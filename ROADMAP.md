@@ -228,6 +228,25 @@ tests must stay green). Invitees work on branches and open PRs; the agents' owne
 
 ---
 
+## Technology direction (decided 2026-09-05, Cees asked "what is the smartest web tech to actually make this?")
+
+Stay browser-native; no engine switch. Harden the layers under the current three.js prototype, incrementally:
+
+| Layer | Choice | Why | When |
+|---|---|---|---|
+| Rendering | **three.js → WebGPURenderer + TSL node materials**, WebGL2 fallback | Compute shaders for clouds, ocean spectra, voxel meshing, particles, GPU-driven vegetation culling; TSL writes once for both backends; no rewrite | Behind a flag after Phase 1; default when stable |
+| Language | **TypeScript** (strict for new files; convert on touch) | Types are the cheapest coordination between many agents | Now |
+| Simulation core | **Rust crate `star-core`** → WASM (client, in workers) and native (server): terrain/biomes, voxel SDF + marching cubes, orbital mechanics, flight model | Same deterministic world on client and server; 5–20× faster than JS workers | Terrain port first (validated against terrain-v2 output), then voxels |
+| Physics | **Rapier** (Rust, WASM, three.js bindings) for landing gear, cargo, collisions, debris | Proven, fast, deterministic-enough; floating origin keeps it in local float precision | Phase 1 landing gear |
+| Networking | **WebTransport** (QUIC datagrams) + WebSocket fallback; binary schema; server authoritative 30 Hz; shards per body | Closest thing to UDP in a browser; matches the Phase 5 design | Phase 5 |
+| Server | **Rust** sharing `star-core` (or TypeScript on Bun first for iteration speed), Postgres 16 + Redis, netcup RS 2000 G12 | One world-gen implementation; cheap to run | Phase 5 |
+| Assets | glTF + **KTX2/Basis textures + meshopt** via `gltf-transform` at build time | 10 MB Meshy props → ~1 MB, GPU-ready | Now, in `clean_asset.py` / build |
+| Tooling | Vite, node:test/vitest, Playwright on system Chromium, GitHub Actions | Already in place | — |
+
+Ruled out: Unity/Unreal web exports (30–60 MB downloads, no 64-bit world, agent-hostile), Godot web (WebGL2 only,
+single-threaded), Bevy (purest option but immature UI/tooling and far less agent fluency than three.js), Babylon.js
+(fine engine, but a rewrite for no gain).
+
 ## Team & process
 
 | Role | Who | Scope |
