@@ -202,3 +202,63 @@ test('high-speed downward travel collides with the near surface without tunnelli
   assert.ok(navigation.position.length() >= RADIUS);
   near(navigation.speed, 0);
 });
+
+function attachController(navigation) {
+  const pad={id:'Test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],
+    buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
+  navigation.gamepad.read=()=>[pad];
+  navigation.update(0);
+  const button=(index,down)=>{pad.buttons[index]={pressed:down,value:Number(down)};};
+  const press=index=>{button(index,true);navigation.update(0);button(index,false);navigation.update(0);};
+  return {pad,button,press};
+}
+
+test('controller preserves analog assisted thrust, steering, roll and keyboard fallback', t=>{
+  const {navigation:nav,advance,keyDown,keyUp}=setup(t);
+  const {pad}=attachController(nav);
+  pad.axes[1]=-.58;nav.update(1/60);const half=nav.speed;
+  nav.orbit();pad.axes[1]=-1;nav.update(1/60);
+  assert.ok(nav.speed>half*1.9 && nav.speed<half*2.1,'half stick gives half assisted speed');
+  nav.orbit();pad.axes.fill(0);pad.axes[2]=.6;const orientation=nav.orientation.clone();advance(.5);
+  assert.ok(nav.orientation.angleTo(orientation)>.1,'right stick steers without pointer lock');
+  pad.connected=false;nav.orbit();keyDown('KeyW');advance(.5);keyUp('KeyW');
+  assert.ok(nav.speed>0,'keyboard survives disconnect');
+  assert.equal(nav.controllerActive,false);
+});
+
+test('controller toggles once per press, applies inertial torque and holds brakes without creeping', t=>{
+  const {navigation:nav,advance}=setup(t);const {pad,button}=attachController(nav);
+  button(11,true);advance(.5);assert.equal(nav.flightAssist,false);
+  advance(.5);assert.equal(nav.flightAssist,false,'holding R3 does not repeatedly toggle assist');
+  button(11,false);pad.axes[1]=-1;pad.axes[2]=.5;button(4,true);advance(.5);
+  assert.ok(nav.speed>1);assert.ok(nav.angularVelocity.length()>.1);
+  button(1,true);const position=nav.position.clone();advance(.5);
+  assert.ok(nav.position.equals(position),'brake overrides thrust and gravity while held');
+  near(nav.speed,0);near(nav.angularVelocity.length(),0);
+  button(1,false);button(4,false);pad.axes.fill(0);button(11,true);advance(.1);
+  assert.equal(nav.flightAssist,true);
+});
+
+test('controller lands, leaves seat, walks proportionally, opens hatch, returns and launches', t=>{
+  const {navigation:nav,advance}=setup(t);const {pad,press}=attachController(nav);
+  nav.transit(destinations.coast,100);press(3);advance(20);
+  assert.equal(nav.mode,'landed');press(2);assert.equal(nav.mode,'walk');
+  const start=nav.position.clone();pad.axes[1]=-.58;advance(.5);const half=nav.position.distanceTo(start);
+  pad.axes[1]=-1;const next=nav.position.clone();advance(.5);
+  assert.ok(nav.position.distanceTo(next)>half*1.5,'walking retains analog speed');
+  for(let i=0;i<600&&nav.toShipLocal().z<2.3;i++)nav.update(1/60);
+  pad.axes.fill(0);press(2);advance(1.2);assert.equal(nav.doorOpen,true);
+  pad.axes[1]=1;
+  for(let i=0;i<600&&nav.toShipLocal().z>-1.4;i++)nav.update(1/60);
+  pad.axes.fill(0);press(2);assert.equal(nav.mode,'landed');press(3);assert.equal(nav.mode,'flight');
+});
+
+test('controller focus and disabled navigation discard held movement and interactions', t=>{
+  const {navigation:nav,advance}=setup(t);const {pad,button}=attachController(nav);
+  nav.enabled=false;pad.axes[1]=-1;button(11,true);advance(.2);
+  nav.enabled=true;advance(.2);near(nav.speed,0);assert.equal(nav.flightAssist,true);
+  pad.axes.fill(0);button(11,false);advance(.1);pad.axes[1]=-1;advance(.2);assert.ok(nav.speed>0);
+  window.dispatch('blur');advance(.2);near(nav.speed,0);
+  window.dispatch('focus');advance(.2);near(nav.speed,0);
+  pad.axes.fill(0);advance(.1);pad.axes[1]=-1;advance(.2);assert.ok(nav.speed>0);
+});
