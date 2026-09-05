@@ -1,13 +1,22 @@
 # Star Agent — Roadmap
 
-*Maintained by Claude (project manager). Astra (Codex) leads core simulation and netcode. Opus/Fable agents take
-scoped modules. Last updated 2026-09-05. Status legend: ✅ done · 🔧 in progress · ⏳ planned.*
+*Maintained by Claude (project manager). Astra (Codex, GPT-6) and its subagents (incl. Sol 5.6) do the implementation;
+Claude reviews, tests and integrates, and spawns Claude agents only for exceptions (see Token policy). Last updated 2026-09-05 15:00. Status legend: ✅ done · 🔧 in progress · ⏳ planned.*
 
 Star Agent is a browser-native, seamless space-to-surface sandbox: fly from orbit, land, walk, build, mine, trade
 and fight, on a ¼-Earth procedural planet and its neighbours, with no loading screens. Everything is procedural
 (a seed grows the world) except a handful of hero assets (station, base props) built in Blender or Meshy.
 
 ---
+
+## Token policy (decided 2026-09-05)
+
+Cees's ChatGPT/Codex plan is now 20×, so **implementation load goes to Astra and its Codex subagents (Sol 5.6 for
+bounded, test-covered pieces)**. Claude's budget is reserved for: project management, design specs and acceptance
+criteria, code review of Astra's commits, QA (screenshot tours, tests, perf gates), and small integration glue. Claude
+agents (Opus/Fable) are spawned only when (a) Astra is saturated on a deadline, (b) a task needs Claude's browser/Chrome
+tooling (e.g. Meshy asset generation), or (c) a Fable-grade shader/maths item stalls on Astra's side. Owner labels
+below reflect this: *Astra* = Astra or a Codex subagent; *Claude* = review/QA/spec, not implementation.
 
 ## Phase 0 — Foundation (now)
 
@@ -42,8 +51,8 @@ matches the scattering shell already rendered). Define:
 **Work items**
 1. `src/flight-model.js` — pure function `step(state, controls, env, dt)`; env = `{ density, gravity, groundRadius }`. Unit-tested (stall, terminal velocity, RCS in vacuum). *Astra.*
 2. Regime blend + HUD regime indicator; speed limits per regime and per travel/combat mode (Phase 4). *Astra.*
-3. `src/landing-gear.js` — per-strut spring-damper (`k`, `c`, travel 0.6 m), one raycast per strut against `terrainHeight`/`station.deckHeightAt`, touchdown g-force → damage event; gear animation from `ship-mk2.js`. *Fable agent.*
-4. Re-entry heating/plasma shader on the hull (emissive, uses `q`). *Opus agent.*
+3. `src/landing-gear.js` — per-strut spring-damper (`k`, `c`, travel 0.6 m), one raycast per strut against `terrainHeight`/`station.deckHeightAt`, touchdown g-force → damage event; gear animation from `ship-mk2.js`. *Astra (Codex subagent); Claude reviews.*
+4. Re-entry heating/plasma shader on the hull (emissive, uses `q`). *Astra subagent.*
 5. Audio: wind loudness from `q`, RCS puffs in vacuum. *Astra's audio subagent.*
 
 Exit criteria: fly from orbit to landing with continuous behaviour change; hard landing bounces on struts; 6-DOF strafe works in space and not on the deck.
@@ -64,8 +73,8 @@ two, all data-driven and cheap.
 
 **Work items**
 1. `ShipState` bus + `mfd/host.js` (page routing, dirty tracking, staggering). *Astra ("hook-up").*
-2. Page renderers `mfd/pages/*.js` with a shared design system (mint brand, mono type, 2-px grids). *Opus agent (frontend).*
-3. Radar sphere `mfd/radar.js`. *Opus agent.*
+2. Page renderers `mfd/pages/*.js` with a shared design system (mint brand, mono type, 2-px grids). *Astra subagent; Claude supplies the design spec + reviews visuals.*
+3. Radar sphere `mfd/radar.js`. *Astra subagent.*
 4. Cockpit geometry with 4 screen quads + sphere mount in `ship-walkable.js` cabin. *Astra.*
 5. Perf gate in the smoke test: MFD update cost measured via `performance.measure`. *Claude.*
 
@@ -89,7 +98,7 @@ Exit criteria: all four MFDs live with real data at < 1 ms/frame; radar shows st
 - **Jump** (quantum-style) between bodies: align, spool 4 s, fly at 0.05 c in a straight line with a tunnel effect; 75 000 km moon ≈ 5 s, 15 M km to Pyre ≈ 17 min → allow 0.2 c for interplanetary (≈ 4 min) or an "interplanetary lane" with 0.5 c. Sun shadow/eclipse visuals as you pass.
 - Time/orbits: bodies move on Keplerian ellipses at 1× real time; positions are doubles; rebasing already handles origin.
 
-**Work items**: `Body` refactor of planet/atmosphere/vegetation (*Astra*), moon palette + craters (*Fable agent*), ring shader + instanced belt (*Fable agent*), Pyre palette + heat mechanic (*Opus agent*), jump travel + tunnel FX + nav MFD page (*Astra + Opus*), sky: moon/planets as lit discs from the surface (*Claude*).
+**Work items**: `Body` refactor of planet/atmosphere/vegetation (*Astra*), moon palette + craters, ring shader + instanced belt, Pyre palette + heat mechanic, jump travel + tunnel FX + nav MFD page, moon/planets as lit discs from the surface (*Astra + subagents*); Claude reviews and runs the screenshot tour per body.
 
 Exit criteria: stand on Aeon's beach at dusk and see the ring arc, the moon rising and Pyre as a bright point; jump to the moon and land in a crater.
 
@@ -105,7 +114,7 @@ Exit criteria: stand on Aeon's beach at dusk and see the ring arc, the moon risi
 - **AI**: 3 behaviours (pursue with lead, strafe-and-extend, evade); difficulty by turn rate and accuracy; spawn "patrol" encounters near the station and the ring. Server-authoritative once Phase 5 exists; single-player first.
 - **Assets**: turrets/mounts/missiles from Meshy (see Assets), muzzle/impact VFX procedural.
 
-**Work items**: `src/combat/` (weapons, projectiles, shields, damage) *Astra*; targeting HUD + lock, lead indicator, shield ripple *Opus agent*; AI *Fable agent*; damage model wired to flight model (Phase 1) *Astra*; balance tests (TTK tables) *Claude*.
+**Work items**: `src/combat/` (weapons, projectiles, shields, damage) *Astra*; targeting HUD + lock, lead indicator, shield ripple *Astra subagent*; AI *Astra subagent*; damage model wired to flight model (Phase 1) *Astra*; balance tests (TTK tables) *Claude*.
 
 Exit criteria: a 3-v-1 dogfight near the station at 60 fps; shields matter; travel→combat transition is legible.
 
@@ -135,7 +144,7 @@ Rules of thumb: budget **~25 KB/s down + 5 KB/s up per player** at 20 Hz with 50
 
 **Ads / funding (modest):** the client is a static site, so ordinary web ads work on the **landing view and loading screen only, never in the HUD**: one 300×250 or a native "sponsor" card under the mission panel, EthicalAds or Carbon Ads (developer-friendly, no consent banners), or AdSense (needs a consent banner in the EU). Add a privacy policy page and an "ad-free supporter" tier (Ko-fi/GitHub Sponsors) — that will likely out-earn banners for this audience.
 
-**Work items**: protocol + schema, server skeleton with one shard and interest management (*Astra*), client netcode (prediction, interpolation, remote ships) (*Astra*), accounts/persistence (*Opus agent*), load test with 500 bot clients (*Claude*), deploy scripts + Cloudflare (*Claude*).
+**Work items**: protocol + schema, server skeleton with one shard and interest management (*Astra*), client netcode (prediction, interpolation, remote ships) (*Astra*), accounts/persistence (*Astra subagent*), load test with 500 bot clients (*Claude*), deploy scripts + Cloudflare (*Claude*, small).
 
 Exit criteria: 50 players formation-flying around the station at 20 Hz with < 150 ms perceived latency in EU.
 
@@ -163,9 +172,9 @@ Exit criteria: 50 players formation-flying around the station at 20 Hz with < 15
   - Tools: pick (small brush, slow), mining laser (beam, heat, larger brush), later a ship-mounted mining laser for
     asteroids (Phase 4 mount system). Chunks cast/receive shadows and use the terrain material's rock/ore layers.
 - **Caves**: carve the terrain with a 3D worm/noise field (`caveField(x,y,z)`), voxelized near the player and meshed with **marching cubes in a worker** (chunks 32³ at 1 m), entrances where the field intersects steep terrain; interior lit by crystal emissives + headlamp; rare items spawn deep. Height-field terrain stays as is; cave chunks replace it locally with a stencil/discard on the surface mesh.
-- **Assets (Meshy, 25 k credits)**: an Opus agent drives Meshy via Chrome (you stay logged in; the agent never enters credentials) to generate textured hero props: forge, refinery, fabricator, storage crate, base gate, turret bases, mining laser, shop kiosk, asteroid set, crystal set. Keep each under 10 k tris; retopo/decimate in Blender headless; export glTF to `public/models/`. Check the per-model credit cost in the Meshy dashboard first; the budget should cover on the order of a hundred assets, so plan ~40 and keep the rest for iterations.
+- **Assets (Meshy, 25 k credits)**: a Claude Opus agent drives Meshy via Chrome (the one standing exception to the token policy, because it needs Claude's browser tooling) (you stay logged in; the agent never enters credentials) to generate textured hero props: forge, refinery, fabricator, storage crate, base gate, turret bases, mining laser, shop kiosk, asteroid set, crystal set. Keep each under 10 k tris; retopo/decimate in Blender headless; export glTF to `public/models/`. Check the per-model credit cost in the Meshy dashboard first; the budget should cover on the order of a hundred assets, so plan ~40 and keep the rest for iterations.
 
-**Work items**: `src/build/` snapping + validation (*Astra*), pieces kit (*Opus + Meshy*), shield mechanic (*Astra*), resources/inventory/crafting (*Opus agent*), `src/voxel/` SDF + marching cubes worker + brush lists — shared by asteroids, caves and outcrops (*Fable agent*), asteroid SDFs and ore fields (*Fable agent*), cave field + entrances (*Fable agent*), mining laser + tools (*Opus agent*), brush-list replication/persistence (*Astra*, Phase 5).
+**Work items**: `src/build/` snapping + validation (*Astra*), pieces kit (*Meshy via a Claude Opus agent in Chrome — exception (b)*), shield mechanic (*Astra*), resources/inventory/crafting (*Astra subagent*), `src/voxel/` SDF + marching cubes worker + brush lists — shared by asteroids, caves and outcrops (*Astra; Fable agent only if it stalls — exception (c)*), asteroid SDFs and ore fields (*Astra subagent*), cave field + entrances (*Astra subagent*), mining laser + tools (*Astra subagent*), brush-list replication/persistence (*Astra*, Phase 5).
 
 Exit criteria: two players build a walled base, lock it with a code, mine metal in a cave, forge ingots, craft a turret.
 
@@ -196,12 +205,10 @@ tests must stay green). Invitees work on branches and open PRs; the agents' owne
 
 | Role | Who | Scope |
 |---|---|---|
-| Core sim, netcode, integration | **Astra (Codex, GPT-6)** | `main.js`, `navigation.js`, `planet.js`, `world.js`, flight model, server |
-| Bounded coding with tests (under evaluation) | **Sol 5.6 (GPT)** | scoped files only, e.g. `tests/station.test.js`; reviewed by Astra |
-| Project management, QA, module design, docs | **Claude (Fable)** | `ROADMAP.md`, `HANDOFF.md`, tests, screenshot tours, agent orchestration |
-| Frontend / MFDs / HUD / shaders | **Opus agents** | `src/mfd/`, combat HUD, VFX |
-| Hard maths & shaders (physics, caves, rings) | **Fable agents** | landing gear, marching cubes, ring, moon |
-| 3D art | **Opus + Meshy / Blender** | hero props, station variants |
+| Implementation lead: sim, netcode, integration, shaders, UI | **Astra (Codex, GPT-6)** + Codex subagents | everything in `src/`, server, MFD pages, effects |
+| Bounded, test-covered pieces | **Sol 5.6 (GPT)** under Astra | scoped files only, reviewed by Astra |
+| Project management, specs, review, QA | **Claude (Fable)** | `ROADMAP.md`, `HANDOFF.md`, tests, screenshot tours, PR review, perf gates |
+| Exceptions only (browser tooling, stalled hard maths) | Claude Opus / Fable agents | Meshy asset generation; a shader or solver if Astra is stuck |
 
 Rules that keep this working: one owner per file (see `HANDOFF.md`), new features land as new modules with a documented
 swap, every module ships with a `/dev/` test page and a screenshot, `npm test` stays green, requests between agents
