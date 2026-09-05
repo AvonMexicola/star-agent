@@ -81,6 +81,7 @@ try {
   }
   let introWarmup=2;
   let elapsed=0,last=null,lastHud=0,frames=0,fps=0,frameAccumulator=0,firstReady=false,transiting=false,hidden=false;
+  document.addEventListener('visibilitychange',()=>{last=null;});
   let renderScale=1, automaticScale=true, resizePending=false;
   function resize(){const width=Math.floor(innerWidth*renderScale),height=Math.floor(innerHeight*renderScale);renderer.setSize(width,height,false);canvas.style.width='100%';canvas.style.height='100%';camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();const size=renderer.getDrawingBufferSize(new THREE.Vector2());atmosphere.resize(size.x,size.y);}
   window.addEventListener('resize',()=>resizePending=true);resize();
@@ -189,8 +190,8 @@ try {
     renderer.info.reset();atmosphere.render(scene,camera,origin,sunDirection,elapsed);travelEffects.render(renderer,camera);
     frames++;frameAccumulator+=realDt;if(frameAccumulator>=2){fps=Math.round(frames/frameAccumulator);frames=0;frameAccumulator=0;if(automaticScale&&firstReady&&!transiting&&fps<23&&renderScale>.55){renderScale=Math.max(.55,renderScale*.85);resizePending=true;}}
     if(time-lastHud>150)updateHud(time);
-    if(opening&&!firstReady&&introWarmup>0)introWarmup--;
-    if(!firstReady&&(opening?opening.phase!=='loading'&&introWarmup===0:planet.ready&&elapsed>1)){firstReady=true;$('loading').classList.add('hidden');}
+    if(opening&&!firstReady&&planet.ready&&introWarmup>0)introWarmup--;
+    if(!firstReady&&(opening?opening.phase!=='loading'&&planet.ready&&introWarmup===0:planet.ready&&elapsed>1)){firstReady=true;$('loading').classList.add('hidden');}
     if(planet.error)fatal(planet.error);
   }
   requestAnimationFrame(frame);
