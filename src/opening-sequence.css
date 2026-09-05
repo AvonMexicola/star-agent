@@ -5,3 +5,5 @@ body.opening-active #hud,body.opening-active .top-actions{opacity:var(--opening-
 body.opening-active .topbar{background:transparent;border-color:transparent}
 body.opening-active #toast{opacity:0}
 body.opening-active .wordmark{pointer-events:none}
+#opening-hint{bottom:5%;padding:12px 18px;background:#06121aca;border:1px solid #aac8c533;border-radius:3px;white-space:nowrap}
+@media(max-width:600px){#opening-hint{font-size:9px;letter-spacing:.12em;padding:10px;max-width:94vw;white-space:normal;text-align:center}}

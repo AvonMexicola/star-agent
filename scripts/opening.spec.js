@@ -15,6 +15,7 @@ test('hangar reveal hands movement to physical boarding and launch',async({page}
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   const shot=async name=>{
     await page.evaluate(()=>{window.starAgent.navigation.enabled=false;window.starAgent.setRenderScale(1);});
+    await page.waitForFunction(()=>document.getElementById('viewport').width===innerWidth);
     await page.screenshot({path:name});
     await page.evaluate(()=>{window.starAgent.setRenderScale(.55);window.starAgent.navigation.enabled=true;});
   };
@@ -24,9 +25,11 @@ test('hangar reveal hands movement to physical boarding and launch',async({page}
   await page.waitForFunction(()=>window.starAgent.state.opening.elapsed>=10);
   await shot('/tmp/star-agent-opening-10.png');
   expect(await page.evaluate(()=>window.starAgent.state.station.doorsOpen)).toBe(1);
+  expect(await page.locator('#hud').evaluate(e=>e.inert)).toBe(true);
   const before=await page.evaluate(()=>window.starAgent.state.position);
   await page.keyboard.press('w');
   await page.waitForFunction(()=>window.starAgent.state.opening.phase==='playing');
+  expect(await page.locator('#hud').evaluate(e=>e.inert)).toBe(false);
   await page.waitForFunction(()=>window.starAgent.state.speed>0);
   await page.keyboard.press('x');
   expect(await page.evaluate(()=>window.starAgent.state.position)).not.toEqual(before);

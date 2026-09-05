@@ -7,6 +7,12 @@ import './opening-sequence.css';
 
 export const OPENING = Object.freeze({duration:10,blendSeconds:.9,hintSeconds:6});
 const UP=new THREE.Vector3(0,1,0),FORWARD=new THREE.Vector3(0,0,-1);
+function openingUI(active){
+  document.body.classList.toggle('opening-active',active);
+  for(const selector of ['#hud','.top-actions','.wordmark']){
+    const element=document.querySelector(selector);if(element)element.inert=active;
+  }
+}
 const MOVE_KEYS=new Set(['KeyW','KeyA','KeyS','KeyD','Space','KeyC']);
 
 /** A deterministic twilight berth: sun 5 degrees above the radial horizon and
@@ -47,7 +53,7 @@ export class OpeningSequence {
         this.requestControl(code);
       }
     };
-    document.body.classList.add('opening-active');
+    openingUI(true);
   }
   get active(){return this.phase==='loading'||this.phase==='cinematic'||this.phase==='blend';}
   get state(){return {phase:this.phase,elapsed:this.elapsed,blend:this.blendElapsed,characterReady:this.character.ready,characterError:this.character.error,
@@ -68,7 +74,7 @@ export class OpeningSequence {
   }
   fail(){
     this.phase='skipped';this.nav.openingActive=false;this.nav.enabled=true;this.nav.orbit();
-    this.character.setVisible(false);document.body.classList.remove('opening-active');
+    this.character.setVisible(false);openingUI(false);
   }
   requestControl(code,fromGesture=false){
     if(this.phase!=='cinematic')return;
@@ -98,7 +104,7 @@ export class OpeningSequence {
           this.nav.notify('Walk around to the rear hatch. F opens it; walk up the ramp to the pilot chair.');
           this.phase='playing';this.nav.openingActive=false;this.character.setVisible(false);
           this.nav.keys.add(this.bufferedKey);this.bufferRemaining=.12;
-          document.body.classList.remove('opening-active');document.body.style.removeProperty('--opening-hud');
+          openingUI(false);document.body.style.removeProperty('--opening-hud');
         }
       }
       this.hint.classList.toggle('visible',this.phase==='cinematic'&&this.elapsed>=OPENING.hintSeconds);
@@ -116,6 +122,6 @@ export class OpeningSequence {
     if(this.phase==='loading')return;
     this.phase='skipped';this.nav.openingActive=false;this.character.setVisible(false);
     this.station.endOpening();this.hint.classList.remove('visible');
-    document.body.classList.remove('opening-active');document.body.style.removeProperty('--opening-hud');
+    openingUI(false);document.body.style.removeProperty('--opening-hud');
   }
 }
