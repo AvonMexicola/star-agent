@@ -90,3 +90,6 @@ export function findDestinations() {
   result.polar=latLonDirection(77,30);
   return result;
 }
+
+// Public terrain source for the second body; lunar rendering and contact must agree.
+export { MOON_RADIUS, MOON_POSITION, MOON_GRAVITY, MOON_LANDING_DIRECTION, moonSurface } from './moon-world.js';

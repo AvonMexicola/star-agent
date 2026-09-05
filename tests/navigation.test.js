@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { Navigation } from '../src/navigation.js';
 import { RADIUS, terrainHeight, findDestinations, latLonDirection } from '../src/world.js';
+import { SELENE, bodySurfacePoint, bodyAltitude } from '../src/celestial.js';
+import { MOON_RADIUS, MOON_POSITION, MOON_LANDING_DIRECTION } from '../src/moon-world.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
 
 class EventSurface {
@@ -201,4 +203,124 @@ test('high-speed downward travel collides with the near surface without tunnelli
   assert.ok(navigation.normal.dot(normal) > 0.999999, 'collision remains on the approach hemisphere');
   assert.ok(navigation.position.length() >= RADIUS);
   near(navigation.speed, 0);
+});
+
+function attachController(navigation) {
+  const pad={id:'Test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],
+    buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
+  navigation.gamepad.read=()=>[pad];
+  navigation.update(0);
+  const button=(index,down)=>{pad.buttons[index]={pressed:down,value:Number(down)};};
+  const press=index=>{button(index,true);navigation.update(0);button(index,false);navigation.update(0);};
+  return {pad,button,press};
+}
+
+test('controller preserves analog assisted thrust, steering, roll and keyboard fallback', t=>{
+  const {navigation:nav,advance,keyDown,keyUp}=setup(t);
+  const {pad}=attachController(nav);
+  pad.axes[1]=-.58;nav.update(1/60);const half=nav.speed;
+  nav.orbit();pad.axes[1]=-1;nav.update(1/60);
+  assert.ok(nav.speed>half*1.9 && nav.speed<half*2.1,'half stick gives half assisted speed');
+  nav.orbit();pad.axes.fill(0);pad.axes[2]=.6;const orientation=nav.orientation.clone();advance(.5);
+  assert.ok(nav.orientation.angleTo(orientation)>.1,'right stick steers without pointer lock');
+  pad.connected=false;nav.orbit();keyDown('KeyW');advance(.5);keyUp('KeyW');
+  assert.ok(nav.speed>0,'keyboard survives disconnect');
+  assert.equal(nav.controllerActive,false);
+});
+
+test('controller toggles once per press, applies inertial torque and holds brakes without creeping', t=>{
+  const {navigation:nav,advance}=setup(t);const {pad,button}=attachController(nav);
+  button(11,true);advance(.5);assert.equal(nav.flightAssist,false);
+  advance(.5);assert.equal(nav.flightAssist,false,'holding R3 does not repeatedly toggle assist');
+  button(11,false);pad.axes[1]=-1;pad.axes[2]=.5;button(4,true);advance(.5);
+  assert.ok(nav.speed>1);assert.ok(nav.angularVelocity.length()>.1);
+  button(1,true);const position=nav.position.clone();advance(.5);
+  assert.ok(nav.position.equals(position),'brake overrides thrust and gravity while held');
+  near(nav.speed,0);near(nav.angularVelocity.length(),0);
+  button(1,false);button(4,false);pad.axes.fill(0);button(11,true);advance(.1);
+  assert.equal(nav.flightAssist,true);
+});
+
+test('controller lands, leaves seat, walks proportionally, opens hatch, returns and launches', t=>{
+  const {navigation:nav,advance}=setup(t);const {pad,press}=attachController(nav);
+  nav.transit(destinations.coast,100);press(3);advance(20);
+  assert.equal(nav.mode,'landed');press(2);assert.equal(nav.mode,'walk');
+  const start=nav.position.clone();pad.axes[1]=-.58;advance(.5);const half=nav.position.distanceTo(start);
+  pad.axes[1]=-1;const next=nav.position.clone();advance(.5);
+  assert.ok(nav.position.distanceTo(next)>half*1.5,'walking retains analog speed');
+  for(let i=0;i<600&&nav.toShipLocal().z<2.3;i++)nav.update(1/60);
+  pad.axes.fill(0);press(2);advance(1.2);assert.equal(nav.doorOpen,true);
+  pad.axes[1]=1;
+  for(let i=0;i<600&&nav.toShipLocal().z>-1.4;i++)nav.update(1/60);
+  pad.axes.fill(0);press(2);assert.equal(nav.mode,'landed');press(3);assert.equal(nav.mode,'flight');
+});
+
+test('controller focus and disabled navigation discard held movement and interactions', t=>{
+  const {navigation:nav,advance}=setup(t);const {pad,button}=attachController(nav);
+  nav.enabled=false;pad.axes[1]=-1;button(11,true);advance(.2);
+  nav.enabled=true;advance(.2);near(nav.speed,0);assert.equal(nav.flightAssist,true);
+  pad.axes.fill(0);button(11,false);advance(.1);pad.axes[1]=-1;advance(.2);assert.ok(nav.speed>0);
+  window.dispatch('blur');advance(.2);near(nav.speed,0);
+  window.dispatch('focus');advance(.2);near(nav.speed,0);
+  pad.axes.fill(0);advance(.1);pad.axes[1]=-1;advance(.2);assert.ok(nav.speed>0);
+});
+
+
+test('Selene supports landing, physical ramp traversal, low-gravity jumping, reboarding and launch',t=>{
+  const {navigation:nav,press,keyDown,keyUp,advance,walkUntil}=setup(t);
+  nav.transitMoon(100);assert.equal(nav.body.id,'selene');near(nav.altitude,100,1e-7);
+  assert.equal(nav.flightEnvironment.density,0);assert.equal(nav.flightEnvironment.atmosphereFraction,0);
+  assert.ok(Math.abs(nav.flightEnvironment.gravity.length()-1.62)<.02);
+  press('KeyL');advance(20);assert.equal(nav.mode,'landed');
+  const parked=nav.shipPosition.clone();near(bodyAltitude(parked,SELENE),0,1e-7);
+  press('KeyF');assert.equal(nav.mode,'walk');
+  walkUntil('KeyW',()=>nav.toShipLocal().z>=2.3);press('KeyF');advance(1.2);
+  walkUntil('KeyW',()=>nav.toShipLocal().z>11);assert.equal(nav.insideShip,false);
+  near(nav.altitude,1.75,1e-7);assert.ok(nav.shipPosition.equals(parked));
+  const outside=nav.position.clone();press('KeyF');assert.ok(nav.position.equals(outside),'interaction does not teleport to seat');
+  keyDown('Space');advance(.1);keyUp('Space');advance(.8);assert.ok(nav.jumpHeight>2,'lunar jump exceeds an Earth jump');
+  advance(6);near(nav.jumpHeight,0);near(nav.altitude,1.75,1e-7);
+  keyDown('KeyW');advance(2,()=>near(nav.altitude,1.75,1e-7));keyUp('KeyW');
+  walkUntil('KeyS',()=>nav.toShipLocal().z<-1.4);press('KeyF');assert.equal(nav.mode,'landed');
+  press('KeyL');assert.equal(nav.mode,'flight');assert.ok(nav.altitude>10);assert.equal(nav.shipPosition,null);
+  nav.orbit();assert.equal(nav.body.id,'aeon');assert.equal(nav.flightEnvironment.regime,'SPACE');
+});
+
+test('lunar walking works at the pole and on the far side without applying Aeon sea level',t=>{
+  const {navigation:nav,press,advance,walkUntil}=setup(t);
+  for(const direction of [[0,1,0],[0,0,-1]]){
+    nav.transitMoon(30,direction);press('KeyL');advance(15);assert.equal(nav.mode,'landed');
+    near(bodyAltitude(nav.shipPosition,SELENE),0,1e-7);press('KeyF');
+    walkUntil('KeyW',()=>nav.toShipLocal().z>2.3);press('KeyF');advance(1.2);
+    walkUntil('KeyW',()=>nav.toShipLocal().z>10);
+    near(nav.altitude,1.75,1e-7);assert.ok(nav.position.distanceTo(new THREE.Vector3(...MOON_POSITION))<MOON_RADIUS+4000);
+  }
+});
+
+test('crossing into lunar navigation keeps position continuous and does not flip the camera',t=>{
+  const {navigation:nav}=setup(t),center=new THREE.Vector3(...MOON_POSITION);
+  nav.position.copy(center).add(new THREE.Vector3(0,0,MOON_RADIUS*8+10));nav.velocity.set(0,0,-1000);
+  const before=nav.position.clone(),orientation=nav.orientation.clone();
+  nav.update(.05);assert.equal(nav.body.id,'selene');
+  assert.ok(nav.position.distanceTo(before)<51);assert.ok(nav.orientation.angleTo(orientation)<1e-6);
+});
+
+test('swept lunar contact lands on real terrain instead of the former 4 km boundary',t=>{
+  const {navigation:nav}=setup(t);nav.transitMoon(4000);nav.velocity.copy(nav.normal).multiplyScalar(-1000000);
+  nav.update(.2);assert.equal(nav.mode,'landed');
+  near(bodyAltitude(nav.shipPosition,SELENE),0,1e-7);assert.ok(nav.altitude<4);
+});
+
+
+test('controller can land on Selene, traverse the ramp, jump and reboard',t=>{
+  const {navigation:nav,advance}=setup(t),{pad,press,button}=attachController(nav);
+  nav.transitMoon(80);press(3);advance(20);assert.equal(nav.mode,'landed');press(2);
+  pad.axes[1]=-1;for(let i=0;i<600&&nav.toShipLocal().z<2.3;i++)nav.update(1/60);
+  pad.axes.fill(0);press(2);advance(1.2);assert.equal(nav.doorOpen,true);
+  pad.axes[1]=-1;for(let i=0;i<600&&nav.toShipLocal().z<12;i++)nav.update(1/60);
+  pad.axes.fill(0);advance(.1);assert.equal(nav.insideShip,false);near(nav.altitude,1.75,1e-7);
+  button(0,true);advance(.1);button(0,false);advance(.8);assert.ok(nav.jumpHeight>2);
+  advance(6);near(nav.jumpHeight,0);
+  pad.axes[1]=1;for(let i=0;i<600&&nav.toShipLocal().z>-1.4;i++)nav.update(1/60);
+  pad.axes.fill(0);press(2);assert.equal(nav.mode,'landed');press(3);assert.equal(nav.mode,'flight');
 });

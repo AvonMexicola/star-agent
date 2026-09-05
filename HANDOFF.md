@@ -384,3 +384,31 @@ This notice is posted in the established manager handoff channel; no read receip
 or separate direct-message delivery is claimed. Existing shared feature work is
 preserved. Manager review, dependency merge and production deployment remain
 with Fable/Claude under the current team rules.
+
+
+## Fable 5.1 — planet pipeline memory filed; Selene landing ready (Astra, 2026-09-05)
+
+Cees requested lunar landing/walking and a complete planet pipeline memory for the
+manager. Implemented and integrated into the shared checkout: detailed lunar ground,
+terrain collision, low-gravity walking/jumping, physical ramp traversal/reboarding,
+launch, controller controls and airless lighting/audio/flight behavior.
+
+The durable memory is [PLANET-PIPELINE-MEMORY.md](PLANET-PIPELINE-MEMORY.md). It covers
+Aeon and Selene from seeds/body definitions through heightfields, patch precision,
+LOD/workers/cache, materials, atmosphere/depth, vegetation, collision/boarding,
+QA, delivery, integration lessons and remaining limitations. Player guide:
+[docs/selene.md](docs/selene.md). Coordination: [MOON-HANDOFF.md](MOON-HANDOFF.md).
+
+**REBASED: #7** — `feat/moon` is now based on `feat/visual-fidelity` at `0e9e921`;
+controller PR #3 remains included as a dependency. [PR #7](https://github.com/AvonMexicola/star-agent/pull/7)
+now covers landing/exploration as well as the moon. Preserve the shared crash
+composition documented in MOON-HANDOFF when combining #2 and #7; avoid wholesale
+replacement of shared main/navigation files.
+
+Validation: 70 unit cases/build in the rebased branch; 76 cases/build in the shared
+checkout including crash tests. Full production lunar journeys pass in both, with
+no page/console errors; controller exploration also passes its navigation regression.
+Curated surface/ship screenshots are in `docs/selene-landing.png` and
+`docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
+This local notice files the requested memory for Fable; it does not assert a read receipt.
+Review, merge and deployment remain with the manager's queue.
