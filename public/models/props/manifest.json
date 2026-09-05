@@ -474,5 +474,157 @@
     "concept": "raw/rock-arch-concept.png",
     "file_mb": 0.557,
     "notes": "Natural wind-eroded sandstone arch; span reads across X."
+  },
+  {
+    "name": "player-male-mq",
+    "file": "player-male-mq.glb",
+    "category": "character",
+    "tris": 10379,
+    "textures": 1,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 1.85,
+    "footprint_m": [
+      1.029,
+      0.421
+    ],
+    "credits": 0,
+    "concept": "raw/player-male-concept.png",
+    "file_mb": 1.851,
+    "notes": "Same Meshy mesh/rig; clips retargeted from mannequin.glb via blender/retarget_clips.py (short, controller-tuned, non-drifting). Alternative to the Meshy preset clips.",
+    "animations": [
+      {
+        "name": "idle",
+        "seconds": 2.0
+      },
+      {
+        "name": "walk",
+        "seconds": 1.0
+      },
+      {
+        "name": "run",
+        "seconds": 0.7
+      },
+      {
+        "name": "jump",
+        "seconds": 1.2
+      },
+      {
+        "name": "crouch-walk",
+        "seconds": 1.2
+      },
+      {
+        "name": "sit-down",
+        "seconds": 1.5
+      },
+      {
+        "name": "sit-idle",
+        "seconds": 3.0
+      },
+      {
+        "name": "stand-up",
+        "seconds": 1.5
+      },
+      {
+        "name": "carry-walk",
+        "seconds": 1.1
+      },
+      {
+        "name": "wounded-walk",
+        "seconds": 1.4
+      },
+      {
+        "name": "aim-rifle",
+        "seconds": 2.0
+      },
+      {
+        "name": "fire-rifle",
+        "seconds": 0.6
+      },
+      {
+        "name": "fire-pistol",
+        "seconds": 0.8
+      },
+      {
+        "name": "death",
+        "seconds": 1.6
+      }
+    ]
+  },
+  {
+    "name": "player-female-mq",
+    "file": "player-female-mq.glb",
+    "category": "character",
+    "tris": 10424,
+    "textures": 1,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 1.72,
+    "footprint_m": [
+      1.003,
+      0.33
+    ],
+    "credits": 0,
+    "concept": "raw/player-female-concept.png",
+    "file_mb": 1.808,
+    "notes": "Same Meshy mesh/rig; clips retargeted from mannequin.glb via blender/retarget_clips.py (short, controller-tuned, non-drifting). Alternative to the Meshy preset clips.",
+    "animations": [
+      {
+        "name": "idle",
+        "seconds": 2.0
+      },
+      {
+        "name": "walk",
+        "seconds": 1.0
+      },
+      {
+        "name": "run",
+        "seconds": 0.7
+      },
+      {
+        "name": "jump",
+        "seconds": 1.2
+      },
+      {
+        "name": "crouch-walk",
+        "seconds": 1.2
+      },
+      {
+        "name": "sit-down",
+        "seconds": 1.5
+      },
+      {
+        "name": "sit-idle",
+        "seconds": 3.0
+      },
+      {
+        "name": "stand-up",
+        "seconds": 1.5
+      },
+      {
+        "name": "carry-walk",
+        "seconds": 1.1
+      },
+      {
+        "name": "wounded-walk",
+        "seconds": 1.4
+      },
+      {
+        "name": "aim-rifle",
+        "seconds": 2.0
+      },
+      {
+        "name": "fire-rifle",
+        "seconds": 0.6
+      },
+      {
+        "name": "fire-pistol",
+        "seconds": 0.8
+      },
+      {
+        "name": "death",
+        "seconds": 1.6
+      }
+    ]
   }
 ]
