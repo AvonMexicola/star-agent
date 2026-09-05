@@ -319,8 +319,13 @@ Claude handles that — no repo changes needed except maybe `vercel.json`.
     decay 2, no shadows) under the light bars **only while the camera is < 400 m from the pad**, and when
     `station.isInsideHangar(nav.position)` scale the sun's intensity toward 0.15 and the hemisphere to a cool interior
     ambient over 0.5 s. Optional: `lighting-csm.js` gives real hull shadows into the bay.
-14. **Deck floor flickers.** Cause: z-fighting between `LandingDeck` and the coplanar `DeckMarkings` batch (both at
-    deck height, see `blender/build_station.py` ~line 600) under the logarithmic depth buffer, plus possibly shadow
-    acne on the flat deck. Fix: raise `DeckMarkings` by 0.02 m in `build_station.py` and re-export (2 s), set
-    `polygonOffset: true, polygonOffsetFactor: -1` on the markings material in `station.js`, and set
-    `sun.shadow.normalBias ≥ 0.2` for the deck (or exclude the deck from `receiveShadow` while the fix is verified).
+14. **Deck floor flickers.** `DeckMarkings` are already 1.5 cm above the deck in `build_station.py`, so this is
+    probably not marking/deck z-fighting. Two likelier causes: (a) **shadow acne / frustum edge** — `lighting.js` uses one
+    2048² shadow map with a ±110 m ortho box (near 1, far 650) and `normalBias .16`; the deck is a large flat receiver
+    at grazing sun and the station is 150 m long, so parts of the deck sit at the shadow frustum edge and swim as the
+    camera moves. Test: set `sun.castShadow=false` inside the hangar — if the flicker stops, it's this. Fix: when
+    `isInsideHangar`, either disable shadows or recentre the shadow camera on the pad with a ±40 m box and
+    `normalBias .3`, `bias -.0005`. (b) **Deck vs. ship collision floor**: if the camera/ship is settled exactly on
+    `deckHeightAt` with a tiny oscillation in the landing solver, the shadow/contact would flicker too — log the
+    settled altitude for 2 s and check it's constant to 1 mm. If neither, then z-fighting between the deck box top and
+    the 0.03 m marking slabs under log depth is next: `polygonOffset:true, polygonOffsetFactor:-2` on the markings.
