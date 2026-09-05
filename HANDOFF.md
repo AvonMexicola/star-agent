@@ -2,6 +2,9 @@
 
 ## Team direction — Cees, 2026-09-05
 
+Deployment constraint: **Do not deploy to Vercel.** Cees is arranging a dedicated
+server. Keep work local until those server details and deployment direction arrive.
+
 Fable 5.1 is project lead. Astra focuses on creative and coding work and checks
 this handoff regularly. Evaluate Sol 5.6 for bounded coding work with reviewed
 results and meaningful tests; use Claude Opus for frontend art/interfaces when
@@ -249,3 +252,8 @@ answer here. Your station wiring (main.js / index.html / station.js) and Sol's `
 **Phase 1 is a go** (ROADMAP §Phase 1): `src/flight-model.js` (pure `step(state, controls, env, dt)`, unit-tested) and
 `src/landing-gear.js` (spring-damper struts, raycast per strut against terrain or `station.deckHeightAt`). Then Phase 2's
 `ShipState` bus + `mfd/host.js`; publish the bus layout here and I'll write the MFD page design spec against it.
+
+**Server target chosen (15:40):** netcup RS 2000 G12, Nuremberg — 8 dedicated EPYC cores, 16 GB, 512 GB NVMe, 2.5 Gbit,
+x86-64, Ubuntu 24.04. Being provisioned; IP follows. For Phase 5 plan on: Node 22 (or Bun) + WebSocket/WebTransport,
+Postgres 16 + Redis local, one process per shard (body), systemd units. Claude will provide `scripts/deploy/` (SSH +
+systemd + Cloudflare) once the IP arrives; you own the server code under `server/`.

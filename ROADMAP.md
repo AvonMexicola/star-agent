@@ -131,8 +131,14 @@ Exit criteria: a 3-v-1 dogfight near the station at 60 fps; shields matter; trav
 - Persistence: Postgres (accounts, inventories, bases, economy), Redis pub/sub between shards. Auth: magic-link email or GitHub OAuth; no passwords stored.
 - Anti-cheat baseline: server owns damage, resources and economy; the client owns only its own flight input.
 
+**Ordered 2026-09-05: netcup RS 2000 G12** (Nuremberg) — 8 dedicated AMD EPYC cores, 16 GB DDR5 ECC, 512 GB NVMe,
+2.5 Gbit/s, fair-use unmetered traffic, €16.89/mo (x86-64, so no Arm build concerns). This is the Tier-1 box; it
+also covers Tier 2 for a while. Deployment target: Ubuntu 24.04, Node 22 or Bun, Postgres 16 + Redis on the box,
+Cloudflare in front, deploy via SSH + systemd units (scripts in `scripts/deploy/`, owned by Claude).
+
 **Server sizing** (single region, EU; bandwidth dominates before CPU). Prices verified 2026-09-05 after Hetzner's
-June-2026 increase (CPX/CCX roughly doubled; CX/CAX and dedicated AX barely moved — pick those).
+June-2026 increase (CPX/CCX roughly doubled; CX/CAX and dedicated AX barely moved). Hetzner CX43 was out of stock,
+hence netcup.
 
 | Tier | Concurrent players | Machine | Est. cost | Notes |
 |---|---|---|---|---|
