@@ -55,3 +55,17 @@ asset/terrain setup and does not consume the reveal while warming the first fram
 
 Player guide: docs/station-opening.md. Local test view: http://localhost:5178/.
 Manager owns review/merge/deployment. No opening deployment by this author.
+
+## Final verification (2026-09-06)
+
+121 unit cases pass and the production build passes. Both final production intro
+cases pass, including the injected 30-second hidden-tab timestamp gap, controller
+handover and complete physical keyboard boarding/launch. The seven existing
+browser cases passed across runs: six in the standard suite and the forest flight
+case in a subsequent isolated run. Earlier shared SwiftShader runs timed out at
+0–1 FPS; the journey test now uses 0.4 internal render scale and permits longer
+transit/landing waits while retaining all gameplay assertions. This is test
+resource tolerance, not evidence of a frame-rate improvement. The final opening
+run reached ready at 4.9 seconds on this machine, still above the 3-second target.
+
+PR #12 is ready for manager review. Preview: http://localhost:5178/.
