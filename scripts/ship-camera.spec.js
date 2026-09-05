@@ -31,7 +31,7 @@ test('4 and camera button show the new ship, preserve flight, and respect typing
   expect(await page.evaluate(()=>window.starAgent.state.speed)).toBeGreaterThan(1);
   await page.keyboard.press('x');
   await page.locator('#help-button').click();
-  await expect(page.locator('#help-dialog')).toContainText('Toggle external ship / cockpit view');
+  await expect(page.locator('#help-dialog')).toContainText('Toggle external ship / player view');
   await page.locator('#seed-input').fill('');await page.locator('#seed-input').pressSequentially('44');
   await expect(page.locator('#seed-input')).toHaveValue('44');
   expect(await page.evaluate(()=>window.starAgent.state.camera.selected)).toBe(true);
@@ -47,7 +47,7 @@ test('4 and camera button show the new ship, preserve flight, and respect typing
   await capture('surface-external');
   await page.evaluate(()=>{
     const nav=window.starAgent.navigation,station=nav.station;
-    nav.position.copy(station.padWorldPosition).addScaledVector(station.up,3.2);nav.dock();
+    nav.position.copy(station.padWorldPosition).addScaledVector(station.up,3.2);nav.orientation.copy(station.padQuaternion);nav.dock();
   });
   await expect.poll(()=>page.evaluate(()=>window.starAgent.state.mode)).toBe('landed');
   await page.waitForFunction(()=>{const s=window.starAgent.state;return Math.hypot(...s.position.map((n,i)=>n-s.camera.position[i]))<40;});
@@ -60,9 +60,40 @@ test('4 and camera button show the new ship, preserve flight, and respect typing
   await capture('hangar-camera');
   await page.keyboard.press('f');
   await expect.poll(()=>page.evaluate(()=>window.starAgent.state.mode)).toBe('walk');
-  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('cockpit');
-  await expect(page.locator('#camera-button')).toBeDisabled();
-  await page.keyboard.press('4');expect(await page.evaluate(()=>window.starAgent.state.camera.selected)).toBe(false);
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('first-person');
+  await expect(page.locator('#camera-button')).toBeEnabled();
+  await page.keyboard.press('4');
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.selected)).toBe(true);
+  await capture('player-cabin');
+  // Put the physical walker on the real hangar deck beside the ship, away from its walls.
+  await page.evaluate(()=>{const nav=window.starAgent.navigation;
+    nav.position.copy(nav.fromShipLocal(nav.position.clone().set(8,1.75,10)));nav.velocity.set(0,0,0);
+    nav.orientation.copy(nav.shipOrientation);
+  });
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('third-person');
+  await page.waitForTimeout(1000);
+  await page.waitForFunction(()=>{const s=window.starAgent.state;return s.character.ready&&s.character.visible&&Math.hypot(...s.position.map((n,i)=>n-s.camera.position[i]))<5;},null,{timeout:20000});
+  const eye=await page.evaluate(()=>window.starAgent.state.position);
+  await capture('player-external');
+  await page.keyboard.press('Numpad4');
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('first-person');
+  expect(await page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
+  const firstEye=await page.evaluate(()=>window.starAgent.state.position);
+  expect(Math.hypot(...eye.map((n,i)=>n-firstEye[i]))).toBeLessThan(.01);
+  await page.locator('#camera-button').click();
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('third-person');
+  await page.keyboard.down('w');
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.character.state)).toMatch(/walk|run/);
+  await page.keyboard.up('w');
+  await page.keyboard.down('Space');
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.character.state)).toBe('jump');
+  await page.keyboard.up('Space');
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.character.state)).toBe('idle');
+  // Re-entering the seat restores the independent external-ship selection.
+  await page.evaluate(()=>{const nav=window.starAgent.navigation;nav.position.copy(nav.fromShipLocal(nav.position.clone().set(0,2.75,-1.2)));nav.velocity.set(0,0,0);nav.embark();});
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.mode)).toBe('landed');
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('external');
+  expect(await page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
   const backend=await page.evaluate(()=>{
     const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');
     return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);

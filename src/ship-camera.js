@@ -1,6 +1,6 @@
-import { Matrix4, Quaternion, Vector3 } from 'three';
+import { Matrix4, Quaternion, Raycaster, Vector3 } from 'three';
 import { SHIP_LAYOUT } from './boarding.js';
-import { RADIUS, terrainHeight } from './world.js';
+import { bodyAltitude } from './celestial.js';
 
 const SEAT = new Vector3(...SHIP_LAYOUT.seatEye);
 const BOOM = new Vector3(0, 7, 24).sub(SEAT);
@@ -13,8 +13,8 @@ const CLEAR_DISTANCE = Math.hypot(...['x','y','z'].map((axis,i) => Math.max(
 ))) + .6;
 
 export function groundRadiusAt(point) {
-  const direction = point.clone().normalize();
-  return RADIUS + Math.max(0, terrainHeight(direction.x, direction.y, direction.z));
+  // Express nearest-body clearance in the radial callback convention, including Selene.
+  return point.length() - bodyAltitude(point);
 }
 
 /** Clip the camera boom against the shared terrain/water surface. Sampling at
@@ -61,6 +61,7 @@ export function isShipCameraKey(event) {
 export class ShipCamera {
   constructor() {
     this.external=false;
+    this.playerExternal=false;
     this.engaged=false;
     this.active=false;
     this.obstructed=false;
@@ -69,28 +70,56 @@ export class ShipCamera {
     this.matrix=new Matrix4();
   }
   toggle(mode) {
+    if(mode==='walk'){this.playerExternal=!this.playerExternal;return true;}
     if(mode!=='flight'&&mode!=='landed')return false;
     this.engaged=true;
     this.external=!this.external;
     return true;
   }
-  update(nav, { surfaceRadius=groundRadiusAt, clipStation }={}) {
-    if(nav.mode!=='flight'&&nav.mode!=='landed')this.external=false;
+  selected(mode) { return mode==='walk'?this.playerExternal:this.external; }
+  update(nav, { surfaceRadius=groundRadiusAt, clipStation, clipShip }={}) {
+    const walking=nav.mode==='walk';
+
     this.active=false;this.obstructed=false;
     this.position.copy(nav.position);this.orientation.copy(nav.orientation);
-    if(!this.external)return;
-    const attitude=nav.shipPosition ? nav.shipOrientation : nav.orientation;
-    const offset=BOOM.clone().applyQuaternion(attitude);
+    if(!this.selected(nav.mode))return;
+    const attitude=walking?nav.orientation:(nav.shipPosition ? nav.shipOrientation : nav.orientation);
+    const offset=(walking?new Vector3(.6,.35,3.7):BOOM.clone()).applyQuaternion(attitude);
     let desired=nav.position.clone().add(offset);
     if(clipStation)desired=clipStation(nav.position,desired,attitude);
+    if(walking&&clipShip)desired=clipShip(nav.position,desired);
     desired=clipTerrainCamera(nav.position,desired,surfaceRadius);
     const actualOffset=desired.clone().sub(nav.position);
     this.obstructed=actualOffset.length()+.05<offset.length();
     // Tight bays automatically show the cockpit instead of putting the camera
     // inside the hull. The selected chase view resumes when there is room.
-    if(actualOffset.length()<CLEAR_DISTANCE)return;
+    if(actualOffset.length()<(walking?.85:CLEAR_DISTANCE))return;
     this.position.copy(desired);this.active=true;
-    this.matrix.lookAt(actualOffset,TARGET.clone().applyQuaternion(attitude),UP.clone().applyQuaternion(attitude));
+    const up=walking?playerUp(nav):UP.clone().applyQuaternion(attitude);
+    this.matrix.lookAt(actualOffset,(walking?new Vector3(0,-.8,-2):TARGET.clone()).applyQuaternion(attitude),up);
     this.orientation.setFromRotationMatrix(this.matrix);
   }
+}
+
+/** Match the navigation support frame on the ramp and in the cabin. */
+export function playerUp(nav) {
+  const local=nav.toShipLocal?.();
+  return local && local.length()<25 ? UP.clone().applyQuaternion(nav.shipOrientation) : nav.normal.clone();
+}
+
+/** Clip against visible ship triangles in its small render frame. World-to-ship
+ * subtraction happens in Navigation's double precision transform first. Hidden
+ * fallback meshes and the player are never obstructions. */
+export function clipShipCamera(start,end,ship,toLocal) {
+  ship.updateWorldMatrix(true,true);
+  const a=toLocal(start).applyMatrix4(ship.matrixWorld);
+  const b=toLocal(end).applyMatrix4(ship.matrixWorld);
+  const delta=b.sub(a),distance=delta.length();
+  if(distance<1e-8)return end.clone();
+  const ray=new Raycaster(a,delta.divideScalar(distance),0,distance+.2);
+  const hit=ray.intersectObject(ship,true).find(hit=>{
+    for(let node=hit.object;node;node=node.parent)if(!node.visible)return false;
+    return true;
+  });
+  return hit?start.clone().lerp(end,Math.min(1,Math.max(0,hit.distance-.25)/distance)):end.clone();
 }

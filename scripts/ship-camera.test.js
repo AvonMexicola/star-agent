@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Quaternion,Vector3} from 'three';
-import {ShipCamera,clipTerrainCamera,isShipCameraKey} from '../src/ship-camera.js';
+import {Quaternion,Vector3,Group,Mesh,BoxGeometry,MeshBasicMaterial,DoubleSide} from 'three';
+import {ShipCamera,clipTerrainCamera,isShipCameraKey,clipShipCamera,groundRadiusAt} from '../src/ship-camera.js';
+import {SELENE,bodySurfacePoint} from '../src/celestial.js';
 import {SHIP_LAYOUT} from '../src/boarding.js';
 const near=(a,b,eps=1e-8)=>assert.ok(Math.abs(a-b)<eps,`${a} != ${b}`);
-const nav=()=>({position:new Vector3(0,1692750,0),orientation:new Quaternion(),mode:'flight',velocity:new Vector3(120,30,-50),shipPosition:null});
+const nav=()=>({position:new Vector3(0,1692750,0),orientation:new Quaternion(),mode:'flight',normal:new Vector3(0,1,0),velocity:new Vector3(120,30,-50),shipPosition:null});
 const noGround={surfaceRadius:()=>0};
 
 test('4 toggles an above-and-behind view and never changes the navigation pose or momentum',()=>{
@@ -34,8 +35,11 @@ test('landed inspection uses ship attitude; leaving the seat returns to first pe
   const view=new ShipCamera();assert.equal(view.toggle('landed'),true);view.update(body,noGround);
   assert.ok(view.position.x>body.position.x+20);
   body.mode='walk';view.update(body,noGround);
-  assert.equal(view.external,false);assert.equal(view.active,false);assert.deepEqual(view.position,body.position);
-  assert.equal(view.toggle('walk'),false);
+  assert.equal(view.external,true);assert.equal(view.active,false);assert.deepEqual(view.position,body.position);
+  assert.equal(view.toggle('walk'),true);view.update(body,noGround);
+  assert.equal(view.active,true);assert.equal(view.playerExternal,true);
+  view.toggle('walk');assert.equal(view.external,true);
+  body.mode='landed';view.update(body,noGround);assert.equal(view.active,true);
 });
 
 test('a close station wall falls back to cockpit and a distant wall retracts the boom',()=>{
@@ -65,4 +69,35 @@ test('camera shortcut respects held keys, typing, modifiers, editable content an
   assert.equal(isShipCameraKey({code:'Digit5'}),false);
   assert.equal(isShipCameraKey({code:'Digit4',target:{isContentEditable:true}}),false);
   assert.equal(isShipCameraKey({code:'Digit4',target:{closest:()=>({})}}),false);
+});
+
+
+test('walking view follows look without changing physical eye and hides in a tight obstruction',()=>{
+  const body=nav();body.mode='walk';body.orientation.setFromAxisAngle(new Vector3(1,0,0),-.4);
+  const saved=structuredClone(body),view=new ShipCamera();view.toggle('walk');view.update(body,noGround);
+  assert.equal(view.active,true);assert.ok(view.position.distanceTo(body.position)>3);
+  near(view.orientation.length(),1);assert.deepEqual(structuredClone(body),saved);
+  view.update(body,{...noGround,clipShip:start=>start.clone()});
+  assert.equal(view.active,false);assert.equal(view.obstructed,true);assert.equal(view.playerExternal,true);
+  view.update(body,noGround);assert.equal(view.active,true);
+});
+
+test('ship triangle obstruction clips visible walls and ignores hidden fallback meshes',()=>{
+  const ship=new Group(),wall=new Mesh(new BoxGeometry(4,4,.2),new MeshBasicMaterial({side:DoubleSide}));
+  wall.position.z=2;ship.add(wall);ship.position.set(40,-20,10);
+  const start=new Vector3(25e9,0,0),end=start.clone().add(new Vector3(0,0,4));
+  const local=p=>p.clone().sub(start);
+  const clipped=clipShipCamera(start,end,ship,local);
+  assert.ok(clipped.z>1.6&&clipped.z<1.7);
+  wall.visible=false;assert.deepEqual(clipShipCamera(start,end,ship,local),end);
+  wall.geometry.dispose();wall.material.dispose();
+});
+
+
+test('camera clearance follows Selene terrain around its offset centre',()=>{
+  const direction=new Vector3(1,0,0);
+  const start=bodySurfacePoint(direction,SELENE,3),end=bodySurfacePoint(direction,SELENE,-2);
+  const clipped=clipTerrainCamera(start,end);
+  const clearance=clipped.length()-groundRadiusAt(clipped);
+  assert.ok(clearance>=.45&&clearance<.5);
 });
