@@ -15,9 +15,11 @@ Open the URL printed by Vite. WebGL 2, a desktop keyboard and mouse, and hardwar
 
 ## Explore and share
 
-The default seed is `7291`. Open `/?seed=42` for another planet, or enter a seed in the controls panel (H). Share the resulting URL. The same seed and generator version produce the same terrain, destinations, vegetation placement, and cloud noise for everyone; this is deterministic generation, not multiplayer synchronization. Cloud animation follows each session's elapsed time.
+The default seed is `7291`. Open `/?seed=42` for another planet, or enter a seed in the controls panel (H). Share the resulting URL. The same seed and client generation versions produce the same terrain, destinations, vegetation placement, and cloud noise for everyone; this is deterministic generation, not multiplayer synchronization. Cloud animation follows each session's elapsed time.
 
 The active terrain generator is version **2**. Its expanded landforms differ from the original generator even with the same seed. Future generation changes must update that version; old algorithms are not archived by the seed URL.
+
+Forest layout is independently versioned at **2**: seeded groves and clearings replace the previous dense tree lattice. This changes tree placement for existing seeds without changing terrain heights or destinations. Clients must run matching generation versions to reproduce the same world.
 
 WASD moves, mouse or arrow keys steer, Space/C ascends/descends, Shift boosts, X brakes, and the mouse wheel adjusts assisted flight speed. Shift + click a destination to set a bearing and distance for **continuous flight**. Climb when the destination lies beyond the horizon. A plain destination click performs optional quick transit; ordinary flight does not use it.
 
@@ -38,7 +40,7 @@ F stands from the chair. Walk aft, use F at the hatch, wait for the ramp and wal
 - Terrain ridges, valleys, coastal cliffs and glaciers come from one shared CPU height function. Collision, rendering, biomes and vegetation use that function.
 - Quadtree terrain streams during flight, retaining parents and skirts while children load. CPU world coordinates remain double-precision metres; render positions subtract local origins before GPU upload.
 - Soil, fractured stone, moss and rippled sand use procedural albedo/relief layers, blended by slope and biome. Local sun shadows and prefiltered sky lighting give surfaces depth. The cabin retains a physical floor, hatch and ramp.
-- Forests use detailed branches nearby, simpler branches at middle distances, and crossed tree silhouettes farther away, with overlapping dithered transitions and a 1.4 km fade. Trees keep their seeded positions across LOD and origin changes. Grass and rocks are instanced.
+- Forests form seeded groves and clearings on a 16 m candidate grid. A worker generates approximately 256 m tiles, retaining nearby tiles during movement. New instances and their shadows fade in over 0.8 seconds. Detailed branches, simpler middle-distance branches and distant crossed silhouettes use overlapping dithered transitions and a 1.4 km fade. Tree placement stays fixed across LOD and origin changes. Grass and rocks cache terrain samples separately and fade with distance; uploads cover only live instances.
 - Water uses filtered wave normals, Fresnel sky reflection, sun glints, depth-coloured shallows and animated shoreline foam. Shore depth comes from the same terrain mesh; wave detail does not displace sea level.
 - The HDR atmosphere uses Rayleigh/Mie single scattering and logarithmic scene depth. Seeded volumetric clouds occupy a layer from 1.8–4.6 km and composite against that same depth, allowing continuous flight through them.
 
@@ -56,11 +58,14 @@ npm run test:browser -- -c scripts/surface-detail.config.js
 npm run test:browser -- -c scripts/station.config.js
 npm run test:browser -- -c scripts/flight-model.config.js
 npm run test:browser -- -c scripts/crash.config.js
+npm run test:browser -- -c scripts/forest.config.js
 ```
 
 Unit checks cover terrain seams, local coordinate precision, seed reproducibility, worker/collision agreement, continuous descent and travel between zone coordinates, physical boarding, gap-free tree LOD coverage, and real-asset station collision/docking/deck support. Browser checks compile and render shaders and exercise the playable controls. The fidelity inspection saves images and render-environment metadata under `/tmp/star-agent-fidelity`; the station journey saves `/tmp/star-agent-station`; the surface-detail inspection saves `/tmp/star-agent-surface`; the boarding inspection saves `/tmp/star-agent-*.png`.
 
 Flight-model checks cover vacuum momentum, body-axis thrust/torque, density boundaries, stall, banked lift, terminal speed, timestep consistency and assist controls. Its browser configuration runs the inertial-control check and full station journey, saving flight evidence under `/tmp/star-agent-flight`.
+
+Forest checks cover deterministic tile generation, grove density, dateline continuity, bounded worker requests, retained appearance times and stale replies after transit. The forest browser inspection saves aerial/ground images and browser/GPU metadata under `/tmp/star-agent-forest`. Set `FOREST_BASELINE_URL` to a running older client to capture the same seeded poses for comparison. These measurements describe one location, not a global density or hardware FPS guarantee. Terrain LOD morphing and higher quality distant tree shapes remain separate work.
 
 The browser tests default to system Chromium with ANGLE/SwiftShader. Override `CHROMIUM_PATH` for another executable. Software-rendered test frame rates are not hardware performance claims. Render scale adapts to slow machines; `starAgent.setRenderScale(1)` fixes native scale for visual inspection.
 
