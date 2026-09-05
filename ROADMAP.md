@@ -31,6 +31,12 @@ below reflect this: *Astra* = Astra or a Codex subagent; *Claude* = review/QA/sp
 | Tests: unit (30) + Playwright smoke on system Chromium | Claude | ✅ |
 | Public repo, README, AGENTS.md, CONTRIBUTING | Astra | 🔧 |
 
+**Opening sequence (decided 2026-09-05, the public demo's first 30 seconds):** the page opens inside the station hangar:
+player character standing beside the landed ship, cinematic camera behind and above looking over the character's head at
+the closed doors; the doors open slowly (~10 s) revealing the planet below; on the first `W` the camera blends into the
+character's eyes and the character walks. Full shot list in `HANDOFF.md` request 18. Owner: Astra; depends on hangar
+lighting fix and the Meshy player character. `?intro=0` skips it for tests.
+
 **Polish backlog (from Cees's review of the 5c7b6b0 build):** terrain LOD popping (geomorphing + hysteresis), hangar
 lighting (remove ×2 emissive boost, local point lights, interior ambient), deck z-fighting (raise markings, polygon
 offset), terrain variety (Whittaker biomes, rivers/lakes without hydrology, hero landmarks, boulder fields). Details in
