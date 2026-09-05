@@ -4,6 +4,7 @@ import { Vector3, Scene, MeshBasicMaterial } from 'three';
 import { MOON_RADIUS, MOON_POSITION, MOON_DISTANCE, MOON_MAX_HEIGHT, CRATERS, moonSurface, moonAltitude, moonApproach, constrainMoonStep } from '../src/moon-world.js';
 import { bodyAltitude, bodySurfacePoint, bodySurfaceNormal, SELENE } from '../src/celestial.js';
 import { generateMoonPatch, MoonTerrain, MOON_GRID } from '../src/moon-terrain.js';
+import { FlightAudio } from '../src/audio.js';
 import { RADIUS, SUN_DISTANCE, cubeDirection } from '../src/world.js';
 
 const center=new Vector3(...MOON_POSITION),perimeter=MOON_RADIUS+MOON_MAX_HEIGHT;
@@ -94,4 +95,17 @@ test('lunar streaming retains complete coverage during descent and releases its 
   let disposed=0;for(const mesh of scene.children)mesh.geometry.addEventListener('dispose',()=>disposed++);
   const count=scene.children.length;terrain.dispose();material.dispose();
   assert.equal(disposed,count);assert.equal(scene.children.length,0);
+});
+
+
+test('airless exploration silences wind while retaining cockpit engine sound',()=>{
+  const audio=new FlightAudio(),parameter=()=>({value:NaN,setTargetAtTime(value){this.value=value;}});
+  assert.equal(audio.context,null,'sound remains opt-in');
+  audio.context={currentTime:0};audio.enabled=true;
+  for(const key of ['hum','overtoneGain','wind'])audio[key]={gain:parameter()};
+  for(const key of ['engine','overtone','windFilter'])audio[key]={frequency:parameter()};
+  audio.update({mode:'flight',speed:100,altitude:10,airless:true});
+  assert.equal(audio.wind.gain.value,0);assert.ok(audio.hum.gain.value>0);
+  audio.update({mode:'walk',airless:true});assert.equal(audio.wind.gain.value,0);assert.equal(audio.hum.gain.value,0);
+  audio.update({mode:'walk',airless:false});assert.ok(audio.wind.gain.value>0,'Aeon ambience returns');
 });

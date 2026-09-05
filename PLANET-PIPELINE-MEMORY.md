@@ -39,6 +39,7 @@ and MFD details. This document covers the environment those systems operate in.
 | Water at Aeon sea level | `src/water.js` |
 | Aeon atmosphere, HDR/depth composite and clouds | `src/atmosphere.js`, `src/cloud-volume.js` |
 | Local light and shadows | `src/lighting.js` |
+| Gesture-started engine/wind sound, airless wind suppression | `src/audio.js` |
 | Trees, grass, rocks and distance representations | `src/vegetation.js`, `src/tree-lod.js` |
 | Lunar constants, deterministic crater surface and swept contact | `src/moon-world.js`, re-exported surface API in `src/world.js` |
 | Lunar geometry, quadtree and geometry cache | `src/moon-terrain.js` |
@@ -156,7 +157,8 @@ waves, without scene reflection/refraction. Those effects belong to Aeon and mus
 not be repositioned around Selene when the active navigation body changes.
 
 For Selene, local sunlight uses the lunar up direction, neutral weak ambient light
-and no atmosphere/sky environment fill. The distant Aeon atmosphere remains visible
+and no atmosphere/sky environment fill. Wind audio is muted in vacuum; cockpit
+engine hum remains available after the player enables sound. The distant Aeon atmosphere remains visible
 around Aeon. A whole-moon eclipse approximation dims sunlight when Aeon occludes it;
 this is not detailed penumbra simulation. Shadow casting near the ground must agree
 with local altitude, and the ship must remain grounded after origin rebasing.
@@ -287,3 +289,20 @@ For a third body, first generalize the body descriptor/surface sampler and swept
 contact without regressing Aeon water, Selene crater floors or station decks.
 Then add a distinct generator, local patch renderer, atmosphere/material policy,
 explicit destination and complete land–walk–reboard regression journey.
+
+## Delivery record — lunar landing, 2026-09-05
+
+- PR #7 was rebased onto `origin/feat/visual-fidelity` at `0e9e921` per the manager's
+  queue. It retains the controller contribution, originally PR #3, as a dependency.
+- The shared checkout includes separate crash work; lunar contact integration uses
+  its real impact policy. Preserve that composition when merging the review branch.
+- Final unit checks: 70 cases in the rebased review branch; 76 in the shared checkout
+  including the six independent crash cases. Builds pass in both.
+- Complete production lunar browser journeys pass in both: 40.5 s isolated and
+  39.8 s shared, without page/console errors. Landed terrain reaches lunar LOD 17.
+- Surface, ship/ramp and distant Aeon screenshots were inspected. Curated evidence:
+  `docs/selene-landing.png`, `docs/selene-aeon.png`.
+- Wind audio was subsequently made body-aware and verified with a focused audio
+  regression plus the full unit suite and production build.
+- Memory is filed locally and announced in `HANDOFF.md`; review/merge/deployment
+  remain in the project manager's queue. No manager read receipt is asserted.

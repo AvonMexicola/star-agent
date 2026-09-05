@@ -149,7 +149,7 @@ try {
       ship.setDoor(nav.doorOpen);ship.update(dt);
       ship.updateDisplays(dt,nav,inventory,course);
     }
-    audio.update({speed:nav.speed,altitude,mode:nav.mode,boost:nav.boost},dt);
+    audio.update({speed:nav.speed,altitude,mode:nav.mode,boost:nav.boost,airless:nav.body.airless},dt);
     renderer.info.reset();atmosphere.render(scene,camera,nav.position,sunDirection,elapsed);
     frames++;frameAccumulator+=realDt;if(frameAccumulator>=2){fps=Math.round(frames/frameAccumulator);frames=0;frameAccumulator=0;if(automaticScale&&firstReady&&!transiting&&fps<23&&renderScale>.55){renderScale=Math.max(.55,renderScale*.85);resizePending=true;}}
     if(time-lastHud>150)updateHud(time);

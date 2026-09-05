@@ -20,5 +20,8 @@ from Aeon and 434.35 km radius are prototype choices; orbital motion is not simu
 
 ![The ship parked on Selene](selene-landing.png)
 
+Screenshots: Chromium 151.0.7922.173, ANGLE/Vulkan SwiftShader, 1280×800, render
+scale 0.55. These are software-rendering checks, not hardware frame-rate evidence.
+
 For implementation, precision, terrain streaming, physics and QA instructions,
 read [the complete planet pipeline memory](../PLANET-PIPELINE-MEMORY.md).
