@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { RADIUS, MAX_LEVEL, cubeDirection, terrainHeight } from './world.js';
-import { createWaterMaterial } from './water.js';
+import { createWaterMaterial, updateWaterMaterial } from './water.js';
 import { createGroundTextures } from './ground-textures.js';
 import { SEED } from './generation.js';
 import { createSurfaceTexture, configureTerrainMaterial } from './surface-materials.js';
@@ -19,7 +19,7 @@ export class Planet {
     this.surfaceTexture=createSurfaceTexture();
     this.groundTextures=createGroundTextures();
     configureTerrainMaterial(this.landMaterial,this.surfaceTexture,this.albedoUniform,this.albedoReady,this.groundTextures);
-    this.waterMaterial=createWaterMaterial(this.surfaceTexture);
+    this.waterMaterial=createWaterMaterial();
     for(let i=0;i<Math.min(3,Math.max(1,(navigator.hardwareConcurrency||4)-2));i++){
       const worker=new Worker(new URL('./terrain.worker.js',import.meta.url),{type:'module'});
       const slot={worker,busy:false};worker.onmessage=e=>this.receive(slot,e.data);
@@ -65,9 +65,6 @@ export class Planet {
       waterGeometry.setAttribute('position',new THREE.BufferAttribute(data.waterPositions,3));
       waterGeometry.setAttribute('direction',new THREE.BufferAttribute(data.directions,3));
       waterGeometry.setAttribute('terrainHeight',new THREE.BufferAttribute(data.heights,1));
-      const waterPoints=new Float32Array(data.waterPositions.length);
-      for(let i=0;i<waterPoints.length;i++)waterPoints[i]=data.waterPositions[i]+((data.center[i%3]%256)+256)%256;
-      waterGeometry.setAttribute('surfacePoint',new THREE.BufferAttribute(waterPoints,3));
       waterGeometry.setIndex(new THREE.BufferAttribute(data.indices,1));waterGeometry.computeBoundingSphere();
       group.add(new THREE.Mesh(waterGeometry,this.waterMaterial));
     }
@@ -102,7 +99,7 @@ export class Planet {
   update(worldPosition,origin,sunDirection,time,altitude){
     this.cameraWorld.copy(worldPosition);this.origin.copy(origin);
     for(const node of this.nodes.values())if(node.mesh)node.mesh.position.copy(node.center).sub(origin);
-    this.waterMaterial.uniforms.sunDirection.value.copy(sunDirection);this.waterMaterial.uniforms.time.value=time;this.waterMaterial.uniforms.altitude.value=altitude;
+    updateWaterMaterial(this.waterMaterial,origin,sunDirection,time,altitude);
     if(!this.lastSelect||performance.now()-this.lastSelect>160){this.select();this.lastSelect=performance.now();}
   }
   get ready(){return this.roots.every(n=>n.mesh);}
