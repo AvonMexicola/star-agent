@@ -85,6 +85,8 @@ Agents coordinate ownership and review through this file. Read the PM notes belo
 Rule: only the owner edits a file. If you need a change in a file you don't own, write the request in
 `## Requests` below (or tell Cees) instead of editing it.
 
+- Astra: Cees says resume after forest PR #6. Claiming terrain transition and ground-detail pass in isolated /tmp/star-agent-terrain-work, feat/terrain-transitions based on forest branch. I own world.js patch buffers, terrain.worker.js, planet.js, new terrain-lod.js, material integration and dedicated tests. Evaluating terrain-material.js in parallel; no shared source edits and no overlap with weatherShip changes. Scope: parent-triangle morph targets, gradual split/merge with hysteresis and parent fallback, plus verified ground-detail improvement if the material experiment passes visual/precision checks.
+
 ## Conventions Claude's modules follow (derived from planet.js / vegetation.js)
 
 - World positions are JS doubles in metres, planet centre at (0,0,0), `RADIUS` from `world.js`.
@@ -236,6 +238,28 @@ All modules have standalone pages under `/dev/` so you can compare before wiring
 
 ## Requests
 
+- Astra camera helper — Cees asks to extend key 4 to external player-character view. Continuing ONLY in isolated `/tmp/star-agent-camera-work` / PR #9: walking camera mode, new procedural `src/player-character.js`, own-ship camera obstruction and tests. No existing avatar found. Ship and player view preferences will be separate; standard physical walking/boarding stays authoritative. Shared navigation/ship/controller files will not be edited.
+
+- Astra helper — EXTERNAL CAMERA READY: https://github.com/AvonMexicola/star-agent/pull/9, commit `42a01d1`, `feat/external-camera` stacked on ship PR #4. Key 4 / Numpad4 and HUD EXTERNAL 4 button toggle chase/cockpit; normal flight unchanged, cockpit stays visible after toggling back, leaving seat restores first person. Camera boom retracts on shared terrain and station sweeps; atmosphere/clouds/terrain/vegetation now use the actual camera render origin, with nav left at physical pilot eye. 52 unit cases, production build and both production Chromium cases pass, including typing, flight, orbit/surface/hangar and 390×844 header. Native 1440×900 screenshots/backend metadata `/tmp/star-agent-camera`; orbit image attached in `docs/images/external-camera-orbit.png` on PR. Preview http://localhost:5194/?seed=7291 (HTTP 200), `star-agent-camera-preview.service`, isolated `/tmp/star-agent-camera-work`. Shared source files untouched. Integration notes `docs/external-camera.md`; keep render origin distinct from nav position and apply any re-entry uniforms after camera pose. No production deployment.
+
+- Astra helper — Cees requests external ship view on key 4. Claiming isolated `/tmp/star-agent-camera-work`, `feat/external-camera`, based on ship PR #4 so the new Nomad is visible. New `src/ship-camera.js` and camera tests; main/index/README/package integration ONLY in that isolated checkout. Normal flight controls retained; key 4 and a HUD button toggle chase/cockpit, walking returns to first person. Actual camera-world origin will drive terrain/cloud/atmosphere rendering; terrain and station boom obstruction checks prevent camera clipping. Shared controller/crash/ship files remain untouched.
+
+- Astra helper — RE-ENTRY READY FOR REVIEW: https://github.com/AvonMexicola/star-agent/pull/5, `feat/reentry-heating` → `feat/inertial-flight`, commit `7ad4600`. Full game integration is in isolated `/tmp/star-agent-reentry-work`; shared controller/ship/crash files were not modified. Adds density × speed³ hull emission with thermal inertia, windward plasma pattern, weather-shader composition, log-depth preservation, cabin/instrument exclusion and transit reset. 48 unit cases, normal production build and both production Chromium re-entry tests pass. Inspected cold/hot/cooled and cockpit screenshots: `/tmp/star-agent-reentry/`; metadata records Chromium 151, ANGLE/Vulkan SwiftShader, 1440×900, zero console/page errors and unchanged exterior draw/triangle counts. Visual heat only; no temperature/damage physics. Merge after flight slice; keep late-asset `reentry.refresh()` after material/weather setup and review cabin masking against the new ship's boarding dimensions. No deployment.
+
+- READY FOR REVIEW — FORESTS: https://github.com/AvonMexicola/star-agent/pull/6, commit 36f9896, feat/forest-streaming stacked on crash PR #2. Isolated /tmp/star-agent-forest-work; seeded groves/clearings, worker tiles, retained residents, 0.8 s appearance/shadow fades and uploads restricted to live instances. 57 unit tests, production forest browser inspection and all four general Chromium cases pass; GitHub verification and automatic Vercel preview checks pass. Sampled aerial population 40,998 → 7,381 trees (82% reduction); 150 m movement adds 16 tiles. Native 1440×900 Chromium 151/ANGLE SwiftShader images, integration notes and limits in FOREST-HANDOFF.md and docs/images/forest-*.png on the branch; detailed metadata /tmp/star-agent-forest. Preview http://localhost:5175/?seed=7291 (star-agent-forest-dev.service). Terrain/water/advanced tree fidelity remains separate; 1.4 km tree range and crossed distant cards remain. Shared source/controller/ship edits preserved. No merge or production deployment by Astra. Sol implemented deterministic distribution and worker tests, and independently reviewed origin/depth/lifecycle integration; no correctness blockers.
+
+- READY FOR REVIEW — CRASHES: https://github.com/AvonMexicola/star-agent/pull/2, commit e0eb3ac, feat/hard-ground-crashes stacked on PR #1. Verified in /tmp/star-agent-crash-work: 47 unit checks, production build, crash/mobile-recovery browser case and all four standard browser cases pass; Sol tests/review complete. Ground/sea-ice/water closing impact >=12 m/s destroys the ship; effects, disabled controls and explicit same-seed recovery are implemented. Stable preview http://localhost:5174/?seed=7291 (star-agent-crash-dev.service); screenshots/environment /tmp/star-agent-crash. No Vercel deployment by Astra. Shared controller/cockpit/Blender work remains untouched. The isolated version has the final Space-key recovery fix; apply it when reconciling shared crash additions (movement-key preventDefault before crash early return). Landing-gear integration and station damage are separate future work.
+
+- Crash integration note for controller/navigation work: isolated crash browser verification found that movement-key preventDefault must run BEFORE the `mode==='crashed'` keydown return. Otherwise Space activates a previously focused destination button and silently recovers. Fixed and browser-verified in /tmp/star-agent-crash-work; please preserve this ordering when integrating the crash PR. Stable crash-only dev preview is http://localhost:5174/?seed=7291 (star-agent-crash-dev.service), separate from the shared 5173 build. Sol's six new impact tests and all 47 unit checks pass; crash/mobile recovery browser check passes. General surface journey regression is still running.
+
+- Astra helper — next roadmap task: Phase 1 re-entry hull heating/plasma. I own new `src/reentry.js`, `scripts/reentry.{test,spec,config}.js` and an isolated review checkout at `/tmp/star-agent-reentry-work` on `feat/reentry-heating`. Main/README/package wiring will happen ONLY in that isolated checkout based on the inertial-flight slice; no shared controller/ship/crash files will be edited. Scope: density × speed³ heating proxy, thermal inertia, composable hull emissive shader, production Chromium rendering evidence. No heat damage or claim of completed Phase 1.
+
+- Astra crash work: concurrent controller/inventory edits now overlap navigation/main/index/style. Moving crash delivery into isolated /tmp/star-agent-crash-work on feat/hard-ground-crashes, based on a67023b, to verify/submit independently. Shared tree currently contains my crash additions plus others' new edits; preserve them. I will not stage shared navigation/main or change the shared branch. Crash PR will be based on feat/inertial-flight; coordinate later integration to preserve both features.
+
+- Astra helper — READY FOR INTEGRATION (2026-09-05): `src/landing-gear.js` and `scripts/landing-gear.test.js` are complete; 13 explicit unit cases pass (`node --test --test-isolation=none scripts/landing-gear.test.js`). One support ray per deployed strut, spring/damper and bump-stop forces, world torque including rotation, compression animation values, touchdown and latched hard-landing events. See `LANDING-GEAR-HANDOFF.md` for the API and remaining terrain/deck adapter, authored rig, force-loop and boarding/animation integration. No changes to navigation/main/package/ship models; no shared branch changes or commits by this helper. These new files are yours to integrate and submit with the relevant Phase 1 slice; playable suspension is not claimed.
+
+- Astra: Cees explicitly requests crashing on hard ground impacts. Claiming src/navigation.js, src/main.js, index.html, src/style.css, README.md, package.json, NEW src/impact.js, src/crash-effects.js and scripts/crash.{test,spec,config}.js. Crash decision uses pre-contact closing speed against the shared terrain normal; crashed ships cannot fly/board/launch until explicit recovery. I will update the existing high-speed-impact expectation in tests/navigation.test.js and make scripts/generation.test.js's continuous landing use landing assist near the floor. Please avoid those two test sections. The helper's landing-gear solver remains untouched; it can later feed impact events into the same crash path. No ship asset/Blender or deployment changes.
+
 - Astra: Flight slice committed as 2cbac2e and published for review at https://github.com/AvonMexicola/star-agent/pull/1 (head feat/inertial-flight, base feat/visual-fidelity). Only the separate review branch was pushed; no production deployment by Astra. Local shared feat/visual-fidelity contains the commit for PM inspection. Sol review is complete with no remaining blockers after the spin-on-assist-cancellation fix.
 
 - READY FOR REVIEW: src/flight-model.js, src/navigation.js, src/main.js, scripts/flight-model.{test,spec,config}.js, index.html, src/style.css, package.json, README.md. First Phase 1 slice implemented: V toggles inertial flight; pure immutable velocity/attitude step integrates body-axis thrust/torque, persistent momentum/spin, inverse-square 1g surface gravity, density-scaled drag/lift and AoA stall. Default assisted servo remains unchanged; 3 km/s inertial cap and station approach cap are explicit. HUD shows sea-level-based SPACE/TRANSITION/ATMOSPHERE and ATMO blend. X clears spin; landing/docking assist clears spin on entry. Frame initialization now prevents negative first-frame dt. Request 16 footer roadmap link is wired. 41 unit checks and six Chromium browser cases pass (four general, inertial controls/transition HUD, full station journey); the final spin fix has unit regression coverage. Screenshots inspected: /tmp/star-agent-flight/transition.png and test-results/orbit.png; browser environment in /tmp/star-agent-flight/environment.json (Chromium 151, ANGLE/Vulkan SwiftShader, 1440×900). Sol independently found the hidden-spin bug and verified the fix; suitable for bounded implementation/review work. This is locally available, not deployed by Astra. Claude owns deployment. Still pending: strut suspension/damage, aerodynamic control-surface authority, re-entry effects/audio, ShipState/MFD bus. Please keep public roadmap Phase 1 marked in progress.
@@ -355,3 +379,204 @@ Claude handles that — no repo changes needed except maybe `vercel.json`.
     in `index.html` (statusbar right side, next to "BUILT TO EXPLORE"): `<a href="./roadmap.html">ROADMAP</a>` styled like
     the other statusbar text. The client is deployed to Vercel from `feat/visual-fidelity` as the interim host until the
     netcup box is live (Monday); Claude runs deploys — don't add Vercel config or a GitHub Action for it.
+
+- READY FOR REVIEW — BLENDER SHIP: https://github.com/AvonMexicola/star-agent/pull/4, commit 9370c53, feat/blender-nomad-ship stacked on PR #1. Isolated /tmp/star-agent-ship-review; shared controller/crash work preserved. Blender Nomad exterior/source, hinged cargo with persistent transfers/capacity, four live MFDs and physical boarding delivered. 46 isolated unit tests + build + 2 production ship browser cases + studio case passed. Studio http://localhost:5190/dev/ship.html. Scope/integration/limitations in SHIP-HANDOFF.md; visual evidence docs/images/nomad-*.png. No merge or deployment.
+
+## Branch & PR rules (Claude, PM, 18:05) — effective now
+
+The shared checkout `~/projects/star-agent` was switched to `feat/controller-support` by one session while two others
+(including Claude) were committing on `feat/visual-fidelity`. That silently re-based other people's work. Rules:
+1. **Never run `git checkout`/`git switch` in the shared tree.** It stays on the integration branch
+   `feat/visual-fidelity` (Claude will switch it back once the current uncommitted controller/inventory edits are
+   committed to their own branch — whoever owns them: please `git stash`/commit them to `feat/controller-support` from
+   an isolated checkout and tell me).
+2. **Feature work happens in isolated checkouts** (`git worktree add /tmp/star-agent-<topic> -b feat/<topic>
+   origin/feat/visual-fidelity`), exactly as the crash/ship/re-entry sessions already do. One PR per topic, based on
+   `feat/visual-fidelity` (stacking on another PR is fine — say so in the description).
+3. **PR = READY FOR REVIEW.** Claude reviews (tests, build, screenshot tour) and merges in dependency order; Astra does
+   not merge. After merge, Claude redeploys Vercel from the integration branch.
+4. `HANDOFF.md` and `ROADMAP.md` stay live-edited in the shared tree; commit them only together with your own PR's files
+   in your isolated checkout (append-only sections, never rewrite others' text).
+5. Vercel deploys come from a clean worktree of the integration branch, never from the shared tree.
+
+17. **Player characters (Cees, 19:35).** Two rigged + animated Meshy characters are being produced (`player-male` 1.85 m,
+    `player-female` 1.72 m, space suits, mint accents) → `public/models/props/player-{male,female}.glb` with clips named
+    `idle, walk, run, jump, crouch-walk, sit-down, sit-idle, stand-up, carry-walk, wounded-walk, aim-pistol, fire-pistol,
+    aim-rifle, fire-rifle, use-tool, death` (whatever Meshy lacks will be listed in the manifest). Astra: please plan a
+    `src/character.js` — GLTF + `AnimationMixer`, state machine (speed-blended locomotion, upper-body aim layer,
+    sit-down→sit-idle for the pilot chair, carry-walk when holding cargo, wounded-walk < 40 % health, use-tool while mining),
+    over-the-shoulder camera with first-person toggle, character selection at start. It replaces the invisible pilot in the
+    boarding loop. ROADMAP §Phase 2 has the contract. Assets land in a few hours; start with a placeholder capsule.
+
+## Fable 5.1 — ship creation pipeline memory is available (2026-09-05)
+
+Cees explicitly requested a comprehensive reusable memory and notification to
+the project manager. **Saved: [SHIP-PIPELINE-MEMORY.md](SHIP-PIPELINE-MEMORY.md).**
+Please use it as the ship-authoring reference for future assignments and reviews.
+
+It records the complete proven route: isolated ownership/worktree setup, Blender
+authoring, game-to-Blender axes, exact cabin/boarding/cargo contracts, `.blend` and
+GLB export, named pivots, asynchronous loading/fallback, inventory persistence and
+modal input, four live MFDs, shader/depth/precision rules, studio/production tests,
+render evidence, failure fixes, PR delivery and merge integration boundaries.
+It also separates implemented features from future systems and includes a reusable
+completion-record template. The player guide links back to the memory.
+
+Reference delivery: [PR #4](https://github.com/AvonMexicola/star-agent/pull/4),
+implementation `9370c53`, stacked on flight PR #1. The new Nomad is integrated in
+the ship game branch and shared workspace; the standalone studio is an additional
+review tool. Playable ship branch: http://localhost:5190/ ; model viewer:
+http://localhost:5190/dev/ship.html . The viewer runs as the transient user service
+`star-agent-ship-viewer.service`. Recorded verification: 46 isolated unit cases,
+production build, two production ship browser cases and one studio case passed.
+The memory update changes documentation only; prior test counts are historical
+implementation results, not newly rerun checks.
+
+This notice is posted in the established manager handoff channel; no read receipt
+or separate direct-message delivery is claimed. Existing shared feature work is
+preserved. Manager review, dependency merge and production deployment remain
+with Fable/Claude under the current team rules.
+
+
+## Terrain and ground detail — READY FOR REVIEW (Astra)
+
+PR #8: https://github.com/AvonMexicola/star-agent/pull/8, commit fce612b, feat/terrain-transitions stacked on forest PR #6. Isolated /tmp/star-agent-terrain-work. Land/water/shadow parent-triangle morph targets, 0.6 s wall-time refinement/merge, 1.8/2.3 hysteresis, retained parents/skirts and the richer terrain-material.js are integrated. 69 unit checks, production terrain/ground inspection, focused shallow-water render and all four general Chromium browser cases pass. Native 1440×900 images inspected on Chromium 151/ANGLE Vulkan SwiftShader; no console/page errors. Eight fixtures retain byte-identical original fine geometry buffers. Sol authored/reviewed independent reconstruction/lifecycle/material tests and found the expensive template userData/albedo clone; patch resources now stay shared.
+
+Preview http://localhost:5176/?seed=7291 (star-agent-terrain-dev.service). Review scope, images and limits: TERRAIN-HANDOFF.md and docs/images/terrain-*.png on the PR branch; detailed backend/state files /tmp/star-agent-terrain. main.js changes are diagnostics only: preserve other agents’ controller/moon/ship additions at integration. Shared source files remain untouched. Temporal morphing still relies on skirts between adjacent LODs, fast travel can outrun loading, and exact-height vegetation may briefly float over coarse fallback. New ground shader has higher pixel cost; no hardware FPS claim. Water optics, distant tree shape and broader shadows remain separate work. No merge or production deployment by Astra. New character/ship-pipeline handoff notes acknowledged for subsequent work.
+
+18. **OPENING SEQUENCE — top priority for the public demo (Cees, 20:05).** The page must open *inside the station hangar*,
+    not in orbit. Shot list, in order:
+    a. **Load** behind the existing loading screen: place the player character (`player-male`/`player-female` GLB when it
+       lands; until then the capsule placeholder) standing on the deck 2.5 m to the +X side of the ship's nose, facing the
+       hangar doors. Ship landed on the pad, gear down, doors **closed**, interior lights on (request 13's fixed lighting:
+       warm point lights under the light bars, sun dimmed inside, no blown-out emissives).
+    b. **Camera A (cinematic)**: behind and above, 6 m back and 2.6 m up from the character, looking over the character's
+       head toward the doors; the ship fills the left third, the character the lower centre, the door seam the centre.
+       Slow dolly forward 1.5 m over the whole sequence (about 10 s), 45° FOV. HUD hidden except the wordmark and a single
+       hint "W to walk" that fades in at second 6.
+    c. **Doors open** slowly: play `DoorsOpen` at 0.5× (≈10 s). As the seam widens, the planet limb fills the gap: bay
+       lights fall off toward the opening so the exterior reads as bright daylight (the atmosphere pass already does this
+       if the camera exposure is left alone; do not auto-expose). Cloud tops and the terminator should be visible below.
+       Pick the station's orientation/time so the sun is 20–30° off-axis outside the doors, not behind the camera.
+    d. **Idle**: the character plays `idle`; a faint breathing sway on the camera (2 cm, 0.2 Hz). Audio: hangar hum, a deep
+       door-motor rumble that resolves as the doors lock open, then the near-silence of the bay.
+    e. **Interaction**: on first `W` (or any move key / gamepad stick): blend the camera from A to **first-person** at the
+       character's eyes (1.65 m / 1.75 m) over 0.9 s with an ease-in-out, simultaneously cross-fading the character from
+       `idle` into `walk`; the HUD fades in during the blend; the character becomes controllable at the end of the blend
+       (input buffered so the first step isn't lost). From then on it is the normal on-foot loop: walk to the ship, F to
+       board, sit, L to launch out through the open doors.
+    f. **Return**: "O" (orbit) and the destination panel keep working as today after the intro; a `?intro=0` query skips
+       the sequence for tests/tours. Reload shows the intro again (it is the hook).
+    Owner: Astra (camera rig + sequencing + audio), with the character controller from request 17. Dependencies: request 13
+    (hangar lighting) and the character GLB (Meshy agent). Ship on the pad + doors are already in place from the station
+    slice. Acceptance: Claude's tour starts with `?intro=1`, screenshots at t=0, 5, 10 s and after pressing W; no popping,
+    no z-fighting on the deck, 60 fps on a laptop GPU, ≤ 3 s from first paint to camera A.
+
+**MERGED (Claude, 20:20): PR #4 Blender Nomad ship → `feat/visual-fidelity` (51d97d7)** and deployed to https://www.staragent.site
+(Cees asked to prioritise the new ship in the dev build). 46 tests, build green. The Nomad (`public/models/nomad.glb`,
+`ship-walkable.js`) is now the default ship. Remaining PRs (#2 crashes, #5 re-entry, #3 controller, #6 forest streaming)
+are reviewed green and will be merged in that order next; owners: please rebase onto `feat/visual-fidelity` if GitHub
+shows conflicts after this merge. Request 18 (opening sequence) should be built against the Nomad's real cockpit/hatch.
+
+**MERGE QUEUE (Claude, 20:30).** After the Nomad merge, PR #2 (`feat/hard-ground-crashes`) conflicts with
+`feat/visual-fidelity` in `index.html`, `package.json`, `src/main.js`. Since #5, #3, #6, #7, #8 are stacked on #2/#3 they
+inherit it. Owners, please: (1) retarget each PR's base to `feat/visual-fidelity` on GitHub (`gh pr edit N --base
+feat/visual-fidelity`), (2) rebase your branch onto `origin/feat/visual-fidelity` in your isolated checkout, resolve the
+three files (the Nomad wiring in main.js/index.html must stay; take both sets of package.json scripts), re-run tests +
+browser checks, force-push your branch, and post `REBASED: #N` here. I merge in this order as each is ready:
+#2 crashes → #5 re-entry → #3 controller → #6 forest streaming → #7 moon → #8 terrain transitions. Merged PRs get closed
+with a comment and the site redeployed.
+
+19. **Props are in (Claude, 20:45).** `public/models/props/` on `feat/visual-fidelity` (0e9e921) now has 12 alien flora/rock
+    props + `player-male.glb` (static, rig/animations coming), each ≤ 850 KB (1024² WebP), listed in
+    `public/models/props/manifest.json` with height/footprint/tris; review page `/dev/props.html`. Please place them in the
+    world via the vegetation/scatter system (new file `src/props-scatter.js` or inside vegetation.js — your call):
+    - alien-tree-bulb / alien-tree-spire / giant-mushroom-cluster: a new "alien grove" biome band (moisture > .55, |lat| <
+      30°) mixed with the conifers, density ~1 per 60 m, scaled ±25 %, random yaw; use the GLB as the near LOD and the
+      existing impostor path (or a billboard) beyond 300 m.
+    - coral-shrub / puffball-plant / vine-clump: understory at 1 per 15 m in the same band; puffballs glow faintly at night.
+    - boulder-mossy / boulder-cracked / boulder-layered: slopes 15-35°, 1 per 80 m, partly sunk 0.2 m; rock-arch: rare
+      (1 per 5 km, flat ground only).
+    - crystal-cluster / crystal-shard-single: reserve for caves (Phase 6); for now a few on polar ice at night.
+    Loading: one GLTFLoader per file at startup, instance with `InstancedMesh` per prop (materials from the GLB), respect
+    the ship exclusion radius like trees. Frustum-cull per instance chunk. Target: < 1 ms/frame CPU, ≤ 15 draw calls total.
+
+**Claude lane update (21:05, Cees: "get some agents working").** Because Astra is saturated (rebases, opening sequence,
+props scatter), Claude agents are taking two character pieces under token-policy exception (a); Astra keeps integration:
+- `blender/build_mannequin.py` → `public/models/props/mannequin.glb`: rigged placeholder astronaut (Mixamo bone names, 1.80 m)
+  with the full 14-clip contract, plus `blender/retarget_clips.py` to retarget those clips onto the Meshy/Mixamo humanoid
+  when it lands. Use the mannequin for request 18 today; the real astronaut swaps in via the same clip names.
+- `src/character.js` (+ tests, `/dev/character.html`): `Character` (GLTF + mixer + state machine per request 17) and
+  `CharacterCamera` (third/first person blend, `cinematic()` for the opening shot). Astra wires it in main/navigation;
+  the agent's report will list the exact lines. Do NOT start a parallel character.js.
+Meshy status: astronaut rig attempts (2× 25 cr) completed but Meshy does not expose the rigged asset; a fresh agent is
+diagnosing; female + gear queued behind it. Do not wait on Meshy for anything.
+
+**CHARACTER READY (Claude, 21:50) — on `feat/visual-fidelity`: 2bb7666 mannequin + c59182f character module.**
+- `public/models/props/mannequin.glb`: rigged placeholder astronaut, 1.80 m, Mixamo bone names, all 14 contract clips
+  (in-place locomotion), 4.3k tris, faces −Z, origin at feet. `blender/retarget_clips.py` moves the clip set onto the
+  Meshy/Mixamo astronaut later (`--map mixamo|meshy|auto`), so nothing you build now is throwaway.
+- `src/character.js`: `Character` (GLTF + mixer + state machine: speed-blended idle/walk/run with stride-matched
+  timeScale, crouch/carry/wounded variants, additive upper-body aim layer, semi-auto fire one-shots, sit-down→sit-idle→
+  stand-up, death) and `CharacterCamera` (third/first person, `blendTo(mode, s)`, `openingShot(10, 1.5)` = request 18's
+  camera A with `onCinematicEnd`). Pure helpers unit-tested (33 tests). Dev page `/dev/character.html`.
+- **The exact wiring is the numbered comment block at the bottom of `src/character.js`** (construct; per-frame
+  `alignToSurface` + `update(dt, navState)`; camera handoff via `characterCamera.applyTo(camera, origin)` +
+  `character.placeCameraRelative(origin)`; opening hook: pose at `station.padWorldPosition + (2.5, 0, −5)·padQuaternion`,
+  `openingShot`, then `blendTo('first', 0.9)` on first W). Astra: please wire it and build request 18 against it now; the
+  Meshy astronaut will replace the mannequin by file swap. `aim-pistol` uses the rifle clip until Meshy/Blender provides one.
+
+
+## Fable 5.1 — planet pipeline memory filed; Selene landing ready (Astra, 2026-09-05)
+
+Cees requested lunar landing/walking and a complete planet pipeline memory for the
+manager. Implemented and integrated into the shared checkout: detailed lunar ground,
+terrain collision, low-gravity walking/jumping, physical ramp traversal/reboarding,
+launch, controller controls and airless lighting/audio/flight behavior.
+
+The durable memory is [PLANET-PIPELINE-MEMORY.md](PLANET-PIPELINE-MEMORY.md). It covers
+Aeon and Selene from seeds/body definitions through heightfields, patch precision,
+LOD/workers/cache, materials, atmosphere/depth, vegetation, collision/boarding,
+QA, delivery, integration lessons and remaining limitations. Player guide:
+[docs/selene.md](docs/selene.md). Coordination: [MOON-HANDOFF.md](MOON-HANDOFF.md).
+
+**REBASED: #7** — `feat/moon` is now based on `feat/visual-fidelity` at `0e9e921`;
+controller PR #3 remains included as a dependency. [PR #7](https://github.com/AvonMexicola/star-agent/pull/7)
+now covers landing/exploration as well as the moon. Preserve the shared crash
+composition documented in MOON-HANDOFF when combining #2 and #7; avoid wholesale
+replacement of shared main/navigation files.
+
+Validation: 70 unit cases/build in the rebased branch; 76 cases/build in the shared
+checkout including crash tests. Full production lunar journeys pass in both, with
+no page/console errors; controller exploration also passes its navigation regression.
+Curated surface/ship screenshots are in `docs/selene-landing.png` and
+`docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
+This local notice files the requested memory for Fable; it does not assert a read receipt.
+Review, merge and deployment remain with the manager's queue.
+
+**REAL CHARACTERS LANDED (Claude, 22:20)** on `feat/visual-fidelity`: `public/models/props/player-male.glb` (1.85 m) and
+`player-female.glb` (1.72 m), Meshy-rigged, **all 14 contract clips embedded** (names per the contract; `aim-pistol` and
+`use-tool` unavailable → `character.js` falls back to the rifle aim), ~1.9 MB each, origin at feet. Gear: backpack
+(origin back-plate), helmet, rifle-laser, mining-laser-tool, sidearm-pistol (origins at grip) — attach to `RightHand` /
+`Spine2` bones. Swap in `character.js` by `url: '/models/props/player-male.glb'` (or female); the mannequin stays as the
+fallback. Clip durations differ from the mannequin (e.g. `walk` 4.21 s, `jump` 9.83 s, `stand-up` 8.29 s): `character.js`
+stride-matches walk/run by speed, but check `jump`/`stand-up` timing in the controller and trim with `AnimationUtils.subclip`
+if they feel slow. Known cosmetic loss: Meshy's retopo bake dropped the mint accent lines (suits are white/black).
+
+
+## Space travel — active user priority (Astra)
+
+Cees now requests a system map on M, selectable travel targets, modest atmospheric boost, faster ordinary space flight and a 0.9c maximum drive with a tunnel effect. This is the active task, ahead of the opening sequence for this session. Work isolated in /tmp/star-agent-travel-work, feat/system-travel, based on current moon/landing branch c98c9fc (PR #7 dependency); no shared source edits. I own navigation/main/index/CSS integration plus new travel-model.js, system-map.js, travel-effects.js and tests. Use real existing Aeon/Selene positions and uninterrupted movement, with body clearance, route obstruction checks and automatic arrival braking. Map labels only implemented bodies as reachable. Please coordinate before touching these files in this worktree.
+
+**MERGED (Claude, 23:45): PR #7 Selene moon → `feat/visual-fidelity` (f028a43)**, 70 tests, build green, deployed.
+**PR #9 external ship camera conflicts** with the integration branch in `index.html`, `package.json`, `src/main.js`,
+`src/style.css` (it was based on the Nomad branch before the merge). Owner: rebase onto `origin/feat/visual-fidelity`,
+retarget the PR base, post `REBASED: #9`. Same for #2, #5, #3, #6, #8 — none are rebased yet; they cannot merge until
+they are. Status of the character work: mannequin + `character.js` + real Meshy pilots are all on the integration branch;
+the opening sequence (request 18) is the top open item on Astra's side.
+
+**Claude lane (23:55): `src/equipment.js`** (Cees: "rig up a weapon and a mining tool for the player to equip"). A Claude
+agent is building equip/holster of rifle-laser, sidearm-pistol, mining-laser-tool (hand sockets calibrated per rig in
+`public/models/props/equipment-sockets.json`), backpack/helmet attach, muzzle flash + tracer bolts (400 m/s, 4 km),
+continuous mining beam with heat/overheat and an `onMine` callback for Phase 6 voxels. Astra: don't start a parallel one;
+wiring lines will follow in the agent's report. Suggested keys: 1/2/3 equip, mouse1 fire/mine, R holster.

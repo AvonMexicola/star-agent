@@ -76,13 +76,13 @@ export class FlightAudio {
     }
   }
 
-  update({ speed = 0, altitude = 0, mode = 'flight', boost = false } = {}, dt = 0) {
+  update({ speed = 0, altitude = 0, mode = 'flight', boost = false, airless = false } = {}, dt = 0) {
     if (!this.context || this.disposed || !this.enabled) return;
     const time = this.context.currentTime;
     const velocity = Number.isFinite(speed) ? Math.abs(speed) : 0;
     const height = Number.isFinite(altitude) ? Math.max(0, altitude) : 0;
     const motion = Math.min(1, Math.log1p(velocity) / Math.log(10001));
-    const air = Math.exp(-height / 18000);
+    const air = airless ? 0 : Math.exp(-height / 18000);
     const flying = mode === 'flight';
     const thrust = flying ? 0.3 + motion * 0.5 + (boost ? 0.2 : 0) : 0;
     // Smoothing is on the audio clock, independent of frame rate and tab stalls.

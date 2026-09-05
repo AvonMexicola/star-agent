@@ -41,7 +41,7 @@ def parse_args(argv):
         raise SystemExit(
             "usage: blender -b --python clean_asset.py -- IN.glb OUT.glb "
             "[--tris N] [--height M] [--origin base|grip|back|center] "
-            "[--max-tex N] [--keep-separate] [--no-scale]"
+            "[--fit z|longest] [--max-tex N] [--keep-separate] [--no-scale]"
         )
 
     args = {
@@ -53,6 +53,8 @@ def parse_args(argv):
         "max_tex": 2048,
         "keep_separate": False,
         "scale": True,
+        "fit": "z",
+        "actions": None,
     }
 
     i = 2
@@ -70,6 +72,10 @@ def parse_args(argv):
             args["keep_separate"] = True; i += 1
         elif a == "--no-scale":
             args["scale"] = False; i += 1
+        elif a == "--fit":
+            args["fit"] = argv[i + 1]; i += 2
+        elif a == "--actions":
+            args["actions"] = argv[i + 1]; i += 2
         else:
             raise SystemExit("unknown argument: %s" % a)
     return args
@@ -161,6 +167,27 @@ def do_import(path):
     return objs
 
 
+def drop_unskinned(objs):
+    """Delete meshes that the armature does not deform.
+
+    Meshy's animated exports ship a stray helper primitive (a unit icosphere at
+    the origin) alongside the character. Left in, it doubles the bounding box
+    and every measurement downstream -- height, footprint, origin -- comes out
+    wrong.
+    """
+    keep, junk = [], []
+    for o in objs:
+        skinned = any(m.type == "ARMATURE" for m in o.modifiers) or (
+            o.parent is not None and o.parent.type == "ARMATURE")
+        (keep if skinned else junk).append(o)
+    if not keep:
+        return objs
+    for o in junk:
+        log("dropping unskinned mesh %s (%d verts)" % (o.name, len(o.data.vertices)))
+        bpy.data.objects.remove(o, do_unlink=True)
+    return keep
+
+
 def do_join(objs):
     if len(objs) < 2:
         return objs
@@ -222,32 +249,56 @@ def do_decimate(objs, budget):
 
 
 def bake_modifiers(objs):
-    """Apply all modifiers so the exported mesh is final."""
+    """Apply all modifiers so the exported mesh is final.
+
+    ARMATURE modifiers are left alone: applying one would freeze the rest pose
+    into the mesh and drop the skinning the animations need.
+    """
     deps = bpy.context.evaluated_depsgraph_get()
     for o in objs:
         bpy.context.view_layer.objects.active = o
         for m in list(o.modifiers):
+            if m.type == "ARMATURE":
+                continue
             try:
                 bpy.ops.object.modifier_apply(modifier=m.name)
             except RuntimeError as e:
                 log("could not apply modifier %s on %s: %s" % (m.name, o.name, e))
 
 
-def scale_to_height(objs, target_h):
-    """Uniformly scale so the world-space Z extent equals target_h metres."""
+def scene_roots():
+    return [o for o in bpy.context.scene.objects if o.parent is None]
+
+
+def scale_to_height(objs, target_h, fit="z"):
+    """Uniformly scale so one world-space extent equals target_h metres.
+
+    fit="z"       -- the vertical extent, for anything that stands upright.
+    fit="longest" -- the largest of the three extents. Hand-held props come out
+                     of Meshy lying along their length, so their "size" is that
+                     length, not their height; measuring Z would inflate a
+                     1.1 m rifle to a 3 m one.
+
+    Rigged assets keep the scale live on the root node instead of applying it:
+    baking a scale into an armature rescales the bones but not the pose-space
+    translation keys, which would tear the animations apart. glTF carries the
+    root node TRS just fine.
+    """
     mins, maxs = world_bbox(objs)
-    cur_h = maxs.z - mins.z
+    size = maxs - mins
+    cur_h = max(size.x, size.y, size.z) if fit == "longest" else size.z
     if cur_h <= 1e-9:
         log("degenerate height, skipping scale")
         return 1.0
     factor = target_h / cur_h
-    log("scaling %.4f m -> %.4f m (factor %.5f)" % (cur_h, target_h, factor))
-    for o in objs:
-        if o.parent is None:
-            o.scale = o.scale * factor
-            o.location = o.location * factor
+    log("scaling %s %.4f m -> %.4f m (factor %.5f)" % (fit, cur_h, target_h, factor))
+    roots = scene_roots()
+    for o in roots:
+        o.scale = o.scale * factor
+        o.location = o.location * factor
     bpy.context.view_layer.update()
-    apply_transforms([o for o in objs if o.parent is None])
+    if not armature_objects():
+        apply_transforms(roots)
     return factor
 
 
@@ -278,7 +329,7 @@ def set_origin(objs, mode):
     log("origin '%s' anchor at (%.3f, %.3f, %.3f)"
         % (mode, anchor.x, anchor.y, anchor.z))
 
-    roots = [o for o in bpy.context.scene.objects if o.parent is None]
+    roots = scene_roots()
     for o in roots:
         o.location = o.location - anchor
     bpy.context.view_layer.update()
@@ -325,6 +376,65 @@ def texture_report():
     return out
 
 
+def remap_actions(path):
+    """Rename the imported actions to the project's clip names, drop the rest.
+
+    `path` is a JSON file: {"Meshy_Action_Name": "walk", ...}. Anything not
+    listed is deleted so the exported GLB carries only the contract clips.
+    NLA tracks/strips are renamed alongside — the glTF exporter takes the
+    animation name from whichever of those it finds.
+    """
+    import json
+    with open(path) as f:
+        mapping = json.load(f)
+
+    kept, dropped = [], []
+    for act in list(bpy.data.actions):
+        new = mapping.get(act.name)
+        if new is None:
+            dropped.append(act.name)
+            continue
+        act.name = new
+        act.use_fake_user = True
+        kept.append(new)
+
+    for obj in bpy.context.scene.objects:
+        ad = obj.animation_data
+        if not ad:
+            continue
+        for track in list(ad.nla_tracks):
+            strips = list(track.strips)
+            live = [s for s in strips if s.action is not None]
+            if not live:
+                ad.nla_tracks.remove(track)
+                continue
+            for s in live:
+                s.name = s.action.name
+            track.name = live[0].action.name
+        if ad.action is not None and ad.action.name not in kept:
+            ad.action = None
+
+    # Deleting after the NLA sweep: strips holding a dropped action are gone
+    # by now, so the datablocks fall to zero users and can be removed.
+    for act in list(bpy.data.actions):
+        if act.name not in kept:
+            bpy.data.actions.remove(act)
+
+    log("actions kept (%d): %s" % (len(kept), ", ".join(sorted(kept))))
+    if dropped:
+        log("actions dropped (%d): %s" % (len(dropped), ", ".join(dropped)))
+    return kept
+
+
+def set_rest_pose(rest):
+    """Switch every armature between its rest (bind) pose and its posed state."""
+    mode = "REST" if rest else "POSE"
+    for arm in armature_objects():
+        arm.data.pose_position = mode
+    bpy.context.view_layer.update()
+    bpy.context.evaluated_depsgraph_get().update()
+
+
 def do_export(path, has_anim):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     kwargs = dict(
@@ -361,21 +471,33 @@ def main():
         objs = do_join(objs)
     elif has_arm:
         log("armature present -- keeping meshes separate, preserving rig")
+        objs = drop_unskinned(objs)
+        # Measure and place the BIND pose, not whatever frame the importer left
+        # the rig on: that rest shape is what a glTF viewer's bounding box sees,
+        # and the clips animate around it. Restored before export.
+        set_rest_pose(True)
 
     apply_transforms([o for o in objs if o.parent is None])
 
     tris_before, tris_after = do_decimate(objs, args["tris"])
 
     if args["scale"] and args["height"]:
-        scale_to_height(objs, args["height"])
+        scale_to_height(objs, args["height"], args["fit"])
 
     set_origin(objs, args["origin"])
 
     clamp_textures(args["max_tex"])
 
+    if args["actions"]:
+        remap_actions(args["actions"])
+
+    mins, maxs = world_bbox(objs)   # rest-pose figures for the manifest
+
+    if has_arm:
+        set_rest_pose(False)
+
     do_export(args["output"], has_arm)
 
-    mins, maxs = world_bbox(objs)
     size = maxs - mins
     size_bytes = os.path.getsize(args["output"]) if os.path.exists(args["output"]) else 0
 

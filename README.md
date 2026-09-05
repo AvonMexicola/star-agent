@@ -25,11 +25,43 @@ Press **V** while freely flying to toggle inertial flight. Releasing thrust then
 
 L engages landing assistance near dry terrain or polar ice. After landing, F stands from the pilot chair. Walk aft, press F at the rear hatch, wait for the ramp to lower, and walk outside. Return up the ramp, approach the chair, press F to sit, then L to launch. Boarding is physical; F outside does not teleport you aboard. Tab hides the interface.
 
+Hit terrain, polar ice or water at **12 m/s or more into the surface** and the ship is destroyed. The impact uses surface-normal closing speed, including terrain slope, before collision stops the ship. A short procedural explosion and crash screen replace flight; propulsion, launch and boarding stay disabled. Choose **Return to orbit**, press O, or use an explicit destination shortcut to restart with the same seed. Gentle contact and landing assistance still work. Station damage, persistent wrecks and deformable ship parts are not implemented.
+
+## Controller
+
+Connect a gamepad and press a button, then release the controls to start. Uses the browser's [Standard Gamepad mapping](https://www.w3.org/TR/gamepad/#remapping), including recognized Xbox and PlayStation controllers. Mouse capture is optional. Sticks have a radial deadzone and proportional movement in flight and on foot. Release controls after switching windows, closing help or reconnecting to resume movement.
+
+| Control (Xbox / PlayStation) | Action |
+| --- | --- |
+| Left / right stick | Move and strafe / look and steer |
+| RT / LT · R2 / L2 | Ascend / descend |
+| LB / RB · L1 / R1 | Roll left / right |
+| A / ✕ | Jump on foot |
+| B / ○ (hold) | Brake translation and rotation |
+| X / □ | Interact with pilot chair or hatch |
+| Y / △ | Land, dock or launch |
+| L3 (hold) / R3 | Boost or sprint / toggle flight assist |
+| D-pad up / down | Increase / decrease assisted speed |
+| View / Share | Toggle HUD |
+| Menu / Options | Open / close controls |
+
+In help, right stick or D-pad up/down scrolls the manual. Destination buttons, seed entry and sound still use mouse or keyboard. Controllers without a standard browser mapping are reported as unsupported; custom remapping and vibration are not implemented. Controller availability depends on browser/OS support and requires HTTPS or localhost.
+
 ## Visit Aeon Orbital
 
 Shift + click **Aeon Orbital** to set a course for continuous flight, or click it normally for optional transit to the exterior approach. The doors open automatically as you approach. Fly forward with W, brake with X over the central pad, and press L to dock. Approach speed is limited automatically near the station.
 
 F stands from the chair. Walk aft, use F at the hatch, wait for the ramp and walk onto the hangar deck. Return up the ramp to the chair and press F to sit. L lifts the ship gently to bay clearance; reverse with S to leave through the doors. Walking stays on the supported deck; jumping into space is not part of this prototype.
+
+## Visit Selene
+
+Selene is a procedural, cratered moon with a 434.35 km radius, held at a fixed position 24,000 km from Aeon’s centre. Its orbit is compressed for the prototype; this is not an astronomical simulation. Broad dark plains, crater bowls, bright rims and surface relief share one deterministic lunar surface function. The moon uses the scene’s sunlight and atmosphere/depth rendering, so its phase and visibility change with your viewpoint.
+
+Click **Selene** for an optional descent approach, or Shift + click it to set a course for continuous flight. Press **L** to land, **F** to leave the chair, walk aft, use **F** at the hatch, and walk down the ramp. Explore with **WASD** and jump with **Space** in lunar gravity (1.62 m/s²). Return up the ramp, **F** sits, and **L** launches. **O** returns to Aeon orbit. Controller landing, interaction and walking use the same controls as Aeon.
+
+The surface streams detailed terrain, with collision and walking height sampled from the same crater generator. The HUD reports height above local terrain, including crater floors below the moon’s reference radius. Selene is airless and has no water or vegetation; it stays the same across planet seeds. Its position is fixed, without orbital motion or an N-body gravity simulation.
+
+See the [lunar exploration guide](docs/selene.md) and [complete planet pipeline memory](PLANET-PIPELINE-MEMORY.md). Moon checks: `node --test tests/moon.test.js tests/navigation.test.js` and `npm run test:browser -- -c scripts/moon.config.js`. Browser evidence is saved under `/tmp/star-agent-moon-evidence`.
 
 ## Rendering
 
@@ -53,6 +85,7 @@ npm run test:browser -- -c scripts/fidelity.config.js
 npm run test:browser -- -c scripts/surface-detail.config.js
 npm run test:browser -- -c scripts/station.config.js
 npm run test:browser -- -c scripts/flight-model.config.js
+npm run test:browser -- -c scripts/crash.config.js
 ```
 
 Unit checks cover terrain seams, local coordinate precision, seed reproducibility, worker/collision agreement, continuous descent and travel between zone coordinates, physical boarding, gap-free tree LOD coverage, and real-asset station collision/docking/deck support. Browser checks compile and render shaders and exercise the playable controls. The fidelity inspection saves images and render-environment metadata under `/tmp/star-agent-fidelity`; the station journey saves `/tmp/star-agent-station`; the surface-detail inspection saves `/tmp/star-agent-surface`; the boarding inspection saves `/tmp/star-agent-*.png`.

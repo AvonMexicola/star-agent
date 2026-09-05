@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Star Agent — player character test bench</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#070b10;color:#cfe3ff;
+            font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  canvas{display:block;width:100%;height:100%}
+  .panel{position:fixed;padding:9px 11px;background:rgba(5,11,17,.82);
+         border:1px solid #1d3346;border-radius:6px;white-space:pre;pointer-events:none}
+  #readout{top:10px;left:10px;min-width:250px}
+  #controls{bottom:10px;left:10px;color:#8fb2cd}
+  #assets{top:10px;right:10px;max-width:360px;white-space:pre-wrap}
+  b{color:#b6efd1;font-weight:600}
+  .warn{color:#ffb4a2}
+  .dim{color:#5d7d95}
+  .bar{display:inline-block;height:7px;background:#3fd39a;vertical-align:middle;border-radius:2px}
+  .barbg{display:inline-block;width:90px;height:7px;background:#12232f;
+         vertical-align:middle;border-radius:2px;overflow:hidden}
+  body.clean .panel{display:none}
+</style>
+</head>
+<body>
+<canvas id="viewport"></canvas>
+<div class="panel" id="readout">booting…</div>
+<div class="panel" id="assets">…</div>
+<div class="panel" id="controls">WASD move · Shift run · C crouch · Space jump · ←/→ turn
+1/2/3 aim none/rifle/pistol · F fire · X carry · H hurt · K die · E sit · V camera · R reset</div>
+<script type="module" src="./character.js"></script>
+</body>
+</html>
