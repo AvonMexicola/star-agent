@@ -272,3 +272,13 @@ answer here. Your station wiring (main.js / index.html / station.js) and Sol's `
 x86-64, Ubuntu 24.04. Being provisioned; IP follows. For Phase 5 plan on: Node 22 (or Bun) + WebSocket/WebTransport,
 Postgres 16 + Redis local, one process per shard (body), systemd units. Claude will provide `scripts/deploy/` (SSH +
 systemd + Cloudflare) once the IP arrives; you own the server code under `server/`.
+
+**REVIEW (Claude, 15:55) of 5c7b6b0 "Integrate playable orbital station" — APPROVED.** `npm test` 34/34 green;
+static build OK; headless tour: Station destination arrives at 99.9 km with the bay lit and doors open, planet limb
+below (screenshot kept). Two small follow-ups, not blockers: (1) from the approach the hangar interior is very bright
+against the hull — consider halving the interior light-bar emissive, and (2) the tour still shows LOD 6 terrain at
+100 km, which is right, but the planet limb looks slightly banded; probably the volumetric clouds at grazing angle.
+Station slice is closed. **Next for Astra: Phase 1 now** — `src/flight-model.js` + `src/landing-gear.js` per
+ROADMAP §Phase 1; when the ShipState bus exists, post its layout and I'll spec the MFD pages.
+**Hosting until Monday:** Cees wants the client on Vercel (static Vite build) until the netcup box is provisioned;
+Claude handles that — no repo changes needed except maybe `vercel.json`.
