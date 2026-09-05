@@ -12,6 +12,12 @@ import {
 const near = (actual, expected, tolerance = 1e-6) =>
   assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} != ${expected}`);
 
+// Three uploads Matrix3 uniforms through a Float32Array. Shader reconstruction
+// must be tested against those coefficients, not the JavaScript-double source.
+const GPU_WATER_ROTATION = new THREE.Matrix3().fromArray(
+  WATER_ROTATION.elements.map(Math.fround),
+);
+
 function expectedSplit(value) {
   let cell = Math.floor(value);
   let fraction = Math.fround(value - cell);
@@ -20,7 +26,7 @@ function expectedSplit(value) {
 }
 
 function shaderCoordinate(anchors, layer, relativePosition) {
-  const rotated = relativePosition.clone().applyMatrix3(WATER_ROTATION).multiplyScalar(1 / WATER_SCALES[layer]);
+  const rotated = relativePosition.clone().applyMatrix3(GPU_WATER_ROTATION).multiplyScalar(1 / WATER_SCALES[layer]);
   const result = [];
   for (let axis = 0; axis < 3; axis++) {
     const local = rotated.getComponent(axis) + anchors.fractions[layer * 3 + axis];
@@ -66,7 +72,7 @@ test('anchor updates are deterministic, fresh, and do not mutate their inputs', 
 test('every layer matches an independent integer and fraction split for negative coordinates', () => {
   const origin = new THREE.Vector3(-712.75, 91.125, -301.5);
   const time = -37.25;
-  const rotated = origin.clone().applyMatrix3(WATER_ROTATION);
+  const rotated = origin.clone().applyMatrix3(GPU_WATER_ROTATION);
   const anchors = updateWaterAnchors(createWaterAnchors(), origin, time);
   for (let layer = 0; layer < WATER_SCALES.length; layer++) {
     for (let axis = 0; axis < 3; axis++) {
@@ -75,6 +81,24 @@ test('every layer matches an independent integer and fraction split for negative
       assert.equal(anchors.cells[index], expected.cell);
       assert.equal(anchors.fractions[index], expected.fraction);
       assert.ok(anchors.fractions[index] >= 0 && anchors.fractions[index] < 1);
+    }
+  }
+});
+
+test('large-origin anchors use the exact Float32 rotation uploaded to the shader', () => {
+  const origin = new THREE.Vector3(25_000_000_000.125, -18_000_000_000.25, 9_000_000_000.5);
+  const time = 31_557_600.75;
+  const rotated = origin.clone().applyMatrix3(GPU_WATER_ROTATION);
+  const doubleRotated = origin.clone().applyMatrix3(WATER_ROTATION);
+  assert.ok(rotated.distanceTo(doubleRotated) > 100,
+    'fixture exposes the large-world error from using double matrix coefficients');
+  const anchors = updateWaterAnchors(createWaterAnchors(), origin, time);
+  for (let layer = 0; layer < WATER_SCALES.length; layer++) {
+    for (let axis = 0; axis < 3; axis++) {
+      const value = (rotated.getComponent(axis) + WATER_ADVECTION[layer][axis] * time) / WATER_SCALES[layer];
+      const expected = expectedSplit(value), index = layer * 3 + axis;
+      assert.equal(anchors.cells[index], expected.cell, `layer ${layer} axis ${axis} cell`);
+      assert.equal(anchors.fractions[index], expected.fraction, `layer ${layer} axis ${axis} fraction`);
     }
   }
 });

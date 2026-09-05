@@ -17,8 +17,9 @@ export const WATER_ADVECTION = Object.freeze([
 ]);
 
 const COMPONENTS = WATER_SCALES.length * 3;
-// Keep the calculation independent of the exported Matrix3's mutability.
-const ROTATION_ELEMENTS = Array.from(WATER_ROTATION.elements);
+// WebGL uploads Matrix3 uniforms as Float32. Use those exact coefficients for
+// the double-precision CPU anchor so origin and camera-relative terms cancel.
+const ROTATION_ELEMENTS = Array.from(WATER_ROTATION.elements, Math.fround);
 
 export function createWaterAnchors() {
   return {
