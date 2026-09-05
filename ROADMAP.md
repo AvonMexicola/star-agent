@@ -234,6 +234,22 @@ Exit criteria: a full loop — mine, sell, buy a weapon, win a fight, repair —
 
 ---
 
+## Audio & music (added 2026-09-06)
+
+- **Music source**: ElevenLabs Music v2 API (licensed training data, commercial use on paid plans) as the default; Stable Audio
+  2.5/3.0 API for ambient beds and SFX (open-weight 3.0 can be self-hosted later). **Not Suno** — no official API as of
+  2026-09, only reverse-engineered wrappers/resellers; legally and technically unfit for a public build.
+- **Adaptive layering, not tracks**: per zone a stem set sharing key/tempo — pad bed, rhythm, melody, tension — 60–90 s
+  loopable instrumental, "no intro/outro, constant tempo", trimmed to exact bars (ffmpeg) for seamless loops. Zones: orbit,
+  atmospheric flight, surface day, surface night, station hangar, combat. Layers cross-fade by state (altitude, inside
+  hangar, on foot, combat mode, night). Stingers: door open, touchdown, launch, death. ~24 clips ≈ 30 MB Opus @ 96 kbps.
+- **SFX**: keep the procedural synth (`audio.js`) for engine/wind/RCS/door motors (physics-synced, zero bandwidth); generated
+  one-shots (ElevenLabs SFX / Stable Audio) for UI, weapons, impacts, footsteps per surface.
+- **Web Audio**: everything after a user gesture (the "take the controls" click starts the hangar rumble); music via `<audio>`
+  → gain node in the same context as the synth; ducking (music −6 dB under weapons/engine, −6 dB under comms later);
+  `.opus` in `.webm` + `.m4a` fallback for Safari; lazy-load zone stems on approach.
+- Owner: Astra (mixer/state hooks in `audio.js`) + a generation script `scripts/gen-music.mjs` (Claude, API keys via env).
+
 ## Phase 8 — Launch & scale
 
 CI (tests + smoke + bundle size), telemetry (fps/latency histograms, opt-in), crash reporting, Cloudflare in front, EU + US regions, weekly builds.
