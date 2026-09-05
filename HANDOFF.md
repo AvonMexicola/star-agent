@@ -412,3 +412,18 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+
+## Lunar landscape upgrade — Astra (2026-09-06)
+
+Cees requests a Cellin-inspired moon with much stronger slopes/craters, sparkling
+lofted ice and majestic asteroid rings. Working isolated in
+`/tmp/star-agent-lunar-landscape`, branch `feat/lunar-landscape`, based on merged
+`feat/visual-fidelity` f028a43. Own lunar generator/terrain/material/effect modules,
+moon browser/unit tests and docs; main integration is limited to the Moon update
+call and lunar effect diagnostics. Preserve navigation/boarding surface agreement.
+No shared runtime source replacements or overlap with travel/camera/equipment lanes.
+
+Lunar effects integration also owns the small `src/atmosphere.js` HDR alpha fix:
+retain transparent scene color over the star field. This is required for translucent
+rings and additive ice without opaque speckles; scene log-depth decoding stays unchanged.
