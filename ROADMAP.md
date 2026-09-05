@@ -131,14 +131,15 @@ Exit criteria: a 3-v-1 dogfight near the station at 60 fps; shields matter; trav
 - Persistence: Postgres (accounts, inventories, bases, economy), Redis pub/sub between shards. Auth: magic-link email or GitHub OAuth; no passwords stored.
 - Anti-cheat baseline: server owns damage, resources and economy; the client owns only its own flight input.
 
-**Server sizing** (single region, EU; bandwidth dominates before CPU)
+**Server sizing** (single region, EU; bandwidth dominates before CPU). Prices verified 2026-09-05 after Hetzner's
+June-2026 increase (CPX/CCX roughly doubled; CX/CAX and dedicated AX barely moved — pick those).
 
 | Tier | Concurrent players | Machine | Est. cost | Notes |
 |---|---|---|---|---|
 | 0 — site only | unlimited | Cloudflare Pages / Netlify (static) | €0 | Client + assets (~6 MB, cached at edge). |
-| 1 — MVP | ≤ 200 CCU | 1× Hetzner CPX41 / CCX23 (4-8 vCPU, 16 GB, 20 TB traffic) | €25-45 / mo | All shards on one box; Postgres + Redis local. 200 players × 25 KB/s down ≈ 5 MB/s ≈ 40 Mbit/s. |
-| 2 — growth | ≤ 2 000 CCU | 3× CCX33 (8 vCPU, 32 GB) + 1 small gateway + managed Postgres | €200-300 / mo | Shards by body; ~400 Mbit/s peak; add regions (US) as a second cluster. |
-| 3 — blow-up | 10 000+ CCU | Autoscaled shard fleet (k8s or Nomad), Redis cluster, CDN for everything static | €1.5-3 k / mo | Per-player cost ≈ €0.1-0.3 / month at scale; instance shards further by cells. |
+| 1 — MVP | ≤ 200 CCU | **Hetzner CX43** (8 shared vCPU, 16 GB, 160 GB, 20 TB) — or **CAX31** (8 Arm vCPU, 16 GB, €20.99) if the server is Node/Bun (both run on aarch64) | **€15.99 / mo** (+ ~€0.60 IPv4) | All shards on one box; Postgres + Redis local. 200 players × 25 KB/s ≈ 40 Mbit/s, ≈ 13 TB/month at full load — inside the 20 TB allowance. Shared vCPU is fine at this size. |
+| 2 — growth | ≤ 2 000 CCU | **Hetzner AX42 dedicated** (Ryzen 7 PRO 8700GE 8c/16t, 64 GB DDR5 ECC, 2× NVMe, **unmetered 1 Gbit**) + Cloudflare in front | **€46 / mo** (+ €39 setup) | One dedicated box outperforms 3 cloud CCX33s (now €138 each) and traffic is unmetered, which is what a game server needs. Run shards by body as separate processes. Second AX42 in a US location when needed. |
+| 3 — blow-up | 10 000+ CCU | 4–8× AX42/AX102 (or EPYC AX162 for a 48-core hub) behind a gateway, Redis cluster, managed Postgres, CDN for all static | €400–1 500 / mo | Per-player cost ≈ €0.05–0.15 / month; shard further by cell. Still far cheaper than any hyperscaler for this bandwidth profile. |
 
 Rules of thumb: budget **~25 KB/s down + 5 KB/s up per player** at 20 Hz with 50 entities in interest; **~0.3 ms CPU per player-tick** at 30 Hz in JS → ~250 players per core-ish; RAM is negligible (entities only). Bandwidth is what you pay for: Hetzner's 20 TB/month per server covers ~2.6 MB/s sustained, so Tier 1 is fine to ~200 CCU average. Add a **Cloudflare tunnel/DDoS front** before any public announcement.
 
