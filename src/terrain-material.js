@@ -20,7 +20,8 @@
 //     denominator, so h is good to millimetres next to the camera.
 //   * noise lattice coordinates: for each octave the CPU splits `R·renderOrigin / cellSize`
 //     into integer cell + fraction (doubles), the shader adds `R·wp / cellSize` to the
-//     fraction and carries the integer part into an integer hash. Exact for |cell| < 2^24.
+//     fraction and carries a wrapped integer part into a matching periodic hash. The wrapped
+//     cells stay below 2^22 and therefore remain exact in float uniforms.
 // Layers: grass (vertex colour tinted), dirt (20–35° slopes), stratified rock (> 35°),
 // sand with a wet band (0–4 m), snow above a latitude-dependent snowline, polar ice.
 // Each layer has its own albedo, roughness and analytic-gradient height field; the height
@@ -55,6 +56,12 @@ export const OCTAVES = [
   { size: [.32, 4.0, .32], rot: 0, fade: [10, 45], fine: true },    // 9 sand ripples (north–south rows), short range
 ];
 export const FINE_ALTITUDE = 30000;
+// GLSL float uniforms represent every integer below 2^24 exactly. Wrapping at
+// 2^22 leaves room for the per-fragment local-cell offset while giving the
+// finest octave a 252 km repeat period. tmHash applies the matching mask, so
+// crossing the wrap boundary is continuous.
+export const NOISE_CELL_PERIOD = 2 ** 22;
+const NOISE_CELL_MASK = NOISE_CELL_PERIOD - 1;
 
 const fragmentPars = /* glsl */`
 uniform vec3 tmUp;
@@ -77,7 +84,7 @@ const mat3 TM_R1 = ${glslMat3(ROTS[1])};
 const mat3 TM_R2 = ${glslMat3(ROTS[2])};
 
 float tmHash(ivec3 p) {
-  uvec3 u = uvec3(p + ivec3(0x2000000));
+  uvec3 u = uvec3(p + ivec3(0x400000)) & uvec3(0x3fffff);
   uint h = u.x * 0x8da6b343u ^ u.y * 0xd8163841u ^ u.z * 0xcb1ab31fu;
   h ^= h >> 13u; h *= 0x27d4eb2du; h ^= h >> 15u;
   return float(h & 0xffffffu) * (1.0 / 16777216.0);
@@ -141,8 +148,8 @@ float warp = o8.w;                          // ~500 m mask warp
 vec4 rc1 = tmRidge(o2 + o1 * 0.5), rc2 = tmRidge(o3 + o2 * 0.5), rc3 = tmRidge(o4 + o3 * 0.5); // lattice-free ridges
 
 // ---- masks ----
-float mDirt = smoothstep(0.965, 0.885, tmCos + 0.05 * o4.w + 0.03 * o5.w);
-float mRock = smoothstep(0.88, 0.74, tmCos + 0.06 * o4.w + 0.04 * o7.w);
+float mDirt = 1.0 - smoothstep(0.885, 0.965, tmCos + 0.05 * o4.w + 0.03 * o5.w);
+float mRock = 1.0 - smoothstep(0.74, 0.88, tmCos + 0.06 * o4.w + 0.04 * o7.w);
 mRock = max(mRock, smoothstep(0.9, 1.5, length(macro.xyz)) * 0.7);
 float mSand = 1.0 - smoothstep(2.6, 4.6, tmH + 0.8 * o5.w + 0.4 * o4.w);
 mSand *= 1.0 - mRock * 0.85;
@@ -320,7 +327,7 @@ export function updateLandMaterial(material, { renderOrigin, sunDirection, time,
     const vy = (R[3] * ox + R[4] * oy + R[5] * oz) / o.size[1];
     const vz = (R[6] * ox + R[7] * oy + R[8] * oz) / o.size[2];
     const cx = Math.floor(vx), cy = Math.floor(vy), cz = Math.floor(vz);
-    cells[k].set(cx, cy, cz);
+    cells[k].set(cx & NOISE_CELL_MASK, cy & NOISE_CELL_MASK, cz & NOISE_CELL_MASK);
     fracs[k].set(vx - cx, vy - cy, vz - cz);
   }
 }
