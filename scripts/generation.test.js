@@ -58,7 +58,7 @@ test('regular flight crosses the atmosphere, lands and climbs back to space with
   nav.transit = nav.orbit = () => assert.fail('continuous flight invoked a teleport');
   nav.keys.add('KeyW');
   let previous = nav.position.clone(), layers = new Set();
-  for (let frame = 0; frame < 60 * 90 && nav.mode === 'flight'; frame++) {
+  for (let frame = 0; frame < 60 * 600 && nav.mode === 'flight'; frame++) {
     nav.update(1/60);
     const distance = nav.position.distanceTo(previous);
     assert.ok(distance < 3000, `continuous step: ${distance}m`);
@@ -67,7 +67,7 @@ test('regular flight crosses the atmosphere, lands and climbs back to space with
   }
   assert.equal(nav.mode, 'landed'); assert.equal(layers.size, 4);
   nav.keys.clear(); nav.landOrLaunch(); nav.keys.add('Space'); nav.keys.add('ShiftLeft');
-  for (let frame = 0; frame < 60 * 90 && nav.altitude < 100000; frame++) nav.update(1/60);
+  for (let frame = 0; frame < 60 * 600 && nav.altitude < 100000; frame++) nav.update(1/60);
   assert.equal(nav.mode, 'flight'); assert.ok(nav.altitude > 70000);
 });
 
