@@ -55,9 +55,11 @@ F stands from the chair. Walk aft, use F at the hatch, wait for the ramp and wal
 
 Selene is a procedural, cratered moon with a 434.35 km radius, held at a fixed position 24,000 km from Aeon’s centre. Its orbit is compressed for the prototype; this is not an astronomical simulation. Broad dark plains, crater bowls, bright rims and surface relief share one deterministic lunar surface function. The moon uses the scene’s sunlight and atmosphere/depth rendering, so its phase and visibility change with your viewpoint.
 
-Click **Selene** for an optional lunar flyby, or Shift + click it to set a course for continuous flight. The HUD reports altitude above Selene nearby. Approach speed decreases as you close in, and a swept collision check stops the ship at a 4 km flyby perimeter. Lunar landing, walking and lunar gravity are not implemented. Return with **High orbit** or O. The moon stays the same across planet seeds.
+Click **Selene** for an optional descent approach, or Shift + click it to set a course for continuous flight. Press **L** to land, **F** to leave the chair, walk aft, use **F** at the hatch, and walk down the ramp. Explore with **WASD** and jump with **Space** in lunar gravity (1.62 m/s²). Return up the ramp, **F** sits, and **L** launches. **O** returns to Aeon orbit. Controller landing, interaction and walking use the same controls as Aeon.
 
-Moon checks: `node --test tests/moon.test.js` and `npm run test:browser -- -c scripts/moon.config.js`. Browser evidence is saved under `/tmp/star-agent-moon-evidence`.
+The surface streams detailed terrain, with collision and walking height sampled from the same crater generator. The HUD reports height above local terrain, including crater floors below the moon’s reference radius. Selene is airless and has no water or vegetation; it stays the same across planet seeds. Its position is fixed, without orbital motion or an N-body gravity simulation.
+
+See the [lunar exploration guide](docs/selene.md) and [complete planet pipeline memory](PLANET-PIPELINE-MEMORY.md). Moon checks: `node --test tests/moon.test.js tests/navigation.test.js` and `npm run test:browser -- -c scripts/moon.config.js`. Browser evidence is saved under `/tmp/star-agent-moon-evidence`.
 
 ## Rendering
 

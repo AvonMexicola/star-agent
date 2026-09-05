@@ -1,11 +1,14 @@
 import { Vector3 } from 'three';
 
 // A quarter-scale lunar radius with a compressed, fixed orbit for this prototype.
-// Positions stay in planet-centred metres; this body is a flyby destination.
+// Positions stay in planet-centred metres. Rendering and contact share this terrain.
 export const MOON_RADIUS = 434_350;
 export const MOON_DISTANCE = 24_000_000;
 export const MOON_POSITION = Object.freeze(new Vector3(-.1, 0, -1).normalize().multiplyScalar(MOON_DISTANCE).toArray());
-export const MOON_CLEARANCE = 4_000;
+export const MOON_MAX_HEIGHT = 4_000;
+export const MOON_GRAVITY = 1.62;
+export const MOON_GENERATOR_VERSION = 2;
+export const MOON_LANDING_DIRECTION = Object.freeze(new Vector3(.45,.22,.87).normalize().toArray());
 export const MOON_NAME = 'Selene';
 
 // A separate deterministic seed keeps the moon stable across planet seeds.
@@ -31,7 +34,8 @@ export function moonSurface(x,y,z) {
   const broad=noise(x*3.7+11,y*3.7-4,z*3.7+7);
   const detail=noise(x*24+7,y*24+3,z*24-6);
   const maria=1-smooth(.33,.50,broad);
-  let height=(broad-.5)*1800+(detail-.5)*130, fresh=0;
+  const hills=noise(x*850+13,y*850-9,z*850+3),gravel=noise(x*12000+6,y*12000-2,z*12000+8);
+  let height=(broad-.5)*1800+(detail-.5)*130+(hills-.5)*12+(gravel-.5)*.16, fresh=0;
   for(const crater of CRATERS){
     const dot=x*crater.direction[0]+y*crater.direction[1]+z*crater.direction[2];
     if(dot<1-crater.radius*crater.radius*.98)continue;
@@ -52,21 +56,40 @@ export function moonApproach() {
   return new Vector3(...MOON_POSITION).addScaledVector(normal,MOON_RADIUS*3.4);
 }
 
-/** Earliest segment contact with the explicitly non-landable flyby perimeter.
- * A swept test catches a fast crossing even when both endpoints are outside. */
-export function constrainMoonStep(previous,proposed) {
-  const center=new Vector3(...MOON_POSITION),radius=MOON_RADIUS+MOON_CLEARANCE;
-  const start=previous.clone().sub(center),delta=proposed.clone().sub(previous);
-  if(start.lengthSq()<radius*radius){
-    if(start.lengthSq()<1e-12)start.set(0,0,1);
-    return {point:start.setLength(radius).add(center),hit:true};
+/** Swept contact against the actual heightfield, including crossings whose two
+ * endpoints are outside the moon. Work is restricted to its bounding sphere. */
+export function constrainMoonStep(previous,proposed,clearance=3.2) {
+  const center=new Vector3(...MOON_POSITION),start=previous.clone().sub(center),delta=proposed.clone().sub(previous);
+  const length=delta.length(),bound=MOON_RADIUS+MOON_MAX_HEIGHT+clearance;
+  const distanceAt=t=>{
+    const local=start.clone().addScaledVector(delta,t),r=local.length();
+    if(r<1)return -MOON_RADIUS;
+    local.divideScalar(r);return r-MOON_RADIUS-moonSurface(local.x,local.y,local.z).height-clearance;
+  };
+  const contact=t=>{
+    const d=start.clone().addScaledVector(delta,t);if(d.lengthSq()<1)d.set(0,0,1);d.normalize();
+    return {point:d.clone().multiplyScalar(MOON_RADIUS+moonSurface(d.x,d.y,d.z).height+clearance).add(center),hit:true,t};
+  };
+  if(start.length()<bound&&distanceAt(0)<=0)return contact(0);
+  if(length===0)return {point:proposed,hit:false};
+  const ray=delta.clone().divideScalar(length),b=start.dot(ray),c=start.lengthSq()-bound*bound,disc=b*b-c;
+  if(disc<0)return {point:proposed,hit:false};
+  const root=Math.sqrt(disc),entry=Math.max(0,(-b-root)/length),exit=Math.min(1,(-b+root)/length);
+  if(exit<entry||exit<0||entry>1)return {point:proposed,hit:false};
+  // A conservative slope allowance covers overlapping crater rims and gravel.
+  // If the work budget is exhausted on a grazing ray, stop at the checked point
+  // rather than allow the unexamined remainder to tunnel through the terrain.
+  let t=entry,last=t;
+  for(let i=0;i<4096&&t<=exit;i++){
+    const height=distanceAt(t);
+    if(height<=.002){
+      let lo=last,hi=t;
+      for(let j=0;j<24;j++){const mid=(lo+hi)/2;if(distanceAt(mid)>0)lo=mid;else hi=mid;}
+      return contact(hi);
+    }
+    if(t===exit)break;
+    last=t;t=Math.min(exit,t+Math.min(250,height/20)/length);
   }
-  const a=delta.lengthSq(),b=start.dot(delta),c=start.lengthSq()-radius*radius;
-  if(a===0||b>=0)return {point:proposed,hit:false};
-  const discriminant=b*b-a*c;
-  if(discriminant<0)return {point:proposed,hit:false};
-  // Stable near-entry root; the alternative subtracts nearly equal large values.
-  const t=c/(-b+Math.sqrt(discriminant));
-  if(t<0||t>1)return {point:proposed,hit:false};
-  return {point:start.addScaledVector(delta,t).setLength(radius+.01).add(center),hit:true};
+  if(t<exit)return {point:previous.clone().addScaledVector(delta,t),hit:false,limited:true};
+  return {point:proposed,hit:false};
 }
