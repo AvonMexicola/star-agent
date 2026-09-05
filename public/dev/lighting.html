@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Star Agent — lighting / CSM shadow bench</title>
+<style>
+  html,body{margin:0;height:100%;background:#05080c;color:#cfe3ff;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  canvas{display:block;width:100%;height:100%}
+  #hud{position:fixed;top:8px;left:8px;padding:8px 10px;background:rgba(4,10,16,.72);border:1px solid #1d3346;border-radius:6px;white-space:pre;pointer-events:none}
+  #bar{position:fixed;bottom:8px;left:8px;display:flex;gap:6px}
+  button{font:inherit;color:#cfe3ff;background:#0d1a26;border:1px solid #24405a;border-radius:4px;padding:5px 9px;cursor:pointer}
+  button:hover{background:#16293a}
+</style>
+</head>
+<body>
+<canvas id="viewport"></canvas>
+<div id="hud">booting…</div>
+<div id="bar">
+  <button data-act="shadows">shadows on/off</button>
+  <button data-act="eye">eye 2 m</button>
+  <button data-act="high">200 m</button>
+  <button data-act="bench">bench 60</button>
+</div>
+<script type="module" src="./lighting.js"></script>
+</body>
+</html>

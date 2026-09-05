@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071019" />
+    <meta name="description" content="Star Agent — a seamless, procedurally generated planet you can fly to, land on, and explore in your browser." />
+    <title>Star Agent · A world without loading screens</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <canvas id="viewport" aria-label="Interactive three-dimensional planet. Use the flight controls described in the help panel."></canvas>
+    <div id="loading"><div class="loading-mark">✳</div><p>STAR AGENT</p><span>Growing a world from a number<span class="dots">…</span></span></div>
+    <header class="topbar">
+      <a class="wordmark" href="./" aria-label="Star Agent home"><span class="brand-icon">✳</span> STAR<span class="wordmark-light">AGENT</span><span class="build-tag">EXPERIMENT 001</span></a>
+      <div class="top-actions"><span class="live"><i></i> LIVE SIMULATION</span><button id="help-button" title="Controls (H)">CONTROLS <kbd>H</kbd></button><button id="sound-button" title="Toggle synthesized flight audio" aria-pressed="false">SOUND OFF</button><button id="photo-button" title="Hide interface (Tab)">◧</button></div>
+    </header>
+    <main id="hud">
+      <section class="mission-panel">
+        <div class="eyebrow"><span class="short-rule"></span> THE FIRST FRONTIER</div>
+        <h1>A world.<br>Within reach.</h1>
+        <p class="intro">From the silence of orbit to the grass beneath your feet. No loading screens. Just a little curiosity.</p>
+        <div class="planet-title"><span class="planet-dot"></span><div><strong>AEON</strong><span id="planet-seed">Terrestrial · Seed 7,291</span></div><span class="planet-index">01</span></div>
+        <div class="planet-facts"><div><span>RADIUS</span><strong>1,592.75 <small>km</small></strong></div><div><span>TO OUR STAR</span><strong>25,000,000 <small>km</small></strong></div></div>
+        <button id="begin-button" class="primary-button">TAKE THE CONTROLS <span>↗</span></button>
+        <p class="mouse-note">Click to fly · Esc releases your cursor</p>
+      </section>
+      <section class="telemetry" aria-label="Live flight telemetry">
+        <div class="telemetry-heading"><i></i> <span id="mode-label">ORBITAL FLIGHT</span><span class="tiny">SA–01</span></div>
+        <div class="readout"><label>ALTITUDE <span>ABOVE SURFACE</span></label><div><strong id="altitude">—</strong><span id="altitude-unit">km</span></div><div class="meter"><i id="altitude-meter"></i></div></div>
+        <div class="readout"><label>VELOCITY <span id="drive-label">FLIGHT ASSIST</span></label><div><strong id="velocity">0</strong><span id="velocity-unit">m/s</span></div></div>
+        <div class="coordinate-row"><span id="latitude">—</span><span id="longitude">—</span></div>
+        <div class="telemetry-foot"><span id="biome">EXOSPHERE</span><span id="fps">— FPS</span></div>
+      </section>
+      <div id="reticle"><span></span><i></i><span></span></div>
+      <div id="flight-state"><span id="state-icon">◇</span><span id="state-text">FREE FLIGHT</span></div>
+      <div id="course-guidance" role="status" hidden></div>
+      <aside class="expedition-panel">
+        <div class="expedition-heading"><span>SHIFT + CLICK TO SET A FLIGHT COURSE</span><span>QUICK TRANSIT ↘</span></div>
+        <div class="destinations">
+          <button data-destination="orbit" class="destination active"><span class="destination-icon orbit-icon">◎</span><span><strong>High orbit</strong><small>THE BIG PICTURE</small></span><span class="destination-number">01</span></button>
+          <button data-destination="coast" class="destination"><span class="destination-icon">≋</span><span><strong>Verdant coast</strong><small>LAND & EXPLORE</small></span><span class="destination-number">02</span></button>
+          <button data-destination="mountain" class="destination"><span class="destination-icon">△</span><span><strong>The highlands</strong><small>ABOVE THE CLOUDS</small></span><span class="destination-number">03</span></button>
+          <button data-destination="forest" class="destination"><span class="destination-icon">♧</span><span><strong>Emerald wilds</strong><small>INTO THE FOREST</small></span><span class="destination-number">04</span></button>
+          <button data-destination="polar" class="destination"><span class="destination-icon">❄</span><span><strong>Polar silence</strong><small>THE FROZEN NORTH</small></span><span class="destination-number">05</span></button>
+        </div>
+      </aside>
+      <footer class="statusbar"><div><i></i><span>PROCEDURAL WORLD</span><span class="status-divider">/</span><span>64-BIT NAVIGATION</span><span class="status-divider">/</span><span id="terrain-status">BUILDING TERRAIN</span></div><div>WEBGL 2 <span class="status-divider">·</span> BUILT TO EXPLORE <span class="cross">+</span></div></footer>
+      <div class="flight-hints"><span><kbd>W A S D</kbd> MOVE</span><span><kbd>SPACE / C</kbd> UP / DOWN</span><span><kbd>SHIFT</kbd> BOOST</span><span><kbd>L</kbd> LAND / LAUNCH</span><span><kbd>F</kbd> SEAT / HATCH</span></div>
+    </main>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <div id="transit"><span>QUICK TRANSIT</span><strong id="transit-name">AEON</strong><i></i></div>
+    <dialog id="help-dialog">
+      <div class="dialog-top"><span class="eyebrow">FLIGHT MANUAL · SA–01</span><button id="close-help" aria-label="Close controls">✕</button></div>
+      <h2>Your next giant leap.</h2><p>Click the view to capture your mouse. Look around, pick a direction, and go. Your ship automatically scales its speed with altitude.</p>
+      <div class="control-grid"><kbd>W / S</kbd><span>Forward / reverse</span><kbd>A / D</kbd><span>Strafe left / right</span><kbd>Mouse / ↑ ↓ ← →</kbd><span>Look / steer</span><kbd>Space / C</kbd><span>Ascend / descend · jump on foot</span><kbd>Shift</kbd><span>Boost · sprint on foot</span><kbd>Mouse wheel</kbd><span>Adjust flight speed</span><kbd>Q / E</kbd><span>Roll ship</span><kbd>X</kbd><span>Brake</span><kbd>L</kbd><span>Autoland / launch while seated</span><kbd>F</kbd><span>Stand / sit at chair · open / close hatch</span><kbd>O</kbd><span>Return to orbit</span><kbd>Tab / H / Esc</kbd><span>Hide HUD / help / release mouse</span></div>
+      <p>After landing, press F to stand. Walk aft to the rear hatch and press F to open it and lower the ramp. Walk outside, explore, then return up the ramp and approach the pilot chair. F seats you; L launches.</p>
+      <p class="manual-note">One continuous planet at ¼ Earth radius. Quick transit is an optional teleport; manual flight crosses the atmosphere without scene changes. Desktop keyboard and mouse recommended.</p>
+      <p>Shift + click a destination to set a flight course. Follow the bearing with your normal flight controls; climb when your destination is beyond the horizon. A plain click uses optional quick transit.</p>
+      <form id="seed-form"><label for="seed-input">Planet seed</label> <input id="seed-input" name="seed" type="number" min="0" max="4294967295" step="1" required value="7291" /> <button type="submit">EXPLORE SEED ↗</button><p class="manual-note">Opening a seed starts a new flight. Share the resulting URL: the same seed and generator version produce the same planet for everyone.</p></form>
+      <button id="help-fly" class="primary-button">LET’S FLY <span>↗</span></button>
+    </dialog>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

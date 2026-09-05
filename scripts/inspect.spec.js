@@ -1,0 +1,45 @@
+import {test,expect} from '@playwright/test';
+test('inspect physical boarding and planet rendering',async({page})=>{
+  const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE ERROR',e.message);});page.on('console',m=>{if(m.type()==='error'){console.log('CONSOLE ERROR',m.text());if(/THREE|WebGL|shader/i.test(m.text()))errors.push(m.text());}});
+  await page.goto('/?debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:60000});
+  await page.waitForTimeout(4000);await page.screenshot({path:'/tmp/star-agent-orbit.png'});
+  console.log('ORBIT',await page.evaluate(()=>window.starAgent.state));
+  await page.evaluate(()=>window.starAgent.setRenderScale(.6));
+  await page.evaluate(()=>window.starAgent.transit('forest'));
+  await page.waitForTimeout(700);
+  await page.keyboard.press('KeyL');
+  await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:45000});
+  await page.screenshot({path:'/tmp/star-agent-cockpit.png'});
+  await page.keyboard.press('KeyF');
+  expect(await page.evaluate(()=>window.starAgent.state.insideShip)).toBe(true);
+  await page.screenshot({path:'/tmp/star-agent-cabin.png'});
+  // Exercise real keyboard travel. Standing automatically faces the aft hatch.
+  await page.keyboard.down('KeyW');
+  await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>2.2);
+  await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
+  await page.keyboard.press('KeyF');
+  await page.waitForFunction(()=>window.starAgent.state.doorProgress>=1);
+  await page.screenshot({path:'/tmp/star-agent-ramp-open.png'});
+  await page.keyboard.down('KeyW');
+  await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>9);
+  await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
+  expect(await page.evaluate(()=>window.starAgent.state.insideShip)).toBe(false);
+  await page.evaluate(()=>{const n=window.starAgent.navigation;n.look(Math.PI,0);});
+  await page.keyboard.press('Tab');await page.waitForTimeout(500);
+  await page.screenshot({path:'/tmp/star-agent-ramp-outside.png'});
+  // From the outside, closing the hatch physically blocks re-entry.
+  await page.keyboard.press('Tab');
+  await page.keyboard.down('KeyW');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<2.5);await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
+  await page.keyboard.press('KeyF');
+  expect(await page.evaluate(()=>window.starAgent.state.doorOpen)).toBe(false);
+  await page.keyboard.down('KeyW');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.4);await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
+  await page.keyboard.press('KeyF');
+  expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('landed');
+  await page.keyboard.press('KeyL');
+  expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('flight');
+  console.log('LAUNCHED',await page.evaluate(()=>window.starAgent.state));
+  await page.evaluate(()=>window.starAgent.transit('coast'));await page.waitForTimeout(500);await page.screenshot({path:'/tmp/star-agent-coast.png'});
+  await page.evaluate(()=>window.starAgent.transit('mountain'));await page.waitForTimeout(500);await page.screenshot({path:'/tmp/star-agent-mountain.png'});
+  await page.evaluate(()=>window.starAgent.transit('polar'));await page.waitForTimeout(500);await page.screenshot({path:'/tmp/star-agent-polar.png'});
+  expect(errors).toEqual([]);
+});
