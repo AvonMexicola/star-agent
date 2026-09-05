@@ -329,3 +329,14 @@ Claude handles that — no repo changes needed except maybe `vercel.json`.
     `deckHeightAt` with a tiny oscillation in the landing solver, the shadow/contact would flicker too — log the
     settled altitude for 2 s and check it's constant to 1 mm. If neither, then z-fighting between the deck box top and
     the 0.03 m marking slabs under log depth is next: `polygonOffset:true, polygonOffsetFactor:-2` on the markings.
+
+15. **Night side (Cees asked "can I fly to the dark side?")** — you can today: the sun is a fixed direction (`SUN_DIRECTION`
+    ≈ lat 22° N, lon 45° E), so the terminator never moves and everything west of ~135° W / east of 135° E is permanent
+    night. The atmosphere pass already darkens the sky and shows stars there, but the surface is nearly black (hemisphere
+    floor `.08`), clouds are unlit, and the ship has no exterior lights, so there is nothing to see. Cheap wins, in order:
+    (a) **ship landing lights + headlamp**: two `SpotLight`s on the ship (nose, belly) auto-on when sun·normal < 0.05 and
+    altitude < 2 km, plus a helmet lamp on foot; (b) **night ambient**: raise the floor to `.12` with a blue-grey
+    hemisphere and add a faint starlight/airglow term in `atmosphere.js` (`+ vec3(.004,.006,.010)` on the night sky, not
+    on ground); (c) **planet rotation** (Phase 3 groundwork): rotate `SUN_DIRECTION` about the planet axis with a
+    configurable day length (suggest 2 h real time, seed-stable), so every site gets sunrise/sunset and the "golden hour"
+    the scattering already renders beautifully; (d) later: moonlight from Sel, aurora at the poles, outpost lights.
