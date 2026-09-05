@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { ringRock, RING_NORMAL } from '../src/moon-rings.js';
 import { mkdir, writeFile } from 'node:fs/promises';
 
 const evidence='/tmp/star-agent-lunar-landscape-evidence';
@@ -65,7 +66,7 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
     nav.position.copy(center).addScaledVector(direction,window.starAgent.state.moon.radius*4.7);
     nav.orientToward(center,nav.position.clone().set(0,1,0));
   });
-  await page.waitForTimeout(2000);await page.screenshot({path:`${evidence}/rings-orbit.png`});
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=3&&window.starAgent.state.moon.effects.terrainBuilds===0);await page.screenshot({path:`${evidence}/rings-orbit.png`});
   await page.evaluate(()=>window.starAgent.navigation.transitMoon(600));
   await page.waitForFunction(()=>window.starAgent.state.moon.lod>=11);await page.waitForTimeout(1200);
   await page.screenshot({path:`${evidence}/crater-approach.png`});
@@ -78,6 +79,13 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
   await page.waitForFunction(()=>window.starAgent.state.moon.lod>=16);await page.waitForTimeout(2500);await page.screenshot({path:`${evidence}/craters-and-ice.png`});
   const a=await page.screenshot();await page.waitForTimeout(1200);const b=await page.screenshot();expect(a.equals(b)).toBe(false);
   const surface=await page.evaluate(()=>window.starAgent.state);expect(surface.moon.effects.iceParticles).toBeGreaterThan(0);
+  const rock=ringRock(5);
+  await page.evaluate(({rock,normal})=>{
+    const nav=window.starAgent.navigation,center=nav.position.clone().fromArray(window.starAgent.state.moon.position),target=center.clone().add(nav.position.clone().fromArray(rock.position));
+    nav.orbit();nav.enabled=false;nav.position.copy(target).addScaledVector(target.clone().sub(center).normalize(),rock.size*6);
+    nav.orientToward(target,nav.position.clone().fromArray(normal));
+  },{rock,normal:RING_NORMAL});
+  await page.waitForTimeout(1500);await page.screenshot({path:`${evidence}/asteroid-close.png`});
   await writeFile(`${evidence}/visual-state.json`,JSON.stringify({browser:browser.version(),surface,errors},null,2));
   expect(errors).toEqual([]);
 });

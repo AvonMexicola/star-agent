@@ -44,8 +44,9 @@ export class MoonRings {
         void main(){float r=length(vLunar);
           float density=.62*band(r,1.79,.085)+.88*band(r,2.08,.13)+.65*band(r,2.39,.105)+.36*band(r,2.69,.07);
           density*=1.0-.92*band(r,2.22,.022);density*=1.0-.9*band(r,1.92,.018);
-          float striation=.66+.17*sin(r*870.0)+.10*sin(r*2170.0)+.07*sin(r*5120.0);
-          float grain=.78+.22*hash(floor(vLunar.xy*23000.0));
+          float footprint=fwidth(r);
+          float striation=.82+.10*sin(r*870.0)*exp(-footprint*870.0)+.05*sin(r*2170.0)*exp(-footprint*2170.0)+.03*sin(r*5120.0)*exp(-footprint*5120.0);
+          float grain=mix(.89,.78+.22*hash(floor(vLunar.xy*23000.0)),1.0-smoothstep(.000015,.0001,footprint));
           float opacity=clamp(density*striation*grain,0.0,.94);
           if(opacity<.006)discard;
           float along=dot(vLunar,sunDirection),miss=length(vLunar-sunDirection*along);
@@ -64,13 +65,26 @@ export class MoonRings {
     }
     geometry.computeVertexNormals();
     this.rockMaterial=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.85,metalness:.12,envMapIntensity:0});
+    this.rockOrigin={value:new THREE.Vector3()};
+    this.rockMaterial.onBeforeCompile=shader=>{
+      shader.uniforms.ringOrigin=this.rockOrigin;
+      shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform vec3 ringOrigin;varying vec3 vRockMoon;')
+        .replace('#include <begin_vertex>','#include <begin_vertex>\nvRockMoon=((modelMatrix*instanceMatrix*vec4(transformed,1.0)).xyz+ringOrigin)/434350.0;');
+      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vRockMoon;')
+        .replace('#include <opaque_fragment>',`vec3 rs=normalize(vec3(${SUN_DIRECTION.join(',')}));
+          float along=dot(vRockMoon,rs),miss=length(vRockMoon-along*rs);
+          float light=along<0.0?smoothstep(.99,1.025,miss):1.0;
+          outgoingLight*=.04+.96*light;
+          #include <opaque_fragment>`);
+    };
+    this.rockMaterial.customProgramCacheKey=()=> 'selene-ring-rocks-v1';
     this.rocks=new THREE.InstancedMesh(geometry,this.rockMaterial,count);this.rocks.name='Selene ring asteroids';this.rocks.frustumCulled=false;
     this.rocks.instanceMatrix.setUsage(THREE.DynamicDrawUsage);this.descriptors=Array.from({length:count},(_,i)=>ringRock(i));
     for(let i=0;i<count;i++)this.rocks.setColorAt(i,new THREE.Color(this.descriptors[i].ice?0x9ba8ae:i%3===0?0x72645a:0x50545c));
     this.rocks.instanceColor.needsUpdate=true;scene.add(this.rocks);this.transform=new THREE.Object3D();
   }
   update(origin,elapsed=0){
-    this.band.position.copy(this.center).sub(origin);
+    this.band.position.copy(this.center).sub(origin);this.rockOrigin.value.copy(origin).sub(this.center);
     for(let i=0;i<this.descriptors.length;i++){
       const rock=this.descriptors[i],t=this.transform;
       // Subtract the double camera origin before each float instance transform.

@@ -13,7 +13,7 @@ function textures(width=1024,height=512) {
       const phi=col/width*Math.PI*2,x=-Math.cos(phi)*sin,z=Math.sin(phi)*sin;
       const sample=moonSurface(x,y,z),i=(row*width+col)*4;
       const shade=Math.round(sample.albedo*255);
-      color.set([Math.round(shade*(.92-sample.frost*.05)),Math.round(shade*(.94+sample.frost*.05)),Math.round(shade*(.99+sample.frost*.10)),255],i);
+      color.set([Math.round(shade*(.80-sample.frost*.05)),Math.round(shade*(.95+sample.frost*.05)),Math.round(shade*(1.2+sample.frost*.12)),255],i);
     }
   }
   const make=data=>{const texture=new THREE.DataTexture(data,width,height);texture.wrapS=THREE.RepeatWrapping;
@@ -70,6 +70,6 @@ export class Moon {
     this.material.color.setScalar(.035+.965*visibility);
   }
   get ready(){return this.terrain.ready;}
-  get effects(){return {ringAsteroids:this.rings.descriptors.length,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:3};}
+  get effects(){return {ringAsteroids:this.rings.descriptors.length,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:3};}
   dispose(){this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.material.dispose();this.maps.color.dispose();}
 }

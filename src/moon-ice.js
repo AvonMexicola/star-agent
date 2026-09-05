@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { MOON_RADIUS, MOON_POSITION, moonSurface } from './moon-world.js';
 import { SUN_DIRECTION } from './world.js';
 
-const CELL=16,RANGE=4;
+const CELL=12,RANGE=5;
 const hash=(x,y,z,s=0)=>{let h=Math.imul(x,374761393)^Math.imul(y,668265263)^Math.imul(z,2147483647)^s;h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))>>>0)/4294967295;};
 // Absolute lunar cells retain their particles across camera rebases and movement.
 export function iceCell(x,y,z){return {position:[(x+hash(x,y,z,11))*CELL,(y+hash(x,y,z,73))*CELL,(z+hash(x,y,z,149))*CELL],phase:hash(x,y,z,237)*Math.PI*2};}
@@ -14,11 +14,11 @@ export class MoonIce {
         #include <logdepthbuf_pars_vertex>
         attribute float phase;uniform float time;uniform vec3 up;uniform float viewportHeight;
         varying float vGlint;varying float vFade;
-        void main(){vec3 p=position+up*sin(time*.75+phase)*.18;
+        void main(){vec3 p=position+up*sin(time*.55+phase)*.35;
           vec4 view=modelViewMatrix*vec4(p,1.0);float distance=length(view.xyz);
-          vGlint=pow(max(0.0,sin(time*(.65+fract(phase)*.9)+phase*7.0)),22.0);
+          vGlint=pow(max(0.0,sin(time*(.65+fract(phase)*.9)+phase*7.0)),12.0);
           vFade=(1.0-smoothstep(35.0,57.0,distance))*smoothstep(.7,2.5,distance);
-          gl_PointSize=clamp(viewportHeight*(.013+vGlint*.035)/max(1.0,-view.z),1.0,8.0);
+          gl_PointSize=clamp(viewportHeight*(.018+vGlint*.085)/max(1.0,-view.z),1.0,8.0);
           gl_Position=projectionMatrix*view;
           #include <logdepthbuf_vertex>
         }`,
@@ -32,7 +32,11 @@ export class MoonIce {
           gl_FragColor=vec4(mix(vec3(.35,.55,.75),vec3(1.0,.93,.80),vGlint)*light,1.0);
           #include <logdepthbuf_fragment>
         }`});
-    this.geometry=new THREE.BufferGeometry();this.points=new THREE.Points(this.geometry,this.material);this.points.name='Sunlit lofted lunar ice';this.points.frustumCulled=false;this.points.visible=false;scene.add(this.points);
+    this.geometry=new THREE.BufferGeometry();
+    const capacity=(RANGE*2+1)**3;
+    this.geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(capacity*3),3).setUsage(THREE.DynamicDrawUsage));
+    this.geometry.setAttribute('phase',new THREE.BufferAttribute(new Float32Array(capacity),1).setUsage(THREE.DynamicDrawUsage));
+    this.geometry.setDrawRange(0,0);this.points=new THREE.Points(this.geometry,this.material);this.points.name='Sunlit lofted lunar ice';this.points.frustumCulled=false;this.points.visible=false;scene.add(this.points);
   }
   rebuild(local){
     const cell=local.toArray().map(v=>Math.floor(v/CELL));this.key=cell.join('/');this.anchor.copy(local);this.descriptors=[];
@@ -41,11 +45,11 @@ export class MoonIce {
       const height=radius-MOON_RADIUS-moonSurface(d.x,d.y,d.z).height;
       if(height>.6&&height<48)this.descriptors.push(particle);
     }
-    const positions=new Float32Array(this.descriptors.length*3),phases=new Float32Array(this.descriptors.length);
+    const positions=this.geometry.attributes.position.array,phases=this.geometry.attributes.phase.array;
     for(let i=0;i<this.descriptors.length;i++){
       const p=this.descriptors[i];positions.set(new THREE.Vector3(...p.position).sub(this.anchor).toArray(),i*3);phases[i]=p.phase;
     }
-    this.geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));this.geometry.setAttribute('phase',new THREE.BufferAttribute(phases,1));
+    this.geometry.attributes.position.needsUpdate=true;this.geometry.attributes.phase.needsUpdate=true;this.geometry.setDrawRange(0,this.descriptors.length);
   }
   update(worldPosition,origin,elapsed,enabled=true){
     const local=worldPosition.clone().sub(new THREE.Vector3(...MOON_POSITION)),radius=local.length(),up=local.clone().normalize();

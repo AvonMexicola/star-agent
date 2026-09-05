@@ -38,7 +38,7 @@ const north=new Vector3().crossVectors(landing,east).normalize();
 export const LANDING_FRAME=Object.freeze({east:Object.freeze(east.toArray()),north:Object.freeze(north.toArray())});
 const localDirection=(x,z)=>landing.clone().addScaledVector(east,x/MOON_RADIUS).addScaledVector(north,z/MOON_RADIUS).normalize().toArray();
 export const LOCAL_CRATERS=Object.freeze([
-  [-1100,180,780,300],[-3400,1200,1900,740],[1800,2300,1250,510],
+  [-1350,100,1354,520],[-3400,1200,1900,740],[1800,2300,1250,510],
   [-280,-480,145,43],[-490,570,210,78],[460,-210,95,32],
   [-6000,-2500,3100,1100],[2600,-3400,2100,760],
   ...Array.from({length:28},(_,i)=>{
@@ -57,7 +57,7 @@ function relief(x,y,z){
   height+=(noise(x*720+13,y*720-9,z*720+3)-.5)*165;
   height+=(noise(x*2500-2,y*2500+5,z*2500+8)-.5)*18;
   height+=(noise(x*18000+6,y*18000-2,z*18000+8)-.5)*.9;
-  let fresh=0;
+  let fresh=0,rock=0;
   const crater=(c,local)=>{
     const dot=x*c.direction[0]+y*c.direction[1]+z*c.direction[2];
     if(dot<1-c.radius*c.radius*1.45)return;
@@ -75,14 +75,24 @@ function relief(x,y,z){
   if(x*landing.x+y*landing.y+z*landing.z>.997){
     for(const c of LOCAL_CRATERS)crater(c,true);
     const u=(x*east.x+y*east.y+z*east.z)*MOON_RADIUS,v=(x*north.x+y*north.y+z*north.z)*MOON_RADIUS;
+    // Compact basalt outcrops are part of the heightfield too. A stable local
+    // cell lattice avoids testing hundreds of rocks for every terrain sample.
+    const cellX=Math.floor(u/45),cellZ=Math.floor(v/45);
+    for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){
+      const cx=cellX+dx,cz=cellZ+dz;if(hash(cx,37,cz)<.64)continue;
+      const px=(cx+.15+hash(cx,61,cz)*.7)*45,pz=(cz+.15+hash(cx,89,cz)*.7)*45;
+      const radius=2.5+hash(cx,107,cz)*6.5,dist=Math.hypot(u-px,(v-pz)*(.7+hash(cx,123,cz)*.6))/radius;
+      const shape=1-smooth(.05,1,dist);
+      height+=radius*.55*shape;rock=Math.max(rock,shape);
+    }
     // Fractured peaks beyond the basin: silhouettes are geometry, not a sky card.
     for(const [a,b,r,h] of [[-2300,-1900,1800,1600],[-4200,3400,2200,2100],[2200,4600,2700,1900]]){
       const distance=Math.hypot(u-a,v-b)/r;
-      height+=h*Math.pow(Math.max(0,1-distance),1.5)*( .78+ridge(340,8,-3,5)*.22);
+      height+=h*Math.pow(Math.max(0,1-distance),1.5)*( .63+Math.pow(ridge(780,8,-3,5),2)*.37);
     }
   }
-  const frost=smooth(.46,.73,noise(x*38-7,y*38+2,z*38+8)+fresh*.6);
-  return {height,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075)),frost};
+  const frost=smooth(.46,.73,noise(x*38-7,y*38+2,z*38+8)+fresh*.6)*(1-rock*.7);
+  return {height,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075-rock*.05)),frost};
 }
 const landingHeight=relief(landing.x,landing.y,landing.z).height;
 /** Direction-based color and canonical geometry remain continuous at UV seams. */

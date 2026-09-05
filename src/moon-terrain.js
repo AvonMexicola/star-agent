@@ -73,7 +73,7 @@ export class MoonTerrain {
     const visit=node=>{
       if(node.level>1&&node.normal.dot(radial)<MOON_RADIUS/Math.max(MOON_RADIUS,radius)-node.size*1.5-MOON_MAX_HEIGHT/MOON_RADIUS)return;
       node.lastUsed=now;
-      const split=node.level<2||(node.level<MOON_MAX_LEVEL&&distance(node)<node.size*MOON_RADIUS*1.8);
+      const split=node.level<(radius<MOON_RADIUS*12?3:2)||(node.level<MOON_MAX_LEVEL&&distance(node)<node.size*MOON_RADIUS*1.8);
       if(split){
         if(!node.children)node.children=[this.node(node.face,node.level+1,node.ix*2,node.iy*2),this.node(node.face,node.level+1,node.ix*2+1,node.iy*2),this.node(node.face,node.level+1,node.ix*2,node.iy*2+1),this.node(node.face,node.level+1,node.ix*2+1,node.iy*2+1)];
         for(const child of [...node.children].sort((a,b)=>distance(a)-distance(b)))if(!child.mesh&&budget>0){this.build(child);budget--;}
@@ -85,6 +85,7 @@ export class MoonTerrain {
     };
     for(const root of [...this.roots].sort((a,b)=>distance(a)-distance(b)))visit(root);
     for(const node of this.nodes.values())if(node.mesh)node.mesh.position.copy(node.center).add(new THREE.Vector3(...MOON_POSITION)).sub(origin);
+    this.buildsLastFrame=8-budget;
     if(this.nodes.size>900)for(const node of this.nodes.values()){
       if(node.level<=2||node.mesh?.visible||now-node.lastUsed<8000)continue;
       if(node.mesh){this.scene.remove(node.mesh);node.mesh.geometry.dispose();node.mesh=null;}

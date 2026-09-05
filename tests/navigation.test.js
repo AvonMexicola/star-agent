@@ -324,3 +324,13 @@ test('controller can land on Selene, traverse the ramp, jump and reboard',t=>{
   pad.axes[1]=1;for(let i=0;i<600&&nav.toShipLocal().z>-1.4;i++)nav.update(1/60);
   pad.axes.fill(0);press(2);assert.equal(nav.mode,'landed');press(3);assert.equal(nav.mode,'flight');
 });
+
+test('walking beyond the landing shelf follows the steep crater terrain',t=>{
+  const {navigation:nav,press,advance,walkUntil,keyDown,keyUp}=setup(t);
+  nav.transitMoon(30);press('KeyL');advance(15);press('KeyF');
+  walkUntil('KeyW',()=>nav.toShipLocal().z>2.3);press('KeyF');advance(1.2);
+  walkUntil('KeyW',()=>nav.toShipLocal().z>12);const start=nav.groundHeight;
+  keyDown('KeyW');advance(90,()=>near(nav.altitude,1.75,1e-5));keyUp('KeyW');
+  assert.ok(Math.abs(nav.groundHeight-start)>30,'walking descends into the basin');
+  assert.equal(nav.mode,'walk');assert.equal(nav.body.id,'selene');
+});
