@@ -10,6 +10,8 @@ import { SELENE, bodySurfacePoint, bodyAltitude } from './celestial.js';
 import { Navigation } from './navigation.js';
 import { Vegetation } from './vegetation.js';
 import { FlightAudio } from './audio.js';
+import { ShipCamera, groundRadiusAt, isShipCameraKey, playerUp, clipShipCamera } from './ship-camera.js';
+import { Character } from './character.js';
 import { createWalkableShip } from './ship-walkable.js';
 import { ShipInventory } from './ship-inventory.js';
 import { createInventoryUI } from './ship-inventory-ui.js';
@@ -35,9 +37,11 @@ try {
   const stationButton=$('station-destination');
   station.readyPromise.then(()=>{stationButton.disabled=false;stationButton.querySelector('small').textContent='HANGAR · DOCK & EXPLORE';}).catch(()=>{stationButton.querySelector('small').textContent='STATION UNAVAILABLE';notify('Station unavailable. Planet flight is still available.');});
   const moon=new Moon(scene);
-  const origin=new THREE.Vector3();
+  const origin=new THREE.Vector3(),shipCamera=new ShipCamera();
   const lighting=createLighting(renderer,scene);
   const ship=createWalkableShip();ship.visible=false;scene.add(ship);weatherShip(ship,planet.surfaceTexture);
+  const character=new Character(scene,{url:'/models/props/player-male.glb',modelYaw:Math.PI,eyeHeight:SHIP_LAYOUT.eyeHeight});
+  character.setVisible(false);
   let localInventoryStorage;try{localInventoryStorage=window.localStorage;}catch{}
   const inventory=new ShipInventory(localInventoryStorage);
   const inventoryUI=createInventoryUI(nav,ship,inventory);
@@ -82,6 +86,14 @@ try {
   nav.onControllerHud=()=>photo();
   const photo=()=>{hidden=!hidden;document.body.classList.toggle('photo-mode',hidden);};$('photo-button').addEventListener('click',photo);
   document.addEventListener('keydown',e=>{if(e.repeat||inventoryUI.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='Tab'&&!help.open){e.preventDefault();photo();}if(e.code==='KeyO'&&!help.open)transit('orbit');});
+  function toggleCamera(){
+    if(transiting||!nav.enabled||inventoryUI.open||document.querySelector('dialog[open]'))return;
+    if(!shipCamera.toggle(nav.mode))return;
+    if(nav.mode==='walk'){notify(shipCamera.playerExternal?'Third-person view. 4 returns to first person.':'First-person view. 4 shows your character.');return;}
+    notify(shipCamera.external?'External ship view. Flight controls unchanged; 4 returns to cockpit.':'Cockpit view. 4 shows the ship.');
+  }
+  $('camera-button').addEventListener('click',toggleCamera);
+  document.addEventListener('keydown',event=>{if(isShipCameraKey(event)){event.preventDefault();toggleCamera();}});
   async function transit(name){
     if(inventoryUI.open||transiting||name==='station'&&!station.ready)return;transiting=true;nav.enabled=false;nav.keys.clear();nav.velocity.set(0,0,0);
     if(document.pointerLockElement)document.exitPointerLock();
@@ -105,6 +117,9 @@ try {
     $('controller-status').textContent=nav.gamepad.status;
     $('keyboard-hints').hidden=controller;$('controller-hints').hidden=!controller;
     const nearMoon=nav.body.airless;
+    $('camera-button').setAttribute('aria-pressed',String(shipCamera.selected(nav.mode)));
+    $('camera-button').innerHTML=shipCamera.selected(nav.mode)?`${nav.mode==='walk'?'FIRST PERSON':'COCKPIT'} <kbd>4</kbd>`:'EXTERNAL <kbd>4</kbd>';
+    $('camera-button').disabled=nav.mode!=='flight'&&nav.mode!=='landed'&&nav.mode!=='walk';
     const alt=nav.altitude,speed=nav.speed,n=nav.normal,flightEnv=nav.flightEnvironment;
     if(course){
       const offset=course.point.clone().sub(nav.position),distance=offset.length();
@@ -135,22 +150,36 @@ try {
     station.update(nav.position,nav.position,nav.sunDirection,dt);
     const steps=Math.max(1,Math.ceil(dt/.025));for(let i=0;i<steps;i++)nav.update(dt/steps);
     if(resizePending){resize();resizePending=false;}
-    origin.copy(nav.position);station.group.position.copy(station.worldPosition).sub(origin);camera.position.set(0,0,0);camera.quaternion.copy(nav.orientation);
+    shipCamera.update(nav,{
+      clipStation:(start,end,orientation)=>station.constrainStep(start,end,orientation,true).point,
+      clipShip:nav.shipPosition?(start,end)=>clipShipCamera(start,end,ship,point=>nav.toShipLocal(point)):undefined,
+    });
+    character.setVisible(nav.mode==='walk'&&shipCamera.active);
+    if(nav.mode==='walk'){
+      const up=playerUp(nav),feet=nav.position.clone().addScaledVector(up,-SHIP_LAYOUT.eyeHeight);
+      character.alignToSurface(feet,up,new THREE.Vector3(0,0,-1).applyQuaternion(nav.orientation));
+      character.update(dt,{speed:nav.velocity.clone().projectOnPlane(up).length(),grounded:nav.jumpHeight===0,jumping:nav.jumpHeight>0});
+    }
+    document.body.classList.toggle('external-view',shipCamera.active);
+    document.body.classList.toggle('camera-engaged',shipCamera.engaged&&nav.mode==='flight');
+    origin.copy(shipCamera.position);station.group.position.copy(station.worldPosition).sub(origin);camera.position.set(0,0,0);camera.quaternion.copy(shipCamera.orientation);
+    character.placeCameraRelative(origin);
+    const cameraAltitude=Math.max(0,origin.length()-groundRadiusAt(origin));
     const sunDirection=nav.sunDirection,normal=nav.normal,altitude=nav.altitude;
     document.body.classList.toggle('exploring',altitude<12000||nav.mode!=='flight'||nav.stationDistance<2000);
-    lighting.update(normal,sunDirection,altitude,nav.body.airless);
-    moon.update(nav.position,origin);
+    lighting.update(nav.body.airless?normal:origin.clone().normalize(),sunDirection,cameraAltitude,nav.body.airless);
+    moon.update(origin,origin);
     if(nav.stationDistance<500)lighting.sun.castShadow=true;
-    planet.update(nav.position,origin,sunDirection,elapsed,Math.max(0,nav.position.length()-RADIUS));vegetation.setExclusion?.(nav.shipPosition);vegetation.update(nav.position,origin,elapsed);
-    ship.visible=Boolean(nav.shipPosition)||(nav.mode==='flight'&&(nav.locked||nav.controllerActive));
+    planet.update(origin,origin,sunDirection,elapsed,Math.max(0,origin.length()-RADIUS));vegetation.setExclusion?.(nav.shipPosition);vegetation.update(origin,origin,elapsed);
+    ship.visible=Boolean(nav.shipPosition)||(nav.mode==='flight'&&(nav.locked||nav.controllerActive||shipCamera.engaged));
     if(ship.visible){
       if(nav.shipPosition){ship.position.copy(nav.shipPosition).sub(origin);ship.quaternion.copy(nav.shipOrientation);}
-      else{ship.quaternion.copy(nav.orientation);ship.position.set(...SHIP_LAYOUT.seatEye).applyQuaternion(nav.orientation).negate();}
+      else{ship.quaternion.copy(nav.orientation);ship.position.copy(nav.position).sub(origin).sub(new THREE.Vector3(...SHIP_LAYOUT.seatEye).applyQuaternion(nav.orientation));}
       ship.setDoor(nav.doorOpen);ship.update(dt);
       ship.updateDisplays(dt,nav,inventory,course);
     }
     audio.update({speed:nav.speed,altitude,mode:nav.mode,boost:nav.boost,airless:nav.body.airless},dt);
-    renderer.info.reset();atmosphere.render(scene,camera,nav.position,sunDirection,elapsed);
+    renderer.info.reset();atmosphere.render(scene,camera,origin,sunDirection,elapsed);
     frames++;frameAccumulator+=realDt;if(frameAccumulator>=2){fps=Math.round(frames/frameAccumulator);frames=0;frameAccumulator=0;if(automaticScale&&firstReady&&!transiting&&fps<23&&renderScale>.55){renderScale=Math.max(.55,renderScale*.85);resizePending=true;}}
     if(time-lastHud>150)updateHud(time);
     if(!firstReady&&planet.ready&&elapsed>1){firstReady=true;$('loading').classList.add('hidden');}
@@ -158,5 +187,5 @@ try {
   }
   requestAnimationFrame(frame);
   // Explicit read-only diagnostics plus navigational hooks for reproducible browser tests.
-  window.starAgent={get state(){return {moon:{position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,distance:nav.position.distanceTo(moon.worldPosition)},controller:{connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:station.canDock(nav.position)},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){automaticScale=false;renderScale=THREE.MathUtils.clamp(value,.4,1);resizePending=true;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;}};
+  window.starAgent={get state(){return {character:{ready:character.ready,visible:character.object.visible,state:character.state,position:character.worldPosition.toArray(),error:character.error},camera:{mode:nav.mode==='walk'?(shipCamera.active?'third-person':'first-person'):(shipCamera.active?'external':'cockpit'),shipVisible:ship.visible,selected:shipCamera.selected(nav.mode),obstructed:shipCamera.obstructed,position:origin.toArray()},moon:{position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,distance:nav.position.distanceTo(moon.worldPosition)},controller:{connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:station.canDock(nav.position)},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){automaticScale=false;renderScale=THREE.MathUtils.clamp(value,.4,1);resizePending=true;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;}};
 }catch(error){console.error(error);fatal(`Could not start WebGL 2. Use a current desktop browser with hardware acceleration enabled. ${error.message}`);}
