@@ -42,6 +42,9 @@ test('terrain worker uses the same seed and geometry as main-thread collision qu
     assert.deepEqual(actual.positions, expected.positions);
     assert.deepEqual(actual.colors, expected.colors);
     assert.deepEqual(actual.heights, expected.heights);
+    for (const field of ['parentPositions','parentWaterPositions','parentNormals','parentColors','parentHeights']) {
+      assert.deepEqual(actual[field], expected[field], `worker transfers deterministic ${field}`);
+    }
   }
 });
 

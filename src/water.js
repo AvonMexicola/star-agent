@@ -5,18 +5,23 @@ import * as THREE from 'three';
 export function createWaterMaterial(surfaceTexture) {
   return new THREE.ShaderMaterial({
     side: THREE.DoubleSide,
-    uniforms: { waveTexture: { value: surfaceTexture }, sunDirection: { value: new THREE.Vector3() }, time: { value: 0 }, altitude: { value: 1e6 } },
+    uniforms: { waveTexture: { value: surfaceTexture }, sunDirection: { value: new THREE.Vector3() }, time: { value: 0 }, altitude: { value: 1e6 }, terrainMorph: { value: 1 } },
     vertexShader: `
       #include <common>
       #include <logdepthbuf_pars_vertex>
       attribute vec3 direction;
       attribute vec3 surfacePoint;
       attribute float terrainHeight;
+      attribute vec3 parentPosition;
+      attribute float parentHeight;
+      uniform float terrainMorph;
       varying vec3 vDirection, vWorld, vWaterPoint;
       varying float vFloor;
       void main() {
-        vDirection=direction; vWaterPoint=surfacePoint; vFloor=terrainHeight;
-        vec4 world=modelMatrix*vec4(position,1.0); vWorld=world.xyz;
+        vec3 morphed=mix(parentPosition,position,terrainMorph);
+        vDirection=direction; vWaterPoint=surfacePoint+morphed-position;
+        vFloor=mix(parentHeight,terrainHeight,terrainMorph);
+        vec4 world=modelMatrix*vec4(morphed,1.0); vWorld=world.xyz;
         gl_Position=projectionMatrix*viewMatrix*world;
         #include <logdepthbuf_vertex>
       }`,
