@@ -6,7 +6,7 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   test.setTimeout(300000);
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
-  await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
+  await page.goto('/?intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   await mkdir(evidence,{recursive:true});
   await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/orbit.png`});await page.keyboard.press('Tab');

@@ -7,7 +7,7 @@ test('controller flies without pointer lock, pauses for help, reconnects and boa
       buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
     Object.defineProperty(navigator,'getGamepads',{value:()=>[window.testPad]});
   });
-  await page.goto('/?debug');
+  await page.goto('/?intro=0&debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.4));
   const frames=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));

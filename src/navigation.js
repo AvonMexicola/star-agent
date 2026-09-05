@@ -14,7 +14,7 @@ export class Navigation {
   constructor(canvas,notify){
     this.canvas=canvas;this.notify=notify;this.position=new THREE.Vector3();this.orientation=new THREE.Quaternion();this.velocity=new THREE.Vector3();
     this.gamepad=new GamepadInput();this.controllerActive=false;this.focused=true;
-    this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
+    this.physicalKeys=new Set();this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
     this.station=null;this.dockedAtStation=false;this.stationLift=false;
     this.flightAssist=true;this.angularVelocity=new THREE.Vector3();
@@ -23,7 +23,9 @@ export class Navigation {
     document.addEventListener('pointerlockchange',()=>{this.locked=document.pointerLockElement===canvas;document.body.classList.toggle('piloting',this.locked);if(!this.locked)this.keys.clear();});
     document.addEventListener('mousemove',e=>{if(this.locked&&this.enabled){this.controllerActive=false;this.look(-e.movementX*.0018,-e.movementY*.0018);}});
     document.addEventListener('keydown',e=>{
+      this.physicalKeys.add(e.code);
       if(!this.enabled||document.querySelector('dialog[open]'))return;
+      if(this.openingActive){this.onOpeningKey?.(e);return;}
       if(['Space','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
       this.controllerActive=false;this.keys.add(e.code);if(e.repeat)return;
       if(e.code==='KeyJ'){this.travel?this.cancelTravel():this.beginTravel();return;}
@@ -32,8 +34,8 @@ export class Navigation {
       if(e.code==='KeyL')this.landOrLaunch();if(e.code==='KeyF')this.embark();
       if(e.code==='KeyX'){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;this.notify('Brakes engaged.');}
     });
-    document.addEventListener('keyup',e=>this.keys.delete(e.code));
-    window.addEventListener('blur',()=>{this.focused=false;this.gamepad.suspend();this.keys.clear();if(this.flightAssist)this.velocity.set(0,0,0);});
+    document.addEventListener('keyup',e=>{this.keys.delete(e.code);this.physicalKeys.delete(e.code);});
+    window.addEventListener('blur',()=>{this.focused=false;this.physicalKeys.clear();this.gamepad.suspend();this.keys.clear();if(this.flightAssist)this.velocity.set(0,0,0);});
     window.addEventListener('focus',()=>{this.focused=true;});
     document.addEventListener('visibilitychange',()=>{if(document.hidden){this.gamepad.suspend();this.keys.clear();}});
     canvas.addEventListener('wheel',e=>{if(!this.locked||this.travel)return;e.preventDefault();this.speedScale=clamp(this.speedScale*Math.exp(-e.deltaY*.002),.05,1);this.notify(`Throttle ${Math.round(this.speedScale*100)}%`);},{passive:false});
@@ -97,6 +99,19 @@ export class Navigation {
       this.notify(travel.plan.kind==='abort'?'Drive disengaged. Normal flight restored.':'Approach reached. Normal flight restored; descend to land.');
     }
   }
+  startStation(){
+    if(!this.station?.ready)throw new Error('Station is not ready for deck spawn.');
+    this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+    this.mode='walk';this.autoland=false;this.flightAssist=true;this.dockedAtStation=true;this.stationLift=false;
+    this.shipPosition=this.station.padWorldPosition.clone();this.shipOrientation.copy(this.station.padQuaternion);
+    this.orientation.copy(this.shipOrientation);this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
+    this.jumpHeight=0;this.jumpVelocity=0;
+    const nose=SHIP_LAYOUT.interior.minZ-.5;
+    const point=this.fromShipLocal(new THREE.Vector3(2.5,SHIP_LAYOUT.eyeHeight,nose));
+    const deck=this.station.deckPoint(point,SHIP_LAYOUT.eyeHeight);
+    if(!deck)throw new Error('Opening spawn must have authored deck support.');
+    this.position.copy(deck);
+  }
   orbit(){
     this.travel=null;this.keys.clear();
     this.dockedAtStation=false;this.stationLift=false;this.flightAssist=true;this.angularVelocity.set(0,0,0);
@@ -108,12 +123,12 @@ export class Navigation {
   }
   orientToward(target,up){matrix.lookAt(this.position,target,up);this.orientation.setFromRotationMatrix(matrix);}
   look(yaw,pitch){
-    if(this.travel||!this.enabled)return;
+    if(this.travel||this.openingActive||!this.enabled)return;
     if(this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
       this.angularVelocity.x+=pitch*4;this.angularVelocity.y+=yaw*4;return;
     }
     // Yaw around local gravity; pitch about the current camera right vector.
-    const normal=this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
+    const normal=this.dockedAtStation?this.station.up:this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
     const right=RIGHT.clone().applyQuaternion(this.orientation);rotation.setFromAxisAngle(right,pitch);this.orientation.premultiply(rotation).normalize();
     if(this.mode==='walk'){
       const forward=FORWARD.clone().applyQuaternion(this.orientation);const dot=forward.dot(normal);
@@ -232,6 +247,7 @@ export class Navigation {
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]')});
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;
+    if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
     if(pad.pressed.has(9))this.onControllerMenu?.();
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
     if(!this.enabled||document.querySelector('dialog[open]'))return;

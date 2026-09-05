@@ -6,7 +6,7 @@ test('fly through station doors, dock, walk down the ramp onto deck, return and 
   await mkdir('/tmp/star-agent-station',{recursive:true});
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
-  await page.goto('/?seed=7291&debug=1');
+  await page.goto('/?intro=0&seed=7291&debug=1');
   await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.station.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.4));
   const before=await page.evaluate(()=>window.starAgent.state.position);

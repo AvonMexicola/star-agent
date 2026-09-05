@@ -4,7 +4,7 @@ test('orbital view, terrain streaming, landing, walking, boarding and launch',as
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error' && /THREE|shader|WebGL|TypeError|ReferenceError/i.test(message.text()))errors.push(message.text());});
-  await page.goto('/');
+  await page.goto('/?intro=0');
   await page.waitForFunction(()=>window.starAgent?.state.ready,{},{timeout:60000});
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   await page.waitForTimeout(3000);

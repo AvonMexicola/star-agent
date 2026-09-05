@@ -20,7 +20,7 @@ function watchForFailures(page) {
 
 async function bootPlanet(page) {
   const failures = watchForFailures(page);
-  await page.goto('/');
+  await page.goto('/?intro=0');
   // The loading veil is dismissed by adding the "hidden" class once the world exists.
   await expect(page.locator('#loading')).toHaveClass(/(^|\s)hidden(\s|$)/, { timeout: BOOT_TIMEOUT });
   return failures;
@@ -69,7 +69,7 @@ test('quick transit to the coast leaves the exosphere', async ({ page }) => {
 });
 
 test('setting a course preserves position and a shared seed survives reload', async ({ page }) => {
-  await page.goto('/?seed=42');
+  await page.goto('/?intro=0&seed=42');
   await page.waitForFunction(()=>window.starAgent?.state.ready, null, {timeout:BOOT_TIMEOUT});
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   const before=await page.evaluate(()=>({state:window.starAgent.state,destinations:window.starAgent.destinations}));

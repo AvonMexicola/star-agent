@@ -1,0 +1,7 @@
+#opening-hint{position:fixed;bottom:9%;left:50%;transform:translateX(-50%);color:#dcebe8;letter-spacing:.25em;font-size:11px;opacity:0;pointer-events:none;transition:opacity 1.5s;text-shadow:0 2px 10px #000}
+#opening-hint.visible{opacity:1}
+body.opening-active{--opening-hud:0}
+body.opening-active #hud,body.opening-active .top-actions{opacity:var(--opening-hud);pointer-events:none}
+body.opening-active .topbar{background:transparent;border-color:transparent}
+body.opening-active #toast{opacity:0}
+body.opening-active .wordmark{pointer-events:none}

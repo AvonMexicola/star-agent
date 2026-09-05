@@ -57,7 +57,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
   function close() { if (dialog.open) { nav.enabled = wasEnabled; dialog.close(); } }
   function open() {
     if (dialog.open) return;
-    if (document.querySelector('dialog[open]') || !nav.enabled) return;
+    if (document.querySelector('dialog[open]') || !nav.enabled || nav.openingActive) return;
     wasEnabled = nav.enabled; returnFocus = document.activeElement;
     if (document.pointerLockElement) document.exitPointerLock();
     nav.keys.clear(); nav.gamepad?.suspend(); nav.enabled = false;

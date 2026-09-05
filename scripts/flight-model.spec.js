@@ -5,7 +5,7 @@ test('inertial controls coast and rotate, assist brakes, transition HUD renders'
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
-  await page.goto('/?seed=7291&debug');
+  await page.goto('/?intro=0&seed=7291&debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   await page.keyboard.press('KeyV');

@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 test('inspect physical boarding and planet rendering',async({page})=>{
   const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE ERROR',e.message);});page.on('console',m=>{if(m.type()==='error'){console.log('CONSOLE ERROR',m.text());if(/THREE|WebGL|shader/i.test(m.text()))errors.push(m.text());}});
-  await page.goto('/?debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:60000});
+  await page.goto('/?intro=0&debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:60000});
   await page.waitForTimeout(4000);await page.screenshot({path:'/tmp/star-agent-orbit.png'});
   console.log('ORBIT',await page.evaluate(()=>window.starAgent.state));
   await page.evaluate(()=>window.starAgent.setRenderScale(.6));
