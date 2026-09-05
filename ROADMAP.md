@@ -83,7 +83,18 @@ two, all data-driven and cheap.
 4. Cockpit geometry with 4 screen quads + sphere mount in `ship-walkable.js` cabin. *Astra.*
 5. Perf gate in the smoke test: MFD update cost measured via `performance.measure`. *Claude.*
 
-Exit criteria: all four MFDs live with real data at < 1 ms/frame; radar shows station, moons, contacts.
+**Player characters (added 2026-09-05):** two Meshy-built, rigged, animated characters — `player-male` (1.85 m) and
+`player-female` (1.72 m) in matching sealed space suits — chosen at start (and later per account). Animation clip contract
+(lower-kebab-case names inside each GLB): `idle, walk, run, jump, crouch-walk, sit-down, sit-idle, stand-up, carry-walk,
+wounded-walk, aim-pistol, fire-pistol, aim-rifle, fire-rifle, use-tool, death`. Work items: third-person/first-person
+**character controller + animation state machine** consuming those clips (blend idle↔walk↔run by speed, upper-body aim
+layer, `sit-down` → `sit-idle` when taking the pilot chair, `carry-walk` when holding a crate, `wounded-walk` below 40 %
+health, `use-tool` while mining) — *Astra*; asset generation + rigging — *Meshy agent*; camera: over-the-shoulder with
+first-person toggle — *Astra*. Ships in the walkable cabin already; the boarding loop should switch from the invisible
+pilot to the chosen character.
+
+Exit criteria: all four MFDs live with real data at < 1 ms/frame; radar shows station, moons, contacts; the chosen
+character walks, runs, sits in the pilot chair and carries a crate with the right clips.
 
 ---
 
