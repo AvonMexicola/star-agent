@@ -1,0 +1,53 @@
+[
+  {
+    "name": "alien-tree-bulb",
+    "file": "alien-tree-bulb.glb",
+    "category": "flora",
+    "tris": 9999,
+    "textures": 3,
+    "texture_size": 2048,
+    "height_m": 12.0,
+    "footprint_m": [
+      10.523,
+      9.609
+    ],
+    "credits": 15,
+    "concept": "raw/alien-tree-bulb-concept.png",
+    "file_mb": 9.06,
+    "notes": "Bulbous lantern-canopy tree; mint bioluminescent seams."
+  },
+  {
+    "name": "alien-tree-spire",
+    "file": "alien-tree-spire.glb",
+    "category": "flora",
+    "tris": 9999,
+    "textures": 3,
+    "texture_size": 2048,
+    "height_m": 18.0,
+    "footprint_m": [
+      11.461,
+      7.649
+    ],
+    "credits": 15,
+    "concept": "raw/alien-tree-spire-concept.png",
+    "file_mb": 9.33,
+    "notes": "Twisted spire tree with three frond tufts."
+  },
+  {
+    "name": "giant-mushroom-cluster",
+    "file": "giant-mushroom-cluster.glb",
+    "category": "flora",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 2048,
+    "height_m": 4.0,
+    "footprint_m": [
+      3.39,
+      2.695
+    ],
+    "credits": 30,
+    "concept": "raw/giant-mushroom-cluster-concept.png",
+    "file_mb": 9.81,
+    "notes": "Three fused caps, gilled undersides, mossy base. 30 cr: a duplicate job fired."
+  }
+]
