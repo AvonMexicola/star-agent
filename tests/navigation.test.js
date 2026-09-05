@@ -196,8 +196,9 @@ test('high-speed downward travel collides with the near surface without tunnelli
   // At 60 Hz this would travel farther than the planet diameter in one frame.
   navigation.velocity.copy(normal).multiplyScalar(-4_000_000 * 8 * 7);
   navigation.update(1 / 60);
-  assert.equal(navigation.mode, 'landed');
-  navigation.toShipLocal().toArray().forEach((value, axis) => near(value, SHIP_LAYOUT.seatEye[axis]));
+  assert.equal(navigation.mode, 'crashed');
+  assert.ok(navigation.crash.impactSpeed > 1000);
+  assert.equal(navigation.shipPosition, null);
   assert.ok(navigation.normal.dot(normal) > 0.999999, 'collision remains on the approach hemisphere');
   assert.ok(navigation.position.length() >= RADIUS);
   near(navigation.speed, 0);
