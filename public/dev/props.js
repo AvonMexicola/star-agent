@@ -126,13 +126,33 @@ async function loadEntry(entry) {
   const center = new THREE.Vector3();
   box.getCenter(center);
 
+  // Rigged characters: play every clip in turn, CLIP_SECONDS each.
+  const clips = gltf.animations || [];
+  const mixer = clips.length ? new THREE.AnimationMixer(root) : null;
+
   return {
     entry, pivot, info, size, center,
     minY: box.min.y,
     height: size.y,
     footprint: Math.max(size.x, size.z),
-    anims: gltf.animations?.length || 0,
+    anims: clips.length,
+    clips, mixer, currentClip: -1,
   };
+}
+
+const CLIP_SECONDS = 3;
+
+function updateClip(item, t) {
+  if (!item.mixer || !item.clips.length) return null;
+  const ci = Math.floor(t / CLIP_SECONDS) % item.clips.length;
+  if (item.currentClip !== ci) {
+    item.mixer.stopAllAction();
+    item.mixer.clipAction(item.clips[ci]).reset().play();
+    item.currentClip = ci;
+  }
+  // setTime() re-evaluates from zero, so the pose is a pure function of t.
+  item.mixer.setTime(t % CLIP_SECONDS);
+  return item.clips[ci].name;
 }
 
 // ------------------------------------------------------------------- framing
@@ -211,6 +231,16 @@ function layout() {
       `tex ${it.info.texSizes.join(',') || 'none'}${it.anims ? ` · ${it.anims} anim` : ''}` +
       (flags.length ? `\n<span class="warn">${flags.join(' · ')}</span>` : '');
     labelHost.appendChild(d);
+    if (it.anims) {
+      const c = document.createElement('div');
+      c.className = 'lab clip';
+      c.style.left = `${cx + 8}px`;
+      c.style.top = `${cy + ch - 30}px`;
+      c.textContent = '▶';
+      labelHost.appendChild(c);
+      it.clipLabel = c;
+      it.lastClip = null;
+    }
   });
 }
 
@@ -228,7 +258,13 @@ function render(timeSec) {
     renderer.setScissor(x, y, cw, ch);
 
     it.pivot.visible = true;
-    it.pivot.rotation.y = timeSec * 0.35 + i * 0.6;
+    // Characters stay front-on so the animation reads; props turntable.
+    const clipName = updateClip(it, timeSec);
+    it.pivot.rotation.y = it.anims ? 0.35 : timeSec * 0.35 + i * 0.6;
+    if (clipName && it.clipLabel && it.lastClip !== clipName) {
+      it.clipLabel.textContent = `▶ ${clipName}`;
+      it.lastClip = clipName;
+    }
     frameCell(it, cw / ch);
     renderer.render(scene, camera);
     it.pivot.visible = false;

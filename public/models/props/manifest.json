@@ -1,11 +1,30 @@
 [
   {
+    "name": "player-male",
+    "file": "player-male.glb",
+    "category": "character",
+    "tris": 20000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 1.85,
+    "footprint_m": [
+      1.03,
+      0.422
+    ],
+    "credits": 34,
+    "concept": "raw/player-male-concept.png",
+    "file_mb": 0.847,
+    "notes": "Sealed space suit, opaque dark visor, mint accent lines. Static mesh; rig/animation pending."
+  },
+  {
     "name": "alien-tree-bulb",
     "file": "alien-tree-bulb.glb",
     "category": "flora",
     "tris": 9999,
     "textures": 3,
-    "texture_size": 2048,
+    "texture_size": 1024,
+    "texture_format": "webp",
     "height_m": 12.0,
     "footprint_m": [
       10.523,
@@ -13,7 +32,7 @@
     ],
     "credits": 15,
     "concept": "raw/alien-tree-bulb-concept.png",
-    "file_mb": 9.06,
+    "file_mb": 0.676,
     "notes": "Bulbous lantern-canopy tree; mint bioluminescent seams."
   },
   {
@@ -22,7 +41,8 @@
     "category": "flora",
     "tris": 9999,
     "textures": 3,
-    "texture_size": 2048,
+    "texture_size": 1024,
+    "texture_format": "webp",
     "height_m": 18.0,
     "footprint_m": [
       11.461,
@@ -30,8 +50,26 @@
     ],
     "credits": 15,
     "concept": "raw/alien-tree-spire-concept.png",
-    "file_mb": 9.33,
+    "file_mb": 0.703,
     "notes": "Twisted spire tree with three frond tufts."
+  },
+  {
+    "name": "coral-shrub",
+    "file": "coral-shrub.glb",
+    "category": "flora",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 1.8,
+    "footprint_m": [
+      2.086,
+      1.946
+    ],
+    "credits": 24,
+    "concept": "raw/coral-shrub-concept.png",
+    "file_mb": 0.374,
+    "notes": "Antler-like branching coral shrub, teal to violet gradient."
   },
   {
     "name": "giant-mushroom-cluster",
@@ -39,7 +77,8 @@
     "category": "flora",
     "tris": 10000,
     "textures": 3,
-    "texture_size": 2048,
+    "texture_size": 1024,
+    "texture_format": "webp",
     "height_m": 4.0,
     "footprint_m": [
       3.39,
@@ -47,7 +86,151 @@
     ],
     "credits": 30,
     "concept": "raw/giant-mushroom-cluster-concept.png",
-    "file_mb": 9.81,
+    "file_mb": 0.692,
     "notes": "Three fused caps, gilled undersides, mossy base. 30 cr: a duplicate job fired."
+  },
+  {
+    "name": "puffball-plant",
+    "file": "puffball-plant.glb",
+    "category": "flora",
+    "tris": 9999,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.9,
+    "footprint_m": [
+      1.138,
+      1.138
+    ],
+    "credits": 15,
+    "concept": "raw/puffball-plant-concept.png",
+    "file_mb": 0.506,
+    "notes": "Glowing spherical seed pods on stalks, mint glow points, mossy base."
+  },
+  {
+    "name": "vine-clump",
+    "file": "vine-clump.glb",
+    "category": "flora",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 2.5,
+    "footprint_m": [
+      4.976,
+      5.17
+    ],
+    "credits": 44,
+    "concept": "raw/vine-clump-concept.png",
+    "file_mb": 0.593,
+    "notes": "Tangled bioluminescent vines draped over a low rock; mint glow."
+  },
+  {
+    "name": "boulder-cracked",
+    "file": "boulder-cracked.glb",
+    "category": "rock",
+    "tris": 9999,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 3.0,
+    "footprint_m": [
+      2.565,
+      2.081
+    ],
+    "credits": 44,
+    "concept": "raw/boulder-cracked-concept.png",
+    "file_mb": 0.473,
+    "notes": "Angular boulder split by deep fissures, sharp fractured faces."
+  },
+  {
+    "name": "boulder-layered",
+    "file": "boulder-layered.glb",
+    "category": "rock",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 1.5,
+    "footprint_m": [
+      2.714,
+      1.883
+    ],
+    "credits": 44,
+    "concept": "raw/boulder-layered-concept.png",
+    "file_mb": 0.461,
+    "notes": "Sedimentary boulder with ochre/grey/rust strata bands."
+  },
+  {
+    "name": "boulder-mossy",
+    "file": "boulder-mossy.glb",
+    "category": "rock",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 2.0,
+    "footprint_m": [
+      2.534,
+      2.146
+    ],
+    "credits": 44,
+    "concept": "raw/boulder-mossy-concept.png",
+    "file_mb": 0.605,
+    "notes": "Rounded granite boulder with dark green moss patches."
+  },
+  {
+    "name": "crystal-cluster",
+    "file": "crystal-cluster.glb",
+    "category": "rock",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 1.6,
+    "footprint_m": [
+      1.153,
+      1.276
+    ],
+    "credits": 44,
+    "concept": "raw/crystal-cluster-concept.png",
+    "file_mb": 0.468,
+    "notes": "Mint-green crystal cluster on a rocky base; translucent look via emissive tint."
+  },
+  {
+    "name": "crystal-shard-single",
+    "file": "crystal-shard-single.glb",
+    "category": "rock",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.6,
+    "footprint_m": [
+      0.185,
+      0.172
+    ],
+    "credits": 44,
+    "concept": "raw/crystal-shard-single-concept.png",
+    "file_mb": 0.441,
+    "notes": "Single pointed mint crystal shard on a small rock base."
+  },
+  {
+    "name": "rock-arch",
+    "file": "rock-arch.glb",
+    "category": "rock",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 5.0,
+    "footprint_m": [
+      7.1,
+      2.268
+    ],
+    "credits": 34,
+    "concept": "raw/rock-arch-concept.png",
+    "file_mb": 0.557,
+    "notes": "Natural wind-eroded sandstone arch; span reads across X."
   }
 ]
