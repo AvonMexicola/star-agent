@@ -45,7 +45,9 @@ opening-sequence work belong to the other handoff lanes.
   docs/images/travel-tunnel.png; additional arrival/mobile images are in /tmp.
 - Visual evidence: Chromium with ANGLE/SwiftShader, 1440x900 viewport, render scale
   0.55; mobile layout checked at 390x844. Software FPS is not a hardware claim.
-- Full existing browser suite result will be recorded below after completion.
+- Full production browser suite: 7/7 pass, including controller exploration,
+  physical landing/walking/reboarding/launch, travel, seed reload and quick transit.
+  CI verify and the Vercel preview checks also passed.
 
 Local production preview: http://127.0.0.1:5177/ . Press M, choose Selene, engage.
 The normal initial orbit has a clear route. The guide explains launch/climb
