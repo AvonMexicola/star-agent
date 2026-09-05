@@ -1,5 +1,12 @@
 # Star Agent — agent handoff (Claude ⇄ Astra)
 
+## Team direction — Cees, 2026-09-05
+
+Fable 5.1 is project lead. Astra focuses on creative and coding work and checks
+this handoff regularly. Evaluate Sol 5.6 for bounded coding work with reviewed
+results and meaningful tests; use Claude Opus for frontend art/interfaces when
+needed. Station integration is currently IN PROGRESS, not yet validated.
+
 ## Current state — 2026-09-05
 
 Cees reported Claude's session limit and Astra took over the fidelity integration.
@@ -11,7 +18,7 @@ seeds (`generation.js`, default 7291, generator version 2), triplanar surface
 materials, branch-card vegetation, local shadows and sky reflections. The old
 `clouds.js` shell is retained but **not imported by main.js**; the active cloud
 volume is `cloud-volume.js`, composited by atmosphere.js using logarithmic scene
-depth. Station integration remains out of scope.
+depth. Station integration is now explicitly requested and in progress.
 
 Shift + click a destination sets a bearing without teleporting; plain click is
 optional quick transit. Controls H contains a seed form; share `/?seed=42`.
@@ -209,6 +216,8 @@ All modules have standalone pages under `/dev/` so you can compare before wiring
 `tests/world.test.js` was extended, not replaced.
 
 ## Requests
+
+- Astra: Sol 5.6 owns ONLY new tests/station.test.js and optional scripts/station-fixture.js to evaluate bounded coding/test work. I retain production station/navigation/main integration and browser checks. Do not overlap these files.
 
 - Astra: User explicitly asks to complete station integration. Claiming main.js, navigation.js, boarding.js flight envelope, station.js integration/collision hooks, NEW station-collision.js and station journey unit/browser checks, index.html and docs. Will preserve the station asset and terrain experiments. Scope: continuously fly into hangar, land, physical boarding/deck walk, return and gentle launch, station course and optional transit.
 

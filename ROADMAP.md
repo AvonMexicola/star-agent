@@ -149,10 +149,23 @@ Exit criteria: 50 players formation-flying around the station at 20 Hz with < 15
 - **Interference shield**: base core projects a sphere (radius by tier, 150–600 m); ships without the code get a "NO ENTRY" MFD warning at 2 R and are pushed out/engines cut inside R; players on foot can still walk in (raids), so walls matter. Visual: faint hex-bubble shader at the boundary.
 - **Resources**: wood (trees — chopping removes the instance via the existing exclusion system and regrows), stone (rocks/cliffs), metal ore (veins in cliffs and caves, ring asteroids), crystals (caves only). Tools: hatchet, pick, **mining laser** (beam + heat, works on ore and asteroids).
 - **Processing chain**: campfire → forge (ore → ingots) → refinery (fuel from ice/regolith) → fabricator (parts, weapons, base pieces). Inventory with mass; ship cargo hold; storage crates.
+- **Voxel mining (asteroids and planetside)**: every mineable volume is a signed-distance field (SDF) meshed with
+  **marching cubes in a worker** — the same engine serves ring asteroids, cave interiors and ore outcrops.
+  - *Asteroids*: SDF = ellipsoid + 3 noise octaves + ore-vein noise (metal/ice/crystal materials by a second field);
+    meshed in 32³ chunks at 0.5–2 m depending on size; only asteroids within ~2 km are voxelized, farther ones use the
+    baked instanced mesh. Mining subtracts a sphere from the SDF (mining laser brush 0.6–1.5 m); edits are stored as a
+    sparse **brush list per asteroid** (position, radius, material removed) — tiny to persist and to replicate over the
+    network, deterministic to replay, so two players see the same hole. Chunks re-mesh in < 4 ms.
+  - *Planetside*: the height-field terrain stays authoritative for the surface; **voxel islands** (ore outcrops on cliffs,
+    cave interiors, and a dig volume under any placed "excavation marker") overlay it with the same SDF/brush system.
+    Digging anywhere on the open surface is out of scope for v1 (a height-field can't have overhangs); caves, cliff
+    faces and outcrops cover the fantasy. Material yield = removed volume × ore density at the brush position.
+  - Tools: pick (small brush, slow), mining laser (beam, heat, larger brush), later a ship-mounted mining laser for
+    asteroids (Phase 4 mount system). Chunks cast/receive shadows and use the terrain material's rock/ore layers.
 - **Caves**: carve the terrain with a 3D worm/noise field (`caveField(x,y,z)`), voxelized near the player and meshed with **marching cubes in a worker** (chunks 32³ at 1 m), entrances where the field intersects steep terrain; interior lit by crystal emissives + headlamp; rare items spawn deep. Height-field terrain stays as is; cave chunks replace it locally with a stencil/discard on the surface mesh.
 - **Assets (Meshy, 25 k credits)**: an Opus agent drives Meshy via Chrome (you stay logged in; the agent never enters credentials) to generate textured hero props: forge, refinery, fabricator, storage crate, base gate, turret bases, mining laser, shop kiosk, asteroid set, crystal set. Keep each under 10 k tris; retopo/decimate in Blender headless; export glTF to `public/models/`. Check the per-model credit cost in the Meshy dashboard first; the budget should cover on the order of a hundred assets, so plan ~40 and keep the rest for iterations.
 
-**Work items**: `src/build/` snapping + validation (*Astra*), pieces kit (*Opus + Meshy*), shield mechanic (*Astra*), resources/inventory/crafting (*Opus agent*), cave field + marching cubes worker (*Fable agent*), mining laser + tools (*Opus agent*).
+**Work items**: `src/build/` snapping + validation (*Astra*), pieces kit (*Opus + Meshy*), shield mechanic (*Astra*), resources/inventory/crafting (*Opus agent*), `src/voxel/` SDF + marching cubes worker + brush lists — shared by asteroids, caves and outcrops (*Fable agent*), asteroid SDFs and ore fields (*Fable agent*), cave field + entrances (*Fable agent*), mining laser + tools (*Opus agent*), brush-list replication/persistence (*Astra*, Phase 5).
 
 Exit criteria: two players build a walled base, lock it with a code, mine metal in a cave, forge ingots, craft a turret.
 
@@ -170,7 +183,12 @@ Exit criteria: a full loop — mine, sell, buy a weapon, win a fight, repair —
 
 ## Phase 8 — Launch & scale
 
-CI (tests + smoke + bundle size), telemetry (fps/latency histograms, opt-in), crash reporting, Cloudflare in front, EU + US regions, community: Discord, contributor guide for **bringing your own agent** (AGENTS.md), weekly builds.
+CI (tests + smoke + bundle size), telemetry (fps/latency histograms, opt-in), crash reporting, Cloudflare in front, EU + US regions, weekly builds.
+
+**Community model (decided 2026-09-05):** the GitHub repo is **private and invitation-based**. Anyone who wants to
+contribute by bringing their own coding agent (Claude Opus 5 / Fable, GPT-6 / Sol, etc.) asks Cees for an invite;
+`AGENTS.md` + `HANDOFF.md` are the onboarding for agents (file ownership, module-swap pattern, `/dev/` test pages,
+tests must stay green). Invitees work on branches and open PRs; the agents' owners review each other's PRs.
 
 ---
 
@@ -178,7 +196,8 @@ CI (tests + smoke + bundle size), telemetry (fps/latency histograms, opt-in), cr
 
 | Role | Who | Scope |
 |---|---|---|
-| Core sim, netcode, integration | **Astra (Codex, GPT)** | `main.js`, `navigation.js`, `planet.js`, `world.js`, flight model, server |
+| Core sim, netcode, integration | **Astra (Codex, GPT-6)** | `main.js`, `navigation.js`, `planet.js`, `world.js`, flight model, server |
+| Bounded coding with tests (under evaluation) | **Sol 5.6 (GPT)** | scoped files only, e.g. `tests/station.test.js`; reviewed by Astra |
 | Project management, QA, module design, docs | **Claude (Fable)** | `ROADMAP.md`, `HANDOFF.md`, tests, screenshot tours, agent orchestration |
 | Frontend / MFDs / HUD / shaders | **Opus agents** | `src/mfd/`, combat HUD, VFX |
 | Hard maths & shaders (physics, caves, rings) | **Fable agents** | landing gear, marching cubes, ring, moon |
