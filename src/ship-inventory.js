@@ -10,8 +10,8 @@ const initial = () => ({ ship: { repair: 3, ration: 12, sample: 6, scanner: 1 },
 
 /** Small local manifest. Item use and resource gathering are not simulated yet. */
 export class ShipInventory {
-  constructor(storage) {
-    this.storage = storage;
+  constructor(storage, capacity = CAPACITY.ship) {
+    this.storage = storage;this.capacity={ship:capacity,pack:CAPACITY.pack};
     this.containers = initial();
     this.saved = Boolean(storage);
     try {
@@ -20,7 +20,7 @@ export class ShipInventory {
         const data = JSON.parse(raw);
         if (data.version === 1 && ['ship', 'pack'].every(container =>
           ITEMS.every(item => Number.isSafeInteger(data[container]?.[item.id]) && data[container][item.id] >= 0)
-          && this.massOf(data[container]) <= CAPACITY[container])) {
+          && this.massOf(data[container]) <= (container==='ship'?2400:CAPACITY.pack))) {
           this.containers = Object.fromEntries(['ship', 'pack'].map(container => [container,
             Object.fromEntries(ITEMS.map(item => [item.id, data[container][item.id]]))]));
         }
@@ -36,7 +36,7 @@ export class ShipInventory {
     if (!item || !['ship', 'pack'].includes(from)) return { ok: false, message: 'Unknown cargo item.' };
     const to = from === 'ship' ? 'pack' : 'ship';
     if (this.count(from, id) < 1) return { ok: false, message: 'No items left in this container.' };
-    if (this.mass(to) + item.mass > CAPACITY[to]) return { ok: false, message: `${to === 'pack' ? 'Backpack' : 'Ship storage'} is full.` };
+    if (this.mass(to) + item.mass > this.capacity[to]) return { ok: false, message: `${to === 'pack' ? 'Backpack' : 'Ship storage'} is full.` };
     this.containers[from][id]--;
     this.containers[to][id]++;
     try {

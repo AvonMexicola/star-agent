@@ -13,6 +13,10 @@ import { FlightAudio } from './audio.js';
 import { createWalkableShip } from './ship-walkable.js';
 import { ShipInventory } from './ship-inventory.js';
 import { createInventoryUI } from './ship-inventory-ui.js';
+import { Fleet, SHIPS } from './fleet.js';
+import { createFleetUI } from './fleet-ui.js';
+import { createFreighter } from './freighter.js';
+import { FREIGHTER_LAYOUT, FreighterSystems } from './freighter-layout.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { createLighting } from './lighting.js';
 import { weatherShip } from './surface-materials.js';
@@ -37,11 +41,48 @@ try {
   const moon=new Moon(scene);
   const origin=new THREE.Vector3();
   const lighting=createLighting(renderer,scene);
-  const ship=createWalkableShip();ship.visible=false;scene.add(ship);weatherShip(ship,planet.surfaceTexture);
   let localInventoryStorage;try{localInventoryStorage=window.localStorage;}catch{}
-  const inventory=new ShipInventory(localInventoryStorage);
-  const inventoryUI=createInventoryUI(nav,ship,inventory);
-  ship.readyPromise.then(model=>{if(model)weatherShip(model,planet.surfaceTexture);});
+  const fleet=new Fleet(localInventoryStorage),freighterSystems=new FreighterSystems();
+  const shipModels=new Map();
+  function modelFor(id){
+    if(!shipModels.has(id)){
+      const model=id==='atlas'?createFreighter(freighterSystems):createWalkableShip();
+      model.visible=false;scene.add(model);weatherShip(model,planet.surfaceTexture);
+      model.readyPromise.then(asset=>{if(asset)weatherShip(asset,planet.surfaceTexture);});
+      shipModels.set(id,model);
+    }
+    return shipModels.get(id);
+  }
+  let ship=modelFor(fleet.active);
+  nav.shipId=fleet.active;nav.layout=fleet.active==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;nav.freighter=fleet.active==='atlas'?freighterSystems:null;
+  const inventory=new ShipInventory(localInventoryStorage,SHIPS[fleet.active].capacity);
+  const inventoryUI=createInventoryUI(nav,()=>ship,inventory);
+  nav.onVoyage=event=>{if(fleet.record(event))notify('Atlas unlocked! Open Fleet (G) while seated at the station to board your freighter.');};
+  let selectingShip=false;
+  const fleetUI=createFleetUI(nav,fleet,async id=>{
+    if(selectingShip)return 'Ship preparation in progress.';
+    if(!fleet.allows(id)||!SHIPS[id])return 'This ship is locked.';
+    if(nav.mode!=='landed'||!nav.dockedAtStation)return 'Dock at Aeon Orbital before switching ships.';
+    if(inventory.mass('ship')>SHIPS[id].capacity)return 'Too much cargo for this ship. Transfer supplies before switching.';
+    selectingShip=true;
+    try{
+      const next=modelFor(id);await next.readyPromise;
+      if(nav.mode!=='landed'||!nav.dockedAtStation)return 'Ship selection cancelled: you left the station pad.';
+      // Hangar services replace the parked ship at the pad centre, aligned with the bay.
+      const layout=id==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT,b=station.interiorBox;
+      const centre=b.getCenter(new THREE.Vector3());centre.y=b.min.y;
+      const orientation=station.quaternion.clone();
+      const bounds=layout.flightBounds;
+      if(bounds.max[0]-bounds.min[0]>b.max.x-b.min.x-2||bounds.max[2]-bounds.min[2]>b.max.z-b.min.z-2||bounds.max[1]>b.max.y-b.min.y-1)return 'This hangar cannot accommodate the selected ship.';
+      centre.x-=(bounds.min[0]+bounds.max[0])/2;centre.z-=(bounds.min[2]+bounds.max[2])/2;
+      ship.visible=false;ship=next;nav.layout=layout;nav.shipId=id;nav.freighter=id==='atlas'?freighterSystems:null;
+      nav.shipPosition=station.toWorld(centre,centre);nav.shipOrientation.copy(orientation);nav.orientation.copy(orientation);
+      nav.position.copy(nav.fromShipLocal(new THREE.Vector3(...layout.seatEye)));nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);
+      nav.doorOpen=false;nav.doorProgress=0;nav.insideShip=true;nav.jumpHeight=0;nav.jumpVelocity=0;
+      inventory.capacity.ship=SHIPS[id].capacity;fleet.active=id;fleet.record('selection');
+      return `${SHIPS[id].name} ready. Close Fleet, then F to stand and explore.`;
+    }finally{selectingShip=false;}
+  });
   $('planet-seed').textContent=`Terrestrial · Seed ${SEED.toLocaleString('en-US')}`;
   $('seed-input').value=SEED;
   $('seed-form').addEventListener('submit',event=>{event.preventDefault();const url=new URL(location.href);url.searchParams.set('seed',String($('seed-input').valueAsNumber));location.assign(url);});
@@ -72,7 +113,7 @@ try {
   canvas.addEventListener('pointerup',()=>dragging=false);
   canvas.addEventListener('pointermove',e=>{if(dragging&&!nav.locked)nav.look(-e.movementX*.002,-e.movementY*.002);});
   const help=$('help-dialog');
-  function openHelp(){if(inventoryUI.open)return;if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.enabled=false;help.showModal();}
+  function openHelp(){if(document.querySelector('dialog[open]'))return;if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.enabled=false;help.showModal();}
   function closeHelp(){help.close();nav.enabled=true;}
   $('help-button').addEventListener('click',openHelp);$('close-help').addEventListener('click',closeHelp);help.addEventListener('close',()=>nav.enabled=true);
   $('help-fly').addEventListener('click',()=>{closeHelp();capture();});
@@ -81,9 +122,9 @@ try {
   nav.onControllerScroll=amount=>{if(help.open)help.scrollTop+=amount;};
   nav.onControllerHud=()=>photo();
   const photo=()=>{hidden=!hidden;document.body.classList.toggle('photo-mode',hidden);};$('photo-button').addEventListener('click',photo);
-  document.addEventListener('keydown',e=>{if(e.repeat||inventoryUI.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='Tab'&&!help.open){e.preventDefault();photo();}if(e.code==='KeyO'&&!help.open)transit('orbit');});
+  document.addEventListener('keydown',e=>{if(e.repeat||inventoryUI.open||fleetUI.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='Tab'&&!help.open){e.preventDefault();photo();}if(e.code==='KeyO'&&!help.open)transit('orbit');});
   async function transit(name){
-    if(inventoryUI.open||transiting||name==='station'&&!station.ready)return;transiting=true;nav.enabled=false;nav.keys.clear();nav.velocity.set(0,0,0);
+    if(document.querySelector('dialog[open]')||transiting||name==='station'&&!station.ready)return;transiting=true;nav.enabled=false;nav.keys.clear();nav.velocity.set(0,0,0);
     if(document.pointerLockElement)document.exitPointerLock();
     const button=document.querySelector(`[data-destination="${name}"]`);$('transit-name').textContent=button.querySelector('strong').textContent.toUpperCase();$('transit').classList.add('active');
     await new Promise(r=>setTimeout(r,350));
@@ -145,7 +186,7 @@ try {
     ship.visible=Boolean(nav.shipPosition)||(nav.mode==='flight'&&(nav.locked||nav.controllerActive));
     if(ship.visible){
       if(nav.shipPosition){ship.position.copy(nav.shipPosition).sub(origin);ship.quaternion.copy(nav.shipOrientation);}
-      else{ship.quaternion.copy(nav.orientation);ship.position.set(...SHIP_LAYOUT.seatEye).applyQuaternion(nav.orientation).negate();}
+      else{ship.quaternion.copy(nav.orientation);ship.position.set(...nav.layout.seatEye).applyQuaternion(nav.orientation).negate();}
       ship.setDoor(nav.doorOpen);ship.update(dt);
       ship.updateDisplays(dt,nav,inventory,course);
     }
@@ -158,5 +199,5 @@ try {
   }
   requestAnimationFrame(frame);
   // Explicit read-only diagnostics plus navigational hooks for reproducible browser tests.
-  window.starAgent={get state(){return {moon:{position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,distance:nav.position.distanceTo(moon.worldPosition)},controller:{connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:station.canDock(nav.position)},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){automaticScale=false;renderScale=THREE.MathUtils.clamp(value,.4,1);resizePending=true;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;}};
+  window.starAgent={get state(){return {fleet:fleet.snapshot,shipId:nav.shipId,lifts:nav.freighter?.snapshot,moon:{position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,distance:nav.position.distanceTo(moon.worldPosition)},controller:{connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:station.canDock(nav.position)},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){automaticScale=false;renderScale=THREE.MathUtils.clamp(value,.4,1);resizePending=true;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;}};
 }catch(error){console.error(error);fatal(`Could not start WebGL 2. Use a current desktop browser with hardware acceleration enabled. ${error.message}`);}

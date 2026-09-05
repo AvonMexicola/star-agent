@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js",
+    "test": "node --test tests/freighter.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js",
     "test:browser": "playwright test"
   },
   "dependencies": {

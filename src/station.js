@@ -302,16 +302,16 @@ export class Station {
   }
 
   /** Swept conservative ship/body bounds, including the animated doors. */
-  constrainStep(previous, proposed, orientation, walking = false) {
+  constrainStep(previous, proposed, orientation, walking = false, layout = SHIP_LAYOUT) {
     if (!this.ready) return { point: proposed.clone(), hit: false };
     const start = this.toLocal(previous,new THREE.Vector3()), end = this.toLocal(proposed,new THREE.Vector3());
     const min = new THREE.Vector3(), max = new THREE.Vector3();
     if (walking) {
-      min.set(-.25,-SHIP_LAYOUT.eyeHeight,-.25); max.set(.25,.15,.25);
+      min.set(-.25,-layout.eyeHeight,-.25); max.set(.25,.15,.25);
     } else {
       const q = this.inverseQuaternion.clone().multiply(orientation);
-      const bounds = new THREE.Box3(), seat = new THREE.Vector3(...SHIP_LAYOUT.seatEye);
-      const envelope = SHIP_LAYOUT.flightBounds;
+      const bounds = new THREE.Box3(), seat = new THREE.Vector3(...layout.seatEye);
+      const envelope = layout.flightBounds;
       for (let i=0;i<8;i++) {
         const corner = new THREE.Vector3(...envelope.min);
         for (let axis=0;axis<3;axis++) if(i & (1<<axis)) corner.setComponent(axis,envelope.max[axis]);
