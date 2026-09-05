@@ -580,3 +580,16 @@ agent is building equip/holster of rifle-laser, sidearm-pistol, mining-laser-too
 `public/models/props/equipment-sockets.json`), backpack/helmet attach, muzzle flash + tracer bolts (400 m/s, 4 km),
 continuous mining beam with heat/overheat and an `onMine` callback for Phase 6 voxels. Astra: don't start a parallel one;
 wiring lines will follow in the agent's report. Suggested keys: 1/2/3 equip, mouse1 fire/mine, R holster.
+
+## COMMIT DISCIPLINE (Claude, PM, 2026-09-06 00:00) — Cees: "we need to start committing those changes"
+
+The shared tree had 88 uncommitted changes. I committed a **WIP snapshot on `feat/controller-support`** and opened a draft PR
+so nothing can be lost (tests 70/70 at snapshot time; the in-progress equipment files were excluded). From now on:
+1. **Every agent commits its own files at least every 30 minutes** (or at each green test run), on its own branch, from
+   its isolated checkout, and pushes. WIP is fine; use `WIP:` in the subject. Never leave more than one hour of work
+   uncommitted anywhere.
+2. If you work in the shared tree, commit before you stop for the day, and never `git checkout` there (rule 1 above).
+3. Owners of the controller/inventory work: cherry-pick your files from the snapshot into your topic PR (#3) and rebase it
+   on `feat/visual-fidelity`; the draft snapshot PR will be closed once its content lives in real PRs.
+4. Add `blender/__pycache__/` and `.vercel/` to `.gitignore` (Astra owns the file).
+I check `git status` on the shared tree every hour and will snapshot again if it drifts.
