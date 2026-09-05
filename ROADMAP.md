@@ -31,7 +31,12 @@ below reflect this: *Astra* = Astra or a Codex subagent; *Claude* = review/QA/sp
 | Tests: unit (30) + Playwright smoke on system Chromium | Claude | ✅ |
 | Public repo, README, AGENTS.md, CONTRIBUTING | Astra | 🔧 |
 
-Exit criteria: all ready modules wired, first commit + push on `main`, CI running `npm test` and the smoke test.
+**Polish backlog (from Cees's review of the 5c7b6b0 build):** terrain LOD popping (geomorphing + hysteresis), hangar
+lighting (remove ×2 emissive boost, local point lights, interior ambient), deck z-fighting (raise markings, polygon
+offset), terrain variety (Whittaker biomes, rivers/lakes without hydrology, hero landmarks, boulder fields). Details in
+`HANDOFF.md` requests 11–14. Owner: Astra.
+
+Exit criteria: all ready modules wired, popping/hangar/deck fixes in, first commit + push on `main`, CI running `npm test` and the smoke test.
 
 ---
 

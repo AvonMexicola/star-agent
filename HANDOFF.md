@@ -2,8 +2,10 @@
 
 ## Team direction — Cees, 2026-09-05
 
-Deployment constraint: **Do not deploy to Vercel.** Cees is arranging a dedicated
-server. Keep work local until those server details and deployment direction arrive.
+Hosting update from Cees: **Vercel is authorized temporarily until Monday,
+7 September 2026**, when the dedicated server is expected. This supersedes the
+earlier no-Vercel instruction. Claude owns deployment; Astra verifies the live build.
+Production URL: https://star-agent-nine.vercel.app/ (Vercel reports Ready).
 
 Fable 5.1 is project lead. Astra focuses on creative and coding work and checks
 this handoff regularly. Evaluate Sol 5.6 for bounded coding work with reviewed
@@ -54,7 +56,8 @@ software-rendered FPS is not a hardware performance claim. Surface-pass evidence
 remains in `/tmp/star-agent-surface`.
 
 The local dev server was restarted at `http://localhost:5173/?seed=7291`.
-No deployment was performed. Await Cees's dedicated netcup server.
+Temporary Vercel hosting is live at https://star-agent-nine.vercel.app/.
+The dedicated netcup server remains the planned Monday hosting target.
 
 Station implementation: fixed at 100 km over the seeded coast. Planet altitude
 remains planet-relative for atmosphere; deck support is the flat authored model
@@ -233,6 +236,10 @@ All modules have standalone pages under `/dev/` so you can compare before wiring
 
 ## Requests
 
+- Astra: VERIFIED LIVE: https://star-agent-nine.vercel.app/?seed=7291. Existing production deployment dpl_5UbCj6MkSE4tsf9k5gUzkMYoQxNK is Ready; homepage and station GLB return HTTP 200. Chromium 151 boots seed 7291 and reaches the station exterior approach through the UI, with no console/page errors. Screenshot and diagnostics: /tmp/star-agent-vercel. No duplicate deployment created. Temporary hosting authorized until Monday 7 September; dedicated-server cutover remains with PM.
+
+- Astra: Local preview recovery: chat-owned/background shell processes did not persist. Vite now runs as transient user service star-agent-dev.service on 127.0.0.1:5173. Use systemctl --user status/stop/restart star-agent-dev.service to manage it. No deployment or Vercel use.
+
 - READY FOR REVIEW: src/main.js, src/station.js, index.html, src/style.css, tests/station.test.js, scripts/station.config.js, scripts/station.spec.js, package.json, README.md. Station wiring/docking/deck journey complete; 34 unit checks, 4 general browser cases and final station journey/layout check pass. Screenshots: /tmp/star-agent-station. Navigation, boarding flight envelope and station-collision.js were already included in the shared baseline. No Vercel or other deployment. Phase 1 specs noted; this commit closes the station slice.
 
 - Astra: Sol 5.6 owns ONLY new tests/station.test.js and optional scripts/station-fixture.js to evaluate bounded coding/test work. I retain production station/navigation/main integration and browser checks. Do not overlap these files.
@@ -282,3 +289,38 @@ Station slice is closed. **Next for Astra: Phase 1 now** — `src/flight-model.j
 ROADMAP §Phase 1; when the ShipState bus exists, post its layout and I'll spec the MFD pages.
 **Hosting until Monday:** Cees wants the client on Vercel (static Vite build) until the netcup box is provisioned;
 Claude handles that — no repo changes needed except maybe `vercel.json`.
+
+## Requests round 3 (Claude → Astra, 16:10) — Cees's feedback on the current build: "looks AMAZING, but…"
+
+11. **Terrain LOD popping.** Cause: `planet.js` swaps a parent patch for its 4 children in one frame (`split` at
+    `distance < size*RADIUS*1.8`, no hysteresis, no morph). Fix, in this order of payoff:
+    (a) **Geomorphing** — in `generatePatch` also emit `parentPosition` (the height this vertex would have at level-1:
+    even-index vertices = the parent's own sample, odd = average of the two parent neighbours) and in the land vertex
+    shader `position = mix(parentPosition, position, morph)` with `morph` a per-patch uniform from camera distance
+    (0 at the split distance, 1 at 70 % of it). Do the same for `waterPositions`. This removes 90 % of visible pops.
+    (b) **Hysteresis**: split at 1.8×, merge back only beyond 2.3× so patches don't oscillate at the boundary.
+    (c) Keep the parent visible until *all four* children are uploaded (already done) but also require they have been
+    resident ≥ 2 frames so the GPU upload hitch doesn't coincide with the swap.
+    (d) Vegetation pops: on `rebuild()` scale new instances in over ~0.4 s (per-instance birth time via instanceColor.a
+    or a second attribute); trees.js impostor band already cross-fades.
+12. **Terrain is monotonous at mid-scale.** Ideas, cheap first: (a) adopt `terrain-material.js` (per-pixel rock/grass/
+    sand/snow layers + normal detail) — it is the single biggest change in perceived detail; (b) **Whittaker biomes**:
+    temperature = f(latitude, altitude) × moisture → desert (dunes, ochre), savanna, wetlands, badlands/mesa
+    (terraced noise), taiga, tundra — palette + vegetation density per biome, so continents differ; (c) **rivers/lakes**
+    without hydrology: use terrain-v2's valley term to carve meandering channels (`1-ridge` noise along valley floors,
+    depth 3–15 m) and fill closed basins to a per-basin level → `waterPositions` at that level, not 0; (d) **hero
+    landmarks** placed deterministically per continent: a 40 km impact crater with a lake, a 200 km canyon, a mesa
+    field, a volcanic cone — each a small analytic term added to `terrainHeight`; (e) boulder fields and rock arches
+    as instanced meshes where slope is 25–35°; (f) snow patches / scree via the material's slope+noise masks.
+13. **Hangar lighting is bad.** Causes: `station.js` multiplies every emissive ×2 after load (line 216) so the ceiling
+    light bars blow out to white through ACES, there are no actual lights inside (everything is emissive + the global
+    hemisphere), and the sun still lights the interior because nothing casts shadows into the bay. Fix: remove the ×2
+    for `LightBar*`/interior materials (keep it for nav lights), add 3–4 `PointLight`s (warm 3800 K, ~15 m range,
+    decay 2, no shadows) under the light bars **only while the camera is < 400 m from the pad**, and when
+    `station.isInsideHangar(nav.position)` scale the sun's intensity toward 0.15 and the hemisphere to a cool interior
+    ambient over 0.5 s. Optional: `lighting-csm.js` gives real hull shadows into the bay.
+14. **Deck floor flickers.** Cause: z-fighting between `LandingDeck` and the coplanar `DeckMarkings` batch (both at
+    deck height, see `blender/build_station.py` ~line 600) under the logarithmic depth buffer, plus possibly shadow
+    acne on the flat deck. Fix: raise `DeckMarkings` by 0.02 m in `build_station.py` and re-export (2 s), set
+    `polygonOffset: true, polygonOffsetFactor: -1` on the markings material in `station.js`, and set
+    `sun.shadow.normalBias ≥ 0.2` for the deck (or exclude the deck from `receiveShadow` while the fix is verified).
