@@ -236,6 +236,8 @@ All modules have standalone pages under `/dev/` so you can compare before wiring
 
 ## Requests
 
+- Astra: Flight slice committed as 2cbac2e and published for review at https://github.com/AvonMexicola/star-agent/pull/1 (head feat/inertial-flight, base feat/visual-fidelity). Only the separate review branch was pushed; no production deployment by Astra. Local shared feat/visual-fidelity contains the commit for PM inspection. Sol review is complete with no remaining blockers after the spin-on-assist-cancellation fix.
+
 - READY FOR REVIEW: src/flight-model.js, src/navigation.js, src/main.js, scripts/flight-model.{test,spec,config}.js, index.html, src/style.css, package.json, README.md. First Phase 1 slice implemented: V toggles inertial flight; pure immutable velocity/attitude step integrates body-axis thrust/torque, persistent momentum/spin, inverse-square 1g surface gravity, density-scaled drag/lift and AoA stall. Default assisted servo remains unchanged; 3 km/s inertial cap and station approach cap are explicit. HUD shows sea-level-based SPACE/TRANSITION/ATMOSPHERE and ATMO blend. X clears spin; landing/docking assist clears spin on entry. Frame initialization now prevents negative first-frame dt. Request 16 footer roadmap link is wired. 41 unit checks and six Chromium browser cases pass (four general, inertial controls/transition HUD, full station journey); the final spin fix has unit regression coverage. Screenshots inspected: /tmp/star-agent-flight/transition.png and test-results/orbit.png; browser environment in /tmp/star-agent-flight/environment.json (Chromium 151, ANGLE/Vulkan SwiftShader, 1440×900). Sol independently found the hidden-spin bug and verified the fix; suitable for bounded implementation/review work. This is locally available, not deployed by Astra. Claude owns deployment. Still pending: strut suspension/damage, aerodynamic control-surface authority, re-entry effects/audio, ShipState/MFD bus. Please keep public roadmap Phase 1 marked in progress.
 
 - Astra helper (Cees redirected the Omarchy-panel session here, 2026-09-05 16:47): claiming ONLY new `src/landing-gear.js`, `scripts/landing-gear.test.js`, and `LANDING-GEAR-HANDOFF.md` for Phase 1's pure spring/damper contact solver and tests. Main Astra retains navigation, flight-model, rendering, package.json and integration. No browser runs or shared build output from this helper. I will leave a concrete API and tested integration notes; please reserve these three new files.
@@ -353,3 +355,32 @@ Claude handles that — no repo changes needed except maybe `vercel.json`.
     in `index.html` (statusbar right side, next to "BUILT TO EXPLORE"): `<a href="./roadmap.html">ROADMAP</a>` styled like
     the other statusbar text. The client is deployed to Vercel from `feat/visual-fidelity` as the interim host until the
     netcup box is live (Monday); Claude runs deploys — don't add Vercel config or a GitHub Action for it.
+
+## Fable 5.1 — ship creation pipeline memory is available (2026-09-05)
+
+Cees explicitly requested a comprehensive reusable memory and notification to
+the project manager. **Saved: [SHIP-PIPELINE-MEMORY.md](SHIP-PIPELINE-MEMORY.md).**
+Please use it as the ship-authoring reference for future assignments and reviews.
+
+It records the complete proven route: isolated ownership/worktree setup, Blender
+authoring, game-to-Blender axes, exact cabin/boarding/cargo contracts, `.blend` and
+GLB export, named pivots, asynchronous loading/fallback, inventory persistence and
+modal input, four live MFDs, shader/depth/precision rules, studio/production tests,
+render evidence, failure fixes, PR delivery and merge integration boundaries.
+It also separates implemented features from future systems and includes a reusable
+completion-record template. The player guide links back to the memory.
+
+Reference delivery: [PR #4](https://github.com/AvonMexicola/star-agent/pull/4),
+implementation `9370c53`, stacked on flight PR #1. The new Nomad is integrated in
+the ship game branch and shared workspace; the standalone studio is an additional
+review tool. Playable ship branch: http://localhost:5190/ ; model viewer:
+http://localhost:5190/dev/ship.html . The viewer runs as the transient user service
+`star-agent-ship-viewer.service`. Recorded verification: 46 isolated unit cases,
+production build, two production ship browser cases and one studio case passed.
+The memory update changes documentation only; prior test counts are historical
+implementation results, not newly rerun checks.
+
+This notice is posted in the established manager handoff channel; no read receipt
+or separate direct-message delivery is claimed. Existing shared feature work is
+preserved. Manager review, dependency merge and production deployment remain
+with Fable/Claude under the current team rules.
