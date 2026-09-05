@@ -110,6 +110,50 @@ test('normal Navigation construction retains the existing orbital start', t => {
   assert.equal(Boolean(navigation.openingActive), false);
 });
 
+test('tilted station walking keeps one deck plane beyond the ship boundary', async t => {
+  const { navigation, station, keyDown, keyUp, step } = await setupOpening(t);
+  navigation.startStation();
+  station.beginOpening();
+  station.setOpeningProgress(1);
+  station.endOpening();
+
+  // Begin clear of the parked ship and walk diagonally across the former 25 m
+  // ship-local cutoff. Both sampled bands are supported by the authored deck.
+  const initialLocal = new THREE.Vector3(14, SHIP_LAYOUT.eyeHeight, 16);
+  navigation.position.copy(navigation.fromShipLocal(initialLocal));
+  navigation.orientation.copy(navigation.shipOrientation).multiply(
+    new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 4),
+  );
+  const supported = station.deckPoint(navigation.position, SHIP_LAYOUT.eyeHeight);
+  nearVector(supported, navigation.position, 1e-8);
+
+  const expectedDirection = new THREE.Vector2(1, 1).normalize();
+  const nearSteps = [], farSteps = [];
+  keyDown('KeyS');
+  for (let frame = 0; frame < 150 && farSteps.length < 20; frame++) {
+    const before = navigation.toShipLocal();
+    step();
+    const after = navigation.toShipLocal();
+    const radius = (before.length() + after.length()) / 2;
+    const delta = new THREE.Vector2(after.x - before.x, after.z - before.z);
+    near(after.y, SHIP_LAYOUT.eyeHeight, 1e-6);
+    if (radius > 23.5 && radius < 24.5) nearSteps.push(delta);
+    if (radius > 25.5 && radius < 26.5) farSteps.push(delta);
+  }
+  keyUp('KeyS');
+
+  assert.ok(nearSteps.length >= 8 && farSteps.length >= 8,
+    `captured motion on both sides of 25 m (${nearSteps.length} near, ${farSteps.length} far)`);
+  const average = samples => samples.reduce((sum, delta) => sum.add(delta), new THREE.Vector2()).multiplyScalar(1 / samples.length);
+  const nearMotion = average(nearSteps), farMotion = average(farSteps);
+  assert.ok(nearMotion.clone().normalize().dot(expectedDirection) > .99999,
+    `near motion follows the intended deck heading: ${nearMotion.toArray()}`);
+  assert.ok(farMotion.clone().normalize().dot(expectedDirection) > .99999,
+    `far motion has no lateral drift: ${farMotion.toArray()}`);
+  near(farMotion.length(), nearMotion.length(), nearMotion.length() * .01);
+  assert.ok(navigation.toShipLocal().length() > 25, 'walking crossed the former ship-local boundary physically');
+});
+
 test('station opening spawn remains gated, then supports a physical board and launch journey', async t => {
   const { navigation, station, press, keyDown, keyUp, step, advance, until, moveUntil } = await setupOpening(t);
   const radialUp = STATION_DIRECTION;
