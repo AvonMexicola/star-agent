@@ -3,19 +3,77 @@
     "name": "player-male",
     "file": "player-male.glb",
     "category": "character",
-    "tris": 20000,
-    "textures": 3,
+    "tris": 10379,
+    "textures": 1,
     "texture_size": 1024,
     "texture_format": "webp",
     "height_m": 1.85,
     "footprint_m": [
-      1.03,
-      0.422
+      1.029,
+      0.421
     ],
     "credits": 34,
     "concept": "raw/player-male-concept.png",
-    "file_mb": 0.847,
-    "notes": "Sealed space suit, opaque dark visor, mint accent lines. Static mesh; rig/animation pending."
+    "file_mb": 1.851,
+    "notes": "Sealed space suit, opaque dark visor, mint accent lines. Meshy auto-rig (24 joints, retopo to 10.4k tris); 14 preset motion clips, 0 cr each.",
+    "animations": [
+      {
+        "name": "aim-rifle",
+        "seconds": 1.833
+      },
+      {
+        "name": "carry-walk",
+        "seconds": 6.5
+      },
+      {
+        "name": "crouch-walk",
+        "seconds": 1.167
+      },
+      {
+        "name": "death",
+        "seconds": 2.25
+      },
+      {
+        "name": "fire-pistol",
+        "seconds": 7.833
+      },
+      {
+        "name": "fire-rifle",
+        "seconds": 0.667
+      },
+      {
+        "name": "idle",
+        "seconds": 2.333
+      },
+      {
+        "name": "jump",
+        "seconds": 9.833
+      },
+      {
+        "name": "run",
+        "seconds": 0.5
+      },
+      {
+        "name": "sit-down",
+        "seconds": 2.292
+      },
+      {
+        "name": "sit-idle",
+        "seconds": 10.667
+      },
+      {
+        "name": "stand-up",
+        "seconds": 8.292
+      },
+      {
+        "name": "walk",
+        "seconds": 4.208
+      },
+      {
+        "name": "wounded-walk",
+        "seconds": 8.667
+      }
+    ]
   },
   {
     "name": "alien-tree-bulb",
@@ -232,5 +290,23 @@
     "concept": "raw/rock-arch-concept.png",
     "file_mb": 0.557,
     "notes": "Natural wind-eroded sandstone arch; span reads across X."
+  },
+  {
+    "name": "mannequin",
+    "file": "mannequin.glb",
+    "category": "character",
+    "tris": 4268,
+    "textures": 0,
+    "texture_size": 0,
+    "texture_format": "none",
+    "height_m": 1.8,
+    "footprint_m": [
+      1.03,
+      0.511
+    ],
+    "credits": 0,
+    "concept": null,
+    "file_mb": 0.413,
+    "notes": "Procedural placeholder astronaut (blender/build_mannequin.py). Rigged to Mixamo bone names without prefix, A-pose rest, faces -Z. 14 clips: idle, walk, run, jump, crouch-walk, sit-down, sit-idle, stand-up, carry-walk, wounded-walk, aim-rifle, fire-rifle, fire-pistol, death. Locomotion in place. Retarget with blender/retarget_clips.py."
   }
 ]
