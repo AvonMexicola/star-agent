@@ -10,3 +10,21 @@
 #seed-form{margin:20px 0;padding:16px 0;border-top:1px solid var(--line)}#seed-form label{font:11px var(--mono);margin-right:12px}#seed-input{width:150px;background:#061119;color:var(--mint);border:1px solid var(--line);padding:9px;font:12px var(--mono);border-radius:3px}#seed-form button{padding:10px;margin-left:8px;font:10px var(--mono)}#seed-input:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
 body.photo-mode #toast{display:none}
 #course-guidance{position:absolute;top:116px;left:50%;transform:translateX(-50%);max-width:90vw;padding:10px 14px;border:1px solid var(--line);background:#061119b3;color:var(--mint);font:10px var(--mono);text-align:center}
+
+/* Six destinations share a row on desktop and a readable 3x2 grid on phones. */
+.destinations{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.destination{gap:10px;padding:18px 12px}
+.destination-icon{flex:0 0 auto}
+.destination>span:nth-child(2){min-width:0}
+.destination strong,.destination small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.destination:focus-visible{outline-offset:2px}
+.destination[disabled]{opacity:.5;cursor:default}
+.destination[disabled]:hover{background:#0b151d99;border-color:var(--line)}
+.flight-hints{bottom:200px}
+@media(min-width:1700px){.destination{padding:22px 18px}.flight-hints{bottom:228px}}
+@media(max-height:800px){.destination{padding:14px 11px}.flight-hints{bottom:180px}}
+@media(max-width:1050px){.destination{gap:8px;padding:14px 9px}}
+@media(max-width:860px){.destinations{grid-template-columns:repeat(3,minmax(0,1fr))}.flight-hints{bottom:232px}}
+@media(max-width:700px){.destinations{gap:6px}.flight-hints{bottom:232px}}
+#course-guidance{z-index:7}
+body:has(#course-guidance:not([hidden])) #toast{top:190px}

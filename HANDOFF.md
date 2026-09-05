@@ -8,20 +8,20 @@ server. Keep work local until those server details and deployment direction arri
 Fable 5.1 is project lead. Astra focuses on creative and coding work and checks
 this handoff regularly. Evaluate Sol 5.6 for bounded coding work with reviewed
 results and meaningful tests; use Claude Opus for frontend art/interfaces when
-needed. Station integration is currently IN PROGRESS, not yet validated.
+needed. Station integration is implemented and validated; ready for PM review.
 
 ## Current state — 2026-09-05
 
 Cees reported Claude's session limit and Astra took over the fidelity integration.
-Working branch: `feat/visual-fidelity`. The repository still has no commits;
-source files are untracked, so do not assume `git diff` describes the work.
+Working branch: `feat/visual-fidelity`. The project now has a committed baseline
+and PM roadmap commits. Preserve concurrent PM changes when staging work.
 
 The active renderer now uses `terrain-v2.js` through `world.js`, shared numeric
 seeds (`generation.js`, default 7291, generator version 2), triplanar surface
 materials, branch-card vegetation, local shadows and sky reflections. The old
 `clouds.js` shell is retained but **not imported by main.js**; the active cloud
 volume is `cloud-volume.js`, composited by atmosphere.js using logarithmic scene
-depth. Station integration is now explicitly requested and in progress.
+depth. The station is now wired into the playable scene.
 
 Shift + click a destination sets a bearing without teleporting; plain click is
 optional quick transit. Controls H contains a seed form; share `/?seed=42`.
@@ -41,22 +41,35 @@ The stable tree lattice is unchanged; sampled terrain/density is cached across
 40 m origin updates. Near shadows remain local; distant trees are crossed cards,
 not full 3D crowns. Ground grass is denser near the viewer.
 
-30 unit checks passed on the final source, including LOD coverage, conservative
-CPU assignment between rebuilds, and stable tree placement across origin changes.
-The production build and `scripts/surface-detail.config.js` browser check passed.
-Native 1440×900 forest-ground, forest-distance and shoreline screenshots plus
-browser/backend metadata are in `/tmp/star-agent-surface`. Chromium 151 uses
-ANGLE/Vulkan SwiftShader: software FPS is NOT a hardware performance claim.
-Earlier full boarding/fidelity and four general browser cases passed before this
-surface pass; those journeys were not rerun for these rendering-only changes.
+34 unit checks pass, including four Sol-authored real-GLB station tests. The
+four general Chromium tests pass (planet startup, continuous physical boarding,
+coast transit, course/seed persistence). The final station production browser
+journey passes: Shift+click course without movement, optional transit to exterior
+approach, W through animated doors, X brake over pad, L dock, F stand, physical
+hatch/ramp/deck walk, return to chair, gentle L launch, S reverse out.
+Desktop six-column and phone-width 3x2 destination layouts and notification/course
+clearance are checked. Screenshots and renderer metadata: `/tmp/star-agent-station`
+(native 1440x900; phone layout 390x844). Chromium 151, ANGLE/Vulkan SwiftShader;
+software-rendered FPS is not a hardware performance claim. Surface-pass evidence
+remains in `/tmp/star-agent-surface`.
 
-The user-facing development server remains at `http://localhost:5173/?seed=7291`.
-The station model, distant asset and door controller exist, but it is absent from
-main.js; playable docking, collision and deck movement still need integration.
+The local dev server was restarted at `http://localhost:5173/?seed=7291`.
+No deployment was performed. Await Cees's dedicated netcup server.
+
+Station implementation: fixed at 100 km over the seeded coast. Planet altitude
+remains planet-relative for atmosphere; deck support is the flat authored model
+surface. Conservative triangle-bound BVH sweeps include wings/nose and animated
+doors; this is conservative contact, not exact mesh physics. Docking retains ship
+heading. Launch rises at 3 m/s to ~6 m eye clearance without the old 12 m jump.
+Walking is bounded to the supported hangar deck; no EVA, side-room/catwalk travel,
+or moving-station passenger physics. Near-station shadows and local hangar lights
+are enabled. Sol proved suitable for this bounded test task after root review;
+Claude Opus supplied the reviewed CSS proposal for destination/notification layout.
+
 Fidelity remains below the Star Citizen target. Distant silhouettes, terrain/asset
 detail, shadow coverage, cloud sampling and scene water reflections need work.
 
-Two AI agents work on this repo in parallel. This file is how we avoid stepping on each other.
+Agents coordinate ownership and review through this file. Read the PM notes below.
 
 ## Ownership
 
@@ -219,6 +232,8 @@ All modules have standalone pages under `/dev/` so you can compare before wiring
 `tests/world.test.js` was extended, not replaced.
 
 ## Requests
+
+- READY FOR REVIEW: src/main.js, src/station.js, index.html, src/style.css, tests/station.test.js, scripts/station.config.js, scripts/station.spec.js, package.json, README.md. Station wiring/docking/deck journey complete; 34 unit checks, 4 general browser cases and final station journey/layout check pass. Screenshots: /tmp/star-agent-station. Navigation, boarding flight envelope and station-collision.js were already included in the shared baseline. No Vercel or other deployment. Phase 1 specs noted; this commit closes the station slice.
 
 - Astra: Sol 5.6 owns ONLY new tests/station.test.js and optional scripts/station-fixture.js to evaluate bounded coding/test work. I retain production station/navigation/main integration and browser checks. Do not overlap these files.
 

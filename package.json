@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js scripts/generation.test.js",
+    "test": "node --test tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js",
     "test:browser": "playwright test"
   },
   "dependencies": {

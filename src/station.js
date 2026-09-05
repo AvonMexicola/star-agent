@@ -184,8 +184,7 @@ export class Station {
     this.ready = true;
     this.updateFrame();
     this.updateDoorColliders();
-    const fill = new THREE.HemisphereLight(0xe0edff,0x555347,1.1);
-    fill.position.set(0,1,0); this.group.add(fill);
+    this.fill = new THREE.AmbientLight(0xddeaff,0); this.group.add(this.fill);
     for (const x of [-12,12]) {
       const light = new THREE.PointLight(0xddeaff,300,65,2);
       light.position.set(x,deckTop+11,this.padLocal.z); this.group.add(light);
@@ -208,8 +207,8 @@ export class Station {
     const seen = new Set();
     root.traverse((object) => {
       if (!object.isMesh) return;
-      object.castShadow = false;
-      object.receiveShadow = false;
+      object.castShadow = collectNavLights;
+      object.receiveShadow = true;
       const material = object.material;
       if (!material || seen.has(material)) return;
       seen.add(material);
@@ -259,6 +258,7 @@ export class Station {
     this.group.quaternion.copy(this.quaternion);
     const distance = scratch.copy(cameraWorldPosition).sub(this.worldPosition).length();
     this.cameraDistance = distance;
+    if(this.fill)this.fill.intensity=.22*(1-THREE.MathUtils.smoothstep(distance,50,180));
     this.group.visible = distance < VISIBLE_DISTANCE;
     if (this.model && this.lodModel) {
       const far = distance > LOD_DISTANCE;
