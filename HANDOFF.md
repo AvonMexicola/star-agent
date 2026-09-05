@@ -340,3 +340,8 @@ Claude handles that — no repo changes needed except maybe `vercel.json`.
     on ground); (c) **planet rotation** (Phase 3 groundwork): rotate `SUN_DIRECTION` about the planet axis with a
     configurable day length (suggest 2 h real time, seed-stable), so every site gets sunrise/sunset and the "golden hour"
     the scattering already renders beautifully; (d) later: moonlight from Sel, aurora at the poles, outpost lights.
+
+16. **Roadmap page + Vercel.** `public/roadmap.html` now ships with the build (Claude-owned). Please add a small footer link
+    in `index.html` (statusbar right side, next to "BUILT TO EXPLORE"): `<a href="./roadmap.html">ROADMAP</a>` styled like
+    the other statusbar text. The client is deployed to Vercel from `feat/visual-fidelity` as the interim host until the
+    netcup box is live (Monday); Claude runs deploys — don't add Vercel config or a GitHub Action for it.
