@@ -49,7 +49,7 @@ try {
     $('course-guidance').hidden=false;
     notify('Flight course set. Steer toward the bearing; climb above the horizon for long journeys.');
   }
-  let elapsed=0,last=performance.now(),lastHud=0,frames=0,fps=0,frameAccumulator=0,firstReady=false,transiting=false,hidden=false;
+  let elapsed=0,last=null,lastHud=0,frames=0,fps=0,frameAccumulator=0,firstReady=false,transiting=false,hidden=false;
   let renderScale=1, automaticScale=true, resizePending=false;
   function resize(){const width=Math.floor(innerWidth*renderScale),height=Math.floor(innerHeight*renderScale);renderer.setSize(width,height,false);canvas.style.width='100%';canvas.style.height='100%';camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();const size=renderer.getDrawingBufferSize(new THREE.Vector2());atmosphere.resize(size.x,size.y);}
   window.addEventListener('resize',()=>resizePending=true);resize();
@@ -85,7 +85,7 @@ try {
   }
   for(const button of document.querySelectorAll('[data-destination]'))button.addEventListener('click',event=>event.shiftKey?setCourse(button.dataset.destination):transit(button.dataset.destination));
   function updateHud(time){
-    const alt=nav.altitude,speed=nav.speed,n=nav.normal;
+    const alt=nav.altitude,speed=nav.speed,n=nav.normal,flightEnv=nav.flightEnvironment;
     if(course){
       const offset=course.point.clone().sub(nav.position),distance=offset.length();
       const local=offset.clone().applyQuaternion(nav.orientation.clone().invert());
@@ -99,16 +99,16 @@ try {
     $('altitude-meter').style.width=`${Math.min(100,Math.log10(alt+1)/7*100)}%`;
     const lat=Math.asin(n.y)*180/Math.PI,lon=Math.atan2(n.x,n.z)*180/Math.PI;
     $('latitude').textContent=`${Math.abs(lat).toFixed(3)}° ${lat>=0?'N':'S'}`;$('longitude').textContent=`${Math.abs(lon).toFixed(3)}° ${lon>=0?'E':'W'}`;
-    const mode=nav.dockedAtStation?(nav.mode==='walk'?'STATION EXPLORATION':'DOCKED'):nav.mode==='walk'?'SURFACE EXPLORATION':nav.mode==='landed'?'LANDED':alt>70000?'ORBITAL FLIGHT':'ATMOSPHERIC FLIGHT';
+    const mode=nav.dockedAtStation?(nav.mode==='walk'?'STATION EXPLORATION':'DOCKED'):nav.mode==='walk'?'SURFACE EXPLORATION':nav.mode==='landed'?'LANDED':flightEnv.regime==='SPACE'?'SPACE FLIGHT':flightEnv.regime==='TRANSITION'?`TRANSITION · ATMO ${Math.round(flightEnv.atmosphereFraction*100)}%`:'ATMOSPHERIC FLIGHT';
     $('mode-label').textContent=mode;$('biome').textContent=nav.stationDistance<500?'AEON ORBITAL':alt>70000?'EXOSPHERE':biomeAt(n.x,n.y,n.z);$('fps').textContent=`${fps} FPS`;
     $('state-text').textContent=nav.stationLift?'UNDOCKING':nav.autoland?(nav.stationDistance<500?'DOCKING ASSIST':'LANDING ASSIST'):nav.mode==='walk'||nav.mode==='landed'?nav.interaction:nav.stationDistance<500?(station.doorsOpen<.98?'HANGAR DOORS OPENING':station.canDock(nav.position)?'L · DOCK ON DECK':'FLY OVER THE CENTRAL PAD'):nav.boost?'BOOST ENGAGED':'FREE FLIGHT';
-    $('drive-label').textContent=nav.mode==='walk'?'ON FOOT':nav.autoland?'AUTOLAND':`ASSIST ×${nav.speedScale.toFixed(1)}`;
+    $('drive-label').textContent=nav.mode==='walk'?'ON FOOT':nav.autoland?'AUTOLAND':nav.flightAssist?`ASSIST ×${nav.speedScale.toFixed(1)}`:'INERTIAL · V TO ASSIST';
     $('terrain-status').textContent=`${planet.visibleCount} PATCHES · LOD ${planet.maxVisibleLevel}`;
     lastHud=time;
   }
   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();nav.enabled=false;fatal('The graphics context was lost. Reload the page to restart your flight.');});
   function frame(time){
-    requestAnimationFrame(frame);const realDt=(time-last)/1000,dt=Math.min(realDt,.2);last=time;elapsed+=dt;
+    requestAnimationFrame(frame);const realDt=last===null?0:Math.max(0,(time-last)/1000),dt=Math.min(realDt,.2);last=time;elapsed+=dt;
     if(document.hidden)return;
     station.update(nav.position,nav.position,nav.sunDirection,dt);
     const steps=Math.max(1,Math.ceil(dt/.025));for(let i=0;i<steps;i++)nav.update(dt/steps);
@@ -134,5 +134,5 @@ try {
   }
   requestAnimationFrame(frame);
   // Explicit read-only diagnostics plus navigational hooks for reproducible browser tests.
-  window.starAgent={get state(){return {seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,groundHeight:nav.groundHeight,biome:biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:station.canDock(nav.position)},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){automaticScale=false;renderScale=THREE.MathUtils.clamp(value,.4,1);resizePending=true;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;}};
+  window.starAgent={get state(){return {seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:station.canDock(nav.position)},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){automaticScale=false;renderScale=THREE.MathUtils.clamp(value,.4,1);resizePending=true;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;}};
 }catch(error){console.error(error);fatal(`Could not start WebGL 2. Use a current desktop browser with hardware acceleration enabled. ${error.message}`);}
