@@ -25,6 +25,26 @@ Press **V** while freely flying to toggle inertial flight. Releasing thrust then
 
 L engages landing assistance near dry terrain or polar ice. After landing, F stands from the pilot chair. Walk aft, press F at the rear hatch, wait for the ramp to lower, and walk outside. Return up the ramp, approach the chair, press F to sit, then L to launch. Boarding is physical; F outside does not teleport you aboard. Tab hides the interface.
 
+## Controller
+
+Connect a gamepad and press a button, then release the controls to start. Uses the browser's [Standard Gamepad mapping](https://www.w3.org/TR/gamepad/#remapping), including recognized Xbox and PlayStation controllers. Mouse capture is optional. Sticks have a radial deadzone and proportional movement in flight and on foot. Release controls after switching windows, closing help or reconnecting to resume movement.
+
+| Control (Xbox / PlayStation) | Action |
+| --- | --- |
+| Left / right stick | Move and strafe / look and steer |
+| RT / LT · R2 / L2 | Ascend / descend |
+| LB / RB · L1 / R1 | Roll left / right |
+| A / ✕ | Jump on foot |
+| B / ○ (hold) | Brake translation and rotation |
+| X / □ | Interact with pilot chair or hatch |
+| Y / △ | Land, dock or launch |
+| L3 (hold) / R3 | Boost or sprint / toggle flight assist |
+| D-pad up / down | Increase / decrease assisted speed |
+| View / Share | Toggle HUD |
+| Menu / Options | Open / close controls |
+
+In help, right stick or D-pad up/down scrolls the manual. Destination buttons, seed entry and sound still use mouse or keyboard. Controllers without a standard browser mapping are reported as unsupported; custom remapping and vibration are not implemented. Controller availability depends on browser/OS support and requires HTTPS or localhost.
+
 ## Visit Aeon Orbital
 
 Shift + click **Aeon Orbital** to set a course for continuous flight, or click it normally for optional transit to the exterior approach. The doors open automatically as you approach. Fly forward with W, brake with X over the central pad, and press L to dock. Approach speed is limited automatically near the station.
