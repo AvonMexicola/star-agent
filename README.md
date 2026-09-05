@@ -51,6 +51,14 @@ Shift + click **Aeon Orbital** to set a course for continuous flight, or click i
 
 F stands from the chair. Walk aft, use F at the hatch, wait for the ramp and walk onto the hangar deck. Return up the ramp to the chair and press F to sit. L lifts the ship gently to bay clearance; reverse with S to leave through the doors. Walking stays on the supported deck; jumping into space is not part of this prototype.
 
+## Visit Selene
+
+Selene is a procedural, cratered moon with a 434.35 km radius, held at a fixed position 24,000 km from Aeon’s centre. Its orbit is compressed for the prototype; this is not an astronomical simulation. Broad dark plains, crater bowls, bright rims and surface relief share one deterministic lunar surface function. The moon uses the scene’s sunlight and atmosphere/depth rendering, so its phase and visibility change with your viewpoint.
+
+Click **Selene** for an optional lunar flyby, or Shift + click it to set a course for continuous flight. The HUD reports altitude above Selene nearby. Approach speed decreases as you close in, and a swept collision check stops the ship at a 4 km flyby perimeter. Lunar landing, walking and lunar gravity are not implemented. Return with **High orbit** or O. The moon stays the same across planet seeds.
+
+Moon checks: `node --test tests/moon.test.js` and `npm run test:browser -- -c scripts/moon.config.js`. Browser evidence is saved under `/tmp/star-agent-moon-evidence`.
+
 ## Rendering
 
 - Terrain ridges, valleys, coastal cliffs and glaciers come from one shared CPU height function. Collision, rendering, biomes and vegetation use that function.

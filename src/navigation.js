@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GamepadInput } from './gamepad.js';
+import { MOON_RADIUS, MOON_CLEARANCE, moonAltitude, constrainMoonStep } from './moon-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
 import { FLIGHT, environmentAt, step as stepFlight } from './flight-model.js';
 import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './boarding.js';
@@ -103,6 +104,7 @@ export class Navigation {
   }
   dryGround(){const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
   landOrLaunch(){
+    if(this.mode==='flight'&&moonAltitude(this.position)<MOON_RADIUS*4){this.notify('Selene is a flyby destination. Lunar landing is not available yet.');return;}
     if(this.mode==='walk'){this.notify('Walk to the cockpit and sit in the pilot chair with F before launch.');return;}
     if(this.mode==='landed'){
       if(this.dockedAtStation){
@@ -229,7 +231,10 @@ export class Navigation {
         const vertical=axis('Space','KeyC',pad.vertical);
         input.addScaledVector(oldNormal,vertical);input.clampLength(0,1);
         const cruise=clamp(altitude*.65+25,12,4_000_000)*this.speedScale*(this.boost?7:1);
-        const approachLimit=this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity;
+        const stationLimit=this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity;
+        const lunarHeight=moonAltitude(this.position);
+        const lunarLimit=lunarHeight<MOON_RADIUS*8?Math.max(12,(lunarHeight-MOON_CLEARANCE)*.65+25):Infinity;
+        const approachLimit=Math.min(stationLimit,lunarLimit);
         const maxSpeed=Math.min(cruise,approachLimit);
         if(this.velocity.length()>approachLimit)this.velocity.setLength(approachLimit);
         const roll=axis('KeyQ','KeyE',pad.roll);
@@ -244,6 +249,12 @@ export class Navigation {
       const steps=clamp(Math.ceil(this.speed*dt/Math.max(10,altitude*.2)),1,96);
       for(let i=0;i<steps;i++){
         const previous=this.position.clone(),proposed=previous.clone().addScaledVector(this.velocity,dt/steps);
+        const lunar=constrainMoonStep(previous,proposed);
+        if(lunar.hit){
+          this.position.copy(lunar.point);this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;
+          if(!this.moonNotice||performance.now()-this.moonNotice>4000){this.notify('Lunar flyby perimeter reached. Turn or reverse to continue around Selene.');this.moonNotice=performance.now();}
+          break;
+        }
         const collision=this.station?.constrainStep(previous,proposed,this.orientation);
         this.position.copy(collision?collision.point:proposed);
         if(collision?.hit){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;break;}
