@@ -184,18 +184,23 @@ Exit criteria: 50 players formation-flying around the station at 20 Hz with < 15
   - Tools: pick (small brush, slow), mining laser (beam, heat, larger brush), later a ship-mounted mining laser for
     asteroids (Phase 4 mount system). Chunks cast/receive shadows and use the terrain material's rock/ore layers.
 - **Caves**: carve the terrain with a 3D worm/noise field (`caveField(x,y,z)`), voxelized near the player and meshed with **marching cubes in a worker** (chunks 32³ at 1 m), entrances where the field intersects steep terrain; interior lit by crystal emissives + headlamp; rare items spawn deep. Height-field terrain stays as is; cave chunks replace it locally with a stencil/discard on the surface mesh.
-- **Assets (Meshy, 25 k credits)** — pipeline that works best (Cees, 2026-09-05): (1) write a one-paragraph prop brief
-  (function, silhouette, materials, scale in metres); (2) have ChatGPT render an **isometric 2D concept** of the prop on a
-  plain background, ¾ view, neutral lighting, no text; (3) feed that image to **Meshy image-to-3D** (PBR textures on,
-  target ≤ 10 k tris), pick the best of the variants, refine once; (4) download the GLB, run it through headless Blender
-  (`blender -b --python blender/clean_asset.py -- in.glb out.glb`: decimate if > 10 k tris, apply transforms, origin at
-  the base, Y-up, metres) and drop it in `public/models/props/`; (5) add a row to `public/models/props/manifest.json`
-  (name, file, tris, footprint, credits spent). A Claude Opus agent drives the Chrome tabs (the one standing exception
-  to the token policy); Cees stays signed in to both sites and the agent never handles credentials or payments.
-  Targets: forge, refinery, fabricator, storage crate, base gate, turret bases, mining laser, shop kiosk, an asteroid
-  set and a crystal set. Check per-model credit cost in the Meshy dashboard first; plan ~40 assets, keep the rest for
-  iterations.
-
+- **Assets (Meshy, 25 k credits)** — pipeline as run on 2026-09-05 (3 assets delivered, 156 credits): (1) one-paragraph
+  prop brief (function, silhouette, materials, height in metres); (2) **concept image inside Meshy's own image generator**
+  (9 cr; ¾ isometric view, plain mid-grey background, no text) — this replaced the ChatGPT step because Chrome blocks
+  cross-site image transfer and Meshy's one-click "Image to 3D" removes the hand-off entirely; (3) Meshy image-to-3D,
+  *Smart Topology* preset, 10 k polys, PBR on, Private (**15 cr/model**; High Detail is 35 cr); refine once if untextured;
+  (4) download GLB → `blender -b --python blender/clean_asset.py -- in.glb out.glb --tris 10000 --height H --origin base`
+  (join, decimate, apply transforms, metric scale, origin at base/grip/back, texture clamp) → `public/models/props/`;
+  (5) append to `public/models/props/manifest.json`; (6) check on the review page `/dev/props.html` (turntable grid,
+  1.8 m silhouette, flags NO TEXTURE / OVER TRIS / SCALE / ORIGIN). At 15 cr/model the 25 k budget covers > 1 000 models,
+  so credits are not the constraint; **Chrome's per-site "Automatic downloads" permission is** — allow it for
+  `meshy.ai` (chrome://settings/content/automaticDownloads) or the agent stalls after ~5 files.
+  Size: raw Meshy GLBs are ~10 MB each (3× 2048² PNG maps); `raw/` is git-ignored and the clean step must shrink
+  textures to 1024² WebP (`gltf-transform webp` + `resize`) so a prop is 1–2 MB on the CDN. A Claude Opus agent drives
+  the Chrome tabs (the standing exception to the token policy); Cees stays signed in, the agent never handles
+  credentials, payments or terms.
+  Batches: 1 alien flora + rocks (12), 2 characters + gear (pilot suit with auto-rig, backpack, pistol, laser rifle,
+  mining laser, helmet), 3 base props (forge, refinery, fabricator, crates, gate, kiosk), 4 asteroids + crystals + ore.
 **Work items**: `src/build/` snapping + validation (*Astra*), pieces kit (*Meshy via a Claude Opus agent in Chrome — exception (b)*), shield mechanic (*Astra*), resources/inventory/crafting (*Astra subagent*), `src/voxel/` SDF + marching cubes worker + brush lists — shared by asteroids, caves and outcrops (*Astra; Fable agent only if it stalls — exception (c)*), asteroid SDFs and ore fields (*Astra subagent*), cave field + entrances (*Astra subagent*), mining laser + tools (*Astra subagent*), brush-list replication/persistence (*Astra*, Phase 5).
 
 Exit criteria: two players build a walled base, lock it with a code, mine metal in a cave, forge ingots, craft a turret.
