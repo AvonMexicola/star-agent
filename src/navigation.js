@@ -67,6 +67,7 @@ export class Navigation {
     if(this.mode!=='walk'||!this.shipPosition)return '';
     const hit=interactionAt(this.toShipLocal(),this.doorOpen);
     if(hit==='seat')return 'F · SIT IN PILOT CHAIR';
+    if(hit==='storage')return 'F · OPEN CARGO STORAGE';
     if(hit==='door')return this.doorOpen?'F · CLOSE HATCH & RAMP':'F · OPEN HATCH & LOWER RAMP';
     return this.insideShip?'WALK AFT TO THE HATCH':'APPROACH THE REAR HATCH TO BOARD';
   }
@@ -140,6 +141,8 @@ export class Navigation {
       if(hit==='door'){
         if(this.doorOpen&&Math.abs(local.x)<1.2&&local.z>3.3&&local.z<7.5){this.notify('Step clear of the ramp before closing it.');return;}
         this.doorOpen=!this.doorOpen;this.notify(this.doorOpen?'Hatch opening. Ramp lowering — walk through when clear.':'Hatch closing. Ramp retracting.');
+      }else if(hit==='storage'){
+        this.keys.clear();this.velocity.set(0,0,0);this.openInventory?.();
       }else if(hit==='seat'){
         this.position.copy(this.fromShipLocal(new THREE.Vector3(...SHIP_LAYOUT.seatEye)));this.orientation.copy(this.shipOrientation);this.mode='landed';this.insideShip=true;this.velocity.set(0,0,0);this.notify('Pilot seat engaged. L to launch · F to stand.');
       }else this.notify(this.interaction||'Approach the ship’s rear hatch.');

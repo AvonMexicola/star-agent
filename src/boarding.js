@@ -1,7 +1,7 @@
 /** Ship-local dimensions in metres. Navigation supplies eye positions. */
 export const SHIP_LAYOUT = Object.freeze({
   // Closed ship envelope includes the six-metre wings and nose.
-  flightBounds: Object.freeze({ min: Object.freeze([-6.05, 0, -6.82]), max: Object.freeze([6.05, 4.26, 4.25]) }),
+  flightBounds: Object.freeze({ min: Object.freeze([-6.05, 0, -6.82]), max: Object.freeze([6.05, 4.28, 4.28]) }),
   floorY: 1,
   eyeHeight: 1.75,
   capsuleRadius: 0.25,
@@ -11,6 +11,7 @@ export const SHIP_LAYOUT = Object.freeze({
   seat: Object.freeze([0, 1, -2.8]),
   seatEye: Object.freeze([0, 2.55, -2.8]),
   stand: Object.freeze([0, 2.75, -1.2]),
+  storage: Object.freeze({ minX: .93, maxX: 1.65, minZ: .35, maxZ: 1.95, topY: 2.08, accessX: .93, accessZ: 1.15 }),
 });
 
 export function shipFloorAt(localX, localZ, doorOpen) {
@@ -32,6 +33,7 @@ const walls = [
   expanded(-1.65, 1.65, -4.5, -4.5),
   expanded(-1.65, -0.9, 4, 4),
   expanded(0.9, 1.65, 4, 4),
+  expanded(SHIP_LAYOUT.storage.minX, SHIP_LAYOUT.storage.maxX, SHIP_LAYOUT.storage.minZ, SHIP_LAYOUT.storage.maxZ),
 ];
 const closedDoor = expanded(-0.9, 0.9, 4, 4);
 
@@ -78,6 +80,7 @@ export function interactionAt(localPosition, doorOpen) {
   const { x, z } = localPosition;
   const inside = Math.abs(x) < 1.65 && z > -4.5 && z < 4;
   if (inside && Math.hypot(x, z + 2.8) <= 1.6) return 'seat';
+  if (inside && x < SHIP_LAYOUT.storage.minX && Math.hypot(x - SHIP_LAYOUT.storage.accessX, z - SHIP_LAYOUT.storage.accessZ) <= 1.12) return 'storage';
   if (Math.abs(x) < 2 && Math.abs(z - 4) < 2.2) return 'door';
   return null;
 }
