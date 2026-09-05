@@ -36,3 +36,5 @@ body:has(#course-guidance:not([hidden])) #toast{top:190px}
 @media(min-width:1100px){.destinations{grid-template-columns:repeat(7,minmax(0,1fr))}.destination{gap:8px;padding-left:10px;padding-right:10px}.destination-number{display:none}.destination small{letter-spacing:.5px;font-size:6px}}
 @media(min-width:861px) and (max-width:1099px){.destinations{grid-template-columns:repeat(4,minmax(0,1fr))}.flight-hints{bottom:240px}}
 @media(max-width:860px){.flight-hints{bottom:320px}}
+.camera-engaged .mission-panel{opacity:0;pointer-events:none;transform:translateY(-12px)}
+#camera-button[aria-pressed="true"]{border-color:#b6efd180;background:#acd9ce1f}
