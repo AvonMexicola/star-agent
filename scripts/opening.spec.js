@@ -61,6 +61,9 @@ test('hangar reveal hands movement to physical boarding and launch',async({page}
 
 test('default intro accepts controller movement and intro=0 keeps orbital boot',async({page})=>{
   await page.addInitScript(()=>{
+    const raf=window.requestAnimationFrame.bind(window);
+    window.openingFrameOffset=0;
+    window.requestAnimationFrame=callback=>raf(time=>callback(time+window.openingFrameOffset));
     window.openingPad={id:'Opening test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],
       buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
     Object.defineProperty(navigator,'getGamepads',{value:()=>[window.openingPad]});
@@ -68,6 +71,17 @@ test('default intro accepts controller movement and intro=0 keeps orbital boot',
   await page.goto('/?debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
+  const elapsedBefore=await page.evaluate(()=>{
+    const elapsed=window.starAgent.state.opening.elapsed;
+    Object.defineProperty(document,'hidden',{configurable:true,value:true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    window.openingFrameOffset+=30000;
+    Object.defineProperty(document,'hidden',{configurable:true,value:false});
+    document.dispatchEvent(new Event('visibilitychange'));
+    return elapsed;
+  });
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  expect(await page.evaluate(()=>window.starAgent.state.opening.elapsed)).toBeLessThan(elapsedBefore+10);
   const start=await page.evaluate(()=>window.starAgent.state.position);
   await page.evaluate(()=>window.openingPad.axes[1]=-.7);
   await page.waitForFunction(()=>window.starAgent.state.opening.phase==='playing');
