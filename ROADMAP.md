@@ -179,7 +179,17 @@ Exit criteria: 50 players formation-flying around the station at 20 Hz with < 15
   - Tools: pick (small brush, slow), mining laser (beam, heat, larger brush), later a ship-mounted mining laser for
     asteroids (Phase 4 mount system). Chunks cast/receive shadows and use the terrain material's rock/ore layers.
 - **Caves**: carve the terrain with a 3D worm/noise field (`caveField(x,y,z)`), voxelized near the player and meshed with **marching cubes in a worker** (chunks 32³ at 1 m), entrances where the field intersects steep terrain; interior lit by crystal emissives + headlamp; rare items spawn deep. Height-field terrain stays as is; cave chunks replace it locally with a stencil/discard on the surface mesh.
-- **Assets (Meshy, 25 k credits)**: a Claude Opus agent drives Meshy via Chrome (the one standing exception to the token policy, because it needs Claude's browser tooling) (you stay logged in; the agent never enters credentials) to generate textured hero props: forge, refinery, fabricator, storage crate, base gate, turret bases, mining laser, shop kiosk, asteroid set, crystal set. Keep each under 10 k tris; retopo/decimate in Blender headless; export glTF to `public/models/`. Check the per-model credit cost in the Meshy dashboard first; the budget should cover on the order of a hundred assets, so plan ~40 and keep the rest for iterations.
+- **Assets (Meshy, 25 k credits)** — pipeline that works best (Cees, 2026-09-05): (1) write a one-paragraph prop brief
+  (function, silhouette, materials, scale in metres); (2) have ChatGPT render an **isometric 2D concept** of the prop on a
+  plain background, ¾ view, neutral lighting, no text; (3) feed that image to **Meshy image-to-3D** (PBR textures on,
+  target ≤ 10 k tris), pick the best of the variants, refine once; (4) download the GLB, run it through headless Blender
+  (`blender -b --python blender/clean_asset.py -- in.glb out.glb`: decimate if > 10 k tris, apply transforms, origin at
+  the base, Y-up, metres) and drop it in `public/models/props/`; (5) add a row to `public/models/props/manifest.json`
+  (name, file, tris, footprint, credits spent). A Claude Opus agent drives the Chrome tabs (the one standing exception
+  to the token policy); Cees stays signed in to both sites and the agent never handles credentials or payments.
+  Targets: forge, refinery, fabricator, storage crate, base gate, turret bases, mining laser, shop kiosk, an asteroid
+  set and a crystal set. Check per-model credit cost in the Meshy dashboard first; plan ~40 assets, keep the rest for
+  iterations.
 
 **Work items**: `src/build/` snapping + validation (*Astra*), pieces kit (*Meshy via a Claude Opus agent in Chrome — exception (b)*), shield mechanic (*Astra*), resources/inventory/crafting (*Astra subagent*), `src/voxel/` SDF + marching cubes worker + brush lists — shared by asteroids, caves and outcrops (*Astra; Fable agent only if it stalls — exception (c)*), asteroid SDFs and ore fields (*Astra subagent*), cave field + entrances (*Astra subagent*), mining laser + tools (*Astra subagent*), brush-list replication/persistence (*Astra*, Phase 5).
 
