@@ -80,3 +80,8 @@ and exterior captures used scale 1.0.
 ![Live cockpit MFDs in the game](images/nomad-cockpit.png)
 
 ![Hinged cargo container](images/nomad-cargo-open.png)
+
+## Reusable creation pipeline
+
+For the complete workflow, architecture contracts, troubleshooting, verification
+and manager delivery process, read [Ship creation pipeline memory](../SHIP-PIPELINE-MEMORY.md).

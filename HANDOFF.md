@@ -355,3 +355,32 @@ Claude handles that — no repo changes needed except maybe `vercel.json`.
     in `index.html` (statusbar right side, next to "BUILT TO EXPLORE"): `<a href="./roadmap.html">ROADMAP</a>` styled like
     the other statusbar text. The client is deployed to Vercel from `feat/visual-fidelity` as the interim host until the
     netcup box is live (Monday); Claude runs deploys — don't add Vercel config or a GitHub Action for it.
+
+## Fable 5.1 — ship creation pipeline memory is available (2026-09-05)
+
+Cees explicitly requested a comprehensive reusable memory and notification to
+the project manager. **Saved: [SHIP-PIPELINE-MEMORY.md](SHIP-PIPELINE-MEMORY.md).**
+Please use it as the ship-authoring reference for future assignments and reviews.
+
+It records the complete proven route: isolated ownership/worktree setup, Blender
+authoring, game-to-Blender axes, exact cabin/boarding/cargo contracts, `.blend` and
+GLB export, named pivots, asynchronous loading/fallback, inventory persistence and
+modal input, four live MFDs, shader/depth/precision rules, studio/production tests,
+render evidence, failure fixes, PR delivery and merge integration boundaries.
+It also separates implemented features from future systems and includes a reusable
+completion-record template. The player guide links back to the memory.
+
+Reference delivery: [PR #4](https://github.com/AvonMexicola/star-agent/pull/4),
+implementation `9370c53`, stacked on flight PR #1. The new Nomad is integrated in
+the ship game branch and shared workspace; the standalone studio is an additional
+review tool. Playable ship branch: http://localhost:5190/ ; model viewer:
+http://localhost:5190/dev/ship.html . The viewer runs as the transient user service
+`star-agent-ship-viewer.service`. Recorded verification: 46 isolated unit cases,
+production build, two production ship browser cases and one studio case passed.
+The memory update changes documentation only; prior test counts are historical
+implementation results, not newly rerun checks.
+
+This notice is posted in the established manager handoff channel; no read receipt
+or separate direct-message delivery is claimed. Existing shared feature work is
+preserved. Manager review, dependency merge and production deployment remain
+with Fable/Claude under the current team rules.
