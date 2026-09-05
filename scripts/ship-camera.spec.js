@@ -77,7 +77,7 @@ test('4 and camera button show the new ship, preserve flight, and respect typing
   await capture('player-external');
   await page.keyboard.press('Numpad4');
   await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('first-person');
-  expect(await page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
   const firstEye=await page.evaluate(()=>window.starAgent.state.position);
   expect(Math.hypot(...eye.map((n,i)=>n-firstEye[i]))).toBeLessThan(.01);
   await page.locator('#camera-button').click();
@@ -93,7 +93,7 @@ test('4 and camera button show the new ship, preserve flight, and respect typing
   await page.evaluate(()=>{const nav=window.starAgent.navigation;nav.position.copy(nav.fromShipLocal(nav.position.clone().set(0,2.75,-1.2)));nav.velocity.set(0,0,0);nav.embark();});
   await expect.poll(()=>page.evaluate(()=>window.starAgent.state.mode)).toBe('landed');
   await expect.poll(()=>page.evaluate(()=>window.starAgent.state.camera.mode)).toBe('external');
-  expect(await page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
+  await expect.poll(()=>page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
   const backend=await page.evaluate(()=>{
     const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');
     return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);

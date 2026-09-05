@@ -1,18 +1,24 @@
-# External ship camera
+# External ship and player camera
 
-Press **4**, **Numpad 4**, or the **EXTERNAL 4** header button to toggle a chase view above and behind the ship. The normal controls still fly the ship. Press again for cockpit view; the cockpit stays visible even without pointer lock once camera viewing has been activated. Leaving the pilot seat restores first person. Shortcuts ignore typing, held repeats, modifier chords, dialogs and inventory.
+Press **4**, **Numpad 4**, or the **EXTERNAL 4** header button to toggle external view. While seated, this shows the ship from above and behind; on foot, it shows the animated player over the shoulder. Press again for cockpit / first person. Walking and ship selections are independent and survive entering or leaving the seat. Normal movement, looking and jumping remain active. Shortcuts ignore typing, held repeats, modifier chords, dialogs and inventory.
+
+![External player view](images/external-camera-player.png)
 
 ![External Nomad view in orbit](images/external-camera-orbit.png)
 
-`src/ship-camera.js` owns camera selection and computes presentation-only world position and orientation. Navigation remains at the physical pilot eye, with unchanged velocity and ship orientation. The actual camera world position is used as the render origin and supplied to planet/vegetation LOD, local lighting and atmosphere/cloud rendering. Ship/station positions are rebased in JS doubles before GPU upload.
+`src/ship-camera.js` computes presentation-only position and orientation. Navigation keeps the physical eye position, velocity and orientation. The actual camera world position drives render origin, terrain/vegetation/moon LOD, lighting and atmosphere. World differences remain JS doubles before GPU upload.
 
-The boom samples the shared terrain/sea-level surface at at most 1 m spacing, bisects the first obstruction and keeps 45 cm clearance. Station obstruction uses the existing conservative walking-capsule sweep. A shortened boom temporarily falls back to cockpit if the camera would lie inside the authored ship envelope; the selected external view resumes when clear. This is a chase camera, not free orbit or a photo-camera controller. Tree/prop collision is not added, and sub-metre terrain features between samples remain a sampling limitation.
+Walking reuses the existing `Character` module and male Meshy pilot, aligned to the navigation support frame and animated from planar velocity and jump state. The model is hidden in first person and while seated. This adds no character selection, equipment controls or opening cinematic.
 
-Validation: 52 unit cases including six camera cases; production Vite build; two production Chromium cases covering keyboard/button toggle, unchanged navigation position, flight thrust, numeric input, the new Nomad asset, surface viewing, hangar retraction, seat exit and a 390×844 header layout. No console/page errors. Screenshots and backend metadata are under `/tmp/star-agent-camera`; desktop evidence is 1440×900 Chromium 151 with ANGLE/Vulkan SwiftShader. No hardware FPS claim.
+The boom samples the shared Aeon/Selene terrain and water surface at at most 1 m spacing, bisects obstruction and keeps 45 cm clearance. Hangar obstruction uses the existing walking-capsule sweep. Walking also clips against visible ship triangles with 25 cm clearance; hidden fallback meshes are ignored. Tight spaces temporarily return to first person / cockpit, then restore the selected external view when clear. Trees and loose props are not camera obstructions, and sub-metre terrain features between samples remain a sampling limitation.
+
+Verification commands:
 
 ```sh
 npm test
 npm run test:browser -- -c scripts/ship-camera.config.js
 ```
 
-This branch is based on the Blender Nomad ship PR. It excludes parallel controller/crash/forest/re-entry changes. During integration, preserve this change's use of the actual render origin in atmosphere and vegetation; continue passing navigation position to physical station/flight logic. If re-entry is merged, update its view-space uniforms after this camera pose is applied.
+Based on `feat/visual-fidelity` at f028a43, including controller support, Nomad and Selene. Keep the render origin in view-dependent systems during integration; physical station and flight logic still use navigation position. If re-entry is integrated, update its view-space uniforms after applying this camera pose.
+
+Verified 2026-09-06: `npm test` passed all 11 test files (including nine camera cases and the existing character tests); production Vite build passed; both Chromium camera cases passed. The browser journey checks ship and player keyboard/button toggles, unchanged physical eye position, normal thrust, walking/jumping animation, typing guards, hangar/cabin views, independent seat transitions and a 390×844 header. No page or console errors. Desktop screenshots above were inspected at 1440×900 on Chromium 151.0.7922.173, ANGLE/Vulkan SwiftShader. Raw images and backend metadata: `/tmp/star-agent-camera`. No hardware FPS claim.
