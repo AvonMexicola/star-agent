@@ -1,5 +1,99 @@
 [
   {
+    "name": "mannequin",
+    "file": "mannequin.glb",
+    "category": "character",
+    "tris": 4268,
+    "textures": 0,
+    "texture_size": 0,
+    "texture_format": "none",
+    "height_m": 1.8,
+    "footprint_m": [
+      1.03,
+      0.511
+    ],
+    "credits": 0,
+    "concept": null,
+    "file_mb": 0.413,
+    "notes": "Procedural placeholder astronaut (blender/build_mannequin.py). Rigged to Mixamo bone names without prefix, A-pose rest, faces -Z. 14 clips: idle, walk, run, jump, crouch-walk, sit-down, sit-idle, stand-up, carry-walk, wounded-walk, aim-rifle, fire-rifle, fire-pistol, death. Locomotion in place. Retarget with blender/retarget_clips.py."
+  },
+  {
+    "name": "player-female",
+    "file": "player-female.glb",
+    "category": "character",
+    "tris": 10424,
+    "textures": 1,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 1.72,
+    "footprint_m": [
+      1.003,
+      0.33
+    ],
+    "credits": 44,
+    "concept": "raw/player-female-concept.png",
+    "file_mb": 1.808,
+    "notes": "Sealed space suit, female build; opaque dark visor, mint accent lines. Meshy auto-rig (24 joints, retopo to 10.4k tris) + the same 14 preset motion clips as player-male.",
+    "animations": [
+      {
+        "name": "aim-rifle",
+        "seconds": 1.833
+      },
+      {
+        "name": "carry-walk",
+        "seconds": 6.5
+      },
+      {
+        "name": "crouch-walk",
+        "seconds": 1.167
+      },
+      {
+        "name": "death",
+        "seconds": 2.25
+      },
+      {
+        "name": "fire-pistol",
+        "seconds": 7.833
+      },
+      {
+        "name": "fire-rifle",
+        "seconds": 0.667
+      },
+      {
+        "name": "idle",
+        "seconds": 2.333
+      },
+      {
+        "name": "jump",
+        "seconds": 9.833
+      },
+      {
+        "name": "run",
+        "seconds": 0.5
+      },
+      {
+        "name": "sit-down",
+        "seconds": 2.292
+      },
+      {
+        "name": "sit-idle",
+        "seconds": 11.333
+      },
+      {
+        "name": "stand-up",
+        "seconds": 8.292
+      },
+      {
+        "name": "walk",
+        "seconds": 4.208
+      },
+      {
+        "name": "wounded-walk",
+        "seconds": 8.667
+      }
+    ]
+  },
+  {
     "name": "player-male",
     "file": "player-male.glb",
     "category": "character",
@@ -184,6 +278,96 @@
     "notes": "Tangled bioluminescent vines draped over a low rock; mint glow."
   },
   {
+    "name": "backpack-life-support",
+    "file": "backpack-life-support.glb",
+    "category": "gear",
+    "tris": 9833,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.6,
+    "footprint_m": [
+      0.6,
+      0.348
+    ],
+    "credits": 24,
+    "concept": "raw/backpack-life-support-concept.png",
+    "file_mb": 0.528,
+    "notes": "Life-support backpack: twin O2 cylinders, hoses, status panel; flat back-plate at the origin."
+  },
+  {
+    "name": "helmet-standalone",
+    "file": "helmet-standalone.glb",
+    "category": "gear",
+    "tris": 9999,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.35,
+    "footprint_m": [
+      0.281,
+      0.306
+    ],
+    "credits": 24,
+    "concept": "raw/helmet-standalone-concept.png",
+    "file_mb": 0.52,
+    "notes": "Standalone sealed helmet, opaque black domed visor, mint accent seam; base sits on the neck ring."
+  },
+  {
+    "name": "mining-laser-tool",
+    "file": "mining-laser-tool.glb",
+    "category": "gear",
+    "tris": 9199,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.627,
+    "footprint_m": [
+      0.8,
+      0.206
+    ],
+    "credits": 24,
+    "concept": "raw/mining-laser-tool-concept.png",
+    "file_mb": 0.59,
+    "notes": "Two-handed mining laser, finned emitter head, mint accents; 0.80 m long, origin near the grip."
+  },
+  {
+    "name": "rifle-laser",
+    "file": "rifle-laser.glb",
+    "category": "gear",
+    "tris": 9999,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.392,
+    "footprint_m": [
+      1.1,
+      0.098
+    ],
+    "credits": 24,
+    "concept": "raw/rifle-laser-concept.png",
+    "file_mb": 0.58,
+    "notes": "Laser carbine, vented barrel, folding stock, mint power cell; 1.10 m long, origin near the grip."
+  },
+  {
+    "name": "sidearm-pistol",
+    "file": "sidearm-pistol.glb",
+    "category": "gear",
+    "tris": 10000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.241,
+    "footprint_m": [
+      0.3,
+      0.048
+    ],
+    "credits": 24,
+    "concept": "raw/sidearm-pistol-concept.png",
+    "file_mb": 0.514,
+    "notes": "Compact energy sidearm, white/dark-grey panels, mint accents; 0.30 m long, origin near the grip."
+  },
+  {
     "name": "boulder-cracked",
     "file": "boulder-cracked.glb",
     "category": "rock",
@@ -290,23 +474,5 @@
     "concept": "raw/rock-arch-concept.png",
     "file_mb": 0.557,
     "notes": "Natural wind-eroded sandstone arch; span reads across X."
-  },
-  {
-    "name": "mannequin",
-    "file": "mannequin.glb",
-    "category": "character",
-    "tris": 4268,
-    "textures": 0,
-    "texture_size": 0,
-    "texture_format": "none",
-    "height_m": 1.8,
-    "footprint_m": [
-      1.03,
-      0.511
-    ],
-    "credits": 0,
-    "concept": null,
-    "file_mb": 0.413,
-    "notes": "Procedural placeholder astronaut (blender/build_mannequin.py). Rigged to Mixamo bone names without prefix, A-pose rest, faces -Z. 14 clips: idle, walk, run, jump, crouch-walk, sit-down, sit-idle, stand-up, carry-walk, wounded-walk, aim-rifle, fire-rifle, fire-pistol, death. Locomotion in place. Retarget with blender/retarget_clips.py."
   }
 ]
