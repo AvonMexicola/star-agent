@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Controller routing integration fixture</title></head><body>
+<button id="help-button">Help</button><dialog id="help-dialog"><button data-controller-focus>Close help</button></dialog>
+<dialog id="cargo-dialog"><button data-controller-focus data-controller-key="close">Close backpack</button><button data-controller-key="copper">Copper ore · 2.4 kg</button><button disabled>Empty slot</button><button data-controller-key="stow">Transfer copper</button><output id="cargo-result"></output></dialog>
+<output id="state"></output>
+<script type="module">
+import { GamepadInput } from '/src/gamepad.js';
+import { createControllerUI } from '/src/controller-ui.js';
+window.pad = {id:'Standard Xbox fixture', index:0, mapping:'standard', connected:true, axes:[0,0,0,0], buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
+const gamepad = new GamepadInput(()=>[window.pad]);
+const nav = {gamepad, enabled:true, mode:'walk', keys:new Set(), toolTrigger:0};
+const state = window.fixtureState = {destination:null,selected:true,cuts:0};
+const cargo = document.getElementById('cargo-dialog'), help = document.getElementById('help-dialog');
+for (const d of [cargo,help]) { d.querySelector('button').onclick=()=>d.close(); d.onclose=()=>{nav.enabled=true;gamepad.suspend();}; }
+const openPack=()=>{nav.enabled=false;cargo.showModal();};
+document.querySelector('[data-controller-key="stow"]').onclick=()=>document.getElementById('cargo-result').textContent='Copper transferred';
+document.getElementById('help-button').onclick=()=>{nav.enabled=false;help.showModal();};
+const ui = createControllerUI({nav,openBackpack:openPack,toggleTool:()=>state.selected=!state.selected,destinations:[{id:'moon',label:'Selene',activate:()=>state.destination='moon'},{id:'station',label:'Station loading',activate:()=>{},enabled:()=>false}]});
+let last=performance.now();
+function tick(now) { const dt=(now-last)/1000;last=now;const input=gamepad.poll({enabled:nav.enabled,ui:Boolean(document.querySelector('dialog[open]'))});ui.update(input,dt);nav.toolTrigger=input.mine;if(nav.enabled&&state.selected&&input.mine>.1)state.cuts++;state.armed=gamepad.armed;state.uiArmed=gamepad.uiArmed;requestAnimationFrame(tick); }
+requestAnimationFrame(tick);window.fixtureReady=true;
+</script></body></html>

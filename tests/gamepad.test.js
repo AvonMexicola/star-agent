@@ -78,3 +78,24 @@ test('additional controllers do not steal an active device; disconnect selects a
   first.connected = false; button(second, 3, true);
   assert.equal(input.poll().pressed.has(3), false); assert.equal(input.index, 0);
 });
+
+test('dialogs receive controller UI actions while flight, mining and EVA remain neutral', () => {
+  const pad = controller(), input = new GamepadInput(() => [pad]); input.poll();
+  button(pad, 9, true); input.poll();
+  assert.equal(input.poll({enabled: false, ui: true}).ui, null, 'opening hold must release first');
+  button(pad, 9, false); input.poll({enabled: false, ui: true});
+  button(pad, 0, true); button(pad, 7, true); pad.axes[1] = 1;
+  const state = input.poll({enabled: false, ui: true});
+  assert.equal(state.ui.pressed.has(0), true); assert.equal(state.ui.y, 1);
+  assert.equal(state.mine, 0); assert.equal(state.forward, 0); assert.equal(state.evaVertical, 0);
+  assert.equal(input.poll().mine, 0, 'closing a dialog with RT held cannot fire');
+  pad.axes.fill(0); button(pad, 0, false); button(pad, 7, false); input.poll();
+  button(pad, 7, true); assert.equal(input.poll().mine, 1);
+});
+
+test('EVA vertical thrust and brake leave RT available for mining', () => {
+  const pad = controller(), input = new GamepadInput(() => [pad]); input.poll();
+  button(pad, 0, true); button(pad, 6, true); button(pad, 7, true);
+  const state = input.poll(); assert.equal(state.evaVertical, 1); assert.equal(state.evaBrake, true); assert.equal(state.mine, 1);
+  button(pad, 0, false); button(pad, 1, true); assert.equal(input.poll().evaVertical, -1);
+});
