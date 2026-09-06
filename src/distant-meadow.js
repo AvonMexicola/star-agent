@@ -48,21 +48,31 @@ function mediumGeometry(){
 export class DistantMeadow {
   constructor(scene,vegetation,{medium=false}={}){
     this.medium=medium;this.spacing=medium?.28:SPACING;this.margin=medium?10:MARGIN;this.capacity=medium?65000:CAPACITY;
-    this.vegetation=vegetation;this.origin=new THREE.Vector3();this.last=new THREE.Vector3(Infinity,Infinity,Infinity);
+    this.vegetation=vegetation;this.origin=new THREE.Vector3();this.previousOrigin=new THREE.Vector3();this.hadPopulation=false;this.blendStart=-1;this.last=new THREE.Vector3(Infinity,Infinity,Infinity);
     this.distance=medium?28:80;this.density=.75;this.cache=new Map();this.pending=null;this.clearing=null;
-    this.uniforms={fieldEye:{value:new THREE.Vector3()},fieldTime:{value:0},fieldRange:{value:this.distance}};
+    this.uniforms={fieldEye:{value:new THREE.Vector3()},fieldTime:{value:0},fieldRange:{value:this.distance},fieldUp:{value:new THREE.Vector3()},fieldResidentCenter:{value:new THREE.Vector3()},fieldResidentRadius:{value:medium?38:0},fieldPreviousCenter:{value:new THREE.Vector3()},fieldPreviousRadius:{value:0},fieldResidentBlend:{value:1}};
     this.texture=medium?null:grassTexture();this.geometry=medium?mediumGeometry():clusterGeometry();
     this.geometry.setAttribute('fieldPhase',new THREE.InstancedBufferAttribute(new Float32Array(this.capacity),1));
     this.material=new THREE.MeshStandardMaterial({map:this.texture,alphaTest:0,side:THREE.DoubleSide,roughness:1});
     this.material.onBeforeCompile=shader=>{
       Object.assign(shader.uniforms,this.uniforms);
-      shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform vec3 fieldEye; uniform float fieldTime; attribute float fieldPhase; varying float fieldDistance; varying float fieldHeight; varying float fieldSeed;')
+      shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform vec3 fieldEye; uniform float fieldTime; uniform vec3 fieldUp,fieldResidentCenter,fieldPreviousCenter; attribute float fieldPhase; varying float fieldDistance; varying float fieldHeight; varying float fieldSeed; varying float fieldResidentDistance; varying float fieldOwnDistance; varying float fieldPreviousDistance;')
         .replace('#include <begin_vertex>',`#include <begin_vertex>
           vec3 root=instanceMatrix[3].xyz; fieldDistance=length(root-fieldEye); fieldHeight=uv.y; fieldSeed=fieldPhase;
+          vec3 residentDelta=root-fieldResidentCenter;
+          fieldResidentDistance=length(residentDelta-fieldUp*dot(residentDelta,fieldUp));
+          fieldOwnDistance=length(root-fieldUp*dot(root,fieldUp));
+          vec3 previousDelta=root-fieldPreviousCenter;fieldPreviousDistance=length(previousDelta-fieldUp*dot(previousDelta,fieldUp));
           transformed.x+=sin(fieldTime*1.8+fieldPhase)*.09*position.y*position.y;`);
-      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform float fieldRange; varying float fieldDistance; varying float fieldHeight; varying float fieldSeed;')
+      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform float fieldRange,fieldResidentRadius,fieldPreviousRadius,fieldResidentBlend; varying float fieldDistance; varying float fieldHeight; varying float fieldSeed; varying float fieldResidentDistance; varying float fieldOwnDistance; varying float fieldPreviousDistance;')
         .replace('#include <alphatest_fragment>',`#include <alphatest_fragment>
-          float cover=smoothstep(${medium?'6.0,10.0':'20.0,28.0'},fieldDistance)*(1.0-smoothstep(${medium?'20.0':'fieldRange*.78'},fieldRange,fieldDistance));
+          float resident=fieldResidentRadius>0.0?1.0-smoothstep(fieldResidentRadius-8.0,fieldResidentRadius,fieldResidentDistance):0.0;
+          float previousResident=fieldPreviousRadius>0.0?1.0-smoothstep(fieldPreviousRadius-8.0,fieldPreviousRadius,fieldPreviousDistance):0.0;
+          resident*=mix(previousResident,1.0,fieldResidentBlend);
+          float outer=smoothstep(20.0,28.0,fieldDistance);
+          // The coarse parent fills unresident parts of the middle layer. Blend
+          // across the retained field edge before new blades finish streaming.
+          float cover=${medium?'smoothstep(6.0,10.0,fieldDistance)*(1.0-outer)*resident':'smoothstep(6.0,10.0,fieldDistance)*(1.0-(1.0-outer)*resident)*(1.0-smoothstep(fieldRange*.78,fieldRange,fieldDistance))*(1.0-smoothstep(fieldRange,fieldRange+20.0,fieldOwnDistance))'};
           float noise=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))${medium?'':'+fieldSeed*.137'}));
           // Preserve the filtered mask's average coverage when blades become
           // subpixel. A hard alpha cutoff erased the sward in distant mipmaps.
@@ -70,7 +80,7 @@ export class DistantMeadow {
         .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal*=faceDirection;')
         .replace('#include <color_fragment>',medium?'#include <color_fragment>\ndiffuseColor.rgb*=mix(vec3(.42,.52,.27),vec3(.80,.88,.45),fieldHeight);':'#include <color_fragment>');
     };
-    this.material.customProgramCacheKey=()=> medium?'medium-meadow-v1':'distant-meadow-v3';
+    this.material.customProgramCacheKey=()=> medium?'medium-meadow-v2':'distant-meadow-v4';
     this.mesh=new THREE.InstancedMesh(this.geometry,this.material,this.capacity);this.mesh.count=0;this.mesh.frustumCulled=false;this.mesh.receiveShadow=true;this.mesh.castShadow=false;this.mesh.name=medium?'Intermediate grass blades':'Distant instanced meadow';scene.add(this.mesh);
     this.stats={range:this.distance,density:.75,clusters:0,pending:0,rebuilds:0,visible:false};
     if(!medium)this.middle=new DistantMeadow(scene,vegetation,{medium:true});
@@ -117,9 +127,19 @@ export class DistantMeadow {
       if(done){this.publish(job);this.pending=null;}
     }
     this.uniforms.fieldEye.value.copy(position).sub(this.origin);this.uniforms.fieldTime.value=time;
+    this.uniforms.fieldUp.value.copy(this.origin).normalize();
+    const residentLayer=this.middle??this;
+    this.uniforms.fieldPreviousCenter.value.copy(residentLayer.previousOrigin).sub(this.origin);
+    this.uniforms.fieldPreviousRadius.value=residentLayer.hadPopulation?residentLayer.distance+residentLayer.margin:0;
+    this.uniforms.fieldResidentBlend.value=THREE.MathUtils.smoothstep(time-residentLayer.blendStart,0,.6);
+    if(this.middle){
+      this.uniforms.fieldResidentCenter.value.copy(this.middle.origin).sub(this.origin);
+      this.uniforms.fieldResidentRadius.value=this.middle.mesh.visible&&this.middle.mesh.count>0?this.middle.distance+this.middle.margin:0;
+    }
     this.mesh.position.copy(this.origin).sub(origin);this.stats.pending=Number(Boolean(this.pending)||Boolean(this.middle?.pending));
   }
   publish(job){
+    this.previousOrigin.copy(this.origin);this.hadPopulation=this.mesh.count>0;this.blendStart=this.uniforms.fieldTime.value;
     this.origin.copy(job.origin);this.cache=job.cache;
     const count=job.count;
     this.mesh.instanceMatrix.array=job.matrices;this.mesh.instanceMatrix.clearUpdateRanges();this.mesh.instanceMatrix.addUpdateRange(0,count*16);this.mesh.instanceMatrix.needsUpdate=true;

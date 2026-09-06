@@ -138,3 +138,19 @@ not recorded as a test pass. The final combined source passed its production bui
 fixture again (**1/1**, zero page/console errors); independent visual review is
 next. Log: `/tmp/star-agent-flight-options-stochastic-browser.log`. No extra scene meshes or triangles
 were added by the mask correction.
+
+
+The fourth review of2da9636 closed the material/coverage finding, but scored
+**3.83/5** with motion3: the player could outrun the intermediate field's10m
+preload margin, leaving a bare strip until publication. The exact displacement,
+publication counts and walking frames are retained in [fourth-review.md](fourth-review.md).
+The correction keeps distant grass wherever the intermediate field is not yet
+resident, fades the actual retained field edge, and blends newly resident finer
+blades in over0.6s. Both representations use the same resident coverage; rebuilding
+stays budgeted. Distant grass also fades its retained outer edge if movement
+outpaces it. This is graceful fallback, not a promise of full preset distance at
+arbitrary movement speed or under unlimited load.
+
+The resident-fallback candidate passed its production build and affected feature
+browser check again (**1/1**, zero console/page errors). Source and runtime
+walking review follow; prior rejected scores remain historical.
