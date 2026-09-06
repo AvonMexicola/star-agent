@@ -1,6 +1,6 @@
 import { MeshStandardMaterial, Vector3 } from 'three';
 
-export const ASTEROID_MATERIAL_VERSION = 1;
+export const ASTEROID_MATERIAL_VERSION = 2;
 const SURFACE_GLSL = `
 float asteroidHash(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
 float asteroidNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(asteroidHash(i),asteroidHash(i+vec2(1.0,0.0)),f.x),mix(asteroidHash(i+vec2(0.0,1.0)),asteroidHash(i+vec2(1.0)),f.x),f.y);}
@@ -41,20 +41,23 @@ export function createAsteroidMaterial({ originUniform = { value: new Vector3() 
       .replace('#include <color_fragment>', `#include <color_fragment>
         vec3 asteroidBlend=pow(abs(normalize(vAsteroidNormal)),vec3(4.0));asteroidBlend/=max(dot(asteroidBlend,vec3(1.0)),.00001);
         float asteroidFootprint=max(length(dFdx(vAsteroidPoint)),length(dFdy(vAsteroidPoint)));
-        float asteroidCoarse=asteroidTri(vAsteroidPoint,asteroidBlend,5.0);
-        float asteroidMediumFade=1.0-smoothstep(.35,1.1,asteroidFootprint*31.0);
-        float asteroidFineFade=1.0-smoothstep(.3,1.0,asteroidFootprint*113.0);
-        float asteroidMedium=mix(.5,asteroidTri(vAsteroidPoint,asteroidBlend,31.0),asteroidMediumFade);
-        float asteroidFine=mix(.5,asteroidTri(vAsteroidPoint,asteroidBlend,113.0),asteroidFineFade);
-        float asteroidLayer=vAsteroidPoint.y*7.0+vAsteroidPoint.x*1.6+asteroidCoarse*.7;
-        float asteroidLayerAA=max(fwidth(asteroidLayer),.003);
-        float asteroidSeam=abs(sin(asteroidLayer*3.14159265));
-        float asteroidFissure=(1.0-smoothstep(.018,.05+asteroidLayerAA*3.2,asteroidSeam))*(1.0-smoothstep(.10,.35,asteroidLayerAA));
-        float asteroidMineral=smoothstep(.58,.84,asteroidCoarse)*(1.0-asteroidFissure);
-        vec3 asteroidUndertone=mix(vec3(.76,.79,.84),vec3(1.18,1.11,.97),asteroidCoarse);
-        diffuseColor.rgb*=asteroidUndertone*(.78+.34*asteroidMedium+.13*asteroidFine);
-        diffuseColor.rgb*=1.0-asteroidFissure*.46;
-        float asteroidHeight=(asteroidMedium-.5)*.022+(asteroidFine-.5)*.006-asteroidFissure*.015;`)
+        float asteroidCoarse=asteroidTri(vAsteroidPoint,asteroidBlend,4.7);
+        float asteroidMediumFade=1.0-smoothstep(.35,1.1,asteroidFootprint*23.0);
+        float asteroidFineFade=1.0-smoothstep(.3,1.0,asteroidFootprint*97.0);
+        float asteroidMedium=mix(.5,asteroidTri(vAsteroidPoint,asteroidBlend,23.0),asteroidMediumFade);
+        float asteroidFine=mix(.5,asteroidTri(vAsteroidPoint,asteroidBlend,97.0),asteroidFineFade);
+        float asteroidFault=asteroidTri(vAsteroidPoint+vec3(7.3,2.1,-4.6),asteroidBlend,8.3);
+        float asteroidCrackSignal=asteroidFault-.51+(asteroidCoarse-.5)*.42;
+        float asteroidCrackAA=max(fwidth(asteroidCrackSignal),.002);
+        float asteroidBreaks=smoothstep(.44,.68,asteroidTri(vAsteroidPoint+vec3(-3.2,9.4,1.8),asteroidBlend,3.3));
+        float asteroidFissure=(1.0-smoothstep(.009,.028+asteroidCrackAA,abs(asteroidCrackSignal)))*asteroidBreaks*(1.0-smoothstep(.08,.2,asteroidCrackAA));
+        float asteroidMineral=smoothstep(.62,.86,asteroidCoarse)*(1.0-asteroidFissure);
+        float asteroidLuminance=dot(diffuseColor.rgb,vec3(.2126,.7152,.0722));
+        diffuseColor.rgb=mix(vec3(asteroidLuminance)*vec3(.90,.98,1.06),diffuseColor.rgb,.20);
+        vec3 asteroidUndertone=mix(vec3(.83,.87,.94),vec3(1.12,1.13,1.11),asteroidCoarse);
+        diffuseColor.rgb*=asteroidUndertone*(.40+.82*asteroidCoarse+.37*asteroidMedium+.17*asteroidFine);
+        diffuseColor.rgb*=1.0-asteroidFissure*.32;
+        float asteroidHeight=(asteroidCoarse-.5)*.065+(asteroidMedium-.5)*.075+(asteroidFine-.5)*.018-asteroidFissure*.026;`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
         roughnessFactor=clamp(.94-asteroidMineral*.14+(asteroidMedium-.5)*.13,.73,.99);`)
       .replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>

@@ -71,7 +71,9 @@ test('procedural material preserves instance tint, standard depth hooks and floa
   assert.ok(shader.vertexShader.includes('#include <logdepthbuf_vertex>'));
   assert.ok(shader.fragmentShader.includes('#include <logdepthbuf_fragment>'));
   assert.ok(shader.fragmentShader.includes('#include <color_fragment>'), 'built-in instance tint remains in the lighting pipeline');
-  assert.ok(shader.fragmentShader.includes('dFdx(vAsteroidPoint)') && shader.fragmentShader.includes('fwidth(asteroidLayer)'));
+  assert.ok(shader.fragmentShader.includes('dFdx(vAsteroidPoint)') && shader.fragmentShader.includes('fwidth(asteroidCrackSignal)'));
+  assert.ok(!shader.fragmentShader.includes('sin(asteroidLayer'), 'fractures must not become continuous latitude contours');
+  assert.ok(shader.fragmentShader.includes('asteroidBreaks'), 'fault traces are interrupted into local cracks');
   assert.equal(material.map, null); assert.equal(material.normalMap, null); assert.equal(material.emissive.getHex(), 0);
   assert.ok(material.roughness >= .8 && material.metalness <= .16);
   material.dispose();

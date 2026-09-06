@@ -2,7 +2,7 @@ import { IcosahedronGeometry, Vector3 } from 'three';
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 import { asteroidField, randomFor } from './ring-world.js';
 
-export const ASTEROID_SHAPE_VERSION = 1;
+export const ASTEROID_SHAPE_VERSION = 2;
 export const ASTEROID_VARIANTS = 4;
 export const ASTEROID_MAX_RADIUS = 1.9;
 const profiles = new Map();
@@ -15,7 +15,16 @@ function profile(family, variant) {
   const random = randomFor(0x41535445 ^ key * 7919);
   const vector = () => new Vector3(random() * 2 - 1, random() * 2 - 1, random() * 2 - 1).normalize();
   const axes = [[1.6, 1.28, 1.48], [1.69, 1.23, 1.46], [1.37, 1.63, 1.29], [1.76, .87, 1.34], [1.49, 1.38, 1.55], [1.7, 1.2, 1.44]][family].map(n => n * (.9 + random() * .15));
-  const planes = Array.from({ length: family === 0 ? 13 : 9 }, () => ({ normal: vector(), offset: .91 + random() * .4 }));
+  // Six face directions and eight corners cover the whole sphere. Every broad
+  // surface terminates at a fracture plane rather than an ellipsoid fallback.
+  const directions = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  for (const x of [-1,1]) for (const y of [-1,1]) for (const z of [-1,1]) directions.push([x,y,z]);
+  const planes = directions.map(direction => {
+    const normal = new Vector3(...direction).normalize().addScaledVector(vector(), .17).normalize();
+    const radius = 1 / Math.sqrt((normal.x / axes[0]) ** 2 + (normal.y / axes[1]) ** 2 + (normal.z / axes[2]) ** 2);
+    return { normal, offset: radius * (.73 + random() * .15) };
+  });
+  for (let cut=0;cut<3;cut++) planes.push({normal:vector(),offset:.82+random()*.3});
   const pits = Array.from({ length: family === 4 ? 6 : 2 }, () => ({ direction: vector(), radius: .2 + random() * .21, depth: family === 4 ? .18 + random() * .23 : .06 + random() * .10 }));
   const result = { axes, planes, pits, fault: vector(), phase: random() * Math.PI * 2, shoulder: vector() };
   profiles.set(key, result); return result;
@@ -26,16 +35,17 @@ function profile(family, variant) {
 export function asteroidRadius(direction, family = 0, variant = 0) {
   const p = profile(family, variant), d = direction.clone().normalize();
   if (!Number.isFinite(d.lengthSq()) || d.lengthSq() < .5) throw new RangeError('Asteroid direction must be nonzero');
-  let radius = 1 / Math.sqrt((d.x / p.axes[0]) ** 2 + (d.y / p.axes[1]) ** 2 + (d.z / p.axes[2]) ** 2);
+  let radius = ASTEROID_MAX_RADIUS;
   // Bedrock blocks terminate at real planes; this produces large readable fracture faces.
   for (const plane of p.planes) {
     const facing = d.dot(plane.normal);
     if (facing > 0) radius = Math.min(radius, plane.offset / facing);
   }
   const fault = d.dot(p.fault), shoulder = d.dot(p.shoulder);
-  const stratum = d.y * (family === 3 ? 17 : 8) + d.x * 2.6 + p.phase;
-  const ridge = 1 - Math.abs(Math.sin(stratum));
-  radius += (family === 3 ? .075 : .026) * (ridge - .5);
+  // Short broken ledges, concentrated in one geological fault. No global
+  // latitude displacement: that reads as an onion instead of fractured stone.
+  const brokenLedge = Math.exp(-((fault / .22) ** 2)) * Math.max(0, Math.sin(shoulder * 13 + p.phase));
+  radius -= (family === 3 ? .10 : .035) * brokenLedge;
   if (family === 1) radius += .065 * Math.abs(shoulder) - .065 * Math.exp(-(((fault + .18) / .09) ** 2));
   if (family === 2) radius += .075 * Math.abs(shoulder) - .14 * Math.exp(-((fault / .095) ** 2));
   if (family === 5) radius += .11 * Math.abs(shoulder) - .22 * Math.exp(-((fault / .105) ** 2));
@@ -70,7 +80,7 @@ export function createAsteroidGeometry(family, detail = 2, variant = 0, { large 
     positions.setXYZ(i, ...direction.multiplyScalar(asteroidRadius(direction, family, variant)).toArray());
   }
   geometry.computeVertexNormals();
-  toCreasedNormals(geometry, Math.PI * .24);
+  toCreasedNormals(geometry, Math.PI * .105);
   geometry.computeBoundingBox(); geometry.computeBoundingSphere();
   // Exact origin-centered bound used by descriptor culling and clearance guarantees.
   geometry.boundingSphere.center.set(0, 0, 0);
