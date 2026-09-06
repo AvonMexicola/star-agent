@@ -799,3 +799,34 @@ are asserted. No page/console errors. Inspected rifle/sidearm/mining captures an
 updated JSON are under docs/qa/equipment-loadout/. Chromium151, Vulkan SwiftShader;
 no physical Xbox or hardware FPS claim. Preview5271: index-B3rNxrVo.js.
 Preserve shared newer authored gear assets when integrating PR32 with PR27.
+
+
+## Base-building plan and universal materials — 2026-09-06
+
+Cees requests Rust-inspired building authority through a physical mainframe,
+floors/walls/doorways/windows/stairs first, then tool/technology tiers, engineering
+stations and wind/solar. The follow-up explicitly permits harder settlement on
+Selene/Pyre. Full plan: docs/design/base-building-plan.md. Design only.
+
+Aeon is the easiest start. All buildable worlds supply ordinary aggregate, dry
+binder, common metals and silica locally; a fictional dry mineral-concrete recipe
+avoids mandatory imported water. Selene/Pyre can demand separated deposits, cargo
+hauling, batteries, suited work and carefully surveyed sites. Tool material tier
+is separate from operator environmental protection. Basic construction cannot
+require rare imports; advanced optics, ring alloys, Pyre refractory materials and
+Aeon cave samples motivate travel. First heat-protection gear is obtainable before
+Pyre. Concrete economics and reserve budgets must be verified rather than guessed.
+
+First delivery is a finite development kit proving snapped pieces, floors/stairs
+collision, mainframe claim, manual door, window and crate persistence. Second is
+local gathering/processing/crafting, then engineering I and power, then off-world
+engineering II/III and specialist settlements. Starting grants are for development;
+normal construction must close the locally supplied recipe loop. Ownership and
+manual locks persist without power. Initial claims are local-owner prototypes;
+multiplayer rights, raids, upkeep and habitat protection require their own systems.
+
+The plan covers controller build mode, atomic saves, common/specialist geology,
+capacity/hauling, bootstrap recipe cycles, support graphs, piece geometry and
+completion criteria. Existing cargo/progression designs and ROADMAP link to it.
+Documentation links and git diff whitespace checked; no runtime or gameplay tests
+were necessary and no construction implementation or manager acceptance is claimed.

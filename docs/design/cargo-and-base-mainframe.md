@@ -5,6 +5,12 @@ carrying limits and base building with a central authority device inspired by a
 tool cupboard. “Mainframe” is the working name. These base/cargo rules are proposed,
 not an implemented claim system or an account-security feature.
 
+The later [base-building implementation plan](base-building-plan.md) specifies
+the piece kit, common-material bootstrap, engineering/tool tree, solar/wind power
+and delivery order. It allows harder Selene/Pyre settlements while keeping basic
+materials locally obtainable. Its newer sequence and explicit prototype parameters
+take precedence over the open choices below; the capacity/permission contracts apply.
+
 ## One item system, three kinds of capacity
 
 Use mass, occupied space and stack slots together. A free slot does not make a
