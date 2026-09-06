@@ -1,6 +1,21 @@
 import {test,expect} from '@playwright/test';
 
-test('hangar reveal hands movement to physical boarding and launch',async({page})=>{
+for(const controller of [false,true])test(`${controller?'controller':'keyboard'} hangar reveal hands movement to physical boarding and launch`,async({page})=>{
+  if(controller)await page.addInitScript(()=>{
+    window.departurePad={id:'Departure pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],
+      buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
+    Object.defineProperty(navigator,'getGamepads',{value:()=>[window.departurePad]});
+  });
+  const held=async(key,down)=>{
+    if(!controller)return down?page.keyboard.down(key):page.keyboard.up(key);
+    await page.evaluate(({key,down})=>{
+      const pad=window.departurePad;
+      if(['w','s','a','d'].includes(key))pad.axes[['a','d'].includes(key)?0:1]=down?(['w','a'].includes(key)?-1:1):0;
+      else {const index={x:1,f:2,l:3}[key];pad.buttons[index]={pressed:down,value:Number(down)};}
+    },{key,down});
+    if(['x','f','l'].includes(key))await page.waitForFunction(({key,down})=>window.starAgent.navigation.gamepad.previous[{x:1,f:2,l:3}[key]]===down,{key,down});
+  };
+  const controls={down:key=>held(key,true),up:key=>held(key,false),press:async key=>{await held(key,true);await held(key,false);}};
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   const started=Date.now();
   await page.goto('/?intro=1&debug');
@@ -36,35 +51,40 @@ test('hangar reveal hands movement to physical boarding and launch',async({page}
   expect(await page.evaluate(()=>window.starAgent.state.station.doorsOpen)).toBe(1);
   expect(await page.locator('#hud').evaluate(e=>e.inert)).toBe(true);
   const before=await page.evaluate(()=>window.starAgent.state.position);
-  await page.keyboard.press('w');
+  await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.opening.phase==='playing');
   expect(await page.locator('#hud').evaluate(e=>e.inert)).toBe(false);
   await page.waitForFunction(()=>window.starAgent.state.speed>0);
-  await page.keyboard.press('x');
+  await controls.up('w');
+  await controls.press('x');
   expect(await page.evaluate(()=>window.starAgent.state.position)).not.toEqual(before);
   await page.screenshot({path:'/tmp/star-agent-opening-walk.png'});
   // Walk along the starboard side to the aft hatch, then centre on the ramp.
-  await page.keyboard.down('s');
+  await controls.down('s');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>7.5);
-  await page.keyboard.up('s');await page.keyboard.press('x');
-  await page.keyboard.down('a');
+  await controls.up('s');await controls.press('x');
+  await controls.down('a');
   await page.waitForFunction(()=>Math.abs(window.starAgent.state.shipLocal[0])<.25);
-  await page.keyboard.up('a');await page.keyboard.press('x');
-  await page.keyboard.down('w');
+  await controls.up('a');await controls.press('x');
+  await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<6);
-  await page.keyboard.up('w');await page.keyboard.press('x');await page.keyboard.press('f');
+  await controls.up('w');await controls.press('x');await controls.press('f');
   await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
-  await page.keyboard.down('w');
+  await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.6);
-  await page.keyboard.up('w');await page.keyboard.press('x');await page.keyboard.press('f');
+  await controls.up('w');await controls.press('x');await controls.press('f');
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
   await page.screenshot({path:'/tmp/star-agent-opening-cockpit.png'});
-  await page.keyboard.press('l');
+  await controls.press('l');
   await page.waitForFunction(()=>window.starAgent.state.mode==='flight'&&!window.starAgent.state.station.lifting);
-  await page.keyboard.down('w');
-  await page.waitForFunction(()=>window.starAgent.state.station.local[2]<-65);
-  await page.keyboard.up('w');await page.keyboard.press('x');
-  await page.screenshot({path:'/tmp/star-agent-opening-launch.png'});
+  const hover=await page.evaluate(()=>window.starAgent.state.station.deckClearance);
+  expect(hover).toBeCloseTo(3.55,3);
+  await controls.down('w');
+  await page.waitForFunction(()=>window.starAgent.state.speed>19);
+  await page.waitForFunction(()=>window.starAgent.state.station.local[2]<-100);
+  expect(await page.evaluate(()=>window.starAgent.state.station.deckClearance)).toBeCloseTo(hover,3);
+  await controls.up('w');await controls.press('x');
+  await page.screenshot({path:`/tmp/star-agent-opening-launch-${controller?'controller':'keyboard'}.png`});
   expect(errors).toEqual([]);
 });
 

@@ -63,14 +63,14 @@ test('floor and station guards cap boosted speed before throttle', () => {
   assert.equal(station.limit, 180);
   assert.equal(station.speed, 180);
   const dock = flightSpeedProfile({ altitude: 70_000, clearance: Infinity, stationDistance: 0, boost: true });
-  assert.equal(dock.limit, 6);
+  assert.equal(dock.limit, 20);
   assert.equal(flightSpeedProfile({ altitude: 70_000, clearance: Infinity, stationDistance: 20_000, boost: true }).limit, 9_000);
   const extreme = flightSpeedProfile({ altitude: Infinity, clearance: Infinity, stationDistance: -Infinity, boost: true, throttle: -Infinity });
   assert.equal(extreme.cruise, 3_000);
   assert.equal(extreme.boosted, 9_000);
-  assert.equal(extreme.limit, 6);
+  assert.equal(extreme.limit, 20);
   assert.equal(extreme.regime, 'SPACE');
-  near(extreme.speed, .3);
+  near(extreme.speed, 1);
   assert.ok(Object.values(extreme).slice(0, 4).every(Number.isFinite));
 });
 

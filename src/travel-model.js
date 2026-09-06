@@ -38,6 +38,12 @@ const nonnegative = (value, fallback = 0) => value === Infinity ? Infinity
   : value === -Infinity ? 0 : Math.max(0, finiteOr(value, fallback));
 const clearanceValue = (value, fallback) => value === Infinity ? Infinity : nonnegative(value, fallback);
 
+/** Controlled bay departure, then progressively release the approach restriction. */
+export function stationSpeedLimit(distance = Infinity) {
+  const clearance = clearanceValue(distance, Infinity);
+  return clearance < 20_000 ? Math.max(20, (clearance - 65) * .18) : Infinity;
+}
+
 /** Speed policy shared by manual flight and the travel-entry UI. */
 export function flightSpeedProfile({
   airless = false,
@@ -49,7 +55,6 @@ export function flightSpeedProfile({
 } = {}) {
   const height = nonnegative(altitude);
   const floorClearance = clearanceValue(clearance, height);
-  const stationClearance = clearanceValue(stationDistance, Infinity);
   const lower = airless ? 2_000 : 20_000;
   const upper = airless ? 20_000 : 70_000;
   const blend = smoothstep(lower, upper, height);
@@ -57,9 +62,7 @@ export function flightSpeedProfile({
   const boosted = 400 + (9_000 - 400) * blend;
   const requested = boost ? boosted : cruise;
   const floorLimit = floorClearance === Infinity ? Infinity : 25 + floorClearance * .5;
-  const stationLimit = stationClearance < 20_000
-    ? Math.max(6, (stationClearance - 65) * .18)
-    : Infinity;
+  const stationLimit = stationSpeedLimit(stationDistance);
   const limit = Math.min(requested, floorLimit, stationLimit);
   const throttleAmount = Number.isNaN(throttle) || typeof throttle !== 'number'
     ? 1 : clamp(throttle, .05, 1);

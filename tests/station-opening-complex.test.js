@@ -138,3 +138,17 @@ test('exterior and pod render horizon follows the camera while hidden station co
   assert.equal(station.hub.group.visible,true);
   assert.equal(station.exterior.hubShell.visible,false,'near hub interior retains its clear window views');
 });
+
+test('one-metre departures clear all twenty tilted berths for Nomad and Atlas',async()=>{
+  const station=await create();
+  for(const pod of station.pods){
+    pod.openDoors();pod.doorMixer.update(6);pod.updateDoorColliders();
+    for(const layout of [SHIP_LAYOUT,FREIGHTER_LAYOUT]){
+      const eye=layout.seatEye[1],z=pod.padLocal.z+layout.seatEye[2];
+      const point=(height,depth)=>pod.toWorld(new THREE.Vector3(pod.padLocal.x,pod.interiorBox.min.y+height,depth),new THREE.Vector3());
+      const dock=point(eye,z),hover=point(eye+1,z),outside=point(eye+1,-120);
+      assert.equal(station.constrainStep(dock,hover,pod.padQuaternion,false,layout).hit,false,`berth ${pod.id} launch clears complete station`);
+      assert.equal(station.constrainStep(hover,outside,pod.padQuaternion,false,layout).hit,false,`berth ${pod.id} departure clears complete station`);
+    }
+  }
+});

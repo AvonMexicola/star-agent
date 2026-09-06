@@ -10,7 +10,7 @@ import { environmentAt, step as stepFlight } from './flight-model.js';
 import { assessImpact, terrainSurfaceNormal } from './impact.js';
 import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './boarding.js';
 
-import { TRAVEL_TARGETS, flightSpeedProfile, planTravel, sampleTravel, abortTravel } from './travel-model.js';
+import { TRAVEL_TARGETS, flightSpeedProfile, stationSpeedLimit, planTravel, sampleTravel, abortTravel } from './travel-model.js';
 
 const UP=new THREE.Vector3(0,1,0),FORWARD=new THREE.Vector3(0,0,-1),RIGHT=new THREE.Vector3(1,0,0);
 const rotation=new THREE.Quaternion(),matrix=new THREE.Matrix4();
@@ -293,9 +293,10 @@ export class Navigation {
       if(this.freighter&&!this.freighter.secured){this.notify('Stow the belly elevator and lower both cargo lifts before launch.');return;}
       if(this.dockedAtStation){
         this.mode='flight';this.dockedAtStation=false;this.stationLift=true;this.autoland=false;
+        this.station.openDoors();
         this.doorOpen=false;this.doorProgress=0;this.insideShip=false;this.shipPosition=null;
         this.velocity.copy(this.station.up).multiplyScalar(3);
-        this.notify('Undocking. Gentle lift to bay clearance. Reverse with S to leave through the doors.');return;
+        this.notify('Undocking. One-metre lift; fly through the hangar doors. W forward / S reverse · bay limit 20 m/s.');return;
       }
       this.mode='flight';this.doorOpen=false;this.doorProgress=0;this.insideShip=false;this.position.addScaledVector(this.normal,12);this.velocity.copy(this.normal).multiplyScalar(12);this.shipPosition=null;this.notify('Hatch secured. Liftoff. Space ascends; Shift boosts.');return;
     }
@@ -408,12 +409,15 @@ export class Navigation {
         this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
         if(roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation).normalize();}
       }else if(this.stationLift){
-        this.velocity.copy(this.station.up).multiplyScalar(3);
-        if(this.deckClearance>=Math.max(6,this.layout.seatEye[1]+1)){this.stationLift=false;this.velocity.set(0,0,0);}
+        // Lift the landing gear one metre, rather than raising every pilot eye
+        // to six metres. Limit the final step so low frame rates cannot overshoot.
+        const remaining=this.layout.seatEye[1]+1-this.deckClearance;
+        if(remaining<=1e-5){this.stationLift=false;this.velocity.set(0,0,0);}
+        else this.velocity.copy(this.station.up).multiplyScalar(dt>0?Math.min(3,remaining/dt):0);
       }else if(this.autoland && this.stationDistance<500){
         if(!this.canDock){this.autoland=false;this.velocity.set(0,0,0);this.notify('Docking cancelled: move over the central pad.');}
-        else if(this.deckClearance<this.landingClearance+.05){this.dock();return;}
-        else this.velocity.copy(this.station.up).multiplyScalar(-Math.max(.5,Math.min(3,(this.deckClearance-this.landingClearance)*.8)));
+        else if(this.deckClearance<this.layout.seatEye[1]+.05){this.dock();return;}
+        else this.velocity.copy(this.station.up).multiplyScalar(-Math.max(.5,Math.min(3,(this.deckClearance-this.layout.seatEye[1])*.8)));
       }else if(this.autoland){
         if(!this.dryGround()){this.autoland=false;this.notify('Landing cancelled: open water.');}
         else if(altitude<this.landingClearance+.4){this.touchDown();return;}
@@ -421,7 +425,7 @@ export class Navigation {
       }else{
         input.addScaledVector(this.spaceFlightAttitude?UP.clone().applyQuaternion(this.orientation):oldNormal,vertical);input.clampLength(0,1);
         const profile=this.speedProfile,maxSpeed=Math.min(profile.speed,this.debrisSpeedLimit);
-        const stationLimit=Math.min(this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity,this.debrisSpeedLimit);
+        const stationLimit=Math.min(stationSpeedLimit(this.stationDistance),this.debrisSpeedLimit);
         if(this.powered&&this.speed>stationLimit)this.velocity.setLength(stationLimit);
         // Assisted flight brakes toward lower commanded limits continuously.
         // Retain the swept guard for overspeed states loaded from older builds.
@@ -451,8 +455,17 @@ export class Navigation {
         if(pyre.limited){proposed.copy(pyre.point);this.velocity.set(0,0,0);}
         const collision=this.station?.constrainStep(previous,proposed,this.orientation,false,this.layout);
         this.position.copy(collision?collision.point:proposed);
-        if(collision?.hit){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;break;}
-        if(!this.stationLift && this.canDock && this.deckClearance<this.landingClearance && this.velocity.dot(this.station.up)<0){this.dock();break;}
+        if(collision?.hit){
+          this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;
+          // A blocked lift must release manual controls, never keep thrusting
+          // into the obstruction and ignore the pilot's departure input forever.
+          if(this.stationLift){this.stationLift=false;this.notify('Launch lift stopped by station structure. Manual flight available; move clear carefully.');}
+          break;
+        }
+        // Capture only a gentle deck arrival at this ship's actual parked height.
+        // The planetary eye-clearance threshold would re-dock a departing Nomad
+        // after just 35 cm of descent, even at full bay speed.
+        if(!this.stationLift && this.canDock && this.speed<=3 && this.deckClearance<this.layout.seatEye[1]+.1 && this.velocity.dot(this.station.up)<0){this.dock();break;}
         const n=this.normal;const ground=this.groundHeight;
         const height=bodyAltitude(this.position,this.body);
         if(height<this.landingClearance){

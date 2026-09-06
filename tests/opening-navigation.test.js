@@ -277,7 +277,7 @@ test('station opening spawn remains gated, then supports a physical board and la
   assert.equal(navigation.stationLift, true);
   assert.equal(navigation.shipPosition, null);
   until(() => !navigation.stationLift, 3, 'undocking lift reaches safe deck clearance');
-  assert.ok(navigation.deckClearance >= 6 - .05);
+  assert.ok(Math.abs(navigation.deckClearance - (SHIP_LAYOUT.seatEye[1] + 1)) < 1e-5);
 
   const openingZ = station.openingZ;
   keyDown('KeyW');
