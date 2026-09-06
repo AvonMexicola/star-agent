@@ -3,6 +3,10 @@
 While piloting in space, the right stick yaws and pitches around the ship's own
 axes. LB / RB rolls. RT / LT translates along ship up / down, including after a
 roll. Mouse look, arrow keys and Space / C use the same space steering frame.
+Hold Xbox B to brake drift and suppress thrust while still aiming with the right
+stick, mouse or roll bumpers. Brake discards angular drift, so releasing it does
+not restart a previous spin.
+
 Assisted and inertial flight agree on these axes; inertial flight retains angular
 momentum. Crossing space without steering preserves the ship's attitude.
 

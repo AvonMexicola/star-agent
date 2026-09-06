@@ -79,3 +79,23 @@ test('assisted atmospheric vertical thrust retains radial ascent after rolling t
   assert.equal(nav.flightEnvironment.regime,'ATMOSPHERE');
   const movement=nav.position.clone().sub(start);assert.ok(movement.dot(radial)>50);assert.ok(movement.clone().projectOnPlane(radial).length()<1e-6);
 });
+
+test('holding Xbox brake still allows yaw/pitch/roll while blocking thrust and inertial spin',t=>{
+  const {nav,pad,reset}=setup(t);
+  for(const assist of [true,false]){
+    pad.buttons.forEach(button=>{button.pressed=false;button.value=0;});reset();nav.flightAssist=assist;
+    nav.velocity.set(100,200,300);nav.angularVelocity.set(1,2,3);const position=nav.position.clone(),before=nav.orientation.clone();
+    pad.buttons[1]={pressed:true,value:1};pad.buttons[7]={pressed:true,value:1};pad.buttons[10]={pressed:true,value:1};pad.axes[1]=-1;pad.axes[2]=1;
+    for(let frame=0;frame<20;frame++)nav.update(.025);
+    const nose=forward.clone().applyQuaternion(nav.orientation).applyQuaternion(before.clone().invert());
+    assert.ok(nose.x>.4,'braked ship yaws at normal manual rate');assert.ok(nav.position.equals(position),'brake suppresses held main thrust and vertical trigger');
+    assert.equal(nav.speed,0);assert.equal(nav.angularVelocity.length(),0);assert.equal(nav.boost,false);
+    pad.axes[2]=0;pad.axes[3]=-1;const yawed=nav.orientation.clone();for(let frame=0;frame<20;frame++)nav.update(.025);
+    assert.ok(forward.clone().applyQuaternion(nav.orientation).applyQuaternion(yawed.clone().invert()).y>.4,'braked ship pitches');
+    pad.axes[3]=0;pad.buttons[4]={pressed:true,value:1};const pitched=nav.orientation.clone();for(let frame=0;frame<20;frame++)nav.update(.025);
+    assert.ok(nav.orientation.angleTo(pitched)>.39,'braked ship rolls');assert.ok(nav.position.equals(position));
+    const rolled=nav.orientation.clone();nav.look(-.2,0);assert.ok(nav.orientation.angleTo(rolled)>.19,'mouse look also remains available under held brake');
+    pad.buttons.forEach(button=>{button.pressed=false;button.value=0;});pad.axes.fill(0);const final=nav.orientation.clone();nav.update(.025);
+    assert.ok(nav.orientation.angleTo(final)<1e-7,'releasing brake does not resume discarded angular drift');assert.equal(nav.angularVelocity.length(),0);
+  }
+});

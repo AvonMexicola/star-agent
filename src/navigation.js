@@ -63,8 +63,8 @@ export class Navigation {
     this.velocity.set(0,0,0);this.mode='flight';this.autoland=false;this.shipPosition=null;this.speedScale=1;this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
   }
   orientToward(target,up){matrix.lookAt(this.position,target,up);this.orientation.setFromRotationMatrix(matrix);}
-  look(yaw,pitch){
-    if(this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
+  look(yaw,pitch,direct=this.brakeFlight??false){
+    if(!direct&&this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
       this.angularVelocity.x+=pitch*4;this.angularVelocity.y+=yaw*4;return;
     }
     // Spacecraft and EVA yaw around their own up axis, so horizontal input
@@ -220,13 +220,13 @@ export class Navigation {
     const moveForward=axis('KeyW','KeyS',pad.forward),strafe=axis('KeyD','KeyA',pad.strafe);
     const turn=axis('ArrowLeft','ArrowRight',pad.yaw),tilt=axis('ArrowUp','ArrowDown',pad.pitch);
     this.doorProgress=clamp(this.doorProgress+(this.doorOpen?dt:-dt)/1.1,0,1);
-    if(pad.brake&&this.mode==='flight'){this.boost=false;return;}
+    const brakeFlight=this.brakeFlight=Boolean(pad.brake&&this.mode==='flight');
     const oldBody=this.body,oldNormal=this.normal,spaceFlight=this.spaceFlightAttitude;
     const yaw=turn*dt*.85;
     const pitch=tilt*dt*.85;
-    const inertial=this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift;
-    if(!inertial&&(yaw||pitch))this.look(yaw,pitch);
-    this.boost=this.keys.has('ShiftLeft')||this.keys.has('ShiftRight')||pad.boost;
+    const inertial=this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift&&!brakeFlight;
+    if(!inertial&&(yaw||pitch))this.look(yaw,pitch,brakeFlight);
+    this.boost=!brakeFlight&&(this.keys.has('ShiftLeft')||this.keys.has('ShiftRight')||pad.boost);
     if(this.mode==='landed')return;
     const forward=FORWARD.clone().applyQuaternion(this.orientation),right=RIGHT.clone().applyQuaternion(this.orientation);
     const input=new THREE.Vector3();
@@ -300,7 +300,13 @@ export class Navigation {
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
       const altitude=this.altitude;
-      if(this.stationLift){
+      if(brakeFlight){
+        // Brake cancels drift and thrust, not the pilot's ability to aim beside
+        // an asteroid. Direct attitude control does not accumulate inertial spin.
+        this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+        const roll=axis('KeyQ','KeyE',pad.roll);
+        if(roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation).normalize();}
+      }else if(this.stationLift){
         this.velocity.copy(this.station.up).multiplyScalar(3);
         if(this.deckClearance>=6){this.stationLift=false;this.velocity.set(0,0,0);}
       }else if(this.autoland && this.stationDistance<500){
