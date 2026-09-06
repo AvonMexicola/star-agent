@@ -134,7 +134,7 @@ export class PyreTerrain {
   }
   select(now = performance.now()) {
     const radius = this.local.length(), radial = this.local.clone().normalize();
-    this.altitude = radius - PYRE_RADIUS;
+    this.altitude = radius - PYRE_RADIUS - pyreSurface(radial.x, radial.y, radial.z).height;
     for (const node of this.nodes.values()) if (node.mesh) node.mesh.visible = false;
     for (const n of this.queue) n.queued = false; this.queue = [];
     this.buildsLastFrame = 0; this.visibleCount = 0; this.maxLevel = 0;
@@ -146,7 +146,7 @@ export class PyreTerrain {
       if (node.level > 1 && node.normal.dot(radial) < PYRE_RADIUS / Math.max(PYRE_RADIUS, radius) - node.size * 1.5 - PYRE_MAX_HEIGHT / PYRE_RADIUS) return;
       node.lastUsed = now;
       if (!node.mesh && budget > 0) { this.request(node); budget--; }
-      const split = node.level < minLevel || (node.level < PYRE_MAX_LEVEL && distance(node) < node.size * PYRE_RADIUS * 1.8);
+      const split = node.level < minLevel || (node.level < PYRE_MAX_LEVEL && distance(node) < node.size * PYRE_RADIUS * 2.3);
       if (split && node.mesh) {
         if (!node.children) node.children = this.childrenOf(node);
         // Siblings are needed for parent replacement even when horizon-culled (PR #15 lesson).

@@ -55,9 +55,10 @@ export class Pyre {
           float pyRange=length(vViewPosition);
           float pyDetail=1.0-smoothstep(150.0,2600.0,pyRange);
           float pyMid=1.0-smoothstep(4000.0,40000.0,pyRange);
-          vec4 pyTex=pyTri(pyreCracks,vPyrePoint/16.0,pyW);
           vec4 pyPlates=pyTri(pyreCracks,vPyrePoint/64.0,pyW);
           vec4 pyMacro=pyTri(pyreCracks,vPyrePoint/256.0,pyW);
+          // Warp the fine crust by the mid-scale grain so the cells never read as a lattice.
+          vec4 pyTex=pyTri(pyreCracks,(vPyrePoint+vec3(pyPlates.g-.5,pyMacro.g-.5,pyPlates.b-.5)*5.0)/16.0,pyW);
           float pyActivity=vPyreData.x,pyFresh=vPyreData.y,pySulphur=vPyreData.z;
           vec3 pyB=pyreFrame*pyD;
           vec2 pyUv=vec2(atan(pyB.x,pyB.z)/6.28318530718+.5,asin(clamp(pyB.y,-1.0,1.0))/3.14159265359+.5);
@@ -66,16 +67,26 @@ export class Pyre {
           diffuseColor.rgb*=mix(1.0,.74+pyMacro.b*.48,pyMid*.7)*mix(1.0,.78+pyPlates.b*.44,pyMid);
           // Walking-scale crust: grain, plate tone, dark cold cracks.
           diffuseColor.rgb*=mix(1.0,.6+pyTex.g*.5+pyTex.b*.3,pyDetail);
-          float pyCrack=pyTex.r*(.55+.45*pyPlates.r);
+          float pyNear=1.0-smoothstep(60.0,420.0,pyRange);
+          float pyCrack=pyTex.r*(.6+.4*pyPlates.r)*smoothstep(.05,.35,pyTex.b*.6+pyPlates.b*.4);
           diffuseColor.rgb*=1.0-pyCrack*.6*pyDetail;
           // Lava: night side glows 3x, the day side is washed out by the star.
           float pyNight=1.0-smoothstep(-.06,.22,pyB.z);
           float pyStrength=mix(.7,3.2,pyNight);
           vec3 pyLava=vec3(1.0,.21,.035);
-          float pyGlow=pyCrack*pyActivity;
-          float pyFieldGlow=max(pyActivity,pyMaps.r)*(.3+.7*(pyPlates.r*.5+pyMacro.b*.5));
-          pyEmissive=pyLava*pyStrength*(pyGlow*pyDetail+pyFieldGlow*(1.0-pyDetail)*.4);
-          diffuseColor.rgb+=pyLava*pyGlow*.14*pyDetail;
+          // Which plates are still hot: activity gated per plate so only part of the crust glows.
+          float pyHot=smoothstep(.22,.55,pyActivity*(.45+.55*pyPlates.b))*pyActivity;
+          float pyGlow=pyCrack*pyHot*pyNear;
+          // 60 m fissures carry the glow from 100 m to a few km; vertex activity beyond; the map from orbit.
+          float pyMidBand=smoothstep(90.0,400.0,pyRange)*(1.0-smoothstep(2500.0,9000.0,pyRange));
+          float pyMidGlow=pyPlates.r*smoothstep(.5,.85,pyMacro.b*.5+pyPlates.b*.5)*pyActivity*pyMidBand;
+          float pyFar=smoothstep(3000.0,12000.0,pyRange);
+          float pyField=mix(pyActivity,max(pyActivity,pyMaps.r),smoothstep(60000.0,300000.0,pyRange));
+          float pyFarGlow=pyField*pyField*pyFar*.55;
+          // Cooling crust between the fissures keeps a dull red heat.
+          float pyEmber=pyHot*(1.0-pyCrack)*.05;
+          pyEmissive=pyLava*pyStrength*(pyGlow+pyMidGlow*.9+pyFarGlow+pyEmber);
+          diffuseColor.rgb+=pyLava*pyGlow*.14;
           pyRough=mix(.92,.3,pyFresh*smoothstep(.3,.8,pyPlates.b));pyRough=mix(pyRough,.72,pySulphur);
           pyRelief=(pyTex.a*.55+pyCrack*.7)*.06*pyDetail+pyPlates.a*.03*pyMid;`)
         .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance+=pyEmissive;')

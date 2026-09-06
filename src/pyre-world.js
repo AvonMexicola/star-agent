@@ -19,7 +19,7 @@ export const PYRE_PERIOD_SECONDS = AEON_YEAR_SECONDS * (PYRE_ORBIT_RADIUS / SUN_
 /** Thin CO2 air: density, scale heights and scattering coefficients in SI units. */
 export const PYRE_ATMOSPHERE = Object.freeze({
   height: 45_000, planeHeight: 12_000, seaLevelDensity: .09, scaleHeight: 6_000, mieScaleHeight: 2_600,
-  betaR: Object.freeze([1.35e-6, 2.3e-6, 4.4e-6]), betaM: Object.freeze([1.15e-5, 8.0e-6, 4.6e-6]), g: .70, gain: 11,
+  betaR: Object.freeze([2.4e-6, 4.2e-6, 8.0e-6]), betaM: Object.freeze([1.7e-5, 1.15e-5, 6.2e-6]), g: .70, gain: 11,
 });
 export const PYRE_LIGHTING = Object.freeze({ sky: 0x9c6a48, ground: 0x2b1510, ambientNight: .06, ambientDay: .24, environment: .05 });
 
@@ -176,13 +176,14 @@ export function pyreSurfaceBody(x, y, z) {
     const caldera = -(1 - smooth(.045, .085, r)) * .13 + Math.exp(-(((r - .075) / .018) ** 2)) * .035;
     // Radial lava channels down the active flanks.
     const channel = smooth(.86, .99, 1 - Math.abs(Math.sin(angle * 7 + qnoise(x * 900, y * 900, z * 900) * 3))) * smooth(.1, .3, r) * (1 - smooth(.8, 1.05, r));
-    height += v.height * (shield + caldera - channel * .012);
+    const gullies = (1 - ridged(x * 1800 + 4, y * 1800 - 6, z * 1800 + 2, 2)) * smooth(.12, .5, r) * (1 - smooth(.8, 1.05, r));
+    height += v.height * (shield + caldera - channel * .012 - gullies * .035 * shield);
     volcanic = Math.max(volcanic, 1 - smooth(.9, 1.2, r));
     if (v.active) {
       calderaHeat = Math.max(calderaHeat, 1 - smooth(.03, .07, r));
       activity = Math.max(activity, channel * (1 - smooth(.45, .95, r)) * .9);
       fresh = Math.max(fresh, (1 - smooth(.35, 1.05, r)) * smooth(.35, .6, qnoise(x * 120 + 7, y * 120 - 3, z * 120 + 1)));
-      sulphur = Math.max(sulphur, (1 - smooth(.06, .28, r)) * smooth(.3, .7, qnoise(x * 1500 + 2, y * 1500 + 4, z * 1500 - 3)));
+      sulphur = Math.max(sulphur, (1 - smooth(.05, .22, r)) * smooth(.52, .8, qnoise(x * 1500 + 2, y * 1500 + 4, z * 1500 - 3)) * .85);
     }
     if (r < .09) region = 'CALDERA'; else if (r < 1.05) region = v.name;
   }
@@ -199,9 +200,11 @@ export function pyreSurfaceBody(x, y, z) {
     const edge = 1 + .35 * (qnoise(x * 60 + 4, y * 60 - 1, z * 60 + 6) - .5);
     const field = (1 - smooth(.55, 1.05, r * edge)) * (1 - .6 * highland);
     if (field <= 0) continue;
-    const patchy = smooth(.32, .68, fbm(x * 230 + 1, y * 230 + 2, z * 230 + 3, 3) + .5);
-    activity = Math.max(activity, field * (.35 + .65 * patchy));
-    fresh = Math.max(fresh, field * smooth(.4, .8, patchy));
+    // Lava lakes (5 km patches) and rivers (bright ridged channels) give the glow structure at every range.
+    const lakes = smooth(.5, .74, fbm(x * 230 + 1, y * 230 + 2, z * 230 + 3, 3) + .5);
+    const rivers = smooth(.62, .96, ridged(x * 760 + 9, y * 760 - 4, z * 760 + 7, 2));
+    activity = Math.max(activity, field * Math.max(rivers, lakes * .85, .16));
+    fresh = Math.max(fresh, field * smooth(.3, .7, lakes + rivers * .5));
     if (field > .3) region = f.name;
   }
   activity = Math.max(activity, calderaHeat);
@@ -230,7 +233,7 @@ export function pyreSurfaceBody(x, y, z) {
   const tone = .8 + .4 * qnoise(x * 350 + 2, y * 350 + 7, z * 350 - 5);
   const basalt = [.082, .076, .07].map(v => v * tone);
   const rego = [.16, .135, .112].map(v => v * tone);
-  const ochre = [.28, .12, .048], yellow = [.74, .60, .12], glass = [.032, .03, .032];
+  const ochre = [.28, .12, .048], yellow = [.56, .43, .09], glass = [.032, .03, .032];
   let color = basalt.map((v, i) => v * (1 - highland) + rego[i] * highland);
   color = color.map((v, i) => v * (1 - oxide) + ochre[i] * oxide);
   color = color.map((v, i) => v * (1 - fresh) + glass[i] * fresh);
