@@ -1,0 +1,33 @@
+{
+  "shipId": "nomad",
+  "browser": "151.0.7922.173",
+  "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "turnAngle": 0.5241100000000012,
+  "thrust": {
+    "seconds": 2.649900000000002,
+    "orientation": [
+      -0.14550298384355478,
+      0.03472619183368176,
+      0.09109472615969279,
+      0.9845429011268343
+    ],
+    "speed": 2508.276007782329
+  },
+  "settled": {
+    "seconds": 3.683199999999998,
+    "orientation": [
+      -0.14550298384355478,
+      0.03472619183368176,
+      0.09109472615969279,
+      0.9845429011268343
+    ],
+    "speed": 72.23361873143553
+  },
+  "speedRatio": 0.028798114125925187,
+  "errors": [],
+  "input": "Injected standard Gamepad; saved Fleet selection; no debug positioning"
+}
