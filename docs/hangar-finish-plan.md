@@ -1,9 +1,12 @@
 # From hangar blockout to finished environment
 
-This is an art review and a proposed production pass, based on PR #16 at
-431369b. The concept and two generated source images below are new deliverables.
-They have NOT been applied to the game. No runtime or Blender model changes are
-included in this art pack.
+The original art review below was prepared against PR #16 at 431369b. The first
+implementation now applies its materials, printed graphics, manufactured props
+and local task lights to the cargo/elevator/workbench corner on `feat/hangar-finish`.
+See [implementation and validation](hangar-finish-implementation.md) for actual
+in-game screenshots, rebuild instructions and remaining work. The concept below
+is still an art target, not an in-game screenshot. The rest of this document
+records the initial review and proposed wider finish pass.
 
 ![Proposed finish target, not an in-game screenshot](../assets/station/art-direction/hangar-finish-target-v1.png)
 

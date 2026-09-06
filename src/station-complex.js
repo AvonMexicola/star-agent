@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Station, STATION_MODEL_URL, STATION_LOD_URL, stationQuaternion, defaultStationDirection, STATION_ALTITUDE } from './station.js';
 import { RADIUS } from './world.js';
+import { createStationFinishMaterials } from './station-finish-materials.js';
+import { createStationFinishGraphics } from './station-finish-graphics.js';
+import { createStationFinishLighting } from './station-finish-lighting.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
@@ -27,12 +30,24 @@ export class StationComplex {
     for(const ring of this.exterior.rings)ring.removeFromParent();
     this.spineColliders=buildStationColliders(this.exterior.group);
     this.exterior.group.add(...this.exterior.rings);
+    this.finishStatus='loading';this.finishRig=null;
     this.readyPromise=this.load(options);
+  }
+  async loadFinish(loader){
+    try{
+      const [materials,props]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb')]);
+      const graphics=createStationFinishGraphics();
+      await graphics.readyPromise;
+      const rig=createStationFinishLighting();
+      this.finishMaterials=materials;this.finishRig=rig;this.finishStatus='ready';
+      return {materials,props,graphics};
+    }catch(error){this.finishStatus='unavailable';this.finishError=error.message;return null;}
   }
   async load(options){
     try{
       const loader=new GLTFLoader();
-      const [gltf,lod]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null)]);
+      const [gltf,lod,finish]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null]);
+      if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       let colliders;
       for(const spec of POD_LAYOUT){
         const pod=new Station(this.scene,{gltf:{scene:gltf.scene.clone(true),animations:gltf.animations},lodUrl:null,offset:spec.offset,yaw:spec.yaw,lodDistance:180,colliders});
@@ -108,6 +123,7 @@ export class StationComplex {
       batch.instances.instanceMatrix.needsUpdate=true;
     }
     this.lodGroup.visible=position.distanceTo(this.centre)<600000;
+    this.finishRig?.update(this,position);
     updateElevator(this.hub.lift,dt);
     this.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
     this.hub.group.visible=position.distanceTo(this.centre)<140;
@@ -158,5 +174,5 @@ export class StationComplex {
     if(Math.abs(p.x)<3.4&&p.z>lift.z-3&&p.z<lift.z+.6)return {kind:'door',label:lift.open?'WALK INTO ELEVATOR · F TO CLOSE':'F · CALL ELEVATOR'};
     return null;
   }
-  get snapshot(){return {pods:this.pods.length,lodBatches:this.lodBatches.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
+  get snapshot(){return {finish:this.finishStatus,finishError:this.finishError,finishMaterials:this.finishMaterials?.stats,pods:this.pods.length,lodBatches:this.lodBatches.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
 }

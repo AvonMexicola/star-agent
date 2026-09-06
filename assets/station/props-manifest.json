@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "generator": "blender/build_station_props.py",
+  "coordinates": "game X right, Y up, Z aft; floor Y=-8; identity placement",
+  "asset": "/models/station-props.glb",
+  "lod": "hero only; shared geometry/materials across all pods",
+  "integration": "Attach glTF scene to station hero root before shared collider build. Existing merged workbenches remain; BenchDress overlays one counter. Do not copy into LOD. All assemblies are decorative, existing terminal/elevator interactions remain runtime-owned.",
+  "assemblies": [
+    {
+      "name": "CargoDolly",
+      "bounds": {
+        "min": [
+          -19.845,
+          -7.99,
+          18.525
+        ],
+        "max": [
+          -17.755,
+          -6.1755,
+          20.004
+        ]
+      },
+      "triangles": 5692,
+      "sourceParts": 97
+    },
+    {
+      "name": "StrappedPallet",
+      "bounds": {
+        "min": [
+          17.7,
+          -8.0,
+          17.727
+        ],
+        "max": [
+          19.9,
+          -6.0975,
+          19.25
+        ]
+      },
+      "triangles": 3392,
+      "sourceParts": 60
+    },
+    {
+      "name": "BenchDress",
+      "bounds": {
+        "min": [
+          -19.85,
+          -7.975,
+          12.15
+        ],
+        "max": [
+          -17.35,
+          -4.985,
+          15.85
+        ]
+      },
+      "triangles": 7680,
+      "sourceParts": 168
+    },
+    {
+      "name": "FireCabinet",
+      "bounds": {
+        "min": [
+          5.0625,
+          -6.99,
+          24.84
+        ],
+        "max": [
+          5.9375,
+          -5.02,
+          25.3
+        ]
+      },
+      "triangles": 1592,
+      "sourceParts": 16
+    },
+    {
+      "name": "TerminalTrim",
+      "bounds": {
+        "min": [
+          -12.995,
+          -7.8,
+          21.935
+        ],
+        "max": [
+          -10.745,
+          -5.56,
+          22.745
+        ]
+      },
+      "triangles": 2592,
+      "sourceParts": 56
+    },
+    {
+      "name": "ElevatorJamb",
+      "bounds": {
+        "min": [
+          -2.45,
+          -8.01,
+          22.013
+        ],
+        "max": [
+          2.45,
+          -4.61,
+          22.47
+        ]
+      },
+      "triangles": 752,
+      "sourceParts": 12
+    }
+  ],
+  "triangles": 21700,
+  "bytes": 1512836,
+  "materials": 8,
+  "drawPrimitives": 8
+}
