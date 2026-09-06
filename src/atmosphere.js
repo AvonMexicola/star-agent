@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RADIUS, ATMOSPHERE_HEIGHT } from './world.js';
+import { RADIUS, ATMOSPHERE_HEIGHT, SUN_ANGULAR_RADIUS } from './world.js';
 import { createCloudNoise, cloudShader } from './cloud-volume.js';
 
 // Single-scattering integration in planet-radius units. Rayleigh + Henyey-Greenstein
@@ -17,6 +17,7 @@ uniform float logFar;
 uniform float radius;
 uniform float atmosphereRadius;
 uniform float exposure;
+uniform float sunAngularRadius;
 varying vec2 vUv;
 const vec3 BETA_R=vec3(5.802e-6,13.558e-6,33.100e-6);
 const vec3 BETA_M=vec3(3.996e-6);
@@ -48,8 +49,9 @@ void main(){
     *exp(-max(0.0,length(cameraPlanet)-1.0)*radius/35000.0);
   vec3 color=ground?original:stars(rd)*(1.0-daylight);
   float sunDot=dot(rd,sunDirection);
-  // A 120,000-km stellar radius at 25 million km: angular radius 0.0048 rad.
-  float disk=smoothstep(cos(.0050),cos(.0046),sunDot);
+  // A 240,000-km stellar radius at 25 million km: angular radius 0.0096 rad
+  // (SUN_ANGULAR_RADIUS from world.js), with a ±4% soft edge (0.0100 / 0.0092).
+  float disk=smoothstep(cos(sunAngularRadius*1.04),cos(sunAngularRadius*.96),sunDot);
   if(!ground)color+=vec3(18.0,15.5,12.5)*disk;
   vec2 hit=sphere(cameraPlanet,rd,atmosphereRadius);
   float start=max(0.0,hit.x),finish=min(distanceToScene,hit.y);
@@ -94,7 +96,7 @@ export class Atmosphere {
     this.cloudNoise=createCloudNoise();
     this.target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true});
     this.target.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
-    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
+    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08},sunAngularRadius:{value:SUN_ANGULAR_RADIUS}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
     this.material.uniforms.cloudNoise={value:this.cloudNoise};this.material.uniforms.cloudTime={value:0};
     this.scene=new THREE.Scene();const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),this.material);quad.frustumCulled=false;this.scene.add(quad);this.camera=new THREE.Camera();
   }
