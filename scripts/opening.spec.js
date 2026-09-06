@@ -95,3 +95,32 @@ test('default intro accepts controller movement and intro=0 keeps orbital boot',
   expect(await page.evaluate(()=>window.starAgent.state.opening.phase)).toBe('skipped');
   expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('flight');
 });
+
+test('hangar floor remains clear while the camera origin moves at eye height',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  await page.goto('/?debug');
+  await page.waitForFunction(()=>window.starAgent?.state.ready);
+  await page.keyboard.press('w');
+  await page.waitForFunction(()=>window.starAgent.state.opening.phase==='playing');
+  await page.evaluate(()=>{
+    const app=window.starAgent,nav=app.navigation,station=nav.station;nav.enabled=false;
+    const local=nav.position.clone().set(-6,station.interiorBox.min.y+1.75,0);
+    nav.position.copy(station.toWorld(local,local.clone()));
+    const target=station.toWorld(local.clone().set(2,station.interiorBox.min.y,-3),local.clone());
+    nav.orientToward(target,station.up);
+    document.querySelectorAll('body > :not(canvas):not(script)').forEach(e=>e.style.visibility='hidden');
+  });
+  for(const scale of [1,.55]){
+    await page.evaluate(scale=>window.starAgent.setRenderScale(scale),scale);
+    for(let step=0;step<8;step++){
+      await page.evaluate(()=>{
+        const nav=window.starAgent.navigation;
+        nav.position.add(nav.position.clone().set(.015,0,.01).applyQuaternion(nav.station.quaternion));
+        return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      });
+      expect(await page.evaluate(()=>window.starAgent.state.station.deckClearance)).toBeCloseTo(1.75,5);
+      if(step===0||step===7)await page.screenshot({path:`/tmp/star-agent-floor-fixed-${scale}-${step}.png`});
+    }
+  }
+  expect(errors).toEqual([]);
+});

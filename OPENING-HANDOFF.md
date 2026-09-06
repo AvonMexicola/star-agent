@@ -69,3 +69,26 @@ resource tolerance, not evidence of a frame-rate improvement. The final opening
 run reached ready at 4.9 seconds on this machine, still above the 3-second target.
 
 PR #12 is ready for manager review. Preview: http://localhost:5178/.
+
+## Floor flicker follow-up
+
+Cees reported dense flicker on the deck in the 5178 preview. Both authored station
+LODs had structural Hull floor tops at -8 m, exactly coplanar with LandingDeck's
+visible top. The Blender generator now ends the structural slab at the deck's
+underside (-8.4 m); LandingDeck, pad and walking height stay at -8 m. Both GLBs
+were regenerated. This removes the competing visible surfaces without depth bias
+or a shifted collision floor. Asset-only fix commit: c4eb24c; independent real-GLB
+regression commit: e0478b0. Manager can carry these into other station branches.
+
+All 123 unit cases pass. The new downward-ray checks fail for both pre-fix GLBs
+and pass for both replacements. The software renderer did not reproduce the
+user's exact dense speckle pattern in the initial angle, but the overlapping
+surfaces were confirmed directly in geometry. Browser follow-up covers eye-height
+camera-origin movement at native and 0.55 scales plus the physical opening journey.
+
+Both follow-up production browser cases pass (physical opening boarding/launch
+and low-angle moving-origin floor inspection). Native and 0.55-scale captures
+were inspected: no speckled floor was visible; reduced scale still has ordinary
+jagged object edges. Chromium 151 / ANGLE Vulkan SwiftShader, 1440x900. Curated
+native image: docs/images/station-floor-fixed.png. The 5178 dev preview serves
+the corrected models; reload the page to replace an already loaded GLB.

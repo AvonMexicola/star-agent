@@ -53,3 +53,13 @@ The dedicated tour captures the reveal and physically walks, boards and launches
 a second case checks controller handover and the orbital opt-out. Screenshots are
 saved to /tmp/star-agent-opening-*.png; captures pause navigation while rendering
 the opening at native resolution, then resume the live journey.
+
+The hangar's structural floor ends beneath the finished landing deck. Both station
+LODs enforce that separation so coplanar surfaces cannot fight for the visible
+floor pixels. The walking surface and pad anchors remain at their authored height.
+
+![Hangar floor after separating the structural slab](images/station-floor-fixed.png)
+
+Floor-fix validation: 123 unit cases, production build, physical boarding/launch,
+and moving-camera floor captures at native and 0.55 scale passed. Image captured
+in Chromium 151 / ANGLE Vulkan SwiftShader at 1440×900.
