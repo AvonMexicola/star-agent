@@ -82,8 +82,8 @@ export function createConcourse({sign}) {
   for(const side of [-1,1]){
     const light=new THREE.SpotLight(p.ivory,280,21,1.45,.3,2);
     light.position.set(side*15,-4.91,-1);light.target.position.set(side*16.2,-8,-1);
-    light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.camera.near=.1;
-    light.shadow.camera.far=22;light.shadow.bias=-.0002;light.shadow.normalBias=.025;
+    light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.near=.1;
+    light.shadow.camera.far=22;light.shadow.bias=-.001;light.shadow.normalBias=.04;
     group.add(light,light.target);lights.push(light);
   }
   return {group,lights,staticBoxes:[],interiorBox:new THREE.Box3(new THREE.Vector3(-22,-8,-19),new THREE.Vector3(22,1.5,19))};
