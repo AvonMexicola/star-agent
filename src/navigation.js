@@ -313,7 +313,9 @@ export class Navigation {
         else this.velocity.copy(oldNormal).multiplyScalar(-Math.min(800,Math.max(1,(altitude-3.2)*.65)));
       }else{
         const vertical=axis('Space','KeyC',pad.vertical);
-        input.addScaledVector(oldNormal,vertical);input.clampLength(0,1);
+        // Assisted vacuum translation matches inertial RCS: triggers move along
+        // ship up/down even after rolling; atmosphere retains radial ascent.
+        input.addScaledVector(spaceFlight?UP.clone().applyQuaternion(this.orientation):oldNormal,vertical);input.clampLength(0,1);
         const cruise=clamp(altitude*.65+25,12,4_000_000)*this.speedScale*(this.boost?7:1);
         const stationLimit=this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity;
         const approachLimit=Math.min(stationLimit,this.debrisSpeedLimit);

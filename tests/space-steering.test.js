@@ -56,3 +56,26 @@ test('ground walking still yaws around gravity and clamps pitch',t=>{
   for(let frame=0;frame<200;frame++)nav.look(0,.04);
   assert.ok(Math.abs(forward.clone().applyQuaternion(nav.orientation).dot(normal))<=.985+1e-8);
 });
+
+test('Xbox triggers translate assisted space flight along ship up/down after rolling',t=>{
+  const {nav,pad,reset}=setup(t);
+  for(const attitude of ['survey','rolled'])for(const [button,sign] of [[7,1],[6,-1]]){
+    pad.buttons.forEach(button=>{button.pressed=false;button.value=0;});reset();
+    if(attitude==='rolled')nav.orientation.setFromEuler(new Euler(.7,-.9,1.3));
+    const shipUp=up.clone().applyQuaternion(nav.orientation),before=nav.position.clone();
+    pad.buttons[button]={pressed:true,value:1};
+    for(let frame=0;frame<20;frame++)nav.update(.025);
+    const movement=nav.position.clone().sub(before);
+    assert.ok(movement.dot(shipUp)*sign>50,`${attitude}: trigger moves along ship-local vertical`);
+    assert.ok(movement.clone().projectOnPlane(shipUp).length()<1e-6,'vertical thrust adds no sideways translation');
+    assert.ok(nav.velocity.clone().normalize().dot(shipUp)*sign>.999999);
+  }
+});
+
+test('assisted atmospheric vertical thrust retains radial ascent after rolling the ship',t=>{
+  const {nav,pad,reset}=setup(t);reset();nav.transit([0,1,0],1000);nav.orientation.setFromEuler(new Euler(.5,.7,1.2));
+  const radial=nav.normal,start=nav.position.clone();pad.buttons[7]={pressed:true,value:1};
+  for(let frame=0;frame<20;frame++)nav.update(.025);
+  assert.equal(nav.flightEnvironment.regime,'ATMOSPHERE');
+  const movement=nav.position.clone().sub(start);assert.ok(movement.dot(radial)>50);assert.ok(movement.clone().projectOnPlane(radial).length()<1e-6);
+});
