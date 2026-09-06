@@ -3,3 +3,4 @@
 #fleet-dialog{width:min(740px,90vw);padding:32px;border:1px solid #719d9e77;background:#102027;color:#e1eeed;border-radius:12px}
 #fleet-dialog::backdrop{background:#020c14b8;backdrop-filter:blur(6px)}
 #fleet-dialog p{line-height:1.6;color:#a6bfbe}.fleet-close{float:right}.fleet-ships{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:24px 0}.fleet-ships article{padding:22px;border:1px solid #64898955;border-radius:6px;background:linear-gradient(145deg,#25414b,#101e27)}.fleet-ships span{font:10px monospace;letter-spacing:2px;color:#d4aa70}.fleet-ships h3{font-size:32px;margin:18px 0}.fleet-ships button,.fleet-close{padding:10px;background:#a5e4cf;color:#102027;border:0;cursor:pointer}.fleet-ships button:disabled{opacity:.45;cursor:default}.fleet-save{font-size:11px}@media(max-width:550px){.fleet-ships{grid-template-columns:1fr}}
+.opening-active #fleet-button{visibility:hidden;pointer-events:none}

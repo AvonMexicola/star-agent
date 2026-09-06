@@ -5,7 +5,7 @@ async function walk(page,key,predicate){
 }
 test('earn Atlas, select it at the station, ride the belly elevator and both cargo lifts, store supplies and launch',async({page})=>{
   const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log(e.message);});page.on('console',m=>{if(m.type()==='error'&&/THREE|WebGL|shader/i.test(m.text()))errors.push(m.text());});
-  await page.goto('/?debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.station.ready);
+  await page.goto('/?intro=0&debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.station.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.4));
   await page.keyboard.press('KeyG');await expect(page.getByRole('button',{name:'LOCKED',exact:true})).toBeDisabled();
   await page.keyboard.press('Escape');
@@ -72,7 +72,7 @@ test('unavailable Atlas asset keeps its elevator and inventory usable',async({pa
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>localStorage.setItem('star-agent.fleet.v1',JSON.stringify({version:1,surfaceVisited:true,unlocked:true,active:'atlas'})));
   await page.route('**/models/atlas.glb',route=>route.abort());
-  await page.goto('/?debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.shipAsset==='fallback');
+  await page.goto('/?intro=0&debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.shipAsset==='fallback');
   await page.evaluate(()=>{const a=window.starAgent;a.setRenderScale(.4);a.navigation.transit(a.destinations.forest,7);a.land();});
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await page.keyboard.press('KeyF');
   await walk(page,'KeyW',()=>window.starAgent.state.shipLocal[2]>.7);await page.keyboard.press('KeyF');

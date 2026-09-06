@@ -194,8 +194,8 @@ test('high-speed downward travel collides with the near surface without tunnelli
   const { navigation } = setup(t);
   const normal = new THREE.Vector3(...destinations.coast);
   navigation.transit(destinations.coast, 1000);
-  // The maximum supported cruise, speed multiplier and boost can reach 224 Mm/s.
-  // At 60 Hz this would travel farther than the planet diameter in one frame.
+  // Inject a legacy overspeed state to exercise the swept collision guard.
+  // Normal flight can no longer accelerate to this speed.
   navigation.velocity.copy(normal).multiplyScalar(-4_000_000 * 8 * 7);
   navigation.update(1 / 60);
   assert.equal(navigation.mode, 'landed');

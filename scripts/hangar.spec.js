@@ -11,7 +11,7 @@ async function screenshot(page,name){
 }
 test('cargo bulk transfer, physical elevator entry, hub exploration and return to the parked ship',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/THREE|WebGL|shader/i.test(m.text()))errors.push(m.text());});
-  await page.goto('/?debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.station.ready);
+  await page.goto('/?intro=0&debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.station.ready);
   await page.evaluate(()=>{
     const a=starAgent,n=a.navigation,s=n.station;a.setRenderScale(.4);
     const p=n.position.clone().set(0,s.interiorBox.min.y+4,2);n.orbit();s.toWorld(p,n.position);n.orientation.copy(s.quaternion);n.landOrLaunch();
@@ -64,7 +64,7 @@ test('cargo bulk transfer, physical elevator entry, hub exploration and return t
 
 test('the complete orbital port renders and its enormous rings rotate',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/THREE|WebGL|shader/i.test(m.text()))errors.push(m.text());});
-  await page.goto('/?debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.station.ready);
+  await page.goto('/?intro=0&debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.station.ready);
   await page.evaluate(()=>{
     const n=starAgent.navigation,s=n.station;n.enabled=false;n.velocity.set(0,0,0);
     n.position.copy(s.centre).add(n.position.clone().set(3500,2000,-3900).applyQuaternion(s.baseQuaternion));n.orientToward(s.centre,s.up);

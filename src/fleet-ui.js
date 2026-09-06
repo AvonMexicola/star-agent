@@ -14,7 +14,7 @@ export function createFleetUI(nav, fleet, selectShip) {
     dialog.querySelector('.fleet-save').textContent=fleet.saved?'Unlock and selected ship saved in this browser.':'Browser storage unavailable. Unlock progress lasts for this session.';
   }
   function open() {
-    if(document.querySelector('dialog[open]')||!nav.enabled)return;
+    if(document.querySelector('dialog[open]')||!nav.enabled||nav.openingActive)return;
     nav.enabled=false;nav.keys.clear();nav.velocity.set(0,0,0);
     if(document.pointerLockElement)document.exitPointerLock();render();dialog.showModal();
   }

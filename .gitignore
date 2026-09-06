@@ -1,7 +1,7 @@
-node_modules/
+node_modules
 dist/
 test-results/
 playwright-report/
 *.log
-
-node_modules
+blender/__pycache__/
+.vercel/

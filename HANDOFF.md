@@ -460,3 +460,28 @@ Merge notes: preserve `nav.layout`, `nav.canDock`, dynamic active ship reference
 opening/travel/camera lanes. External camera bounds should use the active layout.
 Current shared equipment files were not edited. **Merge/deploy remains yours**;
 PR #14 is not a deployment, and manager acknowledgement has not been assumed.
+
+## Hangar integration candidate — 2026-09-06
+
+Cees requested the merge. PR #20 now reconciles the Atlas/modular-port/finish
+stack with `feat/visual-fidelity` at `029cae8`, in isolated worktree
+`/tmp/star-agent-hangar-merge` (`integrate/hangar-finish`). No shared-tree branch
+switching or adoption of the separate hull refinement (#22).
+
+READY FOR REVIEW: `src/main.js`, `src/navigation.js`, `src/station.js`,
+`src/station-complex.js`, `src/opening-sequence.js`, fleet guards, modular GLBs,
+`scripts/hangar-merge.config.js`, `scripts/hangar-merge.spec.js`,
+`tests/station-opening-complex.test.js`, `docs/qa/hangar-integration.md`.
+
+Three agents handled StationComplex/opening transforms, navigation and regression
+coverage, and builder conflict/capture harness independently. Root integrated the
+runtime frame and modal ownership. Preserve fixed complex travel bounds, selected
+ship opening setup, tilted deck up, camera-before-rebase ordering and the input
+pause guard during elevator fade.
+
+151 unit tests and the production build pass. Initial four opening/integration
+browser checks pass; remaining browser/tour checks are in progress. Full results
+and limitations belong in `docs/qa/hangar-integration.md`. The Opus invocation
+returned HTTP 429, reset 13:50 Amsterdam; no visual review score is claimed.
+`QUALITY.md` still requires the independent rubric or Cees's explicit waiver
+before final merge. This entry is a review handoff, not a merge/deployment claim.

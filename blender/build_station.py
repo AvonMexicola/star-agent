@@ -312,6 +312,7 @@ TRUSS_X, TRUSS_Y = 54.0, 44.0
 RING_X, RING_R, RING_TUBE = -40.0, 18.0, 3.0
 DECK_TOP = HZ0
 DECK_THICKNESS = 0.4
+# The structural slab ends under the finished deck, never on its visible face.
 FLOOR_TOP = DECK_TOP - DECK_THICKNESS
 PAD = Vector((0.0, (HY0 + HY1) / 2, DECK_TOP))
 HOVER = 3.2                                                  # ship hover height used by navigation.js

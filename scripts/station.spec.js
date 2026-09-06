@@ -1,19 +1,37 @@
 import { test, expect } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 
+async function openQuickTransit(page){
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeVisible();
+  const menu=page.locator('#quick-transit-menu');
+  const summary=page.locator('#quick-transit-menu > summary');
+  await expect(summary).toHaveText('Quick transit');
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+  await summary.click();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(true);
+  return menu;
+}
+async function chooseDestination(page,name,modifiers=[]){
+  const menu=await openQuickTransit(page);
+  await menu.locator(`[data-destination="${name}"]`).click({modifiers});
+  await expect(page.locator('#help-dialog')).toBeHidden();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+}
+
 test('fly through station doors, dock, walk down the ramp onto deck, return and launch', async ({ page, browser }, testInfo) => {
   const errors=[],captures=[];
   await mkdir('/tmp/star-agent-station',{recursive:true});
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
-  await page.goto('/?seed=7291&debug=1');
+  await page.goto('/?intro=0&seed=7291&debug=1');
   await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.station.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.4));
   const before=await page.evaluate(()=>window.starAgent.state.position);
-  await page.locator('[data-destination="station"]').click({modifiers:['Shift']});
+  await chooseDestination(page,'station',['Shift']);
   expect(await page.evaluate(()=>window.starAgent.state.position)).toEqual(before);
   await expect(page.locator('#course-guidance')).toContainText('Aeon Orbital');
-  await page.locator('[data-destination="station"]').click();
+  await chooseDestination(page,'station');
   await page.waitForFunction(()=>!window.starAgent.state.transiting);
   const backend=await page.evaluate(()=>{
     const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');
@@ -68,21 +86,26 @@ test('fly through station doors, dock, walk down the ramp onto deck, return and 
   await page.waitForFunction(()=>window.starAgent.state.station.local[2]<-70);
   await page.keyboard.up('KeyS');await page.keyboard.press('KeyX');
   await capture('departed');
-  const desktopRows=await page.locator('.destination').evaluateAll(buttons=>buttons.map(button=>Math.round(button.getBoundingClientRect().top)));
-  expect(new Set(desktopRows).size).toBe(1);
+  let menu=await openQuickTransit(page);
+  const desktop=await menu.evaluate(element=>({
+    menu:element.getBoundingClientRect().toJSON(),
+    buttons:[...element.querySelectorAll('.destination')].map(button=>button.getBoundingClientRect().toJSON()),
+  }));
+  expect(desktop.buttons).toHaveLength(7);
+  expect(desktop.buttons.every(button=>button.width>0&&button.left>=desktop.menu.left&&button.right<=desktop.menu.right)).toBe(true);
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeHidden();
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(async()=>{window.starAgent.setRenderScale(.4);await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});
-  const mobile=await page.evaluate(()=>({
-    buttons:[...document.querySelectorAll('.destination')].map(button=>{const b=button.getBoundingClientRect();return {top:b.top,left:b.left,right:b.right};}),
-    hints:document.querySelector('.flight-hints').getBoundingClientRect().bottom,
-    course:document.querySelector('#course-guidance').getBoundingClientRect().bottom,
-    toast:document.querySelector('#toast').getBoundingClientRect().top,
+  menu=await openQuickTransit(page);
+  const mobile=await menu.evaluate(element=>({
+    menu:element.getBoundingClientRect().toJSON(),
+    buttons:[...element.querySelectorAll('.destination')].map(button=>button.getBoundingClientRect().toJSON()),
   }));
-  // Selene is the seventh destination: the existing three-column phone layout needs three rows.
-  expect(new Set(mobile.buttons.map(b=>Math.round(b.top))).size).toBe(3);
-  expect(mobile.buttons.every(b=>b.left>=0&&b.right<=390)).toBe(true);
-  expect(mobile.hints).toBeLessThan(Math.min(...mobile.buttons.map(b=>b.top)));
-  expect(mobile.toast).toBeGreaterThan(mobile.course);
+  expect(mobile.buttons).toHaveLength(7);
+  expect(mobile.menu.left).toBeGreaterThanOrEqual(0);
+  expect(mobile.menu.right).toBeLessThanOrEqual(390);
+  expect(mobile.buttons.every(button=>button.width>0&&button.left>=mobile.menu.left&&button.right<=mobile.menu.right)).toBe(true);
   await page.screenshot({path:'/tmp/star-agent-station/mobile-controls.png'});
   await writeFile('/tmp/star-agent-station/render-environment.json' ,JSON.stringify({browser:browser.version(),backend,viewport:{width:1440,height:900},captures},null,2));
   expect(errors).toEqual([]);

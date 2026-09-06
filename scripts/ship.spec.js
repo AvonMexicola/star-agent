@@ -4,7 +4,7 @@ test('Blender ship: physical cargo access, persistent transfers, live MFDs and b
   const errors = [];
   page.on('pageerror', error => {errors.push(error.message);console.log('PAGE ERROR',error.message);});
   page.on('console', message => { if (message.type() === 'error' && /THREE|WebGL|shader/i.test(message.text())) errors.push(message.text()); });
-  await page.goto('/?debug=1');
+  await page.goto('/?intro=0&debug=1');
   await page.waitForFunction(() => window.starAgent?.state.ready && window.starAgent.state.shipAsset === 'ready', null, { timeout: 60000 });
   await page.evaluate(() => window.starAgent.setRenderScale(.4));
   await page.evaluate(() => window.starAgent.transit('forest'));
@@ -71,7 +71,7 @@ test('Blender ship: physical cargo access, persistent transfers, live MFDs and b
 test('missing GLB keeps the ship boardable and cargo usable', async ({ page }) => {
   const errors = [];page.on('pageerror', error => {errors.push(error.message);console.log('PAGE ERROR',error.message);});
   await page.route('**/models/nomad.glb', route => route.abort());
-  await page.goto('/?debug=1');
+  await page.goto('/?intro=0&debug=1');
   await page.waitForFunction(() => window.starAgent?.state.ready && window.starAgent.state.shipAsset === 'fallback', null, { timeout: 60000 });
   await page.evaluate(() => {
     const app = window.starAgent, nav = app.navigation;

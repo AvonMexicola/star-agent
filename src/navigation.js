@@ -3,8 +3,10 @@ import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
 import { SELENE, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
-import { FLIGHT, environmentAt, step as stepFlight } from './flight-model.js';
+import { environmentAt, step as stepFlight } from './flight-model.js';
 import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './boarding.js';
+
+import { TRAVEL_TARGETS, flightSpeedProfile, planTravel, sampleTravel, abortTravel } from './travel-model.js';
 
 const UP=new THREE.Vector3(0,1,0),FORWARD=new THREE.Vector3(0,0,-1),RIGHT=new THREE.Vector3(1,0,0);
 const rotation=new THREE.Quaternion(),matrix=new THREE.Matrix4();
@@ -12,30 +14,36 @@ export class Navigation {
   constructor(canvas,notify){
     this.canvas=canvas;this.notify=notify;this.position=new THREE.Vector3();this.orientation=new THREE.Quaternion();this.velocity=new THREE.Vector3();
     this.gamepad=new GamepadInput();this.controllerActive=false;this.focused=true;
-    this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
+    this.physicalKeys=new Set();this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
     this.shipId='nomad';this.layout=SHIP_LAYOUT;this.freighter=null;
     this.station=null;this.dockedAtStation=false;this.stationLift=false;
     this.flightAssist=true;this.angularVelocity=new THREE.Vector3();
+    this.travel=null;this.travelTarget=null;
     this.orbit();
     document.addEventListener('pointerlockchange',()=>{this.locked=document.pointerLockElement===canvas;document.body.classList.toggle('piloting',this.locked);if(!this.locked)this.keys.clear();});
     document.addEventListener('mousemove',e=>{if(this.locked&&this.enabled){this.controllerActive=false;this.look(-e.movementX*.0018,-e.movementY*.0018);}});
     document.addEventListener('keydown',e=>{
+      this.physicalKeys.add(e.code);
       if(!this.enabled||document.querySelector('dialog[open]'))return;
+      if(this.openingActive){this.onOpeningKey?.(e);return;}
       if(['Space','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
+      if(['KeyW','KeyA','KeyS','KeyD','Space','KeyC'].includes(e.code))this.onTakeControl?.();
       this.controllerActive=false;this.keys.add(e.code);if(e.repeat)return;
+      if(e.code==='KeyJ'){this.travel?this.cancelTravel():this.beginTravel();return;}
+      if(this.travel){if(e.code==='KeyX')this.cancelTravel();return;}
       if(e.code==='KeyV')this.toggleFlightAssist();
       if(e.code==='KeyL')this.landOrLaunch();if(e.code==='KeyF')this.embark();
       if(e.code==='KeyX'){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;this.notify('Brakes engaged.');}
     });
-    document.addEventListener('keyup',e=>this.keys.delete(e.code));
-    window.addEventListener('blur',()=>{this.focused=false;this.gamepad.suspend();this.keys.clear();if(this.flightAssist)this.velocity.set(0,0,0);});
+    document.addEventListener('keyup',e=>{this.keys.delete(e.code);this.physicalKeys.delete(e.code);});
+    window.addEventListener('blur',()=>{this.focused=false;this.physicalKeys.clear();this.gamepad.suspend();this.keys.clear();if(this.flightAssist)this.velocity.set(0,0,0);});
     window.addEventListener('focus',()=>{this.focused=true;});
     document.addEventListener('visibilitychange',()=>{if(document.hidden){this.gamepad.suspend();this.keys.clear();}});
-    canvas.addEventListener('wheel',e=>{if(!this.locked)return;e.preventDefault();this.speedScale=clamp(this.speedScale*Math.exp(-e.deltaY*.002),.05,8);this.notify(`Flight speed ×${this.speedScale.toFixed(2)}`);},{passive:false});
+    canvas.addEventListener('wheel',e=>{if(!this.locked||this.travel)return;e.preventDefault();this.speedScale=clamp(this.speedScale*Math.exp(-e.deltaY*.002),.05,1);this.notify(`Throttle ${Math.round(this.speedScale*100)}%`);},{passive:false});
   }
   toggleFlightAssist(){
-    if(this.mode!=='flight'||this.autoland||this.stationLift){this.notify('Change flight assist while freely flying.');return;}
+    if(this.travel||this.mode!=='flight'||this.autoland||this.stationLift){this.notify('Change flight assist while freely flying.');return;}
     this.flightAssist=!this.flightAssist;this.angularVelocity.set(0,0,0);
     this.notify(this.flightAssist?'Flight assist on. Releasing thrust brakes the ship.':'Inertial flight. Release thrust to coast; X brakes. V restores assist.');
   }
@@ -47,7 +55,71 @@ export class Navigation {
       gravity:local.normalize().multiplyScalar(-body.gravity*(body.radius/r)**2)};
   }
   capture(){if(!this.enabled)return;try{const result=this.canvas.requestPointerLock();result?.catch(()=>this.notify('Mouse capture unavailable. Drag to look, or use the arrow keys.'));}catch{this.notify('Use arrow keys to steer.');}}
+  get speedProfile(){
+    return flightSpeedProfile({airless:this.body.airless,altitude:this.flightEnvironment.altitude,
+      clearance:this.altitude,stationDistance:this.stationDistance,boost:this.boost,throttle:this.speedScale});
+  }
+  travelRoute(){
+    if(!this.travelTarget)return {ok:false,reason:'Select a world on the map (M).',plan:null};
+    if(this.mode!=='flight'||this.autoland||this.stationLift)return {ok:false,reason:'Launch and leave landing assist before engaging the drive.',plan:null};
+    return planTravel(this.position,this.travelTarget,{obstacles:this.station?.ready?
+      [{name:'Aeon Orbital',center:(this.station.centre??this.station.worldPosition).toArray(),radius:2000}]:[]});
+  }
+  beginTravel(){
+    if(!this.enabled||this.travel)return false;
+    const route=this.travelRoute();
+    if(!route.ok){this.notify(route.reason);return false;}
+    this.travel={plan:route.plan,elapsed:0,targetId:this.travelTarget};
+    this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.boost=false;this.flightAssist=true;
+    this.notify('Drive spooling. Automatic alignment · X aborts.');
+    return true;
+  }
+  cancelTravel(){
+    if(!this.travel||this.travel.plan.kind==='abort')return;
+    this.travel.plan=abortTravel(this.travel.plan,this.travel.elapsed);this.travel.elapsed=0;
+    this.keys.clear();this.notify('Drive aborting. Braking to normal flight.');
+  }
+  get travelState(){
+    if(!this.travel)return null;
+    const sample=sampleTravel(this.travel.plan,this.travel.elapsed);
+    return {...sample,position:sample.position.toArray(),targetId:this.travel.targetId,
+      targetName:TRAVEL_TARGETS.find(t=>t.id===this.travel.targetId)?.name,
+      aborting:this.travel.plan.kind==='abort',eta:Math.max(0,this.travel.plan.duration-this.travel.elapsed)};
+  }
+  updateTravel(dt){
+    const travel=this.travel;
+    travel.elapsed+=Math.max(0,Number.isFinite(dt)?dt:0);
+    const sample=sampleTravel(travel.plan,travel.elapsed);
+    if(travel.plan.direction.lengthSq()>0){
+      matrix.lookAt(new THREE.Vector3(),travel.plan.direction,UP);
+      const aligned=new THREE.Quaternion().setFromRotationMatrix(matrix);
+      this.orientation.slerp(aligned,sample.phase==='spooling'?1-Math.exp(-4*dt):1);
+    }
+    this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
+    if(sample.done){
+      this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+      this.notify(travel.plan.kind==='abort'?'Drive disengaged. Normal flight restored.':'Approach reached. Normal flight restored; descend to land.');
+    }
+  }
+  startStation(){
+    if(!this.station?.ready)throw new Error('Station is not ready for deck spawn.');
+    if('location' in this.station)this.station.location='hangar';
+    if(Number.isInteger(this.station.activeIndex))this.station.parkedPod=this.station.activeIndex;
+    this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+    this.mode='walk';this.autoland=false;this.flightAssist=true;this.dockedAtStation=true;this.stationLift=false;
+    this.shipPosition=this.station.padWorldPosition.clone();this.shipOrientation.copy(this.station.padQuaternion);
+    this.orientation.copy(this.shipOrientation);this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
+    this.jumpHeight=0;this.jumpVelocity=0;
+    // Spawn ahead of the complete selected hull, including the Atlas cockpit
+    // overhang. Interior bounds alone would put a saved freighter under its nose.
+    const nose=this.layout.flightBounds.min[2]-.5;
+    const point=this.fromShipLocal(new THREE.Vector3(2.5,this.layout.eyeHeight,nose));
+    const deck=this.station.deckPoint(point,this.layout.eyeHeight);
+    if(!deck)throw new Error('Opening spawn must have authored deck support.');
+    this.position.copy(deck);
+  }
   orbit(){
+    this.travel=null;this.keys.clear();
     this.dockedAtStation=false;this.stationLift=false;this.flightAssist=true;this.angularVelocity.set(0,0,0);
     this.position.set(...latLonDirection(20,25)).multiplyScalar(RADIUS*2.8);
     const right=new THREE.Vector3().crossVectors(UP,this.position).normalize();
@@ -57,11 +129,12 @@ export class Navigation {
   }
   orientToward(target,up){matrix.lookAt(this.position,target,up);this.orientation.setFromRotationMatrix(matrix);}
   look(yaw,pitch){
+    if(this.travel||this.openingActive||!this.enabled)return;
     if(this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
       this.angularVelocity.x+=pitch*4;this.angularVelocity.y+=yaw*4;return;
     }
     // Yaw around local gravity; pitch about the current camera right vector.
-    const normal=this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
+    const normal=this.dockedAtStation?this.station.up:this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
     const right=RIGHT.clone().applyQuaternion(this.orientation);rotation.setFromAxisAngle(right,pitch);this.orientation.premultiply(rotation).normalize();
     if(this.mode==='walk'){
       const forward=FORWARD.clone().applyQuaternion(this.orientation);const dot=forward.dot(normal);
@@ -92,6 +165,7 @@ export class Navigation {
     return this.insideShip?'WALK AFT TO THE HATCH':'APPROACH THE REAR HATCH TO BOARD';
   }
   transit(direction,altitude=100){
+    this.travel=null;this.keys.clear();
     this.dockedAtStation=false;this.stationLift=false;this.flightAssist=true;this.angularVelocity.set(0,0,0);
     const d=new THREE.Vector3(...direction);const h=Math.max(0,terrainHeight(...direction));
     this.position.copy(d).multiplyScalar(RADIUS+h+altitude);
@@ -129,6 +203,7 @@ export class Navigation {
   }
   dryGround(){if(this.body.airless)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
   landOrLaunch(){
+    if(this.travel)return;
     if(this.mode==='walk'){this.notify('Walk to the cockpit and sit in the pilot chair with F before launch.');return;}
     if(this.mode==='landed'){
       if(this.freighter&&!this.freighter.secured){this.notify('Stow the belly elevator and lower both cargo lifts before launch.');return;}
@@ -164,6 +239,7 @@ export class Navigation {
     this.notify(this.freighter?'Touchdown. F leaves the pilot chair; walk aft to lower the belly elevator.':'Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
   }
   embark(){
+    if(this.travel)return;
     if(this.mode==='walk'&&this.stationAction?.())return;
     if(this.mode==='flight'){this.notify('Land your ship before disembarking. Press L near the surface.');return;}
     if(this.mode==='landed'){
@@ -191,9 +267,12 @@ export class Navigation {
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]')});
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;
+    if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
     if(pad.pressed.has(9))this.onControllerMenu?.();
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
     if(!this.enabled||document.querySelector('dialog[open]'))return;
+    if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
+    if(this.travel){if(pad.brake)this.cancelTravel();this.updateTravel(dt);return;}
     if(pad.pressed.has(8))this.onControllerHud?.();
     if(pad.pressed.has(11))this.toggleFlightAssist();
     if(pad.pressed.has(3))this.landOrLaunch();
@@ -201,7 +280,7 @@ export class Navigation {
     // Interactions may open a modal and disable navigation in this same frame.
     if(!this.enabled||document.querySelector('dialog[open]'))return;
     if(pad.brake){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;}
-    if(this.mode==='flight'&&pad.speed)this.speedScale=clamp(this.speedScale*Math.exp(pad.speed*dt),.05,8);
+    if(this.mode==='flight'&&pad.speed)this.speedScale=clamp(this.speedScale*Math.exp(pad.speed*dt),.05,1);
     const axis=(positive,negative,analog=0)=>clamp(Number(this.keys.has(positive))-Number(this.keys.has(negative))+analog,-1,1);
     const moveForward=axis('KeyW','KeyS',pad.forward),strafe=axis('KeyD','KeyA',pad.strafe);
     const turn=axis('ArrowLeft','ArrowRight',pad.yaw),tilt=axis('ArrowUp','ArrowDown',pad.pitch);
@@ -222,7 +301,7 @@ export class Navigation {
     input.addScaledVector(right,strafe);
     if(this.mode==='walk'){
       const localBefore=this.toShipLocal();
-      const shipUp=localBefore&&localBefore.length()<50?UP.clone().applyQuaternion(this.shipOrientation):oldNormal;
+      const shipUp=this.dockedAtStation?this.station.up:localBefore&&localBefore.length()<50?UP.clone().applyQuaternion(this.shipOrientation):oldNormal;
       const magnitude=Math.min(1,input.length());input.projectOnPlane(shipUp);if(input.lengthSq()>0)input.setLength(magnitude);input.multiplyScalar(this.insideShip?2.3:this.boost?9:4.5);
       this.velocity.lerp(input,1-Math.exp(-12*dt));
       let proposed=this.position.clone().addScaledVector(this.velocity,dt);
@@ -265,16 +344,16 @@ export class Navigation {
       }else{
         const vertical=axis('Space','KeyC',pad.vertical);
         input.addScaledVector(oldNormal,vertical);input.clampLength(0,1);
-        const cruise=clamp(altitude*.65+25,12,4_000_000)*this.speedScale*(this.boost?7:1);
+        const profile=this.speedProfile,maxSpeed=profile.speed;
         const stationLimit=this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity;
-        const approachLimit=stationLimit;
-        const maxSpeed=Math.min(cruise,approachLimit);
-        if(this.velocity.length()>approachLimit)this.velocity.setLength(approachLimit);
+        if(this.speed>stationLimit)this.velocity.setLength(stationLimit);
+        // Assisted flight brakes toward lower commanded limits continuously.
+        // Retain the swept guard for overspeed states loaded from older builds.
         const roll=axis('KeyQ','KeyE',pad.roll);
         const flight=stepFlight(this,{assist:this.flightAssist,targetVelocity:input.multiplyScalar(maxSpeed),
           translation:new THREE.Vector3(strafe,vertical,-moveForward),
           rotation:new THREE.Vector3(tilt,turn,-roll),
-          boost:this.boost,maxSpeed:this.flightAssist?approachLimit:Math.min(FLIGHT.travelSpeed,approachLimit)},this.flightEnvironment,dt);
+          boost:this.boost,maxSpeed:this.flightAssist?Math.max(this.speed,profile.limit):profile.limit},this.flightEnvironment,dt);
         this.velocity.copy(flight.velocity);this.orientation.copy(flight.orientation);this.angularVelocity.copy(flight.angularVelocity);
         if(this.flightAssist&&roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation);}
       }

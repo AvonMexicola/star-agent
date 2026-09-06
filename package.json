@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test tests/station-finish-materials.test.js tests/station-finish-props.test.js tests/station-complex.test.js tests/freighter.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js",
+    "test": "node --test tests/opening-support.test.js tests/opening-navigation.test.js tests/station-floor.test.js tests/player-idle.test.js tests/character.test.js tests/travel-model.test.js tests/travel-navigation.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js tests/station-finish-materials.test.js tests/station-finish-props.test.js tests/station-complex.test.js tests/freighter.test.js tests/station-opening-complex.test.js",
     "test:browser": "playwright test"
   },
   "dependencies": {

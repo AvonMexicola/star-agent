@@ -7,7 +7,7 @@ test('water, ground materials and all forest LODs render without shader errors',
   const errors = [], captures = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-  await page.goto('/?seed=7291&debug=1');
+  await page.goto('/?intro=0&seed=7291&debug=1');
   await page.waitForFunction(() => window.starAgent?.state.ready);
   await page.evaluate(() => window.starAgent.setRenderScale(.55));
   await page.keyboard.press('Tab');

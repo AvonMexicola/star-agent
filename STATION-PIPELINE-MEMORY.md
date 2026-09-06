@@ -169,3 +169,33 @@ mobile assertion still expected two rows from the old six-destination menu;
 `scripts/station.spec.js` now expects the three rows used by seven destinations.
 No runtime UI layout change was needed. Chromium version: 151.0.7922.173.
 Final screenshots were reviewed and copied to `docs/images/aeon-*.png`.
+
+## Opening and travel integration addendum — 2026-09-06
+
+PR #20 integrates this port with `feat/visual-fidelity` at `029cae8` in an isolated
+worktree. See `docs/qa/hangar-integration.md` for actual combined validation and
+review status; the earlier counts above describe the original modular pass.
+
+`StationComplex(scene, openingStationOptions())` shares the authored direction,
+orientation and altitude with every pod and the hub. Its opening methods delegate
+to a locked active berth and preserve controlled door poses during asset loading.
+`station.update(nav.position, origin, sun, dt)` takes the physical player position
+separately from the final camera origin. Select a flight berth using the former;
+rebase and choose visible LOD using the latter after `opening.placeCamera()`.
+Keep `station.nav = nav` connected so cinematic and navigation mode guards work.
+
+Initialize the selected ship layout before constructing the opening. Spawn ahead
+of `layout.flightBounds.min[2]`, and keep an Atlas cinematic camera outside its
+full width. Preserve `station.up` for walking on the tilted deck. Travel avoidance
+uses `station.centre`, not the active berth's changing `worldPosition`.
+
+Input stays paused throughout the elevator's closed-dialog fade. Help and quick
+transit must respect `nav.enabled` as well as open modal flags; otherwise the orbit
+shortcut starts a competing transfer timer. Normal Help destinations close Help
+before initiating their explicit quick transit. The integration browser regression
+covers both the forbidden overlap and that normal flow.
+
+The modular GLBs keep the structural slab below the authored deck. The separate
+manager hull refinement in PR #22 is not part of this merge candidate. Use
+`scripts/hangar-merge.config.js` for combined checks and
+`scripts/hangar-integration-tour.mjs` for reproducible production captures.

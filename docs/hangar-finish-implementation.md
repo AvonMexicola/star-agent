@@ -2,12 +2,14 @@
 
 The first finish pass adds manufactured equipment, distinct surface materials,
 scene-lit printed graphics and task lighting around the cargo terminal, elevator
-and adjoining workbench. It is implemented on `feat/hangar-finish`, stacked on
-the art pack (#17), modular port (#16) and Atlas (#14). It is not a deployment.
+and adjoining workbench. PR #20 includes the art pack (#17), modular port (#16)
+and Atlas (#14), reconciled with the playable opening and system travel from
+`feat/visual-fidelity` at `029cae8`. A review candidate is not a deployment.
 
 The three contributing agents owned materials, Blender props and printed graphics
 separately. Root integrated the kit, task lights and gameplay verification.
-The existing station hull builder and its GLBs remain owned by the manager's lane.
+The modular station hull retains the structural floor fix. The manager's separate
+station hull refinement (#22) remains outside this integration.
 
 ## What is implemented
 
@@ -71,9 +73,12 @@ and existing game textures. Four local spotlights are not multiplied by twenty.
    The latter builds production assets, exercises functional services and Atlas,
    and captures six controlled views under `/tmp/star-agent-hangar-finish-evidence`.
    Inspect the images and console; a successful build alone is insufficient.
-7. Submit the stack for manager review. Reconcile current opening, travel and
-   global lighting changes before integration; never copy this branch's older
-   `main.js` or `navigation.js` over the manager's versions wholesale.
+7. Run the combined opening, travel, services and fleet regression suite with
+   `npm run test:browser -- -c scripts/hangar-merge.config.js`. The production
+   capture harness is `scripts/hangar-integration-tour.mjs`; it records fixed
+   world views, the opening at t=10, the cockpit and optional service detail.
+   Keep machine-readable reports in `/tmp`; attach curated captures for review.
+   Follow `QUALITY.md` for the independent visual review before merge.
 
 ## Validation and remaining work
 
@@ -118,14 +123,14 @@ reviews, not game screenshots.
 
 This is the service-corner slice. More distant original block storage, wall and ceiling
 construction, bright navigation boards, the hub counter and seating remain for
-follow-up. The wider art target is not yet achieved. The current branch predates
-the manager's playable opening and system travel integration; its fixture views
-do not validate that newer opening. The manager's independent visual rubric
-review and full integration tour are still required before merge.
+follow-up. The wider art target is not yet achieved. The preceding seven-test
+result and images describe the original finish pass; combined integration evidence
+is recorded separately in `docs/qa/hangar-integration.md`.
 
-When adopting this stack, preserve Station's opening direction/orientation,
-opening-controlled door methods, camera-before-origin update ordering and modal
-guards. StationComplex needs those newer opening hooks before replacing Station
-in the integration branch. System travel's keep-out centre must remain fixed on
-the complex, not switch with its active berth. The local lighting can coexist
-with the manager's CSM work but needs a combined exposure review.
+The integrated StationComplex preserves Station's opening direction/orientation
+and controlled door methods. Physical player position selects the occupied berth;
+the final cinematic camera origin controls rendering and LOD. The opening locks
+its berth and starts outside the selected Nomad or Atlas hull. Fleet selection is
+unavailable during that opening. System travel's keep-out centre stays fixed on
+the complex instead of following its active berth. Current menu, map, controller
+handoff and gesture-gated audio remain connected.

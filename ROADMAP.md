@@ -216,8 +216,13 @@ Exit criteria: 50 players formation-flying around the station at 20 Hz with < 15
   textures to 1024² WebP (`gltf-transform webp` + `resize`) so a prop is 1–2 MB on the CDN. A Claude Opus agent drives
   the Chrome tabs (the standing exception to the token policy); Cees stays signed in, the agent never handles
   credentials, payments or terms.
-  Batches: 1 alien flora + rocks (12), 2 characters + gear (pilot suit with auto-rig, backpack, pistol, laser rifle,
-  mining laser, helmet), 3 base props (forge, refinery, fabricator, crates, gate, kiosk), 4 asteroids + crystals + ore.
+  **Division of labour (decided 2026-09-06):** Meshy for **organic** shapes only (flora, rocks, crystals, creatures,
+  characters — where its retopo softness doesn't matter). **Hard-surface** props (weapons, tools, backpacks, helmets,
+  base modules, machines, ship parts) are built **procedurally in Blender by script** (`blender/build_*.py`, like the
+  station and the Nomad): crisp bevels, panel lines, emissive strips, exact origins, zero credits, re-buildable. The
+  Meshy gear items are being replaced by `blender/build_gear.py`.
+  Batches: 1 alien flora + rocks (12, Meshy ✅), 2 characters (Meshy ✅, rigged) + gear (Blender, in progress), 3 base
+  props (Blender scripts), 4 asteroids + crystals + ore (Meshy for asteroid/crystal shapes).
 **Work items**: `src/build/` snapping + validation (*Astra*), pieces kit (*Meshy via a Claude Opus agent in Chrome — exception (b)*), shield mechanic (*Astra*), resources/inventory/crafting (*Astra subagent*), `src/voxel/` SDF + marching cubes worker + brush lists — shared by asteroids, caves and outcrops (*Astra; Fable agent only if it stalls — exception (c)*), asteroid SDFs and ore fields (*Astra subagent*), cave field + entrances (*Astra subagent*), mining laser + tools (*Astra subagent*), brush-list replication/persistence (*Astra*, Phase 5).
 
 Exit criteria: two players build a walled base, lock it with a code, mine metal in a cave, forge ingots, craft a turret.
@@ -280,6 +285,15 @@ Ruled out: Unity/Unreal web exports (30–60 MB downloads, no 64-bit world, agen
 single-threaded), Bevy (purest option but immature UI/tooling and far less agent fluency than three.js), Babylon.js
 (fine engine, but a rewrite for no gain).
 
+## Quality bar (added 2026-09-06)
+
+Tests passing is not the bar; **looking finished is**. `QUALITY.md` defines: the art direction (faction language, "no
+whitebox ships", UI is information first, world rules), a Definition of Done for every PR (tests, build, zero console
+errors, screenshot tour at 5 fixed viewpoints, perf numbers, reach), a 6-criterion **visual review rubric scored by an
+Opus reviewer with a 4.0 pass mark**, screenshot regression against baselines, per-scene performance budgets, and a
+weekly quality pass. Two-stage review on every PR: Claude functional → Opus visual. Placeholder assets ship only behind a
+dev flag. Cees's review notes are logged in `docs/qa/`.
+
 ## Team & process
 
 | Role | Who | Scope |
@@ -289,6 +303,6 @@ single-threaded), Bevy (purest option but immature UI/tooling and far less agent
 | Project management, specs, review, QA | **Claude (Fable)** | `ROADMAP.md`, `HANDOFF.md`, tests, screenshot tours, PR review, perf gates |
 | Exceptions only (browser tooling, stalled hard maths) | Claude Opus / Fable agents | Meshy asset generation; a shader or solver if Astra is stuck |
 
-Rules that keep this working: one owner per file (see `HANDOFF.md`), new features land as new modules with a documented
+Rules that keep this working: the quality bar in `QUALITY.md` applies to every PR; one owner per file (see `HANDOFF.md`), new features land as new modules with a documented
 swap, every module ships with a `/dev/` test page and a screenshot, `npm test` stays green, requests between agents
 go in `HANDOFF.md`, and the roadmap is updated when a phase's exit criteria are met.

@@ -2,19 +2,32 @@ import { test, expect } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 
 const evidence='/tmp/star-agent-moon-evidence';
+async function chooseDestination(page,name,modifiers=[]){
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeVisible();
+  const menu=page.locator('#quick-transit-menu');
+  const summary=page.locator('#quick-transit-menu > summary');
+  await expect(summary).toHaveText('Quick transit');
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+  await summary.click();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(true);
+  await menu.locator(`[data-destination="${name}"]`).click({modifiers});
+  await expect(page.locator('#help-dialog')).toBeHidden();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+}
 test('Selene landing, ramp exploration, lunar jump, reboarding and launch render correctly',async({page,browser})=>{
   test.setTimeout(300000);
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
-  await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
+  await page.goto('/?intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   await mkdir(evidence,{recursive:true});
   await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/orbit.png`});await page.keyboard.press('Tab');
   const before=await page.evaluate(()=>window.starAgent.state.position);
-  await page.locator('[data-destination="moon"]').click({modifiers:['Shift']});
+  await chooseDestination(page,'moon',['Shift']);
   await expect(page.locator('#course-guidance')).toContainText('Selene');
   expect(await page.evaluate(()=>window.starAgent.state.position)).toEqual(before);
-  await page.locator('[data-destination="moon"]').click();
+  await chooseDestination(page,'moon');
   await page.waitForFunction(()=>!window.starAgent.state.transiting&&Number(getComputedStyle(document.getElementById('transit')).opacity)===0);
   await expect(page.locator('#mode-label')).toHaveText('LUNAR FLIGHT');
   await expect(page.locator('#altitude-reference')).toHaveText('ABOVE SELENE');

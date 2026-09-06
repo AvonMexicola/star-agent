@@ -20,10 +20,24 @@ function watchForFailures(page) {
 
 async function bootPlanet(page) {
   const failures = watchForFailures(page);
-  await page.goto('/');
+  await page.goto('/?intro=0');
   // The loading veil is dismissed by adding the "hidden" class once the world exists.
   await expect(page.locator('#loading')).toHaveClass(/(^|\s)hidden(\s|$)/, { timeout: BOOT_TIMEOUT });
   return failures;
+}
+
+async function chooseDestination(page,name,modifiers=[]){
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeVisible();
+  const menu=page.locator('#quick-transit-menu');
+  const summary=page.locator('#quick-transit-menu > summary');
+  await expect(summary).toHaveText('Quick transit');
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+  await summary.click();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(true);
+  await menu.locator(`[data-destination="${name}"]`).click({modifiers});
+  await expect(page.locator('#help-dialog')).toBeHidden();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
 }
 
 test('the planet boots into orbit without a page error', async ({ page }) => {
@@ -53,7 +67,7 @@ test('the planet boots into orbit without a page error', async ({ page }) => {
 test('quick transit to the coast leaves the exosphere', async ({ page }) => {
   const { pageErrors } = await bootPlanet(page);
 
-  await page.locator('button[data-destination="coast"]').click();
+  await chooseDestination(page,'coast');
   await expect
     .poll(async () => (await page.locator('#biome').innerText()).trim(), { timeout: BOOT_TIMEOUT })
     .not.toBe('EXOSPHERE');
@@ -69,11 +83,11 @@ test('quick transit to the coast leaves the exosphere', async ({ page }) => {
 });
 
 test('setting a course preserves position and a shared seed survives reload', async ({ page }) => {
-  await page.goto('/?seed=42');
+  await page.goto('/?intro=0&seed=42');
   await page.waitForFunction(()=>window.starAgent?.state.ready, null, {timeout:BOOT_TIMEOUT});
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   const before=await page.evaluate(()=>({state:window.starAgent.state,destinations:window.starAgent.destinations}));
-  await page.locator('[data-destination="coast"]').click({modifiers:['Shift']});
+  await chooseDestination(page,'coast',['Shift']);
   await expect(page.locator('#course-guidance')).toContainText('Verdant coast');
   const after=await page.evaluate(()=>window.starAgent.state);
   expect(after.position).toEqual(before.state.position);

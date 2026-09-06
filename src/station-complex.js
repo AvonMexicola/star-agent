@@ -13,8 +13,12 @@ import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, upda
 export class StationComplex {
   constructor(scene,options={}){
     this.scene=scene;this.pods=[];this.activeIndex=0;this.parkedPod=0;this.location='hangar';this.ready=false;this.error=null;
-    this.direction=defaultStationDirection();this.baseQuaternion=stationQuaternion(this.direction,new THREE.Quaternion());
-    this.centre=this.direction.clone().multiplyScalar(RADIUS+STATION_ALTITUDE);
+    this.direction=(options.direction?.clone()??defaultStationDirection()).normalize();
+    this.altitude=options.altitude??STATION_ALTITUDE;
+    this.baseQuaternion=options.orientation?.clone().normalize()??stationQuaternion(this.direction,new THREE.Quaternion());
+    this._up=new THREE.Vector3(0,1,0).applyQuaternion(this.baseQuaternion).normalize();
+    this._openingIndex=null;this._openingProgress=0;
+    this.centre=this.direction.clone().multiplyScalar(RADIUS+this.altitude);
     this.exterior=createExterior();scene.add(this.exterior.group);
     this.lodGroup=new THREE.Group();this.lodGroup.name='Instanced distant berths';scene.add(this.lodGroup);this.lodBatches=[];
     this.hub=createHub();scene.add(this.hub.group);
@@ -50,7 +54,7 @@ export class StationComplex {
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       let colliders;
       for(const spec of POD_LAYOUT){
-        const pod=new Station(this.scene,{gltf:{scene:gltf.scene.clone(true),animations:gltf.animations},lodUrl:null,offset:spec.offset,yaw:spec.yaw,lodDistance:180,colliders});
+        const pod=new Station(this.scene,{gltf:{scene:gltf.scene.clone(true),animations:gltf.animations},lodUrl:null,direction:this.direction,orientation:this.baseQuaternion,altitude:this.altitude,offset:spec.offset,yaw:spec.yaw,lodDistance:180,colliders});
         if(finish)prepareStationFinishShadows(pod.model);
         colliders??=pod.colliders;pod.id=spec.id;
         if(lod)pod.attachLod({scene:lod.scene.clone(true)});
@@ -73,7 +77,9 @@ export class StationComplex {
           this.lodBatches.push({instances,matrix:mesh.matrixWorld.clone(),door,closedX:door>=0?this.pods[0].doors[door].position.x:0});
         });
       }
-      this.ready=true;return this;
+      this.ready=true;
+      if(this.openingControlled){this.activeIndex=this._openingIndex;this.active.beginOpening();this.active.setOpeningProgress(this._openingProgress);}
+      return this;
     }catch(error){this.error=error.message;throw error;}
   }
   get active(){return this.pods[this.activeIndex];}
@@ -81,12 +87,13 @@ export class StationComplex {
   get worldPosition(){return this.frame?.worldPosition??this.centre;}
   get quaternion(){return this.frame?.quaternion??this.baseQuaternion;}
   get inverseQuaternion(){return this.frame?.inverseQuaternion??this.baseQuaternion.clone().invert();}
-  get up(){return this.direction;}
+  get up(){return this._up;}
   get interiorBox(){return this.frame?.interiorBox;}
   get padLocal(){return this.active?.padLocal;}
   get padWorldPosition(){return this.active?.padWorldPosition;}
   get padQuaternion(){return this.active?.padQuaternion;}
   get approachWorldPosition(){return this.active?.approachWorldPosition;}
+  get doorTriggerWorldPosition(){return this.active?.doorTriggerWorldPosition;}
   get openingZ(){return this.active?.openingZ;}
   get model(){return this.active?.model;}
   get doorsOpen(){return this.active?.doorsOpen??0;}
@@ -100,13 +107,31 @@ export class StationComplex {
   transitParams(...args){this.location='hangar';return this.active.transitParams(...args);}
   openDoors(){this.active?.openDoors();}
   closeDoors(){this.active?.closeDoors();}
+  get openingControlled(){return this._openingIndex!==null;}
+  get openingProgress(){return this._openingProgress;}
+  beginOpening(){
+    this.location='hangar';this._openingIndex=this.activeIndex;this._openingProgress=0;
+    this.active?.beginOpening();return 0;
+  }
+  setOpeningProgress(progress){
+    this._openingProgress=THREE.MathUtils.clamp(Number.isFinite(progress)?progress:0,0,1);
+    if(this.openingControlled)this.activeIndex=this._openingIndex;
+    this.active?.setOpeningProgress(this._openingProgress);return this._openingProgress;
+  }
+  endOpening(){
+    if(this.openingControlled)this.activeIndex=this._openingIndex;
+    const openness=this.active?.endOpening()??0;this._openingIndex=null;return openness;
+  }
   update(position,origin,sun,dt){
-    if(this.ready && this.nav?.mode==='flight'){
+    if(this.openingControlled){this.activeIndex=this._openingIndex;this.location='hangar';}
+    if(this.ready && this.nav?.mode==='flight'&&!this.openingControlled&&!this.nav.openingActive){
       this.location='hangar';let nearest=Infinity;
       this.pods.forEach((pod,i)=>{const distance=position.distanceToSquared(pod.worldPosition);if(distance<nearest){nearest=distance;this.activeIndex=i;}});
     }
     for(const pod of this.pods){
-      pod.update(position,origin,sun,dt);updateElevator(pod.lift,dt);
+      // Navigation chooses the occupied berth; the final cinematic/first-person
+      // camera origin controls visibility and floating-origin render transforms.
+      pod.update(origin,origin,sun,dt);updateElevator(pod.lift,dt);
       pod.lift.group.visible=pod.services.visible=pod.cameraDistance<230;
       if(pod.lodModel)pod.lodModel.visible=false;
     }
@@ -123,11 +148,11 @@ export class StationComplex {
       });
       batch.instances.instanceMatrix.needsUpdate=true;
     }
-    this.lodGroup.visible=position.distanceTo(this.centre)<600000;
+    this.lodGroup.visible=origin.distanceTo(this.centre)<600000;
     this.finishRig?.update(this,position);
     updateElevator(this.hub.lift,dt);
     this.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
-    this.hub.group.visible=position.distanceTo(this.centre)<140;
+    this.hub.group.visible=origin.distanceTo(this.centre)<140;
     this.exterior.hubShell.visible=!this.hub.group.visible;
     for(const light of this.hub.lights)light.visible=this.location==='hub'&&position.distanceTo(this.centre)<100;
     this.rebase(origin);
