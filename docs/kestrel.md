@@ -46,6 +46,7 @@ Blender 5.2.0 LTS was used. Run these from the repo root:
 ```sh
 blender -b -t 4 --python-exit-code 1 --python blender/build_fighter.py -- --stage detail --round local --render
 blender -b assets/kestrel/kestrel.blend -t 4 --python-exit-code 1 --python blender/export_fighter.py -- --prepare
+python3 blender/clean_meshy_upload.py
 blender -b -t 2 --python-exit-code 1 --python blender/pack_fighter_textures.py
 blender -b /tmp/kestrel-uv.blend -t 4 --python-exit-code 1 --python blender/export_fighter.py -- --export
 blender -b assets/kestrel/kestrel.blend --python-exit-code 1 --python blender/check_fighter_clearance.py
@@ -61,6 +62,15 @@ assemblies. It bakes base colour, roughness, metallic, tangent-space normal and
 AO, then exports `kestrel-meshy-input.glb` with one mesh and the
 existing base-colour atlas. The UV-layout hash is recorded in
 `assets/kestrel/texture-layout.json`.
+
+The current upload retry file is `assets/kestrel/kestrel-meshy-clean.glb`.
+`clean_meshy_upload.py` excludes 78 triangle fragments with negligible geometric
+area or collapsed UV area from the temporary painting shell. Position, normal,
+UV and image buffers are byte-for-byte unchanged. This preserves the existing
+atlas and does not modify the runtime GLB. Both the original and cleaned files
+pass Khronos glTF Validator with zero issues. Meshy reported only "Texturing
+failed" after the manual upload; whether this cleanup resolves that failure is
+still unverified. See the QA record for limits and hashes.
 
 The remaining texture step uploads that authored mesh to Meshy's text-to-texture
 workflow with **Keep Original Texture and UV** enabled, then validates/imports

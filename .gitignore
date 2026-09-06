@@ -9,4 +9,5 @@ assets/kestrel/*.blend1
 assets/kestrel/kestrel-blockout.glb
 assets/kestrel/kestrel-detail.glb
 assets/kestrel/kestrel-meshy-input.glb
+assets/kestrel/kestrel-meshy-clean.glb
 .vercel/

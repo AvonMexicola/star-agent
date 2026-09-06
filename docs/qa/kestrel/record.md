@@ -1,10 +1,12 @@
 # Kestrel candidate record — 2026-09-06
 
-**Draft; material gate pending.** The required Meshy texture pass has not run.
+**Draft; material gate pending.** The required Meshy texture pass has not succeeded.
 Current maps are Blender procedural bakes and are labelled that way in the
-provenance. The upload-ready mesh and planned prompt exist; browser file upload
-is blocked by the extension's file-URL permission. No Meshy generation or credit
-spend is claimed. Final appearance must be reviewed again after texturing.
+provenance. Automated file attachment was blocked by the browser extension's
+file-URL permission. Cees then uploaded manually and reported "Texturing failed"
+without a more specific reason. A cleaned retry file is prepared below. No
+successful Kestrel texture output or verified Kestrel credit charge is claimed.
+Final appearance must be reviewed again after texturing.
 
 Current GLB: `2fa436d32c089b6d7ed705925ad013a1306e8e30ce56568c07604405610503b0`.
 36,226 triangles, 2,305,008 bytes, 45 meshes, six materials, three 1024² WebP maps.
@@ -93,3 +95,32 @@ other animation-loop work. The observed RAF pacing is about 16.7 ms.
 These measured render costs fit the isolated studio budget. They do not predict
 FPS after hangar, flight, terrain or combat integration. The performance script
 is retained in `scripts/kestrel-performance.spec.js` for the later textured asset.
+
+## Manual upload failure and conservative retry
+
+Cees reported a generic "Texturing failed" response after manual upload with
+Keep Original Texture and UV enabled. No Meshy error code or specific cause was
+available. The original upload GLB is 2,560,732 bytes, one mesh/primitive, one
+material, one 1024² 8-bit RGB PNG and one UV set, without animations or extensions.
+Its SHA-256 is `6211ea3111e122f8ac0d3457635607305e84408df62eb0abfc88d2f724b714ea`.
+Khronos glTF Validator 2.0.0-dev.3.10 reports zero errors, warnings, information
+messages or hints. A valid glTF file can still fail Meshy's processing; this
+result does not identify the remote cause.
+
+An additional triangle-area check found 24 zero-area geometric fragments and
+78 triangles with negligible/collapsed UV area. `blender/clean_meshy_upload.py`
+excludes the union (78) from the temporary painting shell, reducing it from
+34,886 to 34,808 triangles. The excluded surface totals 0.0118814 m² out of
+358.608 m²; almost all of that is one collapsed-UV cockpit face. This is a
+conservative ingestion experiment, not a claim that the authored rig's UV
+defects or Meshy's failure are repaired. No UV island is moved or repacked.
+
+Retry file: `assets/kestrel/kestrel-meshy-clean.glb`, 2,560,264 bytes, SHA-256
+`8ae571172e149a8c0a831abc743c35aea24f0f6b4352c4a2f639e3407d8b8282`.
+An independent Node byte comparison confirms unchanged position, normal, UV and
+image buffers. Khronos validation again reports zero issues. Cleaning the result
+a second time excludes zero triangles and produces identical bytes. Detailed
+local diagnostics are under `/tmp/kestrel-upload-validator-*.json` and
+`/tmp/kestrel-meshy-clean*.json`; generated diagnostic reports are not committed.
+Runtime GLB hash, reviewed images, budget and visual score remain unchanged.
+The manual retry and successful texturing still need verification.
