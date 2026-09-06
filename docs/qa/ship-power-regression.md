@@ -30,7 +30,10 @@ the same machine with the same Chromium executable and SwiftShader launch flags.
 
 ## Results
 
-The first command ran five selected cases:
+The first command ran five selected cases. At that point the config selected
+`inspect.spec.js` alongside opening and travel. The final config replaces that
+short-timeout inspection with the verified `flight.spec.js` boarding case; the
+original inspection source and its recorded failure are unchanged:
 
 ```text
 npm run test:browser -- -c scripts/ship-power-regression.config.js

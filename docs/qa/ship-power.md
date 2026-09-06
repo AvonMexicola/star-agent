@@ -45,7 +45,7 @@ Focused production browser coverage exercises powered assisted Nomad course hold
 power-off momentum and reseating, rotating Atlas cabin/lift travel, emergency MFDs,
 and touch/controller power controls. Captures use Chromium 151.0.7922.173,
 ANGLE/Vulkan SwiftShader, 1440×900 and 390×844; screenshots use render scale 1.
-Integration checks and retained timing failures are listed in the
+Five opening/boarding/travel regression scenarios also pass. The older full-resolution inspection timed out at its 45-second descent wait; the existing .4-scale physical journey passed on rerun. Integration checks and retained timing failures are listed in the
 [regression report](ship-power-regression.md).
 Software-renderer frame measurements do not establish the laptop GPU budget.
 Independent Opus visual review remains pending; this is a draft review candidate,
