@@ -74,6 +74,32 @@ test('zoom is clamped and centers either the fitted bounds or supplied focus', (
   assert.equal(createMapProjection({ targets, zoom: .01 }).zoom, .5);
 });
 
+test('returned world center round-trips and can be reused without moving the chart', () => {
+  const options = {
+    targets: TRAVEL_TARGETS,
+    positions: [new Vector3(3_000_000, 450_000, -700_000), [-900_000, -125_000, 800_000]],
+    width: 713,
+    height: 389,
+    padding: 51,
+    zoom: 2.75,
+  };
+  const fitted = createMapProjection(options);
+  assert.equal(Object.isFrozen(fitted.center), true);
+  const chartCenter = fitted.project(fitted.center);
+  near(chartCenter.x, options.width / 2);
+  near(chartCenter.y, options.height / 2);
+  near(chartCenter.depth, 0, 1e-7);
+
+  const reused = createMapProjection({ ...options, focus: fitted.center });
+  near(reused.metersPerPixel, fitted.metersPerPixel);
+  for (const probe of [...options.positions, ...TRAVEL_TARGETS.map(target => target.center)]) {
+    const before = fitted.project(probe), after = reused.project(probe);
+    near(after.x, before.x, 1e-9);
+    near(after.y, before.y, 1e-9);
+    near(after.depth, before.depth, 1e-7);
+  }
+});
+
 test('anchored double projection is invariant to a large shared origin shift', () => {
   const positions = [new Vector3(3_000_000, 250_000, -400_000), [-700_000, -80_000, 900_000]];
   const probe = new Vector3(1_234_000, 56_000, -78_000);
