@@ -27,6 +27,10 @@ Press **V** while freely flying to toggle inertial flight. Releasing thrust then
 
 **P** toggles ship main power from the pilot chair. **F** lets you stand during ordinary flight: assisted flight holds the current course and speed while you walk inside either ship. Approach the chair and press F to resume piloting. Shutdown preserves momentum and disables propulsion; external exits remain secured in flight. See [ship power and cabin flight](docs/ship-power.md).
 
+Press **4** (or the **EXTERNAL 4** button) to see the ship from above and behind; press again to return to the cockpit. Normal flight controls still steer the ship. The camera retracts near terrain and station walls, temporarily returns to cockpit in tight spaces, and keeps independent view selections for walking and piloting. On foot, **4** toggles first person / an animated third-person player view; normal walking and jumping controls still apply.
+
+Press **V** while freely flying to toggle inertial flight. Releasing thrust then preserves momentum; arrow keys and Q/E apply rotational thrust, and mouse movements adjust rotation rate. Space/C thrust along the ship's up/down axis in this mode. **X** stops translation and rotation; **V** restores assisted braking. Inertial flight includes inverse-square gravity (9.81 m/s² at sea level), density-dependent drag, banked wing lift and loss of lift beyond stall angle. It has a 3 km/s travel cap and retains the station approach speed limit. Assisted mode remains the default, with gravity/aero compensation and altitude-scaled travel speed. The transition readout maps 70–20 km above sea level to ATMO 0–100%; it is a regime blend, not air density. Orbit/quick-transit resets assist to on.
+
 L engages landing assistance near dry terrain or polar ice. After landing, F stands from the pilot chair. Walk aft, press F at the rear hatch, wait for the ramp to lower, and walk outside. Return up the ramp, approach the chair, press F to sit, then L to launch. Boarding is physical; F outside does not teleport you aboard. Tab hides the interface.
 
 Press **M** for the **system map** and select Aeon or Selene. **ENGAGE DRIVE** or
@@ -111,6 +115,8 @@ npm run test:browser -- -c scripts/opening.config.js
 npm run test:browser -- -c scripts/crash.config.js
 
 npm run test:browser -- -c scripts/reentry.config.js
+
+npm run test:browser -- -c scripts/ship-camera.config.js
 ```
 
 Unit checks cover terrain seams, local coordinate precision, seed reproducibility, worker/collision agreement, continuous descent and travel between zone coordinates, physical boarding, gap-free tree LOD coverage, and real-asset station collision/docking/deck support. Browser checks compile and render shaders and exercise the playable controls. The fidelity inspection saves images and render-environment metadata under `/tmp/star-agent-fidelity`; the station journey saves `/tmp/star-agent-station`; the surface-detail inspection saves `/tmp/star-agent-surface`; the boarding inspection saves `/tmp/star-agent-*.png`.
