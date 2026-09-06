@@ -1,6 +1,6 @@
-# Deploy (netcup RS 2000 G12, 159.195.204.247)
+# Deploy (netcup RS 2000 G12, 159.195.204.247, Debian 13)
 
-1. First login (once, by Cees, with the netcup root password): `ssh-copy-id -i ~/.ssh/id_ed25519_netcup.pub root@159.195.204.247`
+1. First login (once, by Cees, **from the laptop**, with the netcup root password): `ssh-copy-id -i ~/.ssh/id_ed25519_netcup.pub root@159.195.204.247`
 2. Bootstrap (idempotent): `ssh staragent 'DOMAIN=play.staragent.site bash -s' < scripts/deploy/bootstrap.sh`
 3. DNS: add an `A` record `play.staragent.site → 159.195.204.247` (Cloudflare proxied later); Caddy fetches TLS automatically.
 4. Game server (Phase 5, Astra): deploy a release to `/opt/staragent/releases/<sha>`, symlink `/opt/staragent/current`,

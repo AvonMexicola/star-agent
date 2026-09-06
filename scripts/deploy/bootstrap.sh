@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Star Agent — one-shot bootstrap for the netcup RS 2000 G12 (Ubuntu 24.04, x86-64).
+# Star Agent — one-shot bootstrap for the netcup RS 2000 G12 (Debian 13 "trixie", x86-64; also works on Ubuntu 24.04).
 # Run ONCE as root over SSH:  ssh staragent 'bash -s' < scripts/deploy/bootstrap.sh
 # Idempotent: safe to re-run. Creates the `staragent` service user, key-only SSH, firewall,
-# unattended upgrades, fail2ban, Node 22, Caddy (TLS + reverse proxy), Postgres 16, Redis, systemd unit stubs.
+# unattended upgrades, fail2ban, Node 22, Caddy (TLS + reverse proxy), Postgres (distro version), Redis, systemd unit stubs.
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 DEPLOY_USER=staragent
@@ -12,7 +12,7 @@ PUBKEY="${PUBKEY:-$(cat /root/.ssh/authorized_keys | head -1)}"
 echo "== packages"
 apt-get update -qq
 apt-get install -y -qq ufw fail2ban unattended-upgrades apt-listchanges curl git jq ca-certificates gnupg \
-  postgresql-16 redis-server debian-keyring debian-archive-keyring apt-transport-https >/dev/null
+  postgresql redis-server debian-keyring debian-archive-keyring apt-transport-https sudo openssl >/dev/null   # Debian 13 ships PostgreSQL 17
 
 echo "== service user"
 id -u $DEPLOY_USER >/dev/null 2>&1 || adduser --disabled-password --gecos "" $DEPLOY_USER
@@ -30,7 +30,7 @@ PermitRootLogin prohibit-password
 X11Forwarding no
 MaxAuthTries 3
 SSH
-systemctl reload ssh || systemctl reload sshd
+systemctl reload ssh 2>/dev/null || systemctl reload sshd
 
 echo "== firewall"
 ufw --force reset >/dev/null
@@ -81,7 +81,7 @@ CADDY
 systemctl enable --now caddy >/dev/null && systemctl reload caddy
 
 echo "== postgres + redis"
-systemctl enable --now postgresql redis-server >/dev/null
+systemctl enable --now postgresql redis-server >/dev/null; PGV=$(ls /etc/postgresql | sort -n | tail -1); echo "postgres $PGV"
 sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='staragent'" | grep -q 1 || \
   sudo -u postgres psql -c "CREATE ROLE staragent LOGIN PASSWORD '$(openssl rand -hex 16)';" >/dev/null
 sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname='staragent'" | grep -q 1 || \
