@@ -160,3 +160,47 @@ radius before the old field was replaced. The renderer now retains the published
 radius, blends range expansion after publication, and caps display by the requested
 setting. The final build passes; the independent walking/settings run validates
 this final shader variant rather than reusing a capture of the previous source.
+
+
+## Final acceptance — runtime ff8c6df
+
+Independent Codex/Astra review under the current HANDOFF reviewer policy passes
+this bounded feature scope at **4.0/5 (all six criteria4)**. The exact final report
+is [final-review.md](final-review.md); all four rejected reports remain above.
+At20.1m and27.0m of actual walking, middle publication was still pending but the
+coarse fallback preserved the field. The80→160m settings transition also retained
+coverage while generation ran. All18 independent frames used1600×900, render
+scale1, Chromium151.0.7922.173, AMD Radeon860M ANGLE/OpenGL ES3.2; zero browser
+errors/warnings. Independent source/meadow tests6/6 passed. The aborted stale
+capture is not used as evidence. No physical controller hardware was tested.
+
+Final source build passes. Root unit suite467/467, feature journeys2/2, the
+corrected physical controller boarding case1/1, and affected visual fixtures
+were rerun after their respective changes as recorded above. Finalff8c6df shader
+rendering and walking/settings transitions are established by the independent
+capture. GitHub verify and Vercel feature-preview checks passed onff8c6df.
+The existing Vite large-chunk build warning remains; it is not a browser error.
+
+Measured scene counts from the final independent walking sequence:
+
+| View | Draw calls | Triangles |
+|---|---:|---:|
+|80m field,1600×900,scale1|497–521|1.758–1.785M|
+|160m field,1600×900,scale1|506–521|2.026–2.045M|
+
+These renderer scene counts are not per-asset counts or steady-state frame-time
+measurements. The160m preset exceeds the project's1.8M surface triangle target;
+whole-scene frame budgets are not certified. Density/distance can be reduced,
+and80m remains the default. Far grass retains visible fine dither/grain and
+simplified silhouettes; full near-blade detail is not rendered to160m. Gear
+retains the deployed collision envelope. Inherited PR34 world/station quality
+and performance work remains open. The PR remains draft for integration review.
+
+Final independent actual-game evidence: [80m field](meadow-80-reviewed.png),
+[160m walking](meadow-160-walking-reviewed.png), [160m settled](meadow-160-reviewed.png).
+Earlier before images remain in the history of this record and in the rejected
+review evidence directories. No concept render is presented as gameplay.
+
+Delivery: PR38, `feat/flight-options`, base integration6f80fc0. Local production
+preview remains http://localhost:5290. **No merge or production deployment**;
+staragent.site remains the earlier integrated release.
