@@ -25,7 +25,7 @@ test('standard axes, analog triggers and action edges remain independent', () =>
   const state = input.poll();
   assert.ok(state.forward > 0 && state.strafe > 0 && state.pitch > 0 && state.yaw < 0);
   assert.ok(Math.abs(state.vertical - .5) < 1e-9);
-  assert.equal(state.roll, 1); assert.equal(state.boost, true);
+  assert.equal(state.roll, -1); assert.equal(state.boost, true);
   assert.equal(state.pressed.has(2), true);
   assert.equal(input.poll().pressed.size, 0, 'held actions do not repeat');
   button(pad, 2, false); input.poll(); button(pad, 2, true);

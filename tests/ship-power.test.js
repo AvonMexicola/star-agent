@@ -294,3 +294,35 @@ test('explicit transit resets cabin-flight state without changing the selected p
   near(nav.shipAngularVelocity.length(), 0);
   assert.equal(nav.powered, false, 'quick transit does not silently change main power');
 });
+
+for (const shipId of ['nomad', 'atlas']) {
+  for (const assisted of [true, false]) {
+    test(`${shipId}: Q/LB bank left and E/RB bank right in ${assisted ? 'assisted' : 'inertial'} flight`, t => {
+      const { navigation: nav, keyDown, keyUp, advance } = setup(t);
+      nav.shipId = shipId;
+      nav.layout = shipId === 'atlas' ? FREIGHTER_LAYOUT : SHIP_LAYOUT;
+      nav.freighter = shipId === 'atlas' ? new FreighterSystems() : null;
+      const pad = { id: 'Roll direction pad', index: 0, connected: true, mapping: 'standard',
+        axes: [0, 0, 0, 0], buttons: Array.from({length: 17}, () => ({pressed: false, value: 0})) };
+      nav.gamepad.read = () => [pad];
+      for (const [label, key, button, rightWingSign] of [
+        ['Q', 'KeyQ', null, 1], ['E', 'KeyE', null, -1],
+        ['LB', null, 4, 1], ['RB', null, 5, -1],
+      ]) {
+        nav.orbit();nav.position.set(0, RADIUS * 3, 0);nav.orientation.identity();
+        nav.flightAssist = assisted;
+        nav.gamepad.poll();
+        if (key) keyDown(key);
+        else pad.buttons[button] = {pressed: true, value: 1};
+        advance(.25);
+        const rightWing = new THREE.Vector3(1, 0, 0).applyQuaternion(nav.orientation);
+        assert.ok(rightWing.y * rightWingSign > .04,
+          `${label}: bank ${rightWingSign > 0 ? 'left (right wing rises)' : 'right (right wing drops)'}, actual wing y=${rightWing.y}`);
+        nearVector(new THREE.Vector3(0, 0, -1).applyQuaternion(nav.orientation),
+          new THREE.Vector3(0, 0, -1), 1e-8, `${label}: roll leaves nose direction unchanged`);
+        if (key) keyUp(key);
+        else pad.buttons[button] = {pressed: false, value: 0};
+      }
+    });
+  }
+}

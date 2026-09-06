@@ -451,7 +451,7 @@ export class Navigation {
       }
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
-      this.advanceFlight(dt,{moveForward,strafe,vertical:axis('Space','KeyC',pad.vertical),turn,tilt,roll:axis('KeyQ','KeyE',pad.roll)});
+      this.advanceFlight(dt,{moveForward,strafe,vertical:axis('Space','KeyC',pad.vertical),turn,tilt,roll:axis('KeyE','KeyQ',pad.roll)});
     }
     if(pad.brake&&(this.powered||this.mode!=='flight')){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);}
     const newNormal=this.normal;

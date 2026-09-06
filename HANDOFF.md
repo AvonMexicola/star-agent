@@ -542,3 +542,17 @@ or Vercel. Main power does not simulate batteries or distribution, and moving
 EVA is outside this slice. Do not merge PR #24's stopped-ship EVA path over this
 independent hull frame or lose active-ship layout support when reconciling lanes.
 Opus rubric, complete quality-budget acceptance and merge/deploy remain pending.
+
+
+### READY FOR REVIEW — corrected roll input directions (2026-09-06)
+
+Cees specifies E/RB roll right and Q/LB roll left; yaw is correct and pitch stays
+unchanged. Corrected src/navigation.js keyboard axis and src/gamepad.js bumper
+axis in the isolated PR #25 power branch. Positive roll means right bank in both
+assisted and inertial physics. Tests verify actual wing direction and unchanged
+nose direction for Nomad/Atlas and all four bindings; failed before fix, pass after.
+166 unit tests/build pass. Eight real-production Nomad keyboard/injected-gamepad
+roll checks pass, Chromium 151/ANGLE Vulkan SwiftShader, no errors/warnings.
+Evidence and limitation notes: docs/qa/ship-power.md, paired roll screenshots.
+Previews 5245 (Nomad) and 5244 (Atlas) serve rebuilt output; reload to apply.
+Shared root runtime and yaw/pitch inputs were preserved; no main/Vercel deploy.

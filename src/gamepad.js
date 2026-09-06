@@ -60,7 +60,8 @@ export class GamepadInput {
       return result;
     }
     return { strafe, forward: -moveY, yaw: -lookX, pitch: -lookY, vertical: up - down,
-      roll: Number(buttons[4] ?? false) - Number(buttons[5] ?? false),
+      // Positive roll banks right: RB/R1; LB/L1 banks left.
+      roll: Number(buttons[5] ?? false) - Number(buttons[4] ?? false),
       boost: Boolean(buttons[10]), jump: Boolean(buttons[0]), brake: Boolean(buttons[1]),
       scroll: 0, menuPressed: new Set(), speed: Number(buttons[12] ?? false) - Number(buttons[13] ?? false), pressed, used: !neutral };
   }

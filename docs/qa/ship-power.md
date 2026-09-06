@@ -78,3 +78,25 @@ ship intentionally skips display repaint without pointer lock/controller activit
 so an invalid hidden-MFD snapshot wait was removed. The controller scenario
 verifies B-close with A and the forward stick held, unchanged power, discarded
 flight input, and rearming only after neutral input.
+
+
+### Roll direction correction — 2026-09-06
+
+Cees confirmed yaw is correct and pitch inversion is a preference, but E/RB must
+bank right and Q/LB left. The input signs were reversed: positive roll already
+rotates about ship-forward (right wing down), but keyboard Q and controller LB
+were producing positive input. Corrected only the keyboard and bumper mapping.
+Yaw, pitch, torque integration and flight-assist behavior are unchanged.
+
+Regression tests first failed for both ships in both flight modes, showing Q
+lowering the right wing. They now verify all four bindings by actual wing height
+and unchanged nose direction. Full unit run: **166/166 pass**; build passes.
+Production Nomad preview on 5245: eight checks (Q/E/LB/RB in assisted/inertial mode)
+pass with actual keyboard and injected standard-gamepad input. Chromium
+151.0.7922.173, ANGLE Vulkan SwiftShader, 1440×900; no console errors/warnings.
+No physical controller was used. Root inspected [left bank](ship-power/nomad-roll-left.png)
+and [right bank](ship-power/nomad-roll-right.png) at render scale 1. Raw results:
+`/tmp/star-agent-roll-browser.json`; no hardware FPS claim.
+
+Both local previews serve the rebuilt production output (Nomad 5245, Atlas 5244).
+Reload to receive the corrected input mapping. Main/Vercel deployment is separate.
