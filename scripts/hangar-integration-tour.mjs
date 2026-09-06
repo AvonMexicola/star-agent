@@ -1,14 +1,14 @@
 // Independent production-renderer captures for QUALITY.md §4. Run this file
 // yourself; it neither consumes earlier screenshots nor substitutes model files.
 // node scripts/hangar-integration-tour.mjs --url http://127.0.0.1:5239 \
-//   --out /tmp/star-agent-hangar-opus/screens --extras --perf1440
+//   --out /tmp/star-agent-hangar-tour --extras --perf1440
 import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import * as THREE from 'three';
 import { RADIUS, terrainHeight } from '../src/world.js';
 
-const options = { url: 'http://127.0.0.1:5239', out: '/tmp/star-agent-hangar-opus/screens', extras: false, perf1440: false };
+const options = { url: 'http://127.0.0.1:5239', out: '/tmp/star-agent-hangar-tour', extras: false, perf1440: false };
 for (let i = 2; i < process.argv.length; i++) {
   const flag = process.argv[i];
   if (flag === '--url' || flag === '--out') {
@@ -27,19 +27,55 @@ if (!['http:', 'https:'].includes(base.protocol)) throw new Error('--url must us
 const out = resolve(options.out);
 await mkdir(out, { recursive: true });
 const launchArgs = ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--disable-dev-shm-usage'];
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? '/usr/bin/chromium', args: launchArgs });
-const context = await browser.newContext({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 1 });
-const page = await context.newPage();
-page.setDefaultTimeout(240_000);
-page.setDefaultNavigationTimeout(120_000);
-const errors = [], warnings = [], captures = [], requestsFailed = [];
+const errors = [], warnings = [], captures = [], requestsFailed = [], sessions = [], lifecycleDiagnostics = [];
+let browser = null, context = null, page = null, currentSession = null;
 let backend = null, failure = null;
-page.on('pageerror', error => errors.push({ url: page.url(), message: error.message }));
-page.on('console', message => {
-  if (message.type() === 'error') errors.push({ url: page.url(), message: message.text() });
-  if (message.type() === 'warning') warnings.push({ url: page.url(), message: message.text() });
-});
-page.on('requestfailed', request => requestsFailed.push({ url: request.url(), failure: request.failure()?.errorText }));
+
+async function closeSession() {
+  if (!currentSession) return;
+  const session = currentSession;
+  // Set this before closing: expected page/context/disconnect events are not
+  // evidence of a browser failure and must never appear in crash diagnostics.
+  session.plannedClose = true;
+  try { await browser?.close(); }
+  catch (error) { session.closeError = error.message; }
+  session.closedAt = new Date().toISOString();
+  browser = null; context = null; page = null; currentSession = null;
+}
+
+async function startSession(label) {
+  await closeSession();
+  const session = { id: sessions.length + 1, label, startedAt: new Date().toISOString(), plannedClose: false };
+  sessions.push(session); currentSession = session;
+  console.log(`Starting isolated Chromium session ${session.id}: ${label}`);
+  browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? '/usr/bin/chromium', args: launchArgs });
+  const sessionBrowser = browser;
+  session.browser = browser.version();
+  const unexpected = (event, sourcePage = null) => {
+    if (session.plannedClose) return;
+    lifecycleDiagnostics.push({ sessionId: session.id, label, event, at: new Date().toISOString(),
+      url: sourcePage?.url() ?? null, browserConnected: sessionBrowser.isConnected(),
+      cause: 'Unknown; this lifecycle event alone does not establish a resource or application failure cause.' });
+    console.error(`Unexpected browser lifecycle event: session ${session.id} ${event}`);
+  };
+  browser.on('disconnected', () => unexpected('browser-disconnected'));
+  context = await browser.newContext({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 1 });
+  context.on('close', () => unexpected('context-closed'));
+  page = await context.newPage();
+  const sessionPage = page;
+  page.setDefaultTimeout(240_000);
+  page.setDefaultNavigationTimeout(120_000);
+  page.on('crash', () => unexpected('page-crashed', sessionPage));
+  page.on('close', () => unexpected('page-closed', sessionPage));
+  page.on('pageerror', error => errors.push({ sessionId: session.id, url: sessionPage.url(), message: error.message }));
+  page.on('console', message => {
+    if (message.type() === 'error') errors.push({ sessionId: session.id, url: sessionPage.url(), message: message.text() });
+    if (message.type() === 'warning') warnings.push({ sessionId: session.id, url: sessionPage.url(), message: message.text() });
+  });
+  page.on('requestfailed', request => {
+    if (!session.plannedClose) requestsFailed.push({ sessionId: session.id, url: request.url(), failure: request.failure()?.errorText });
+  });
+}
 
 async function frames(count = 3) {
   await page.evaluate(count => new Promise(resolve => {
@@ -93,6 +129,7 @@ async function boot(intro) {
     return { renderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
       vendor: ext ? gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR), version: gl.getParameter(gl.VERSION) };
   });
+  currentSession.backend = backend;
 }
 
 async function cadence() {
@@ -118,7 +155,8 @@ async function capture(name, fixture, minLevel = 0) {
   await page.screenshot({ path });
   const state = await page.evaluate(() => window.starAgent.state);
   const observedRaf = await cadence();
-  const record = { name, path, url: page.url(), fixture, viewport: page.viewportSize(), state, observedRaf };
+  const record = { name, path, sessionId: currentSession.id, browser: currentSession.browser, backend,
+    url: page.url(), fixture, viewport: page.viewportSize(), state, observedRaf };
   if (options.perf1440 && ['05-hangar-t10', '06-cockpit', '07-corner', '08-gallery'].includes(name)) {
     await page.setViewportSize({ width: 1440, height: 900 });
     await frames(4);
@@ -154,9 +192,12 @@ function seaDirection(direction) {
 }
 
 try {
+  await startSession('01-orbit');
   await boot(0);
   await capture('01-orbit', { type: 'initial orbit', seed: 7291 }, 0);
   for (const [name, destination, altitude] of [['02-coast', 'coast', 95], ['03-forest', 'forest', 95], ['04-highlands', 'mountain', 700]]) {
+    await startSession(name);
+    await boot(0);
     const direction = await page.evaluate(name => window.starAgent.destinations[name], destination);
     const sea = destination === 'coast' ? seaDirection(direction) : null;
     await page.evaluate(({ destination, altitude, sea }) => {
@@ -171,6 +212,7 @@ try {
   // The opening is the explicit exception to intro=0. Evaluate its authored
   // cinematic to exactly t=10, then freeze it. This avoids frame-rate-dependent
   // overshoot and does not replace or reposition the StationComplex render group.
+  await startSession('05-hangar / 06-cockpit / optional station detail views');
   await boot(1);
   await page.evaluate(() => {
     const app = window.starAgent, opening = app.openingSequence, nav = app.navigation;
@@ -213,19 +255,21 @@ try {
       await capture(name, { type: 'active berth local camera fixture', eye, target });
     }
   }
-  if (errors.length || warnings.length) throw new Error(`Browser reported ${errors.length} errors and ${warnings.length} warnings; see evidence.json`);
+  if (errors.length || warnings.length || lifecycleDiagnostics.length) throw new Error(`Browser reported ${errors.length} errors, ${warnings.length} warnings and ${lifecycleDiagnostics.length} unexpected lifecycle events; see evidence.json`);
 } catch (error) {
   failure = error.stack ?? error.message;
-  try { await page.screenshot({ path: resolve(out, 'failure.png') }); } catch { /* browser may have lost its context */ }
+  try { await page?.screenshot({ path: resolve(out, 'failure.png') }); } catch { /* browser may have lost its context */ }
   throw error;
 } finally {
   let lastState = null;
-  try { lastState = await page.evaluate(() => window.starAgent?.state ?? null); } catch { /* preserve the failure report */ }
+  try { lastState = await page?.evaluate(() => window.starAgent?.state ?? null) ?? null; } catch { /* preserve the failure report */ }
+  await closeSession();
   await writeFile(resolve(out, 'evidence.json'), JSON.stringify({
-    generatedAt: new Date().toISOString(), browser: browser.version(), backend, launchArgs, options,
+    generatedAt: new Date().toISOString(), browser: sessions.at(-1)?.browser ?? null, backend, launchArgs, options,
+    sessionIsolation: 'A fresh browser process and context for each world viewpoint; one further fresh process/context for opening, cockpit and optional station detail views. No browser, terrain cache or local storage is carried between world viewpoints.',
+    sessions, lifecycleDiagnostics,
     seed: 7291, qualityViewport: { width: 1600, height: 900 }, captures, errors, warnings, requestsFailed, failure, lastState,
     timingNote: 'Observed requestAnimationFrame intervals on the recorded Chromium backend, including CPU and software-rendering costs. These are not GPU timings or evidence that laptop GPU frame budgets pass.',
     fixtureNote: 'Review camera fixtures only; no gameplay or physical-boarding pass is claimed. Surface views use intro=0; hangar uses the authored intro=1 cinematic evaluated and frozen at t=10.',
   }, null, 2));
-  await browser.close();
 }

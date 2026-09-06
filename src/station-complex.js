@@ -148,11 +148,14 @@ export class StationComplex {
       });
       batch.instances.instanceMatrix.needsUpdate=true;
     }
-    this.lodGroup.visible=origin.distanceTo(this.centre)<600000;
+    const cameraDistance=origin.distanceTo(this.centre);
+    // The fixed spine and rings share the pod render horizon. Keeping their
+    // group visible at planetary orbit costs 93 draws for a subpixel station.
+    this.lodGroup.visible=this.exterior.group.visible=cameraDistance<600000;
     this.finishRig?.update(this,position);
     updateElevator(this.hub.lift,dt);
     this.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
-    this.hub.group.visible=origin.distanceTo(this.centre)<140;
+    this.hub.group.visible=cameraDistance<140;
     this.exterior.hubShell.visible=!this.hub.group.visible;
     for(const light of this.hub.lights)light.visible=this.location==='hub'&&position.distanceTo(this.centre)<100;
     this.rebase(origin);

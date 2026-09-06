@@ -1,6 +1,12 @@
 import {test,expect} from '@playwright/test';
 const errorsFor=page=>{const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});return errors;};
 const ready=async page=>{await page.waitForFunction(()=>window.starAgent?.state.ready);await page.evaluate(()=>window.starAgent.setRenderScale(.55));};
+const polledButton=async(page,index,pressed)=>{
+  await page.evaluate(({index,pressed})=>{window.uiPad.buttons[index]={pressed,value:Number(pressed)};},{index,pressed});
+  // Button edges are sampled by Navigation's animation-frame Gamepad.poll.
+  // A wall-clock delay can miss the entire release on a slow software renderer.
+  await page.waitForFunction(({index,pressed})=>window.starAgent.navigation.gamepad.previous[index]===pressed,{index,pressed});
+};
 const playerOnly=async page=>{
   await expect(page.locator('.topbar')).toBeHidden();await expect(page.locator('.mission-panel')).toBeHidden();await expect(page.locator('.statusbar')).toBeHidden();
   await expect(page.locator('.telemetry')).toBeVisible();await expect(page.locator('#flight-state')).toBeVisible();
@@ -38,14 +44,18 @@ test('left-stick handover dismisses launcher and controller Menu remains availab
   const errors=errorsFor(page);
   await page.addInitScript(()=>{window.uiPad={id:'UI test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>[window.uiPad]});});
   await page.goto('/?debug');await ready(page);
-  await page.evaluate(()=>{window.uiPad.buttons[0]={pressed:true,value:1};});await page.waitForTimeout(250);
-  await page.evaluate(()=>{window.uiPad.buttons[0]={pressed:false,value:0};});await page.waitForTimeout(250);
+  await polledButton(page,0,true);await polledButton(page,0,false);
+  await page.waitForFunction(()=>window.starAgent.navigation.gamepad.armed);
   await page.evaluate(()=>{window.uiPad.axes[1]=-.8;});await page.waitForFunction(()=>window.starAgent.state.opening.phase==='playing');
   await page.evaluate(()=>{window.uiPad.axes[1]=0;});await playerOnly(page);
-  await page.evaluate(()=>{window.uiPad.buttons[9]={pressed:true,value:1};});await expect(page.locator('#help-dialog')).toBeVisible();
-  await page.evaluate(()=>{window.uiPad.buttons[9]={pressed:false,value:0};});await page.waitForTimeout(250);
-  await page.evaluate(()=>{window.uiPad.buttons[9]={pressed:true,value:1};});await expect(page.locator('#help-dialog')).toBeHidden();
-  await page.evaluate(()=>{window.uiPad.buttons[9]={pressed:false,value:0};});await playerOnly(page);expect(errors).toEqual([]);
+  await polledButton(page,9,true);await expect(page.locator('#help-dialog')).toBeVisible();
+  expect(await page.evaluate(()=>window.starAgent.navigation.enabled)).toBe(false);
+  await polledButton(page,9,false);
+  expect(await page.evaluate(()=>window.starAgent.navigation.gamepad.armed)).toBe(false);
+  await polledButton(page,9,true);await expect(page.locator('#help-dialog')).toBeHidden();
+  await polledButton(page,9,false);
+  await page.waitForFunction(()=>window.starAgent.navigation.enabled&&window.starAgent.navigation.gamepad.armed);
+  await playerOnly(page);expect(errors).toEqual([]);
 });
 
 test('orbital opt-out dismisses the launcher on keyboard movement',async({page})=>{

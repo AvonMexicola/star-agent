@@ -108,3 +108,33 @@ test('physical player selects the berth while the cinematic camera controls LOD,
   const onDeck = world(station, [0, -8 + FREIGHTER_LAYOUT.seatEye[1], seatZ]);
   assert.equal(station.active.constrainStep(hover, onDeck, station.quaternion, false, FREIGHTER_LAYOUT).hit, false, 'Atlas can descend along the tilted deck normal');
 });
+
+test('exterior and pod render horizon follows the camera while hidden station collision and hub location remain intact', async () => {
+  const station=await create();station.nav={mode:'flight',openingActive:false};
+  const pod=station.pods[0],near=pod.padWorldPosition.clone();
+  const far=station.centre.clone().addScaledVector(station.up,650000);
+  station.update(near,far,SUN,0);
+  assert.equal(station.activeIndex,0,'physical player still selects the occupied berth');
+  assert.equal(station.exterior.group.visible,false,'rings and spine are culled outside the 600 km camera horizon');
+  assert.equal(station.lodGroup.visible,false);
+  assert.ok(station.pods.every(p=>!p.group.visible),'nearby physical player cannot retain distant-camera pod geometry');
+  const start=pod.toWorld(new THREE.Vector3(-40,-4,0),new THREE.Vector3());
+  const end=pod.toWorld(new THREE.Vector3(0,-4,0),new THREE.Vector3());
+  assert.equal(station.constrainStep(start,end,pod.quaternion).hit,true,'render culling does not disable swept station collision');
+
+  station.update(far,near,SUN,0);
+  assert.equal(station.exterior.group.visible,true,'near cinematic camera restores exterior even when physical player is far away');
+  assert.equal(station.lodGroup.visible,true);
+  assert.equal(pod.model.visible,true,'near cinematic camera also selects detailed pod geometry');
+  nearVector(station.exterior.group.position,station.centre.clone().sub(near),'restored exterior uses final camera-relative doubles');
+
+  station.nav.mode='walk';station.location='hub';
+  station.update(station.centre,far,SUN,0);
+  assert.equal(station.location,'hub');
+  assert.equal(station.exterior.group.visible,false,'walking in the hub cannot override a distant camera cutoff');
+  assert.equal(station.hub.group.visible,false);
+  station.update(station.centre,station.centre,SUN,0);
+  assert.equal(station.exterior.group.visible,true,'returning the camera to the hub restores the visible rings');
+  assert.equal(station.hub.group.visible,true);
+  assert.equal(station.exterior.hubShell.visible,false,'near hub interior retains its clear window views');
+});
