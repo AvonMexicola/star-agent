@@ -46,7 +46,7 @@ test('Xbox equips and fires away from every nearby Selene deposit without awardi
 test('ring flight right-stick yaw turns left and right even when the nose points along lunar gravity',async({page,browser})=>{
   test.setTimeout(180000);const errors=watchErrors(page);await mkdir(evidence,{recursive:true});await setup(page);await menuTransit(page,'ring');
   await page.waitForFunction(()=>window.starAgent.state.mode==='flight');const observations=[];
-  for(const input of [-.8,.8]){
+  for(const braking of [false,true])for(const input of [-.8,.8]){
     // Exact pole-facing orientation exposes gravity-axis yaw becoming roll.
     // Only initial orientation is a fixture; live navigation consumes all input.
     const initial=await page.evaluate(()=>{
@@ -55,11 +55,13 @@ test('ring flight right-stick yaw turns left and right even when the nose points
       return {q:n.orientation.toArray(),right:n.position.clone().set(1,0,0).applyQuaternion(n.orientation).toArray(),up:up.toArray()};
     });
     await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+    if(braking){await button(page,1,true);await button(page,7,true);}
     await page.evaluate(input=>window.regressionPad.axes=[0,0,input,0],input);
     await page.waitForFunction(q=>{const n=window.starAgent.navigation;return n.orientation.angleTo(n.orientation.clone().fromArray(q))>.16;},initial.q,{timeout:15000});
     await page.evaluate(async()=>{window.regressionPad.axes=[0,0,0,0];await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});
-    const result=await page.evaluate(initial=>{const n=window.starAgent.navigation,f=n.position.clone().set(0,0,-1).applyQuaternion(n.orientation);return {right:f.dot(n.position.clone().fromArray(initial.right)),pitch:f.dot(n.position.clone().fromArray(initial.up)),orientation:n.orientation.toArray()};},initial);
-    expect(result.right*Math.sign(input),'right stick produces yaw rather than roll').toBeGreaterThan(.1);expect(Math.abs(result.pitch),'yaw preserves pitch in the initial ship frame').toBeLessThan(.03);observations.push({input,initial,result});
+    const result=await page.evaluate(initial=>{const n=window.starAgent.navigation,f=n.position.clone().set(0,0,-1).applyQuaternion(n.orientation);return {speed:n.speed,right:f.dot(n.position.clone().fromArray(initial.right)),pitch:f.dot(n.position.clone().fromArray(initial.up)),orientation:n.orientation.toArray()};},initial);
+    expect(result.right*Math.sign(input),'right stick produces yaw rather than roll').toBeGreaterThan(.1);expect(Math.abs(result.pitch),'yaw preserves pitch in the initial ship frame').toBeLessThan(.03);if(braking){expect(result.speed).toBeLessThan(1e-8);await button(page,7,false);await button(page,1,false);}
+    observations.push({braking,input,initial,result});
   }
   await page.screenshot({path:`${evidence}/ring-yaw.png`});await writeFile(`${evidence}/ring-yaw.json`,JSON.stringify({browser:browser.version(),fixture:'Debug initial pole-facing camera orientation; actual standard Gamepad flight input',observations,errors},null,2));expect(errors).toEqual([]);
 });

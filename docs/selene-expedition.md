@@ -16,7 +16,9 @@ focus change or reconnection re-arms gameplay without firing a held trigger.
 L lands, F leaves the chair and operates the rear hatch. Walk physically down the
 ramp to the Crescent deposit. Hold T or captured left mouse to fire; R holsters and
 3 equips. The on-screen mining button supports touch. The laser now beams into
-empty space too; only a validated rock hit yields material.
+empty space too; only a validated rock hit yields material. Tool availability is
+independent of deposit distance: equip it anywhere while exploring outside the ship.
+In space, ship yaw, pitch and vertical thrust use the ship's own axes.
 
 **Ring survey:** choose Selene rings in the destination list or controller command
 menu. This is an explicit quick-transit shortcut; a flight course is also available
@@ -79,6 +81,10 @@ origin before upload. Neighboring cells wrap around the ring seam. Fast flight i
 its boundary; local ship movement is limited to 400 m/s inside the debris band,
 including boosted and inertial flight.
 
+Aiming at a nearby small rock prioritizes it for preparation; the HUD reports
+preparation, range, save capacity or a large asteroid that cannot be hand-mined.
+Visible asteroid triangles determine tool occlusion and local collision, so broad
+collision bounds cannot block an otherwise clear mining ray or visible gap.
 Nearby small rocks promote to at most two live 32³-cell excavation domains. Their
 low-detail silhouettes and mineable fields sample the same continuous shape
 function. A saved edited instance stays suppressed at lower detail and restores

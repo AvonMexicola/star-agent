@@ -59,3 +59,6 @@ the outcrop's regional weights are 93.5% copper, 4.5% basalt and 2% ice. Finite 
 strike discrete seams, so collected proportions need not exactly equal the regional
 weights. The screenshot and saved state show the actual result, rather than a
 separate inventory fixture.
+
+Player-reported surface tool, asteroid selection and ring steering fixes have
+additional [regression evidence](regressions/README.md).

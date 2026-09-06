@@ -599,3 +599,25 @@ merge and deployment. This handoff does not claim a manager read receipt.
 
 Draft review PR: https://github.com/AvonMexicola/star-agent/pull/24 .
 The shared manager HANDOFF.md now points to this complete memory and evidence.
+
+
+## Expedition player fixes — surface tool, asteroid aim and ring steering (2026-09-06)
+
+PR #24 follow-up in /tmp/star-agent-expedition-work / feat/selene-expedition.
+Removed the tool's 90 m deposit proximity gate. Space yaw/pitch and vertical thrust
+now use ship axes; held controller B stops drift/thrust without locking aim.
+Aimed small asteroids take priority over two-nearest preparation; exact visible
+triangles replace false sphere occlusion/collision. Large static asteroids now
+explicitly report unavailable hand mining; pending/range/save-cap feedback is clear.
+
+All 22 npm test files pass. Five distinct follow-up production browser checks pass,
+including remote Selene equip/RT, pole-facing yaw +/- with and without B+RT held,
+third-rock worker promotion/RT/backpack, large-asteroid no-award feedback, and the
+existing controller Crescent plus physical EVA mining routes. Synthetic asteroid
+positions and debug orientation/position fixtures are documented honestly; actual
+meshes, colliders, workers and input routes are used. No physical Xbox claim.
+
+Evidence: docs/qa/expedition/regressions/ in the expedition worktree / PR.
+Memory and docs/space-steering.md record the corrected contracts. Preview remains
+http://127.0.0.1:5213/ with final index-DGnB0h5g.js. No shared navigation/gear/station
+or ship-power lane was overwritten. Fable/Claude retain review and integration.

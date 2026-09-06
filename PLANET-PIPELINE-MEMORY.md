@@ -525,3 +525,22 @@ regional composition, not a guarantee that every individual cut returns that exa
 mixture. Keep future assets, scanners and resource yields on this same classifier.
 See docs/resource-geology.md and docs/selene-expedition.md; renderer evidence and
 current acceptance status belong in docs/qa/expedition/ and the review handoff.
+
+
+## Player-reported expedition regressions
+
+Tool availability must depend on player/equipment mode, never distance to a mineral
+node. The first expedition incorrectly hid the tool beyond 90 metres from a deposit;
+this gate is removed. The player can equip and beam into empty space without reward.
+
+Spacecraft yaw/pitch and assisted vertical thrust use the ship's local frame.
+Using lunar radial up at the ring turned horizontal stick input into roll or pitch.
+Gravity-relative walking and atmospheric ascent remain distinct; travel in space
+must not silently transport the ship attitude to follow the moon's radial normal.
+
+Mining preparation prioritizes the asteroid under the aiming ray independently
+of the two-nearest streaming heuristic. Tool rays and nearby collision must use
+visible asteroid geometry; broad spheres are only candidate filters. Static large
+asteroids must explicitly report unavailable hand mining. Retain bounded workers,
+pending-job safety and atomic edits; a targeting fix must not duplicate resources
+or silently restore a pristine shell over an excavated rock.
