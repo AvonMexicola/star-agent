@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {Vector3} from 'three';
-import {ringRock,asteroidDescriptor,RING_POPULATION,RING_NORMAL} from '../src/ring-world.js';
+import {ringRock,asteroidDescriptor,RING_POPULATION,RING_NORMAL,RING_RADIUS,RING_THICKNESS} from '../src/ring-world.js';
 import {MOON_POSITION} from '../src/moon-world.js';
 import {SUN_DIRECTION} from '../src/world.js';
 const evidence='/tmp/star-agent-ring-visibility-evidence';
@@ -55,6 +55,55 @@ test('large ring bodies retain visible geometry through distance bands and cell 
     const retained=anchors.filter(id=>visible.has(id));expect(retained.length).toBe(anchors.length);snapshots.push({side,retained,state});
   }
   expect(snapshots[1].retained).toEqual(snapshots[0].retained);
+  // Micro-ice is measured inside the actual annulus, independent of the nearby
+  // hero asteroid. Aim slightly beside the sun for readable scattering on sky.
+  const icePosition=center.clone().addScaledVector(radial,RING_RADIUS);
+  const iceTarget=icePosition.clone().addScaledVector(sun,1000).addScaledVector(tangent,120);
+  await place(page,icePosition,iceTarget);
+  await page.waitForFunction(()=>window.starAgent.state.rings.ice?.count>0&&window.starAgent.state.rings.ice.sunlight>.9&&window.starAgent.state.moon.effects.terrainBuilds===0);
+  const iceInside=await page.evaluate(()=>window.starAgent.state.rings.ice);
+  expect(iceInside.presence).toBeGreaterThan(.99);expect(iceInside.count).toBeLessThanOrEqual(iceInside.capacity);
+  const iceOn=await page.screenshot({path:`${evidence}/sunlit-ring-ice.png`});
+  // Hide only the real Points draw layer for the comparison, then restore it.
+  // Particle generation/positions and shader inputs remain production values.
+  await page.evaluate(()=>{const p=window.starAgent.navigation.surfaceObstacles.rings.scene.getObjectByName('Sunlit ring micro-ice');window.iceLayerBefore=p.layers.mask;p.layers.mask=0;});
+  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+  const iceOff=await page.screenshot({path:`${evidence}/sunlit-ring-ice-hidden-comparison.png`});
+  await page.evaluate(()=>{window.starAgent.navigation.surfaceObstacles.rings.scene.getObjectByName('Sunlit ring micro-ice').layers.mask=window.iceLayerBefore;});
+  const icePixels=await page.evaluate(async({on,off})=>{
+    const decode=async data=>{const image=new Image();image.src=`data:image/png;base64,${data}`;await image.decode();const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const ctx=c.getContext('2d');ctx.drawImage(image,0,0);return ctx.getImageData(0,0,c.width,c.height).data;};
+    const a=await decode(on),b=await decode(off);let brighterPixels=0,maximumIncrease=0;
+    for(let i=0;i<a.length;i+=4){const delta=Math.max(a[i]-b[i],a[i+1]-b[i+1],a[i+2]-b[i+2]);if(delta>4)brighterPixels++;maximumIncrease=Math.max(maximumIncrease,delta);}
+    return {brighterPixels,maximumIncrease,comparison:'Actual particle layer visible versus hidden; unchanged camera and scene'};
+  },{on:iceOn.toString('base64'),off:iceOff.toString('base64')});
+  expect(icePixels.brighterPixels,'sunlit ice contributes actual rendered pixels').toBeGreaterThan(4);
+  // Cross a real 32m ice hash-cell boundary. Compare common phase identities and
+  // world-space positions reconstructed from the actual GPU buffer, allowing
+  // only the documented slow animation drift between the captured frames.
+  const iceBoundary=icePosition.clone();iceBoundary.x=center.x+Math.round((icePosition.x-center.x)/32)*32;
+  const iceBoundaryFrames=[];
+  for(const side of [-.25,.25]){
+    const at=iceBoundary.clone();at.x+=side;
+    await place(page,at,at.clone().addScaledVector(sun,1000));
+    iceBoundaryFrames.push(await page.evaluate(()=>{
+      const n=window.starAgent.navigation,p=n.surfaceObstacles.rings.scene.getObjectByName('Sunlit ring micro-ice'),positions=p.geometry.attributes.position,parameters=p.geometry.attributes.iceParameters;
+      const particles={};for(let i=0;i<p.geometry.drawRange.count;i++)particles[String(parameters.getX(i))]=[positions.getX(i)+n.position.x,positions.getY(i)+n.position.y,positions.getZ(i)+n.position.z];
+      return {state:window.starAgent.state.rings.ice,time:p.material.uniforms.iceTime.value,particles};
+    }));
+  }
+  expect(iceBoundaryFrames[0].state.cell).not.toBe(iceBoundaryFrames[1].state.cell);
+  const common=Object.keys(iceBoundaryFrames[0].particles).filter(id=>iceBoundaryFrames[1].particles[id]);
+  expect(common.length).toBeGreaterThan(Math.min(...iceBoundaryFrames.map(f=>f.state.count))*.8);
+  const driftLimit=.05+Math.abs(iceBoundaryFrames[1].time-iceBoundaryFrames[0].time)*.05;
+  let maximumDrift=0;
+  for(const id of common){const a=iceBoundaryFrames[0].particles[id],b=iceBoundaryFrames[1].particles[id];maximumDrift=Math.max(maximumDrift,Math.hypot(...a.map((v,i)=>v-b[i])));}
+  expect(maximumDrift,'crossing an ice cell cannot reseed existing particles').toBeLessThan(driftLimit);
+  const outsidePosition=icePosition.clone().addScaledVector(normal,RING_THICKNESS/2+250);
+  await place(page,outsidePosition,outsidePosition.clone().addScaledVector(tangent,1000));
+  await page.waitForFunction(()=>window.starAgent.state.rings.ice.count===0&&window.starAgent.state.rings.ice.presence===0);
+  const iceOutside=await page.evaluate(()=>{const p=window.starAgent.navigation.surfaceObstacles.rings.scene.getObjectByName('Sunlit ring micro-ice');return {...window.starAgent.state.rings.ice,visible:p.visible,drawCount:p.geometry.drawRange.count};});
+  expect(iceOutside.visible).toBe(false);expect(iceOutside.drawCount).toBe(0);await page.screenshot({path:`${evidence}/outside-ring-no-ice.png`});
+  const ice={inside:iceInside,pixels:icePixels,boundaryFrames:iceBoundaryFrames,outside:iceOutside,commonParticles:common.length,maximumDrift,driftLimit};
   const environment=await page.evaluate(()=>{const gl=document.getElementById('viewport').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return {renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),renderScale:window.starAgent.state.renderScale};});
-  await writeFile(`${evidence}/evidence.json`,JSON.stringify({browser:browser.version(),viewport:page.viewportSize(),environment,fixture:'Debug camera views of deterministic generated bodies; no synthetic asteroid placement',hero,frames,wide,boundary:boundary.toArray(),snapshots,errors},null,2));expect(errors).toEqual([]);
+  await writeFile(`${evidence}/evidence.json`,JSON.stringify({browser:browser.version(),viewport:page.viewportSize(),environment,fixture:'Debug camera views of deterministic generated bodies; no synthetic asteroid placement',hero,frames,wide,boundary:boundary.toArray(),snapshots,ice,errors},null,2));expect(errors).toEqual([]);
 });
