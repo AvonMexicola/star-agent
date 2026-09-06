@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createWeaponTarget } from '../effects/weapon-target.js';
 import { Equipment } from '../equipment.js';
 import { MINERALS } from './volume.js';
+import { MINERAL_CAPACITY_PER_BOX } from '../inventory/containers.js';
 import './mining.css';
 
 /** First-person socket adapter for the existing Equipment implementation. A full
@@ -91,9 +92,9 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       const targetMessage=targetMessages[inspected?.status];
       $('.mining-guide').textContent=targetMessage?`${inspected.distance.toFixed(1)} m · ${targetMessage}`:hit?`${hit.distance.toFixed(1)} m · Cut the rock to collect its minerals`:distance<40000?`${distance.toFixed(0)} m · ${Math.abs(angle).toFixed(0)}° ${angle<0?'LEFT':'RIGHT'} · Tool range 8 m`:'Aim at a mineral outcrop or small asteroid · Tool range 8 m';
       $('meter').value=equipment.heat;
-      $('.mining-resources').textContent=`Pouch ${rock.store.mass.toFixed(2)} / ${rock.store.capacity??12} kg · ${rock.store.state.pack.map((m,i)=>`${MINERALS[i]} ${m.toFixed(2)}`).join(' / ')}`;
+      $('.mining-resources').textContent=`Pouch ${rock.store.mass.toFixed(2)} / ${rock.store.capacity??MINERAL_CAPACITY_PER_BOX} kg · ${rock.store.state.pack.map((m,i)=>`${MINERALS[i]} ${m.toFixed(2)}`).join(' / ')}`;
       button.disabled=!selected||Boolean(rock.error)||rock.store.blocked||rock.store.free<.001;
-      $('.mining-feedback').textContent=rock.error||rock.store.warning||(rock.store.free<.001?'Pouch full. Stow samples in the ship cargo locker.':equipment.overheated?'Cooling down…':!selected?(nav.controllerActive?'D-pad → · Equip mining laser':'3 · Equip mining laser'):rock.pending?'Cutting rock…':(nav.controllerActive?'RT · Mine / D-pad → · Holster / View · Backpack':'Hold T / mouse · R holsters · I opens backpack'));
+      $('.mining-feedback').textContent=rock.error||rock.store.warning||(rock.store.free<.001?'Pouch full. Use Deposit all resources at ship cargo.':equipment.overheated?'Cooling down…':!selected?(nav.controllerActive?'D-pad → · Equip mining laser':'3 · Equip mining laser'):rock.pending?'Cutting rock…':(nav.controllerActive?'RT · Mine / D-pad → · Holster / View · Backpack':'Hold T / mouse · R holsters · I opens backpack'));
     },
     get state(){return {active,item:equipment.equipped,ammo:loadout?.ammoFor()??0,hit:hit?.point.toArray()??null,heat:equipment.heat,beaming:equipment.beaming,selected,target:rock.inspectState??null,toolError:equipment.error};},
   };

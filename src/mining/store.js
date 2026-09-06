@@ -2,9 +2,11 @@ import { ROCK_ID, ROCK_VERSION, SIDE, createDensity, encodeDensity, decodeDensit
 import { STARTER_CREDITS, STATION_SHOPS, initialShopStock } from '../station-shop.js';
 import { ShipInventory, ITEMS } from '../ship-inventory.js';
 import { defaultLoadout, validLoadout } from '../inventory/loadout.js';
-import { CATALOG, MATERIAL_IDS, PROCESSED_IDS, resourceItems, resourceAmounts, emptyItems, fitsBox, planTransfer, validItems, MAX_BOXES } from '../inventory/containers.js';
+import { CATALOG, MATERIAL_IDS, PROCESSED_IDS, resourceItems, resourceAmounts, emptyItems, fitsBox, planTransfer, validItems, MAX_BOXES, MINERAL_CAPACITY_PER_BOX } from '../inventory/containers.js';
+import { defaultMiningProgression, validMiningProgression, awardMiningXP } from './progression.js';
+export const RECOVERED_KG_PER_CUBIC_METRE = 1;
 export const MINING_KEY = 'star-agent.selene-mining.v1';
-export const POUCH_CAPACITY = 12;
+export const POUCH_CAPACITY = MINERAL_CAPACITY_PER_BOX;
 // Exact snapshots: 17 fields including the legacy deposit stay below 3.3M
 // serialized characters. Never evict edits or restore exhausted ore to make room.
 export const MAX_SAVED_ROCKS = 16;
@@ -23,7 +25,7 @@ export class MiningStore {
       id: ROCK_ID, version: ROCK_VERSION, revision: 0, field: createDensity(), pack: [0, 0, 0], ship: [0, 0, 0],
       economy: {credits:legacy.credits,shopStock:structuredClone(legacy.shopStock)},
       boxes: { pack: 1, ship: 4, station: 2 }, supplies: oldSupplies, loadout: defaultLoadout(),
-      materials: { pack: {}, ship: {} },
+      materials: { pack: {}, ship: {} }, progression: defaultMiningProgression(),
       remote: { station: { name: 'Aeon orbital locker', kind: 'station', items: emptyItems() } }, rocks: {},
     };
     const initialState = this.state;
@@ -46,6 +48,7 @@ export class MiningStore {
           if (!safeId(id) || !Number.isSafeInteger(rock.revision) || rock.revision < 0 || !validField(rock.field)) throw Error('Invalid rock save');
         }
         if (!Number.isSafeInteger(this.state.economy?.credits) || this.state.economy.credits<0 || this.state.economy.credits>STARTER_CREDITS || !Object.entries(STATION_SHOPS).every(([id,shop])=>shop.offers.every(offer=>Number.isSafeInteger(this.state.economy.shopStock?.[id]?.[offer.itemId])&&this.state.economy.shopStock[id][offer.itemId]>=0&&this.state.economy.shopStock[id][offer.itemId]<=offer.stock)))throw Error('Invalid shop ledger');
+        if (!validMiningProgression(this.state.progression)) throw Error('Invalid mining progression');
         if (!validLoadout(this.state.loadout) || !this.validContainers(this.state)) throw Error('Invalid containers');
       }
     } catch {
@@ -64,7 +67,7 @@ export class MiningStore {
   }
   limits(id, state = this.state) {
     if(id==='pack'&&!state.loadout.slots.backpack)return {resources:0,supplies:0};
-    return { resources: state.boxes[id] * 12, supplies: id === 'pack' ? 20 : id === 'ship' ? (this.manifest?.capacity.ship??2400) : state.boxes[id] * 30 };
+    return { resources: state.boxes[id] * MINERAL_CAPACITY_PER_BOX, supplies: id === 'pack' ? 20 : id === 'ship' ? (this.manifest?.capacity.ship??2400) : state.boxes[id] * 30 };
   }
   validContainers(state) {
     if (!state.materials || Array.isArray(state.materials) || typeof state.materials !== 'object' || !['pack','ship'].every(id => { const items=state.materials[id]; return items && !Array.isArray(items) && validItems(items) && Object.keys(items).every(key=>PROCESSED_IDS.includes(key)); })) return false;
@@ -120,11 +123,12 @@ export class MiningStore {
     if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : `Rock save slots are full (${MAX_SAVED_ROCKS} surveyed deposits). Existing deposits remain mineable.`; return false; }
     const rock = id === ROCK_ID ? this.state : this.state.rocks[id] ?? this.initialRocks.get(id);
     if (!rock || revision !== rock.revision || !Array.isArray(result.yieldVolume) || result.yieldVolume.length !== 3 || !result.yieldVolume.every(n => Number.isFinite(n) && n >= 0) || !validField(result.field)) return false;
-    const added = result.yieldVolume.map(v => v * 12);
-    if (added.reduce((a, b) => a + b, 0) > this.free + 1e-7) { this.warning = 'Backpack mineral boxes are full.'; return false; }
+    const added = result.yieldVolume.map(v => v * RECOVERED_KG_PER_CUBIC_METRE);
+    if (added.reduce((a, b) => a + b, 0) > this.free + 1e-7) { this.warning = 'Backpack mineral boxes are full. Use Deposit all resources at ship cargo.'; return false; }
     if (result.encodedField) this.encodedFields.set(result.field, result.encodedField);
     const next = { ...this.state, pack: this.state.pack.map((v, i) => v + added[i]) };
-    if (!fitsBox(this.container('pack', next).items, next.boxes.pack, this.limits('pack', next))) { this.warning = 'Backpack stack slots are full. Stow items or attach another box.'; return false; }
+    if (!fitsBox(this.container('pack', next).items, next.boxes.pack, this.limits('pack', next))) { this.warning = 'Backpack stack slots are full. Use Deposit all resources at ship cargo or attach another box.'; return false; }
+    next.progression = awardMiningXP(this.state.progression, added.reduce((a,b)=>a+b,0));
     if (id === ROCK_ID) { next.field = result.field; next.revision = revision + 1; }
     else next.rocks = { ...this.state.rocks, [id]: { field: result.field, revision: revision + 1 } };
     return this.write(next, id === ROCK_ID ? result.encodedField : undefined);
@@ -158,7 +162,7 @@ export class MiningStore {
     const c = this.container(id), max = id === 'pack' ? 2 : MAX_BOXES;
     if (!c || c.boxes >= max) return { ok: false, message: `All ${max} box mounts are occupied.` };
     const ok = this.write({ ...this.state, boxes: { ...this.state.boxes, [id]: c.boxes + 1 } });
-    return { ok, message: ok ? 'Empty box attached: 8 stack slots and 12 kg mineral capacity added.' : this.warning };
+    return { ok, message: ok ? `Empty box attached: 8 stack slots and ${MINERAL_CAPACITY_PER_BOX} kg mineral capacity added.` : this.warning };
   }
   registerContainer({ id, name, kind = 'base', boxes = 2 }) {
     if (!safeId(id) || ['pack', 'ship', 'station'].includes(id) || !['base', 'station', 'ship'].includes(kind) || typeof name !== 'string' || name.length > 80 || !Number.isSafeInteger(boxes) || boxes < 1 || boxes > MAX_BOXES) return false;

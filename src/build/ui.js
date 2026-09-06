@@ -47,22 +47,29 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
       lastMaterials = JSON.stringify(store.container('pack')?.items);
       description.textContent = 'Immediate manual field batches. Ingredients and output: backpack. Each separation consumes its entire input batch. No electricity or imported materials required.';
       const batches = document.createElement('div'); batches.className = 'build-batches';
-      for (const quantity of [1, 10, 100]) { const el = button(`${quantity} batch${quantity === 1 ? '' : 'es'}`, `recipe-batch-${quantity}`, () => { batch = quantity; render(); }); el.setAttribute('aria-pressed', String(batch === quantity)); batches.append(el); }
+      for (const quantity of [1, 10, 'max']) { const el = button(quantity === 'max' ? 'Max' : `${quantity} batch${quantity === 1 ? '' : 'es'}`, `recipe-batch-${quantity}`, () => { batch = quantity; render(); }); el.setAttribute('aria-pressed', String(batch === quantity)); batches.append(el); }
       content.append(batches);
       for (const recipe of RECIPES) {
+        let quantity = batch;
+        if (batch === 'max') {
+          const items = store.container('pack')?.items ?? {};
+          quantity = Math.min(...Object.entries(recipe.inputs).map(([id, amount]) => Math.floor((items[id] ?? 0) / amount)));
+          while (quantity > 0 && !previewCraft(store, recipe.id, {quantity}).ok) quantity--;
+          quantity = Math.max(1, quantity);
+        }
         const row = document.createElement('article'); row.className = 'build-recipe';
         const title = document.createElement('h3'); title.textContent = recipe.name;
-        const input = document.createElement('p'); input.textContent = `Consume: ${amounts(recipe.inputs, batch)}`;
-        const output = document.createElement('p'); output.textContent = `Produce: ${amounts(recipe.outputs, batch)}`;
-        const result = previewCraft(store, recipe.id, {quantity: batch});
+        const input = document.createElement('p'); input.textContent = `Consume: ${amounts(recipe.inputs, quantity)}`;
+        const output = document.createElement('p'); output.textContent = `Produce: ${amounts(recipe.outputs, quantity)}`;
+        const result = previewCraft(store, recipe.id, {quantity});
         const reason = document.createElement('p'); reason.className = 'build-recipe-reason'; reason.dataset.ready = String(result.ok); reason.textContent = result.ok ? 'Ready · Output fits in backpack' : result.message;
-        const action = button(`Process ${batch} × ${recipe.name}`, `recipe-${recipe.id}`, () => { const result = craft(store, recipe.id, {quantity: batch}); render(); report(result); });
+        const action = button(`Process ${quantity} × ${recipe.name}`, `recipe-${recipe.id}`, () => { const result = craft(store, recipe.id, {quantity}); render(); report(result); });
         action.disabled = !result.ok; row.append(title, input, output, reason, action); content.append(row);
       }
     } else {
       description.textContent = 'Local owner access. This mainframe records your claim and construction supplies.';
       const info = document.createElement('dl'); info.className = 'build-overview';
-      for (const [label,value] of [['Site',claim?.name || 'Mainframe'],['Body',claim?.body || nav.body?.id],['Authority','Local owner · Build and storage access'],['Boundary',`${claim?.radius || 64} m radius`],['Pieces',Array.isArray(claim?.pieces) ? claim.pieces.length : build.state?.pieceCount ?? 0]]) {
+      for (const [label,value] of [['Site',claim?.name || 'Mainframe'],['Body',nav.body?.name || String(claim?.body || nav.body?.id || '').replace(/^./,c=>c.toUpperCase())],['Authority','Local owner · Build and storage access'],['Boundary',`${claim?.radius || 64} m radius`],['Pieces',Array.isArray(claim?.pieces) ? claim.pieces.length : build.state?.pieceCount ?? 0]]) {
         const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = label; dd.textContent = String(value); info.append(dt,dd);
       }
       content.append(info);
@@ -96,7 +103,7 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
     document.body.classList.toggle('building',build.active);
     shortcut.hidden = nav.openingActive || build.active || nav.mode !== 'walk' || nav.insideShip || !nav.enabled || Boolean(document.querySelector('dialog[open]'));
     hud.hidden = !build.active || dialog.open;
-    const preview = build.preview || build.state?.preview || {}, piece = PIECES[preview.pieceId || build.state?.pieceId];
+    const preview = build.preview || {}, piece = PIECES[preview.pieceId || build.pieceId];
     const snapshot = JSON.stringify([piece?.id,preview.valid,preview.reason,preview.cost,preview.sources]);
     if (snapshot !== lastPreview) {
       lastPreview = snapshot; hud.querySelector('.build-selected').textContent = piece?.label || 'Choose a piece';

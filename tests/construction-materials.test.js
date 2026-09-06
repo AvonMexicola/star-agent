@@ -21,7 +21,7 @@ test('field recipes conserve every kilogram and require no water or grid',()=>{
  assert.equal(craft(store,'concrete').ok,true);
  assert.equal(store.container('pack').items.concrete,10);assert.equal(store.mass,10);
  assert.equal(craft(store,'concrete').ok,false);assert.equal(store.mass,10);
- assert.equal(fitsBox({concrete:13},1),false);
+ assert.equal(fitsBox({concrete:49},1),false);
 });
 test('processed cargo survives every withItems transfer and reload without changing extensions or old cuts',()=>{
  const {store,disk}=setup();store.state.pack=[2,1,0];store.state.build={custom:'preserved'};
@@ -40,14 +40,14 @@ test('preview, capacity rejection, quota failure and stale session never consume
  const before=store.state,raw=disk.getItem(MINING_KEY);
  assert.equal(previewCraft(store,'aggregate').ok,true);assert.equal(store.state,before);assert.equal(disk.getItem(MINING_KEY),raw);
  assert.equal(craft(store,'aggregate',{quantity:NaN}).ok,false);
- store.state.materials.ship={concrete:48};
+ store.state.materials.ship={concrete:192};
  assert.equal(craft(store,'aggregate',{target:'ship'}).ok,false);assert.equal(store.state,before);
  disk.setItem=()=>{throw Error('quota');};assert.equal(craft(store,'aggregate').ok,false);assert.equal(store.state,before);assert.equal(disk.getItem(MINING_KEY),raw);
  const stale=setup();stale.store.state.pack=[1,0,0];stale.disk.setItem(MINING_KEY,'other session');
  assert.equal(craft(stale.store,'aggregate').ok,false);assert.equal(stale.store.state.pack[0],1);
 });
 test('all processed fractions use the same pack mass budget; malformed material saves are retained and blocked',()=>{
- const {store,disk}=setup();store.state.materials.pack={concrete:12};assert.equal(store.free,0);
+ const {store,disk}=setup();store.state.materials.pack={concrete:48};assert.equal(store.free,0);
  assert.equal(store.commit({field:store.state.field,yieldVolume:[.01,0,0]},0),false);
  assert.equal(store.write(store.state),true);const saved=JSON.parse(disk.getItem(MINING_KEY));saved.materials.pack.concrete=-1;
  const raw=JSON.stringify(saved);disk.setItem(MINING_KEY,raw);assert.equal(new MiningStore(disk).blocked,true);assert.equal(disk.getItem(MINING_KEY),raw);

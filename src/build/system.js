@@ -65,7 +65,7 @@ export class BuildSystem {
       {position:[p.position[0],p.position[1],p.position[2]-2],rotation:Math.PI},
       {position:[p.position[0]+2,p.position[1],p.position[2]],rotation:Math.PI/2},
       {position:[p.position[0]-2,p.position[1],p.position[2]],rotation:-Math.PI/2},
-    ]).map(p=>({...p,rotation:p.rotation+(this.turn%2===0?this.turn:0)*Math.PI/2})).sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));
+    ]).map(p=>({...p,rotation:p.rotation+Math.floor(this.turn/2)*Math.PI})).sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));
     if(def.category==='stairs')return panels.filter(p=>p.type==='foundation'||p.type==='floor').map(p=>({position:[...p.position],rotation})).sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));
     if(def.category==='floor'){
       const candidates=panels.map(p=>({position:[p.position[0],p.position[1]+STOREY+this.height,p.position[2]],rotation}));

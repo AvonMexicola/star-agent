@@ -3,7 +3,7 @@
 The legacy basalt/copper/ice arrays remain unchanged in the mining save. Six
 processed kilogram resources live beside them in `materials.pack` and
 `materials.ship`; remote containers use their existing item maps. All nine
-materials share the mineral mass budget (12 kg per box), four-kilogram stack size
+materials share the mineral mass budget (48 kg per box), 16-kilogram stack size
 and eight slots per box. Gear, shop stock, ammunition, terrain edits and building
 extensions remain in the existing atomic save. Normal new saves receive no
 construction material.

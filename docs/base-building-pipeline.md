@@ -27,9 +27,22 @@ owner identity is local single-player state, not multiplayer security.
 Legacy `pack` and `ship` arrays still mean basalt/copper/ice. Six processed material
 IDs live under `materials.pack/ship`; remote inventories use item maps. Preserve
 existing equipment, ammunition, shop stock, supplies and density edits when adding
-resources. All current construction products use kg, finite four-kg stacks, eight
-slots and 12 kg mineral mass per attached box. Do not silently change these units
-or present fictional field recipes as realistic chemical mass fractions.
+resources. All current construction products use kg, finite 16 kg stacks, eight
+slots and 48 kg mineral mass per attached box. Do not silently change these units
+or present fictional field recipes as realistic chemical mass fractions. New
+mining recovers 1 kg concentrate per cubic metre of removed rock, replacing the
+old 12 kg conversion; existing saved cargo is not rescaled. Typical measured
+whole rocks yield about 8–14 kg. Keep capacity tests based on complete generated
+rocks as well as individual cuts, with starter supplies occupying their real slots.
+
+Mining progression lives in `state.progression.mining.xp`. Award it only in the
+same successful `commitRock` transaction as accepted cargo and density edits.
+Missing old progression starts at zero; malformed records must retain the save
+and pause writes. No XP for rejected capacity, stale revisions, misses, crafting
+or moving resources between containers. Levels currently have no yield multiplier.
+The shared inventory displays `miningSkill` and exposes `store.stow()` as the
+physical ship's **Deposit all resources** action. It is one all-or-nothing write
+across all material types, preserving equipment, supplies and earned skill.
 
 Outcrop placement must sample the canonical body terrain. Aeon/Pyre use
 `src/mining/construction-deposits.js` and the existing worker/streaming budget;

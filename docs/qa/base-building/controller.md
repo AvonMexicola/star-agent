@@ -1,6 +1,6 @@
 # Construction controls and validation
 
-Date: 2026-09-06. Physical-controller testing has not been performed.
+Date: 2026-09-07. Physical-controller testing has not been performed.
 
 ## Implemented interface
 
@@ -10,7 +10,7 @@ pieces with their actual material costs. Placement, rotation, snapping and heigh
 adjustments all call the same BuildSystem methods from controller, keyboard and
 touch. Ordinary parts rotate 90°; walls flip 180° on their selected edge.
 
-Recipes show their pack ingredients/output, 1/10/100 batch presets and the exact
+Recipes show their pack ingredients/output, 1/10/Max batch presets and the exact
 transaction validation, including output capacity. Mainframe controls show local
 ownership, claim radius, piece count, nonempty supply contents and the explicit
 construction-buffer toggle. Opening supplies uses the real inventory dialog.
@@ -48,21 +48,36 @@ The finite phase-1 save fixture grants 22kg of processed backpack materials and
 and cargo stack rules. This tests imported construction supplies, not the complete
 local mining economy. The separate materials journey owns that evidence.
 
-The latest completed run physically selected Selene through the menu, landed,
-walked through the hatch, placed a mainframe and foundation, returned aboard for
-stair materials through the real controller inventory, returned to the site and
-placed the staircase. An initial 1m approach tolerance allowed lateral drift past
-the 2m-wide stair. Corrected controller steering now keeps a 12cm centreline
-tolerance and exposed a real foundation-entry precision issue: spherical terrain
-put the feet 24 micrometres below the site's tangent plane, so the 0.3m foundation
-exceeded the 0.3m step limit by more than the solver's 10-micrometre tolerance.
-The player stopped at local `[4, 1.74997555, 2.281564]` directly in front of the
-stair. A numerical reproduction confirmed the collision rejection. A consistent
-1mm contact tolerance and regression now fix it. The next actual controller run
-climbed to `[3.999619, 5.05, -1.717270]`, opened the backpack and reloaded; only its
-final strict comparison rejected JSON's normal conversion from negative zero to
-zero. The expected snapshot now uses the save's JSON representation. A fresh green
-runner result is pending; the complete planned phase is not yet claimed.
+The final full-kit production journey **passed**: one Playwright test, 10.7 minutes,
+Chrome 151.0.7922.173, native ANGLE GL on AMD Radeon 860M, 1440×900, no browser
+page errors. It used an injected standard Gamepad and physically selected Selene,
+landed, left through the hatch, moved 3m onto the checked flat shelf, and placed all
+eight piece types (nine pieces including two foundations). Four real round trips
+to ship cargo supplied construction materials. The controller rotated the stairs
+180°, climbed them, opened/closed the doorway, walked into the room, deposited and
+withdrew the final metal stock through the crate, enabled the mainframe buffer and
+filled it, then climbed onto the supported upper floor at local
+`[4.000008, 5.05, 4.019188]`. Opening Equipment before mainframe supplies verified
+that supplies explicitly restore the Cargo view. Backpack return and full claim
+and container-content equality after reload passed.
+
+The accepted build predates the subsequent backpack-capacity, mining-skill and
+Deposit-all changes. Its explicit fixture used the then-current 24kg mineral pouch,
+22kg of construction materials in the pack and 62kg on the ship. It neither mined
+nor granted additional resources during play. Physical Xbox hardware and a
+fly-away-and-return route remain untested.
+
+Failure history is retained in the evidence directory. Earlier runs exposed a
+real spherical-terrain foundation contact precision issue, fixed with a consistent
+1mm tolerance and regression. A subsequent three-piece run completed climbing and
+reload but failed a strict negative-zero comparison, corrected to compare JSON
+save representations. Full-kit attempts then rejected an uneven bay correctly,
+blocked a stair-side crossing correctly, and exposed a 2.8mm terrain depression at
+the mirrored stair foot. No collision rule was relaxed for these terrain/path
+failures. The accepted route physically backs up 3m before claiming; 21 canonical
+samples and actual Navigation preflight verified the flat footprint. Evolving
+3/4/7/9-piece preflights caught a later wall crossing and verified the final
+west-of-core cargo bypass in both directions. These failed attempts are not passes.
 
 Earlier software-renderer runs used short timed strafe pulses that were not
 reliably sampled at approximately 1 frame/sec. The test now waits for measured
@@ -73,18 +88,57 @@ Evidence is saved under `/tmp/star-agent-build-gameplay/`, including placement
 captures, automatic failure state and trace. A passing run writes `journey.json`
 with the actual browser, renderer, viewport, resulting claims and browser errors.
 
-`BUILD_FULL_KIT=1 npm run test:browser -- -c scripts/build-gameplay.config.js` adds
-three physical cargo trips and builds all eight piece types across two foundations.
-Its finite fixture contains 22kg in the pack and 62kg on the ship. It operates the
-door, transfers materials into/out of the crate and into the enabled mainframe
-buffer, traverses the supported upper floor and checks saved contents. This
-extension initially reached the second bay and correctly rejected its uneven
-terrain (canonical samples reached 0.77m below the requested deck). Nine samples
-on the opposite bay all fit the 0.30m foundation height. A mirrored route exposed
-a 2.8mm terrain depression at the stair entry; the normal step limit correctly
-rejected it. The prepared route physically backs up 3m before claiming, keeping
-the entire footprint on the flat landing shelf. Its 21 canonical samples and
-actual Navigation simulation pass all door, perimeter, core, stair and upper-floor
-segments (`route-check.mjs` and `route-check.log` in the evidence directory).
-The full controller runner has not yet passed. It still does not test
-a physical fly-away-and-return route.
+`BUILD_FULL_KIT=1 npm run test:browser -- -c scripts/build-gameplay.config.js`
+reproduces the accepted full-kit route. `full-kit-run.log` retains raw production
+build/test output; `full-kit-journey.json` records browser/GPU/fixture, placed pieces
+and errors. `upper-floor-controller.png`, `crate-controller-transfer.png` and
+`mainframe-controller-buffer.png` show actual game interactions. The upper-floor
+capture was inspected and visibly shows the landing and staircase rails.
+
+The final focused UI revision on the current 16kg-stack runtime passed all four
+tests together in 10.7 seconds: controller/touch fixtures now contain
+the real `#fleet-button` and `#keyboard-hints` elements, both hidden while building
+so they cannot overlap the phone Height controls. Body labels show names (Aeon),
+and Max uses ingredient and output-slot validation: a full eight-slot pack can
+process its entire 4kg basalt stack when doing so frees the required output slot.
+The full-slot fixture uses eight distinct carried types, so its 4kg basalt stack
+still occupies one slot with the new stack size; processing it entirely frees the
+needed output slot. Cinematic entry is suppressed,
+and the hidden HUD no longer reads the deep-cloned build-state snapshot each frame.
+Phone screenshots were inspected; broader art/presentation findings remain in the
+independent Opus review and are not cleared by these functional checks.
+
+## Deposit-all and current-capacity follow-up
+
+After the capacity/skill update, `npm run test:browser -- -c
+scripts/deposit-gameplay.config.js` passed **4/4 cases in 3.7 minutes** on a fresh
+153-module production build (3.31s, `main-acpY2RmM.js`). Each case starts in the real
+ship and presses X to stand in its physical cabin. An explicit pre-load fixture
+supplies 11kg of mixed basalt, copper, ice and concrete, plus carried ammo, a
+bandage and rations. It does not inject a pose, invoke storage methods directly,
+or grant anything during play.
+
+The cases enter ship Cargo and activate **Deposit all resources** with an injected
+standard controller, native keyboard, and actual CDP touch events at 390×844.
+All resources move aboard, while carried supplies, equipped gear, XP and cut
+revision stay unchanged. A fourth case fills the ship's current 192kg resource
+capacity before load; Deposit-all fails with visible feedback and leaves both
+containers unchanged. Every case closes/reopens the backpack and verifies saved
+container/loadout/progression equality after a page reload. No page errors occurred.
+
+Committed captures: [desktop](deposit-desktop.png), [phone](deposit-phone.png),
+and [full-ship rollback](deposit-full-ship.png).
+
+Evidence: `/tmp/star-agent-deposit-gameplay/` contains per-case before/after
+screenshots and JSON snapshots. `touch-before.png` was inspected: the Deposit-all
+button and Mining level bar are visible above the inventory at phone width, with
+no document overflow. `controller-after.png` visibly retains ammo/bandage/rations
+in the pack and shows the materials aboard. These tests verify that transfers do
+not award XP; actual mining awards are covered by the separate materials check.
+
+The full-kit cargo helper now adapts to 16kg stacks: it uses Transfer one whenever
+a whole stack would exceed the exact requested amount. Offline real MiningStore
+transfer/debit arithmetic passes with the unchanged finite fixture and leaves
+exactly 1kg metal for the crate/buffer interactions. The historical 10.7-minute
+full-kit browser pass remains evidence for the earlier compiled 4kg-stack build;
+it was not rerun solely for this test-helper adaptation.

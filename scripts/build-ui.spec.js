@@ -15,6 +15,7 @@ test('construction dialogs share controller focus, recipe transactions and held-
   await focus(page,'build-tab-pieces');await tap(page,0);await focus(page,'build-piece-mainframe');await tap(page,0);await expect(page.locator('#build-dialog')).not.toBeVisible();
   await page.screenshot({path:'/tmp/star-agent-build-ui/placement-phone.png'});
   expect(await page.locator('#build-hud').evaluate(el=>el.getBoundingClientRect().top>innerHeight/2)).toBe(true);
+  await expect(page.locator('#fleet-button')).not.toBeVisible();await expect(page.locator('#keyboard-hints')).not.toBeVisible();
   await page.evaluate(()=>window.pad.buttons[7]={pressed:true,value:1});await page.waitForTimeout(160);expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(1);
   await tap(page,2);await expect(page.locator('#build-dialog')).toBeVisible();await tap(page,1);await expect(page.locator('#build-dialog')).toBeVisible();
   await page.evaluate(()=>window.pad.buttons[7]={pressed:false,value:0});await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
@@ -24,7 +25,8 @@ test('construction dialogs share controller focus, recipe transactions and held-
 
 test('keyboard entry and touch placement use the same build actions',async({page})=>{
   await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);
-  await page.keyboard.press('b');await expect(page.locator('#build-dialog')).toBeVisible();
+  await page.evaluate(()=>window.fixture.nav.openingActive=true);await page.keyboard.press('b');await expect(page.locator('#build-dialog')).not.toBeVisible();await expect(page.locator('#build-shortcut')).not.toBeVisible();
+  await page.evaluate(()=>window.fixture.nav.openingActive=false);await page.keyboard.press('b');await expect(page.locator('#build-dialog')).toBeVisible();
   await page.locator('[data-controller-key="build-piece-crate"]').click();await expect(page.locator('#build-hud')).toBeVisible();await page.waitForFunction(()=>window.fixture.nav.enabled);
   await page.keyboard.press('Enter');expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(1);
   const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true});
@@ -38,6 +40,7 @@ test('keyboard entry and touch placement use the same build actions',async({page
 test('mainframe storage handoff keeps gameplay paused until storage closes',async({page})=>{
   await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);
   await page.evaluate(()=>window.fixture.ui.openMainframe({id:'fixture-core',name:'Test outpost',body:'aeon',radius:64,pieces:[],bufferId:'ship'}));
+  await expect(page.locator('.build-overview')).toContainText('Aeon');
   await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await focus(page,'build-supplies');await tap(page,0);
   await expect(page.locator('#fixture-storage')).toBeVisible();expect(await page.evaluate(()=>window.fixture.nav.enabled)).toBe(false);
   await tap(page,1);await expect(page.locator('#fixture-storage')).not.toBeVisible();await page.waitForFunction(()=>window.fixture.nav.enabled);
@@ -51,4 +54,6 @@ test('recipe output-slot failures are visible and cannot spend ingredients',asyn
   await tap(page,9);await focus(page,'recipes');await tap(page,0);
   const action=page.locator('[data-controller-key="recipe-aggregate"]');await expect(action).toBeDisabled();await expect(action.locator('..')).toContainText('Output container lacks mass capacity or stack slots.');
   expect(await page.evaluate(()=>window.fixture.store.container('pack').items)).toEqual(before);
+  await focus(page,'recipe-batch-max');await tap(page,0);await expect(action).toHaveText('Process 4 × Crush aggregate');await expect(action).toBeEnabled();
+  await focus(page,'recipe-aggregate');await tap(page,0);expect(await page.evaluate(()=>window.fixture.store.container('pack').items.aggregate)).toBe(4);
 });

@@ -348,6 +348,27 @@ than promise terrain flattening. Inspect real GPU captures of placement, interio
 and stairs. Set a measured initial piece cap; the roadmap's 1,000-piece ambition
 is not a performance guarantee. Physical Xbox testing is reported separately.
 
+## First mining-skill and hauling slice
+
+Mining progress is a saved player stat alongside cargo and edited rocks: only
+successfully collected ore awards XP. The first implementation shows levels and
+progress in the shared inventory, with 100 XP per collected kg and an increasing
+threshold per level. It grants no automatic yield bonus or research bypass.
+Later perks should improve deliberate choices such as scanning, cutting precision
+and heat management; they must preserve the need for tools, stations and travel.
+
+The starter backpack holds 48 kg of materials in eight slots, with 16 kg material
+stacks. A second box doubles mass and slots. Typical whole rocks recover about
+8–14 kg of concentrate, so even the starter can finish several before depositing.
+The original large test rock is about 22.55 kg. Existing collected cargo keeps its
+amounts when recovery balance changes; no retroactive skill credit is inferred.
+
+Physical ship storage has a prominent **Deposit all resources** action, shared
+across keyboard, controller and touch. Raw and processed materials move together;
+equipment, ammo and medical supplies stay with the player. Capacity or save failure
+retains the entire load. More ship boxes and physical base crates provide capacity
+for longer expeditions; they do not grant remote access from the surface.
+
 ## Miasma: proposed biological and chemical materials
 
 Miasma is Pyre's toxic moon in the separate `feat/pyre-toxic-moon` lane (PR39).

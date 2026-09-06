@@ -12,7 +12,7 @@
 .build-recipe-reason{color:var(--mint)!important}#build-dialog button:disabled{opacity:.45;cursor:default}
 .build-recipe-reason[data-ready=false]{color:var(--warning)!important}
 #build-shortcut{position:fixed;z-index:5;left:24px;top:116px;min-height:44px;padding:10px 16px;background:var(--dialog-bg);border-radius:4px}
-.building #loadout-bar,.building #controller-hints{display:none!important}
+.building #loadout-bar,.building #controller-hints,.building #keyboard-hints,.building #fleet-button{display:none!important}
 .build-feedback{color:var(--warning)!important;min-height:1.8em}
 .build-feedback[data-ok=true]{color:var(--mint)!important}
 .build-overview{display:grid;grid-template-columns:100px 1fr;gap:12px;font-size:13px}.build-overview dt{color:var(--muted)}.build-overview dd{margin:0}

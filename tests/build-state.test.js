@@ -23,6 +23,17 @@ function setup(){
  function core(){fund(PIECES.mainframe.cost);assert.equal(system.begin('mainframe').ok,true);const result=system.place();assert.equal(result.ok,true,result.message);return system.claims[0];}
  return {data,disk,store,system,nav,target,fund,aim,core};
 }
+test('wall pieces flip on their socket after any quarter-turn carried from another piece',()=>{
+ const f=setup(),claim={pieces:[{type:'foundation',position:[0,.3,0]}]};
+ f.system.toLocal=p=>p.clone();
+ for(const id of ['wall','window','doorway'])for(const turn of [0,1,2,3])for(const delta of [-1,1]){
+  f.system.select('foundation');f.system.turn=0;f.system.rotate(turn);f.system.select(id);
+  const before=f.system.candidates(claim,v([0,.3,-2]));f.system.rotate(delta);
+  const after=f.system.candidates(claim,v([0,.3,-2]));
+  assert.deepEqual(after.map(p=>p.position),before.map(p=>p.position));
+  after.forEach((p,i)=>assert.ok(Math.abs(Math.abs(p.rotation-before[i].rotation)-Math.PI)<1e-9,`${id}, carried turn ${turn}, direction ${delta}`));
+ }
+});
 test('core placement consumes exact ingredients and atomically creates one empty local buffer',()=>{
  const f=setup(),beforeLoadout=structuredClone(f.store.state.loadout),beforeField=f.store.state.field;
  f.fund({...PIECES.mainframe.cost,basalt:1});f.system.begin('mainframe');

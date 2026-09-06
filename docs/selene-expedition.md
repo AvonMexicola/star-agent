@@ -57,7 +57,7 @@ remains a heightfield; mining is available on the finite outcrops. See [resource
 ## One inventory language
 
 The backpack, ship, station and Crescent field cache use the same box/stack view.
-Every box adds eight stack slots and 12 kg mineral capacity. Minerals stack to 4 kg;
+Every box adds eight stack slots and 48 kg mineral capacity. Materials stack to 16 kg;
 supplies have their own stack limits. The backpack accepts two box mounts. Empty
 boxes are freely attachable in this prototype; crafting/purchasing boxes is later.
 
@@ -65,8 +65,10 @@ The persistent Backpack button shows collected mineral mass. Open a container,
 select an item stack, and transfer one unit or a stack to the other open container.
 Ship cargo is available aboard, the station locker when docked, and the marked
 Crescent cache within four metres. The cache is a physical field storage box next
-to the surface deposit, not a constructed base settlement. Future base containers
-register with this same interface and proximity callback.
+to the surface deposit, not a constructed base settlement. Constructed mainframes and crates
+register with this same interface and proximity callback. Ship Cargo exposes
+**Deposit all resources**, and the inventory displays saved mining skill progress.
+See [the construction guide](base-building.md) for the current material loop.
 
 Cuts, minerals, supplies, box counts and transfers persist in one transaction.
 Legacy mining saves and supply manifests migrate without deleting their originals.

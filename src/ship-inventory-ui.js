@@ -3,6 +3,7 @@ import { CATALOG, MATERIAL_IDS, SLOTS_PER_BOX, stacksFor, itemById, itemMass, qu
 import './inventory/inventory.css';
 import { itemIcon } from './inventory/item-icons.js';
 import { loadoutHTML } from './inventory/loadout-ui.js';
+import { defaultMiningProgression, miningSkill } from './mining/progression.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const icon = itemIcon;
@@ -22,10 +23,11 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
   dialog.id = 'cargo-dialog'; dialog.setAttribute('aria-labelledby', 'cargo-title');
   dialog.innerHTML = `<header class="inventory-header"><div><span class="eyebrow">PERSONAL LOGISTICS</span><h2 id="cargo-title">Backpack & storage</h2></div><button class="inventory-close" type="button" data-controller-focus data-controller-key="inventory-close" aria-label="Close inventory">Close <kbd>Esc / B</kbd></button></header>
     <nav class="inventory-view-tabs" aria-label="Inventory views"><button data-inventory-view="cargo" data-controller-key="view-cargo">Storage</button><button data-inventory-view="equipment" data-controller-key="view-equipment">Equipment</button></nav>
-    <div class="inventory-toolbar"><p>One stack per slot. More boxes give you room for more items.</p><nav class="inventory-locations" aria-label="Nearby storage"></nav></div>
+    <section class="inventory-mining-skill" aria-label="Mining skill"><strong></strong><progress max="1" aria-label="Progress to next mining level"></progress><span></span></section>
+    <div class="inventory-toolbar"><p>One stack per slot. More boxes give you room for more items.</p><nav class="inventory-locations" aria-label="Nearby storage"></nav><div class="inventory-bulk" hidden><button type="button" data-action="stow" data-controller-key="deposit-all">Deposit all resources</button><span>Backpack → ship cargo · minerals and construction materials</span></div></div>
     <div class="inventory-columns"></div><div class="inventory-equipment" hidden></div>
     <section class="inventory-detail" aria-label="Selected item"></section>
-    <footer class="inventory-footer"><p class="cargo-feedback" role="status" aria-live="polite">Select a stack to inspect or transfer it.</p><p class="cargo-save"></p><div class="mining-cargo"><button type="button" data-action="stow" data-controller-key="stow-minerals">Stow all minerals</button></div></footer>`;
+    <footer class="inventory-footer"><p class="cargo-feedback" role="status" aria-live="polite">Select a stack to inspect or transfer it.</p><p class="cargo-save"></p></footer>`;
   (document.querySelector('.top-actions') || document.body).append(launcher);
   document.body.append(dialog);
 
@@ -56,8 +58,13 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
   function render() {
     if (targetId && !accessible(targetId)) { targetId = null; selection = null; }
     const activeKey = document.activeElement?.dataset.controllerKey;
+    const skill=miningSkill(store.state.progression??defaultMiningProgression());
+    const skillPanel=dialog.querySelector('.inventory-mining-skill');
+    skillPanel.querySelector('strong').textContent=`Mining · Level ${skill.level}`;
+    skillPanel.querySelector('progress').value=skill.progress;
+    skillPanel.querySelector('span').textContent=skill.atMaxLevel?'Maximum level':`${Math.floor(skill.levelXP)} / ${skill.requiredXP} XP · Earned by collecting ore`;
     dialog.querySelector('.inventory-locations').innerHTML = `<button type="button" data-location="" data-controller-key="location-pack" aria-pressed="${!targetId}">Backpack</button>${availableIds().map(id => `<button type="button" data-location="${escape(id)}" data-controller-key="location-${escape(id)}" aria-pressed="${targetId === id}">${escape(store.container(id).name)}</button>`).join('')}`;
-    dialog.querySelector('.inventory-columns').innerHTML = containerHTML('pack') + (targetId ? containerHTML(targetId) : `<section class="inventory-empty-context"><span class="eyebrow">YOUR FIELD INVENTORY</span><h3>Everything you carry.</h3><p>Mined basalt, copper and ice appear here as you collect them. Each stack occupies a box slot.</p><p>${availableIds().length ? 'Choose a nearby storage container above to move supplies and minerals.' : 'Return aboard the Nomad or dock at Aeon orbital to access storage.'}</p><div class="inventory-rules"><span>MINERALS<strong>4 kg / stack</strong></span><span>BOX CAPACITY<strong>8 stack slots</strong></span><span>BACKPACK<strong>2 box mounts</strong></span></div><p class="prototype-box-note">Attach empty box mounts; processed materials share mineral capacity.</p></section>`);
+    dialog.querySelector('.inventory-columns').innerHTML = containerHTML('pack') + (targetId ? containerHTML(targetId) : `<section class="inventory-empty-context"><span class="eyebrow">YOUR FIELD INVENTORY</span><h3>Everything you carry.</h3><p>Mined basalt, copper and ice appear here as you collect them. Each stack occupies a box slot.</p><p>${availableIds().length ? 'Choose a nearby storage container above to move supplies and minerals.' : 'Return aboard the Nomad or dock at Aeon orbital to access storage.'}</p><div class="inventory-rules"><span>MINERALS<strong>${itemById('basalt').stack} kg / stack</strong></span><span>BOX CAPACITY<strong>8 stack slots</strong></span><span>BACKPACK<strong>2 box mounts</strong></span></div><p class="prototype-box-note">Attach empty box mounts; processed materials share mineral capacity.</p></section>`);
     dialog.querySelector('.inventory-view-tabs').hidden=!loadout;
     for(const b of dialog.querySelectorAll('[data-inventory-view]'))b.setAttribute('aria-pressed',String(b.dataset.inventoryView===view));
     const gear=view==='equipment'&&loadout;
@@ -70,7 +77,8 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
     if(gear)dialog.querySelector('.inventory-equipment').innerHTML=loadoutHTML(loadout,selectedSlot,['pack',...availableIds()].map(id=>store.container(id)));
     renderDetail();
     dialog.querySelector('.cargo-save').textContent = store.blocked ? store.warning : store.saved ? 'Saved on this browser · cuts and cargo share one transaction' : 'Changes require browser storage.';
-    const stow = dialog.querySelector('[data-action="stow"]'); stow.hidden = view==='equipment' || targetId !== 'ship'; stow.disabled = store.mass <= 1e-7 || store.blocked;
+    dialog.querySelector('.inventory-bulk').hidden = view==='equipment' || targetId !== 'ship' || !accessible('ship');
+    const stow = dialog.querySelector('[data-action="stow"]'); stow.disabled = store.mass <= 1e-7 || store.blocked;
     if (activeKey) [...dialog.querySelectorAll('[data-controller-key]')].find(el => el.dataset.controllerKey === activeKey)?.focus({ preventScroll: true });
     lastState = store.state;
   }
@@ -115,7 +123,10 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
       if (!to || !accessible(to) || !accessible(selection.from)) { feedback({ message: 'This storage container is out of reach.' }); return; }
       feedback(store.transfer(item.id, selection.from, to, Math.min(amount, button.dataset.transfer === 'one' ? 1 : item.stack)));
     } else if (button.dataset.addBox) feedback(store.addBox(button.dataset.addBox));
-    else if (button.dataset.action === 'stow' && accessible('ship')) feedback({ message: store.stow() ? 'Survey samples stowed aboard.' : store.warning });
+    else if (button.dataset.action === 'stow' && view === 'cargo' && targetId === 'ship' && accessible('ship')) {
+      const amount=store.mass;
+      feedback({ message: store.stow() ? `${amount.toFixed(2)} kg resources deposited aboard. Equipment and supplies remain in your backpack.` : store.warning });
+    }
   });
   nav.openInventory = () => {view='cargo';return openContainer('ship');}; nav.openBackpack = openPack;
   function update() {

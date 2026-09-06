@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { MOON_LANDING_DIRECTION, LANDING_FRAME, MOON_RADIUS, MOON_POSITION, moonResources, MOON_RESOURCE_VERSION } from '../moon-world.js';
 import { bodySurfacePoint, bodyAltitude, bodyAt, SELENE } from '../celestial.js';
 import { RockCollision } from './collision.js';
-import { MiningStore } from './store.js';
+import { MiningStore, RECOVERED_KG_PER_CUBIC_METRE } from './store.js';
 import { ROCK_ID, normalizeResourceWeights, MINERAL_GLSL, RESOURCE_VEIN_VERSION } from './volume.js';
 
 export class MineableRock {
@@ -77,7 +77,7 @@ export class MineableRock {
     this.budget=Math.min(.045,this.budget+Math.min(.1,Math.max(0,dt))*Math.max(0,Math.min(.35,rate)));
     if(this.pending||this.budget<.018)return;
     const local=this.toLocal(point.clone().addScaledVector(direction,.08));
-    const budget=Math.min(this.budget,this.store.free/12);this.budget=0;
+    const budget=Math.min(this.budget,this.store.free/RECOVERED_KG_PER_CUBIC_METRE);this.budget=0;
     const contactNormal=normal?.clone()??direction.clone().negate();
     this.request(local.toArray(),budget,{normal:contactNormal,point:point.clone().addScaledVector(contactNormal,.035)});
   }

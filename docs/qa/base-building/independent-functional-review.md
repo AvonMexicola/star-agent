@@ -69,6 +69,27 @@ existing regression also checks unsupported upper-floor rejection. Re-read the
 null/object guards and confirmed they still precede claim/piece dereferences.
 No browser or GPU was launched for this follow-up.
 
+## Follow-up: wall rotation parity (2026-09-07)
+
+Opus identified a wall-facing defect when an odd quarter-turn was retained from
+another selected piece. Wall actions add two quarter-turns; the previous candidate
+mapping discarded both odd states, so rotation could leave the facing unchanged.
+The integrating agent changed the candidate offset to `Math.floor(turn / 2) * Math.PI`.
+
+Independent Node checks called the real `BuildSystem.candidates` and `rotate`
+methods for wall, window and doorway, all four initial turn values, both rotation
+directions and all four foundation-edge sockets. All **96 flip checks passed**:
+one action reverses facing by 180 degrees, snapped positions and ordering remain
+unchanged, and a second action restores the original candidates. No runtime source
+was edited and no GPU/browser was launched. This verifies the bounded rotation fix;
+it is not a replacement for the separately required visual review.
+
+Also verified the repository regression at `tests/build-state.test.js:26`, named
+`wall pieces flip on their socket after any quarter-turn carried from another piece`.
+It passed independently with `node --test --test-name-pattern='wall pieces flip on
+their socket' tests/build-state.test.js`. An intermediate reviewer message saying
+the regression was absent was mistaken; the test is near the beginning of the file.
+
 ## Integration assessment and limits
 
 Code inspection confirms that placement combines payment, piece IDs, claims and

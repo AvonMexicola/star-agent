@@ -45,7 +45,7 @@ test('cuts and collected samples survive reload as one transaction without repla
 });
 test('full pouch, unavailable storage and invalid saves cannot silently destroy rock or credit cargo',()=>{
   const db=storage(),s=new MiningStore(db),result=carve(s.state.field,[0,0,1.35],.025);
-  s.state.pack=[12,0,0];assert.equal(s.commit(result,0),false);assert.equal(s.state.revision,0);
+  s.state.pack=[s.capacity,0,0];assert.equal(s.commit(result,0),false);assert.equal(s.state.revision,0);
   const noSave=new MiningStore({getItem:()=>null,setItem:()=>{throw Error('quota');}});
   assert.equal(noSave.commit(result,0),false);assert.equal(noSave.state.revision,0);assert.equal(noSave.mass,0);
   db.setItem(MINING_KEY,'broken');const bad=new MiningStore(db);assert.equal(bad.blocked,true);assert.equal(bad.commit(result,0),false);assert.equal(db.getItem(MINING_KEY),'broken');

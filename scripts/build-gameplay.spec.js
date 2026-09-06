@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {MiningStore,MINING_KEY} from '../src/mining/store.js';
+import {itemById} from '../src/inventory/containers.js';
 const evidence='/tmp/star-agent-build-gameplay';
 const fullKit=process.env.BUILD_FULL_KIT==='1';
 test.afterEach(async({page},info)=>{
@@ -43,23 +44,32 @@ async function placeAt(page,id,point){
   await page.screenshot({path:`${evidence}/${id}-preview.png`});await place(page,id);await tap(page,1);
 }
 
+async function takeFromShip(page,id,total){
+  for(;;){
+    const current=await page.evaluate(id=>window.starAgent.state.build.materials[id]??0,id);if(current>=total)return;
+    const source=await page.evaluate(id=>window.starAgent.state.containers.containers.find(c=>c.id==='ship').items[id],id),stack=Math.min(source,itemById(id).stack);
+    const key=await page.locator(`[data-from="ship"][data-item="${id}"]`).first().getAttribute('data-controller-key');await choose(page,key);
+    await choose(page,stack>total-current?'transfer-one':'transfer-stack');
+  }
+}
+
 async function extendFullKit(page,{approach,rampPoint,cabinPoint}){
   const haul=async quantities=>{
     console.log('additional cargo trip',quantities);
-    await walkOnClaim(page,4,3);await walkOnClaim(page,7.5,3);await walkOnClaim(page,7.5,-3);await walk(page,approach,1);await walk(page,rampPoint,1);await walk(page,cabinPoint,1);await page.waitForFunction(()=>window.starAgent.state.insideShip);
+    await walkOnClaim(page,4,3);await walkOnClaim(page,-2,3);await walkOnClaim(page,-2,-3);await walk(page,approach,1);await walk(page,rampPoint,1);await walk(page,cabinPoint,1);await page.waitForFunction(()=>window.starAgent.state.insideShip);
     await tap(page,8);await choose(page,'location-ship');
-    for(const [id,total] of Object.entries(quantities))while(await page.evaluate(id=>window.starAgent.state.build.materials[id]??0,id)<total){const key=await page.locator(`[data-from="ship"][data-item="${id}"]`).first().getAttribute('data-controller-key');await choose(page,key);await choose(page,'transfer-stack');}
-    await tap(page,1);await walk(page,rampPoint,1);await walk(page,approach,1);
+    for(const [id,total] of Object.entries(quantities))await takeFromShip(page,id,total);
+    await tap(page,1);await walk(page,rampPoint,1);await walk(page,approach,1);await walkOnClaim(page,-2,-3);await walkOnClaim(page,-2,3);await walkOnClaim(page,7.5,3);
   };
   await test.step('Controller hauls and constructs the remaining kit',async()=>{
-    await haul({concrete:12,glass:2,'metal-stock':4});
+    await haul({concrete:12,glass:2,'metal-stock':5});
     await walkOnClaim(page,7.5,3);await walkOnClaim(page,7.5,-4);
     await placeAt(page,'foundation',[4,.3,-4]);
     await walkOnClaim(page,7.5,3);
     await haul({concrete:16});
     await walkOnClaim(page,7.5,3);await walkOnClaim(page,7.5,-4);
     await placeAt(page,'wall',[2,.3,-4]);await placeAt(page,'window',[6,.3,-4]);await placeAt(page,'doorway',[4,.3,-6]);
-    await walkOnClaim(page,7.5,3);await haul({concrete:8,'metal-stock':4});
+    await walkOnClaim(page,7.5,3);await haul({concrete:8,'metal-stock':5});
     await walkOnClaim(page,7.5,3);await walkOnClaim(page,7.5,-4);
     // Fit the ground-floor crate before capping the room; utility placement
     // otherwise selects the highest supporting panel at its target.
@@ -134,7 +144,7 @@ test(fullKit?'controller constructs and uses all eight base pieces with physical
     console.log('cargo trip');await walk(page,approach,1.5);
     await walk(page,rampPoint,1.2);await walk(page,cabinPoint,1.2);await page.waitForFunction(()=>window.starAgent.state.insideShip);
     await tap(page,8);await choose(page,'location-ship');
-    for(const [id,total] of [['concrete',12],['metal-stock',3]]){while(await page.evaluate(id=>window.starAgent.state.build.materials[id]??0,id)<total){const key=await page.locator(`[data-from="ship"][data-item="${id}"]`).first().getAttribute('data-controller-key');await choose(page,key);await choose(page,'transfer-stack');}}
+    for(const [id,total] of [['concrete',12],['metal-stock',4]])await takeFromShip(page,id,total);
     await tap(page,1);await walk(page,rampPoint,1.2);await walk(page,approach,1.5);
   });
   await test.step('Place and physically climb the staircase',async()=>{

@@ -88,3 +88,23 @@ for(const body of [AEON,PYRE])test(`${body.name} landing fixture mines finite lo
  }
  await writeFile(`/tmp/star-agent-materials-gameplay/${body.id}-evidence.json`,JSON.stringify({gpu,viewport:{width:1280,height:800},epoch:PYRE_EPOCH,fixture:d,mined,processed,pieceCount:built.pieceCount,reloaded,errors},null,2));expect(errors).toEqual([]);
 });
+
+test('accepted mining awards persisted XP and shows the backpack skill bar',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(['error','warning'].includes(m.type()))errors.push(m.text());});
+ await page.goto(`/?intro=0&debug=1&seed=7291&epoch=${PYRE_EPOCH}`);await page.waitForFunction(()=>window.starAgent?.state.ready);
+ const before=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)||'null'),MINING_KEY);
+ expect(before?.progression?.mining?.xp??0).toBe(0);
+ const d=outcrop(AEON);await pose(page,d);
+ await page.keyboard.down('t');try{await page.waitForFunction(()=>window.starAgent.state.mining.pack.reduce((a,b)=>a+b,0)>=.1,null,{timeout:20000});}finally{await page.keyboard.up('t');}
+ await page.waitForFunction(()=>!window.starAgent.state.mining.pending);
+ const saved=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),MINING_KEY),mass=saved.pack.reduce((a,b)=>a+b,0);
+ expect(mass).toBeGreaterThanOrEqual(.1);expect(saved.progression.mining.xp).toBeCloseTo(mass*100,7);expect(saved.boxes.pack).toBe(1);
+ await page.keyboard.press('i');await expect(page.locator('#cargo-dialog')).toBeVisible();
+ const skill=page.locator('.inventory-mining-skill');await expect(skill).toContainText('Mining · Level 1');expect(await skill.locator('progress').evaluate(p=>p.value)).toBeGreaterThan(0);
+ const gpu=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);});
+ await mkdir('/tmp/star-agent-materials-gameplay',{recursive:true});await page.screenshot({path:'/tmp/star-agent-materials-gameplay/mining-skill.png'});
+ await page.reload();await page.waitForFunction(()=>window.starAgent?.state.ready);
+ const after=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),MINING_KEY);
+ expect(after.progression).toEqual(saved.progression);expect(after.pack).toEqual(saved.pack);expect(after.rocks).toEqual(saved.rocks);
+ await writeFile('/tmp/star-agent-materials-gameplay/mining-skill-evidence.json',JSON.stringify({gpu,viewport:{width:1280,height:800},renderScale:.4,fixture:d.id,mass,xp:saved.progression.mining.xp,capacity:48,reloadPreserved:true,errors},null,2));expect(errors).toEqual([]);
+});

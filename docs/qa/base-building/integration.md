@@ -139,3 +139,87 @@ The map's renderer counters are stale from the prior world frame; source skips
 3D scene rendering while that map is open, so those counters are not modal draw
 measurements. The new Build shortcut/entry is now suppressed during the opening.
 An inherited mining-tool visibility issue in that cinematic remains recorded.
+
+The independent Opus inspection also reproduced a rotation carry-over defect:
+after a quarter-turn on a foundation, wall rotation kept an odd turn index that
+the socket calculation ignored. Wall sockets now use the index's half-turn bit,
+so either bumper flips the facing for every previous rotation. The regression
+checks all three wall types, all four carried rotations and both directions,
+including unchanged socket positions. `node --test tests/build-state.test.js`
+passes after this bounded correction; the final controller route uses this code.
+
+## Completed independent Opus review
+
+The second CLI session completed successfully on 2026-09-07 local time. Its
+assistant messages and final model usage identify `claude-opus-5`; the review
+session is `e550d49b-4c1c-4540-a616-343ab915631a`. The exact authored report is
+[opus-review.md](opus-review.md), with twelve independently captured images.
+The reviewer ran its own production build, saved-base interaction check, fixed
+tour and additional placement/recipe/mainframe captures, sequentially on native
+AMD ANGLE GL. All completed with zero browser errors or warnings. The first
+session-limit attempt remains preserved as history.
+
+Scores are 4 / 4 / 3 / 4 / 3 / 3, averaging **3.5/5**. The visual merge gate is
+**not passed**. The reviewer independently reran and verified the wall-facing
+fix while writing its report; that correction does not rescore the candidate.
+Whole-scene draw budgets and representative frame-time acceptance also remain
+open. No merge, deployment or user waiver is claimed.
+
+The remaining visual work includes door animation, visibility transitions at
+distance, base lighting, an authored placement silhouette, and clearer display
+and scrolling layouts. These are recorded follow-up requirements for acceptance,
+not features silently described as finished. Current controller results and
+subsequent UI corrections are recorded separately in controller.md.
+
+Two review diagnoses need context: the runtime kit has several authored material
+families, although it shares one concrete finish; “one material for all eight”
+describes the perceived sameness, not the actual GLB material count. The cause of
+different RAF samples between runs was not isolated, so machine contention is
+the reviewer's hypothesis, not an established explanation. The review's original
+wording and score are preserved.
+
+After the wall-facing and bounded UI corrections, the delivery `npm test` run
+again passed all 68 configured test files in 39.3 seconds, with zero failures
+(`/tmp/star-agent-base-tests-delivery.txt`). This is the latest broad unit result;
+controller and visual acceptance still have their own independent outcomes.
+
+## Complete controller kit, then mining-loop follow-through
+
+The full controller construction journey passed in 10.7 minutes: all eight piece
+types (nine placed modules), four physical ship cargo trips, pocket-door and crate
+interactions, Equipment-to-mainframe Cargo handoff, buffer transfer, upper-floor
+walking and complete claim/container reload. No runtime pose or inventory grants
+were used. Its finite imported stock and old 12 kg boxes / 4 kg stacks are stated
+in [controller.md](controller.md). The later carrying-balance changes do not
+retroactively change that fixture or its measurements.
+
+Cees then reported filling the backpack before finishing a rock and requested
+longer mining trips, mining skill and a ship Deposit all button. Typical measured
+whole rocks recovered 95–165 kg with the old conversion. New cuts now recover
+1 kg concentrate per cubic metre instead of 12, with 48 kg boxes and 16 kg material
+stacks. Three complete large common outcrops total 41.235942 kg and fit a starter
+backpack with its normal supplies; a fourth requires the second box. Existing
+saved cargo and edits retain their values.
+
+Mining XP commits with accepted material and edited density. The inventory shows
+levels/progress and exposes **Deposit all resources** beside ship storage selection.
+Deposits move every material type in one write, preserving carried supplies,
+loadout and XP; full cargo or a failed write retains the entire load. New tests
+exercise actual generated whole fields, migration, malformed XP, stale results,
+capacity/slot denial, quota rollback and no XP from processing/transfers.
+
+The final broad suite after these runtime changes passes **71 configured files**,
+zero failures, 48.0 seconds (`/tmp/star-agent-base-tests-mining-loop.txt`). Read
+[mining-loop.md](mining-loop.md) for the measured fields and current mining browser
+result; new input/visual evidence is recorded separately. The prior Aeon/Pyre
+mining-to-mainframe runs used the old recovery balance and remain historical.
+The Opus score also predates this additional inventory UI; no new visual approval
+is inferred from unit tests or the earlier review.
+
+Current browser acceptance is complete: **4/4 Deposit all cases** pass controller,
+keyboard, 390 px touch, full-ship rollback and reload; **4/4 building UI cases**
+pass with 16 kg stacks; actual mining recovers 0.1582977785 kg and saves
+15.82977785 XP, shows the skill bar and preserves XP/cargo/cuts through reload
+(58.2 seconds, zero browser errors/warnings). Root inspected the desktop deposit,
+phone deposit and actual mining-skill images. These are functional and layout
+checks; the independent visual merge gate remains open.

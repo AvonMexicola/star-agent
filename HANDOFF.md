@@ -1336,3 +1336,44 @@ Integration notes: this branch uses contextual on-foot B for construction. PR38'
 flight B and later LB+RB utility chord need explicit reconciliation when combined.
 Preserve its free-heading drive, ship utilities and grass changes; none is silently
 included here. Shared manager assets and other feature worktrees were not modified.
+
+
+## 2026-09-07 — Materials, construction and mining-loop delivery
+
+READY FOR REVIEW: src/build/, src/inventory/, src/mining/, src/ship-inventory-ui.js,
+docs/base-building.md, docs/base-building-pipeline.md,
+docs/design/base-building-plan.md, docs/qa/base-building/.
+
+Candidate branch: feat/base-building on integrate/main-2026-09-06 at 6f80fc0.
+Local production preview: http://127.0.0.1:5296/ . Draft only; no merge/deployment.
+
+The eight-piece kit, field recipes, local mainframe claims, physical storage and
+body-fixed Pyre saves are implemented. Controller-only full-kit construction
+passed (10.7 minutes, four physical cargo trips); its imported-stock/old-capacity
+fixture remains labelled. Current mining balance is 48 kg per box, 16 kg material
+stacks and 1 kg recovered concentrate per cubic metre of new cuts. Three complete
+large common rocks fit the starter pack. Existing cargo is unchanged. Accepted
+ore awards saved mining XP; inventory displays levels/progress and ship Cargo
+has Deposit all resources, preserving carried gear, ammo, medicines and XP.
+
+Final checks: npm test passes 71 configured files; production build passes.
+Current Deposit all controller/keyboard/touch/full-cargo checks pass 4/4; current
+building UI checks pass 4/4. Actual mining-to-XP/visible-bar/reload passes in 58.2 s,
+with zero browser errors/warnings. Whole-rock, save migration, rejected collection,
+stale results and quota rollback are covered. No physical Xbox test claimed.
+
+Opus retry completed (claude-opus-5), with independently captured scene/tour/UI
+images and a 3.5/5 rubric. Its wall rotation carry-over bug is fixed and verified.
+The final mining/Deposit UI is later than that score; no rescore or waiver inferred.
+Keep this draft unmerged. Outstanding acceptance requests for the manager:
+1. Animate door travel and improve distant base visibility transitions.
+2. Add coherent base/threshold/display lighting and review day/night placement.
+3. Improve the authored placement preview and remaining panel/scroll presentation.
+4. Address measured whole-scene budget failures and establish frame-time acceptance.
+5. Reconcile PR38 flight B / LB+RB utilities on integration; PR39 Miasma stays separate.
+
+Miasma resource proposals are saved in docs/design/base-building-plan.md: Brimstone
+crystals, Verdigris salts, Sporeweave, Caustic brine, Lumen resin, Mycelium cultures,
+Void pearls and Blackglass. Specialty harvesting, protective suits, engineering,
+power and survival remain future work. Common basic construction stays locally
+obtainable; read docs/base-building-pipeline.md before adding new material IDs.

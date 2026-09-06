@@ -30,13 +30,32 @@ by crushing basalt into aggregate, separating a separate binder batch, and press
 recipe contracts are in [field materials](design/field-materials-slice.md).
 
 All processed resources use the existing backpack, ship and base inventory grids,
-with 12 kg mineral capacity and eight slots per attached box. Carry materials back
+with 48 kg mineral capacity, 16 kg material stacks and eight slots per attached
+box. The starter backpack has one box; its second mount raises capacity to 96 kg.
+The ship starts with four boxes (192 kg) and can mount eight (384 kg). Carry materials back
 from the ship through the physical cargo interaction. An installed mainframe and
 crate each provide two storage boxes through that same interface. Approach a
 mainframe, press **F / controller X**, open its supplies and transfer materials.
 Enable its construction supply buffer to spend those stored materials while
 standing within that site's boundary. The buffer is opt-in and never draws from
 remote ships or other bases.
+
+Typical complete outcrops now recover about 8–14 kg of concentrate, giving a
+starter backpack room for at least three of the largest measured typical rocks,
+provided other carried items leave enough stack slots. The original large test
+rock yields about 22.55 kg. Old collected cargo keeps its existing quantities.
+
+At the ship, open **Backpack → Nomad cargo → Deposit all resources**. On a
+controller, use **View**, select the ship's storage and confirm the deposit action
+with **A**. The button moves all raw and processed materials together. Carried
+weapons, ammo, medical items and supplies stay with you. A full destination or
+failed save leaves the entire resource load in your pack.
+
+The inventory also shows **Mining level** and progress. Successfully collected
+ore awards 100 XP per kg; the first level-up requires 1,000 XP. Later levels need
+more XP. Misses, rejected collection, crafting and transfers award none. Older
+saves without skill data start at level 1 without retroactive XP. Levels currently record skill;
+tool bonuses and technology unlocks remain future work.
 
 ## Placement and structure
 
@@ -65,12 +84,13 @@ and doorways snap to panel edges. A wall rotates by 180° to flip its facing on 
 edge; other pieces rotate by 90°. Upper floors require two supporting walls.
 Stairs occupy one panel bay: leave the space above the stairs open and put the
 upper landing over an adjacent bay supported by two walls. Concrete panels, walls,
-window glass, stair treads and rails all have collision. Doorway leaves slide into
-their own jambs, with their movement space reserved during placement.
+window glass, stair treads and rails all have collision. Doorway leaves retract
+into their own jambs, with their movement space reserved during placement. This
+first slice switches directly between open and closed; eased motion is pending.
 
 The preview explains insufficient material, occupied space, lack of support,
-steep terrain, player obstruction and claim limits before spending. Night placement
-has a forward work light. Placed mainframes show live owner, site size, module count
+steep terrain, player obstruction and claim limits before spending. A forward work
+light aids placement, including at night. Placed mainframes show live owner, site size, module count
 and buffer status on their front display. Doors, physical storage, placements and
 material consumption persist in the same save transaction. Failed storage writes
 retain the preceding material and base state.

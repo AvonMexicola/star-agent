@@ -103,3 +103,12 @@ journey owns physical navigation acceptance. A complete locally supplied 2×2
 shelter with its 25% margin on every body, production hauling balance, timed
 presses, power, thermal shelter and rare-material progression remain outside
 these material/core checks.
+
+## 2026-09-07 balance follow-up
+
+The browser masses and timings above are historical evidence from the original
+12 kg/m³ recovery, 12 kg boxes and 4 kg stacks. The subsequent player-requested
+mining-loop balance uses 1 kg/m³ recovery, 48 kg boxes and 16 kg material stacks.
+Existing collected cargo and cuts remain unchanged. These captures are not a
+claim that the new balance was browser-tested; see [mining-loop.md](mining-loop.md)
+for the new measurements, persisted skill and follow-up checks.
