@@ -676,7 +676,7 @@ if DETAIL:
             for k in range(9):interior.add(box_geo(.16,.18,1.1,place((side*20.40,y-1.8+k*.45,HZ0+7.2))),'Gunmetal')
             for dy in [-2.0,2.0]:
                 for z in [HZ0+5.7,HZ0+8.4]:interior.add(cyl_geo(.07,.07,.08,8,place((side*20.3,y+dy,z),rot(0,math.pi/2,0))),'HullPanel')
-            text_mesh(f'Sign_Service_{side}_{j}',f'SERVICE {j+1:02d}',.34,(side*20.25,y,HZ0+4.0),rot(math.pi/2,0,side*math.pi/2),'MintPaint',.005)
+            text_mesh(f'Sign_Service_{side}_{j}',f'SERVICE {j+1:02d}',.34,(side*20.25,y,HZ0+4.0),rot(math.pi/2,0,-side*math.pi/2),'MintPaint',.005)
         for h in [10.6,11.1,11.6]:
             interior.add(cyl_geo(.16,.16,HY1-HY0-3,12,place((side*19.0,-1,HZ0+h),rot(math.pi/2,0,0))),'ServiceOchre' if h==11.1 else 'Gunmetal')
         for y in range(-22,21,4):interior.add(box_geo(.5,.15,1.6,place((side*19,y,HZ0+11.1))),'Truss')
@@ -691,30 +691,45 @@ if DETAIL:
         # Flush deck seams and maintenance-lane markings never create a raised floor.
         for y in range(-22,21,3):lights.add(box_geo(3.0,.025,.005,place((side*16.8,y,DECK_TOP+.004))),'Gunmetal')
         lights.add(box_geo(.04,43,.04,place((side*16.3,-1,DECK_TOP+.022))),'AmberSoft')
+    # Layered aft bulkhead: recessed access plates, structural ribs and utility rails.
+    for x in range(-18,19,6):
+        for h in [6.2,10.0,13.4]:
+            interior.add(box_geo(5.65,.13,2.9,place((x,HY0+.43,HZ0+h))),'HullPanel')
+            interior.add(box_geo(5.25,.09,.09,place((x,HY0+.55,HZ0+h-1.2))),'Gunmetal')
+            for dx in [-2.45,2.45]:
+                for dz in [-1.1,1.1]:interior.add(cyl_geo(.065,.065,.06,8,place((x+dx,HY0+.57,HZ0+h+dz),rot(math.pi/2,0,0))),'Gunmetal')
+    for x in [-20,-14,-7,7,14,20]:
+        interior.add(box_geo(.14,.24,10.6,place((x,HY0+.65,HZ0+10.1))),'Gunmetal')
+    # Ceiling coffers, cross-beams and suspended warm service lighting.
+    for y in range(-20,23,6):
+        interior.add(box_geo(39,.18,.23,place((0,y,HZ1-.45))),'Gunmetal')
+        for x in [-15,-8,0,8,15]:
+            interior.add(box_geo(5.8,4.9,.06,place((x,y,HZ1-.2))),'HullPanel')
+            if x!=0:lights.add(box_geo(2.4,.13,.07,place((x,y,HZ1-.52))),'HangarLight')
     # Aft warehouse shutters, ribbed storage modules and cargo restraint frames.
     for x in [-17,17]:
         interior.add(box_geo(5.5,.35,5.0,place((x,HY0+1.5,HZ0+2.5))),'ServiceTeal')
         for k in range(13):interior.add(box_geo(5.1,.08,.11,place((x,HY0+1.72,HZ0+.3+k*.35))),'Gunmetal')
-        text_mesh(f'Sign_Warehouse_{x}','WAREHOUSE / 10T' if x<0 else 'ENGINEERING',.36,(x,HY0+1.8,HZ0+5.6),rot(math.pi/2,0,0),'MintPaint',.006)
+        text_mesh(f'Sign_Warehouse_{x}','WAREHOUSE / 10T' if x<0 else 'ENGINEERING',.36,(x,HY0+1.8,HZ0+5.6),rot(math.pi/2,0,math.pi),'MintPaint',.006)
     # Cargo terminal: an angled display, card reader, recessed keyboard and service pedestal.
     interior.add(box_geo(1.7,1.0,1.05,place((-12,-22.5,HZ0+.525))),'ServiceTeal')
     interior.add(box_geo(1.85,.95,.12,place((-12,-22.4,HZ0+1.1))),'Gunmetal')
     interior.add(box_geo(1.85,.18,1.3,place((-12,-22.8,HZ0+1.72))),'Gunmetal')
     for k in range(8):interior.add(box_geo(.12,.13,.025,place((-12.65+k*.18,-22.15,HZ0+1.18))),'HullPanel')
     lights.add(box_geo(.12,.15,.07,place((-11.25,-22.1,HZ0+1.20))),'Amber')
-    text_mesh('Sign_Freight','FREIGHT TRANSFER',.42,(-12,-23.5,HZ0+3.6),rot(math.pi/2,0,0),'MintPaint',.005)
+    text_mesh('Sign_Freight','FREIGHT TRANSFER',.42,(-12,-23.5,HZ0+3.6),rot(math.pi/2,0,math.pi),'MintPaint',.005)
     # A real 4 m wide elevator vestibule behind its runtime sliding leaves.
     for side in [-1,1]:
         interior.add(box_geo(.18,3.4,3.3,place((side*2.15,-24,HZ0+1.65))),'HullPanel')
         lights.add(box_geo(.04,2.8,.04,place((side*1.95,-24,HZ0+3.1))),'HangarLight')
     interior.add(box_geo(4.5,.25,.35,place((0,-22.35,HZ0+3.35))),'ServiceOchre')
     interior.add(box_geo(4.4,3.4,.18,place((0,-24,HZ0+3.5))),'Gunmetal')
-    text_mesh('Sign_Hub','CENTRAL HUB',.50,(0,-22.16,HZ0+4.15),rot(math.pi/2,0,0),'MintPaint',.006)
-    text_mesh('Sign_Transit','ELEVATOR / CONCOURSE',.21,(0,-22.16,HZ0+3.65),rot(math.pi/2,0,0),'MintPaint',.003)
+    text_mesh('Sign_Hub','CENTRAL HUB',.50,(0,-22.16,HZ0+4.15),rot(math.pi/2,0,math.pi),'MintPaint',.006)
+    text_mesh('Sign_Transit','ELEVATOR / CONCOURSE',.21,(0,-22.16,HZ0+3.65),rot(math.pi/2,0,math.pi),'MintPaint',.003)
     # Suspended wayfinding and hazard decals, away from the walking capsule.
     for x,label in [(-15,'CARGO  <'),(15,'>  CREW SERVICES')]:
         interior.add(box_geo(7,.25,1.1,place((x,-15,HZ0+12.0))),'ServiceTeal')
-        text_mesh(f'Sign_Wayfinding_{x}',label,.40,(x,-14.84,HZ0+12.0),rot(math.pi/2,0,0),'MintPaint',.005)
+        text_mesh(f'Sign_Wayfinding_{x}',label,.40,(x,-14.84,HZ0+12.0),rot(math.pi/2,0,math.pi),'MintPaint',.005)
 interior.build(); lights.build()
 
 # ============================================================================= HANGAR DOORS

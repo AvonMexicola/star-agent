@@ -38,7 +38,7 @@ try {
   const atmosphere=new Atmosphere(renderer),nav=new Navigation(canvas,notify),planet=new Planet(scene),vegetation=new Vegetation(scene),audio=new FlightAudio();
   const station=new StationComplex(scene);nav.station=station;
   const stationButton=$('station-destination');
-  station.readyPromise.then(()=>{stationButton.disabled=false;stationButton.querySelector('small').textContent='HANGAR · DOCK & EXPLORE';}).catch(()=>{stationButton.querySelector('small').textContent='STATION UNAVAILABLE';notify('Station unavailable. Planet flight is still available.');});
+  station.readyPromise.then(()=>{weatherShip(station.pods[0].model,planet.surfaceTexture);weatherShip(station.hub.group,planet.surfaceTexture);stationButton.disabled=false;stationButton.querySelector('small').textContent='HANGAR · DOCK & EXPLORE';}).catch(()=>{stationButton.querySelector('small').textContent='STATION UNAVAILABLE';notify('Station unavailable. Planet flight is still available.');});
   const moon=new Moon(scene);
   const origin=new THREE.Vector3();
   const lighting=createLighting(renderer,scene);

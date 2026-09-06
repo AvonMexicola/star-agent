@@ -3,7 +3,7 @@ import './station-interior.css';
 
 export function createStationCargoUI(nav,inventory){
   const dialog=document.createElement('dialog');dialog.id='station-cargo-dialog';dialog.setAttribute('aria-labelledby','station-cargo-title');
-  dialog.innerHTML='<button class="station-close" aria-label="Close cargo terminal">✕</button><p class="eyebrow">AEON ORBITAL / FREIGHT SERVICES</p><h2 id="station-cargo-title">Cargo transfer terminal</h2><p>Your station warehouse ↔ your docked ship. Transfers are saved together.</p><div class="cargo-bulk"><button data-bulk="station">Take all</button><button data-bulk="ship">Store all</button></div><p class="terminal-capacity"></p><div class="terminal-items"></div><p role="status" class="terminal-feedback"></p>';
+  dialog.innerHTML='<button class="station-close" aria-label="Close cargo terminal">✕</button><p class="eyebrow">AEON ORBITAL / FREIGHT SERVICES</p><h2 id="station-cargo-title">Cargo transfer terminal</h2><p>Your station warehouse ↔ your docked ship. Load supplies aboard or store them ashore.</p><div class="cargo-bulk"><button data-bulk="station">Take all</button><button data-bulk="ship">Store all</button></div><p class="terminal-capacity"></p><div class="terminal-items"></div><p role="status" class="terminal-feedback"></p>';
   document.body.append(dialog);
   function render(){
     dialog.querySelector('.terminal-capacity').textContent=`WAREHOUSE ${inventory.mass('station').toFixed(1)} / ${inventory.capacity.station} kg   •   ${nav.shipId.toUpperCase()} ${inventory.mass('ship').toFixed(1)} / ${inventory.capacity.ship} kg`;

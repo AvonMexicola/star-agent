@@ -281,6 +281,7 @@ export class Station {
     if (triggerDistanceSq < DOOR_OPEN_RADIUS * DOOR_OPEN_RADIUS) this.openDoors();
     else if (triggerDistanceSq > DOOR_CLOSE_RADIUS * DOOR_CLOSE_RADIUS) this.closeDoors();
     if (this.doorMixer && !this.doorAction.paused) this.doorMixer.update(dt);
+    if(this.lodModel)for(const door of this.doors){const farDoor=this.lodModel.getObjectByName(door.name);if(farDoor)farDoor.position.copy(door.position);}
     this.updateDoorColliders();
 
     // Aviation-style lights: a white double-strobe once per second, red and green in anti-phase.

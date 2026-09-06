@@ -26,6 +26,17 @@ test('twenty transformed berths share geometry and collision while keeping indep
   assert.equal(s.pods.filter(p=>p.model.visible).length,1);
   assert.equal(s.exterior.rings[0].rotation.x,10*RING_SPEED);assert.equal(s.exterior.rings[1].rotation.x,-10*RING_SPEED);
   assert.equal(RING_RADIUS,1450);
+  assert.ok(s.lodBatches.length<45,'twenty distant bays use fewer than 45 instanced geometry batches');
+  const batch=s.lodBatches.find(b=>b.door===0),matrix=new THREE.Matrix4();
+  // At a distant camera all berths use the instanced meshes; the first door retains its open pose.
+  s.update(s.centre.clone().addScalar(5000),s.centre,new THREE.Vector3(1,0,0),0);
+  batch.instances.getMatrixAt(0,matrix);
+  const expected=batch.matrix.clone();expected.elements[12]+=s.pods[0].doors[0].position.x-batch.closedX;
+  expected.premultiply(new THREE.Matrix4().compose(s.pods[0].offset,s.pods[0].yaw,new THREE.Vector3(1,1,1)));
+  for(let i=0;i<16;i++)assert.ok(Math.abs(matrix.elements[i]-expected.elements[i])<.001);
+  assert.ok(s.ringColliders[0].bounds.max.x>=40,'instanced habitat panels participate in collision');
+  const other=s.pods[19],a=other.toWorld(new THREE.Vector3(-100,-3,0),new THREE.Vector3()),b=other.toWorld(new THREE.Vector3(0,-3,0),new THREE.Vector3());
+  assert.equal(s.activeIndex,0);assert.equal(s.constrainStep(a,b,other.quaternion).hit,true,'a non-active berth still blocks flight');
 });
 test('clear walking aisles reach cargo and elevator; closed elevator blocks swept entry',async()=>{
   const s=await create(),q=s.quaternion,to=p=>s.toWorld(new THREE.Vector3(...p),new THREE.Vector3());

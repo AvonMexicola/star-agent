@@ -13,6 +13,7 @@ export class StationComplex {
     this.direction=defaultStationDirection();this.baseQuaternion=stationQuaternion(this.direction,new THREE.Quaternion());
     this.centre=this.direction.clone().multiplyScalar(RADIUS+STATION_ALTITUDE);
     this.exterior=createExterior();scene.add(this.exterior.group);
+    this.lodGroup=new THREE.Group();this.lodGroup.name='Instanced distant berths';scene.add(this.lodGroup);this.lodBatches=[];
     this.hub=createHub();scene.add(this.hub.group);
     this.hub.quaternion=this.baseQuaternion.clone();this.hub.inverseQuaternion=this.baseQuaternion.clone().invert();this.hub.worldPosition=this.centre.clone();this.hub.ready=true;
     for(const name of ['toWorld','toLocal','deckPoint','deckHeightAt','isInsideHangar'])this.hub[name]=Station.prototype[name];
@@ -44,6 +45,17 @@ export class StationComplex {
         sign(pod.services,'CARGO TRANSFER\nF  /  OPEN TERMINAL',[-12,pod.interiorBox.min.y+1.72,22.69],1.72,1.12);
         sign(pod.services,`BERTH ${String(pod.id).padStart(2,'0')}`,[0,pod.interiorBox.min.y+5.2,22.15],5,.75);
         this.pods.push(pod);
+      }
+      if(lod){
+        lod.scene.updateMatrixWorld(true);
+        lod.scene.traverse(mesh=>{
+          if(!mesh.isMesh)return;
+          let parent=mesh,door=-1;
+          while(parent){if(parent.name==='HangarDoor_L')door=0;if(parent.name==='HangarDoor_R')door=1;parent=parent.parent;}
+          const instances=new THREE.InstancedMesh(mesh.geometry,mesh.material,this.pods.length);
+          instances.name=mesh.name;instances.frustumCulled=false;this.lodGroup.add(instances);
+          this.lodBatches.push({instances,matrix:mesh.matrixWorld.clone(),door,closedX:door>=0?this.pods[0].doors[door].position.x:0});
+        });
       }
       this.ready=true;return this;
     }catch(error){this.error=error.message;throw error;}
@@ -80,16 +92,32 @@ export class StationComplex {
     for(const pod of this.pods){
       pod.update(position,origin,sun,dt);updateElevator(pod.lift,dt);
       pod.lift.group.visible=pod.services.visible=pod.cameraDistance<230;
+      if(pod.lodModel)pod.lodModel.visible=false;
     }
+    const matrix=new THREE.Matrix4(),local=new THREE.Matrix4(),unit=new THREE.Vector3(1,1,1);
+    for(const batch of this.lodBatches){
+      this.pods.forEach((pod,i)=>{
+        if(pod.cameraDistance<=pod.lodDistance||pod.cameraDistance>=600000)matrix.makeScale(0,0,0);
+        else{
+          local.copy(batch.matrix);
+          if(batch.door>=0)local.elements[12]+=pod.doors[batch.door].position.x-batch.closedX;
+          matrix.compose(pod.offset,pod.yaw,unit).multiply(local);
+        }
+        batch.instances.setMatrixAt(i,matrix);
+      });
+      batch.instances.instanceMatrix.needsUpdate=true;
+    }
+    this.lodGroup.visible=position.distanceTo(this.centre)<600000;
     updateElevator(this.hub.lift,dt);
     this.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
-    this.hub.group.visible=position.distanceTo(this.centre)<6000;
+    this.hub.group.visible=position.distanceTo(this.centre)<140;
+    this.exterior.hubShell.visible=!this.hub.group.visible;
     for(const light of this.hub.lights)light.visible=this.location==='hub'&&position.distanceTo(this.centre)<100;
     this.rebase(origin);
   }
   rebase(origin){
     for(const pod of this.pods){pod.group.position.copy(pod.worldPosition).sub(origin);pod.group.quaternion.copy(pod.quaternion);}
-    for(const group of [this.exterior.group,this.hub.group]){group.position.copy(this.centre).sub(origin);group.quaternion.copy(this.baseQuaternion);}
+    for(const group of [this.exterior.group,this.hub.group,this.lodGroup]){group.position.copy(this.centre).sub(origin);group.quaternion.copy(this.baseQuaternion);}
   }
   constrainStep(previous,proposed,orientation,walking=false,layout=SHIP_LAYOUT){
     if(!this.ready)return {point:proposed.clone(),hit:false};
@@ -130,5 +158,5 @@ export class StationComplex {
     if(Math.abs(p.x)<3.4&&p.z>lift.z-3&&p.z<lift.z+.6)return {kind:'door',label:lift.open?'WALK INTO ELEVATOR · F TO CLOSE':'F · CALL ELEVATOR'};
     return null;
   }
-  get snapshot(){return {pods:this.pods.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
+  get snapshot(){return {pods:this.pods.length,lodBatches:this.lodBatches.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
 }

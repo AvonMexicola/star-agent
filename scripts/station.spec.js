@@ -78,7 +78,8 @@ test('fly through station doors, dock, walk down the ramp onto deck, return and 
     course:document.querySelector('#course-guidance').getBoundingClientRect().bottom,
     toast:document.querySelector('#toast').getBoundingClientRect().top,
   }));
-  expect(new Set(mobile.buttons.map(b=>Math.round(b.top))).size).toBe(2);
+  // Selene is the seventh destination: the existing three-column phone layout needs three rows.
+  expect(new Set(mobile.buttons.map(b=>Math.round(b.top))).size).toBe(3);
   expect(mobile.buttons.every(b=>b.left>=0&&b.right<=390)).toBe(true);
   expect(mobile.hints).toBeLessThan(Math.min(...mobile.buttons.map(b=>b.top)));
   expect(mobile.toast).toBeGreaterThan(mobile.course);
