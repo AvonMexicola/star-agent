@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RADIUS, ATMOSPHERE_HEIGHT } from './world.js';
+import { RADIUS, ATMOSPHERE_HEIGHT, SUN_ANGULAR_RADIUS } from './world.js';
 import { createCloudNoise, cloudShader } from './cloud-volume.js';
 
 // Single-scattering integration in planet-radius units. Rayleigh + Henyey-Greenstein
@@ -17,6 +17,10 @@ uniform float logFar;
 uniform float radius;
 uniform float atmosphereRadius;
 uniform float exposure;
+uniform float sunAngularRadius;
+uniform float sunDisk;
+uniform float heat;
+uniform float heatTime;
 varying vec2 vUv;
 const vec3 BETA_R=vec3(5.802e-6,13.558e-6,33.100e-6);
 const vec3 BETA_M=vec3(3.996e-6);
@@ -32,6 +36,7 @@ vec3 stars(vec3 rd){
   float milky=pow(max(0.0,1.0-abs(dot(rd,normalize(vec3(.4,.7,-.2))))),18.0);
   return color*s*2.5+vec3(.0015,.0020,.0035)+vec3(.004,.006,.009)*milky;
 }
+float vnoise2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(vec3(i,1.0)),hash(vec3(i+vec2(1.0,0.0),1.0)),f.x),mix(hash(vec3(i+vec2(0.0,1.0),1.0)),hash(vec3(i+1.0,1.0)),f.x),f.y);}
 vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.0,1.0);}
 ${cloudShader}
 void main(){
@@ -40,16 +45,27 @@ void main(){
   // float32 rounds p.w to zero, so dividing would poison the sky with NaNs.
   vec3 viewRay=normalize(p.xyz);
   vec3 rd=normalize(cameraRotation*viewRay);
-  float depth=texture2D(sceneDepth,vUv).r;
+  // Heat haze: near the star the scene sample is displaced by rising shimmer (sun.js drives heat).
+  vec2 uv=vUv;
+  if(heat>0.0){
+    vec2 q=vUv*vec2(9.0*resolution.x/resolution.y,9.0);
+    float n1=vnoise2(q+vec2(0.0,-heatTime*1.1)),n2=vnoise2(q*1.7+vec2(3.1,-heatTime*1.6)),n3=vnoise2(q*3.1+vec2(-heatTime*.7,-heatTime*2.3));
+    float shimmer=smoothstep(.55,1.0,heat);
+    uv=clamp(vUv+((vec2(n1,n2)-.5)*.006+(vec2(n3,n1)-.5)*.002)*shimmer,vec2(.001),vec2(.999));
+  }
+  float depth=texture2D(sceneDepth,uv).r;
   bool ground=depth<.999999;
   float distanceToScene=ground?(exp2(depth*logFar)-1.0)/max(.0001,-viewRay.z)/radius:1e9;
-  vec3 original=texture2D(sceneColor,vUv).rgb;
+  vec3 original=texture2D(sceneColor,uv).rgb;
   float daylight=smoothstep(-.12,.2,dot(normalize(cameraPlanet),sunDirection))
     *exp(-max(0.0,length(cameraPlanet)-1.0)*radius/35000.0);
-  vec3 color=ground?original:stars(rd)*(1.0-daylight);
+  // Space pixels keep their (additive, depth-less) HDR light: corona, glare, travel light.
+  vec3 color=ground?original:stars(rd)*(1.0-daylight)+original;
   float sunDot=dot(rd,sunDirection);
-  // A 120,000-km stellar radius at 25 million km: angular radius 0.0048 rad.
-  float disk=smoothstep(cos(.0050),cos(.0046),sunDot);
+  // A 240,000-km stellar radius at 25 million km: angular radius 0.0096 rad
+  // (SUN_ANGULAR_RADIUS from world.js), with a ±4% soft edge (0.0100 / 0.0092).
+  // sunDisk fades this disk out once the real photosphere sphere (sun.js) is within range.
+  float disk=smoothstep(cos(sunAngularRadius*1.04),cos(sunAngularRadius*.96),sunDot)*sunDisk;
   if(!ground)color+=vec3(18.0,15.5,12.5)*disk;
   vec2 hit=sphere(cameraPlanet,rd,atmosphereRadius);
   float start=max(0.0,hit.x),finish=min(distanceToScene,hit.y);
@@ -82,6 +98,7 @@ void main(){
   }
   vec4 clouds=cloudRadiance(cameraPlanet,rd,distanceToScene,sunDot);
   color=color*(1.0-clouds.a)+clouds.rgb;
+  color+=vec3(.5,.12,.02)*smoothstep(.55,1.0,heat)*.02;
   color=aces(color*exposure);
   color=pow(color,vec3(1.0/2.2));
   float dither=(hash(vec3(gl_FragCoord.xy,0.0))-.5)/255.0;
@@ -94,14 +111,16 @@ export class Atmosphere {
     this.cloudNoise=createCloudNoise();
     this.target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true});
     this.target.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
-    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
+    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08},sunAngularRadius:{value:SUN_ANGULAR_RADIUS},sunDisk:{value:1},heat:{value:0},heatTime:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
     this.material.uniforms.cloudNoise={value:this.cloudNoise};this.material.uniforms.cloudTime={value:0};
     this.scene=new THREE.Scene();const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),this.material);quad.frustumCulled=false;this.scene.add(quad);this.camera=new THREE.Camera();
   }
+  /** Hand-off from the painted disk to the real sphere, and the heat-haze strength (both 0..1). */
+  setSun({disk=1,heat=0}={}){this.material.uniforms.sunDisk.value=disk;this.material.uniforms.heat.value=heat;}
   resize(w,h){this.target.setSize(w,h);this.material.uniforms.resolution.value.set(w,h);}
   render(scene,camera,worldPosition,sunDirection,elapsed=0){
     camera.updateMatrixWorld();const u=this.material.uniforms;
-    u.cloudTime.value=elapsed;
+    u.cloudTime.value=elapsed;u.heatTime.value=elapsed;
     u.inverseProjection.value.copy(camera.projectionMatrixInverse);u.cameraRotation.value.setFromMatrix4(camera.matrixWorld);u.cameraPlanet.value.copy(worldPosition).multiplyScalar(1/RADIUS);u.sunDirection.value.copy(sunDirection);u.logFar.value=Math.log2(camera.far+1);
     this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,1);this.renderer.clear();this.renderer.render(scene,camera);
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);

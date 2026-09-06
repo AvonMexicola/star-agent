@@ -18,7 +18,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
     <div class="system-map-layout">
       <div class="system-chart" aria-label="Schematic system map">
         <div class="map-grid"></div><div class="map-orbit map-orbit-outer"></div><div class="map-orbit map-orbit-inner"></div>
-        <div class="map-star"><i></i><span>OUR STAR<small>25 M km from Aeon</small></span></div>
+        <button class="map-star" data-travel-target="star"><i></i><span>OUR STAR<small>25 M km from Aeon</small></span></button>
         <div class="map-route-line"></div>
         <button class="map-body map-aeon" data-travel-target="aeon"><i></i><span>AEON<small>TERRESTRIAL PLANET</small></span></button>
         <button class="map-body map-selene" data-travel-target="selene"><i></i><span>SELENE<small>AIRLESS MOON</small></span></button>
@@ -45,7 +45,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
     if (!target) return;
     const route = nav.travel ? { ok: false, reason: 'Drive paused. Close the map to resume; X aborts in flight.' } : nav.travelRoute();
     el('map-target-name').textContent = target.name;
-    el('map-target-description').textContent = target.id === 'aeon' ? 'Oceans, forests and an atmosphere. Arrive above the atmosphere, then descend in normal flight.' : 'Cratered terrain and low gravity. Arrive above the moon, then fly down to land and explore.';
+    el('map-target-description').textContent = target.id === 'aeon' ? 'Oceans, forests and an atmosphere. Arrive above the atmosphere, then descend in normal flight.' : target.id === 'star' ? 'A 240,000 km photosphere. Arrive at a standoff where the disk fills 35° of sky; the hull cannot survive closer than three radii.' : 'Cratered terrain and low gravity. Arrive above the moon, then fly down to land and explore.';
     el('map-distance').textContent = formatRange(route.plan?.distance ?? nav.position.distanceTo(new Vector3(...target.center)));
     el('map-eta').textContent = route.ok ? `${route.plan.duration.toFixed(1)} s` : '—';
     el('map-approach').textContent = formatRange(target.arrivalRadius - target.radius);

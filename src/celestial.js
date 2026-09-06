@@ -1,8 +1,10 @@
 import { Vector3 } from 'three';
-import { RADIUS, terrainHeight, MOON_RADIUS, MOON_POSITION, MOON_GRAVITY, moonSurface } from './world.js';
+import { RADIUS, terrainHeight, MOON_RADIUS, MOON_POSITION, MOON_GRAVITY, moonSurface, SUN_RADIUS, SUN_DISTANCE, SUN_DIRECTION } from './world.js';
 
 export const AEON=Object.freeze({id:'aeon',name:'Aeon',center:Object.freeze([0,0,0]),radius:RADIUS,gravity:9.81,airless:false});
 export const SELENE=Object.freeze({id:'selene',name:'Selene',center:MOON_POSITION,radius:MOON_RADIUS,gravity:MOON_GRAVITY,airless:true});
+// The star is a travel destination with a standoff, never a landing body: bodyAt() ignores it.
+export const STAR=Object.freeze({id:'star',name:'Our star',center:Object.freeze(SUN_DIRECTION.map(v=>v*SUN_DISTANCE)),radius:SUN_RADIUS,gravity:0,airless:true,star:true});
 // Explicit local navigation domain; this is not an N-body orbital solver.
 export function bodyAt(position) {
   const dx=position.x-MOON_POSITION[0],dy=position.y-MOON_POSITION[1],dz=position.z-MOON_POSITION[2];

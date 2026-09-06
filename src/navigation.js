@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
+import { SUN_POSITION, SUN_AXIS, constrainSunStep, sunStandoffPoint } from './sun.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
 import { SELENE, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
 import { environmentAt, step as stepFlight } from './flight-model.js';
@@ -170,6 +171,12 @@ export class Navigation {
     const east=new THREE.Vector3().crossVectors(Math.abs(d.y)<.9?UP:RIGHT,d).normalize();
     this.orientToward(this.position.clone().addScaledVector(east,1000).addScaledVector(d,-180),d);
     this.jumpHeight=0;this.jumpVelocity=0;
+  }
+  /** Standoff between Aeon and the star, facing the disk; the rotation axis is screen-up. */
+  transitStar(){
+    this.orbit();
+    this.position.copy(sunStandoffPoint());
+    this.orientToward(new THREE.Vector3(...SUN_POSITION),new THREE.Vector3(...SUN_AXIS));
   }
   get stationDistance(){return this.station?.ready?this.position.distanceTo(this.station.worldPosition):Infinity;}
   get stationLocal(){return this.station?.ready?this.station.toLocal(this.position,new THREE.Vector3()):null;}
@@ -345,6 +352,9 @@ export class Navigation {
           this.position.copy(lunar.point);this.touchDown();break;
         }
         if(lunar.limited){proposed.copy(lunar.point);this.velocity.set(0,0,0);}
+        const solar=constrainSunStep(previous,proposed);
+        if(solar.hit){this.position.copy(solar.point);this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;
+          if(!this.heatNotice||performance.now()-this.heatNotice>4000){this.notify('HULL TEMPERATURE CRITICAL. Drive refuses to close on the star.');this.heatNotice=performance.now();}break;}
         const collision=this.station?.constrainStep(previous,proposed,this.orientation);
         this.position.copy(collision?collision.point:proposed);
         if(collision?.hit){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;break;}
