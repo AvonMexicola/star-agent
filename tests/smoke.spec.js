@@ -26,6 +26,20 @@ async function bootPlanet(page) {
   return failures;
 }
 
+async function chooseDestination(page,name,modifiers=[]){
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeVisible();
+  const menu=page.locator('#quick-transit-menu');
+  const summary=page.locator('#quick-transit-menu > summary');
+  await expect(summary).toHaveText('Quick transit');
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+  await summary.click();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(true);
+  await menu.locator(`[data-destination="${name}"]`).click({modifiers});
+  await expect(page.locator('#help-dialog')).toBeHidden();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+}
+
 test('the planet boots into orbit without a page error', async ({ page }) => {
   const { consoleErrors, pageErrors } = await bootPlanet(page);
 
@@ -53,7 +67,7 @@ test('the planet boots into orbit without a page error', async ({ page }) => {
 test('quick transit to the coast leaves the exosphere', async ({ page }) => {
   const { pageErrors } = await bootPlanet(page);
 
-  await page.locator('button[data-destination="coast"]').click();
+  await chooseDestination(page,'coast');
   await expect
     .poll(async () => (await page.locator('#biome').innerText()).trim(), { timeout: BOOT_TIMEOUT })
     .not.toBe('EXOSPHERE');
@@ -73,7 +87,7 @@ test('setting a course preserves position and a shared seed survives reload', as
   await page.waitForFunction(()=>window.starAgent?.state.ready, null, {timeout:BOOT_TIMEOUT});
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   const before=await page.evaluate(()=>({state:window.starAgent.state,destinations:window.starAgent.destinations}));
-  await page.locator('[data-destination="coast"]').click({modifiers:['Shift']});
+  await chooseDestination(page,'coast',['Shift']);
   await expect(page.locator('#course-guidance')).toContainText('Verdant coast');
   const after=await page.evaluate(()=>window.starAgent.state);
   expect(after.position).toEqual(before.state.position);

@@ -35,9 +35,10 @@ test('inertial controls coast and rotate, assist brakes, transition HUD renders'
     const nav=window.starAgent.navigation;nav.position.normalize().multiplyScalar(1592750+45000);nav.velocity.set(0,0,0);
   });
   await expect(page.locator('#mode-label')).toHaveText('TRANSITION · ATMO 50%');
-  await page.getByRole('button',{name:'Controls H',exact:false}).click();
+  await page.keyboard.press('KeyH');
   await expect(page.locator('#help-dialog')).toContainText('Toggle flight assist / inertial flight');
-  await page.getByRole('button',{name:'Close controls'}).click();
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeHidden();
   await mkdir('/tmp/star-agent-flight',{recursive:true});
   await page.screenshot({path:'/tmp/star-agent-flight/transition.png'});
   const gpu=await page.evaluate(()=>{
