@@ -5,8 +5,8 @@ slots, one tool, one backpack, two ammo slots and four quick-item slots. Select 
 slot, then draw, stow or assign an item from your backpack or accessible storage.
 The same dialog and focus system serves the ship, station and field cache.
 
-A finite starter kit contains a carbine, sidearm, mining laser, life-support
-backpack, 60 carbine charges, 36 sidearm charges, three bandages and two healing
+A finite starter kit contains a laser rifle, sidearm, mining laser, life-support
+backpack, 60 laser rifle charges, 36 sidearm charges, three bandages and two healing
 stims. Quick slots 3 and 4 start empty. Existing mineral cuts, container contents
 and box mounts are preserved when an older save gains its initial loadout.
 
@@ -63,9 +63,22 @@ It does not introduce a separate save that could lose one side of a transfer.
 
 The current first-person Equipment socket adapter now supports both held weapon
 models and the cutter. Existing authored GLBs and calibrations are preserved.
-`weapon-target.js` is reused from committed PR27 (`d9f4d7c`) for camera/muzzle
-queries; the existing shared particle director provides pulse/impact feedback.
-Weapon hits do not excavate or grant minerals. Only the cutter requests cuts.
+The particle director, weapon profiles, slipstream dependency and targeting helper
+are reused from committed PR27 (`d9f4d7c`). The equipped laser rifle now selects
+the solar laser profile: an immediate orange beam with a bright core, muzzle
+flash, ion motes and contact bursts. The sidearm uses crimson traveling pulses.
+Both use the calibrated muzzle and camera/muzzle obstruction queries. Small
+held-weapon recoil is disabled by Reduced motion. Weapons retain their existing
+fire rate and consume one successfully saved charge before each shot appears.
+Weapon hits do not excavate or grant minerals. Only the cutter requests cuts;
+its green beam, contact sparks and committed ore-collection particles remain.
+
+The rifle and ammunition keep their saved IDs (`rifle-laser`, `carbine-charge`),
+so the clearer display names do not invalidate equipped items or replenish ammo.
+New players and saves predating equipment receive the finite starter kit; later
+saves retain their current inventory. The shared effects upgrade includes its
+slipstream dependency, but flight effects are not activated by this ground-weapon
+integration. PR27 owns that independent flight adapter.
 
 This branch is stacked on expedition PR24 at `c3ef10c`. Fable should preserve the
 newer shared rig/gear assets and PR27's independent colored-weapon and flight

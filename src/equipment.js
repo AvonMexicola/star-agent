@@ -65,7 +65,7 @@ const PROPS = '/models/props/';
 export const ITEMS = Object.freeze({
   'rifle-laser': {
     name: 'rifle-laser',
-    label: 'Laser carbine',
+    label: 'Laser rifle',
     file: `${PROPS}rifle-laser.glb`,
     socket: 'RightHand',
     handed: 2,

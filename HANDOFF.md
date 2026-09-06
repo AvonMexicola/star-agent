@@ -776,3 +776,26 @@ PR24, newer authored gear/rig/ship work, and PR27's independent colored weapons
 and flight integration. Keep the public Equipment authorizeFire hook, inventory
 loadout transactions and contextual D-pad routes; don't restore the old unlimited
 free weapon selector over them. No merge or public deployment is claimed.
+
+
+## Starter laser rifle and current particle effects — 2026-09-06
+
+Cees requested a starter rifle, mining tool and ammo, then the particle agent’s
+latest laser effects. The finite default already grants rifle-laser, mining tool
+and 60 compatible charges (plus sidearm/pack/medical kit). The equipment branch
+now names them Laser rifle / Laser rifle charges and actually selects the solar
+laser profile: immediate orange beam/core, muzzle motes and contact bursts.
+Sidearm uses crimson pulses. Reuses PR27 d9f4d7c EnergyEffects, weapon profiles and
+slipstream dependency; preserves the single director, mining collection callbacks,
+saved IDs and atomic ammo authorization. Small held recoil respects Reduced motion.
+Flight adapter remains PR27’s integration responsibility; no new flight input.
+
+All 30 numerical files pass. Two final production browser checks pass (5.2 min):
+full controller equipment/landing/mining/weapons/backpack and mouse/touch mining
+with menu/focus/disconnect suppression. Six observed rifle shots consume exactly
+six charges and create six impacts; rock revision is unchanged by weapons.
+Fresh default, active laser profile/beam, menu retirement and held RT suppression
+are asserted. No page/console errors. Inspected rifle/sidearm/mining captures and
+updated JSON are under docs/qa/equipment-loadout/. Chromium151, Vulkan SwiftShader;
+no physical Xbox or hardware FPS claim. Preview5271: index-B3rNxrVo.js.
+Preserve shared newer authored gear assets when integrating PR32 with PR27.

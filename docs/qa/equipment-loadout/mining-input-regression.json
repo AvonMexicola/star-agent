@@ -15,7 +15,7 @@
   "fixture": "Debug initial position/aim, actual pointer/touch/Gamepad inputs; synthetic browser focus events; no physical Xbox",
   "mouse": {
     "effects": {
-      "particles": 161,
+      "particles": 168,
       "capacity": 1024,
       "boost": 0,
       "travel": 0,
@@ -23,14 +23,18 @@
       "miningContacts": 6,
       "collectedBursts": 4,
       "weaponShots": 0,
+      "weaponImpacts": 0,
+      "lastWeapon": "pulse",
+      "lances": 0,
+      "slipstream": 0,
       "reducedMotion": false,
       "beamVisible": false,
       "bloom": true
     },
     "pack": [
-      1.5635230057791887,
+      1.56349774908756,
       0.0234375,
-      0.2129449336352991
+      0.21298916921659838
     ]
   },
   "after": {
@@ -42,6 +46,10 @@
     "miningContacts": 14,
     "collectedBursts": 9,
     "weaponShots": 0,
+    "weaponImpacts": 0,
+    "lastWeapon": "pulse",
+    "lances": 0,
+    "slipstream": 0,
     "reducedMotion": true,
     "beamVisible": true,
     "bloom": false

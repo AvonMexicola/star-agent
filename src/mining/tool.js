@@ -10,7 +10,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   const mount=new THREE.Group(),hand=new THREE.Bone(),back=new THREE.Bone();hand.name='RightHand';back.name='Spine2';
   hand.rotation.y=-Math.PI/2;back.visible=false;mount.add(hand,back);scene.add(mount);
   const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:Object.fromEntries(['mining-laser-tool','rifle-laser','sidearm-pistol'].map(id=>[id,{position:[0,0,0],rotation:[0,0,0]}]))}}};
-  let hit=null,held=false,keyHeld=false,selected=true,active=false,direction=new THREE.Vector3();
+  let hit=null,held=false,keyHeld=false,selected=true,active=false,recoil=0,direction=new THREE.Vector3();
   const equipment=new Equipment({skeleton:{bones:[hand,back]}},scene,{camera,sockets,onMine:data=>{if(hit&&active)rock.onMine({...data,point:hit.point.clone(),normal:hit.normal?.clone(),target:hit.rock},direction);}});
   equipment.equip(loadout?.item??'mining-laser-tool');
   const weaponTarget=createWeaponTarget({nav,mining:rock});
@@ -20,7 +20,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   const panel=document.createElement('aside');panel.id='mining-panel';panel.hidden=true;
   panel.innerHTML='<div class="mining-eyebrow">SELENE / FIELD SURVEY</div><strong class="mining-target"></strong><p class="mining-guide"></p><div class="mining-heat"><span>LASER HEAT</span><meter min="0" max="1" value="0" aria-label="Mining laser heat"></meter></div><p class="mining-resources"></p><button type="button" class="mining-trigger">HOLD TO MINE</button><small class="mining-feedback" role="status"></small>';
   document.body.append(panel);const $=s=>panel.querySelector(s),button=$('.mining-trigger');
-  const clear=()=>{held=false;keyHeld=false;rock.budget=0;if(effects)effects.miningInput=null;};
+  const clear=()=>{held=false;keyHeld=false;recoil=0;rock.budget=0;if(effects)effects.miningInput=null;};
   function select(slot){clear();nav.gamepad.suspend();if(loadout){const result=loadout.select(slot);if(!result.ok)nav.notify(result.message);}else selected=slot!==null;}
   function cycle(){clear();nav.gamepad.suspend();if(loadout)loadout.cycle();}
   canvas.addEventListener('pointerdown',e=>{if(e.button===0&&active&&nav.locked)held=true;});
@@ -46,7 +46,8 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       const inspected=active&&isMining?rock.inspectTarget?.(nav.position,direction,8):null;
       hit=active&&isMining?rock.raycast(nav.position,direction):null;
       lamp.visible=active&&selected;lamp.position.set(.15,-.18,0).applyQuaternion(nav.orientation);lamp.target.position.copy(direction).multiplyScalar(6);
-      mount.position.set(equipment.equipped==='sidearm-pistol'?.25:.29,equipment.equipped==='sidearm-pistol'?-.25:-.35,-.47).applyQuaternion(nav.orientation);mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
+      recoil*=Math.exp(-dt*18);
+      mount.position.set(equipment.equipped==='sidearm-pistol'?.25:.29,equipment.equipped==='sidearm-pistol'?-.25:-.35,-.47+recoil).applyQuaternion(nav.orientation);mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
       equipment.setRenderOrigin(origin);equipment.holster(!active||!selected);
       // Check muzzle obstruction too, so a close edge cannot be mined through.
       const muzzle=equipment.muzzleWorldPosition();
@@ -56,7 +57,13 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       equipment.update(dt,{firing,authorizeFire:item=>loadout?.spendRound(item)??false,hasHit:Boolean(hit),targetWorldPoint:hit?.point??(inspected?.distance<=8?inspected.point:null)??nav.position.clone().addScaledVector(direction,8)});
       if(effects&&!isMining&&equipment.firingInput()){
         const start=equipment.muzzleWorldPosition(),range=equipment.equipped==='rifle-laser'?1200:450;
-        if(start){const target=weaponTarget(nav.position,direction,origin,range),end=target?.point??nav.position.clone().addScaledVector(direction,range),ray=end.clone().sub(start).normalize(),contact=weaponTarget(start,ray,origin,range);effects.fire(start,ray,{hit:contact,range,power:equipment.equipped==='rifle-laser'?.45:.32});}
+        if(start){
+          const rifle=equipment.equipped==='rifle-laser';
+          const target=weaponTarget(nav.position,direction,origin,range),end=target?.point??nav.position.clone().addScaledVector(direction,range);
+          const ray=end.clone().sub(start).normalize(),contact=weaponTarget(start,ray,origin,range);
+          effects.fire(start,ray,{hit:contact,range,weapon:rifle?'laser':'pulse',color:rifle?0xff902d:0xff395f,power:rifle?.45:.32});
+          if(!effects.reducedMotion)recoil=rifle?.065:.04;
+        }
       }
       if(effects){
         // Equipment still owns muzzle calibration, heat and validated cut requests.

@@ -1,6 +1,6 @@
 # Equipment loadout — production verification, 2026-09-06
 
-Final preview: http://127.0.0.1:5271/ — `index-BPCnBCsf.js`.
+Final preview: http://127.0.0.1:5271/ — `index-B3rNxrVo.js`.
 Branch `feat/equipment-loadout`, stacked on expedition `c3ef10c` / PR24.
 
 - All 30 numerical files pass (`npm test`). Eight new loadout cases cover one-time
@@ -46,3 +46,29 @@ was inferred. The final dedicated-port run completed normally.
 Chromium151.0.7922.173, ANGLE Vulkan SwiftShader, desktop1440x900/mobile390x844.
 Adaptive scaling for full gameplay; see individual JSON for fixture details.
 No physical Xbox test or hardware FPS claim. Browser origin/port scopes saves.
+
+## Starter laser rifle and particle integration follow-up
+
+The rifle now uses PR27's (`d9f4d7c`) immediate solar laser beam, core, muzzle
+particles and impact bursts. The sidearm uses crimson pulses. Starter equipment
+remains a rifle, mining tool and 60 compatible rifle charges, plus the existing
+sidearm, backpack and medical kit. Saved IDs/counts are preserved.
+
+All 30 numerical files pass again, including the particle agent's laser,
+singularity and slipstream invariants. The final production browser run passes
+both the complete controller loadout journey (3.6 minutes) and mining input/
+interruption regression (1.4 minutes), 5.2 minutes total, with zero page/console
+errors. The controller route now asserts the fresh starter kit, laser profile
+and active beam, immediate impacts, exact rifle ammo consumption, unchanged rock
+revision, and beam retirement in menus. Six measured rifle shots consume six
+charges and produce six impacts. Mining still supports pointer/touch and held
+controller suppression across menus, focus and disconnect/reconnect.
+
+Updated desktop loadout, rifle, sidearm and controller JSON evidence comes from
+this build. The rifle capture shows its beam from the held muzzle to the rock,
+bright core and orange bursts; the sidearm shows crimson contact particles.
+The updated mining regression JSON and inspected mining capture confirm the green
+cutter beam and committed ore feedback. Previous medical/mobile/storage/EVA
+evidence above belongs to the initial equipment build and is not a claim those
+unmodified journeys were repeated for this effects-only follow-up. Same Chromium
+151 / ANGLE Vulkan SwiftShader environment; no physical Xbox or FPS claim.

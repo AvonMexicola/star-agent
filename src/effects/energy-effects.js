@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { ParticlePool, additive } from './particles.js';
+import { Slipstream } from './slipstream.js';
+import { weaponProfile } from './weapons.js';
 
 const ZERO=new THREE.Vector3(),Z=new THREE.Vector3(0,0,1);
 const CYAN=new THREE.Color(.12,1.3,2.8),MINT=new THREE.Color(.18,2.3,1.2);
@@ -50,12 +52,14 @@ class Plasma {
 export class EnergyEffects {
   constructor(scene,{capacity=2048,reducedMotion=false,seed=7291}={}){
     this.particles=new ParticlePool(scene,capacity);this.time=0;this.seed=seed;this.reducedMotion=reducedMotion;
+    this.slipstream=new Slipstream(scene);
+    this.lances=Array.from({length:6},()=>({shell:new Plasma(scene),core:new Plasma(scene),active:false}));
     this.beam=new Plasma(scene);this.jets=[new Plasma(scene,true),new Plasma(scene,true)];
     this.light=new THREE.PointLight(0x88ffd4,0,7,2);scene.add(this.light);
     this.nozzles=[new THREE.Vector3(-2.56,1.86,4.08),new THREE.Vector3(2.56,1.86,4.08)];
     this.bolts=[];this.boost=0;this.throttle=0;this.travel=0;this.carries={};
     this._p=new THREE.Vector3();this._v=new THREE.Vector3();this._collector=new THREE.Vector3();
-    this._previousOrigin=null;this.miningContacts=0;this.collectedBursts=0;this.weaponShots=0;
+    this._previousOrigin=null;this.miningContacts=0;this.collectedBursts=0;this.weaponShots=0;this.weaponImpacts=0;this.lastWeapon='pulse';
   }
   random(){this.seed=(Math.imul(this.seed,1664525)+1013904223)>>>0;return this.seed/4294967296;}
   budget(key,rate,dt){const amount=(this.carries[key]??0)+rate*dt,n=Math.floor(amount);this.carries[key]=amount-n;return Math.min(n,120);}
@@ -73,22 +77,41 @@ export class EnergyEffects {
     this.collectedBursts++;
     yields.forEach((amount,i)=>{if(amount>0)this.spray(point,normal,Math.min(18,Math.max(2,Math.ceil(amount*1100))),{color:ORE[i],speed:1.7,size:.065,life:1.5,kind:3,attract:true});});
   }
-  impact(point,normal=Z,power=1){
-    this.spray(point,normal,Math.round(38*power),{speed:9,color:0x6dcfff,size:.1,gain:2});
-    this.spray(point,normal,Math.round(16*power),{speed:5,color:0xffa34e,size:.065,gain:2});
-    this.particles.emit(point,ZERO,{color:CYAN,life:.32,size:1.5*power,kind:2,stretch:0});
+  impact(point,normal=Z,power=1,{color=0x6dcfff,kind='pulse'}={}){
+    this.weaponImpacts++;
+    this.spray(point,normal,Math.round(38*power),{speed:kind==='void'?14:9*Math.min(1,Math.sqrt(power)),color,size:.1*Math.min(1,Math.sqrt(power)),gain:2});
+    this.spray(point,normal,Math.round(16*power),{speed:5,color:kind==='void'?0x64ffee:0xffa34e,size:.065,gain:2});
+    this.particles.emit(point,ZERO,{color:kind==='pulse'&&color===0x6dcfff?CYAN:color,life:kind==='void'?.7:.32,size:1.5*power,kind:2,stretch:0,gain:kind==='pulse'?1:2});
     this.particles.emit(point,ZERO,{color:0xe9faff,life:.14,size:1.2*power,stretch:0,gain:4});
+    if(kind==='void'){
+      for(let i=0;i<3;i++)this.particles.emit(point,ZERO,{color:i%2?0x50ffec:color,life:.3+i*.17,size:(1+i*.6)*power,kind:2,stretch:0,gain:2});
+      this.spray(point,normal,25,{speed:2,color,life:.8,size:.4,kind:0,gain:1.4});
+    }
   }
-  fire(start,direction,{hit=null,speed=450,range=1600,power=1,velocity=ZERO}={}){
+  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color}={}){
+    const profile=weaponProfile(weapon),kind=profile.kind;
+    if(hit&&start.distanceTo(hit.point)>range)hit=null;
+    speed??=profile.speed;power??=profile.power;
+    const tint=color===undefined?(kind==='pulse'?CYAN.clone():new THREE.Color(profile.color).multiplyScalar(2)):new THREE.Color(color).multiplyScalar(2);
     if(this.bolts.length>=32)return;
-    this.weaponShots++;
-    this.bolts.push({start:start.clone(),p:start.clone(),direction:direction.clone().normalize(),velocity:velocity.clone(),age:0,speed,range,power,hit:hit?{point:hit.point.clone(),normal:hit.normal?.clone()??direction.clone().negate()}:null,travelled:0});
-    this.particles.emit(start,ZERO,{color:0xbceaff,life:.12,size:.6*power,stretch:0,gain:4});
-    this.spray(start,direction,6,{color:CYAN,speed:3,size:.07,life:.2});
+    this.weaponShots++;this.lastWeapon=kind;
+    const end=hit?.point.clone()??start.clone().addScaledVector(direction,range);
+    if(kind==='laser'){
+      const lance=this.lances.find(l=>!l.active)??this.lances[0];
+      Object.assign(lance,{active:true,start:start.clone(),end,age:0,life:.22,power,tint});
+      lance.shell.material.uniforms.color.value.copy(tint);lance.core.material.uniforms.color.value.setRGB(3,2.8,2.2);
+      if(hit)this.impact(end,hit.normal??direction.clone().negate(),power,{color:tint,kind});
+      // Ionised motes peel from the length of the fired lance.
+      const length=Math.min(80,start.distanceTo(end));
+      for(let i=0;i<16;i++){const p=start.clone().addScaledVector(direction,length*i/16);this.spray(p,direction,1,{color:tint,speed:2,life:.28,size:.06});}
+    }else this.bolts.push({start:start.clone(),p:start.clone(),direction:direction.clone().normalize(),velocity:velocity.clone(),age:0,speed,range,power,tint,kind,hit:hit?{point:hit.point.clone(),normal:hit.normal?.clone()??direction.clone().negate()}:null,travelled:0});
+    this.particles.emit(start,ZERO,{color:kind==='pulse'&&color===undefined?0xbceaff:tint,life:.12,size:.6*power,stretch:0,gain:4});
+    this.spray(start,direction,6,{color:tint,speed:3,size:.07,life:.2});
   }
   reset(){
     this.particles.clear();this.bolts.length=0;this.carries={};this.boost=0;this.throttle=0;this.travel=0;
-    this._particleOrigin=null;
+    this._particleOrigin=null;this.slipstream.reset();
+    for(const l of this.lances){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;}
     this.beam.mesh.visible=false;for(const jet of this.jets)jet.mesh.visible=false;this.light.intensity=0;
   }
   update(dt,{origin,camera,shipPosition,shipQuaternion,velocity=ZERO,flying=false,boost=false,throttle=0,mining=null,collector=origin,suspended=false}={}){
@@ -134,17 +157,33 @@ export class EnergyEffects {
         this.light.position.copy(point).sub(origin);this.light.intensity=5;
       }
     }
+    for(const l of this.lances){
+      if(!l.active)continue;l.age+=dt;
+      if(l.age>=l.life){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;continue;}
+      const fade=Math.pow(1-l.age/l.life,.5);
+      l.shell.set(l.start,l.end,.11*l.power,origin,this.time,fade*1.4);
+      l.core.set(l.start,l.end,.025*l.power,origin,this.time,fade*2);
+    }
     for(let i=this.bolts.length-1;i>=0;i--){
       const b=this.bolts[i],step=b.speed*dt;b.age+=dt;b.travelled+=step;
       const hitDistance=b.hit?b.start.distanceTo(b.hit.point):Infinity;
-      if(b.travelled>=hitDistance){this.impact(b.hit.point,b.hit.normal,b.power);this.bolts.splice(i,1);continue;}
-      if(b.travelled>b.range||b.age>4){this.bolts.splice(i,1);continue;}
+      if(b.travelled>=hitDistance){this.impact(b.hit.point,b.hit.normal,b.power,{color:b.tint,kind:b.kind});this.bolts.splice(i,1);continue;}
+      if(b.travelled>b.range||b.age>b.range/b.speed+.5){this.bolts.splice(i,1);continue;}
       b.p.copy(b.start).addScaledVector(b.direction,b.travelled).addScaledVector(b.velocity,b.age);
       this._v.copy(b.direction).multiplyScalar(b.speed);
-      this.particles.emit(b.p,this._v,{color:CYAN,life:.045,size:.12*b.power,kind:1,stretch:.025,gain:3});
+      if(b.kind==='void'){
+        this.particles.emit(b.p,ZERO,{color:b.tint,life:.08,size:.85*b.power,stretch:0,gain:2});
+        const rotation=new THREE.Quaternion().setFromUnitVectors(Z,b.direction);
+        for(let j=0;j<3;j++){
+          const phase=b.age*23+j*Math.PI*2/3;
+          const offset=new THREE.Vector3(Math.cos(phase),Math.sin(phase),0).multiplyScalar(.45*b.power).applyQuaternion(rotation);
+          this.particles.emit(b.p.clone().add(offset),ZERO,{color:j?b.tint:0x62ffee,life:.23,size:.13*b.power,stretch:0,gain:2});
+        }
+      }else this.particles.emit(b.p,this._v,{color:b.tint,life:.045,size:.12*b.power,kind:1,stretch:.025,gain:3});
     }
     const speed=velocity.length(),targetTravel=flying&&!this.reducedMotion?clamp(Math.log10(Math.max(1,speed)/350)/2.5,0,1):0;
     this.travel+=(targetTravel-this.travel)*(1-Math.exp(-dt*3));
+    this.slipstream.update({origin,eye:origin.clone().add(camera?.position??ZERO),velocity,intensity:this.travel,time:this.time,reducedMotion:this.reducedMotion},dt);
     if(this.travel>.01&&camera){
       // A camera-local dust neighborhood, aligned with actual velocity (including reverse/strafe).
       const forward=velocity.clone().normalize(),right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion),up=new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion);
@@ -159,6 +198,6 @@ export class EnergyEffects {
     }
     this.particles.update(dt,origin,this._collector);
   }
-  get state(){return {particles:this.particles.count,capacity:this.particles.capacity,boost:this.boost,travel:this.travel,bolts:this.bolts.length,miningContacts:this.miningContacts,collectedBursts:this.collectedBursts,weaponShots:this.weaponShots,reducedMotion:this.reducedMotion};}
-  dispose(){this.particles.dispose();this.beam.dispose();this.jets.forEach(j=>j.dispose());this.light.removeFromParent();}
+  get state(){return {particles:this.particles.count,capacity:this.particles.capacity,boost:this.boost,travel:this.travel,bolts:this.bolts.length,miningContacts:this.miningContacts,collectedBursts:this.collectedBursts,weaponShots:this.weaponShots,weaponImpacts:this.weaponImpacts,lastWeapon:this.lastWeapon,lances:this.lances.filter(l=>l.active).length,slipstream:this.slipstream.material.uniforms.drive.value,reducedMotion:this.reducedMotion};}
+  dispose(){this.slipstream.dispose();this.lances.forEach(l=>{l.shell.dispose();l.core.dispose();});this.particles.dispose();this.beam.dispose();this.jets.forEach(j=>j.dispose());this.light.removeFromParent();}
 }

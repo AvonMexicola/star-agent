@@ -10,6 +10,8 @@ function total(store,id){return ['pack','ship',...Object.keys(store.state.remote
 
 test('legacy saves gain the finite starter equipment once and preserve cargo and cuts',()=>{
   const {disk,store,gear}=setup();assert.equal(EQUIPMENT_SLOTS.length,10);assert.equal(validLoadout(gear.state),true);
+  assert.equal(gear.state.slots.weapon1.item,'rifle-laser');assert.equal(gear.state.slots.tool.item,'mining-laser-tool');
+  assert.equal(gear.state.slots.ammo1.item,'carbine-charge');assert.equal(gear.state.slots.ammo1.quantity,60);
   store.commit({field:store.state.field,yieldVolume:[.1,.2,0]},0);
   const old=JSON.parse(disk.getItem(MINING_KEY));delete old.loadout;disk.setItem(MINING_KEY,JSON.stringify(old));
   const migrated=new MiningStore(disk),g=new Loadout(migrated);assert.deepEqual(migrated.state.pack,store.state.pack);assert.equal(migrated.state.revision,1);

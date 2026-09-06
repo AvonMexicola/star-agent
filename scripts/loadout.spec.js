@@ -22,6 +22,9 @@ for(const destination of ['moon']) test(`${destination}: controller equips both 
   await mkdir(evidence,{recursive:true});
   await page.addInitScript(()=>{window.testPad={id:'Automated standard Xbox',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.testPad];});
   await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed&&window.starAgent.state.mining.ready);
+  const starter=await page.evaluate(()=>window.starAgent.state.loadout);
+  expect(starter.slots.weapon1.item).toBe('rifle-laser');expect(starter.slots.tool.item).toBe('mining-laser-tool');
+  expect(starter.slots.ammo1).toEqual({item:'carbine-charge',quantity:60});
   // Reads debug state for assertions and steering feedback. No gameplay mutation,
   // teleport helper, keyboard event, mouse click or pointer capture is used.
   await tap(page,9);await expect(page.locator('#controller-menu')).toBeVisible();
@@ -68,11 +71,20 @@ for(const destination of ['moon']) test(`${destination}: controller equips both 
   await setButton(page,7,true);await page.waitForFunction(n=>window.starAgent.state.effects.weaponShots>=n+3,beforeGun.shots);await page.screenshot({path:`${evidence}/sidearm-firing.png`});await setButton(page,7,false);
   const afterGun=await page.evaluate(()=>({ammo:window.starAgent.state.loadout.slots.ammo2.quantity,shots:window.starAgent.state.effects.weaponShots,revision:window.starAgent.state.mining.activeRevision}));
   expect(beforeGun.ammo-afterGun.ammo).toBe(afterGun.shots-beforeGun.shots);expect(afterGun.revision).toBe(beforeGun.revision);
+  expect(await page.evaluate(()=>window.starAgent.state.effects.lastWeapon)).toBe('pulse');
   await tap(page,14);await page.waitForFunction(()=>window.starAgent.state.mining.tool.item==='rifle-laser');
-  const rifleShots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await setButton(page,7,true);await page.waitForFunction(n=>window.starAgent.state.effects.weaponShots>n,rifleShots);await page.screenshot({path:`${evidence}/carbine-firing.png`});
+  await expect(page.locator('.mining-target')).toHaveText('LASER RIFLE');
+  const beforeRifle=await page.evaluate(()=>({ammo:window.starAgent.state.loadout.slots.ammo1.quantity,shots:window.starAgent.state.effects.weaponShots,impacts:window.starAgent.state.effects.weaponImpacts,revision:window.starAgent.state.mining.activeRevision}));
+  await setButton(page,7,true);await page.waitForFunction(n=>{const e=window.starAgent.state.effects;return e.weaponShots>=n+3&&e.lastWeapon==='laser'&&e.lances>0;},beforeRifle.shots);
+  await page.screenshot({path:`${evidence}/carbine-firing.png`});
+  await setButton(page,7,false);await page.waitForFunction(()=>window.starAgent.navigation.toolTrigger<=.1);
+  const afterRifle=await page.evaluate(()=>({ammo:window.starAgent.state.loadout.slots.ammo1.quantity,shots:window.starAgent.state.effects.weaponShots,impacts:window.starAgent.state.effects.weaponImpacts,revision:window.starAgent.state.mining.activeRevision}));
+  expect(beforeRifle.ammo-afterRifle.ammo).toBe(afterRifle.shots-beforeRifle.shots);expect(afterRifle.impacts).toBeGreaterThan(beforeRifle.impacts);expect(afterRifle.revision).toBe(beforeRifle.revision);
+  await setButton(page,7,true);await page.waitForFunction(n=>window.starAgent.state.effects.weaponShots>n,afterRifle.shots);
   // Opening equipment while RT is held cancels fire; a held trigger cannot replay.
   await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();
   const paused=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await page.waitForTimeout(400);expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(paused);
+  expect(await page.evaluate(()=>window.starAgent.state.effects.lances)).toBe(0);
   await setButton(page,7,false);await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await setButton(page,7,true);await tap(page,1);await expect(page.locator('#cargo-dialog')).not.toBeVisible();await page.waitForTimeout(350);expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(paused);
   await setButton(page,7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
   await tap(page,12);expect(await page.evaluate(()=>window.starAgent.state.loadout.quickIndex)).toBe(1);await tap(page,13);expect(await page.evaluate(()=>window.starAgent.state.loadout.slots.quick2.quantity)).toBe(2);
@@ -80,6 +92,6 @@ for(const destination of ['moon']) test(`${destination}: controller equips both 
   await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await page.screenshot({path:`${evidence}/${destination}-controller-backpack.png`});
   await tap(page,13);expect(await page.locator('#cargo-dialog [data-controller-selected]').count()).toBe(1);
   await tap(page,1);await expect(page.locator('#cargo-dialog')).not.toBeVisible();
-  await writeFile(`${evidence}/${destination}-controller-gameplay.json`,JSON.stringify({browser:browser.version(),input:'Injected W3C standard Gamepad; no physical controller used',viewport:page.viewportSize(),assigned,beforeGun,afterGun,effects,mined,errors},null,2));
+  await writeFile(`${evidence}/${destination}-controller-gameplay.json`,JSON.stringify({browser:browser.version(),input:'Injected W3C standard Gamepad; no physical controller used',viewport:page.viewportSize(),starter,assigned,beforeGun,afterGun,beforeRifle,afterRifle,effects,mined,errors},null,2));
   expect(errors).toEqual([]);
 });
