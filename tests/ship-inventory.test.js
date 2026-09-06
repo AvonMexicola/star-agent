@@ -12,7 +12,7 @@ function storage() {
 }
 test('cargo transfers conserve every item and mass and persist across reload', () => {
   const disk = storage(), inventory = new ShipInventory(disk), before = inventory.snapshot;
-  for (const item of ITEMS) {
+  for (const item of ITEMS.filter(item => before.ship[item.id] > 0)) {
     assert.equal(inventory.transfer(item.id, 'ship').ok, true);
     const after = new ShipInventory(disk);
     assert.equal(after.count('ship', item.id), inventory.count('ship', item.id));
@@ -66,4 +66,30 @@ test('Blender asset fits the navigation envelope with a correctly placed movable
   const hinge = lid.getWorldPosition(new THREE.Vector3());
   assert.ok(hinge.distanceTo(new THREE.Vector3(1.65, 1.98, 1.15)) < 1e-5);
   assert.ok(new THREE.Box3().setFromObject(lid).getSize(new THREE.Vector3()).length() < 2, 'lid transforms remain ship local');
+  const chair=scene.getObjectByName('PilotChair');assert.ok(chair,'Blender pilot chair is present');
+  const chairBounds=new THREE.Box3().setFromObject(chair);
+  assert.ok(chairBounds.max.z<-2,'seat shell stays clear of the rear standing aisle');
+  const sightline=new THREE.Raycaster(new THREE.Vector3(...SHIP_LAYOUT.seatEye),new THREE.Vector3(0,0,-1),0,8);
+  const opaque=sightline.intersectObject(scene,true).filter(hit=>!hit.object.material.transparent);
+  assert.equal(opaque.length,0,'centre windscreen remains clear of opaque struts');
+});
+
+
+test('bulk transfers fill available capacity, conserve cargo and save once across all containers',()=>{
+  const disk=storage();let writes=0;const original=disk.setItem;disk.setItem=(...args)=>{writes++;original(...args);};
+  const inv=new ShipInventory(disk),before=inv.snapshot;writes=0;
+  const result=inv.transferAll('station','ship');assert.equal(result.ok,true);assert.ok(result.remaining>0);
+  assert.equal(writes,1);assert.equal(inv.mass('ship'),120);
+  inv.transferAll('ship','pack');assert.equal(inv.mass('pack'),20);
+  for(const item of ITEMS)assert.equal(['ship','pack','station'].reduce((n,c)=>n+inv.count(c,item.id),0),['ship','pack','station'].reduce((n,c)=>n+before[c][item.id],0));
+  assert.deepEqual(new ShipInventory(disk).snapshot,inv.snapshot);
+  const after=inv.snapshot;assert.equal(inv.transferAll('__proto__','ship').ok,false);assert.equal(inv.transferAll('ship','constructor').ok,false);assert.equal(inv.transferAll('ship','ship').ok,false);assert.deepEqual(inv.snapshot,after);
+});
+test('legacy saves migrate without resetting cargo, and blocked persistence keeps bulk moves in session',()=>{
+  const disk=storage(),old=new ShipInventory(disk).snapshot;old.ship.repair=1;old.pack.repair=2;
+  disk.setItem(INVENTORY_KEY,JSON.stringify({version:1,ship:old.ship,pack:old.pack}));
+  const inv=new ShipInventory(disk);assert.equal(inv.count('ship','repair'),1);assert.equal(inv.count('station','repair'),12);
+  inv.transferAll('pack','station');assert.equal(JSON.parse(disk.getItem(INVENTORY_KEY)).version,3);
+  const blocked=new ShipInventory({getItem(){return null;},setItem(){throw Error('denied');}});
+  assert.equal(blocked.transferAll('station','ship').ok,true);assert.equal(blocked.saved,false);assert.equal(blocked.mass('ship'),120);
 });

@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Station } from '../src/station.js';
 import { Navigation } from '../src/navigation.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
+import { FREIGHTER_LAYOUT, FreighterSystems } from '../src/freighter-layout.js';
 
 if (!globalThis.ProgressEvent) {
   globalThis.ProgressEvent = class ProgressEvent {
@@ -109,6 +110,35 @@ function setupNavigation(t, station) {
   return { navigation, notices, press, keyDown, keyUp, advance, advanceUntil, walkUntil };
 }
 
+test('cached door bounds ignore world rebasing and track cinematic, mixer and geometry changes',async t=>{
+  const {station}=await createStation();t.after(()=>station.dispose());
+  const check=()=>{
+    station.updateDoorColliders();station.group.updateMatrixWorld(true);
+    const inverse=station.group.matrixWorld.clone().invert();
+    station.doors.forEach((door,i)=>{
+      const expected=new THREE.Box3();door.traverse(mesh=>{if(mesh.isMesh){mesh.geometry.computeBoundingBox();expected.union(mesh.geometry.boundingBox.clone().applyMatrix4(inverse.clone().multiply(mesh.matrixWorld)));}});
+      nearVector(station.doorBoxes[i].min,expected.min,1e-7);nearVector(station.doorBoxes[i].max,expected.max,1e-7);
+    });
+  };
+  station.beginOpening();station.setOpeningProgress(.25);check();
+  const boxes=station.doorBoxes.map(box=>box.clone()),references=[...station.doorBoxes];
+  let traversals=0;const update=station.group.updateMatrixWorld;
+  station.group.updateMatrixWorld=function(...args){traversals++;return update.apply(this,args);};
+  station.group.position.set(25000000,-1900000,5000000);station.group.rotation.set(.3,.7,.2);
+  station.updateDoorColliders();
+  assert.equal(traversals,0,'rebasing never traverses the hidden hero model for local door collision');
+  station.doorBoxes.forEach((box,i)=>{assert.equal(box,references[i]);assert.ok(box.equals(boxes[i]),'local doubles stay exactly unchanged');});
+  station.setOpeningProgress(.75);check();assert.ok(!station.doorBoxes[0].equals(boxes[0]));
+  station.endOpening();station.closeDoors();station.doorMixer.update(1);check();
+  const leaf=station.doors[0];let mesh;leaf.traverse(node=>{if(node.isMesh&&!mesh)mesh=node;});
+  mesh.geometry=mesh.geometry.clone();const position=mesh.geometry.attributes.position;
+  position.setX(0,position.getX(0)+20);position.needsUpdate=true;check();
+  mesh.position.y+=.7;check();
+  const addition=new THREE.Mesh(new THREE.BoxGeometry(80,.5,.5),mesh.material);leaf.add(addition);check();
+  leaf.remove(addition);check();addition.geometry.dispose();
+  station.attach(await loadStationGltf());check();
+});
+
 test('the production station asset retains its authored deck, bay, anchors and door animation', async t => {
   const { gltf, station } = await createStation();
   t.after(() => station.dispose());
@@ -116,7 +146,7 @@ test('the production station asset retains its authored deck, bay, anchors and d
   model.updateMatrixWorld(true);
 
   const fullSize = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
-  nearVector(fullSize, new THREE.Vector3(149.9, 47, 89.6), 0.02, 'full station dimensions');
+  nearVector(fullSize, new THREE.Vector3(149.9, 39.45, 89.6), 0.02, 'full station dimensions');
 
   const deck = model.getObjectByName('LandingDeck');
   assert.ok(deck?.isMesh, 'the production GLB has a mesh named LandingDeck');
@@ -254,4 +284,27 @@ test('L docks in the bay, then the cabin, hatch, ramp, deck, return and launch r
   advanceUntil(() => !navigation.stationLift, 3, 'launch reaches safe bay clearance');
   assert.ok(navigation.deckClearance >= 6 - 0.05, 'launch stops its vertical lift below the ceiling');
   assert.ok(navigation.stationLocal.y < station.interiorBox.max.y, 'launch remains inside the hangar clear volume');
+});
+
+test('Atlas docks at its own eye height, carries a rider to the hangar deck and interlocks launch', async t => {
+  const {station}=await createStation();t.after(()=>station.dispose());
+  const {navigation:nav,press,advance,advanceUntil,walkUntil}=setupNavigation(t,station);
+  nav.shipId='atlas';nav.layout=FREIGHTER_LAYOUT;nav.freighter=new FreighterSystems();
+  const centre=station.interiorBox.getCenter(new THREE.Vector3());
+  nav.position.copy(localToWorld(station,centre.x,station.interiorBox.min.y+7,centre.z+FREIGHTER_LAYOUT.seatEye[2]));
+  nav.orientation.copy(station.quaternion);
+  press('KeyL');advance(8);assert.equal(nav.mode,'landed',JSON.stringify({canDock:nav.canDock,clearance:nav.deckClearance,local:nav.stationLocal.toArray(),box:station.interiorBox,autoland:nav.autoland}));
+  near(nav.deckClearance,5.55);press('KeyF');
+  walkUntil('KeyW',()=>nav.toShipLocal().z>.8);press('KeyF');
+  advanceUntil(()=>nav.freighter.lifts[0].y===0,7,'main lift lowers');
+  near(nav.toShipLocal().y,1.75);walkUntil('KeyW',()=>nav.toShipLocal().z>10.5);
+  assert.equal(nav.insideShip,false);near(nav.deckClearance,1.75);
+  walkUntil('KeyS',()=>nav.toShipLocal().z<1.2);press('KeyF');
+  advanceUntil(()=>nav.freighter.lifts[0].y===4,7,'main lift raises rider');near(nav.toShipLocal().y,5.75);
+  walkUntil('KeyS',()=>nav.toShipLocal().z<-9);press('KeyF');assert.equal(nav.mode,'landed');
+  nav.freighter.toggle('port');press('KeyL');assert.equal(nav.mode,'landed','cannot launch with moving cargo lift');
+  advance(6);press('KeyL');assert.equal(nav.mode,'landed','cannot launch with raised cargo lift');
+  nav.freighter.toggle('port');advance(6);press('KeyL');assert.equal(nav.mode,'flight');
+  advanceUntil(()=>!nav.stationLift,3,'Atlas lifts clear of deck');
+  assert.ok(nav.deckClearance>=6.5);assert.ok(nav.deckClearance+9.8-5.55<station.interiorBox.max.y-station.interiorBox.min.y);
 });
