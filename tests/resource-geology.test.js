@@ -52,3 +52,18 @@ test('resource-color additions leave canonical relief and the landing shelf unch
     surface.color.forEach((value,i)=>assert.ok(Math.abs(patch.colors[index+i]-value)<1e-7));
   }
 });
+
+test('orbital deposits form irregular exposures and channels while survey core profiles stay exact',()=>{
+  for(const p of RESOURCE_PROVINCES){
+    const n=new Vector3(...p.direction),u=new Vector3().crossVectors(n,new Vector3(0,1,0)).normalize(),v=new Vector3().crossVectors(n,u).normalize(),samples=[];
+    for(let j=0;j<32;j++){
+      const angle=j*Math.PI/16,d=n.clone().addScaledVector(u,Math.cos(angle)*p.radius*.72/MOON_RADIUS).addScaledVector(v,Math.sin(angle)*p.radius*.72/MOON_RADIUS).normalize();
+      samples.push(moonResources(...d.toArray()).weights[p.resource==='ice'?2:1]);
+    }
+    assert.ok(Math.max(...samples)-Math.min(...samples)>.4,'equal-distance samples include mineral exposures and basalt channels');
+    const weights=moonResources(...p.direction).weights,expected=p.resource==='ice'?[.025,.015,.96]:[.045,.935,.02];
+    expected.forEach((value,index)=>assert.ok(Math.abs(weights[index]-value)<1e-12,'survey-anchor mining profile remains unchanged'));
+    const tangent=u.clone().multiplyScalar(40000/MOON_RADIUS),a=n.clone().add(tangent.clone().multiplyScalar(.99999)).normalize(),b=n.clone().add(tangent.clone().multiplyScalar(1.00001)).normalize();
+    moonResources(...a.toArray()).weights.forEach((value,index)=>assert.ok(Math.abs(value-moonResources(...b.toArray()).weights[index])<.0001,'core protection has no hard material seam'));
+  }
+});

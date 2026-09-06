@@ -49,20 +49,40 @@ export const RESOURCE_PROVINCES=Object.freeze([
   ['SOUTH ICE FIELDS','ice',new Vector3(.1,-.97,.12).normalize().toArray(),95000],
 ].map(([name,resource,direction,radius])=>Object.freeze({id:name.toLowerCase().replaceAll(' ','-'),name,resource,direction:Object.freeze(direction),radius})));
 
+const provinceFrames=RESOURCE_PROVINCES.map((p,index)=>{
+  const direction=new Vector3(...p.direction),u=new Vector3().crossVectors(Math.abs(direction.y)<.9?new Vector3(0,1,0):new Vector3(1,0,0),direction).normalize();
+  return {u:u.toArray(),v:new Vector3().crossVectors(direction,u).normalize().toArray(),phase:index*1.73};
+});
+
 /** Normalized lunar direction -> collectible mineral fractions [basalt,copper,ice].
  * This cheap classifier is also the authority for orbital and walking colors. */
 export function moonResources(x,y,z){
-  let copper=0,ice=0,province='BASALT HIGHLANDS',strongest=0;
-  for(const p of RESOURCE_PROVINCES){
-    const dot=x*p.direction[0]+y*p.direction[1]+z*p.direction[2];
-    const r=p.radius/MOON_RADIUS;
-    if(dot<1-r*r*.8)continue;
+  let copper=0,ice=0,province='BASALT HIGHLANDS',strongest=0,coreProvince=null,corePriority=0,stratigraphy=null;
+  const landingDot=x*landing.x+y*landing.y+z*landing.z;
+  const localOnly=landingDot>0&&(1-landingDot*landingDot)*MOON_RADIUS*MOON_RADIUS<18000*18000;
+  for(let index=0;!localOnly&&index<RESOURCE_PROVINCES.length;index++){
+    const p=RESOURCE_PROVINCES[index],frame=provinceFrames[index];
+    const dot=x*p.direction[0]+y*p.direction[1]+z*p.direction[2],r=p.radius/MOON_RADIUS;
+    if(dot<1-r*r*2)continue;
     const distance=Math.sqrt(Math.max(0,2-2*dot))*MOON_RADIUS;
-    const boundary=p.radius*(1+.12*Math.sin(x*17+z*11)*Math.sin(y*19-z*7));
-    const strength=1-smooth(boundary*.55,boundary,distance);
+    // One shared geological sample, not extra noise octaves for every district.
+    stratigraphy ??= .38+.62*noise(x*22+11,y*22-4,z*22+7);
+    const u=(x*frame.u[0]+y*frame.u[1]+z*frame.u[2])/r,v=(x*frame.v[0]+y*frame.v[1]+z*frame.v[2])/r;
+    const wu=u+.23*Math.sin(v*6+frame.phase)+.12*Math.sin(u*11-v*8),wv=v+.19*Math.sin(u*5-v*3)+.08*Math.sin(v*14+frame.phase);
+    const basin=1-smooth(.25,1.08,Math.hypot(wu/1.2,wv*1.25));
+    // Long sinuous faults and diagonal tributaries join the core to satellite
+    // exposures. Variable strength opens dark basalt channels through the field.
+    const trunk=(1-smooth(.80,1.65,Math.abs(u)))*(1-smooth(.06,.30,Math.abs(v+.30*Math.sin(u*4+frame.phase)+.14*Math.sin(u*9))));
+    const branch=(1-smooth(.75,1.5,Math.hypot(u,v)))*(1-smooth(.025,.19,Math.abs(v-.65*u-.20*Math.sin(u*6+frame.phase))));
+    const core=1-smooth(40000,65000,distance*(1+.12*Math.sin(u*7+frame.phase)*Math.sin(v*6)));
+    if(core>corePriority){coreProvince=p;corePriority=core;}
+    const strength=Math.max(core,basin*stratigraphy,trunk*.82*stratigraphy,branch*.76*stratigraphy);
     if(p.resource==='ice')ice=Math.max(ice,strength);else copper=Math.max(copper,strength);
     if(strength>strongest){strongest=strength;province=p.name;}
   }
+  // Keep every survey anchor and its 35 km test core exactly the same profile;
+  // neighbouring province tendrils cannot alter already-authored mining yields.
+  if(coreProvince){ice=ice*(1-corePriority)+Number(coreProvince.resource==='ice')*corePriority;copper=copper*(1-corePriority)+Number(coreProvince.resource==='copper')*corePriority;if(corePriority>.5)province=coreProvince.name;}
   const dot=x*landing.x+y*landing.y+z*landing.z;
   if(dot>.997){
     const u=(x*east.x+y*east.y+z*east.z)*MOON_RADIUS,v=(x*north.x+y*north.y+z*north.z)*MOON_RADIUS;
