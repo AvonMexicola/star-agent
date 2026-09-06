@@ -245,11 +245,13 @@ export class Navigation {
     }
   }
   update(dt){
-    const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]')});
+    const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(this.isMapOpen?.())});
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;
     if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
     if(pad.pressed.has(9))this.onControllerMenu?.();
+    if(pad.ui){this.onControllerMapInput?.(pad.ui);return;}
+    if(pad.pressed.has(14))this.onControllerMap?.();
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
     if(!this.enabled||document.querySelector('dialog[open]'))return;
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
