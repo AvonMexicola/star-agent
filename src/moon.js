@@ -5,6 +5,7 @@ import { MoonTerrain } from './moon-terrain.js';
 import { MoonRings } from './moon-rings.js';
 import { MoonIce } from './moon-ice.js';
 import { acquireTerrainMaps, terrainMapShader, terrainMapUniforms } from './terrain-maps.js';
+import { OrbitalSurface, orbitalShader } from './orbital-surface.js';
 
 // Periodic fractured stone: one tile spans four metres. Packed channels retain
 // cracks, granular relief and mineral variation through triplanar mipmapping.
@@ -31,15 +32,27 @@ export class Moon {
     this.material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,metalness:0,envMapIntensity:0,side:THREE.DoubleSide});
     this.grain=rockTexture();
     this.terrainMaps=acquireTerrainMaps();
+    this.orbitalSurface=new OrbitalSurface('selene');
     this.material.onBeforeCompile=shader=>{
       shader.uniforms.moonGrain={value:this.grain};
+      shader.uniforms.orbitalNormal=this.orbitalSurface.normal;
+      shader.uniforms.moonAlbedo=this.orbitalSurface.color;
+      shader.uniforms.moonAlbedoReady=this.orbitalSurface.ready;
       Object.assign(shader.uniforms,terrainMapUniforms(this.terrainMaps));
       shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 moonDirection;attribute vec3 moonPoint;attribute vec2 moonSurfaceData;varying vec3 vMoonNormal;varying vec3 vMoonDirection;varying vec3 vMoonPoint;varying vec2 vMoonSurface;')
         .replace('#include <begin_vertex>','#include <begin_vertex>\nvMoonNormal=normal;vMoonDirection=moonDirection;vMoonPoint=moonPoint;vMoonSurface=moonSurfaceData;');
-      shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>\n${terrainMapShader}\nuniform sampler2D moonGrain;varying vec3 vMoonNormal;varying vec3 vMoonDirection;varying vec3 vMoonPoint;varying vec2 vMoonSurface;`)
+      shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>\n${terrainMapShader}\n${orbitalShader}\nuniform sampler2D moonAlbedo;uniform float moonAlbedoReady;uniform sampler2D moonGrain;varying vec3 vMoonNormal;varying vec3 vMoonDirection;varying vec3 vMoonPoint;varying vec2 vMoonSurface;`)
         .replace('#include <color_fragment>',`#include <color_fragment>
           vec3 geologyColor=diffuseColor.rgb;
           vec3 md=normalize(vMoonDirection),mn=normalize(vMoonNormal);
+          float range=length(vViewPosition);
+          float orbitalFade=smoothstep(12000.0,60000.0,range)*moonAlbedoReady;
+          #ifdef USE_NORMALMAP_OBJECTSPACE
+            mn=normalize(texture2D(normalMap,vNormalMapUv).xyz*2.0-1.0);
+            orbitalFade=smoothstep(70000.0,160000.0,range)*moonAlbedoReady;
+          #endif
+          geologyColor=mix(geologyColor,texture2D(moonAlbedo,bodyUV(md)).rgb*diffuse,orbitalFade);
+          diffuseColor.rgb=geologyColor;
           vec3 mw=pow(abs(mn),vec3(4.0));mw/=dot(mw,vec3(1.0));
           vec3 detail=texture2D(moonGrain,vMoonPoint.yz/4.0).rgb*mw.x+texture2D(moonGrain,vMoonPoint.xz/4.0).rgb*mw.y+texture2D(moonGrain,vMoonPoint.xy/4.0).rgb*mw.z;
           float grain=detail.g;
@@ -55,6 +68,14 @@ export class Moon {
           vec3 mappedGradient=vec3(0.0);
           float mappedRoughness=.97;
           float mappedFade=1.0-smoothstep(2500.0,14000.0,length(vViewPosition));
+          // Regional mineral fields are body anchored; crater and ejecta colour
+          // still comes from moonSurface, shared with collision and destinations.
+          if(terrainMapsReady>.5) {
+            float deposit=dot(terrainColor(md*1696.6796875,mw,1.0),vec3(.2126,.7152,.0722));
+            float regionalFade=1.0-smoothstep(30000.0,90000.0,range);
+            geologyColor*=mix(1.0,.8+smoothstep(.025,.3,deposit)*.38,regionalFade);
+            diffuseColor.rgb=geologyColor;
+          }
           if (terrainMapsReady>.5 && mappedFade>.001) {
             vec3 broad=mix(terrainColor(vMoonPoint/64.0,mw,1.0),terrainColor(vMoonPoint/256.0,mw,1.0),.65);
             float deposit=dot(broad,vec3(.2126,.7152,.0722));
@@ -83,13 +104,15 @@ export class Moon {
           vec3 grad=sign(det)*(dFdx(relief)*r1+dFdy(relief)*r2);
           if(terrainMapsReady>.5) normal=terrainNormalAt(normal,mappedGradient,mappedFade*(1.0-smoothstep(100.0,1200.0,length(vViewPosition))));
           else normal=normalize(max(abs(det),1e-10)*normal-grad);`);
+      shader.fragmentShader=shader.fragmentShader.replace('vec3 q0=dFdx(-vViewPosition)', 'normal=normalize(mix(normal,orbitalViewNormal(md),orbitalFade));\nvec3 q0=dFdx(-vViewPosition)');
     };
-    this.material.customProgramCacheKey=()=> 'selene-terrain-cc0-v1';
+    this.material.customProgramCacheKey=()=> 'selene-terrain-orbital-v2';
     this.terrain=new MoonTerrain(scene,this.material);
     this.rings=new MoonRings(scene);this.ice=new MoonIce(scene);
     this.sun=new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
   }
   update(worldPosition,origin,elapsed=0,outside=true) {
+    if(worldPosition.distanceTo(this.worldPosition)<MOON_RADIUS*12)this.orbitalSurface.start();
     this.rings.update(origin,elapsed);this.ice.update(worldPosition,origin,elapsed,outside);
     this.terrain.update(worldPosition,origin);
     // Eclipse the moon when Aeon blocks its direct sunlight. The small ambient
@@ -100,6 +123,6 @@ export class Moon {
     this.material.color.setScalar(.035+.965*visibility);
   }
   get ready(){return this.terrain.ready;}
-  get effects(){return {ringAsteroids:this.rings.descriptors.length,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:MOON_GENERATOR_VERSION};}
-  dispose(){this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.terrainMaps.dispose();this.material.dispose();}
+  get effects(){return {orbitalResolution:this.orbitalSurface.resolution,settled:this.terrain.waitingCount===0,ringAsteroids:this.rings.descriptors.length,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:MOON_GENERATOR_VERSION};}
+  dispose(){this.orbitalSurface.dispose();this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.terrainMaps.dispose();this.material.dispose();}
 }

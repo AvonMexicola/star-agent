@@ -1,5 +1,10 @@
 # Aeon and Selene surface materials
 
+This page records the first CC0 material pass (PR #23). The subsequent
+[orbit-to-ground rendering pass](orbit-ground-fidelity.md) adds denser flight
+geometry, terrain-derived patch maps, orbital relief and lunar worker streaming.
+The checks and comparisons below describe the first pass at commit `9bd1da5`.
+
 Walking and low flight now reveal local soil, moss, sand and cliff textures on
 Aeon. Exposed rock interrupts snow on slopes; damp shoreline sand darkens and
 has lower roughness. Selene uses granular dust and exposed stone while preserving

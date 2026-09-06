@@ -4,6 +4,8 @@ export const ATMOSPHERE_HEIGHT = 70_000;
 export const SUN_DISTANCE = 25_000_000_000;
 export const SUN_DIRECTION = [.9,.35,.12].map(v=>v/Math.hypot(.9,.35,.12));
 import { SEED } from './generation.js';
+import { validateTerrainGrid } from './terrain-resolution.js';
+import { generatePatchSurface } from './patch-surface-data.js';
 export { SEED } from './generation.js';
 export const MAX_LEVEL = 17;
 export const GRID = 16;
@@ -40,14 +42,15 @@ export function cubeDirection(face,u,v) {
 }
 export function latLonDirection(lat,lon){const a=lat*Math.PI/180,b=lon*Math.PI/180;return [Math.cos(a)*Math.sin(b),Math.sin(a),Math.cos(a)*Math.cos(b)];}
 
-export function generatePatch({face,level,ix,iy}) {
+export function generatePatch({face,level,ix,iy,grid=GRID,surfaceDetail=false}) {
+  validateTerrainGrid(grid);
   const size=2/2**level,u0=-1+ix*size,v0=-1+iy*size;
   const center=cubeDirection(face,u0+size/2,v0+size/2).map(v=>v*RADIUS);
-  const count=(GRID+1)**2+4*(GRID+1);
+  const count=(grid+1)**2+4*(grid+1);
   const positions=new Float32Array(count*3),normals=new Float32Array(count*3),colors=new Float32Array(count*3);
   const directions=new Float32Array(count*3),waterPositions=new Float32Array(count*3);
   const heights=new Float32Array(count);
-  const step=Math.max(.4,Math.min(200,size*RADIUS/GRID*.5));
+  const step=Math.max(.4,Math.min(200,size*RADIUS/grid*.5));
   function write(index,u,v,skirt=0) {
     const d=cubeDirection(face,u,v),h=terrainHeight(...d),r=RADIUS+h-skirt;
     const k=index*3;
@@ -66,14 +69,15 @@ export function generatePatch({face,level,ix,iy}) {
     const nx=d[0]-tx*dhT-bx*dhB,ny=d[1]-ty*dhT-by*dhB,nz=d[2]-tz*dhT-bz*dhB;
     const nl=Math.hypot(nx,ny,nz);normals.set([nx/nl,ny/nl,nz/nl],k);
   }
-  for(let j=0;j<=GRID;j++)for(let i=0;i<=GRID;i++)write(j*(GRID+1)+i,u0+size*i/GRID,v0+size*j/GRID);
+  for(let j=0;j<=grid;j++)for(let i=0;i<=grid;i++)write(j*(grid+1)+i,u0+size*i/grid,v0+size*j/grid);
   const indices=[];
-  for(let j=0;j<GRID;j++)for(let i=0;i<GRID;i++){const a=j*(GRID+1)+i,b=a+1,c=a+GRID+1,d=c+1;indices.push(a,b,c,b,d,c);}
-  const edges=[Array.from({length:GRID+1},(_,i)=>i),Array.from({length:GRID+1},(_,j)=>j*(GRID+1)+GRID),Array.from({length:GRID+1},(_,i)=>GRID*(GRID+1)+GRID-i),Array.from({length:GRID+1},(_,j)=>(GRID-j)*(GRID+1))];
-  let next=(GRID+1)**2;
+  for(let j=0;j<grid;j++)for(let i=0;i<grid;i++){const a=j*(grid+1)+i,b=a+1,c=a+grid+1,d=c+1;indices.push(a,b,c,b,d,c);}
+  const edges=[Array.from({length:grid+1},(_,i)=>i),Array.from({length:grid+1},(_,j)=>j*(grid+1)+grid),Array.from({length:grid+1},(_,i)=>grid*(grid+1)+grid-i),Array.from({length:grid+1},(_,j)=>(grid-j)*(grid+1))];
+  let next=(grid+1)**2;
   const depth=Math.max(4,size*RADIUS*.045);
-  for(const edge of edges){const start=next;for(const src of edge){const i=src%(GRID+1),j=Math.floor(src/(GRID+1));write(next++,u0+size*i/GRID,v0+size*j/GRID,depth);}for(let i=0;i<GRID;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
-  return {center,positions,normals,colors,directions,waterPositions,heights,indices:new Uint16Array(indices)};
+  for(const edge of edges){const start=next;for(const src of edge){const i=src%(grid+1),j=Math.floor(src/(grid+1));write(next++,u0+size*i/grid,v0+size*j/grid,depth);}for(let i=0;i<grid;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
+  const field=surfaceDetail?generatePatchSurface({face,level,ix,iy,radius:RADIUS,directionAt:cubeDirection,sample:(...d)=>({height:terrainHeight(...d)}),colorAt:surfaceColor}):null;
+  return {center,positions,normals,colors,directions,waterPositions,heights,indices:new Uint16Array(indices),field};
 }
 
 export function findDestinations() {

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { terrainMapShader, terrainMapUniforms } from './terrain-maps.js';
+import { orbitalShader } from './orbital-surface.js';
 
 // A small, periodic material field. Channels hold relief, organic cover, stone
 // variation and roughness, all linear data. No downloaded textures are needed.
@@ -57,18 +58,19 @@ vec3 detailNormal(vec3 eyePosition, vec3 n, float height) {
 }
 `;
 
-export function configureTerrainMaterial(material, texture, albedoUniform, albedoReady, groundTextures, maps) {
+export function configureTerrainMaterial(material, texture, albedoUniform, albedoReady, groundTextures, maps, orbital) {
   material.onBeforeCompile = shader => {
     shader.uniforms.surfaceDetail = { value: texture };
     shader.uniforms.groundMaterials = { value: groundTextures };
     shader.uniforms.planetAlbedo = albedoUniform;
     shader.uniforms.albedoReady = albedoReady;
+    shader.uniforms.orbitalNormal = orbital?.normal ?? albedoUniform;
     Object.assign(shader.uniforms, terrainMapUniforms(maps));
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nattribute vec3 direction;\nattribute float terrainHeight;\nvarying float vGroundHeight;\nvarying vec3 vGroundNormal;\nattribute vec3 surfacePoint;\nvarying vec3 vSurfacePoint;\nvarying vec3 vPlanetDirection;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvSurfacePoint=surfacePoint;vPlanetDirection=direction;vGroundHeight=terrainHeight;vGroundNormal=normal;');
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', `#include <common>\n${sampling}\n${terrainMapShader}
+      .replace('#include <common>', `#include <common>\n${sampling}\n${terrainMapShader}\n${orbitalShader}
         precision highp sampler2DArray;
         uniform sampler2DArray groundMaterials;
         varying float vGroundHeight;
@@ -84,16 +86,43 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
         vec2 puv = vec2(atan(pd.x,pd.z)/6.28318530718+.5, asin(clamp(pd.y,-1.0,1.0))/3.14159265359+.5);
         float range = length(vViewPosition);
         float distant = smoothstep(20000.0,80000.0,range)*albedoReady;
+        #ifdef USE_NORMALMAP_OBJECTSPACE
+          distant=smoothstep(120000.0,260000.0,range)*albedoReady;
+        #endif
         diffuseColor.rgb = mix(diffuseColor.rgb,texture2D(planetAlbedo,puv).rgb,distant);
-        vec3 weights = pow(abs(normalize(vGroundNormal)),vec3(6.0));
+        vec3 groundNormal=normalize(vGroundNormal);
+        #ifdef USE_NORMALMAP_OBJECTSPACE
+          groundNormal=normalize(texture2D(normalMap,vNormalMapUv).xyz*2.0-1.0);
+        #endif
+        vec3 weights = pow(abs(groundNormal),vec3(6.0));
         weights /= max(dot(weights,vec3(1.0)),.0001);
+        // Direction-based kilometre fields survive patch changes and origin
+        // rebases. Actual height and slope determine snow and exposed faces.
+        float slope = 1.0-max(0.0,dot(groundNormal,pd));
+        float snow = smoothstep(.42,.7,min(diffuseColor.r,min(diffuseColor.g,diffuseColor.b)));
+        vec4 regional = surfaceSample(pd*398.1875,weights);
+        vec4 gullies = surfaceSample(pd*1592.75,weights);
+        float regionalFade = 1.0-smoothstep(45000.0,120000.0,range);
+        float exposed = smoothstep(.045,.23,slope+(.5-regional.r)*.16);
+        vec3 stone = vec3(.19,.205,.22);
+        if(terrainMapsReady>.5 && regionalFade>.001) {
+          vec3 rock = terrainColor(pd*6221.6796875,weights,1.0);
+          float mineral = dot(rock,vec3(.2126,.7152,.0722));
+          stone *= .65+smoothstep(.02,.34,mineral)*.85;
+        }
+        float layerPhase=vGroundHeight*.035+regional.r*8.0;
+        float layers=(.5+.5*sin(layerPhase))*(1.0-smoothstep(.3,2.0,fwidth(layerPhase)));
+        stone*=.83+layers*.24;
+        vec3 regionalColor=diffuseColor.rgb*(.78+regional.r*.3+gullies.r*.18);
+        regionalColor=mix(regionalColor,stone,exposed*mix(.42,.92,snow));
+        diffuseColor.rgb=mix(diffuseColor.rgb,regionalColor,regionalFade);
         float detailFade = 1.0-smoothstep(800.0,4500.0,range);
         vec4 detail = vec4(diffuseColor.rgb,.5);
         vec3 mappedGradient=vec3(0.0);
         float mappedRoughness=.96;
         if (detailFade > .001) {
           vec4 macro = surfaceSample(pd*300.0,weights);
-          float slope = 1.0-max(0.0,dot(normalize(vGroundNormal),pd));
+          float slope = 1.0-max(0.0,dot(groundNormal,pd));
           float organic = smoothstep(.012,.075,diffuseColor.g-diffuseColor.b);
           float snow = smoothstep(.42,.7,min(diffuseColor.r,min(diffuseColor.g,diffuseColor.b)));
           vec3 p = vSurfacePoint*.25;
@@ -141,9 +170,12 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
         }
       `)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,terrainMapsReady>.5?mappedRoughness:.88+detail.a*.1,detailFade);')
-      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif(terrainMapsReady>.5) normal=terrainNormalAt(normal,mappedGradient,detailFade*(1.0-smoothstep(100.0,1100.0,range))); else normal=detailNormal(-vViewPosition,normal,detail.a*.055*detailFade);');
+      .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+        ${orbital ? 'normal=normalize(mix(normal,orbitalViewNormal(pd),distant));' : ''}
+        if(terrainMapsReady>.5) normal=terrainNormalAt(normal,mappedGradient,detailFade*(1.0-smoothstep(100.0,1100.0,range)));
+        else normal=detailNormal(-vViewPosition,normal,detail.a*.055*detailFade);`);
   };
-  material.customProgramCacheKey = () => 'terrain-material-cc0-v1';
+  material.customProgramCacheKey = () => `terrain-material-regional-v2-${Boolean(orbital)}`;
 }
 
 /** Object-local wear on the merged hull and furniture, which have no UVs. */
