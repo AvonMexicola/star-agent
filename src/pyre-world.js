@@ -1,4 +1,5 @@
 import { Vector3 } from 'three';
+import { resourceProfile, resourceColor } from './resource-profile.js';
 import { SUN_DIRECTION, SUN_DISTANCE } from './world.js';
 
 // Pyre: the hot inner planet. 1 200 km radius on a circular 10 M km orbit around
@@ -10,7 +11,10 @@ export const PYRE_RADIUS = 1_200_000;
 export const PYRE_ORBIT_RADIUS = 10_000_000_000;
 export const PYRE_GRAVITY = 7.6;
 export const PYRE_MAX_HEIGHT = 9_000;
-export const PYRE_GENERATOR_VERSION = 1;
+export const PYRE_GENERATOR_VERSION = 2;
+export const PYRE_RESOURCE_VERSION = 1;
+export const PYRE_RESOURCE_IDS=Object.freeze(['basalt','oxide','sulphur']);
+export const PYRE_RESOURCE_PALETTE=Object.freeze({basalt:[.082,.076,.07],oxide:[.28,.12,.048],sulphur:[.56,.43,.09]});
 export const PYRE_NAME = 'Pyre';
 export const PYRE_DAY_TEMPERATURE = 400;
 /** Aeon's assumed year; Pyre's period follows from Kepler's third law. */
@@ -19,7 +23,7 @@ export const PYRE_PERIOD_SECONDS = AEON_YEAR_SECONDS * (PYRE_ORBIT_RADIUS / SUN_
 /** Thin CO2 air: density, scale heights and scattering coefficients in SI units. */
 export const PYRE_ATMOSPHERE = Object.freeze({
   height: 45_000, planeHeight: 12_000, seaLevelDensity: .09, scaleHeight: 6_000, mieScaleHeight: 2_600,
-  betaR: Object.freeze([1.35e-6, 2.3e-6, 4.4e-6]), betaM: Object.freeze([1.15e-5, 8.0e-6, 4.6e-6]), g: .70, gain: 11,
+  betaR: Object.freeze([2.4e-6, 4.2e-6, 8.0e-6]), betaM: Object.freeze([1.7e-5, 1.15e-5, 6.2e-6]), g: .70, gain: 11,
 });
 export const PYRE_LIGHTING = Object.freeze({ sky: 0x9c6a48, ground: 0x2b1510, ambientNight: .06, ambientDay: .24, environment: .05 });
 
@@ -67,7 +71,7 @@ export function pyreLatLon(lat, lon) { const a = lat * Math.PI / 180, b = lon * 
 
 // ---- deterministic noise, independent of Aeon's ?seed --------------------
 const SEED = 0x50595245;
-const hash = (x, y, z) => { let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(z | 0, 2147483647) ^ SEED; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
+const hash = (x, y, z) => { let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(z | 0, 1442695041) ^ SEED; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
 const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 function qnoise(x, y, z) {
   const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
@@ -176,13 +180,14 @@ export function pyreSurfaceBody(x, y, z) {
     const caldera = -(1 - smooth(.045, .085, r)) * .13 + Math.exp(-(((r - .075) / .018) ** 2)) * .035;
     // Radial lava channels down the active flanks.
     const channel = smooth(.86, .99, 1 - Math.abs(Math.sin(angle * 7 + qnoise(x * 900, y * 900, z * 900) * 3))) * smooth(.1, .3, r) * (1 - smooth(.8, 1.05, r));
-    height += v.height * (shield + caldera - channel * .012);
+    const gullies = (1 - ridged(x * 1800 + 4, y * 1800 - 6, z * 1800 + 2, 2)) * smooth(.12, .5, r) * (1 - smooth(.8, 1.05, r));
+    height += v.height * (shield + caldera - channel * .012 - gullies * .035 * shield);
     volcanic = Math.max(volcanic, 1 - smooth(.9, 1.2, r));
     if (v.active) {
       calderaHeat = Math.max(calderaHeat, 1 - smooth(.03, .07, r));
       activity = Math.max(activity, channel * (1 - smooth(.45, .95, r)) * .9);
       fresh = Math.max(fresh, (1 - smooth(.35, 1.05, r)) * smooth(.35, .6, qnoise(x * 120 + 7, y * 120 - 3, z * 120 + 1)));
-      sulphur = Math.max(sulphur, (1 - smooth(.06, .28, r)) * smooth(.3, .7, qnoise(x * 1500 + 2, y * 1500 + 4, z * 1500 - 3)));
+      sulphur = Math.max(sulphur, (1 - smooth(.05, .22, r)) * smooth(.52, .8, qnoise(x * 1500 + 2, y * 1500 + 4, z * 1500 - 3)) * .85);
     }
     if (r < .09) region = 'CALDERA'; else if (r < 1.05) region = v.name;
   }
@@ -199,15 +204,19 @@ export function pyreSurfaceBody(x, y, z) {
     const edge = 1 + .35 * (qnoise(x * 60 + 4, y * 60 - 1, z * 60 + 6) - .5);
     const field = (1 - smooth(.55, 1.05, r * edge)) * (1 - .6 * highland);
     if (field <= 0) continue;
-    const patchy = smooth(.32, .68, fbm(x * 230 + 1, y * 230 + 2, z * 230 + 3, 3) + .5);
-    activity = Math.max(activity, field * (.35 + .65 * patchy));
-    fresh = Math.max(fresh, field * smooth(.4, .8, patchy));
+    // Lava lakes (5 km patches) and rivers (bright ridged channels) give the glow structure at every range.
+    const lakes = smooth(.5, .74, fbm(x * 230 + 1, y * 230 + 2, z * 230 + 3, 3) + .5);
+    const rivers = smooth(.62, .96, ridged(x * 760 + 9, y * 760 - 4, z * 760 + 7, 2));
+    activity = Math.max(activity, field * Math.max(rivers, lakes * .85, .16));
+    fresh = Math.max(fresh, field * smooth(.3, .7, lakes + rivers * .5));
     if (field > .3) region = f.name;
   }
   activity = Math.max(activity, calderaHeat);
   fresh = Math.max(fresh, calderaHeat);
   // Oxidised ochre plains, away from fresh flows and the highlands.
-  const oxide = smooth(.46, .66, qnoise(x * 23 + 9.4, y * 23 - 5.5, z * 23 + 2.2) + (broad) * .3) * plains * (1 - fresh);
+  const warp = [fbm(x*8+2,y*8-7,z*8+3,3),fbm(x*8-13,y*8+5,z*8-11,3),fbm(x*8+17,y*8+19,z*8+7,3)];
+  const oxideField = fbm(x*11+warp[0]*6+9.4,y*11+warp[1]*6-5.5,z*11+warp[2]*6+2.2,4)+.5;
+  const oxide = smooth(.43,.62,oxideField+broad*.3)*plains*(1-fresh);
   // Metre-scale relief: 30 m and 8 m bands, rougher (a'a clinker) on fresh flows.
   const rough = 1 + 1.6 * fresh + .6 * highland;
   height += fbm(x * 40000 + 3.7, y * 40000 - 1.1, z * 40000 + 6.3, 3, 2.27) * 3.0 * rough;
@@ -216,8 +225,9 @@ export function pyreSurfaceBody(x, y, z) {
   if (activity > .05 || fresh > .05) {
     const gx = x * PYRE_RADIUS / 60, gy = y * PYRE_RADIUS / 60, gz = z * PYRE_RADIUS / 60;
     const cx = Math.floor(gx), cy = Math.floor(gy), cz = Math.floor(gz);
-    for (let i = 0; i < 8; i++) {
-      const ox = cx + (i & 1), oy = cy + ((i >> 1) & 1), oz = cz + (i >> 2);
+    // Include neighbours on both sides: a blister can cross its seed cell edge.
+    for (let i = 0; i < 27; i++) {
+      const ox = cx + i % 3 - 1, oy = cy + Math.floor(i / 3) % 3 - 1, oz = cz + Math.floor(i / 9) - 1;
       if (hash(ox, oy + 71, oz) < .55) continue;
       const dx = gx - ox - hash(ox, oy, oz + 3), dy = gy - oy - hash(ox + 5, oy, oz), dz = gz - oz - hash(ox, oy + 9, oz);
       const radius = .12 + hash(ox + 11, oy, oz) * .25, dist = Math.sqrt(dx * dx + dy * dy + dz * dz) / radius;
@@ -228,17 +238,15 @@ export function pyreSurfaceBody(x, y, z) {
   else if (region === 'BASALT PLAINS' && oxide > .5) region = 'OXIDISED PLAINS';
   // Palette (linear RGB): charcoal basalt, ochre oxidation, sulphur, glassy fresh flows.
   const tone = .8 + .4 * qnoise(x * 350 + 2, y * 350 + 7, z * 350 - 5);
-  const basalt = [.082, .076, .07].map(v => v * tone);
-  const rego = [.16, .135, .112].map(v => v * tone);
-  const ochre = [.28, .12, .048], yellow = [.74, .60, .12], glass = [.032, .03, .032];
-  let color = basalt.map((v, i) => v * (1 - highland) + rego[i] * highland);
-  color = color.map((v, i) => v * (1 - oxide) + ochre[i] * oxide);
-  color = color.map((v, i) => v * (1 - fresh) + glass[i] * fresh);
-  color = color.map((v, i) => v * (1 - sulphur) + yellow[i] * sulphur);
-  return { height, color, activity, fresh, sulphur, oxide, region };
+  // As on Selene, visual provinces and surveys share one normalized mineral field.
+  const resources=resourceProfile(PYRE_RESOURCE_IDS,[(1-oxide)*(1-sulphur),oxide*(1-sulphur),sulphur],region);
+  const color=resourceColor(resources,PYRE_RESOURCE_PALETTE).map(v=>v*tone*(1+highland*.3)*(1-fresh*.48));
+  return { height, color, activity, fresh, sulphur, oxide, region, resources, resource:resources.dominant };
+
 }
 /** World-frame sampler: rendering, contact and walking all use this one. */
 export function pyreSurface(x, y, z) { return pyreSurfaceBody(...toPyreBody(x, y, z)); }
+export function pyreResources(x,y,z){return pyreSurface(x,y,z).resources;}
 export function pyreRegion(x, y, z) {
   const b = toPyreBody(x, y, z);
   return `${b[2] > .04 ? 'DAY SIDE' : b[2] < -.04 ? 'NIGHT SIDE' : 'TERMINATOR'} · ${pyreSurfaceBody(...b).region}`;
@@ -255,7 +263,8 @@ export function pyreHeat(position, sunDirection = null) {
   const exposure = smooth(-.12, .45, normal.dot(toStar));
   const low = 1 - smooth(25_000, 160_000, altitude);
   const sample = pyreSurface(normal.x, normal.y, normal.z);
-  const lava = sample.activity * (1 - smooth(20, 400, altitude)) * .45;
+  const clearance = Math.max(0, r - PYRE_RADIUS - sample.height);
+  const lava = sample.activity * (1 - smooth(20, 400, clearance)) * .45;
   return Math.min(1, low * (.12 + .88 * exposure) + lava);
 }
 
@@ -295,15 +304,26 @@ export function constrainPyreStep(previous, proposed, clearance = 3.2) {
 
 /** Equirectangular identity map in the body frame: activity, fresh flows, sulphur, oxide. */
 export function bakePyreMaps(width = 1024, height = 512) {
-  const data = new Uint8Array(width * height * 4);
-  for (let row = 0; row < height; row++) {
-    const theta = (1 - row / (height - 1)) * Math.PI, sin = Math.sin(theta), y = Math.cos(theta);
-    for (let col = 0; col < width; col++) {
-      const phi = (col / width - .5) * Math.PI * 2, x = Math.sin(phi) * sin, z = Math.cos(phi) * sin;
-      const s = pyreSurfaceBody(x, y, z), i = (row * width + col) * 4;
-      data[i] = Math.round(255 * Math.min(1, s.activity)); data[i + 1] = Math.round(255 * Math.min(1, s.fresh));
-      data[i + 2] = Math.round(255 * Math.min(1, s.sulphur)); data[i + 3] = Math.round(255 * Math.min(1, s.oxide));
+  if(!Number.isInteger(width)||!Number.isInteger(height)||width<4||height<2||width>2048||height>1024)throw new RangeError('Invalid Pyre map size');
+  const data=new Uint8Array(width*height*4),color=new Uint8Array(data.length),normal=new Uint8Array(data.length),heights=new Float64Array(width*height);
+  const srgb=v=>Math.round(Math.max(0,Math.min(1,v<=.0031308?v*12.92:1.055*v**(1/2.4)-.055))*255);
+  for(let row=0;row<height;row++){
+    const lat=((row+.5)/height-.5)*Math.PI,y=Math.sin(lat),c=Math.cos(lat);
+    for(let col=0;col<width;col++){
+      const lon=((col+.5)/width-.5)*Math.PI*2,s=pyreSurfaceBody(c*Math.sin(lon),y,c*Math.cos(lon)),i=row*width+col;
+      heights[i]=s.height;data.set([s.activity,s.fresh,s.sulphur,s.oxide].map(v=>Math.round(Math.min(1,v)*255)),i*4);
+      color.set([...s.color.map(srgb),255],i*4);
     }
   }
-  return { width, height, data };
+  for(let row=0;row<height;row++){
+    const lat=((row+.5)/height-.5)*Math.PI,sy=Math.sin(lat),cy=Math.cos(lat),south=Math.max(0,row-1),north=Math.min(height-1,row+1);
+    for(let col=0;col<width;col++){
+      const lon=((col+.5)/width-.5)*Math.PI*2,sl=Math.sin(lon),cl=Math.cos(lon),i=row*width+col;
+      const dx=(heights[row*width+(col+1)%width]-heights[row*width+(col+width-1)%width])/Math.max(1,PYRE_RADIUS*cy*Math.PI*4/width);
+      const dy=(heights[north*width+col]-heights[south*width+col])/(PYRE_RADIUS*Math.PI/height*(north-south));
+      const n=[cy*sl-cl*dx+sy*sl*dy,sy-cy*dy,cy*cl+sl*dx+sy*cl*dy],l=Math.hypot(...n);
+      normal.set([...n.map(v=>Math.round((v/l*.5+.5)*255)),255],i*4);
+    }
+  }
+  return {width,height,data,color,normal};
 }
