@@ -10,7 +10,7 @@
   </head>
   <body>
     <canvas tabindex="0" id="viewport" aria-label="Interactive three-dimensional planet. Use the flight controls described in the help panel."></canvas>
-    <div id="loading"><div class="loading-mark">✳</div><p>STAR AGENT</p><span>Growing a world from a number<span class="dots">…</span></span></div>
+    <div id="loading"><div class="loading-mark">✳</div><p>STAR AGENT</p><span id="loading-status" role="status" aria-live="polite">Preparing your arrival…</span><progress id="loading-progress" max="8" value="0" aria-label="Preparing your arrival"></progress></div>
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Star Agent home"><span class="brand-icon">✳</span> STAR<span class="wordmark-light">AGENT</span><span class="build-tag">EXPERIMENT 001</span></a>
       <div class="top-actions"><span class="live"><i></i> LIVE SIMULATION</span><button id="help-button" title="Controls (H)">CONTROLS <kbd>H</kbd></button><button id="camera-button" title="External view (4)" aria-pressed="false">EXTERNAL <kbd>4</kbd></button></div>

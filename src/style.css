@@ -48,3 +48,7 @@ body:has(#course-guidance:not([hidden])) #toast{top:190px}
 body.crashed:after{background:radial-gradient(ellipse at center,transparent 25%,#521d1a99 100%)}body.crashed .flight-hints,body.crashed .mission-panel{visibility:hidden}
 .camera-engaged .mission-panel{opacity:0;pointer-events:none;transform:translateY(-12px)}
 #camera-button[aria-pressed="true"]{border-color:#b6efd180;background:#acd9ce1f}
+
+#loading-progress{width:min(260px,70vw);height:4px;margin-top:24px;border:0;border-radius:2px;accent-color:var(--mint);background:var(--line)}
+#loading-progress::-webkit-progress-bar{background:var(--line);border-radius:2px}#loading-progress::-webkit-progress-value{background:var(--mint);border-radius:2px}#loading-progress::-moz-progress-bar{background:var(--mint);border-radius:2px}
+#loading-status{max-width:85vw;text-align:center}

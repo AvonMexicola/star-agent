@@ -1265,3 +1265,31 @@ The newer Sun encounter PR35 is reserved for PM's next rebase. Dirty shared stat
 and gear work remains untouched. Do not restore older controller/hull/Pyre snapshots
 over the reconciled code. No feature branches deleted. Preview5280 serves this
 runtime; tests and public docs distinguish the Atlas studio from the live fleet.
+
+## ROOT DELIVERED — STARTUP PRELOAD AND STATION DEPARTURE — 2026-09-06
+
+Integration preview http://localhost:5280 now serves main-8-TKQTmE.js.
+Station departure commit1f489b1: one-metre gear lift, no overshoot, obstruction
+cancels a stuck lift, bay speed20m/s instead of6. Automatic capture requires a slow
+arrival near the actual ship parked height, so a slight nose-down departure cannot
+re-dock at the planetary clearance threshold. Both layouts and all20 tilted berths
+covered, plus full physical keyboard and Gamepad boarding/departure journeys.
+
+Startup waits for station/ship/characters/surface maps/Aeon4096 orbital generation,
+settled starting terrain, async shader compilation and rendered warmup before
+handing over controls/cinematic. Stage-labelled progress bar, pre-play resolution
+calibration, held-key release guard, Gamepad neutral gate and sticky graphics-loss
+recovery. Optional orbital-worker failure/disposal releases waiting preload.
+This moves work earlier; no persistent generated-map cache, universal FPS claim
+or whole-universe preload. Initial successful boots20–24s on this machine.
+
+Final458 unit tests/build pass. Six affected startup/opening browser cases pass;
+two startup cases rerun after final held-input/fatal hardening pass. Independent
+Astra review approves this bounded change, loading UI4.0/5, desktop/phone evidence
+and real WEBGL_lose_context warmup recovery. Records: docs/qa/startup-preload/ and
+docs/qa/station-departure/. Hardware gamepad not tested.
+
+PR34 remains DRAFT: request23 full-scene visual blockers remain open. This is not
+READY FOR MERGE for the whole consolidation. main/default/site unchanged. New
+retail435f116/PR20 handoff acknowledged, not merged over this lane; SunPR35 remains
+separate. Updated TOKEN POLICY v2 reviewer ownership acknowledged.

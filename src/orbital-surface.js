@@ -13,6 +13,8 @@ function texture(data, width, height, colorSpace) {
  * throughout generation; both colour and normal publish at the same resolution. */
 export class OrbitalSurface {
   constructor(body) {
+    this.readyPromise = new Promise(resolve => { this.finish = () => { this.complete = true; resolve(); }; });
+    this.complete = false; this.error = null;
     this.body = body; this.resolution = 0; this.started = false; this.disposed = false;
     this.color = {value: texture(new Uint8Array([100,110,70,255]), 1, 1, THREE.SRGBColorSpace)};
     this.normal = {value: texture(new Uint8Array([128,128,255,128]), 1, 1, THREE.NoColorSpace)};
@@ -22,12 +24,12 @@ export class OrbitalSurface {
     if (this.started || this.disposed) return;
     this.started = true;
     this.worker = new Worker(new URL('./orbital-surface.worker.js', import.meta.url), {type:'module'});
-    this.worker.onerror = error => { console.warn('Orbital detail retained at its available resolution.', error.message); this.worker.terminate(); };
+    this.worker.onerror = error => { this.error=error.message; console.warn('Orbital detail retained at its available resolution.', error.message); this.worker.terminate(); this.finish(); };
     this.worker.onmessage = ({data}) => {
       if (this.disposed) return;
       if (data.done || data.error) {
-        if (data.error) console.warn('Orbital detail retained at its available resolution.', data.error);
-        this.worker.terminate(); return;
+        if (data.error) { this.error=data.error; console.warn('Orbital detail retained at its available resolution.', data.error); }
+        this.worker.terminate(); this.finish(); return;
       }
       const color = texture(data.color, data.width, data.height, THREE.SRGBColorSpace);
       const normal = texture(data.normal, data.width, data.height, THREE.NoColorSpace);
@@ -38,7 +40,7 @@ export class OrbitalSurface {
     this.worker.postMessage({body:this.body, seed:SEED});
   }
   dispose() {
-    this.disposed = true; this.worker?.terminate(); this.color.value.dispose(); this.normal.value.dispose();
+    this.disposed = true; this.finish(); this.worker?.terminate(); this.color.value.dispose(); this.normal.value.dispose();
   }
 }
 
