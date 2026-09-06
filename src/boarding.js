@@ -37,7 +37,7 @@ const walls = [
 ];
 const closedDoor = expanded(-0.9, 0.9, 4, 4);
 
-function crossesWall(previous, proposed, wall) {
+export function crossesWall(previous, proposed, wall) {
   const [minX, maxX, minZ, maxZ] = wall;
   const dx = proposed.x - previous.x, dz = proposed.z - previous.z;
   const inside = previous.x > minX + EPSILON && previous.x < maxX - EPSILON

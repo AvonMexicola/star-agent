@@ -82,6 +82,10 @@ test('missing GLB keeps the ship boardable and cargo usable', async ({ page }) =
   await expect(page.getByRole('dialog', { name: 'Ship inventory' })).toBeVisible();
   await page.getByRole('button', { name: 'Take Survey scanner', exact: true }).click();
   expect(await page.evaluate(() => window.starAgent.state.inventory.pack.scanner)).toBe(1);
+  await page.getByRole('button',{name:'Take all',exact:true}).click();
+  expect(await page.evaluate(()=>window.starAgent.state.inventory.packMass)).toBe(20);
+  await page.getByRole('button',{name:'Stow all',exact:true}).click();
+  expect(await page.evaluate(()=>window.starAgent.state.inventory.packMass)).toBe(0);
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => window.starAgent.state.mode)).toBe('walk');
   expect(errors).toEqual([]);

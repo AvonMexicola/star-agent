@@ -412,3 +412,275 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+
+## READY for Fable 5.1 — Atlas freighter and Nomad cockpit (2026-09-06)
+
+Cees’ larger **unlockable** ship and subsequent Nomad chair/windscreen correction
+are implemented in [PR #14](https://github.com/AvonMexicola/star-agent/pull/14),
+`feat/unlockable-freighter`, isolated `/tmp/star-agent-freighter-work`.
+Implementation checkpoints 3e5ef97 and 8b5b84d are committed/pushed.
+Base ad20802; latest integration equipment/character commits c4f3d2d/3f7d470 are
+in different files and were not replaced. Shared runtime files remain untouched.
+
+Atlas: 30 m envelope, 8 × 10 m belly elevator, twin 2.2 × 3 m cargo lifts to upper
+landings, 2,400 kg inventory, four live MFDs. Land on Aeon/Selene then dock at the
+station to unlock; G opens Fleet and seated station selection. Saved progress,
+selected ship and conserved inventory. One lift simulation drives geometry, walk
+support and rider carry. Shaft guards/edge checks and stow-before-launch interlocks
+work. Separate hull/gear sweeps avoid falsely filling the open underbody. Both
+ships retain usable fallbacks if GLBs fail. Secured lift cases are props; no trading
+economy, loose-crate pickup, item use or cargo-mass flight physics is claimed.
+
+Nomad: new Blender bucket chair with shaped shell, bolsters, webbing harness,
+headrest and articulated arms; centre windscreen strut removed. Original seat/aisle
+dimensions preserved, runtime chair fallback hides only after PilotChair loads.
+
+Validation: 76 unit tests, build, **4 production browser checks**, **2 studio checks**
+passed. Atlas unlock/selection, three lift rides, station deck walk/reboarding,
+inventory, pilot return, launch, reload, both GLB fallbacks and original Nomad
+journey covered. Chromium/ANGLE SwiftShader, 1440×900 game and 1600×1000 studio;
+scale .4 for walking and 1 for game evidence, no hardware FPS claim. A concurrent
+studio run timed out under software-renderer load; its separate rerun passed.
+Curated screenshots and actual limitations are in `docs/atlas-freighter.md` and
+`docs/nomad-ship.md`.
+
+**The comprehensive ship pipeline memory now also covers unlockable ships and
+physical cargo lifts:** `SHIP-PIPELINE-MEMORY.md` has a new Atlas/Nomad addendum
+with node contracts, dynamic layouts, persistence, collider traps, fallback,
+validation and delivery instructions. Please point future ship agents there.
+
+Local dev preview is running from this isolated checkout on **5216**:
+http://127.0.0.1:5216/dev/ship.html (Pilot Seat / Cockpit),
+http://127.0.0.1:5216/dev/freighter.html (Atlas / elevator / lifts),
+http://127.0.0.1:5216/ (game). Old 5190 remains the previous Nomad viewer.
+
+Merge notes: preserve `nav.layout`, `nav.canDock`, dynamic active ship references
+(inventory UI takes a getter), fleet initialization and modal gates when combining
+opening/travel/camera lanes. External camera bounds should use the active layout.
+Current shared equipment files were not edited. **Merge/deploy remains yours**;
+PR #14 is not a deployment, and manager acknowledgement has not been assumed.
+
+## Hangar integration candidate — 2026-09-06
+
+Cees requested the merge. PR #20 now reconciles the Atlas/modular-port/finish
+stack with `feat/visual-fidelity` at `029cae8`, in isolated worktree
+`/tmp/star-agent-hangar-merge` (`integrate/hangar-finish`). No shared-tree branch
+switching or adoption of the separate hull refinement (#22).
+
+READY FOR REVIEW: `src/main.js`, `src/navigation.js`, `src/station.js`,
+`src/station-complex.js`, `src/opening-sequence.js`, fleet guards, modular GLBs,
+`scripts/hangar-merge.config.js`, `scripts/hangar-merge.spec.js`,
+`tests/station-opening-complex.test.js`, `docs/qa/hangar-integration.md`.
+
+Three agents handled StationComplex/opening transforms, navigation and regression
+coverage, and builder conflict/capture harness independently. Root integrated the
+runtime frame and modal ownership. Preserve fixed complex travel bounds, selected
+ship opening setup, tilted deck up, camera-before-rebase ordering and the input
+pause guard during elevator fade.
+
+151 unit tests and the production build pass. Initial four opening/integration
+browser checks pass; remaining browser/tour checks are in progress. Full results
+and limitations belong in `docs/qa/hangar-integration.md`. The Opus invocation
+returned HTTP 429, reset 13:50 Amsterdam; no visual review score is claimed.
+`QUALITY.md` still requires the independent rubric or Cees's explicit waiver
+before final merge. This entry is a review handoff, not a merge/deployment claim.
+
+### Final local verification and production standard
+
+Runtime candidate `7a73ecf` is pushed to PR #20, now based on
+`feat/visual-fidelity` (`029cae8`). The exterior shares the existing 600 km camera
+cutoff; the orbit tour confirms removal of 93 unnecessary draws and exactly
+restores the base 477 draws / 304,642 triangles. Full units: **152 pass**. Build
+passes. **17 distinct browser cases pass** across the recorded runs/reruns;
+the final render-only cutoff additionally has collision/visibility tests and a
+complete eight-view production tour. Tour completed 13:05:50 Amsterdam with no
+errors, warnings, failed requests or unexpected closures. Curated scene and
+desktop/phone captures are in `docs/qa/hangar-integration/`.
+
+Cees requested a complete record as the standard for other assets. READY FOR
+REVIEW: `docs/asset-production-standard.md`, `docs/qa/hangar-production-record.md`,
+`docs/qa/hangar-integration.md`, linked from `AGENTS.md` and both pipeline memories.
+The proceedings retain the controller timing failure, interrupted first tour,
+exterior performance regression and their verified corrections. Raw reports stay
+in `/tmp`; no independent visual score, hardware performance approval or final
+merge is claimed. Opus review/explicit Cees exception remains the final decision.
+
+
+## READY FOR REVIEW: final station candidate and asset production record — 2026-09-06
+
+TO Fable 5.1 manager: Cees requested the merge and a complete asset pipeline
+record for reuse. PR20 integrates default 85aa836, the modular twenty-bay station,
+finished hangar, Nomad and Atlas. Runtime is 1eeb302 (parent 0d75c3f; integration
+merge 7ddef61). Isolated checkout: /tmp/star-agent-hangar-current. Preserve the
+shared checkout's unrelated gear/controller work; no shared branch was switched.
+
+The reusable entry point is docs/asset-production-standard.md, already linked
+from AGENTS.md. Complete proceedings: docs/qa/hangar-production-record.md.
+Functional results, AMD timing tables, pixelmatch comparison, the original
+3.67 Opus review, incomplete later review, source-art provenance and twelve
+curated new/before images are under docs/qa/. SHIP-PIPELINE-MEMORY.md and
+STATION-PIPELINE-MEMORY.md include the final lessons. This is a file handoff,
+not a claimed manager read receipt.
+
+Verified: all 21 unit-test files and build pass; 18 production browser cases at
+0d75c3f (4.9 minutes), then two focused production checks after the ceiling fix
+at 1eeb302 (28.7 seconds). Eight final AMD views completed with zero errors,
+warnings, request failures or unexpected lifecycle failures. Image comparison
+found covered ceiling diffusers; the visibility test failed before correction
+and passed afterward, alongside both floor tests. Named hierarchy, door ownership
+and vertex AO are preserved; distant geometry batches retain every triangle.
+Nomad: 57,784 triangles / 3,783,616 bytes. Atlas: 58,460 / 3,770,128, with rebuilt
+editable .blend files and the Nomad chair retained. Every prop assembly meets
+10k triangles / 1 MB.
+
+Latest AMD 860M measurement at 1440x900, scale 1: affected GPU p95 <=9.339 ms,
+CPU callback p95 <=6.8 ms; the menu issues zero WebGL draws across 60 callbacks.
+Earlier much slower measurements remain recorded; their cause is unconfirmed.
+Orbit still inherits 477 draws against the 300 budget. No GPU timing claim uses
+RAF/vsync intervals.
+
+Merge is NOT complete: the original Opus review failed at 3.67; the final Opus 5
+attempt (session 20c55ac0-2541-4775-93cd-a8dce1d1af55) ended without a rubric at
+its session limit, reporting a 19:00 Amsterdam reset. No waiver or final visual
+approval is inferred. Repeat independent review with its own captures from the
+stable host preview; root captures cannot replace it. PR20 remains open/unmerged.
+
+Latest playable preview: http://127.0.0.1:5249/ (W takes control; F interacts).
+The transient user unit star-agent-hangar-current-preview.service serves
+/tmp/star-agent-hangar-current-build. Host HTTP 200 was verified. A restricted
+namespace connection failure does not establish that a host service stopped.
+To stop this specific preview when finished:
+systemctl --user stop star-agent-hangar-current-preview.service
+Port 5239 was a historical candidate. No production deployment is claimed.
+
+
+## READY FOR REVIEW: concourse shops, elevator interiors and CPU optimization — 2026-09-06
+
+TO Fable 5.1 manager: Cees requested the elevator/lobby/furniture refinement and
+a performance diagnosis, continuing the complete-record requirement. Runtime
+commit 9e5a713 is on the isolated `/tmp/star-agent-concourse-work` checkout,
+branch `feat/station-concourse`, continuing PR #20 from 056d20b. Root is updating
+that existing PR; no branch switch or unrelated asset import occurred in the
+shared checkout.
+
+READY FOR REVIEW: original `blender/build_station_concourse.py`, both new GLBs,
+concourse/elevator runtime wrappers, working station shops and v3 purchase save,
+door/LOD caches, `scripts/concourse.config.js`, actual-game captures and the
+complete `docs/qa/station-concourse-production-record.md`. The asset contract,
+performance report and independent-review attempt are linked there. The reusable
+`docs/asset-production-standard.md` and `STATION-PIPELINE-MEMORY.md` now include
+these lessons. This is a file handoff, not a claimed manager read receipt.
+
+Verified: all 23 unit files and build; twelve distinct affected production browser
+cases across the recorded full run and reruns; final physical/controller shop
+journey 43.5 s and phone 7.1 s after the input initialization fix. The record preserves
+the coasting-related test failure, close-event wait, first-D-pad race, oversized
+textures and inherited rear-wall occlusion with their actual corrections. Five
+GLB/layout tests include the original-station/new-cabin overlay ray check.
+
+Final AMD 860M / Chromium 151 / ANGLE GL, 1440×900 scale 1: hub 259 draws vs 625,
+CPU median 5.300 ms vs 12.600 ms, GPU 4.205 ms (p95 4.940). Hangar 505 draws, GPU
+8.198 ms (p95 8.596), CPU 6.800 ms (p95 7.600). Both views show 16.7 ms median/p95
+RAF cadence in this short run. CPU/GPU/RAF are separate, never added. Final
+station update 0.366 ms, zero unchanged LOD matrix writes. Eight release camera
+views completed with zero browser errors/warnings; thirteen curated images
+include desktop/phone purchases and matched hub before/after.
+
+New ships/shops limitations remain explicit: purchased weapons/components are
+stored cargo; combat, equipping and installation are not implemented. Credits
+and finite stock share one local manifest; no shared multiplayer economy.
+
+Merge remains pending: Opus 5 session 14807f9f-66d0-4c07-8f6f-ddfcc2a1afef returned
+its session limit before review tools or scoring, reporting 19:00 Amsterdam. No
+new score or Cees waiver is inferred. Preserve the old 3.67 failure and repeat the
+independent review with its own captures when available.
+
+Playable release: http://127.0.0.1:5260/ . W takes control; F calls the elevator;
+walk inside, select Central hub, then approach either shop counter and press F.
+Purchases arrive in station storage. The service `star-agent-concourse-preview`
+serves `/tmp/star-agent-concourse-build`; `/review/` exposes the curated images.
+Port 5249 remains the earlier candidate. This is a local preview, not a deployment.
+
+
+Publication receipt: runtime 9e5a713 and full proceedings 27077ec were pushed
+by fast-forward to `origin/feat/hangar-finish`. GitHub confirmed PR #20 OPEN at
+27077ece690f64fa9c613d6c7c2cef7ec0a78938, with no merged timestamp or auto-merge
+request. Its title and body now describe the furnished shops, elevator fit,
+measured performance, source assets, complete record and outstanding Opus gate.
+The isolated worktree was clean after those commits. The following receipt-only
+commit changes no runtime or served asset.
+
+
+## READY FOR REVIEW — BRANDED STATION SHOPS — 2026-09-06
+
+Runtime 435f116 is published to PR20 / origin/feat/hangar-finish from the isolated
+/tmp/star-agent-concourse-work. Cees requested shop identity, posters, textures,
+banners, A5 holders and dirty carpet. WATCHKEEP ARMORY and KESTREL SHIPWORKS now
+have original campaign art, deterministic type, real Blender print hardware,
+worn textile floor coverings and matching accessible purchase menus. Elevator
+GLB SHA 981a229d is unchanged. Physical purchase/cargo routes remain operational.
+
+178 unit tests across 24 files, build, four affected browser cases and fourteen final
+actual-game views pass; isolated branded desktop/mobile evidence was visually
+checked after shared historical /tmp filenames were overwritten by another run.
+Retail rendering is 3 batches / 604 triangles / 4 bounded textures; concourse 25 assemblies,
+44,668 triangles / 8 batches. Alternating retail ON/OFF GPU differences have mixed
+signs; no reproducible multi-ms retail regression. Unchanged hangar timing still
+exceeds 10 ms in the noisy rerun, openly recorded.
+
+Sources/prompts: assets/station-shop/ . Complete proceedings, failed checks/fixes,
+screenshots and profiles: docs/qa/station-shop-branding-record.md and
+station-shop-branding-performance.md. Source and encoding instructions are
+preserved; asset-production-standard.md and STATION-PIPELINE-MEMORY.md updated.
+
+Cees explicitly requested “Use astra instead” for the independent visual review.
+Astra is reviewing 435f116 with its own captures and the same numerical rubric.
+This changes reviewer selection for this task, not the acceptance thresholds.
+No score/waiver/merge is claimed before its result. The interrupted Opus launch
+produced no recorded review. Final review will be station-shop-branding-astra-review.md.
+
+Integration manager: this is a new continuation after the earlier station/ship
+intake, not authorization to overwrite PR34's newer input, equipment, world or
+departure work. Reconcile only the retail changes and preserve PM's outstanding
+PR34 blockers, including the shop enclosure appearance. PR20 remains open.
+Local candidate http://127.0.0.1:5260/ ; actual shop images /review/shops/ .
+This HANDOFF update is the manager notification; no external read receipt exists.
+
+
+## READY FOR REVIEW: ASTRA-REVIEWED SHOP CORRECTION — 2026-09-06
+
+Final runtime025e587 follows branded-shop435f116 and enclosure29885c9 on PR20,
+origin/feat/hangar-finish. Cees selected Astra instead of Opus. Independent Astra
+review now scores the affected shops4/4/4/4/4/4 =4.00 PASS, with its own14 final
+captures and bounded interaction-motion evidence. Original3.50 failure and the
+intermediate shadow-band finding are preserved. Whole-PR merge approval remains
+NO: inherited orbit/coast findings and CPU timing tails are not waived.
+
+Changes: sealed low shop ceilings with cassettes/beams/vents; varied labelled
+weapons/cases/filters/avionics; balanced fixtures below ceilings; readable ivory
+rear branding; corrected poster shadow banding using the existing two shop lights
+with1024² shadow maps. Concourse51,888triangles/8draws/27budgeted assemblies,
+77static boxes; elevator SHA981a229d remains byte-identical. Purchases and all
+existing station/ship gameplay are unchanged by the final shadow correction.
+
+All24 unit-test files and build pass. Corrected29885 resource/mobile browser
+cases pass17.9s; fullscale physical/controller/purchase/cargo/reload recording
+passes48.6s. Final025e58714-view capture has zero browser errors/warnings.
+AMD860M/Chromium151/ANGLE GL at1440×900 scale1: hub269draws/479478tris,
+GPU5.314ms median/5.754p95, CPU6.5/10.1ms; hangar505/684953,
+GPU7.992/9.050ms, CPU7.4/12.0ms. Prior slower runs retained, no universal pass.
+
+Complete record: docs/qa/station-shop-enclosure-record.md; independent final:
+station-shop-enclosure-astra-review.md; bounded motion: station-shop-motion.md;
+profiles: station-shop-branding-performance.md. Original art/prompts in
+assets/station-shop/. STATION-PIPELINE-MEMORY.md and asset-production-standard.md
+carry reusable lessons, including rejected iterations. Portable motion tools
+now preserve unique output paths; temporary source video/trace retention is explicit.
+
+Integration manager: reconcile this retail-only continuation with PR34 and the
+newer fighter/input/world work; do not overwrite those lanes. PR20 remains open;
+no merge/deployment is claimed. Local playable candidate http://127.0.0.1:5260/;
+final actual-game interiors /review/shops/armory-interior.webp and
+/review/shops/components-interior.webp. This file update is the manager
+notification; it does not imply a read receipt.
