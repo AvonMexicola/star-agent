@@ -1,25 +1,42 @@
 import { test, expect } from '@playwright/test';
 
+async function chooseDestination(page,name,modifiers=[]){
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeVisible();
+  const menu=page.locator('#quick-transit-menu');
+  const summary=page.locator('#quick-transit-menu > summary');
+  await expect(summary).toHaveText('Quick transit');
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+  await summary.click();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(true);
+  await menu.locator(`[data-destination="${name}"]`).click({modifiers});
+  await expect(page.locator('#help-dialog')).toBeHidden();
+  await expect.poll(()=>menu.evaluate(element=>element.open)).toBe(false);
+}
+
 test('orbital view, terrain streaming, landing, walking, boarding and launch',async({page})=>{
+  // Physical journey, not an FPS benchmark: allow shared software-renderer load.
+  test.setTimeout(300000);
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error' && /THREE|shader|WebGL|TypeError|ReferenceError/i.test(message.text()))errors.push(message.text());});
-  await page.goto('/');
+  await page.goto('/?intro=0');
   await page.waitForFunction(()=>window.starAgent?.state.ready,{},{timeout:60000});
-  await page.evaluate(()=>window.starAgent.setRenderScale(.55));
+  await page.evaluate(()=>window.starAgent.setRenderScale(.4));
   await page.waitForTimeout(3000);
   await page.screenshot({path:'test-results/orbit.png'});
   console.log('Orbit',await page.evaluate(()=>window.starAgent.state));
   expect(errors).toEqual([]);
-  await page.getByRole('button',{name:'Controls H',exact:false}).click();
+  await page.keyboard.press('KeyH');
   await expect(page.locator('#help-dialog')).toBeVisible();
-  await page.getByRole('button',{name:'Close controls'}).click();
-  await page.locator('[data-destination="forest"]').click();
-  await page.waitForFunction(()=>!window.starAgent.state.transiting,{},{timeout:20000});
+  await page.keyboard.press('KeyH');
+  await expect(page.locator('#help-dialog')).toBeHidden();
+  await chooseDestination(page,'forest');
+  await page.waitForFunction(()=>!window.starAgent.state.transiting,{},{timeout:60000});
   await page.screenshot({path:'test-results/forest-flight.png'});
   console.log('Forest',await page.evaluate(()=>window.starAgent.state));
   await page.keyboard.press('l');
-  await page.waitForFunction(()=>window.starAgent.state.mode==='landed',{},{timeout:45000});
+  await page.waitForFunction(()=>window.starAgent.state.mode==='landed',{},{timeout:90000});
   await page.keyboard.press('f');
   await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
   await page.waitForTimeout(2000);
@@ -47,8 +64,8 @@ test('orbital view, terrain streaming, landing, walking, boarding and launch',as
   await page.keyboard.down('Space');await page.waitForTimeout(700);await page.keyboard.up('Space');
   expect(await page.evaluate(()=>window.starAgent.state.altitude)).toBeGreaterThan(10);
   await page.keyboard.press('Tab');
-  await page.locator('[data-destination="polar"]').click();
-  await page.waitForFunction(()=>!window.starAgent.state.transiting,{},{timeout:20000});
+  await chooseDestination(page,'polar');
+  await page.waitForFunction(()=>!window.starAgent.state.transiting,{},{timeout:60000});
   await page.screenshot({path:'test-results/polar.png'});
   console.log('Polar',await page.evaluate(()=>window.starAgent.state));
   expect(errors).toEqual([]);

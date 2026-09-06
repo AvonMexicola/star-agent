@@ -4,7 +4,7 @@ test('M selects a real target; drive renders, pauses and travels continuously bo
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
-  await page.goto('/?debug');
+  await page.goto('/?intro=0&debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   // A reproducible clear vantage above Aeon's moon-facing hemisphere.
@@ -60,7 +60,7 @@ test('M selects a real target; drive renders, pauses and travels continuously bo
 
 test('surface exclusion explains blocked drive; map remains usable on a narrow screen',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('/?debug');
+  await page.goto('/?intro=0&debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>{window.starAgent.setRenderScale(.55);window.starAgent.navigation.transitMoon(180);});
   await page.setViewportSize({width:390,height:844});

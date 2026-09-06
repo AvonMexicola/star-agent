@@ -56,6 +56,7 @@ export class Station {
    * @param {string} [options.url='/models/station.glb']
    * @param {string|null} [options.lodUrl='/models/station_lod1.glb'] low-poly stand-in beyond 25 km; null disables
    * @param {THREE.Vector3} [options.direction] unit vector of the ground track (default: over the coast destination)
+   * @param {THREE.Quaternion|null} [options.orientation] fixed model orientation; defaults to radial stationQuaternion
    * @param {number} [options.altitude=STATION_ALTITUDE]
    * @param {boolean} [options.orbiting=false] true: circles the planet's axis once per `period`. Off by default,
    *   because a target that moves at 1.1 km/s is no fun to chase; the fixed station reads as geostationary.
@@ -82,12 +83,14 @@ export class Station {
     this.lodModel = null;
 
     this.direction0 = (options.direction ? options.direction.clone() : defaultStationDirection()).normalize();
+    this.orientationOverride = options.orientation ? options.orientation.clone().normalize() : null;
     /** Current unit direction from the planet centre to the station. */
     this.direction = this.direction0.clone();
     /** Station origin in world metres (double precision). */
     this.worldPosition = new THREE.Vector3();
     this.quaternion = new THREE.Quaternion();
     this.inverseQuaternion = new THREE.Quaternion();
+    this._up = new THREE.Vector3();
 
     // Model-space anchors, filled by attach().
     this.padLocal = new THREE.Vector3();
@@ -107,6 +110,8 @@ export class Station {
     this.doorAction = null;
     this.doorClip = null;
     this.doorCommand = 'closed';
+    this.openingControlled = false;
+    this.openingProgress = 0;
     this.navMaterials = [];
     this.cameraDistance = Infinity;
 
@@ -183,10 +188,11 @@ export class Station {
     if (this.lodModel) this.lodModel.visible = false;
     this.ready = true;
     this.updateFrame();
-    this.updateDoorColliders();
+    if (this.openingControlled) this.setOpeningProgress(this.openingProgress);
+    else this.updateDoorColliders();
     this.fill = new THREE.AmbientLight(0xddeaff,0); this.group.add(this.fill);
     for (const x of [-12,12]) {
-      const light = new THREE.PointLight(0xddeaff,300,65,2);
+      const light = new THREE.PointLight(0xffdfb4,300,65,2);
       light.position.set(x,deckTop+11,this.padLocal.z); this.group.add(light);
     }
     return this;
@@ -224,8 +230,10 @@ export class Station {
   /** Recompute world position, orientation and the world-space anchors. */
   updateFrame() {
     this.worldPosition.copy(this.direction).multiplyScalar(RADIUS + this.altitude);
-    stationQuaternion(this.direction, this.quaternion);
+    if (this.orientationOverride) this.quaternion.copy(this.orientationOverride);
+    else stationQuaternion(this.direction, this.quaternion);
     this.inverseQuaternion.copy(this.quaternion).invert();
+    this._up.set(0, 1, 0).applyQuaternion(this.quaternion).normalize();
     this.toWorld(this.padLocal, this._padWorld);
     this.toWorld(this.approachLocal, this._approachWorld);
     this.toWorld(this.triggerLocal, this._triggerWorld);
@@ -268,8 +276,10 @@ export class Station {
     if (!this.ready) return;
 
     const triggerDistanceSq = scratch.copy(cameraWorldPosition).sub(this._triggerWorld).lengthSq();
-    if (triggerDistanceSq < DOOR_OPEN_RADIUS * DOOR_OPEN_RADIUS) this.openDoors();
-    else if (triggerDistanceSq > DOOR_CLOSE_RADIUS * DOOR_CLOSE_RADIUS) this.closeDoors();
+    if (!this.openingControlled) {
+      if (triggerDistanceSq < DOOR_OPEN_RADIUS * DOOR_OPEN_RADIUS) this.openDoors();
+      else if (triggerDistanceSq > DOOR_CLOSE_RADIUS * DOOR_CLOSE_RADIUS) this.closeDoors();
+    }
     if (this.doorMixer && !this.doorAction.paused) this.doorMixer.update(dt);
     this.updateDoorColliders();
 
@@ -353,6 +363,39 @@ export class Station {
     action.enabled = true; action.timeScale = -1; action.paused = false;
   }
 
+  /** Take deterministic control of the opening animation for the intro. */
+  beginOpening() {
+    this.openingControlled = true;
+    this.doorCommand = 'opening';
+    return this.setOpeningProgress(0);
+  }
+
+  /** Set and immediately evaluate the authored door pose, including collision. */
+  setOpeningProgress(progress) {
+    this.openingProgress = THREE.MathUtils.clamp(Number.isFinite(progress) ? progress : 0, 0, 1);
+    const action = this.doorAction;
+    if (action) {
+      action.enabled = true;
+      action.paused = true;
+      action.timeScale = 0;
+      action.time = this.openingProgress * this.doorClip.duration;
+      this.doorMixer.update(0);
+      this.updateDoorColliders();
+    }
+    return this.openingProgress;
+  }
+
+  /** Release intro control without changing the current authored door pose. */
+  endOpening() {
+    this.openingControlled = false;
+    if (this.doorAction) {
+      this.doorAction.paused = true;
+      this.doorAction.timeScale = 1;
+    }
+    this.doorCommand = this.doorsOpen >= 1 - 1e-4 ? 'open' : this.doorsOpen <= 1e-4 ? 'closed' : 'paused';
+    return this.doorsOpen;
+  }
+
   /** 0 = sealed, 1 = fully open. */
   get doorsOpen() {
     if (!this.doorAction) return 0;
@@ -360,7 +403,7 @@ export class Station {
   }
 
   /** Unit vector away from the planet at the station (local +Y). */
-  get up() { return this.direction; }
+  get up() { return this._up; }
   /** Deck-centre world position, on the deck surface. */
   get padWorldPosition() { return this._padWorld; }
   /** Orientation for a landed ship: pads flat on the deck, nose (-Z) toward the doors. */
@@ -397,7 +440,7 @@ export class Station {
     const world = this.toWorld(local, new THREE.Vector3());
     const direction = world.clone().normalize();
     const ground = Math.max(0, terrainHeight(direction.x, direction.y, direction.z));
-    return { direction: direction.toArray(), altitude: world.length() - RADIUS - ground, lookAt: this.toWorld(new THREE.Vector3(this.padLocal.x,this.interiorBox.min.y+height,this.padLocal.z),new THREE.Vector3()), up: this.direction.clone() };
+    return { direction: direction.toArray(), altitude: world.length() - RADIUS - ground, lookAt: this.toWorld(new THREE.Vector3(this.padLocal.x,this.interiorBox.min.y+height,this.padLocal.z),new THREE.Vector3()), up: this.up.clone() };
   }
 
   dispose() {

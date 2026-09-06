@@ -6,7 +6,7 @@ test('seeded planet renders orbit, ground materials, foliage, cabin and shadows'
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-  await page.goto('/?seed=7291&debug=1');
+  await page.goto('/?intro=0&seed=7291&debug=1');
   await page.waitForFunction(() => window.starAgent?.state.ready, null, { timeout: 60000 });
   await page.evaluate(() => window.starAgent.setRenderScale(1));
   const backend = await page.evaluate(() => {
@@ -62,7 +62,7 @@ test('inspect coast material from low flight',async({page})=>{
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
-  await page.goto('/?seed=7291');
+  await page.goto('/?intro=0&seed=7291');
   await page.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:60000});
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   await page.evaluate(()=>window.starAgent.transit('coast'));

@@ -311,12 +311,15 @@ SPINE_Z, SPINE_R, SPINE_X = 13.6, 4.6, 64.0
 TRUSS_X, TRUSS_Y = 54.0, 44.0
 RING_X, RING_R, RING_TUBE = -40.0, 18.0, 3.0
 DECK_TOP = HZ0
+DECK_THICKNESS = 0.4
+# The structural slab ends under the finished deck, never on its visible face.
+FLOOR_TOP = DECK_TOP - DECK_THICKNESS
 PAD = Vector((0.0, (HY0 + HY1) / 2, DECK_TOP))
 HOVER = 3.2                                                  # ship hover height used by navigation.js
 
 # ============================================================================= HANGAR HULL
 hull_parts = []
-hull_parts.append(hero_box('Hull_Floor', (2 * OX, HY1 - OY0, HZ0 - OZ0), (0, (OY0 + HY1) / 2, (OZ0 + HZ0) / 2), 'Hull', 0.5))
+hull_parts.append(hero_box('Hull_Floor', (2 * OX, HY1 - OY0, FLOOR_TOP - OZ0), (0, (OY0 + HY1) / 2, (OZ0 + FLOOR_TOP) / 2), 'Hull', 0.5))
 hull_parts.append(hero_box('Hull_Ceiling', (2 * OX, HY1 - OY0, OZ1 - HZ1), (0, (OY0 + HY1) / 2, (HZ1 + OZ1) / 2), 'Hull', 0.5))
 for s in (-1, 1):
     hull_parts.append(hero_box(f'Hull_Side{s}', (WALL, HY1 - OY0, OZ1 - OZ0), (s * (HX + WALL / 2), (OY0 + HY1) / 2, (OZ0 + OZ1) / 2), 'Hull', 0.5))
@@ -598,7 +601,7 @@ labs.build()
 
 # ============================================================================= LANDING DECK + MARKINGS
 deck = Batch('LandingDeck')
-deck.add(box_geo(2 * HX, HY1 - HY0, 0.4, place((0, (HY0 + HY1) / 2, DECK_TOP - 0.2))), 'Deck')
+deck.add(box_geo(2 * HX, HY1 - HY0, DECK_THICKNESS, place((0, (HY0 + HY1) / 2, DECK_TOP - DECK_THICKNESS / 2))), 'Deck')
 DECK = deck.build()
 marks = Batch('DeckMarkings')
 zm = DECK_TOP + 0.015
