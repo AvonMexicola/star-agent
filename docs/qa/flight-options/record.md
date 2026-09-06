@@ -124,4 +124,17 @@ The production build and affected browser fixture passed again (**1/1**) with
 both intermediate and distant fields populated and completely published. No
 console/page errors were recorded. This rerun follows the earlier full2/2 feature
 suite; unaffected controller behavior was not gratuitously rerun for grass geometry.
-The final independent walking review is pending.
+The third independent review of32782e5 also scored **3.83/5**; its exact report is
+retained in [third-review.md](third-review.md). It confirmed the inner improvement
+but found the outer20–28m card overlap still sparse and olive. The next correction
+preserves filtered alpha coverage instead of discarding mipmapped blades at a hard
+threshold, uses32 individually shaded blades in the shared128px mask, and pads
+transparent RGB to prevent black color bleeding during minification. Per-instance
+stochastic coverage lets overlapping far clusters contribute independently.
+
+The first coverage variant passed the affected browser check1/1. A subsequent
+intermediate variant was terminated with exit143 before producing a result; it is
+not recorded as a test pass. The final combined source passed its production build and affected browser
+fixture again (**1/1**, zero page/console errors); independent visual review is
+next. Log: `/tmp/star-agent-flight-options-stochastic-browser.log`. No extra scene meshes or triangles
+were added by the mask correction.

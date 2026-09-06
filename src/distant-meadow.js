@@ -2,17 +2,29 @@ import * as THREE from 'three';
 import { RADIUS, terrainHeight, moisture, hash } from './world.js';
 
 const CAPACITY=85000, SPACING=1.1, MARGIN=20, UP=new THREE.Vector3(0,1,0);
-/** Cheap crossed clusters: 18 tapered blades encoded in one reusable alpha mask.
+/** Cheap crossed clusters: 32 tapered blades encoded in one reusable colored alpha mask.
  * The source is deterministic; no network textures or per-blade scene objects. */
 function grassTexture(){
   const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
-  const c=canvas.getContext('2d');c.fillStyle='white';
-  for(let i=0;i<18;i++){
-    const x=4+hash(i,0,8791)*120,h=45+hash(i,1,8791)*78,lean=(hash(i,2,8791)-.5)*28;
+  const c=canvas.getContext('2d');
+  for(let i=0;i<32;i++){
+    const x=4+hash(i,0,8791)*120,h=83+hash(i,1,8791)*41,lean=(hash(i,2,8791)-.5)*28;
+    const gradient=c.createLinearGradient(0,128,0,128-h);
+    gradient.addColorStop(0,new THREE.Color(.42,.52,.27).getStyle());
+    gradient.addColorStop(1,new THREE.Color(.80,.88,.45).getStyle());c.fillStyle=gradient;
     c.beginPath();c.moveTo(x-2.2,128);c.quadraticCurveTo(x+lean*.2,128-h*.6,x+lean,128-h);
     c.quadraticCurveTo(x+lean*.3+2,128-h*.55,x+2.2,128);c.fill();
   }
-  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
+  // Supply RGB even outside the mask so minification does not average black
+  // transparent texels into the blade color. Alpha still controls coverage.
+  const pixels=c.getImageData(0,0,128,128).data,color=new THREE.Color();
+  for(let y=0;y<128;y++)for(let x=0;x<128;x++){
+    const i=(y*128+x)*4;if(pixels[i+3]!==0)continue;
+    const t=Math.min(1,(128-y)/105);color.setRGB(.42+t*.38,.52+t*.36,.27+t*.18).convertLinearToSRGB();
+    pixels[i]=Math.round(color.r*255);pixels[i+1]=Math.round(color.g*255);pixels[i+2]=Math.round(color.b*255);
+  }
+  const texture=new THREE.DataTexture(pixels,128,128);texture.colorSpace=THREE.SRGBColorSpace;
+  texture.flipY=true;texture.generateMipmaps=true;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.magFilter=THREE.LinearFilter;texture.needsUpdate=true;return texture;
 }
 function clusterGeometry(){
   const positions=[],uv=[],indices=[];
@@ -41,22 +53,24 @@ export class DistantMeadow {
     this.uniforms={fieldEye:{value:new THREE.Vector3()},fieldTime:{value:0},fieldRange:{value:this.distance}};
     this.texture=medium?null:grassTexture();this.geometry=medium?mediumGeometry():clusterGeometry();
     this.geometry.setAttribute('fieldPhase',new THREE.InstancedBufferAttribute(new Float32Array(this.capacity),1));
-    this.material=new THREE.MeshStandardMaterial({map:this.texture,alphaTest:medium?0:.32,side:THREE.DoubleSide,roughness:1});
+    this.material=new THREE.MeshStandardMaterial({map:this.texture,alphaTest:0,side:THREE.DoubleSide,roughness:1});
     this.material.onBeforeCompile=shader=>{
       Object.assign(shader.uniforms,this.uniforms);
-      shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform vec3 fieldEye; uniform float fieldTime; attribute float fieldPhase; varying float fieldDistance; varying float fieldHeight;')
+      shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform vec3 fieldEye; uniform float fieldTime; attribute float fieldPhase; varying float fieldDistance; varying float fieldHeight; varying float fieldSeed;')
         .replace('#include <begin_vertex>',`#include <begin_vertex>
-          vec3 root=instanceMatrix[3].xyz; fieldDistance=length(root-fieldEye); fieldHeight=uv.y;
+          vec3 root=instanceMatrix[3].xyz; fieldDistance=length(root-fieldEye); fieldHeight=uv.y; fieldSeed=fieldPhase;
           transformed.x+=sin(fieldTime*1.8+fieldPhase)*.09*position.y*position.y;`);
-      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform float fieldRange; varying float fieldDistance; varying float fieldHeight;')
+      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform float fieldRange; varying float fieldDistance; varying float fieldHeight; varying float fieldSeed;')
         .replace('#include <alphatest_fragment>',`#include <alphatest_fragment>
           float cover=smoothstep(${medium?'6.0,10.0':'20.0,28.0'},fieldDistance)*(1.0-smoothstep(${medium?'20.0':'fieldRange*.78'},fieldRange,fieldDistance));
-          float noise=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))));
-          if(noise>cover)discard;`)
+          float noise=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))${medium?'':'+fieldSeed*.137'}));
+          // Preserve the filtered mask's average coverage when blades become
+          // subpixel. A hard alpha cutoff erased the sward in distant mipmaps.
+          if(noise>cover*diffuseColor.a)discard;`)
         .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal*=faceDirection;')
-        .replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=mix(vec3(.42,.52,.27),vec3(.80,.88,.45),fieldHeight);');
+        .replace('#include <color_fragment>',medium?'#include <color_fragment>\ndiffuseColor.rgb*=mix(vec3(.42,.52,.27),vec3(.80,.88,.45),fieldHeight);':'#include <color_fragment>');
     };
-    this.material.customProgramCacheKey=()=> medium?'medium-meadow-v1':'distant-meadow-v2';
+    this.material.customProgramCacheKey=()=> medium?'medium-meadow-v1':'distant-meadow-v3';
     this.mesh=new THREE.InstancedMesh(this.geometry,this.material,this.capacity);this.mesh.count=0;this.mesh.frustumCulled=false;this.mesh.receiveShadow=true;this.mesh.castShadow=false;this.mesh.name=medium?'Intermediate grass blades':'Distant instanced meadow';scene.add(this.mesh);
     this.stats={range:this.distance,density:.75,clusters:0,pending:0,rebuilds:0,visible:false};
     if(!medium)this.middle=new DistantMeadow(scene,vegetation,{medium:true});
