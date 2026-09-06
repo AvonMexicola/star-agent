@@ -1,9 +1,11 @@
 import * as THREE from 'three';
+import { createStationShopUI } from './station-shop-ui.js';
 import { createStationCargoUI } from './station-cargo-ui.js';
 
 export function createStationServices(nav,station,inventory){
   station.nav=nav;
   const openCargo=createStationCargoUI(nav,inventory);
+  const shopUI=createStationShopUI(nav,inventory);
   const dialog=document.createElement('dialog');dialog.id='station-elevator-dialog';dialog.setAttribute('aria-labelledby','elevator-title');
   dialog.innerHTML='<button class="station-close" aria-label="Close elevator destinations">✕</button><p class="eyebrow">AEON ORBITAL / PASSENGER TRANSIT</p><h2 id="elevator-title">Elevator destinations</h2><p class="elevator-location"></p><button data-destination="hub">Central hub</button><div class="station-destinations"></div>';
   document.body.append(dialog);
@@ -38,11 +40,12 @@ export function createStationServices(nav,station,inventory){
     station.rebase(nav.position);
     await new Promise(resolve=>setTimeout(resolve,500));
     fade.classList.remove('active');travelling=false;release();
-    nav.notify(destination==='hub'?'Central concourse. Walk out to the windows; use the elevator to return to your ship.':`Berth ${Number(destination)+1}. Your ship remains at berth ${station.parkedPod+1}.`);
+    nav.notify(destination==='hub'?'Central concourse. Armory to the left, ship components to the right. Purchases go to station storage.':`Berth ${Number(destination)+1}. Your ship remains at berth ${station.parkedPod+1}.`);
   });
   nav.stationAction=()=>{
     const interaction=station.interaction(nav);if(!interaction)return false;
     if(interaction.kind==='cargo')openCargo();
+    else if(interaction.kind==='shop')shopUI.open(interaction.shopId);
     else if(interaction.kind==='door'){
       // Closing is only available from outside the doorway; never crush a walker.
       const p=station.toLocal(nav.position,new THREE.Vector3());

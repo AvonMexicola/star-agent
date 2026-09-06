@@ -110,6 +110,35 @@ function setupNavigation(t, station) {
   return { navigation, notices, press, keyDown, keyUp, advance, advanceUntil, walkUntil };
 }
 
+test('cached door bounds ignore world rebasing and track cinematic, mixer and geometry changes',async t=>{
+  const {station}=await createStation();t.after(()=>station.dispose());
+  const check=()=>{
+    station.updateDoorColliders();station.group.updateMatrixWorld(true);
+    const inverse=station.group.matrixWorld.clone().invert();
+    station.doors.forEach((door,i)=>{
+      const expected=new THREE.Box3();door.traverse(mesh=>{if(mesh.isMesh){mesh.geometry.computeBoundingBox();expected.union(mesh.geometry.boundingBox.clone().applyMatrix4(inverse.clone().multiply(mesh.matrixWorld)));}});
+      nearVector(station.doorBoxes[i].min,expected.min,1e-7);nearVector(station.doorBoxes[i].max,expected.max,1e-7);
+    });
+  };
+  station.beginOpening();station.setOpeningProgress(.25);check();
+  const boxes=station.doorBoxes.map(box=>box.clone()),references=[...station.doorBoxes];
+  let traversals=0;const update=station.group.updateMatrixWorld;
+  station.group.updateMatrixWorld=function(...args){traversals++;return update.apply(this,args);};
+  station.group.position.set(25000000,-1900000,5000000);station.group.rotation.set(.3,.7,.2);
+  station.updateDoorColliders();
+  assert.equal(traversals,0,'rebasing never traverses the hidden hero model for local door collision');
+  station.doorBoxes.forEach((box,i)=>{assert.equal(box,references[i]);assert.ok(box.equals(boxes[i]),'local doubles stay exactly unchanged');});
+  station.setOpeningProgress(.75);check();assert.ok(!station.doorBoxes[0].equals(boxes[0]));
+  station.endOpening();station.closeDoors();station.doorMixer.update(1);check();
+  const leaf=station.doors[0];let mesh;leaf.traverse(node=>{if(node.isMesh&&!mesh)mesh=node;});
+  mesh.geometry=mesh.geometry.clone();const position=mesh.geometry.attributes.position;
+  position.setX(0,position.getX(0)+20);position.needsUpdate=true;check();
+  mesh.position.y+=.7;check();
+  const addition=new THREE.Mesh(new THREE.BoxGeometry(80,.5,.5),mesh.material);leaf.add(addition);check();
+  leaf.remove(addition);check();addition.geometry.dispose();
+  station.attach(await loadStationGltf());check();
+});
+
 test('the production station asset retains its authored deck, bay, anchors and door animation', async t => {
   const { gltf, station } = await createStation();
   t.after(() => station.dispose());

@@ -100,6 +100,25 @@ test('clear walking aisles reach cargo and elevator; closed elevator blocks swep
   assert.ok(s.deckPoint(hubB,1.75).distanceTo(hubB)<1e-8);
   assert.equal(s.constrainStep(to([20,-6.25,0]),to([25,-6.25,0]),s.quaternion,true).hit,true);
 });
+test('steady distant berths upload no matrices until visibility, pose or their own door changes',async()=>{
+  const s=await create(),sun=new THREE.Vector3(1,0,0),camera=s.centre.clone().addScalar(5000);
+  for(const pod of s.pods){pod.beginOpening();pod.setOpeningProgress(.5);}
+  s.update(camera,camera,sun,0);
+  const writes=[];for(const batch of s.lodBatches){const original=batch.instances.setMatrixAt;batch.instances.setMatrixAt=function(index,matrix){writes.push({batch,index});return original.call(this,index,matrix);};}
+  const versions=s.lodBatches.map(b=>b.instances.instanceMatrix.version);
+  s.update(camera,camera.clone().addScalar(1),sun,0);
+  assert.equal(writes.length,0,'floating-origin movement within the same LOD interval needs no local instance writes');
+  assert.deepEqual(s.lodBatches.map(b=>b.instances.instanceMatrix.version),versions,'unchanged matrices are not reuploaded');
+  s.pods[19].setOpeningProgress(.75);s.update(camera,camera,sun,0);
+  assert.ok(writes.length>0);assert.ok(writes.every(w=>w.index===19&&w.batch.door>=0),'only this berth’s moving door batches update');
+  writes.length=0;s.pods[19].offset.x+=2;s.update(camera,camera,sun,0);
+  assert.equal(writes.length,s.lodBatches.length);assert.ok(writes.every(w=>w.index===19),'berth pose change updates all its batches');
+  writes.length=0;const near=s.pods[0].worldPosition;s.update(near,near,sun,0);
+  assert.ok(writes.some(w=>w.index===0),'entering the hero distance removes its distant instances');
+  const matrix=new THREE.Matrix4();s.lodBatches[0].instances.getMatrixAt(0,matrix);
+  assert.equal(new THREE.Vector3().setFromMatrixScale(matrix).length(),0);
+  writes.length=0;s.update(camera,camera,sun,0);assert.ok(writes.some(w=>w.index===0),'leaving restores distant geometry');
+});
 test('hero and LOD structural slabs stay below the visible deck',async()=>{
   const s=await create();
   for(const model of [s.active.model,s.active.lodModel]){

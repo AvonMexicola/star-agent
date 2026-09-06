@@ -6,6 +6,8 @@ import { RADIUS } from './world.js';
 import { createStationFinishMaterials } from './station-finish-materials.js';
 import { createStationFinishGraphics } from './station-finish-graphics.js';
 import { createStationFinishLighting, prepareStationFinishShadows } from './station-finish-lighting.js';
+import { attachConcourse } from './station-concourse.js';
+import { attachPressureElevator } from './station-elevator.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
@@ -74,12 +76,12 @@ export class StationComplex {
   }
   async loadFinish(loader){
     try{
-      const [materials,props]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb')]);
+      const [materials,props,concourse,elevator]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb')]);
       const graphics=createStationFinishGraphics();
       await graphics.readyPromise;
       const rig=createStationFinishLighting();
       this.finishMaterials=materials;this.finishRig=rig;this.finishStatus='ready';
-      return {materials,props,graphics};
+      return {materials,props,graphics,concourse,elevator};
     }catch(error){this.finishStatus='unavailable';this.finishError=error.message;return null;}
   }
   async load(options){
@@ -87,6 +89,14 @@ export class StationComplex {
       const loader=new GLTFLoader();
       const [gltf,lod,finish]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null]);
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
+      if(finish){
+        attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials});
+        // Collision for the batched furniture comes from authored assembly boxes.
+        // Keep the room BVH built before these optional props and moving leaves.
+        finish.materials.apply(this.hub.group);
+        this.hub.group.traverse(mesh=>{if(mesh.isMesh&&(/Detail|Sign_/.test(mesh.name)||mesh.material.transparent))mesh.castShadow=false;});
+        attachPressureElevator(this.hub.lift,finish.elevator,{sign,materials:finish.materials});
+      }
       let colliders;
       for(const spec of POD_LAYOUT){
         const pod=new Station(this.scene,{gltf:{scene:gltf.scene.clone(true),animations:gltf.animations},lodUrl:null,direction:this.direction,orientation:this.baseQuaternion,altitude:this.altitude,offset:spec.offset,yaw:spec.yaw,lodDistance:180,colliders});
@@ -95,6 +105,7 @@ export class StationComplex {
         if(lod)pod.attachLod({scene:lod.scene.clone(true)});
         const number=pod.model.getObjectByName('DeckNumber');if(number)number.visible=false;
         pod.lift=createElevator(pod.group,22.3,pod.interiorBox.min.y);
+        if(finish)attachPressureElevator(pod.lift,finish.elevator,{sign,materials:finish.materials});
         pod.services=new THREE.Group();pod.group.add(pod.services);
         sign(pod.services,`BERTH ${String(pod.id).padStart(2,'0')} / AEON`,[0,9,-26],18,2);
         sign(pod.services,'CARGO TRANSFER\nF  /  OPEN TERMINAL',[-12,pod.interiorBox.min.y+1.72,22.69],1.72,1.12);
@@ -166,18 +177,34 @@ export class StationComplex {
       pod.lift.group.visible=pod.services.visible=pod.cameraDistance<230;
       if(pod.lodModel)pod.lodModel.visible=false;
     }
-    const matrix=new THREE.Matrix4(),local=new THREE.Matrix4(),unit=new THREE.Vector3(1,1,1);
+    this._lodPoseCache??=new WeakMap();
+    this._lodScratch??={matrix:new THREE.Matrix4(),local:new THREE.Matrix4(),unit:new THREE.Vector3(1,1,1)};
+    const {matrix,local,unit}=this._lodScratch;
+    const poses=this.pods.map(pod=>{
+      let pose=this._lodPoseCache.get(pod);
+      if(!pose){pose={offset:new THREE.Vector3(Infinity,Infinity,Infinity),yaw:new THREE.Quaternion(),base:new THREE.Matrix4(),visible:null,doors:[],doorChanged:[]};this._lodPoseCache.set(pod,pose);}
+      const visible=pod.cameraDistance>pod.lodDistance&&pod.cameraDistance<600000;
+      pose.changed=pose.visible!==visible||!pose.offset.equals(pod.offset)||!pose.yaw.equals(pod.yaw);
+      if(pose.changed){pose.visible=visible;pose.offset.copy(pod.offset);pose.yaw.copy(pod.yaw);pose.base.compose(pod.offset,pod.yaw,unit);}
+      for(let i=0;i<2;i++){const x=pod.doors[i]?.position.x;pose.doorChanged[i]=pose.doors[i]!==x;pose.doors[i]=x;}
+      return pose;
+    });
     for(const batch of this.lodBatches){
+      let changed=false;
       this.pods.forEach((pod,i)=>{
-        if(pod.cameraDistance<=pod.lodDistance||pod.cameraDistance>=600000)matrix.makeScale(0,0,0);
+        const pose=poses[i];
+        if(batch._poseInitialized&&!pose.changed&&!(pose.visible&&batch.door>=0&&pose.doorChanged[batch.door]))return;
+        if(!pose.visible)matrix.makeScale(0,0,0);
         else{
           local.copy(batch.matrix);
-          if(batch.door>=0)local.elements[12]+=pod.doors[batch.door].position.x-batch.closedX;
-          matrix.compose(pod.offset,pod.yaw,unit).multiply(local);
+          if(batch.door>=0)local.elements[12]+=pose.doors[batch.door]-batch.closedX;
+          matrix.copy(pose.base).multiply(local);
         }
         batch.instances.setMatrixAt(i,matrix);
+        batch.instances.instanceMatrix.addUpdateRange(i*16,16);changed=true;
       });
-      batch.instances.instanceMatrix.needsUpdate=true;
+      if(changed)batch.instances.instanceMatrix.needsUpdate=true;
+      batch._poseInitialized=true;
     }
     const cameraDistance=origin.distanceTo(this.centre);
     // The fixed spine and rings share the pod render horizon. Keeping their
@@ -201,7 +228,7 @@ export class StationComplex {
     const keep=result=>{if(result.hit&&(!closest.hit||result.point.distanceToSquared(previous)<closest.point.distanceToSquared(previous)))closest=result;};
     if(walking){
       const frame=this.frame,start=frame.toLocal(previous,new THREE.Vector3()),end=frame.toLocal(proposed,new THREE.Vector3());
-      const doors=elevatorBoxes(this.lift);
+      const doors=[...elevatorBoxes(this.lift),...this.lift.staticBoxes,...(frame.staticBoxes??[])];
       if(this.location==='hangar')doors.push(...this.active.doorBoxes);
       const result=constrainStationSweep(frame.colliders,doors,start,end,new THREE.Vector3(-.25,-layout.eyeHeight,-.25),new THREE.Vector3(.25,.15,.25));
       frame.toWorld(result.point,result.point);return result;
@@ -228,6 +255,9 @@ export class StationComplex {
     if(Math.abs(p.y-floor-nav.layout.eyeHeight)>1)return null;
     if(this.location==='hangar'&&p.distanceTo(new THREE.Vector3(-12,floor+nav.layout.eyeHeight,20.7))<2.3){
       return this.activeIndex===this.parkedPod?{kind:'cargo',label:'F · CARGO TRANSFER TERMINAL'}:{kind:'unavailable',label:`SHIP PARKED AT BERTH ${this.parkedPod+1}`};
+    }
+    if(this.location==='hub')for(const [x,shopId,name] of [[-10.7,'weapons','AEON ARMORY'],[10.7,'equipment','SHIP COMPONENTS']]){
+      if(Math.hypot(p.x-x,p.z)<1.75)return {kind:'shop',shopId,label:`F · ${name}`};
     }
     const lift=this.lift;
     if(Math.abs(p.x)<1.65&&p.z>lift.z+.65&&p.z<lift.z+3.1)return {kind:'travel',label:'F · ELEVATOR DESTINATIONS'};

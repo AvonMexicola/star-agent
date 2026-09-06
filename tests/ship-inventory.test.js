@@ -12,7 +12,7 @@ function storage() {
 }
 test('cargo transfers conserve every item and mass and persist across reload', () => {
   const disk = storage(), inventory = new ShipInventory(disk), before = inventory.snapshot;
-  for (const item of ITEMS) {
+  for (const item of ITEMS.filter(item => before.ship[item.id] > 0)) {
     assert.equal(inventory.transfer(item.id, 'ship').ok, true);
     const after = new ShipInventory(disk);
     assert.equal(after.count('ship', item.id), inventory.count('ship', item.id));
@@ -77,7 +77,7 @@ test('Blender asset fits the navigation envelope with a correctly placed movable
 
 test('bulk transfers fill available capacity, conserve cargo and save once across all containers',()=>{
   const disk=storage();let writes=0;const original=disk.setItem;disk.setItem=(...args)=>{writes++;original(...args);};
-  const inv=new ShipInventory(disk),before=inv.snapshot;
+  const inv=new ShipInventory(disk),before=inv.snapshot;writes=0;
   const result=inv.transferAll('station','ship');assert.equal(result.ok,true);assert.ok(result.remaining>0);
   assert.equal(writes,1);assert.equal(inv.mass('ship'),120);
   inv.transferAll('ship','pack');assert.equal(inv.mass('pack'),20);
@@ -89,7 +89,7 @@ test('legacy saves migrate without resetting cargo, and blocked persistence keep
   const disk=storage(),old=new ShipInventory(disk).snapshot;old.ship.repair=1;old.pack.repair=2;
   disk.setItem(INVENTORY_KEY,JSON.stringify({version:1,ship:old.ship,pack:old.pack}));
   const inv=new ShipInventory(disk);assert.equal(inv.count('ship','repair'),1);assert.equal(inv.count('station','repair'),12);
-  inv.transferAll('pack','station');assert.equal(JSON.parse(disk.getItem(INVENTORY_KEY)).version,2);
+  inv.transferAll('pack','station');assert.equal(JSON.parse(disk.getItem(INVENTORY_KEY)).version,3);
   const blocked=new ShipInventory({getItem(){return null;},setItem(){throw Error('denied');}});
   assert.equal(blocked.transferAll('station','ship').ok,true);assert.equal(blocked.saved,false);assert.equal(blocked.mass('ship'),120);
 });

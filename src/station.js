@@ -17,6 +17,20 @@ export const DOOR_OPEN_RADIUS = 600;
 export const DOOR_CLOSE_RADIUS = 1_500;
 const LOD_DISTANCE = 25_000;
 const preparedMaterials = new WeakSet();
+const doorGeometryBounds = new WeakMap();
+function cachedDoorGeometryBounds(geometry) {
+  const position=geometry.attributes.position,morph=geometry.morphAttributes.position??[];
+  let cached=doorGeometryBounds.get(geometry);
+  if(!cached||cached.position!==position||cached.version!==position?.version||
+    cached.relative!==geometry.morphTargetsRelative||cached.morph.length!==morph.length||
+    morph.some((attribute,i)=>cached.morph[i].attribute!==attribute||cached.morph[i].version!==attribute.version)){
+    geometry.computeBoundingBox();
+    cached={position,version:position?.version,relative:geometry.morphTargetsRelative,
+      morph:morph.map(attribute=>({attribute,version:attribute.version})),box:geometry.boundingBox.clone()};
+    doorGeometryBounds.set(geometry,cached);
+  }
+  return cached;
+}
 const VISIBLE_DISTANCE = 600_000;
 const NAV_LIGHT_MATERIALS = ['NavLight_Red', 'NavLight_Green', 'Beacon_White'];
 const REQUIRED_NODES = ['HangarDoor_L', 'HangarDoor_R', 'LandingDeck', 'LandingPad', 'ApproachPoint', 'DoorTrigger'];
@@ -311,16 +325,36 @@ export class Station {
 
   updateDoorColliders() {
     if (!this.doors) return;
-    this.group.updateMatrixWorld(true);
-    const inverse = this.group.matrixWorld.clone().invert();
-    this.doorBoxes = this.doors.map(door => {
-      const box = new THREE.Box3();
-      door.traverse(mesh => {
-        if (!mesh.isMesh) return;
-        mesh.geometry.computeBoundingBox();
-        box.union(mesh.geometry.boundingBox.clone().applyMatrix4(inverse.clone().multiply(mesh.matrixWorld)));
-      });
-      return box;
+    this._doorBoundsCache??=new WeakMap();
+    this.doorBoxes.length=this.doors.length;
+    this.doors.forEach((door,index)=>{
+      let cached=this._doorBoundsCache.get(door);
+      if(!cached){cached={nodes:new WeakMap(),meshes:[],box:new THREE.Box3(),parent:new THREE.Matrix4()};this._doorBoundsCache.set(door,cached);}
+      // Work entirely in station-local doubles. Rebasing or rotating the
+      // station cannot change a local collision box, and should never force
+      // a world-matrix traversal through every hidden hero model.
+      const ancestors=[];for(let p=door.parent;p&&p!==this.group;p=p.parent)ancestors.push(p);
+      cached.parent.identity();
+      for(let i=ancestors.length-1;i>=0;i--){const node=ancestors[i];if(node.matrixAutoUpdate)node.updateMatrix();cached.parent.multiply(node.matrix);}
+      let changed=false;const meshes=[];
+      const visit=(node,parent)=>{
+        let state=cached.nodes.get(node);
+        if(!state){state={matrix:new THREE.Matrix4(),previous:new THREE.Matrix4(),box:new THREE.Box3(),source:null};cached.nodes.set(node,state);}
+        if(node.matrixAutoUpdate)node.updateMatrix();
+        state.matrix.multiplyMatrices(parent,node.matrix);
+        if(node.isMesh){
+          const source=cachedDoorGeometryBounds(node.geometry);meshes.push(state);
+          if(state.source!==source||!state.previous.equals(state.matrix)){
+            state.source=source;state.previous.copy(state.matrix);state.box.copy(source.box).applyMatrix4(state.matrix);changed=true;
+          }
+        }
+        for(const child of node.children)visit(child,state.matrix);
+      };
+      visit(door,cached.parent);
+      if(changed||meshes.length!==cached.meshes.length||meshes.some((mesh,i)=>mesh!==cached.meshes[i])){
+        cached.box.makeEmpty();for(const mesh of meshes)cached.box.union(mesh.box);cached.meshes=meshes;
+      }
+      this.doorBoxes[index]=cached.box;
     });
   }
 
