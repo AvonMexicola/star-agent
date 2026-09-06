@@ -1,0 +1,102 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "viewports": [
+    [
+      1440,
+      900
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "fixture": "Medical test starts from an injured save; no natural gameplay injury claimed.",
+  "before": {
+    "version": 1,
+    "active": "tool",
+    "quickIndex": 0,
+    "health": 100,
+    "bleeding": false,
+    "slots": {
+      "weapon1": {
+        "item": "rifle-laser",
+        "quantity": 1
+      },
+      "weapon2": {
+        "item": "sidearm-pistol",
+        "quantity": 1
+      },
+      "tool": {
+        "item": "mining-laser-tool",
+        "quantity": 1
+      },
+      "backpack": {
+        "item": "backpack-life-support",
+        "quantity": 1
+      },
+      "ammo1": {
+        "item": "carbine-charge",
+        "quantity": 60
+      },
+      "ammo2": {
+        "item": "sidearm-charge",
+        "quantity": 36
+      },
+      "quick1": {
+        "item": "bandage",
+        "quantity": 3
+      },
+      "quick2": {
+        "item": "healing-stim",
+        "quantity": 2
+      },
+      "quick3": null,
+      "quick4": null
+    }
+  },
+  "final": {
+    "version": 1,
+    "active": "weapon1",
+    "quickIndex": 0,
+    "health": 100,
+    "bleeding": false,
+    "slots": {
+      "weapon1": {
+        "item": "rifle-laser",
+        "quantity": 1
+      },
+      "weapon2": {
+        "item": "sidearm-pistol",
+        "quantity": 1
+      },
+      "tool": {
+        "item": "mining-laser-tool",
+        "quantity": 1
+      },
+      "backpack": {
+        "item": "backpack-life-support",
+        "quantity": 1
+      },
+      "ammo1": {
+        "item": "carbine-charge",
+        "quantity": 60
+      },
+      "ammo2": {
+        "item": "sidearm-charge",
+        "quantity": 36
+      },
+      "quick1": {
+        "item": "bandage",
+        "quantity": 2
+      },
+      "quick2": {
+        "item": "healing-stim",
+        "quantity": 1
+      },
+      "quick3": null,
+      "quick4": null
+    }
+  },
+  "errors": []
+}

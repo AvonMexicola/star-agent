@@ -1,0 +1,217 @@
+{
+  "browser": "151.0.7922.173",
+  "input": "Injected W3C standard Gamepad; no physical controller used",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "assigned": {
+    "version": 1,
+    "active": "tool",
+    "quickIndex": 0,
+    "health": 100,
+    "bleeding": false,
+    "slots": {
+      "weapon1": {
+        "item": "sidearm-pistol",
+        "quantity": 1
+      },
+      "weapon2": {
+        "item": "rifle-laser",
+        "quantity": 1
+      },
+      "tool": {
+        "item": "mining-laser-tool",
+        "quantity": 1
+      },
+      "backpack": {
+        "item": "backpack-life-support",
+        "quantity": 1
+      },
+      "ammo1": {
+        "item": "carbine-charge",
+        "quantity": 60
+      },
+      "ammo2": {
+        "item": "sidearm-charge",
+        "quantity": 36
+      },
+      "quick1": null,
+      "quick2": {
+        "item": "healing-stim",
+        "quantity": 2
+      },
+      "quick3": {
+        "item": "bandage",
+        "quantity": 3
+      },
+      "quick4": null
+    }
+  },
+  "beforeGun": {
+    "ammo": 36,
+    "shots": 0,
+    "revision": 4
+  },
+  "afterGun": {
+    "ammo": 31,
+    "shots": 5,
+    "revision": 4
+  },
+  "effects": {
+    "particles": 162,
+    "capacity": 1024,
+    "boost": 0,
+    "travel": 0,
+    "bolts": 0,
+    "miningContacts": 5,
+    "collectedBursts": 4,
+    "weaponShots": 0,
+    "reducedMotion": false,
+    "beamVisible": true,
+    "bloom": true
+  },
+  "mined": {
+    "resourceWeights": [
+      0.6613890135452534,
+      0.015,
+      0.32361098645474656
+    ],
+    "resourceVersion": "1.1",
+    "ready": true,
+    "pending": false,
+    "revision": 4,
+    "position": [
+      -2193727.966415542,
+      95037.49792359378,
+      -23505086.116092708
+    ],
+    "pack": [
+      1.1016885137942154,
+      0.04807022010209039,
+      0.6501350504913717
+    ],
+    "ship": [
+      0,
+      0,
+      0
+    ],
+    "saved": true,
+    "error": "",
+    "triangles": 24680,
+    "meshMs": 330.70000000298023,
+    "publishMs": 5.4000000059604645,
+    "inspection": {
+      "status": "ready",
+      "name": "Crescent deposit",
+      "distance": 2.981281652372109,
+      "mineable": true,
+      "rockId": "selene-crescent-ore-01",
+      "point": [
+        -2193727.3384722867,
+        95036.76826348054,
+        -23505086.112565424
+      ]
+    },
+    "groundRevision": 4,
+    "space": false,
+    "targetName": "Crescent deposit",
+    "activeRock": "selene-crescent-ore-01",
+    "activeRevision": 4,
+    "activePosition": [
+      -2193727.966415542,
+      95037.49792359378,
+      -23505086.116092708
+    ],
+    "debrisBrake": false,
+    "surfaceRock": null,
+    "nearestRegional": {
+      "id": "selene-deposit-v1-4324-2574",
+      "name": "Ice outcrop",
+      "position": [
+        -2193894.380129962,
+        95079.8773684497,
+        -23505314.78393483
+      ],
+      "direction": [
+        0.44810297752941664,
+        0.21939598483472553,
+        0.8666424426299878
+      ],
+      "dominant": "ice",
+      "resourceWeights": [
+        0.025000000000000022,
+        0.015,
+        0.96
+      ],
+      "distance": 287.8294545907897,
+      "ready": true
+    },
+    "regionalDeposits": [
+      {
+        "id": "selene-deposit-v1-4324-2574",
+        "name": "Ice outcrop",
+        "dominant": "ice",
+        "variant": 4,
+        "distance": 287.8294545907897,
+        "resourceWeights": [
+          0.025000000000000022,
+          0.015,
+          0.96
+        ],
+        "resourceVersion": "1.1",
+        "ready": true,
+        "pending": false,
+        "revision": 0,
+        "position": [
+          -2193894.380129962,
+          95079.8773684497,
+          -23505314.78393483
+        ],
+        "pack": [
+          1.1016885137942154,
+          0.04807022010209039,
+          0.6501350504913717
+        ],
+        "ship": [
+          0,
+          0,
+          0
+        ],
+        "saved": true,
+        "error": "",
+        "triangles": 16012,
+        "meshMs": 276,
+        "publishMs": 0.7000000029802322
+      }
+    ],
+    "spaceRocks": [],
+    "tool": {
+      "active": true,
+      "item": "mining-laser-tool",
+      "ammo": 0,
+      "hit": [
+        -2193727.3384722867,
+        95036.76826348054,
+        -23505086.112565424
+      ],
+      "heat": 0.315035000000002,
+      "beaming": true,
+      "selected": true,
+      "target": {
+        "status": "ready",
+        "name": "Crescent deposit",
+        "distance": 2.981281652372109,
+        "mineable": true,
+        "rockId": "selene-crescent-ore-01",
+        "point": {
+          "x": -2193727.3384722867,
+          "y": 95036.76826348054,
+          "z": -23505086.112565424
+        }
+      },
+      "toolError": null
+    }
+  },
+  "errors": []
+}

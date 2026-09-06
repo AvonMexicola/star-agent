@@ -539,7 +539,7 @@ export class Equipment {
       this._equipped = name;
       this._holstered = false;
       this._gate = new FireGate(spec.fireRate);
-      if (spec.shot === 'beam') this._heat.reset();
+      // Keep tool heat across slot changes; update() cools it while stowed.
     }
     return this._ensure(name).then(() => { this._attach(name); return this; });
   }
@@ -709,7 +709,7 @@ export class Equipment {
     if (held && spec.shot === 'beam') this._updateBeam(step, wantsFire, source.targetWorldPoint, source.hasHit !== false);
     else { this._beaming = false; this._heat.update(step, false); this._hideBeam(); }
 
-    if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle()) {
+    if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle() && (!source.authorizeFire || source.authorizeFire(spec.name))) {
       this._spawnTracer(spec, source.targetWorldPoint);
       this._spawnFlash(spec);
       this._firePulse = true;
@@ -838,6 +838,8 @@ export class Equipment {
   }
 
   _attach(name) {
+    // An older asynchronous model load may finish after a different slot was drawn.
+    if(this.disposed || (ITEMS[name]?.worn ? !this._worn.has(name) : this._equipped!==name))return;
     const entry = this._items.get(name);
     if (!entry) return;
     const spec = ITEMS[name];
