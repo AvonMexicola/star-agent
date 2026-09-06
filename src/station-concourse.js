@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { stationFinishPalette } from './station-finish-palette.js';
+import { createStationShopGraphics } from './station-shop-graphics.js';
 
 /** Room architecture is baked into local-metre material batches. The authored
  * shop kit supplies the furniture, stock and human-scale storefronts. */
@@ -93,7 +94,7 @@ export function assetCollisionBoxes(root,offset=new THREE.Vector3()){
   return boxes.map(({min,max})=>new THREE.Box3(new THREE.Vector3(...min).add(offset),new THREE.Vector3(...max).add(offset)));
 }
 
-export function attachConcourse(hub,asset,{sign,materials}){
+export function attachConcourse(hub,asset,{sign,materials,shopGraphics}){
   const props=asset.scene.clone(true);
   // Reuse the station's physical surface maps on the authored material batches.
   props.traverse(mesh=>{if(mesh.isMesh){mesh.material.name=mesh.material.name.replace(/^Concourse/,'Finish');mesh.castShadow=true;mesh.receiveShadow=true;}});
@@ -106,11 +107,11 @@ export function attachConcourse(hub,asset,{sign,materials}){
     const anchor=props.getObjectByName(name);
     if(anchor)sign(anchor,`AEON / DECK 04\n${heading}\n${rows}\nELEVATOR BEHIND YOU`,[0,0,0],.56,1.58,0);
   }
-  for(const [side,id,title] of [[-1,'Armory','AEON ARMORY'],[1,'Components','SHIP COMPONENTS']]){
+  for(const [side,id,title] of [[-1,'Armory','WATCHKEEP / ARMORY'],[1,'Components','KESTREL / SHIP COMPONENTS']]){
     const anchor=props.getObjectByName(id+'Sign');
     if(anchor)sign(anchor,title,[0,0,0],7.05,.29,-side*Math.PI/2);
     const screen=props.getObjectByName(id+'Screen');
     if(screen)sign(screen,'F / BROWSE STOCK',[0,0,0],.43,.24,-side*Math.PI/2);
-
   }
+  if(shopGraphics)hub.group.add(createStationShopGraphics(props,shopGraphics));
 }

@@ -265,3 +265,28 @@ door bounds and instance transforms at every origin rebase. Physical finish
 materials must not be passed through the legacy whole-model weather shader again.
 Generated room UVs should use metres, and small signs/flush decorative strips
 should not silently become extra shadow casters.
+
+## Retail identity continuation — 2026-09-06
+
+[The shop branding proceedings](docs/qa/station-shop-branding-record.md) extend
+the same pipeline with WATCHKEEP ARMORY and KESTREL SHIPWORKS: actual A5 holders,
+framed campaigns, suspended banners, shelf categories and worn carpet. Original
+generated masters, exact prompts and runtime encoding live in
+`assets/station-shop/`; deterministic type and palette belong to
+`src/station-shop-graphics.js`. `loadStationShopGraphics()` awaits shared images
+and font readiness, then supplies three locally batched native-material meshes.
+Failed image requests keep a usable authored fallback and do not disable the
+hangar. Paper normals follow full GLB anchor quaternions; A5 is .148 × .210 m.
+
+Use `--only-concourse` when refining retail geometry so the player-praised
+elevator appearance is preserved byte-for-byte. Check banner headroom and print
+backings against actual triangles, including all paper corners. Texture sheet
+cells must match the physical print aspect ratio; a shared atlas alone does not
+prevent stretched type. Read both entry and close walking-height camera views.
+
+Browser evidence must use a dedicated output directory and per-test paths.
+Global `/tmp` filenames can be overwritten by another worktree's browser run.
+Verify the visible brand and served bundle, not merely a recent file timestamp.
+For noisy performance, alternate graphics on/off in one camera and preserve all
+pairs. GPU timer values, CPU callback time and RAF cadence remain distinct; other
+active browser work can invalidate a comparison across separate runs.

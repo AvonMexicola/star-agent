@@ -10,11 +10,19 @@ The kit replaces oversized bench blocks with three-place manufactured seating,
 adds two distinct shop interiors, and replaces bare elevator leaves with a
 pressure-door surround, pockets, lined cabin, handrails and controls. Shop stock
 uses original inert rifle silhouettes, filter canisters, avionics modules and a
-drive assembly. No external geometry or generated image is included.
+drive assembly. The GLBs contain no external geometry or embedded imagery;
+runtime graphics and their provenance are documented separately.
 
 The final merchandising pass adds a third rack in each shop at Z=-1.0 and two
 slim directory pylons at X=±5.5, Z=-12. The studio images below predate this
 additional stock and the pylons; final in-game review remains pending.
+
+The subsequent retail-branding pass starts from `abacfdc`: WATCHKEEP ARMORY
+retains petrol/ivory finishes while KESTREL SHIPWORKS gains ochre/dark accents.
+It adds six replaceable poster frames, two suspended cloth-banner mounts and
+four tilted A5 brochure pockets with paper stacks. Print artwork remains
+runtime-owned. This pass changes only the concourse GLB; the praised elevator
+export remains byte-for-byte unchanged.
 
 ## Rebuild and inspect
 
@@ -33,7 +41,10 @@ remained unchanged. Source geometry is authored in game metres and transformed o
 from Blender Z-up to glTF Y-up. Materials read the established CSS colour tokens,
 convert sRGB to scene-linear, and use bevels and weighted normals. The station
 finish decorator maps `FinishIvory`, `FinishPetrol`, `FinishSteel`, `FinishDark`
-and `FinishRubber`; `FinishMint` keeps its modest authored emission.
+and `FinishRubber`; `FinishMint` keeps its modest authored emission. The branding
+pass adds shared `FinishOchre` paint and `FinishPaper` (metalness 0, roughness .92),
+both from existing CSS tokens. These two physical finishes increase static
+concourse batches from six to eight, rather than adding materials per printed item.
 
 The builder exports actual standalone GLBs to temporary directories to measure
 each assembly's bytes, including its own material/JSON overhead. It then batches
@@ -44,31 +55,41 @@ leaf. The aggregate buffer is not charged repeatedly to every prop.
 
 | Asset | Actual GLB bytes | Actual triangles | Mesh primitives | Static collision boxes |
 |---|---:|---:|---:|---:|
-| `station-concourse.glb` | 2,676,356 | 36,932 | 6 | 69 |
+| `station-concourse.glb` | 3,247,564 | 44,668 | 8 | 75 |
 | `station-elevator.glb` | 364,380 | 4,724 | 18 | 45 |
 
-The concourse is an aggregate of fifteen separately measured assemblies. Every
+The concourse is an aggregate of twenty-five separately measured assemblies. Every
 assembly passes the 10,000-triangle and 1,000,000-byte prop limits. The two assets
-use 24 mesh primitives together, below the kit's 60-draw limit; these are asset
+use 26 mesh primitives together, below the kit's 60-draw limit; these are asset
 counts, not measured total scene draw calls or frame timings.
 
 | Assembly | Triangles | Standalone GLB bytes |
 |---|---:|---:|
 | Armory architecture | 1,640 | 136,764 |
 | Armory counter | 2,056 | 171,228 |
-| Components architecture | 1,640 | 136,852 |
-| Components counter | 2,056 | 171,332 |
+| Components architecture | 1,640 | 136,848 |
+| Components counter | 2,056 | 171,328 |
 | Armory rack 0 | 2,936 | 242,884 |
-| Components rack 0 | 4,152 | 319,760 |
+| Components rack 0 | 4,152 | 319,984 |
 | Armory rack 1 | 2,936 | 242,744 |
-| Components rack 1 | 4,152 | 319,708 |
+| Components rack 1 | 4,152 | 319,932 |
 | Armory rack 2 | 2,936 | 242,204 |
-| Components rack 2 | 4,152 | 319,564 |
+| Components rack 2 | 4,152 | 319,784 |
 | Drive module display | 2,100 | 153,408 |
 | Waiting seat bank 0 | 2,240 | 160,700 |
 | Waiting seat bank 1 | 2,240 | 160,680 |
 | North directory pylon | 848 | 64,936 |
 | South directory pylon | 848 | 64,932 |
+| WATCHKEEP end poster frame | 536 | 47,004 |
+| WATCHKEEP rack-gap frame 0 | 720 | 61,548 |
+| WATCHKEEP rack-gap frame 1 | 720 | 61,540 |
+| WATCHKEEP banner hardware | 836 | 63,276 |
+| WATCHKEEP brochure holders | 1,056 | 95,556 |
+| KESTREL end poster frame | 536 | 46,972 |
+| KESTREL rack-gap frame 0 | 720 | 61,508 |
+| KESTREL rack-gap frame 1 | 720 | 61,500 |
+| KESTREL banner hardware | 836 | 63,244 |
+| KESTREL brochure holders | 1,056 | 95,480 |
 | Elevator surround | 2,048 | 170,548 |
 | Elevator cabin | 2,060 | 171,052 |
 | Elevator left leaf | 308 | 26,220 |
@@ -77,7 +98,7 @@ counts, not measured total scene draw calls or frame timings.
 GLB SHA-256 for this reviewed export:
 
 ```text
-station-concourse.glb 9654c3d3068759dfad2a340521d662fe022511e770f662482fb42939448e0cef
+station-concourse.glb c7ac88c867564caed225aeb708a374f331e8c479fdb6eeb4099fa2ab52d88878
 station-elevator.glb  981a229de511ed34ea99a1d35cc639bb05651e4f8c8829d8ba987dbfc5b9f5c2
 ```
 
@@ -118,9 +139,29 @@ Shop sign anchors face the central aisle along ±X, including `ArmoryScreen` and
 `ComponentsScreen`. Elevator header and call-screen anchors face -Z; the internal
 screen faces -X. Runtime code owns the displayed names, stock and interactions.
 
+For retail print anchors, `side=-1` means WATCHKEEP (west), `side=+1` means
+KESTREL (east). The prefix below is `Watchkeep` or `Kestrel`:
+
+| Anchor suffix | Game-local centre | Print width × height | Face |
+|---|---|---|---|
+| `PosterEnd` | `[side*14.2,-6.35,-10.927]` | 1.20 × 1.70 m | +Z, yaw 0 |
+| `PosterGap0/1` | `[side*19.675,-6.45,-4.05/2.05]` | 1.15 × 1.60 m | inward, yaw `-side*π/2` |
+| `Banner` | `[side*8.318,-5.32,5.9]` | 1.25 × 1.30 m | inward, yaw `-side*π/2` |
+| `Brochure0/1` | `[side*11.8166713,-6.7449184,-1.50/-.95]` | .148 × .210 m (A5) | authored quaternion |
+
+Brochure anchors carry their full orientation: right `[0,0,side]`, up
+`[side*sin(18°),cos(18°),0]`, normal `[-side*cos(18°),sin(18°),0]`. Attach the
+cover with zero additional local rotation. Paper faces stand 1.5 mm behind their
+anchors; all four cover corners remain exposed within the manufactured holder.
+The banner backing is 16 mm behind its anchor face; cloth ripples must stay
+within that clearance. Its lowest rolled-rail cap is 1.982 m above the floor,
+82 mm above the current walking-body top. Above-counter brochure assemblies and
+banner cloth do not add collision boxes; real-triangle sweeps also verify that
+the hardware does not obstruct the walking route beneath either banner.
+
 ## Validation and studio review
 
-Five focused Node tests passed against the real GLBs with Node 26.7.0. They check
+Six focused Node tests passed against the real GLBs with Node 26.7.0. They check
 the index count against the manifest, vertex containment, individual budget rows,
 the central corridor, both counter approaches, passage around counters, directory
 footprints and front-facing display anchors, blocked
@@ -128,6 +169,8 @@ counter/seat volumes, seat height, visible cabin walls, cloned leaf independence
 and collision agreement in closed, partially open, open and closed-again poses.
 They exercise door Z=14.3 and Z=22.3 at floor=-8, plus a translated floor=-11.25
 to catch fixed-height assumptions. Both exported models loaded successfully.
+Branding checks cover all print-anchor backing rays, A5 quaternion and corner
+rays, the two additional shared finishes and actual triangle sweeps below banners.
 The additional overlay test loads the original `station.glb` together with the
 new cabin and verifies that both rear lining and handrail are the first visible
 ray hits, ahead of the inherited vestibule. Two previous clear-path endpoints
@@ -145,8 +188,8 @@ Blender printed existing optional `cattrs` and MeshOptimizer availability errors
 at startup/export. All builds exited zero; the assets use ordinary uncompressed
 glTF and require neither optional component. Raw audit/build logs remain in `/tmp`.
 
-These five images are **Blender CPU studio renders before the final merchandising
-pass and rear-cabin fit correction**, 1200×800, Cycles with 24
+These five images are **historical Blender CPU studio renders before the final
+merchandising, rear-cabin fit and retail-branding passes**, 1200×800, Cycles with 24
 samples and denoising, using studio area lights. They are not game screenshots or
 performance evidence. Review copies preserve dimensions and use WebP quality 86:
 

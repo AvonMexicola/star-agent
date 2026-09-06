@@ -398,3 +398,10 @@ empty hub and frame rate. It preserves an actual before/after CPU/GPU profile,
 material-batched original Blender assets, explicit walking collision, a compatible
 transactional save migration and physical shop journeys. Its validation and review
 status are stated separately; improved measurements alone do not certify the art.
+
+The [retail identity continuation](qa/station-shop-branding-record.md) applies
+the standard to original campaign imagery, deterministic typography, A5 print
+fixtures, banners and worn textiles. It also records aspect-ratio corrections,
+optional-image fallbacks, per-test screenshot isolation and alternating GPU
+comparisons under variable background load. Retain those corrections and actual
+review status when using this as the next asset's reference.

@@ -14,8 +14,10 @@ for (let i = 2; i < process.argv.length; i++) {
     const value = process.argv[++i];
     if (!value || value.startsWith('--')) throw new Error(`${arg} requires a value`);
     options[arg.slice(2)] = arg === '--frames' ? Number(value) : value;
+  } else if (arg === '--retail-comparison') {
+    options.retailComparison = true;
   } else if (arg === '--help') {
-    console.log('Usage: node scripts/station-performance-check.mjs [--url URL] [--out DIRECTORY] [--frames N>=60]');
+    console.log('Usage: node scripts/station-performance-check.mjs [--url URL] [--out DIRECTORY] [--frames N>=60] [--retail-comparison]');
     process.exit(0);
   } else throw new Error(`Unknown option: ${arg}`);
 }
@@ -288,6 +290,40 @@ async function diagnose(name) {
   console.log(`${name}: ${attribution.frames} diagnostic frames, ${attribution.matrixWrites} LOD matrix writes; top draws: ${JSON.stringify(attribution.draws.slice(0,4).map(d=>({name:d.name,pass:d.pass,perFrame:d.calls/attribution.frames})))}`);
 }
 
+async function compareRetail(){
+  const conditions=[true,false,true,false,true,false,true,false];
+  const fixture={camera:'central hub local fixture',eye:[0,-6.25,12],target:[0,-3,-16],physicalElevatorJourney:false};
+  const initial=await page.evaluate(()=>{
+    const group=window.starAgent.navigation.station.hub.group.getObjectByName('Shop retail graphics');
+    if(!group)throw new Error('Retail comparison requires the finished graphics group');
+    return {visible:group.visible,children:group.children.map(m=>({name:m.name,material:m.material.name,triangles:m.geometry.index.count/3}))};
+  });
+  try{
+    for(let i=0;i<conditions.length;i++){
+      const visible=conditions[i];
+      await page.evaluate(visible=>{window.starAgent.navigation.station.hub.group.getObjectByName('Shop retail graphics').visible=visible;},visible);
+      await measure(`retail-${String(i+1).padStart(2,'0')}-${visible?'on':'off'}`,{...fixture,retailVisible:visible,sequence:i+1});
+    }
+    const blocks=captures.filter(c=>c.name.startsWith('retail-'));
+    const reference=blocks[0].state.camera.position;
+    for(const block of blocks){
+      if(block.state.camera.position.some((value,i)=>Math.abs(value-reference[i])>1e-7))throw new Error('Retail A/B camera moved');
+      if(block.state.lod!==blocks[0].state.lod||block.state.patches!==blocks[0].state.patches)throw new Error('Retail A/B terrain LOD changed');
+    }
+    const pairs=[];
+    for(let i=0;i<blocks.length;i+=2){
+      const on=blocks[i],off=blocks[i+1];
+      pairs.push({on:on.name,off:off.name,gpuDeltaMs:on.gpuMs.median-off.gpuMs.median,cpuDeltaMs:on.cpuCallbackMs.median-off.cpuCallbackMs.median,drawDelta:on.drawCalls.median-off.drawCalls.median,triangleDelta:on.triangles.median-off.triangles.median});
+    }
+    const report={conditions:'ON / OFF repeated four times in one page, unchanged camera. Thirty warm frames and >=60 valid GPU queries per block; no active CPU profiler. Only retail group visibility changes. World animation and external GPU contention are not frozen.',initial,pairs,
+      pairedGpuMedianMs:summary(pairs.map(p=>p.gpuDeltaMs)),pairedCpuMedianMs:summary(pairs.map(p=>p.cpuDeltaMs))};
+    await writeFile(resolve(out,'retail-comparison.json'),JSON.stringify(report,null,2));
+    console.log('Retail paired GPU median deltas: '+JSON.stringify(pairs.map(p=>p.gpuDeltaMs)));
+  }finally{
+    await page.evaluate(visible=>{window.starAgent.navigation.station.hub.group.getObjectByName('Shop retail graphics').visible=visible;},initial.visible);
+  }
+}
+
 try {
   await boot(1);
   await page.evaluate(() => {
@@ -306,6 +342,7 @@ try {
   });
   await measure('02-hub', {camera:'central hub local fixture',eye:[0,-6.25,12],target:[0,-3,-16],physicalElevatorJourney:false});
   await diagnose('02-hub');
+  if(options.retailComparison)await compareRetail();
   if(errors.length||warnings.length||diagnostics.length)throw new Error('Browser diagnostics were not clean; inspect evidence.json');
 } catch (error) {
   failure = error.stack ?? error.message;
