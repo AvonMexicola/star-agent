@@ -12,7 +12,7 @@ test('Atlas Blender geometry renders with three independently animated cargo lif
   await page.screenshot({path:'/tmp/atlas-elevator-lowered.png'});
   for(const id of ['port','starboard'])await page.locator(`[data-lift="${id}"]`).click();
   await page.waitForFunction(()=>window.shipStudio.systems.lifts.slice(1).every(l=>l.y===7));
-  await page.evaluate(()=>window.shipStudio.view('cargo'));await page.waitForTimeout(700);
+  await page.evaluate(()=>window.shipStudio.view('lifts'));await page.waitForTimeout(700);
   await page.screenshot({path:'/tmp/atlas-cargo-lifts.png'});
   expect(await page.evaluate(()=>window.shipStudio.ship.displayState().length)).toBe(4);
   expect(errors).toEqual([]);

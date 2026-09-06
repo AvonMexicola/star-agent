@@ -182,6 +182,10 @@ for s in [-1,1]:
     label('Hull registry','A T L A S   /   0 2',(s*6.585,6.75,.5),.45,dark,(math.pi/2,0,s*math.pi/2))
     label('Hull capacity','LOGISTICS / 2400 KG',(s*6.585,5.6,4),.21,ivory,(math.pi/2,0,s*math.pi/2))
 
+surface('Forward roof transition',[(-5.5,7.6,-8.25),(5.5,7.6,-8.25),(6.2,9.3,-8),(-6.2,9.3,-8)],ivory,.15)
+for side in [-1,1]:
+    surface('Roof transition cheek',[(side*5.5,7.6,-8.25),(side*6.2,9.3,-8),(side*6.2,7.6,-8)],teal,.08)
+
 rod('Front canopy brow',(-2.4,6.9,-13),(2.4,6.9,-13),.1,metal)
 rod('Front split screen',(0,4.9,-15),(0,6.9,-13),.045,metal)
 box('Rear lintel',(0,9.05,10),(12.5,.7,.55),teal,.12)
@@ -199,7 +203,7 @@ surface('Front windscreen',[(-2.7,4.9,-15),(2.7,4.9,-15),(2.4,6.9,-13),(-2.4,6.9
 for s in [-1,1]:surface('Side windscreen',[(s*2.7,4.9,-15),(s*6,5,-8),(s*5.5,7.6,-8),(s*2.4,6.9,-13)],glass,.01)
 
 # Familiar four-screen flight station stays at human scale in a much larger bridge.
-box('Pilot console',(0,4.9,-11.9),(3.3,.8,.6),dark,.08)
+box('Pilot console',(0,4.53,-11.95),(3.3,.6,.57),dark,.08)
 box('Pilot seat',(0,4.45,-10.5),(.85,.25,.8),teal,.1)
 box('Pilot seat back',(0,5,-10.08),(.85,1,.18),teal,.09)
 rod('Pilot pedestal',(0,4,-10.5),(0,4.4,-10.5),.25,metal)
@@ -225,8 +229,8 @@ for name,x,z,w,d,y in [('MainLift',0,5,8,10,4),('PortLift',-4.8,-4.5,2.2,3,4),('
         parts.append(box('Lift grip tread',(x,y+.012,z-d/2+.18+i*.5),(w-.35,.02,.035),dark,.004))
     # The two small lifts physically carry sealed cargo cases, leaving a rider lane.
     if name!='MainLift':
-        parts.append(box('Lift secured freight',(x,y+.38,z+.72),(1.25,.76,.9),orange,.09))
-        parts.append(box('Freight top inset',(x,y+.77,z+.72),(.95,.04,.67),dark,.02))
+        parts.append(box('Lift secured freight',(x+math.copysign(.5,x),y+.38,z-.6),(.75,.76,.9),orange,.09))
+        parts.append(box('Freight top inset',(x+math.copysign(.5,x),y+.77,z-.6),(.55,.04,.67),dark,.02))
     # Platform control console travels with the rider.
     cx,cz=(0,1) if name=='MainLift' else (x,-3.8)
     parts.append(box('Lift control pedestal',(cx+.65,y+.55,cz),(.12,1.1,.12),dark,.02))

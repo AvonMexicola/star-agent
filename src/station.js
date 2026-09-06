@@ -306,6 +306,21 @@ export class Station {
     if (!this.ready) return { point: proposed.clone(), hit: false };
     const start = this.toLocal(previous,new THREE.Vector3()), end = this.toLocal(proposed,new THREE.Vector3());
     const min = new THREE.Vector3(), max = new THREE.Vector3();
+    if (!walking && layout.flightParts) {
+      const q=this.inverseQuaternion.clone().multiply(orientation),seat=new THREE.Vector3(...layout.seatEye);
+      let closest={point:end.clone(),hit:false};
+      for(const envelope of layout.flightParts){
+        const bounds=new THREE.Box3();
+        for(let i=0;i<8;i++){
+          const corner=new THREE.Vector3(...envelope.min);
+          for(let axis=0;axis<3;axis++)if(i&(1<<axis))corner.setComponent(axis,envelope.max[axis]);
+          bounds.expandByPoint(corner.sub(seat).applyQuaternion(q));
+        }
+        const hit=constrainStationSweep(this.colliders,this.doorBoxes,start,end,bounds.min,bounds.max);
+        if(hit.hit&&(!closest.hit||hit.point.distanceToSquared(start)<closest.point.distanceToSquared(start)))closest=hit;
+      }
+      this.toWorld(closest.point,closest.point);return closest;
+    }
     if (walking) {
       min.set(-.25,-layout.eyeHeight,-.25); max.set(.25,.15,.25);
     } else {
@@ -331,9 +346,19 @@ export class Station {
     local.y=box.min.y+eyeHeight; return this.toWorld(local,local);
   }
 
-  canDock(worldPosition) {
+  canDock(worldPosition, layout = SHIP_LAYOUT, orientation = this.quaternion) {
     if (!this.ready) return false;
     const p=this.toLocal(worldPosition,new THREE.Vector3()), b=this.interiorBox;
+    if (layout !== SHIP_LAYOUT) {
+      const q=this.inverseQuaternion.clone().multiply(orientation),seat=new THREE.Vector3(...layout.seatEye);
+      const bounds=new THREE.Box3();
+      for(let i=0;i<8;i++){
+        const corner=new THREE.Vector3(...layout.flightBounds.min);
+        for(let axis=0;axis<3;axis++)if(i&(1<<axis))corner.setComponent(axis,layout.flightBounds.max[axis]);
+        bounds.expandByPoint(corner.sub(seat).applyQuaternion(q).add(p));
+      }
+      return bounds.min.x>b.min.x+.5 && bounds.max.x<b.max.x-.5 && bounds.min.z>b.min.z+.5 && bounds.max.z<b.max.z-.5 && p.y>b.min.y && bounds.max.y<b.max.y-.3;
+    }
     return p.x>b.min.x+9 && p.x<b.max.x-9 && p.z>b.min.z+12 && p.z<b.max.z-12 && p.y>b.min.y && p.y<b.max.y-3;
   }
 

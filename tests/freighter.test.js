@@ -80,4 +80,8 @@ test('original Blender freighter fits its collision envelope and retains all ani
   assert.ok(hits.length);assert.ok(hits[0].point.y<4.1,'belly shaft contains only its moving platform, no hull slab');
   const bridgeRay=new THREE.Raycaster(point(0,5.75,-10.5),point(0,-1,0));
   assert.ok(bridgeRay.intersectObject(scene,true)[0].point.y<4.8,'bridge has a human-scale chair and floor');
+  for(const x of [-4.8,4.8]){
+    const ceiling=new THREE.Raycaster(point(x,8.9,-7),point(0,1,0)).intersectObject(scene,true);
+    assert.ok(ceiling.length && ceiling[0].point.y>9,'upper landing retains headroom beneath the roof');
+  }
 });

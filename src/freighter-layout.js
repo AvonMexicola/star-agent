@@ -2,6 +2,14 @@ import { crossesWall } from './boarding.js';
 
 export const FREIGHTER_LAYOUT = Object.freeze({
   flightBounds: { min: [-9.5, 0, -16], max: [9.5, 9.8, 14] },
+  // The underbody is open. A single solid box would snag the pad beneath the bay.
+  flightParts: [
+    { min: [-6.6,3.5,-16], max: [6.6,9.8,10.4] },
+    ...[-1,1].flatMap(side=>[
+      { min: [side<0?-9.5:6.6,3.5,-4.2], max: [side<0?-6.6:9.5,7.1,14] },
+      ...[-8,8].map(z=>({ min:[side<0?-8.5:6,.0,z-.5], max:[side<0?-6:8.5,4.4,z+2] })),
+    ]),
+  ],
   floorY: 4, eyeHeight: 1.75, capsuleRadius: .25,
   interior: { minX: -6, maxX: 6, minZ: -12, maxZ: 10 },
   seat: [0, 4, -10.5], seatEye: [0, 5.55, -10.5], stand: [0, 5.75, -8.8],
@@ -54,6 +62,7 @@ export class FreighterSystems {
       walls.push(wall(2.3,3.3,-8.4,-6.6));
     }
     for (const lift of this.lifts) {
+      if(lift.id!=='main' && Math.abs(foot-lift.y)<.3){const x=(lift.minX+lift.maxX)/2+Math.sign(lift.minX)*.5;walls.push(wall(x-.375,x+.375,-5.55,-4.65));}
       const riding = inside(previous,lift,.1) && Math.abs(foot-lift.y)<.3;
       const moving = Math.abs(lift.target-lift.y)>.001;
       if (moving && riding || Math.abs(foot-lift.y)>.3 && foot>=lift.low-.1 || riding && lift.y!==4) {

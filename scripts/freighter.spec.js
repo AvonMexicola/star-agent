@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 async function walk(page,key,predicate){
-  await page.keyboard.down(key);await page.waitForFunction(predicate,null,{timeout:45000});await page.keyboard.up(key);await page.keyboard.press('KeyX');
+  await page.keyboard.down(key);try{await page.waitForFunction(predicate,null,{timeout:45000});}catch(error){console.log('WALK FAILED',key,await page.evaluate(()=>({local:window.starAgent.state.shipLocal,enabled:window.starAgent.navigation.enabled,keys:[...window.starAgent.navigation.keys],interaction:window.starAgent.state.interaction})));throw error;}finally{await page.keyboard.up(key);}await page.keyboard.press('KeyX');
 }
 test('earn Atlas, select it at the station, ride the belly elevator and both cargo lifts, store supplies and launch',async({page})=>{
   const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log(e.message);});page.on('console',m=>{if(m.type()==='error'&&/THREE|WebGL|shader/i.test(m.text()))errors.push(m.text());});
@@ -57,7 +57,7 @@ test('earn Atlas, select it at the station, ride the belly elevator and both car
   await expect(page.locator('.cargo-capacities')).toContainText('2400 kg');
   await page.getByRole('button',{name:'Take Repair kit',exact:true}).click();
   const manifest=await page.evaluate(()=>window.starAgent.state.inventory);
-  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');await expect(page.locator('#cargo-dialog')).not.toBeVisible();await page.waitForFunction(()=>window.starAgent.navigation.enabled);
   await walk(page,'KeyA',()=>window.starAgent.state.shipLocal[0]<.15);
   await walk(page,'KeyW',()=>window.starAgent.state.shipLocal[2]<-9.2);
   await page.keyboard.press('KeyF');expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('landed');
@@ -65,5 +65,23 @@ test('earn Atlas, select it at the station, ride the belly elevator and both car
   await page.reload();await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.shipAsset==='ready');
   expect(await page.evaluate(()=>window.starAgent.state.shipId)).toBe('atlas');
   expect(await page.evaluate(()=>window.starAgent.state.inventory)).toEqual(manifest);
+  expect(errors).toEqual([]);
+});
+
+test('unavailable Atlas asset keeps its elevator and inventory usable',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.addInitScript(()=>localStorage.setItem('star-agent.fleet.v1',JSON.stringify({version:1,surfaceVisited:true,unlocked:true,active:'atlas'})));
+  await page.route('**/models/atlas.glb',route=>route.abort());
+  await page.goto('/?debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.shipAsset==='fallback');
+  await page.evaluate(()=>{const a=window.starAgent;a.setRenderScale(.4);a.navigation.transit(a.destinations.forest,7);a.land();});
+  await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await page.keyboard.press('KeyF');
+  await walk(page,'KeyW',()=>window.starAgent.state.shipLocal[2]>.7);await page.keyboard.press('KeyF');
+  await page.waitForFunction(()=>window.starAgent.state.lifts[0].y===0);
+  expect(await page.evaluate(()=>window.starAgent.state.shipLocal[1])).toBeCloseTo(1.75,3);
+  await page.keyboard.press('KeyF');await page.waitForFunction(()=>window.starAgent.state.lifts[0].y===4);
+  await walk(page,'KeyS',()=>window.starAgent.state.shipLocal[2]<-7.1);
+  // Facing aft, A moves toward the starboard container.
+  await walk(page,'KeyA',()=>window.starAgent.state.shipLocal[0]>1.4);
+  await page.keyboard.press('KeyF');await expect(page.getByRole('dialog',{name:'Ship inventory'})).toBeVisible();
   expect(errors).toEqual([]);
 });

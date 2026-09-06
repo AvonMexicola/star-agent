@@ -19,8 +19,8 @@ const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStanda
 const systems=new FreighterSystems();const ship=createFreighter(systems,{assetURL:'/models/atlas.glb'});scene.add(ship);
 document.querySelectorAll('[data-lift]').forEach(button=>button.onclick=()=>systems.toggle(button.dataset.lift));
 const inventory=new ShipInventory(undefined,2400);
-const nav={freighter:systems,flightEnvironment:{regime:'ATMOSPHERE',atmosphereFraction:1},normal:new THREE.Vector3(.2,.4,.89).normalize(),orientation:new THREE.Quaternion(),velocity:new THREE.Vector3(),speed:0,altitude:2.55,mode:'landed',flightAssist:true,doorOpen:true,doorProgress:1};
-const views={exterior:[[30,21,-35],[0,4,-1]],rear:[[25,14,31],[0,3.4,2]],cockpit:[[0,5.55,-10.5],[0,5,-12.5]],cargo:[[0,6.8,-7],[0,4.5,6]]};
+const nav={freighter:systems,flightEnvironment:{regime:'ATMOSPHERE',atmosphereFraction:1},normal:new THREE.Vector3(.2,.4,.89).normalize(),orientation:new THREE.Quaternion(),velocity:new THREE.Vector3(),speed:0,altitude:5.55,mode:'landed',flightAssist:true,doorOpen:true,doorProgress:1};
+const views={lifts:[[0,7.7,.2],[0,6.6,-5.7]],exterior:[[30,21,-35],[0,4,-1]],rear:[[25,14,31],[0,3.4,2]],cockpit:[[0,5.55,-10.5],[0,5,-12.5]],cargo:[[0,6.8,-7],[0,4.5,6]]};
 function view(name){camera.fov=name==='cockpit'?52:44;camera.updateProjectionMatrix();camera.position.set(...views[name][0]);controls.target.set(...views[name][1]);controls.update();}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));
 let open=false;document.getElementById('lid').onclick=()=>ship.setStorage(open=!open);

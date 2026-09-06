@@ -107,11 +107,12 @@ export class Navigation {
     this.jumpHeight=0;this.jumpVelocity=0;
   }
   get stationDistance(){return this.station?.ready?this.position.distanceTo(this.station.worldPosition):Infinity;}
+  get canDock(){return Boolean(this.station?.canDock(this.position,this.layout,this.orientation));}
   get stationLocal(){return this.station?.ready?this.station.toLocal(this.position,new THREE.Vector3()):null;}
   get deckClearance(){return this.stationLocal?this.stationLocal.y-this.station.interiorBox.min.y:Infinity;}
   dock(){
     const station=this.station;
-    if(!station?.canDock(this.position))return;
+    if(!this.canDock)return;
     const up=station.up;
     let forward=FORWARD.clone().applyQuaternion(this.orientation).projectOnPlane(up);
     if(forward.lengthSq()<.01)forward.set(0,0,1).applyQuaternion(station.quaternion);
@@ -121,8 +122,8 @@ export class Navigation {
     this.shipPosition=eye.clone().sub(new THREE.Vector3(...this.layout.seatEye).applyQuaternion(this.shipOrientation));
     this.position.copy(eye);this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.mode='landed';this.autoland=false;
     this.dockedAtStation=true;this.stationLift=false;this.doorOpen=false;this.doorProgress=0;
+    this.notify(this.freighter?'Docked. F to stand; walk aft to the belly elevator controls.':'Docked. F to stand; walk aft and open the hatch to explore the hangar.');
     this.onVoyage?.('dock');
-    this.notify('Docked. F to stand; walk aft and open the hatch to explore the hangar.');
   }
   dryGround(){if(this.body.airless)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
   landOrLaunch(){
@@ -139,7 +140,7 @@ export class Navigation {
     }
     if(this.autoland){this.autoland=false;this.notify('Landing assist disengaged.');return;}
     if(this.stationDistance<500){
-      if(!this.station.canDock(this.position)){this.notify('Fly through the open doors and over the central landing pad, then press L.');return;}
+      if(!this.canDock){this.notify('Fly through the open doors and over the central landing pad, then press L.');return;}
       this.autoland=true;this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.notify('Docking assist. Settling onto the hangar deck.');return;
     }
     if(!this.dryGround()){this.notify('Open water below. Find dry ground or polar ice to land.');return;}
@@ -158,7 +159,7 @@ export class Navigation {
     matrix.lookAt(new THREE.Vector3(),forward,n);this.shipOrientation.setFromRotationMatrix(matrix);this.orientation.copy(this.shipOrientation);
     this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.seatEye)));this.doorOpen=false;this.doorProgress=0;
     this.onVoyage?.('surface');
-    this.notify('Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
+    this.notify(this.freighter?'Touchdown. F leaves the pilot chair; walk aft to lower the belly elevator.':'Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
   }
   embark(){
     if(this.mode==='flight'){this.notify('Land your ship before disembarking. Press L near the surface.');return;}
@@ -166,7 +167,7 @@ export class Navigation {
       this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.stand)));
       this.mode='walk';this.insideShip=true;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
       this.orientation.copy(this.shipOrientation).multiply(new THREE.Quaternion().setFromAxisAngle(UP,Math.PI));
-      this.notify('Standing in the cabin. Walk aft; F opens the hatch and lowers the ramp.');
+      this.notify(this.freighter?'Standing on the cargo deck. Walk aft to the elevator pedestal; F lowers it.':'Standing in the cabin. Walk aft; F opens the hatch and lowers the ramp.');
     }else{
       if(!this.shipPosition)return;
       const local=this.toShipLocal(),hit=this.shipInteraction(local);
@@ -251,7 +252,7 @@ export class Navigation {
         this.velocity.copy(this.station.up).multiplyScalar(3);
         if(this.deckClearance>=Math.max(6,this.layout.seatEye[1]+1)){this.stationLift=false;this.velocity.set(0,0,0);}
       }else if(this.autoland && this.stationDistance<500){
-        if(!this.station.canDock(this.position)){this.autoland=false;this.velocity.set(0,0,0);this.notify('Docking cancelled: move over the central pad.');}
+        if(!this.canDock){this.autoland=false;this.velocity.set(0,0,0);this.notify('Docking cancelled: move over the central pad.');}
         else if(this.deckClearance<this.landingClearance+.05){this.dock();return;}
         else this.velocity.copy(this.station.up).multiplyScalar(-Math.max(.5,Math.min(3,(this.deckClearance-this.landingClearance)*.8)));
       }else if(this.autoland){
@@ -286,7 +287,7 @@ export class Navigation {
         const collision=this.station?.constrainStep(previous,proposed,this.orientation,false,this.layout);
         this.position.copy(collision?collision.point:proposed);
         if(collision?.hit){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;break;}
-        if(!this.stationLift && this.station?.canDock(this.position) && this.deckClearance<this.landingClearance && this.velocity.dot(this.station.up)<0){this.dock();break;}
+        if(!this.stationLift && this.canDock && this.deckClearance<this.landingClearance && this.velocity.dot(this.station.up)<0){this.dock();break;}
         const n=this.normal;const ground=this.groundHeight;
         const height=bodyAltitude(this.position,this.body);
         if(height<this.landingClearance){this.position.copy(bodySurfacePoint(n,this.body,this.landingClearance));this.velocity.set(0,0,0);if(this.dryGround())this.touchDown();else this.notify('Surface hover. Open water — landing unavailable.');break;}

@@ -41,6 +41,10 @@ export function createFreighter(systems, { assetURL = `${import.meta.env.BASE_UR
   });
   // Riders are also enclosed while travelling; the landing rails stay behind.
   const riderGuards=guards.map(g=>{const copy=g.clone();ship.add(copy);return copy;});
+  const hatch=new THREE.Group();ship.add(hatch);
+  const slats=Array.from({length:8},(_,i)=>box(hatch,0,4+(i+.5)*.625,10.06,11.9,.61,.15,i===3?warning:steel));
+  // Rear edge rails prevent a four-metre drop when the elevator opens the bay.
+  for(const [x,w] of [[-5,2],[5,2]])box(ship,x,4.8,10,w,.08,.08,warning);
   const mfds=createShipMFDs();mfds.position.set(0,3,-7.7);ship.add(mfds);
   ship.updateDisplays=(dt,nav,inventory,course)=>mfds.update(dt,nav,inventory,course);
   ship.displayState=()=>mfds.snapshot();
@@ -57,8 +61,11 @@ export function createFreighter(systems, { assetURL = `${import.meta.env.BASE_UR
       liftNodes[i].position.y=lift.y;
       const moving=Math.abs(lift.target-lift.y)>.001;
       guards[i].position.y=4;guards[i].visible=moving||Math.abs(lift.y-4)>.01;
-      riderGuards[i].position.y=lift.y;riderGuards[i].visible=moving;
+      riderGuards[i].position.y=lift.y;riderGuards[i].visible=moving || lift.id!=='main' && lift.y===7;
+      riderGuards[i].children[2].visible=moving; // Upper shelf entrance opens at the front.
     });
+    const opening=1-systems.lifts[0].y/4;
+    slats.forEach((slat,i)=>{slat.position.y=THREE.MathUtils.lerp(4+(i+.5)*.625,9.05+i*.025,opening);slat.position.z=10.06-i*.04*opening;});
   };
   ship.userData.assetStatus='loading';
   ship.readyPromise=new GLTFLoader().loadAsync(assetURL).then(({scene:model})=> {
