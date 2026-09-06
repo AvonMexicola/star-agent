@@ -2,10 +2,44 @@
 
 PR #20 combines the Nomad cockpit refinement, unlockable Atlas, twenty modular
 hangars, central hub, cargo transfer and manufactured service-corner finish with
-`feat/visual-fidelity` at `029cae8`. The production candidate preserves the current
-playable opening, system travel, water, player menu and controller handoff.
+the current opening, system travel, water, player menu and controller handoff.
 
-## Integration decisions
+**Current runtime candidate:** `7ddef61db8b2626679266ea64568c1b0a01006e3`,
+a merge of the reviewed `4da1a5d` stack and default branch `85aa836`. It includes
+the newer detailed hull and the subsequent review corrections. The production
+build, **21 unit test files** and **18 production browser checks** pass. Final
+hardware measurements and independent Opus re-review remain pending. This merge
+commit exists on the candidate branch; it is not evidence that PR #20 has merged
+into the default branch or been deployed.
+
+The current review preview is `http://127.0.0.1:5249/`. The older
+`http://127.0.0.1:5239/` serves the historical `4da1a5d` candidate (runtime
+`7a73ecf`); do not use it to judge the revision. The automated browser run used
+its own production server on port **5248**.
+
+## Current candidate verification: 7ddef61
+
+- `npm test`: **21 test files pass**, as reported by the integration lead. This
+  Node reporter count is not an inferred count of individual assertions/cases.
+- `npm run build`: **PASS**. The existing bundle-size advisory remains recorded.
+- `npm run test:browser -- -c /tmp/star-agent-hangar-current.config.mjs`:
+  **18 passed (5.0m)** against the production build. The configuration enables
+  the real AMD GPU through ANGLE GL. The complete log is
+  `/tmp/star-agent-hangar-current-browser.log`; the test server was port 5248.
+  Coverage retains the prior opening, Atlas, service, fallback, boarding,
+  controller, phone and continuous-travel journeys, and adds the modal
+  zero-draw regression.
+- The final hardware benchmark is being captured separately under
+  `/tmp/star-agent-hangar-hardware-final`. Its results and performance acceptance
+  are **pending**, as is the independent Opus re-review. Successful browser
+  journeys on hardware do not by themselves establish the frame-time budget.
+
+The completed earlier Opus review scored **3.67: not mergeable** at `4da1a5d`
+(runtime `7a73ecf`). Its [verbatim report](hangar-opus-review-2026-09-06.md) and
+[resumed production record](hangar-production-record.md#resumed-integration-after-the-completed-review)
+retain the findings and subsequent work. No new visual pass or waiver is claimed.
+
+## Historical integration decisions: base 029cae8
 
 - StationComplex shares the opening's direction and tilted orientation across
   pods, rings and hub. Controlled doors and their collision follow the opening.
@@ -19,7 +53,7 @@ playable opening, system travel, water, player menu and controller handoff.
   station assets are retained. The separate station hull refinement in #22 is
   outside this candidate.
 
-## Verification
+## Historical verification: runtime 7a73ecf
 
 - `npm test`: **152 tests passed** at runtime candidate `7a73ecf`, including tilted twenty-pod layout, controlled
   doors, saved Atlas spawn/boarding/lift, fixed travel keep-out centre, structural
@@ -56,6 +90,9 @@ restoration, plus the complete production tour below. Unrelated gameplay cases
 were not repeated after a render-only visibility change.
 
 ## Final production tour
+
+This is the **historical** tour of runtime `7a73ecf`, retained as evidence for
+the earlier reviewed candidate; it does not measure `7ddef61`.
 
 Runtime candidate `7a73ecf`, production asset `index-E60SiKWO.js`, completed
 2026-09-06 at 13:05:50 Europe/Amsterdam. Root inspected all eight scene captures.
@@ -114,13 +151,16 @@ remains. Full reports and failed-run evidence stay in `/tmp`.
 
 ## Review status
 
-Independent Opus visual review has not run. The attempted reviewer invocation
-returned HTTP 429 with a session reset at 13:50 Europe/Amsterdam on 2026-09-06.
-`QUALITY.md` requires its rubric to pass, or an explicit Cees “polish later”
-decision, before merge. No review score or hardware performance approval is
-claimed by these functional checks.
+The first Opus invocation returned HTTP 429 with a session reset at 13:50
+Europe/Amsterdam on 2026-09-06. The later completed review of `4da1a5d` scored
+**3.67 and failed acceptance**; the original pending label is superseded by the
+[archived report](hangar-opus-review-2026-09-06.md). The revised `7ddef61`
+candidate requires its own review, which is pending alongside final hardware
+performance acceptance. `QUALITY.md` requires a passing rubric or an explicit
+Cees “polish later” decision before merge. No new review score is claimed.
 
 The operations gallery remains decorative architecture with static graphics.
-Distant block storage, ceiling/wall construction, bright navigation signs and
-hub furniture remain follow-up art work. This candidate does not add multiplayer
+The earlier candidate's ceiling, sign and ring findings led to changes in the
+revision; their final visual acceptance is pending. Hub furniture and broader
+art polish remain subject to review. This candidate does not add multiplayer
 networking; twenty pods are the reusable station layout.

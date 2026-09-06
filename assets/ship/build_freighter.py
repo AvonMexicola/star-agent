@@ -3,6 +3,7 @@ Run Blender background with --python assets/ship/build_freighter.py.
 Moving lift origins are their deck surfaces; never batch them into the hull.
 """
 import math
+import sys
 from pathlib import Path
 import bpy
 from mathutils import Vector
@@ -43,7 +44,8 @@ def finish(obj, name, mat, bevel=0):
     if bevel:
         mod = obj.modifiers.new('Manufactured edge radii', 'BEVEL')
         mod.width = bevel
-        mod.segments = 3
+        # Two-segment manufactured radii retain every panel within the mesh budget.
+        mod.segments = 2
         mod = obj.modifiers.new('Weighted panel normals', 'WEIGHTED_NORMAL')
         mod.keep_sharp = True
     return obj
@@ -255,6 +257,7 @@ for parent in [None]+[o for o in bpy.context.scene.objects if o.type=='EMPTY']:
         bpy.context.view_layer.objects.active=objects[0];bpy.ops.object.join()
         objects[0].name=(parent.name if parent else 'Hull')+' / '+mat.name
 bpy.context.preferences.filepaths.save_version=0
-bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/ship/atlas.blend'))
+if '--runtime-only' not in sys.argv:
+    bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/ship/atlas.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'public/models/atlas.glb'),export_format='GLB',export_yup=True,export_apply=True,export_extras=True)
-print('ATLAS: saved editable Blender source and runtime GLB')
+print('ATLAS: saved runtime GLB' if '--runtime-only' in sys.argv else 'ATLAS: saved editable Blender source and runtime GLB')

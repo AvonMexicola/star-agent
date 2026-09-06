@@ -7,6 +7,7 @@ Z-up coordinates back to the game's convention. Cabin, hatch and MFDs remain
 runtime geometry so their physical and interactive contracts stay explicit.
 """
 import math
+import sys
 from pathlib import Path
 import bpy
 from mathutils import Vector
@@ -47,7 +48,9 @@ def finish(obj, name, mat, bevel=0):
     if bevel:
         mod = obj.modifiers.new('Manufactured edge radii', 'BEVEL')
         mod.width = bevel
-        mod.segments = 3
+        # Small manufactured edges need two segments; retain broader silhouettes.
+        # The pilot chair explicitly overrides its bevels to six below.
+        mod.segments = 2 if bevel <= .04 else 3
         mod = obj.modifiers.new('Weighted panel normals', 'WEIGHTED_NORMAL')
         mod.keep_sharp = True
     return obj
@@ -278,7 +281,8 @@ for parent in [None,chair]:
         bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 
 bpy.context.preferences.filepaths.save_version = 0
-bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/ship/nomad.blend'))
+if '--runtime-only' not in sys.argv:
+    bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/ship/nomad.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'public/models/nomad.glb'),
     export_format='GLB',export_yup=True,export_apply=True,export_extras=True)
-print('NOMAD: saved editable Blender source and runtime GLB')
+print('NOMAD: saved runtime GLB' if '--runtime-only' in sys.argv else 'NOMAD: saved editable Blender source and runtime GLB')

@@ -93,3 +93,18 @@ Browser page errors and shader errors are collected. Generated reports remain in
 ![Twin internal cargo lifts](images/atlas-cargo-lifts.png)
 
 The complete reusable workflow is in [Ship pipeline memory](../SHIP-PIPELINE-MEMORY.md).
+
+## Mesh budget refinement — 2026-09-06
+
+The rebuilt Atlas contains **58,460 triangles / 3,770,128 bytes**, down from
+84,580 triangles / 5,652,816 bytes. Default manufactured bevels use two segments
+instead of three; no panels, lift parts or other functional geometry were removed.
+UVs, materials, node names, parents and transforms are retained. The nose bound
+moves inward by 1.652 mm from bevel sampling; other overall bounds are unchanged.
+
+The builder regenerates both the tracked `.blend` and GLB. Append
+`-- --runtime-only` when intentionally exporting only the runtime GLB.
+`node --test tests/ship-inventory.test.js tests/freighter.test.js tests/navigation.test.js`
+passed, including all three lift layouts, moving-node origins and the flight
+envelope. The images above are historical captures from before this mesh
+reduction; visual review of the new export is pending.

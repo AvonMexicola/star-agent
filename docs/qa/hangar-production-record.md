@@ -12,11 +12,13 @@ specific reference case, not a declaration that all station art is finished.
 **3.67 and failed the visual acceptance gate**. The
 [verbatim review](hangar-opus-review-2026-09-06.md) is archived separately.
 The default branch subsequently advanced through `7e7194a` to `85aa836`; its
-detailed hull and baked vertex ambient occlusion are being reconciled with the hangar finish in the
-isolated `/tmp/star-agent-hangar-current` worktree. Ceiling, sign and ring corrections are implemented but await actual game visual
-verification; hardware performance acceptance remains pending. The historical
-passes below do not certify this revised working tree. No merge or deployment is
-claimed by this record.
+detailed hull and baked vertex ambient occlusion are integrated with the hangar
+finish at candidate `7ddef61db8b2626679266ea64568c1b0a01006e3` in the isolated
+`/tmp/star-agent-hangar-current` worktree. The current production build, 21 unit
+test files and 18 production browser checks pass. Ceiling, sign and ring
+corrections are implemented but await actual game visual verification; hardware performance acceptance remains pending. Historical
+passes below remain attributed to their original candidate. The candidate merge
+commit exists; PR merge into the default branch and deployment are not claimed.
 
 **Historical checkpoint:** runtime candidate `7a73ecfb50c801dab55de5b5eb5f357aa15d6ad8` for
 [PR #20](https://github.com/AvonMexicola/star-agent/pull/20), based on integration
@@ -438,10 +440,25 @@ results above. The reviewed worktree remains separate from the current integrati
    Earlier review timings were ANGLE Vulkan SwiftShader. Hardware availability
    does not establish the frame budget: representative benchmarks are **pending**.
 
-The integration lead subsequently reported the current unit command passing
-**21 test files** under Node's default reporter. This is a file-level result;
-no inferred internal case count is recorded. It does not replace the pending
-hardware captures, combined gameplay verification or independent visual re-review.
+The next completed checkpoint is runtime candidate
+`7ddef61db8b2626679266ea64568c1b0a01006e3`, whose parents are the reviewed
+`4da1a5d1a1acac00b3034fed8f06457a682f6852` and default
+`85aa836c70d5c955235a0230a457b4c5c5d937d5`. This is an actual candidate merge
+commit, not a claim that PR #20 merged into the default branch.
+
+At this candidate, the integration lead reports the production build and
+**21 unit test files** passing. The latter is Node's file-level result; no
+inferred internal case count is recorded. The completed production browser run
+records **18 passed (5.0m)** in `/tmp/star-agent-hangar-current-browser.log`, using
+`/tmp/star-agent-hangar-current.config.mjs` and the actual AMD GPU through ANGLE
+GL. It covers the existing combined journeys and the new modal zero-draw
+regression. Its isolated production server used port 5248.
+
+The latest review preview is `http://127.0.0.1:5249/`. Port 5239 remains the old
+`4da1a5d` reviewed candidate, runtime `7a73ecf`; it must not supply evidence for
+the new revision. Final hardware captures under
+`/tmp/star-agent-hangar-hardware-final` and independent Opus re-review are pending.
+Hardware browser regression success is not a frame-budget measurement.
 
 ### Current acceptance boundary
 
@@ -451,8 +468,8 @@ hardware captures, combined gameplay verification or independent visual re-revie
 | Ceiling/sign/ring appearance | Implemented; actual game captures and visual review pending |
 | Independent visual acceptance | Historical candidate FAILED at 3.67; no pass or waiver recorded for the revision |
 | Hardware performance | AMD Radeon 860M / ANGLE GL available; benchmark and budget disposition pending |
-| Final combined regression/build | Current unit command: 21 test files pass, per integration lead; remaining final checks must be recorded separately. The historical 152-test/build result does not certify this revised tree |
-| Merge/deployment | No completed outcome recorded here |
+| Final combined regression/build | PASS at `7ddef61`: production build, 21 unit test files, 18 production browser checks in 5.0m; hardware and visual gates remain separate |
+| Merge/deployment | Candidate merge `7ddef61` exists; PR merge into the default branch and deployment are not recorded |
 
 The integration lead will append the final served candidate, commands, evidence,
 review result and any verified merge/deployment outcome. This checkpoint claims
