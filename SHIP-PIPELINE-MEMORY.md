@@ -651,3 +651,15 @@ both geometry and encoded byte budgets before accepting a hero asset. The final
 later art correction remain tracked in the same record. The original Opus review
 failed at 3.67; its later attempt stopped at the service's session limit. Neither
 an attempted review nor this memory file constitutes merge approval.
+
+## Station-shop inventory continuation — 2026-09-06
+
+The concourse continuation at runtime `9e5a713` keeps the existing inventory key
+but migrates valid v1/v2 cargo into a v3 manifest with credits and finite station
+shop stock. Purchased weapons/components are stored cargo, not equipped weapons
+or installed ship upgrades. The current ship's capacity and Atlas unlock remain
+unchanged. A purchase persists money, stock and delivery together before changing
+memory; malformed saves remain intact. Read the full migration, physical transfer,
+controller and performance evidence in
+[the concourse record](docs/qa/station-concourse-production-record.md) before
+extending the item catalogue or asset pipeline.

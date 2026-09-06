@@ -388,3 +388,13 @@ Merge SHA/time: PENDING until verified
 Deployment identifier/URL/time: PENDING until verified
 Final record updated by / date:
 ```
+
+
+## Concourse follow-through
+
+The [concourse production record](qa/station-concourse-production-record.md)
+extends this process after direct player feedback about the elevator, furniture,
+empty hub and frame rate. It preserves an actual before/after CPU/GPU profile,
+material-batched original Blender assets, explicit walking collision, a compatible
+transactional save migration and physical shop journeys. Its validation and review
+status are stated separately; improved measurements alone do not certify the art.

@@ -235,3 +235,33 @@ hashes, real checks, open gates and eventual merge outcome. The reusable
 [asset production standard](docs/asset-production-standard.md) remains the
 entry point for the next asset; preserve failures and resolved findings as well
 as passing screenshots.
+
+
+## Concourse continuation — 2026-09-06
+
+Cees requested a better elevator, realistic furniture, a weapons shop and ship
+equipment shop, and an explanation for low performance. The isolated continuation
+from PR20 head 056d20b is recorded in
+[concourse proceedings](docs/qa/station-concourse-production-record.md),
+[asset contracts](docs/qa/station-concourse-assets.md) and
+[measured performance](docs/qa/station-performance.md). This record does not
+replace the earlier failed/incomplete visual reviews or imply a merge.
+
+New source boundaries: `station-concourse.js` owns the material-batched hub shell
+and shop props; `station-elevator.js` attaches independently animated pressure
+leaves and static cabin collision. `blender/build_station_concourse.py` rebuilds
+both GLBs and embeds measured assembly budgets and explicit local collision boxes.
+Never create a single enclosing collision box for an open shop or cabin.
+
+`station-shop.js` owns finite local catalogues and controller edges;
+`station-shop-ui.js` supplies the modal. Inventory keeps the existing storage key
+but migrates valid v1/v2 cargo into one v3 manifest with a one-time credit grant.
+A purchase writes cargo, money and stock together before committing memory.
+Weapons/components are stored cargo; combat and installation remain unimplemented.
+
+Profile CPU work independently of GPU timer queries and presentation cadence.
+A hidden model can still consume update time; avoid recomputing unchanged local
+door bounds and instance transforms at every origin rebase. Physical finish
+materials must not be passed through the legacy whole-model weather shader again.
+Generated room UVs should use metres, and small signs/flush decorative strips
+should not silently become extra shadow casters.

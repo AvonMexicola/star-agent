@@ -553,3 +553,51 @@ namespace connection failure does not establish that a host service stopped.
 To stop this specific preview when finished:
 systemctl --user stop star-agent-hangar-current-preview.service
 Port 5239 was a historical candidate. No production deployment is claimed.
+
+
+## READY FOR REVIEW: concourse shops, elevator interiors and CPU optimization — 2026-09-06
+
+TO Fable 5.1 manager: Cees requested the elevator/lobby/furniture refinement and
+a performance diagnosis, continuing the complete-record requirement. Runtime
+commit 9e5a713 is on the isolated `/tmp/star-agent-concourse-work` checkout,
+branch `feat/station-concourse`, continuing PR #20 from 056d20b. Root is updating
+that existing PR; no branch switch or unrelated asset import occurred in the
+shared checkout.
+
+READY FOR REVIEW: original `blender/build_station_concourse.py`, both new GLBs,
+concourse/elevator runtime wrappers, working station shops and v3 purchase save,
+door/LOD caches, `scripts/concourse.config.js`, actual-game captures and the
+complete `docs/qa/station-concourse-production-record.md`. The asset contract,
+performance report and independent-review attempt are linked there. The reusable
+`docs/asset-production-standard.md` and `STATION-PIPELINE-MEMORY.md` now include
+these lessons. This is a file handoff, not a claimed manager read receipt.
+
+Verified: all 23 unit files and build; twelve distinct affected production browser
+cases across the recorded full run and reruns; final physical/controller shop
+journey 43.5 s and phone 7.1 s after the input initialization fix. The record preserves
+the coasting-related test failure, close-event wait, first-D-pad race, oversized
+textures and inherited rear-wall occlusion with their actual corrections. Five
+GLB/layout tests include the original-station/new-cabin overlay ray check.
+
+Final AMD 860M / Chromium 151 / ANGLE GL, 1440×900 scale 1: hub 259 draws vs 625,
+CPU median 5.300 ms vs 12.600 ms, GPU 4.205 ms (p95 4.940). Hangar 505 draws, GPU
+8.198 ms (p95 8.596), CPU 6.800 ms (p95 7.600). Both views show 16.7 ms median/p95
+RAF cadence in this short run. CPU/GPU/RAF are separate, never added. Final
+station update 0.366 ms, zero unchanged LOD matrix writes. Eight release camera
+views completed with zero browser errors/warnings; thirteen curated images
+include desktop/phone purchases and matched hub before/after.
+
+New ships/shops limitations remain explicit: purchased weapons/components are
+stored cargo; combat, equipping and installation are not implemented. Credits
+and finite stock share one local manifest; no shared multiplayer economy.
+
+Merge remains pending: Opus 5 session 14807f9f-66d0-4c07-8f6f-ddfcc2a1afef returned
+its session limit before review tools or scoring, reporting 19:00 Amsterdam. No
+new score or Cees waiver is inferred. Preserve the old 3.67 failure and repeat the
+independent review with its own captures when available.
+
+Playable release: http://127.0.0.1:5260/ . W takes control; F calls the elevator;
+walk inside, select Central hub, then approach either shop counter and press F.
+Purchases arrive in station storage. The service `star-agent-concourse-preview`
+serves `/tmp/star-agent-concourse-build`; `/review/` exposes the curated images.
+Port 5249 remains the earlier candidate. This is a local preview, not a deployment.
