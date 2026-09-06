@@ -518,3 +518,14 @@ are committed; pipeline memory links the research. No mining engine, runtime
 benchmark, asset conversion, downloaded assets or shared runtime edits in this lane.
 Fable: review alongside the Phase 6 plan; <4 ms remeshing and indefinitely tiny
 brush logs are not established results. Preserve the existing equipment owner.
+
+
+## First Selene mining implementation — Astra (2026-09-06)
+
+Cees authorized the first implementation. Isolated /tmp/star-agent-mining-work,
+feat/selene-mining based on research #18 / lunar #15. Own NEW src/mining/ modules,
+mining tests/studio, and narrow main/navigation/gamepad integration plus ore storage.
+Reuse equipment.js + mining laser asset verbatim from manager commit 9930e82;
+no shared equipment edits, no duplicate weapon system. First slice: one rock by
+Crescent Rim, worker meshing, saved cut/material state, resource inventory and
+collision, keyboard/controller/touch mining. Full mountain excavation stays later.

@@ -13,7 +13,7 @@ export function stick(x, y) {
 const value = button => clamp(finite(button?.value ?? (button?.pressed ? 1 : 0)), 0, 1);
 const trigger = button => Math.max(0, (value(button) - .05) / .95);
 const empty = () => ({ strafe: 0, forward: 0, yaw: 0, pitch: 0, vertical: 0, roll: 0,
-  boost: false, jump: false, brake: false, speed: 0, scroll: 0, pressed: new Set(), used: false });
+  boost: false, jump: false, brake: false, speed: 0, scroll: 0, mine: 0, pressed: new Set(), used: false });
 
 export class GamepadInput {
   constructor(read = () => globalThis.navigator?.getGamepads?.() ?? []) {
@@ -56,7 +56,7 @@ export class GamepadInput {
       if (pressed.has(9)) result.pressed.add(9);
       return result;
     }
-    return { strafe, forward: -moveY, yaw: -lookX, pitch: -lookY, vertical: up - down,
+    return { mine: up, strafe, forward: -moveY, yaw: -lookX, pitch: -lookY, vertical: up - down,
       roll: Number(buttons[4] ?? false) - Number(buttons[5] ?? false),
       boost: Boolean(buttons[10]), jump: Boolean(buttons[0]), brake: Boolean(buttons[1]),
       scroll: 0, speed: Number(buttons[12] ?? false) - Number(buttons[13] ?? false), pressed, used: !neutral };
