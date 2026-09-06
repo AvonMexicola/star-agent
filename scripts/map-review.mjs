@@ -7,6 +7,10 @@ await mkdir(out, {recursive:true});
 const browser = await chromium.launch({executablePath:process.env.CHROMIUM_PATH ?? '/usr/bin/chromium',args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
 const page = await browser.newPage({viewport:{width:1440,height:900},hasTouch:true});
 const errors = [], warnings = [];
+const shot = async name => {
+  await page.locator('#system-map').evaluate(e => Promise.all(e.getAnimations({subtree:true}).map(a => a.finished.catch(() => {}))));
+  await page.screenshot({path:`${out}/${name}.png`});
+};
 page.on('pageerror', e => errors.push(e.message));
 page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); if (m.type() === 'warning') warnings.push(m.text()); });
 try {
@@ -18,7 +22,7 @@ try {
     n.position.set(-.1,0,-1).normalize().multiplyScalar(3592750); n.velocity.set(0,0,0);
   });
   await page.keyboard.press('m'); await page.locator('[data-travel-target="selene"]').tap();
-  await page.screenshot({path:`${out}/desktop.png`});
+  await shot('desktop');
   const before = await page.evaluate(() => window.starAgent.state);
   const cadence = await page.evaluate(() => new Promise(resolve => {
     const intervals = []; let last = performance.now();
@@ -31,17 +35,21 @@ try {
     return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
   });
   await page.setViewportSize({width:390,height:844}); await page.waitForTimeout(300);
-  await page.screenshot({path:`${out}/phone-chart.png`});
-  await page.locator('#map-engage').scrollIntoViewIfNeeded(); await page.screenshot({path:`${out}/phone-details.png`});
+  await shot('phone-chart');
+  await page.locator('#map-engage').scrollIntoViewIfNeeded(); await shot('phone-details');
   await page.locator('#close-system-map').tap(); await page.setViewportSize({width:1440,height:900});
-  await page.keyboard.press('m'); await page.locator('#map-engage').click();
+  await page.evaluate(() => { window.starAgent.navigation.position.y += 1200000; window.starAgent.navigation.position.x += 700000; });
+  await page.keyboard.press('m'); await shot('off-axis');
+  await page.locator('#map-zoom-in').click(); await page.waitForTimeout(250); await shot('zoom');
+  await page.locator('#map-fit').click(); await page.waitForTimeout(250);
+  await page.locator('#map-engage').click();
   await page.waitForFunction(() => Boolean(window.starAgent.state.travel));
   await page.evaluate(() => {
     const n = window.starAgent.navigation;
     n.travel.elapsed = n.travel.plan.spoolSeconds + n.travel.plan.motionSeconds * .45; n.updateTravel(0);
     document.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyM',bubbles:true}));
   });
-  await page.screenshot({path:`${out}/drive-held.png`});
+  await shot('drive-held');
   await writeFile(`${out}/evidence.json`, JSON.stringify({browser:browser.version(),backend,viewport:[1440,900],renderScale:before.renderScale,previousScene:{drawCalls:before.drawCalls,triangles:before.triangles},heldSceneRenderCount:after.renderedFrames-before.renderedFrames,mapRafCadenceMs:cadence,positionHeld:JSON.stringify(before.position)===JSON.stringify(after.position),errors,warnings},null,2));
   if (errors.length) throw new Error(errors.join('\n'));
   console.log(`Map evidence saved to ${out}`);

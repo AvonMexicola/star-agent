@@ -123,6 +123,7 @@ export function createMapProjection({
 
   return Object.freeze({
     project,
+    center: Object.freeze(frame.anchor.clone().addScaledVector(frame.right, centerU).addScaledVector(frame.up, centerV).toArray()),
     metersPerPixel: metresPerPixel,
     scaleBar: niceScaleBar(metresPerPixel, availableWidth),
     zoom: safeZoom,

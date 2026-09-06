@@ -7,11 +7,11 @@
   ],
   "renderScale": 0.55,
   "previousScene": {
-    "drawCalls": 187,
-    "triangles": 119042
+    "drawCalls": 210,
+    "triangles": 133762
   },
   "heldSceneRenderCount": 0,
-  "mapRafCadenceMs": 16.668965517241368,
+  "mapRafCadenceMs": 17.24137931034483,
   "positionHeld": true,
   "errors": [],
   "warnings": []

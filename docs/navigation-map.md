@@ -3,7 +3,7 @@
 `M` opens the map. A standard controller opens it with D-pad left; inside the map,
 use the left stick or D-pad to move focus, A to activate, and B or Menu to close.
 The controls menu also offers a touch-accessible System button. On narrow screens,
-the header and flight-hold status stay visible while destination details scroll.
+the header and bottom Return button stay visible while destination details scroll.
 
 The chart projects Aeon, Selene, the ship and its approach route onto the plane
 through Aeon–Selene and world up. World coordinates remain JavaScript doubles.
@@ -16,7 +16,7 @@ Selecting a world changes only the course. Engage starts the existing continuous
 travel plan. The chart shows the full plan and remaining segment, distance to the
 actual approach endpoint, remaining duration, phase and progress. An aborted drive
 shows distance to the braking stop. Blocked starts explain the relevant altitude
-exclusion. Fit restores the whole route; zoom centres on the selected world.
+exclusion. Fit restores the whole route; zoom smoothly centres on the selected world and respects reduced-motion preferences.
 
 Opening the map holds simulation and skips world updates, atmosphere rendering and
 tunnel rendering. Animation-frame callbacks continue polling the isolated

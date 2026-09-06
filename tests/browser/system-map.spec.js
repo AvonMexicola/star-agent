@@ -29,7 +29,7 @@ test('chart follows real position; modal holds rendering, travel metrics and rou
   expect(await page.evaluate(() => window.starAgent.state.position)).toEqual(before.position);
   await expect(page.locator('#map-route')).toHaveAttribute('d', /^M.+ L.+/);
   const range = await page.locator('#map-distance').textContent();
-  await page.locator('#map-zoom-in').click();
+  await page.locator('#map-zoom-in').click(); await page.waitForTimeout(220);
   await expect(page.locator('#map-distance')).toHaveText(range);
   await page.locator('#map-fit').click();
   await expect(page.locator('#map-ship')).toHaveAttribute('transform', before.marker);
@@ -108,6 +108,8 @@ test('phone retains close control while scrolled; touch, backdrop and exclusion 
   expect(await page.locator('#system-map').evaluate(e => e.scrollWidth <= e.clientWidth + 1)).toBe(true);
   await page.screenshot({path:'/tmp/star-agent-map-phone-details.png'});
   await page.locator('#close-system-map').tap();
+  await expect(page.locator('#system-map')).toBeHidden();
+  await page.keyboard.press('m'); await page.locator('#map-return').tap();
   await expect(page.locator('#system-map')).toBeHidden();
   await page.keyboard.press('m'); await page.touchscreen.tap(2,2);
   await expect(page.locator('#system-map')).toBeHidden();
