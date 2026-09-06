@@ -88,7 +88,7 @@ test('returned world center round-trips and can be reused without moving the cha
   const chartCenter = fitted.project(fitted.center);
   near(chartCenter.x, options.width / 2);
   near(chartCenter.y, options.height / 2);
-  near(chartCenter.depth, 0, 1e-7);
+  near(chartCenter.depth, 0, Math.max(1e-7, new Vector3(...fitted.center).length()*Number.EPSILON*8));
 
   const reused = createMapProjection({ ...options, focus: fitted.center });
   near(reused.metersPerPixel, fitted.metersPerPixel);

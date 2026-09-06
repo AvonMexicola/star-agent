@@ -428,7 +428,7 @@ export class Navigation {
         const flight=stepFlight(this,{assist:this.powered&&this.flightAssist,targetVelocity:cruiseTarget??input.multiplyScalar(maxSpeed),
           translation:this.powered?new THREE.Vector3(strafe,vertical,-moveForward):new THREE.Vector3(),
           rotation:this.powered?new THREE.Vector3(tilt,turn,-roll):new THREE.Vector3(),
-          boost:this.powered&&this.boost,maxSpeed:!this.powered?Infinity:this.flightAssist?Math.max(this.speed,profile.limit):profile.limit},this.flightEnvironment,dt);
+          boost:this.powered&&this.boost,maxSpeed:!this.powered?Infinity:Math.max(this.speed,profile.limit)},this.flightEnvironment,dt);
         this.engineAcceleration.copy(flight.engineAcceleration);
         this.velocity.copy(flight.velocity);this.orientation.copy(flight.orientation);this.angularVelocity.copy(flight.angularVelocity);
         if(this.powered&&this.flightAssist&&roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation);}
@@ -441,11 +441,13 @@ export class Navigation {
         if(rockHit?.hit){this.position.copy(rockHit.point);this.velocity.set(0,0,0);this.autoland=false;if(rockHit.debrisBrake)this.notify('Debris proximity brake. Approach at controlled speed.');break;}
         const lunar=constrainMoonStep(previous,proposed,this.landingClearance);
         if(lunar.hit){
-          this.position.copy(lunar.point);this.touchDown();break;
+          this.position.copy(lunar.point);
+          const normal=bodySurfaceNormal(this.position,SELENE),impact=assessImpact(this.velocity,normal,'lunar regolith');
+          if(!this.crashAt(impact,normal))this.touchDown();break;
         }
         if(lunar.limited){proposed.copy(lunar.point);this.velocity.set(0,0,0);}
         const pyre=constrainPyreStep(previous,proposed,this.landingClearance);
-        if(pyre.hit){this.position.copy(pyre.point);this.touchDown();break;}
+        if(pyre.hit){this.position.copy(pyre.point);const normal=bodySurfaceNormal(this.position,PYRE);if(!this.crashAt(assessImpact(this.velocity,normal,'volcanic rock'),normal))this.touchDown();break;}
         if(pyre.limited){proposed.copy(pyre.point);this.velocity.set(0,0,0);}
         const collision=this.station?.constrainStep(previous,proposed,this.orientation,false,this.layout);
         this.position.copy(collision?collision.point:proposed);

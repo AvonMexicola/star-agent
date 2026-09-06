@@ -253,9 +253,9 @@ test('an unseated passenger follows the ship through touchdown into a stable par
   const { navigation: nav, press } = setup(t);
   const coast = findDestinations().coast;
   const approach = new THREE.Vector3(...coast);
-  nav.transit(coast, 80);
+  nav.transit(coast, 5);
   nav.flightAssist = false;
-  nav.velocity.copy(approach).multiplyScalar(-120);
+  nav.velocity.copy(approach).multiplyScalar(-2);
   press('KeyF');
   assert.equal(nav.cabinFlight, true);
   const localPassenger = nav.toShipLocal().clone();
