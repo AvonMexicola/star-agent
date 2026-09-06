@@ -24,7 +24,8 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
     <div class="inventory-columns"></div>
     <section class="inventory-detail" aria-label="Selected item"></section>
     <footer class="inventory-footer"><p class="cargo-feedback" role="status" aria-live="polite">Select a stack to inspect or transfer it.</p><p class="cargo-save"></p><div class="mining-cargo"><button type="button" data-action="stow" data-controller-key="stow-minerals">Stow all minerals</button></div></footer>`;
-  document.body.append(launcher, dialog);
+  (document.querySelector('.top-actions') || document.body).append(launcher);
+  document.body.append(dialog);
 
   function accessible(id) {
     if (id === 'pack') return true;
@@ -63,6 +64,7 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
   }
   function feedback(result) { render(); dialog.querySelector('.cargo-feedback').textContent = result.message; }
   function openContainer(id = null) {
+    if (!dialog.open && !nav.enabled) return false;
     if (id && !accessible(id)) { nav.notify?.('Approach that storage container first.'); return false; }
     if (!dialog.open && document.querySelector('dialog[open]')) return false;
     targetId = id; selection = null;
