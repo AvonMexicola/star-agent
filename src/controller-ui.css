@@ -19,3 +19,33 @@
 .controller-command-list { display: grid; gap: 10px; }
 #controller-menu button { min-height: 44px; padding: 12px; color: inherit; background: transparent; border: 1px solid var(--line, #39514f); text-align: left; cursor: pointer; }
 #controller-menu button:disabled { opacity: .4; cursor: default; }
+
+/* The held modifier legend must remain readable over both clouds and MFDs. */
+#controller-hints.utility-shortcuts:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: max-content;
+  max-width: min(920px, calc(100vw - 32px));
+  gap: 10px 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--dialog-solid);
+  color: inherit;
+  font: 11px/1.7 var(--mono);
+  white-space: normal;
+}
+#controller-hints.utility-shortcuts kbd {
+  color: var(--mint);
+  font-size: 11px;
+}
+@media (max-width: 700px) {
+  #controller-hints.utility-shortcuts:not([hidden]) {
+    width: calc(100vw - 32px);
+    gap: 8px 12px;
+    padding: 12px;
+    font-size: 12px;
+  }
+  #controller-hints.utility-shortcuts kbd { font-size: 12px; }
+}

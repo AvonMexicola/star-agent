@@ -44,3 +44,11 @@ HUD/help desktop and phone visual review is pending.
 
 [Builder HUD capture](hud-builder.png). Production is unchanged; no merge or
 public deployment is claimed. Keyboard controls remain as in flight options.
+
+
+Independent first visual review scored3.83/5: mappings/help fit, but the modifier
+legend's inherited7–8px muted text was hard to read against clouds and cockpit
+screens. Exact report: [first-review.md](first-review.md). The correction adds a
+scoped panel using the existing opaque dialog color token, inherited text color,
+11px desktop /12px phone type, and wrapping. It only styles the held-modifier
+legend. The production build passes; final browser re-review follows.
