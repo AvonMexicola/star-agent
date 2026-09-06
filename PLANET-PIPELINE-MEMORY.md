@@ -360,3 +360,45 @@ exclusion margin. The ring is decorative and is not a new travel target or colli
 hazard. Mining, moving orbital bodies, terrain deformation, particle thermodynamics,
 ring shadows on the lunar surface and rigid-body asteroid impacts remain future work.
 For merge ownership, review results and screenshots use `LUNAR-LANDSCAPE-HANDOFF.md`.
+
+
+## Surface identity and extreme relief — 2026-09-06, generator v4
+
+Cees found Selene visually uniform and difficult to navigate by landmarks. Two
+causes were identified: the supplied preview address (5178) served opening-work,
+and v3's 1024-wide global albedo map represented kilometres per pixel on foot.
+Always verify the service working directory, successful startup and served asset
+hash against the built dist; HTTP 200 alone does not identify a branch.
+The lunar production preview now has its own star-agent-selene-geology service
+at http://127.0.0.1:5180/; opening's server remains untouched.
+
+V4 removes the orbital albedo texture dependency. moonSurface returns linear RGB
+material colors shared by terrain vertices and skirts. Fixed geographic masks
+produce dark Obsidian Crown, blue-white Glass Rift, Copper Ejecta and icy Frostwall.
+moonRegion names those districts plus Crescent Rim/Basin, Twin Spires and the
+highlands in the existing lunar biome label/state. Labels do not teleport players.
+Broad color fields avoid aliasing on distant meshes; sub-metre detail uses a
+periodic, mipmapped triplanar fracture/relief texture. Do not sample sub-metre noise
+only at distant terrain vertices: this produces a patchwork grid when interpolated.
+
+The canonical heightfield adds a winding 180 m ice-fault trough, deepens local
+impact bowls, and raises three mountain groups with 6.2–7.6 km contributions.
+Peaks are several kilometres from the shelf so the sky and ring remain visible.
+The 35 m level landing area, shared walking floor, low gravity and physical ramp
+remain. The conservative 16 km upper bound and travel exclusion contract remain.
+Heightfield geometry still cannot form overhangs or caves.
+
+Streaming lesson: horizon-culled siblings still form part of a visible parent's
+all-four-children replacement dependency. Evicting them repeatedly rebuilt meshes
+and exposed coarse mountain fallbacks. Mark required siblings recently used, even
+when they are culled. A regression advances the cache clock beyond expiry and
+checks a stationary view requires zero new builds. Visual tours wait for zero
+terrain builds before taking surface/survey evidence; maximum LOD alone only
+proves that some nearby patches are loaded, not the mountain landscape.
+
+Verification covers distinct material/region identities, shared material edges,
+more than 7.5 km local relief, collision/landing/walking, cache stability and actual
+Chromium shaders. Full suite: 77 unit cases across nine test files. Production
+lunar journey and render tour pass; the final shader/cache refinements receive a
+new render tour. Evidence includes docs/selene-geology.png and updated crater view.
+Use LUNAR-LANDSCAPE-HANDOFF.md and PR #15 for integration boundaries and delivery.

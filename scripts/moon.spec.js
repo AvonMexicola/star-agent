@@ -69,7 +69,7 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
   });
   await page.waitForFunction(()=>window.starAgent.state.moon.lod>=3&&window.starAgent.state.moon.effects.terrainBuilds===0);await page.screenshot({path:`${evidence}/rings-orbit.png`});
   await page.evaluate(()=>window.starAgent.navigation.transitMoon(600));
-  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=11);await page.waitForTimeout(1200);
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=11&&window.starAgent.state.moon.effects.terrainBuilds===0);await page.waitForTimeout(1200);
   await page.screenshot({path:`${evidence}/crater-approach.png`});
   // Look aft from the landing shelf toward the new impact basin and ring arc.
   await page.evaluate(()=>{
@@ -77,7 +77,7 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
     const up=nav.normal,east=nav.position.clone().set(0,1,0).cross(up).normalize();
     nav.orientToward(nav.position.clone().addScaledVector(east,-1000).addScaledVector(up,120),up);
   });
-  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=16);await page.waitForTimeout(2500);await page.screenshot({path:`${evidence}/craters-and-ice.png`});
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=16&&window.starAgent.state.moon.effects.terrainBuilds===0);await page.waitForTimeout(2500);await page.screenshot({path:`${evidence}/craters-and-ice.png`});
   const a=await page.screenshot();await page.waitForTimeout(1200);const b=await page.screenshot();expect(a.equals(b)).toBe(false);
   const surface=await page.evaluate(()=>window.starAgent.state);expect(surface.moon.effects.iceParticles).toBeGreaterThan(0);
   // A low-flight survey shows the rift, crater floor and distinct mountain districts together.
@@ -86,7 +86,7 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
     const shelf=nav.position.clone();nav.position.addScaledVector(up,7000).addScaledVector(east,6500).addScaledVector(north,-7500);
     nav.orientToward(shelf.clone().addScaledVector(east,-1800),up);
   });
-  await page.waitForTimeout(5000);await page.screenshot({path:`${evidence}/geology-survey.png`});
+  await page.waitForFunction(()=>window.starAgent.state.moon.effects.terrainBuilds===0);await page.waitForTimeout(500);await page.screenshot({path:`${evidence}/geology-survey.png`});
   const rock=ringRock(5);
   await page.evaluate(({rock,normal})=>{
     const nav=window.starAgent.navigation,center=nav.position.clone().fromArray(window.starAgent.state.moon.position),target=center.clone().add(nav.position.clone().fromArray(rock.position));

@@ -76,6 +76,10 @@ export class MoonTerrain {
       const split=node.level<(radius<MOON_RADIUS*12?3:2)||(node.level<MOON_MAX_LEVEL&&distance(node)<node.size*MOON_RADIUS*1.8);
       if(split){
         if(!node.children)node.children=[this.node(node.face,node.level+1,node.ix*2,node.iy*2),this.node(node.face,node.level+1,node.ix*2+1,node.iy*2),this.node(node.face,node.level+1,node.ix*2,node.iy*2+1),this.node(node.face,node.level+1,node.ix*2+1,node.iy*2+1)];
+        // All four siblings are required for parent replacement, even when one
+        // is horizon-culled. Retain these dependencies to avoid eviction/rebuild
+        // loops that repeatedly expose coarse fallback mountains.
+        for(const child of node.children)child.lastUsed=now;
         for(const child of [...node.children].sort((a,b)=>distance(a)-distance(b)))if(!child.mesh&&budget>0){this.build(child);budget--;}
         // A parent remains visible until every child has geometry, including
         // during a rapid descent or a cache miss after returning from Aeon.

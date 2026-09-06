@@ -108,7 +108,9 @@ function relief(x,y,z){
   const basalt=Math.max(rock,obsidian,1-smooth(.30,.62,detail));
   // Materials are sampled at every terrain vertex, including centimetre LODs.
   // Ground identity must never depend on a kilometre-wide orbital texture pixel.
-  const veins=smooth(.47,.64,noise(x*35000+8,y*35000-5,z*35000+2));
+  // Broad mineral fields remain stable on distant meshes; sub-metre fractures
+  // belong in the mipmapped fragment material, not aliased vertex noise.
+  const veins=smooth(.47,.64,noise(x*720+8,y*720-5,z*720+2));
   const ice=Math.min(1,Math.max(capIce*.88,frost*(.55+veins*.45)+veins*.15*(1-obsidian)));
   const base=[.115,.135,.17].map((v,i)=>v*(1-basalt)+[.019,.028,.046][i]*basalt);
   const color=base.map((v,i)=>{

@@ -167,9 +167,20 @@ test('geological districts have distinct materials and labels at walking and fli
   assert.ok(ice.color[2]>rock.color[2]*4,'ice and obsidian read as distinct regions');
   assert.ok(copper.color[0]>copper.color[2]*3,'copper ejecta has a distinct warm mineral tint');
   assert.ok(frostwall.frost>.65,'Frostwall visibly carries ice');
-  const colors=Array.from({length:20},(_,i)=>sample(i-10,0).color[2]);
-  assert.ok(Math.max(...colors)-Math.min(...colors)>.03,'ground materials vary inside the landing shelf');
   // Region materials, like heights, stay continuous across a patch boundary.
   const a=generateMoonPatch({face:4,level:15,ix:13000,iy:18000}),b=generateMoonPatch({face:4,level:15,ix:13001,iy:18000});
   for(let y=0;y<=MOON_GRID;y++)assert.deepEqual(a.colors.slice((y*(MOON_GRID+1)+MOON_GRID)*3,(y*(MOON_GRID+1)+MOON_GRID)*3+3),b.colors.slice(y*(MOON_GRID+1)*3,y*(MOON_GRID+1)*3+3));
+});
+
+test('stationary lunar views finish streaming and retain culled siblings needed by visible parents',t=>{
+  let now=0;t.mock.method(performance,'now',()=>now);
+  const scene=new Scene(),material=new MeshBasicMaterial(),terrain=new MoonTerrain(scene,material);
+  const point=bodySurfacePoint(new Vector3(...MOON_LANDING_DIRECTION),SELENE,1.75);
+  try{
+    let frames=0;
+    do{now+=16;terrain.update(point,point);frames++;}while(terrain.buildsLastFrame&&frames<600);
+    assert.ok(frames<600,'a fixed view must settle');assert.ok(terrain.maxLevel>=16);
+    now+=10000;terrain.update(point,point);terrain.update(point,point);
+    assert.equal(terrain.buildsLastFrame,0,'cache eviction must not discard required siblings');
+  }finally{terrain.dispose();material.dispose();}
 });

@@ -466,3 +466,27 @@ lunar tests and evidence/docs; main.js changes only lunar biome label/diagnostic
 (the lunar service failed on its occupied port). Will use dedicated port 5180,
 leaving opening preview intact. Implement canonical contrasting geological regions,
 glacial channels and larger mountain relief; verify rendered surface and landing.
+
+
+## UPDATED: #15 — distinct Selene geology and extreme relief (Astra, 2026-09-06)
+
+User follow-up is implemented on feat/lunar-landscape in /tmp/star-agent-lunar-landscape.
+Generator v4 supplies named districts, fractured ground, blue-white Glass Rift,
+dark Obsidian Crown, Copper Ejecta and icy Frostwall. Local sampled elevation range
+is 8,980 m (−2,927 to +6,053 m relative to lunar radius), with the safe landing shelf
+and shared collision/walking heightfield retained. Required LOD siblings now stay
+cached: a fixed view settles instead of rebuilding horizon-culled dependencies.
+
+Corrected preview: http://127.0.0.1:5180/ — star-agent-selene-geology.service.
+Verified final served asset index-DB4-R7TB.js matches the browser-tested dist.
+Earlier 5178 claim was incorrect: opening-work owns that port, and the lunar service
+failed there. No shared runtime sources or other preview services were replaced.
+
+77 unit cases across nine files pass; build and physical lunar journey pass.
+Final material/cache changes were rechecked in the full visual tour with zero
+page/console errors and zero terrain builds at the recorded surface view.
+Evidence: docs/selene-geology.png, docs/selene-crater-country.png and evidence JSON.
+PLANET-PIPELINE-MEMORY.md v4 update is filed on PR #15 for Fable. main.js integration
+now also imports moonRegion for the existing lunar biome label/state. Preserve other
+lanes' main/UI changes during merge. Manager review/merge/deployment remain pending;
+this local handoff does not assert a read receipt.

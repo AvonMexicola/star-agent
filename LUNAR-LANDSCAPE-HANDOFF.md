@@ -6,16 +6,20 @@ sunlight-reflecting ice particles and majestic asteroid rings.
 Review: [PR #15](https://github.com/AvonMexicola/star-agent/pull/15).
 Branch: `feat/lunar-landscape`, based on merged `feat/visual-fidelity` f028a43.
 Isolated worktree: `/tmp/star-agent-lunar-landscape`.
-Local production preview: http://127.0.0.1:5178/ . Select Selene, L lands, F stands,
+Local production preview: http://127.0.0.1:5180/ . Select Selene, L lands, F stands,
 walk aft/open the hatch and explore. Keyboard/controller boarding remains physical.
-The preview is the user service `star-agent-lunar-landscape.service`.
+The preview is the user service `star-agent-selene-geology.service`.
 
 ## Delivered
 
-- Generator v3: stronger global relief, deeper crater bowls/rims/ejecta, 36 local
+- Generator v4: stronger global relief, deeper crater bowls/rims/ejecta, 36 local
   basins, broken peaks and basalt outcrops in the canonical walking heightfield.
 - A level 35 m landing shelf on a crater rim, blending into the terrain by 150 m.
-- Cool regolith/frost material with small-scale relief and height-dependent bands.
+- Distinct ice rift, dark obsidian peaks, copper ejecta and icy Frostwall; named
+  districts in the existing lunar location display. Per-vertex material regions
+  replace the coarse orbital color map; mipmapped fractures supply walking detail.
+- Much taller mountains with 6.2–7.6 km peak contributions and deeper local basins.
+- Required LOD siblings remain cached so a fixed view finishes streaming.
 - Four tilted ring bands with gaps, distance-filtered striations and lunar shadow.
 - 1,800 instanced, irregular asteroids with surface variation and lunar shadow;
   broad dust fades near the observer so a close approach resolves into rocks.
@@ -28,7 +32,8 @@ The preview is the user service `star-agent-lunar-landscape.service`.
 ## Merge boundaries
 
 Owned runtime files: `moon-world.js`, `moon-terrain.js`, `moon.js`, new
-`moon-rings.js`, new `moon-ice.js`. The two `main.js` hooks supply elapsed time/
+`moon-rings.js`, new `moon-ice.js`. The `main.js` hooks additionally import moonRegion and use it for the existing
+biome label/state, and supply elapsed time/
 inside-ship state to Moon and expose effect diagnostics. `atmosphere.js` has the
 small transparent-HDR composite fix required to retain rings/ice over stars.
 Logarithmic depth reconstruction is unchanged. Preserve these changes when merging
@@ -50,7 +55,7 @@ merge and deployment remain with the manager, following the established queue.
 
 ## Validation and limits
 
-All 75 unit cases pass; production build passes. Both dedicated production browser
+All 77 unit cases pass; production build passes. Both dedicated production browser
 cases pass: the full land/walk/jump/reboard/launch journey, and the orbital/surface/
 asteroid/Aeon render tour. The visual case was rerun after close-range refinement.
 No page/console errors. Numerical checks cover slopes >20°, terrain range/bounds,
@@ -69,4 +74,9 @@ metadata, decorative asteroid belt, artistic ice drift (no thermodynamic simulat
 no mining/asteroid impacts, no ring shadow cast onto the lunar ground, and no orbit
 simulation. The terrain is a heightfield, so it has no overhangs or caves.
 
-See `docs/selene-landscape.md` and the v3 section of `PLANET-PIPELINE-MEMORY.md`.
+See `docs/selene-landscape.md` and the v4 section of `PLANET-PIPELINE-MEMORY.md`.
+
+Preview correction: 5178 belonged to the opening-work lane; the earlier lunar
+service failed because the port was occupied. The dedicated geology service on
+5180 serves this branch's production dist. Do not replace opening's preview or
+copy its main/navigation files to integrate lunar modules.
