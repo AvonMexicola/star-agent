@@ -85,6 +85,8 @@ Agents coordinate ownership and review through this file. Read the PM notes belo
 Rule: only the owner edits a file. If you need a change in a file you don't own, write the request in
 `## Requests` below (or tell Cees) instead of editing it.
 
+- READY FOR REVIEW — FORESTS: `feat/forest-streaming`, stacked on crash PR #2. Seeded groves/clearings, worker tiles, retained residents, 0.8 s appearance/shadow fades and bounded live-instance uploads. Isolated `/tmp/star-agent-forest-work`; 57 unit tests, production forest browser check and all four general browser cases pass. Sampled forest drops 40,998 → 7,381 trees; 150 m movement adds 16 tiles. Native screenshots and limits in FOREST-HANDOFF.md and docs/images/forest-*.png. Local preview http://localhost:5175/?seed=7291. Terrain/water/advanced tree material work remains separate. No merge or deployment.
+
 ## Conventions Claude's modules follow (derived from planet.js / vegetation.js)
 
 - World positions are JS doubles in metres, planet centre at (0,0,0), `RADIUS` from `world.js`.

@@ -3,14 +3,16 @@ import { Meadow } from './meadow.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createBranchGeometry, createNeedleTexture, addFoliageWind, createTreeImpostor } from './foliage.js';
 import { createSurfaceTexture } from './surface-materials.js';
-import { RADIUS, terrainHeight, moisture, biomeAt, hash } from './world.js';
+import { RADIUS, terrainHeight, biomeAt, hash } from './world.js';
 
-import { TREE_LODS, TREE_RADIUS, TREE_REBUILD_DISTANCE, treeLodIncludes, addTreeLod } from './tree-lod.js';
+import { ForestStream } from './forest-stream.js';
+import { FOREST_GENERATOR_VERSION, FOREST_RECORD_STRIDE } from './forest-distribution.js';
+import { TREE_LODS, TREE_REBUILD_DISTANCE, treeLodIncludes, addTreeLod, addVegetationFade } from './tree-lod.js';
 
 const TAU = Math.PI * 2;
 const UP = new THREE.Vector3(0, 1, 0);
 const TREE_LIMIT = TREE_LODS[0].capacity;
-const GRASS_LIMIT = 12000;
+const GRASS_LIMIT = 6000;
 const ROCK_LIMIT = 600;
 
 export function treeVariant(col,row,latitude,height) {
@@ -52,7 +54,7 @@ export class Vegetation {
     this.scale = new THREE.Vector3();
     this.matrix = new THREE.Matrix4();
     this.color = new THREE.Color();
-    this.stats = { trees: 0, grassTufts: 0, rocks: 0, rebuilds: 0 };
+    this.stats = { trees: 0, grassTufts: 0, rocks: 0, rebuilds: 0, forestGeneratorVersion: FOREST_GENERATOR_VERSION };
     this.exclusionPosition = null;
     this.exclusionDirection = new THREE.Vector3();
     this.exclusionRadius = 13;
@@ -60,7 +62,11 @@ export class Vegetation {
 
     this.windTime = { value: 0 };
     this.lodCamera = { value: new THREE.Vector3() };
-    this.treeCache = new Map();
+    this.stream = new ForestStream();
+    this.lastPlan = new THREE.Vector3(Infinity,Infinity,Infinity);
+    this.lastDetails = new THREE.Vector3(Infinity,Infinity,Infinity);
+    this.detailCache = new Map();
+    this.hasOrigin = false;
     this.surfaceTexture = createSurfaceTexture();
     this.treeSets=Array.from({length:3},(_,variant)=>{
       const needleTexture = createNeedleTexture(variant===2);
@@ -110,11 +116,20 @@ export class Vegetation {
     rock.translate(0, .24, 0);
     this.meadow = new Meadow(scene, this);
     this.rocks = this.makeMesh(rock, { color: 0xffffff, roughness: .9, bumpMap: this.surfaceTexture, bumpScale: .055 }, ROCK_LIMIT);
+    for(const mesh of this.treeMeshes.flat()) {
+      addVegetationFade(mesh.material,this.lodCamera,this.windTime);
+      if(mesh.customDepthMaterial)addVegetationFade(mesh.customDepthMaterial,this.lodCamera,this.windTime);
+    }
+    addVegetationFade(this.grass.material,this.lodCamera,this.windTime,[90,110]);
+    addVegetationFade(this.rocks.material,this.lodCamera,this.windTime,[240,280]);
+    this.rocks.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking});
+    addVegetationFade(this.rocks.customDepthMaterial,this.lodCamera,this.windTime,[240,280]);
   }
 
   makeMesh(geometry, materialOptions, capacity) {
     const mesh = new THREE.InstancedMesh(geometry, new THREE.MeshStandardMaterial(materialOptions), capacity);
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    geometry.setAttribute('instanceBirth',new THREE.InstancedBufferAttribute(new Float32Array(capacity),1).setUsage(THREE.DynamicDrawUsage));
     mesh.count = 0;
     // Disabling aggregate culling avoids stale bounds
     // during origin rebasing and successive patches with different populations.
@@ -156,23 +171,36 @@ export class Vegetation {
   update(worldPosition, renderOrigin, elapsedSeconds, walking = false, downwash = null) {
     this.meadow.update(worldPosition, renderOrigin, elapsedSeconds, walking, downwash);
     this.windTime.value = elapsedSeconds;
-    const distance = worldPosition.length();
-    if (distance < 1) { this.group.visible = false; return; }
+    const distance=worldPosition.length();
+    if(distance<1){this.group.visible=false;return;}
     this.direction.copy(worldPosition).divideScalar(distance);
-    const height = terrainHeight(this.direction.x, this.direction.y, this.direction.z);
-    const altitude = distance - RADIUS - Math.max(0, height);
-    this.group.visible = altitude < 1800 && altitude > -50;
-    if (!this.group.visible) return;
-
-    if (this.exclusionDirty || worldPosition.distanceToSquared(this.lastPosition) > TREE_REBUILD_DISTANCE ** 2) {
-      this.lastPosition.copy(worldPosition);
-      this.origin.copy(this.direction).multiplyScalar(RADIUS + height);
-      this.rebuild(this.direction);
-      this.exclusionDirty = false;
+    const height=terrainHeight(this.direction.x,this.direction.y,this.direction.z);
+    const altitude=distance-RADIUS-Math.max(0,height);
+    this.group.visible=altitude<1800&&altitude>-50;
+    // Preload before trees enter their 1.4 km distance fade on descent.
+    if(altitude>2600||altitude<-50)return;
+    let dirty=false;
+    if(worldPosition.distanceToSquared(this.lastPlan)>128**2){
+      dirty=this.stream.plan(this.direction);this.lastPlan.copy(worldPosition);
     }
+    dirty=this.stream.publish(elapsedSeconds)||dirty;
+    if(!this.hasOrigin||worldPosition.distanceToSquared(this.origin)>5000**2){
+      this.origin.copy(this.direction).multiplyScalar(RADIUS+height);this.hasOrigin=true;
+      this.lastPosition.set(Infinity,Infinity,Infinity);this.lastDetails.set(Infinity,Infinity,Infinity);
+    }
+    if(dirty||this.exclusionDirty||worldPosition.distanceToSquared(this.lastPosition)>TREE_REBUILD_DISTANCE**2){
+      this.lastPosition.copy(worldPosition);const start=performance.now();
+      this.rebuildTrees();this.stats.treeUploadMs=performance.now()-start;
+    }
+    if(altitude<320&&(this.exclusionDirty||worldPosition.distanceToSquared(this.lastDetails)>20**2)){
+      this.lastDetails.copy(worldPosition);this.rebuildDetails(worldPosition.clone().normalize());
+    } else if(altitude>=320){this.grass.count=this.rocks.count=0;this.stats.grassTufts=this.stats.rocks=0;this.lastDetails.set(Infinity,Infinity,Infinity);}
+    this.exclusionDirty=false;
     this.lodCamera.value.copy(worldPosition).sub(this.origin);
     this.group.position.copy(this.origin).sub(renderOrigin);
     this.stats.meadow = this.meadow.stats;
+    this.stats.pendingTiles=this.stream.pending;this.stats.residentTiles=this.stream.tiles.size;
+    this.stats.generatedTiles=this.stream.generated;this.stats.error=this.stream.error;
   }
 
   // Each latitude row has a fixed, integer number of longitude cells. Sampling
@@ -217,64 +245,64 @@ export class Vegetation {
     mesh.setMatrixAt(index, this.matrix);
   }
 
-  rebuild(direction) {
-    // place() reuses the direction scratch vector, so preserve the patch center.
-    const center = direction.clone();
-    let trees = 0, grassTufts = 0, rocks = 0;
-    const lodCounts = [0, 0, 0], speciesCounts=[0,0,0], setCounts=this.treeSets.map(()=>[0,0,0]), nextCache = new Map();
-    this.scatter(center, TREE_RADIUS, 12, 711, (x, y, z, col, row, a, b) => {
-      if (Math.abs(y) > .84 || this.isExcluded(x, y, z, 5)) return;
-      const key = `${col}/${row}`;
-      let record = this.treeCache.get(key);
-      if (!record) {
-        const h = terrainHeight(x, y, z), m = moisture(x, y, z);
-        const density = m > .46 ? Math.min(.86, .58 + (m - .46) * 2) : m > .4 ? .025 : 0;
-        const variant=treeVariant(col,row,y,h);
-        record = { h, variant, present: h >= 12 && h <= 2200 && hash(col, row, 911) <= density };
-      }
-      nextCache.set(key, record);
-      if (!record.present) return;
-      const h = record.h, variant=record.variant, size = (variant===2?6:8) + hash(col, row, 1103) * (variant===1?17:12), width = size * (variant===0?.72:variant===1?.82:1.08) * (.82 + b * .36);
-      const distance = Math.hypot(x*(RADIUS+h)-this.lastPosition.x,y*(RADIUS+h)-this.lastPosition.y,z*(RADIUS+h)-this.lastPosition.z);
+  upload(mesh) {
+    if (!mesh.count) return;
+    // Only upload live instances, not the unused capacity of every LOD buffer.
+    for (const attribute of [mesh.instanceMatrix, mesh.geometry.attributes.instanceBirth, mesh.instanceColor]) {
+      if (!attribute) continue;
+      attribute.clearUpdateRanges();
+      attribute.addUpdateRange(0, mesh.count * attribute.itemSize);
+      attribute.needsUpdate = true;
+    }
+  }
+
+  rebuildTrees() {
+    let trees=0;const lodCounts=[0,0,0],speciesCounts=[0,0,0],setCounts=this.treeSets.map(()=>[0,0,0]);
+    for(const tile of this.stream.tiles.values())for(let k=0;k<tile.records.length;k+=FOREST_RECORD_STRIDE){
+      const r=tile.records,x=r[k],y=r[k+1],z=r[k+2],h=r[k+3],width=r[k+4],size=r[k+5],angle=r[k+6],a=r[k+7],b=r[k+8];
+      if(this.isExcluded(x,y,z,5))continue;
+      const distance=Math.hypot(x*(RADIUS+h)-this.lastPosition.x,y*(RADIUS+h)-this.lastPosition.y,z*(RADIUS+h)-this.lastPosition.z);
+      if(distance>1400+TREE_REBUILD_DISTANCE+25)continue;
+      const variant=treeVariant(Math.round(x*RADIUS/16),Math.round(z*RADIUS/16),y,h);
       trees++;speciesCounts[variant]++;
-      for (let level = 0; level < 3; level++) {
-        if (!treeLodIncludes(distance, level) || setCounts[variant][level] >= TREE_LODS[level].capacity) continue;
-        const meshes = this.treeSets[variant].meshes[level], index = setCounts[variant][level]++;lodCounts[level]++;
-        this.place(meshes[0], index, x, y, z, h - .08, width, size, width, a * TAU);
-        if (meshes[1]) meshes[1].setMatrixAt(index, this.matrix);
-        this.color.setRGB(.52 + a * .18, .60 + b * .18, .48 + a * .16);
+      for(let level=0;level<3;level++){
+        if(!treeLodIncludes(distance,level)||setCounts[variant][level]>=TREE_LODS[level].capacity)continue;
+        const meshes=this.treeSets[variant].meshes[level],index=setCounts[variant][level]++;lodCounts[level]++;
+        this.place(meshes[0],index,x,y,z,h-.08,width,size,width,angle);
+        if(meshes[1])meshes[1].setMatrixAt(index,this.matrix);
+        for(const mesh of meshes)mesh.geometry.attributes.instanceBirth.setX(index,tile.born+a*.2);
+        this.color.setRGB(.52+a*.18,.60+b*.18,.48+a*.16);
         if(variant===1){this.color.r*=.9;this.color.b*=.83;}
         if(variant===2){this.color.r*=.94;this.color.g*=1.08;this.color.b*=.76;}
-        meshes[meshes.length - 1].setColorAt(index, this.color);
+        meshes[meshes.length-1].setColorAt(index,this.color);
       }
-    });
-    this.treeCache = nextCache;
-    for(let variant=0;variant<3;variant++)for(let level=0;level<3;level++)for(const mesh of this.treeSets[variant].meshes[level])mesh.count=setCounts[variant][level];
+    }
+    for(let variant=0;variant<3;variant++)for(let level=0;level<3;level++)for(const mesh of this.treeSets[variant].meshes[level]){mesh.count=setCounts[variant][level];this.upload(mesh);}
+    Object.assign(this.stats,{trees,species:speciesCounts,treeLods:lodCounts,treeRange:1400,rebuilds:this.stats.rebuilds+1});
+  }
 
-    this.scatter(center, 170, 4.5, 1933, (x, y, z, col, row, a, b) => {
+  rebuildDetails(direction) {
+    const center=direction.clone(),nextCache=new Map();let grassTufts=0,rocks=0;
+    const sample=(key,x,y,z)=>{
+      let record=this.detailCache.get(key);
+      if(!record)record={h:terrainHeight(x,y,z),born:this.windTime.value};
+      nextCache.set(key,record);return record;
+    };
+    this.scatter(center, 135, 3.2, 1933, (x, y, z, col, row, a, b) => {
       if (grassTufts >= GRASS_LIMIT || Math.abs(y) > .84 || this.isExcluded(x, y, z)) return;
-      const h = terrainHeight(x, y, z);
-      if (h < 2 || h > 2200 || hash(col, row, 2111) > .86) return;
+      if(hash(col,row,2111)>.55)return;
+      const record=sample(`grass/${col}/${row}`,x,y,z),h=record.h;
+      if(h<2||h>2200)return;
       const size = .22 + a * .36;
       this.place(this.grass, grassTufts, x, y, z, h - .025, .3 + b*.5, size, .3 + b*.5, b * TAU);
       this.color.setRGB(.11 + a * .10, .16 + b * .09, .045 + a * .045);
+      this.grass.geometry.attributes.instanceBirth.setX(grassTufts,record.born+a*.2);
       this.grass.setColorAt(grassTufts++, this.color);
-    });
-
-    // Fine undergrowth around the viewer complements the sparse distant tufts.
-    this.scatter(center, 45, 1, 2099, (x,y,z,col,row,a,b) => {
-      if (grassTufts >= GRASS_LIMIT || Math.abs(y) > .84 || this.isExcluded(x,y,z) || a > .8) return;
-      const h = terrainHeight(x,y,z);
-      if (h < 12 || h > 2200 || moisture(x,y,z) < .44) return;
-      const size = .12+a*.24;
-      this.place(this.grass,grassTufts,x,y,z,h-.025,.22+b*.3,size,.22+b*.3,b*TAU);
-      this.color.setRGB(.10+a*.09,.13+b*.07,.035+a*.04);
-      this.grass.setColorAt(grassTufts++,this.color);
     });
 
     this.scatter(center, 300, 25, 3011, (x, y, z, col, row, a, b) => {
       if (rocks >= ROCK_LIMIT || a > .45 || this.isExcluded(x, y, z)) return;
-      const h = terrainHeight(x, y, z);
+      const record=sample(`rock/${col}/${row}`,x,y,z),h=record.h;
       if (h < .5) return;
       const biome = biomeAt(x, y, z, h);
       if (biome === 'POLAR ICE') return;
@@ -282,19 +310,18 @@ export class Vegetation {
       this.place(this.rocks, rocks, x, y, z, h - .07, size, size * (.5 + a), size * (.65 + b * .5), a * TAU);
       const shade = .23 + b * .17;
       this.color.setRGB(shade, shade * 1.025, shade * .96);
+      this.rocks.geometry.attributes.instanceBirth.setX(rocks,record.born+a*.2);
       this.rocks.setColorAt(rocks++, this.color);
     });
 
-    this.grass.count = grassTufts;
-    this.rocks.count = rocks;
-    for (const mesh of [...this.treeMeshes.flat(), this.grass, this.rocks]) {
-      mesh.instanceMatrix.needsUpdate = true;
-      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-    }
-    this.stats = { trees, species:speciesCounts, treeLods: lodCounts, treeRange: 1400, grassTufts, rocks, rebuilds: this.stats.rebuilds + 1 };
+    this.grass.count=grassTufts;this.rocks.count=rocks;this.detailCache=nextCache;
+    this.upload(this.grass);this.upload(this.rocks);
+    Object.assign(this.stats,{grassTufts,rocks});
   }
 
   dispose() {
+    this.stream.dispose();
+    this.rocks.customDepthMaterial.dispose();
     this.meadow.dispose();
     for (const mesh of [...this.treeMeshes.flat(), this.grass, this.rocks]) {
       mesh.geometry.dispose();
