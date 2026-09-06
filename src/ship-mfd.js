@@ -6,14 +6,16 @@ const mint = '#9ee7d1', dim = '#5d939c', white = '#e0efed', amber = '#f3b16d';
 const titles = ['FLIGHT', 'NAVIGATION', 'SYSTEMS', 'CARGO'];
 const distance = value => value >= 1000 ? `${(value / 1000).toFixed(1)} km` : `${value.toFixed(1)} m`;
 
-/** Four independent, physical 16:10 screens. Update textures at 5 Hz, not every draw. */
-export function createShipMFDs() {
+/** Four physical displays; 16:10 by default, configurable canvas height for authored quads. Updates at 5 Hz. */
+export function createShipMFDs({height=320,profile='nomad'}={}) {
   const group = new THREE.Group();
   group.name = 'Four rectangular multifunction displays';
   const frameFinish = new THREE.MeshStandardMaterial({ color: 0x111f26, metalness: .65, roughness: .36 });
-  const screens = titles.map((title, i) => {
-    const canvas = document.createElement('canvas');canvas.width = 512;canvas.height = 320;
+  const screenTitles=profile==='kestrel'?['FLIGHT','VESSEL','SYSTEMS','DRIVE']:titles;
+  const screens = screenTitles.map((title, i) => {
+    const canvas = document.createElement('canvas');canvas.width = 512;canvas.height = height;
     const ctx = canvas.getContext('2d');
+    ctx.setTransform(1,0,0,height/320,0,0);
     const texture = new THREE.CanvasTexture(canvas);texture.colorSpace = THREE.SRGBColorSpace;
     const mount = new THREE.Group();mount.position.set((i - 1.5) * .52, 2.08, -4.25);mount.rotation.x = -.36;
     const bezel = new THREE.Mesh(new THREE.BoxGeometry(.504, .326, .065), frameFinish);
@@ -61,6 +63,15 @@ export function createShipMFDs() {
     accumulator += dt;if (accumulator < .2) return;accumulator = 0;
     const env = nav.flightEnvironment, n = nav.normal;
     const localVelocity = nav.velocity.clone().applyQuaternion(nav.orientation.clone().invert());
+    if(profile==='kestrel'){
+      const progress=nav.previewProgress,targets=nav.previewTargets;
+      const state=(key,closed,open)=>progress[key]<.001?closed:progress[key]>.999?open:targets[key]?'DEPLOYING':'STOWING';
+      paint(screens[0],[['SHIP STATUS','PARKED'],['RIG CLEARANCE','0.9 m'],['CONTROLS','INSPECTION']],'DRAG TO ORBIT  /  1-6 VIEWPOINTS',0);
+      paint(screens[1],[['ROLE','SINGLE-SEAT INTERCEPTOR'],['LENGTH / SPAN','13.5 / 9.0 m'],['FLIGHT SYSTEM','OFFLINE']],'KESTREL SHIPWORKS  /  KS-134',1);
+      paint(screens[2],[['CANOPY',state('canopy','SEALED','OPEN')],['LADDER',state('ladder','STOWED','DEPLOYED')],['LANDING GEAR',state('gear','RETRACTED','DOWN')]],'C CANOPY   L LADDER   G GEAR',2);
+      paint(screens[3],[['ENGINE GLOW',`${Math.round((nav.previewThrottle||0)*100)} %`],['DRY MASS','9,000 kg'],['FUEL / HEAT','NOT CONNECTED']],'SHIPWORKS INSPECTION  /  STATIC RIG',3);
+      return;
+    }
     paint(screens[0], [['VELOCITY', `${nav.speed.toFixed(1)} m/s`], ['ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase()]], 'V ASSIST   X BRAKE   L LAND / LAUNCH', 0);
     let bearing = 'NO COURSE';
     if (course) {
@@ -73,5 +84,7 @@ export function createShipMFDs() {
     paint(screens[3], [['SHIP STORAGE', `${inventory.mass('ship').toFixed(1)} / ${CAPACITY.ship} kg`], ['BACKPACK', `${inventory.mass('pack').toFixed(1)} / ${CAPACITY.pack} kg`], ['ACCESS', 'STARBOARD CABIN']], 'ON FOOT: F AT THE CARGO CONTAINER', 3);
   };
   group.snapshot = () => screens.map(screen => ({ title: screen.title, values: [...screen.values] }));
+  // Asset studios can bind the same bounded-rate canvases to authored glTF quads.
+  group.screenTextures = () => screens.map(screen=>screen.texture);
   return group;
 }
