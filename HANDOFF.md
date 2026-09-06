@@ -596,3 +596,6 @@ workers join Crescent, and eight additional deposits can retain edits. Boxes are
 free prototype mounts; fuel/oxygen, crafting, multiplayer and N-body physics are
 not implemented. Fable/Claude retain independent visual review, integration,
 merge and deployment. This handoff does not claim a manager read receipt.
+
+Draft review PR: https://github.com/AvonMexicola/star-agent/pull/24 .
+The shared manager HANDOFF.md now points to this complete memory and evidence.
