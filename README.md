@@ -25,6 +25,8 @@ WASD moves, mouse or arrow keys steer, Space/C ascends/descends, Shift boosts, X
 
 Press **V** while freely flying to toggle inertial flight. Releasing thrust then preserves momentum; arrow keys and Q/E apply rotational thrust, and mouse movements adjust rotation rate. Space/C thrust along the ship's up/down axis in this mode. **X** stops translation and rotation; **V** restores assisted braking. Inertial flight includes inverse-square gravity (9.81 m/s² at sea level), density-dependent drag, banked wing lift and loss of lift beyond stall angle. It shares the atmospheric/space speed limits below and retains the station approach speed limit. Assisted mode remains the default, with gravity/aero compensation and altitude-scaled travel speed. The transition readout maps 70–20 km above sea level to ATMO 0–100%; it is a regime blend, not air density. Orbit/quick-transit resets assist to on.
 
+**P** toggles ship main power from the pilot chair. **F** lets you stand during ordinary flight: assisted flight holds the current course and speed while you walk inside either ship. Approach the chair and press F to resume piloting. Shutdown preserves momentum and disables propulsion; external exits remain secured in flight. See [ship power and cabin flight](docs/ship-power.md).
+
 L engages landing assistance near dry terrain or polar ice. After landing, F stands from the pilot chair. Walk aft, press F at the rear hatch, wait for the ramp to lower, and walk outside. Return up the ramp, approach the chair, press F to sit, then L to launch. Boarding is physical; F outside does not teleport you aboard. Tab hides the interface.
 
 Press **M** for the **system map** and select Aeon or Selene. **ENGAGE DRIVE** or
@@ -52,7 +54,7 @@ Connect a gamepad and press a button, then release the controls to start. Uses t
 | View / Share | Toggle HUD |
 | Menu / Options | Open / close controls |
 
-In help, right stick or D-pad up/down scrolls the manual. Destination buttons, seed entry and sound still use mouse or keyboard. Controllers without a standard browser mapping are reported as unsupported; custom remapping and vibration are not implemented. Controller availability depends on browser/OS support and requires HTTPS or localhost.
+In help, the D-pad selects controls, A / Cross activates, B / Circle closes, and the right stick scrolls. Menu initially focuses MAIN POWER while seated. Seed entry still uses the keyboard. Controllers without a standard browser mapping are reported as unsupported; custom remapping and vibration are not implemented. Controller availability depends on browser/OS support and requires HTTPS or localhost.
 
 ## Visit Aeon Orbital
 

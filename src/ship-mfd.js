@@ -56,20 +56,44 @@ export function createShipMFDs() {
     ctx.fillStyle = '#00000012';for (let y = 56; y < 280; y += 4) ctx.fillRect(0, y, 512, 1);
     texture.needsUpdate = true;
   }
-  let accumulator = 1;
+  let accumulator = 1, renderedPower = null;
   group.update = (dt, nav, inventory, course) => {
-    accumulator += dt;if (accumulator < .2) return;accumulator = 0;
+    const powered = nav.powered !== false;
+    accumulator += Number.isFinite(dt) ? Math.max(0, dt) : 0;
+    // Keep the normal 5 Hz canvas budget, but show power transitions on the
+    // first frame so a shutdown never leaves stale flight data on the panels.
+    if (accumulator < .2 && renderedPower === powered) return;
+    accumulator = 0;renderedPower = powered;
+    const rawShipSpeed = Number.isFinite(nav.shipSpeed) ? nav.shipSpeed : nav.speed;
+    const shipSpeed = Number.isFinite(rawShipSpeed) ? rawShipSpeed : 0;
+    if (!powered) {
+      const storage = `${inventory.mass('ship').toFixed(1)} / ${(inventory.capacity?.ship ?? CAPACITY.ship)} kg`;
+      const pages = [
+        [['MAIN POWER', 'OFF'], ['PROPULSION', 'DISABLED'], ['SHIP VELOCITY', `${shipSpeed.toFixed(1)} m/s`]],
+        [['MAIN POWER', 'OFF'], ['NAVIGATION', 'STANDBY'], ['FLIGHT CONTROLS', 'UNAVAILABLE']],
+        [['MAIN POWER', 'OFF'], ['PROPULSION', 'DISABLED'], ['CABIN ACCESS', 'AVAILABLE']],
+        [['MAIN POWER', 'OFF'], ['SHIP STORAGE', storage], ['CARGO ACCESS', 'AVAILABLE']],
+      ];
+      pages.forEach((rows, index) => paint(screens[index], rows, 'P AT PILOT SEAT TO RESTORE POWER', index));
+      return;
+    }
     const env = nav.flightEnvironment, n = nav.normal;
-    const localVelocity = nav.velocity.clone().applyQuaternion(nav.orientation.clone().invert());
-    paint(screens[0], [['VELOCITY', `${nav.speed.toFixed(1)} m/s`], ['ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase()]], 'V ASSIST   X BRAKE   L LAND / LAUNCH', 0);
+    const velocity = nav.cabinFlight && nav.shipVelocity ? nav.shipVelocity : nav.velocity;
+    const orientation = nav.cabinFlight && nav.shipOrientation ? nav.shipOrientation : nav.orientation;
+    const localVelocity = velocity.clone().applyQuaternion(orientation.clone().invert());
+    const flightControl = nav.cabinFlight
+      ? nav.flightAssist ? 'CABIN / ASSIST' : 'CABIN / INERTIAL'
+      : nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase();
+    paint(screens[0], [['VELOCITY', `${shipSpeed.toFixed(1)} m/s`], ['ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', flightControl]], 'V ASSIST   X BRAKE   L LAND / LAUNCH', 0);
     let bearing = 'NO COURSE';
     if (course) {
-      const offset = course.point.clone().sub(nav.position).applyQuaternion(nav.orientation.clone().invert());
+      const position = nav.cabinFlight && nav.shipPosition ? nav.shipPosition : nav.position;
+      const offset = course.point.clone().sub(position).applyQuaternion(orientation.clone().invert());
       const angle = Math.atan2(offset.x, -offset.z) * 180 / Math.PI;
       bearing = `${Math.abs(angle).toFixed(0)} DEG ${angle < 0 ? 'LEFT' : 'RIGHT'}`;
     }
     paint(screens[1], [['COURSE', course ? course.name.toUpperCase() : 'FREE EXPLORATION'], ['BEARING', bearing], ['POSITION', `${(Math.asin(n.y) * 180 / Math.PI).toFixed(2)} / ${(Math.atan2(n.x, n.z) * 180 / Math.PI).toFixed(2)}`]], 'SHIFT + DESTINATION TO SET COURSE', 1);
-    paint(screens[2], [['ENVIRONMENT', env.regime], [nav.freighter?'CARGO LIFTS':'HATCH / RAMP', nav.freighter?(nav.freighter.secured?'SECURED':'DEPLOYED'):nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
+    paint(screens[2], [['ENVIRONMENT', env.regime], [nav.freighter?'CARGO LIFTS':'HATCH / RAMP', nav.freighter?(nav.freighter.secured?'SECURED':'DEPLOYED'):nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${!nav.cabinFlight && nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
     paint(screens[3], [['SHIP STORAGE', `${inventory.mass('ship').toFixed(1)} / ${(inventory.capacity?.ship ?? CAPACITY.ship)} kg`], ['BACKPACK', `${inventory.mass('pack').toFixed(1)} / ${(inventory.capacity?.pack ?? CAPACITY.pack)} kg`], ['ACCESS', 'STARBOARD CABIN']], 'ON FOOT: F AT THE CARGO CONTAINER', 3);
   };
   group.snapshot = () => screens.map(screen => ({ title: screen.title, values: [...screen.values] }));
