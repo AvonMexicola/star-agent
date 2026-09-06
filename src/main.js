@@ -227,6 +227,9 @@ try {
     if(document.hidden||opening?.phase==='loading')return;
     const steps=nav.travel||opening?.active?1:Math.max(1,Math.ceil(dt/.025));for(let i=0;i<steps;i++)nav.update(dt/steps);
     opening?.update(firstReady?dt:0);
+    // Keep the last scene behind menus while input/controller polling and world
+    // updates continue. A resize needs one fresh frame at the new canvas size.
+    const drawScene=resizePending||!firstReady||(!systemMap.open&&!document.querySelector('dialog[open]'));
     if(resizePending){resize();resizePending=false;}
     origin.copy(nav.position);camera.position.set(0,0,0);camera.quaternion.copy(nav.orientation);
     if(!opening?.placeCamera(camera,origin)&&camera.fov!==52){camera.fov=52;camera.updateProjectionMatrix();}
@@ -249,7 +252,8 @@ try {
       ship.updateDisplays(dt,nav,inventory,course);
     }
     audio.update({speed:nav.speed,altitude,mode:nav.mode,boost:nav.boost,airless:nav.body.airless,inHangar,doorMotion:station.doorsOpen>0&&station.doorsOpen<1?1:0},dt);
-    renderer.info.reset();atmosphere.render(scene,camera,origin,sunDirection,elapsed);travelEffects.render(renderer,camera);
+    renderer.info.reset();
+    if(drawScene){atmosphere.render(scene,camera,origin,sunDirection,elapsed);travelEffects.render(renderer,camera);}
     frames++;frameAccumulator+=realDt;if(frameAccumulator>=2){fps=Math.round(frames/frameAccumulator);frames=0;frameAccumulator=0;if(automaticScale&&firstReady&&!transiting&&fps<23&&renderScale>.55){renderScale=Math.max(.55,renderScale*.85);resizePending=true;}}
     if(time-lastHud>150)updateHud(time);
     if(opening&&!firstReady&&planet.ready&&introWarmup>0)introWarmup--;

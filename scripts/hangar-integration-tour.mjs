@@ -8,7 +8,7 @@ import { resolve } from 'node:path';
 import * as THREE from 'three';
 import { RADIUS, terrainHeight } from '../src/world.js';
 
-const options = { url: 'http://127.0.0.1:5239', out: '/tmp/star-agent-hangar-tour', extras: false, perf1440: false };
+const options = { url: 'http://127.0.0.1:5239', out: '/tmp/star-agent-hangar-tour', extras: false, perf1440: false, hardware: false };
 for (let i = 2; i < process.argv.length; i++) {
   const flag = process.argv[i];
   if (flag === '--url' || flag === '--out') {
@@ -17,8 +17,9 @@ for (let i = 2; i < process.argv.length; i++) {
     options[flag.slice(2)] = value;
   } else if (flag === '--extras') options.extras = true;
   else if (flag === '--perf1440') options.perf1440 = true;
+  else if (flag === '--hardware') options.hardware = true;
   else if (flag === '--help') {
-    console.log('Usage: node scripts/hangar-integration-tour.mjs [--url URL] [--out DIRECTORY] [--extras] [--perf1440]');
+    console.log('Usage: node scripts/hangar-integration-tour.mjs [--url URL] [--out DIRECTORY] [--extras] [--perf1440] [--hardware]');
     process.exit(0);
   } else throw new Error(`Unknown argument: ${flag}`);
 }
@@ -26,7 +27,9 @@ const base = new URL(options.url);
 if (!['http:', 'https:'].includes(base.protocol)) throw new Error('--url must use HTTP(S)');
 const out = resolve(options.out);
 await mkdir(out, { recursive: true });
-const launchArgs = ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--disable-dev-shm-usage'];
+const launchArgs = options.hardware
+  ? ['--no-sandbox', '--enable-gpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=gl', '--disable-dev-shm-usage']
+  : ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--disable-dev-shm-usage'];
 const errors = [], warnings = [], captures = [], requestsFailed = [], sessions = [], lifecycleDiagnostics = [];
 let browser = null, context = null, page = null, currentSession = null;
 let backend = null, failure = null;

@@ -49,6 +49,71 @@ test('station finish shares materials and UV storage across repeated pods and pr
   assert.equal(clone.children[0].geometry, geometry);
   assert.equal(clone.children[0].material, wall.material);
   assert.equal(finish.stats.replacedMeshes, 2, 'applying after cloning is idempotent');
+  assert.equal(finish.stats.materialCount, 9, 'old uncoloured fixtures retain the nine base finishes');
+});
+
+test('baked vertex AO and deck tones retain cached colour variants without changing uncoloured shared materials', async () => {
+  const finish = await kit(), root = new THREE.Group();
+  const coloured = new THREE.BoxGeometry();
+  const values = new Float32Array(coloured.getAttribute('position').count * 3);
+  for (let i = 0; i < values.length; i++) values[i] = .35 + (i % 5) * .12;
+  const attribute = new THREE.BufferAttribute(values, 3);
+  coloured.setAttribute('color', attribute);
+  const originalValues = Array.from(values);
+  const hullSource = source('Hull'); hullSource.vertexColors = true;
+  const hull = new THREE.Mesh(coloured, hullSource);
+  const secondHull = new THREE.Mesh(coloured, hullSource);
+  // A source shared with a plain primitive must not enable an absent attribute.
+  const plainHull = new THREE.Mesh(new THREE.BoxGeometry(), hullSource);
+  const deckSource = source('Deck'); deckSource.vertexColors = true;
+  const deck = new THREE.Mesh(coloured, deckSource);
+  const unusedTint = new THREE.Mesh(coloured, source('Hull'));
+  root.add(hull, secondHull, plainHull, deck, unusedTint);
+  finish.apply(root);
+  assert.equal(hull.material.vertexColors, true);
+  assert.equal(hull.material, secondHull.material, 'coloured hull primitives share one cached finish');
+  assert.notEqual(hull.material, finish.materials.ivory);
+  assert.equal(plainHull.material, finish.materials.ivory);
+  assert.equal(plainHull.material.vertexColors, false);
+  assert.equal(unusedTint.material, finish.materials.ivory, 'an authored disabled colour attribute remains disabled');
+  assert.equal(deck.material.vertexColors, true);
+  assert.equal(deck.material.map, finish.textures.deck, 'deck AO multiplies the same shared colour texture');
+  assert.equal(hull.material.bumpMap, finish.materials.ivory.bumpMap);
+  assert.equal(hull.material.roughnessMap, finish.materials.ivory.roughnessMap);
+  assert.equal(coloured.getAttribute('color'), attribute, 'baked attribute storage is not replaced');
+  assert.deepEqual(Array.from(attribute.array), originalValues, 'AO and tint values are not flattened or rewritten');
+  assert.equal(finish.stats.materialCount, 11, 'only the two used colour variants were created');
+  assert.equal(finish.stats.textureCount, 3);
+  assert.equal(hull.material.userData.stationFinished, true);
+  assert.equal(hull.material.onBeforeCompile, THREE.Material.prototype.onBeforeCompile);
+  const clone = root.clone(true);
+  finish.apply(clone);
+  assert.equal(clone.children[0].material, hull.material, 'pod clones reuse the colour variant');
+  assert.equal(clone.children[0].geometry, coloured);
+  const later = new THREE.Group();
+  const laterSource = source('HullPanel'); laterSource.vertexColors = true;
+  const laterHull = new THREE.Mesh(coloured, laterSource); later.add(laterHull); finish.apply(later);
+  assert.equal(laterHull.material, hull.material, 'later templates reuse the same mapped finish variant');
+  assert.equal(finish.stats.materialCount, 11, 'cloning or later application allocates no repeated variants');
+});
+
+test('authored hull shades, recesses and unmapped deck materials preserve their baked-colour contract', async () => {
+  const finish = await kit(), root = new THREE.Group();
+  const geometry = new THREE.BoxGeometry();
+  geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(geometry.getAttribute('position').count * 3).fill(.6), 3));
+  const authored = ['HullMid', 'HullDark', 'Trim', 'Recess', 'Metal', 'Radiator', 'DeckB', 'MintStrip'].map((name, i) => {
+    const material = source(name); material.vertexColors = true;
+    material.color.setRGB(.1 + i * .07, .2, .3);
+    const mesh = new THREE.Mesh(geometry, material); root.add(mesh); return { mesh, material, colour: material.color.clone() };
+  });
+  finish.apply(root);
+  for (const { mesh, material, colour } of authored) {
+    assert.equal(mesh.material, material, `${material.name} keeps its original material`);
+    assert.ok(mesh.material.color.equals(colour));
+    assert.equal(mesh.material.vertexColors, true);
+  }
+  assert.equal(finish.stats.materialCount, 9);
+  assert.equal(finish.stats.replacedMeshes, 0);
 });
 
 test('station colour and independent relief use correct colour spaces and native log-depth shader path', async () => {

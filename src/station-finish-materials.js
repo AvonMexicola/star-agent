@@ -114,6 +114,21 @@ export async function createStationFinishMaterials({ palette = stationFinishPale
   const stats = { replacedMeshes: 0, generatedUVs: 0, materialCount: Object.keys(materials).length, textureCount: 3,
     // RGBA, including full mip chains. Textures are shared across every bay.
     estimatedTextureBytes: Math.ceil((1024 ** 2 + 512 ** 2 + 128 ** 2) * 4 * 4 / 3) };
+  const vertexColorMaterials = new Map();
+  const materialFor = (key, vertexColors) => {
+    if (!vertexColors) return materials[key];
+    // The detailed hull bakes AO, panel tone and deck wear into COLOR_0. Keep a
+    // stable shader variant for those primitives; uncoloured props/LOD can share
+    // the existing base finish without toggling compilation flags every draw.
+    if (!vertexColorMaterials.has(key)) {
+      const material = materials[key].clone();
+      material.name = `${materials[key].name}_VertexColor`;
+      material.vertexColors = true;
+      vertexColorMaterials.set(key, material);
+      stats.materialCount++;
+    }
+    return vertexColorMaterials.get(key);
+  };
   const absoluteScale = new THREE.Vector3();
   const apply = root => {
     root.updateMatrixWorld(true);
@@ -128,7 +143,7 @@ export async function createStationFinishMaterials({ palette = stationFinishPale
         // An authored custom shader may encode functional behaviour. Leave it alone.
         if (source.onBeforeCompile !== THREE.Material.prototype.onBeforeCompile) return source;
         replaced = true;
-        return materials[key];
+        return materialFor(key, mesh.geometry.hasAttribute('color') && source.vertexColors === true);
       };
       mesh.material = Array.isArray(mesh.material) ? mesh.material.map(replace) : replace(mesh.material);
       if (!replaced) return;

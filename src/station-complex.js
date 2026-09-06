@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { Station, STATION_MODEL_URL, STATION_LOD_URL, stationQuaternion, defaultStationDirection, STATION_ALTITUDE } from './station.js';
 import { RADIUS } from './world.js';
 import { createStationFinishMaterials } from './station-finish-materials.js';
@@ -8,6 +9,40 @@ import { createStationFinishLighting, prepareStationFinishShadows } from './stat
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
+
+/** Bake only cloned LOD geometry into the station frame, then merge compatible
+ * material/attribute sets. Each moving door stays separate from static parts
+ * and from the opposite door, so every berth retains its own animation pose.
+ */
+function stationLodParts(root){
+  root.updateMatrixWorld(true);
+  const groups=new Map(),separate=[];
+  root.traverse(mesh=>{
+    if(!mesh.isMesh)return;
+    let parent=mesh,door=-1;
+    while(parent){if(parent.name==='HangarDoor_L')door=0;if(parent.name==='HangarDoor_R')door=1;parent=parent.parent;}
+    const source=mesh.geometry,attributes=Object.entries(source.attributes).sort(([a],[b])=>a.localeCompare(b));
+    // Preserve uncommon authored draw layouts unchanged rather than dropping
+    // groups, morph targets, interleaved attributes or partial draw ranges.
+    if(Array.isArray(mesh.material)||mesh.isSkinnedMesh||source.isInstancedBufferGeometry||
+      Object.keys(source.morphAttributes).length||attributes.some(([,a])=>a.isInterleavedBufferAttribute)||
+      source.drawRange.start!==0||Number.isFinite(source.drawRange.count)){
+      separate.push({geometry:source.clone(),material:mesh.material,matrix:mesh.matrixWorld.clone(),door,name:mesh.name,sourceCount:1});return;
+    }
+    const signature=attributes.map(([name,a])=>[name,a.itemSize,a.normalized,a.array.constructor.name,a.gpuType].join(':')).join('|');
+    const key=`${door}/${mesh.material.uuid}/${Boolean(source.index)}/${signature}`;
+    let group=groups.get(key);
+    if(!group){group={geometries:[],material:mesh.material,door,name:mesh.name};groups.set(key,group);}
+    group.geometries.push(source.clone().applyMatrix4(mesh.matrixWorld));
+  });
+  for(const group of groups.values()){
+    const geometry=group.geometries.length===1?group.geometries[0]:mergeGeometries(group.geometries,false);
+    if(!geometry)throw new Error('Compatible station LOD geometry could not be merged.');
+    if(group.geometries.length>1)for(const part of group.geometries)part.dispose();
+    separate.push({geometry,material:group.material,matrix:new THREE.Matrix4(),door:group.door,name:group.name,sourceCount:group.geometries.length});
+  }
+  return separate;
+}
 
 /** One asset, twenty independent berths. Positions stay in doubles until rebase(). */
 export class StationComplex {
@@ -67,15 +102,11 @@ export class StationComplex {
         this.pods.push(pod);
       }
       if(lod){
-        lod.scene.updateMatrixWorld(true);
-        lod.scene.traverse(mesh=>{
-          if(!mesh.isMesh)return;
-          let parent=mesh,door=-1;
-          while(parent){if(parent.name==='HangarDoor_L')door=0;if(parent.name==='HangarDoor_R')door=1;parent=parent.parent;}
-          const instances=new THREE.InstancedMesh(mesh.geometry,mesh.material,this.pods.length);
-          instances.name=mesh.name;instances.frustumCulled=false;this.lodGroup.add(instances);
-          this.lodBatches.push({instances,matrix:mesh.matrixWorld.clone(),door,closedX:door>=0?this.pods[0].doors[door].position.x:0});
-        });
+        for(const part of stationLodParts(lod.scene)){
+          const instances=new THREE.InstancedMesh(part.geometry,part.material,this.pods.length);
+          instances.name=part.name;instances.frustumCulled=false;this.lodGroup.add(instances);
+          this.lodBatches.push({instances,matrix:part.matrix,door:part.door,sourceCount:part.sourceCount,closedX:part.door>=0?this.pods[0].doors[part.door].position.x:0});
+        }
       }
       this.ready=true;
       if(this.openingControlled){this.activeIndex=this._openingIndex;this.active.beginOpening();this.active.setOpeningProgress(this._openingProgress);}

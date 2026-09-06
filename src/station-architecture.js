@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { stationFinishPalette } from './station-finish-palette.js';
 
 export const POD_LAYOUT = Object.freeze(Array.from({length:20},(_,i)=>Object.freeze({
   id:i+1, offset:[((i%10)-4.5)*190,0,i<10?-520:520], yaw:i<10?0:Math.PI,
@@ -10,6 +11,31 @@ const steel = new THREE.MeshStandardMaterial({color:0x879699,metalness:.65,rough
 const dark = new THREE.MeshStandardMaterial({color:0x182b33,metalness:.65,roughness:.55});
 const ochre = new THREE.MeshStandardMaterial({color:0xb18342,metalness:.5,roughness:.48});
 const glow = new THREE.MeshStandardMaterial({color:0xabc8c1,emissive:0x9bdcca,emissiveIntensity:2});
+
+let ringFinish;
+function ringMaterials(){
+  if(ringFinish)return ringFinish;
+  const palette=stationFinishPalette(),paint=new THREE.Color(palette.dark),metal=new THREE.Color(palette.steel);
+  // Painted habitat cladding needs diffuse response in the station's ambient
+  // light. A dark, mostly metallic finish loses its surface to the black sky.
+  ringFinish={
+    panel:new THREE.MeshStandardMaterial({color:paint.clone().lerp(metal,.36),metalness:.08,roughness:.8,envMapIntensity:.4}),
+    frame:new THREE.MeshStandardMaterial({color:metal.clone().lerp(paint,.15),metalness:.28,roughness:.62,envMapIntensity:.4}),
+    spoke:new THREE.MeshStandardMaterial({color:paint.clone().lerp(metal,.48),metalness:.18,roughness:.72,envMapIntensity:.4}),
+    rib:new THREE.MeshStandardMaterial({color:palette.ochre,metalness:.12,roughness:.72,envMapIntensity:.4}),
+  };
+  return ringFinish;
+}
+
+function ringEnvironment(renderer,scene,camera,geometry,material){
+  // With an implicit scene map Three replaces material.envMapIntensity with
+  // the near-zero space environment intensity. Reuse the existing PMREM
+  // explicitly to retain a readable reflected/diffuse planetary fill here.
+  // This remains directional scene lighting, never emissive paint, and adds
+  // neither a texture nor a light. Keep the scene's changing planet-up frame.
+  if(material.envMap!==scene.environment){material.envMap=scene.environment;material.needsUpdate=true;}
+  material.envMapRotation.copy(scene.environmentRotation);
+}
 
 export function block(parent,size,position,material=steel,name='Structure'){
   const mesh=new THREE.Mesh(boxGeometry,material);mesh.name=name;mesh.scale.set(...size);mesh.position.set(...position);parent.add(mesh);return mesh;
@@ -41,27 +67,31 @@ export function createExterior(){
     block(group,[14,16,480],[pod.offset[0],-23,pod.offset[2]/2],steel);
     block(group,[5,3,470],[pod.offset[0],-13,pod.offset[2]/2],ochre);
   }
-  const rings=[];
+  const rings=[],finish=ringMaterials();
   for(const [i,x] of [-1110,1110].entries()){
     const ring=new THREE.Group();ring.position.x=x;group.add(ring);rings.push(ring);
-    const torus=new THREE.Mesh(new THREE.TorusGeometry(RING_RADIUS,26,8,192),steel);
+    const torus=new THREE.Mesh(new THREE.TorusGeometry(RING_RADIUS,26,8,192),finish.frame);
     torus.rotation.y=Math.PI/2;ring.add(torus);
     for(const dx of [-37,37]){
-      const rail=new THREE.Mesh(new THREE.TorusGeometry(RING_RADIUS,3,6,192),ochre);rail.rotation.y=Math.PI/2;rail.position.x=dx;ring.add(rail);
+      const rail=new THREE.Mesh(new THREE.TorusGeometry(RING_RADIUS,3,6,192),finish.rib);rail.rotation.y=Math.PI/2;rail.position.x=dx;ring.add(rail);
     }
-    const panels=new THREE.InstancedMesh(boxGeometry,dark,120),windows=new THREE.InstancedMesh(boxGeometry,glow,120);
-    const dummy=new THREE.Object3D();
+    const panels=new THREE.InstancedMesh(boxGeometry,finish.panel,120),windows=new THREE.InstancedMesh(boxGeometry,glow,120);
+    const dummy=new THREE.Object3D(),tint=new THREE.Color();
     for(let k=0;k<120;k++){
       const a=k*Math.PI*2/120;
       dummy.position.set(0,Math.cos(a)*RING_RADIUS,Math.sin(a)*RING_RADIUS);dummy.rotation.set(a,0,0);dummy.scale.set(80,52,58);dummy.updateMatrix();panels.setMatrixAt(k,dummy.matrix);
+      // Four-panel maintenance sections vary only in paint value, retaining one
+      // instanced draw and the original physical panels and collision bounds.
+      const value=[1,.84,1.26][Math.floor(k/4)%3];panels.setColorAt(k,tint.setRGB(value,value,value));
       dummy.position.x=i===0?41:-41;dummy.scale.set(1,8,42);dummy.updateMatrix();windows.setMatrixAt(k,dummy.matrix);
     }
     ring.add(panels,windows);
     for(let k=0;k<6;k++){
       const a=k*Math.PI/3;
-      const spoke=block(ring,[12,RING_RADIUS,12],[0,Math.cos(a)*RING_RADIUS/2,Math.sin(a)*RING_RADIUS/2],dark);spoke.rotation.x=a;
-      const marker=block(ring,[60,45,80],[0,Math.cos(a)*RING_RADIUS,Math.sin(a)*RING_RADIUS],ochre);marker.rotation.x=a;
+      const spoke=block(ring,[12,RING_RADIUS,12],[0,Math.cos(a)*RING_RADIUS/2,Math.sin(a)*RING_RADIUS/2],finish.spoke);spoke.rotation.x=a;
+      const marker=block(ring,[60,45,80],[0,Math.cos(a)*RING_RADIUS,Math.sin(a)*RING_RADIUS],finish.rib);marker.rotation.x=a;
     }
+    ring.traverse(mesh=>{if(mesh.isMesh&&mesh.material!==glow)mesh.onBeforeRender=ringEnvironment;});
   }
   return {group,rings,hubShell};
 }

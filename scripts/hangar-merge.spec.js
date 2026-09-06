@@ -1,5 +1,22 @@
 import {test,expect} from '@playwright/test';
 
+test('menus stop scene draws and closing them restores rendering and input',async({page})=>{
+  await page.goto('/?intro=0&debug=1');
+  await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.drawCalls>0);
+  for(const key of ['h','m']){
+    await page.keyboard.press(key);
+    await page.waitForFunction(()=>!starAgent.navigation.enabled&&starAgent.state.drawCalls===0);
+    const draws=await page.evaluate(async()=>{
+      const samples=[];
+      for(let i=0;i<12;i++){await new Promise(requestAnimationFrame);samples.push(starAgent.state.drawCalls);}
+      return samples;
+    });
+    expect(draws).toEqual(Array(12).fill(0));
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(()=>starAgent.navigation.enabled&&starAgent.state.drawCalls>0);
+  }
+});
+
 test('saved Atlas opens in its finished berth and opening guards fleet input until control handoff',async({page})=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.addInitScript(()=>localStorage.setItem('star-agent.fleet.v1',JSON.stringify({version:1,surfaceVisited:true,unlocked:true,active:'atlas'})));

@@ -7,15 +7,26 @@ standard for other assets. The reusable process is
 [asset-production-standard.md](../asset-production-standard.md); this is its
 specific reference case, not a declaration that all station art is finished.
 
-**Checkpoint:** runtime candidate `7a73ecfb50c801dab55de5b5eb5f357aa15d6ad8` for
+**Current status:** the completed independent review of HEAD
+`4da1a5d1a1acac00b3034fed8f06457a682f6852` (runtime `7a73ecf`) scored
+**3.67 and failed the visual acceptance gate**. The
+[verbatim review](hangar-opus-review-2026-09-06.md) is archived separately.
+The default branch subsequently advanced through `7e7194a` to `85aa836`; its
+detailed hull and baked vertex ambient occlusion are being reconciled with the hangar finish in the
+isolated `/tmp/star-agent-hangar-current` worktree. Ceiling, sign and ring corrections are implemented but await actual game visual
+verification; hardware performance acceptance remains pending. The historical
+passes below do not certify this revised working tree. No merge or deployment is
+claimed by this record.
+
+**Historical checkpoint:** runtime candidate `7a73ecfb50c801dab55de5b5eb5f357aa15d6ad8` for
 [PR #20](https://github.com/AvonMexicola/star-agent/pull/20), based on integration
 branch `feat/visual-fidelity` at `029cae8`. Its parent integration commit
 `1eeb5b4` passed 151 unit tests and the production build. The subsequent bounded
 exterior-visibility fix passed the full 152-test suite and build. All 17 unique combined browser cases
 passed across the documented runs and focused reruns before that exterior fix.
 The complete eight-view production tour subsequently passed at `7a73ecf`, with
-zero browser errors, warnings, failed requests or unexpected closures. Independent
-visual review remains pending; no merge or production deployment is claimed.
+zero browser errors, warnings, failed requests or unexpected closures. These
+functional and capture results preceded the completed failed visual review.
 The verification ledger is [hangar-integration.md](hangar-integration.md).
 
 ## Brief and development sequence
@@ -59,7 +70,8 @@ measurements of task duration. Follow the commits for exact source changes.
 `1eeb5b4` has parents `77ccf3c` and `029cae8`; `7a73ecf` follows it. They are
 review-branch candidates, not proof that PR #20 has merged into the default branch. PR #14
 contains the Atlas dependency; PR #16 the modular station; PR #17 the source art.
-The manager's separate station hull refinement in PR #22 is outside this candidate.
+The manager's separate station hull refinement in PR #22 was outside this
+historical candidate; the resumed integration below incorporates the newer base.
 Other branches visible in Git history are not automatically included features.
 
 ## Workspaces and ownership
@@ -72,7 +84,8 @@ Production used isolated worktrees, preserving the shared application checkout:
 | Modular port | `/tmp/star-agent-hangar-work`, `feat/modular-hangar` | Station builder, complex, services and inventory bulk transfer |
 | Art direction | `/tmp/star-agent-hangar-art`, `art/hangar-finish` | Finish brief, concept and generated source images |
 | Finish implementation | `/tmp/star-agent-hangar-finish`, `feat/hangar-finish` | Three bounded agent lanes, root integration and verification |
-| Current integration | `/tmp/star-agent-hangar-merge`, `integrate/hangar-finish` | Semantic merge with current `feat/visual-fidelity`; root owns delivery |
+| Reviewed integration | `/tmp/star-agent-hangar-merge`, `integrate/hangar-finish` | Preserved candidate reviewed at `4da1a5d`, runtime `7a73ecf`, base `029cae8` |
+| Resumed integration | `/tmp/star-agent-hangar-current` | Isolated reconciliation with default `85aa836` (including `7e7194a`); root owns final verification and delivery |
 
 The materials agent owned the new material decorator and focused tests; the props
 agent owned the Blender prop builder, GLB and measured manifest; the graphics
@@ -129,7 +142,7 @@ schematics are deterministic JavaScript graphics. They share one 1024×1024
 canvas atlas. Exact instructions remain authored text; static gallery diagrams
 do not claim live traffic or occupancy data.
 
-## Artifact identity at the candidate checkpoint
+## Historical artifact identity at runtime candidate 7a73ecf
 
 These values were read from the actual files and manifest in the integration
 worktree. The station hull remains the modular port asset; props are a separate
@@ -169,7 +182,7 @@ excludes posters/atlas, shadows and all existing textures. The graphics group ha
 ten meshes and 576 triangles after gallery labels were added. Sharing resources
 across pods does not make every nearby hero an instanced draw.
 
-## Physical and runtime contracts retained
+## Physical and runtime contracts at the historical checkpoint
 
 | Contract | Implemented value / behavior |
 |---|---|
@@ -293,7 +306,7 @@ docks, walks the hatch/ramp, returns to the seat and launches. Atlas checks cove
 unlock, lift state/interlocks, boarding and persistence. Services checks cover
 Take all, physical elevator entry, hub/berth 20/parked-ship return and ring motion.
 
-## Verification chronology and current disposition
+## Historical verification chronology through the reviewed candidate
 
 - Original modular port checkpoint: 81 unit tests and seven browser cases were
   recorded in the station pipeline. A mobile destination-row assertion was
@@ -333,11 +346,14 @@ Take all, physical elevator entry, hub/berth 20/parked-ship return and ring moti
   all counts, 1440×900 affected-scene observations and 390×844 menu evidence.
   The affected views use 344–435 draws and 516,064–645,481 triangles at 1440×900.
   Existing orbit draw-budget and hardware-timing gates remain explicitly open.
-- Independent Opus visual review had not run. Its invocation returned HTTP 429
-  and reported a session reset at 13:50 Europe/Amsterdam on 2026-09-06. A rate
-  limit is not a review score. No quality waiver is recorded at this checkpoint.
+- The first independent Opus invocation returned HTTP 429 and reported a session
+  reset at 13:50 Europe/Amsterdam on 2026-09-06. This was initially a pending gate.
+  The later completed review at HEAD `4da1a5d` (runtime `7a73ecf`) supplied its own
+  captures and scored 3.67, below the required 4.0. Its disposition was
+  **MERGEABLE: NO**. The exact report is preserved in
+  [the review archive](hangar-opus-review-2026-09-06.md); no waiver is recorded.
 
-### Acceptance record
+### Historical acceptance at the reviewed candidate
 
 | Gate | Status at this checkpoint | Final evidence / disposition |
 |---|---|---|
@@ -345,19 +361,99 @@ Take all, physical elevator entry, hub/berth 20/parked-ship return and ring moti
 | Production build | PASS at `7a73ecf` | Existing large-bundle advisory retained; no dependency expansion |
 | Combined browser regression | PASS, 17 unique cases across documented runs/reruns | Later render-only cutoff covered by full units and final production tour |
 | Fixed screenshot tour | PASS, all eight scene views at `7a73ecf` | [Images, counts, environment and limitations](hangar-integration.md#final-production-tour); manual inspection, no pixel-diff certification |
-| Independent visual review | PENDING, reviewer HTTP 429 | Add self-captured evidence, rubric scores and fixes, or explicit Cees waiver |
+| Independent visual review | FAIL, mean 3.67 at `4da1a5d` / runtime `7a73ecf` | [Completed report and self-capture record](hangar-opus-review-2026-09-06.md); revised visuals require re-review |
 | Hardware performance gate | NOT ESTABLISHED by SwiftShader results | Record designated hardware measurements or explicit exception |
 | Merge | NOT RECORDED | Verified merge SHA/time required |
 | Deployment | NOT RECORDED | Verified deployment identifier/URL/time required |
 
-The remaining art limits are explicit: the operations gallery is decorative,
+The art limits recorded for that candidate were explicit: the operations gallery is decorative,
 some distant storage and wall/ceiling construction still read as blockout, bright
 navigation boards and hub furniture need further finish work, and the wider
 concept target has not been fully achieved. Twenty physical pods do not provide
 multiplayer allocation, networking or shared inventory authority. Static gallery
 schematics do not provide live operations control. The separate hull refinement
-in PR #22 must be evaluated on its own integration and evidence.
+in PR #22 required its own integration and evidence; the resumed work below
+addresses that dependency without transferring old acceptance to the new export.
 
 Use this record's traceability, failure handling, clear ownership, real-artifact
 tests and honest review gates as the standard for the next asset. Do not reuse
 a historical pass count, an unreviewed image or an old preview as new acceptance.
+
+
+## Resumed integration after the completed review
+
+This section records the later working state on 2026-09-06. It supersedes the old
+pending-review label; it does not rewrite the reviewed artifacts, hashes or test
+results above. The reviewed worktree remains separate from the current integration.
+
+1. The independent review of `4da1a5d` / runtime `7a73ecf` completed with a 3.67
+   average and a failed merge disposition. Its three principal blockers were the
+   near-black ring treatment, blown-out ceiling diffusers and weak wayfinding
+   contrast. Character-shadow visibility and MFD readability were additional
+   findings. The original report is archived without editorial changes.
+2. The default branch advanced to `7e7194a`, introducing a more detailed hull,
+   additional authored material shades and baked `COLOR_0` ambient occlusion/tint.
+   The actual merge input is the later default commit
+   `85aa836c70d5c955235a0230a457b4c5c5d937d5`, confirmed from `MERGE_HEAD` in
+   `/tmp/star-agent-hangar-current`. It also includes hierarchy and deck-grid fixes.
+   The earlier `7e7194a` label identified the hull change, not the final merge base.
+   Replacing the newer
+   hull with the old finish binary would discard this work, so the builders and
+   runtime contracts are being reconciled in the isolated tree.
+3. Material splitting during export changed the shape of named objects. Grouped
+   `Hull` and `HangarInterior` nodes restore those runtime lookup contracts while
+   retaining the new material primitives. `LandingDeck` remains a single measured
+   mesh. This is a hierarchy compatibility correction, not permission to change
+   the walking floor or ship clearance.
+4. The finish decorator initially discarded baked vertex shading on mapped
+   materials. It now selects cached coloured/uncoloured material variants while
+   retaining the shared texture kit and authored unmapped shades. Parsed combined
+   hero checks retain vertex colour rendering on all **83 coloured primitives**.
+   This verifies attribute/material compatibility; visual AO balance still needs
+   examination in the actual revised renderer.
+5. LOD material batching reduced the rebuilt distant model from **48 to 27
+   meshes/batches**, retaining **6,932 triangles**. A lower triangle count alone
+   would not have revealed the additional draws caused by material splitting.
+   Runtime scene cost must still be measured at the final candidate. A subsequent
+   rebuild reported the hero at 3,838,580 bytes, 90,424 triangles and 110 nodes,
+   and the LOD at 250,796 bytes, 6,932 triangles and 15 nodes. These are later
+   integration-lead measurements; node counts are not interchangeable with the
+   preceding mesh/batch counts. Final asset hashes remain to be recorded.
+6. Ceiling emission, backed sign readability and ring surface treatment are
+   implemented in the builder and runtime, but **not visually verified** at this
+   checkpoint. The lead reports effective diffuser emission of 1.4, wayfinding
+   emission of 1.2, text backplates fitted to local text bounds and the ring
+   material treatment in place. Source inspection found that Station preparation
+   doubles nonzero material emissives once across shared instances. Therefore an
+   authored light strength is not its final runtime brightness; the adjustment
+   must preserve unrelated navigation and functional emissives. glTF may fold
+   strengths below one into emissive RGB, so inspect RGB multiplied by intensity.
+7. The reviewer's observation of an indistinct character shadow is retained, but
+   its proposed altitude-cutoff cause does not match the source: `main.js` already
+   forces the sun's shadow flag near the station, and placeholder and loaded
+   character meshes enable shadow casting. The image finding requires further
+   lighting/occlusion inspection, not another copy of those flags.
+8. A hardware-capable Chromium configuration is now available with **AMD Radeon
+   860M through ANGLE GL**, as reported by the integration lead's renderer probe.
+   Earlier review timings were ANGLE Vulkan SwiftShader. Hardware availability
+   does not establish the frame budget: representative benchmarks are **pending**.
+
+The integration lead subsequently reported the current unit command passing
+**21 test files** under Node's default reporter. This is a file-level result;
+no inferred internal case count is recorded. It does not replace the pending
+hardware captures, combined gameplay verification or independent visual re-review.
+
+### Current acceptance boundary
+
+| Gate | Current disposition |
+|---|---|
+| Revised export/material contracts | Grouped required nodes, 83 coloured primitives preserved, LOD 48 → 27 at 6,932 triangles; final integrated verification remains the lead's responsibility |
+| Ceiling/sign/ring appearance | Implemented; actual game captures and visual review pending |
+| Independent visual acceptance | Historical candidate FAILED at 3.67; no pass or waiver recorded for the revision |
+| Hardware performance | AMD Radeon 860M / ANGLE GL available; benchmark and budget disposition pending |
+| Final combined regression/build | Current unit command: 21 test files pass, per integration lead; remaining final checks must be recorded separately. The historical 152-test/build result does not certify this revised tree |
+| Merge/deployment | No completed outcome recorded here |
+
+The integration lead will append the final served candidate, commands, evidence,
+review result and any verified merge/deployment outcome. This checkpoint claims
+neither completed polish nor a completed acceptance cycle.

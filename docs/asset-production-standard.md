@@ -88,6 +88,14 @@ backplate or another named attachment. Compare human-scale details with the
 project's 1.80 m reference. Test clearance with the complete supported ship or
 walking envelope, not a ray through the centre alone.
 
+Treat named hierarchy as an API. A Blender object with several material slots
+may export as an Object3D containing several mesh primitives. Inspect the loaded
+GLB tree, not just Blender object names. Preserve required wrapper names such as
+`Hull` and `HangarInterior`; explicitly test whether each consumer needs a group
+or a mesh. Retain single-mesh contracts such as the measured `LandingDeck` unless
+the consumer and its tests are deliberately updated together. Do not flatten
+animation pivots, collider exclusions or attachment transforms while batching.
+
 ## 4. Build manufactured geometry and retain its source
 
 Use a rebuildable Blender script for hard surfaces, in accordance with
@@ -113,6 +121,13 @@ Export a manifest with measured assembly bounds, triangles, runtime bytes,
 materials, draw primitives, coordinate convention, builder and placement. Group
 geometry by reusable material where appropriate. Keep transparent glazing in a
 separate batch and preserve its intended shadow behavior.
+
+Measure LOD draw primitives after material and AO changes. Fewer triangles do
+not guarantee fewer draws: exporting more material slots can multiply meshes.
+Batch compatible static LOD geometry by material while preserving transforms,
+required names, collision semantics and visibility groups. Check retained triangle
+counts and bounds, then measure actual scene draws. Report mesh primitives and
+scene nodes separately; those numbers are not interchangeable.
 
 Do not hide a budget problem by renaming a large asset a kit. Report both the
 aggregate and individual assembly costs, and obtain review for any unresolved
@@ -171,6 +186,22 @@ Keep runtime ownership clear:
   player instead of creating twenty sets of shadow-casting lights.
 - Reapply per-mesh policy after constructors that overwrite flags. In this
   project, `Station.prepareMaterials()` enables mesh shadows during attachment.
+
+Preserve authored vertex data when decorating materials. `COLOR_0` can contain
+baked ambient occlusion, deck tint and seam shading. A replacement standard
+material with `vertexColors=false` silently discards those contributions. Inspect
+the geometry attribute and the source material's colour flag; cache coloured and
+uncoloured variants instead of toggling compile flags per mesh or per frame.
+Share textures across variants and pod clones, report the actual material count,
+and retain deliberately distinct authored shade families that are not mapped.
+Test both representative mixed geometry and the real exported asset; compare how
+many colour-bearing primitives still render their vertex colour after decoration.
+
+Trace emission through export and runtime before tuning a light. glTF can fold
+an authored strength below one into emissive RGB; compare effective RGB times
+intensity, including any constructor multiplier. Adjust the intended diffuser or
+sign independently so navigation lights and functional displays retain their
+meaning. Verify preparation is idempotent across shared clones.
 
 Loading failures must leave coherent behavior. Commit readiness only after all
 required resources and synchronous setup succeed. Optional posters can retain a
@@ -258,11 +289,26 @@ before reuse. Software-rendered SwiftShader results establish rendering and
 counts, not approval of a hardware frame-time budget. State whether counts
 include shadow passes, and separate texture-memory estimates from measured totals.
 
+Probe the actual browser renderer before recording hardware performance. The
+presence of a laptop GPU does not prove Chromium uses it. Record the unmasked
+renderer, browser launch flags, device/backend, viewport and render scale alongside
+the measurements. ANGLE GL on an AMD Radeon 860M and ANGLE Vulkan SwiftShader are
+different validation environments; software timing cannot stand in for hardware
+timing. A successful hardware probe is availability evidence, not a frame-budget
+pass. Fresh-browser captures establish individual views; retain separate continuous
+travel and lifecycle checks when those behaviors matter.
+
 Functional checks and builds cannot replace visual review. `QUALITY.md` requires
 Claude functional review followed by Opus rubric review averaging at least 4.0,
 with no criterion below 3, or an explicit Cees “polish later” decision. A reviewer
 rate limit or unavailable service is a pending gate, not a passed review. Record
 the actual reviewer, candidate, self-captured evidence, scores, findings and fixes.
+Archive the exact completed report with provenance. Keep observed image defects
+separate from a reviewer's proposed source-level cause: inspect the actual active
+flags and update order before changing code. Preserve the report while recording
+any correction to its diagnosis separately. After a new base, export or visual
+fix, label old test counts and review scores as historical and obtain acceptance
+for the revised candidate.
 
 ## 10. Deliver the record with the asset
 
@@ -299,7 +345,8 @@ Ownership (geometry, materials, graphics, integration, tests, reviewer):
 ## Contract
 Units / axes / origin:
 Measured bounds / scale reference:
-Required node names / pivots / animations:
+Required node names and loaded node types / pivots / animations:
+Vertex attributes (including COLOR_0) / mapped and preserved material families:
 Floor / collision / interaction / movement contracts:
 Shared resources / LOD / visibility strategy:
 
@@ -307,7 +354,8 @@ Shared resources / LOD / visibility strategy:
 Tool versions:
 Exact rebuild and texture-derivative commands:
 Manifest path:
-Asset path / bytes / triangles / draw primitives / SHA-256:
+Asset path / bytes / triangles / draw primitives / scene nodes / SHA-256:
+Hero and LOD before/after batching / named hierarchy preservation:
 Texture dimensions / encoded bytes / colour space / estimated decoded memory:
 
 ## Proceedings
@@ -318,7 +366,7 @@ Include failures, fixes, regression consequences and unresolved findings.
 Command | Candidate | Result and count | Evidence path
 Actual player journey vs controlled fixture:
 Missing-resource / denied-storage / input restoration checks:
-Browser / GPU backend / viewport / render scale / seed:
+Browser / unmasked GPU renderer / backend / launch flags / viewport / render scale / seed:
 Draw calls / triangles / ms per frame / shadow-count convention:
 Warnings and their disposition:
 
