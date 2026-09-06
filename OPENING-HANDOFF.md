@@ -92,3 +92,28 @@ were inspected: no speckled floor was visible; reduced scale still has ordinary
 jagged object edges. Chromium 151 / ANGLE Vulkan SwiftShader, 1440x900. Curated
 native image: docs/images/station-floor-fixed.png. The 5178 dev preview serves
 the corrected models; reload the page to replace an already loaded GLB.
+
+## Relaxed pilot idle follow-up
+
+Cees disliked the raised right hand in the starter pilot's idle. The male GLB now
+uses relaxed shoulder/arm/forearm/hand rotations sampled from the existing
+mannequin-retargeted idle, while retaining the original idle torso, hips and legs.
+All other clips, geometry, textures, rig and transforms are byte-preserved. The
+original grounded body avoids the elevated leg present in the full alternate clip.
+
+Reproduce with `python3 blender/relax_pilot_idle.py public/models/props/player-male.glb`.
+The small checked-in pilot-idle-arms.json preset contains only upper-limb rotations;
+the script maps them onto the original loop duration and closes the arm pose.
+Repeated application was verified byte-identical. Only 6,131 bytes changed, all
+within the eight original idle rotation output channels. No runtime override.
+
+124 unit cases pass. The real-GLB regression samples 241 poses: wrists remain
+within 3cm of the pelvis line, both feet retain <1.4cm height difference and
+<1.2mm drift, and the loop closes. The original raised-hand asset fails this test.
+Native 1200x1000 Chromium/SwiftShader close-up inspected at multiple idle times;
+evidence docs/images/pilot-relaxed-idle.png. The preview on 5178 serves this asset
+on reload. Manager can carry the male GLB into the external-camera lane too.
+
+Final production build and complete opening/physical boarding/launch browser case
+pass with the relaxed pilot. That case also checks the actual playing idle's hand
+heights five seconds into the reveal. No shader/page errors were observed.

@@ -63,3 +63,8 @@ floor pixels. The walking surface and pad anchors remain at their authored heigh
 Floor-fix validation: 123 unit cases, production build, physical boarding/launch,
 and moving-camera floor captures at native and 0.55 scale passed. Image captured
 in Chromium 151 / ANGLE Vulkan SwiftShader at 1440×900.
+
+The starter pilot rests with both arms down and subtle idle movement. The original
+standing body and planted feet are retained; only the idle's arm rotations changed.
+
+![Pilot with relaxed arms](images/pilot-relaxed-idle.png)

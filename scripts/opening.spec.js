@@ -21,6 +21,15 @@ test('hangar reveal hands movement to physical boarding and launch',async({page}
   };
   await shot('/tmp/star-agent-opening-0.png');
   await page.waitForFunction(()=>window.starAgent.state.opening.elapsed>=5);
+  const restingHands=await page.evaluate(()=>{
+    const c=window.starAgent.openingSequence.character;
+    c.model.updateMatrixWorld(true);
+    const hips=c.model.getObjectByName('Hips').getWorldPosition(c.worldPosition.clone());
+    return ['LeftHand','RightHand'].map(name=>c.model.getObjectByName(name)
+      .getWorldPosition(c.worldPosition.clone()).sub(hips).dot(c.up));
+  });
+  // Wrist joints rest at the pelvis line; fingers extend down beside the thighs.
+  for(const height of restingHands)expect(height).toBeLessThan(.03);
   await shot('/tmp/star-agent-opening-5.png');
   await page.waitForFunction(()=>window.starAgent.state.opening.elapsed>=10);
   await shot('/tmp/star-agent-opening-10.png');
