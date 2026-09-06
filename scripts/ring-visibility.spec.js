@@ -87,7 +87,7 @@ test('large ring bodies retain visible geometry through distance bands and cell 
     await place(page,at,at.clone().addScaledVector(sun,1000));
     iceBoundaryFrames.push(await page.evaluate(()=>{
       const n=window.starAgent.navigation,p=n.surfaceObstacles.rings.scene.getObjectByName('Sunlit ring micro-ice'),positions=p.geometry.attributes.position,parameters=p.geometry.attributes.iceParameters;
-      const particles={};for(let i=0;i<p.geometry.drawRange.count;i++)particles[String(parameters.getX(i))]=[positions.getX(i)+n.position.x,positions.getY(i)+n.position.y,positions.getZ(i)+n.position.z];
+      const particles={};for(let i=0;i<p.geometry.drawRange.count;i++)particles[`${parameters.getX(i)}:${parameters.getY(i)}`]=[positions.getX(i)+n.position.x,positions.getY(i)+n.position.y,positions.getZ(i)+n.position.z];
       return {state:window.starAgent.state.rings.ice,time:p.material.uniforms.iceTime.value,particles};
     }));
   }
