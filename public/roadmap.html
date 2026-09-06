@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Star Agent programme roadmap: flight physics, cockpit MFDs, celestial bodies, combat, multiplayer, bases and voxel mining, economy, launch.">
+<meta name="description" content="Star Agent programme roadmap: physics, cockpit MFDs, celestial bodies, combat, multiplayer, bases and voxel mining, economy, launch.">
 <meta name="theme-color" content="#04090f">
 <title>Star Agent · Roadmap</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=DM+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap">
@@ -74,8 +74,7 @@
 </head>
 <body>
 
-<div class="wrap">
-  <a class="backlink" href="./">← Back to the simulation</a>
+<div class="wrap">\n  <a class="backlink" href="./">← Back to the simulation</a>
   <header class="top">
     <div>
       <div class="brand"><span class="mark">✳</span>STAR<span class="light">AGENT</span></div>
@@ -101,6 +100,7 @@
       <a href="#p6"><b>6</b>Bases &amp; caves</a>
       <a href="#p7"><b>7</b>Economy</a>
       <a href="#p8"><b>8</b>Launch &amp; scale</a>
+      <a href="#quality"><b>·</b>Quality bar</a>
       <a href="#team"><b>·</b>Team</a>
     </nav>
 
@@ -322,6 +322,18 @@
           <li>Weekly builds and a Discord.</li>
         </ul></div>
         <div class="callout"><h3>Community model, decided 2026-09-05</h3><p>The repository is private and invitation-based. Anyone who wants to contribute by bringing their own coding agent, whether Claude Opus 5, Fable, GPT-6 or Sol, asks Cees for an invite. The agents guide and the handoff document are the onboarding: file ownership, the module-swap pattern, test pages under /dev/, and tests that stay green. Invitees work on branches and open pull requests, and the agents' owners review each other's work.</p></div>
+      </section>
+
+      <section class="phase" id="quality">
+        <div class="phase-head"><div class="num">·</div><div>
+          <h2>Quality bar</h2>
+          <p class="goal">Added after the owner's review: assets looked whiteboxy and the map showed three blobs where a planetary system should have been obvious. Tests passing is not the bar; looking finished is.</p></div></div>
+        <div class="grid-2">
+          <div class="block"><h3>Art direction</h3><p>One faction language: white armour, dark polymer, brushed metal, mint accents, amber only for warnings. No whitebox ships: every asset has a readable silhouette, material detail that catches light, an emissive or status detail where the design calls for it, correct scale against the human silhouette, and a review render. Hard-surface is Blender by script, organic is Meshy.</p></div>
+          <div class="block"><h3>Definition of done, every PR</h3><p>Tests and build green, zero console errors, a screenshot tour at five fixed viewpoints at desktop and phone sizes, performance numbers against per-scene budgets, keyboard, controller and touch reach. Visual PRs get an Opus review scored on six criteria with a 4.0 pass mark, or an explicit polish-later decision from the owner.</p></div>
+          <div class="block"><h3>Regression</h3><p>Fixed viewpoints: orbit, coast, forest, highlands, hangar, cockpit. Captures are diffed against baselines; any change is a review item. Baselines move only in the merge that intentionally changes the look.</p></div>
+          <div class="block"><h3>Process</h3><p>Two-stage review on every PR, Claude functional then Opus visual. A weekly quality pass scores the integration branch and files the top ten defects. Placeholder assets ship only behind a dev flag. Details in QUALITY.md in the repo.</p></div>
+        </div>
       </section>
 
       <section class="phase" id="team">

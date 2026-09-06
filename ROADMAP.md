@@ -285,6 +285,15 @@ Ruled out: Unity/Unreal web exports (30–60 MB downloads, no 64-bit world, agen
 single-threaded), Bevy (purest option but immature UI/tooling and far less agent fluency than three.js), Babylon.js
 (fine engine, but a rewrite for no gain).
 
+## Quality bar (added 2026-09-06)
+
+Tests passing is not the bar; **looking finished is**. `QUALITY.md` defines: the art direction (faction language, "no
+whitebox ships", UI is information first, world rules), a Definition of Done for every PR (tests, build, zero console
+errors, screenshot tour at 5 fixed viewpoints, perf numbers, reach), a 6-criterion **visual review rubric scored by an
+Opus reviewer with a 4.0 pass mark**, screenshot regression against baselines, per-scene performance budgets, and a
+weekly quality pass. Two-stage review on every PR: Claude functional → Opus visual. Placeholder assets ship only behind a
+dev flag. Cees's review notes are logged in `docs/qa/`.
+
 ## Team & process
 
 | Role | Who | Scope |
@@ -294,6 +303,6 @@ single-threaded), Bevy (purest option but immature UI/tooling and far less agent
 | Project management, specs, review, QA | **Claude (Fable)** | `ROADMAP.md`, `HANDOFF.md`, tests, screenshot tours, PR review, perf gates |
 | Exceptions only (browser tooling, stalled hard maths) | Claude Opus / Fable agents | Meshy asset generation; a shader or solver if Astra is stuck |
 
-Rules that keep this working: one owner per file (see `HANDOFF.md`), new features land as new modules with a documented
+Rules that keep this working: the quality bar in `QUALITY.md` applies to every PR; one owner per file (see `HANDOFF.md`), new features land as new modules with a documented
 swap, every module ships with a `/dev/` test page and a screenshot, `npm test` stays green, requests between agents
 go in `HANDOFF.md`, and the roadmap is updated when a phase's exit criteria are met.
