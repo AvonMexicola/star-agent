@@ -185,6 +185,7 @@ export class Navigation {
     if(hit==='seat')return 'F · SIT IN PILOT CHAIR';
     if(hit==='storage')return 'F · OPEN CARGO STORAGE';
     if(hit==='door')return this.cabinFlight?'HATCH · SECURED IN FLIGHT':this.doorOpen?'F · CLOSE HATCH & RAMP':'F · OPEN HATCH & LOWER RAMP';
+    if(this.cabinFlight)return 'IN-FLIGHT CABIN · RETURN TO CHAIR TO PILOT';
     if(this.dockedAtStation&&!this.insideShip)return this.station?.location==='hub'?'CENTRAL CONCOURSE · ELEVATORS AT REAR':'CARGO TERMINAL & CENTRAL HUB · AFT WALL';
     if(this.freighter)return this.insideShip?'F AT LIFT CONTROLS · G FLEET':'APPROACH THE REAR ELEVATOR · F TO CALL';
     return this.insideShip?'WALK AFT TO THE HATCH':'APPROACH THE REAR HATCH TO BOARD';
