@@ -1,5 +1,6 @@
 import { Vector3 } from 'three';
-import { AEON, SELENE } from './celestial.js';
+import { AEON, SELENE, STAR } from './celestial.js';
+import { SUN_STANDOFF, SUN_EXCLUSION } from './sun.js';
 
 export const LIGHT_SPEED = 299_792_458;
 export const TRAVEL = Object.freeze({
@@ -22,6 +23,8 @@ const targetFrom = (body, exclusion, arrival) => Object.freeze({
 export const TRAVEL_TARGETS = Object.freeze([
   targetFrom(AEON, 100_000, 150_000),
   targetFrom(SELENE, 20_000, 50_000),
+  // Exclusion at 3 radii; arrival where the disk subtends 35° (R / sin 17.5°), computed in sun.js.
+  targetFrom(STAR, SUN_EXCLUSION - STAR.radius, SUN_STANDOFF - STAR.radius),
 ]);
 
 const BODY_TARGETS = TRAVEL_TARGETS;
