@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { AEON, SELENE } from './celestial.js';
+import { AEON, SELENE, PYRE } from './celestial.js';
 
 export const LIGHT_SPEED = 299_792_458;
 export const TRAVEL = Object.freeze({
@@ -22,6 +22,7 @@ const targetFrom = (body, exclusion, arrival) => Object.freeze({
 export const TRAVEL_TARGETS = Object.freeze([
   targetFrom(AEON, 100_000, 150_000),
   targetFrom(SELENE, 20_000, 50_000),
+  targetFrom(PYRE, 40_000, 90_000),
 ]);
 
 const BODY_TARGETS = TRAVEL_TARGETS;

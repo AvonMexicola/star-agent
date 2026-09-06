@@ -3,8 +3,9 @@ import { ringPathIntervals } from './ring-world.js';
 import { stepEVA, constrainEVAShip, canAttachRamp } from './eva.js';
 import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
+import { PYRE_ARRIVAL_ALTITUDE, pyreLandingDirection, constrainPyreStep, pyreFrame, VOLCANOES, fromPyreBody } from './pyre-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
-import { SELENE, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
+import { SELENE, PYRE, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
 import { environmentAt, step as stepFlight } from './flight-model.js';
 import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './boarding.js';
 
@@ -78,8 +79,9 @@ export class Navigation {
   }
   get flightEnvironment(){
     const body=this.body;
-    if(!body.airless)return environmentAt(this.position,RADIUS);
+    if(body.id==='aeon')return environmentAt(this.position,RADIUS);
     const local=bodyOffset(this.position,body),r=Math.max(body.radius,local.length());
+    if(body.atmosphere)return environmentAt(local,body.radius,body.atmosphere,body.gravity);
     return {groundRadius:body.radius,altitude:Math.max(0,r-body.radius),density:0,regime:'SPACE',atmosphereFraction:0,
       gravity:local.normalize().multiplyScalar(-body.gravity*(body.radius/r)**2)};
   }
@@ -92,8 +94,9 @@ export class Navigation {
     if(!this.powered)return {ok:false,reason:'Power on with P before engaging the travel drive.',plan:null};
     if(!this.travelTarget)return {ok:false,reason:'Select a world on the map (M).',plan:null};
     if(this.mode!=='flight'||this.autoland||this.stationLift)return {ok:false,reason:'Launch and leave landing assist before engaging the drive.',plan:null};
-    return planTravel(this.position,this.travelTarget,{obstacles:this.station?.ready?
-      [{name:'Aeon Orbital',center:(this.station.centre??this.station.worldPosition).toArray(),radius:2000}]:[]});
+    const obstacles=[{name:'the star',center:new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).toArray(),radius:2.5e8}];
+    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:(this.station.centre??this.station.worldPosition).toArray(),radius:2000});
+    return planTravel(this.position,this.travelTarget,{obstacles});
   }
   beginTravel(){
     if(!this.enabled||this.travel)return false;
@@ -225,6 +228,24 @@ export class Navigation {
     this.orientToward(this.position.clone().addScaledVector(east,1000).addScaledVector(d,-180),d);
     this.jumpHeight=0;this.jumpVelocity=0;
   }
+  /** Arrive above the dusk terminator looking north along it: day side to the right,
+   * glowing night side to the left. Pitch follows the horizon dip at any altitude. */
+  transitPyre(altitude=PYRE_ARRIVAL_ALTITUDE,direction=pyreLandingDirection()){
+    this.orbit();
+    const d=new THREE.Vector3(...direction).normalize();
+    this.position.copy(bodySurfacePoint(d,PYRE,altitude));
+    const sun=this.sunDirection,along=new THREE.Vector3().crossVectors(d,sun).normalize();
+    if(along.lengthSq()<.5)along.crossVectors(Math.abs(d.y)<.9?UP:RIGHT,d).normalize();
+    if(along.dot(new THREE.Vector3(...pyreFrame().y))<0)along.negate();
+    const dip=Math.acos(PYRE.radius/(PYRE.radius+Math.max(0,altitude))),pitch=Math.min(1.3,dip+.06);
+    this.orientToward(this.position.clone().addScaledVector(along,1000*Math.cos(pitch)).addScaledVector(d,-1000*Math.sin(pitch)),d);
+    // Frame the nearby shield at arrival so the destination opens on geography.
+    if(altitude===PYRE_ARRIVAL_ALTITUDE){
+      const landmark=new THREE.Vector3(...fromPyreBody(...VOLCANOES[0].direction));
+      this.orientToward(bodySurfacePoint(landmark,PYRE),d);
+    }
+    this.jumpHeight=0;this.jumpVelocity=0;
+  }
   get stationDistance(){return this.station?.ready?this.position.distanceTo(this.station.worldPosition):Infinity;}
   get canDock(){return Boolean(this.station?.canDock(this.position,this.layout,this.orientation));}
   get stationLocal(){return this.station?.ready?this.station.toLocal(this.position,new THREE.Vector3()):null;}
@@ -244,7 +265,7 @@ export class Navigation {
     this.notify(this.freighter?'Docked. F to stand; walk aft to the belly elevator controls.':'Docked. F to stand; walk aft and open the hatch to explore the hangar.');
     this.onVoyage?.('dock');
   }
-  dryGround(){if(this.body.airless)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
+  dryGround(){if(!this.body.water)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
   landOrLaunch(){
     if(this.travel)return;
     if(this.mode==='eva'){this.notify('Return to the pilot chair before controlling the ship.');return;}
@@ -272,7 +293,7 @@ export class Navigation {
   touchDown(){
     if(!this.dryGround())return;
     const body=this.body,radial=this.normal;
-    const n=body.airless?bodySurfaceNormal(this.position,body):radial;
+    const n=body.water?radial:bodySurfaceNormal(this.position,body);
     const surface=bodySurfacePoint(radial,body);
     this.position.copy(surface).addScaledVector(n,3.2);
     this.mode='landed';this.autoland=false;this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
@@ -402,6 +423,9 @@ export class Navigation {
           this.position.copy(lunar.point);this.touchDown();break;
         }
         if(lunar.limited){proposed.copy(lunar.point);this.velocity.set(0,0,0);}
+        const pyre=constrainPyreStep(previous,proposed,this.landingClearance);
+        if(pyre.hit){this.position.copy(pyre.point);this.touchDown();break;}
+        if(pyre.limited){proposed.copy(pyre.point);this.velocity.set(0,0,0);}
         const collision=this.station?.constrainStep(previous,proposed,this.orientation,false,this.layout);
         this.position.copy(collision?collision.point:proposed);
         if(collision?.hit){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;break;}

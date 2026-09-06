@@ -17,12 +17,13 @@ export function createSystemMap(nav, onTarget = () => {}) {
     <div class="system-map-header"><div><span class="map-eyebrow">SA–01 / NAVIGATION</span><h2 id="system-map-title">The Aeon system<span>01</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
     <div class="system-map-layout">
       <div class="system-chart" aria-label="Schematic system map">
-        <div class="map-grid"></div><div class="map-orbit map-orbit-outer"></div><div class="map-orbit map-orbit-inner"></div>
+        <div class="map-grid"></div><div class="map-orbit map-orbit-outer"></div><div class="map-orbit map-orbit-inner"></div><div class="map-orbit map-orbit-pyre"></div>
         <div class="map-star"><i></i><span>OUR STAR<small>25 M km from Aeon</small></span></div>
         <div class="map-route-line"></div>
         <button class="map-body map-aeon" data-travel-target="aeon"><i></i><span>AEON<small>TERRESTRIAL PLANET</small></span></button>
         <button class="map-body map-selene" data-travel-target="selene"><i></i><span>SELENE<small>AIRLESS MOON</small></span></button>
-        <div class="map-chart-caption"><span>2 WORLDS TO EXPLORE</span><span>SCHEMATIC · NOT TO SCALE</span></div>
+        <button class="map-body map-pyre" data-travel-target="pyre"><i></i><span>PYRE<small>HOT INNER PLANET</small></span></button>
+        <div class="map-chart-caption"><span>3 WORLDS TO EXPLORE</span><span>SCHEMATIC · NOT TO SCALE</span></div>
       </div>
       <section class="map-destination" aria-label="Selected destination">
         <span class="map-eyebrow">DESTINATION</span><h3 id="map-target-name">Where next?</h3><p id="map-target-description">Select a world on the map to plot an approach.</p>
@@ -45,7 +46,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
     if (!target) return;
     const route = nav.travel ? { ok: false, reason: 'Drive paused. Close the map to resume; X aborts in flight.' } : nav.travelRoute();
     el('map-target-name').textContent = target.name;
-    el('map-target-description').textContent = target.id === 'aeon' ? 'Oceans, forests and an atmosphere. Arrive above the atmosphere, then descend in normal flight.' : 'Cratered terrain and low gravity. Arrive above the moon, then fly down to land and explore.';
+    el('map-target-description').textContent = target.id === 'aeon' ? 'Oceans, forests and an atmosphere. Arrive above the atmosphere, then descend in normal flight.' : target.id === 'pyre' ? 'Tidally locked and 400 °C on the day side; lava fields glow through cracked basalt on the night side. Thin CO₂ air. Arrive above the atmosphere and descend toward the terminator.' : 'Cratered terrain and low gravity. Arrive above the moon, then fly down to land and explore.';
     el('map-distance').textContent = formatRange(route.plan?.distance ?? nav.position.distanceTo(new Vector3(...target.center)));
     el('map-eta').textContent = route.ok ? `${route.plan.duration.toFixed(1)} s` : '—';
     el('map-approach').textContent = formatRange(target.arrivalRadius - target.radius);
