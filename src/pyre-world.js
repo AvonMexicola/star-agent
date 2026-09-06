@@ -1,3 +1,5 @@
+import { constrainTerrainStep } from './terrain-contact.js';
+import { bakeSurfaceMaps } from './surface-maps.js';
 import { Vector3 } from 'three';
 import { resourceProfile, resourceColor } from './resource-profile.js';
 import { SUN_DIRECTION, SUN_DISTANCE } from './world.js';
@@ -11,7 +13,7 @@ export const PYRE_RADIUS = 1_200_000;
 export const PYRE_ORBIT_RADIUS = 10_000_000_000;
 export const PYRE_GRAVITY = 7.6;
 export const PYRE_MAX_HEIGHT = 9_000;
-export const PYRE_GENERATOR_VERSION = 2;
+export const PYRE_GENERATOR_VERSION = 3;
 export const PYRE_RESOURCE_VERSION = 1;
 export const PYRE_RESOURCE_IDS=Object.freeze(['basalt','oxide','sulphur']);
 export const PYRE_RESOURCE_PALETTE=Object.freeze({basalt:[.082,.076,.07],oxide:[.28,.12,.048],sulphur:[.56,.43,.09]});
@@ -32,11 +34,13 @@ const STAR = new Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
 const ORBIT_NORMAL = new Vector3(0, 1, 0).addScaledVector(new Vector3(...SUN_DIRECTION), -SUN_DIRECTION[1]).normalize();
 const ORBIT_X = new Vector3(...SUN_DIRECTION).negate();          // from the star toward Aeon
 const ORBIT_Y = new Vector3().crossVectors(ORBIT_NORMAL, ORBIT_X);
-const PHASE_AT_EPOCH_ZERO = 1.0;
+// Authored quadrature: the Aeon-to-Pyre line is tangent to Pyre's stellar orbit.
+// This gives a half-lit globe with sunlight screen-left when orbital north is up.
+const PHASE_AT_EPOCH_ZERO = Math.acos(PYRE_ORBIT_RADIUS / SUN_DISTANCE);
 
-/** Circular Keplerian position at wall-clock milliseconds (Aeon-centred metres). */
+/** Circular orbit relative to the session epoch; the playable scene freezes at quadrature. */
 export function pyreOrbitPosition(ms) {
-  const phase = PHASE_AT_EPOCH_ZERO + 2 * Math.PI * ((ms / 1000) / PYRE_PERIOD_SECONDS);
+  const phase = PHASE_AT_EPOCH_ZERO + 2 * Math.PI * (((ms - PYRE_EPOCH) / 1000) / PYRE_PERIOD_SECONDS);
   return STAR.clone().addScaledVector(ORBIT_X, PYRE_ORBIT_RADIUS * Math.cos(phase)).addScaledVector(ORBIT_Y, PYRE_ORBIT_RADIUS * Math.sin(phase));
 }
 /** Tidally locked body frame: +Z toward the star, +Y the orbit normal, +X east (leading). */
@@ -114,22 +118,22 @@ const feature = (lat, lon, radiusKm, extra) => {
 };
 /** Shield volcanoes: four on the northern hemisphere, three on the southern. */
 export const VOLCANOES = Object.freeze([
-  feature(16, -90, 45, { name: 'CINDER THRONE', height: 5200, active: true }),
-  feature(38, -30, 60, { name: 'SULPHUR CROWN', height: 6400, active: true }),
-  feature(8, 140, 30, { name: 'EMBER DOME', height: 3200, active: true }),
-  feature(55, 60, 24, { name: 'GREY SHIELD', height: 2400, active: false }),
-  feature(-22, -112, 50, { name: 'TWIN FURNACE', height: 5600, active: true }),
-  feature(-48, 20, 36, { name: 'OLD BASALT', height: 3000, active: false }),
-  feature(-9, -72, 20, { name: 'DUSK CALDERA', height: 2600, active: true }),
+  feature(16, 90, 45, { name: 'CINDER THRONE', height: 5200, active: true }),
+  feature(38, 30, 60, { name: 'SULPHUR CROWN', height: 6400, active: true }),
+  feature(8, -140, 30, { name: 'EMBER DOME', height: 3200, active: true }),
+  feature(55, -60, 24, { name: 'GREY SHIELD', height: 2400, active: false }),
+  feature(-22, 112, 50, { name: 'TWIN FURNACE', height: 5600, active: true }),
+  feature(-48, -20, 36, { name: 'OLD BASALT', height: 3000, active: false }),
+  feature(-9, 72, 20, { name: 'DUSK CALDERA', height: 2600, active: true }),
 ]);
 /** Active lava fields: cracked crust glowing through, strongest on the night side. */
 export const LAVA_FIELDS = Object.freeze([
-  feature(4, -135, 260, { name: 'NIGHTFIRE PLAIN' }),
-  feature(12, -96, 95, { name: 'THRONE FLOWS' }),
-  feature(-28, -140, 160, { name: 'FURNACE FLOWS' }),
-  feature(30, 160, 130, { name: 'EMBER FIELD' }),
-  feature(-14, 95, 150, { name: 'FAR SCAR' }),
-  feature(44, -22, 70, { name: 'CROWN FLOWS' }),
+  feature(4, 135, 260, { name: 'NIGHTFIRE PLAIN' }),
+  feature(12, 96, 95, { name: 'THRONE FLOWS' }),
+  feature(-28, 140, 160, { name: 'FURNACE FLOWS' }),
+  feature(30, -160, 130, { name: 'EMBER FIELD' }),
+  feature(-14, -95, 150, { name: 'FAR SCAR' }),
+  feature(44, 22, 70, { name: 'CROWN FLOWS' }),
 ]);
 let seed = SEED;
 const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
@@ -139,11 +143,13 @@ export const CRATERS = Object.freeze(Array.from({ length: 56 }, () => {
   const radius = .0028 + random() ** 2 * .032;
   return Object.freeze({ direction: Object.freeze([r * Math.cos(angle), y, r * Math.sin(angle)]), radius, depth: radius * PYRE_RADIUS * .07 });
 }));
-/** Body-frame landing site: on the dusk terminator in the Throne Flows, 104 km from Cinder Throne. */
-export const PYRE_LANDING_BODY_DIRECTION = Object.freeze(pyreLatLon(13.5, -94.5));
+/** Body-frame landing site: on the Aeon-facing terminator in the Throne Flows, 104 km from Cinder Throne. */
+export const PYRE_LANDING_BODY_DIRECTION = Object.freeze(pyreLatLon(13.5, 94.5));
 export const PYRE_ARRIVAL_ALTITUDE = 1_800_000;
 /** World-frame landing direction for the current epoch. */
 export function pyreLandingDirection() { return fromPyreBody(...PYRE_LANDING_BODY_DIRECTION); }
+/** Near-side twilight approach from Aeon, with orbital north as camera up. */
+export function pyreArrivalDirection() { return new Vector3(...PYRE_POSITION).negate().normalize().toArray(); }
 
 // ---- the canonical surface -------------------------------------------------
 const chord = (d, c) => { const dot = d[0] * c[0] + d[1] * c[1] + d[2] * c[2]; return Math.sqrt(Math.max(0, 2 - 2 * dot)); };
@@ -270,60 +276,10 @@ export function pyreHeat(position, sunDirection = null) {
 
 /** Swept contact against the heightfield (same scheme as constrainMoonStep). */
 export function constrainPyreStep(previous, proposed, clearance = 3.2) {
-  const center = new Vector3(...PYRE_POSITION), start = previous.clone().sub(center), delta = proposed.clone().sub(previous);
-  const length = delta.length(), bound = PYRE_RADIUS + PYRE_MAX_HEIGHT + clearance;
-  const distanceAt = t => {
-    const local = start.clone().addScaledVector(delta, t), r = local.length();
-    if (r < 1) return -PYRE_RADIUS;
-    local.divideScalar(r); return r - PYRE_RADIUS - pyreSurface(local.x, local.y, local.z).height - clearance;
-  };
-  const contact = t => {
-    const d = start.clone().addScaledVector(delta, t); if (d.lengthSq() < 1) d.set(0, 0, 1); d.normalize();
-    return { point: d.clone().multiplyScalar(PYRE_RADIUS + pyreSurface(d.x, d.y, d.z).height + clearance).add(center), hit: true, t };
-  };
-  if (start.length() < bound && distanceAt(0) <= 0) return contact(0);
-  if (length === 0) return { point: proposed, hit: false };
-  const ray = delta.clone().divideScalar(length), b = start.dot(ray), c = start.lengthSq() - bound * bound, disc = b * b - c;
-  if (disc < 0) return { point: proposed, hit: false };
-  const root = Math.sqrt(disc), entry = Math.max(0, (-b - root) / length), exit = Math.min(1, (-b + root) / length);
-  if (exit < entry || exit < 0 || entry > 1) return { point: proposed, hit: false };
-  let t = entry, last = t;
-  for (let i = 0; i < 4096 && t <= exit; i++) {
-    const height = distanceAt(t);
-    if (height <= .002) {
-      let lo = last, hi = t;
-      for (let j = 0; j < 24; j++) { const mid = (lo + hi) / 2; if (distanceAt(mid) > 0) lo = mid; else hi = mid; }
-      return contact(hi);
-    }
-    if (t === exit) break;
-    last = t; t = Math.min(exit, t + Math.min(250, height / 20) / length);
-  }
-  if (t < exit) return { point: previous.clone().addScaledVector(delta, t), hit: false, limited: true };
-  return { point: proposed, hit: false };
+  return constrainTerrainStep(previous, proposed, { radius: PYRE_RADIUS, position: PYRE_POSITION, maxHeight: PYRE_MAX_HEIGHT, sample: pyreSurface }, clearance);
 }
 
 /** Equirectangular identity map in the body frame: activity, fresh flows, sulphur, oxide. */
 export function bakePyreMaps(width = 1024, height = 512) {
-  if(!Number.isInteger(width)||!Number.isInteger(height)||width<4||height<2||width>2048||height>1024)throw new RangeError('Invalid Pyre map size');
-  const data=new Uint8Array(width*height*4),color=new Uint8Array(data.length),normal=new Uint8Array(data.length),heights=new Float64Array(width*height);
-  const srgb=v=>Math.round(Math.max(0,Math.min(1,v<=.0031308?v*12.92:1.055*v**(1/2.4)-.055))*255);
-  for(let row=0;row<height;row++){
-    const lat=((row+.5)/height-.5)*Math.PI,y=Math.sin(lat),c=Math.cos(lat);
-    for(let col=0;col<width;col++){
-      const lon=((col+.5)/width-.5)*Math.PI*2,s=pyreSurfaceBody(c*Math.sin(lon),y,c*Math.cos(lon)),i=row*width+col;
-      heights[i]=s.height;data.set([s.activity,s.fresh,s.sulphur,s.oxide].map(v=>Math.round(Math.min(1,v)*255)),i*4);
-      color.set([...s.color.map(srgb),255],i*4);
-    }
-  }
-  for(let row=0;row<height;row++){
-    const lat=((row+.5)/height-.5)*Math.PI,sy=Math.sin(lat),cy=Math.cos(lat),south=Math.max(0,row-1),north=Math.min(height-1,row+1);
-    for(let col=0;col<width;col++){
-      const lon=((col+.5)/width-.5)*Math.PI*2,sl=Math.sin(lon),cl=Math.cos(lon),i=row*width+col;
-      const dx=(heights[row*width+(col+1)%width]-heights[row*width+(col+width-1)%width])/Math.max(1,PYRE_RADIUS*cy*Math.PI*4/width);
-      const dy=(heights[north*width+col]-heights[south*width+col])/(PYRE_RADIUS*Math.PI/height*(north-south));
-      const n=[cy*sl-cl*dx+sy*sl*dy,sy-cy*dy,cy*cl+sl*dx+sy*cl*dy],l=Math.hypot(...n);
-      normal.set([...n.map(v=>Math.round((v/l*.5+.5)*255)),255],i*4);
-    }
-  }
-  return {width,height,data,color,normal};
+  return bakeSurfaceMaps(pyreSurfaceBody, PYRE_RADIUS, width, height);
 }

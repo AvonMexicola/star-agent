@@ -11,3 +11,10 @@
 body.drive-active #course-guidance{visibility:hidden}
 
 .map-body.map-star{left:3%;top:47%;color:#efcfa0}.map-body.map-star i{width:45px;height:45px;margin-bottom:0;background:radial-gradient(circle at 38% 35%,#fff7cf,#ffb54e 60%,#d64722);box-shadow:0 0 30px #ffa83b70,0 0 70px #ef76252f}.map-body.map-star[aria-pressed=true]{background:#fda3470e}@media(max-width:740px){.map-body.map-star{left:0;top:43%}}
+
+/* Pyre sits at quadrature to the star–Aeon baseline; satellite spacing is enlarged. */
+.map-pyre{left:24%;top:16%}.map-pyre i{width:43px;height:43px;background:radial-gradient(circle at 73% 52%,#e95b22 0 4%,transparent 12%),linear-gradient(90deg,#bd8260,#694c37 47%,#241710 53%,#090b0b)}
+.map-miasma{left:45%;top:4%}.map-miasma i{width:25px;height:25px;background:repeating-linear-gradient(155deg,#adb575 0 3px,#787c39 5px,#bec88b 8px,#3b5a42 12px);box-shadow:inset -8px -3px 10px #0009,0 0 18px #c8d05c33}
+.map-orbit-pyre{left:5%;top:12%;width:36%;height:70%;transform:rotate(-25deg)}
+.map-selene{left:72%;top:28%}.map-aeon{left:55%;top:55%}
+@media(max-width:740px){.map-pyre{left:21%;top:11%}.map-miasma{left:47%;top:1%}.map-body{font-size:10px;padding:12px;gap:8px}.map-body small{font-size:7px}.map-pyre i{width:31px;height:31px}.map-miasma i{width:19px;height:19px}.map-selene{left:65%;top:31%}.map-aeon{left:51%;top:57%}.map-chart-caption{bottom:10px}}

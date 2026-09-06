@@ -1,3 +1,4 @@
+import { MIASMA_POSITION, MIASMA_RADIUS } from './miasma-world.js';
 import * as THREE from 'three';
 import { PYRE_RADIUS, PYRE_POSITION } from './pyre-world.js';
 import { RADIUS, SUN_RADIUS, SUN_DISTANCE, SUN_DIRECTION, SUN_ANGULAR_RADIUS, clamp, smoothstep } from './world.js';
@@ -79,4 +80,5 @@ export const DEFAULT_OCCLUDERS = [
   { name: 'Aeon', center: [0, 0, 0], radius: RADIUS },
   { name: 'Selene', center: MOON_POSITION, radius: MOON_RADIUS },
   { name: 'Pyre', center: PYRE_POSITION, radius: PYRE_RADIUS },
+  { name: 'Miasma', center: MIASMA_POSITION, radius: MIASMA_RADIUS },
 ];
