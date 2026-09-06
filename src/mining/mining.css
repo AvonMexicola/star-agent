@@ -12,3 +12,6 @@
 .surveying-moon .mission-panel{display:none}@media(max-width:700px){.surveying-moon .telemetry{top:185px}}
 
 .surveying-moon .telemetry{background:#03101ccc;border:1px solid #b6efd133;border-radius:4px;padding:15px}
+
+.field-equipment{display:flex;gap:5px;margin-top:12px}.field-equipment button{flex:1;padding:8px 4px;font:10px var(--mono);background:#102330;color:#a8becd;border:1px solid #385265;border-radius:3px}.field-equipment button[aria-pressed=true]{color:#fff;border-color:#91e7d7}.mining-heat[hidden]{display:none}
+#ship-weapons{position:fixed;right:28px;top:170px;width:260px;padding:14px;background:#071019ed;border:1px solid #385265;border-radius:6px;z-index:11;color:#a7c2d3;font:10px var(--mono)}#ship-weapons[hidden],.photo-mode #ship-weapons{display:none}#ship-weapons>span{letter-spacing:1.5px;font-size:9px}.ship-weapon-options{display:grid;gap:5px;margin:10px 0}.ship-weapon-options button,.ship-trigger{font:10px var(--mono);padding:8px;background:#122432;color:#bad0df;border:1px solid #375369;border-radius:3px}.ship-weapon-options button[aria-pressed=true]{border-color:#a1eade;color:white}.ship-trigger{width:100%;touch-action:none}#ship-weapons small{display:block;margin-top:9px;font-size:9px}@media(max-width:700px){#ship-weapons{top:auto;bottom:110px;right:12px;width:210px}}

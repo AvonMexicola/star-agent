@@ -17,12 +17,13 @@ mapping, not operating-system Bluetooth status.
 | Dialog | Right stick | Scroll |
 | Flight / walking | Left / right stick | Move / aim |
 | Flight | RT / LT | Rise / descend |
+| Flight | A / ✕ | Fire selected ship weapon (pulse / solar lance / singularity) |
 | Flight | LB / RB | Roll |
 | Flight | Y / X | Land or launch / interact |
 | Flight | B / right-stick click | Brake / flight assist |
 | Walking | A / X | Jump / interact, including hatch and cargo |
-| Walking / EVA | D-pad right | Equip or holster mining tool |
-| Walking / EVA | RT | Fire equipped mining tool |
+| Walking / EVA | D-pad right | Equip or holster held tool |
+| Walking / EVA | RT | Fire equipped cutter, carbine or sidearm |
 | EVA | A / B | Rise / descend |
 | EVA | LT | Brake |
 | EVA | LB / RB | Roll |
@@ -98,3 +99,17 @@ Run `npm run test:browser -- -c scripts/controller-gameplay.config.js` after mai
 mining tool and navigation integration. Do not count this journey as passed until
 its actual run completes. No physical-controller validation was available during
 this implementation.
+
+## Energy arsenal follow-up (PR #27)
+
+Command menu actions equip each handheld tool outside the cabin and select each
+ship weapon in flight. Disabled actions are skipped by the shared focus router.
+The effects/input adapter owns A firing only in flight, where A had no existing
+action; navigation retains A jump/EVA rise. RT retains flight ascent and fires
+the equipped tool only on foot or in EVA. No raw second Gamepad poll is used.
+Equipment/weapon changes suspend shared input until neutral, as do menu closes.
+The new route is `scripts/controller-effects.spec.js`: controller-only ship
+selection/fire, physical lunar landing/exit/approach, both gun selections and
+impacts, cutter mining, cargo UI and return. It also covers held RT across focus,
+disconnect, replacement and unsupported mapping. Debug state is read only for
+steering and assertions; no physical controller testing is claimed.

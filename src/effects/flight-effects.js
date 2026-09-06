@@ -1,48 +1,55 @@
 import * as THREE from 'three';
 import { SHIP_LAYOUT } from '../boarding.js';
-import { bodyAltitude } from '../celestial.js';
+import { createWeaponTarget } from './weapon-target.js';
+import { WEAPONS, weaponProfile } from './weapons.js';
 
-/** Input/pose adapter. Flight simulation remains authoritative. */
+/** Input/pose adapter. A fires in flight; RT retains flight ascent and suit fire. */
 export function createFlightEffects({effects,nav,mining,camera}){
-  let cooldown=0,side=1;
+  let cooldown=0,side=1,weapon='pulse',keyHeld=false,pointerHeld=false,controllerFire=false,controllerArmed=false;
   const position=new THREE.Vector3(),forward=new THREE.Vector3(),collector=new THREE.Vector3();
-  const raycaster=new THREE.Raycaster();
-  function target(start,direction,origin){
-    let hit=mining.raycast(start,direction,1600);
-    // Respect station walls without querying every terrain triangle in the world.
-    if(nav.stationDistance<1800){
-      raycaster.set(start.clone().sub(origin),direction);raycaster.far=1600;
-      const wall=raycaster.intersectObject(nav.station.group,true).find(h=>h.object.visible&&h.object.material?.depthWrite!==false);
-      if(wall&&(!hit||wall.distance<hit.distance))hit={distance:wall.distance,point:wall.point.clone().add(origin),normal:wall.face?.normal.clone().transformDirection(wall.object.matrixWorld)};
-    }
-    // Ground impacts sample the same body height function used by navigation.
-    let previous=0;
-    for(let d=2;d<Math.min(1600,hit?.distance??1600);d+=12){
-      const p=start.clone().addScaledVector(direction,d);
-      if(bodyAltitude(p,nav.body)<=0){
-        let lo=previous,hi=d;
-        for(let i=0;i<10;i++){const mid=(lo+hi)*.5;if(bodyAltitude(start.clone().addScaledVector(direction,mid),nav.body)>0)lo=mid;else hi=mid;}
-        return {point:start.clone().addScaledVector(direction,lo),normal:nav.normal.clone()};
-      }
-      previous=d;
-    }
-    return hit;
+  const target=createWeaponTarget({nav,mining});
+  const panel=document.createElement('aside');panel.id='ship-weapons';panel.hidden=true;
+  panel.innerHTML='<span>SHIP / ENERGY ARRAY</span><div class="ship-weapon-options"></div><button class="ship-trigger" type="button">HOLD TO FIRE</button><small>J · Fire / 1–3 · Weapon</small>';
+  document.body.append(panel);const trigger=panel.querySelector('.ship-trigger');
+  const clear=()=>{keyHeld=false;pointerHeld=false;controllerArmed=false;};
+  const ready=()=>nav.mode==='flight'&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
+  function select(id){if(!WEAPONS[id])return;weapon=id;clear();nav.gamepad.suspend();controllerFire=false;cooldown=.12;}
+  for(const [i,[id,profile]] of Object.entries(Object.entries(WEAPONS))){
+    const button=document.createElement('button');button.type='button';button.textContent=`${Number(i)+1} · ${profile.label}`;button.dataset.shipWeapon=id;button.onclick=()=>select(id);panel.querySelector('.ship-weapon-options').append(button);
   }
+  document.addEventListener('keydown',e=>{
+    if(!ready()||e.repeat||e.target.closest('input,dialog'))return;
+    const id={Digit1:'pulse',Digit2:'laser',Digit3:'void'}[e.code];if(id)select(id);
+    if(e.code==='KeyJ')keyHeld=true;
+  });
+  document.addEventListener('keyup',e=>{if(e.code==='KeyJ')keyHeld=false;});
+  window.addEventListener('blur',clear);document.addEventListener('visibilitychange',clear);
+  trigger.addEventListener('pointerdown',e=>{if(!ready())return;e.preventDefault();pointerHeld=true;trigger.setPointerCapture(e.pointerId);});
+  for(const event of ['pointerup','pointercancel','lostpointercapture'])trigger.addEventListener(event,()=>pointerHeld=false);
+  trigger.addEventListener('keydown',e=>{if(['Space','Enter'].includes(e.code)){e.preventDefault();e.stopPropagation();if(!e.repeat&&ready())pointerHeld=true;}});
+  trigger.addEventListener('keyup',e=>{if(['Space','Enter'].includes(e.code)){e.preventDefault();e.stopPropagation();pointerHeld=false;}});
   return {
+    select,
+    controller(pad){controllerFire=Boolean(pad.jump&&!pad.ui);},
+    get state(){return {weapon,controllerFire};},
     update(dt,origin,{suspended=false}={}){
-      const flying=nav.mode==='flight',ready=flying&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]')&&!suspended;
+      const active=ready()&&!suspended;
+      panel.hidden=nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
+      if(!active)clear();
+      else if(!controllerFire)controllerArmed=true;
+      for(const b of panel.querySelectorAll('[data-ship-weapon]'))b.setAttribute('aria-pressed',String(b.dataset.shipWeapon===weapon));
+      panel.querySelector('small').textContent=nav.controllerActive?'A / ✕ · Fire / Menu · Weapon':'J · Fire / 1–3 · Weapon';
       position.set(...SHIP_LAYOUT.seatEye).applyQuaternion(nav.orientation).negate().add(nav.position);
       forward.set(0,0,-1).applyQuaternion(nav.orientation);
       cooldown=Math.max(0,cooldown-dt);
-      if(ready&&nav.keys.has('KeyJ')&&cooldown===0){
+      if(active&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
         const start=new THREE.Vector3(side*2.35,1.55,-3.3).applyQuaternion(nav.orientation).add(position);
-        // Two hardpoints converge on the reticle at useful short range.
         const direction=nav.position.clone().addScaledVector(forward,400).sub(start).normalize();
-        effects.fire(start,direction,{hit:target(start,direction,origin)});side*=-1;cooldown=.14;
+        effects.fire(start,direction,{hit:target(start,direction,origin),weapon});side*=-1;cooldown=weaponProfile(weapon).interval;
       }
       collector.set(.2,-.35,-.15).applyQuaternion(nav.orientation).add(nav.position);
-      const throttle=ready?Math.max(nav.keys.has('KeyW')?1:0,Math.min(1,Math.abs(nav.velocity.dot(forward))/200)):0;
-      effects.update(dt,{origin,camera,shipPosition:position,shipQuaternion:nav.orientation,velocity:nav.velocity,flying:ready,boost:nav.boost,throttle,mining:effects.miningInput,collector,suspended:suspended||!nav.focused||document.hidden});
+      const throttle=active?Math.max(nav.keys.has('KeyW')?1:0,Math.min(1,Math.abs(nav.velocity.dot(forward))/200)):0;
+      effects.update(dt,{origin,camera,shipPosition:position,shipQuaternion:nav.orientation,velocity:nav.velocity,flying:active,boost:nav.boost,throttle,mining:effects.miningInput,collector,suspended:suspended||!nav.focused||document.hidden});
     },
   };
 }

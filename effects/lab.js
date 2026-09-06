@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Atmosphere } from '../src/atmosphere.js';
+import { WEAPONS,WEAPON_COLORS } from '../src/effects/weapons.js';
 import { EnergyEffects } from '../src/effects/energy-effects.js';
 import { RADIUS } from '../src/world.js';
 import { createAsteroidGeometry } from '../src/asteroid-geometry.js';
@@ -37,20 +38,28 @@ for(const r of [1,2,3]){const ring=new THREE.Mesh(new THREE.TorusGeometry(r,.015
 // A sparse star field gives transit a stationary reference and leaves the center clear.
 const starPositions=[],starColors=[];for(let i=0;i<1600;i++){const v=new THREE.Vector3(effects.random()-.5,effects.random()-.5,effects.random()-.5).normalize().multiplyScalar(5000);starPositions.push(...v.toArray());starColors.push(.15+effects.random()*.25,.25+effects.random()*.3,.5+effects.random()*.3);}
 const stars=new THREE.BufferGeometry();stars.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));stars.setAttribute('color',new THREE.Float32BufferAttribute(starColors,3));scene.add(new THREE.Points(stars,new THREE.PointsMaterial({vertexColors:true,size:1,sizeAttenuation:false})));
+let weapon='pulse',weaponColor;
 let mode='engines',paused=false,boost=true,power=.85,elapsed=0,last=performance.now(),shot=0,cut=0;
 const descriptions={
  engines:['NOMAD / TWIN PLASMA DRIVE','Light the afterburners.','A white-hot core. Turbulent plasma. Expanding shock diamonds.'],
  mining:['FIELD TOOL / MINERAL EXTRACTION','Break it. Bring it home.','Molten sparks scatter as liberated minerals spiral into the collector.'],
  weapons:['HARDPOINTS / PULSED ENERGY','Every shot has weight.','Charged muzzle flashes, luminous bolts and cascading impact sparks.'],
- travel:['DEEP SPACE / VELOCITY FIELD','Feel the distance disappear.','Starlit particles stretch along the flight vector as speed builds.'],
+ travel:['SLIPSTREAM / FIELD DISPLACEMENT','Tear a path through space.','Braided plasma, racing energy waves and a corridor between worlds.'],
 };
 function select(next){
- mode=next;effects.reset();shot=0;cut=0;ship.visible=mode==='engines';rock.visible=mode==='mining';target.visible=mode==='weapons';emitters.visible=mode==='weapons';
+ mode=next;$('weapon-options').hidden=mode!=='weapons';effects.reset();shot=0;cut=0;ship.visible=mode==='engines';rock.visible=mode==='mining';target.visible=mode==='weapons';emitters.visible=mode==='weapons';
  document.querySelectorAll('[data-scene]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scene===mode)));
  const [tag,title,description]=descriptions[mode];$('tag').textContent=tag;$('title').textContent=title;$('description').textContent=description;
  const views={engines:[[17,9,23],[0,2,4]],mining:[[4,2.6,7],[0,0,0]],weapons:[[10,6,15],[0,1,-9]],travel:[[0,0,0],[0,0,-1]]};
  camera.position.fromArray(views[mode][0]);controls.target.fromArray(views[mode][1]);controls.enabled=mode!=='travel';camera.lookAt(controls.target);controls.update();
 }
+function selectWeapon(id){weapon=id;weaponColor=undefined;effects.reset();shot=0;
+ for(const b of document.querySelectorAll('[data-weapon]'))b.setAttribute('aria-pressed',String(b.dataset.weapon===id));
+ for(const b of document.querySelectorAll('[data-color]'))b.setAttribute('aria-pressed','false');
+ if(mode==='weapons'){$('title').textContent=WEAPONS[id].label;$('description').textContent={pulse:'Charged muzzle flashes, luminous bolts and cascading impact sparks.',laser:'A searing amber lance and molten contact shower.',void:'A violet core, orbital filaments and a collapsing energy shockwave.'}[id];}}
+for(const [id,p] of Object.entries(WEAPONS)){const b=document.createElement('button');b.type='button';b.dataset.weapon=id;b.textContent=p.label;b.onclick=()=>selectWeapon(id);$('weapon-types').append(b);}
+for(const [id,color] of Object.entries(WEAPON_COLORS)){const b=document.createElement('button');b.type='button';b.dataset.color=id;b.title=id;b.setAttribute('aria-label',`${id} emission`);b.style.setProperty('--swatch',`#${color.toString(16).padStart(6,'0')}`);b.onclick=()=>{weaponColor=color;for(const other of document.querySelectorAll('[data-color]'))other.setAttribute('aria-pressed',String(other===b));};$('weapon-colors').append(b);}
+selectWeapon('pulse');
 document.querySelectorAll('[data-scene]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.scene)));
 $('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'RESUME':'PAUSE';$('pause').setAttribute('aria-pressed',String(paused));};
 $('boost').onclick=()=>{boost=!boost;$('boost').setAttribute('aria-pressed',String(boost));$('boost').querySelector('span').textContent=boost?'ON':'OFF';};
@@ -72,11 +81,11 @@ function frame(now){
    }
   }
   if(mode==='weapons'){
-   shot+=dt;if(shot>.18){shot=0;const start=world([elapsed%1>.5?-3:3,1.2,1.06]),end=world([(effects.random()-.5)*1.8,2+(effects.random()-.5)*1.8,-17.7]);effects.fire(start,end.clone().sub(start).normalize(),{hit:{point:end,normal:new THREE.Vector3(0,0,1)},speed:90});}
+   shot+=dt;if(shot>WEAPONS[weapon].interval){shot=0;const start=world([elapsed%1>.5?-3:3,1.2,1.06]),end=world([(effects.random()-.5)*1.8,2+(effects.random()-.5)*1.8,-17.7]);effects.fire(start,end.clone().sub(start).normalize(),{hit:{point:end,normal:new THREE.Vector3(0,0,1)},speed:weapon==='void'?28:90,weapon,color:weaponColor});}
   }
   effects.update(dt,{origin,camera,shipPosition:origin,shipQuaternion:new THREE.Quaternion(),flying:mode==='engines'||mode==='travel',boost:boost&&mode==='engines',throttle:power,velocity:new THREE.Vector3(0,0,mode==='travel'?-Math.pow(10,3+power*4):0),mining,collector:world([2,-.8,3.4])});
  }
  atmosphere.render(scene,camera,origin,sun,elapsed);$('particle-count').textContent=effects.state.particles;
 }
 requestAnimationFrame(frame);
-window.effectsLab={select,get state(){return {mode,assetReady,paused,bloom:atmosphere.bloom.enabled,...effects.state};},effects,renderer,camera};
+window.effectsLab={select,get state(){return {mode,weapon,weaponColor,assetReady,paused,bloom:atmosphere.bloom.enabled,...effects.state};},effects,renderer,camera};

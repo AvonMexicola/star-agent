@@ -1,5 +1,8 @@
 # Energy effects visual review — 2026-09-06
 
+These are the initial captures. See [the arsenal/slipstream follow-up](v2/README.md)
+for the current transit field, additional weapons and controller acceptance.
+
 Production Chromium 151.0.7922.173, ANGLE/Vulkan SwiftShader (software),
 1440 × 900 desktop and 390 × 844 mobile. Range captures use native resolution;
 the game mining/flight check uses render scale 0.6. No hardware FPS claim.

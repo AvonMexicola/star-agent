@@ -7,7 +7,7 @@ const controls = dialog => [...dialog.querySelectorAll(selector)].filter(el => v
 /** Every native dialog gets the same controller focus/activate/back behavior.
  * Features keep their real click handlers; this never synthesizes keyboard mining.
  */
-export function createControllerUI({ nav, destinations = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {} }) {
+export function createControllerUI({ nav, destinations = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {}, actions = [] }) {
   const menu = document.createElement('dialog');
   menu.id = 'controller-menu'; menu.setAttribute('aria-labelledby', 'controller-menu-title');
   menu.innerHTML = '<div class="controller-menu-top"><h2 id="controller-menu-title">Command menu</h2><button type="button" data-controller-close aria-label="Close command menu">×</button></div><p>D-pad / left stick · Select &nbsp; A · Confirm &nbsp; B · Back</p><div class="controller-command-list"></div>';
@@ -20,7 +20,8 @@ export function createControllerUI({ nav, destinations = [], openBackpack = () =
   };
   add('Resume exploration', () => {}, 'resume').setAttribute('data-controller-focus', '');
   add('Backpack', openBackpack, 'backpack');
-  add('Equip / holster mining laser', toggleTool, 'tool');
+  add('Equip / holster held tool', toggleTool, 'tool');
+  for(const action of actions){const b=add(action.label,action.activate,action.id);if(action.enabled)b._controllerEnabled=action.enabled;}
   for (const d of destinations) {
     const b = add(`Quick transit · ${d.label}`, d.activate, `destination-${d.id}`);
     if (d.enabled) b._controllerEnabled = d.enabled;
