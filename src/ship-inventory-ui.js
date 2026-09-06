@@ -1,17 +1,18 @@
 import { MiningStore } from './mining/store.js';
 import { CATALOG, RESOURCE_IDS, SLOTS_PER_BOX, stacksFor, itemById, itemMass, quantityLabel } from './inventory/containers.js';
 import './inventory/inventory.css';
+import { itemIcon } from './inventory/item-icons.js';
+import { loadoutHTML } from './inventory/loadout-ui.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
-const icon = item => item.unit === 'kg'
-  ? `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 43 19 19 40 10 54 34 43 53 24 55Z" fill="${item.color}" opacity=".88"/><path d="m19 19 14 18 7-27m-7 27 21-3M12 43l21-6 10 16" fill="none" stroke="currentColor" opacity=".5"/><path d="m24 24 8-6 7 9-10 16" fill="none" stroke="#edfafa" stroke-width="2" opacity=".55"/></svg>`
-  : `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="13" y="17" width="38" height="34" rx="5" fill="#637d75"/><path d="M22 17v-5h20v5M13 28h38M25 17v34m14-34v34" fill="none" stroke="#bdd9cd" stroke-width="2"/><path d="M28 34h8m-4-4v8" stroke="#effff8" stroke-width="2"/></svg>`;
+const icon = itemIcon;
 
 /** Shared native-dialog renderer for a backpack and any available box container. */
-export function createInventoryUI(nav, ship, inventory, mining = null) {
+export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=null} = {}) {
   const store = mining ?? new MiningStore(inventory.storage);
   store.bindManifest(inventory);
   const availability = new Map();
+  let view='cargo',selectedSlot='tool';
   let targetId = null, selection = null, lastState = null, savedEnabled = true, lastPaint = 0;
   const launcher = document.createElement('button');
   launcher.id = 'backpack-button'; launcher.type = 'button'; launcher.className = 'inventory-launcher';
@@ -20,8 +21,9 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
   const dialog = document.createElement('dialog');
   dialog.id = 'cargo-dialog'; dialog.setAttribute('aria-labelledby', 'cargo-title');
   dialog.innerHTML = `<header class="inventory-header"><div><span class="eyebrow">PERSONAL LOGISTICS</span><h2 id="cargo-title">Backpack & storage</h2></div><button class="inventory-close" type="button" data-controller-focus data-controller-key="inventory-close" aria-label="Close inventory">Close <kbd>Esc / B</kbd></button></header>
+    <nav class="inventory-view-tabs" aria-label="Inventory views"><button data-inventory-view="cargo" data-controller-key="view-cargo">Storage</button><button data-inventory-view="equipment" data-controller-key="view-equipment">Equipment</button></nav>
     <div class="inventory-toolbar"><p>One stack per slot. More boxes give you room for more items.</p><nav class="inventory-locations" aria-label="Nearby storage"></nav></div>
-    <div class="inventory-columns"></div>
+    <div class="inventory-columns"></div><div class="inventory-equipment" hidden></div>
     <section class="inventory-detail" aria-label="Selected item"></section>
     <footer class="inventory-footer"><p class="cargo-feedback" role="status" aria-live="polite">Select a stack to inspect or transfer it.</p><p class="cargo-save"></p><div class="mining-cargo"><button type="button" data-action="stow" data-controller-key="stow-minerals">Stow all minerals</button></div></footer>`;
   (document.querySelector('.top-actions') || document.body).append(launcher);
@@ -56,9 +58,19 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
     const activeKey = document.activeElement?.dataset.controllerKey;
     dialog.querySelector('.inventory-locations').innerHTML = `<button type="button" data-location="" data-controller-key="location-pack" aria-pressed="${!targetId}">Backpack</button>${availableIds().map(id => `<button type="button" data-location="${escape(id)}" data-controller-key="location-${escape(id)}" aria-pressed="${targetId === id}">${escape(store.container(id).name)}</button>`).join('')}`;
     dialog.querySelector('.inventory-columns').innerHTML = containerHTML('pack') + (targetId ? containerHTML(targetId) : `<section class="inventory-empty-context"><span class="eyebrow">YOUR FIELD INVENTORY</span><h3>Everything you carry.</h3><p>Mined basalt, copper and ice appear here as you collect them. Each stack occupies a box slot.</p><p>${availableIds().length ? 'Choose a nearby storage container above to move supplies and minerals.' : 'Return aboard the Nomad or dock at Aeon orbital to access storage.'}</p><div class="inventory-rules"><span>MINERALS<strong>4 kg / stack</strong></span><span>BOX CAPACITY<strong>8 stack slots</strong></span><span>BACKPACK<strong>2 box mounts</strong></span></div><p class="prototype-box-note">Empty boxes are freely attachable in this prototype. Crafting and box purchase are not implemented.</p></section>`);
+    dialog.querySelector('.inventory-view-tabs').hidden=!loadout;
+    for(const b of dialog.querySelectorAll('[data-inventory-view]'))b.setAttribute('aria-pressed',String(b.dataset.inventoryView===view));
+    const gear=view==='equipment'&&loadout;
+    dialog.classList.toggle('equipment-view',Boolean(gear));
+    dialog.querySelector('#cargo-title').textContent=gear?'Equipment & loadout':'Backpack & storage';
+    dialog.querySelector('.inventory-toolbar>p').textContent=gear?'Select a slot to draw, stow or assign available gear.':'One stack per slot. More boxes give you room for more items.';
+    dialog.querySelector('.inventory-columns').hidden=Boolean(gear);
+    dialog.querySelector('.inventory-detail').hidden=Boolean(gear);
+    dialog.querySelector('.inventory-equipment').hidden=!gear;
+    if(gear)dialog.querySelector('.inventory-equipment').innerHTML=loadoutHTML(loadout,selectedSlot,['pack',...availableIds()].map(id=>store.container(id)));
     renderDetail();
     dialog.querySelector('.cargo-save').textContent = store.blocked ? store.warning : store.saved ? 'Saved on this browser · cuts and cargo share one transaction' : 'Changes require browser storage.';
-    const stow = dialog.querySelector('[data-action="stow"]'); stow.hidden = targetId !== 'ship'; stow.disabled = store.mass <= 1e-7 || store.blocked;
+    const stow = dialog.querySelector('[data-action="stow"]'); stow.hidden = view==='equipment' || targetId !== 'ship'; stow.disabled = store.mass <= 1e-7 || store.blocked;
     if (activeKey) [...dialog.querySelectorAll('[data-controller-key]')].find(el => el.dataset.controllerKey === activeKey)?.focus({ preventScroll: true });
     lastState = store.state;
   }
@@ -76,7 +88,8 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
     ship.setStorage(targetId === 'ship');
     return true;
   }
-  function openPack() { return openContainer(null); }
+  function openPack() { view='cargo';return openContainer(null); }
+  function openEquipment(){view='equipment';return openContainer(null);}
   launcher.addEventListener('click', openPack);
   const keyHandler = event => {
     if (event.code !== 'KeyI' || event.repeat || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
@@ -84,10 +97,16 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
   };
   document.addEventListener('keydown', keyHandler);
   dialog.querySelector('.inventory-close').addEventListener('click', () => dialog.close());
-  dialog.addEventListener('close', () => { ship.setStorage(false); nav.keys.clear(); nav.enabled = savedEnabled; nav.canvas.focus(); });
+  dialog.addEventListener('close', () => { ship.setStorage(false); nav.keys.clear(); nav.enabled = savedEnabled; nav.gamepad.suspend(); nav.canvas.focus(); });
   dialog.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button) return;
-    if (button.dataset.location !== undefined) { targetId = button.dataset.location || null; selection = null; render(); ship.setStorage(targetId === 'ship'); }
+    if(button.dataset.inventoryView){view=button.dataset.inventoryView;render();}
+    else if(button.dataset.equipmentSlot){selectedSlot=button.dataset.equipmentSlot;render();}
+    else if(button.dataset.loadoutAssign){const from=button.dataset.loadoutFrom;if(accessible(from))feedback(loadout.assign(selectedSlot,button.dataset.loadoutAssign,from));}
+    else if(button.dataset.loadoutStow){const to=button.dataset.loadoutStow;if(accessible(to))feedback(loadout.stow(selectedSlot,to));}
+    else if(button.dataset.loadoutAction==='select')feedback(loadout.select(loadout.active===selectedSlot?null:selectedSlot));
+    else if(button.dataset.loadoutAction==='use')feedback(loadout.useQuick(Number(selectedSlot.slice(5))-1));
+    else if (button.dataset.location !== undefined) { targetId = button.dataset.location || null; selection = null; render(); ship.setStorage(targetId === 'ship'); }
     else if (button.dataset.item) { selection = { item: button.dataset.item, from: button.dataset.from, index: Number(button.dataset.slot) }; render(); }
     else if (button.dataset.transfer && selection) {
       const source = store.container(selection.from), item = itemById(selection.item), amount = source.items[item.id];
@@ -97,7 +116,7 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
     } else if (button.dataset.addBox) feedback(store.addBox(button.dataset.addBox));
     else if (button.dataset.action === 'stow' && accessible('ship')) feedback({ message: store.stow() ? 'Survey samples stowed aboard.' : store.warning });
   });
-  nav.openInventory = () => openContainer('ship'); nav.openBackpack = openPack;
+  nav.openInventory = () => {view='cargo';return openContainer('ship');}; nav.openBackpack = openPack;
   function update() {
     const now = performance.now(); if (now - lastPaint < 200) return; lastPaint = now;
     launcher.querySelector('.backpack-count').textContent = `${store.mass.toFixed(2)} kg minerals`;
@@ -107,8 +126,8 @@ export function createInventoryUI(nav, ship, inventory, mining = null) {
   }
   const ticker = setInterval(update, 250); update();
   return {
-    get open() { return dialog.open; }, openPack, openContainer, update,
-    get state() { return { open: dialog.open, target: targetId, containers: ['pack', 'ship', ...Object.keys(store.state.remote)].map(id => store.container(id)), saved: store.saved, warning: store.warning }; },
+    get open() { return dialog.open; }, openPack, openEquipment, openContainer, update,
+    get state() { return { open: dialog.open, view, target: targetId, containers: ['pack', 'ship', ...Object.keys(store.state.remote)].map(id => store.container(id)), saved: store.saved, warning: store.warning }; },
     registerContainer(definition) { const { available, ...def } = definition; if (!store.registerContainer(def)) return false; availability.set(def.id, typeof available === 'function' ? available : () => false); return true; },
     dispose() { clearInterval(ticker); document.removeEventListener('keydown', keyHandler); dialog.remove(); launcher.remove(); },
   };

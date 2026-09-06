@@ -12,3 +12,5 @@
 .surveying-moon .mission-panel{display:none}@media(max-width:700px){.surveying-moon .telemetry{top:185px}}
 
 .surveying-moon .telemetry{background:#03101ccc;border:1px solid #b6efd133;border-radius:4px;padding:15px}
+
+.mining-heat[hidden]{display:none}

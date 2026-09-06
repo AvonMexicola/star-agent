@@ -156,3 +156,11 @@ system on Selene outcrops and mineable ring rocks. RT / T / mouse and the touch
 button retain their bindings. Controls and help offers Energy glow and Reduced
 particle motion; both also work through controller focus and A. See
 [mining particles](mining-particles.md) for the saved-cut and rendering contracts.
+
+## Equipment loadout
+
+The new [equipment system](equipment-loadout.md) adds two weapon slots, a tool,
+a backpack, two ammo stacks and four quick-item stacks to the shared inventory.
+K / Menu → Equipment manages gear; on-foot D-pad left cycles held slots and
+right returns to the cutter. The mining particle system and regional deposits
+remain connected to the same saved inventory.

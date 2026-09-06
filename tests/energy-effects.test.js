@@ -64,3 +64,27 @@ test('extraction event follows successful commit, rejects replay and quota failu
  rock.request([0,0,1.35],.02);storage.setItem=()=>{throw Error('quota');};
  const next=carve(result.field,[0,0,1.35],.02);rock.receive({id:worker.message.id,...next,...meshVolume(next.field),meshMs:1});assert.equal(events,1);rock.dispose();
 });
+
+test('laser is immediate, colored and range-limited; its beam retires on reset',()=>{
+ const fx=new EnergyEffects(new THREE.Scene());
+ fx.fire(v(),v(0,0,-1),{weapon:'laser',color:0xff2222,hit:{point:v(0,0,-10)}});
+ assert.equal(fx.state.weaponImpacts,1);assert.equal(fx.state.lances,1);assert.equal(fx.state.bolts,0);
+ assert.ok(fx.lances[0].tint.r>fx.lances[0].tint.g*3);
+ fx.fire(v(),v(0,0,-1),{weapon:'laser',range:5,hit:{point:v(0,0,-10)}});assert.equal(fx.state.weaponImpacts,1);
+ fx.reset();assert.equal(fx.state.lances,0);fx.dispose();
+});
+test('singularity retains flight time, produces one impact and obeys the bolt cap',()=>{
+ const fx=new EnergyEffects(new THREE.Scene());
+ fx.fire(v(),v(0,0,-1),{weapon:'void',hit:{point:v(0,0,-22)}});
+ fx.update(.1,{origin:v()});assert.equal(fx.state.weaponImpacts,0);assert.equal(fx.bolts[0].kind,'void');
+ fx.update(.1,{origin:v()});assert.equal(fx.state.weaponImpacts,1);
+ for(let i=0;i<100;i++)fx.fire(v(),v(0,0,-1),{weapon:'void'});
+ assert.equal(fx.state.bolts,32);fx.dispose();
+});
+test('slipstream geometry rebases locally, preserves log depth and fades completely',async()=>{
+ const {Slipstream}=await import('../src/effects/slipstream.js');
+ const field=new Slipstream(new THREE.Scene()),origin=v(25e9,2e9,-9e9);
+ field.update({origin,velocity:v(0,0,-1e6),intensity:1,time:2},.1);
+ assert.ok(field.mesh.visible);assert.ok(field.mesh.position.length()<100);assert.ok(field.material.vertexShader.includes('logdepthbuf_vertex'));assert.ok(field.material.fragmentShader.includes('logdepthbuf_fragment'));
+ field.update({origin,velocity:v(),intensity:0,time:3},.1);assert.equal(field.mesh.visible,false);assert.equal(field.material.uniforms.drive.value,0);field.dispose();
+});

@@ -719,3 +719,63 @@ that work, current regional deposits and recovery marker. Retain one director
 and bloom pass when combining branches, plus all regional extraction callbacks.
 This integration enables mining effects; it does not add weapon damage or flight
 bindings. No manager review acceptance, merge or public deployment is claimed.
+
+
+## Equipment loadout implementation — 2026-09-06
+
+New branch feat/equipment-loadout is stacked on expedition c3ef10c (PR24), isolated
+in /tmp/star-agent-loadout-work. The shared inventory dialog gains Equipment:
+two weapon slots, tool, backpack, two ammo stacks and four quick-item stacks.
+State lives in the SAME MiningStore save as cuts/cargo. Legacy saves receive one
+finite starter kit; swaps/stows/assignments, ammo and medical use save atomically.
+A backpack must be empty before external stow; without it carrying/gathering
+capacity is zero. Existing box mounts return when it is equipped again.
+
+K/Menu→Equipment opens it; View/I opens Storage. D-pad left cycles held slots,
+right retains mining shortcut, up selects a quick slot, down uses it on foot/EVA.
+Flight bindings remain unchanged. Weapon1/2/tool map to keys1/2/3; quick use4–7.
+Ammo authorization runs in Equipment's fire gate before shot effects, one matching
+charge per pulse; failed saves cancel the shot. No magazine/reload timing yet.
+Bandages heal15/stop bleeding, stims heal40, capped100; full-health items aren't
+wasted, and neither revives. There is no ambient/combat injury source yet; injure()
+is an explicit hook. These effects were verified against an injured-save fixture.
+Late asynchronous models cannot reattach after switching, and tool heat is kept
+across slot changes. Shared authored models/rig offsets are not changed.
+
+All30 numerical files pass. Four final production browser cases pass (4.1min):
+complete controller gear+Selene mining+both weapons+backpack, saved medical/mobile
+UI, container transfers and physical space mining. Prior focused mining-input
+regression also passes. Initial duplicate-Backpack-label failure and interrupted
+mixed run are documented; the final dedicated-port suite completes normally.
+Evidence: docs/qa/equipment-loadout/. Contract: docs/equipment-loadout.md.
+Preview http://127.0.0.1:5271/ serves index-BPCnBCsf.js; port5213 remains the prior
+expedition build and has a separate browser save. No physical Xbox/FPS claim.
+
+Fable integration: retain the one particle director and regional callbacks from
+PR24, newer authored gear/rig/ship work, and PR27's independent colored weapons
+and flight integration. Keep the public Equipment authorizeFire hook, inventory
+loadout transactions and contextual D-pad routes; don't restore the old unlimited
+free weapon selector over them. No merge or public deployment is claimed.
+
+
+## Starter laser rifle and current particle effects — 2026-09-06
+
+Cees requested a starter rifle, mining tool and ammo, then the particle agent’s
+latest laser effects. The finite default already grants rifle-laser, mining tool
+and 60 compatible charges (plus sidearm/pack/medical kit). The equipment branch
+now names them Laser rifle / Laser rifle charges and actually selects the solar
+laser profile: immediate orange beam/core, muzzle motes and contact bursts.
+Sidearm uses crimson pulses. Reuses PR27 d9f4d7c EnergyEffects, weapon profiles and
+slipstream dependency; preserves the single director, mining collection callbacks,
+saved IDs and atomic ammo authorization. Small held recoil respects Reduced motion.
+Flight adapter remains PR27’s integration responsibility; no new flight input.
+
+All 30 numerical files pass. Two final production browser checks pass (5.2 min):
+full controller equipment/landing/mining/weapons/backpack and mouse/touch mining
+with menu/focus/disconnect suppression. Six observed rifle shots consume exactly
+six charges and create six impacts; rock revision is unchanged by weapons.
+Fresh default, active laser profile/beam, menu retirement and held RT suppression
+are asserted. No page/console errors. Inspected rifle/sidearm/mining captures and
+updated JSON are under docs/qa/equipment-loadout/. Chromium151, Vulkan SwiftShader;
+no physical Xbox or hardware FPS claim. Preview5271: index-B3rNxrVo.js.
+Preserve shared newer authored gear assets when integrating PR32 with PR27.

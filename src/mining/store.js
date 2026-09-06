@@ -1,6 +1,7 @@
 import { ROCK_ID, ROCK_VERSION, SIDE, createDensity, encodeDensity, decodeDensity } from './volume.js';
 import { ShipInventory, ITEMS } from '../ship-inventory.js';
-import { RESOURCE_IDS, resourceItems, resourceAmounts, emptyItems, fitsBox, planTransfer, validItems, MAX_BOXES } from '../inventory/containers.js';
+import { defaultLoadout, validLoadout } from '../inventory/loadout.js';
+import { CATALOG, RESOURCE_IDS, resourceItems, resourceAmounts, emptyItems, fitsBox, planTransfer, validItems, MAX_BOXES } from '../inventory/containers.js';
 export const MINING_KEY = 'star-agent.selene-mining.v1';
 export const POUCH_CAPACITY = 12;
 export const MAX_SAVED_ROCKS = 8;
@@ -16,7 +17,7 @@ export class MiningStore {
     const oldSupplies = new ShipInventory(storage).containers;
     this.state = {
       id: ROCK_ID, version: ROCK_VERSION, revision: 0, field: createDensity(), pack: [0, 0, 0], ship: [0, 0, 0],
-      boxes: { pack: 1, ship: 4, station: 2 }, supplies: oldSupplies,
+      boxes: { pack: 1, ship: 4, station: 2 }, supplies: oldSupplies, loadout: defaultLoadout(),
       remote: { station: { name: 'Aeon orbital locker', kind: 'station', items: emptyItems() } }, rocks: {},
     };
     const initialState = this.state;
@@ -35,7 +36,7 @@ export class MiningStore {
           if (typeof rawRockField === 'string') this.encodedFields.set(rock.field, rawRockField);
           if (!safeId(id) || !Number.isSafeInteger(rock.revision) || rock.revision < 0 || !validField(rock.field)) throw Error('Invalid rock save');
         }
-        if (!this.validContainers(this.state)) throw Error('Invalid containers');
+        if (!validLoadout(this.state.loadout) || !this.validContainers(this.state)) throw Error('Invalid containers');
       }
     } catch {
       this.state = initialState;
@@ -43,7 +44,7 @@ export class MiningStore {
     }
   }
   get mass() { return this.state.pack.reduce((a, b) => a + b, 0); }
-  get capacity() { return this.state.boxes.pack * POUCH_CAPACITY; }
+  get capacity() { return this.state.loadout.slots.backpack ? this.state.boxes.pack * POUCH_CAPACITY : 0; }
   get free() { return Math.max(0, this.capacity - this.mass); }
   container(id, state = this.state) {
     if (!safeId(id)) return null;
@@ -52,11 +53,12 @@ export class MiningStore {
     return remote ? { id, ...remote, boxes: state.boxes[id], items: { ...emptyItems(), ...remote.items } } : null;
   }
   limits(id, state = this.state) {
+    if(id==='pack'&&!state.loadout.slots.backpack)return {resources:0,supplies:0};
     return { resources: state.boxes[id] * 12, supplies: id === 'pack' ? 20 : id === 'ship' ? 120 : state.boxes[id] * 30 };
   }
   validContainers(state) {
     if (!state.boxes || !state.supplies || !state.remote || Array.isArray(state.remote) || typeof state.remote !== 'object'
-      || Object.keys(state.remote).length > 16 || !['pack', 'ship'].every(id => validItems(state.supplies[id]) && ITEMS.every(item => Number.isSafeInteger(state.supplies[id][item.id])) && Object.keys(state.supplies[id]).every(key => ITEMS.some(item => item.id === key)))) return false;
+      || Object.keys(state.remote).length > 16 || !['pack', 'ship'].every(id => validItems(state.supplies[id]) && ITEMS.every(item => Number.isSafeInteger(state.supplies[id][item.id])) && Object.keys(state.supplies[id]).every(key => CATALOG.some(item => item.id === key && item.unit === 'item')))) return false;
     return ['pack', 'ship', ...Object.keys(state.remote)].every(id => {
       if (!safeId(id)) return false;
       const c = this.container(id, state);
@@ -113,7 +115,7 @@ export class MiningStore {
     return this.write(next, id === ROCK_ID ? result.encodedField : undefined);
   }
   withItems(state, id, items) {
-    if (id === 'pack' || id === 'ship') return { ...state, [id]: resourceAmounts(items), supplies: { ...state.supplies, [id]: Object.fromEntries(ITEMS.map(item => [item.id, items[item.id] ?? 0])) } };
+    if (id === 'pack' || id === 'ship') return { ...state, [id]: resourceAmounts(items), supplies: { ...state.supplies, [id]: Object.fromEntries(CATALOG.filter(item=>item.unit==='item').map(item => [item.id, items[item.id] ?? 0])) } };
     return { ...state, remote: { ...state.remote, [id]: { ...state.remote[id], items } } };
   }
   transfer(id, from, to, quantity) {
@@ -137,6 +139,7 @@ export class MiningStore {
     return this.write(next);
   }
   addBox(id) {
+    if(id==='pack'&&!this.state.loadout.slots.backpack)return {ok:false,message:'Equip a backpack first.'};
     const c = this.container(id), max = id === 'pack' ? 2 : MAX_BOXES;
     if (!c || c.boxes >= max) return { ok: false, message: `All ${max} box mounts are occupied.` };
     const ok = this.write({ ...this.state, boxes: { ...this.state.boxes, [id]: c.boxes + 1 } });

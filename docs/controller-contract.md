@@ -22,7 +22,9 @@ mapping, not operating-system Bluetooth status.
 | Flight | B / right-stick click | Brake / flight assist |
 | Walking | A / X | Jump / interact, including hatch and cargo |
 | Walking / EVA | D-pad right | Equip or holster mining tool |
-| Walking / EVA | RT | Fire equipped mining tool |
+| Walking / EVA | RT | Fire equipped weapon or mining tool |
+| Walking / EVA | D-pad left | Cycle weapon 1, weapon 2 and tool |
+| Walking / EVA | D-pad up / down | Select next quick slot / use selected item |
 | EVA | A / B | Rise / descend |
 | EVA | LT | Brake |
 | EVA | LB / RB | Roll |
@@ -98,3 +100,25 @@ Run `npm run test:browser -- -c scripts/controller-gameplay.config.js` after mai
 mining tool and navigation integration. Do not count this journey as passed until
 its actual run completes. No physical-controller validation was available during
 this implementation.
+
+## Equipment loadout
+
+Menu → Equipment opens the shared inventory dialog on its Equipment tab. View
+opens Storage; choose the Equipment tab with D-pad and A. Slot, draw, stow,
+assignment and medical-use buttons all use the native dialog focus router.
+RT spends a compatible ammo-slot charge through the Equipment fire gate before
+a weapon pulse is emitted; the mining tool uses its heat budget instead.
+
+In walking/EVA, D-pad left cycles held slots; right selects or holsters the tool.
+Up selects the next quick slot and down uses it. These are edge actions, not
+held repeat actions. Flight still uses up/down for speed and RT/LT for translation.
+Slot changes explicitly suspend gameplay until controls return to neutral.
+Keyboard 1/2/3 draws the held slots, 4–7 uses a quick item and K opens Equipment.
+On-screen shortcut buttons and inventory actions retain pointer/touch support.
+
+`loadout.spec.js` covers a complete controller-only equipment and Selene journey,
+including slot swaps, ammo reassignment, tool mining, both weapons, quick-item
+shortcuts, a held RT across inventory closure and return to the backpack.
+Medical success uses an injured-save fixture in `loadout-ui.spec.js`; no natural
+injury source is claimed. Shared interruption tests continue to cover focus and
+device reconnect. Physical Xbox testing remains separate from injected inputs.
