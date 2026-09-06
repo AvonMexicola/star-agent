@@ -505,3 +505,40 @@ The proceedings retain the controller timing failure, interrupted first tour,
 exterior performance regression and their verified corrections. Raw reports stay
 in `/tmp`; no independent visual score, hardware performance approval or final
 merge is claimed. Opus review/explicit Cees exception remains the final decision.
+
+## READY FOR REVIEW — ship main power and moving cabins (2026-09-06)
+
+Cees requested power on/off and leaving a powered ship's pilot seat. Implemented
+in isolated /tmp/star-agent-ship-power, feat/ship-power-cabin, PR #25 stacked on
+PR #20's candidate 4da1a5d. Runtime e82c3e5 plus cabin guidance b891272; controls and
+browser tests follow on the same branch. No shared-root runtime files changed.
+
+READY FOR REVIEW: src/navigation.js, src/main.js, src/gamepad.js,
+src/ship-power-ui.js, src/ship-mfd.js, src/audio.js, index.html,
+src/player-interface.css, tests/ship-power*.test.js, tests/gamepad.test.js,
+tests/navigation.test.js, scripts/ship-power*.js, docs/ship-power.md,
+docs/qa/ship-power.md and docs/qa/ship-power/.
+
+P switches main power from the pilot seat; F stands during ordinary flight.
+The powered assisted hull holds world course/speed independently of passenger
+walking/look controls. Inertial or unpowered hulls retain gravity, drag and spin.
+Returning physically to the chair transfers the current hull motion back to
+piloting. Nomad hatch/Atlas belly elevator are secured in flight; powered internal
+Atlas lifts carry the walker while the hull moves. Existing shared terrain,
+moon and station sweeps also handle unseated touchdown. MFD, audio, HUD and the
+keyboard/controller/touch menu report the same power state. Menus still pause.
+
+Final unit run: 162/162 pass; production build passes (existing chunk-size advisory).
+New production browser run: 3/3 pass, Chromium 151/ANGLE Vulkan SwiftShader,
+1440x900 plus 390x844, no console errors/warnings. Captures are committed in
+docs/qa/ship-power/. B-close with A/stick held does not leak flight controls or
+change power; controller rearming requires neutral input. Regression outcomes
+and retained fixture/timing failures are documented in the QA reports.
+
+Local production demo http://localhost:5244/__atlas_demo selects Atlas on its
+separate origin. W then F was directly verified to retain 758.686m/s while the
+pilot walks; old 5240 remains available. This is a local review build, not main
+or Vercel. Main power does not simulate batteries or distribution, and moving
+EVA is outside this slice. Do not merge PR #24's stopped-ship EVA path over this
+independent hull frame or lose active-ship layout support when reconciling lanes.
+Opus rubric, complete quality-budget acceptance and merge/deploy remain pending.
