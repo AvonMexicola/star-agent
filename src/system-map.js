@@ -34,7 +34,6 @@ export function createSystemMap(nav, onTarget = () => {}) {
     </div>
     <footer class="system-map-footer"><span><i></i> FLIGHT PAUSED WHILE MAP IS OPEN</span><span>SELECT A WORLD · <kbd>ESC</kbd> RETURN TO FLIGHT</span></footer>`;
   document.body.append(dialog);
-  const button = document.querySelector('#map-button');
   let wasEnabled = true, timer, returnFocus;
   const el = id => dialog.querySelector(`#${id}`);
   function refresh() {
@@ -77,7 +76,6 @@ export function createSystemMap(nav, onTarget = () => {}) {
   el('map-engage').addEventListener('click', () => {
     close(); nav.beginTravel();
   });
-  button?.addEventListener('click', () => dialog.open ? close() : open());
   document.addEventListener('keydown', event => {
     if (event.code !== 'KeyM' || event.repeat || event.ctrlKey || event.metaKey || event.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName)) return;
     event.preventDefault(); dialog.open ? close() : open();

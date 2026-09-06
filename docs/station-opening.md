@@ -68,3 +68,15 @@ The starter pilot rests with both arms down and subtle idle movement. The origin
 standing body and planted feet are retained; only the idle's arm rotations changed.
 
 ![Pilot with relaxed arms](images/pilot-relaxed-idle.png)
+
+Taking control with W or the left stick dismisses the launcher header, promotional
+panel and footer. They stay dismissed when the mouse is released, when menus are
+closed and after quick transit. Flight telemetry, interaction guidance and the
+cockpit MFDs remain available. Tab still toggles the whole HUD for screenshots.
+
+Press H or controller Menu/Options for settings. **Quick transit** is a collapsed
+dropdown there: selecting a location uses an optional teleport; Shift + click sets
+a course for regular flight. Choosing either closes the menu. M opens the system
+map directly. Sound and Hide HUD controls also live in the options panel.
+
+![Options with Quick transit expanded](images/player-options-menu.png)

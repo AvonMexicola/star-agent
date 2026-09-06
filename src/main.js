@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import './style.css';
+import './player-interface.css';
 import { OpeningSequence, openingStationOptions } from './opening-sequence.js';
 import { createSystemMap } from './system-map.js';
 import { TravelEffects } from './travel-effects.js';
@@ -36,6 +37,12 @@ try {
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,.08,SUN_DISTANCE*5);
   const atmosphere=new Atmosphere(renderer),nav=new Navigation(canvas,notify),planet=new Planet(scene),vegetation=new Vegetation(scene),audio=new FlightAudio();
+  function enterPlayerInterface(){
+    if(document.body.classList.contains('player-active'))return;
+    document.body.classList.add('player-active');
+    for(const element of document.querySelectorAll('.topbar,.mission-panel,.statusbar'))element.inert=true;
+  }
+  nav.onTakeControl=enterPlayerInterface;
   const station=new Station(scene,introEnabled?openingStationOptions():{});nav.station=station;
   const stationButton=$('station-destination');
   station.readyPromise.then(()=>{stationButton.disabled=false;stationButton.querySelector('small').textContent='HANGAR · DOCK & EXPLORE';}).catch(()=>{stationButton.querySelector('small').textContent='STATION UNAVAILABLE';notify('Station unavailable. Planet flight is still available.');});
@@ -85,7 +92,7 @@ try {
   let renderScale=1, automaticScale=true, resizePending=false;
   function resize(){const width=Math.floor(innerWidth*renderScale),height=Math.floor(innerHeight*renderScale);renderer.setSize(width,height,false);canvas.style.width='100%';canvas.style.height='100%';camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();const size=renderer.getDrawingBufferSize(new THREE.Vector2());atmosphere.resize(size.x,size.y);}
   window.addEventListener('resize',()=>resizePending=true);resize();
-  function capture(){if(transiting)return;nav.capture();}
+  function capture(){if(transiting||!nav.enabled||opening?.active)return;enterPlayerInterface();nav.capture();}
   canvas.addEventListener('click',capture);$('begin-button').addEventListener('click',capture);
   // Drag fallback also works when browser pointer-lock is unavailable.
   let dragging=false;
@@ -94,14 +101,19 @@ try {
   canvas.addEventListener('pointermove',e=>{if(dragging&&!nav.locked)nav.look(-e.movementX*.002,-e.movementY*.002);});
   const help=$('help-dialog');
   function openHelp(){if(opening?.active||inventoryUI.open||systemMap.open)return;if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.enabled=false;help.showModal();}
-  function closeHelp(){help.close();nav.enabled=true;}
-  $('help-button').addEventListener('click',openHelp);$('close-help').addEventListener('click',closeHelp);help.addEventListener('close',()=>nav.enabled=true);
+  function closeHelp(){help.close();nav.enabled=!transiting;}
+  $('help-button').addEventListener('click',openHelp);$('close-help').addEventListener('click',closeHelp);help.addEventListener('close',()=>{
+    $('quick-transit-menu').open=false;
+    nav.enabled=!transiting&&!document.querySelector('dialog[open]');
+    if(nav.enabled)canvas.focus({preventScroll:true});
+  });
+  $('map-button').addEventListener('click',()=>{closeHelp();systemMap.openMap();});
   $('help-fly').addEventListener('click',()=>{closeHelp();capture();});
   $('sound-button').addEventListener('click',async()=>{const enabled=await audio.toggle();$('sound-button').textContent=enabled?'SOUND ON':'SOUND OFF';$('sound-button').setAttribute('aria-pressed',String(enabled));});
   nav.onControllerMenu=()=>{if(transiting||document.body.classList.contains('fatal'))return;if(systemMap.open)systemMap.close();else if(help.open)closeHelp();else if(nav.enabled&&!document.querySelector('dialog[open]'))openHelp();};
   nav.onControllerScroll=amount=>{if(help.open)help.scrollTop+=amount;};
   nav.onControllerHud=()=>photo();
-  const photo=()=>{hidden=!hidden;document.body.classList.toggle('photo-mode',hidden);};$('photo-button').addEventListener('click',photo);
+  const photo=()=>{hidden=!hidden;document.body.classList.toggle('photo-mode',hidden);};$('photo-button').addEventListener('click',()=>{closeHelp();photo();});
   document.addEventListener('keydown',e=>{if(opening?.active||e.repeat||inventoryUI.open||systemMap.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='Tab'&&!help.open){e.preventDefault();photo();}if(e.code==='KeyO'&&!help.open)transit('orbit');});
   async function transit(name){
     if(opening?.active||inventoryUI.open||systemMap.open||transiting||name==='station'&&!station.ready)return;opening?.leave();transiting=true;nav.enabled=false;nav.keys.clear();nav.velocity.set(0,0,0);
@@ -119,7 +131,10 @@ try {
     $('transit').classList.remove('active');transiting=false;nav.enabled=true;
     notify(name==='moon'?'Selene descent. L lands; F leaves the chair. Open the rear hatch and walk down the ramp to explore.':name==='station'?'Station approach. W enters the bay; X brakes. Over the central pad, L docks.':name==='orbit'?'High orbit. Click to fly. W approaches Aeon; Space moves away.':'Arrival complete. Click to fly · L lands · F leaves the pilot chair.');
   }
-  for(const button of document.querySelectorAll('[data-destination]'))button.addEventListener('click',event=>event.shiftKey?setCourse(button.dataset.destination):transit(button.dataset.destination));
+  for(const button of document.querySelectorAll('[data-destination]'))button.addEventListener('click',event=>{
+    closeHelp();
+    if(event.shiftKey)setCourse(button.dataset.destination);else transit(button.dataset.destination);
+  });
   function updateHud(time){
     const controller=nav.controllerActive;
     document.body.classList.toggle('piloting',nav.locked||controller);

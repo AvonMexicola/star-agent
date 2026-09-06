@@ -1,0 +1,18 @@
+/* The launcher stays dismissed after taking control, independent of pointer lock. */
+body.player-active .topbar,body.player-active .mission-panel,body.player-active .statusbar{display:none}
+body.player-active .flight-hints{display:flex;bottom:24px;gap:14px}
+body.player-active .flight-hints[hidden]{display:none}
+#quick-transit-menu{margin:20px 0;border:1px solid var(--line);border-radius:4px;background:#07121d}
+#quick-transit-menu summary{padding:14px 16px;cursor:pointer;font:12px var(--mono);color:var(--mint)}
+#quick-transit-menu summary:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+#quick-transit-menu>p{margin:0;padding:0 16px 14px;font-size:11px}
+#quick-transit-menu .destinations{display:grid;grid-template-columns:1fr;gap:4px;padding:0 10px 10px}
+#quick-transit-menu .destination{padding:10px 12px;flex-direction:row;text-align:left;gap:12px;background:#10212b}
+#quick-transit-menu .destination strong{font-size:12px}
+#quick-transit-menu .destination small{display:block;font-size:8px;letter-spacing:.5px}
+#quick-transit-menu .destination-icon{font-size:22px}
+#quick-transit-menu .destination-number{display:none}
+.menu-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.menu-actions button{padding:10px 12px;font:10px var(--mono);border-radius:3px}
+.menu-actions kbd{margin-left:6px}
+@media(max-width:700px){body.player-active .flight-hints{bottom:16px;gap:10px;font-size:7px}.menu-actions button{display:block!important}}

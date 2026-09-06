@@ -27,6 +27,7 @@ export class Navigation {
       if(!this.enabled||document.querySelector('dialog[open]'))return;
       if(this.openingActive){this.onOpeningKey?.(e);return;}
       if(['Space','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
+      if(['KeyW','KeyA','KeyS','KeyD','Space','KeyC'].includes(e.code))this.onTakeControl?.();
       this.controllerActive=false;this.keys.add(e.code);if(e.repeat)return;
       if(e.code==='KeyJ'){this.travel?this.cancelTravel():this.beginTravel();return;}
       if(this.travel){if(e.code==='KeyX')this.cancelTravel();return;}
@@ -251,6 +252,7 @@ export class Navigation {
     if(pad.pressed.has(9))this.onControllerMenu?.();
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
     if(!this.enabled||document.querySelector('dialog[open]'))return;
+    if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
     if(this.travel){if(pad.brake)this.cancelTravel();this.updateTravel(dt);return;}
     if(pad.pressed.has(8))this.onControllerHud?.();
     if(pad.pressed.has(11))this.toggleFlightAssist();

@@ -117,3 +117,28 @@ on reload. Manager can carry the male GLB into the external-camera lane too.
 Final production build and complete opening/physical boarding/launch browser case
 pass with the relaxed pilot. That case also checks the actual playing idle's hand
 heights five seconds into the reveal. No shader/page errors were observed.
+
+## Player interface cleanup
+
+Cees requests the location buttons moved into a dropdown and launcher chrome
+removed on W/left-stick handover. The seven existing destination controls now
+live inside native details#quick-transit-menu in the H/controller Menu dialog.
+They start collapsed, close after selecting quick transit or Shift-click course,
+and remain available explicitly through the menu. Sound, map and photo actions
+also live there. M retains the direct map binding.
+
+main.js installs an idempotent onTakeControl hook; navigation invokes it for valid
+movement and opening invokes it at handover. The player-active body state hides
+and makes inert the header, mission and footer. It is independent of pointer
+lock, so Escape/releasing the mouse cannot restore the launcher. Player HUD,
+interaction prompts, route guidance and cockpit MFDs remain. Help close respects
+another open dialog/transit so a help→map transition remains paused. Map button
+wiring now lives in main.js; system-map.js retains keyboard and map ownership.
+
+All three dedicated production player-interface cases pass: keyboard handover,
+controller handover/Menu, orbital opt-out, hidden/inert chrome, dropdown course
+without teleport, quick transit, map pause/resume and mobile dropdown bounds.
+124 unit cases and build pass. Curated menu screenshot: docs/images/player-options-menu.png.
+Browser: Chromium 151 / ANGLE Vulkan SwiftShader, 1440x900 desktop and 390x844
+mobile; scene scale .55 in the dedicated UI tour. Existing journey tests were
+adapted to enter the dropdown instead of targeting removed onscreen rows.

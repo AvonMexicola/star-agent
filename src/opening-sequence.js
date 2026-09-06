@@ -78,6 +78,7 @@ export class OpeningSequence {
   }
   requestControl(code,fromGesture=false){
     if(this.phase!=='cinematic')return;
+    this.nav.onTakeControl?.();
     this.bufferedKey=code;this.phase='blend';this.blendElapsed=0;
     this.cameraRig.blendTo('first',OPENING.blendSeconds);
     if(fromGesture)this.onGesture();
