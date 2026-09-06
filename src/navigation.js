@@ -14,7 +14,7 @@ export class Navigation {
     this.gamepad=new GamepadInput();this.controllerActive=false;this.focused=true;
     this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
-    this.station=null;this.dockedAtStation=false;this.stationLift=false;
+    this.surfaceObstacles=null;this.toolTrigger=0;this.station=null;this.dockedAtStation=false;this.stationLift=false;
     this.flightAssist=true;this.angularVelocity=new THREE.Vector3();
     this.orbit();
     document.addEventListener('pointerlockchange',()=>{this.locked=document.pointerLockElement===canvas;document.body.classList.toggle('piloting',this.locked);if(!this.locked)this.keys.clear();});
@@ -174,6 +174,7 @@ export class Navigation {
   }
   update(dt){
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]')});
+    this.toolTrigger=pad.mine||0;
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;
     if(pad.pressed.has(9))this.onControllerMenu?.();
@@ -219,7 +220,7 @@ export class Navigation {
       if(floor!==null||this.dockedAtStation||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
       this.insideShip=floor!==null&&local.z<=4;
-      if((this.keys.has('Space')||pad.jump)&&this.jumpHeight===0&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=.001;}
+      if((this.keys.has('Space')||pad.jump)&&(this.jumpHeight===0||this.surfaceObstacles?.grounded)&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=Math.max(.001,this.jumpHeight);}
       this.jumpVelocity-=(this.dockedAtStation?9.81:this.body.gravity)*dt;this.jumpHeight=Math.max(0,this.jumpHeight+this.jumpVelocity*dt);if(this.jumpHeight===0)this.jumpVelocity=0;
       if(floor!==null){local.y=floor+SHIP_LAYOUT.eyeHeight+this.jumpHeight;this.position.copy(this.fromShipLocal(local));}
       else if(this.dockedAtStation){
@@ -230,6 +231,11 @@ export class Navigation {
       if(this.dockedAtStation){
         const result=this.station.constrainStep(previous,this.position,this.orientation,true);
         this.position.copy(result.point);
+      }
+      if(floor===null&&!this.dockedAtStation&&this.surfaceObstacles){
+        const result=this.surfaceObstacles.constrainWalker(previous,this.position);
+        this.position.copy(result.point);
+        if(result.hit){this.jumpHeight=Math.max(0,bodyAltitude(this.position,this.body)-SHIP_LAYOUT.eyeHeight);if(result.grounded&&this.jumpVelocity<0)this.jumpVelocity=0;}
       }
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
@@ -265,6 +271,8 @@ export class Navigation {
       const steps=clamp(Math.ceil(this.speed*dt/Math.max(10,altitude*.2)),1,96);
       for(let i=0;i<steps;i++){
         const previous=this.position.clone(),proposed=previous.clone().addScaledVector(this.velocity,dt/steps);
+        const rockHit=this.surfaceObstacles?.constrainFlight(previous,proposed);
+        if(rockHit?.hit){this.position.copy(rockHit.point);this.velocity.set(0,0,0);this.autoland=false;break;}
         const lunar=constrainMoonStep(previous,proposed);
         if(lunar.hit){
           this.position.copy(lunar.point);this.touchDown();break;

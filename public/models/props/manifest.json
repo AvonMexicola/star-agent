@@ -317,19 +317,21 @@
     "name": "mining-laser-tool",
     "file": "mining-laser-tool.glb",
     "category": "gear",
-    "tris": 9199,
-    "textures": 3,
-    "texture_size": 1024,
-    "texture_format": "webp",
-    "height_m": 0.627,
+    "tris": 7312,
+    "textures": 0,
+    "texture_size": 0,
+    "texture_format": "none",
+    "height_m": 0.404,
     "footprint_m": [
-      0.8,
-      0.206
+      0.812,
+      0.197
     ],
-    "credits": 24,
-    "concept": "raw/mining-laser-tool-concept.png",
-    "file_mb": 0.59,
-    "notes": "Two-handed mining laser, finned emitter head, mint accents; 0.80 m long, origin near the grip."
+    "credits": 0,
+    "concept": null,
+    "file_mb": 0.241,
+    "notes": "Procedural two-handed mining laser (blender/build_gear.py): finned emitter head with mint focusing lens, coolant tank with mint/amber heat gauge, battery block, cables, forward grip. 0.80 m long, 7 materials, no textures.",
+    "source": "blender/build_gear.py",
+    "origin": "rear pistol-grip palm point; emitter axis -X at y=0.14; muzzle (-0.60, 0.14, 0); leftGrip (-0.30, 0.01, 0)"
   },
   {
     "name": "rifle-laser",

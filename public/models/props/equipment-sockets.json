@@ -1,0 +1,149 @@
+{
+  "$schema": "src/equipment.js — resolveSocket() reads this file",
+  "note": "Where each item sits on each rig. Calibrated on /dev/equipment.html in the aim-rifle pose; nudge with the arrow keys / Q E R F Z X there and paste the printed block back in here.",
+  "units": {
+    "position": "metres, in the socket bone's own frame (the item hangs off a group scaled by 1/boneWorldScale, so 0.01 always means 1 cm on every rig)",
+    "rotation": "degrees, XYZ Euler, applied after the position"
+  },
+  "conventions": {
+    "barrel": "every weapon and the mining tool point out of -X in their own model space; the muzzle points are in src/equipment.js",
+    "hands": "the mannequin faces -Z and carries its right hand at +X; the two Meshy pilots face +Z and carry their right hand at -X, and their armature is scaled 0.01",
+    "bones": "logical socket names map to real bone names per rig; the Meshy rigs call the chest bone 'Spine' where the mannequin calls it 'Spine2'",
+    "back": "'behind the character' is +Z in the mannequin's chest bone and -Z in the Meshy pilots' — that is why the holster and backpack offsets flip sign between them",
+    "pose": "the hand offsets were fitted against the aim-rifle pose (mannequin: any frame, it is static; player-male/female: phase 0.35 of the clip, where both arms are up)"
+  },
+  "rigs": {
+    "mannequin": {
+      "bones": {
+        "RightHand": "RightHand",
+        "LeftHand": "LeftHand",
+        "Spine2": "Spine2",
+        "Head": "Head"
+      },
+      "items": {
+        "rifle-laser": {
+          "position": [0, 0.07, 0],
+          "rotation": [-175.1, -51.68, 132.73]
+        },
+        "sidearm-pistol": {
+          "position": [0, 0.07, 0],
+          "rotation": [-175.01, -51.63, 132.99]
+        },
+        "mining-laser-tool": {
+          "position": [0, 0.07, 0],
+          "rotation": [-175.06, -51.66, 132.84]
+        },
+        "backpack-life-support": {
+          "position": [0.0243, 0.0063, 0.1392],
+          "rotation": [5.66, 10.01, -0.02]
+        },
+        "helmet-standalone": {
+          "position": [0.0168, -0.0824, -0.0126],
+          "rotation": [10.45, -8.61, 11.56]
+        }
+      },
+      "holster": {
+        "rifle-laser": {
+          "position": [-0.052, -0.1755, 0.2158],
+          "rotation": [110.35, 55.16, -17.72]
+        },
+        "mining-laser-tool": {
+          "position": [-0.1149, -0.2532, 0.1376],
+          "rotation": [110.35, 55.16, -17.72]
+        },
+        "sidearm-pistol": {
+          "position": [0.1664, -0.1831, -0.038],
+          "rotation": [117.01, 64.13, -23.48]
+        }
+      }
+    },
+    "player-male": {
+      "bones": {
+        "RightHand": "RightHand",
+        "LeftHand": "LeftHand",
+        "Spine2": "Spine",
+        "Head": "Head"
+      },
+      "items": {
+        "rifle-laser": {
+          "position": [-0.0898, 0.2318, 0.0002],
+          "rotation": [-114.17, 64, 27.22]
+        },
+        "sidearm-pistol": {
+          "position": [-0.0349, 0.1259, 0.0388],
+          "rotation": [-114.17, 64, 27.22]
+        },
+        "mining-laser-tool": {
+          "position": [-0.1048, 0.3132, 0.1063],
+          "rotation": [-114.17, 64, 27.22]
+        },
+        "backpack-life-support": {
+          "position": [-0.0289, 0.0354, -0.1338],
+          "rotation": [-173.46, -12, -179.46]
+        },
+        "helmet-standalone": {
+          "position": [0.0051, -0.0555, 0.0642],
+          "rotation": [129.93, -14.41, 176.48]
+        }
+      },
+      "holster": {
+        "rifle-laser": {
+          "position": [0.0424, -0.1266, -0.2495],
+          "rotation": [78.77, -55.13, 158.67]
+        },
+        "mining-laser-tool": {
+          "position": [0.1069, -0.2193, -0.1916],
+          "rotation": [78.77, -55.13, 158.67]
+        },
+        "sidearm-pistol": {
+          "position": [-0.1674, -0.1861, 0.0047],
+          "rotation": [70.89, -63.84, 151.85]
+        }
+      }
+    },
+    "player-female": {
+      "bones": {
+        "RightHand": "RightHand",
+        "LeftHand": "LeftHand",
+        "Spine2": "Spine",
+        "Head": "Head"
+      },
+      "items": {
+        "rifle-laser": {
+          "position": [-0.1064, 0.2108, -0.0692],
+          "rotation": [-103.84, 61, -1.04]
+        },
+        "sidearm-pistol": {
+          "position": [-0.0512, 0.1263, 0.0052],
+          "rotation": [-103.84, 61, -1.04]
+        },
+        "mining-laser-tool": {
+          "position": [-0.1509, 0.3123, 0.0071],
+          "rotation": [-103.84, 61, -1.04]
+        },
+        "backpack-life-support": {
+          "position": [-0.0299, 0.0462, -0.1303],
+          "rotation": [-168.77, -12.52, -178.46]
+        },
+        "helmet-standalone": {
+          "position": [0.0052, -0.0485, 0.0696],
+          "rotation": [123.93, -14.63, 176.37]
+        }
+      },
+      "holster": {
+        "rifle-laser": {
+          "position": [0.0377, -0.1074, -0.259],
+          "rotation": [82.08, -55.89, 157.25]
+        },
+        "mining-laser-tool": {
+          "position": [0.1013, -0.2053, -0.2093],
+          "rotation": [82.08, -55.89, 157.25]
+        },
+        "sidearm-pistol": {
+          "position": [-0.1702, -0.1834, -0.0077],
+          "rotation": [73.5, -64.47, 149.79]
+        }
+      }
+    }
+  }
+}

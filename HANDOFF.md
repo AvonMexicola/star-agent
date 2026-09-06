@@ -518,3 +518,38 @@ are committed; pipeline memory links the research. No mining engine, runtime
 benchmark, asset conversion, downloaded assets or shared runtime edits in this lane.
 Fable: review alongside the Phase 6 plan; <4 ms remeshing and indefinitely tiny
 brush logs are not established results. Preserve the existing equipment owner.
+
+
+## First Selene mining implementation — Astra (2026-09-06)
+
+Cees authorized the first implementation. Isolated /tmp/star-agent-mining-work,
+feat/selene-mining based on research #18 / lunar #15. Own NEW src/mining/ modules,
+mining tests/studio, and narrow main/navigation/gamepad integration plus ore storage.
+Reuse equipment.js + mining laser asset verbatim from manager commit 9930e82;
+no shared equipment edits, no duplicate weapon system. First slice: one rock by
+Crescent Rim, worker meshing, saved cut/material state, resource inventory and
+collision, keyboard/controller/touch mining. Full mountain excavation stays later.
+
+
+## IMPLEMENTATION READY — first Selene mining rock (Astra, 2026-09-06)
+
+User-authorized first slice is on feat/selene-mining, isolated at
+/tmp/star-agent-mining-work, stacked on research #18 and lunar #15. Preview:
+http://127.0.0.1:5203/ (star-agent-mining.service), verified asset index-DpEVt4cu.js.
+Crescent Rim now has one mineable basalt/copper/ice rock. Existing Equipment laser
+handles keyboard/mouse/Xbox RT/touch; cuts, collision and survey samples publish
+together after one save. The cargo dialog stows the pouch into a sample locker.
+
+116 numerical cases and all 3 browser journeys pass: mining/save/reload/controller/
+touch/cargo, physical lunar reboarding/launch, and lunar visual regression.
+Guide: docs/selene-mining.md; screenshots/metadata: docs/qa/selene-mining/.
+PLANET-PIPELINE-MEMORY.md records the actual implementation and limitations.
+
+Consistent marching tetrahedra in one 32³-cell volume; whole-rock worker remesh,
+packed collision and encoded snapshot transfer. Observed worker total 352 ms;
+main-thread publication 2.6 ms on Chromium/SwiftShader, not p95/FPS approval.
+No fragment physics, cave/mountain excavation, crafting or multiplayer.
+Equipment module/model/socket data adopted from manager commit 9930e82; preserve
+newer gear and concurrent main/navigation/UI integration hooks during merge.
+Fable/Claude own integration, independent Opus visual review, merge and deployment.
+This handoff does not assert a manager read receipt or visual approval.
