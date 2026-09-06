@@ -38,6 +38,8 @@ export class MiningField {
   get grounded(){return this.ground.grounded||this.surfaceRock?.grounded||this.fieldCache.grounded;}
   get targetName(){return this.spaceMode?(this.surveyDescriptor?.name??'Ring survey'):this.surfaceSurvey?.name??'Crescent deposit';}
   update(origin){
+    const extracted=data=>this.onExtract?.(data);
+    this.ground.onExtract=extracted;
     const nearestProvince=this.provinces.map(p=>({p,d:p.position.distanceTo(origin)})).sort((a,b)=>a.d-b.d)[0];
     this.surfaceSurvey=nearestProvince?.d<40000?nearestProvince.p:null;
     if(this.surfaceRock&&this.surfaceRock.rockId!==this.surfaceSurvey?.rockId&&!this.surfaceRock.pending){
@@ -49,6 +51,7 @@ export class MiningField {
       this.surfaceRock=new MineableRock(this.scene,null,{store:this.store,rockId:p.rockId,position:p.position,quaternion,initialField:createDensity(),resourceWeights:moonResources(...p.direction).weights});
       this.surfaceRock.descriptor=p;this.surfaceRock.group.name=`${p.name} survey outcrop`;
     }
+    if(this.surfaceRock)this.surfaceRock.onExtract=extracted;
     this.surfaceRock?.update(origin);
     const center=new THREE.Vector3(...MOON_POSITION),candidates=this.rings.local.filter(r=>r.mineable).map(r=>({r,d:new THREE.Vector3(...r.position).add(center).distanceTo(origin)})).sort((a,b)=>a.d-b.d);
     this.spaceMode=this.rings.local.length>0;
@@ -67,7 +70,7 @@ export class MiningField {
       const current=/^selene-ring-v2-(\d+)$/.exec(key),id=known?.id??(current?Number(current[1]):null);
       if(id!==null&&Number.isSafeInteger(id)&&(known||id>=0&&id<RING_POPULATION))this.rings.hiddenIds.add(id);
     }
-    for(const [id,rock] of this.cache){rock.update(origin);if(rock.ready)this.rings.hiddenIds.add(id);}
+    for(const [id,rock] of this.cache){rock.onExtract=extracted;rock.update(origin);if(rock.ready)this.rings.hiddenIds.add(id);}
     if(this.aimedDescriptor){this.surveyDescriptor=this.aimedDescriptor;this.surveyPosition=new THREE.Vector3(...this.aimedDescriptor.position).add(center);}
     this.active=this.spaceMode&&candidates.length?(this.cache.get(this.surveyDescriptor?.id)??this.ground):(this.surfaceRock&&this.surfaceRock.rockId===this.surfaceSurvey?.rockId?this.surfaceRock:this.ground);
     this.ground.update(origin);this.fieldCache.update(origin);

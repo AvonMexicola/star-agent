@@ -41,7 +41,7 @@ export class MineableRock {
   toWorld(point){return point.clone().applyQuaternion(this.quaternion).add(this.position);}
   request(point,budget){
     if(this.pending||this.error)return false;
-    this.pending=true;this.job={id:++this.sequence,revision:this.snapshot.revision,carving:Boolean(point)};
+    this.pending=true;this.job={id:++this.sequence,revision:this.snapshot.revision,carving:Boolean(point),point:point?this.toWorld(new THREE.Vector3(...point)):null};
     const field=this.snapshot.field.slice();this.worker.postMessage({...this.job,field,point,budget,resourceWeights:this.resourceWeights},[field.buffer]);return true;
   }
   receive(data){
@@ -57,6 +57,7 @@ export class MineableRock {
     if(this.mesh){const old=this.mesh.geometry;this.mesh.geometry=geometry;old.dispose();}
     else{this.mesh=new THREE.Mesh(geometry,this.material);this.mesh.castShadow=true;this.mesh.receiveShadow=true;this.group.add(this.mesh);}
     this.collision=collision;this.ready=true;this.meshMs=data.meshMs;this.publishMs=performance.now()-start;
+    if(this.job.carving&&data.removed>0)this.onExtract?.({point:this.job.point.clone(),normal:this.job.normal?.clone(),yields:[...data.yieldVolume]});
   }
   raycast(origin,direction,range=8){
     if(!this.ready||origin.distanceTo(this.position)>range+4)return null;
@@ -70,14 +71,17 @@ export class MineableRock {
     return {...hit,point,localPoint:hit.point,normal:hit.normal.applyQuaternion(this.quaternion)};
   }
   /** Equipment adapter: point must be the validated nearest rock hit, in world metres. */
-  onMine({point,dt,rate=.35},direction){
+  onMine({point,normal,dt,rate=.35},direction){
     if(!this.ready||this.store.blocked||this.store.free<.0001||this.error)return;
     if(this.rockId!==ROCK_ID&&this.store.canEditRock&&!this.store.canEditRock(this.rockId)){this.store.warning="Survey save full. Existing deposits remain mineable.";return;}
     this.budget=Math.min(.045,this.budget+Math.min(.1,Math.max(0,dt))*Math.max(0,Math.min(.35,rate)));
     if(this.pending||this.budget<.018)return;
     const local=this.toLocal(point.clone().addScaledVector(direction,.08));
     const budget=Math.min(this.budget,this.store.free/12);this.budget=0;
-    this.request(local.toArray(),budget);
+    if(this.request(local.toArray(),budget)){
+      this.job.normal=normal?.clone()??direction.clone().negate();
+      this.job.point=point.clone().addScaledVector(this.job.normal,.035);
+    }
   }
   constrainWalker(previous,proposed){
     this.grounded=false;if(!this.ready||previous.distanceTo(this.position)>6&&proposed.distanceTo(this.position)>6)return {point:proposed,hit:false};
