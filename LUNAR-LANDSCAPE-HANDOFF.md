@@ -3,6 +3,7 @@
 Cees requested a Cellin-inspired moon with more interesting slopes/craters,
 sunlight-reflecting ice particles and majestic asteroid rings.
 
+Review: [PR #15](https://github.com/AvonMexicola/star-agent/pull/15).
 Branch: `feat/lunar-landscape`, based on merged `feat/visual-fidelity` f028a43.
 Isolated worktree: `/tmp/star-agent-lunar-landscape`.
 Local production preview: http://127.0.0.1:5178/ . Select Selene, L lands, F stands,
