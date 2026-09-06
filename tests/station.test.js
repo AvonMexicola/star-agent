@@ -117,7 +117,7 @@ test('the production station asset retains its authored deck, bay, anchors and d
   model.updateMatrixWorld(true);
 
   const fullSize = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
-  nearVector(fullSize, new THREE.Vector3(149.9, 47, 89.6), 0.02, 'full station dimensions');
+  nearVector(fullSize, new THREE.Vector3(149.9, 39.45, 89.6), 0.02, 'full station dimensions');
 
   const deck = model.getObjectByName('LandingDeck');
   assert.ok(deck?.isMesh, 'the production GLB has a mesh named LandingDeck');

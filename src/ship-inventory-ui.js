@@ -6,8 +6,8 @@ export function createInventoryUI(nav, ship, inventory) {
   dialog.id = 'cargo-dialog';
   dialog.setAttribute('aria-labelledby', 'cargo-title');
   dialog.innerHTML = `<div class="dialog-top"><span class="eyebrow">NOMAD / CARGO 01</span><button type="button" aria-label="Close ship inventory">✕</button></div>
-    <h2 id="cargo-title">Ship inventory</h2><p>Expedition supplies, right where you left them. Transfer one item at a time between the ship and your backpack.</p>
-    <div class="cargo-capacities"></div><div class="cargo-items"></div>
+    <h2 id="cargo-title">Ship inventory</h2><p>Expedition supplies, right where you left them. Transfer individual items or everything that fits between the ship and your backpack.</p>
+    <div class="cargo-bulk"><button data-bulk="ship">Take all</button><button data-bulk="pack">Stow all</button></div><div class="cargo-capacities"></div><div class="cargo-items"></div>
     <p class="cargo-feedback" role="status" aria-live="polite"></p><p class="cargo-save manual-note"></p>`;
   document.body.append(dialog);
   const mass = value => `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })} kg`;
@@ -23,6 +23,8 @@ export function createInventoryUI(nav, ship, inventory) {
     dialog.querySelector('.cargo-save').textContent = inventory.saved ? 'Manifest saved on this browser. Supplies can be carried and stowed; item use is not available yet.' : 'Browser storage unavailable. Transfers work for this session, but may not survive a reload.';
   }
   dialog.addEventListener('click', event => {
+    const bulk=event.target.closest('[data-bulk]');
+    if(bulk){const result=inventory.transferAll(bulk.dataset.bulk);render();dialog.querySelector('.cargo-feedback').textContent=result.message;return;}
     const button = event.target.closest('button[data-item]');
     if (!button) return;
     const result = inventory.transfer(button.dataset.item, button.dataset.from);

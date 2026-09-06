@@ -16,6 +16,7 @@ export const HOVER_HEIGHT = 3.2;
 export const DOOR_OPEN_RADIUS = 600;
 export const DOOR_CLOSE_RADIUS = 1_500;
 const LOD_DISTANCE = 25_000;
+const preparedMaterials = new WeakSet();
 const VISIBLE_DISTANCE = 600_000;
 const NAV_LIGHT_MATERIALS = ['NavLight_Red', 'NavLight_Green', 'Beacon_White'];
 const REQUIRED_NODES = ['HangarDoor_L', 'HangarDoor_R', 'LandingDeck', 'LandingPad', 'ApproachPoint', 'DoorTrigger'];
@@ -74,6 +75,11 @@ export class Station {
     this.error = null;
     this.ready = false;
     this.elapsed = 0;
+    this.offset = new THREE.Vector3(...(options.offset ?? [0,0,0]));
+    this.yaw = new THREE.Quaternion().setFromAxisAngle(UP, options.yaw ?? 0);
+    this.lodDistance = options.lodDistance ?? LOD_DISTANCE;
+    this.sharedColliders = options.colliders;
+    this.localLights = [];
 
     this.group = new THREE.Group();
     this.group.name = 'Orbital station';
@@ -157,7 +163,7 @@ export class Station {
     nodes.ApproachPoint.getWorldPosition(this.approachLocal);
     nodes.DoorTrigger.getWorldPosition(this.triggerLocal);
 
-    this.colliders = buildStationColliders(model);
+    this.colliders = this.sharedColliders ?? buildStationColliders(model);
     this.doorBoxes = [];
     this.prepareMaterials(model, true);
     this.deck = nodes.LandingDeck;
@@ -187,7 +193,7 @@ export class Station {
     this.fill = new THREE.AmbientLight(0xddeaff,0); this.group.add(this.fill);
     for (const x of [-12,12]) {
       const light = new THREE.PointLight(0xddeaff,300,65,2);
-      light.position.set(x,deckTop+11,this.padLocal.z); this.group.add(light);
+      light.position.set(x,deckTop+11,this.padLocal.z); this.group.add(light); this.localLights.push(light);
     }
     return this;
   }
@@ -213,7 +219,8 @@ export class Station {
       if (!material || seen.has(material)) return;
       seen.add(material);
       if (material.emissive && material.emissiveIntensity > 0 && material.emissive.getHex() !== 0) {
-        material.emissiveIntensity *= 2;
+        if (!preparedMaterials.has(material)) material.emissiveIntensity *= 2;
+        preparedMaterials.add(material);
       }
       if (collectNavLights && NAV_LIGHT_MATERIALS.includes(material.name)) {
         this.navMaterials.push({ material, base: material.emissiveIntensity, kind: material.name });
@@ -225,6 +232,8 @@ export class Station {
   updateFrame() {
     this.worldPosition.copy(this.direction).multiplyScalar(RADIUS + this.altitude);
     stationQuaternion(this.direction, this.quaternion);
+    this.worldPosition.add(this.offset.clone().applyQuaternion(this.quaternion));
+    this.quaternion.multiply(this.yaw);
     this.inverseQuaternion.copy(this.quaternion).invert();
     this.toWorld(this.padLocal, this._padWorld);
     this.toWorld(this.approachLocal, this._approachWorld);
@@ -260,8 +269,9 @@ export class Station {
     this.cameraDistance = distance;
     if(this.fill)this.fill.intensity=.22*(1-THREE.MathUtils.smoothstep(distance,50,180));
     this.group.visible = distance < VISIBLE_DISTANCE;
+    for (const light of this.localLights) light.visible = distance < 180;
     if (this.model && this.lodModel) {
-      const far = distance > LOD_DISTANCE;
+      const far = distance > this.lodDistance;
       this.model.visible = !far;
       this.lodModel.visible = far;
     }

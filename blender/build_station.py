@@ -311,12 +311,14 @@ SPINE_Z, SPINE_R, SPINE_X = 13.6, 4.6, 64.0
 TRUSS_X, TRUSS_Y = 54.0, 44.0
 RING_X, RING_R, RING_TUBE = -40.0, 18.0, 3.0
 DECK_TOP = HZ0
+DECK_THICKNESS = 0.4
+FLOOR_TOP = DECK_TOP - DECK_THICKNESS
 PAD = Vector((0.0, (HY0 + HY1) / 2, DECK_TOP))
 HOVER = 3.2                                                  # ship hover height used by navigation.js
 
 # ============================================================================= HANGAR HULL
 hull_parts = []
-hull_parts.append(hero_box('Hull_Floor', (2 * OX, HY1 - OY0, HZ0 - OZ0), (0, (OY0 + HY1) / 2, (OZ0 + HZ0) / 2), 'Hull', 0.5))
+hull_parts.append(hero_box('Hull_Floor', (2 * OX, HY1 - OY0, FLOOR_TOP - OZ0), (0, (OY0 + HY1) / 2, (OZ0 + FLOOR_TOP) / 2), 'Hull', 0.5))
 hull_parts.append(hero_box('Hull_Ceiling', (2 * OX, HY1 - OY0, OZ1 - HZ1), (0, (OY0 + HY1) / 2, (HZ1 + OZ1) / 2), 'Hull', 0.5))
 for s in (-1, 1):
     hull_parts.append(hero_box(f'Hull_Side{s}', (WALL, HY1 - OY0, OZ1 - OZ0), (s * (HX + WALL / 2), (OY0 + HY1) / 2, (OZ0 + OZ1) / 2), 'Hull', 0.5))
@@ -409,7 +411,7 @@ ext.build()
 
 # Signage.
 if DETAIL:
-    text_mesh('Sign_Front', 'HANGAR 01', 1.25, (0, HY1 + 0.08, (HZ1 + OZ1) / 2 + 0.35), rot(math.pi / 2, 0, math.pi), 'Mint')
+    text_mesh('Sign_Front', 'AEON / FREIGHT', 1.25, (0, HY1 + 0.08, (HZ1 + OZ1) / 2 + 0.35), rot(math.pi / 2, 0, math.pi), 'Mint')
     text_mesh('Sign_Port', 'STAR AGENT', 3.2, (-OX - 0.08, -4, 2.0), rot(math.pi / 2, 0, -math.pi / 2), 'MintPaint')
     text_mesh('Sign_Starboard', 'STAR AGENT', 3.2, (OX + 0.08, -4, 2.0), rot(math.pi / 2, 0, math.pi / 2), 'MintPaint')
 
@@ -472,39 +474,6 @@ for s in (-1, 1):
     for e in (-1, 1):
         truss.add(sphere_geo(0.5, 12, 6, place((x, e * (TRUSS_Y + 0.3), SPINE_Z))), 'NavLight_Red' if s < 0 else 'NavLight_Green')
 truss.build(); solar.build()
-
-# ============================================================================= HABITAT RING
-ring_parts = []
-if DETAIL:
-    bpy.ops.mesh.primitive_torus_add(major_radius=RING_R, minor_radius=RING_TUBE, major_segments=96, minor_segments=32, location=(0, 0, 0))
-else:
-    bpy.ops.mesh.primitive_torus_add(major_radius=RING_R, minor_radius=RING_TUBE, major_segments=24, minor_segments=8, location=(0, 0, 0))
-ring = bpy.context.object; ring.name = 'HabitatRing'
-ring.matrix_world = Matrix.Translation((RING_X, 0, SPINE_Z)) @ rot(0, math.pi / 2, 0)
-ring.data.materials.append(MATS['Hull'])
-for p in ring.data.polygons: p.use_smooth = True
-link(ring)
-ringd = Batch('HabitatRingDetail')
-hub = place((RING_X, 0, SPINE_Z), rot(0, math.pi / 2, 0))
-ringd.add(cyl_geo(SPINE_R + 1.6, SPINE_R + 1.6, 6.0, 48 if DETAIL else 16, hub), 'HullPanel')
-for k in range(6):
-    a = TAU * k / 6
-    y, z = math.sin(a), math.cos(a)
-    ringd.add(strut_geo((RING_X, y * (SPINE_R + 1.2), SPINE_Z + z * (SPINE_R + 1.2)), (RING_X, y * (RING_R - 1.5), SPINE_Z + z * (RING_R - 1.5)), 1.1, 16 if DETAIL else 8), 'Hull')
-    ringd.add(strut_geo((RING_X + 1.6, y * (SPINE_R + 1.2), SPINE_Z + z * (SPINE_R + 1.2)), (RING_X + 1.6, y * (RING_R - 1.5), SPINE_Z + z * (RING_R - 1.5)), 0.3, 8), 'Gunmetal')
-    ringd.add(strut_geo((RING_X - 1.6, y * (SPINE_R + 1.2), SPINE_Z + z * (SPINE_R + 1.2)), (RING_X - 1.6, y * (RING_R - 1.5), SPINE_Z + z * (RING_R - 1.5)), 0.3, 8), 'Gunmetal')
-if DETAIL:
-    # Ring segment seams and windows on both faces.
-    for k in range(24):
-        a = TAU * (k + 0.5) / 24
-        Rk = place((RING_X, 0, SPINE_Z)) @ rot(a, 0, 0)  # rotate about X: (y, z) plane
-        ringd.add(torus_geo(RING_TUBE + 0.12, 0.28, 24, 8, Rk @ Matrix.Translation((0, 0, RING_R)) @ rot(0, math.pi / 2, 0)), 'HullPanel') if k % 2 == 0 else None
-        for s in (-1, 1):
-            ringd.add(box_geo(0.12, 1.3, 0.7, Rk @ Matrix.Translation((s * (RING_TUBE - 0.02), 0, RING_R))), 'Window')
-            ringd.add(box_geo(0.12, 1.3, 0.7, Rk @ rot(TAU / 48 * 0.5, 0, 0) @ Matrix.Translation((s * (RING_TUBE - 0.02), 0, RING_R))), 'Window')
-        ringd.add(box_geo(0.7, 1.0, 0.16, Rk @ Matrix.Translation((0, 0, RING_R + RING_TUBE - 0.02))), 'MintPaint') if k % 3 == 0 else None
-ringd.add(sphere_geo(0.5, 12, 6, place((RING_X, 0, SPINE_Z + RING_R + RING_TUBE + 0.3))), 'Beacon_White')
-ringd.build()
 
 # ============================================================================= END MODULES
 ends = Batch('EndModules')
@@ -598,7 +567,7 @@ labs.build()
 
 # ============================================================================= LANDING DECK + MARKINGS
 deck = Batch('LandingDeck')
-deck.add(box_geo(2 * HX, HY1 - HY0, 0.4, place((0, (HY0 + HY1) / 2, DECK_TOP - 0.2))), 'Deck')
+deck.add(box_geo(2 * HX, HY1 - HY0, DECK_THICKNESS, place((0, (HY0 + HY1) / 2, DECK_TOP - DECK_THICKNESS / 2))), 'Deck')
 DECK = deck.build()
 marks = Batch('DeckMarkings')
 zm = DECK_TOP + 0.015
@@ -658,10 +627,9 @@ for s in (-1, 1):
         lights.add(box_geo(0.1, 0.5, 0.2, place((xw - s * 1.42, y + 0.9, HZ0 + 2.2))), 'Amber')
         interior.add(cyl_geo(0.35, 0.35, 0.9, 12, place((xw - s * 1.3, y - 0.6, HZ0 + 1.6), rot(0, math.pi / 2, 0))), 'Gunmetal')
         if DETAIL:
-            pts = [(xw - s * 1.5, y - 0.6, HZ0 + 1.6), (xw - s * 4.0, y - 1.2, HZ0 + 0.5), (xw - s * 9.0, y - 2.5, HZ0 + 0.25), (xw - s * 13.0, y - 3.0, HZ0 + 0.22)]
-            for a, b in zip(pts, pts[1:]):
-                interior.add(strut_geo(a, b, 0.14, 8), 'Rubber')
-            interior.add(cyl_geo(0.22, 0.16, 0.6, 8, place(pts[-1], rot(0, s * math.pi / 2 * 0.9, 0))), 'Gunmetal')
+            # Hose reels stay on the wall; nothing lies across the walking deck.
+            interior.add(torus_geo(.62,.085,24,8,place((xw-s*1.47,y-.6,HZ0+1.8),rot(0,math.pi/2,0))),'Rubber')
+            interior.add(box_geo(.18,1.45,.18,place((xw-s*1.5,y-.6,HZ0+.85))),'Gunmetal')
     # Tool racks and crates along the walls.
     if DETAIL:
         for k, y in enumerate((-20.0, -8.0, 4.0, 16.0)):
@@ -695,6 +663,58 @@ lights.add(box_geo(24.0, 0.1, 0.12, place((0, PAD.y - 16.0 + 0.62, HZ1 - 1.6))),
 # Door-jamb warning lights inside the opening.
 for s in (-1, 1):
     lights.add(box_geo(0.2, 0.2, HZ1 - HZ0 - 1, place((s * (HX - 0.15), HY1 - 0.6, (HZ0 + HZ1) / 2))), 'Amber')
+# ----------------------------------------------------------------------------- Service architecture and layered detail
+# All low furniture stays in the wall-side service lanes (|x| > 17) or aft of the pad.
+if DETAIL:
+    material('ServiceOchre',(.43,.24,.075),.35,.58)
+    material('ServiceTeal',(.045,.15,.18),.35,.55)
+    # Recessed wall panels, service numbers, vents, fasteners and overhead utilities.
+    for side in [-1,1]:
+        for j,y in enumerate(range(-19,19,6)):
+            interior.add(box_geo(.18,4.8,3.2,place((side*20.55,y,HZ0+7.1))),'ServiceTeal')
+            interior.add(box_geo(.12,4.3,.18,place((side*20.43,y,HZ0+8.65))),'ServiceOchre')
+            for k in range(9):interior.add(box_geo(.16,.18,1.1,place((side*20.40,y-1.8+k*.45,HZ0+7.2))),'Gunmetal')
+            for dy in [-2.0,2.0]:
+                for z in [HZ0+5.7,HZ0+8.4]:interior.add(cyl_geo(.07,.07,.08,8,place((side*20.3,y+dy,z),rot(0,math.pi/2,0))),'HullPanel')
+            text_mesh(f'Sign_Service_{side}_{j}',f'SERVICE {j+1:02d}',.34,(side*20.25,y,HZ0+4.0),rot(math.pi/2,0,side*math.pi/2),'MintPaint',.005)
+        for h in [10.6,11.1,11.6]:
+            interior.add(cyl_geo(.16,.16,HY1-HY0-3,12,place((side*19.0,-1,HZ0+h),rot(math.pi/2,0,0))),'ServiceOchre' if h==11.1 else 'Gunmetal')
+        for y in range(-22,21,4):interior.add(box_geo(.5,.15,1.6,place((side*19,y,HZ0+11.1))),'Truss')
+        # Maintenance benches and tools face into the side aisles.
+        for y in [-14,4]:
+            interior.add(box_geo(2.5,3.7,.18,place((side*18.6,y,HZ0+1.2))),'Gunmetal')
+            for dy in [-1.55,1.55]:interior.add(box_geo(.20,.20,1.2,place((side*18.6,y+dy,HZ0+.6))),'Truss')
+            interior.add(box_geo(.20,3.6,1.5,place((side*19.75,y,HZ0+2))),'ServiceTeal')
+            for k in range(6):
+                interior.add(box_geo(.11,.07,.6,place((side*19.58,y-1.2+k*.45,HZ0+2.1))),'HullPanel')
+                interior.add(cyl_geo(.095,.095,.07,10,place((side*19.55,y-1.2+k*.45,HZ0+2.43),rot(0,math.pi/2,0))),'ServiceOchre')
+        # Flush deck seams and maintenance-lane markings never create a raised floor.
+        for y in range(-22,21,3):lights.add(box_geo(3.0,.025,.005,place((side*16.8,y,DECK_TOP+.004))),'Gunmetal')
+        lights.add(box_geo(.04,43,.04,place((side*16.3,-1,DECK_TOP+.022))),'AmberSoft')
+    # Aft warehouse shutters, ribbed storage modules and cargo restraint frames.
+    for x in [-17,17]:
+        interior.add(box_geo(5.5,.35,5.0,place((x,HY0+1.5,HZ0+2.5))),'ServiceTeal')
+        for k in range(13):interior.add(box_geo(5.1,.08,.11,place((x,HY0+1.72,HZ0+.3+k*.35))),'Gunmetal')
+        text_mesh(f'Sign_Warehouse_{x}','WAREHOUSE / 10T' if x<0 else 'ENGINEERING',.36,(x,HY0+1.8,HZ0+5.6),rot(math.pi/2,0,0),'MintPaint',.006)
+    # Cargo terminal: an angled display, card reader, recessed keyboard and service pedestal.
+    interior.add(box_geo(1.7,1.0,1.05,place((-12,-22.5,HZ0+.525))),'ServiceTeal')
+    interior.add(box_geo(1.85,.95,.12,place((-12,-22.4,HZ0+1.1))),'Gunmetal')
+    interior.add(box_geo(1.85,.18,1.3,place((-12,-22.8,HZ0+1.72))),'Gunmetal')
+    for k in range(8):interior.add(box_geo(.12,.13,.025,place((-12.65+k*.18,-22.15,HZ0+1.18))),'HullPanel')
+    lights.add(box_geo(.12,.15,.07,place((-11.25,-22.1,HZ0+1.20))),'Amber')
+    text_mesh('Sign_Freight','FREIGHT TRANSFER',.42,(-12,-23.5,HZ0+3.6),rot(math.pi/2,0,0),'MintPaint',.005)
+    # A real 4 m wide elevator vestibule behind its runtime sliding leaves.
+    for side in [-1,1]:
+        interior.add(box_geo(.18,3.4,3.3,place((side*2.15,-24,HZ0+1.65))),'HullPanel')
+        lights.add(box_geo(.04,2.8,.04,place((side*1.95,-24,HZ0+3.1))),'HangarLight')
+    interior.add(box_geo(4.5,.25,.35,place((0,-22.35,HZ0+3.35))),'ServiceOchre')
+    interior.add(box_geo(4.4,3.4,.18,place((0,-24,HZ0+3.5))),'Gunmetal')
+    text_mesh('Sign_Hub','CENTRAL HUB',.50,(0,-22.16,HZ0+4.15),rot(math.pi/2,0,0),'MintPaint',.006)
+    text_mesh('Sign_Transit','ELEVATOR / CONCOURSE',.21,(0,-22.16,HZ0+3.65),rot(math.pi/2,0,0),'MintPaint',.003)
+    # Suspended wayfinding and hazard decals, away from the walking capsule.
+    for x,label in [(-15,'CARGO  <'),(15,'>  CREW SERVICES')]:
+        interior.add(box_geo(7,.25,1.1,place((x,-15,HZ0+12.0))),'ServiceTeal')
+        text_mesh(f'Sign_Wayfinding_{x}',label,.40,(x,-14.84,HZ0+12.0),rot(math.pi/2,0,0),'MintPaint',.005)
 interior.build(); lights.build()
 
 # ============================================================================= HANGAR DOORS
@@ -738,7 +758,7 @@ def build_door(side):
             det.add(cyl_geo(0.45, 0.45, 0.5, 12, place((px, DOOR_Y, DOOR_Z + DOOR_H / 2 + 0.2), rot(0, math.pi / 2, 0))), 'Gunmetal')
             det.add(cyl_geo(0.45, 0.45, 0.5, 12, place((px, DOOR_Y, DOOR_Z - DOOR_H / 2 - 0.2), rot(0, math.pi / 2, 0))), 'Gunmetal')
         # Big painted numeral + brand text.
-        parts.append(text_mesh(f'{name}_text', '1' if side < 0 else '0', 8.0, (xc + side * 4.0, DOOR_Y + DOOR_T * 0.3 + 0.02, DOOR_Z - 0.6), rot(math.pi / 2, 0, math.pi), 'MintPaint', 0.03))
+        # Bay numbers are applied per reusable pod at runtime.
     parts.append(det.build())
     door = join(parts, name)
     set_origin(door, (xc, DOOR_Y, DOOR_Z))

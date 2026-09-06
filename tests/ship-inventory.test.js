@@ -73,3 +73,23 @@ test('Blender asset fits the navigation envelope with a correctly placed movable
   const opaque=sightline.intersectObject(scene,true).filter(hit=>!hit.object.material.transparent);
   assert.equal(opaque.length,0,'centre windscreen remains clear of opaque struts');
 });
+
+
+test('bulk transfers fill available capacity, conserve cargo and save once across all containers',()=>{
+  const disk=storage();let writes=0;const original=disk.setItem;disk.setItem=(...args)=>{writes++;original(...args);};
+  const inv=new ShipInventory(disk),before=inv.snapshot;
+  const result=inv.transferAll('station','ship');assert.equal(result.ok,true);assert.ok(result.remaining>0);
+  assert.equal(writes,1);assert.equal(inv.mass('ship'),120);
+  inv.transferAll('ship','pack');assert.equal(inv.mass('pack'),20);
+  for(const item of ITEMS)assert.equal(['ship','pack','station'].reduce((n,c)=>n+inv.count(c,item.id),0),['ship','pack','station'].reduce((n,c)=>n+before[c][item.id],0));
+  assert.deepEqual(new ShipInventory(disk).snapshot,inv.snapshot);
+  const after=inv.snapshot;assert.equal(inv.transferAll('__proto__','ship').ok,false);assert.equal(inv.transferAll('ship','constructor').ok,false);assert.equal(inv.transferAll('ship','ship').ok,false);assert.deepEqual(inv.snapshot,after);
+});
+test('legacy saves migrate without resetting cargo, and blocked persistence keeps bulk moves in session',()=>{
+  const disk=storage(),old=new ShipInventory(disk).snapshot;old.ship.repair=1;old.pack.repair=2;
+  disk.setItem(INVENTORY_KEY,JSON.stringify({version:1,ship:old.ship,pack:old.pack}));
+  const inv=new ShipInventory(disk);assert.equal(inv.count('ship','repair'),1);assert.equal(inv.count('station','repair'),12);
+  inv.transferAll('pack','station');assert.equal(JSON.parse(disk.getItem(INVENTORY_KEY)).version,2);
+  const blocked=new ShipInventory({getItem(){return null;},setItem(){throw Error('denied');}});
+  assert.equal(blocked.transferAll('station','ship').ok,true);assert.equal(blocked.saved,false);assert.equal(blocked.mass('ship'),120);
+});
