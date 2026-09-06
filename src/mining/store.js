@@ -16,7 +16,7 @@ export class MiningStore {
   constructor(storage) {
     this.storage = storage; this.saved = Boolean(storage); this.warning = ''; this.initialRocks = new Map(); this.encodedFields = new WeakMap();
     const legacy = new ShipInventory(storage), oldSupplies = legacy.containers;
-    this.persistedRaw = storage?.getItem(MINING_KEY) ?? null;
+    this.persistedRaw = null;
     this.state = {
       id: ROCK_ID, version: ROCK_VERSION, revision: 0, field: createDensity(), pack: [0, 0, 0], ship: [0, 0, 0],
       economy: {credits:legacy.credits,shopStock:structuredClone(legacy.shopStock)},
@@ -25,7 +25,7 @@ export class MiningStore {
     };
     const initialState = this.state;
     try {
-      const raw = storage?.getItem(MINING_KEY);
+      const raw = storage?.getItem(MINING_KEY);this.persistedRaw=raw??null;
       if (raw) {
         const d = JSON.parse(raw); const rawField = d.field; d.field = decodeField(d.field);
         if (typeof rawField === 'string') this.encodedFields.set(d.field, rawField);
@@ -33,6 +33,8 @@ export class MiningStore {
           || !['pack', 'ship'].every(k => Array.isArray(d[k]) && d[k].length === 3 && d[k].every(n => Number.isFinite(n) && n >= 0))) throw Error('Unrecognized mining save');
         // Defaults migrate v1 mining saves and the old supply manifest exactly once.
         this.state = { ...this.state, ...d };
+        this.state.supplies={...oldSupplies,...this.state.supplies};
+        for(const id of ['station','ship','pack'])this.state.supplies[id]={...Object.fromEntries(ITEMS.map(item=>[item.id,0])),...this.state.supplies[id]};
         if (!this.state.rocks || typeof this.state.rocks !== 'object' || Array.isArray(this.state.rocks) || Object.keys(this.state.rocks).length > MAX_SAVED_ROCKS) throw Error('Invalid rock registry');
         for (const [id, rock] of Object.entries(this.state.rocks)) {
           const rawRockField = rock.field; rock.field = decodeField(rock.field);

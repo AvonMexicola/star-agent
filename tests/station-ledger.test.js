@@ -33,3 +33,8 @@ test('old field supplies missing newer shop item keys migrate without discarding
  disk.setItem(MINING_KEY,JSON.stringify(saved));const migrated=new MiningStore(disk);
  assert.equal(Boolean(migrated.blocked),false);assert.equal(migrated.state.revision,store.state.revision);
 });
+test('unreadable storage blocks changes without throwing during game startup',()=>{
+ const disk={getItem(){throw Error('access denied');},setItem(){assert.fail('must not overwrite unreadable save');}};
+ const store=new MiningStore(disk),inventory=new ShipInventory(disk);bindStationLedger(inventory,store);
+ assert.equal(store.blocked,true);assert.equal(store.saved,false);assert.equal(inventory.purchase(shopId,offer.itemId).ok,false);
+});

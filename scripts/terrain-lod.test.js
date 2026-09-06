@@ -370,3 +370,22 @@ test('Planet reverses a merge without swapping meshes and collapses descendants 
   assert.equal(parent.mesh.visible, true);
   assert.equal(parent.children.every(child => child.mesh.visible === false), true);
 });
+
+test('mixed 16/32 grids reconstruct the parent surface at both landscape band boundaries', () => {
+  for (const [level,grid,parentGrid] of [[4,32,16],[14,16,32]]) {
+    const ix=2**(level-1)+1,iy=2**(level-1)+1;
+    const child=generatePatch({face:4,level,ix,iy,grid,parentGrid});
+    const parent=generatePatch({face:4,level:level-1,ix:Math.floor(ix/2),iy:Math.floor(iy/2),grid:parentGrid});
+    for(let j=0;j<=grid;j++)for(let i=0;i<=grid;i++){
+      const u=(ix%2)*parentGrid/2+i*parentGrid/(2*grid),v=(iy%2)*parentGrid/2+j*parentGrid/(2*grid);
+      const x=Math.min(parentGrid-1,Math.floor(u)),y=Math.min(parentGrid-1,Math.floor(v)),a=u-x,b=v-y;
+      const triangle=parent.indices.slice((y*parentGrid+x)*6+(a+b<=1?0:3),(y*parentGrid+x)*6+(a+b<=1?3:6));
+      const weights=a+b<=1?[1-a-b,a,b]:[1-b,a+b-1,1-a];
+      for(const [field,target,components] of [['positions','parentPositions',3],['waterPositions','parentWaterPositions',3],['normals','parentNormals',3],['colors','parentColors',3],['heights','parentHeights',1]])for(let k=0;k<components;k++){
+        const shift=field==='positions'||field==='waterPositions'?parent.center[k]-child.center[k]:0;
+        const expected=Math.fround([...triangle].reduce((sum,index,t)=>sum+(parent[field][index*components+k]+shift)*weights[t],0));
+        assert.equal(child[target][(j*(grid+1)+i)*components+k],expected,`${level}: ${target} ${i},${j}`);
+      }
+    }
+  }
+});

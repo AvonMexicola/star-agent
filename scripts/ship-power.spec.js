@@ -208,8 +208,19 @@ test('touch and controller menu controls toggle main power from the real help me
   await expect(page.locator('#help-dialog')).toBeHidden();
 
   await setPadButton(page, 9, true);
-  await expect(page.locator('#help-dialog')).toBeVisible();
+  await expect(page.locator('#controller-menu')).toBeVisible();
   await setPadButton(page, 9, false);
+  for(let i=0;i<40;i++){
+    if(await page.locator('[data-controller-key=help]').evaluate(el=>el===document.activeElement))break;
+    await setPadButton(page,13,true);await setPadButton(page,13,false);
+  }
+  await expect(page.locator('[data-controller-key=help]')).toBeFocused();
+  await setPadButton(page,0,true);await setPadButton(page,0,false);
+  await expect(page.locator('#help-dialog')).toBeVisible();
+  for(let i=0;i<12;i++){
+    if(await powerButton.evaluate(el=>el===document.activeElement))break;
+    await setPadButton(page,13,true);await setPadButton(page,13,false);
+  }
   await expect(powerButton).toBeFocused();
   await setPadButton(page, 0, true);
   await expect.poll(() => page.evaluate(() => window.starAgent.state.powered)).toBe(false);

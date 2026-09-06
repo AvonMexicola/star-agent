@@ -78,7 +78,7 @@ test('controller opens, selects and engages; held sticks cannot leak into flight
   await press(0); await expect(page.locator('#map-target-name')).toHaveText('Selene');
   const position = await page.evaluate(() => window.starAgent.state.position);
   await page.evaluate(() => { window.mapPad.axes[1] = 1; }); await frames(page);
-  await expect(page.locator('#map-zoom-out')).toBeFocused();
+  await expect(page.locator('[data-travel-target="pyre"]')).toBeFocused();
   await press(1); await expect(page.locator('#system-map')).toBeHidden();
   await frames(page); expect(await page.evaluate(() => window.starAgent.state.position)).toEqual(position);
   await page.evaluate(() => { window.mapPad.axes.fill(0); }); await frames(page);

@@ -1,13 +1,13 @@
 import './controller-ui.css';
 
-const selector = 'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), [tabindex="0"]';
+const selector = 'summary, button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), [tabindex="0"]';
 const visible = el => !el.closest('[hidden], [inert]') && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
 const controls = dialog => [...dialog.querySelectorAll(selector)].filter(el => visible(el) && el.getAttribute('aria-disabled') !== 'true');
 
 /** Every native dialog gets the same controller focus/activate/back behavior.
  * Features keep their real click handlers; this never synthesizes keyboard mining.
  */
-export function createControllerUI({ nav, destinations = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {}, openEquipment = null, cycleEquipment = () => {}, cycleQuick = () => {}, useQuick = () => {} }) {
+export function createControllerUI({ nav, destinations = [], actions = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {}, openEquipment = null, cycleEquipment = () => {}, cycleQuick = () => {}, useQuick = () => {} }) {
   const menu = document.createElement('dialog');
   menu.id = 'controller-menu'; menu.setAttribute('aria-labelledby', 'controller-menu-title');
   menu.innerHTML = '<div class="controller-menu-top"><h2 id="controller-menu-title">Command menu</h2><button type="button" data-controller-close aria-label="Close command menu">×</button></div><p>D-pad / left stick · Select &nbsp; A · Confirm &nbsp; B · Back</p><div class="controller-command-list"></div>';
@@ -26,6 +26,7 @@ export function createControllerUI({ nav, destinations = [], openBackpack = () =
     const b = add(`Quick transit · ${d.label}`, d.activate, `destination-${d.id}`);
     if (d.enabled) b._controllerEnabled = d.enabled;
   }
+  for(const action of actions){const button=add(action.label,action.activate,action.id);button._controllerEnabled=action.enabled;}
   add('Controls and help', () => document.getElementById('help-button')?.click(), 'help');
   menu.querySelector('[data-controller-close]').addEventListener('click', () => menu.close());
   menu.addEventListener('close', () => { nav.keys.clear(); if (restoreOnClose) nav.enabled = true; nav.gamepad.suspend(); });

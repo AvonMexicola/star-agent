@@ -312,10 +312,10 @@ test('crossing into lunar navigation keeps position continuous and does not flip
   assert.ok(nav.position.distanceTo(before)<51);assert.ok(nav.orientation.angleTo(orientation)<1e-6);
 });
 
-test('swept lunar contact lands on real terrain instead of the former 4 km boundary',t=>{
+test('swept fatal lunar contact hits real terrain instead of the former 4 km boundary',t=>{
   const {navigation:nav}=setup(t);nav.transitMoon(4000);nav.velocity.copy(nav.normal).multiplyScalar(-1000000);
-  nav.update(.2);assert.equal(nav.mode,'landed');
-  near(bodyAltitude(nav.shipPosition,SELENE),0,1e-7);assert.ok(nav.altitude<4);
+  nav.update(.2);assert.equal(nav.mode,'crashed');
+  assert.ok(nav.crash.impactSpeed>12);assert.ok(nav.altitude<4);assert.equal(nav.shipPosition,null);
 });
 
 

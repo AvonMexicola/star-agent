@@ -197,7 +197,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
   });
   function controllerInput(input) {
     if (!dialog.open || !input) return;
-    if (input.pressed.has(1)) { close(); return; }
+    if (input.pressed.has(1) || input.pressed.has(9)) { close(); return; }
     const direction = Math.abs(input.y) > .5 ? Math.sign(input.y) : Math.abs(input.x) > .5 ? Math.sign(input.x) : 0;
     const step = input.pressed.has(12) || input.pressed.has(14) ? -1 : input.pressed.has(13) || input.pressed.has(15) ? 1 : direction && direction !== stickDirection ? direction : 0;
     stickDirection = direction;

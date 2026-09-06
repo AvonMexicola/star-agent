@@ -27,6 +27,9 @@ for(const destination of ['moon']) test(`${destination}: controller equips both 
   expect(starter.slots.ammo1).toEqual({item:'carbine-charge',quantity:60});
   // Reads debug state for assertions and steering feedback. No gameplay mutation,
   // teleport helper, keyboard event, mouse click or pointer capture is used.
+  if(await page.evaluate(()=>window.starAgent.state.opening.phase!=='skipped'&&window.starAgent.state.opening.phase!=='playing')){
+    await axes(page,[0,-1,0,0]);await page.waitForFunction(()=>window.starAgent.state.opening.phase==='playing');await axes(page,[0,0,0,0]);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  }
   await tap(page,9);await expect(page.locator('#controller-menu')).toBeVisible();
   const choose=async selector=>{for(let i=0;i<60;i++){if(await page.locator(selector).evaluate(el=>el===document.activeElement))break;await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await tap(page,13);}await expect(page.locator(selector)).toBeFocused();await tap(page,0);};
   await choose('[data-controller-key="equipment"]');await expect(page.locator('.inventory-equipment')).toBeVisible();

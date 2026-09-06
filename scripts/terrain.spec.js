@@ -8,7 +8,7 @@ test('terrain transitions and layered ground render through descent and coastal 
   const label=baseline?'before':'after';
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());console.log(m.text());}else if(m.text().startsWith('terrain-progress'))console.log(m.text());});
-  await page.goto((process.env.TERRAIN_BASELINE_URL||'')+'/?seed=7291&debug');
+  await page.goto((process.env.TERRAIN_BASELINE_URL||'')+'/?intro=0&seed=7291&debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>{
     window.starAgent.setRenderScale(.55);

@@ -1,5 +1,5 @@
 import { ITEMS } from './ship-inventory.js';
-import { STATION_SHOPS, STARTER_CREDITS, purchaseStationItem, StationShopController } from './station-shop.js';
+import { STATION_SHOPS, STARTER_CREDITS, purchaseStationItem } from './station-shop.js';
 import './station-shop.css';
 
 export function createStationShopUI(nav, inventory) {
@@ -14,24 +14,6 @@ export function createStationShopUI(nav, inventory) {
     <p class="manual-note shop-policy"></p><p class="shop-controls">Controller: D-pad or left stick to choose · A to confirm · B / Menu to close</p>`;
   document.body.append(dialog);
   let activeShop = null;
-  const controller = new StationShopController();
-  let controllerFrame = null;
-  function pollController() {
-    controllerFrame = null;
-    if (!dialog.open) return;
-    const action = controller.poll(document.hasFocus() && !document.hidden);
-    if (action === 'close') dialog.close();
-    else if (action === 'activate') {
-      if (dialog.contains(document.activeElement)) document.activeElement.click();
-    } else if (action) {
-      const buttons = [...dialog.querySelectorAll('button:not([disabled])')];
-      const current = buttons.indexOf(document.activeElement);
-      const index = (current + (action === 'next' ? 1 : -1) + buttons.length) % buttons.length;
-      buttons[index]?.focus({ preventScroll: true });
-      buttons[index]?.scrollIntoView({ block: 'nearest' });
-    }
-    if (dialog.open) controllerFrame = requestAnimationFrame(pollController);
-  }
   const number = value => value.toLocaleString('en-US', { maximumFractionDigits: 1 });
   function render() {
     const shop = STATION_SHOPS[activeShop];
@@ -52,7 +34,7 @@ export function createStationShopUI(nav, inventory) {
       const quantity = document.createElement('p'); quantity.className = 'shop-quantity';
       quantity.textContent = `${inventory.shopStock[activeShop][item.id]} in shop · ${owned} owned (${inventory.count('station', item.id)} in warehouse)`;
       info.append(quantity);
-      const buy = document.createElement('button'); buy.type = 'button'; buy.dataset.purchase = item.id;
+      const buy = document.createElement('button'); buy.type = 'button'; buy.dataset.purchase = item.id;buy.dataset.controllerKey=`purchase-${item.id}`;
       buy.textContent = `Buy 1 · ${number(offer.price)} CR`;
       buy.setAttribute('aria-label', `Buy ${item.name} for ${offer.price} credits`);
       // Keep unavailable offers keyboard reachable so their explanation can be read.
@@ -72,8 +54,7 @@ export function createStationShopUI(nav, inventory) {
   });
   dialog.querySelector('.dialog-top button').addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', () => {
-    if (controllerFrame !== null) cancelAnimationFrame(controllerFrame);
-    controllerFrame = null; controller.reset();
+    nav.gamepad.suspend();
     nav.keys.clear(); nav.velocity.set(0, 0, 0);
     nav.enabled = !document.querySelector('dialog[open]');
     if (nav.enabled) nav.canvas.focus({ preventScroll: true });
@@ -88,12 +69,8 @@ export function createStationShopUI(nav, inventory) {
       if (document.pointerLockElement) document.exitPointerLock();
       render(); dialog.querySelector('.shop-feedback').textContent = '';
       dialog.showModal();
-      controller.reset();
-      // Sample the current neutral state when the modal takes focus, so a fresh
-      // first D-pad press need not wait for an initial animation-frame poll.
-      // A held button still leaves this new input owner unarmed until released.
-      controller.poll(document.hasFocus() && !document.hidden);
-      controllerFrame = requestAnimationFrame(pollController);
+      // The shared dialog router owns controller focus and activation.
+      nav.gamepad.suspend();
       return true;
     },
   };

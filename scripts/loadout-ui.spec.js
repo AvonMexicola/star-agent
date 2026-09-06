@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 const out='/tmp/star-agent-loadout-evidence';
 test('equipment saves, medical slots work on an injured save, and mouse/touch can manage gear on mobile',async({page,browser})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});await mkdir(out,{recursive:true});
-  await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
+  await page.goto('/?intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.keyboard.press('k');await expect(page.locator('.inventory-equipment')).toBeVisible();
   await page.locator('[data-equipment-slot="tool"]').click();await page.locator('[data-controller-key="stow-tool-pack"]').click();expect(await page.evaluate(()=>window.starAgent.state.loadout.slots.tool)).toBeNull();
   await page.locator('[data-controller-key="assign-tool-pack-mining-laser-tool"]').click();await page.locator('[data-controller-key="draw-tool"]').click();
