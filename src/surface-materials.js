@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { terrainMapShader, terrainMapUniforms } from './terrain-maps.js';
 
 // A small, periodic material field. Channels hold relief, organic cover, stone
 // variation and roughness, all linear data. No downloaded textures are needed.
@@ -56,17 +57,18 @@ vec3 detailNormal(vec3 eyePosition, vec3 n, float height) {
 }
 `;
 
-export function configureTerrainMaterial(material, texture, albedoUniform, albedoReady, groundTextures) {
+export function configureTerrainMaterial(material, texture, albedoUniform, albedoReady, groundTextures, maps) {
   material.onBeforeCompile = shader => {
     shader.uniforms.surfaceDetail = { value: texture };
     shader.uniforms.groundMaterials = { value: groundTextures };
     shader.uniforms.planetAlbedo = albedoUniform;
     shader.uniforms.albedoReady = albedoReady;
+    Object.assign(shader.uniforms, terrainMapUniforms(maps));
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nattribute vec3 direction;\nattribute float terrainHeight;\nvarying float vGroundHeight;\nvarying vec3 vGroundNormal;\nattribute vec3 surfacePoint;\nvarying vec3 vSurfacePoint;\nvarying vec3 vPlanetDirection;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvSurfacePoint=surfacePoint;vPlanetDirection=direction;vGroundHeight=terrainHeight;vGroundNormal=normal;');
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', `#include <common>\n${sampling}
+      .replace('#include <common>', `#include <common>\n${sampling}\n${terrainMapShader}
         precision highp sampler2DArray;
         uniform sampler2DArray groundMaterials;
         varying float vGroundHeight;
@@ -85,14 +87,43 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
         diffuseColor.rgb = mix(diffuseColor.rgb,texture2D(planetAlbedo,puv).rgb,distant);
         vec3 weights = pow(abs(normalize(vGroundNormal)),vec3(6.0));
         weights /= max(dot(weights,vec3(1.0)),.0001);
-        float detailFade = 1.0-smoothstep(120.0,1600.0,range);
+        float detailFade = 1.0-smoothstep(800.0,4500.0,range);
         vec4 detail = vec4(diffuseColor.rgb,.5);
+        vec3 mappedGradient=vec3(0.0);
+        float mappedRoughness=.96;
         if (detailFade > .001) {
           vec4 macro = surfaceSample(pd*300.0,weights);
           float slope = 1.0-max(0.0,dot(normalize(vGroundNormal),pd));
           float organic = smoothstep(.012,.075,diffuseColor.g-diffuseColor.b);
           float snow = smoothstep(.42,.7,min(diffuseColor.r,min(diffuseColor.g,diffuseColor.b)));
           vec3 p = vSurfacePoint*.25;
+          if (terrainMapsReady > .5) {
+            TerrainSample ground = terrainSample(p,weights,0.0);
+            float growth = organic*smoothstep(.24,.65,macro.g*.6+surfaceSample(p/16.0,weights).g*.4);
+            if (growth>.01) ground=terrainMix(ground,terrainSample(p,weights,2.0),growth);
+            float beach=(1.0-smoothstep(3.0,26.0,vGroundHeight))*(1.0-smoothstep(.06,.2,slope));
+            if (beach>.01) ground=terrainMix(ground,terrainSample(p*.5,weights,3.0),beach);
+            float exposed=smoothstep(.045,.27,slope);
+            exposed=max(exposed,(1.0-organic)*.24*(1.0-beach));
+            if (exposed>.01) ground=terrainMix(ground,terrainSample(p*.25,weights,1.0),exposed);
+            // A second, broad texture scale keeps outcrops readable in low flight.
+            vec3 broad=terrainColor(vSurfacePoint/64.0,weights,1.0);
+            float mineral=dot(broad,vec3(.2126,.7152,.0722));
+            ground.color*=mix(.72,1.3,smoothstep(.035,.36,mineral));
+            float phase=vGroundHeight*.22+macro.r*5.0;
+            float band=(.5+.5*sin(phase))*(1.0-smoothstep(.3,2.0,fwidth(phase)));
+            ground.color*=mix(vec3(.83,.87,.92),vec3(1.12,1.02,.87),band*exposed);
+            // Preserve geographic biome colour, while steep snow faces expose rock.
+            ground.color=mix(ground.color,ground.color*(diffuseColor.rgb+vec3(.15))*1.65,.18);
+            float snowBreak=smoothstep(.06,.24,mineral)*smoothstep(.012,.11,slope);
+            float snowCover=snow*(1.0-smoothstep(.035,.19,slope))*(1.0-snowBreak*.8);
+            ground.color=mix(ground.color,vec3(.72,.81,.87)*(.73+mineral*.8),snowCover);
+            float wet=(1.0-smoothstep(.15,2.8,vGroundHeight))*beach;
+            ground.color*=1.0-wet*.43;
+            mappedRoughness=mix(clamp(ground.roughness,.58,1.0),.38,wet);
+            mappedGradient=ground.gradient*mix(.8,.18,snowCover);
+            detail=vec4(ground.color,.5);
+          } else {
           vec4 soil = groundSample(p,weights,0.0);
           vec4 stone = groundSample(p*.25,weights,1.0);
           vec4 moss = groundSample(p,weights,2.0);
@@ -105,13 +136,14 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
           // Retain the biome's large-scale tint while resolving real material relief.
           detail.rgb=mix(detail.rgb,detail.rgb*(diffuseColor.rgb+vec3(.1))*2.0,.25);
           detail.rgb=mix(detail.rgb,diffuseColor.rgb*(.88+soil.a*.2),snow);
+          }
           diffuseColor.rgb=mix(diffuseColor.rgb,detail.rgb,detailFade*.9);
         }
       `)
-      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.88+detail.a*.1,detailFade);')
-      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nnormal=detailNormal(-vViewPosition,normal,detail.a*.055*detailFade);');
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,terrainMapsReady>.5?mappedRoughness:.88+detail.a*.1,detailFade);')
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif(terrainMapsReady>.5) normal=terrainNormalAt(normal,mappedGradient,detailFade*(1.0-smoothstep(100.0,1100.0,range))); else normal=detailNormal(-vViewPosition,normal,detail.a*.055*detailFade);');
   };
-  material.customProgramCacheKey = () => 'terrain-material-layers-v2';
+  material.customProgramCacheKey = () => 'terrain-material-cc0-v1';
 }
 
 /** Object-local wear on the merged hull and furniture, which have no UVs. */

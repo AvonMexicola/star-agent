@@ -1,0 +1,50 @@
+{
+  "license": "CC0-1.0",
+  "licenseUrl": "https://docs.ambientcg.com/license/",
+  "author": "ambientCG / Lennart Demes",
+  "layerSize": 512,
+  "layers": [
+    {
+      "id": "Ground048",
+      "role": "soil",
+      "source": "https://ambientcg.com/a/Ground048",
+      "download": "https://ambientcg.com/get?file=Ground048_1K-JPG.zip",
+      "archiveSha256": "3decfdd20e6c8f8c1ff02840cbd336922fca678e23987111af4bebb0a7a89c96"
+    },
+    {
+      "id": "Rock030",
+      "role": "cliff",
+      "source": "https://ambientcg.com/a/Rock030",
+      "download": "https://ambientcg.com/get?file=Rock030_1K-JPG.zip",
+      "archiveSha256": "2fd0bc2d214e2487c19062ed0798a85dd135b41cfc12bbaed42d5acae238f989"
+    },
+    {
+      "id": "Ground037",
+      "role": "moss",
+      "source": "https://ambientcg.com/a/Ground037",
+      "download": "https://ambientcg.com/get?file=Ground037_1K-JPG.zip",
+      "archiveSha256": "4e69db2b7251b1736fa70fe6fe4ab80d64bd220117dd5dd4c7caaead51c2574e"
+    },
+    {
+      "id": "Ground054",
+      "role": "sand",
+      "source": "https://ambientcg.com/a/Ground054",
+      "download": "https://ambientcg.com/get?file=Ground054_1K-JPG.zip",
+      "archiveSha256": "b325ec2f167dce95a0fabc61a2104641288cf20915419578c3efdb46200c563e"
+    }
+  ],
+  "packing": {
+    "albedo.png": "sRGB RGB; opaque",
+    "normal-roughness.png": "linear OpenGL normal XY in RG, roughness in B; opaque"
+  },
+  "files": {
+    "albedo.png": {
+      "bytes": 2235682,
+      "sha256": "31a4e80486ab25c67ce35f57c0d3a95d1e0df884f83dc32c1afccba3888c60c7"
+    },
+    "normal-roughness.png": {
+      "bytes": 2312231,
+      "sha256": "6f285717aa39fb20cf793c9d65f46d65a7356f09d9ff618e04af0cf157855462"
+    }
+  }
+}
