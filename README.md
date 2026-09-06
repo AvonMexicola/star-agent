@@ -56,6 +56,8 @@ Connect a gamepad and press a button, then release the controls to start. Uses t
 
 In help, the D-pad selects controls, A / Cross activates, B / Circle closes, and the right stick scrolls. Menu initially focuses MAIN POWER while seated. Seed entry still uses the keyboard. Controllers without a standard browser mapping are reported as unsupported; custom remapping and vibration are not implemented. Controller availability depends on browser/OS support and requires HTTPS or localhost.
 
+Hit terrain, polar ice or water at **12 m/s or more into the surface** and the ship is destroyed. The impact uses surface-normal closing speed, including terrain slope, before collision stops the ship. A short procedural explosion and crash screen replace flight; propulsion, launch and boarding stay disabled. Choose **Return to orbit**, press O, or use an explicit destination shortcut to restart with the same seed. Gentle contact and landing assistance still work. Station damage, persistent wrecks and deformable ship parts are not implemented.
+
 ## Visit Aeon Orbital
 
 Shift + click **Aeon Orbital** to set a course for continuous flight, or click it normally for optional transit to the exterior approach. The doors open automatically as you approach. Fly forward with W, brake with X over the central pad, and press L to dock. Approach speed is limited automatically near the station.
@@ -101,6 +103,8 @@ npm run test:browser -- -c scripts/hangar.config.js
 npm run test:browser -- -c scripts/flight-model.config.js
 npm run test:browser -- -c scripts/travel.config.js
 npm run test:browser -- -c scripts/opening.config.js
+
+npm run test:browser -- -c scripts/crash.config.js
 ```
 
 Unit checks cover terrain seams, local coordinate precision, seed reproducibility, worker/collision agreement, continuous descent and travel between zone coordinates, physical boarding, gap-free tree LOD coverage, and real-asset station collision/docking/deck support. Browser checks compile and render shaders and exercise the playable controls. The fidelity inspection saves images and render-environment metadata under `/tmp/star-agent-fidelity`; the station journey saves `/tmp/star-agent-station`; the surface-detail inspection saves `/tmp/star-agent-surface`; the boarding inspection saves `/tmp/star-agent-*.png`.

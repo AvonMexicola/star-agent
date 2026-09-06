@@ -45,6 +45,14 @@
     </main>
     <div id="opening-hint">W TO WALK · OR MOVE THE LEFT STICK</div>
     <div id="toast" role="status" aria-live="polite"></div>
+    <section id="crash-panel" hidden aria-label="Crash recovery">
+      <p class="eyebrow">CRITICAL IMPACT</p>
+      <h2 role="alert">Ship destroyed.</h2>
+      <p id="crash-impact"></p>
+      <p>Flight systems lost. Brake before touchdown or use landing assist with L.</p>
+      <button id="crash-recover" class="primary-button">RETURN TO ORBIT <span>↗</span></button>
+      <small>Same planet seed · new ship</small>
+    </section>
     <div id="transit"><span>QUICK TRANSIT</span><strong id="transit-name">AEON</strong><i></i></div>
     <dialog id="help-dialog">
       <div class="dialog-top"><span class="eyebrow">FLIGHT MANUAL · SA–01</span><button id="close-help" aria-label="Close controls">✕</button></div>

@@ -78,6 +78,7 @@ test('regular flight crosses the atmosphere, lands and climbs back to space with
     const distance = nav.position.distanceTo(previous);
     assert.ok(distance < 3000, `continuous step: ${distance}m`);
     previous.copy(nav.position);
+    if(nav.mode==='flight'&&nav.altitude<100&&!nav.autoland){nav.keys.clear();nav.landOrLaunch();}
     for (const threshold of [70000,10000,1500,100]) if (nav.altitude < threshold) layers.add(threshold);
   }
   assert.equal(nav.mode, 'landed'); assert.equal(layers.size, 4);
