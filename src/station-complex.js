@@ -4,7 +4,7 @@ import { Station, STATION_MODEL_URL, STATION_LOD_URL, stationQuaternion, default
 import { RADIUS } from './world.js';
 import { createStationFinishMaterials } from './station-finish-materials.js';
 import { createStationFinishGraphics } from './station-finish-graphics.js';
-import { createStationFinishLighting } from './station-finish-lighting.js';
+import { createStationFinishLighting, prepareStationFinishShadows } from './station-finish-lighting.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
@@ -51,6 +51,7 @@ export class StationComplex {
       let colliders;
       for(const spec of POD_LAYOUT){
         const pod=new Station(this.scene,{gltf:{scene:gltf.scene.clone(true),animations:gltf.animations},lodUrl:null,offset:spec.offset,yaw:spec.yaw,lodDistance:180,colliders});
+        if(finish)prepareStationFinishShadows(pod.model);
         colliders??=pod.colliders;pod.id=spec.id;
         if(lod)pod.attachLod({scene:lod.scene.clone(true)});
         const number=pod.model.getObjectByName('DeckNumber');if(number)number.visible=false;

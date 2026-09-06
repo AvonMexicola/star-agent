@@ -12,12 +12,12 @@
         "min": [
           -19.845,
           -7.99,
-          18.525
+          17.225
         ],
         "max": [
           -17.755,
           -6.1755,
-          20.004
+          18.704
         ]
       },
       "triangles": 5692,
@@ -29,12 +29,12 @@
         "min": [
           17.7,
           -8.0,
-          17.727
+          17.127
         ],
         "max": [
           19.9,
           -6.0975,
-          19.25
+          18.65
         ]
       },
       "triangles": 3392,
@@ -107,10 +107,61 @@
       },
       "triangles": 752,
       "sourceParts": 12
+    },
+    {
+      "name": "LeftStorage",
+      "bounds": {
+        "min": [
+          -20.25,
+          -8.009,
+          18.811
+        ],
+        "max": [
+          -17.8344,
+          -5.43,
+          21.189
+        ]
+      },
+      "triangles": 4512,
+      "sourceParts": 80
+    },
+    {
+      "name": "RightStorage",
+      "bounds": {
+        "min": [
+          17.8344,
+          -8.009,
+          18.811
+        ],
+        "max": [
+          20.25,
+          -5.43,
+          21.189
+        ]
+      },
+      "triangles": 4512,
+      "sourceParts": 80
+    },
+    {
+      "name": "OperationsGallery",
+      "bounds": {
+        "min": [
+          -12.15,
+          0.3,
+          23.75
+        ],
+        "max": [
+          12.15,
+          3.8,
+          24.365
+        ]
+      },
+      "triangles": 5508,
+      "sourceParts": 100
     }
   ],
-  "triangles": 21700,
-  "bytes": 1512836,
-  "materials": 8,
-  "drawPrimitives": 8
+  "triangles": 36232,
+  "bytes": 2564192,
+  "materials": 9,
+  "drawPrimitives": 9
 }

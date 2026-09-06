@@ -20,6 +20,7 @@ import { createFreighter } from './freighter.js';
 import { FREIGHTER_LAYOUT, FreighterSystems } from './freighter-layout.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { createLighting } from './lighting.js';
+import { updateStationFinishSun } from './station-finish-lighting.js';
 import { weatherShip } from './surface-materials.js';
 import { SEED, GENERATOR_VERSION } from './generation.js';
 
@@ -184,7 +185,7 @@ try {
     lighting.update(normal,sunDirection,altitude,nav.body.airless);
     moon.update(nav.position,origin);
     const inFinishedHangar=station.finishStatus==='ready'&&station.location==='hangar'&&station.isInsideHangar(nav.position);
-    lighting.sun.intensity=inFinishedHangar ? .65 : 3.4;
+    updateStationFinishSun(lighting.sun,inFinishedHangar);
     if(nav.stationDistance<500)lighting.sun.castShadow=true;
     planet.update(nav.position,origin,sunDirection,elapsed,Math.max(0,nav.position.length()-RADIUS));vegetation.setExclusion?.(nav.shipPosition);vegetation.update(nav.position,origin,elapsed);
     ship.visible=Boolean(nav.shipPosition)||(nav.mode==='flight'&&(nav.locked||nav.controllerActive));

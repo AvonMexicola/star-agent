@@ -15,6 +15,7 @@ args = argparse.ArgumentParser()
 args.add_argument('--out', default='public/models/station-props.glb')
 args.add_argument('--manifest', default='assets/station/props-manifest.json')
 args.add_argument('--render')
+args.add_argument('--view', choices=['corner','gallery'], default='corner')
 opts=args.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 M={}; GROUPS={}; current=''
@@ -34,6 +35,10 @@ material('DarkSteel',(.055,.068,.075),.7,.43)
 material('Rubber',(.018,.023,.025),0,.8)
 material('Red',(.46,.035,.018),.2,.4)
 material('WarmLight',(1,.65,.3),0,.3,2)
+material('Glass',(.10,.20,.22),.15,.22)
+M['Glass'].node_tree.nodes.get('Principled BSDF').inputs['Alpha'].default_value=.14
+M['Glass'].diffuse_color=(.10,.20,.22,.14)
+M['Glass'].surface_render_method='DITHERED'
 
 def vec(p):return Vector((p[0],-p[2],p[1]))
 def register(ob, name, mat):
@@ -89,7 +94,7 @@ def case(x,y,z,w=1.4,h=.65,d=.8,color='Petrol'):
     for i in range(11):box('TrackingCode',(x-.105+i*.02,y+h*.20,z-d/2-.023),(.007 if i%3 else .011,.075,.003),'DarkSteel',0)
 
 current='CargoDolly'
-x,z=-18.8,19.2
+x,z=-18.8,17.9
 box('LoadDeck',(x,-7.60,z),(2.05,.15,1.35),'Ochre',.045)
 box('DeckGrip',(x,-7.51,z),(1.83,.025,1.13),'Rubber',.015)
 for sx in [-1,1]:
@@ -104,7 +109,7 @@ for sx in [-1,1]:box('CornerBumper',(x+sx*.98,-7.59,z),(.13,.14,1.27),'DarkSteel
 case(x,-7.49,z-.05,1.67,.69,.98,'Ivory');case(x+.09,-6.79,z-.02,1.45,.58,.86,'Petrol')
 
 current='StrappedPallet'
-x,z=18.8,18.5
+x,z=18.8,17.9
 for dx in [-.78,0,.78]:box('ForkRunner',(x+dx,-7.89,z),(.25,.22,1.42),'DarkSteel',.025)
 for dz in [-.55,0,.55]:box('PalletCrossmember',(x,-7.74,z+dz),(2.2,.13,.21),'Ochre',.024)
 for dx in [-.9,-.45,0,.45,.9]:box('PalletDeck',(x+dx,-7.63,z),(.37,.09,1.5),'Ivory',.018)
@@ -210,19 +215,87 @@ box('LintelTrim',(0,-4.71,22.27),(4.90,.20,.40),'Petrol',.045)
 box('LintelTaskLight',(0,-4.83,22.25),(3.98,.028,.16),'WarmLight',.012)
 # No floor threshold, no elevator door leaves, no collider across the opening.
 
+
+# Fitted skins for two original source stacks; original collision volumes remain.
+# The dolly and pallet have been moved clear of these existing, measured boxes.
+def storage_skin(x, y, z, w, h, d, color):
+    # The source box supplies the core. Thin shells, gaskets and hardware supply
+    # real manufacturing joints without adding another solid overlapping block.
+    for side in [-1,1]:
+        box('SideSkin',(x+side*(w/2+.013),y+h/2,z),(.026,h-.07,d-.07),color,.008)
+        box('EndSkin',(x,y+h/2,z+side*(d/2+.013)),(w-.07,h-.07,.026),color,.008)
+        box('LongitudinalSeal',(x+side*(w/2+.027),y+h*.77,z),(.018,.022,d-.06),'Rubber',.004)
+        box('CrossSeal',(x,y+h*.77,z+side*(d/2+.027)),(w-.06,.022,.018),'Rubber',.004)
+    box('StackLid',(x,y+h+.017,z),(w-.02,.034,d-.02),color,.012)
+    box('StackTopGasket',(x,y+h-.024,z),(w+.035,.042,d+.035),'Rubber',.006)
+    for sx in [-1,1]:
+        for sz in [-1,1]:
+            box('VerticalRail',(x+sx*(w/2-.025),y+h/2,z+sz*(d/2-.025)),(.15,h+.018,.15),'DarkSteel',.022)
+            for yy in [y+.14,y+h-.12]:
+                # Compact hexagonal captive bolts on both front/back rail faces.
+                screw((x+sx*(w/2-.025),yy,z+sz*(d/2+.056)),r=.017)
+    for sz in [-1,1]:
+        for dx in [-w*.28,w*.28]:
+            zz=z+sz*(d/2+.05)
+            box('LatchRecess',(x+dx,y+h*.76,zz),(.16,.24,.036),'Rubber',.012)
+            box('RetainingLatch',(x+dx,y+h*.77,zz+sz*.023),(.11,.18,.032),'Steel',.012)
+    # Side panels face the clear service aisle; carry pulls are genuine U forms.
+    inward=-1 if x>0 else 1
+    xx=x+inward*(w/2+.074)
+    for dz in [-d*.31,d*.31]:
+        box('HandleRecess',(xx,y+h*.40,z+dz),(.022,.23,.47),'Rubber',.007)
+        for end in [-1,1]:rod('HandleBracket',(xx,y+h*.4,z+dz+end*.16),(xx+inward*.065,y+h*.4,z+dz+end*.16),.025,'Steel',10)
+        rod('StackCarryHandle',(xx+inward*.065,y+h*.4,z+dz-.16),(xx+inward*.065,y+h*.4,z+dz+.16),.028,'Steel',10)
+    for offset in [-w*.27,w*.27]:box('LidRib',(x+offset,y+h+.045,z),(.08,.05,d*.72),'DarkSteel',.012)
+
+for side in [-1,1]:
+    current='LeftStorage' if side<0 else 'RightStorage'
+    storage_skin(side*19.1,-8,20,2.2,1.6,2.2,'Petrol')
+    storage_skin(side*18.9,-6.4,19.8,1.6,.9,1.6,'Ivory')
+
+# Shallow operations gallery fitted over the old luminous window strip. The root
+# runtime darkens ControlGlass; opaque backing here masks its coarse old consoles.
+current='OperationsGallery'
+box('GalleryBack',(0,2.01,24.345),(24.0,2.88,.04),'DarkSteel',.008)
+box('GalleryLowBack',(0,1.015,24.01),(24.0,1.03,.06),'DarkSteel',.008)
+for yy in [.43,3.57]:box('WindowTransom',(0,yy,24.02),(24.28,.20,.48),'Petrol',.035)
+box('WindowSill',(0,.36,23.96),(24.30,.12,.38),'Steel',.025)
+for xx in [-12,-8,-4,0,4,8,12]:
+    box('WindowMullion',(xx,2.0,24.04),(.12,3.10,.45),'DarkSteel',.025)
+    box('MullionCap',(xx,2.0,23.796),(.074,3.04,.022),'Steel',.007)
+    for yy in [.64,3.32]:screw((xx,yy,23.777),r=.016)
+for xx in [-10,-6,-2,2,6,10]:
+    box('ConsoleCarcass',(xx,1.10,23.965),(1.62,.54,.068),'Petrol',.014)
+    box('ConsoleDisplayBezel',(xx,1.22,23.942),(1.22,.44,.044),'Steel',.009)
+    box('ConsoleDarkFace',(xx,1.22,23.917),(1.14,.36,.012),'Rubber',.004)
+    box('ConsoleControlRail',(xx,.86,23.931),(1.64,.08,.09),'Steel',.012)
+    # Chair backs and a narrow head rest form quiet staffed-control-room silhouettes.
+    box('OperatorSeatBack',(xx+1.15,1.61,24.15),(.52,.74,.19),'Rubber',.08)
+    box('OperatorHeadrest',(xx+1.15,2.11,24.13),(.36,.20,.15),'Rubber',.045)
+    rod('OperatorSeatStem',(xx+1.15,.98,24.2),(xx+1.15,1.48,24.2),.042,'Steel')
+    for yy in [2.83,2.91,2.99]:box('VentSlot',(xx,yy,24.27),(2.2,.028,.035),'Rubber',.006)
+box('OperationsPlaque',(0,3.65,23.79),(5.86,.30,.08),'DarkSteel',.012)
+# Six single-surface panes: no doubled transparency, and excluded from collisions.
+for index,(left,right) in enumerate(zip([-12,-8,-4,0,4,8],[-8,-4,0,4,8,12])):
+    points=[vec((left+.065,.54,23.86)),vec((right-.065,.54,23.86)),vec((right-.065,3.46,23.86)),vec((left+.065,3.46,23.86))]
+    mesh=bpy.data.meshes.new('OperationsGlass');mesh.from_pydata(points,[],[(0,3,2,1)]);mesh.update()
+    uv=mesh.uv_layers.new(name='UVMap')
+    for loop,coord in zip(mesh.loops,[(0,0),(0,1),(1,1),(1,0)]):uv.data[loop.index].uv=coord
+    ob=bpy.data.objects.new('OperationsGlass',mesh);bpy.context.collection.objects.link(ob);register(ob,'GlassPane','Glass')
+
 bpy.context.view_layer.update()
 manifest={'version':1,'generator':'blender/build_station_props.py','coordinates':'game X right, Y up, Z aft; floor Y=-8; identity placement','asset':'/models/station-props.glb','lod':'hero only; shared geometry/materials across all pods','integration':'Attach glTF scene to station hero root before shared collider build. Existing merged workbenches remain; BenchDress overlays one counter. Do not copy into LOD. All assemblies are decorative, existing terminal/elevator interactions remain runtime-owned.','assemblies':[]}
 for name,objects in GROUPS.items():
     points=[ob.matrix_world@Vector(c) for ob in objects for c in ob.bound_box]
     game=[Vector((p.x,p.z,-p.y)) for p in points]
     manifest['assemblies'].append({'name':name,'bounds':{'min':[round(min(p[i] for p in game),4) for i in range(3)],'max':[round(max(p[i] for p in game),4) for i in range(3)]},'triangles':sum(len(p.vertices)-2 for ob in objects for p in ob.data.polygons),'sourceParts':len(objects)})
-# One batch per material keeps all 20 hero clones on eight shared draw primitives.
+# One batch per material: eight opaque batches and one shared glazing batch.
 for key,mat in M.items():
     objects=[ob for ob in bpy.context.scene.objects if ob.type=='MESH' and mat in list(ob.data.materials)]
     if not objects:continue
     bpy.ops.object.select_all(action='DESELECT')
     for ob in objects:ob.select_set(True)
-    bpy.context.view_layer.objects.active=objects[0];bpy.ops.object.join();ob=bpy.context.object;ob.name='StationProps_'+key
+    bpy.context.view_layer.objects.active=objects[0];bpy.ops.object.join();ob=bpy.context.object;ob.name='Detail_OperationsGlass' if key=='Glass' else 'StationProps_'+key
     # Bake transforms in authoring frame; UVs from mesh primitives are retained.
     bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
     # Smooth bevel faces while keeping broad manufactured faces planar.
@@ -250,4 +323,8 @@ if opts.render:
         ob=bpy.data.objects.new(name,data);scene.collection.objects.link(ob);ob.location=vec(pos);ob.rotation_euler=(vec((-18.5,-6.8,17))-ob.location).to_track_quat('-Z','Y').to_euler()
     bpy.ops.object.camera_add(location=vec((-12.3,-4.0,22.9)));camera=bpy.context.object
     camera.rotation_euler=(vec((-18.7,-6.5,16.5))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.lens=41;scene.camera=camera
+    if opts.view=='gallery':
+        camera.location=vec((0,1.7,5));camera.rotation_euler=(vec((0,2,24))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.lens=26;scene.render.resolution_x=1600;scene.render.resolution_y=620
+        data=bpy.data.lights.new('Gallery softbox','AREA');data.energy=2600;data.shape='RECTANGLE';data.size=18;data.size_y=5
+        ob=bpy.data.objects.new('Gallery softbox',data);scene.collection.objects.link(ob);ob.location=vec((0,5,16));ob.rotation_euler=(vec((0,2,24))-ob.location).to_track_quat('-Z','Y').to_euler()
     scene.view_settings.view_transform='AgX';scene.render.filepath=os.path.abspath(opts.render);os.makedirs(os.path.dirname(opts.render),exist_ok=True);bpy.ops.render.render(write_still=True)

@@ -4,7 +4,10 @@ import {stationFinishPalette} from './station-finish-palette.js';
 // One small print set per loaded station, shared by all twenty cloned berths.
 // Coordinates are game-local metres, with the aft wall facing -Z. These meshes
 // deliberately use Sign_/Detail names: paper and frame trim add no floor bumps.
-const ATLAS = Object.freeze({freight:[0,0,640,960],safety:[672,0,352,440],inspection:[672,472,352,220],serial:[672,724,352,160]});
+const ATLAS = Object.freeze({
+  freight:[0,0,640,960],safety:[672,0,352,440],inspection:[672,472,352,220],serial:[672,724,352,160],
+  operations:[0,968,640,56],stencil:[672,888,192,20],console:[672,916,352,104],
+});
 const UNIT_BOX = new THREE.BoxGeometry(1,1,1);
 let shared;
 
@@ -77,6 +80,22 @@ function atlasTexture(){
     rect(672,724,352,160,p.paper);text('AEON // EQUIPMENT',687,758,23);
     for(let i=0;i<70;i++){const width=1+(i*13%4);rect(688+i*4.4,780,width,45,p.ink);}
     text('AX-2048 / STATION PROPERTY',688,856,15,mono);
+    // Reuse the remaining atlas margins for the shallow operations gallery.
+    // These are static architectural identification and equipment schematics,
+    // never invented live berth or traffic telemetry.
+    rect(0,968,640,56,p.ink);rect(0,968,7,56,p.ochre);
+    text('OPERATIONS / BAY CONTROL',22,1008,35,display,p.paper);
+    text('OPS / CONTROL GALLERY',680,904,16,display,p.paper);
+    rect(672,916,352,104,p.ink);
+    text('BAY CONTROL / SERVICE DIAGRAM',684,935,12,mono,p.muted);
+    line([[684,944],[1012,944]],p.muted,1);
+    for(let i=0;i<3;i++){
+      const x=693+i*108;
+      ctx.strokeStyle=p.muted;ctx.lineWidth=1;ctx.strokeRect(x,965,61,33);
+      line([[x+7,989],[x+7,974],[x+54,974],[x+54,989]],p.mint,1.5);
+      line([[x+61,981],[x+83,981],[x+83,956]],p.muted,1);
+      rect(x+80,953,6,6,p.ochre);
+    }
     texture.needsUpdate=true;
   };
   draw();
@@ -100,6 +119,10 @@ function resources(){
   steel.name='StationPrintFrame';backing.name='StationPrintBacking';
   steel.userData.unweathered=backing.userData.unweathered=true;
   shared={selene:printMaterial(seleneFallback),atlas:printMaterial(atlas),steel,backing,planes:new Map()};
+  shared.stencil=printMaterial(atlas);shared.stencil.name='StationGalleryGlazingStencil';
+  shared.stencil.transparent=true;shared.stencil.alphaTest=.15;shared.stencil.depthWrite=false;
+  shared.console=printMaterial(atlas);shared.console.name='StationGalleryConsolePrint';
+  shared.console.emissive.set('white');shared.console.emissiveMap=atlas;shared.console.emissiveIntensity=.14;
   const resource=shared;
   resource.ready=typeof document==='undefined'?Promise.resolve(false):new THREE.TextureLoader()
     .loadAsync('/textures/station/poster-selene.webp')
@@ -148,6 +171,22 @@ export function createStationFinishGraphics(){
     items.forEach(({size,position},i)=>{dummy.position.set(...position);dummy.scale.set(...size);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});
     mesh.castShadow=true;mesh.receiveShadow=true;group.add(mesh);
   }
+  // Matches the Blender props kit's upper control-gallery frame and desks.
+  // Shared static schematics deliberately carry no simulated occupancy state.
+  const header=new THREE.Mesh(printGeometry('operations',5.7,.24),r.atlas);
+  header.name='Sign_OperationsGalleryHeader';header.position.set(0,3.65,23.73);header.rotation.y=Math.PI;
+  header.receiveShadow=true;group.add(header);
+  const galleryXs=[-10,-6,-2,2,6,10];
+  for(const [key,width,height,y,z,material,name] of [
+    ['console',1.12,.34,1.22,23.905,r.console,'Detail_OperationsConsoleGraphics'],
+    ['stencil',.50,.07,.83,23.825,r.stencil,'Sign_OperationsGlazingStencils'],
+  ]){
+    const mesh=new THREE.InstancedMesh(printGeometry(key,width,height),material,galleryXs.length);
+    mesh.name=name;dummy.rotation.set(0,Math.PI,0);dummy.scale.set(1,1,1);
+    galleryXs.forEach((x,i)=>{dummy.position.set(x,y,z);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});
+    mesh.receiveShadow=true;group.add(mesh);
+  }
   group.userData.prints={count:5,textureFiles:['/textures/station/poster-selene.webp'],sharedAtlasSize:1024};
+  group.userData.operations={headers:1,consoles:6,stencils:6,sharedPrintAtlas:true};
   return group;
 }

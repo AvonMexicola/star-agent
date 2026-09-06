@@ -11,21 +11,35 @@ The existing station hull builder and its GLBs remain owned by the manager's lan
 
 ## What is implemented
 
-- Seven shared paint, steel, rubber and deck materials. Missing hull UVs use
+- Seven shared paint, steel, rubber and deck materials, plus a dim gallery backing
+  and transparent observation glass. Missing hull UVs use
   mesh-local metre projection; native Three.js standard materials retain log depth.
   The deck uses a 1024-square WebP with mirrored sampling. Separate procedural
   roughness and microrelief avoid interpreting the generated image's light as depth.
-- Six Blender assemblies: latched freight cases on a wheeled dolly, strapped pallet,
+- Nine Blender assemblies: latched freight cases on a wheeled dolly, strapped pallet,
   workbench drawers and tools, extinguisher cabinet, terminal hardware and elevator
-  jamb trim. The separate GLB has 21,700 triangles, eight material batches and
-  1,512,836 bytes. Each assembly stays below 10,000 triangles.
+  jamb trim, fitted skins for the two nearest original storage stacks and an
+  operations-window gallery. The separate GLB has 36,232 triangles, eight opaque
+  material batches plus one glass batch, and 2,564,192 bytes. Each assembly stays
+  below 10,000 triangles. The dolly and pallet sit forward of the old storage
+  boxes, correcting their previous overlap.
 - Five physical prints: Selene exploration, freight services, cargo safety,
   inspection and serial identification. One 683×1024 WebP and one 1024-square
   canvas atlas; frames and backings use shared instanced batches. Exact safety and
   equipment copy is authored deterministically. Prints receive scene lighting.
+  The same atlas now supplies the operations header, glazing stencils and six
+  static console schematics without increasing texture dimensions or payload.
 - A single four-spotlight rig follows the occupied bay. Only its broad service
   light casts a 1024-square local shadow; the other three illuminate task areas.
   General bay fill and the interior sun are reduced to preserve material contrast.
+  The existing sun shadow frustum tightens to 90 m across in the occupied hangar
+  and restores its original size and bias outside. Painted markings, printed
+  letters and glass do not cast opaque shadows; equipment and frames still do.
+
+The operations gallery is shallow decorative architecture: tinted panes, framing,
+console silhouettes and seat backs. Its original emissive window strip becomes a
+dim opaque rear surface. It is not a walkable control room or live traffic system.
+Working light bars, navigation beacons and their animation remain unchanged.
 
 Resources are created before the twenty pod instances are cloned. Geometry,
 materials and textures remain shared; distant pods retain the existing batched
@@ -55,7 +69,7 @@ and existing game textures. Four local spotlights are not multiplied by twenty.
    after any texture change, including the mirrored deck repetition.
 6. Run `npm test` and `npm run test:browser -- -c scripts/hangar-finish.config.js`.
    The latter builds production assets, exercises functional services and Atlas,
-   and captures five controlled views under `/tmp/star-agent-hangar-finish-evidence`.
+   and captures six controlled views under `/tmp/star-agent-hangar-finish-evidence`.
    Inspect the images and console; a successful build alone is insufficient.
 7. Submit the stack for manager review. Reconcile current opening, travel and
    global lighting changes before integration; never copy this branch's older
@@ -63,7 +77,7 @@ and existing game textures. Four local spotlights are not multiplied by twenty.
 
 ## Validation and remaining work
 
-`npm test`: **88 tests passed**, including actual combined-GLB aisle, elevator,
+`npm test`: **91 tests passed**, including actual combined-GLB aisle, elevator,
 terminal screen, deck and Atlas flight-envelope checks. The production build
 passes with the existing bundle-size advisory. Chromium gameplay checks pass for
 Atlas unlock and all three lifts, inventory persistence, cargo Take all, physical
@@ -73,10 +87,10 @@ The Nomad journey flies through the doors, docks, walks through the hatch and do
 the ramp, reboards and launches; its desktop/390×844 phone layout checks pass too.
 In total, seven browser tests passed across the gameplay run and final capture run.
 
-Five in-game views were inspected at seed 7291, 1440×900, render scale 1, Chromium
+Six in-game views were inspected at seed 7291, 1440×900, render scale 1, Chromium
 151.0.7922.173 with ANGLE Vulkan SwiftShader. There were no console, page or shader
-errors in the normal visual run. Scene totals for those views were 349–456 draws
-and 403,630–443,582 triangles, including shadow passes. These are render counts,
+errors in the normal visual run. Scene totals for those views were 273–410 draws
+and 399,166–460,822 triangles, including shadow passes. These are render counts,
 not a hardware FPS claim. The views use controlled camera fixtures; they do not
 exercise the newer playable opening. Machine-readable run evidence stays in `/tmp`.
 
@@ -88,16 +102,21 @@ After, actual game renderer:
 
 ![Service corner with shared materials, props, prints and task lighting](qa/hangar-finish-corner.png)
 
+[The first finish pass](qa/hangar-finish-first-pass.png) is preserved for comparison
+with the subsequent window, storage and shadow refinements.
+
 ![Readable scene-lit posters and safety print](qa/hangar-finish-posters.png)
 
 ![Manufactured freight cases, dolly and dressed workbench](qa/hangar-finish-props.png)
+
+![Shallow operations gallery viewed from walking eye height](qa/hangar-finish-gallery.png)
 
 [Terminal close view](qa/hangar-finish-terminal.png) and
 [deck grazing-angle view](qa/hangar-finish-deck.png) are also saved. The separate
 `docs/qa/hangar-props-corner.png` and `hangar-graphics-*` images are studio/atlas
 reviews, not game screenshots.
 
-This is the service-corner slice. Original large block storage, wall and ceiling
+This is the service-corner slice. More distant original block storage, wall and ceiling
 construction, bright navigation boards, the hub counter and seating remain for
 follow-up. The wider art target is not yet achieved. The current branch predates
 the manager's playable opening and system travel integration; its fixture views

@@ -7,6 +7,7 @@ const MATERIAL_KEYS = {
   Gunmetal: 'steel', Truss: 'dark', Deck: 'deck', Rubber: 'rubber', ServiceOchre: 'ochre',
   FinishIvory: 'ivory', FinishPetrol: 'petrol', FinishSteel: 'steel', FinishDark: 'dark',
   FinishDeck: 'deck', FinishRubber: 'rubber', FinishOchre: 'ochre',
+  ControlGlass: 'galleryBack', FinishGlass: 'observationGlass',
 };
 
 function tileSettings(texture) {
@@ -95,6 +96,10 @@ export async function createStationFinishMaterials({ palette = stationFinishPale
     rubber: { color: palette.rubber, metalness: 0, roughness: .98, bumpScale: .00065 },
     deck: { color: 'white', metalness: .08, roughness: .86, bumpScale: .0014, map: deck },
     ochre: { color: palette.ochre, metalness: .14, roughness: .73, bumpScale: .0004 },
+    // The original opaque control-room pane becomes the dim rear surface of the
+    // shallow gallery. The new transparent pane is separate Blender geometry.
+    galleryBack: { color: palette.dark, metalness: .08, roughness: .36, emissive: palette.cool, emissiveIntensity: .035, envMapIntensity: .25, bumpMap: null, roughnessMap: null, bumpScale: 0 },
+    observationGlass: { color: palette.cool, metalness: .12, roughness: .18, transparent: true, opacity: .14, depthWrite: false, envMapIntensity: .35, bumpMap: null, roughnessMap: null, bumpScale: 0 },
   };
   const materials = Object.fromEntries(Object.entries(definitions).map(([key, definition]) => {
     const material = new THREE.MeshStandardMaterial({
@@ -118,7 +123,8 @@ export async function createStationFinishMaterials({ palette = stationFinishPale
       const replace = source => {
         if (!source || source.userData.stationFinished) return source;
         const key = MATERIAL_KEYS[source.name];
-        if (!key || source.transparent || source.emissiveIntensity > .8 && source.emissive?.getHex() !== 0) return source;
+        if (!key || source.transparent && source.name !== 'FinishGlass') return source;
+        if (source.emissiveIntensity > .8 && source.emissive?.getHex() !== 0 && source.name !== 'ControlGlass') return source;
         // An authored custom shader may encode functional behaviour. Leave it alone.
         if (source.onBeforeCompile !== THREE.Material.prototype.onBeforeCompile) return source;
         replaced = true;

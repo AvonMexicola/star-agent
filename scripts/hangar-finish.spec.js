@@ -14,6 +14,7 @@ test('finished service corner renders shared materials, props, prints and task s
   ['posters',[-5.8,-6.25,21],[-6.5,-5.65,25.15]],
   ['props',[-14,-6.25,13],[-18.8,-6.4,18]],
   ['deck',[-10,-6.25,3],[-4,-8,10]],
+  ['gallery',[-3,-6.25,15],[0,2,24]],
  ]){
   await page.evaluate(({position,target})=>{const n=starAgent.navigation,s=n.station,p=n.position.clone().set(...position);s.toWorld(p,n.position);n.orientToward(s.toWorld(p.clone().set(...target),p.clone()),s.up);},{position,target});
   await page.waitForTimeout(500);await page.screenshot({path:`/tmp/star-agent-hangar-finish-evidence/${name}.png`});
@@ -22,6 +23,8 @@ test('finished service corner renders shared materials, props, prints and task s
  expect(errors).toEqual([]);
  const textureState=await page.evaluate(()=>{const s=starAgent.navigation.station;return {shared:s.pods[0].model.getObjectByName('LandingDeck').geometry===s.pods[19].model.getObjectByName('LandingDeck').geometry,uv:Boolean(s.pods[0].model.getObjectByName('LandingDeck').geometry.attributes.uv),lamps:s.finishRig.lamps.length,shadows:s.finishRig.lamps.filter(l=>l.castShadow).length,prints:s.pods[0].model.getObjectByName('Sign_StationFinishedPrints').userData.prints.count};});
  expect(textureState).toEqual({shared:true,uv:true,lamps:4,shadows:1,prints:5});
+ const gallery=await page.evaluate(()=>{const model=starAgent.navigation.station.pods[0].model,glass=model.getObjectByName('Detail_OperationsGlass');return {operations:model.getObjectByName('Sign_StationFinishedPrints').userData.operations,glassTransparent:glass.material.transparent,glassCastsShadow:glass.castShadow,freightLabelCastsShadow:model.getObjectByName('Sign_Freight').castShadow};});
+ expect(gallery).toEqual({operations:{headers:1,consoles:6,stencils:6,sharedPrintAtlas:true},glassTransparent:true,glassCastsShadow:false,freightLabelCastsShadow:false});
  const backend=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);});
  await writeFile('/tmp/star-agent-hangar-finish-evidence/render-environment.json',JSON.stringify({browser:browser.version(),backend,viewport:{width:1440,height:900},renderScale:1,records,textureState,errors},null,2));
 });

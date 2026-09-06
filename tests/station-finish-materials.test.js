@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createStationFinishMaterials, ensureStationMaterialUVs } from '../src/station-finish-materials.js';
+import { prepareStationFinishShadows, updateStationFinishSun } from '../src/station-finish-lighting.js';
 
-const palette = { ivory: 'ivory', petrol: 'darkslategray', steel: 'slategray', dark: 'dimgray', rubber: 'black', ochre: 'goldenrod' };
+const palette = { ivory: 'ivory', petrol: 'darkslategray', steel: 'slategray', dark: 'dimgray', rubber: 'black', ochre: 'goldenrod', cool: 'lightsteelblue' };
 const kit = () => createStationFinishMaterials({ palette, textureLoader: { loadAsync: async () => new THREE.Texture() } });
 const source = name => Object.assign(new THREE.MeshStandardMaterial(), { name });
 
@@ -67,4 +68,68 @@ test('station colour and independent relief use correct colour spaces and native
   assert.equal(finish.materials.deck.map, finish.textures.deck);
   assert.notEqual(finish.materials.deck.bumpMap, finish.materials.deck.map);
   assert.ok(finish.stats.estimatedTextureBytes < 7 * 1024 * 1024);
+});
+
+test('only the authored control-room pane is dimmed; navigation and working lights retain their materials', async () => {
+  const finish = await kit(), root = new THREE.Group();
+  const names = ['ControlGlass', 'Window', 'HangarLight', 'Mint', 'Amber', 'NavLight_Red', 'NavLight_Green'];
+  const meshes = names.map(name => {
+    const material = source(name); material.emissive.set('white'); material.emissiveIntensity = 3.2;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(), material); root.add(mesh); return {mesh, material};
+  });
+  const glass = new THREE.Mesh(new THREE.BoxGeometry(), source('FinishGlass')); glass.material.transparent = true; root.add(glass);
+  finish.apply(root);
+  assert.equal(meshes[0].mesh.material, finish.materials.galleryBack);
+  assert.ok(meshes[0].mesh.material.emissiveIntensity < .1);
+  for (const {mesh, material} of meshes.slice(1)) assert.equal(mesh.material, material);
+  assert.equal(glass.material, finish.materials.observationGlass);
+  assert.equal(glass.material.depthWrite, false);
+  assert.ok(glass.material.opacity < .2);
+});
+
+test('hangar sun shadows restore the original flight settings and update projection only on transitions', () => {
+  const sun = new THREE.DirectionalLight('white', 4.1);
+  const camera = sun.shadow.camera;
+  Object.assign(camera, { left: -120, right: 135, top: 99, bottom: -80, near: 2, far: 700 });
+  sun.shadow.normalBias = .13;
+  const bounds = ['left', 'right', 'top', 'bottom'].map(key => camera[key]);
+  let updates = 0;
+  const update = camera.updateProjectionMatrix.bind(camera);
+  camera.updateProjectionMatrix = () => { updates++; update(); };
+  updateStationFinishSun(sun, false);
+  const flightProjection = camera.projectionMatrix.clone();
+  assert.equal(sun.intensity, 4.1);
+  updateStationFinishSun(sun, true);
+  assert.equal(sun.intensity, .65);
+  assert.deepEqual(['left', 'right', 'top', 'bottom'].map(key => camera[key]), [-45, 45, 45, -45]);
+  assert.equal(sun.shadow.normalBias, .045);
+  assert.equal(camera.near, 2); assert.equal(camera.far, 700);
+  assert.equal(camera.projectionMatrix.equals(flightProjection), false);
+  const transitions = updates;
+  for (let frame = 0; frame < 10; frame++) updateStationFinishSun(sun, true);
+  assert.equal(updates, transitions, 'steady hangar frames do not rebuild the shadow projection');
+  updateStationFinishSun(sun, false);
+  assert.equal(sun.intensity, 4.1);
+  assert.equal(sun.shadow.normalBias, .13);
+  assert.deepEqual(['left', 'right', 'top', 'bottom'].map(key => camera[key]), bounds);
+  assert.ok(camera.projectionMatrix.equals(flightProjection));
+});
+
+test('print and glazing shadow policy removes opaque shadow cards while retaining manufactured prop shadows', () => {
+  const root = new THREE.Group();
+  const add = (name, material = new THREE.MeshStandardMaterial()) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(), material);
+    mesh.name = name; mesh.castShadow = true; mesh.receiveShadow = true; root.add(mesh); return mesh;
+  };
+  const sign = add('Sign_Print_Selene'), marking = add('DeckMarkings_1'), number = add('DeckNumber');
+  const glass = add('Detail_OperationsGlass', new THREE.MeshStandardMaterial({ transparent: true, opacity: .14 }));
+  const mixed = add('MixedGlazing', [new THREE.MeshStandardMaterial(), new THREE.MeshStandardMaterial({ transparent: true })]);
+  const frame = add('Detail_PrintFrame'), caseMesh = add('StationProps_Petrol');
+  prepareStationFinishShadows(root);
+  for (const mesh of [sign, marking, number, glass, mixed]) {
+    assert.equal(mesh.castShadow, false, `${mesh.name} must not cast an opaque card shadow`);
+    assert.equal(mesh.receiveShadow, true, 'paper and glazing still receive scene lighting/shadows');
+  }
+  assert.equal(frame.castShadow, true, 'physical poster frame retains its contact shadow');
+  assert.equal(caseMesh.castShadow, true, 'manufactured storage retains its grounding shadow');
 });

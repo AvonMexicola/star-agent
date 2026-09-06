@@ -33,16 +33,37 @@ test('finished prop asset remains correctly scaled within its measured service z
   props.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(props);
   assert.ok(bounds.min.y >= -8.011, 'no prop penetrates more than the fitted 1 cm jamb seal below the deck');
-  assert.ok(bounds.max.y <= -4.59, 'all fittings remain within 3.41 m of the floor');
-  assert.ok(bounds.min.x >= -20 && bounds.max.x <= 20, 'service props remain within the hangar side walls');
+  assert.ok(bounds.max.y <= 3.81, 'the elevated gallery stays below the original upper wall panels');
+  assert.ok(bounds.min.x >= -20.3 && bounds.max.x <= 20.3, 'storage skins retain at least 70 cm clearance from structural side walls');
   assert.ok(bounds.min.z >= 12 && bounds.max.z <= 25.4, 'no prop enters the forward docking area or back wall');
   const manifest = JSON.parse(await readFile(new URL('../assets/station/props-manifest.json', import.meta.url), 'utf8'));
+  const assemblies = new Map(manifest.assemblies.map(assembly => [assembly.name, assembly]));
+  const gallery = assemblies.get('OperationsGallery');
+  assert.ok(gallery, 'the elevated operations gallery is tracked separately from floor props');
+  assert.ok(gallery.bounds.min[1] >= .29 && gallery.bounds.max[1] <= 3.81, 'gallery fittings remain 8.29 m above the walking deck');
+  assert.ok(gallery.bounds.min[0] >= -12.2 && gallery.bounds.max[0] <= 12.2);
+  assert.ok(gallery.bounds.min[2] >= 23.7 && gallery.bounds.max[2] <= 24.4, 'gallery occupies only the shallow window recess');
+  for (const assembly of manifest.assemblies) if (assembly.name !== 'OperationsGallery') {
+    assert.ok(assembly.bounds.max[1] <= -4.59, `${assembly.name} retains the original 3.41 m service height limit`);
+  }
+  // Both vehicles must stand in front of the old crate stacks, not intersect them.
+  // Original stacks begin at Z=18.9; fitted skins begin slightly forward at 18.84.
+  for (const name of ['CargoDolly', 'StrappedPallet']) {
+    assert.ok(assemblies.get(name).bounds.max[2] < 18.8, `${name} clears the original stack and new storage skin`);
+  }
+  for (const [name, side] of [['LeftStorage', -1], ['RightStorage', 1]]) {
+    const box = assemblies.get(name)?.bounds;
+    assert.ok(box, `${name} is measured in the manifest`);
+    assert.ok(box.min[2] >= 18.8 && box.max[2] <= 21.2, `${name} fits around its original stack`);
+    assert.ok(side < 0 ? box.max[0] <= -17.8 : box.min[0] >= 17.8, `${name} including inward pull handles stays inside its wall-side service zone`);
+  }
   const allowed = manifest.assemblies.map(({ bounds: box }) => new THREE.Box3(new THREE.Vector3(...box.min), new THREE.Vector3(...box.max)).expandByScalar(.002));
-  let meshes = 0, triangles = 0;
+  let meshes = 0, triangles = 0, glazing = 0;
   const point = new THREE.Vector3();
   props.traverse(mesh => {
     if (!mesh.isMesh) return;
     meshes++;
+    if (mesh.material.name === 'FinishGlass') glazing++;
     const geometry = mesh.geometry, positions = geometry.getAttribute('position');
     triangles += (geometry.index?.count ?? positions.count) / 3;
     for (let i = 0; i < positions.count; i++) {
@@ -51,7 +72,8 @@ test('finished prop asset remains correctly scaled within its measured service z
     }
   });
   assert.equal(triangles, manifest.triangles, 'manifest reflects the actual exported triangle count');
-  assert.equal(meshes, 8, 'six prop assemblies remain eight shared material draw primitives');
+  assert.equal(meshes, 9, 'opaque assemblies remain eight shared primitives, with one separate glazing batch');
+  assert.equal(glazing, 1, 'all gallery panes share one transparent draw primitive');
   for (const assembly of manifest.assemblies) assert.ok(assembly.triangles <= 10_000, `${assembly.name} stays under the individual prop triangle budget`);
 });
 
