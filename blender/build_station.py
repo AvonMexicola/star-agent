@@ -1095,11 +1095,11 @@ if DETAIL:
                 for dz in [-1.1,1.1]:interior.add(cyl_geo(.065,.065,.06,8,place((x+dx,HY0+.57,HZ0+h+dz),rot(math.pi/2,0,0))),'Gunmetal')
     for x in [-20,-14,-7,7,14,20]:
         interior.add(box_geo(.14,.24,10.6,place((x,HY0+.65,HZ0+10.1))),'Gunmetal')
-    # Ceiling coffers, cross-beams and suspended warm service lighting.
+    # Cross-beams and suspended warm service lighting. The shell already owns
+    # recessed coffers: a second sheet here would cover their diffusers.
     for y in range(-20,23,6):
         interior.add(box_geo(39,.18,.23,place((0,y,HZ1-.45))),'Gunmetal')
         for x in [-15,-8,0,8,15]:
-            interior.add(box_geo(5.8,4.9,.06,place((x,y,HZ1-.2))),'HullPanel')
             if x != 0:
                 interior.add(box_geo(2.58,.28,.09,place((x,y,HZ1-.49))), 'Gunmetal')
                 lights.add(box_geo(2.4,.13,.07,place((x,y,HZ1-.52))), 'HangarLight')
