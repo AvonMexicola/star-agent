@@ -19,7 +19,7 @@ test('vacuum coasting preserves world momentum and does not mutate input', () =>
   assert.deepEqual(structuredClone(initial),saved);
   near(next.orientation.length(),1);
   assert.ok(next.orientation.angleTo(initial.orientation)>.1);
-  assert.deepEqual(step(initial,{},vacuum,0),{...initial,...aerodynamics(initial.velocity,initial.orientation,0)});
+  assert.deepEqual(step(initial,{},vacuum,0),{...initial,engineAcceleration:new Vector3(),...aerodynamics(initial.velocity,initial.orientation,0)});
   assert.throws(()=>step(initial,{},vacuum,NaN),RangeError);
 });
 

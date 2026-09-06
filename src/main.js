@@ -1,3 +1,4 @@
+import { flightDownwash } from './meadow.js';
 import * as THREE from 'three';
 import './style.css';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, biomeAt, findDestinations } from './world.js';
@@ -141,7 +142,7 @@ try {
     lighting.update(normal,sunDirection,altitude,nav.body.airless);
     moon.update(nav.position,origin,elapsed,!nav.insideShip);
     if(nav.stationDistance<500)lighting.sun.castShadow=true;
-    planet.update(nav.position,origin,sunDirection,elapsed,Math.max(0,nav.position.length()-RADIUS));vegetation.setExclusion?.(nav.shipPosition);vegetation.update(nav.position,origin,elapsed);
+    planet.update(nav.position,origin,sunDirection,elapsed,Math.max(0,nav.position.length()-RADIUS));vegetation.setExclusion?.(nav.shipPosition);vegetation.update(nav.position,origin,elapsed,nav.mode==='walk'&&!nav.insideShip&&!nav.body.airless&&!nav.dockedAtStation,flightDownwash(nav));
     ship.visible=Boolean(nav.shipPosition)||(nav.mode==='flight'&&(nav.locked||nav.controllerActive));
     if(ship.visible){
       if(nav.shipPosition){ship.position.copy(nav.shipPosition).sub(origin);ship.quaternion.copy(nav.shipOrientation);}
