@@ -1,0 +1,24 @@
+{
+  "generator": "OpenAI built-in imagegen tool",
+  "date": "2026-09-06",
+  "referenceImages": [],
+  "sources": [
+    {
+      "file": "ceramic-albedo-source.png",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless square BASE COLOR material texture for an original AAA-quality industrial cargo spacecraft model, not a concept illustration. Generate a 2048x2048 orthographic flat evenly lit scan-like tile of warm off-white ceramic-coated aluminium. The entire image is one continuous material, fine subtle paint grain and extremely restrained small scratches, occasional tiny dark pinprick chips exposing dull grey undercoat. Warm pale grey ivory overall, with slight natural paint density variation, clean maintained aerospace finish, no large stains. Exact scale target: one square metre of coating. Absolutely NO panel boundaries, seams, bolts, logos, text, rivets, hazard markings, shadows, directional highlights, perspective, vignette, frame, or lighting gradients. No objects. Tile seamlessly left/right/top/bottom. This is albedo only; normal and roughness will be authored separately from real geometry/microstructure. Overall color should remain uniform enough for large hull panels, with microdetail visible at close range. Do not create a ship render or mockup. Save the generated texture image.",
+      "sha256": "3d0d99fedb2581a7a43df9d35349d0e05f1dd53fa95e503f5bbdb612d089011f"
+    },
+    {
+      "file": "deck-albedo-source.png",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless square BASE COLOR material texture for an original detailed industrial spaceship cargo deck. Generate a 2048x2048 flat orthographic evenly lit scan-like tile of dark graphite-grey sealed steel with subtle directional abrasion and very fine stippled nonslip coating. Entire image is one continuous material, maintained but worked, tiny restrained metallic flecks and sparse light scuff traces at millimetre scale. Overall neutral dark grey, not black, no brown rust, no major smears. Exact scale target: one square metre. Absolutely NO panels, seams, bolts, text, logos, hazard stripes, chevrons, grids, shadows, directional illumination, reflections, perspective, vignette or frame. No objects. Seamless repeat across all four edges. Albedo only; geometric tread, normal maps and roughness will be independently authored. Natural manufacturing microvariation without loud repeating motifs. Do not render a ship or room.",
+      "sha256": "ea394a704ea00778e5620a7f0f9847bd229bfb1cc7d44fcc7fdc406b77c20944"
+    }
+  ],
+  "derivation": "../build_textures.py; independent deterministic normals and ORM, not inferred surface relief from albedo brightness",
+  "proceduralMaterials": [
+    "ceramic micrograin",
+    "deck nonslip micrograin",
+    "steel brushing",
+    "cloth weave"
+  ]
+}

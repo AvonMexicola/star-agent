@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "source": "assets/atlas-mark-ii/build_atlas.py",
+  "layout": "assets/atlas-mark-ii/layout.json",
+  "lods": [
+    {
+      "level": 0,
+      "triangles": 412988,
+      "meshes": 168,
+      "bounds": {
+        "min": [
+          -17.855575561523438,
+          0.0,
+          -30.88530731201172
+        ],
+        "max": [
+          17.855575561523438,
+          14.618499755859375,
+          30.901958465576172
+        ]
+      },
+      "file": "public/models/atlas-mark-ii/atlas-mark-ii.glb",
+      "bytes": 38037892,
+      "sha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa"
+    },
+    {
+      "level": 1,
+      "triangles": 133848,
+      "meshes": 168,
+      "bounds": {
+        "min": [
+          -17.855575561523438,
+          0.0,
+          -30.88530731201172
+        ],
+        "max": [
+          17.855575561523438,
+          14.618499755859375,
+          30.901958465576172
+        ]
+      },
+      "file": "public/models/atlas-mark-ii/atlas-mark-ii-lod1.glb",
+      "bytes": 13909084,
+      "sha256": "cd32ac7041c346c07d1d9527bbb2d98662ea046e062bce51bfc9ef69fd65e50d"
+    },
+    {
+      "level": 2,
+      "triangles": 43340,
+      "meshes": 168,
+      "bounds": {
+        "min": [
+          -17.86054229736328,
+          0.008209634572267532,
+          -30.883995056152344
+        ],
+        "max": [
+          17.860488891601562,
+          14.618499755859375,
+          30.903654098510742
+        ]
+      },
+      "file": "public/models/atlas-mark-ii/atlas-mark-ii-lod2.glb",
+      "bytes": 4216528,
+      "sha256": "1d22c5ef0a86c29659f0ef224285358753fc8db51fe1fb71c10c83809e78dc39"
+    }
+  ]
+}
