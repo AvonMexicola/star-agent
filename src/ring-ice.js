@@ -83,11 +83,11 @@ export class RingIce {
           float phase=iceParameters.x,spin=phase+iceTime*iceParameters.z;
           vec3 facet=normalize(vec3(sin(spin),cos(spin*.79+phase),sin(spin*.61+phase*1.31)));
           vec3 viewDirection=normalize(cameraPosition-worldPoint.xyz),halfDirection=normalize(iceSun+viewDirection+vec3(.00001));
-          vIceGlint=pow(abs(dot(facet,halfDirection)),90.0)*iceSunlight;
+          vIceGlint=pow(abs(dot(facet,halfDirection)),72.0)*iceSunlight;
           vIcePhaseLight=pow(max(dot(viewDirection,-iceSun),0.0),5.0)*iceSunlight;
           vec3 sunView=(viewMatrix*vec4(iceSun,0.0)).xyz;
           vIceAngle=atan(sunView.y,sunView.x)+phase*.2;
-          float diameter=clamp(iceParameters.y*38.0/max(6.0,-viewPoint.z)+vIceGlint*.9,.5,2.5);
+          float diameter=clamp(iceParameters.y*60.0/max(6.0,-viewPoint.z)+vIceGlint*.9,.7,2.5);
           gl_PointSize=max(1.0,diameter);vIceCoverage=min(1.0,diameter*diameter);
           vIceOpacity=iceParameters.w;
           #include <logdepthbuf_vertex>
@@ -101,9 +101,9 @@ export class RingIce {
           vec2 p=gl_PointCoord-.5;float c=cos(vIceAngle),s=sin(vIceAngle);p=mat2(c,-s,s,c)*p;
           float facet=1.0-smoothstep(.22,.52,abs(p.x)+abs(p.y));
           float streak=(1.0-smoothstep(.035,.13,abs(p.y)))*(1.0-smoothstep(.24,.49,abs(p.x)))*vIceGlint;
-          float alpha=max(facet,streak)*vIceOpacity*vIceCoverage*.66;
+          float alpha=max(facet,streak)*vIceOpacity*vIceCoverage*.74;
           if(alpha<.005)discard;
-          vec3 color=vec3(.64,.81,.94)*(.035+iceSunlight*.28+vIcePhaseLight*.7+vIceGlint*5.0);
+          vec3 color=vec3(.64,.81,.94)*(.035+iceSunlight*.48+vIcePhaseLight*.85+vIceGlint*5.0);
           gl_FragColor=vec4(color,alpha);
         }`,
     });
