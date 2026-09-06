@@ -4,6 +4,7 @@ import { RADIUS, SUN_DISTANCE, SUN_DIRECTION } from './world.js';
 import { MoonTerrain } from './moon-terrain.js';
 import { MoonRings } from './moon-rings.js';
 import { MoonIce } from './moon-ice.js';
+import { MoonStones } from './moon-stones.js';
 import { acquireTerrainMaps, terrainMapShader, terrainMapUniforms } from './terrain-maps.js';
 import { OrbitalSurface, orbitalShader } from './orbital-surface.js';
 
@@ -108,21 +109,22 @@ export class Moon {
     };
     this.material.customProgramCacheKey=()=> 'selene-terrain-orbital-v2';
     this.terrain=new MoonTerrain(scene,this.material);
-    this.rings=new MoonRings(scene);this.ice=new MoonIce(scene);
+    this.rings=new MoonRings(scene);this.ice=new MoonIce(scene);this.stones=new MoonStones(scene,this.grain);
     this.sun=new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
   }
-  update(worldPosition,origin,elapsed=0,outside=true) {
+  update(worldPosition,origin,elapsed=0,outside=true,shipPosition=null) {
     if(worldPosition.distanceTo(this.worldPosition)<MOON_RADIUS*12)this.orbitalSurface.start();
     this.rings.update(origin,elapsed);this.ice.update(worldPosition,origin,elapsed,outside);
-    this.terrain.update(worldPosition,origin);
+    this.terrain.update(worldPosition,origin);this.stones.update(worldPosition,origin,shipPosition);
     // Eclipse the moon when Aeon blocks its direct sunlight. The small ambient
     // component keeps the disk readable without giving it a self-lit texture.
     const toSun=this.sun.clone().sub(this.worldPosition).normalize(),along=-this.worldPosition.dot(toSun);
     const miss=this.worldPosition.clone().addScaledVector(toSun,Math.max(0,along)).length();
     const visibility=along>0?THREE.MathUtils.smoothstep(miss,RADIUS-MOON_RADIUS,RADIUS+MOON_RADIUS):1;
     this.material.color.setScalar(.035+.965*visibility);
+    for(const layer of this.stones.layers)layer.material.color.copy(this.material.color);
   }
   get ready(){return this.terrain.ready;}
-  get effects(){return {orbitalResolution:this.orbitalSurface.resolution,settled:this.terrain.waitingCount===0,ringAsteroids:this.rings.descriptors.length,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:MOON_GENERATOR_VERSION};}
-  dispose(){this.orbitalSurface.dispose();this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.terrainMaps.dispose();this.material.dispose();}
+  get effects(){return {stones:this.stones.stats,orbitalResolution:this.orbitalSurface.resolution,settled:this.terrain.waitingCount===0,ringAsteroids:this.rings.descriptors.length,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:MOON_GENERATOR_VERSION};}
+  dispose(){this.stones.dispose();this.orbitalSurface.dispose();this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.terrainMaps.dispose();this.material.dispose();}
 }
