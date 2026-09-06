@@ -77,7 +77,7 @@ export class FlightAudio {
   }
 
   update({ speed = 0, altitude = 0, mode = 'flight', boost = false, airless = false,
-    inHangar = false, doorMotion = 0 } = {}, dt = 0) {
+    inHangar = false, doorMotion = 0, powered = true } = {}, dt = 0) {
     if (!this.context || this.disposed || !this.enabled) return;
     const time = this.context.currentTime;
     const velocity = Number.isFinite(speed) ? Math.abs(speed) : 0;
@@ -85,11 +85,12 @@ export class FlightAudio {
     const motion = Math.min(1, Math.log1p(velocity) / Math.log(10001));
     const air = airless ? 0 : Math.exp(-height / 18000);
     const flying = mode === 'flight';
-    const thrust = flying ? 0.3 + motion * 0.5 + (boost ? 0.2 : 0) : 0;
+    const propulsion = flying && powered !== false;
+    const thrust = propulsion ? 0.3 + motion * 0.5 + (boost ? 0.2 : 0) : 0;
     const hangar = inHangar ? 1 : 0;
     const motor = Math.max(0, Math.min(1, Number.isFinite(doorMotion) ? doorMotion : 0));
-    const engineGain = (flying ? 0.018 + thrust * 0.026 : 0) + hangar * 0.009 + motor * 0.018;
-    const overtoneGain = (flying ? 0.005 + thrust * 0.009 : 0) + hangar * 0.002 + motor * 0.012;
+    const engineGain = (propulsion ? 0.018 + thrust * 0.026 : 0) + hangar * 0.009 + motor * 0.018;
+    const overtoneGain = (propulsion ? 0.005 + thrust * 0.009 : 0) + hangar * 0.002 + motor * 0.012;
     const ambientNoise = hangar * 0.002 + motor * 0.008;
     // Smoothing is on the audio clock, independent of frame rate and tab stalls.
     const smooth = (parameter, target) => parameter.setTargetAtTime(target, time, 0.18);
