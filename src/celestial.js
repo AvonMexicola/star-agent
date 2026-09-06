@@ -1,15 +1,22 @@
 import { Vector3 } from 'three';
 import { RADIUS, terrainHeight, MOON_RADIUS, MOON_POSITION, MOON_GRAVITY, moonSurface } from './world.js';
+import { PYRE_RADIUS, PYRE_POSITION, PYRE_GRAVITY, PYRE_ATMOSPHERE, pyreSurface } from './pyre-world.js';
 
-export const AEON=Object.freeze({id:'aeon',name:'Aeon',center:Object.freeze([0,0,0]),radius:RADIUS,gravity:9.81,airless:false});
-export const SELENE=Object.freeze({id:'selene',name:'Selene',center:MOON_POSITION,radius:MOON_RADIUS,gravity:MOON_GRAVITY,airless:true});
-// Explicit local navigation domain; this is not an N-body orbital solver.
+// Each descriptor carries its own canonical sampler; `water` bodies clamp to sea level.
+export const AEON=Object.freeze({id:'aeon',name:'Aeon',center:Object.freeze([0,0,0]),radius:RADIUS,gravity:9.81,airless:false,water:true,height:(x,y,z)=>Math.max(0,terrainHeight(x,y,z))});
+export const SELENE=Object.freeze({id:'selene',name:'Selene',center:MOON_POSITION,radius:MOON_RADIUS,gravity:MOON_GRAVITY,airless:true,water:false,height:(x,y,z)=>moonSurface(x,y,z).height});
+export const PYRE=Object.freeze({id:'pyre',name:'Pyre',center:PYRE_POSITION,radius:PYRE_RADIUS,gravity:PYRE_GRAVITY,airless:false,water:false,atmosphere:PYRE_ATMOSPHERE,height:(x,y,z)=>pyreSurface(x,y,z).height});
+export const BODIES=Object.freeze([AEON,SELENE,PYRE]);
+// Explicit local navigation domains (8 radii); this is not an N-body orbital solver.
 export function bodyAt(position) {
-  const dx=position.x-MOON_POSITION[0],dy=position.y-MOON_POSITION[1],dz=position.z-MOON_POSITION[2];
-  return dx*dx+dy*dy+dz*dz<(MOON_RADIUS*8)**2?SELENE:AEON;
+  for(const body of [SELENE,PYRE]){
+    const dx=position.x-body.center[0],dy=position.y-body.center[1],dz=position.z-body.center[2];
+    if(dx*dx+dy*dy+dz*dz<(body.radius*8)**2)return body;
+  }
+  return AEON;
 }
 export function bodyOffset(position,body=bodyAt(position)) {return position.clone().sub(new Vector3(...body.center));}
-export function bodyHeight(direction,body) {return body.airless?moonSurface(direction.x,direction.y,direction.z).height:Math.max(0,terrainHeight(direction.x,direction.y,direction.z));}
+export function bodyHeight(direction,body) {return body.height(direction.x,direction.y,direction.z);}
 export function bodySurfacePoint(direction,body,clearance=0) {
   const d=direction.clone().normalize();return d.multiplyScalar(body.radius+bodyHeight(d,body)+clearance).add(new Vector3(...body.center));
 }

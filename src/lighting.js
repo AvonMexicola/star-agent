@@ -34,14 +34,22 @@ export function createLighting(renderer, scene) {
   const rotation = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0);
   return {
     sun, ambient,
-    update(normal, sunDirection, altitude, airless=false) {
+    // `profile` describes another body's ambient light ({sky, ground, ambientNight,
+    // ambientDay, environment}); without it Aeon/Selene behave exactly as before.
+    update(normal, sunDirection, altitude, airless=false, profile=null) {
       sun.position.copy(sunDirection).multiplyScalar(320);
       sun.target.position.set(0, 0, 0);
       ambient.position.copy(normal);
       const daylight = THREE.MathUtils.smoothstep(normal.dot(sunDirection), -.12, .35);
+      if (profile) {
+        ambient.color.set(profile.sky); ambient.groundColor.set(profile.ground);
+        ambient.intensity = profile.ambientNight + profile.ambientDay * daylight * Math.exp(-altitude / 40000);
+        scene.environmentIntensity = profile.environment * (.2 + .8 * daylight);
+      } else {
       ambient.color.set(airless?0xb5b3ad:0xc4ddf4);ambient.groundColor.set(airless?0x393837:0x393326);
       ambient.intensity = airless ? .055 : .08 + .35 * daylight * Math.exp(-altitude / 60000);
       scene.environmentIntensity = airless ? .015 : .04 + .4 * daylight * Math.exp(-altitude / 90000);
+      }
       rotation.setFromUnitVectors(up, normal);
       scene.environmentRotation.setFromQuaternion(rotation);
       sun.castShadow = altitude < 1500;
