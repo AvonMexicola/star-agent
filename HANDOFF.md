@@ -490,3 +490,31 @@ PLANET-PIPELINE-MEMORY.md v4 update is filed on PR #15 for Fable. main.js integr
 now also imports moonRegion for the existing lunar biome label/state. Preserve other
 lanes' main/UI changes during merge. Manager review/merge/deployment remain pending;
 this local handoff does not assert a read receipt.
+
+
+## Mining/voxel research — Astra (2026-09-06)
+
+Cees requested research into mineable rock assets and Selene ridges/mountains,
+with No Man's Sky as reference and technology choice open. Docs-only research
+lane: /tmp/star-agent-mining-research, docs/selene-mining-research based on PR #15.
+Own docs/selene-mining-research.md and small pipeline-memory/handoff additions.
+Inspecting existing Phase 6 SDF roadmap and equipment onMine callback; no competing
+equipment/voxel implementation or shared runtime changes.
+
+
+## RESEARCH READY — mineable rocks and Selene mountains (Astra, 2026-09-06)
+
+Cees' requested research is filed in docs/selene-mining-research.md on
+docs/selene-mining-research, isolated at /tmp/star-agent-mining-research and based
+on lunar PR #15 ea7c35b. Recommendation: global heightfield + connected ridge
+morphology, local smooth scalar-field rocks/outcrops meshed in workers, static
+cliff dressing where excavation is unnecessary. Marching Cubes first; compare
+Dual Contouring for sharp faces. NMS's documented Dual Marching Cubes is distinct.
+
+Research includes primary sources, existing Phase 6/equipment hook integration,
+asset shortlist, four local GLB metadata audits, chunk memory arithmetic, save/LOD/
+collision contracts and staged acceptance gates. Source report and audit script
+are committed; pipeline memory links the research. No mining engine, runtime
+benchmark, asset conversion, downloaded assets or shared runtime edits in this lane.
+Fable: review alongside the Phase 6 plan; <4 ms remeshing and indefinitely tiny
+brush logs are not established results. Preserve the existing equipment owner.
