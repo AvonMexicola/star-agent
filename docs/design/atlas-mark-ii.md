@@ -48,7 +48,7 @@ npm run test:browser -- -c scripts/atlas-mark-ii.config.js
 ATLAS_HARDWARE=1 npm run test:browser -- -c scripts/atlas-mark-ii.config.js
 ```
 
-This inspection scene is independent of the live fleet, saves and flight controls. Flight integration requires a deliberate new ship layout in `boarding.js`, navigation/collision ownership, powered-cabin behavior, hangar-fit validation, cargo mechanics, controller testing and graphics budget approval. The dedicated walker uses 55 authored furniture/bulkhead AABBs, platform rails, empty-shaft barriers, visible landing gates and closed-door boundaries. These still require deliberate integration with live gameplay physics; a standalone walkthrough is not a full gameplay physics certification.
+This inspection scene is independent of the live fleet, saves and flight controls. Flight integration requires a deliberate new ship layout in `boarding.js`, navigation/collision ownership, powered-cabin behavior, hangar-fit validation, cargo mechanics, controller testing and graphics budget approval. The dedicated walker uses 56 authored furniture/bulkhead AABBs, platform rails, empty-shaft barriers, visible landing gates and closed-door boundaries. These still require deliberate integration with live gameplay physics; a standalone walkthrough is not a full gameplay physics certification.
 
 ## Revision after the first walkthrough
 
@@ -68,3 +68,19 @@ outer hull and drive-pod geometry are retained. Door-frame faces project beyond
 partition ends to remove their coplanar flicker. The complete physical browser
 route reaches the last bunk, meets the aft wall and returns through the side door.
 See [the upper-deck production record](../qa/atlas-mark-ii/upper-deck-record.md).
+
+
+## Pilot displays and physical controls
+
+`layout.json` owns four PilotMFD anchors and the chair-aligned pilot eye. The shared
+MFD renderer accepts those authored mounts, and draws real ramp/lift state at 5 Hz.
+F/A at the pilot seat sits down; F/A stands up. Flight, navigation and manifest
+pages remain disconnected in this studio. All four screens fit the tested 56°
+pilot view. The instrument extension has its own physical collider.
+
+Controls use [the physical button standard](../physical-control-standard.md):
+projected labels show Go up/Go down/Call lift and Open/Close ramp from actual
+mechanism state, with F/A/TAP activation and disabled interlock states. Preset
+buttons hide while walking. The documented hangar contract awaits station adoption.
+The [nose/cockpit record](../qa/atlas-mark-ii/cockpit-controls-record.md) includes
+actual close-ups, seated renders, browser input checks and remaining boundaries.

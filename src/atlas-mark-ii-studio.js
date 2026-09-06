@@ -5,6 +5,9 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import atlasLayout from '../assets/atlas-mark-ii/layout.json' with { type: 'json' };
 import { AtlasMarkIISystems } from './atlas-mark-ii-systems.js';
+import { createShipMFDs } from './ship-mfd.js';
+import { atlasInspectionPages, describeAtlasControl } from './atlas-mark-ii-controls.js';
+import { createProjectedActionLabel } from './projected-action-label.js';
 
 const MODEL_URL = '/models/atlas-mark-ii/atlas-mark-ii.glb';
 const WALK_SPEED = 4.2;
@@ -220,6 +223,10 @@ let messageTimer = 0;
 let currentInteraction = null;
 let yaw = 0;
 let pitch = 0;
+let seated = false;
+let inputDevice = 'keyboard';
+const mfds = createShipMFDs({ mounts: atlasLayout.pilotMFDs, includeFrames: false, screenOffset: .046 });
+const controlLabel = createProjectedActionLabel(document.body, id => onInteraction(id));
 const walker = { position: new THREE.Vector3(0, atlasLayout.eyeHeight, 34) };
 const keys = new Set();
 const controllerButtons = { interact: false, exit: false };
@@ -320,6 +327,7 @@ const assetPromise = new GLTFLoader().loadAsync(MODEL_URL).then((gltf) => {
   model.name = 'AtlasMarkII';
   bindSystems(model);
   collectStats(model);
+  model.add(mfds);
   scene.add(model);
   renderer.shadowMap.needsUpdate = true;
   assetState.textContent = 'READY';
@@ -425,6 +433,7 @@ function readController(dt) {
   }
   const interact = Boolean(gamepad.buttons[0]?.pressed);
   const exit = Boolean(gamepad.buttons[1]?.pressed);
+  if (interact || exit || gamepad.axes.some(value => Math.abs(value) > .15)) inputDevice = 'controller';
   if (interact && !controllerButtons.interact) onInteraction();
   if (exit && !controllerButtons.exit) leaveWalk();
   controllerButtons.interact = interact;
@@ -459,6 +468,8 @@ function enterWalk() {
 function leaveWalk(selectExterior = true) {
   if (document.pointerLockElement === canvas) document.exitPointerLock();
   mode = 'inspect';
+  seated = false;
+  controlLabel.hide();
   keys.clear();
   body.classList.remove('walking');
   controls.enabled = true;
@@ -477,13 +488,16 @@ function capturePointer() {
   }
 }
 
-function onInteraction() {
+function onInteraction(expectedId = null) {
   if (mode !== 'walk') return false;
-  const interaction = systems.interactionAt?.(walker.position) ?? null;
+  const descriptor = describeAtlasControl(systems, walker.position, seated);
+  const interaction = descriptor?.id ?? null;
+  if (typeof expectedId === 'string' && interaction !== expectedId) return false;
   if (!interaction) {
     showMessage('No control within reach.', 1500);
     return false;
   }
+  if (!descriptor.enabled) { showMessage(descriptor.reason || descriptor.action);return false; }
   if (interaction.startsWith('ramp:')) {
     const id = interaction.slice(5);
     const config = atlasLayout.ramps.find((item) => item.id === id);
@@ -501,7 +515,11 @@ function onInteraction() {
     return Boolean(changed);
   }
   if (interaction === 'seat') {
-    showMessage('Bridge seat inspected. This test scene does not provide flight control.');
+    seated = !seated;
+    walker.position.fromArray(seated ? atlasLayout.pilotEye : atlasLayout.stand);
+    yaw = 0;pitch = 0;keys.clear();
+    camera.fov = seated ? 56 : 67;camera.updateProjectionMatrix();
+    showMessage(seated ? 'Pilot station. F / A to stand up.' : 'Standing at the pilot station.');
     return true;
   }
   return false;
@@ -529,22 +547,23 @@ function updateWalker(dt) {
   scratch.motion.addScaledVector(scratch.right, controller.x);
   scratch.motion.addScaledVector(scratch.forward, -controller.y);
   const precisionWalking = keys.has('ShiftLeft') || keys.has('ShiftRight');
-  if (scratch.motion.lengthSq() > 0) scratch.motion.normalize().multiplyScalar((precisionWalking ? 1 : WALK_SPEED) * dt);
+  if (seated) scratch.motion.set(0, 0, 0);
+  else if (scratch.motion.lengthSq() > 0) scratch.motion.normalize().multiplyScalar((precisionWalking ? 1 : WALK_SPEED) * dt);
   scratch.next.copy(walker.position).add(scratch.motion);
   const constrained = systems.constrain?.(walker.position, scratch.next);
   scratch.next.copy(constrained?.isVector3 ? constrained : scratch.next);
   const floorHeight = systems.floorAt?.(scratch.next);
-  if (Number.isFinite(floorHeight)) scratch.next.y = floorHeight + atlasLayout.eyeHeight;
+  if (!seated && Number.isFinite(floorHeight)) scratch.next.y = floorHeight + atlasLayout.eyeHeight;
   walker.position.copy(scratch.next);
   camera.position.copy(walker.position);
   camera.rotation.set(pitch, yaw, 0, 'YXZ');
 
-  currentInteraction = systems.interactionAt?.(walker.position) ?? null;
+  const descriptor = describeAtlasControl(systems, walker.position, seated);
+  currentInteraction = descriptor?.id ?? null;
   prompt.hidden = !currentInteraction;
   if (currentInteraction) {
-    promptText.textContent = currentInteraction.startsWith('ramp:')
-      ? `ACTUATE ${currentInteraction.slice(5).toUpperCase()} RAMP`
-      : currentInteraction === 'elevator:crew' ? 'CALL CREW LIFT' : 'INSPECT PILOT SEAT';
+    promptText.textContent = descriptor.action + (descriptor.reason ? ` · ${descriptor.reason}` : '');
+    prompt.querySelector('kbd').textContent = inputDevice === 'controller' ? 'A' : inputDevice === 'touch' ? 'TAP' : 'F';
   }
 }
 
@@ -585,6 +604,7 @@ document.addEventListener('mousemove', (event) => {
   pitch = THREE.MathUtils.clamp(pitch - event.movementY * 0.002, -1.42, 1.42);
 });
 window.addEventListener('keydown', (event) => {
+  inputDevice = 'keyboard';
   if (mode !== 'walk') return;
   if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'ShiftRight', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
     event.preventDefault();
@@ -602,6 +622,7 @@ for (const button of document.querySelectorAll('[data-hold]')) {
   button.addEventListener('pointerleave', release);
 }
 document.querySelector('[data-touch-interact]').addEventListener('click', onInteraction);
+document.addEventListener('pointerdown', event => { if (event.pointerType === 'touch') inputDevice = 'touch'; });
 let touchLook = null;
 canvas.addEventListener('pointerdown', (event) => {
   if (mode === 'walk' && event.pointerType === 'touch') touchLook = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -638,6 +659,13 @@ function frame() {
   }
   updateDynamicShadows();
   updateAnnotations();
+  mfds.updatePages(frameDelta, atlasInspectionPages(systems));
+  if (mode === 'walk') {
+    controlLabel.update(describeAtlasControl(systems, walker.position, seated), camera,
+      { width: innerWidth, height: innerHeight }, inputDevice === 'controller' ? 'A' : inputDevice === 'touch' ? 'TAP' : 'F', model);
+    // Keep the conventional prompt as a fallback for a control outside the view.
+    if (!controlLabel.element.hidden) prompt.hidden = true;
+  } else controlLabel.hide();
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
@@ -660,4 +688,8 @@ window.atlasMarkIIStudio = {
   get transitioning() { return Boolean(viewTransition); },
   get heading() { return { yaw, pitch }; },
   get interaction() { return currentInteraction; },
+  get seated() { return seated; },
+  mfds,
+  get control() { return describeAtlasControl(systems, walker.position, seated); },
+  get camera() { return camera; },
 };

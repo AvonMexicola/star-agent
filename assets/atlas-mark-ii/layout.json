@@ -78,7 +78,7 @@
   "pilotEye": [
     -2.1,
     11.05,
-    -22.4
+    -21.25
   ],
   "stand": [
     -2.1,
@@ -296,5 +296,67 @@
         8.0
       ]
     }
-  }
+  },
+  "pilotMFDs": [
+    {
+      "node": "PilotMFD_01",
+      "position": [
+        -2.97,
+        10.82,
+        -22.8
+      ],
+      "rotation": [
+        -0.2,
+        0,
+        0
+      ],
+      "width": 0.52,
+      "height": 0.325
+    },
+    {
+      "node": "PilotMFD_02",
+      "position": [
+        -2.39,
+        10.82,
+        -22.8
+      ],
+      "rotation": [
+        -0.2,
+        0,
+        0
+      ],
+      "width": 0.52,
+      "height": 0.325
+    },
+    {
+      "node": "PilotMFD_03",
+      "position": [
+        -1.81,
+        10.82,
+        -22.8
+      ],
+      "rotation": [
+        -0.2,
+        0,
+        0
+      ],
+      "width": 0.52,
+      "height": 0.325
+    },
+    {
+      "node": "PilotMFD_04",
+      "position": [
+        -1.23,
+        10.82,
+        -22.8
+      ],
+      "rotation": [
+        -0.2,
+        0,
+        0
+      ],
+      "width": 0.52,
+      "height": 0.325
+    }
+  ]
 }

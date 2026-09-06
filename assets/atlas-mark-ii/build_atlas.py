@@ -31,13 +31,14 @@ for x in [-2,2]:
 for side in [-1,1]:
     g.box('Cargo pressure wall',(side*7.48,5.72,0),(.28,6.24,48),m['dark'],.055,exterior)
     g.box('Upper pressure wall',(side*7.43,11.125,0),(.26,3.25,36),m['dark'],.045,exterior)
-    g.box('Continuous structural spine',(side*8.25,9.08,0),(1.3,.64,49.2),m['dark'],.09,exterior)
+    g.box('Continuous structural spine',(side*8.25,9.08,3.4),(1.3,.64,42.4),m['dark'],.09,exterior)
     g.box('Belly load longeron',(side*5.8,1.8,0),(.55,.65,49),m['steel'],.07,exterior)
     for z in [-21,-13,-5,3,11,19]:
         g.box('Transverse chassis frame',(0,1.92,z),(14.8,.48,.42),m['dark'],.055,exterior)
-        g.rod('Outrigger spine web',(side*7.65,8.7,z-2),(side*9.25,9.12,z+2),.11,m['steel'],12,exterior)
-    # Five unequal armour segments reveal structural intervals along the flank.
-    breaks=[-24,-16.1,-7.0,3.2,14.3,24]
+        if z >= -17.8: g.rod('Outrigger spine web',(side*7.65,8.7,z-2),(side*9.25,9.12,z+2),.11,m['steel'],12,exterior)
+    # Aft armour starts behind the shaped bow; overlapping legacy nose plates are removed.
+    # Unequal armour segments reveal structural intervals along the flank.
+    breaks=[-12,-7.0,3.2,14.3,24]
     for i,(za,zb) in enumerate(zip(breaks,breaks[1:])):
         a,b=za+.12,zb-.12
         h=8.25 if i%2 else 8.65
@@ -196,6 +197,8 @@ for sx in [-1,1]:
         for zz in [z-.75,z+.75]:g.rod('Lift entry upright',(xx,e['low']+.1,zz),(xx,e['low']+1.1,zz),.045,m['steel'],10,lift)
 for zz in [z-e['length']/2+.2,z+e['length']/2-.2]:
     g.rod('Lift end safety rail',(x-e['width']/2+.1,e['low']+1.1,zz),(x+e['width']/2-.1,e['low']+1.1,zz),.06,m['warning'],12,lift)
+g.box('Lift rider control housing',(x,e['low']+1.12,z-1.52),(.46,.40,.16),m['steel'],.035,lift)
+g.box('Lift rider control face',(x,e['low']+1.13,z-1.42),(.32,.27,.025),m['mint'],.01,lift)
 for xx in [x+e['width']/2+.12]:
     for zz in [z-e['length']/2,z+e['length']/2]:
         g.box('Elevator guide channel',(xx,6.2,zz),(.18,8,.22),m['dark'],.035,ship)
@@ -233,7 +236,7 @@ for mount in layout['mounts']:
 # Registration, rescue markings and service handles are placed where used.
 for side in [-1,1]:
     g.text('Atlas upper registration','ATLAS  /  02',(side*2.65,13.18,2.5),.72,m['ivory'],parent=roof)
-    for z in [-21,-15,-8,0,8,15]:
+    for z in [-15,-8,0,8,15]:
         for xx in [7.84,8.40]:g.rod('Service handhold',(side*xx,9.52,z-.34),(side*xx,9.52,z+.34),.033,m['steel'],8,exterior)
         g.rod('Handhold bridge',(side*7.84,9.52,z+.34),(side*8.40,9.52,z+.34),.033,m['steel'],8,exterior)
 # Interior authoring is independent but consumes the same authoritative contract.

@@ -7,7 +7,8 @@ const titles = ['FLIGHT', 'NAVIGATION', 'SYSTEMS', 'CARGO'];
 const distance = value => value >= 1000 ? `${(value / 1000).toFixed(1)} km` : `${value.toFixed(1)} m`;
 
 /** Four independent, physical 16:10 screens. Update textures at 5 Hz, not every draw. */
-export function createShipMFDs() {
+export function createShipMFDs({ mounts = null, includeFrames = true, screenOffset = .034 } = {}) {
+  if (mounts && mounts.length !== 4) throw new RangeError('A pilot MFD suite requires four mounts');
   const group = new THREE.Group();
   group.name = 'Four rectangular multifunction displays';
   const frameFinish = new THREE.MeshStandardMaterial({ color: 0x111f26, metalness: .65, roughness: .36 });
@@ -15,13 +16,17 @@ export function createShipMFDs() {
     const canvas = document.createElement('canvas');canvas.width = 512;canvas.height = 320;
     const ctx = canvas.getContext('2d');
     const texture = new THREE.CanvasTexture(canvas);texture.colorSpace = THREE.SRGBColorSpace;
-    const mount = new THREE.Group();mount.position.set((i - 1.5) * .52, 2.08, -4.25);mount.rotation.x = -.36;
-    const bezel = new THREE.Mesh(new THREE.BoxGeometry(.504, .326, .065), frameFinish);
-    mount.add(bezel);
+    const definition = mounts?.[i];
+    const width = definition?.width ?? .464, height = definition?.height ?? .29;
+    const mount = new THREE.Group();
+    mount.position.fromArray(definition?.position ?? [(i - 1.5) * .52, 2.08, -4.25]);
+    mount.rotation.fromArray(definition?.rotation ?? [-.36, 0, 0]);
+    const bezel = includeFrames ? new THREE.Mesh(new THREE.BoxGeometry(width + .04, height + .036, .065), frameFinish) : null;
+    if (bezel) mount.add(bezel);
     const material = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false });material.userData.unweathered = true;
-    const screen = new THREE.Mesh(new THREE.PlaneGeometry(.464, .29), material);screen.position.z = .034;
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);screen.position.z = screenOffset;
     screen.name = `MFD ${i + 1} / ${title}`;mount.add(screen);
-    for (const side of [-1, 1]) {
+    for (const side of includeFrames ? [-1, 1] : []) {
       for (let k = 0; k < 4; k++) {
         const key = new THREE.Mesh(new THREE.BoxGeometry(.010, .024, .009), bezel.material);
         key.position.set(side * .243, -.09 + k * .06, .037);mount.add(key);
@@ -35,9 +40,11 @@ export function createShipMFDs() {
   const frames = [];
   group.traverse(object => { if (object.isMesh && object.material === frameFinish) frames.push(object); });
   const geometries = frames.map(object => object.geometry.clone().applyMatrix4(object.matrixWorld));
-  const frame = new THREE.Mesh(mergeGeometries(geometries), frameFinish);frame.name = 'MFD bezels and keys';
+  const frame = geometries.length ? new THREE.Mesh(mergeGeometries(geometries), frameFinish) : null;
+  if (frame) frame.name = 'MFD bezels and keys';
   frames.forEach(object => { object.parent.remove(object);object.geometry.dispose(); });
-  geometries.forEach(geometry => geometry.dispose());group.add(frame);
+  geometries.forEach(geometry => geometry.dispose());
+  if (frame) group.add(frame);else frameFinish.dispose();
   function paint(screen, rows, footer, index) {
     const { ctx, title, texture } = screen;
     screen.values = rows.map(([label, value]) => `${label}: ${value}`);
@@ -57,6 +64,15 @@ export function createShipMFDs() {
     texture.needsUpdate = true;
   }
   let accumulator = 1, renderedPower = null;
+  // Alternate consumers supply truthful page data without fabricating a
+  // Navigation or inventory object. Production flight keeps update() below.
+  group.updatePages = (dt, pages) => {
+    if (pages.length !== 4) throw new RangeError('Supply four MFD pages');
+    accumulator += Number.isFinite(dt) ? Math.max(0, dt) : 0;
+    if (accumulator < .2) return;
+    accumulator = 0;
+    pages.forEach((page, index) => paint(screens[index], page.rows, page.footer, index));
+  };
   group.update = (dt, nav, inventory, course) => {
     const powered = nav.powered !== false;
     accumulator += Number.isFinite(dt) ? Math.max(0, dt) : 0;

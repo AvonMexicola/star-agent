@@ -7,6 +7,8 @@ import layout from '../assets/atlas-mark-ii/layout.json' with { type: 'json' };
 import colliderData from '../assets/atlas-mark-ii/interior-colliders.json' with { type: 'json' };
 import mountStandard from '../assets/atlas-mark-ii/mount-standard.json' with { type: 'json' };
 import { AtlasMarkIISystems } from '../src/atlas-mark-ii-systems.js';
+import { atlasInspectionPages, describeAtlasControl } from '../src/atlas-mark-ii-controls.js';
+import { controlAction, projectActionAnchor } from '../src/projected-action-label.js';
 import {
   NOMAD_FUTURE_S1_ATTACHMENT,
   createMountFittingGauge,
@@ -125,6 +127,54 @@ const settle = (systems, rider = null) => {
     if (rider) rider.y += carry;
   }
 };
+
+test('physical control verbs follow lift/ramp interlocks and support the shared hangar contract', () => {
+  const systems = new AtlasMarkIISystems();settle(systems);
+  const rider = point(5.5, 4.35, -4);
+  assert.equal(describeAtlasControl(systems, rider).action, 'Go up');
+  assert.equal(systems.toggleElevator(rider), true);
+  assert.equal(describeAtlasControl(systems, rider).enabled, false);
+  assert.equal(describeAtlasControl(systems, rider).action, 'Securing gates');
+  settle(systems, rider);
+  assert.equal(describeAtlasControl(systems, rider).action, 'Go down');
+  assert.equal(describeAtlasControl(systems, point(3.5, 4.35, -4)).action, 'Call lift');
+  assert.equal(describeAtlasControl(systems, point(3.5, 11.25, -4)).enabled, false);
+  assert.equal(describeAtlasControl(systems, point(-4.5, 4.35, -21.5)).action, 'Open ramp');
+  systems.toggleRamp('front');
+  assert.equal(describeAtlasControl(systems, point(-4.5, 4.35, -21.5)).enabled, false);
+  settle(systems);
+  assert.equal(describeAtlasControl(systems, point(-4.5, 4.35, -21.5)).action, 'Close ramp');
+  assert.equal(controlAction('hangar', 'closed').action, 'Open hangar');
+  assert.equal(controlAction('hangar', 'opening').enabled, false);
+  assert.throws(() => controlAction('hangar', 'unknown'), /Unknown physical control state/);
+});
+
+test('projected labels hide behind the camera and opaque structure, but allow glazing', () => {
+  const camera = new THREE.PerspectiveCamera(55, 1.6, .1, 100);
+  const viewport = { width: 1440, height: 900 };
+  assert.deepEqual(projectActionAnchor([0, 0, -2], camera, viewport), { x: 720, y: 450 });
+  assert.equal(projectActionAnchor([0, 0, 2], camera, viewport), null);
+  assert.equal(projectActionAnchor([10, 0, -2], camera, viewport), null);
+  const wall = new THREE.Mesh(new THREE.BoxGeometry(.5, .5, .1), new THREE.MeshBasicMaterial());
+  wall.position.z = -1;wall.updateMatrixWorld(true);
+  assert.equal(projectActionAnchor([0, 0, -2], camera, viewport, wall), null);
+  wall.material.transparent = true;wall.material.opacity = .2;
+  assert.ok(projectActionAnchor([0, 0, -2], camera, viewport, wall));
+  wall.geometry.dispose();wall.material.dispose();
+});
+
+test('inspection MFD pages expose actual actuator state and explicit disconnected flight data', () => {
+  const systems = new AtlasMarkIISystems();settle(systems);
+  const initial = atlasInspectionPages(systems);
+  assert.equal(initial.length, 4);
+  assert.deepEqual(initial[2].rows.map(row => row[1]), ['CLOSED', 'CLOSED', 'CARGO DECK']);
+  assert.equal(initial[0].rows[1][1], 'NOT CONNECTED');
+  assert.equal(initial[3].rows[2][1], 'NOT CONNECTED');
+  systems.toggleRamp('front');
+  assert.equal(atlasInspectionPages(systems)[2].rows[0][1], 'OPENING');
+  settle(systems);
+  assert.equal(atlasInspectionPages(systems)[2].rows[0][1], 'OPEN');
+});
 
 test('shared S1 and S3 slots have coherent metre-scale fitting geometry', () => {
   assert.deepEqual(mountStandard.coordinateSystem, {
@@ -416,7 +466,8 @@ test('tapered bridge cheeks keep the full walker capsule inside the pressure foo
     aftZ: -17.8, aftHalfWidth: 7.2, frontZ: -25, frontHalfWidth: 4.8,
   });
   const eyeY = layout.upper.floor + layout.eyeHeight;
-  const z = -22.5;
+  // Sample the passage between the forward instrument console and seat backs.
+  const z = -22.2;
   const progress = (z - footprint.frontZ) / (footprint.aftZ - footprint.frontZ);
   const halfWidth = THREE.MathUtils.lerp(footprint.frontHalfWidth, footprint.aftHalfWidth, progress);
   const slope = (footprint.aftHalfWidth - footprint.frontHalfWidth)
@@ -494,6 +545,9 @@ test('exported Atlas Mark II GLB preserves metre scale, system pivots and mount 
     assert.ok(bounds.max.getComponent(axis) <= layout.hull.max[axis] + 0.2, `hull max ${axis}: ${bounds.max.toArray()}`);
   }
   const size = bounds.getSize(new THREE.Vector3());
+  const bow = scene.getObjectByName('LoadingBow');
+  assert.ok(bow && boundsInFrame(bow).min.y >= 4.95,
+    'loading arch feet terminate in the bow cheeks instead of piercing the lower front armour');
   assert.ok(size.x > 34 && size.y > 14 && size.z > 61.5, `metre-scale hull is ${size.toArray()}`);
   assert.ok(bounds.min.z < -30.8 && bounds.max.z > 30.8,
     `shaped bow and stern survive export: ${bounds.min.z}..${bounds.max.z}`);
@@ -501,6 +555,17 @@ test('exported Atlas Mark II GLB preserves metre scale, system pivots and mount 
     `bow and stern remain longitudinally balanced: ${bounds.min.z}..${bounds.max.z}`);
 
   const rampDefinitions = [];
+  assert.equal(layout.pilotMFDs.length, 4);
+  for (const definition of layout.pilotMFDs) {
+    const anchor = scene.getObjectByName(definition.node);
+    assert.ok(anchor && !anchor.isMesh, `${definition.node} is an exported physical screen anchor`);
+    nearVector(anchor.getWorldPosition(new THREE.Vector3()), point(...definition.position));
+    const expected = new THREE.Quaternion().setFromEuler(new THREE.Euler(...definition.rotation));
+    assert.ok(Math.abs(anchor.getWorldQuaternion(new THREE.Quaternion()).dot(expected)) > 1 - 1e-7);
+    const localBounds = boundsInFrame(anchor);
+    assert.ok(localBounds.min.x <= -definition.width / 2 && localBounds.max.x >= definition.width / 2);
+    assert.ok(localBounds.min.y <= -definition.height / 2 && localBounds.max.y >= definition.height / 2);
+  }
   for (const definition of layout.ramps) {
     const pivot = scene.getObjectByName(definition.node);
     assert.ok(pivot && !pivot.isMesh, `${definition.node} remains an animatable named pivot`);
@@ -527,7 +592,7 @@ test('exported Atlas Mark II GLB preserves metre scale, system pivots and mount 
   ));
   const liftBounds = boundsInFrame(lift);
   nearVector(liftBounds.min, point(-1.4, -0.32, -1.8), 0.03);
-  nearVector(liftBounds.max, point(1.4, 1.16, 1.8), 0.03);
+  nearVector(liftBounds.max, point(1.4, 1.32, 1.8), 0.03);
   for (const [index, name] of layout.elevator.gateNodes.entries()) {
     const gate = scene.getObjectByName(name);
     assert.ok(gate && !gate.isMesh, `${name} remains an animatable landing gate pivot`);

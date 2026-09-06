@@ -85,6 +85,9 @@ test('loads the authored asset and completes the physical aft-ramp-to-upper-deck
   }, null, { timeout: 90000 });
   await precisionMoveUntil(page, 'KeyD', 'x', 'greater', 5.1);
   await expect.poll(() => page.evaluate(() => window.atlasMarkIIStudio.interaction)).toBe('elevator:crew');
+  await expect(page.locator('.projected-action')).toBeVisible();
+  await expect(page.locator('.projected-action strong')).toHaveText('Go up');
+  await page.screenshot({ path: '/tmp/atlas-mark-ii-lift-action.png', timeout: 60000 });
   await page.keyboard.press('KeyF');
   await page.waitForFunction(() => window.atlasMarkIIStudio.walker.position.y > 11.1, null, { timeout: 90000 });
   await page.waitForFunction(() => {
@@ -100,6 +103,34 @@ test('loads the authored asset and completes the physical aft-ramp-to-upper-deck
   await precisionMoveUntil(page, 'KeyA', 'x', 'less', -1.9);
   await expect.poll(() => page.evaluate(() => window.atlasMarkIIStudio.interaction)).toBe('seat');
   await page.screenshot({ path: '/tmp/atlas-mark-ii-bridge-walk.png', timeout: 60000 });
+  await page.keyboard.press('KeyF');
+  await page.waitForFunction(() => window.atlasMarkIIStudio.seated);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(350);
+  const cockpit = await page.evaluate(() => {
+    const studio = window.atlasMarkIIStudio, frames = [];
+    studio.mfds.traverse(object => {
+      if (!object.isMesh || !object.name.startsWith('MFD ')) return;
+      const vertices = object.geometry.attributes.position;
+      frames.push(Array.from({ length: vertices.count }, (_, i) => {
+        const vertex = object.position.clone().fromBufferAttribute(vertices, i);
+        return object.localToWorld(vertex).project(studio.camera).toArray();
+      }));
+    });
+    return { frames, pages: studio.mfds.snapshot(), position: studio.walker.position.toArray() };
+  });
+  expect(cockpit.frames).toHaveLength(4);
+  for (const corners of cockpit.frames) for (const [x, y, z] of corners) {
+    expect(Math.abs(x)).toBeLessThan(.98);expect(Math.abs(y)).toBeLessThan(.98);
+    expect(z).toBeGreaterThan(-1);expect(z).toBeLessThan(1);
+  }
+  expect(cockpit.pages.map(page => page.title)).toEqual(['FLIGHT', 'NAVIGATION', 'SYSTEMS', 'CARGO']);
+  expect(cockpit.pages[2].values).toContain('CREW LIFT: UPPER DECK');
+  expect(cockpit.pages[2].values).toContain('AFT RAMP: OPEN');
+  await page.screenshot({ path: '/tmp/atlas-mark-ii-pilot-mfds.png', timeout: 60000 });
+  await page.keyboard.press('KeyF');
+  await page.waitForFunction(() => !window.atlasMarkIIStudio.seated);
+  await page.setViewportSize({ width: 480, height: 300 });
 
   await precisionMoveUntil(page, 'KeyD', 'x', 'greater', -0.2);
   await moveUntil(page, 'KeyS', 'z', 'greater', 2);
@@ -182,6 +213,39 @@ test('phone controls remain usable', async ({ browser }) => {
   await phone.close();
 });
 
+test('projected lift label activates by mouse and touch and follows the moving button', async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  const errors = watchErrors(page);
+  await page.goto('/dev/atlas-mark-ii.html');
+  await page.waitForFunction(() => document.body.classList.contains('is-ready'));
+  await page.getByRole('button', { name: /physical walkthrough/i }).click();
+  // This isolated input fixture starts on the platform; the separate journey
+  // above proves boarding and reaching it without repositioning.
+  await page.evaluate(() => {
+    document.exitPointerLock();
+    window.atlasMarkIIStudio.walker.position.set(5.5, 4.35, -4);
+  });
+  const label = page.locator('.projected-action');
+  await expect(label).toBeVisible();
+  await expect(label.locator('strong')).toHaveText('Go up');
+  const rect = await label.boundingBox();
+  expect(rect.x).toBeGreaterThanOrEqual(0);expect(rect.x + rect.width).toBeLessThanOrEqual(390);
+  await label.click();
+  await expect(label).toBeDisabled();
+  await page.waitForFunction(() => {
+    const state = window.atlasMarkIIStudio.systems.snapshot.elevator;
+    return !state.moving && state.y > 9.4;
+  });
+  await expect(label.locator('strong')).toHaveText('Go down');
+  const upper = await label.boundingBox();
+  await page.screenshot({ path: '/tmp/atlas-mark-ii-lift-action-phone.png' });
+  await page.touchscreen.tap(upper.x + upper.width / 2, upper.y + upper.height / 2);
+  await page.waitForFunction(() => window.atlasMarkIIStudio.systems.elevator.target === 2.6);
+  await expect(label.locator('kbd')).toHaveText('TAP');
+  expect(errors).toEqual([]);
+  await page.close();
+});
+
 test('controller walk, look, interact, and exit use neutral button edges', async ({ page }) => {
   const errors = watchErrors(page);
   await page.setViewportSize({ width: 720, height: 450 });
@@ -222,6 +286,7 @@ test('controller walk, look, interact, and exit use neutral button edges', async
     const ramp = window.atlasMarkIIStudio.systems.ramps.find(item => item.id === 'front');
     return ramp.moving && ramp.target === ramp.openAngle;
   }, null, { timeout: 30000 });
+  await expect(page.locator('#interaction-prompt kbd')).toHaveText('A');
   await page.evaluate(() => {
     window.__atlasTestPad.buttons[0].pressed = false;
     window.__atlasTestPad.buttons[0].value = 0;

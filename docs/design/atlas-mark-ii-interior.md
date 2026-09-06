@@ -63,7 +63,7 @@ cassettes and the aft environmental cover give those frames attached equipment.
 All equipment is visual detail; no life-support or privacy-curtain controls are
 implemented in this pass.
 
-The walker has 55 fixed collider envelopes. The inboard crew wall includes the
+The walker has 56 fixed collider envelopes. The inboard crew wall includes the
 frame feet and panel thickness. Galley access covers are recessed to retain at
 least 1.60 m for capsule-centre travel. The entire crew aisle is traversable at
 x=-3.1 from z=3 to z=16.2, including past the fold desk. Physical and exported-mesh

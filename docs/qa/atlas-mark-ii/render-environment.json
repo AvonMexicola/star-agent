@@ -1,8 +1,8 @@
 {
   "errors": [],
   "stats": {
-    "meshes": 157,
-    "triangles": 426504,
+    "meshes": 168,
+    "triangles": 412988,
     "materials": 13,
     "textures": 10
   },
@@ -13,8 +13,8 @@
   ],
   "dpr": 1,
   "browser": "Chromium 151.0.7922.173",
-  "assetSha256": "659b54660075ff1adb759d1c1141dfbc06c8aba6302190766756cec016fc4a1f",
-  "functionalSuiteAssetSha256": "659b54660075ff1adb759d1c1141dfbc06c8aba6302190766756cec016fc4a1f",
+  "assetSha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+  "functionalSuiteAssetSha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
   "functionalViewport": [
     480,
     300
@@ -26,5 +26,20 @@
   "phoneViewport": [
     390,
     844
-  ]
+  ],
+  "runtimeMFDs": {
+    "meshes": 4,
+    "textures": 4,
+    "materials": 4,
+    "resolution": [
+      512,
+      320
+    ],
+    "updateHz": 5
+  },
+  "pilotViewport": [
+    1440,
+    900
+  ],
+  "pilotVerticalFov": 56
 }

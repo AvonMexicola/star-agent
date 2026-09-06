@@ -332,6 +332,12 @@
       "label": "Hygiene doorway jamb 1",
       "min": [1.28, 9.5, 12.98],
       "max": [1.56, 12.4, 13.18]
+    },
+    {
+      "id": "pilot-instrument-extension",
+      "label": "Pilot console extension and four display frames",
+      "min": [-3.35, 10.3, -23.68],
+      "max": [-0.85, 11.1, -22.69]
     }
   ]
 }

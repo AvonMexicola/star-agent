@@ -24,11 +24,22 @@ def build_bow_cheek(g,m,parent,side):
                 q=mid+(p-mid)*.87
                 g.rod('Bow armour captive fixing',q,q+Vector((side*.10,0,0)),.04,m['steel'],6,root)
         g.rod('Bow chine machined edge',low[i],low[j],.075,m['steel'],10,root)
-    # Recessed longitudinal sensor channel with independent housings.
-    for i in range(4):
-        z=-24+i*1.0;x=side*(11.8+i*.28)
-        g.box('Bow tracking sensor well',(x,5.05,z),(.22,.65,.72),m['rubber'],.05,root)
-        g.box('Bow tracking lens',(x+side*.13,5.12,z),(.03,.18,.36),m['glass'],.01,root)
+    # Seat the sensor array on the actual sloped forward facet. Independent
+    # world-X boxes floated above this hull after the bow redesign.
+    a,b,c,d=[Vector(p) for p in (low[2],low[3],top[3],top[2])]
+    tangent=(b-a).normalized()
+    normal=tangent.cross(d-a).normalized()
+    if normal.x*side<0: normal=-normal
+    vertical=normal.cross(tangent).normalized()
+    for i,t in enumerate((.18,.38,.58,.78)):
+        centre=a.lerp(b,t).lerp(d.lerp(c,t),.52)+Vector((side*.09,0,0))
+        def plate(name,offset,width,height,material,thickness):
+            p=centre+normal*offset
+            points=[tuple(p+tangent*u+vertical*v) for u,v in
+                    [(-width/2,-height/2),(width/2,-height/2),(width/2,height/2),(-width/2,height/2)]]
+            return g.panel(name,points,material,thickness,.014,root)
+        plate(f'Flush bow sensor housing {i}',.09,.78,.44,m['dark'],.12)
+        plate(f'Flush bow sensor lens {i}',.16,.48,.17,m['glass'],.018)
     return root
 
 

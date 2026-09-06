@@ -539,52 +539,27 @@ def build_interior(g, m, layout):
     dashboard = g.box("Bridge angled dashboard", (0, upper_floor + .98, -23.45),
                       (7.55, .16, .92), steel, bevel=.055, parent=bridge_root)
     g.rotate_game(dashboard, (.20, 0, 0))
-    station_xs = (-2.6, 0, 2.6)
-    for station, x in enumerate(station_xs):
-        width = 1.55 if x else 1.42
-        g.box(f"Bridge console footwell recess {station}",
-              (x, upper_floor + .34, -23.575), (1.72, .43, .035),
-              petrol, bevel=.055, parent=bridge_root)
-        g.box(f"Bridge display well {station}", (x, upper_floor + 1.16, -23.43),
-              (width, .56, .05), petrol, bevel=.04, parent=bridge_root)
-        screen_y = upper_floor + 1.16
-        screen_z = -23.395
-        g.box(f"Bridge MFD glass {station}", (x, screen_y, screen_z),
-              (width - .18, .39, .018), glass, bevel=.018, parent=bridge_root)
-        # Raised four-piece bezels put a visible manufactured recess around
-        # each screen instead of relying on a flat coloured rectangle.
-        bezel_z = -23.36
-        for edge, edge_x in (("port", x - width / 2 + .04),
-                             ("starboard", x + width / 2 - .04)):
-            g.box(f"Bridge MFD bezel {station} {edge}", (edge_x, screen_y, bezel_z),
-                  (.08, .57, .075), steel, bevel=.018, parent=bridge_root)
-        for edge, edge_y in (("lower", screen_y - .245), ("upper", screen_y + .245)):
-            g.box(f"Bridge MFD bezel {station} {edge}", (x, edge_y, bezel_z),
-                  (width, .08, .075), steel, bevel=.018, parent=bridge_root)
-
-        # Physical emissive marks remain legible when texture filtering or a
-        # steep viewing angle would erase screen artwork.
-        data_z = -23.32
-        for row, (offset_y, fraction) in enumerate(((-.125, .32), (-.045, .48), (.035, .23))):
-            bar_width = (width - .22) * fraction
-            g.box(f"Bridge MFD data bar {station} {row}",
-                  (x - width * .23 + bar_width / 2, screen_y + offset_y, data_z),
-                  (bar_width, .025, .015), display, bevel=.007, parent=bridge_root)
-        g.ring(f"Bridge MFD arc {station}",
-               (x + width * .25, screen_y + .015, data_z),
-               .09, .012, display if station != 2 else amber,
-               axis="z", parent=bridge_root)
-        for tick, offset_x in enumerate((-.08, 0, .08)):
-            g.box(f"Bridge MFD status tick {station} {tick}",
-                  (x + offset_x, screen_y + .145, data_z),
-                  (.045, .018, .015), amber if tick == station else display,
-                  bevel=.005, parent=bridge_root)
-        for key in (-.30, 0, .30):
-            if abs(key) < width / 2 - .08:
-                g.box(f"Bridge console key {station} {key:+.2f}",
-                      (x + key, upper_floor + 1.13, -23.08),
-                      (.13, .025, .16), amber if key == 0 else ivory,
-                      bevel=.018, parent=bridge_root)
+    g.box("Pilot instrument console extension", (-2.1,upper_floor+.90,-23.20),
+          (2.50,.20,.96), dark, bevel=.055, parent=bridge_root)
+    # Four physical pilot display frames. Named anchors and dimensions are
+    # shared with the runtime canvas screens; no baked placeholder telemetry.
+    for index, definition in enumerate(layout["pilotMFDs"]):
+        x,y,z=definition["position"]
+        width,height=definition["width"],definition["height"]
+        g.rod(f"Pilot display {index} mounting stalk", (x,upper_floor+.96,z-.22),
+              (x,y-.08,z-.04), .035, steel, vertices=10, parent=bridge_root)
+        anchor=g.empty(definition["node"], (x,y,z), parent=bridge_root)
+        anchor["role"]="pilot-mfd";anchor["screenWidth"]=width;anchor["screenHeight"]=height
+        g.box(f"Pilot display {index} chassis", (x,y,z-.02),
+              (width+.10,height+.10,.10), dark, bevel=.025, parent=anchor)
+        g.box(f"Pilot display {index} recessed face", (x,y,z+.037),
+              (width+.01,height+.01,.014), petrol, bevel=.004, parent=anchor)
+        for side in (-1,1):
+            g.box(f"Pilot display {index} vertical bezel {side}", (x+side*(width/2+.022),y,z+.041),
+                  (.04,height+.08,.03), steel, bevel=.007, parent=anchor)
+            g.box(f"Pilot display {index} horizontal bezel {side}", (x,y+side*(height/2+.022),z+.041),
+                  (width,.04,.03), steel, bevel=.007, parent=anchor)
+        g.rotate_game(anchor, definition["rotation"])
 
     def pilot_seat(name, x):
         """Compact ergonomic flight chair inside the authored seat collider."""

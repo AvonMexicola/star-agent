@@ -60,12 +60,12 @@ def build_loading_bow(g,m,parent):
     for side in [-1,1]:
         # An eight-sided mouth reads as one vessel instead of detached pontoons.
         g.panel('Bow arch upper bevel',[(side*6.0,8.62,-29.0),(side*8.9,6.8,-29.0),(side*9.15,7.85,-28.45),(side*6.2,9.5,-28.45)],m['ivory'],.24,.05,root)
-        g.panel('Bow arch upright',[(side*8.9,3.0,-29.0),(side*8.9,6.8,-29.0),(side*9.15,7.85,-28.45),(side*9.15,3.35,-28.45)],m['dark'],.3,.04,root)
+        g.panel('Bow arch upright',[(side*8.9,5.0,-29.0),(side*8.9,6.8,-29.0),(side*9.15,7.85,-28.45),(side*9.15,5.16,-28.45)],m['dark'],.3,.04,root)
         g.panel('Swept bow shoulder',[(side*4.9,9.3,-25.9),(side*6.2,9.5,-28.45),(side*9.15,7.85,-28.45),(side*10.45,7.85,-23.6),(side*7.8,9.3,-23.6)],m['ivory'],.16,.035,root)
         g.rod('Bow load arch edge',(side*6.0,8.6,-29.07),(side*8.9,6.8,-29.07),.11,m['steel'],12,root)
-        for z in [-28.0,-26.5,-25.0]:
-            g.box('Bow docking sensor recess',(side*9.8,7.6,z),(.4,.28,.55),m['dark'],.03,root)
-        for y in [4,5,6]:g.box('Bow approach lamp',(side*8.93,y,-29.18),(.10,.22,.08),m['mint'],.01,root)
+        # The arch feet terminate inside the bow cheeks. Old full-height
+        # plates pierced the lower armour; detached docking boxes and low lamps
+        # are replaced by the surface-mounted sensor array on each bow cheek.
     g.prism('Continuous loading arch crown',[(-6.2,-29.05),(6.2,-29.05),(6.45,-28.2),(-6.45,-28.2)],8.62,9.48,m['dark'],.075,root)
     g.prism('Loading arch crown armour',[(-6.0,-29.08),(6.0,-29.08),(6.2,-28.15),(-6.2,-28.15)],9.47,9.62,m['ivory'],.035,root)
     g.box('Loading approach illumination',(0,8.66,-29.12),(6.4,.075,.08),m['mint'],.01,root)

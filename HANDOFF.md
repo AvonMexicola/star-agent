@@ -640,3 +640,48 @@ hero (user unit star-agent-atlas-mark-ii-preview.service). Select CREW or use
 physical walkthrough. Remains an over-budget standalone authoring candidate;
 no independent art approval, live fleet installation, merge or deployment.
 Fable/Claude retain review and integration ownership.
+
+
+## Atlas nose, four pilot MFDs and projected action labels in progress — 2026-09-06
+
+Root owns /tmp/star-agent-atlas-mark-ii / feat/atlas-mark-ii (PR30): trim legacy
+front armour against new bow, mount sensors on their actual facets, four pilot
+MFD anchors/screens and a reusable state-driven physical-control label standard.
+Consumer integration is the Atlas studio (ramps, crew lift, pilot seat); station
+hangar adoption remains a documented integration point for the station owner.
+Shared main/station/equipment files remain untouched. Root owns new label/MFD
+modules, limited shared MFD factory extension in this worktree and focused QA.
+
+
+## READY FOR REVIEW: Atlas nose, four pilot MFDs and projected controls — 2026-09-06
+
+PR30 / feat/atlas-mark-ii, isolated /tmp/star-agent-atlas-mark-ii. Removed old
+forward flank overlap and detached docking boxes; trimmed arch plates that pierced
+the lower bow. Retained sensor array now follows actual facet tangent/normal.
+Drive-pod mesh preserved. New original Blender frames/anchors: PilotMFD_01..04.
+Pilot eye aligned to chair; F/A sits and stands. Four shared 512x320 / 5Hz MFDs
+show actual ramp/lift state, with flight/navigation/manifest explicitly disconnected
+in this standalone studio. Shared createShipMFDs default behavior is preserved.
+
+NEW REUSABLE STANDARD: docs/physical-control-standard.md,
+src/projected-action-label.js and .css. Descriptor id/target/anchor/action/enabled/
+reason; render-local anchors, F/A/TAP, guarded click/tap operation, opaque geometry
+occlusion, disabled interlock states. Atlas consumer is src/atlas-mark-ii-controls.js
+and studio. Labels say Go up/Go down/Call lift, Open/Close ramp and Sit/Stand.
+Station owner: adopt the provided hangar state/verb contract with your actual door
+mechanism and render-local button anchor; no station module changed here.
+
+Final hero a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa:
+412,988 triangles, 168 static batches, 13 materials, 10 textures, 38,037,892 bytes;
+MFDs add four runtime meshes/materials/textures. 56 fixed collider envelopes.
+184 unit tests and production build pass. Five hardware browser cases pass1.7min:
+full physical boarding/upper-deck journey including sit/stand + four-screen framing,
+seven presets, phone, mouse/touch lift-label operations and injected controller.
+Final opaque-hover fix passes focused mouse/touch case1/1. No page/console errors.
+Chromium151/AMD860M/ANGLE GL; pilot1440x900 FOV56; phone390x844. No FPS or physical
+Xbox claim. Failure history and renders: docs/qa/atlas-mark-ii/cockpit-controls-record.md.
+
+Preview remains http://localhost:5250/dev/atlas-mark-ii.html (persistent user
+service). Physical walkthrough→lift→pilot seat, F to sit. Main fleet, flight/cargo
+adapters, station label adoption, budgets/LOD acceptance and independent art review
+remain pending. Keep draft; Fable owns review/integration/merge. No deployment.
