@@ -154,3 +154,9 @@ arbitrary movement speed or under unlimited load.
 The resident-fallback candidate passed its production build and affected feature
 browser check again (**1/1**, zero console/page errors). Source and runtime
 walking review follow; prior rejected scores remain historical.
+
+Independent source review then caught the80→160m preference changing the fade
+radius before the old field was replaced. The renderer now retains the published
+radius, blends range expansion after publication, and caps display by the requested
+setting. The final build passes; the independent walking/settings run validates
+this final shader variant rather than reusing a capture of the previous source.
