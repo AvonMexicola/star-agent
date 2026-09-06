@@ -22,6 +22,21 @@ Barlow Condensed numerals, DM Sans body) and the base `dialog` chrome. New palet
 **World.** No popping (geomorph + hysteresis), no z-fighting, no flat plane views: at any destination the screenshot must
 show relief, material detail and something on the horizon. Night has light sources. Hangars are lit by their lights.
 
+## 1b. High-quality asset recipe (decided 2026-09-06, Cees: "combine Meshy and Blender")
+
+Blender makes the geometry, Meshy paints it. In order of impact:
+1. **Geometry in Blender by script** (bevels 2-seg, EXACT booleans for seams, clean UVs via smart-project + seams on
+   hard edges); **textures from Meshy's text-to-texture on the uploaded mesh** (PBR: albedo/rough/metal/normal with wear,
+   decals, grime); Blender bakes/packs to 1024² WebP and exports glTF. Hard-surface only goes this way.
+2. **`blender/materials.py`**: procedural Principled node groups — edge wear (bevel + pointiness), cavity grime (AO),
+   panel-line darkening, colour noise — baked at export. Every asset gets it; no uniform materials ship.
+3. **Kitbash part library** (`blender/parts/`): hatches, vents, pipes, clamps, bolts, rails, fixtures, with a manifest;
+   assets are composed from parts.
+4. **Geometry Nodes** for detail density: cables along curves, rivet rows on edges, greeble scatter on flat faces.
+5. **Render-in-the-loop**: EEVEE turntable, 4 angles, HDRI; a reviewer session scores; ≥ 3 rounds before export.
+6. **Reference boards** in `docs/refs/<class>/` (station, ship, gear, flora, UI); match references, not adjectives.
+7. **Meshy for organic base sculpts only** (flora, rocks, creatures), then Blender retopo + the same material pass.
+
 ## 2. Definition of Done — every PR (functional + visual)
 
 - [ ] `npm test` green; `vite build` green; zero console errors/warnings in the browser check.
