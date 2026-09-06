@@ -26,7 +26,7 @@ function afterburnerMaterial(tint){
     float fade=1.0-smoothstep(0.0,1.0,burn);
     float rim=pow(1.0-abs(dot(normalize(viewNormal),normalize(eye))),0.6);
     float cells=0.8+0.2*cos(burn*31.4);
-    gl_FragColor=vec4(mix(tint,vec3(1.0),fade*0.35),fade*cells*(0.025+0.11*rim));
+    gl_FragColor=vec4(mix(tint,vec3(1.0),fade*0.35),fade*cells*(0.045+0.19*rim));
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
    }`
@@ -56,6 +56,9 @@ export function createKestrel({url}={}){
   const hud=asset.getObjectByName('HUD_Glass');if(hud)hud.castShadow=false;
   asset.traverse(o=>{if(o.isMesh&&o.material.transparent)o.castShadow=false;});
   core=asset.getObjectByName('EngineCores');coreTint=core.material.emissive.clone();
+  // Keep the dormant liner dark enough that emitted mint defines low thrust.
+  // The final white-hot range comes from emission, not bright diffuse lighting.
+  core.material.color.multiplyScalar(.18);
   const burn=afterburnerMaterial(coreTint.clone());
   for(const side of ['L','R']){const cone=asset.getObjectByName('AB_'+side);cone.material=burn;cone.castShadow=false;cone.receiveShadow=false;}
   evaluate();ready=true;root.update(0);return root;
@@ -75,7 +78,7 @@ export function createKestrel({url}={}){
    values[key]+=Math.sign(delta)*Math.min(Math.abs(delta),step);
   }
   evaluate();nav.doorOpen=targets.canopy===1;nav.doorProgress=values.canopy;nav.previewThrottle=throttle;mfd.update(dt,nav,{mass:()=>0},null);
-  if(core){core.material.emissive.copy(coreTint).lerp(white,throttle*.65);core.material.emissiveIntensity=.5+2*throttle;}
+  if(core){core.material.emissive.copy(coreTint).lerp(white,Math.pow(throttle,1.6)*.84);core.material.emissiveIntensity=.22+2.6*throttle;}
   for(const side of ['L','R']){
    const cone=asset.getObjectByName('AB_'+side);if(cone){cone.visible=throttle>.72;cone.scale.set(1,1,Math.max(.01,(throttle-.72)/.28));}
   }

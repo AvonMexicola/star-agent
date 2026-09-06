@@ -5,11 +5,11 @@ Request 24 delivers a single-seat interceptor and an inspection page at
 tuning, physical ladder traversal, suspension forces and combat systems belong
 to a subsequent integration PR.
 
-**Work in progress:** the required Meshy text-to-texture pass and final visual
-gate are pending. The current GLB uses baked Blender procedural materials.
-Nothing has entered `public/models/` or been declared ready to merge.
-The latest independent review scores 4.17/5, with materials at 3.5; the brief
-requires at least 4.2 overall and no criterion below 4.
+**Ready for Cees's review:** the refined Meshy/Blender candidate passes its
+independent visual gate at **4.25/5**, with every criterion at least 4. The current
+GLB combines authored material regions, filtered Meshy service detail and Blender
+contact AO on the original UVs. Cees retains the final PR gate; the asset has not
+entered `public/models/` or been integrated into gameplay.
 
 ## Asset contract
 
@@ -35,7 +35,7 @@ model is 13.5 m long, 9 m wide and 3.2 m high, with 0.9 m belly clearance and a
 The hard limits include the cockpit: 60,000 triangles, 4,000,000 bytes and 1024²
 WebP textures. The `.blend`, HDRI and baking inputs are authoring files; the page
 bundles only the runtime GLB.
-The current candidate is 36,226 triangles and 2,305,008 bytes, with three 1024²
+The current candidate is 36,226 triangles and 2,330,924 bytes, with three 1024²
 WebP maps. Its complete authoring/verification record is in
 [`docs/qa/kestrel/record.md`](qa/kestrel/record.md).
 
@@ -63,24 +63,46 @@ AO, then exports `kestrel-meshy-input.glb` with one mesh and the
 existing base-colour atlas. The UV-layout hash is recorded in
 `assets/kestrel/texture-layout.json`.
 
-The current upload retry file is `assets/kestrel/kestrel-meshy-clean.glb`.
+The accepted upload file is `assets/kestrel/kestrel-meshy-clean.glb`.
 `clean_meshy_upload.py` excludes 78 triangle fragments with negligible geometric
 area or collapsed UV area from the temporary painting shell. Position, normal,
 UV and image buffers are byte-for-byte unchanged. This preserves the existing
 atlas and does not modify the runtime GLB. Both the original and cleaned files
-pass Khronos glTF Validator with zero issues. Meshy reported only "Texturing
-failed" after the manual upload; whether this cleanup resolves that failure is
-still unverified. See the QA record for limits and hashes.
+pass Khronos glTF Validator with zero issues. The original manual upload failed
+with only "Texturing failed"; the cleaned upload and subsequent PBR generation
+succeeded. The exact remote cause remains unknown. See the QA record for hashes.
 
-The remaining texture step uploads that authored mesh to Meshy's text-to-texture
-workflow with **Keep Original Texture and UV** enabled, then validates/imports
-its PBR maps. Art direction: white armour, dark polymer, brushed metal, restrained
-mint markings, serials and plausible service wear. Preserve geometry and UVs.
+The authored shell was uploaded to Meshy's text-to-texture workflow with
+**Keep Original Texture and UV** enabled. Meshy 7 generated 2K PBR maps at a
+displayed cost of 10 credits. The exact submitted prompt and raw maps are in
+`assets/kestrel/textures/meshy-prompt.txt` and `meshy-source/`. After downloading
+the resulting GLB, import a new candidate with:
+
+```sh
+blender -b -t 2 --python-exit-code 1 --python blender/import_fighter_textures.py -- --source /path/to/downloaded.glb
+```
+
+The importer restores Meshy's normalized positions for comparison and rejects
+a UV mismatch. All 47,024 returned vertices matched the authored atlas within
+1.26e-6 UV units. Geometry and animation stay in Blender's original rig. Generated
+maps are reduced to 1024²; normals are renormalized, and glTF's green roughness /
+blue metallic channels are separated. Raw 2K JPEG maps and their hashes are kept
+for provenance; the runtime contains only the three packed WebP textures.
+
 `pack_fighter_textures.py` accepts `meshy-basecolor.png`, `meshy-normal.png`,
-`meshy-roughness.png` and `meshy-metallic.png` in the texture directory. It keeps
-Blender contact AO, packs AO/roughness/metallic into RGB, and records source hashes
-in `textures/provenance.json`. Missing maps explicitly fall back to procedural
-candidates; that fallback does not satisfy the final asset recipe.
+`meshy-roughness.png` and `meshy-metallic.png` in the texture directory. It checks
+the UV-layout hash of `/tmp/kestrel-uv.blend`, then rasterizes actual material
+assignments with two-texel margins. These regions preserve ceramic, graphite,
+rubber, titanium, mint livery and amber/graphite markings. A bounded local-detail
+filter removes Meshy's broad shading-like colour streaks. Material-specific
+roughness and metalness retain generated service variation; metal also receives
+directional brushing. The normal blend preserves authored bevels while adding
+attenuated generated detail. Blender contact AO remains in the ORM red channel.
+Source hashes, region coverage and finish parameters are recorded in
+`textures/provenance.json`. Raw generated maps remain unchanged. The optional
+`--raw-meshy` flag reproduces the direct-import treatment reviewed in round 5.
+If no generated maps exist, packing explicitly falls back to a procedural
+candidate; that fallback does not satisfy the final asset recipe.
 
 Export batches geometry only within a rigid assembly and retains animated
 parents, socket transforms, display UVs, glass and independently driven parts.
@@ -131,14 +153,18 @@ environment metadata go to `/tmp/star-agent-kestrel-browser-evidence`.
 
 The performance configuration requests ANGLE/OpenGL hardware at 1440×900. On
 Chromium 151 / AMD Radeon 860M / ANGLE OpenGL ES 3.2, 120 asynchronous GPU queries
-per view measured the following. CPU values cover `renderer.render` only. RAF
-intervals were about 16.7 ms and are not GPU time. This is an isolated studio
-measurement, not a full-game performance claim.
+per view measured the following on the final textured candidate. CPU values
+cover `renderer.render` only. No disjoint events or browser errors occurred.
+This is an isolated studio measurement, not a full-game performance claim.
 
 | View | Draws / triangles | GPU median / p95 | CPU render median / p95 |
 |---|---:|---:|---:|
-| Exterior | 46 / 36,480 | 1.84 / 2.21 ms | 0.80 / 1.50 ms |
-| Cockpit | 22 / 26,364 | 3.19 / 3.96 ms | 0.70 / 1.20 ms |
+| Exterior | 46 / 36,480 | 3.31 / 3.98 ms | 1.50 / 4.20 ms |
+| Cockpit | 22 / 26,364 | 5.97 / 7.68 ms | 1.20 / 3.40 ms |
+
+Instrumented RAF intervals had medians 17.0/17.1 ms and p95 values 43.5/56.3 ms
+for exterior/cockpit. That variable pacing is not a stable-FPS or complete frame
+budget pass; the GPU query measures rendering work, not the whole animation loop.
 
 Independent reports and original captures are retained in
 [`docs/qa/kestrel/reviewer/`](qa/kestrel/reviewer/round-2/review.md). Round 1 failed
@@ -146,6 +172,11 @@ the silhouette gate at 3.8/5. Rebuilt wing/body and cowl profiles reached 4.5/5 
 round 2 before detail. Round 3 evaluates the first full procedural candidate,
 including its side-screen winding defect, and failed at 3.42/5. Round 4's fresh
 33-capture review closes the rig/display/engine defects and scores 4.17/5, with
-materials still at 3.5. Those reports preserve the actual candidates assessed.
-Final acceptance requires the Meshy pass, a fresh score of at least 4.2 with
-every criterion at least 4, and Cees's PR gate.
+materials still at 3.5. Round 5's 38-capture review scores the direct Meshy import
+at 4.00/5, identifying broad albedo streaks and weakened faction markings. The
+refined mix passes [round 6](qa/kestrel/reviewer/round-6/review.md) at **4.25/5**:
+silhouette 4.5, materials 4.0, lighting 4.0, cohesion 4.0, function 4.5 and motion
+4.5. The reviewer inspected 34 fresh captures and independently confirmed
+unchanged geometry, UVs, node records and animations. Those reports preserve
+the actual candidates assessed. Close cockpit/nozzle detail remains optional
+polish. Final acceptance remains Cees's PR gate.

@@ -1,0 +1,14 @@
+{
+  "referenceCommit": "5c0cffd",
+  "referenceSha256": "2fa436d32c089b6d7ed705925ad013a1306e8e30ce56568c07604405610503b0",
+  "candidateSha256": "ef42a970295f0db8535fdd08aa6f8b2385243545891f512816392befdbaed374",
+  "meshNamesAndAccessorDataIdentical": true,
+  "nodeNamesTransformsHierarchyExtrasIdentical": true,
+  "animationDataIdentical": true,
+  "meshCount": 45,
+  "nodeCount": 81,
+  "animationCount": 3,
+  "changedMeshNames": [],
+  "changedNodeNames": [],
+  "changedAnimations": []
+}
