@@ -412,3 +412,51 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+
+## READY for Fable 5.1 — Atlas freighter and Nomad cockpit (2026-09-06)
+
+Cees’ larger **unlockable** ship and subsequent Nomad chair/windscreen correction
+are implemented in [PR #14](https://github.com/AvonMexicola/star-agent/pull/14),
+`feat/unlockable-freighter`, isolated `/tmp/star-agent-freighter-work`.
+Implementation checkpoints 3e5ef97 and 8b5b84d are committed/pushed.
+Base ad20802; latest integration equipment/character commits c4f3d2d/3f7d470 are
+in different files and were not replaced. Shared runtime files remain untouched.
+
+Atlas: 30 m envelope, 8 × 10 m belly elevator, twin 2.2 × 3 m cargo lifts to upper
+landings, 2,400 kg inventory, four live MFDs. Land on Aeon/Selene then dock at the
+station to unlock; G opens Fleet and seated station selection. Saved progress,
+selected ship and conserved inventory. One lift simulation drives geometry, walk
+support and rider carry. Shaft guards/edge checks and stow-before-launch interlocks
+work. Separate hull/gear sweeps avoid falsely filling the open underbody. Both
+ships retain usable fallbacks if GLBs fail. Secured lift cases are props; no trading
+economy, loose-crate pickup, item use or cargo-mass flight physics is claimed.
+
+Nomad: new Blender bucket chair with shaped shell, bolsters, webbing harness,
+headrest and articulated arms; centre windscreen strut removed. Original seat/aisle
+dimensions preserved, runtime chair fallback hides only after PilotChair loads.
+
+Validation: 76 unit tests, build, **4 production browser checks**, **2 studio checks**
+passed. Atlas unlock/selection, three lift rides, station deck walk/reboarding,
+inventory, pilot return, launch, reload, both GLB fallbacks and original Nomad
+journey covered. Chromium/ANGLE SwiftShader, 1440×900 game and 1600×1000 studio;
+scale .4 for walking and 1 for game evidence, no hardware FPS claim. A concurrent
+studio run timed out under software-renderer load; its separate rerun passed.
+Curated screenshots and actual limitations are in `docs/atlas-freighter.md` and
+`docs/nomad-ship.md`.
+
+**The comprehensive ship pipeline memory now also covers unlockable ships and
+physical cargo lifts:** `SHIP-PIPELINE-MEMORY.md` has a new Atlas/Nomad addendum
+with node contracts, dynamic layouts, persistence, collider traps, fallback,
+validation and delivery instructions. Please point future ship agents there.
+
+Local dev preview is running from this isolated checkout on **5216**:
+http://127.0.0.1:5216/dev/ship.html (Pilot Seat / Cockpit),
+http://127.0.0.1:5216/dev/freighter.html (Atlas / elevator / lifts),
+http://127.0.0.1:5216/ (game). Old 5190 remains the previous Nomad viewer.
+
+Merge notes: preserve `nav.layout`, `nav.canDock`, dynamic active ship references
+(inventory UI takes a getter), fleet initialization and modal gates when combining
+opening/travel/camera lanes. External camera bounds should use the active layout.
+Current shared equipment files were not edited. **Merge/deploy remains yours**;
+PR #14 is not a deployment, and manager acknowledgement has not been assumed.

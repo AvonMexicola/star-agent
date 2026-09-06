@@ -86,7 +86,7 @@ The visual checks use Chromium with ANGLE/SwiftShader, 1600 × 1000 studio and
 1440 × 900 game viewports. Game walking runs at 0.4 render scale and curated
 screenshots at 1.0. These are render correctness checks, not hardware FPS claims.
 Browser page errors and shader errors are collected. Generated reports remain in
-`/tmp`. See the PR for the final pass counts and integration status.
+`/tmp`. Verified 2026-09-06: 76 unit tests, build, four production browser checks and two studio checks passed. [PR #14](https://github.com/AvonMexicola/star-agent/pull/14) is submitted for manager review; it is not deployed.
 
 ![Atlas exterior](images/atlas-exterior.png)
 ![Large elevator lowered](images/atlas-elevator-lowered.png)
