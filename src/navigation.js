@@ -30,6 +30,7 @@ export class Navigation {
     this.powered=true;this.cabinFlight=false;
     this.shipVelocity=new THREE.Vector3();this.shipAngularVelocity=new THREE.Vector3();
     this.cruiseVelocity=new THREE.Vector3();
+    this.engineAcceleration=new THREE.Vector3();
     this.orbit();
     document.addEventListener('pointerlockchange',()=>{this.locked=document.pointerLockElement===canvas;document.body.classList.toggle('piloting',this.locked);if(!this.locked)this.keys.clear();});
     document.addEventListener('mousemove',e=>{if(this.locked&&this.enabled){this.controllerActive=false;this.look(-e.movementX*.0018,-e.movementY*.0018);}});
@@ -360,6 +361,7 @@ export class Navigation {
     const forward=FORWARD.clone().applyQuaternion(this.orientation),right=RIGHT.clone().applyQuaternion(this.orientation);
     const input=forward.clone().multiplyScalar(moveForward).addScaledVector(right,strafe);
       const altitude=this.altitude;
+      if(this.autoland||this.stationLift)this.engineAcceleration.copy(this.flightEnvironment.gravity).negate();
       if(this.brakeFlight&&this.powered){
         this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
         if(roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation).normalize();}
@@ -385,6 +387,7 @@ export class Navigation {
           translation:this.powered?new THREE.Vector3(strafe,vertical,-moveForward):new THREE.Vector3(),
           rotation:this.powered?new THREE.Vector3(tilt,turn,-roll):new THREE.Vector3(),
           boost:this.powered&&this.boost,maxSpeed:!this.powered?Infinity:this.flightAssist?Math.max(this.speed,profile.limit):profile.limit},this.flightEnvironment,dt);
+        this.engineAcceleration.copy(flight.engineAcceleration);
         this.velocity.copy(flight.velocity);this.orientation.copy(flight.orientation);this.angularVelocity.copy(flight.angularVelocity);
         if(this.powered&&this.flightAssist&&roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation);}
       }
@@ -410,6 +413,7 @@ export class Navigation {
       // Assisted travel and inertial flight share the same swept collision path.
   }
   update(dt){
+    this.engineAcceleration.set(0,0,0);
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(document.querySelector('dialog[open]'))});
     this.onControllerInput?.(pad,dt);
     this.toolTrigger=pad.mine||0;
