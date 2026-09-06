@@ -28,7 +28,8 @@ test('Xbox equips and fires away from every nearby Selene deposit without awardi
   await page.evaluate(()=>{
     const n=window.starAgent.navigation,center=n.position.clone().fromArray(window.starAgent.state.moon.position),east=n.position.clone().set(0,1,0).cross(n.normal).normalize();
     n.position.addScaledVector(east,350);const radial=n.position.clone().sub(center).normalize();
-    n.position.copy(center).addScaledVector(radial,window.starAgent.state.moon.radius+n.groundHeight+1.75);
+    const elevation=n.groundHeight;
+    n.position.copy(center).addScaledVector(radial,window.starAgent.state.moon.radius+elevation+1.75);
     n.mode='walk';n.shipPosition=null;n.insideShip=false;n.spaceParked=false;n.jumpHeight=0;n.jumpVelocity=0;n.velocity.set(0,0,0);n.enabled=true;
     n.orientToward(n.position.clone().addScaledVector(radial,5).addScaledVector(east,2),radial.clone().cross(east));
   });
