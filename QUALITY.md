@@ -67,8 +67,8 @@ Assets: props ≤ 10 k tris / ≤ 1 MB, characters ≤ 20 k / ≤ 2 MB, ships �
 
 ## 6. Process
 
-1. **Two-stage review on every PR**: Claude (functional: tests, build, tour, perf) → Opus (visual rubric) for anything
-   the player sees. Findings go to HANDOFF as numbered requests; the PR isn't merged until the score passes or Cees
+1. **Two-stage review on every PR**: Claude (cheap functional gate: tests, build) → an Astra/Codex **reviewer session**
+   (visual rubric, never the session that built the PR) for anything the player sees. Findings go to HANDOFF as numbered requests; the PR isn't merged until the score passes or Cees
    waives it.
 2. **Weekly quality pass** (Claude): full tour at the §4 viewpoints on the integration branch, a scored report in
    `docs/qa/weekly-<date>.md`, top-10 defects filed. Cees's own review notes are logged there too.
