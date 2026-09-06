@@ -20,6 +20,10 @@ empty space too; only a validated rock hit yields material. Tool availability is
 independent of deposit distance: equip it anywhere while exploring outside the ship.
 In space, ship yaw, pitch and vertical thrust use the ship's own axes.
 
+An automatic **NOMAD** marker shows distance to your rear ramp when you leave the
+ship. Follow its edge arrow if the ship is outside your view; turn until the diamond
+marks the ramp, then approach slowly. It hides after boarding and needs no binding.
+
 **Ring survey:** choose Selene rings in the destination list or controller command
 menu. This is an explicit quick-transit shortcut; a flight course is also available
 with Shift-click. Stop the ship, leave the chair, open the hatch and walk outside.
@@ -41,10 +45,14 @@ hatch, then follow the mining panel to the nearby outcrop. The outcrop's visible
 veins and collected minerals use that region's composition. Geological fractions
 describe the deposit overall; individual cuts can strike a trace mineral seam.
 
-Five representative provincial outcrops stream on approach, with at most one live
-provincial worker. They share the same tool, backpack, collision and persistent cut
-system as Crescent and the small ring asteroids. The colored terrain itself remains
-a heightfield; mining is available on these outcrops. See [resource geology](resource-geology.md).
+Regional outcrops now spawn throughout Selene's resource regions, using the same
+mineral data as the surface colors. Copper/ice-rich cells have dense coverage;
+basalt terrain has sparser deposits. Follow the mining panel's bearing and range
+to the nearest outcrop. Three regional workers stream within 400 m, alongside at
+most one named provincial worker. The five survey destinations still provide
+reliable starting points. All use the same tool, backpack, collision and persistent
+cut system as Crescent and the small ring asteroids. The colored terrain itself
+remains a heightfield; mining is available on the finite outcrops. See [resource geology](resource-geology.md).
 
 ## One inventory language
 

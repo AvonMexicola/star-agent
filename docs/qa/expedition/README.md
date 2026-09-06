@@ -65,3 +65,7 @@ additional [regression evidence](regressions/README.md).
 
 The revised sparse population, long draw distance and fine ice have current
 [sparse-ring evidence](sparse-ring/README.md).
+
+The automatic recovery beacon has [full controller EVA return evidence](ship-marker/README.md).
+
+Mineable outcrops beyond named survey sites have [regional controller and persistence evidence](regional-deposits/README.md).

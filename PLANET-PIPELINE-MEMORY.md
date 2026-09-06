@@ -652,3 +652,40 @@ and door/storage permissions are distinct. Local ownership is not secure shared
 multiplayer authorization. First base slice: finite starter kit, core, snapped
 shelter, crate, actual mineral transfer, leave/return/reload using a controller.
 These capacity, claim and construction rules remain proposals, not runtime work.
+
+
+## Regional mineral outcrops — surface deposit generator v1
+
+Cees expects a copper-colored region to contain actual mineable copper deposits.
+`src/mining/surface-deposits.js` now supplies deterministic, slope-aligned regional
+outcrops across Selene in approximately 180 m spherical cells. Cells with copper
+or ice weight >=0.45 are occupied; other cells have 40% occupancy. Each descriptor
+uses the canonical `moonResources` at its final terrain anchor for visible seams
+and actual carve rewards. Six existing editable shape fields supply variation.
+Aeon biome deposits and terrain excavation remain outside this implementation.
+
+`MiningField` caches a wider descriptor neighborhood by spatial cell and renders
+at most three regional excavation workers within 400 m. Named survey/Crescent
+anchors keep an 80 m exclusion, and the existing named worker remains bounded.
+Nearest or aimed local rocks drive tool target/range/bearing; a distant survey
+name must not override them. No extra scanner binding or menu is required.
+
+Stable `selene-deposit-v1-row-column` identities preserve cuts through streaming
+and reload, using the same atomic store and shared eight additional edited-deposit
+limit as ring/province rocks. Pending jobs finish before eviction; duplicate/late
+results cannot credit material twice. Geometry, placement or occupancy changes
+need a versioned compatibility decision rather than relocating saved edits.
+
+Numerical coverage includes arbitrary copper-rich sites, true copper-biased cuts,
+seam/pole identities, terrain normals, collision, save limits and pending travel.
+The real controller journey in `scripts/regional-deposits.spec.js` leaves a named
+landing site and mines a separate regional deposit; exact runtime evidence is
+recorded in the expedition QA directory after the integrated browser run.
+
+Final verification for this follow-up: all 28 numerical files pass; five distinct
+browser journeys pass across the integrated run and targeted marker run (automatic
+beacon exit/return, regional copper, named copper, Crescent and space mining).
+The regional controller trip recovered 3.108 kg copper from a generated outcrop
+101.52 m beyond the nearest named site and preserved cuts/cargo after reload.
+Current evidence: `docs/qa/expedition/ship-marker/` and `regional-deposits/`.
+Dedicated preview http://127.0.0.1:5213/ serves `index-ChFNEySb.js`.

@@ -672,3 +672,44 @@ Balance, creature/material names and economic prices remain proposals. Preserve
 the independent ship-power, Atlas and station lanes. Design docs were reviewed
 against current modules and local links checked; no gameplay tests were needed
 for this documentation-only addition. Manager acceptance is not assumed.
+
+
+## Ship recovery marker, biome deposits and base priorities — 2026-09-06
+
+Cees prioritized a marker to find a ship after space EVA, then carrying limits and
+a central mainframe for base building rights. They also requested actual mineral
+deposits across resource biomes after learning that the five survey sites were
+the only provincial outcrops. Implemented in /tmp/star-agent-expedition-work /
+feat/selene-expedition / draft PR #24; preview http://127.0.0.1:5213/ serves
+index-ChFNEySb.js. Runtime commits: 53a3c77 (marker) and baccba2 (regional deposits).
+
+Automatic Nomad beacon: distance to rear ramp, in-view diamond, off-screen/behind
+arrow, hides after boarding. Current hull pose is read every frame. Integration
+with the independent moving-ship/Atlas lane must supply active hull name, pose
+and entry point; do not copy a static departure coordinate or Nomad dimensions.
+No binding is needed; full controller physical EVA exit/return/reseat passed.
+
+Selene: deterministic regional outcrops in approximately 180 m spherical cells,
+copper/ice-rich occupancy and sparser basalt, three local workers within 400 m.
+Authoritative mineral weights drive visible seams and real yields; nearest/aimed
+outcrops drive existing tool bearing/range. Named approaches retain an 80 m buffer.
+Cuts preserve stable IDs through streaming/reload and share the existing eight
+additional edited-deposit cap. Aeon biome deposits and whole-terrain excavation
+are not implemented by this change.
+
+All 28 numerical files pass. Five distinct browser journeys pass across the
+integrated run and targeted marker run: marker, regional copper, named copper,
+Crescent and physical space mining. Regional trip recovered 3.108 kg copper from
+a generated outcrop 101.52 m beyond the nearest named site; exact cut/cargo saved
+after reload. Curated evidence: docs/qa/expedition/ship-marker/ and
+docs/qa/expedition/regional-deposits/. Controller input is injected; no physical
+Xbox sequence or hardware performance approval is claimed.
+
+Design only: docs/design/cargo-and-base-mainframe.md proposes mass/volume/slots,
+hull-specific ship payload, physical base containers and central claim authority
+with separate build/door/storage permissions. User priority moves a small playable
+core/shelter/crate base slice ahead of the previous crafting-first plan. Construction
+and new capacity/permission rules are not implemented yet. Full memory and prior
+progression draft link the change. Preserve shared station/gear, ship-power and
+Atlas lanes; Fable/Claude retain review/integration/merge/deploy. This file notice
+is not manager acknowledgment or a public deployment claim.
