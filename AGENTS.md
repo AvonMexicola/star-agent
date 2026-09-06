@@ -64,3 +64,15 @@ record failed checks and fixes, and retain the final review and delivery evidenc
 example. Read its current status before reusing any result; pending visual review
 or deployment is not approval. `QUALITY.md` remains the acceptance bar, with the
 ship and station pipeline memories supplying the specific runtime contracts.
+
+## Controller acceptance is mandatory
+
+Every new playable feature must support a standard controller through its complete
+journey, including feature entry, aiming or selection, activation, result inventory
+and return to play. Follow [the controller contract](docs/controller-contract.md).
+Use the shared input and dialog router, provide discoverable bindings and visible
+focus, and coordinate contextual mappings before changing them. Input-only unit
+tests or a simulated trigger after debug teleport do not establish full support.
+Add or extend an actual controller-only browser journey, test held-input suppression
+across focus/dialog/disconnect transitions, and report physical-device testing
+separately from injected Gamepad tests. Features missing this route remain incomplete.

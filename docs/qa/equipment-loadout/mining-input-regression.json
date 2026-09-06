@@ -1,0 +1,58 @@
+{
+  "browser": "151.0.7922.173",
+  "environment": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "renderScale": 0.65
+  },
+  "desktop": [
+    1440,
+    900
+  ],
+  "mobile": [
+    390,
+    844
+  ],
+  "fixture": "Debug initial position/aim, actual pointer/touch/Gamepad inputs; synthetic browser focus events; no physical Xbox",
+  "mouse": {
+    "effects": {
+      "particles": 168,
+      "capacity": 1024,
+      "boost": 0,
+      "travel": 0,
+      "bolts": 0,
+      "miningContacts": 6,
+      "collectedBursts": 4,
+      "weaponShots": 0,
+      "weaponImpacts": 0,
+      "lastWeapon": "pulse",
+      "lances": 0,
+      "slipstream": 0,
+      "reducedMotion": false,
+      "beamVisible": false,
+      "bloom": true
+    },
+    "pack": [
+      1.56349774908756,
+      0.0234375,
+      0.21298916921659838
+    ]
+  },
+  "after": {
+    "particles": 0,
+    "capacity": 1024,
+    "boost": 0,
+    "travel": 0,
+    "bolts": 0,
+    "miningContacts": 14,
+    "collectedBursts": 9,
+    "weaponShots": 0,
+    "weaponImpacts": 0,
+    "lastWeapon": "pulse",
+    "lances": 0,
+    "slipstream": 0,
+    "reducedMotion": true,
+    "beamVisible": true,
+    "bloom": false
+  },
+  "errors": []
+}

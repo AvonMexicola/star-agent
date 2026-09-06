@@ -26,6 +26,7 @@
  */
 
 import * as THREE from 'three';
+import { textureMiningTool } from './mining/tool-materials.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // Re-exported like character.js does, so the raw-served page under /public/dev/
@@ -64,7 +65,7 @@ const PROPS = '/models/props/';
 export const ITEMS = Object.freeze({
   'rifle-laser': {
     name: 'rifle-laser',
-    label: 'Laser carbine',
+    label: 'Laser rifle',
     file: `${PROPS}rifle-laser.glb`,
     socket: 'RightHand',
     handed: 2,
@@ -538,7 +539,7 @@ export class Equipment {
       this._equipped = name;
       this._holstered = false;
       this._gate = new FireGate(spec.fireRate);
-      if (spec.shot === 'beam') this._heat.reset();
+      // Keep tool heat across slot changes; update() cools it while stowed.
     }
     return this._ensure(name).then(() => { this._attach(name); return this; });
   }
@@ -705,10 +706,10 @@ export class Equipment {
     this._firePulse = false;
     this._gate.update(step);
 
-    if (held && spec.shot === 'beam') this._updateBeam(step, wantsFire, source.targetWorldPoint);
+    if (held && spec.shot === 'beam') this._updateBeam(step, wantsFire, source.targetWorldPoint, source.hasHit !== false);
     else { this._beaming = false; this._heat.update(step, false); this._hideBeam(); }
 
-    if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle()) {
+    if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle() && (!source.authorizeFire || source.authorizeFire(spec.name))) {
       this._spawnTracer(spec, source.targetWorldPoint);
       this._spawnFlash(spec);
       this._firePulse = true;
@@ -722,9 +723,12 @@ export class Equipment {
   dispose() {
     this.disposed = true;
     // The item meshes are `clone(true)` of the shared GLTF cache and share its
-    // geometry and materials, so they are detached, never disposed — freeing them
-    // would pull the rug from under the next Equipment that loads the same item.
-    for (const name of [...this._items.keys()]) this._detach(name);
+    // geometry and original materials. Dispose only instance mining wear
+    // materials/texture, then detach; shared cache resources stay alive.
+    for (const name of [...this._items.keys()]) {
+      this._items.get(name).root.userData.disposeMiningTexture?.();
+      this._detach(name);
+    }
     this._items.clear();
     for (const group of this._socketGroups.values()) if (group.parent) group.parent.remove(group);
     this._socketGroups.clear();
@@ -764,6 +768,7 @@ export class Equipment {
       root.traverse((node) => {
         if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false; }
       });
+      if (name === 'mining-laser-tool') textureMiningTool(root);
       const group = new THREE.Group();
       group.name = `equipment-${name}`;
       group.add(root);
@@ -833,6 +838,8 @@ export class Equipment {
   }
 
   _attach(name) {
+    // An older asynchronous model load may finish after a different slot was drawn.
+    if(this.disposed || (ITEMS[name]?.worn ? !this._worn.has(name) : this._equipped!==name))return;
     const entry = this._items.get(name);
     if (!entry) return;
     const spec = ITEMS[name];
@@ -1068,7 +1075,7 @@ export class Equipment {
     }
   }
 
-  _updateBeam(dt, wantsFire, targetWorldPoint) {
+  _updateBeam(dt, wantsFire, targetWorldPoint, hasHit = true) {
     const spec = this.item;
     const on = this._heat.update(dt, wantsFire) && this._updateMuzzle();
     this._beaming = on;
@@ -1096,15 +1103,15 @@ export class Equipment {
 
     _v4.copy(_v1).addScaledVector(_v3, length);
     const pulse = spec.beam.impact * (0.85 + 0.15 * Math.sin(this._elapsed * 37));
-    this._impact.visible = true;
+    this._impact.visible = hasHit;
     this._impact.position.copy(_v4).addScaledVector(_v3, -0.02);
     this._impact.quaternion.setFromUnitVectors(UNIT_Z, _backwards.copy(_v3).negate());
     this._impact.scale.setScalar(pulse);
-    this._impactLight.visible = true;
+    this._impactLight.visible = hasHit;
     this._impactLight.position.copy(_v4);
     this._impactLight.intensity = 3.5 * (0.85 + 0.15 * Math.sin(this._elapsed * 23));
 
-    if (this.onMine) {
+    if (this.onMine && hasHit) {
       _v4.add(this._renderOrigin);
       this.onMine({ item: spec.name, point: _v4, dt, rate: spec.miningRate, heat: this._heat.heat });
     }
@@ -1144,21 +1151,27 @@ const FLASH_FRAG = /* glsl */`
     float star = pow(max(0.0, 1.0 - min(abs(p.x), abs(p.y)) * 7.0), 3.0) * (1.0 - r);
     float alpha = uOpacity * clamp(core * 1.6 + star * 0.8, 0.0, 1.4);
     vec3 colour = mix(uColor, vec3(1.0), pow(core, 1.5));
-    gl_FragColor = vec4(colour, alpha);
+    gl_FragColor = vec4(colour * 2.0, alpha);
+    #include <logdepthbuf_fragment>
   }
 `;
 
 const BEAM_VERT = /* glsl */`
+  #include <common>
+  #include <logdepthbuf_pars_vertex>
   varying vec2 vUv;
   void main() {
     vUv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    #include <logdepthbuf_vertex>
   }
 `;
 
 // A mint core with a noisy, scrolling alpha along the beam plus a soft edge
 // falloff across it, so the beam flickers like a plasma cutter instead of a tube.
 const BEAM_FRAG = /* glsl */`
+  #include <common>
+  #include <logdepthbuf_pars_fragment>
   precision highp float;
   varying vec2 vUv;
   uniform vec3 uColor;
@@ -1186,7 +1199,8 @@ const BEAM_FRAG = /* glsl */`
     float body = pow(across, 0.35);
     float alpha = uOpacity * flicker * taper * body;
     vec3 colour = mix(uColor, vec3(1.0), 0.55 * pow(across, 3.0));
-    gl_FragColor = vec4(colour, alpha);
+    gl_FragColor = vec4(colour * 2.0, alpha);
+    #include <logdepthbuf_fragment>
   }
 `;
 

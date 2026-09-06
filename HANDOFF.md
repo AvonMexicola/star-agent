@@ -789,3 +789,389 @@ Preview remains http://localhost:5250/dev/atlas-mark-ii.html (persistent user
 service). Physical walkthrough→lift→pilot seat, F to sit. Main fleet, flight/cargo
 adapters, station label adoption, budgets/LOD acceptance and independent art review
 remain pending. Keep draft; Fable owns review/integration/merge. No deployment.
+
+## Lunar landscape upgrade — Astra (2026-09-06)
+
+Cees requests a Cellin-inspired moon with much stronger slopes/craters, sparkling
+lofted ice and majestic asteroid rings. Working isolated in
+`/tmp/star-agent-lunar-landscape`, branch `feat/lunar-landscape`, based on merged
+`feat/visual-fidelity` f028a43. Own lunar generator/terrain/material/effect modules,
+moon browser/unit tests and docs; main integration is limited to the Moon update
+call and lunar effect diagnostics. Preserve navigation/boarding surface agreement.
+No shared runtime source replacements or overlap with travel/camera/equipment lanes.
+
+Lunar effects integration also owns the small `src/atmosphere.js` HDR alpha fix:
+retain transparent scene color over the star field. This is required for translucent
+rings and additive ice without opaque speckles; scene log-depth decoding stays unchanged.
+
+
+## READY: #15 — Selene landscape, ice and rings (Astra, 2026-09-06)
+
+Cees' Cellin-inspired lunar upgrade is implemented in
+[PR #15](https://github.com/AvonMexicola/star-agent/pull/15), `feat/lunar-landscape`,
+based on merged integration f028a43. Local production preview:
+http://127.0.0.1:5178/ — select Selene. User service: `star-agent-lunar-landscape`.
+Isolated checkout: `/tmp/star-agent-lunar-landscape`; shared runtime source untouched.
+
+Delivered: a crater-rim landing shelf, steeper/deeper terrain, 36 local craters,
+fractured ridges and walkable basalt outcrops; cool regolith/frost, sunlit lofted ice,
+and four tilted ice/dust ring bands with 1,800 individual asteroids. Nearby belt dust
+fades into rocks; the moon shadows both bands and asteroids. The generator is v3,
+with a 16 km upper bound. Existing 20 km drive exclusion still covers it.
+
+75 unit cases/build pass. Both production lunar browser cases pass: full physical
+landing/walking/jumping/reboarding/launch and orbit/surface/asteroid/Aeon rendering.
+Final visual refinements were rechecked; no page/console errors. Curated screenshots,
+renderer metadata and limitations are committed in the PR.
+
+Fable's [updated planet pipeline memory](https://github.com/AvonMexicola/star-agent/blob/feat/lunar-landscape/PLANET-PIPELINE-MEMORY.md)
+is filed on that branch. Read `LUNAR-LANDSCAPE-HANDOFF.md` there for merge boundaries:
+main only supplies Moon elapsed/outside state and diagnostics; atmosphere retains
+transparent HDR effects over sky without changing log-depth reconstruction. Preserve
+those hooks alongside travel/camera work. The ring is decorative, without collision,
+mining, orbit simulation or shadows cast onto the ground. Review/merge/deployment
+remain with Fable/Claude; this local handoff does not assert a read acknowledgment.
+
+
+## Selene surface identity follow-up — Astra (2026-09-06)
+
+Cees reports uniform beige terrain and insufficient extreme elevations. Continuing
+PR #15 in /tmp/star-agent-lunar-landscape. Own moon-world/moon-terrain/moon material,
+lunar tests and evidence/docs; main.js changes only lunar biome label/diagnostics.
+5178 is occupied by opening-work: the earlier lunar preview claim was incorrect
+(the lunar service failed on its occupied port). Will use dedicated port 5180,
+leaving opening preview intact. Implement canonical contrasting geological regions,
+glacial channels and larger mountain relief; verify rendered surface and landing.
+
+
+## UPDATED: #15 — distinct Selene geology and extreme relief (Astra, 2026-09-06)
+
+User follow-up is implemented on feat/lunar-landscape in /tmp/star-agent-lunar-landscape.
+Generator v4 supplies named districts, fractured ground, blue-white Glass Rift,
+dark Obsidian Crown, Copper Ejecta and icy Frostwall. Local sampled elevation range
+is 8,980 m (−2,927 to +6,053 m relative to lunar radius), with the safe landing shelf
+and shared collision/walking heightfield retained. Required LOD siblings now stay
+cached: a fixed view settles instead of rebuilding horizon-culled dependencies.
+
+Corrected preview: http://127.0.0.1:5180/ — star-agent-selene-geology.service.
+Verified final served asset index-DB4-R7TB.js matches the browser-tested dist.
+Earlier 5178 claim was incorrect: opening-work owns that port, and the lunar service
+failed there. No shared runtime sources or other preview services were replaced.
+
+77 unit cases across nine files pass; build and physical lunar journey pass.
+Final material/cache changes were rechecked in the full visual tour with zero
+page/console errors and zero terrain builds at the recorded surface view.
+Evidence: docs/selene-geology.png, docs/selene-crater-country.png and evidence JSON.
+PLANET-PIPELINE-MEMORY.md v4 update is filed on PR #15 for Fable. main.js integration
+now also imports moonRegion for the existing lunar biome label/state. Preserve other
+lanes' main/UI changes during merge. Manager review/merge/deployment remain pending;
+this local handoff does not assert a read receipt.
+
+
+## Mining/voxel research — Astra (2026-09-06)
+
+Cees requested research into mineable rock assets and Selene ridges/mountains,
+with No Man's Sky as reference and technology choice open. Docs-only research
+lane: /tmp/star-agent-mining-research, docs/selene-mining-research based on PR #15.
+Own docs/selene-mining-research.md and small pipeline-memory/handoff additions.
+Inspecting existing Phase 6 SDF roadmap and equipment onMine callback; no competing
+equipment/voxel implementation or shared runtime changes.
+
+
+## RESEARCH READY — mineable rocks and Selene mountains (Astra, 2026-09-06)
+
+Cees' requested research is filed in docs/selene-mining-research.md on
+docs/selene-mining-research, isolated at /tmp/star-agent-mining-research and based
+on lunar PR #15 ea7c35b. Recommendation: global heightfield + connected ridge
+morphology, local smooth scalar-field rocks/outcrops meshed in workers, static
+cliff dressing where excavation is unnecessary. Marching Cubes first; compare
+Dual Contouring for sharp faces. NMS's documented Dual Marching Cubes is distinct.
+
+Research includes primary sources, existing Phase 6/equipment hook integration,
+asset shortlist, four local GLB metadata audits, chunk memory arithmetic, save/LOD/
+collision contracts and staged acceptance gates. Source report and audit script
+are committed; pipeline memory links the research. No mining engine, runtime
+benchmark, asset conversion, downloaded assets or shared runtime edits in this lane.
+Fable: review alongside the Phase 6 plan; <4 ms remeshing and indefinitely tiny
+brush logs are not established results. Preserve the existing equipment owner.
+
+
+## First Selene mining implementation — Astra (2026-09-06)
+
+Cees authorized the first implementation. Isolated /tmp/star-agent-mining-work,
+feat/selene-mining based on research #18 / lunar #15. Own NEW src/mining/ modules,
+mining tests/studio, and narrow main/navigation/gamepad integration plus ore storage.
+Reuse equipment.js + mining laser asset verbatim from manager commit 9930e82;
+no shared equipment edits, no duplicate weapon system. First slice: one rock by
+Crescent Rim, worker meshing, saved cut/material state, resource inventory and
+collision, keyboard/controller/touch mining. Full mountain excavation stays later.
+
+
+## IMPLEMENTATION READY — first Selene mining rock (Astra, 2026-09-06)
+
+User-authorized first slice is on feat/selene-mining, isolated at
+/tmp/star-agent-mining-work, stacked on research #18 and lunar #15. Preview:
+http://127.0.0.1:5203/ (star-agent-mining.service), verified asset index-DpEVt4cu.js.
+Crescent Rim now has one mineable basalt/copper/ice rock. Existing Equipment laser
+handles keyboard/mouse/Xbox RT/touch; cuts, collision and survey samples publish
+together after one save. The cargo dialog stows the pouch into a sample locker.
+
+116 numerical cases and all 3 browser journeys pass: mining/save/reload/controller/
+touch/cargo, physical lunar reboarding/launch, and lunar visual regression.
+Guide: docs/selene-mining.md; screenshots/metadata: docs/qa/selene-mining/.
+PLANET-PIPELINE-MEMORY.md records the actual implementation and limitations.
+
+Consistent marching tetrahedra in one 32³-cell volume; whole-rock worker remesh,
+packed collision and encoded snapshot transfer. Observed worker total 352 ms;
+main-thread publication 2.6 ms on Chromium/SwiftShader, not p95/FPS approval.
+No fragment physics, cave/mountain excavation, crafting or multiplayer.
+Equipment module/model/socket data adopted from manager commit 9930e82; preserve
+newer gear and concurrent main/navigation/UI integration hooks during merge.
+Fable/Claude own integration, independent Opus visual review, merge and deployment.
+This handoff does not assert a manager read receipt or visual approval.
+
+
+## IMPLEMENTATION READY — Selene expedition and resource geography (Astra, 2026-09-06)
+
+Cees explicitly authorized controller, inventory and EVA agents, procedural ring
+mining, and orbital colors that reveal resource locations. Integrated branch:
+feat/selene-expedition, isolated at /tmp/star-agent-expedition-work, stacked on
+feat/selene-mining / PR #21 (itself research #18 and lunar #15). Dedicated preview:
+http://127.0.0.1:5213/ via star-agent-expedition.service, verified final asset
+index-EcwN-ktI.js. Earlier previews are intact.
+
+Implemented standard-controller command/dialog routing and complete Crescent plus
+Copper Ejecta controller journeys; visible textured laser and log-depth beam;
+shared finite box/stack storage for backpack, ship, station and physical base cache;
+atomic cuts/cargo/transfers; physical hatch/ramp EVA with inertia, thrust and braking;
+20,971,520 deterministic ring descriptors with bounded LOD, six asteroid families
+and editable small rocks; and five mineral provinces whose orbital/ground colors,
+outcrop seams and collected resources share one authoritative geological field.
+Ring width is 20 km radial by 2 km vertical; local ship speed is limited to 400 m/s.
+
+Final validation: 156 numerical cases; all nine distinct production browser checks
+pass across the integrated run and targeted reruns. The initial orbital fixture
+incorrectly expected LOD 4 at a LOD 3 viewpoint; corrected, then final resource
+appearance/layout, EVA and space mining passed. Separate controller-modal and HDR
+texture/beam fixtures pass. Real screenshots, GPU/backend/input provenance and
+specific limitations are in docs/qa/expedition/. Browser is Chromium 151 on
+SwiftShader; this is not hardware FPS approval. Physical Xbox button sequencing
+has not been performed; injected full controller routes are explicitly distinguished.
+
+Updated complete memory: PLANET-PIPELINE-MEMORY.md. Guides:
+docs/selene-expedition.md, docs/resource-geology.md, docs/controller-contract.md,
+docs/container-inventory.md and docs/character-eva.md. AGENTS.md now requires
+controller support for every new playable feature through its whole journey.
+
+Preserve newer manager gear/station/navigation work when integrating common
+main/navigation/gamepad/equipment/UI hooks. Equipment derives from manager 9930e82;
+this branch repairs its beam/material feedback, without replacing the gear lane.
+The shared checkout's unrelated station and gear changes were not overwritten.
+Large asteroids and terrain are not excavatable; at most two ring and one provincial
+workers join Crescent, and eight additional deposits can retain edits. Boxes are
+free prototype mounts; fuel/oxygen, crafting, multiplayer and N-body physics are
+not implemented. Fable/Claude retain independent visual review, integration,
+merge and deployment. This handoff does not claim a manager read receipt.
+
+Draft review PR: https://github.com/AvonMexicola/star-agent/pull/24 .
+The shared manager HANDOFF.md now points to this complete memory and evidence.
+
+
+## Expedition player fixes — surface tool, asteroid aim and ring steering (2026-09-06)
+
+PR #24 follow-up in /tmp/star-agent-expedition-work / feat/selene-expedition.
+Removed the tool's 90 m deposit proximity gate. Space yaw/pitch and vertical thrust
+now use ship axes; held controller B stops drift/thrust without locking aim.
+Aimed small asteroids take priority over two-nearest preparation; exact visible
+triangles replace false sphere occlusion/collision. Large static asteroids now
+explicitly report unavailable hand mining; pending/range/save-cap feedback is clear.
+
+All 22 npm test files pass. Five distinct follow-up production browser checks pass,
+including remote Selene equip/RT, pole-facing yaw +/- with and without B+RT held,
+third-rock worker promotion/RT/backpack, large-asteroid no-award feedback, and the
+existing controller Crescent plus physical EVA mining routes. Synthetic asteroid
+positions and debug orientation/position fixtures are documented honestly; actual
+meshes, colliders, workers and input routes are used. No physical Xbox claim.
+
+Evidence: docs/qa/expedition/regressions/ in the expedition worktree / PR.
+Memory and docs/space-steering.md record the corrected contracts. Preview remains
+http://127.0.0.1:5213/ with final index-DGnB0h5g.js. No shared navigation/gear/station
+or ship-power lane was overwritten. Fable/Claude retain review and integration.
+
+
+## Sparse Selene ring and sunlit grains — 2026-09-06
+
+Cees requested roughly 2 km asteroid spacing, better draw distance/Yela-inspired
+rock surfaces, a huge physical ring and fine sunlit ice inside it. Implemented in
+/tmp/star-agent-expedition-work / feat/selene-expedition / draft PR #24. Code head
+0f7f1f1; dedicated preview http://127.0.0.1:5213/ serves index-N8I1Odnu.js.
+
+V2 has 14,336 deterministic bodies and minimum 2,132.11 m bounding clearance,
+while retaining the 1,826.896 km outer diameter and 20 km wide / 2 km thick band.
+Three fading geometry levels retain large rocks through 80 km; 24 geological
+variants have fractured gray surfaces. Fine world-anchored ice glints render only
+inside the ring, with 12 m cabin clearance and bounded 104 m particle neighborhood.
+Small rocks remain mineable; saved v1 cuts retain their coordinates and cargo,
+with preserved edits explicitly excepted from the new spacing rule.
+
+All 26 numerical test files pass. Five distinct production browser checks pass
+across the integrated run and targeted reruns: ring geometry/ice, remote tool
+equip, held-B yaw, aimed-worker promotion/large-body feedback and physical EVA
+plus RT mining/backpack. The space fixture was corrected to wait for its own
+injected controller identity and neutral poll. Final GPU captures have no errors;
+no physical Xbox sequence or hardware FPS approval is claimed. Curated evidence:
+docs/qa/expedition/sparse-ring/; full contracts in PLANET-PIPELINE-MEMORY.md.
+
+Preserve shared station/gear changes and the separate ship-power-cabin lane.
+Fable/Claude retain independent visual review, integration, merge and deployment.
+This file handoff is not a claim of manager acknowledgment or public deployment.
+
+
+## Design ready for review — crafting, skills and expedition progression (2026-09-06)
+
+Cees asked to start thinking about material tiers, upgraded suits for valuable
+hot-planet mining, and dangerous cave fauna with special loot. Recorded a concrete
+draft at docs/design/progression-crafting-skills.md in the expedition worktree
+(/tmp/star-agent-expedition-work, feat/selene-expedition / PR #24), linked from
+PLANET-PIPELINE-MEMORY.md. No runtime change or implementation claim.
+
+Proposal: four material tiers; Pyre industrial and Aeon cave/biological branches;
+practical training in Extraction, Fabrication, Survey and Field operations; shared
+box inventory for recipes/modules/loot. The initial Pyre suit must use materials
+obtainable outside Pyre. Cave creatures have readable threats and biological loot
+with noncombat alternatives. Start with station refining and one useful crafted
+mining heat-sink, then suit hazards, one Pyre expedition and one complete cave.
+
+The draft calls out the current three-mineral/fixed-supply save migration, atomic
+crafting/training/loot, cave-owned collision and complete controller journeys.
+Balance, creature/material names and economic prices remain proposals. Preserve
+the independent ship-power, Atlas and station lanes. Design docs were reviewed
+against current modules and local links checked; no gameplay tests were needed
+for this documentation-only addition. Manager acceptance is not assumed.
+
+
+## Ship recovery marker, biome deposits and base priorities — 2026-09-06
+
+Cees prioritized a marker to find a ship after space EVA, then carrying limits and
+a central mainframe for base building rights. They also requested actual mineral
+deposits across resource biomes after learning that the five survey sites were
+the only provincial outcrops. Implemented in /tmp/star-agent-expedition-work /
+feat/selene-expedition / draft PR #24; preview http://127.0.0.1:5213/ serves
+index-ChFNEySb.js. Runtime commits: 53a3c77 (marker) and baccba2 (regional deposits).
+
+Automatic Nomad beacon: distance to rear ramp, in-view diamond, off-screen/behind
+arrow, hides after boarding. Current hull pose is read every frame. Integration
+with the independent moving-ship/Atlas lane must supply active hull name, pose
+and entry point; do not copy a static departure coordinate or Nomad dimensions.
+No binding is needed; full controller physical EVA exit/return/reseat passed.
+
+Selene: deterministic regional outcrops in approximately 180 m spherical cells,
+copper/ice-rich occupancy and sparser basalt, three local workers within 400 m.
+Authoritative mineral weights drive visible seams and real yields; nearest/aimed
+outcrops drive existing tool bearing/range. Named approaches retain an 80 m buffer.
+Cuts preserve stable IDs through streaming/reload and share the existing eight
+additional edited-deposit cap. Aeon biome deposits and whole-terrain excavation
+are not implemented by this change.
+
+All 28 numerical files pass. Five distinct browser journeys pass across the
+integrated run and targeted marker run: marker, regional copper, named copper,
+Crescent and physical space mining. Regional trip recovered 3.108 kg copper from
+a generated outcrop 101.52 m beyond the nearest named site; exact cut/cargo saved
+after reload. Curated evidence: docs/qa/expedition/ship-marker/ and
+docs/qa/expedition/regional-deposits/. Controller input is injected; no physical
+Xbox sequence or hardware performance approval is claimed.
+
+Design only: docs/design/cargo-and-base-mainframe.md proposes mass/volume/slots,
+hull-specific ship payload, physical base containers and central claim authority
+with separate build/door/storage permissions. User priority moves a small playable
+core/shelter/crate base slice ahead of the previous crafting-first plan. Construction
+and new capacity/permission rules are not implemented yet. Full memory and prior
+progression draft link the change. Preserve shared station/gear, ship-power and
+Atlas lanes; Fable/Claude retain review/integration/merge/deploy. This file notice
+is not manager acknowledgment or a public deployment claim.
+
+
+## READY FOR REVIEW: new particles connected to expedition mining — 2026-09-06
+
+Cees requested the new mining particle system in the playable tool. PR24 now
+reuses PR27/a81b75e's plasma beam, sparks/dust, mineral collection and HDR bloom.
+Committed extraction forwarding includes the newer regional deposits, alongside
+Crescent, province and ring rocks. Actual saved cuts drive collection bursts;
+visuals never award minerals. RT/T/mouse/touch bindings remain the same. The
+controller can toggle glow and reduced particle motion in Controls and help.
+
+All 29 numerical files and five distinct production browser checks pass, including
+three full controller surface routes, physical space mining and the focused
+mouse/touch/interruption/settings regression. Its initial mobile visibility race
+was corrected in the test and rerun; QA records that failure. No page/console
+errors in final cases. Browser151/SwiftShader, desktop1440x900/mobile390x844;
+no hardware FPS or physical Xbox claim. Curated evidence and full contract:
+docs/qa/expedition/mining-particles/ and docs/mining-particles.md.
+
+Preview http://127.0.0.1:5213/ serves index-DY2p5nPi.js. During PR27 integration,
+keep one shared EnergyEffects director/bloom pass and retain regional forwarding.
+The actively edited effects worktree, shared gear and ship lanes were untouched.
+Fable/Claude retain independent review, integration, merge and deployment.
+
+
+## READY FOR REVIEW: equipment slot system
+
+
+## Equipment loadout implementation — 2026-09-06
+
+New branch feat/equipment-loadout is stacked on expedition c3ef10c (PR24), isolated
+in /tmp/star-agent-loadout-work. The shared inventory dialog gains Equipment:
+two weapon slots, tool, backpack, two ammo stacks and four quick-item stacks.
+State lives in the SAME MiningStore save as cuts/cargo. Legacy saves receive one
+finite starter kit; swaps/stows/assignments, ammo and medical use save atomically.
+A backpack must be empty before external stow; without it carrying/gathering
+capacity is zero. Existing box mounts return when it is equipped again.
+
+K/Menu→Equipment opens it; View/I opens Storage. D-pad left cycles held slots,
+right retains mining shortcut, up selects a quick slot, down uses it on foot/EVA.
+Flight bindings remain unchanged. Weapon1/2/tool map to keys1/2/3; quick use4–7.
+Ammo authorization runs in Equipment's fire gate before shot effects, one matching
+charge per pulse; failed saves cancel the shot. No magazine/reload timing yet.
+Bandages heal15/stop bleeding, stims heal40, capped100; full-health items aren't
+wasted, and neither revives. There is no ambient/combat injury source yet; injure()
+is an explicit hook. These effects were verified against an injured-save fixture.
+Late asynchronous models cannot reattach after switching, and tool heat is kept
+across slot changes. Shared authored models/rig offsets are not changed.
+
+All30 numerical files pass. Four final production browser cases pass (4.1min):
+complete controller gear+Selene mining+both weapons+backpack, saved medical/mobile
+UI, container transfers and physical space mining. Prior focused mining-input
+regression also passes. Initial duplicate-Backpack-label failure and interrupted
+mixed run are documented; the final dedicated-port suite completes normally.
+Evidence: docs/qa/equipment-loadout/. Contract: docs/equipment-loadout.md.
+Preview http://127.0.0.1:5271/ serves index-BPCnBCsf.js; port5213 remains the prior
+expedition build and has a separate browser save. No physical Xbox/FPS claim.
+
+Fable integration: retain the one particle director and regional callbacks from
+PR24, newer authored gear/rig/ship work, and PR27's independent colored weapons
+and flight integration. Keep the public Equipment authorizeFire hook, inventory
+loadout transactions and contextual D-pad routes; don't restore the old unlimited
+free weapon selector over them. No merge or public deployment is claimed.
+
+
+## Starter laser rifle and current particle effects — 2026-09-06
+
+Cees requested a starter rifle, mining tool and ammo, then the particle agent’s
+latest laser effects. The finite default already grants rifle-laser, mining tool
+and 60 compatible charges (plus sidearm/pack/medical kit). The equipment branch
+now names them Laser rifle / Laser rifle charges and actually selects the solar
+laser profile: immediate orange beam/core, muzzle motes and contact bursts.
+Sidearm uses crimson pulses. Reuses PR27 d9f4d7c EnergyEffects, weapon profiles and
+slipstream dependency; preserves the single director, mining collection callbacks,
+saved IDs and atomic ammo authorization. Small held recoil respects Reduced motion.
+Flight adapter remains PR27’s integration responsibility; no new flight input.
+
+All 30 numerical files pass. Two final production browser checks pass (5.2 min):
+full controller equipment/landing/mining/weapons/backpack and mouse/touch mining
+with menu/focus/disconnect suppression. Six observed rifle shots consume exactly
+six charges and create six impacts; rock revision is unchanged by weapons.
+Fresh default, active laser profile/beam, menu retirement and held RT suppression
+are asserted. No page/console errors. Inspected rifle/sidearm/mining captures and
+updated JSON are under docs/qa/equipment-loadout/. Chromium151, Vulkan SwiftShader;
+no physical Xbox or hardware FPS claim. Preview5271: index-B3rNxrVo.js.
+Preserve shared newer authored gear assets when integrating PR32 with PR27.

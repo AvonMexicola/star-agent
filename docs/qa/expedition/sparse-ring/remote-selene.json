@@ -1,0 +1,22 @@
+{
+  "browser": "151.0.7922.173",
+  "fixture": "Debug surface position350m from deposit; actual controller menu/equip/RT",
+  "distance": 666.3310414777037,
+  "before": {
+    "pack": [
+      0,
+      0,
+      0
+    ],
+    "revision": 0
+  },
+  "after": {
+    "pack": [
+      0,
+      0,
+      0
+    ],
+    "revision": 0
+  },
+  "errors": []
+}

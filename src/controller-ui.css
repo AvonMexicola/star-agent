@@ -1,0 +1,21 @@
+[data-controller-selected] {
+  outline: 3px solid var(--mint, #a2e8d7) !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px #071019 !important;
+}
+#controller-menu {
+  width: min(540px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 24px;
+  color: var(--text, #e9f3f1);
+  background: var(--panel, #071019);
+  border: 1px solid var(--line, #39514f);
+  overflow: auto;
+}
+#controller-menu::backdrop { background: #02080bb8; }
+.controller-menu-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.controller-menu-top h2 { font: inherit; font-size: 22px; }
+#controller-menu p { color: var(--muted, #9db5b4); font-size: 13px; line-height: 1.6; }
+.controller-command-list { display: grid; gap: 10px; }
+#controller-menu button { min-height: 44px; padding: 12px; color: inherit; background: transparent; border: 1px solid var(--line, #39514f); text-align: left; cursor: pointer; }
+#controller-menu button:disabled { opacity: .4; cursor: default; }

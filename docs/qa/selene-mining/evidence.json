@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-06",
+  "branch": "feat/selene-mining",
+  "preview": "http://127.0.0.1:5203/",
+  "verifiedServedAsset": "index-DpEVt4cu.js",
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "viewports": {
+    "desktop": [
+      1440,
+      900
+    ],
+    "phone": [
+      390,
+      844
+    ]
+  },
+  "renderScale": "0.65 for initial mining; automatic scaling enabled after reload",
+  "validation": {
+    "numericalCasesPassed": 116,
+    "browserJourneysPassed": 3,
+    "browserDurationMinutes": 4.0,
+    "consoleOrPageErrors": [],
+    "browserCommand": "npm run test:browser -- -c scripts/mining.config.js",
+    "journeys": [
+      "Laser mining, save/reload, Xbox RT, touch and sample stow",
+      "Physical lunar landing, ramp, jumping, reboarding and launch",
+      "Lunar terrain, rings, ice, orbit, asteroid and Aeon regression"
+    ]
+  },
+  "minedSample": {
+    "ready": true,
+    "pending": false,
+    "revision": 8,
+    "position": [
+      -2193727.966415542,
+      95037.49792359378,
+      -23505086.116092708
+    ],
+    "pack": [
+      1.3417546176569886,
+      0.7854890020280436,
+      1.3031577524525346
+    ],
+    "ship": [
+      0,
+      0,
+      0
+    ],
+    "saved": true,
+    "error": "",
+    "triangles": 25320,
+    "meshMs": 352.29999999701977,
+    "publishMs": 2.5999999940395355,
+    "tool": {
+      "active": true,
+      "hit": null,
+      "heat": 0.46588000000000107,
+      "beaming": false,
+      "selected": true,
+      "toolError": null
+    }
+  },
+  "timingInterpretation": {
+    "meshMs": "Entire worker job: carve, mesh, collision tree and snapshot encoding. Single observed sample; not p95.",
+    "publishMs": "Main-thread publication, including persistence, for this observed job.",
+    "limits": "Software rendering; no hardware FPS claim. The approximately 352 ms worker job does not meet the proposed sub-100 ms target."
+  },
+  "testBoundary": "Mining journey physically exits the ship. Its isolated post-reload cargo check restores the cargo interaction position through a test hook; the independent lunar journey covers physical reboarding.",
+  "review": "Screenshots inspected for functional changes. Independent manager/Opus visual approval pending.",
+  "images": [
+    "before.png",
+    "after.png",
+    "reloaded.png",
+    "phone.png",
+    "cargo.png"
+  ]
+}

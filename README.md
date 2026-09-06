@@ -72,6 +72,8 @@ Click **Selene** for an optional descent approach, or Shift + click it to set a 
 
 The surface streams detailed terrain, with collision and walking height sampled from the same crater generator. The HUD reports height above local terrain, including crater floors below the moon’s reference radius. Selene is airless and has no water or vegetation; it stays the same across planet seeds. Its position is fixed, without orbital motion or an N-body gravity simulation.
 
+The landing area overlooks a deep impact basin, with steep crater walls, fractured ridges, smaller craters and basalt outcrops. Sunlit ice grains drift above the ground, and a tilted belt of ice/dust bands and 1,800 asteroids arches overhead. See the [landscape and rings guide](docs/selene-landscape.md).
+
 See the [lunar exploration guide](docs/selene.md) and [complete planet pipeline memory](PLANET-PIPELINE-MEMORY.md). Moon checks: `node --test tests/moon.test.js tests/navigation.test.js` and `npm run test:browser -- -c scripts/moon.config.js`. Browser evidence is saved under `/tmp/star-agent-moon-evidence`.
 
 ## Rendering
@@ -108,3 +110,10 @@ Flight-model checks cover vacuum momentum, body-axis thrust/torque, density boun
 The browser tests default to system Chromium with ANGLE/SwiftShader. Override `CHROMIUM_PATH` for another executable. Software-rendered test frame rates are not hardware performance claims. Render scale adapts to slow machines; `starAgent.setRenderScale(1)` fixes native scale for visual inspection.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) for contribution and architecture contracts.
+
+Expanded mining, controller commands, shared backpack/storage, EVA and asteroid rings:
+[expedition guide](docs/selene-expedition.md). Selene's orbital color patches now
+show [resource provinces](docs/resource-geology.md), with matching mineable outcrops.
+Run `npm run test:browser -- -c scripts/expedition.config.js` for the integrated journeys.
+
+Original mining slice: [mining guide](docs/selene-mining.md).

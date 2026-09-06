@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="icon" href="/favicon.svg"><title>Mining tool HDR verification</title><style>body{margin:0;background:#000}canvas{display:block}</style></head><body><canvas id="view"></canvas><script type="module">
+import * as THREE from 'three';
+import {Equipment} from '/src/equipment.js';
+import {Atmosphere} from '/src/atmosphere.js';
+const canvas=document.getElementById('view');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:false,logarithmicDepthBuffer:true,preserveDrawingBuffer:true});renderer.setSize(1000,700);renderer.outputColorSpace=THREE.LinearSRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(52,1000/700,.08,125000000000);camera.updateMatrixWorld();
+const atmosphere=new Atmosphere(renderer);atmosphere.resize(1000,700);
+scene.add(new THREE.HemisphereLight(0xc8e9ff,0x43505a,2));const sunlight=new THREE.DirectionalLight(0xffe0b0,3);sunlight.position.set(-4,6,3);scene.add(sunlight);
+const target=new THREE.Mesh(new THREE.IcosahedronGeometry(.9,3),new THREE.MeshStandardMaterial({color:0x3b4a55,roughness:.85}));target.position.set(0,0,-4.9);scene.add(target);
+const background=new THREE.Mesh(new THREE.PlaneGeometry(30,30),new THREE.MeshStandardMaterial({color:0x17242d,roughness:1}));background.position.z=-7;scene.add(background);
+const mount=new THREE.Group(),hand=new THREE.Bone(),back=new THREE.Bone();hand.name='RightHand';back.name='Spine2';hand.rotation.y=-Math.PI/2;mount.add(hand,back);mount.position.set(.29,-.35,-.47);scene.add(mount);
+const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:{'mining-laser-tool':{position:[0,0,0],rotation:[0,0,0]}}}}};
+const equipment=new Equipment({skeleton:{bones:[hand,back]}},scene,{camera,sockets});await equipment.equip('mining-laser-tool');await equipment.readyPromise;
+const world=new THREE.Vector3(100000000,2000000,0),sun=new THREE.Vector3(-.3,.7,.3).normalize();equipment.setRenderOrigin(world);
+const point=new THREE.Vector3(0,0,-4),occluder=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.MeshStandardMaterial({color:0x314150}));occluder.position.set(.15,-.08,-2);occluder.visible=false;scene.add(occluder);
+const capture=()=>{atmosphere.render(scene,camera,world,sun,0);const c=document.createElement('canvas');c.width=1000;c.height=700;const ctx=c.getContext('2d');ctx.drawImage(canvas,0,0);return Array.from(ctx.getImageData(0,0,1000,700).data);};
+const textures=new Set();scene.traverse(n=>{for(const m of Array.isArray(n.material)?n.material:[n.material])if(m?.userData.toolTexture)textures.add(m.userData.toolTexture);});
+const original=new Map([...textures].map(t=>[t,t.image.data.slice()]));
+window.visual={equipment,
+ render({fire=false,block=false,flat=false,beamOnly=false,hasHit=true}={}){for(const t of textures){t.image.data.set(original.get(t));if(flat)for(let i=0;i<t.image.data.length;i+=4)t.image.data.set([218,145,180,255],i);t.needsUpdate=true;}occluder.visible=block;mount.updateMatrixWorld(true);equipment.update(.016,{firing:fire,hasHit,targetWorldPoint:point.clone().add(world)});if(beamOnly){equipment._impact.visible=false;equipment._impactLight.visible=false;}return capture();},
+ meta(){const gl=renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return {renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),logDepth:renderer.capabilities.logarithmicDepthBuffer,hdrType:atmosphere.target.texture.type,textures:textures.size,muzzle:equipment.muzzleWorldPosition()?.sub(world).toArray(),target:point.toArray(),beamEnd:equipment._beamMesh.position.clone().add(new THREE.Vector3(0,0,equipment._beamMesh.scale.z).applyQuaternion(equipment._beamMesh.quaternion)).toArray()};}}
+window.visual.render();window.visualReady=true;
+</script></body></html>

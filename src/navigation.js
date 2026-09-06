@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { ringPathIntervals } from './ring-world.js';
+import { stepEVA, constrainEVAShip, canAttachRamp } from './eva.js';
 import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
@@ -10,6 +12,10 @@ import { TRAVEL_TARGETS, flightSpeedProfile, planTravel, sampleTravel, abortTrav
 
 const UP=new THREE.Vector3(0,1,0),FORWARD=new THREE.Vector3(0,0,-1),RIGHT=new THREE.Vector3(1,0,0);
 const rotation=new THREE.Quaternion(),matrix=new THREE.Matrix4();
+// The narrow finite belt gets a local maneuvering envelope. The extra 300 m
+// margin also captures a ship stopped just before the swept debris-entry brake.
+export const DEBRIS_SPEED_LIMIT=400;
+export function debrisSpeedLimit(position){return ringPathIntervals(position,position,600).length?DEBRIS_SPEED_LIMIT:Infinity;}
 export class Navigation {
   constructor(canvas,notify){
     this.canvas=canvas;this.notify=notify;this.position=new THREE.Vector3();this.orientation=new THREE.Quaternion();this.velocity=new THREE.Vector3();
@@ -18,6 +24,7 @@ export class Navigation {
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
     this.shipId='nomad';this.layout=SHIP_LAYOUT;this.freighter=null;
     this.station=null;this.dockedAtStation=false;this.stationLift=false;
+    this.spaceParked=false;this.evaBraking=false;this.surfaceObstacles=null;this.toolTrigger=0;
     this.flightAssist=true;this.angularVelocity=new THREE.Vector3();
     this.travel=null;this.travelTarget=null;
     this.powered=true;this.cabinFlight=false;
@@ -33,12 +40,13 @@ export class Navigation {
       if(['Space','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
       if(['KeyW','KeyA','KeyS','KeyD','Space','KeyC'].includes(e.code))this.onTakeControl?.();
       this.controllerActive=false;this.keys.add(e.code);if(e.repeat)return;
+      if(e.code==='KeyG'&&(this.mode==='eva'||this.mode==='walk'&&!this.insideShip))this.toggleEVA();
       if(e.code==='KeyP'){this.togglePower();return;}
       if(e.code==='KeyJ'){this.travel?this.cancelTravel():this.beginTravel();return;}
       if(this.travel){if(e.code==='KeyX')this.cancelTravel();return;}
       if(e.code==='KeyV')this.toggleFlightAssist();
       if(e.code==='KeyL')this.landOrLaunch();if(e.code==='KeyF')this.embark();
-      if(e.code==='KeyX')this.brake();
+      if(e.code==='KeyX'&&this.mode!=='eva')this.brake();
     });
     document.addEventListener('keyup',e=>{this.keys.delete(e.code);this.physicalKeys.delete(e.code);});
     window.addEventListener('blur',()=>{this.focused=false;this.physicalKeys.clear();this.gamepad.suspend();this.keys.clear();if(this.powered&&this.flightAssist)this.velocity.set(0,0,0);});
@@ -140,6 +148,7 @@ export class Navigation {
     this.position.copy(deck);
   }
   orbit(){
+    this.spaceParked=false;
     this.resetCabinFlight();
     this.travel=null;this.keys.clear();
     this.dockedAtStation=false;this.stationLift=false;this.flightAssist=true;this.angularVelocity.set(0,0,0);
@@ -150,25 +159,29 @@ export class Navigation {
     this.velocity.set(0,0,0);this.mode='flight';this.autoland=false;this.shipPosition=null;this.speedScale=1;this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
   }
   orientToward(target,up){matrix.lookAt(this.position,target,up);this.orientation.setFromRotationMatrix(matrix);}
-  look(yaw,pitch){
+  look(yaw,pitch,direct=this.brakeFlight??false){
     if(this.travel||this.openingActive||!this.enabled)return;
     if(this.mode==='flight'&&!this.powered)return;
-    if(this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
+    if(!direct&&this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
       this.angularVelocity.x+=pitch*4;this.angularVelocity.y+=yaw*4;return;
     }
-    // Yaw around local gravity; pitch about the current camera right vector.
-    const normal=this.cabinFlight?UP.clone().applyQuaternion(this.shipOrientation):this.dockedAtStation?this.station.up:this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
+    // Spacecraft and EVA yaw around their own up axis, so horizontal input
+    // always turns the nose sideways even when the nearest moon is overhead.
+    // Surface walking and assisted atmospheric flight retain gravity-relative yaw.
+    const normal=this.cabinFlight?UP.clone().applyQuaternion(this.shipOrientation):this.dockedAtStation?this.station.up:this.mode==='eva'||this.spaceFlightAttitude?UP.clone().applyQuaternion(this.orientation):this.spaceParked&&this.mode==='walk'?UP.clone().applyQuaternion(this.shipOrientation):this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
     const right=RIGHT.clone().applyQuaternion(this.orientation);rotation.setFromAxisAngle(right,pitch);this.orientation.premultiply(rotation).normalize();
     if(this.mode==='walk'){
       const forward=FORWARD.clone().applyQuaternion(this.orientation);const dot=forward.dot(normal);
       if(Math.abs(dot)>.985){rotation.setFromAxisAngle(right,-pitch);this.orientation.premultiply(rotation).normalize();}
     }
   }
+  get spaceFlightAttitude(){return this.mode==='flight'&&!this.autoland&&!this.stationLift&&this.flightEnvironment.regime==='SPACE';}
   get body(){return bodyAt(this.position);}
   get normal(){return bodyOffset(this.position,this.body).normalize();}
   get groundHeight(){return bodyHeight(this.normal,this.body);}
   get altitude(){return Math.max(0,bodyAltitude(this.position,this.body));}
   get speed(){return this.velocity.length();}
+  get debrisSpeedLimit(){return debrisSpeedLimit(this.position);}
   get sunDirection(){return new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).sub(this.position).normalize();}
   toShipLocal(point=this.position){return this.shipPosition?point.clone().sub(this.shipPosition).applyQuaternion(this.shipOrientation.clone().invert()):null;}
   fromShipLocal(point){return point.clone().applyQuaternion(this.shipOrientation).add(this.shipPosition);}
@@ -176,6 +189,7 @@ export class Navigation {
   get landingClearance(){return Math.max(3.2,this.layout.seatEye[1]+.35);}
   get interaction(){
     if(this.mode==='flight')return this.autoland||this.stationLift||this.travel?'FINISH MANEUVER TO LEAVE SEAT':'F · LEAVE PILOT SEAT';
+    if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.position.distanceTo(this.shipPosition))+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
     if(this.mode==='landed')return 'F · LEAVE PILOT SEAT';
     if(this.mode!=='walk'||!this.shipPosition)return '';
     const service=!this.cabinFlight&&this.station?.interaction?.(this);if(service)return service.label;
@@ -184,13 +198,14 @@ export class Navigation {
     if(hit?.startsWith('lift:')){const lift=this.freighter.lifts.find(l=>l.id===hit.slice(5));return `F · ${lift.name.toUpperCase()} · ${Math.abs(lift.y-lift.target)>.001?'MOVING':lift.y===lift.low?'RAISE':'LOWER'}`;}
     if(hit==='seat')return 'F · SIT IN PILOT CHAIR';
     if(hit==='storage')return 'F · OPEN CARGO STORAGE';
-    if(hit==='door')return this.cabinFlight?'HATCH · SECURED IN FLIGHT':this.doorOpen?'F · CLOSE HATCH & RAMP':'F · OPEN HATCH & LOWER RAMP';
+    if(hit==='door')return this.cabinFlight&&!this.spaceParked?'HATCH · SECURED IN FLIGHT':this.doorOpen?'F · CLOSE HATCH & RAMP':'F · OPEN HATCH & LOWER RAMP';
     if(this.cabinFlight)return 'IN-FLIGHT CABIN · RETURN TO CHAIR TO PILOT';
     if(this.dockedAtStation&&!this.insideShip)return this.station?.location==='hub'?'CENTRAL CONCOURSE · ELEVATORS AT REAR':'CARGO TERMINAL & CENTRAL HUB · AFT WALL';
     if(this.freighter)return this.insideShip?'F AT LIFT CONTROLS · G FLEET':'APPROACH THE REAR ELEVATOR · F TO CALL';
     return this.insideShip?'WALK AFT TO THE HATCH':'APPROACH THE REAR HATCH TO BOARD';
   }
   transit(direction,altitude=100){
+    this.spaceParked=false;
     this.resetCabinFlight();
     this.travel=null;this.keys.clear();
     this.dockedAtStation=false;this.stationLift=false;this.flightAssist=true;this.angularVelocity.set(0,0,0);
@@ -231,6 +246,7 @@ export class Navigation {
   dryGround(){if(this.body.airless)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
   landOrLaunch(){
     if(this.travel)return;
+    if(this.mode==='eva'){this.notify('Return to the pilot chair before controlling the ship.');return;}
     if(this.mode==='walk'){this.notify('Walk to the cockpit and sit in the pilot chair with F before launch.');return;}
     if(!this.powered){this.notify('Power on with P before using launch or landing assist.');return;}
     if(this.mode==='landed'){
@@ -266,6 +282,14 @@ export class Navigation {
     this.onVoyage?.('surface');
     this.notify(this.freighter?'Touchdown. F leaves the pilot chair; walk aft to lower the belly elevator.':'Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
   }
+  toggleEVA(){
+    if(this.mode==='walk'&&!this.insideShip&&!this.dockedAtStation){this.mode='eva';this.jumpHeight=0;this.jumpVelocity=0;this.notify('Suit thrusters active. WASD / left stick · Space/C or A/B vertical · X or LT brakes.');}
+    else if(this.mode==='eva'){
+      if(this.altitude<2.3){this.mode='walk';this.position.copy(bodySurfacePoint(this.normal,this.body,SHIP_LAYOUT.eyeHeight));this.velocity.set(0,0,0);this.notify('Boots on terrain. G / Y enables suit thrusters.');}
+      else this.notify('Return through the open rear ramp to board. Thrust toward terrain before disabling suit thrusters.');
+    }
+  }
+  get evaState(){return {active:this.mode==='eva',spaceParked:this.spaceParked,braking:this.evaBraking,shipDistance:this.shipPosition?this.position.distanceTo(this.shipPosition):null,speed:this.speed};}
   embark(){
     if(this.travel)return;
     if(this.mode==='walk'&&!this.cabinFlight&&this.stationAction?.())return;
@@ -274,8 +298,10 @@ export class Navigation {
       this.shipOrientation.copy(this.orientation);
       this.shipPosition=this.position.clone().sub(new THREE.Vector3(...this.layout.seatEye).applyQuaternion(this.shipOrientation));
       this.shipVelocity.copy(this.velocity);this.shipAngularVelocity.copy(this.angularVelocity);this.cruiseVelocity.copy(this.velocity);
+      this.spaceParked=this.altitude>120&&this.speed<=2;
       this.cabinFlight=true;this.mode='landed';this.doorOpen=false;this.doorProgress=0;
     }
+    if(this.mode==='eva'){this.notify('Approach the open ramp slowly at deck height to board.');return;}
     if(this.mode==='landed'){
       this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.stand)));
       this.mode='walk';this.insideShip=true;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
@@ -291,16 +317,16 @@ export class Navigation {
         const moved=this.freighter.toggle(hit.slice(5),local);this.velocity.set(0,0,0);
         this.notify(moved?'Lift moving. Stay inside the guard rails.':'Lift busy, or you are standing on its edge. Step fully on or off.');
       }else if(hit==='door'){
-        if(this.cabinFlight){this.notify('Hatch secured in flight. Land or dock to open it.');return;}
+        if(this.cabinFlight&&!this.spaceParked){this.notify('Hatch secured in flight. Land or dock to open it.');return;}
         if(this.doorOpen&&Math.abs(local.x)<1.2&&local.z>3.3&&local.z<7.5){this.notify('Step clear of the ramp before closing it.');return;}
         this.doorOpen=!this.doorOpen;this.notify(this.doorOpen?'Hatch opening. Ramp lowering — walk through when clear.':'Hatch closing. Ramp retracting.');
       }else if(hit==='storage'){
         this.keys.clear();this.velocity.set(0,0,0);this.openInventory?.();
       }else if(hit==='seat'){
         this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.seatEye)));this.orientation.copy(this.shipOrientation);
-        this.mode=this.cabinFlight?'flight':'landed';this.insideShip=!this.cabinFlight;this.keys.clear();this.boost=false;
-        if(this.cabinFlight){this.velocity.copy(this.shipVelocity);this.angularVelocity.copy(this.shipAngularVelocity);this.cabinFlight=false;this.shipPosition=null;}
-        else this.velocity.set(0,0,0);
+        this.mode=this.cabinFlight||this.spaceParked?'flight':'landed';this.insideShip=!this.cabinFlight;this.keys.clear();this.boost=false;
+        if(this.cabinFlight){this.velocity.copy(this.shipVelocity);this.angularVelocity.copy(this.shipAngularVelocity);this.cabinFlight=false;this.spaceParked=false;this.shipPosition=null;this.doorOpen=false;this.doorProgress=0;}
+        else {this.velocity.set(0,0,0);if(this.spaceParked){this.spaceParked=false;this.shipPosition=null;this.doorOpen=false;this.doorProgress=0;this.insideShip=false;}}
         this.notify('Pilot seat engaged. P main power · F stand · L land / launch.');
       }else this.notify(this.interaction||'Approach the ship’s rear hatch.');
     }
@@ -334,7 +360,10 @@ export class Navigation {
     const forward=FORWARD.clone().applyQuaternion(this.orientation),right=RIGHT.clone().applyQuaternion(this.orientation);
     const input=forward.clone().multiplyScalar(moveForward).addScaledVector(right,strafe);
       const altitude=this.altitude;
-      if(this.stationLift){
+      if(this.brakeFlight&&this.powered){
+        this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+        if(roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation).normalize();}
+      }else if(this.stationLift){
         this.velocity.copy(this.station.up).multiplyScalar(3);
         if(this.deckClearance>=Math.max(6,this.layout.seatEye[1]+1)){this.stationLift=false;this.velocity.set(0,0,0);}
       }else if(this.autoland && this.stationDistance<500){
@@ -346,9 +375,9 @@ export class Navigation {
         else if(altitude<this.landingClearance+.4){this.touchDown();return;}
         else this.velocity.copy(oldNormal).multiplyScalar(-Math.min(800,Math.max(1,(altitude-this.landingClearance)*.65)));
       }else{
-        input.addScaledVector(oldNormal,vertical);input.clampLength(0,1);
-        const profile=this.speedProfile,maxSpeed=profile.speed;
-        const stationLimit=this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity;
+        input.addScaledVector(this.spaceFlightAttitude?UP.clone().applyQuaternion(this.orientation):oldNormal,vertical);input.clampLength(0,1);
+        const profile=this.speedProfile,maxSpeed=Math.min(profile.speed,this.debrisSpeedLimit);
+        const stationLimit=Math.min(this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity,this.debrisSpeedLimit);
         if(this.powered&&this.speed>stationLimit)this.velocity.setLength(stationLimit);
         // Assisted flight brakes toward lower commanded limits continuously.
         // Retain the swept guard for overspeed states loaded from older builds.
@@ -363,6 +392,8 @@ export class Navigation {
       const steps=clamp(Math.ceil(this.speed*dt/Math.max(10,altitude*.2)),1,96);
       for(let i=0;i<steps;i++){
         const previous=this.position.clone(),proposed=previous.clone().addScaledVector(this.velocity,dt/steps);
+        const rockHit=this.surfaceObstacles?.constrainFlight(previous,proposed);
+        if(rockHit?.hit){this.position.copy(rockHit.point);this.velocity.set(0,0,0);this.autoland=false;if(rockHit.debrisBrake)this.notify('Debris proximity brake. Approach at controlled speed.');break;}
         const lunar=constrainMoonStep(previous,proposed,this.landingClearance);
         if(lunar.hit){
           this.position.copy(lunar.point);this.touchDown();break;
@@ -379,36 +410,35 @@ export class Navigation {
       // Assisted travel and inertial flight share the same swept collision path.
   }
   update(dt){
-    const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]')});
+    const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(document.querySelector('dialog[open]'))});
+    this.onControllerInput?.(pad,dt);
+    this.toolTrigger=pad.mine||0;
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;
     if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
-    if(pad.pressed.has(9))this.onControllerMenu?.();
-    if(this.onControllerUI?.(pad,dt))return;
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
     if(!this.enabled||document.querySelector('dialog[open]'))return;
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
     if(this.travel){if(pad.brake)this.cancelTravel();this.updateTravel(dt);return;}
-    if(pad.pressed.has(8))this.onControllerHud?.();
     if(pad.pressed.has(11))this.toggleFlightAssist();
-    if(pad.pressed.has(3))this.landOrLaunch();
+    if(pad.pressed.has(3)){if(this.mode==='eva'||(this.mode==='walk'&&!this.insideShip))this.toggleEVA();else this.landOrLaunch();}
     if(pad.pressed.has(2))this.embark();
     // Interactions may open a modal and disable navigation in this same frame.
     if(!this.enabled||document.querySelector('dialog[open]'))return;
-    if(pad.brake&&(this.powered||this.mode!=='flight')){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;}
+    if(pad.brake&&this.mode!=='eva'&&(this.powered||this.mode!=='flight')){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;}
     if(this.mode==='flight'&&pad.speed)this.speedScale=clamp(this.speedScale*Math.exp(pad.speed*dt),.05,1);
     const axis=(positive,negative,analog=0)=>clamp(Number(this.keys.has(positive))-Number(this.keys.has(negative))+analog,-1,1);
     const moveForward=axis('KeyW','KeyS',pad.forward),strafe=axis('KeyD','KeyA',pad.strafe);
     const turn=axis('ArrowLeft','ArrowRight',pad.yaw),tilt=axis('ArrowUp','ArrowDown',pad.pitch);
     this.doorProgress=clamp(this.doorProgress+(this.doorOpen?dt:-dt)/1.1,0,1);
-    if(pad.brake&&this.mode==='flight'&&this.powered){this.boost=false;return;}
-    if(this.cabinFlight)this.updateCabinFlight(dt);
-    const oldBody=this.body,oldNormal=this.normal;
+    const brakeFlight=this.brakeFlight=Boolean(pad.brake&&this.mode==='flight'&&this.powered);
+    if(this.cabinFlight&&!this.spaceParked)this.updateCabinFlight(dt);
+    const oldBody=this.body,oldNormal=this.normal,spaceFlight=this.spaceFlightAttitude;
     const yaw=turn*dt*.85;
     const pitch=tilt*dt*.85;
-    const inertial=this.mode==='flight'&&(!this.powered||!this.flightAssist)&&!this.autoland&&!this.stationLift;
-    if(!inertial&&(yaw||pitch))this.look(yaw,pitch);
-    this.boost=(this.mode==='walk'||this.powered)&&(this.keys.has('ShiftLeft')||this.keys.has('ShiftRight')||pad.boost);
+    const inertial=this.mode==='flight'&&(!this.powered||!this.flightAssist)&&!this.autoland&&!this.stationLift&&!brakeFlight;
+    if(!inertial&&(yaw||pitch))this.look(yaw,pitch,brakeFlight);
+    this.boost=!brakeFlight&&(this.mode==='walk'||this.powered)&&(this.keys.has('ShiftLeft')||this.keys.has('ShiftRight')||pad.boost);
     const rider=this.mode==='walk'?this.toShipLocal():null;
     if(this.freighter&&this.shipPosition&&this.powered){const carry=this.freighter.update(dt,rider);if(carry){rider.y+=carry;this.position.copy(this.fromShipLocal(rider));this.velocity.set(0,0,0);}}
     if(this.mode==='landed')return;
@@ -416,6 +446,34 @@ export class Navigation {
     const input=new THREE.Vector3();
     input.addScaledVector(forward,moveForward);
     input.addScaledVector(right,strafe);
+    if(this.mode==='eva'){
+      this.evaBraking=this.keys.has('KeyX')||Boolean(pad.evaBrake);
+      const vertical=axis('Space','KeyC',pad.evaVertical||0),roll=axis('KeyQ','KeyE',pad.roll);
+      if(roll){rotation.setFromAxisAngle(forward,roll*dt*.85);this.orientation.premultiply(rotation).normalize();}
+      const result=stepEVA(this.velocity,this.orientation,new THREE.Vector3(strafe,vertical,-moveForward),dt,{boost:this.boost,brake:this.evaBraking});
+      const previous=this.position.clone();let proposed=previous.clone().add(result.displacement);this.velocity.copy(result.velocity);
+      if(this.shipPosition){
+        const hit=constrainEVAShip(this.toShipLocal(previous),this.toShipLocal(proposed),this.doorProgress>.98);
+        if(hit.hit){proposed=this.fromShipLocal(hit.point);this.velocity.set(0,0,0);}
+      }
+      const obstacle=this.surfaceObstacles?.constrainEVA?.(previous,proposed);
+      if(obstacle?.hit){proposed.copy(obstacle.point);this.velocity.set(0,0,0);}
+      const station=this.station?.constrainStep(previous,proposed,this.orientation,true);
+      if(station?.hit){proposed.copy(station.point);this.velocity.set(0,0,0);}
+      this.position.copy(proposed);this.insideShip=false;
+      if(this.shipPosition&&canAttachRamp(this.toShipLocal(),this.doorProgress>.98,this.speed)){
+        const local=this.toShipLocal();local.y=shipFloorAt(local.x,local.z,true)+SHIP_LAYOUT.eyeHeight;
+        this.position.copy(this.fromShipLocal(local));this.mode='walk';this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
+        // Magnetic boots align the suit with the deck without moving to the chair.
+        const direction=FORWARD.clone().applyQuaternion(this.orientation),up=UP.clone().applyQuaternion(this.shipOrientation);
+        direction.projectOnPlane(up);if(direction.lengthSq()<.001)direction.set(0,0,-1).applyQuaternion(this.shipOrientation);
+        this.orientToward(this.position.clone().add(direction),up);this.notify('Boots attached to the ramp. Walk through the hatch to the pilot chair.');
+      }else if(bodyAltitude(this.position,this.body)<SHIP_LAYOUT.eyeHeight){
+        this.position.copy(bodySurfacePoint(this.normal,this.body,SHIP_LAYOUT.eyeHeight));this.mode='walk';this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
+        this.notify('Surface contact. G / Y enables suit thrusters again.');
+      }
+      return;
+    }
     if(this.mode==='walk'){
       const localBefore=this.toShipLocal();
       const shipUp=this.dockedAtStation?this.station.up:localBefore&&localBefore.length()<50?UP.clone().applyQuaternion(this.shipOrientation):oldNormal;
@@ -428,16 +486,20 @@ export class Navigation {
         local=this.freighter?this.freighter.constrain(localBefore,this.toShipLocal(proposed)):constrainShipStep(localBefore,this.toShipLocal(proposed),this.doorProgress>.98);
         proposed=this.fromShipLocal(local);floor=this.freighter?this.freighter.floorAt(local):shipFloorAt(local.x,local.z,this.doorProgress>.98);
       }
-      if(this.cabinFlight&&floor===null){
+      if(this.cabinFlight&&!this.spaceParked&&floor===null){
         // Moving-ship EVA is a separate transition. Never let a missing cabin
         // support point fall through into the planet-floor walking branch.
         this.velocity.set(0,0,0);return;
+      }
+      if(this.spaceParked&&floor===null&&localBefore&&localBefore.length()<35){
+        this.position.copy(proposed);this.mode='eva';this.insideShip=false;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.projectOnPlane(UP.clone().applyQuaternion(this.shipOrientation));
+        this.notify('EVA. Release thrust to coast; X / LT brakes. Return slowly to the open ramp.');return;
       }
       const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.airless?0:terrainHeight(dir.x,dir.y,dir.z);
       if(floor!==null||this.dockedAtStation||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
       this.insideShip=floor!==null&&(this.freighter?local.z<=10:local.z<=4);
-      if((this.keys.has('Space')||pad.jump)&&this.jumpHeight===0&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=.001;}
+      if(!this.spaceParked&&(this.keys.has('Space')||pad.jump)&&(this.jumpHeight===0||this.surfaceObstacles?.grounded)&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=Math.max(.001,this.jumpHeight);}
       this.jumpVelocity-=(this.dockedAtStation?9.81:this.body.gravity)*dt;this.jumpHeight=Math.max(0,this.jumpHeight+this.jumpVelocity*dt);if(this.jumpHeight===0)this.jumpVelocity=0;
       if(floor!==null){local.y=floor+this.layout.eyeHeight+this.jumpHeight;this.position.copy(this.fromShipLocal(local));}
       else if(this.dockedAtStation){
@@ -449,13 +511,18 @@ export class Navigation {
         const result=this.station.constrainStep(previous,this.position,this.orientation,true);
         this.position.copy(result.point);
       }
+      if(floor===null&&!this.dockedAtStation&&this.surfaceObstacles){
+        const result=this.surfaceObstacles.constrainWalker(previous,this.position);
+        this.position.copy(result.point);
+        if(result.hit){this.jumpHeight=Math.max(0,bodyAltitude(this.position,this.body)-SHIP_LAYOUT.eyeHeight);if(result.grounded&&this.jumpVelocity<0)this.jumpVelocity=0;}
+      }
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
       this.advanceFlight(dt,{moveForward,strafe,vertical:axis('Space','KeyC',pad.vertical),turn,tilt,roll:axis('KeyE','KeyQ',pad.roll)});
     }
-    if(pad.brake&&(this.powered||this.mode!=='flight')){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);}
+    if(pad.brake&&this.mode!=='eva'&&(this.powered||this.mode!=='flight')){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);}
     const newNormal=this.normal;
-    if(!inertial&&!this.cabinFlight&&oldBody===this.body&&this.mode!=='landed'){rotation.setFromUnitVectors(oldNormal,newNormal);this.orientation.premultiply(rotation).normalize();}
+    if(!spaceFlight&&!this.spaceParked&&!inertial&&!this.cabinFlight&&oldBody===this.body&&this.mode!=='landed'){rotation.setFromUnitVectors(oldNormal,newNormal);this.orientation.premultiply(rotation).normalize();}
     if(!Number.isFinite(this.position.length())||this.position.length()>SUN_DISTANCE*4){this.orbit();this.notify('Navigation envelope exceeded. Returned to orbit.');}
   }
 }
