@@ -428,3 +428,19 @@ QA is `scripts/pyre.config.js`; evidence is under `/tmp/star-agent-pyre` with cu
 images in `docs/images/pyre`. Resource surveys and terrain colours share the field;
 Pyre excavation and heat damage remain unimplemented. Aeon/Selene's separate
 material, meadow, stones and expedition PRs still require their own integration.
+
+
+## Stellar encounter — 2026-09-06
+
+Cees requested a larger visible star, a dramatic close approach and real thermal
+ship loss. `feat/stellar-encounter` is isolated from `feat/pyre-planet-tech`; it
+continues the recovered star shader draft and integrates a 500,000 km surface
+clearance arrival, continuous drive destination, stellar cruise, persistent hull
+damage, swept lethal contact and explicit recovery. Scope and physical assumptions
+are in `docs/sun.md`. It owns the additive changes to navigation, the atmosphere
+composite, map/UI and cockpit instruments in this branch only. Other worktrees,
+including Fable's sun checkout, remain untouched.
+
+Local preview: port 53759 (`star-agent-stellar-encounter.service`). QA:
+`scripts/star.config.js`; evidence under `/tmp/star-agent-stellar`. Separate
+impact/re-entry damage branches still need consolidation at integration time.

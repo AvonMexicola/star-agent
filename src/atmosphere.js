@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RADIUS, ATMOSPHERE_HEIGHT } from './world.js';
+import { RADIUS, ATMOSPHERE_HEIGHT, SUN_RADIUS, SUN_ANGULAR_RADIUS } from './world.js';
 import { createCloudNoise, cloudShader } from './cloud-volume.js';
 
 // Single-scattering integration in body-radius units. Rayleigh + Henyey-Greenstein
@@ -26,6 +26,7 @@ uniform float radius;
 uniform float atmosphereRadius;
 uniform float exposure;
 uniform float sunAngularRadius;
+uniform float sunDisk;
 uniform vec3 atmoCamera[${ATMOSPHERE_SLOTS}];
 uniform float atmoRadius[${ATMOSPHERE_SLOTS}];
 uniform float atmoOuter[${ATMOSPHERE_SLOTS}];
@@ -103,10 +104,11 @@ void main(){
     daylight=max(daylight,smoothstep(-.12,.2,dot(normalize(atmoCamera[i]),sunDirection))
       *exp(-max(0.0,length(atmoCamera[i])-1.0)*atmoRadius[i]/35000.0));
   }
-  vec3 color=ground?original:stars(rd)*(1.0-daylight);
+  // Preserve additive corona light in space pixels even without opaque depth.
+  vec3 color=ground?original:stars(rd)*(1.0-daylight)+original;
   float sunDot=dot(rd,sunDirection);
-  // A 120,000-km stellar radius: 0.0048 rad from Aeon, larger from the inner planet.
-  float disk=smoothstep(cos(sunAngularRadius*1.0417),cos(sunAngularRadius*.9583),sunDot);
+  // Physical photosphere radius: twice the previous angular size from Aeon.
+  float disk=smoothstep(cos(sunAngularRadius*1.0417),cos(sunAngularRadius*.9583),sunDot)*sunDisk;
   if(!ground)color+=vec3(18.0,15.5,12.5)*disk;
   // Distant worlds as bright points with a soft halo; extinguished by the air like the star.
   if(!ground)for(int i=0;i<${POINT_BODIES};i++){
@@ -138,7 +140,7 @@ export class Atmosphere {
     this.target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true});
     this.target.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
     const slots=n=>Array.from({length:n});
-    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08},sunAngularRadius:{value:.0048},
+    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08},sunAngularRadius:{value:SUN_ANGULAR_RADIUS},sunDisk:{value:1},
       atmoCamera:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoRadius:{value:slots(ATMOSPHERE_SLOTS).map(()=>RADIUS)},atmoOuter:{value:slots(ATMOSPHERE_SLOTS).map(()=>1)},
       atmoBetaR:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoBetaM:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoScale:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector2(8000,1200))},atmoPhase:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector2(.76,11))},atmoEnabled:{value:slots(ATMOSPHERE_SLOTS).map(()=>0)},
       pointDirection:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3(0,0,1))},pointColor:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3())},pointSize:{value:slots(POINT_BODIES).map(()=>0)}},
@@ -159,12 +161,13 @@ export class Atmosphere {
   setPoint(index,direction,color,size){
     const u=this.material.uniforms;u.pointDirection.value[index].copy(direction);u.pointColor.value[index].fromArray(color);u.pointSize.value[index]=size;
   }
+  setSun(sun){this.material.uniforms.sunDisk.value=sun.diskWeight;}
   resize(w,h){this.target.setSize(w,h);this.material.uniforms.resolution.value.set(w,h);}
   render(scene,camera,worldPosition,sunDirection,elapsed=0,sunDistance=null){
     camera.updateMatrixWorld();const u=this.material.uniforms;
     u.cloudTime.value=elapsed;
     u.inverseProjection.value.copy(camera.projectionMatrixInverse);u.cameraRotation.value.setFromMatrix4(camera.matrixWorld);u.cameraPlanet.value.copy(worldPosition).multiplyScalar(1/RADIUS);u.sunDirection.value.copy(sunDirection);u.logFar.value=Math.log2(camera.far+1);
-    u.sunAngularRadius.value=sunDistance?Math.atan(1.2e8/sunDistance):.0048;
+    u.sunAngularRadius.value=sunDistance?Math.asin(Math.min(1,SUN_RADIUS/Math.max(SUN_RADIUS,sunDistance))):SUN_ANGULAR_RADIUS;
     for(let i=0;i<ATMOSPHERE_SLOTS;i++){
       const body=this.bodies[i];
       if(!body){u.atmoEnabled.value[i]=0;continue;}

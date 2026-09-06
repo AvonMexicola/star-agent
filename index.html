@@ -61,10 +61,11 @@
           <button id="station-destination" data-destination="station" class="destination" disabled><span class="destination-icon">◇</span><span><strong>Aeon Orbital</strong><small>LOADING STATION</small></span><span class="destination-number">06</span></button>
           <button data-destination="moon" class="destination"><span class="destination-icon">☾</span><span><strong>Selene</strong><small>LAND & EXPLORE</small></span><span class="destination-number">07</span></button>
           <button data-destination="pyre" class="destination"><span class="destination-icon">◐</span><span><strong>Pyre</strong><small>HOT INNER PLANET</small></span><span class="destination-number">08</span></button>
+          <button data-destination="star" class="destination"><span class="destination-icon">☀</span><span><strong>Our star</strong><small>STELLAR OBSERVATION</small></span><span class="destination-number">09</span></button>
         </div>
       </details>
-      <h2>Your next giant leap.</h2><p>Click the view to capture your mouse. Look around, pick a direction, and go. Atmospheric flight cruises at 250 m/s, with a modest 400 m/s boost. Speed rises smoothly to 3 km/s in space, or 9 km/s boosted. Ground and station approaches reduce these limits. Press V for inertial flight: momentum and rotation persist until countered or braked with X.</p>
-      <div class="control-grid"><kbd>M</kbd><span>System map · select Aeon, Selene or Pyre</span><kbd>J</kbd><span>Engage / abort selected travel route</span><kbd>W / S</kbd><span>Forward / reverse</span><kbd>A / D</kbd><span>Strafe left / right</span><kbd>Mouse / ↑ ↓ ← →</kbd><span>Look / steer</span><kbd>Space / C</kbd><span>Ascend / descend · jump on foot</span><kbd>Shift</kbd><span>Boost · sprint on foot</span><kbd>Mouse wheel</kbd><span>Adjust flight speed</span><kbd>Q / E</kbd><span>Roll ship</span><kbd>X</kbd><span>Brake translation and rotation · abort drive</span><kbd>V</kbd><span>Toggle flight assist / inertial flight</span><kbd>L</kbd><span>Autoland / launch while seated</span><kbd>F</kbd><span>Stand / sit at chair · hatch · cargo storage</span><kbd>O</kbd><span>Return to orbit</span><kbd>Tab / H / Esc</kbd><span>Hide HUD / help / release mouse</span></div>
+      <h2>Your next giant leap.</h2><p>Click the view to capture your mouse. Look around, pick a direction, and go. Atmospheric flight cruises at 250 m/s, with a modest 400 m/s boost. Speed rises smoothly to 3 km/s in space, or 9 km/s boosted. Ground and station approaches reduce these limits. Near the star, stellar cruise allows longer approaches; Space + Shift thrusts away from the star. Shield temperature rises with radiation and damages the hull if cooling cannot keep up. The drive stops 500,000 km above the photosphere. Manual flight may enter the danger zone; below 20,000 km the ship is destroyed immediately. Press V for inertial flight: momentum and rotation persist until countered or braked with X.</p>
+      <div class="control-grid"><kbd>M</kbd><span>System map · select a planet, moon or our star</span><kbd>J</kbd><span>Engage / abort selected travel route</span><kbd>W / S</kbd><span>Forward / reverse</span><kbd>A / D</kbd><span>Strafe left / right</span><kbd>Mouse / ↑ ↓ ← →</kbd><span>Look / steer</span><kbd>Space / C</kbd><span>Ascend / descend · jump on foot</span><kbd>Shift</kbd><span>Boost · sprint on foot</span><kbd>Mouse wheel</kbd><span>Adjust flight speed</span><kbd>Q / E</kbd><span>Roll ship</span><kbd>X</kbd><span>Brake translation and rotation · abort drive</span><kbd>V</kbd><span>Toggle flight assist / inertial flight</span><kbd>L</kbd><span>Autoland / launch while seated</span><kbd>F</kbd><span>Stand / sit at chair · hatch · cargo storage</span><kbd>O</kbd><span>Return to orbit</span><kbd>Tab / H / Esc</kbd><span>Hide HUD / help / release mouse</span></div>
       <h3>Controller</h3>
       <p id="controller-status" role="status">Connect a controller and press a button.</p>
       <p>Standard Xbox and PlayStation layouts are supported when recognized by your browser. Release sticks and buttons after connecting or returning to the game. Mouse capture is optional.</p>
@@ -79,6 +80,17 @@
       <form id="seed-form"><label for="seed-input">Planet seed</label> <input id="seed-input" name="seed" type="number" min="0" max="4294967295" step="1" required value="7291" /> <button type="submit">EXPLORE SEED ↗</button><p class="manual-note">Opening a seed starts a new flight. Share the resulting URL: the same seed and generator version produce the same planet for everyone.</p></form>
       <button id="help-fly" class="primary-button">LET’S FLY <span>↗</span></button>
     </dialog>
-    <script type="module" src="/src/main.js"></script>
+    <aside id="stellar-shields" hidden aria-label="Stellar thermal protection">
+  <strong id="stellar-status">STELLAR OBSERVATION</strong>
+  <div><span>SHIELD TEMPERATURE</span><b id="stellar-temperature">17 °C</b></div>
+  <progress id="stellar-heat-meter" max="1" value="0" aria-label="Shield heat"></progress>
+  <div><span>HULL INTEGRITY</span><b id="stellar-hull">100%</b></div>
+  <small>SPACE + SHIFT · RETREAT FROM THE STAR</small>
+</aside>
+<section id="stellar-loss" hidden role="alertdialog" aria-modal="true" aria-labelledby="stellar-loss-title">
+  <div><span>THERMAL PROTECTION LOST</span><h2 id="stellar-loss-title">Ship destroyed</h2><p id="stellar-loss-reason"></p>
+  <button id="stellar-recover">Return to Aeon in a replacement ship</button><small>ENTER / A / ✕ TO RECOVER</small></div>
+</section>
+<script type="module" src="/src/main.js"></script>
   </body>
 </html>
