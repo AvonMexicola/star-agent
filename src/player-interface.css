@@ -16,3 +16,5 @@ body.player-active .flight-hints[hidden]{display:none}
 .menu-actions button{padding:10px 12px;font:10px var(--mono);border-radius:3px}
 .menu-actions kbd{margin-left:6px}
 @media(max-width:700px){body.player-active .flight-hints{bottom:16px;gap:10px;font-size:7px}.menu-actions button{display:block!important}}
+
+#help-dialog button:focus,#help-dialog summary:focus{outline:2px solid var(--mint);outline-offset:3px}
