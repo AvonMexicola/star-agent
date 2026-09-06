@@ -45,12 +45,50 @@ Xbox acceptance. Consolidation is not a claim of finished Star Citizen fidelity.
 
 ## Verification and publication
 
-The full unit suite and production build passed before the last focused controller
-fixes. Combined browser checks found duplicate shop controller polling and overlapping map touch targets after adding Pyre, and missing controller Menu-close
-handling. Their focused browser reruns passed. The independent functional review
-then identified controller crash recovery and corrupt legacy-save handling; those
-fixes and final checks are recorded in the review follow-up.
-Final results, review verdict and screenshots will be recorded here before merge.
+Runtime frozen at `0ab1854`; `a20ca1e` adds only Pyre reconciliation docs,
+two passing recovered invariant tests, and the old branch history. The diff in
+`src/`, `public/`, `index.html`, `package.json` and `vite.config.js` is empty.
+
+| Check | Actual result |
+|---|---|
+| Full unit suite after Pyre reconciliation | **447 passed, 0 failed** |
+| Production build | **Passed**; existing shared-loader chunk >500 kB advisory |
+| Core browser suite | **15 passed** (5.4 min) |
+| Atlas studio + equipment browser suite | **7 passed** (2.9 min) |
+| Independent Opus functional review | Findings fixed; **functionally mergeable**, with final extra-suite condition now satisfied |
+| Visual/performance acceptance | **Pending PM-owned Opus review**; no score or budget acceptance claimed |
+
+Browser: Chromium 151.0.7922.173, AMD Radeon 860M via ANGLE OpenGL ES 3.2.
+Core desktop/UI captures use 1440×900 and phone captures 390×844; Pyre's own
+capture fixture uses 960×600. Streaming tests temporarily reduce render scale;
+curated detail captures use 1.0 where the spec states it. These are correctness
+checks, not a controlled FPS benchmark or physical Xbox test. Browser error
+assertions passed; power checks also explicitly collected zero warnings.
+
+Failure history and independent findings are preserved in
+[the initial functional review](functional-review-initial.md) and
+[the follow-up](functional-review-followup.md). Earlier failures exposed duplicate
+shop controller polling, overlapping three-world map touch targets, missing
+controller Menu-close routing and unreachable crash recovery; all are corrected.
+Two initial test harness failures were caused by missing touch context and
+reloading conflicted source during integration; final runs used a frozen runtime.
+
+Build output totals approximately 105 MiB. Atlas Mark II studio models account
+for about 54 MiB (36.28 hero, 13.26 LOD1, 4.02 LOD2); props account for about
+15 MiB. The two terrain maps add 8.29 MiB. Vite copies public inspection assets,
+so this output size is not the initial game's network download. Atlas asset
+budget acceptance remains outstanding; no silent deletion of authoring assets.
+
+[Hangar](hangar.png) · [Cockpit](cockpit.png) · [Forest](forest.png) ·
+[Shore](shore.png) · [Map desktop](map-desktop.png) · [Map phone](map-phone.png) ·
+[Shop desktop](shop-desktop.png) · [Shop phone](shop-phone.png) ·
+[Atlas pilot MFDs](atlas-mfds.png) · [Equipment phone](equipment-phone.png).
+These are integration test captures, not substitutes for the PM's independent
+fixed-viewpoint visual tour and baseline comparison.
+
+Original Pyre history is accounted for in [the reconciliation record](pyre-reconciliation.md).
+The newly published Sun encounter PR35 is explicitly reserved for PM's next
+rebase after PR34, as recorded in the shared handoff.
 
 Run the production preview on port 5280, then:
 
@@ -67,5 +105,5 @@ node scripts/integration-tour.mjs
 The tour writes to `/tmp/star-agent-main-tour`; override `INTEGRATION_URL` or
 `INTEGRATION_EVIDENCE` as needed. It records browser/GPU, viewport, draw calls,
 triangles and RAF intervals. RAF intervals include display refresh and are not
-GPU execution times. Publication and the independent QUALITY.md gate are pending.
+GPU execution times. Main merge and the independent visual QUALITY.md gate are pending.
 `staragent.site` currently serves another build; this candidate is not deployed.

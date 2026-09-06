@@ -1248,3 +1248,20 @@ directory uncommitted station and equipment art was not included.
 ## Terrain and ground detail — READY FOR REVIEW
 
 Astra: feat/terrain-transitions is stacked on forest PR #6, isolated at /tmp/star-agent-terrain-work. Land/water/shadow parent-triangle morphs, 0.6 s wall-time split/merge, 1.8/2.3 hysteresis, retained parents/skirts, and terrain-material.js ground detail are integrated. 69 unit checks, production terrain/ground inspection, focused shallow-water inspection and four general Chromium cases pass. Original fine buffers remain byte-identical across eight regression fixtures. Review notes/screenshots and limitations: TERRAIN-HANDOFF.md and docs/images/terrain-*.png. Preview http://localhost:5176/?seed=7291. main.js changes are diagnostics only; preserve other branches’ ShipState/controller/moon/ship hooks when integrating. No merge or production deployment by Astra.
+
+## READY FOR REVIEW: MAIN CONSOLIDATION PR34 — 2026-09-06
+
+Runtime0ab1854; current integration ancestrya20ca1e adds only Pyre invariant tests,
+docs and reconciliation of44e426a. See docs/qa/main-integration/README.md and
+pyre-reconciliation.md. Final447/447 unit tests, production build,15/15 core
+browser checks and7/7 Atlas/equipment browser checks pass. Chromium151/AMD860M/
+ANGLE GL; no physical Xbox or controlled FPS claim. Independent Opus functional
+follow-up found all findings fixed and source functionally mergeable; its remaining
+extra-suite condition is satisfied by7/7. Review and final screenshots attached.
+
+Main exists at accepted85aa836; PR34 contains the combined candidate. PM owns the
+ongoing Opus visual/baseline gate and default/Vercel changes. Site is not updated.
+The newer Sun encounter PR35 is reserved for PM's next rebase. Dirty shared station
+and gear work remains untouched. Do not restore older controller/hull/Pyre snapshots
+over the reconciled code. No feature branches deleted. Preview5280 serves this
+runtime; tests and public docs distinguish the Atlas studio from the live fleet.
