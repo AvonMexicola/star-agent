@@ -1,0 +1,193 @@
+{
+  "builder": "blender/build_base.py",
+  "coordinates": "metres, Y up; origin support surface, wall x width; stair rises toward -Z",
+  "source": "original deterministic scripted construction; no external imagery",
+  "pieces": {
+    "foundation": {
+      "triangles": 360,
+      "drawPrimitives": 3,
+      "bytes": 28400,
+      "sha256": "6fa12e66efb801b7c3993e71a02194363011c79c1bb721c0e757953516e1af58",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.6000000238418579,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.0015999999595806003,
+          2.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "floor": {
+      "triangles": 360,
+      "drawPrimitives": 3,
+      "bytes": 28384,
+      "sha256": "5a409457b25ba46005e4cb7c86702278b23425876f1196549c17190f15799158",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.18000000715255737,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.0015999999595806003,
+          2.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "wall": {
+      "triangles": 1620,
+      "drawPrimitives": 2,
+      "bytes": 115632,
+      "sha256": "b2e68e63b90b308bc924654ed05e7b3949ff2e2a6e34406c980f5845136c4c38",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.16300000250339508
+        ],
+        "max": [
+          2.0,
+          3.0,
+          0.16300001740455627
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "doorway": {
+      "triangles": 3024,
+      "drawPrimitives": 8,
+      "bytes": 215516,
+      "sha256": "b005ab254d5d4cef78abbba81a269631f5c8d429855fc5956d56068dd8b70457",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.22500000894069672
+        ],
+        "max": [
+          2.0,
+          3.0,
+          0.16300001740455627
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "WhiteArmour"
+      ]
+    },
+    "window": {
+      "triangles": 2484,
+      "drawPrimitives": 3,
+      "bytes": 177180,
+      "sha256": "9696a12dcf12990bfdd2aad9bfd714045ed7e5a7faf05b07871ec5da01a9566f",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.16300000250339508
+        ],
+        "max": [
+          2.0,
+          3.0,
+          0.16300001740455627
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "WindowGlass"
+      ]
+    },
+    "stairs": {
+      "triangles": 3672,
+      "drawPrimitives": 2,
+      "bytes": 259248,
+      "sha256": "e1d52ab2560fee87b09ceff9d2a29728b3d887e1d8e51def84f607d10da900cf",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          1.0,
+          3.9935715198516846,
+          2.0
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "mainframe": {
+      "triangles": 1944,
+      "drawPrimitives": 4,
+      "bytes": 140508,
+      "sha256": "0d866023512c0a3b615ce3b9edede8b934992b160980237dee1aa62bfac896a7",
+      "bounds": {
+        "min": [
+          -0.550000011920929,
+          0.0,
+          -0.3970000147819519
+        ],
+        "max": [
+          0.5499999523162842,
+          1.7799999713897705,
+          0.3499999940395355
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "crate": {
+      "triangles": 1512,
+      "drawPrimitives": 3,
+      "bytes": 107048,
+      "sha256": "ec136f90d8fd1013d458d58c677c11d57783b0d2ab8cb76402226da883cd77d5",
+      "bounds": {
+        "min": [
+          -0.6000000238418579,
+          0.0,
+          -0.45249998569488525
+        ],
+        "max": [
+          0.6000000238418579,
+          0.75,
+          0.4000000059604645
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "WhiteArmour"
+      ]
+    }
+  },
+  "aggregateBytes": 1071916,
+  "aggregateTriangles": 14976
+}

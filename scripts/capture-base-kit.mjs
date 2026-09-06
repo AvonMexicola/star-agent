@@ -1,0 +1,8 @@
+import {chromium} from '@playwright/test';
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=gl','--enable-webgl']});
+const page=await browser.newPage({viewport:{width:1440,height:900}});const errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+await page.goto('http://127.0.0.1:5295/dev/build.html');await page.waitForFunction(()=>window.__buildStudio?.ready);await page.waitForTimeout(1500);await page.screenshot({path:'docs/qa/base-building/kit-desktop.png'});
+const evidence=await page.evaluate(()=>{const {renderer}=window.__buildStudio;const gl=renderer.getContext();const ext=gl.getExtension('WEBGL_debug_renderer_info');return {draws:renderer.info.render.calls,triangles:renderer.info.render.triangles,backend:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER)};});
+await page.goto('http://127.0.0.1:5295/dev/build.html?only=doorway');await page.waitForFunction(()=>window.__buildStudio?.ready);await page.waitForTimeout(800);await page.screenshot({path:'docs/qa/base-building/doorway-desktop.png'});
+await page.goto('http://127.0.0.1:5295/dev/build.html?only=mainframe');await page.waitForFunction(()=>window.__buildStudio?.ready);await page.waitForTimeout(800);await page.screenshot({path:'docs/qa/base-building/mainframe-desktop.png'});
+console.log(JSON.stringify({evidence,errors}));await browser.close();if(errors.length)process.exitCode=1;

@@ -39,12 +39,13 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       if(loadout){selected=Boolean(loadout.item);if(equipment.equipped!==loadout.item){clear();if(loadout.item)equipment.equip(loadout.item);else equipment.unequip();}}
       const isMining=equipment.equipped==='mining-laser-tool';
       const distance=nav.position.distanceTo(rock.position);
-      active=(nav.mode==='walk'||nav.mode==='eva')&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
+      active=!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
       panel.hidden=!active;mount.visible=active&&selected;
       if(!active)clear();
       direction.set(0,0,-1).applyQuaternion(nav.orientation);
       const inspected=active&&isMining?rock.inspectTarget?.(nav.position,direction,8):null;
       hit=active&&isMining?rock.raycast(nav.position,direction):null;
+      if(hit){const obstruction=nav.buildingRaycast?.(nav.position,direction,hit.distance);if(obstruction)hit=null;}
       lamp.visible=active&&selected;lamp.position.set(.15,-.18,0).applyQuaternion(nav.orientation);lamp.target.position.copy(direction).multiplyScalar(6);
       recoil*=Math.exp(-dt*18);
       mount.position.set(equipment.equipped==='sidearm-pistol'?.25:.29,equipment.equipped==='sidearm-pistol'?-.25:-.35,-.47+recoil).applyQuaternion(nav.orientation);mount.position.add(nav.position.clone().sub(origin));mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
@@ -52,6 +53,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       // Check muzzle obstruction too, so a close edge cannot be mined through.
       const muzzle=equipment.muzzleWorldPosition();
       if(muzzle){lamp.position.copy(muzzle).sub(origin).addScaledVector(direction,.06);lamp.target.position.copy(lamp.position).addScaledVector(direction,6);}
+      if(hit&&muzzle){const obstruction=nav.buildingRaycast?.(muzzle,hit.point.clone().sub(muzzle).normalize(),muzzle.distanceTo(hit.point));if(obstruction)hit=null;}
       if(hit&&muzzle){const to=hit.point.clone().sub(muzzle),length=to.length(),muzzleHit=rock.raycast(muzzle,to.normalize(),length+.1);if(muzzleHit&&muzzleHit.point.distanceTo(hit.point)>.22)hit=null;}
       const firing=active&&selected&&Boolean(held||keyHeld||(nav.gamepad.armed&&nav.toolTrigger>.1))&&!rock.store.blocked&&(isMining?rock.store.free>.001&&!rock.error:loadout?.ammoFor()>0);
       equipment.update(dt,{firing,authorizeFire:item=>loadout?.spendRound(item)??false,hasHit:Boolean(hit),targetWorldPoint:hit?.point??(inspected?.distance<=8?inspected.point:null)??nav.position.clone().addScaledVector(direction,8)});

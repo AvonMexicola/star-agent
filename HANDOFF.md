@@ -1293,3 +1293,46 @@ PR34 remains DRAFT: request23 full-scene visual blockers remain open. This is no
 READY FOR MERGE for the whole consolidation. main/default/site unchanged. New
 retail435f116/PR20 handoff acknowledged, not merged over this lane; SunPR35 remains
 separate. Updated TOKEN POLICY v2 reviewer ownership acknowledged.
+
+## Materials and base construction — first playable slice
+
+READY FOR REVIEW: src/build/, src/crafting/, common Aeon/Pyre mining outcrops,
+processed-material inventory/persistence, controller integration, authored base
+kit and the associated tests/design/QA documents. Isolated feat/base-building in
+/tmp/star-agent-base-work, based on integrate/main-2026-09-06 at6f80fc0.
+Stable local production preview: http://127.0.0.1:5296/.
+
+Read docs/base-building.md for current controls and limits, and
+**docs/base-building-pipeline.md** for Fable's durable integration memory.
+The full roadmap and Miasma specialty-material proposals are in
+**docs/design/base-building-plan.md**. Miasma itself remains in the separate PR39
+lane; this branch implements Aeon/Selene/Pyre construction only. Engineering,
+wind/solar power, advanced tech, biological harvesting and habitat protection are
+not claimed as implemented.
+
+Materials use the existing atomic inventory/mining save. Mainframe claims and
+crates have physical shared containers; supplies are opt-in within the claim.
+Pyre base anchors and nearby outcrop IDs follow its canonical body-fixed frame
+across page epochs. New saves receive no construction stock. Six field recipes
+complete immediately in the backpack. Eight authored pieces include working
+pocket doorways, supporting walls/floors and climbable stairs.
+
+Actual Aeon/Pyre mining-to-core routes and Pyre next-day page reload pass, with
+explicit pose fixtures. The full saved-kit door/mainframe/storage browser check
+passes on desktop and phone with zero browser errors/warnings. Complete Gamepad
+construction coverage and the fixed tour have their latest exact status in
+**docs/qa/base-building/**; do not substitute numerical tests or imported stock
+for a complete local-economy/survival expedition. Physical Xbox testing remains
+separate from injected Gamepad routing.
+
+Opus CLI returned429/session-limit before doing any review. No Opus rubric or
+polish-later waiver is claimed; read opus-review-attempt.md. Independent Astra
+functional review found and verified the fix for malformed-base startup crashes,
+and checked the corrected floor/wall seating joint. Whole-scene frame budgets
+remain open: the root lunar base viewpoint measured41.76ms mean RAF at scale0.85.
+Keep this draft unmerged until required review gates are satisfied.
+
+Integration notes: this branch uses contextual on-foot B for construction. PR38's
+flight B and later LB+RB utility chord need explicit reconciliation when combined.
+Preserve its free-heading drive, ship utilities and grass changes; none is silently
+included here. Shared manager assets and other feature worktrees were not modified.

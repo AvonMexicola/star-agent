@@ -2,10 +2,12 @@ import { ROCK_ID, ROCK_VERSION, SIDE, createDensity, encodeDensity, decodeDensit
 import { STARTER_CREDITS, STATION_SHOPS, initialShopStock } from '../station-shop.js';
 import { ShipInventory, ITEMS } from '../ship-inventory.js';
 import { defaultLoadout, validLoadout } from '../inventory/loadout.js';
-import { CATALOG, RESOURCE_IDS, resourceItems, resourceAmounts, emptyItems, fitsBox, planTransfer, validItems, MAX_BOXES } from '../inventory/containers.js';
+import { CATALOG, MATERIAL_IDS, PROCESSED_IDS, resourceItems, resourceAmounts, emptyItems, fitsBox, planTransfer, validItems, MAX_BOXES } from '../inventory/containers.js';
 export const MINING_KEY = 'star-agent.selene-mining.v1';
 export const POUCH_CAPACITY = 12;
-export const MAX_SAVED_ROCKS = 8;
+// Exact snapshots: 17 fields including the legacy deposit stay below 3.3M
+// serialized characters. Never evict edits or restore exhausted ore to make room.
+export const MAX_SAVED_ROCKS = 16;
 const validField = field => field?.length === SIDE ** 3 && Array.from(field).every(n => Number.isFinite(n) && Math.abs(n) < 20);
 const decodeField = field => typeof field === 'string' ? decodeDensity(field) : new Float32Array(field);
 const safeId = id => typeof id === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,119}$/.test(id) && !['constructor', 'prototype', '__proto__'].includes(id);
@@ -21,6 +23,7 @@ export class MiningStore {
       id: ROCK_ID, version: ROCK_VERSION, revision: 0, field: createDensity(), pack: [0, 0, 0], ship: [0, 0, 0],
       economy: {credits:legacy.credits,shopStock:structuredClone(legacy.shopStock)},
       boxes: { pack: 1, ship: 4, station: 2 }, supplies: oldSupplies, loadout: defaultLoadout(),
+      materials: { pack: {}, ship: {} },
       remote: { station: { name: 'Aeon orbital locker', kind: 'station', items: emptyItems() } }, rocks: {},
     };
     const initialState = this.state;
@@ -50,12 +53,12 @@ export class MiningStore {
       this.saved = false; this.warning = 'Inventory save could not be read. Original save retained; mining and transfers are paused.'; this.blocked = true;
     }
   }
-  get mass() { return this.state.pack.reduce((a, b) => a + b, 0); }
+  get mass() { const items=this.container('pack').items; return MATERIAL_IDS.reduce((sum,id)=>sum+items[id],0); }
   get capacity() { return this.state.loadout.slots.backpack ? this.state.boxes.pack * POUCH_CAPACITY : 0; }
   get free() { return Math.max(0, this.capacity - this.mass); }
   container(id, state = this.state) {
     if (!safeId(id)) return null;
-    if (id === 'pack' || id === 'ship') return { id, name: id === 'pack' ? 'Backpack' : 'Nomad cargo', kind: id === 'pack' ? 'backpack' : 'ship', boxes: state.boxes[id], items: { ...emptyItems(), ...state.supplies[id], ...resourceItems(state[id]) } };
+    if (id === 'pack' || id === 'ship') return { id, name: id === 'pack' ? 'Backpack' : 'Nomad cargo', kind: id === 'pack' ? 'backpack' : 'ship', boxes: state.boxes[id], items: { ...emptyItems(), ...state.supplies[id], ...state.materials?.[id], ...resourceItems(state[id]) } };
     const remote = Object.hasOwn(state.remote, id) ? state.remote[id] : null;
     return remote ? { id, ...remote, boxes: state.boxes[id], items: { ...emptyItems(), ...remote.items } } : null;
   }
@@ -64,8 +67,9 @@ export class MiningStore {
     return { resources: state.boxes[id] * 12, supplies: id === 'pack' ? 20 : id === 'ship' ? (this.manifest?.capacity.ship??2400) : state.boxes[id] * 30 };
   }
   validContainers(state) {
+    if (!state.materials || Array.isArray(state.materials) || typeof state.materials !== 'object' || !['pack','ship'].every(id => { const items=state.materials[id]; return items && !Array.isArray(items) && validItems(items) && Object.keys(items).every(key=>PROCESSED_IDS.includes(key)); })) return false;
     if (!state.boxes || !state.supplies || !state.remote || Array.isArray(state.remote) || typeof state.remote !== 'object'
-      || Object.keys(state.remote).length > 16 || !['pack', 'ship'].every(id => validItems(state.supplies[id]) && ITEMS.every(item => Number.isSafeInteger(state.supplies[id][item.id]??0)) && Object.keys(state.supplies[id]).every(key => CATALOG.some(item => item.id === key && item.unit === 'item')))) return false;
+      || Object.keys(state.remote).length > 64 || !['pack', 'ship'].every(id => validItems(state.supplies[id]) && ITEMS.every(item => Number.isSafeInteger(state.supplies[id][item.id]??0)) && Object.keys(state.supplies[id]).every(key => CATALOG.some(item => item.id === key && item.unit === 'item')))) return false;
     return ['pack', 'ship', ...Object.keys(state.remote)].every(id => {
       if (!safeId(id)) return false;
       const c = this.container(id, state);
@@ -113,7 +117,7 @@ export class MiningStore {
   releaseRock(id) { this.initialRocks.delete(id); }
   canEditRock(id) { return safeId(id) && !this.blocked && (id === ROCK_ID || Object.hasOwn(this.state.rocks, id) || Object.keys(this.state.rocks).length < MAX_SAVED_ROCKS); }
   commitRock(id, result, revision) {
-    if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : 'Rock save slots are full (8 surveyed deposits). Existing deposits remain mineable.'; return false; }
+    if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : `Rock save slots are full (${MAX_SAVED_ROCKS} surveyed deposits). Existing deposits remain mineable.`; return false; }
     const rock = id === ROCK_ID ? this.state : this.state.rocks[id] ?? this.initialRocks.get(id);
     if (!rock || revision !== rock.revision || !Array.isArray(result.yieldVolume) || result.yieldVolume.length !== 3 || !result.yieldVolume.every(n => Number.isFinite(n) && n >= 0) || !validField(result.field)) return false;
     const added = result.yieldVolume.map(v => v * 12);
@@ -126,7 +130,7 @@ export class MiningStore {
     return this.write(next, id === ROCK_ID ? result.encodedField : undefined);
   }
   withItems(state, id, items) {
-    if (id === 'pack' || id === 'ship') return { ...state, [id]: resourceAmounts(items), supplies: { ...state.supplies, [id]: Object.fromEntries(CATALOG.filter(item=>item.unit==='item').map(item => [item.id, items[item.id] ?? 0])) } };
+    if (id === 'pack' || id === 'ship') return { ...state, [id]: resourceAmounts(items), materials: {...state.materials, [id]: Object.fromEntries(PROCESSED_IDS.map(key=>[key,items[key]??0]))}, supplies: { ...state.supplies, [id]: Object.fromEntries(CATALOG.filter(item=>item.unit==='item').map(item => [item.id, items[item.id] ?? 0])) } };
     return { ...state, remote: { ...state.remote, [id]: { ...state.remote[id], items } } };
   }
   transfer(id, from, to, quantity) {
@@ -140,7 +144,7 @@ export class MiningStore {
   }
   stow() {
     let next = this.state;
-    for (const id of RESOURCE_IDS) {
+    for (const id of MATERIAL_IDS) {
       const source = this.container('pack', next), target = this.container('ship', next), amount = source.items[id];
       if (amount <= 1e-7) continue;
       const result = planTransfer(source.items, target.items, id, amount, target.boxes, this.limits('ship', next));

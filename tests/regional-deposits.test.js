@@ -7,6 +7,7 @@ import {MOON_RADIUS,MOON_POSITION,RESOURCE_PROVINCES,moonResources} from '../src
 import {bodySurfacePoint,bodySurfaceNormal,SELENE} from '../src/celestial.js';
 import {asteroidField} from '../src/ring-world.js';
 import {carve,createDensity,meshVolume,encodeDensity} from '../src/mining/volume.js';
+import {MAX_SAVED_ROCKS} from '../src/mining/store.js';
 import {RockCollision} from '../src/mining/collision.js';
 
 const center=new Vector3(...MOON_POSITION);
@@ -90,14 +91,14 @@ test('regional streaming selects the nearest or aimed outcrop, preserves physica
   field.update(new Vector3());assert.equal(field.regionalRocks.size,0);assert.equal(rock.disposed,true);assert.equal(field.store.initialRocks.has(id),false);
   field.update(origin);assert.deepEqual(field.regionalRocks.get(id).snapshot.field,saved);assert.equal(field.store.mass,mass);
   const restored=create();restored.update(origin);assert.deepEqual(restored.regionalRocks.get(id).snapshot.field,saved);assert.equal(restored.store.mass,mass,'restoring an outcrop awards no new cargo');
-  for(let index=0;index<7;index++){
+  for(let index=0;index<MAX_SAVED_ROCKS-1;index++){
     const key=`slot-fixture-${index}`,initial=createDensity();restored.store.getRock(key,initial);
     assert.equal(restored.store.commitRock(key,{field:initial,yieldVolume:[0,0,0]},0),true);
   }
-  assert.equal(Object.keys(restored.store.state.rocks).length,8);
+  assert.equal(Object.keys(restored.store.state.rocks).length,MAX_SAVED_ROCKS);
   const virgin=[...restored.regionalRocks.values()].find(r=>r.rockId!==id),posts=virgin.worker.posts;
   virgin.onMine({point:virgin.toWorld(new Vector3(0,.5,1)),dt:.1},new Vector3(0,0,-1));
-  assert.equal(virgin.worker.posts,posts,'regional rocks share the eight additional saved-domain cap');assert.match(restored.store.warning,/save full/i);
+  assert.equal(virgin.worker.posts,posts,'regional rocks share the bounded saved-domain cap');assert.match(restored.store.warning,/save full/i);
   assert.equal(restored.store.canEditRock(id),true,'the already saved regional rock remains editable');
 });
 
