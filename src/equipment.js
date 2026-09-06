@@ -70,8 +70,8 @@ export const ITEMS = Object.freeze({
     handed: 2,
     length: 1.10,
     barrelAxis: [-1, 0, 0],
-    muzzle: [-0.55, 0.19, 0],
-    leftGrip: [-0.20, 0.02, 0],
+    muzzle: [-0.55, 0.115, 0],
+    leftGrip: [-0.29, 0.012, 0],
     aimClip: 'aim-rifle',
     fireClip: 'fire-rifle',
     aiming: 'rifle',
@@ -91,7 +91,7 @@ export const ITEMS = Object.freeze({
     handed: 1,
     length: 0.30,
     barrelAxis: [-1, 0, 0],
-    muzzle: [-0.15, 0.143, 0],
+    muzzle: [-0.15, 0.055, 0],
     leftGrip: null,
     // Meshy shipped no `aim-pistol`; character.js maps it to the rifle aim.
     aimClip: 'aim-rifle',
@@ -113,8 +113,8 @@ export const ITEMS = Object.freeze({
     handed: 2,
     length: 0.80,
     barrelAxis: [-1, 0, 0],
-    muzzle: [-0.40, 0.30, 0],
-    leftGrip: [-0.13, -0.02, 0],
+    muzzle: [-0.60, 0.14, 0],
+    leftGrip: [-0.30, 0.01, 0],
     aimClip: 'aim-rifle',              // no `use-tool` clip exists; the rifle aim holds it up
     fireClip: null,                    // a continuous beam has no recoil one-shot
     aiming: 'rifle',

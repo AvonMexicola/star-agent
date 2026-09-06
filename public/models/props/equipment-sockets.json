@@ -22,19 +22,19 @@
       },
       "items": {
         "rifle-laser": {
-          "position": [0.0842, 0.213, -0.0907],
-          "rotation": [-174.99, -51.61, 133.07]
+          "position": [0, 0.07, 0],
+          "rotation": [-175.1, -51.68, 132.73]
         },
         "sidearm-pistol": {
-          "position": [0.0581, 0.0924, -0.0682],
-          "rotation": [-174.99, -51.61, 133.07]
+          "position": [0, 0.07, 0],
+          "rotation": [-175.01, -51.63, 132.99]
         },
         "mining-laser-tool": {
-          "position": [0.1677, 0.2197, -0.1959],
-          "rotation": [-174.99, -51.61, 133.07]
+          "position": [0, 0.07, 0],
+          "rotation": [-175.06, -51.66, 132.84]
         },
         "backpack-life-support": {
-          "position": [0.0848, -0.0275, 0.4802],
+          "position": [0.0243, 0.0063, 0.1392],
           "rotation": [5.66, 10.01, -0.02]
         },
         "helmet-standalone": {
@@ -44,15 +44,15 @@
       },
       "holster": {
         "rifle-laser": {
-          "position": [-0.0293, -0.1882, 0.3437],
+          "position": [-0.052, -0.1755, 0.2158],
           "rotation": [110.35, 55.16, -17.72]
         },
         "mining-laser-tool": {
-          "position": [-0.0922, -0.2659, 0.2655],
+          "position": [-0.1149, -0.2532, 0.1376],
           "rotation": [110.35, 55.16, -17.72]
         },
         "sidearm-pistol": {
-          "position": [0.1891, -0.1958, 0.0899],
+          "position": [0.1664, -0.1831, -0.038],
           "rotation": [117.01, 64.13, -23.48]
         }
       }
@@ -78,7 +78,7 @@
           "rotation": [-114.17, 64, 27.22]
         },
         "backpack-life-support": {
-          "position": [-0.1013, 0.0742, -0.472],
+          "position": [-0.0289, 0.0354, -0.1338],
           "rotation": [-173.46, -12, -179.46]
         },
         "helmet-standalone": {
@@ -88,15 +88,15 @@
       },
       "holster": {
         "rifle-laser": {
-          "position": [0.0153, -0.1121, -0.3763],
+          "position": [0.0424, -0.1266, -0.2495],
           "rotation": [78.77, -55.13, 158.67]
         },
         "mining-laser-tool": {
-          "position": [0.0798, -0.2048, -0.3184],
+          "position": [0.1069, -0.2193, -0.1916],
           "rotation": [78.77, -55.13, 158.67]
         },
         "sidearm-pistol": {
-          "position": [-0.1945, -0.1716, -0.1221],
+          "position": [-0.1674, -0.1861, 0.0047],
           "rotation": [70.89, -63.84, 151.85]
         }
       }
@@ -122,7 +122,7 @@
           "rotation": [-103.84, 61, -1.04]
         },
         "backpack-life-support": {
-          "position": [-0.1053, 0.1124, -0.4635],
+          "position": [-0.0299, 0.0462, -0.1303],
           "rotation": [-168.77, -12.52, -178.46]
         },
         "helmet-standalone": {
@@ -132,15 +132,15 @@
       },
       "holster": {
         "rifle-laser": {
-          "position": [0.0094, -0.0826, -0.384],
+          "position": [0.0377, -0.1074, -0.259],
           "rotation": [82.08, -55.89, 157.25]
         },
         "mining-laser-tool": {
-          "position": [0.073, -0.1805, -0.3343],
+          "position": [0.1013, -0.2053, -0.2093],
           "rotation": [82.08, -55.89, 157.25]
         },
         "sidearm-pistol": {
-          "position": [-0.1985, -0.1586, -0.1327],
+          "position": [-0.1702, -0.1834, -0.0077],
           "rotation": [73.5, -64.47, 149.79]
         }
       }
