@@ -663,3 +663,19 @@ memory; malformed saves remain intact. Read the full migration, physical transfe
 controller and performance evidence in
 [the concourse record](docs/qa/station-concourse-production-record.md) before
 extending the item catalogue or asset pipeline.
+
+## Atlas Mark II physical controls and four-screen authoring continuation
+
+PR #30 remains a standalone authoring candidate, not installed in the live fleet.
+`assets/atlas-mark-ii/layout.json` owns PilotMFD_01..04 transforms/dimensions and
+the chair-aligned pilot eye. `createShipMFDs({mounts, includeFrames, screenOffset})`
+can consume authored mounts while its default fleet layout and `update()` API stay
+unchanged. `updatePages()` permits truthful inspection data without a fabricated
+Navigation/inventory object. Four canvases remain 512×320 at 5 Hz.
+
+Use [the physical control standard](docs/physical-control-standard.md) for physical
+buttons and projected action labels. `projected-action-label.js/.css` are reusable;
+the Atlas adapter demonstrates real ramp/lift/seat state, moving anchors and guarded
+F/A/TAP activation. The shared hangar verb contract awaits station adoption.
+[Nose/MFD/control evidence and limitations](docs/qa/atlas-mark-ii/cockpit-controls-record.md)
+records the actual candidate, input checks, geometry fixes and independent-review boundary.

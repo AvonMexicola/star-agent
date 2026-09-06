@@ -170,7 +170,7 @@ test('walking cannot pass through a closed hatch or either cabin side wall', t =
   }
 });
 
-test('open ocean rejects landing assistance and disembarking', t => {
+test('open ocean rejects landing but permits walking inside the secured flying cabin', t => {
   const { navigation, press, advance } = setup(t);
   let ocean;
   for (let latitude = -40; latitude <= 40 && !ocean; latitude += 10) {
@@ -187,7 +187,10 @@ test('open ocean rejects landing assistance and disembarking', t => {
   assert.equal(navigation.mode, 'flight');
   near(navigation.altitude, 100);
   press('KeyF');
-  assert.equal(navigation.mode, 'flight');
+  assert.equal(navigation.mode, 'walk');
+  assert.equal(navigation.cabinFlight, true);
+  assert.equal(navigation.insideShip, true);
+  assert.equal(navigation.doorOpen, false);
 });
 
 test('high-speed downward travel collides with the near surface without tunnelling through the planet', t => {

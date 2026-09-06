@@ -25,7 +25,7 @@ test('standard axes, analog triggers and action edges remain independent', () =>
   const state = input.poll();
   assert.ok(state.forward > 0 && state.strafe > 0 && state.pitch > 0 && state.yaw < 0);
   assert.ok(Math.abs(state.vertical - .5) < 1e-9);
-  assert.equal(state.roll, 1); assert.equal(state.boost, true);
+  assert.equal(state.roll, -1); assert.equal(state.boost, true);
   assert.equal(state.pressed.has(2), true);
   assert.equal(input.poll().pressed.size, 0, 'held actions do not repeat');
   button(pad, 2, false); input.poll(); button(pad, 2, true);
@@ -77,4 +77,17 @@ test('additional controllers do not steal an active device; disconnect selects a
   assert.equal(input.poll().forward, 1); assert.equal(input.index, 1);
   first.connected = false; button(second, 3, true);
   assert.equal(input.poll().pressed.has(3), false); assert.equal(input.index, 0);
+});
+
+test('paused menu has separate confirm, back and focus edges without leaking flight actions', () => {
+  const pad = controller(), input = new GamepadInput(() => [pad]); input.poll();
+  button(pad, 0, true); button(pad, 13, true); pad.axes[1] = -1;
+  const menu = input.poll({enabled: false});
+  assert.deepEqual([...menu.menuPressed], [0, 13]);
+  assert.equal(menu.pressed.size, 0); assert.equal(menu.jump, false);
+  assert.equal(menu.forward, 0); assert.equal(menu.scroll, 0);
+  assert.equal(input.poll({enabled: false}).menuPressed.size, 0);
+  assert.equal(input.poll({enabled: true}).forward, 0, 'held menu input cannot resume flight');
+  pad.axes.fill(0); button(pad, 0, false); button(pad, 13, false); input.poll();
+  pad.axes[1] = -1; assert.equal(input.poll().forward, 1);
 });

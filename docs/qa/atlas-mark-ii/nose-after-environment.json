@@ -1,0 +1,15 @@
+{
+  "errors": [],
+  "stats": {
+    "meshes": 168,
+    "triangles": 412988,
+    "materials": 13,
+    "textures": 10
+  },
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "viewport": [
+    1440,
+    900
+  ],
+  "dpr": 1
+}

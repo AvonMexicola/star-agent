@@ -610,3 +610,182 @@ request. Its title and body now describe the furnished shops, elevator fit,
 measured performance, source assets, complete record and outstanding Opus gate.
 The isolated worktree was clean after those commits. The following receipt-only
 commit changes no runtime or served asset.
+## READY FOR REVIEW — ship main power and moving cabins (2026-09-06)
+
+Cees requested power on/off and leaving a powered ship's pilot seat. Implemented
+in isolated /tmp/star-agent-ship-power, feat/ship-power-cabin, PR #25 stacked on
+PR #20's candidate 4da1a5d. Runtime e82c3e5 plus cabin guidance b891272; controls and
+browser tests follow on the same branch. No shared-root runtime files changed.
+
+READY FOR REVIEW: src/navigation.js, src/main.js, src/gamepad.js,
+src/ship-power-ui.js, src/ship-mfd.js, src/audio.js, index.html,
+src/player-interface.css, tests/ship-power*.test.js, tests/gamepad.test.js,
+tests/navigation.test.js, scripts/ship-power*.js, docs/ship-power.md,
+docs/qa/ship-power.md and docs/qa/ship-power/.
+
+P switches main power from the pilot seat; F stands during ordinary flight.
+The powered assisted hull holds world course/speed independently of passenger
+walking/look controls. Inertial or unpowered hulls retain gravity, drag and spin.
+Returning physically to the chair transfers the current hull motion back to
+piloting. Nomad hatch/Atlas belly elevator are secured in flight; powered internal
+Atlas lifts carry the walker while the hull moves. Existing shared terrain,
+moon and station sweeps also handle unseated touchdown. MFD, audio, HUD and the
+keyboard/controller/touch menu report the same power state. Menus still pause.
+
+Final unit run: 162/162 pass; production build passes (existing chunk-size advisory).
+New production browser run: 3/3 pass, Chromium 151/ANGLE Vulkan SwiftShader,
+1440x900 plus 390x844, no console errors/warnings. Captures are committed in
+docs/qa/ship-power/. B-close with A/stick held does not leak flight controls or
+change power; controller rearming requires neutral input. Regression outcomes
+and retained fixture/timing failures are documented in the QA reports.
+
+Local production demo http://localhost:5244/__atlas_demo selects Atlas on its
+separate origin. W then F was directly verified to retain 758.686m/s while the
+pilot walks; old 5240 remains available. This is a local review build, not main
+or Vercel. Main power does not simulate batteries or distribution, and moving
+EVA is outside this slice. Do not merge PR #24's stopped-ship EVA path over this
+independent hull frame or lose active-ship layout support when reconciling lanes.
+Opus rubric, complete quality-budget acceptance and merge/deploy remain pending.
+
+
+### READY FOR REVIEW — corrected roll input directions (2026-09-06)
+
+Cees specifies E/RB roll right and Q/LB roll left; yaw is correct and pitch stays
+unchanged. Corrected src/navigation.js keyboard axis and src/gamepad.js bumper
+axis in the isolated PR #25 power branch. Positive roll means right bank in both
+assisted and inertial physics. Tests verify actual wing direction and unchanged
+nose direction for Nomad/Atlas and all four bindings; failed before fix, pass after.
+166 unit tests/build pass. Eight real-production Nomad keyboard/injected-gamepad
+roll checks pass, Chromium 151/ANGLE Vulkan SwiftShader, no errors/warnings.
+Evidence and limitation notes: docs/qa/ship-power.md, paired roll screenshots.
+Previews 5245 (Nomad) and 5244 (Atlas) serve rebuilt output; reload to apply.
+Shared root runtime and yaw/pitch inputs were preserved; no main/Vercel deploy.
+
+### Atlas Mark II — original Blender asset and physical studio (2026-09-06)
+
+Isolated branch feat/atlas-mark-ii, stacked on PR #25 / 8c48317. All source/asset
+work is under assets/atlas-mark-ii, public/models/atlas-mark-ii,
+public/textures/atlas-mark-ii, standalone atlas-mark-ii studio/systems/tests,
+and design/QA documents. Main fleet, navigation, station and other worktrees
+remain independent. Manager integration and art approval are still required.
+
+Editable Blender 5.2 source plus parametric mesh, PBR, UV and contact-bake pipeline;
+through cargo hold, two folding ramps, interlocked crew lift, upper bridge/crew/
+galley/hygiene. S1/S3 standard and three S3 attachment interfaces, no weapons.
+User rejection of the first blockout led to a wedge canopy, sealed reported
+pressure joints, tapered bridge sole/collision, sloped bow/stern, octagonal
+mechanical exhausts and a wall mess leaf with clear circulation. A final 25 mm
+inward steel-leaf change removes coplanar trim flicker without changing bounds.
+
+180 unit tests and production build pass. Four hardware production cases pass:
+physical aft ramp→cargo→lift→bridge→crew→galley/hygiene, seven inspection presets,
+phone and injected controller. Chromium 151 / AMD Radeon 860M / ANGLE GL; no page
+or console errors. Full functional suite used 81ccc96f; final trim model is
+b021dd55, with repeated export tests and focused visual/phone checks. Actual
+renders, measured bytes/triangles and limitations: docs/qa/atlas-mark-ii/.
+No hardware-controller or FPS claim. Static shadows update for animated parts
+and reuse their maps during camera-only movement.
+
+Full asset: 398,608 triangles, 154 batches, 13 materials, 10 textures, 36,736,924 bytes;
+LOD1: 128,387 triangles / 13,325,672 bytes; LOD2: 40,625 triangles / 3,974,280 bytes. Above existing hero
+budget; no budget waiver. Initial independent Opus review was 2.4/5; a later
+attempt hit the session limit, so no current independent visual approval exists.
+Keep draft. Interiors and the long upper-hull rhythm still need art refinement;
+automatic LODs, hardware budgeting and live fleet/boarding integration remain.
+
+Preview: http://localhost:5250/dev/atlas-mark-ii.html . Stable transient user
+service star-agent-atlas-mark-ii-preview.service serves this worktree's dist.
+Stop only this preview with systemctl --user stop star-agent-atlas-mark-ii-preview.service.
+No merge or public deployment is included.
+
+Final shallow-angle render review also isolated broad hull striping to key-shadow
+acne (shadow-off removed it, normal-map-off did not). Bias is now -0.0005 with
+0.06 m normal bias for the 92 m key frustum. Seven final production views passed
+again with actual shadows and zero errors; before/final evidence is retained.
+
+Published as draft PR #30: https://github.com/AvonMexicola/star-agent/pull/30 . Preserve its draft status until independent art review and fleet integration are complete.
+
+
+## Atlas upper-deck refinement in progress — 2026-09-06
+
+Root owns only /tmp/star-agent-atlas-mark-ii, feat/atlas-mark-ii (draft PR30):
+crew room end-wall closure, shaped pressure frames, bunk surrounds and upper
+ceiling/service liners. Matching collision and exported-geometry checks belong
+to this lane. Preserve approved exterior/nacelles and all shared runtime work.
+First review view is the crew aisle at standing eye height; validate the actual
+Blender export, full physical boarding route and upper-deck clearance before
+updating the stable 5250 preview. No main fleet integration or merge this pass.
+
+
+## READY FOR REVIEW: Atlas upper-deck construction — 2026-09-06
+
+Draft PR30 / feat/atlas-mark-ii now has explicit crew fore/aft walls and an
+outboard liner, enclosed berth backs and shaped end shells, chamfered pressure
+frames in crew/corridor/mess/bridge, removable service cassettes and a visible
+aft environmental panel. New Blender source: upper_deck.py. Approved exterior
+and nacelle geometry preserved. The additional corridor render exposed old
+coplanar jamb/partition faces; jambs now project 20 mm and have physical
+colliders. Galley aisle retains 1.60 m for capsule-centre travel; side doorways
+retain 0.96 m. There are 55 authored fixed collider envelopes.
+
+Final hero SHA 659b54660075ff1adb759d1c1141dfbc06c8aba6302190766756cec016fc4a1f:
+426,504 triangles, 157 batches, 13 materials, 10 textures, 38,890,964 bytes.
+181 unit tests and production build pass. All four hardware browser cases pass
+again (1.6 min), zero captured page/console errors. Extended physical route
+reaches the last bunk, stops at its aft wall and returns through the doorway
+before visiting galley/hygiene. Actual export tests also check room closure,
+standing aisle clearance and depth separation at both door-frame junctions.
+Chromium151 / AMD Radeon860M / ANGLE GL, inspection1440x900 DPR1. No FPS or
+physical-controller claim. Final images, correction history and exact hashes:
+docs/qa/atlas-mark-ii/upper-deck-record.md and README.md.
+
+Stable http://localhost:5250/dev/atlas-mark-ii.html serves the verified final
+hero (user unit star-agent-atlas-mark-ii-preview.service). Select CREW or use
+physical walkthrough. Remains an over-budget standalone authoring candidate;
+no independent art approval, live fleet installation, merge or deployment.
+Fable/Claude retain review and integration ownership.
+
+
+## Atlas nose, four pilot MFDs and projected action labels in progress — 2026-09-06
+
+Root owns /tmp/star-agent-atlas-mark-ii / feat/atlas-mark-ii (PR30): trim legacy
+front armour against new bow, mount sensors on their actual facets, four pilot
+MFD anchors/screens and a reusable state-driven physical-control label standard.
+Consumer integration is the Atlas studio (ramps, crew lift, pilot seat); station
+hangar adoption remains a documented integration point for the station owner.
+Shared main/station/equipment files remain untouched. Root owns new label/MFD
+modules, limited shared MFD factory extension in this worktree and focused QA.
+
+
+## READY FOR REVIEW: Atlas nose, four pilot MFDs and projected controls — 2026-09-06
+
+PR30 / feat/atlas-mark-ii, isolated /tmp/star-agent-atlas-mark-ii. Removed old
+forward flank overlap and detached docking boxes; trimmed arch plates that pierced
+the lower bow. Retained sensor array now follows actual facet tangent/normal.
+Drive-pod mesh preserved. New original Blender frames/anchors: PilotMFD_01..04.
+Pilot eye aligned to chair; F/A sits and stands. Four shared 512x320 / 5Hz MFDs
+show actual ramp/lift state, with flight/navigation/manifest explicitly disconnected
+in this standalone studio. Shared createShipMFDs default behavior is preserved.
+
+NEW REUSABLE STANDARD: docs/physical-control-standard.md,
+src/projected-action-label.js and .css. Descriptor id/target/anchor/action/enabled/
+reason; render-local anchors, F/A/TAP, guarded click/tap operation, opaque geometry
+occlusion, disabled interlock states. Atlas consumer is src/atlas-mark-ii-controls.js
+and studio. Labels say Go up/Go down/Call lift, Open/Close ramp and Sit/Stand.
+Station owner: adopt the provided hangar state/verb contract with your actual door
+mechanism and render-local button anchor; no station module changed here.
+
+Final hero a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa:
+412,988 triangles, 168 static batches, 13 materials, 10 textures, 38,037,892 bytes;
+MFDs add four runtime meshes/materials/textures. 56 fixed collider envelopes.
+184 unit tests and production build pass. Five hardware browser cases pass1.7min:
+full physical boarding/upper-deck journey including sit/stand + four-screen framing,
+seven presets, phone, mouse/touch lift-label operations and injected controller.
+Final opaque-hover fix passes focused mouse/touch case1/1. No page/console errors.
+Chromium151/AMD860M/ANGLE GL; pilot1440x900 FOV56; phone390x844. No FPS or physical
+Xbox claim. Failure history and renders: docs/qa/atlas-mark-ii/cockpit-controls-record.md.
+
+Preview remains http://localhost:5250/dev/atlas-mark-ii.html (persistent user
+service). Physical walkthrough→lift→pilot seat, F to sit. Main fleet, flight/cargo
+adapters, station label adoption, budgets/LOD acceptance and independent art review
+remain pending. Keep draft; Fable owns review/integration/merge. No deployment.
