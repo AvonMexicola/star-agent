@@ -116,6 +116,59 @@ test('attached shop collision preserves central circulation and access but stops
   }
 });
 
+test('low shop ceilings seal wall-top gaps and keep full walking headroom', async () => {
+  const scene = (await load('station-concourse')).scene.clone(true);
+  scene.updateMatrixWorld(true);
+  for (const side of [-1, 1]) {
+    for (const x of [9, 12, 15, 18]) for (const z of [-10.5, -6.5, -2.5, 1.5, 7.5]) {
+      const ray = new THREE.Raycaster(new THREE.Vector3(side * x, -6.1, z), new THREE.Vector3(0, 1, 0), 0, 3);
+      const hit = ray.intersectObject(scene, true)[0];
+      assert.ok(hit, `shop ceiling closes the sky above ${side * x},${z}`);
+      assert.ok(hit.point.y >= -4.69 && hit.point.y <= -4.39, 'visible underside has 3.31–3.61 m floor clearance');
+    }
+    for (const z of [-8, -3, 2, 6]) {
+      const ray = new THREE.Raycaster(new THREE.Vector3(side * 10.7, -6.25, z), new THREE.Vector3(side * .75, .6, 0).normalize(), 0, 20);
+      const hit = ray.intersectObject(scene, true)[0];
+      assert.ok(hit && hit.point.y >= -4.69 && hit.point.y <= -4.39, 'upward view from customer aisle meets ceiling rather than escaping above the display wall');
+    }
+    const seamRay = new THREE.Raycaster(new THREE.Vector3(side * 14, -6.25, 0), new THREE.Vector3(0, 1.69, -11.1).normalize(), 0, 15);
+    const seam = seamRay.intersectObject(scene, true)[0];
+    assert.ok(seam && seam.point.y > -4.69 && seam.point.y < -4.4, 'end-wall downstand seals the old daylight slot');
+  }
+  const colliders = buildStationColliders(scene), eye = -8 + SHIP_LAYOUT.eyeHeight;
+  for (const side of [-1, 1]) {
+    const result = constrainStationSweep(colliders, [], vector([side * 10.7, eye, 4]), vector([side * 17, eye, 4]), extentMin, extentMax);
+    assert.equal(result.hit, false, 'roof and supports retain the complete player crosswalk');
+  }
+});
+
+test('rack stock contains compact sidearms, longarms and equipment with distinct physical scale', async () => {
+  const scene = (await load('station-concourse')).scene;
+  scene.updateMatrixWorld(true);
+  const stock = JSON.parse(scene.userData.stockManifest);
+  const rifles = stock.filter(item => item.kind === 'longRifle');
+  const sidearms = stock.filter(item => item.kind === 'sidearm');
+  assert.equal(rifles.length, 2, 'only the longarm rack carries long rifles');
+  assert.equal(sidearms.length, 3);
+  assert.equal(new Set(sidearms.map(item => item.rack)).size, 1, 'sidearms have their own display rack');
+  for (const item of sidearms) {
+    const size = vector(item.bounds.max).sub(vector(item.bounds.min));
+    assert.ok(size.y < .30 && size.z > .20 && size.z < .33, 'short slide and grip fit a handheld sidearm envelope');
+    assert.ok(size.x < .07, 'sidearm retains a human-scale grip width');
+    const ray = new THREE.Raycaster(new THREE.Vector3(-18.7, -6.317, item.bounds.min[2] + .08), new THREE.Vector3(-1, 0, 0), 0, 1);
+    const hit = ray.intersectObject(scene, true)[0];
+    assert.ok(hit && hit.point.x >= item.bounds.min[0] - .001 && hit.point.x <= item.bounds.max[0] + .005, 'actual compact slide is visible ahead of its mounting tile');
+  }
+  const filters = stock.filter(item => item.kind === 'filterCanister');
+  const avionics = stock.filter(item => item.kind === 'avionics');
+  const cases = stock.filter(item => item.kind === 'equipmentCase');
+  assert.ok(filters.length >= 3 && avionics.length >= 2 && cases.length >= 4);
+  assert.ok(filters.every(item => item.rack === 'ComponentsRack0'), 'filter stock no longer repeats across all three racks');
+  assert.ok(avionics.every(item => item.rack === 'ComponentsRack1'), 'avionics has its own rack');
+  assert.ok(cases.some(item => item.rack === 'ComponentsRack2') && cases.some(item => item.rack === 'ArmoryRack2'), 'repair and field equipment use distinct case displays');
+  assert.ok(new Set(filters.map(item => (item.bounds.max[1] - item.bounds.min[1]).toFixed(2))).size >= 3, 'filter variants have deliberately different dimensions');
+});
+
 test('retail print anchors face their real backing, A5 covers tilt correctly, and banner hardware clears a walking body', async () => {
   const scene = (await load('station-concourse')).scene.clone(true);
   scene.updateMatrixWorld(true);

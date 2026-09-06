@@ -33,9 +33,10 @@ export function createConcourse({sign}) {
       box([.45,9.5,.45],[side*21.8,-3.25,z],ivory);
       box([.65,.7,.65],[side*21.8,-7.65,z],steel);
     }
-    box([11.7,.16,.22],[side*14,-4.1,-1],steel);
-    box([.3,.11,1.8],[side*15,-4.19,-1],dark);
-    box([.23,.015,1.65],[side*15,-4.251,-1],glow,true,0);
+    // Mount the display wash beneath the enclosed shop ceiling and its beams.
+    box([11.7,.10,.22],[side*14,-4.70,-1],steel);
+    box([.3,.11,1.8],[side*15,-4.81,-1],dark);
+    box([.23,.015,1.65],[side*15,-4.871,-1],glow,true,0);
     // Flush expansion joints, recessed guidance and perimeter skirting.
     box([.07,.008,33],[side*3.7,-7.992,-1],steel,true,0);
     box([.025,.009,18],[side*3.57,-7.99,1],glow,true,0);
@@ -79,8 +80,8 @@ export function createConcourse({sign}) {
   // Only this occupied hub activates these two small maps; twenty bays do not
   // acquire twenty copies of these lights.
   for(const side of [-1,1]){
-    const light=new THREE.SpotLight(p.ivory,210,21,1.1,.65,2);
-    light.position.set(side*15,-4.3,-1);light.target.position.set(side*15,-8,-1);
+    const light=new THREE.SpotLight(p.ivory,280,21,1.45,.3,2);
+    light.position.set(side*15,-4.91,-1);light.target.position.set(side*16.2,-8,-1);
     light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.camera.near=.1;
     light.shadow.camera.far=22;light.shadow.bias=-.0002;light.shadow.normalBias=.025;
     group.add(light,light.target);lights.push(light);

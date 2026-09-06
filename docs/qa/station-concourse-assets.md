@@ -24,6 +24,14 @@ four tilted A5 brochure pockets with paper stacks. Print artwork remains
 runtime-owned. This pass changes only the concourse GLB; the praised elevator
 export remains byte-for-byte unchanged.
 
+Following the independent review of `435f116`, which identified open-looking
+upper shops and repetitive display stock, the next candidate adds sealed low
+shop ceilings and distinct rack contents. Each roof has a continuous upper
+skin, replaceable underside panels, return vents, cross beams and end-wall
+downstands. The ceilings are authored geometry, not a background image. This
+candidate still requires its own integrated visual review; the earlier images
+below do not establish acceptance of these revisions.
+
 ## Rebuild and inspect
 
 Blender **5.2.0 LTS**, build `fbe6228777e7`. Run from the repository root:
@@ -55,10 +63,10 @@ leaf. The aggregate buffer is not charged repeatedly to every prop.
 
 | Asset | Actual GLB bytes | Actual triangles | Mesh primitives | Static collision boxes |
 |---|---:|---:|---:|---:|
-| `station-concourse.glb` | 3,247,564 | 44,668 | 8 | 75 |
+| `station-concourse.glb` | 3,801,048 | 51,888 | 8 | 77 |
 | `station-elevator.glb` | 364,380 | 4,724 | 18 | 45 |
 
-The concourse is an aggregate of twenty-five separately measured assemblies. Every
+The concourse is an aggregate of twenty-seven separately measured assemblies. Every
 assembly passes the 10,000-triangle and 1,000,000-byte prop limits. The two assets
 use 26 mesh primitives together, below the kit's 60-draw limit; these are asset
 counts, not measured total scene draw calls or frame timings.
@@ -66,15 +74,17 @@ counts, not measured total scene draw calls or frame timings.
 | Assembly | Triangles | Standalone GLB bytes |
 |---|---:|---:|
 | Armory architecture | 1,640 | 136,764 |
+| Armory ceiling | 2,068 | 182,320 |
 | Armory counter | 2,056 | 171,228 |
 | Components architecture | 1,640 | 136,848 |
+| Components ceiling | 2,068 | 182,456 |
 | Components counter | 2,056 | 171,328 |
-| Armory rack 0 | 2,936 | 242,884 |
-| Components rack 0 | 4,152 | 319,984 |
-| Armory rack 1 | 2,936 | 242,744 |
-| Components rack 1 | 4,152 | 319,932 |
-| Armory rack 2 | 2,936 | 242,204 |
-| Components rack 2 | 4,152 | 319,784 |
+| Armory rack 0 | 2,256 | 189,028 |
+| Components rack 0 | 4,792 | 355,036 |
+| Armory rack 1 | 5,328 | 437,108 |
+| Components rack 1 | 2,932 | 237,144 |
+| Armory rack 2 | 4,376 | 360,596 |
+| Components rack 2 | 4,664 | 380,788 |
 | Drive module display | 2,100 | 153,408 |
 | Waiting seat bank 0 | 2,240 | 160,700 |
 | Waiting seat bank 1 | 2,240 | 160,680 |
@@ -98,20 +108,42 @@ counts, not measured total scene draw calls or frame timings.
 GLB SHA-256 for this reviewed export:
 
 ```text
-station-concourse.glb c7ac88c867564caed225aeb708a374f331e8c479fdb6eeb4099fa2ab52d88878
+station-concourse.glb 953054d5cf34e246b4a0e3b43c5181d3e64e5ff5c4cbb18c44fa53e064975378
 station-elevator.glb  981a229de511ed34ea99a1d35cc639bb05651e4f8c8829d8ba987dbfc5b9f5c2
 ```
 
 ## Placement and collision API
 
 The concourse attaches at identity, with its floor at Y=-8. Its measured bounds
-are approximately `[-19.94,-8,-12.22]` to `[19.94,-4.02,10.8761]`. Counters are
+are approximately `[-19.95,-8,-12.22]` to `[19.95,-4.02,10.8761]`. Counters are
 centred at X=±12, Z=0; customer reach points are X=±10.7, Z=0. Seating banks at
 X=±6, Z=10.5 have a measured cushion surface 0.46 m above the floor.
 Directory pylons have 0.88 × 0.44 m footprints and stand 2.45 m tall. Their
 `DirectoryNorth` / `DirectorySouth` display anchors are at
 `[-5.5,-6.59,-11.792]` / `[5.5,-6.59,-11.792]`, facing +Z. The portrait inset is
 0.58 × 1.64 m; labels and actual station directions are runtime-owned.
+
+Each ceiling spans |X|=8.10–19.95, with its continuous skin covering
+Z=-11.10–8.60. End downstands extend 25 mm beyond those Z edges to overlap the
+wall thickness. Roof top Y=-4.32, underside panels Y=-4.50, cross-beam bottoms
+Y=-4.63, and end downstands Y=-4.68. The minimum resulting headroom is 3.32 m.
+Runtime fixtures must remain below these surfaces; light placement and tuning
+are owned by `src/station-concourse.js`.
+
+Rack indices and printed category locations retain their original centres:
+
+| Rack index / Z | WATCHKEEP ARMORY | KESTREL SHIPWORKS |
+|---|---|---|
+| 0 / -7.1 | Two long rifles | Five differently sized filter canisters |
+| 1 / +5.1 | Three compact sidearms and two accessory cases | Three avionics modules and a scanner |
+| 2 / -1.0 | Three field cases and torches | Three repair cases and machined couplers |
+
+Sidearms have short slides, angled grips, open trigger guards and independent
+mounting tiles. Their actual widths/heights/lengths fit 5–6 cm × 21–26 cm ×
+25–31 cm envelopes; they are not scaled-down rifle meshes. Closed cases have
+separate lids, gaskets, corner protection, latches and recessed handles.
+All merchandise is inert display geometry; the modal catalog owns purchases
+and inventory, and its stock counts are not inferred from these displays.
 
 The elevator attaches at `[0,floor,doorZ]`. Its local bounds are approximately
 `[-4.39,-0.024,-0.37]` to `[4.39,3.585,3.4]`. The threshold is flush with the floor.
@@ -129,6 +161,11 @@ Both loaded `gltf.scene.userData` objects directly contain:
 - `assetManifest`: JSON string array of `{name,bounds:{min,max},triangles,standaloneBytes}`.
 - `collisionBoxes`: JSON string array of `{name,min,max}`, in game-local Y-up metres.
 - `coordinates` and `builder`: provenance strings.
+
+The concourse additionally carries `stockManifest`, a JSON string array of
+`{kind,rack,bounds:{min,max}}` for the measured rifles, sidearms, equipment cases,
+filter canisters and avionics modules. Decorative torches, scanner and couplers
+are included in their rack's main assembly budget.
 
 Shop architecture, surround and cabin supply individual physical-piece boxes;
 their broad enclosing bounds must not be used as a solid wall across the interior.
@@ -161,7 +198,7 @@ the hardware does not obstruct the walking route beneath either banner.
 
 ## Validation and studio review
 
-Six focused Node tests passed against the real GLBs with Node 26.7.0. They check
+Eight focused Node tests passed against the real GLBs with Node 26.7.0. They check
 the index count against the manifest, vertex containment, individual budget rows,
 the central corridor, both counter approaches, passage around counters, directory
 footprints and front-facing display anchors, blocked
@@ -171,6 +208,11 @@ They exercise door Z=14.3 and Z=22.3 at floor=-8, plus a translated floor=-11.25
 to catch fixed-height assumptions. Both exported models loaded successfully.
 Branding checks cover all print-anchor backing rays, A5 quaternion and corner
 rays, the two additional shared finishes and actual triangle sweeps below banners.
+Ceiling checks cast vertical rays across both shop footprints, upward viewing
+rays from the customer aisle, and a ray through the former end-wall daylight
+slot. Actual triangle sweeps retain the Z=4 crosswalk below the roof. Stock tests
+check compact sidearm scale and visible slide geometry in front of mounting
+tiles, two longarms, separate rack categories and varying filter dimensions.
 The additional overlay test loads the original `station.glb` together with the
 new cabin and verifies that both rear lining and handrail are the first visible
 ray hits, ahead of the inherited vestibule. Two previous clear-path endpoints
@@ -189,7 +231,8 @@ at startup/export. All builds exited zero; the assets use ordinary uncompressed
 glTF and require neither optional component. Raw audit/build logs remain in `/tmp`.
 
 These five images are **historical Blender CPU studio renders before the final
-merchandising, rear-cabin fit and retail-branding passes**, 1200×800, Cycles with 24
+merchandising, rear-cabin fit, retail-branding, ceiling and stock-variety passes**,
+1200×800, Cycles with 24
 samples and denoising, using studio area lights. They are not game screenshots or
 performance evidence. Review copies preserve dimensions and use WebP quality 86:
 

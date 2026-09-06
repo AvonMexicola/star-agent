@@ -107,6 +107,39 @@ from background load. See [the performance record](station-shop-branding-perform
 Independent visual review and PR publication remain pending at this point in
 the record; functional checks alone are not visual acceptance.
 
+### Publication and reviewer selection
+
+Runtime and proceedings committed as `435f116` and fast-forwarded to
+`origin/feat/hangar-finish`; PR20's description now includes the final shop scope,
+evidence and candid performance limits. The local preview serves the same bundle.
+
+The Opus launch approval was interrupted before any review result was recorded.
+Cees then explicitly instructed **“Use astra instead”**. An independent
+`gpt-6-astra` agent was assigned the same capture/interaction/rubric review,
+with separate `astra-views`, `astra-ui` and `astra-context` output directories.
+This user instruction selects the reviewer for this task; it does not waive or
+alter the numerical quality thresholds. The review result is recorded separately.
+
+### Astra review and corrective pass
+
+[Astra's independent review](station-shop-branding-astra-review.md) captured and
+read all 25 required images, verified the exact bundle and passed both shop
+journeys. Candidate `435f116` scored **4 / 3 / 3 / 4 / 4 / 3 = 3.50**, mergeable
+NO. No criterion was below three. The review distinguishes the new retail pass
+from inherited world/performance issues and does not manufacture acceptance.
+
+Three affected-shop findings enter a corrective pass: the high upper enclosure
+still reads open to space, rear stock/branding is underlit compared with the
+floor/counter, and repeated identical stock looks provisional beside the detailed
+campaign art. The correction adds actual low shop ceilings, mounts/tunes local
+lighting beneath them, improves the KESTREL mark's contrast and differentiates
+the physical merchandise. Elevator and circulation contracts remain in force.
+
+The motion score reflects limited visual evidence rather than an observed bug.
+The follow-up records a continuous physical journey with timestamped consecutive
+transition samples. Inherited coast/orbit findings remain separately recorded;
+this retail pass does not claim to repair or waive them.
+
 ## Reproduction and retained images
 
 ```sh

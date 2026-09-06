@@ -28,6 +28,7 @@ OUT = ROOT / 'public/models'
 CSS = (ROOT / 'src/style.css').read_text()
 M = {}
 PARTS = {}
+STOCK = []
 ASSEMBLY = ''
 
 
@@ -54,10 +55,11 @@ def material(name, token, metallic, roughness, emission=0):
 
 
 def reset():
-    global PARTS
+    global PARTS, STOCK
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete(use_global=False)
     PARTS = {}
+    STOCK = []
 
 
 def finish(obj, name, mat, radius=0):
@@ -163,7 +165,7 @@ def counter(side):
     for z in (-2.04, 2.04):
         box('End bumper', (x, -7.44, z), (.83, .86, .065), 'Dark')
     box('Under-counter diffuser', (x-side*.427, -7.055, 0), (.015, .025, 3.85), 'Mint', .003)
-    # A screen mounting surface, populated from real shop state by the runtime.
+    # Mount for the runtime interaction label; catalog state lives in its modal.
     rod('Terminal stem', (x, -6.92, 1.23), (x, -6.54, 1.23), .026)
     box('Terminal back', (x-side*.025, -6.53, 1.23), (.09, .38, .48), 'Dark')
     box('Terminal recess', (x-side*.075, -6.53, 1.23), (.018, .30, .4), 'Rubber', .006)
@@ -191,6 +193,32 @@ def shop_architecture(side):
     for z in (-8.8, -4.4, 0, 4.4, 7.5):
         box('Canopy bracket', (side*9.0, -4.38, z), (1.8, .16, .06), 'Steel')
     anchor('ArmorySign' if side < 0 else 'ComponentsSign', (side*7.967, -4.23, -1.3))
+
+
+def shop_ceiling(side):
+    global ASSEMBLY
+    ASSEMBLY='ArmoryCeiling' if side<0 else 'ComponentsCeiling'
+    x=side*14.025
+    # A continuous upper skin seals the room. Replaceable underside panels and
+    # beam caps sit below it; no cracks expose the starfield between modules.
+    box('Continuous roof skin',(x,-4.36,-1.25),(11.85,.08,19.70),'Dark',.012)
+    for i in range(4):
+        for j in range(5):
+            xx=side*(8.1+(i+.5)*11.85/4)
+            z=-11.1+(j+.5)*19.7/5
+            box('Replaceable ceiling cassette',(xx,-4.455,z),(2.91,.09,3.88),'Ivory',.012)
+            if (i,j) in ((1,1),(2,3)):
+                box('Recessed return vent',(xx,-4.503,z),(1.48,.016,.81),'Dark',.004)
+                for dz in (-.30,-.20,-.10,0,.10,.20,.30):
+                    box('Vent louvre',(xx,-4.518,z+dz),(1.37,.025,.026),'Steel',.005)
+    for z in (-11.04,-7.16,-3.22,.72,4.66,8.54):
+        box('Cross beam',(x,-4.57,z),(11.85,.12,.13),'Steel',.012)
+    for xx in (8.16,19.89):
+        box('Perimeter beam',(side*xx,-4.565,-1.25),(.12,.13,19.7),'Dark',.012)
+    # End-wall tops sit lower than the display wall. These downstands overlap
+    # the old wall cassettes to close the remaining 12 cm daylight slot.
+    for z in (-11.045,8.545):
+        box('Sealed end-wall downstand',(x,-4.54,z),(11.85,.28,.16),'Petrol' if side<0 else 'Ochre',.012)
 
 
 def rack_frame(side, z):
@@ -225,16 +253,81 @@ def display_rifle(x, z, index):
     box('Security clamp', (x+.13, -7.05, z), (.04, .075, .31), 'Steel')
 
 
+def record_stock(kind,start):
+    STOCK.append({'kind':kind,'rack':ASSEMBLY,'objects':PARTS[ASSEMBLY][start:]})
+
+
+def display_sidearm(x,y,z,variant):
+    start=len(PARTS[ASSEMBLY])
+    # Three compact sidearms, each with a short slide, angled grip and open
+    # trigger guard. These are inert exterior silhouettes, not scaled rifles.
+    length=(.22,.27,.20)[variant]
+    profile('Sidearm frame',[(y+.015,z-length*.55),(y+.068,z-length*.55),
+        (y+.068,z+.07),(y+.015,z+.095),(y-.10,z+.055),(y-.11,z-.005),
+        (y-.012,z-.025),(y-.012,z-.065)],x,.040,'Dark',.003)
+    box('Short sidearm slide',(x,y+.073,z-length*.20),(.047,.052,length),'Ivory' if variant!=1 else 'Petrol',.006)
+    profile('Angled grip panels',[(y+.012,z+.021),(y+.012,z+.073),
+        (y-.093,z+.050),(y-.099,z+.004)],x,.048,'Rubber',.003)
+    guard=[(y+.015,z-.068),(y-.047,z-.071),(y-.056,z-.017),(y-.015,z+.007)]
+    for a,b in zip(guard,guard[1:]):
+        rod('Open trigger guard',(x,*a),(x,*b),.004,'Steel',8)
+    rod('Short muzzle',(x,y+.077,z-length*.71),(x,y+.077,z-length*.71-.018),.012,'Dark',12)
+    for dz in (.020,.033,.046,.059):
+        box('Slide grip relief',(x+.025,y+.073,z+dz),(.003,.033,.004),'Dark',.001)
+    if variant==1:
+        box('Compact optic base',(x,y+.106,z+.026),(.055,.020,.056),'Steel',.003)
+        box('Enclosed optic',(x,y+.130,z+.026),(.043,.036,.043),'Dark',.003)
+    record_stock('sidearm',start)
+
+
+def closed_case(side,x,y,z,width=.78,height=.34,depth=.42,color='Petrol'):
+    start=len(PARTS[ASSEMBLY])
+    box('Ribbed transport shell',(x,y+height*.43,z),(depth,height*.83,width),color,.026)
+    box('Lid gasket',(x,y+height*.78,z),(depth+.008,.015,width+.008),'Rubber',.002)
+    box('Separate protective lid',(x,y+height*.91,z),(depth+.006,height*.18,width+.006),color,.010)
+    face=x-side*(depth/2+.018)
+    for dz in (-width*.32,width*.32):
+        box('Recessed latch pocket',(face,y+height*.73,z+dz),(.023,.13,.083),'Dark',.003)
+        box('Over-centre latch',(face-side*.016,y+height*.77,z+dz),(.018,.084,.055),'Steel',.003)
+    for dz in (-.105,.105):
+        rod('Carry handle mount',(face,y+height*.39,z+dz),(face-side*.05,y+height*.39,z+dz),.012,'Steel',8)
+    rod('Recessed carry handle',(face-side*.05,y+height*.39,z-.105),(face-side*.05,y+height*.39,z+.105),.017,'Rubber',10)
+    for dz in (-width*.40,width*.40):
+        box('Lid strengthening rib',(x,y+height+.009,z+dz),(depth*.78,.018,.025),'Dark',.003)
+        for sx in (-1,1):
+            box('Corner protector',(x+sx*(depth/2-.021),y+height*.45,z+dz),(.062,height*.86,.07),'Dark',.009)
+    record_stock('equipmentCase',start)
+
+
 def armory_rack(z, index):
     global ASSEMBLY
     ASSEMBLY = 'ArmoryRack' + str(index)
     x = rack_frame(-1, z)
-    for i, dz in enumerate((-.88, 0, .88)):
-        display_rifle(x+.04, z+dz, i)
+    if index==0:
+        for i,dz in enumerate((-.68,.58)):
+            start=len(PARTS[ASSEMBLY]);display_rifle(x+.04,z+dz,i)
+            record_stock('longRifle',start)
+    elif index==1:
+        for i,dz in enumerate((-.88,0,.88)):
+            box('Sidearm mounting tile',(x-.055,-6.39,z+dz),(.025,.40,.54),'Ivory',.014)
+            display_sidearm(x+.022,-6.39,z+dz,i)
+            box('Security rest',(x+.085,-6.52,z+dz),(.10,.04,.18),'Steel',.004)
+        box('Accessories shelf',(x+.02,-7.64,z),(.73,.06,2.76),'Steel')
+        closed_case(-1,x+.04,-7.61,z-.75,.53,.24,.34,'Dark')
+        closed_case(-1,x+.04,-7.61,z+.65,.66,.30,.37,'Petrol')
+    else:
+        for y in (-7.66,-6.53):box('Equipment shelf',(x+.025,y,z),(.75,.06,2.76),'Steel')
+        closed_case(-1,x+.03,-7.63,z-.68,.86,.41,.46,'Petrol')
+        closed_case(-1,x+.03,-7.63,z+.72,.71,.32,.43,'Ivory')
+        closed_case(-1,x+.03,-6.50,z-.57,.68,.30,.35,'Dark')
+        for dz in (.38,.67,.96):
+            rod('Field torch body',(x+.08,-6.48,z+dz),(x+.08,-6.16,z+dz),.043,'Petrol',12)
+            rod('Torch bezel',(x+.08,-6.16,z+dz),(x+.08,-6.10,z+dz),.061,'Steel',12)
     box('Inventory label mount', (x+.09, -7.62, z), (.045, .11, 1.5), 'Ivory')
 
 
 def canister(x, y, z, height=.74, radius=.19):
+    start=len(PARTS[ASSEMBLY])
     rod('Filter body', (x,y+.06,z), (x,y+height-.06,z), radius, 'Ivory', 16)
     for yy in (y+.08, y+height-.08):
         rod('Locking collar', (x,yy-.025,z), (x,yy+.025,z), radius+.027, 'Steel', 16)
@@ -242,6 +335,17 @@ def canister(x, y, z, height=.74, radius=.19):
     for dz in (-.075, .075):
         rod('Carry handle stay', (x,y+height-.02,z+dz), (x,y+height+.14,z+dz), .014, 'Steel', 8)
     rod('Carry handle', (x,y+height+.14,z-.075), (x,y+height+.14,z+.075), .019, 'Rubber', 8)
+    record_stock('filterCanister',start)
+
+
+def avionics(x,y,z,width=.66,height=.56):
+    start=len(PARTS[ASSEMBLY])
+    box('Avionics module',(x,y+height/2,z),(.53,height,width),'Petrol',.04)
+    for fraction in (-.34,-.17,0,.17,.34):
+        box('Cooling fin',(x-.286,y+height/2,z+fraction*width),(.06,height*.72,.025),'Steel',.006)
+    for dz in (-width*.23,width*.23):
+        rod('Upper cable socket',(x,y+height,z+dz),(x,y+height+.08,z+dz),.051,'Dark',12)
+    record_stock('avionics',start)
 
 
 def component_rack(z, index):
@@ -251,13 +355,26 @@ def component_rack(z, index):
     for y in (-7.66, -6.53):
         box('Folded shelf', (x-.09, y, z), (.78, .065, 2.83), 'Steel')
         box('Shelf front lip', (x-.49, y+.03, z), (.045, .1, 2.83), 'Ivory')
-    for dz in (-.91, 0, .91):
-        canister(x-.10, -7.62, z+dz, .78, .21)
-    for dz in (-.9, .9):
-        box('Avionics module', (x-.08, -6.20, z+dz), (.53, .56, .66), 'Petrol', .04)
-        for shift in (-.20, -.10, 0, .10, .20):
-            box('Cooling fin', (x-.366, -6.20, z+dz+shift), (.06, .4, .025), 'Steel', .006)
-        rod('Cable socket', (x-.04,-5.91,z+dz), (x-.04,-5.83,z+dz), .071, 'Dark', 12)
+    if index==0:
+        for dz,height,radius in [(-.89,.77,.21),(0,.59,.17),(.84,.84,.19)]:
+            canister(x-.10,-7.62,z+dz,height,radius)
+        for dz in (-.61,.57):canister(x-.10,-6.49,z+dz,.41,.14)
+    elif index==1:
+        avionics(x-.08,-7.62,z-.78,.84,.68)
+        avionics(x-.08,-7.62,z+.71,.62,.46)
+        avionics(x-.08,-6.49,z-.72,.58,.42)
+        box('Scanner mounting foot',(x-.08,-6.46,z+.67),(.46,.06,.6),'Steel')
+        rod('Scanner gimbal',(x-.08,-6.43,z+.67),(x-.08,-6.17,z+.67),.04,'Dark',12)
+        rod('Scanner housing',(x-.13,-6.06,z+.67),(x+.08,-6.06,z+.67),.17,'Ivory',16)
+        rod('Scanner recessed face',(x-.145,-6.06,z+.67),(x-.13,-6.06,z+.67),.132,'Dark',16)
+    else:
+        closed_case(1,x-.08,-7.62,z-.70,.88,.42,.48,'Ochre')
+        closed_case(1,x-.08,-7.62,z+.75,.67,.33,.44,'Dark')
+        closed_case(1,x-.08,-6.49,z-.72,.65,.30,.38,'Ivory')
+        for dz,length in ((.38,.31),(.77,.23),(1.08,.18)):
+            rod('Machined service coupler',(x-.08,-6.46,z+dz),(x-.08,-6.46+length,z+dz),.065,'Steel',12)
+            for yy in (-6.42,-6.46+length-.03):
+                rod('Coupler collar',(x-.08,yy-.022,z+dz),(x-.08,yy+.022,z+dz),.086,'Dark',12)
 
 
 def turbine_display():
@@ -472,6 +589,13 @@ def export_asset(filename, moving=None):
     manifest=[]
     collision_boxes=[]
     bpy.context.view_layer.update()
+    stock_manifest=[]
+    for item in STOCK:
+        points=[obj.matrix_world@Vector(corner)for obj in item['objects']for corner in obj.bound_box]
+        game=[(p.x,p.z,-p.y)for p in points]
+        stock_manifest.append({'kind':item['kind'],'rack':item['rack'],'bounds':{
+            'min':[min(p[i]for p in game)for i in range(3)],
+            'max':[max(p[i]for p in game)for i in range(3)]}})
     for name,objects in PARTS.items():
         points=[obj.matrix_world@Vector(corner) for obj in objects for corner in obj.bound_box]
         game=[(p.x,p.z,-p.y)for p in points]
@@ -534,6 +658,7 @@ def export_asset(filename, moving=None):
         obj.name=('Static' if parent is None else parent.name)+'_'+mat.name
     bpy.context.scene['assetManifest']=json.dumps(manifest,separators=(',',':'))
     bpy.context.scene['collisionBoxes']=json.dumps(collision_boxes,separators=(',',':'))
+    bpy.context.scene['stockManifest']=json.dumps(stock_manifest,separators=(',',':'))
     bpy.context.scene['coordinates']='Game metres, X right / Y up / Z aft'
     bpy.context.scene['builder']='blender/build_station_concourse.py'
     bpy.ops.export_scene.gltf(filepath=str(OUT/filename),export_format='GLB',
@@ -603,6 +728,7 @@ if '--only-elevator' not in sys.argv:
     reset()
     for side in (-1,1):
         shop_architecture(side)
+        shop_ceiling(side)
         counter(side)
     for i,z in enumerate((-7.1,5.1)):
         armory_rack(z,i)

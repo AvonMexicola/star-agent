@@ -96,7 +96,7 @@ function makeWordmarkAtlas(p){
   const style=typeof getComputedStyle==='function'?getComputedStyle(document.documentElement):null;
   const display=style?.getPropertyValue('--station-display').trim()||'sans-serif';
   for(const [west,y] of [[true,0],[false,128]]){
-    ctx.textBaseline='middle';ctx.fillStyle=west?p.ivory:p.ochre;
+    ctx.textBaseline='middle';ctx.fillStyle=p.ivory;
     ctx.font=`700 99px ${display}`;ctx.fillText(west?'WATCHKEEP':'KESTREL',16,y+61,630);
     ctx.fillRect(670,y+30,3,67);
     ctx.font=`600 44px ${display}`;ctx.fillText(west?'ARMORY':'SHIPWORKS',697,y+49,310);
@@ -104,7 +104,7 @@ function makeWordmarkAtlas(p){
   }
   // Each category tile matches its physical fascia aspect: the long Kestrel
   // shelves must not stretch lettering six times wider than its authored shape.
-  const categories=['LONG ARMS','DUTY STOCK','FIELD EQUIPMENT','DRIVE SYSTEMS','FILTERS / AIR','SERVICE PARTS'];
+  const categories=['LONG ARMS','SIDEARMS','FIELD EQUIPMENT','FILTERS / AIR','AVIONICS / SCANNERS','REPAIR / COUPLERS'];
   categories.forEach((label,i)=>{
     const [x,y,w,h]=TILES['shelf'+i],west=i<3;
     ctx.fillStyle=west?p.petrol:p.ochre;ctx.fillRect(x+3,y+3,w-6,h-6);

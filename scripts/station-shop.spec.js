@@ -11,11 +11,11 @@ const errorsFor = page => {
 async function readyDocked(page) {
   await page.goto('/?intro=0&debug=1&seed=7291');
   await page.waitForFunction(() => window.starAgent?.state.ready && starAgent.state.station.ready);
-  await page.evaluate(() => {
-    const n = starAgent.navigation, s = n.station; starAgent.setRenderScale(.55);
+  await page.evaluate(renderScale => {
+    const n = starAgent.navigation, s = n.station; starAgent.setRenderScale(renderScale);
     const p = n.position.clone().set(0, s.interiorBox.min.y + 4, 2);
     n.orbit(); s.toWorld(p, n.position); n.orientation.copy(s.quaternion); n.landOrLaunch();
-  });
+  }, process.env.STATION_MOTION_RENDER_SCALE === '1' ? 1 : .55);
   await page.waitForFunction(() => starAgent.state.station.docked);
 }
 async function walkTo(page, x, z) {
@@ -78,6 +78,17 @@ test('walk through passenger transit to the armory, buy with a controller, trans
   });
   await readyDocked(page);
   const parked = await page.evaluate(() => starAgent.navigation.shipPosition.toArray());
+  if (process.env.STATION_MOTION_RENDER_SCALE === '1') {
+    const environment = await page.evaluate(() => {
+      const gl = document.querySelector('canvas').getContext('webgl2');
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      return { renderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : null,
+        version: gl.getParameter(gl.VERSION), renderScale: starAgent.state.renderScale,
+        viewport: [innerWidth, innerHeight], drawingBuffer: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+        timeOrigin: performance.timeOrigin, performanceNow: performance.now(), wallTime: Date.now() };
+    });
+    await testInfo.attach('motion-environment', { body: JSON.stringify(environment, null, 2), contentType: 'application/json' });
+  }
   // Begin in a clear hangar side aisle. Existing boarding tests cover the ship ramp.
   await page.evaluate(() => {
     const n = starAgent.navigation, s = n.station;
