@@ -412,3 +412,32 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+## READY FOR REVIEW: recovered station hull detail — Astra, 2026-09-06
+
+feat/station-hull-detail, isolated /tmp/star-agent-station-hull, based on
+integration029cae8. Production preview http://localhost:5185. Recovered Fable's
+builder and both station models; corrected split-material hierarchy so Hull
+contains every structural part. LandingDeck remains one Mesh; floor regression
+now tests the recessed seam and adjacent full-height plate with exact original
+bounds and hull clearance. No runtime navigation/lighting/props modules changed.
+
+124 unit tests, build, four production Chromium browser cases passed. Includes
+opening/controller handoff, physical boarding/launch, moving floor at scale1/.55,
+and full fly-in/dock/deck/reboard/depart journey plus phone controls. Before/after
+images and six world viewpoints: docs/qa/station-hull/ (zero browser errors and
+warnings). Station samples284–361 draws /190310–317000 tris depending viewpoint;
+SwiftShader1440x900 scale1, no hardware FPS claim. Existing orbit budget and world
+art defects remain documented. Hero2.99MB/70540tris/105primitives, LOD273KB/7784tris.
+
+Files: blender/build_station.py, public/models/station*.glb, tests/station-floor.test.js,
+scripts/hull-review.mjs and hull.config.js, assets/station/hull-manifest.json,
+docs/station-hull-detail.md and curated QA evidence. Sol audited contracts/cost
+and committed only the floor test; Astra reviewed/rebuilt the asset and ran
+renderer/journey validation. Named batches may now be groups; preserve vertex colours
+and traverse descendants in the other hangar lane. Collider data increases62%;
+review shared BVH use before twenty-pod adoption. PR20 props/materials/light
+refinement remains separately owned and untouched. Shared root originals preserved.
+
+Draft pending independent Opus rubric: attempt returned429/session limit until
+13:50 Europe/Amsterdam. No visual approval, merge or deployment claimed.
