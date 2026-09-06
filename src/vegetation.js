@@ -12,6 +12,11 @@ const TREE_LIMIT = TREE_LODS[0].capacity;
 const GRASS_LIMIT = 12000;
 const ROCK_LIMIT = 600;
 
+export function treeVariant(col,row,latitude,height) {
+  const choice=hash(col,row,1259),cold=Math.abs(latitude)>.57||height>1400;
+  return cold?(choice<.8?0:1):(choice<.27?0:choice<.57?1:2);
+}
+
 // Three bent blades form each tuft; the base of every blade is exactly y = 0.
 function grassGeometry() {
   const vertices = [];
@@ -55,36 +60,40 @@ export class Vegetation {
     this.windTime = { value: 0 };
     this.lodCamera = { value: new THREE.Vector3() };
     this.treeCache = new Map();
-    this.needleTexture = createNeedleTexture();
     this.surfaceTexture = createSurfaceTexture();
-    const trunk = new THREE.CylinderGeometry(.012, .027, .94, 9);
-    trunk.translate(0, .47, 0);
-    this.trunks = this.makeMesh(trunk, { color: 0x655747, roughness: 1, bumpMap: this.surfaceTexture, bumpScale: .04 }, TREE_LIMIT);
-    this.foliage = this.makeMesh(createBranchGeometry(), { color: 0xffffff, map: this.needleTexture, alphaTest: .32, side: THREE.DoubleSide, vertexColors: true, roughness: .9 }, TREE_LIMIT);
-    addFoliageWind(this.foliage.material, this.windTime);
-    this.foliage.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: this.needleTexture, alphaTest: .32, side: THREE.DoubleSide });
-    addFoliageWind(this.foliage.customDepthMaterial, this.windTime);
-    this.midTrunks = this.makeMesh(trunk.clone(), { color: 0x655747, roughness: 1 }, TREE_LODS[1].capacity);
-    this.midFoliage = this.makeMesh(createBranchGeometry(true), { color: 0xffffff, map: this.needleTexture, alphaTest: .27, side: THREE.DoubleSide, vertexColors: true, roughness: .9 }, TREE_LODS[1].capacity);
-    addFoliageWind(this.midFoliage.material, this.windTime);
-    this.midFoliage.castShadow = this.midTrunks.castShadow = false;
-    const impostor = createTreeImpostor(this.needleTexture);
-    this.impostorTexture = impostor.texture;
-    this.farFoliage = this.makeMesh(impostor.geometry, { color: 0xffffff, map: impostor.texture, alphaTest: .2, side: THREE.DoubleSide, roughness: .95 }, TREE_LODS[2].capacity);
-    this.farFoliage.castShadow = false;
-    // Both sides represent the same rounded crown. DoubleSide's default normal
-    // flip would turn half the distant trees into bright/dark paper crosses.
-    this.farFoliage.material.onBeforeCompile = shader => {
-      shader.fragmentShader = shader.fragmentShader
-        .replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\nnormal *= faceDirection;')
-        .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(.5,.85,vMapUv.y);');
-    };
-    this.farFoliage.material.customProgramCacheKey = () => 'rounded-tree-impostor-v1';
-    this.treeMeshes = [[this.trunks, this.foliage], [this.midTrunks, this.midFoliage], [this.farFoliage]];
-    for (let level = 0; level < 3; level++) for (const mesh of this.treeMeshes[level]) addTreeLod(mesh.material, level, this.lodCamera);
-    addTreeLod(this.foliage.customDepthMaterial, 0, this.lodCamera);
-    this.trunks.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
-    addTreeLod(this.trunks.customDepthMaterial, 0, this.lodCamera);
+    this.treeSets=Array.from({length:3},(_,variant)=>{
+      const needleTexture = createNeedleTexture(variant===2);
+      const trunk = new THREE.CylinderGeometry(.012, .027, .94, 9);
+      trunk.translate(0, .47, 0);
+      const trunks = this.makeMesh(trunk, { color: 0x655747, roughness: 1, bumpMap: this.surfaceTexture, bumpScale: .04 }, TREE_LIMIT);
+      const foliage = this.makeMesh(createBranchGeometry(false,variant), { color: 0xffffff, map: needleTexture, alphaTest: .32, side: THREE.DoubleSide, vertexColors: true, roughness: .9 }, TREE_LIMIT);
+      addFoliageWind(foliage.material, this.windTime);
+      foliage.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: needleTexture, alphaTest: .32, side: THREE.DoubleSide });
+      addFoliageWind(foliage.customDepthMaterial, this.windTime);
+      const midTrunks = this.makeMesh(trunk.clone(), { color: 0x655747, roughness: 1 }, TREE_LODS[1].capacity);
+      const midFoliage = this.makeMesh(createBranchGeometry(true,variant), { color: 0xffffff, map: needleTexture, alphaTest: .27, side: THREE.DoubleSide, vertexColors: true, roughness: .9 }, TREE_LODS[1].capacity);
+      addFoliageWind(midFoliage.material, this.windTime);
+      midFoliage.castShadow = midTrunks.castShadow = false;
+      const impostor = createTreeImpostor(needleTexture,variant);
+      const impostorTexture = impostor.texture;
+      const farFoliage = this.makeMesh(impostor.geometry, { color: 0xffffff, map: impostor.texture, alphaTest: .2, side: THREE.DoubleSide, roughness: .95 }, TREE_LODS[2].capacity);
+      farFoliage.castShadow = false;
+      // Both sides represent the same rounded crown. DoubleSide's default normal
+      // flip would turn half the distant trees into bright/dark paper crosses.
+      farFoliage.material.onBeforeCompile = shader => {
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\nnormal *= faceDirection;')
+          .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= mix(.68,.93,vMapUv.y);');
+      };
+      farFoliage.material.customProgramCacheKey = () => 'rounded-tree-impostor-v2';
+      const treeMeshes = [[trunks, foliage], [midTrunks, midFoliage], [farFoliage]];
+      for (let level = 0; level < 3; level++) for (const mesh of treeMeshes[level]) addTreeLod(mesh.material, level, this.lodCamera);
+      addTreeLod(foliage.customDepthMaterial, 0, this.lodCamera);
+      trunks.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+      addTreeLod(trunks.customDepthMaterial, 0, this.lodCamera);
+      return {meshes:treeMeshes,needleTexture,impostorTexture};
+    });
+    this.treeMeshes=[0,1,2].map(level=>this.treeSets.flatMap(set=>set.meshes[level]));
     this.grass = this.makeMesh(grassGeometry(), { color: 0xffffff, roughness: 1, side: THREE.DoubleSide }, GRASS_LIMIT);
     const rockSource = new THREE.IcosahedronGeometry(.5, 2);
     rockSource.deleteAttribute('normal');
@@ -208,7 +217,7 @@ export class Vegetation {
     // place() reuses the direction scratch vector, so preserve the patch center.
     const center = direction.clone();
     let trees = 0, grassTufts = 0, rocks = 0;
-    const lodCounts = [0, 0, 0], nextCache = new Map();
+    const lodCounts = [0, 0, 0], speciesCounts=[0,0,0], setCounts=this.treeSets.map(()=>[0,0,0]), nextCache = new Map();
     this.scatter(center, TREE_RADIUS, 12, 711, (x, y, z, col, row, a, b) => {
       if (Math.abs(y) > .84 || this.isExcluded(x, y, z, 5)) return;
       const key = `${col}/${row}`;
@@ -216,25 +225,27 @@ export class Vegetation {
       if (!record) {
         const h = terrainHeight(x, y, z), m = moisture(x, y, z);
         const density = m > .46 ? Math.min(.86, .58 + (m - .46) * 2) : m > .4 ? .025 : 0;
-        record = { h, present: h >= 12 && h <= 2200 && hash(col, row, 911) <= density };
+        const variant=treeVariant(col,row,y,h);
+        record = { h, variant, present: h >= 12 && h <= 2200 && hash(col, row, 911) <= density };
       }
       nextCache.set(key, record);
       if (!record.present) return;
-      const h = record.h, size = 7 + hash(col, row, 1103) * 13, width = size * (.83 + b * .28);
+      const h = record.h, variant=record.variant, size = (variant===2?6:8) + hash(col, row, 1103) * (variant===1?17:12), width = size * (variant===0?.72:variant===1?.82:1.08) * (.82 + b * .36);
       const distance = Math.hypot(x*(RADIUS+h)-this.lastPosition.x,y*(RADIUS+h)-this.lastPosition.y,z*(RADIUS+h)-this.lastPosition.z);
-      trees++;
+      trees++;speciesCounts[variant]++;
       for (let level = 0; level < 3; level++) {
-        if (!treeLodIncludes(distance, level) || lodCounts[level] >= TREE_LODS[level].capacity) continue;
-        const meshes = this.treeMeshes[level], index = lodCounts[level]++;
+        if (!treeLodIncludes(distance, level) || setCounts[variant][level] >= TREE_LODS[level].capacity) continue;
+        const meshes = this.treeSets[variant].meshes[level], index = setCounts[variant][level]++;lodCounts[level]++;
         this.place(meshes[0], index, x, y, z, h - .08, width, size, width, a * TAU);
         if (meshes[1]) meshes[1].setMatrixAt(index, this.matrix);
         this.color.setRGB(.52 + a * .18, .60 + b * .18, .48 + a * .16);
-        if (level === 2) this.color.multiplyScalar(.55);
+        if(variant===1){this.color.r*=.9;this.color.b*=.83;}
+        if(variant===2){this.color.r*=.94;this.color.g*=1.08;this.color.b*=.76;}
         meshes[meshes.length - 1].setColorAt(index, this.color);
       }
     });
     this.treeCache = nextCache;
-    for (let level = 0; level < 3; level++) for (const mesh of this.treeMeshes[level]) mesh.count = lodCounts[level];
+    for(let variant=0;variant<3;variant++)for(let level=0;level<3;level++)for(const mesh of this.treeSets[variant].meshes[level])mesh.count=setCounts[variant][level];
 
     this.scatter(center, 170, 4.5, 1933, (x, y, z, col, row, a, b) => {
       if (grassTufts >= GRASS_LIMIT || Math.abs(y) > .84 || this.isExcluded(x, y, z)) return;
@@ -276,7 +287,7 @@ export class Vegetation {
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     }
-    this.stats = { trees, treeLods: lodCounts, treeRange: 1400, grassTufts, rocks, rebuilds: this.stats.rebuilds + 1 };
+    this.stats = { trees, species:speciesCounts, treeLods: lodCounts, treeRange: 1400, grassTufts, rocks, rebuilds: this.stats.rebuilds + 1 };
   }
 
   dispose() {
@@ -285,11 +296,8 @@ export class Vegetation {
       mesh.material.dispose();
       mesh.dispose();
     }
-    this.impostorTexture.dispose();
-    this.trunks.customDepthMaterial.dispose();
-    this.needleTexture.dispose();
+    for(const set of this.treeSets){set.impostorTexture.dispose();set.needleTexture.dispose();for(const mesh of set.meshes[0])mesh.customDepthMaterial?.dispose();}
     this.surfaceTexture.dispose();
-    this.foliage.customDepthMaterial.dispose();
     this.group.removeFromParent();
   }
 }

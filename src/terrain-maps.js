@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const SIZE = 512, LAYERS = 4;
+const SIZE = 512, LAYERS = 8;
 let shared;
 
 function arrayTexture(pixel, colorSpace) {

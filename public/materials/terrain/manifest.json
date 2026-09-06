@@ -31,6 +31,35 @@
       "source": "https://ambientcg.com/a/Ground054",
       "download": "https://ambientcg.com/get?file=Ground054_1K-JPG.zip",
       "archiveSha256": "b325ec2f167dce95a0fabc61a2104641288cf20915419578c3efdb46200c563e"
+    },
+    {
+      "id": "Grass004",
+      "role": "grass",
+      "source": "https://ambientcg.com/a/Grass004",
+      "download": "https://ambientcg.com/get?file=Grass004_1K-JPG.zip",
+      "archiveSha256": "4b63495f459db8481f4d5144e4e9069345c81cf898cc71f2216f5dd3bb344469"
+    },
+    {
+      "id": "Ground028",
+      "role": "leaf-litter",
+      "source": "https://ambientcg.com/a/Ground028",
+      "download": "https://ambientcg.com/get?file=Ground028_1K-JPG.zip",
+      "archiveSha256": "9965aff106c1076347af095021dc58fedaa93c1742b69437f36cff3fa8020c93"
+    },
+    {
+      "id": "Gravel001",
+      "role": "gravel",
+      "source": "https://ambientcg.com/a/Gravel001",
+      "download": "https://ambientcg.com/get?file=Gravel001_1K-JPG.zip",
+      "archiveSha256": "1a00ed0714502fd4dbc88f91dd46823e170a07e1331e15ff2711d69e9610e53b",
+      "roughnessFallback": 0.94
+    },
+    {
+      "id": "Snow010A",
+      "role": "snow",
+      "source": "https://ambientcg.com/a/Snow010A",
+      "download": "https://ambientcg.com/get?file=Snow010A_1K-JPG.zip",
+      "archiveSha256": "06852017cc69c885b4ee375f4dc8cf16184456b7f6f02de821fb7d2f3cbe8768"
     }
   ],
   "packing": {
@@ -39,12 +68,12 @@
   },
   "files": {
     "albedo.png": {
-      "bytes": 2235682,
-      "sha256": "31a4e80486ab25c67ce35f57c0d3a95d1e0df884f83dc32c1afccba3888c60c7"
+      "bytes": 4369864,
+      "sha256": "c58304374e65f8f43aefaf5effbcebafbc783abd2b290f11d57df65401a06c11"
     },
     "normal-roughness.png": {
-      "bytes": 2312231,
-      "sha256": "6f285717aa39fb20cf793c9d65f46d65a7356f09d9ff618e04af0cf157855462"
+      "bytes": 4320355,
+      "sha256": "fd8fd6a7c685110852b90521b28419cddf1bd966b7f59e3e8cb8281f765348b3"
     }
   }
 }

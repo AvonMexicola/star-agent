@@ -13,7 +13,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'public/materials/terrain'
-SOURCES = [('Ground048', 'soil'), ('Rock030', 'cliff'), ('Ground037', 'moss'), ('Ground054', 'sand')]
+SOURCES = [('Ground048', 'soil'), ('Rock030', 'cliff'), ('Ground037', 'moss'), ('Ground054', 'sand'), ('Grass004', 'grass'), ('Ground028', 'leaf-litter'), ('Gravel001', 'gravel'), ('Snow010A', 'snow')]
 
 
 def magick(*args):
@@ -34,7 +34,14 @@ def pack(archives):
                 for channel in ['Color', 'NormalGL', 'Roughness']:
                     name = f'{asset}_1K-JPG_{channel}.jpg'
                     paths[channel] = temp / name
-                    paths[channel].write_bytes(source.read(name))
+                    if name in source.namelist():
+                        paths[channel].write_bytes(source.read(name))
+                    elif channel == 'Roughness' and asset == 'Gravel001':
+                        # This source supplies no roughness map. Use a declared
+                        # matte scalar, not a fabricated photographic channel.
+                        magick('-size', '1024x1024', 'xc:gray(94%)', paths[channel])
+                    else:
+                        raise ValueError(f'Missing source map: {name}')
             color, normal = temp / f'{role}-color.png', temp / f'{role}-normal.png'
             magick(paths['Color'], '-resize', '512x512!', '-strip', '-define', 'png:color-type=2', color)
             # RG = OpenGL normal XY, B = linear roughness. Z is reconstructed.
@@ -47,7 +54,8 @@ def pack(archives):
             normals.append(normal)
             records.append({'id': asset, 'role': role, 'source': f'https://ambientcg.com/a/{asset}',
                             'download': f'https://ambientcg.com/get?file={asset}_1K-JPG.zip',
-                            'archiveSha256': hashlib.sha256(archive.read_bytes()).hexdigest()})
+                            'archiveSha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
+                            **({'roughnessFallback': .94} if asset == 'Gravel001' else {})})
         for name, layers in [('albedo', colors), ('normal-roughness', normals)]:
             magick(*layers, '-append', '-strip', '-define', 'png:color-type=2', OUT / f'{name}.png')
     manifest = {'license': 'CC0-1.0', 'licenseUrl': 'https://docs.ambientcg.com/license/',

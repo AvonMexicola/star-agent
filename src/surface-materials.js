@@ -47,6 +47,14 @@ vec4 surfaceSample(vec3 p, vec3 weights) {
        + texture2D(surfaceDetail, p.zx) * weights.y
        + texture2D(surfaceDetail, p.xy) * weights.z;
 }
+float biomeHash(vec3 p) {
+  p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);
+}
+float biomeNoise(vec3 p) {
+  vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+  return mix(mix(mix(biomeHash(i),biomeHash(i+vec3(1,0,0)),f.x),mix(biomeHash(i+vec3(0,1,0)),biomeHash(i+vec3(1,1,0)),f.x),f.y),
+    mix(mix(biomeHash(i+vec3(0,0,1)),biomeHash(i+vec3(1,0,1)),f.x),mix(biomeHash(i+vec3(0,1,1)),biomeHash(i+vec3(1,1,1)),f.x),f.y),f.z);
+}
 // Screen derivatives build a surface gradient without needing tangent UVs.
 vec3 detailNormal(vec3 eyePosition, vec3 n, float height) {
   vec3 q0 = dFdx(eyePosition), q1 = dFdy(eyePosition);
@@ -100,6 +108,11 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
         // rebases. Actual height and slope determine snow and exposed faces.
         float slope = 1.0-max(0.0,dot(groundNormal,pd));
         float snow = smoothstep(.42,.7,min(diffuseColor.r,min(diffuseColor.g,diffuseColor.b)));
+        vec3 biomePoint=pd*3110.83984375;
+        float cover=biomeNoise(biomePoint+vec3(0,biomeNoise(biomePoint*.37)*2.4,0));
+        float undergrowth=biomeNoise(biomePoint*4.13+vec3(71,29,13));
+        float lowland=(1.0-smoothstep(1800.0,2800.0,vGroundHeight))*(1.0-snow)*(1.0-smoothstep(.06,.26,slope));
+        float forestCover=(1.0-smoothstep(.13,.205,diffuseColor.g))*lowland;
         vec4 regional = surfaceSample(pd*398.1875,weights);
         vec4 gullies = surfaceSample(pd*1592.75,weights);
         float regionalFade = 1.0-smoothstep(45000.0,120000.0,range);
@@ -114,9 +127,14 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
         float layers=(.5+.5*sin(layerPhase))*(1.0-smoothstep(.3,2.0,fwidth(layerPhase)));
         stone*=.83+layers*.24;
         vec3 regionalColor=diffuseColor.rgb*(.78+regional.r*.3+gullies.r*.18);
+        // Irregular body-anchored vegetation patches carry meadow colour in
+        // flight. Fine blades are allowed to mip away instead of becoming rows.
+        vec3 meadow=diffuseColor.rgb*mix(vec3(.72,.86,.61),vec3(1.13,1.03,.82),cover);
+        meadow*=.87+undergrowth*.26;
+        regionalColor=mix(regionalColor,meadow,lowland*smoothstep(8.0,35.0,vGroundHeight));
         regionalColor=mix(regionalColor,stone,exposed*mix(.42,.92,snow));
         diffuseColor.rgb=mix(diffuseColor.rgb,regionalColor,regionalFade);
-        float detailFade = 1.0-smoothstep(800.0,4500.0,range);
+        float detailFade = 1.0-smoothstep(80.0,700.0,range);
         vec4 detail = vec4(diffuseColor.rgb,.5);
         vec3 mappedGradient=vec3(0.0);
         float mappedRoughness=.96;
@@ -128,17 +146,27 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
           vec3 p = vSurfacePoint*.25;
           if (terrainMapsReady > .5) {
             TerrainSample ground = terrainSample(p,weights,0.0);
-            float growth = organic*smoothstep(.24,.65,macro.g*.6+surfaceSample(p/16.0,weights).g*.4);
-            if (growth>.01) ground=terrainMix(ground,terrainSample(p,weights,2.0),growth);
+            float growth = organic*(.65+.35*smoothstep(.2,.65,cover))*(1.0-smoothstep(1800.0,2800.0,vGroundHeight));
+            if (growth>.01) {
+              TerrainSample grass=terrainSample(p*.5,weights,4.0);
+              grass.color*=mix(vec3(1.12,.98,.7),vec3(.79,1.06,.82),cover);
+              ground=terrainMix(ground,grass,growth);
+              float litter=growth*forestCover*(.4+.6*smoothstep(.3,.7,cover));
+              if(litter>.01) ground=terrainMix(ground,terrainSample(p,weights,5.0),litter*.75);
+              float moss=growth*smoothstep(.62,.85,undergrowth)*.4;
+              if(moss>.01) ground=terrainMix(ground,terrainSample(p,weights,2.0),moss);
+            }
             float beach=(1.0-smoothstep(3.0,26.0,vGroundHeight))*(1.0-smoothstep(.06,.2,slope));
             if (beach>.01) ground=terrainMix(ground,terrainSample(p*.5,weights,3.0),beach);
             float exposed=smoothstep(.045,.27,slope);
             exposed=max(exposed,(1.0-organic)*.24*(1.0-beach));
             if (exposed>.01) ground=terrainMix(ground,terrainSample(p*.25,weights,1.0),exposed);
-            // A second, broad texture scale keeps outcrops readable in low flight.
-            vec3 broad=terrainColor(vSurfacePoint/64.0,weights,1.0);
-            float mineral=dot(broad,vec3(.2126,.7152,.0722));
-            ground.color*=mix(.72,1.3,smoothstep(.035,.36,mineral));
+            float scree=smoothstep(1800.0,2800.0,vGroundHeight)*(1.0-snow)*(1.0-exposed)*(.35+cover*.45);
+            if(scree>.01) ground=terrainMix(ground,terrainSample(p*.5,weights,6.0),scree);
+            // The previous 64m rock multiplier stamped a repeating pattern
+            // across every meadow. Geological variation is non-periodic here.
+            float mineral=.08+undergrowth*.2;
+            ground.color*=.88+cover*.24;
             float phase=vGroundHeight*.22+macro.r*5.0;
             float band=(.5+.5*sin(phase))*(1.0-smoothstep(.3,2.0,fwidth(phase)));
             ground.color*=mix(vec3(.83,.87,.92),vec3(1.12,1.02,.87),band*exposed);
@@ -147,6 +175,10 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
             float snowBreak=smoothstep(.06,.24,mineral)*smoothstep(.012,.11,slope);
             float snowCover=snow*(1.0-smoothstep(.035,.19,slope))*(1.0-snowBreak*.8);
             ground.color=mix(ground.color,vec3(.72,.81,.87)*(.73+mineral*.8),snowCover);
+            if(snowCover>.01){
+              TerrainSample ice=terrainSample(p*.5,weights,7.0);
+              ground=terrainMix(ground,ice,snowCover);
+            }
             float wet=(1.0-smoothstep(.15,2.8,vGroundHeight))*beach;
             ground.color*=1.0-wet*.43;
             mappedRoughness=mix(clamp(ground.roughness,.58,1.0),.38,wet);
@@ -175,7 +207,7 @@ export function configureTerrainMaterial(material, texture, albedoUniform, albed
         if(terrainMapsReady>.5) normal=terrainNormalAt(normal,mappedGradient,detailFade*(1.0-smoothstep(100.0,1100.0,range)));
         else normal=detailNormal(-vViewPosition,normal,detail.a*.055*detailFade);`);
   };
-  material.customProgramCacheKey = () => `terrain-material-regional-v2-${Boolean(orbital)}`;
+  material.customProgramCacheKey = () => `terrain-material-biomes-v3-${Boolean(orbital)}`;
 }
 
 /** Object-local wear on the merged hull and furniture, which have no UVs. */

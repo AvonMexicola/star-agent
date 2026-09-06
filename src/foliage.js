@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // Botanical branch cards rather than solid cones. The atlas is drawn once using
 // a private seed, so creating foliage never changes the world's random stream.
-export function createNeedleTexture() {
+export function createNeedleTexture(broadleaf = false) {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 256;
   const ctx = canvas.getContext('2d');
@@ -23,8 +23,13 @@ export function createNeedleTexture() {
         const brightness = 62 + Math.floor(random() * 58);
         ctx.strokeStyle = `rgb(${brightness + 12},${brightness + 28},${Math.floor(brightness * .66)})`;
         ctx.lineWidth = 1.2 + random();
-        ctx.beginPath(); ctx.moveTo(x, py);
-        ctx.lineTo(x + side * (5 + random() * 10), py - 9 - random() * 13); ctx.stroke();
+        if(broadleaf){
+          ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();
+          ctx.ellipse(x+side*5,py-5,4+random()*4,2+random()*3,side*.65,0,Math.PI*2);ctx.fill();
+        }else{
+          ctx.beginPath(); ctx.moveTo(x, py);
+          ctx.lineTo(x + side * (5 + random() * 10), py - 9 - random() * 13); ctx.stroke();
+        }
       }
     }
   }
@@ -34,12 +39,18 @@ export function createNeedleTexture() {
   return texture;
 }
 
-export function createBranchGeometry(medium = false) {
+export function crownProfile(t,variant=0) {
+  if(variant===1)return {y:.50+t*.43,spread:.34*Math.pow(Math.sin((.12+t*.88)*Math.PI),.55)+.025};
+  if(variant===2)return {y:.28+t*.65,spread:.38*Math.pow(Math.sin((.08+t*.92)*Math.PI),.6)+.025};
+  return {y:.22+t*.684,spread:.29*(1-t*9/11)};
+}
+
+export function createBranchGeometry(medium = false, variant = 0) {
   const positions = [], normals = [], uvs = [], colors = [];
   const up = new THREE.Vector3(0, 1, 0);
   for (let layer = 0; layer < (medium ? 6 : 10); layer++) {
     const t = layer / (medium ? 5 : 9);
-    const y = .22 + t * .684, spread = .29 * (1 - t * 9 / 11);
+    const {y,spread}=crownProfile(t,variant);
     const count = medium ? 4 : layer > 7 ? 4 : 6;
     for (let branch = 0; branch < count; branch++) {
       const angle = branch / count * Math.PI * 2 + layer * 2.399;
@@ -86,7 +97,7 @@ export function addFoliageWind(material, windTime) {
 
 // A full-tree silhouette for distant stands. Ragged branch clusters preserve
 // the tree's width and height; two crossed cards give coverage from any bearing.
-export function createTreeImpostor(needleTexture) {
+export function createTreeImpostor(needleTexture,variant=0) {
   const canvas = document.createElement('canvas');
   canvas.width = 512; canvas.height = 1024;
   const ctx = canvas.getContext('2d');
@@ -94,11 +105,11 @@ export function createTreeImpostor(needleTexture) {
   let seed = 991;
   const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
   for (let layer = 0; layer < 22; layer++) {
-    const t = layer / 21, y = 115 + t * 695, width = 18 + t * 216;
+    const t = 1-layer/21,profile=crownProfile(t,variant),y=(1-profile.y)*1024,width=profile.spread*512;
     for (let branch = 0; branch < 10; branch++) {
       const side = branch % 2 ? 1 : -1;
       const reach = width * (.25 + random() * .75);
-      ctx.save(); ctx.translate(256 + side * reach * .5, y + random() * 32);
+      ctx.save(); ctx.translate(256 + side * reach * .5, y + random() * 20);
       ctx.rotate(side * (.8 + random() * .8));
       ctx.drawImage(needleTexture.image, -38-t*24, -reach*.7, 76+t*48, reach+35);
       ctx.restore();
@@ -109,7 +120,7 @@ export function createTreeImpostor(needleTexture) {
   const geometry = new THREE.BufferGeometry(), positions = [], normals = [], uvs = [];
   for (const angle of [0, Math.PI / 2]) {
     for (const i of [0,2,1,1,2,3]) {
-      const x = (i % 2 ? .36 : -.36), y = i < 2 ? 0 : 1;
+      const x = (i % 2 ? .5 : -.5), y = i < 2 ? 0 : 1;
       positions.push(x*Math.cos(angle),y,x*Math.sin(angle));
       // Round crown lighting avoids a bright/dark cross at a card intersection.
       normals.push(Math.cos(angle)*.25,.94,Math.sin(angle)*.25);
