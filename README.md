@@ -95,4 +95,9 @@ The browser tests default to system Chromium with ANGLE/SwiftShader. Override `C
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) for contribution and architecture contracts.
 
-First playable Selene mining slice: [mining guide](docs/selene-mining.md).
+Expanded mining, controller commands, shared backpack/storage, EVA and asteroid rings:
+[expedition guide](docs/selene-expedition.md). Selene's orbital color patches now
+show [resource provinces](docs/resource-geology.md), with matching mineable outcrops.
+Run `npm run test:browser -- -c scripts/expedition.config.js` for the integrated journeys.
+
+Original mining slice: [mining guide](docs/selene-mining.md).

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Vector3,Scene} from 'three';
-import {RING_POPULATION,RING_RADIUS,RING_WIDTH,RING_THICKNESS,RING_NORMAL,ASTEROID_FAMILIES,asteroidDescriptor,nearbyAsteroids,asteroidField,ringRock,ringCellAt} from '../src/ring-world.js';
+import {RING_POPULATION,RING_RADIUS,RING_WIDTH,RING_THICKNESS,RING_NORMAL,ASTEROID_FAMILIES,asteroidDescriptor,nearbyAsteroids,asteroidField,ringRock,ringCellAt,ringPathIntervals} from '../src/ring-world.js';
 import {MOON_POSITION} from '../src/moon-world.js';
 import {MoonRings,asteroidGeometry} from '../src/moon-rings.js';
 import {createDensity,meshVolume,carve} from '../src/mining/volume.js';
@@ -32,4 +32,13 @@ test('every procedural rock family has a finite shared silhouette and editable i
     signatures.push(field.reduce((sum,v)=>sum+v,0));geometry.dispose();
   }
   assert.equal(new Set(signatures).size,ASTEROID_FAMILIES.length);
+});
+
+
+test('finite ring segment intervals detect full high-speed crossings and reject paths outside the belt',()=>{
+  const p=new Vector3(...MOON_POSITION).add(new Vector3(...ringRock(5).position)),normal=new Vector3(...RING_NORMAL);
+  const intervals=ringPathIntervals(p.clone().addScaledVector(normal,20000),p.clone().addScaledVector(normal,-20000));
+  assert.equal(intervals.length,1);assert.ok(intervals[0][0]>.4&&intervals[0][1]<.6);
+  assert.deepEqual(ringPathIntervals(p.clone().addScaledVector(normal,20000),p.clone().addScaledVector(normal,10000)),[]);
+  assert.deepEqual(ringPathIntervals(new Vector3(),new Vector3(1,2,3)),[]);
 });

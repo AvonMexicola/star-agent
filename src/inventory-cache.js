@@ -28,9 +28,12 @@ export class FieldCache {
     const start=this.local(a),end=this.local(b),result=this.collision.sweep(start,end);result.grounded ||= end.y<=start.y+1e-5&&this.collision.groundedAt(result.point);this.grounded=result.grounded;
     return {...result,point:result.point.applyQuaternion(this.quaternion).add(this.position)};
   }
-  constrainFlight(a,b){
-    const start=this.local(a),end=this.local(b);if(new THREE.Line3(start,end).closestPointToPoint(new THREE.Vector3(),true,new THREE.Vector3()).length()>13)return {point:b,hit:false};
-    const lift=new THREE.Vector3(0,10,0),result=this.collision.sweep(start.add(lift),end.add(lift),{radius:10,height:20});
+  raycast(origin,direction,range){return this.collision.raycast(this.local(origin),direction.clone().applyQuaternion(this.inverse),range);}
+  constrainEVA(a,b){return this.sweepSphere(a,b,.35);}
+  constrainFlight(a,b){return this.sweepSphere(a,b,10);}
+  sweepSphere(a,b,radius){
+    const start=this.local(a),end=this.local(b);if(new THREE.Line3(start,end).closestPointToPoint(new THREE.Vector3(),true,new THREE.Vector3()).length()>radius+3)return {point:b,hit:false};
+    const lift=new THREE.Vector3(0,radius,0),result=this.collision.sweep(start.add(lift),end.add(lift),{radius,height:radius*2});
     return {...result,point:result.point.sub(lift).applyQuaternion(this.quaternion).add(this.position)};
   }
   dispose(){const materials=new Set(),geometries=new Set();this.group.traverse(n=>{if(n.geometry)geometries.add(n.geometry);if(n.material)materials.add(n.material);});for(const g of geometries)g.dispose();for(const m of materials){m.map?.dispose();m.dispose();}this.scene.remove(this.group);}

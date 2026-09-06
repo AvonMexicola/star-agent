@@ -18,7 +18,7 @@ const empty = () => ({ strafe: 0, forward: 0, yaw: 0, pitch: 0, vertical: 0, rol
 export class GamepadInput {
   constructor(read = () => globalThis.navigator?.getGamepads?.() ?? []) {
     this.read = read; this.id = null; this.index = null; this.connected = false;
-    this.uiArmed = false; this.wasUI = false; this.armed = false; this.uiArmed = false; this.previous = []; this.status = 'Connect a controller and press a button.';
+    this.uiArmed = false; this.wasUI = false; this.armed = false; this.previous = []; this.status = 'Connect a controller and press a button.';
   }
   suspend() { this.armed = false; this.uiArmed = false; }
   poll({ focused = true, enabled = true, ui = false } = {}) {
@@ -62,7 +62,7 @@ export class GamepadInput {
     }
     if (!focused || !enabled) this.armed = false;
     else if (neutral) this.armed = true;
-    this.status = this.armed ? 'Controller ready · Menu / Options opens controls.' : 'Controller connected · Release controls to resume.';
+    this.status = this.armed ? 'Controller ready · Menu / Options opens the command menu.' : 'Controller connected · Release controls to resume.';
     if (!focused) return empty();
     if (!this.armed) {
       // Menu remains available while help pauses navigation. Gameplay edges are discarded.

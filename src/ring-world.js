@@ -36,6 +36,25 @@ export function nearbyAsteroids(world,reach=1){
   return result;
 }
 
+/** Parametric segment intervals inside the padded finite annular belt. */
+export function ringPathIntervals(previous,proposed,padding=300){
+  const center=new Vector3(...MOON_POSITION),a=previous.clone().sub(center).applyQuaternion(inverse),b=proposed.clone().sub(center).applyQuaternion(inverse),d=b.sub(a);
+  let lo=0,hi=1;
+  const half=RING_THICKNESS/2+padding;
+  if(Math.abs(d.z)<1e-12){if(Math.abs(a.z)>half)return [];}
+  else{const t=[(-half-a.z)/d.z,(half-a.z)/d.z].sort((x,y)=>x-y);lo=Math.max(lo,t[0]);hi=Math.min(hi,t[1]);}
+  const circle=radius=>{
+    const aa=d.x*d.x+d.y*d.y,bb=a.x*d.x+a.y*d.y,cc=a.x*a.x+a.y*a.y-radius*radius;
+    if(aa<1e-12)return cc<=0?[-Infinity,Infinity]:null;
+    const det=bb*bb-aa*cc;if(det<0)return null;const root=Math.sqrt(det);return [(-bb-root)/aa,(-bb+root)/aa];
+  };
+  const outer=circle(RING_RADIUS+RING_WIDTH/2+padding);if(!outer)return [];
+  lo=Math.max(lo,outer[0]);hi=Math.min(hi,outer[1]);if(lo>hi)return [];
+  const inner=circle(RING_RADIUS-RING_WIDTH/2-padding);
+  if(!inner||inner[1]<=lo||inner[0]>=hi)return [[lo,hi]];
+  return [[lo,Math.min(hi,inner[0])],[Math.max(lo,inner[1]),hi]].filter(([a,b])=>b>a);
+}
+
 // A continuous shape shared by the low-resolution rock silhouettes and editable
 // density grids. All six families stay within the 4 m mining domain.
 export function asteroidField(x,y,z,family=0){

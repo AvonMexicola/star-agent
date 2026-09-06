@@ -13,9 +13,10 @@ export function createControllerUI({ nav, destinations = [], openBackpack = () =
   menu.innerHTML = '<div class="controller-menu-top"><h2 id="controller-menu-title">Command menu</h2><button type="button" data-controller-close aria-label="Close command menu">×</button></div><p>D-pad / left stick · Select &nbsp; A · Confirm &nbsp; B · Back</p><div class="controller-command-list"></div>';
   document.body.append(menu);
   const list = menu.querySelector('.controller-command-list');
+  let restoreOnClose = true;
   const add = (label, callback, key) => {
     const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.dataset.controllerKey = key;
-    b.addEventListener('click', () => { menu.close(); callback(); }); list.append(b); return b;
+    b.addEventListener('click', () => { restoreOnClose = false; nav.enabled = true; menu.close(); callback(); }); list.append(b); return b;
   };
   add('Resume exploration', () => {}, 'resume').setAttribute('data-controller-focus', '');
   add('Backpack', openBackpack, 'backpack');
@@ -26,7 +27,7 @@ export function createControllerUI({ nav, destinations = [], openBackpack = () =
   }
   add('Controls and help', () => document.getElementById('help-button')?.click(), 'help');
   menu.querySelector('[data-controller-close]').addEventListener('click', () => menu.close());
-  menu.addEventListener('close', () => { nav.keys.clear(); nav.enabled = true; nav.gamepad.suspend(); });
+  menu.addEventListener('close', () => { nav.keys.clear(); if (restoreOnClose) nav.enabled = true; nav.gamepad.suspend(); });
   let activeDialog = null, direction = 0, repeat = 0, focusKey = null, focusIndex = 0;
   const clearFocus = () => document.querySelectorAll('[data-controller-selected]').forEach(el => el.removeAttribute('data-controller-selected'));
   function focus(el, items) {
@@ -36,7 +37,7 @@ export function createControllerUI({ nav, destinations = [], openBackpack = () =
   }
   function open() {
     if (!nav.enabled || document.querySelector('dialog[open]')) return;
-    nav.keys.clear(); nav.toolTrigger = 0; nav.enabled = false;
+    restoreOnClose = true; nav.keys.clear(); nav.toolTrigger = 0; nav.enabled = false;
     if (document.pointerLockElement) document.exitPointerLock();
     for (const b of list.children) if (b._controllerEnabled) b.disabled = !b._controllerEnabled();
     menu.showModal();

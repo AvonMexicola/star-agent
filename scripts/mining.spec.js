@@ -48,7 +48,7 @@ test('land, walk to the deposit, mine with the laser, persist cuts and stow coll
   // The survey container is integrated with the real cargo dialog. Restore a
   // landed ship after reload, then enter its storage interaction position.
   await page.evaluate(()=>{const n=window.starAgent.navigation;n.transitMoon(3.2);n.touchDown();n.embark();n.position.copy(n.fromShipLocal(n.position.clone().set(.4,2.75,1.15)));n.openInventory();});
-  await page.getByRole('button',{name:'Stow survey pouch'}).click();
+  await page.getByRole('button',{name:'Stow all minerals'}).click();
   expect(await page.evaluate(()=>window.starAgent.state.mining.pack.reduce((a,b)=>a+b,0))).toBe(0);
   expect(await page.evaluate(()=>window.starAgent.state.mining.ship.reduce((a,b)=>a+b,0))).toBeGreaterThan(.5);
   await page.screenshot({path:`${evidence}/cargo.png`});

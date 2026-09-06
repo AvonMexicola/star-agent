@@ -68,19 +68,15 @@ unsaved runtime initial field when a streamed rock is evicted; it never deletes 
 saved edit. Encoded immutable fields are cached to avoid re-encoding every saved
 rock during an unrelated transfer.
 
-## Validation in this lane
+## Validation
 
-21 numerical checks passed across container inventory, mining and ship inventory.
-They cover slot and mass limits, box expansion, legacy migration, reloads,
-resource conservation, station/base transfers, failed saves, stale rewards and the
-space-rock save cap. The release hook was added after that run and has a targeted
-regression assertion.
+The integrated numerical suite covers slot and mass limits, box expansion, legacy
+migration, reloads, resource conservation, station/base transfers, failed saves,
+stale rewards and the additional-rock save cap.
 
-The production browser run reached desktop backpack display, mineral and supply
-transfers, box expansion and screenshots, then failed an immediate assertion of
-navigation state following the asynchronous dialog close event. The test now
-waits for the close handler. A rerun was held at tool approval and interrupted;
-final browser validation is delegated to the integration lane. Desktop screenshots
-from the partial run are in `/tmp/star-agent-inventory-evidence/`. Mobile and
-station screenshots are not claimed. The test's station docking state is an
-explicit UI fixture, not evidence of physical station traversal.
+The production Chromium journey passes backpack/ship transfers, box expansion,
+reload, station storage, physical-cache availability and the 390 px phone layout.
+Evidence is included with the expedition review. Station docking and placement near
+the field cache are explicit UI fixtures; this inventory test does not claim a
+physical journey to either location. The separate controller journey covers real
+in-game entry, mining, backpack access and return to play through standard input.

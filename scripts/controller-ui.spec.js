@@ -11,6 +11,7 @@ test('standard controller selects destination, tool, backpack contents and trans
   await tap(page,13);await tap(page,13);await tap(page,13);
   await expect(page.locator('[data-controller-key="destination-moon"]')).toBeFocused();
   await tap(page,0);expect(await page.evaluate(()=>window.fixtureState.destination)).toBe('moon');
+  await page.waitForFunction(()=>!window.fixtureState.transitioning&&window.fixtureState.armed);expect(await page.evaluate(()=>window.fixtureState.pauseLeaks)).toBe(0);
   await tap(page,15);expect(await page.evaluate(()=>window.fixtureState.selected)).toBe(false);
   await tap(page,15);expect(await page.evaluate(()=>window.fixtureState.selected)).toBe(true);
   await page.evaluate(()=>window.pad.buttons[7]={pressed:true,value:1});await page.waitForFunction(()=>window.fixtureState.cuts>2);

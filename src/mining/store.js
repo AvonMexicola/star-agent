@@ -100,7 +100,7 @@ export class MiningStore {
   releaseRock(id) { this.initialRocks.delete(id); }
   canEditRock(id) { return safeId(id) && !this.blocked && (id === ROCK_ID || Object.hasOwn(this.state.rocks, id) || Object.keys(this.state.rocks).length < MAX_SAVED_ROCKS); }
   commitRock(id, result, revision) {
-    if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : 'Rock save slots are full (8 space deposits). Existing deposits remain mineable.'; return false; }
+    if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : 'Rock save slots are full (8 surveyed deposits). Existing deposits remain mineable.'; return false; }
     const rock = id === ROCK_ID ? this.state : this.state.rocks[id] ?? this.initialRocks.get(id);
     if (!rock || revision !== rock.revision || !Array.isArray(result.yieldVolume) || result.yieldVolume.length !== 3 || !result.yieldVolume.every(n => Number.isFinite(n) && n >= 0) || !validField(result.field)) return false;
     const added = result.yieldVolume.map(v => v * 12);

@@ -486,7 +486,7 @@ docs/selene-expedition.md for the concrete feature and storage boundaries.
 - Selene's versioned ring generator defines 20,971,520 stable descriptors in a 20 km
   radial by 2 km vertical band. Six family functions drive low-detail silhouettes
   and editable small-rock fields. Near-cell streaming is bounded to 3,200 descriptors,
-  two live excavation workers, eight persisted space-rock snapshots.
+  two live ring excavation workers, eight persisted additional survey snapshots.
 - Large asteroids remain procedural collision geometry pending chunked mining;
   small representatives of all six families are hand-mineable in EVA. Preserve this
   distinction in UI/docs. No massive unbounded mesh allocation or pristine LOD over cuts.
@@ -496,3 +496,32 @@ docs/selene-expedition.md for the concrete feature and storage boundaries.
 
 This update replaces no manager review requirement. Final test/evidence counts are
 recorded in the expedition review handoff, not inferred from earlier mining PR #21.
+
+
+## Resource geography is visible from orbit
+
+Cees requested surface color patches that reveal where to find resources. The
+canonical `moonResources(direction)` now supplies normalized basalt/copper/ice
+weights, a dominant mineral and province name. Both orbital fallback and streamed
+ground patches use `moonSurface` colors from those weights; no separate texture or
+heightfield is introduced. Resource version 1 is separate from terrain version 4.
+The existing crater/mountain height fixtures and Crescent landing shelf are intact.
+
+Blue-white marks ice, rust-red copper and dark slate basalt. Five broad provinces
+are large enough to survive orbital mesh sampling. Existing near-Crescent named
+geology overrides those broad masks locally. A HUD legend reports the region below
+the ship, and the shared command menu offers controller-accessible survey routes.
+
+Each province has a deterministic mineable outcrop, with at most one additional
+surface worker. The landing approach is offset from its collider. The outcrop's
+profile drives discrete mineral seams, mesh colors, shader classification and
+worker yield together. Shared atomic saves preserve cuts and collected cargo;
+changing visual LOD cannot regenerate a pristine shell over an edited deposit.
+Crescent retains its saved geometry and now follows the local resource profile.
+The eight additional saved deposit slots are shared by provincial and ring rocks.
+
+The surface heightfield is not itself excavatable. Province fractions describe
+regional composition, not a guarantee that every individual cut returns that exact
+mixture. Keep future assets, scanners and resource yields on this same classifier.
+See docs/resource-geology.md and docs/selene-expedition.md; renderer evidence and
+current acceptance status belong in docs/qa/expedition/ and the review handoff.

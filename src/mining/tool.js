@@ -12,7 +12,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock}){
   let hit=null,held=false,selected=true,active=false,mouseArmed=false,direction=new THREE.Vector3();
   const equipment=new Equipment({skeleton:{bones:[hand,back]}},scene,{camera,sockets,onMine:data=>{if(hit&&active)rock.onMine({...data,point:hit.point.clone(),target:hit.rock},direction);}});
   equipment.equip('mining-laser-tool');
-  const lamp=new THREE.SpotLight(new THREE.Color(.82,.93,1),12,12,.58,.6,2);
+  const lamp=new THREE.SpotLight(new THREE.Color(.82,.93,1),4,12,.58,.6,2);
   lamp.castShadow=true;lamp.shadow.mapSize.set(512,512);lamp.shadow.camera.near=.1;lamp.shadow.camera.far=12;lamp.shadow.bias=-.0002;lamp.shadow.normalBias=.015;
   scene.add(lamp,lamp.target);
   const panel=document.createElement('aside');panel.id='mining-panel';panel.hidden=true;
@@ -42,15 +42,16 @@ export function createMiningTool({scene,camera,canvas,nav,rock}){
       equipment.setRenderOrigin(origin);equipment.holster(!active||!selected);
       // Check muzzle obstruction too, so a close edge cannot be mined through.
       const muzzle=equipment.muzzleWorldPosition();
+      if(muzzle){lamp.position.copy(muzzle).sub(origin).addScaledVector(direction,.06);lamp.target.position.copy(lamp.position).addScaledVector(direction,6);}
       if(hit&&muzzle){const to=hit.point.clone().sub(muzzle),length=to.length(),muzzleHit=rock.raycast(muzzle,to.normalize(),length+.1);if(muzzleHit&&muzzleHit.point.distanceTo(hit.point)>.22)hit=null;}
       const firing=active&&selected&&Boolean(held||nav.keys.has('KeyT')||nav.toolTrigger>.1)&&rock.store.free>.001&&!rock.error&&!rock.store.blocked;
       equipment.update(dt,{firing,hasHit:Boolean(hit),targetWorldPoint:hit?.point??nav.position.clone().addScaledVector(direction,8)});
       if(!firing)rock.budget=0;
       if(!active)return;
       const local=rock.position.clone().sub(nav.position).applyQuaternion(nav.orientation.clone().invert()),angle=Math.atan2(local.x,-local.z)*180/Math.PI;
-      $('.mining-eyebrow').textContent=nav.mode==='eva'?'SELENE RINGS / EVA SURVEY':'SELENE / FIELD SURVEY';
+      $('.mining-eyebrow').textContent=nav.mode==='eva'?`SELENE RINGS / EVA · ${nav.speed.toFixed(1)} m/s`:'SELENE / FIELD SURVEY';
       $('.mining-target').textContent=(rock.targetName??'Crescent deposit').toUpperCase();
-      $('.mining-guide').textContent=hit?`${hit.distance.toFixed(1)} m · Cut the rock to expose copper and ice`:`${distance.toFixed(0)} m · ${Math.abs(angle).toFixed(0)}° ${angle<0?'LEFT':'RIGHT'} · Tool range 8 m`;
+      $('.mining-guide').textContent=hit?`${hit.distance.toFixed(1)} m · Cut the rock to collect its minerals`:`${distance.toFixed(0)} m · ${Math.abs(angle).toFixed(0)}° ${angle<0?'LEFT':'RIGHT'} · Tool range 8 m`;
       $('meter').value=equipment.heat;
       $('.mining-resources').textContent=`Pouch ${rock.store.mass.toFixed(2)} / ${rock.store.capacity??12} kg · ${rock.store.state.pack.map((m,i)=>`${MINERALS[i]} ${m.toFixed(2)}`).join(' / ')}`;
       button.disabled=!selected||Boolean(rock.error)||rock.store.blocked||rock.store.free<.001;

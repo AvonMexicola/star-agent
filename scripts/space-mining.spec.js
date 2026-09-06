@@ -34,7 +34,7 @@ test('ring survey, physical EVA exit, thruster approach, Xbox asteroid mining an
   expect(mined.speed).toBeLessThan(.01);expect(mined.mining.tool.toolError).toBe(null);expect(mined.mining.activeRock).toMatch(/^selene-ring-v1-/);
   // View opens the actual shared backpack dialog; the collected items are
   // visible without approaching the ship or a separate survey-only interface.
-  await page.evaluate(()=>window.spacePad.buttons[8]={pressed:true,value:1});await page.waitForTimeout(180);await page.evaluate(()=>window.spacePad.buttons[8]={pressed:false,value:0});
+  await page.evaluate(()=>window.spacePad.buttons[8]={pressed:true,value:1});await page.waitForFunction(()=>window.starAgent.navigation.gamepad.previous[8]);await page.evaluate(()=>window.spacePad.buttons[8]={pressed:false,value:0});
   await expect(page.locator('dialog[open]')).toBeVisible();await expect(page.locator('dialog[open]')).toContainText(/backpack/i);
   await page.screenshot({path:`${evidence}/space-backpack.png`});
   const gpu=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);});

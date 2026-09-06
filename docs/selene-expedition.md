@@ -26,6 +26,24 @@ open rear ramp to the pilot chair. See [EVA controls](character-eva.md) for the
 translation, roll and brake bindings. Nearby small rocks use the same mining tool,
 resource pouch and saved density edits as the surface deposit.
 
+## Read resources from orbit
+
+Selene has blue-white ice provinces, rust-red copper provinces and dark slate
+basalt highlands. The orbital mesh and nearby terrain sample the same geological
+field. Province boundaries persist through descent, and a surface legend identifies
+the region directly below the ship.
+
+Open **Menu** (M / Xbox Menu) and choose a named resource survey, such as Copper
+Ejecta Province or Frostwall Ice Province. Land with L / Y, leave the chair and rear
+hatch, then follow the mining panel to the nearby outcrop. The outcrop's visible
+veins and collected minerals use that region's composition. Geological fractions
+describe the deposit overall; individual cuts can strike a trace mineral seam.
+
+Five representative provincial outcrops stream on approach, with at most one live
+provincial worker. They share the same tool, backpack, collision and persistent cut
+system as Crescent and the small ring asteroids. The colored terrain itself remains
+a heightfield; mining is available on these outcrops. See [resource geology](resource-geology.md).
+
 ## One inventory language
 
 The backpack, ship, station and Crescent field cache use the same box/stack view.
@@ -63,7 +81,7 @@ Nearby small rocks promote to at most two live 32³-cell excavation domains. The
 low-detail silhouettes and mineable fields sample the same continuous shape
 function. A saved edited instance stays suppressed at lower detail and restores
 its cut when approached again. Edits and collection share the surface mining
-transaction. Up to eight space deposits can currently retain edits in browser
+transaction. Up to eight surveyed surface or space deposits can currently retain edits in browser
 storage; previously saved deposits remain mineable when that limit is reached.
 
 The larger ring boulders currently provide procedural geometry and conservative

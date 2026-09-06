@@ -36,12 +36,20 @@ test('backpack shows saved mining items and shared box UI transfers, expands and
   await expect(page.locator('[data-container="pack"] .inventory-box')).toHaveCount(2);
   // UI integration fixture: docking state is injected; this does not claim a physical station journey.
   await page.evaluate(() => { window.starAgent.navigation.dockedAtStation = true; });
-  await page.keyboard.press('i'); await page.keyboard.press('i');
+  await page.keyboard.press('i'); await page.waitForFunction(()=>window.starAgent.navigation.enabled); await page.keyboard.press('i');
   await page.getByRole('button', { name: 'Aeon orbital locker', exact: true }).click();
   await page.locator('[data-container="pack"] [data-item="ice"]').click();
   await page.locator('[data-transfer="stack"]').click();
   await expect(page.locator('[data-container="station"] [data-item="ice"]')).toContainText('1.25 kg');
   await page.screenshot({ path: `${evidence}/station-desktop.png` });
+  // The base-storage renderer is exercised at the registered physical field cache.
+  // Position setup isolates inventory availability; traversal is covered elsewhere.
+  await page.keyboard.press('Escape');await page.waitForFunction(()=>window.starAgent.navigation.enabled);
+  await page.evaluate(()=>{const n=window.starAgent.navigation;n.transitMoon();n.mode='walk';n.position.fromArray(window.starAgent.state.fieldCache);const up=n.normal.clone(),east=n.position.clone().set(0,1,0).cross(up).normalize();n.position.addScaledVector(up,1.03).addScaledVector(east,3);n.orientToward(n.position.clone().fromArray(window.starAgent.state.fieldCache),up);});
+  await page.keyboard.press('i');await page.getByRole('button',{name:'Crescent field cache',exact:true}).click();
+  await page.locator('[data-container="pack"] [data-item="basalt"]').click();await page.locator('[data-transfer="one"]').click();
+  await expect(page.locator('[data-container="crescent-cache"] [data-item="basalt"]')).toContainText('1.00 kg');
+  await page.screenshot({path:`${evidence}/field-cache-desktop.png`});
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Backpack', exact: true }).click();
   await page.locator('#cargo-dialog').evaluate(el => { el.scrollTop = 0; });
@@ -57,7 +65,7 @@ test('backpack shows saved mining items and shared box UI transfers, expands and
   await page.evaluate(() => window.starAgent.navigation.openBackpack());
   await expect(page.locator('#cargo-dialog')).not.toBeVisible();
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('star-agent.selene-mining.v1')));
-  expect(saved.remote.station.items.ice).toBe(1.25); expect(saved.pack[2]).toBe(0);
+  expect(saved.remote['crescent-cache'].items.basalt).toBe(1);expect(saved.remote.station.items.ice).toBe(1.25); expect(saved.pack[2]).toBe(0);
   const renderer = await page.evaluate(() => { const gl = document.querySelector('canvas').getContext('webgl2'), ext = gl.getExtension('WEBGL_debug_renderer_info'); return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER); });
   await writeFile(`${evidence}/evidence.json`, JSON.stringify({ browser: browser.version(), renderer, viewports: ['1440x900', '390x844'], seededMineralsKg: 6.75, stationState: 'debug docking fixture, not a physical traversal', errors }, null, 2));
   expect(errors).toEqual([]);
