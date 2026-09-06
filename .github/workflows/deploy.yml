@@ -1,4 +1,4 @@
-name: Deploy client to play.staragent.site
+name: Deploy to staragent.site (play + homepage)
 on:
   push:
     branches: [main]
@@ -21,10 +21,14 @@ jobs:
           KNOWN: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           mkdir -p ~/.ssh && echo "$KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy && echo "$KNOWN" >> ~/.ssh/known_hosts
-          echo "$GITHUB_SHA" > dist/RELEASE
+          # Release layout: public/ = game client (dist), site/ = homepage (repo site/, if present)
+          mkdir -p release/public release/site
+          rsync -a dist/ release/public/
+          [ -d site ] && rsync -a site/ release/site/ || true
+          echo "$GITHUB_SHA" > release/RELEASE
           # RELEASE last: the server's path unit promotes atomically when it appears
-          rsync -az --delete --exclude RELEASE -e "ssh -i ~/.ssh/deploy" dist/ staragent@$HOST:/
-          rsync -az -e "ssh -i ~/.ssh/deploy" dist/RELEASE staragent@$HOST:/
+          rsync -az --delete --exclude RELEASE -e "ssh -i ~/.ssh/deploy" release/ staragent@$HOST:/
+          rsync -az -e "ssh -i ~/.ssh/deploy" release/RELEASE staragent@$HOST:/
       - name: Verify
         run: |
           sleep 15
