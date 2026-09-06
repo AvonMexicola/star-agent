@@ -6,6 +6,7 @@ import { patchSurfaceMaterial, patchSurfaceUV } from './patch-surface.js';
 import { addTerrainMorph, advanceTerrainMorph, terrainMorphValue } from './terrain-lod.js';
 import { PYRE_RADIUS, PYRE_POSITION, PYRE_MAX_HEIGHT, PYRE_EPOCH, pyreSurface } from './pyre-world.js';
 
+export const PYRE_TERRAIN = Object.freeze({ name: 'Pyre', radius: PYRE_RADIUS, position: PYRE_POSITION, maxHeight: PYRE_MAX_HEIGHT, sample: pyreSurface });
 export const PYRE_GRID = 16, PYRE_MAX_LEVEL = 17;
 const normalized = (x, y, z) => { const l = Math.hypot(x, y, z); return [x / l, y / l, z / l]; };
 
@@ -19,16 +20,17 @@ export function cubeCoordinates(d) {
 
 /** Patch geometry in body-local metres (double-precision centre on the real surface).
  * A one-cell halo shares height samples between vertices and their normals. */
-export function generatePyrePatch({ face, level, ix, iy }) {
+export function generatePyrePatch({ face, level, ix, iy }, body = PYRE_TERRAIN) {
+  const { radius, sample: surface } = body;
   const grid=terrainGridForLevel(level);
   const size = 2 / 2 ** level, u0 = -1 + ix * size, v0 = -1 + iy * size;
-  const d0 = cubeDirection(face, u0 + size / 2, v0 + size / 2), centerRadius = PYRE_RADIUS + pyreSurface(...d0).height, center = d0.map(v => v * centerRadius);
+  const d0 = cubeDirection(face, u0 + size / 2, v0 + size / 2), centerRadius = radius + surface(...d0).height, center = d0.map(v => v * centerRadius);
   const count = (grid + 1) ** 2 + 4 * (grid + 1);
   const positions = new Float32Array(count * 3), normals = new Float32Array(count * 3), directions = new Float32Array(count * 3), points = new Float32Array(count * 3), colors = new Float32Array(count * 3), data = new Float32Array(count * 4);
   const stride = grid + 3, samples = [];
   for (let y = -1; y <= grid + 1; y++) for (let x = -1; x <= grid + 1; x++) {
-    const d = cubeDirection(face, u0 + size * x / grid, v0 + size * y / grid), sample = pyreSurface(...d);
-    samples.push({ d, sample, p: d.map(v => v * (PYRE_RADIUS + sample.height)), normal: null });
+    const d = cubeDirection(face, u0 + size * x / grid, v0 + size * y / grid), sample = surface(...d);
+    samples.push({ d, sample, p: d.map(v => v * (radius + sample.height)), normal: null });
   }
   const at = (x, y) => samples[(y + 1) * stride + x + 1];
   let maxHeight = -Infinity, minHeight = Infinity;
@@ -54,24 +56,25 @@ export function generatePyrePatch({ face, level, ix, iy }) {
   for (let y = 0; y < grid; y++) for (let x = 0; x < grid; x++) { const a = y * (grid + 1) + x, b = a + 1, c = a + grid + 1; indices.push(a, b, c, b, c + 1, c); }
   const edges = [Array.from({ length: grid + 1 }, (_, i) => i), Array.from({ length: grid + 1 }, (_, i) => i * (grid + 1) + grid), Array.from({ length: grid + 1 }, (_, i) => grid * (grid + 1) + grid - i), Array.from({ length: grid + 1 }, (_, i) => (grid - i) * (grid + 1))];
   let next = (grid + 1) ** 2;
-  const depth = Math.max(.15, size * PYRE_RADIUS * .18);
+  const depth = Math.max(.15, size * radius * .18);
   for (const edge of edges) { const start = next; for (const index of edge) write(next++, index % (grid + 1), Math.floor(index / (grid + 1)), depth); for (let i = 0; i < grid; i++) indices.push(edge[i], start + i, edge[i + 1], edge[i + 1], start + i, start + i + 1); }
-  const field=level>=6&&level<=13?generatePatchSurface({face,level,ix,iy,radius:PYRE_RADIUS,directionAt:cubeDirection,sample:pyreSurface}):null;
+  const field=level>=6&&level<=13?generatePatchSurface({face,level,ix,iy,radius,directionAt:cubeDirection,sample:surface}):null;
   return { grid, field, center, positions, normals, directions, points, colors, data, indices: new Uint16Array(indices), maxHeight, minHeight };
 }
 
 /** Worker-streamed cubed-sphere quadtree for Pyre. Falls back to synchronous
  * generation when Workers are unavailable (node tests). */
 export class PyreTerrain {
-  constructor(parent, material, { sync = false, workers = 3, onMaps = null } = {}) {
+  constructor(parent, material, { sync = false, workers = 3, onMaps = null, body = PYRE_TERRAIN, workerFactory = () => new Worker(new URL('./pyre.worker.js', import.meta.url), { type: 'module' }) } = {}) {
+    this.body = body;
     this.parent = parent; this.material = material; this.nodes = new Map(); this.queue = []; this.jobs = new Map(); this.nextId = 0; this.workers = [];
     this.origin = new THREE.Vector3(); this.local = new THREE.Vector3(); this.visibleCount = 0; this.maxLevel = 0; this.buildsLastFrame = 0; this.altitude = Infinity; this.error = null;
     this.sync = sync || typeof Worker === 'undefined'; this.onMaps = onMaps; this.lastSelect = 0;this.frame=0;this.lastMorphTime=null;this.disposed=false;
     if (!this.sync) for (let i = 0; i < Math.min(workers, Math.max(1, (navigator.hardwareConcurrency || 4) - 2)); i++) {
-      const worker = new Worker(new URL('./pyre.worker.js', import.meta.url), { type: 'module' });
+      const worker = workerFactory();
       const slot = { worker, busy: false };
       worker.onmessage = e => this.receive(slot, e.data);
-      worker.onerror = e => { console.error('Pyre terrain worker failed', e); this.error = 'Pyre terrain worker failed.'; slot.busy = false; };
+      worker.onerror = e => { console.error(`${this.body.name} terrain worker failed`, e); this.error = `${this.body.name} terrain worker failed.`; slot.busy = false; };
       this.workers.push(slot);
     }
     this.roots = Array.from({ length: 6 }, (_, face) => this.node(face, 0, 0, 0));
@@ -81,16 +84,16 @@ export class PyreTerrain {
   node(face, level, ix, iy) {
     const key = `${face}/${level}/${ix}/${iy}`; if (this.nodes.has(key)) return this.nodes.get(key);
     const size = 2 / 2 ** level, d = cubeDirection(face, -1 + (ix + .5) * size, -1 + (iy + .5) * size), normal = new THREE.Vector3(...d);
-    const node = { key, face, level, ix, iy, size, normal, surface: normal.clone().multiplyScalar(PYRE_RADIUS + pyreSurface(...d).height), children: null, mesh: null, queued: false, lastUsed: performance.now(),refined:false,wantsSplit:false,progress:0,target:0,morph:{value:1},parent:null,residentFrame:0 };
+    const node = { key, face, level, ix, iy, size, normal, surface: normal.clone().multiplyScalar(this.body.radius + this.body.sample(...d).height), children: null, mesh: null, queued: false, lastUsed: performance.now(),refined:false,wantsSplit:false,progress:0,target:0,morph:{value:1},parent:null,residentFrame:0 };
     this.nodes.set(key, node); return node;
   }
   request(node, urgent = false) {
     if (node.mesh || node.queued) return;
-    if (this.sync) { this.upload(node, generatePyrePatch(node)); this.buildsLastFrame++; return; }
+    if (this.sync) { this.upload(node, generatePyrePatch(node, this.body)); this.buildsLastFrame++; return; }
     node.queued = true; node.urgent = urgent; this.queue.push(node);
   }
   dispatch() {
-    const rank = n => (n.urgent ? 0 : 1e6) + n.surface.distanceTo(this.local) / (n.size * PYRE_RADIUS);
+    const rank = n => (n.urgent ? 0 : 1e6) + n.surface.distanceTo(this.local) / (n.size * this.body.radius);
     this.queue.sort((a, b) => rank(a) - rank(b));
     for (const slot of this.workers) {
       if (slot.busy || !this.queue.length) continue;
@@ -121,11 +124,11 @@ export class PyreTerrain {
     const material=data.field?patchSurfaceMaterial(this.material,data.field):this.material.clone();
     if(!data.field){material.onBeforeCompile=this.material.onBeforeCompile;material.customProgramCacheKey=this.material.customProgramCacheKey;}
     addTerrainMorph(material,node.morph,false);
-    node.mesh = new THREE.Mesh(geometry, material); node.mesh.name = `Pyre terrain ${node.key}`;
+    node.mesh = new THREE.Mesh(geometry, material); node.mesh.name = `${this.body.name} terrain ${node.key}`;
     node.mesh.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});
     addTerrainMorph(node.mesh.customDepthMaterial,node.morph,false);
     node.mesh.receiveShadow = true; node.mesh.castShadow = node.level >= 12; node.mesh.visible = false;
-    node.mesh.position.copy(node.center).add(new THREE.Vector3(...PYRE_POSITION)).sub(this.origin);
+    node.mesh.position.copy(node.center).add(new THREE.Vector3(...this.body.position)).sub(this.origin);
     this.parent.add(node.mesh);
   }
   /** Request the whole column of nodes (and their siblings) above a landing direction. */
@@ -158,7 +161,7 @@ export class PyreTerrain {
       positions.setXYZ(index,...values);
     };
     for(let y=0;y<=grid;y++)for(let x=0;x<=grid;x++)write(y*(grid+1)+x,x,y);
-    let index=(grid+1)**2;const depth=Math.max(.15,child.size*PYRE_RADIUS*.18);
+    let index=(grid+1)**2;const depth=Math.max(.15,child.size*this.body.radius*.18);
     for(let i=0;i<=grid;i++)write(index++,i,0,depth);
     for(let i=0;i<=grid;i++)write(index++,grid,i,depth);
     for(let i=0;i<=grid;i++)write(index++,grid-i,grid,depth);
@@ -167,31 +170,31 @@ export class PyreTerrain {
     geometry.computeBoundingBox();geometry.boundingBox.union(new THREE.Box3().setFromBufferAttribute(positions));geometry.boundingSphere=geometry.boundingBox.getBoundingSphere(new THREE.Sphere());
   }
   update(worldPosition, origin) {
-    this.origin.copy(origin); this.local.copy(worldPosition).sub(new THREE.Vector3(...PYRE_POSITION));
+    this.origin.copy(origin); this.local.copy(worldPosition).sub(new THREE.Vector3(...this.body.position));
     const now = performance.now(),dt=this.lastMorphTime===null?0:Math.max(0,(now-this.lastMorphTime)/1000);this.lastMorphTime=now;this.frame++;
     for(const node of this.nodes.values()){
       node.progress=advanceTerrainMorph(node.progress,node.target,dt);
       if(node.children)for(const child of node.children)child.morph.value=terrainMorphValue(node.progress);
     }
     if (now - this.lastSelect > 100 || this.sync) { this.select(now); this.lastSelect = now; }
-    for (const node of this.nodes.values()) if (node.mesh) node.mesh.position.copy(node.center).add(new THREE.Vector3(...PYRE_POSITION)).sub(origin);
+    for (const node of this.nodes.values()) if (node.mesh) node.mesh.position.copy(node.center).add(new THREE.Vector3(...this.body.position)).sub(origin);
   }
   select(now = performance.now()) {
     const radius = this.local.length(), radial = this.local.clone().normalize();
-    this.altitude = radius - PYRE_RADIUS - pyreSurface(radial.x, radial.y, radial.z).height;
+    this.altitude = radius - this.body.radius - this.body.sample(radial.x, radial.y, radial.z).height;
     for (const node of this.nodes.values()) if (node.mesh) node.mesh.visible = false;
     for (const n of this.queue) n.queued = false; this.queue = [];
     this.buildsLastFrame = 0; this.visibleCount = 0; this.maxLevel = 0;
     // Streaming budget: many more patches in flight close to the ground (moon lesson).
     let budget = this.altitude < 5000 ? 64 : this.altitude < 100_000 ? 32 : 16;
     const distance = node => node.surface.distanceTo(this.local);
-    const minLevel = radius < PYRE_RADIUS * 12 ? 3 : 2;
+    const minLevel = radius < this.body.radius * 12 ? (this.body.orbitLevel ?? 3) : 2;
     const visit = (node,collapse=false) => {
-      if (!collapse && node.level > 1 && node.normal.dot(radial) < PYRE_RADIUS / Math.max(PYRE_RADIUS, radius) - node.size * 1.5 - PYRE_MAX_HEIGHT / PYRE_RADIUS) return;
+      if (!collapse && node.level > 1 && node.normal.dot(radial) < this.body.radius / Math.max(this.body.radius, radius) - node.size * 1.5 - this.body.maxHeight / this.body.radius) return;
       node.lastUsed = now;
       if (!node.mesh && budget > 0) { this.request(node); budget--; }
       if(node.refined&&!node.children.every(child=>child.mesh)){node.refined=false;node.progress=node.target=0;}
-      node.wantsSplit=!collapse&&(node.level<minLevel||(node.level<PYRE_MAX_LEVEL&&distance(node)<node.size*PYRE_RADIUS*(node.wantsSplit?2.7:2.3)));
+      node.wantsSplit=!collapse&&(node.level<minLevel||(node.level<PYRE_MAX_LEVEL&&distance(node)<node.size*this.body.radius*(node.wantsSplit?2.7:2.3)));
       if(node.wantsSplit&&node.mesh&&node.morph.value===1){
         if(!node.children)node.children=this.childrenOf(node);
         for(const child of node.children){child.lastUsed=now;if(!child.mesh&&budget>0){this.request(child);budget--;}}

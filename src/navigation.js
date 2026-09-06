@@ -1,11 +1,12 @@
+import { MIASMA_ARRIVAL_ALTITUDE, miasmaArrivalDirection, constrainMiasmaStep } from './miasma-world.js';
 import * as THREE from 'three';
 import { SUN_POSITION, SUN_AXIS, sunStandoffPoint } from './stellar-world.js';
 import { createStellarThermal, stepStellarThermal, stellarIncursion } from './stellar-thermal.js';
 import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
-import { PYRE_ARRIVAL_ALTITUDE, pyreLandingDirection, constrainPyreStep, pyreFrame, VOLCANOES, fromPyreBody } from './pyre-world.js';
+import { PYRE_ARRIVAL_ALTITUDE, pyreArrivalDirection, pyreLandingDirection, constrainPyreStep, pyreFrame } from './pyre-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
-import { SELENE, PYRE, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
+import { SELENE, PYRE, MIASMA, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
 import { environmentAt, step as stepFlight } from './flight-model.js';
 import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './boarding.js';
 
@@ -97,13 +98,14 @@ export class Navigation {
     travel.elapsed+=Math.max(0,Number.isFinite(dt)?dt:0);
     const sample=sampleTravel(travel.plan,travel.elapsed);
     if(travel.plan.direction.lengthSq()>0){
-      matrix.lookAt(new THREE.Vector3(),travel.plan.direction,UP);
+      matrix.lookAt(new THREE.Vector3(),travel.plan.direction,travel.targetId==='pyre'||travel.targetId==='miasma'?new THREE.Vector3(...pyreFrame().y):UP);
       const aligned=new THREE.Quaternion().setFromRotationMatrix(matrix);
       this.orientation.slerp(aligned,sample.phase==='spooling'?1-Math.exp(-4*dt):1);
     }
     this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
     if(sample.done){
       this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+      if(travel.plan.kind==='travel'&&(travel.targetId==='pyre'||travel.targetId==='miasma'))this.orientToward(new THREE.Vector3(...(travel.targetId==='pyre'?PYRE:MIASMA).center),new THREE.Vector3(...pyreFrame().y));
       this.notify(travel.plan.kind==='abort'?'Drive disengaged. Normal flight restored.':travel.targetId==='star'?'Stellar observation distance reached. Watch shield temperature; Space + Shift retreats.':'Approach reached. Normal flight restored; descend to land.');
     }
   }
@@ -198,9 +200,8 @@ export class Navigation {
     this.orientToward(this.position.clone().addScaledVector(east,1000).addScaledVector(d,-180),d);
     this.jumpHeight=0;this.jumpVelocity=0;
   }
-  /** Arrive above the dusk terminator looking north along it: day side to the right,
-   * glowing night side to the left. Pitch follows the horizon dip at any altitude. */
-  transitPyre(altitude=PYRE_ARRIVAL_ALTITUDE,direction=pyreLandingDirection()){
+  /** High arrival matches the Aeon approach: sunlight left, night right. */
+  transitPyre(altitude=PYRE_ARRIVAL_ALTITUDE,direction=altitude===PYRE_ARRIVAL_ALTITUDE?pyreArrivalDirection():pyreLandingDirection()){
     this.orbit();
     const d=new THREE.Vector3(...direction).normalize();
     this.position.copy(bodySurfacePoint(d,PYRE,altitude));
@@ -209,11 +210,15 @@ export class Navigation {
     if(along.dot(new THREE.Vector3(...pyreFrame().y))<0)along.negate();
     const dip=Math.acos(PYRE.radius/(PYRE.radius+Math.max(0,altitude))),pitch=Math.min(1.3,dip+.06);
     this.orientToward(this.position.clone().addScaledVector(along,1000*Math.cos(pitch)).addScaledVector(d,-1000*Math.sin(pitch)),d);
-    // Frame the nearby shield at arrival so the destination opens on geography.
-    if(altitude===PYRE_ARRIVAL_ALTITUDE){
-      const landmark=new THREE.Vector3(...fromPyreBody(...VOLCANOES[0].direction));
-      this.orientToward(bodySurfacePoint(landmark,PYRE),d);
-    }
+    if(altitude===PYRE_ARRIVAL_ALTITUDE)this.orientToward(new THREE.Vector3(...PYRE.center),new THREE.Vector3(...pyreFrame().y));
+    this.jumpHeight=0;this.jumpVelocity=0;
+  }
+  transitMiasma(altitude=MIASMA_ARRIVAL_ALTITUDE,direction=miasmaArrivalDirection()){
+    if(this.mode==='destroyed')return;
+    this.orbit();const d=new THREE.Vector3(...direction).normalize();
+    this.position.copy(bodySurfacePoint(d,MIASMA,altitude));
+    if(altitude>100000)this.orientToward(new THREE.Vector3(...MIASMA.center),new THREE.Vector3(...pyreFrame().y));
+    else {const east=new THREE.Vector3().crossVectors(Math.abs(d.y)<.9?UP:RIGHT,d).normalize();this.orientToward(this.position.clone().addScaledVector(east,1000).addScaledVector(d,-180),d);}
     this.jumpHeight=0;this.jumpVelocity=0;
   }
   get stationDistance(){return this.station?.ready?this.position.distanceTo(this.station.worldPosition):Infinity;}
@@ -399,6 +404,9 @@ export class Navigation {
         const pyre=constrainPyreStep(previous,proposed);
         if(pyre.hit){this.position.copy(pyre.point);this.touchDown();break;}
         if(pyre.limited){proposed.copy(pyre.point);this.velocity.set(0,0,0);}
+        const toxic=constrainMiasmaStep(previous,proposed);
+        if(toxic.hit){this.position.copy(toxic.point);this.touchDown();break;}
+        if(toxic.limited){proposed.copy(toxic.point);this.velocity.set(0,0,0);}
         const collision=this.station?.constrainStep(previous,proposed,this.orientation);
         this.position.copy(collision?collision.point:proposed);
         if(collision?.hit){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;break;}

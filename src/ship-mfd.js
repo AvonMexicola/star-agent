@@ -73,7 +73,7 @@ export function createShipMFDs() {
     if(nav.body.star){
       const thermal=nav.stellarThermal;
       paint(screens[2],[['SHIELD TEMPERATURE',`${Math.round(thermal.temperature-273.15)} C`],['HULL INTEGRITY',`${Math.ceil(thermal.hull)}%`],['RADIATION',thermal.temperature>=STELLAR_THERMAL.damage?'THERMAL DAMAGE':'SHIELDS HOLDING']],'SPACE + SHIFT: RETREAT FROM STAR',2);
-    }else paint(screens[2], [['ENVIRONMENT', env.regime], ['HATCH / RAMP', nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
+    }else paint(screens[2], [['ENVIRONMENT', nav.body.toxic&&env.atmosphereFraction>0?'TOXIC · SUIT SEALED':env.regime], ['HATCH / RAMP', nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
     paint(screens[3], [['SHIP STORAGE', `${inventory.mass('ship').toFixed(1)} / ${CAPACITY.ship} kg`], ['BACKPACK', `${inventory.mass('pack').toFixed(1)} / ${CAPACITY.pack} kg`], ['ACCESS', 'STARBOARD CABIN']], 'ON FOOT: F AT THE CARGO CONTAINER', 3);
   };
   group.snapshot = () => screens.map(screen => ({ title: screen.title, values: [...screen.values] }));

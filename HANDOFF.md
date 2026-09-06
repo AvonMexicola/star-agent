@@ -444,3 +444,10 @@ including Fable's sun checkout, remain untouched.
 Local preview: port 53759 (`star-agent-stellar-encounter.service`). QA:
 `scripts/star.config.js`; evidence under `/tmp/star-agent-stellar`. Separate
 impact/re-entry damage branches still need consolidation at integration time.
+
+
+## Pyre twilight and Miasma — feat/pyre-toxic-moon
+
+Based on `feat/stellar-encounter` (PR #36), this adds a landable toxic moon and authored Pyre quadrature: Aeon drive and quick transit arrive with light left/night right at 1,800 km. The new moon's 650 km approach is on the map and in quick transit. Pyre generator v3 reflects named volcano/field longitudes into the visible hemisphere. Miasma shares the canonical quadtree/map/contact machinery, has a third atmosphere slot, animated cloud shell, mineral survey and small decorative fragments. Existing suit sealing is assumed; there is no new toxic-damage or oxygen system. See `docs/miasma.md` for implementation scope and verification commands. Local preview: `http://localhost:53761/?intro=0` (`star-agent-pyre-miasma.service`). Other agents' worktrees remain untouched.
+
+Miasma follow-up: atmosphere reduced to 18 km / 0.065 kg/m³ with sparse 5.2 km wisps. `src/miasma-flora.js` reuses Claude's four existing flora GLBs in deterministic instanced colonies, with gentle wind, mint luminescence and landed-ship clearance. Plants lazy-load below 2.5 km and fade by species at 48–140 m. No new asset downloads or dependencies. Additional browser check: `scripts/miasma-flora.config.js`; evidence `/tmp/star-agent-miasma-flora`. Same preview and PR #39.

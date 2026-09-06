@@ -4,10 +4,9 @@ import { createCloudNoise, cloudShader } from './cloud-volume.js';
 
 // Single-scattering integration in body-radius units. Rayleigh + Henyey-Greenstein
 // Mie scattering, exponential density, sunlight extinction and planet shadow.
-// Two atmosphere slots: 0 is Aeon (the former hard-coded constants, plus clouds),
-// 1 is any other body. A slot is skipped when the camera is more than
+// Atmosphere slots: 0 Aeon, 1 Pyre, 2 Miasma. A slot is skipped when the camera is more than
 // ATMOSPHERE_RANGE body radii away; distant bodies are painted as points instead.
-export const ATMOSPHERE_SLOTS = 2, POINT_BODIES = 2, ATMOSPHERE_RANGE = 400;
+export const ATMOSPHERE_SLOTS = 3, POINT_BODIES = 2, ATMOSPHERE_RANGE = 400;
 export const AEON_ATMOSPHERE = Object.freeze({
   height: ATMOSPHERE_HEIGHT, scaleHeight: 8000, mieScaleHeight: 1200,
   betaR: Object.freeze([5.802e-6, 13.558e-6, 33.100e-6]), betaM: Object.freeze([3.996e-6, 3.996e-6, 3.996e-6]), g: .76, gain: 11,
@@ -27,6 +26,7 @@ uniform float atmosphereRadius;
 uniform float exposure;
 uniform float sunAngularRadius;
 uniform float sunDisk;
+uniform int atmoOrder[${ATMOSPHERE_SLOTS}];
 uniform vec3 atmoCamera[${ATMOSPHERE_SLOTS}];
 uniform float atmoRadius[${ATMOSPHERE_SLOTS}];
 uniform float atmoOuter[${ATMOSPHERE_SLOTS}];
@@ -119,9 +119,10 @@ void main(){
     color+=pointColor[i]*(core+halo);
   }
   for(int i=0;i<${ATMOSPHERE_SLOTS};i++){
-    if(atmoEnabled[i]<.5)continue;
-    float bodyDistance=ground?sceneMetres/atmoRadius[i]:1e9;
-    color=scatter(color,atmoCamera[i],rd,bodyDistance,atmoRadius[i],atmoOuter[i],atmoBetaR[i],atmoBetaM[i],atmoScale[i],atmoPhase[i]);
+    int j=atmoOrder[i];
+    if(atmoEnabled[j]<.5)continue;
+    float bodyDistance=ground?sceneMetres/atmoRadius[j]:1e9;
+    color=scatter(color,atmoCamera[j],rd,bodyDistance,atmoRadius[j],atmoOuter[j],atmoBetaR[j],atmoBetaM[j],atmoScale[j],atmoPhase[j]);
   }
   if(atmoEnabled[0]>=.5){
     vec4 clouds=cloudRadiance(cameraPlanet,rd,distanceToScene,sunDot);
@@ -141,7 +142,7 @@ export class Atmosphere {
     this.target.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
     const slots=n=>Array.from({length:n});
     this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08},sunAngularRadius:{value:SUN_ANGULAR_RADIUS},sunDisk:{value:1},
-      atmoCamera:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoRadius:{value:slots(ATMOSPHERE_SLOTS).map(()=>RADIUS)},atmoOuter:{value:slots(ATMOSPHERE_SLOTS).map(()=>1)},
+      atmoOrder:{value:[0,1,2]},atmoCamera:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoRadius:{value:slots(ATMOSPHERE_SLOTS).map(()=>RADIUS)},atmoOuter:{value:slots(ATMOSPHERE_SLOTS).map(()=>1)},
       atmoBetaR:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoBetaM:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoScale:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector2(8000,1200))},atmoPhase:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector2(.76,11))},atmoEnabled:{value:slots(ATMOSPHERE_SLOTS).map(()=>0)},
       pointDirection:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3(0,0,1))},pointColor:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3())},pointSize:{value:slots(POINT_BODIES).map(()=>0)}},
       vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
@@ -174,6 +175,9 @@ export class Atmosphere {
       u.atmoCamera.value[i].copy(worldPosition).sub(body.center).multiplyScalar(1/body.radius);
       u.atmoEnabled.value[i]=u.atmoCamera.value[i].length()<ATMOSPHERE_RANGE?1:0;
     }
+    // Distinct non-overlapping atmospheres composite from far to near, including
+    // Miasma seen through Pyre's foreground air and Pyre seen from Miasma.
+    u.atmoOrder.value.sort((a,b)=>u.atmoCamera.value[b].length()*u.atmoRadius.value[b]-u.atmoCamera.value[a].length()*u.atmoRadius.value[a]);
     this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,1);this.renderer.clear();this.renderer.render(scene,camera);
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);
   }
