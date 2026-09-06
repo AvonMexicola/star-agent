@@ -1,8 +1,9 @@
 import {test,expect} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
 const tap = async(page,index) => {
-  await page.evaluate(i=>window.pad.buttons[i]={pressed:true,value:1},index);await page.waitForTimeout(80);
-  await page.evaluate(i=>window.pad.buttons[i]={pressed:false,value:0},index);await page.waitForTimeout(80);
+  const frames=()=>page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(resolve=>requestAnimationFrame(resolve));});
+  await page.evaluate(i=>window.pad.buttons[i]={pressed:true,value:1},index);await frames();
+  await page.evaluate(i=>window.pad.buttons[i]={pressed:false,value:0},index);await frames();
 };
 test('standard controller selects destination, tool, backpack contents and transfer without pointer or keyboard',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
