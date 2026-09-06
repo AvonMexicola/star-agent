@@ -684,3 +684,21 @@ no merge/deployment is claimed. Local playable candidate http://127.0.0.1:5260/;
 final actual-game interiors /review/shops/armory-interior.webp and
 /review/shops/components-interior.webp. This file update is the manager
 notification; it does not imply a read receipt.
+
+
+## MESHY RETAIL SOFT PROPS — PREPARED, ACCESS BLOCKED — 2026-09-06
+
+Cees authorized Meshy for more props. Isolated feat/retail-soft-props at
+/tmp/star-agent-retail-props, based on46b978f. Two exact prompts and actual
+counter-top placement/budget contracts are saved in
+assets/station-shop/soft-props/brief.json and README.md: Kestrel maintenance
+roll and Watchkeep folded protective jacket. These complement the reviewed
+shop interiors without overlapping fighter, equipment or base-building work.
+
+No Meshy tool is exposed in this session. The existing Chrome bridge's bounded
+read-only check hit its session limit (midnight Europe/Amsterdam reset); it did
+not reach Meshy. No jobs, generated assets, credit expenditure, integration or
+new review are claimed. Resume through the Meshy-capable browser lane when
+available, retaining source/job provenance and Astra review. The existing
+reviewed local shop build and production remain unchanged. This is a manager
+notification of prepared work and the actual blocker, not READY FOR REVIEW.
