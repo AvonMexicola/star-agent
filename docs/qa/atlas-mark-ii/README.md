@@ -17,7 +17,7 @@ This is an original ship asset and dedicated inspection/walking scene. It is not
 |---|---:|---:|---:|
 | Full authoring detail | 398,608 | 154 | 36,736,924 |
 | Distance candidate 1 | 128,387 | 154 | 13,325,672 |
-| Distance candidate 2 | 40,625 | 154 | 3,974,200 |
+| Distance candidate 2 | 40,625 | 154 | 3,974,280 |
 
 The hero has 13 materials and 10 textures. The full-detail material maps are 1024 px; distance candidates use 512 / 256 px derivatives. Geometry, UVs and hashes are recorded by `assets/atlas-mark-ii/manifest.json`. The studio loads the hero only. Distance switching, attachment clearance in gameplay and LOD interior quality are not approved by these measurements.
 

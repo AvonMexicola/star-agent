@@ -598,3 +598,5 @@ Final shallow-angle render review also isolated broad hull striping to key-shado
 acne (shadow-off removed it, normal-map-off did not). Bias is now -0.0005 with
 0.06 m normal bias for the 92 m key frustum. Seven final production views passed
 again with actual shadows and zero errors; before/final evidence is retained.
+
+Published as draft PR #30: https://github.com/AvonMexicola/star-agent/pull/30 . Preserve its draft status until independent art review and fleet integration are complete.
