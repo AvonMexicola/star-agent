@@ -2,7 +2,11 @@ import {Vector3,Quaternion} from 'three';
 import {MOON_RADIUS,MOON_POSITION,MOON_LANDING_DIRECTION,LANDING_FRAME} from './moon-world.js';
 
 export const RING_WIDTH=20000,RING_THICKNESS=2000,RING_RADIUS=MOON_RADIUS*2.08;
-export const ANGULAR_CELLS=8192,RADIAL_CELLS=20,VERTICAL_CELLS=4,ROCKS_PER_CELL=32;
+// V2 is a sparse navigable belt. A half-cell stagger and bounded jitter avoid
+// overlapping boulders while retaining at least 2 km between their outer bounds.
+export const ANGULAR_CELLS=2048,RADIAL_CELLS=7,VERTICAL_CELLS=1,ROCKS_PER_CELL=1;
+export const RING_RADIAL_CELL_SIZE=RING_WIDTH/RADIAL_CELLS,RING_VERTICAL_CELL_SIZE=RING_THICKNESS/VERTICAL_CELLS;
+export const LEGACY_RING_POPULATION=8192*20*4*32;
 export const RING_POPULATION=ANGULAR_CELLS*RADIAL_CELLS*VERTICAL_CELLS*ROCKS_PER_CELL;
 export const RING_NORMAL=Object.freeze(new Vector3(...MOON_LANDING_DIRECTION).multiplyScalar(.34).addScaledVector(new Vector3(...LANDING_FRAME.north),.9).addScaledVector(new Vector3(...LANDING_FRAME.east),.25).normalize().toArray());
 export const RING_ROTATION=new Quaternion().setFromUnitVectors(new Vector3(0,0,1),new Vector3(...RING_NORMAL));
@@ -10,27 +14,46 @@ const inverse=RING_ROTATION.clone().invert(),TAU=Math.PI*2;
 export const ASTEROID_FAMILIES=Object.freeze(['Angular basalt','Copper breccia','Ice aggregate','Layered shale','Pitted basalt','Fractured outcrop']);
 export function randomFor(seed){let n=seed>>>0;n=Math.imul(n^(n>>>16),0x7feb352d);n=Math.imul(n^(n>>>15),0x846ca68b);n=(n^(n>>>16))>>>0;return ()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296;};}
 export function cellId(a,r,z){return (((a%ANGULAR_CELLS+ANGULAR_CELLS)%ANGULAR_CELLS)*RADIAL_CELLS+r)*VERTICAL_CELLS+z;}
-export function asteroidDescriptor(id){
-  if(!Number.isSafeInteger(id)||id<0||id>=RING_POPULATION)throw RangeError('Asteroid id outside ring');
-  const slot=id%ROCKS_PER_CELL,cell=Math.floor(id/ROCKS_PER_CELL),z=cell%VERTICAL_CELLS,r=Math.floor(cell/VERTICAL_CELLS)%RADIAL_CELLS,a=Math.floor(cell/(VERTICAL_CELLS*RADIAL_CELLS));
-  const random=randomFor(id^0x6a09e667),angle=(a+random())/ANGULAR_CELLS*TAU;
+/** Legacy geometry identifiers remain reproducible for previously saved cuts. */
+export function asteroidDescriptorV1(id){
+  if(!Number.isSafeInteger(id)||id<0||id>=LEGACY_RING_POPULATION)throw RangeError('Asteroid id outside ring');
+  const slot=id%32,cell=Math.floor(id/32),z=cell%4,r=Math.floor(cell/4)%20,a=Math.floor(cell/(4*20));
+  const random=randomFor(id^0x6a09e667),angle=(a+random())/8192*TAU;
   const radius=RING_RADIUS-RING_WIDTH/2+(r+random())*1000;
   const height=-RING_THICKNESS/2+(z+random())*500;
   const position=new Vector3(Math.cos(angle)*radius,Math.sin(angle)*radius,height).applyQuaternion(RING_ROTATION);
   const family=Math.floor(random()*ASTEROID_FAMILIES.length),size=slot%8===0?12+random()**3*125:1;
   return {id,key:`selene-ring-v1-${id}`,position:position.toArray(),size,family,name:ASTEROID_FAMILIES[family],rotation:[random()*TAU,random()*TAU,random()*TAU],scale:[1,1,1],ice:family===2,mineable:size===1};
 }
+export function asteroidDescriptor(id){
+  if(!Number.isSafeInteger(id)||id<0||id>=RING_POPULATION)throw RangeError('Asteroid id outside ring');
+  const r=id%RADIAL_CELLS,a=Math.floor(id/RADIAL_CELLS),random=randomFor(id^0x59324c41);
+  const tangentJitter=(random()-.5)*140;
+  const radius=RING_RADIUS-RING_WIDTH/2+(r+.5)*RING_RADIAL_CELL_SIZE+(random()-.5)*140;
+  const angle=(a+.5+(r&1)*.5)/ANGULAR_CELLS*TAU+tangentJitter/radius;
+  const height=(random()-.5)*1000;
+  const position=new Vector3(Math.cos(angle)*radius,Math.sin(angle)*radius,height).applyQuaternion(RING_ROTATION);
+  const family=Math.floor(random()*ASTEROID_FAMILIES.length);
+  // This phase keeps ringRock(5) as a small, accessible survey deposit.
+  const size=id%4===1?1:24+random()**.55*116,variant=Math.floor(random()*4);
+  return {id,key:`selene-ring-v2-${id}`,position:position.toArray(),size,family,variant,name:ASTEROID_FAMILIES[family],rotation:[random()*TAU,random()*TAU,random()*TAU],scale:[1,1,1],ice:family===2,mineable:size===1};
+}
 export function ringRock(index){return asteroidDescriptor((Math.imul(index,104729)>>>0)%RING_POPULATION);}
 export function ringCellAt(world){
   const p=world.clone().sub(new Vector3(...MOON_POSITION)).applyQuaternion(inverse),angle=(Math.atan2(p.y,p.x)+TAU)%TAU;
-  return [Math.floor(angle/TAU*ANGULAR_CELLS),Math.floor((Math.hypot(p.x,p.y)-RING_RADIUS+RING_WIDTH/2)/1000),Math.floor((p.z+RING_THICKNESS/2)/500)];
+  const r=Math.floor((Math.hypot(p.x,p.y)-RING_RADIUS+RING_WIDTH/2)/RING_RADIAL_CELL_SIZE);
+  const angular=angle/TAU*ANGULAR_CELLS-(r&1)*.5;
+  return [Math.floor((angular+ANGULAR_CELLS)%ANGULAR_CELLS),r,Math.floor((p.z+RING_THICKNESS/2)/RING_VERTICAL_CELL_SIZE)];
 }
 export function nearbyAsteroids(world,reach=1){
+  if(!Number.isSafeInteger(reach)||reach<0)throw RangeError('Cell reach must be a nonnegative integer');
   const [a,r,z]=ringCellAt(world),result=[];
   if(r< -reach||r>=RADIAL_CELLS+reach||z< -reach||z>=VERTICAL_CELLS+reach)return result;
-  for(let da=-reach;da<=reach;da++)for(let dr=-reach;dr<=reach;dr++)for(let dz=-reach;dz<=reach;dz++){
-    if(r+dr<0||r+dr>=RADIAL_CELLS||z+dz<0||z+dz>=VERTICAL_CELLS)continue;
-    const base=cellId(a+da,r+dr,z+dz)*ROCKS_PER_CELL;
+  // Clip finite dimensions before looping, including for long draw distances.
+  const radialStart=Math.max(0,r-reach),radialEnd=Math.min(RADIAL_CELLS-1,r+reach),verticalStart=Math.max(0,z-reach),verticalEnd=Math.min(VERTICAL_CELLS-1,z+reach);
+  const count=Math.min(ANGULAR_CELLS,reach*2+1);
+  for(let da=0;da<count;da++)for(let ri=radialStart;ri<=radialEnd;ri++)for(let zi=verticalStart;zi<=verticalEnd;zi++){
+    const base=cellId(a-reach+da,ri,zi)*ROCKS_PER_CELL;
     for(let i=0;i<ROCKS_PER_CELL;i++)result.push(asteroidDescriptor(base+i));
   }
   return result;
