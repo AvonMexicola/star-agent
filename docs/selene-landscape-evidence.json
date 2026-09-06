@@ -1,0 +1,16 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "viewport": [
+    1280,
+    800
+  ],
+  "gameplayRenderScale": 0.55,
+  "visualRenderScale": 0.8,
+  "unitCases": 75,
+  "browserScenarios": [
+    "physical lunar landing, exploration and return",
+    "ring, surface, asteroid and Aeon rendering"
+  ],
+  "errors": []
+}

@@ -38,7 +38,7 @@ export function generateMoonPatch({face,level,ix,iy}) {
   for(let y=0;y<MOON_GRID;y++)for(let x=0;x<MOON_GRID;x++){const a=y*(MOON_GRID+1)+x,b=a+1,c=a+MOON_GRID+1;indices.push(a,b,c,b,c+1,c);}
   const edges=[Array.from({length:MOON_GRID+1},(_,i)=>i),Array.from({length:MOON_GRID+1},(_,i)=>i*(MOON_GRID+1)+MOON_GRID),Array.from({length:MOON_GRID+1},(_,i)=>MOON_GRID*(MOON_GRID+1)+MOON_GRID-i),Array.from({length:MOON_GRID+1},(_,i)=>(MOON_GRID-i)*(MOON_GRID+1))];
   let next=(MOON_GRID+1)**2;
-  for(const edge of edges){const start=next;for(const index of edge)write(next++,index%(MOON_GRID+1),Math.floor(index/(MOON_GRID+1)),Math.max(.15,size*MOON_RADIUS*.04));for(let i=0;i<MOON_GRID;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
+  for(const edge of edges){const start=next;for(const index of edge)write(next++,index%(MOON_GRID+1),Math.floor(index/(MOON_GRID+1)),Math.max(.15,size*MOON_RADIUS*.18));for(let i=0;i<MOON_GRID;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
   return {center,positions,normals,directions,points,surface,indices:new Uint16Array(indices)};
 }
 

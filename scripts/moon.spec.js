@@ -82,10 +82,14 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
   const rock=ringRock(5);
   await page.evaluate(({rock,normal})=>{
     const nav=window.starAgent.navigation,center=nav.position.clone().fromArray(window.starAgent.state.moon.position),target=center.clone().add(nav.position.clone().fromArray(rock.position));
-    nav.orbit();nav.enabled=false;nav.position.copy(target).addScaledVector(target.clone().sub(center).normalize(),rock.size*6);
+    nav.orbit();nav.enabled=false;nav.position.copy(target).addScaledVector(target.clone().sub(center).normalize(),rock.size*6).addScaledVector(nav.position.clone().fromArray(normal),rock.size*3);
     nav.orientToward(target,nav.position.clone().fromArray(normal));
   },{rock,normal:RING_NORMAL});
   await page.waitForTimeout(1500);await page.screenshot({path:`${evidence}/asteroid-close.png`});
+  await page.evaluate(()=>window.starAgent.transit('coast'));
+  await page.waitForFunction(()=>!window.starAgent.state.transiting&&window.starAgent.state.lod>=12);
+  await page.waitForTimeout(1500);await page.screenshot({path:`${evidence}/aeon-coast-after-effects.png`});
+  const aeon=await page.evaluate(()=>window.starAgent.state);expect(aeon.body).toBe('aeon');expect(aeon.atmosphereFraction).toBeGreaterThan(.9);
   await writeFile(`${evidence}/visual-state.json`,JSON.stringify({browser:browser.version(),surface,errors},null,2));
   expect(errors).toEqual([]);
 });

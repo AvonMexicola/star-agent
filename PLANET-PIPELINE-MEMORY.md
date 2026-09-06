@@ -1,5 +1,9 @@
 # Star Agent planet creation pipeline — durable project memory
 
+Updated 2026-09-06: lunar generator v3 adds the crater-rim landscape, lofted ice
+and asteroid rings. See the newest section below and `docs/selene-landscape.md`.
+Earlier delivery records describe their historical branch state.
+
 Recorded 2026-09-05 for Fable 5.1, the project manager, humans and future coding
 agents. Reference bodies: Aeon and landable Selene, [moon PR #7](https://github.com/AvonMexicola/star-agent/pull/7).
 This records the implemented pipeline and delivery lessons. Read current source
@@ -306,3 +310,53 @@ explicit destination and complete land–walk–reboard regression journey.
   regression plus the full unit suite and production build.
 - Memory is filed locally and announced in `HANDOFF.md`; review/merge/deployment
   remain in the project manager's queue. No manager read receipt is asserted.
+
+
+## Lunar landscape pipeline update — 2026-09-06, generator v3
+
+Cees requested more interesting terrain, slopes/craters, sunlight-reflecting ice
+particles and majestic asteroid rings, using Cellin as a visual reference. This
+supersedes v2's regolith-only visual scope and the old 4,000 m terrain bound.
+
+`moon-world.js` now owns a 16,000 m conservative upper bound, deeper global crater
+profiles with ejecta/central peaks, local impact basins, fractured ridges and compact
+basalt outcrops. All are in the canonical heightfield, so navigation and rendering
+still share the floor. The original landing direction now has a shelf on a large
+crater rim; a 35 m flat centre blends into the terrain by 150 m. Its absolute height
+changes with generator version 3. Do not reuse old recorded landing coordinates.
+
+`moon-terrain.js` evaluates a one-cell halo and reuses those samples to compute grid
+normals. This avoids four extra heightfield calls per vertex and filters normal
+detail to the rendered grid spacing. Parent fallback and skirts remain; nearby
+orbital views use minimum LOD 3 while distant views keep minimum LOD 2. The expanded
+terrain bound also feeds conservative horizon culling. The maximum LOD remains 17.
+
+`moon.js` shades cool basalt, height bands, frost and fine regolith relief. It owns
+`MoonRings` (`moon-rings.js`) and `MoonIce` (`moon-ice.js`). `main.js` supplies elapsed
+time and whether the player is outside the ship, and exposes effect counts in
+`state.moon.effects`. Ring bands are a transparent annulus with gaps and filtered
+radial striations, plus 1,800 instanced asteroids. Dust-band opacity fades between
+20 and 80 km from the observer to avoid an opaque-looking sheet inside the belt. Both shade the moon's obstruction
+of sunlight. Rock instance translations subtract camera origin in doubles before
+float upload; close-range precision is covered by a regression.
+
+Ice cells are keyed in absolute lunar coordinates. The effect samples the real
+terrain to keep initial particles above it, uses a small drift/glint animation,
+fades at its bounds and is disabled in the ship. A fixed-capacity position/phase
+buffer is updated in place as cells change. Replacing BufferAttributes on every
+cell rebuild would leave old GPU buffers difficult to reclaim; reuse is deliberate.
+
+Rendering lesson: a transparent object with depthWrite=false disappeared against
+empty sky in the previous atmosphere composite, which selected only stars when
+scene depth was clear. Writing opaque depth to force visibility produced speckled
+rings and dark particle dots. The HDR target now clears to alpha zero, retains its
+premultiplied scene color, and composites stars/sun through remaining coverage.
+Normal ring alpha blends normally; additive ice changes RGB without masking the
+sky. Log-depth reconstruction is unchanged. This shared shader change requires
+checking Aeon water/sky as well as the moon; a build alone cannot validate it.
+
+The terrain bounds still fit inside the separate travel contribution's 20 km lunar
+exclusion margin. The ring is decorative and is not a new travel target or collision
+hazard. Mining, moving orbital bodies, terrain deformation, particle thermodynamics,
+ring shadows on the lunar surface and rigid-body asteroid impacts remain future work.
+For merge ownership, review results and screenshots use `LUNAR-LANDSCAPE-HANDOFF.md`.
