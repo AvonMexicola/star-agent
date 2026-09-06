@@ -141,7 +141,7 @@ export const CRATERS = Object.freeze(Array.from({ length: 56 }, () => {
 }));
 /** Body-frame landing site: on the dusk terminator in the Throne Flows, 104 km from Cinder Throne. */
 export const PYRE_LANDING_BODY_DIRECTION = Object.freeze(pyreLatLon(13.5, -94.5));
-export const PYRE_ARRIVAL_ALTITUDE = 60_000;
+export const PYRE_ARRIVAL_ALTITUDE = 1_800_000;
 /** World-frame landing direction for the current epoch. */
 export function pyreLandingDirection() { return fromPyreBody(...PYRE_LANDING_BODY_DIRECTION); }
 

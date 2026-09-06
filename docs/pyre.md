@@ -2,7 +2,7 @@
 
 Pyre is a 1,200 km radius volcanic planet, 10 million km from the star, with 7.6 m/s² surface gravity and a thin 45 km atmosphere. Its circular orbit is evaluated when the page loads and stays fixed during that session. `?epoch=1788000000000` pins the position for reproduction. The body frame keeps the same hemisphere facing the star.
 
-Open **Controls (H) → Quick transit → Pyre** for a 60 km arrival above the dusk terminator, or select Pyre in the **system map (M)** to use the travel drive. Normal descent crosses the atmosphere continuously. **L** lands, **F** leaves the chair or operates the hatch, and **W/S** walk along the cabin and ramp. Return to the chair with **F**, then **L** launches.
+Open **Controls (H) → Quick transit → Pyre** for a 1,800 km arrival above the dusk terminator, or select Pyre in the **system map (M)** to use the travel drive. Normal descent crosses the atmosphere continuously. **L** lands, **F** leaves the chair or operates the hatch, and **W/S** walk along the cabin and ramp. Return to the chair with **F**, then **L** launches.
 
 ## Geography and appearance
 
@@ -34,3 +34,5 @@ The night side is deliberately dark. Orbital maps have finite resolution, and ma
 ![Cinder Throne caldera at 5 km](images/pyre/caldera-5km.png)
 ![Cooled crust at 8 m](images/pyre/day-8.png)
 ![Canonical resource survey](images/pyre/resource-survey.png)
+
+![Quick-transit arrival at 1,800 km](images/pyre/arrival.png)

@@ -24,7 +24,7 @@ import { StationComplex } from './station-complex.js';
 import { createStationServices } from './station-services.js';
 import { SELENE, PYRE, bodySurfacePoint, bodyAltitude } from './celestial.js';
 import { Pyre, PYRE_MESH_RANGE } from './pyre.js';
-import { PYRE_RADIUS, PYRE_POSITION, PYRE_ATMOSPHERE, PYRE_LIGHTING, PYRE_EPOCH, PYRE_GENERATOR_VERSION, VOLCANOES, LAVA_FIELDS, pyreLandingDirection, fromPyreBody, pyreRegion, pyreResources, pyreHeat } from './pyre-world.js';
+import { PYRE_RADIUS, PYRE_POSITION, PYRE_ARRIVAL_ALTITUDE, PYRE_ATMOSPHERE, PYRE_LIGHTING, PYRE_EPOCH, PYRE_GENERATOR_VERSION, VOLCANOES, LAVA_FIELDS, pyreLandingDirection, fromPyreBody, pyreRegion, pyreResources, pyreHeat } from './pyre-world.js';
 import { Navigation } from './navigation.js';
 import { Vegetation } from './vegetation.js';
 import { CrashEffects, playCrashSound } from './crash-effects.js';
@@ -169,7 +169,7 @@ try {
   function setCourse(name){
     if(name==='ring'){course={name,point:ringSurveyPoint(),direction:ringSurveyPoint().normalize()};$('course-guidance').hidden=false;notify('Course set for the Selene ring survey.');return;}
     if(name==='moon'){course={name,point:bodySurfacePoint(new THREE.Vector3(...MOON_LANDING_DIRECTION),SELENE,180),direction:new THREE.Vector3(...MOON_POSITION).normalize()};$('course-guidance').hidden=false;notify('Course set for Selene. Fly to the lunar approach marker.');return;}
-    if(name==='pyre'){course={name,point:bodySurfacePoint(new THREE.Vector3(...pyreLandingDirection()),PYRE,60000),direction:new THREE.Vector3(...PYRE_POSITION).normalize()};$('course-guidance').hidden=false;notify('Course set for Pyre. Use the system map drive (M) for the 18 M km crossing.');return;}
+    if(name==='pyre'){course={name,point:bodySurfacePoint(new THREE.Vector3(...pyreLandingDirection()),PYRE,PYRE_ARRIVAL_ALTITUDE),direction:new THREE.Vector3(...PYRE_POSITION).normalize()};$('course-guidance').hidden=false;notify('Course set for Pyre. Use the system map drive (M) for the 18 M km crossing.');return;}
     if(name==='station'){
       if(!station.ready)return;
       course={name,point:station.approachWorldPosition.clone(),direction:station.direction.clone()};
@@ -237,7 +237,7 @@ try {
     const started=performance.now();
     while(performance.now()-started<(name==='pyre'?12000:6500)){await new Promise(r=>setTimeout(r,150));if(performance.now()-started>1100 && planet.pending<4 && (name==='moon'||resourceRoute?moon.terrain.maxLevel>=14:name==='pyre'?pyre.ready:name==='orbit'||name==='station'||name==='ring'||planet.maxVisibleLevel>=12))break;}
     $('transit').classList.remove('active');transiting=false;nav.enabled=true;
-    notify(name==='pyre'?'Pyre terminator approach. Watch hull temperature on the day side.':resourceRoute?`${resourceRoute.label}. L / Y lands. The marked outcrop shares this region's minerals; the terrain itself cannot be excavated.`:name==='ring'?'Ring survey. Brake to a stop, F leaves the chair; open the hatch and walk outside. G activates suit thrusters.':name==='moon'?'Selene descent. L lands; F leaves the chair. Open the rear hatch and walk down the ramp to explore.':name==='station'?'Station approach. W enters the bay; X brakes. Over the central pad, L docks.':name==='orbit'?'High orbit. Click to fly. W approaches Aeon; Space moves away.':'Arrival complete. Click to fly · L lands · F leaves the pilot chair.');
+    notify(name==='pyre'?`Pyre, ${PYRE_ARRIVAL_ALTITUDE/1000} km above the dusk terminator. Descend to explore.`:resourceRoute?`${resourceRoute.label}. L / Y lands. The marked outcrop shares this region's minerals; the terrain itself cannot be excavated.`:name==='ring'?'Ring survey. Brake to a stop, F leaves the chair; open the hatch and walk outside. G activates suit thrusters.':name==='moon'?'Selene descent. L lands; F leaves the chair. Open the rear hatch and walk down the ramp to explore.':name==='station'?'Station approach. W enters the bay; X brakes. Over the central pad, L docks.':name==='orbit'?'High orbit. Click to fly. W approaches Aeon; Space moves away.':'Arrival complete. Click to fly · L lands · F leaves the pilot chair.');
   }
   $('crash-recover').addEventListener('click',()=>transit('orbit'));
   const ringButton=document.createElement('button');ringButton.type='button';ringButton.className=$('moon-destination')?.className??'destination';ringButton.dataset.destination='ring';ringButton.innerHTML='<span class="destination-icon">⌁</span><span><strong>Selene rings</strong><small>ASTEROID SURVEY · EVA</small></span>';document.querySelector('[data-destination="moon"]').after(ringButton);
