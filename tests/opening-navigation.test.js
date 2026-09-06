@@ -271,7 +271,7 @@ test('station opening spawn remains gated, then supports a physical board and la
   assert.equal(navigation.mode, 'landed');
   nearVector(navigation.toShipLocal(), new THREE.Vector3(...SHIP_LAYOUT.seatEye), 1e-8);
 
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.mode, 'flight');
   assert.equal(navigation.dockedAtStation, false);
   assert.equal(navigation.stationLift, true);

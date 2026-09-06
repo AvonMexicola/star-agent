@@ -410,3 +410,19 @@ test('the module exports the class main.js wires in', () => {
       `Equipment#${getter} is not a getter`);
   }
 });
+
+test('third-person aim keeps the firing wrist fixed and brings the support hand onto a reachable grip',()=>{
+  const root=new THREE.Group(),right=new THREE.Bone(),leftArm=new THREE.Bone(),forearm=new THREE.Bone(),left=new THREE.Bone();
+  right.name='RightHand';right.position.set(.2,1.1,-.1);root.add(right);
+  leftArm.name='LeftArm';leftArm.position.set(-.2,1.4,0);root.add(leftArm);
+  forearm.name='LeftForeArm';forearm.position.y=-.35;leftArm.add(forearm);left.name='LeftHand';left.position.y=-.3;forearm.add(left);
+  root.updateMatrixWorld(true);const grip=new THREE.Vector3(-.2,1.1,-.35),direction=new THREE.Vector3(.1,-.05,-1).normalize();
+  const wrist=right.getWorldPosition(new THREE.Vector3());
+  const equipment={_holstered:false,_equipped:'rifle-laser',_renderOrigin:new THREE.Vector3(),_bone:name=>name==='RightHand'?right:left,
+    muzzleWorldDirection:()=>new THREE.Vector3(-1,0,0).applyQuaternion(right.getWorldQuaternion(new THREE.Quaternion())),leftHandTargetWorld:()=>grip.clone()};
+  Equipment.prototype.aimHeld.call(equipment,direction);
+  assert.ok(equipment.muzzleWorldDirection().dot(direction)>.999999);
+  assert.ok(right.getWorldPosition(new THREE.Vector3()).distanceTo(wrist)<1e-8,'aim rotates the wrist without moving its socket');
+  assert.ok(left.getWorldPosition(new THREE.Vector3()).distanceTo(grip)<.04,'support wrist reaches the physical foregrip');
+  const held=right.quaternion.clone();equipment._holstered=true;Equipment.prototype.aimHeld.call(equipment,new THREE.Vector3(0,1,0));assert.ok(right.quaternion.equals(held));
+});

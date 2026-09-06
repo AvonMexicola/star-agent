@@ -7,7 +7,7 @@ test('earn Atlas, select it at the station, ride the belly elevator and both car
   const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log(e.message);});page.on('console',m=>{if(m.type()==='error'&&/THREE|WebGL|shader/i.test(m.text()))errors.push(m.text());});
   await page.goto('/?intro=0&debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.station.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.4));
-  await page.keyboard.press('KeyG');await expect(page.getByRole('button',{name:'LOCKED',exact:true})).toBeDisabled();
+  await page.keyboard.press('KeyU');await expect(page.getByRole('button',{name:'LOCKED',exact:true})).toBeDisabled();
   await page.keyboard.press('Escape');
   // Fixture only sets the approach. Production landing, docking and unlock callbacks run normally.
   await page.evaluate(()=>{const a=window.starAgent;a.navigation.transit(a.destinations.forest,7);a.land();});
@@ -19,7 +19,7 @@ test('earn Atlas, select it at the station, ride the belly elevator and both car
   });
   await page.waitForFunction(()=>window.starAgent.state.station.docked);
   expect(await page.evaluate(()=>window.starAgent.state.fleet.unlocked)).toBe(true);
-  await page.keyboard.press('KeyG');await page.getByRole('button',{name:'BOARD ATLAS',exact:true}).click();
+  await page.keyboard.press('KeyU');await page.getByRole('button',{name:'BOARD ATLAS',exact:true}).click();
   await page.waitForFunction(()=>window.starAgent.state.shipId==='atlas'&&window.starAgent.state.shipAsset==='ready');
   await page.screenshot({path:'/tmp/atlas-game-fleet.png'});
   await page.keyboard.press('Escape');
@@ -61,7 +61,7 @@ test('earn Atlas, select it at the station, ride the belly elevator and both car
   await walk(page,'KeyA',()=>window.starAgent.state.shipLocal[0]<.15);
   await walk(page,'KeyW',()=>window.starAgent.state.shipLocal[2]<-9.2);
   await page.keyboard.press('KeyF');expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('landed');
-  await page.keyboard.press('KeyL');expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('flight');
+  await page.keyboard.press('KeyB');expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('flight');
   await page.reload();await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.shipAsset==='ready');
   expect(await page.evaluate(()=>window.starAgent.state.shipId)).toBe('atlas');
   expect(await page.evaluate(()=>window.starAgent.state.inventory)).toEqual(manifest);

@@ -33,7 +33,7 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   await expect(page.locator('#mode-label')).toHaveText('LUNAR FLIGHT');
   await expect(page.locator('#altitude-reference')).toHaveText('ABOVE SELENE');
   expect(await page.evaluate(()=>window.starAgent.state.altitude)).toBeCloseTo(180,5);
-  await page.keyboard.press('l');
+  await page.keyboard.press('b');
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:90000});
   await page.waitForFunction(()=>window.starAgent.state.moon.lod>=14);
   const landed=await page.evaluate(()=>window.starAgent.state);
@@ -58,7 +58,7 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   await page.evaluate(value=>window.starAgent.navigation.orientation.fromArray(value),orientation);
   await page.keyboard.down('s');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.4);await page.keyboard.up('s');await page.keyboard.press('x');
   await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
-  await page.keyboard.press('l');expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('flight');
+  await page.keyboard.press('b');expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('flight');
   expect(await page.evaluate(()=>window.starAgent.state.altitude)).toBeGreaterThan(10);
   await page.keyboard.press('o');await page.waitForFunction(()=>!window.starAgent.state.transiting);
   expect(await page.evaluate(()=>window.starAgent.state.body)).toBe('aeon');

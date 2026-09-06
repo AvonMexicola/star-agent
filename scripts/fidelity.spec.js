@@ -33,7 +33,7 @@ test('seeded planet renders orbit, ground materials, foliage, cabin and shadows'
   await capture('orbit');
   await page.evaluate(() => window.starAgent.setRenderScale(.6));
   await page.evaluate(() => window.starAgent.transit('forest'));
-  await page.keyboard.press('KeyL');
+  await page.keyboard.press('KeyB');
   await page.waitForFunction(() => window.starAgent.state.mode === 'landed', null, { timeout: 60000 });
   await capture('forest-cockpit');
   await page.keyboard.press('KeyF');

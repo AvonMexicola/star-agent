@@ -100,7 +100,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     const flightControl = nav.cabinFlight
       ? nav.flightAssist ? 'CABIN / ASSIST' : 'CABIN / INERTIAL'
       : nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase();
-    paint(screens[0], [['VELOCITY', `${shipSpeed.toFixed(1)} m/s`], ['ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', flightControl]], 'V ASSIST   X BRAKE   L LAND / LAUNCH', 0);
+    paint(screens[0], [['VELOCITY', `${shipSpeed.toFixed(1)} m/s`], ['ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', flightControl]], nav.controllerActive?'R3 ASSIST   B BRAKE   Y LAND / LAUNCH':'V ASSIST   X BRAKE   B LAND / LAUNCH', 0);
     let bearing = 'NO COURSE';
     if (course) {
       const position = nav.cabinFlight && nav.shipPosition ? nav.shipPosition : nav.position;

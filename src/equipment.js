@@ -826,6 +826,38 @@ export class Equipment {
     return found || null;
   }
 
+  /** Final pose correction after the animation mixer: keep the firing hand
+   * and held barrel aimed together, then bring the support wrist to its grip. */
+  aimHeld(direction) {
+    if(this._holstered||!this._equipped)return;
+    const hand=this._bone('RightHand'),barrel=this.muzzleWorldDirection();
+    if(!hand?.parent||!barrel)return;
+    const rotateWorld=(bone,delta)=>{
+      const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());
+      const local=parent.clone().invert().multiply(delta).multiply(parent);
+      bone.quaternion.premultiply(local);bone.updateWorldMatrix(false,true);
+    };
+    rotateWorld(hand,new THREE.Quaternion().setFromUnitVectors(barrel.normalize(),direction.clone().normalize()));
+    const left=this._bone('LeftHand'),target=this.leftHandTargetWorld();
+    if(!left||!target)return;
+    target.sub(this._renderOrigin);
+    // CCD on the two arm joints only; the character root/spine stay authored.
+    const joints=[left.parent,left.parent?.parent].filter(b=>b?.isBone&&/arm/i.test(b.name));
+    for(let pass=0;pass<5;pass++)for(const joint of joints){
+      const pivot=joint.getWorldPosition(new THREE.Vector3());
+      const from=left.getWorldPosition(new THREE.Vector3()).sub(pivot),to=target.clone().sub(pivot);
+      if(from.lengthSq()>1e-8&&to.lengthSq()>1e-8)rotateWorld(joint,new THREE.Quaternion().setFromUnitVectors(from.normalize(),to.normalize()));
+    }
+  }
+
+  bindCharacter(character, rig, sockets) {
+    if(this.character===character&&this.rig===rig&&this.sockets===sockets)return;
+    for(const group of this._socketGroups.values())group.removeFromParent();
+    this._socketGroups.clear();this._bonesBound=false;
+    this.character=character;this.rig=rig;this.sockets=sockets;
+    this._bindBones();
+  }
+
   /** Re-parent everything once the rig's GLB has landed (or been swapped). */
   _bindBones() {
     const skeleton = this.character && this.character.skeleton;

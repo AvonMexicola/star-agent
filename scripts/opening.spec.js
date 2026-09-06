@@ -11,9 +11,9 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
     await page.evaluate(({key,down})=>{
       const pad=window.departurePad;
       if(['w','s','a','d'].includes(key))pad.axes[['a','d'].includes(key)?0:1]=down?(['w','a'].includes(key)?-1:1):0;
-      else {const index={x:1,f:2,l:3}[key];pad.buttons[index]={pressed:down,value:Number(down)};}
+      else {const index={x:1,f:2,b:3}[key];pad.buttons[index]={pressed:down,value:Number(down)};}
     },{key,down});
-    if(['x','f','l'].includes(key))await page.waitForFunction(({key,down})=>window.starAgent.navigation.gamepad.previous[{x:1,f:2,l:3}[key]]===down,{key,down});
+    if(['x','f','b'].includes(key))await page.waitForFunction(({key,down})=>window.starAgent.navigation.gamepad.previous[{x:1,f:2,b:3}[key]]===down,{key,down});
   };
   const controls={down:key=>held(key,true),up:key=>held(key,false),press:async key=>{await held(key,true);await held(key,false);}};
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
@@ -59,6 +59,25 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   await controls.press('x');
   expect(await page.evaluate(()=>window.starAgent.state.position)).not.toEqual(before);
   await page.screenshot({path:'/tmp/star-agent-opening-walk.png'});
+  if(controller){
+    const padFrames=()=>page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
+    const padButton=async(index,down)=>{await page.evaluate(({index,down})=>{window.departurePad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await padFrames();};
+    const tap=async index=>{await padButton(index,true);await padButton(index,false);};
+    const command=async key=>{
+      await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(9);await expect(page.locator('#controller-menu')).toBeVisible();
+      for(let i=0;i<45;i++){if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key))break;await tap(13);}
+      expect(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)).toBe(key);await tap(0);
+    };
+    await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(14);
+    await page.waitForFunction(()=>window.starAgent.state.mining.tool.item==='rifle-laser');
+    await command('camera-view');await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='character-hand');
+    const ammo=await page.evaluate(()=>window.starAgent.state.mining.tool.ammo);
+    await page.waitForFunction(()=>window.starAgent.state.controller.armed);await padButton(7,true);
+    await page.waitForFunction(before=>window.starAgent.state.mining.tool.ammo<before,ammo);
+    await page.screenshot({path:'/tmp/star-agent-controller-held-rifle.png'});await padButton(7,false);
+    await command('lights');await page.waitForFunction(()=>window.starAgent.state.utilities.suit);
+    await page.screenshot({path:'/tmp/star-agent-controller-flashlight.png'});
+  }
   // Walk along the starboard side to the aft hatch, then centre on the ramp.
   await controls.down('s');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>7.5);
@@ -72,10 +91,12 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
   await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.6);
-  await controls.up('w');await controls.press('x');await controls.press('f');
+  await controls.up('w');await controls.press('x');
+  if(controller)await page.waitForFunction(()=>window.starAgent.state.character.state==='idle');
+  await controls.press('f');
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
   await page.screenshot({path:'/tmp/star-agent-opening-cockpit.png'});
-  await controls.press('l');
+  await controls.press('b');
   await page.waitForFunction(()=>window.starAgent.state.mode==='flight'&&!window.starAgent.state.station.lifting);
   const hover=await page.evaluate(()=>window.starAgent.state.station.deckClearance);
   expect(hover).toBeCloseTo(3.55,3);

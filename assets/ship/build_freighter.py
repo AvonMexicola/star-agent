@@ -162,11 +162,17 @@ for s in [-1,1]:
     surface('Bridge swept roof',[(0,7.6,-8),(s*5.5,7.6,-8),(s*2.4,6.9,-13),(0,6.9,-13)],ivory,.15)
     # Heavy landing gear: feet at local y=0, cargo elevator shares that plane.
     for z in [-8,8]:
+        gear_before = set(bpy.context.scene.objects)
         rod('Gear oleo',(s*6.8,4.3,z),(s*7.6,.6,z+.7),.23,dark)
         rod('Gear polished piston',(s*7.2,2.3,z+.4),(s*7.6,.55,z+.7),.14,metal)
         rod('Gear diagonal brace',(s*6.1,3.6,z+1.9),(s*7.6,.55,z+.7),.12,metal)
         box('Gear foot',(s*7.6,.18,z+.7),(1.7,.36,2.3),rubber,.12)
         box('Gear hazard cap',(s*7.6,.42,z+.7),(1.3,.12,1.9),orange,.05)
+        gear_parts = set(bpy.context.scene.objects) - gear_before
+        bpy.ops.object.empty_add(type='PLAIN_AXES', location=xyz((s*6.8,4.3,z)))
+        gear_root=bpy.context.object; gear_root.name=f'LandingGear_{s}_{z}'
+        for obj in gear_parts:
+            obj.parent=gear_root; obj.matrix_parent_inverse=gear_root.matrix_world.inverted()
     # Internal mezzanine shelves and their matching railings.
     box('Upper cargo landing',(s*4.8,6.85,-7),(2.2,.3,2),metal)
     for x in [s*3.7,s*5.9]:

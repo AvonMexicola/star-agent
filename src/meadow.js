@@ -146,14 +146,19 @@ transformed += vec3(dot(displacement, instanceMatrix[0].xyz) / dot(instanceMatri
  dot(displacement, instanceMatrix[1].xyz) / dot(instanceMatrix[1].xyz, instanceMatrix[1].xyz),
  dot(displacement, instanceMatrix[2].xyz) / dot(instanceMatrix[2].xyz, instanceMatrix[2].xyz));
 `);
+    // Thin leaves share the meadow's upward diffuse lobe. Keeping most of
+    // that light on both faces matches the distant cluster representation;
+    // geometric normals still contribute shape at walking distance.
+    shader.vertexShader=shader.vertexShader.replace('#include <defaultnormal_vertex>', '#include <defaultnormal_vertex>\ntransformedNormal=normalize(mix(normalize(transformedNormal),normalize(normalMatrix*meadowUp),.8));');
     shader.fragmentShader = 'varying float meadowDistance;\n' + shader.fragmentShader;
+    shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal*=faceDirection;');
     shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', `#include <alphatest_fragment>
 float coverage = 1.0 - smoothstep(6.0, 10.0, meadowDistance);
 float meadowDither = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(.06711056, .00583715))));
 if (coverage <= meadowDither) discard;
 `);
   };
-  material.customProgramCacheKey = () => 'interactive-meadow-v2';
+  material.customProgramCacheKey = () => 'interactive-meadow-v3';
 }
 
 /** A small independently streamed meadow; moving a metre never rebuilds the forest. */

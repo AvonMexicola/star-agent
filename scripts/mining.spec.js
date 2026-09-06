@@ -7,7 +7,7 @@ test('land, walk to the deposit, mine with the laser, persist cuts and stow coll
   await mkdir(evidence,{recursive:true});await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.mining.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.65));
   await page.locator('[data-destination="moon"]').click();await page.waitForFunction(()=>!window.starAgent.state.transiting);
-  await page.keyboard.press('l');await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
+  await page.keyboard.press('b');await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
   await page.keyboard.press('f');await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>2.3);await page.keyboard.up('w');await page.keyboard.press('x');
   await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
   await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>12);await page.keyboard.up('w');await page.keyboard.press('x');

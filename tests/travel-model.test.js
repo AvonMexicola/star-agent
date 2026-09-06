@@ -192,3 +192,30 @@ test('target planning chooses the near-side endpoint and enforces route guards',
   assert.equal(bodyBlocked.ok, false);
   assert.match(bodyBlocked.reason, /intersects Aeon/i);
 });
+
+test('free heading drive reserves a safe stop before a distant obstacle even with a long frame',async()=>{
+  const {planFreeTravel,abortTravel,TRAVEL}=await import('../src/travel-model.js');
+  const body={center:[0,0,0]};
+  const start=new Vector3(0,10_000_000,0),heading=new Vector3(0,1,0);
+  const route=planFreeTravel(start,heading,{body,altitude:20_000,obstacles:[{name:'test world',center:[0,1_010_000_000,0],radius:1_000_000}]});
+  assert.equal(route.ok,true);assert.equal(route.obstruction,'test world');
+  const done=sampleTravel(route.plan,1e8);assert.equal(done.done,true);assert.ok(done.position.y<1_009_000_000);
+  const free=planFreeTravel(start,heading,{body,altitude:20_000});assert.equal(free.ok,true);
+  const fast=sampleTravel(free.plan,100);assert.equal(fast.speed,TRAVEL.maxSpeed);
+  const stop=abortTravel(free.plan,100);assert.ok(sampleTravel(stop,100).done);assert.ok(sampleTravel(stop,0).position.distanceTo(fast.position)<1e-7);
+  assert.equal(planFreeTravel(start,[NaN,0,0],{body,altitude:20_000}).ok,false);
+  assert.equal(planFreeTravel(start,heading,{body,altitude:5,outsideAtmosphere:true}).ok,false);
+  assert.equal(planFreeTravel(start,heading,{body,altitude:1000,outsideAtmosphere:true}).ok,true);
+});
+
+test('airless heading departure checks the full canonical terrain sweep before accelerating',async()=>{
+  const {bodySurfacePoint,bodyAltitude}=await import('../src/celestial.js');
+  const {planFreeTravel}=await import('../src/travel-model.js');
+  const up=new Vector3(Math.cos(4.8),Math.sin(1.4)*.7,Math.sin(4.8)).normalize();
+  const start=bodySurfacePoint(up,SELENE,110),heading=up.clone().cross(new Vector3(0,1,0)).normalize();
+  assert.ok(bodyAltitude(start.clone().addScaledVector(heading,2400),SELENE)<0,'fixture crosses a crater rim');
+  const route=planFreeTravel(start,heading,{body:SELENE,altitude:110,outsideAtmosphere:true});
+  assert.equal(route.ok,false);assert.match(route.reason,/Terrain|clear/);
+  const climb=planFreeTravel(start,up,{body:SELENE,altitude:110,outsideAtmosphere:true});
+  assert.equal(climb.ok,true,climb.reason);
+});

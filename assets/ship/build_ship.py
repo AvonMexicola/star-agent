@@ -171,12 +171,18 @@ for s in [-1,1]:
         rod('Nozzle / ceramic petal',(x,y,3.45),(x,y,3.98),.055,dark)
     # Four oleo legs; feet are exactly on the existing y=0 landing plane.
     for z in [-2.72,2.80]:
+        gear_before = set(bpy.context.scene.objects)
         rod('Gear / upper shock',(s*1.96,1.25,z),(s*2.34,.59,z+.16),.13,dark)
         rod('Gear / polished piston',(s*2.27,.75,z+.12),(s*2.51,.23,z+.23),.082,metal)
         rod('Gear / trailing brace',(s*1.95,1.12,z+.58),(s*2.51,.23,z+.23),.057,metal)
         box('Gear / sole',(s*2.51,.08,z+.23),(.78,.16,1.02),rubber,.055)
         box('Gear / landing shoe',(s*2.51,.18,z+.23),(.62,.12,.83),metal,.065)
         box('Gear / warning flash',(s*2.51,.247,z+.23),(.38,.014,.41),orange,.005)
+        gear_parts = set(bpy.context.scene.objects) - gear_before
+        bpy.ops.object.empty_add(type='PLAIN_AXES', location=xyz((s*1.96,1.3,z)))
+        gear_root=bpy.context.object; gear_root.name=f'LandingGear_{s}_{z}'
+        for obj in gear_parts:
+            obj.parent=gear_root; obj.matrix_parent_inverse=gear_root.matrix_world.inverted()
     # Rear jamb plating leaves the 1.8 metre physical doorway completely clear.
     box('Aft portal armor',(s*1.45,2.46,4.14),(1.02,2.87,.19),ivory,.10)
     box('Aft portal rescue stripe',(s*1.45,3.40,4.242),(.73,.23,.014),orange,.005)

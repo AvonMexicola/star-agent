@@ -24,7 +24,7 @@ test('hard impact destroys ship, renders crash effects, blocks controls and reco
   expect(impact.impactSpeed).toBeGreaterThan(12);
   await mkdir('/tmp/star-agent-crash',{recursive:true});
   await page.screenshot({path:'/tmp/star-agent-crash/impact.png'});
-  for(const key of ['KeyL','KeyF','KeyV','KeyX'])await page.keyboard.press(key);
+  for(const key of ['KeyB','KeyF','KeyV','KeyX'])await page.keyboard.press(key);
   await page.keyboard.down('KeyW');await page.keyboard.down('Space');await page.waitForTimeout(700);
   await page.keyboard.up('KeyW');await page.keyboard.up('Space');
   const stopped=await page.evaluate(()=>window.starAgent.state);

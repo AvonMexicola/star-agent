@@ -212,7 +212,7 @@ test('crash state latches controls, then orbit and transit permit a second crash
   const firstCrashSnapshot = structuredClone(firstCrash);
   const stoppedAt = navigation.position.clone();
 
-  for (const code of ['KeyL', 'KeyF', 'KeyV']) press(code);
+  for (const code of ['KeyB', 'KeyF', 'KeyV']) press(code);
   keyDown('KeyW');
   keyDown('Space');
   keyDown('ArrowLeft');

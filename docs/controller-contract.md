@@ -140,3 +140,25 @@ selection/fire, physical lunar landing/exit/approach, both gun selections and
 impacts, cutter mining, cargo UI and return. It also covers held RT across focus,
 disconnect, replacement and unsupported mapping. Debug state is read only for
 steering and assertions; no physical controller testing is claimed.
+
+## Heading drive, utilities and graphics
+
+Menu → “N · Spool / disengage heading drive” starts along the current ship heading;
+B brakes out of either travel mode. Aim along the horizon or away from the nearest
+world. Entry needs 20 km altitude or no atmosphere, plus a safe terrain/station
+path. M / the map retains selected-destination travel with J.
+
+Menu offers landing gear, contextual lights, camera view and Graphics. Graphics
+uses buttons that cycle grass distance (40/80/160 m), density (50/75/100%) and render
+resolution (automatic/60/80/100%); D-pad/A therefore reaches every value. Closing
+it uses the shared neutral-input gate. Keyboard G controls gear in flight and EVA
+outside the ship, L controls ship floodlights or the suit flashlight, B lands or
+launches, and U opens Fleet. Controller Y still lands/launches. Keyboard/mouse
+players can reach the command menu through H → Ship systems / Graphics after the
+launcher is dismissed.
+
+`scripts/flight-options.spec.js` includes a controller-only orbital start, stick
+alignment, drive spool/brake, gear/lights, graphics changes and held ascent across
+modal closure. `scripts/opening.spec.js` extends the physical controller boarding
+journey with third-person rifle selection/fire, flashlight and cabin holstering.
+These use injected standard Gamepad input; physical device testing is separate.

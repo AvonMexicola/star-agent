@@ -1,3 +1,5 @@
+import { MOON_MAX_HEIGHT, constrainMoonStep } from './moon-world.js';
+import { PYRE_MAX_HEIGHT } from './pyre-world.js';
 import { Vector3 } from 'three';
 import { AEON, SELENE, PYRE } from './celestial.js';
 
@@ -149,6 +151,7 @@ const invalidPlan = plan => !plan || !plan.start?.isVector3 || !plan.end?.isVect
 
 /** Sample a plan analytically. Repeated or partitioned calls cannot accumulate drift. */
 export function sampleTravel(plan, elapsed) {
+  if (plan?.kind === 'free') return sampleFreeTravel(plan, elapsed);
   if (invalidPlan(plan)) throw new TypeError('A valid travel plan is required.');
   const time = elapsed === Infinity ? plan.duration : clamp(finiteOr(elapsed, 0), 0, plan.duration);
   if (plan.distance === 0 || time >= plan.duration) return {
@@ -250,4 +253,53 @@ export function planTravel(start, targetId, { obstacles = [] } = {}) {
       return failed(`Direct route intersects ${hazard.name}'s exclusion zone.`);
   }
   return { ok: true, reason: null, plan: createTravelPlan(from, endpoint) };
+}
+
+/** Manual heading travel. Reserve the entire forward ray before spooling, so
+ * even a long frame and its braking distance cannot tunnel through a world. */
+export function planFreeTravel(start, heading, { body, altitude, outsideAtmosphere=false, obstacles=[] }={}) {
+  let from, direction;
+  try { from=vectorFrom(start,'Travel start'); direction=vectorFrom(heading,'Heading'); }
+  catch(error) { return failed(error.message); }
+  if(direction.lengthSq()<1e-12)return failed('Choose a flight heading.');
+  direction.normalize();
+  if(!body || !Number.isFinite(altitude) || altitude<100 || (altitude<20_000&&!outsideAtmosphere))
+    return failed('Climb to 20 km or leave the atmosphere before spooling.');
+  const radial=from.clone().sub(new Vector3(...body.center)).normalize();
+  if(direction.dot(radial)<-.001)return failed('Aim along the horizon or away from the planet before spooling.');
+  const hazards=BODY_TARGETS.map(b=>({name:b.name,center:b.center,radius:b.radius+({aeon:12_000,selene:MOON_MAX_HEIGHT,pyre:PYRE_MAX_HEIGHT}[b.id]??20_000)+100})).concat(obstacles);
+  let clearance=Infinity, obstruction=null;
+  for(const hazard of hazards){
+    const offset=from.clone().sub(vectorFrom(hazard.center,'Obstacle'));
+    const c=offset.lengthSq()-hazard.radius**2, projection=offset.dot(direction);
+    if(c<=0){
+      // Airless launch can begin below the global terrain envelope only after
+      // the canonical swept heightfield validates the entire departure segment.
+      if(body.id==='selene'&&hazard.name===body.name&&projection>=0){
+        const exit=-projection+Math.sqrt(projection**2-c)+1;
+        const checked=constrainMoonStep(from,from.clone().addScaledVector(direction,exit),100);
+        if(!checked.hit&&!checked.limited)continue;
+        return failed('Terrain ahead. Aim higher or climb before spooling.');
+      }
+      return failed(`Move clear of ${hazard.name} before spooling.`);
+    }
+    const discriminant=projection**2-c;
+    if(projection>=0||discriminant<0)continue;
+    const entry=-projection-Math.sqrt(discriminant);
+    if(entry<clearance){clearance=entry;obstruction=hazard.name;}
+  }
+  if(Number.isFinite(clearance)){
+    const distance=clearance-10_000;
+    if(distance<1000)return failed(`Aim clear of ${obstruction} before spooling.`);
+    return {ok:true,reason:null,obstruction,plan:createTravelPlan(from,from.clone().addScaledVector(direction,distance))};
+  }
+  return {ok:true,reason:null,plan:Object.freeze({kind:'free',start:frozenVector(from),direction:frozenVector(direction),duration:Infinity})};
+}
+export function sampleFreeTravel(plan, elapsed) {
+  const t=Math.max(0,Number.isFinite(elapsed)?elapsed:0);
+  const motion=Math.max(0,t-TRAVEL.spoolSeconds), ramp=TRAVEL.maxSpeed/TRAVEL.acceleration;
+  const accel=Math.min(ramp,motion), speed=Math.min(TRAVEL.maxSpeed,TRAVEL.acceleration*motion);
+  const distance=.5*TRAVEL.acceleration*accel**2+TRAVEL.maxSpeed*Math.max(0,motion-ramp);
+  return {position:plan.start.clone().addScaledVector(plan.direction,distance),speed,
+    phase:t<TRAVEL.spoolSeconds?'spooling':motion<ramp?'accelerating':'cruising',remaining:Infinity,progress:0,done:false};
 }

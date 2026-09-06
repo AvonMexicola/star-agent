@@ -8,11 +8,17 @@ export function createWeaponTarget({nav,mining}){
     let hit=mining.raycast(start,direction,range);
     if(nav.station&&nav.stationDistance<range+200){
       raycaster.set(start.clone().sub(origin),direction);raycaster.far=range;
-      const wall=raycaster.intersectObject(nav.station.group,true).find(h=>{
-        let object=h.object;while(object){if(!object.visible)return false;object=object.parent;}
-        return h.object.material?.depthWrite!==false;
-      });
-      if(wall&&(!hit||wall.distance<hit.distance))hit={distance:wall.distance,point:wall.point.clone().add(origin),normal:wall.face?.normal.clone().transformDirection(wall.object.matrixWorld)};
+      // StationComplex owns several scene roots rather than the original
+      // Station.group. Traverse only currently visible meshes, including LODs.
+      const station=nav.station,roots=station.group?[station.group]:[station.exterior?.group,station.hub?.group,station.lodGroup,...(station.pods??[]).map(p=>p.group)];
+      const meshes=[];
+      for(const root of roots)root?.traverseVisible(object=>{if(object.isMesh&&object.material?.depthWrite!==false)meshes.push(object);});
+      const wall=raycaster.intersectObjects(meshes,false)[0];
+      if(wall&&(!hit||wall.distance<hit.distance)){
+        const matrix=wall.object.matrixWorld.clone();
+        if(wall.object.isInstancedMesh&&wall.instanceId!==undefined){const instance=new THREE.Matrix4();wall.object.getMatrixAt(wall.instanceId,instance);matrix.multiply(instance);}
+        hit={distance:wall.distance,point:wall.point.clone().add(origin),normal:wall.face?.normal.clone().transformDirection(matrix)};
+      }
     }
     let previous=0;
     // Fine near the muzzle to catch close surface obstruction; larger distant

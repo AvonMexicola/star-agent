@@ -72,7 +72,7 @@ const near = (actual, expected, tolerance = 1e-6) => {
 test('coast landing, physical cabin and hatch traversal, return to chair and launch work together', t => {
   const { navigation, press, advance, walkUntil } = setup(t);
   navigation.transit(destinations.coast, 100);
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.autoland, true);
   advance(20);
   assert.equal(navigation.mode, 'landed');
@@ -101,7 +101,7 @@ test('coast landing, physical cabin and hatch traversal, return to chair and lau
   press('KeyF');
   assert.equal(navigation.mode, 'walk', 'F outside does not teleport into the ship');
   assert.ok(navigation.position.equals(outsidePosition));
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.mode, 'walk', 'launch is unavailable on foot');
 
   walkUntil('KeyS', () => navigation.toShipLocal().z <= 2);
@@ -113,7 +113,7 @@ test('coast landing, physical cabin and hatch traversal, return to chair and lau
   press('KeyF');
   assert.equal(navigation.mode, 'landed');
   navigation.toShipLocal().toArray().forEach((value, axis) => near(value, SHIP_LAYOUT.seatEye[axis]));
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.mode, 'flight');
   assert.equal(navigation.shipPosition, null);
   assert.ok(navigation.velocity.dot(navigation.normal) > 0, 'launch velocity points away from ground');
@@ -131,7 +131,7 @@ test('polar landing and walking use sea-level ice above submerged terrain', t =>
   }
   assert.ok(submerged, 'fixture exercises submerged polar terrain');
   navigation.transit(submerged, 100);
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.autoland, true);
   advance(20);
   assert.equal(navigation.mode, 'landed');
@@ -153,7 +153,7 @@ test('polar landing and walking use sea-level ice above submerged terrain', t =>
 test('walking cannot pass through a closed hatch or either cabin side wall', t => {
   const { navigation, press, keyDown, keyUp, advance } = setup(t);
   navigation.transit(destinations.coast, 100);
-  press('KeyL');
+  press('KeyB');
   advance(20);
   press('KeyF');
   keyDown('KeyW');
@@ -184,7 +184,7 @@ test('open ocean rejects landing but permits walking inside the secured flying c
   }
   assert.ok(ocean, 'planet has open ocean away from polar caps');
   navigation.transit(ocean, 100);
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.autoland, false);
   advance(20);
   assert.equal(navigation.mode, 'flight');
@@ -278,7 +278,7 @@ test('Selene supports landing, physical ramp traversal, low-gravity jumping, reb
   nav.transitMoon(100);assert.equal(nav.body.id,'selene');near(nav.altitude,100,1e-7);
   assert.equal(nav.flightEnvironment.density,0);assert.equal(nav.flightEnvironment.atmosphereFraction,0);
   assert.ok(Math.abs(nav.flightEnvironment.gravity.length()-1.62)<.02);
-  press('KeyL');advance(20);assert.equal(nav.mode,'landed');
+  press('KeyB');advance(20);assert.equal(nav.mode,'landed');
   const parked=nav.shipPosition.clone();near(bodyAltitude(parked,SELENE),0,1e-7);
   press('KeyF');assert.equal(nav.mode,'walk');
   walkUntil('KeyW',()=>nav.toShipLocal().z>=2.3);press('KeyF');advance(1.2);
@@ -289,14 +289,14 @@ test('Selene supports landing, physical ramp traversal, low-gravity jumping, reb
   advance(6);near(nav.jumpHeight,0);near(nav.altitude,1.75,1e-7);
   keyDown('KeyW');advance(2,()=>near(nav.altitude,1.75,1e-7));keyUp('KeyW');
   walkUntil('KeyS',()=>nav.toShipLocal().z<-1.4);press('KeyF');assert.equal(nav.mode,'landed');
-  press('KeyL');assert.equal(nav.mode,'flight');assert.ok(nav.altitude>10);assert.equal(nav.shipPosition,null);
+  press('KeyB');assert.equal(nav.mode,'flight');assert.ok(nav.altitude>10);assert.equal(nav.shipPosition,null);
   nav.orbit();assert.equal(nav.body.id,'aeon');assert.equal(nav.flightEnvironment.regime,'SPACE');
 });
 
 test('lunar walking works at the pole and on the far side without applying Aeon sea level',t=>{
   const {navigation:nav,press,advance,walkUntil}=setup(t);
   for(const direction of [[0,1,0],[0,0,-1]]){
-    nav.transitMoon(30,direction);press('KeyL');advance(15);assert.equal(nav.mode,'landed');
+    nav.transitMoon(30,direction);press('KeyB');advance(15);assert.equal(nav.mode,'landed');
     near(bodyAltitude(nav.shipPosition,SELENE),0,1e-7);press('KeyF');
     walkUntil('KeyW',()=>nav.toShipLocal().z>2.3);press('KeyF');advance(1.2);
     walkUntil('KeyW',()=>nav.toShipLocal().z>10);
@@ -334,7 +334,7 @@ test('controller can land on Selene, traverse the ramp, jump and reboard',t=>{
 
 test('walking beyond the landing shelf follows the steep crater terrain',t=>{
   const {navigation:nav,press,advance,walkUntil,keyDown,keyUp}=setup(t);
-  nav.transitMoon(30);press('KeyL');advance(15);press('KeyF');
+  nav.transitMoon(30);press('KeyB');advance(15);press('KeyF');
   walkUntil('KeyW',()=>nav.toShipLocal().z>2.3);press('KeyF');advance(1.2);
   walkUntil('KeyW',()=>nav.toShipLocal().z>12);const start=nav.groundHeight;
   keyDown('KeyW');advance(90,()=>near(nav.altitude,1.75,1e-5));keyUp('KeyW');

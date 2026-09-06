@@ -6,7 +6,7 @@ import { Vegetation } from '../src/vegetation.js';
 import { RADIUS, terrainHeight, latLonDirection } from '../src/world.js';
 
 function fixture(){
- const vegetation={scatter:Vegetation.prototype.scatter,isExcluded:()=>false,exclusionPosition:null};
+ const vegetation={scatter:Vegetation.prototype.scatter,scatterRecords:Vegetation.prototype.scatterRecords,isExcluded:()=>false,exclusionPosition:null};
  const meadow=new Meadow(new THREE.Scene(),vegetation);
  const up=new THREE.Vector3(...latLonDirection(15.74,22.44));
  const foot=up.clone().multiplyScalar(RADIUS+terrainHeight(...up.toArray()));

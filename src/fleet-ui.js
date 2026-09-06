@@ -2,7 +2,7 @@ import { SHIPS } from './fleet.js';
 import './fleet.css';
 
 export function createFleetUI(nav, fleet, selectShip) {
-  const button=document.createElement('button');button.id='fleet-button';button.textContent='FLEET · G';document.body.append(button);
+  const button=document.createElement('button');button.id='fleet-button';button.textContent='FLEET · U';document.body.append(button);
   const dialog=document.createElement('dialog');dialog.id='fleet-dialog';dialog.setAttribute('aria-labelledby','fleet-title');
   dialog.innerHTML='<button class="fleet-close" aria-label="Close fleet">✕</button><p class="eyebrow">AEON ORBITAL / SHIP REGISTRY</p><h2 id="fleet-title">Your fleet</h2><p class="fleet-progress"></p><div class="fleet-ships"></div><p class="fleet-message" role="status"></p><p class="fleet-save"></p>';
   document.body.append(dialog);
@@ -24,6 +24,6 @@ export function createFleetUI(nav, fleet, selectShip) {
     const id=event.target.closest('[data-ship]')?.dataset.ship;if(!id)return;
     const result=await selectShip(id);render();dialog.querySelector('.fleet-message').textContent=result;
   });
-  document.addEventListener('keydown',event=>{if(event.code==='KeyG'&&!event.repeat&&nav.mode!=='eva'&&(nav.mode!=='walk'||nav.insideShip)){if(dialog.open)dialog.close();else open();}});
+  document.addEventListener('keydown',event=>{if(event.code==='KeyU'&&!event.repeat&&nav.mode!=='eva'&&(nav.mode!=='walk'||nav.insideShip)){if(dialog.open)dialog.close();else open();}});
   return {openMenu:open,get open(){return dialog.open;}};
 }

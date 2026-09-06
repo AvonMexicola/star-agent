@@ -32,7 +32,7 @@ test('Pyre landing, ramp walk, reboarding and launch use the physical surface',a
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.goto('/?intro=0&debug&epoch=1788000000000');await page.waitForFunction(()=>window.starAgent?.state.ready);
  await page.evaluate(()=>{window.starAgent.setRenderScale(.4);window.starAgent.navigation.transitPyre(20);});
- await page.keyboard.press('l');await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:90000});
+ await page.keyboard.press('b');await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:90000});
  await page.waitForFunction(()=>window.starAgent.state.pyre.ready&&window.starAgent.state.pyre.lod>=16,null,{timeout:240000});
  const landed=await page.evaluate(()=>window.starAgent.state);expect(landed.body).toBe('pyre');
  await page.keyboard.press('f');await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>2.3);await page.keyboard.up('w');await page.keyboard.press('x');
@@ -42,7 +42,7 @@ test('Pyre landing, ramp walk, reboarding and launch use the physical surface',a
  await page.evaluate(()=>window.starAgent.setRenderScale(1));await page.keyboard.press('Tab');await page.screenshot({path:'/tmp/star-agent-pyre/walking.png'});
  await page.evaluate(()=>window.starAgent.setRenderScale(.4));
  await page.keyboard.down('s');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.4);await page.keyboard.up('s');await page.keyboard.press('x');
- await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await page.keyboard.press('l');
+ await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await page.keyboard.press('b');
  await page.waitForFunction(()=>window.starAgent.state.mode==='flight');expect(await page.evaluate(()=>window.starAgent.state.altitude)).toBeGreaterThan(10);
  await writeFile('/tmp/star-agent-pyre/journey.json',JSON.stringify({landed,outside,errors},null,2));expect(errors).toEqual([]);
  // Daylit hemisphere: distant basin geography and a close surface view.

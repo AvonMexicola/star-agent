@@ -83,7 +83,7 @@ test('J engages travel, active controls cannot perturb it, and X begins continuo
   const orientation = navigation.orientation.clone();
   const noticeCount = notices.length;
   navigation.look(.4, -.2);
-  for (const code of ['ArrowLeft', 'KeyL', 'KeyF', 'KeyV']) press(code);
+  for (const code of ['ArrowLeft', 'KeyB', 'KeyF', 'KeyV']) press(code);
   assert.equal(navigation.orientation.angleTo(orientation), 0);
   assert.equal(navigation.flightAssist, true);
   assert.equal(navigation.autoland, false);
@@ -174,4 +174,31 @@ test('orbit and surface transit cancel active travel and discard held controls',
   assert.equal(navigation.mode, 'flight');
   assert.equal(navigation.speed, 0);
   assert.ok(navigation.position.clone().normalize().distanceTo(new Vector3(...direction)) < 1e-12);
+});
+
+test('N requires an outward safe heading, spools without a target and N drops out continuously', t=>{
+  const {navigation:n,press,notices}=setup(t);
+  n.transit(destinations.coast,19_000);
+  const up=n.normal;n.orientToward(n.position.clone().add(up),up.clone().set(up.y,up.z,up.x));
+  press('KeyN');assert.equal(n.travel,null);assert.match(notices.at(-1),/20 km/);
+  n.position.addScaledVector(up,1100);
+  n.orientToward(n.position.clone().sub(up),new Vector3(0,1,0));
+  press('KeyN');assert.equal(n.travel,null);assert.match(notices.at(-1),/away/);
+  n.orientToward(n.position.clone().add(up),new Vector3(0,1,0));
+  press('KeyN');assert.ok(n.travel);assert.equal(n.travel.manual,true);assert.equal(n.travelTarget,null);
+  const start=n.position.clone();n.updateTravel(2);nearVector(n.position,start);assert.equal(n.travelState.phase,'spooling');
+  n.updateTravel(2);assert.ok(n.position.distanceTo(start)>1_000_000);
+  const before=n.position.clone(),speed=n.speed;press('KeyN');nearVector(n.position,before);assert.equal(n.travelState.aborting,true);
+  n.updateTravel(.1);assert.ok(n.speed<speed);assert.ok(n.position.distanceTo(before)>0);
+  n.updateTravel(100);assert.equal(n.travel,null);assert.equal(n.speed,0);
+});
+
+test('G and L are contextual utilities; landing assist deploys gear; B retains launch',t=>{
+  const {navigation:n,press}=setup(t);
+  press('KeyG');assert.equal(n.gearDeployed,false);
+  press('KeyL');assert.equal(n.shipLightsOn,true);assert.equal(n.autoland,false);
+  n.transit(destinations.coast,100);press('KeyB');assert.equal(n.autoland,true);assert.equal(n.gearDeployed,true);
+  press('KeyG');assert.equal(n.gearDeployed,true);
+  n.mode='walk';press('KeyL');assert.equal(n.flashlightOn,true);assert.equal(n.shipLightsOn,true);
+  press('KeyL');assert.equal(n.flashlightOn,false);
 });

@@ -243,7 +243,7 @@ test('L docks in the bay, then the cabin, hatch, ramp, deck, return and launch r
   navigation.velocity.set(0, 0, 0);
   navigation.mode = 'flight';
   assert.equal(station.canDock(navigation.position), true, 'fixture starts over the central landing pad');
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.autoland, true, 'L engages docking assist inside the bay');
   advanceUntil(() => navigation.mode === 'landed', 8, 'docking assist settles on the deck');
   assert.equal(navigation.dockedAtStation, true);
@@ -276,7 +276,7 @@ test('L docks in the bay, then the cabin, hatch, ramp, deck, return and launch r
   assert.equal(navigation.mode, 'landed', 'F at the chair sits down');
   nearVector(navigation.toShipLocal(), new THREE.Vector3(...SHIP_LAYOUT.seatEye), 1e-6, 'returned pilot position');
 
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.mode, 'flight');
   assert.equal(navigation.dockedAtStation, false);
   assert.equal(navigation.stationLift, true, 'launch begins with controlled vertical clearance');
@@ -293,7 +293,7 @@ test('Atlas docks at its own eye height, carries a rider to the hangar deck and 
   const centre=station.interiorBox.getCenter(new THREE.Vector3());
   nav.position.copy(localToWorld(station,centre.x,station.interiorBox.min.y+7,centre.z+FREIGHTER_LAYOUT.seatEye[2]));
   nav.orientation.copy(station.quaternion);
-  press('KeyL');advance(8);assert.equal(nav.mode,'landed',JSON.stringify({canDock:nav.canDock,clearance:nav.deckClearance,local:nav.stationLocal.toArray(),box:station.interiorBox,autoland:nav.autoland}));
+  press('KeyB');advance(8);assert.equal(nav.mode,'landed',JSON.stringify({canDock:nav.canDock,clearance:nav.deckClearance,local:nav.stationLocal.toArray(),box:station.interiorBox,autoland:nav.autoland}));
   near(nav.deckClearance,5.55);press('KeyF');
   walkUntil('KeyW',()=>nav.toShipLocal().z>.8);press('KeyF');
   advanceUntil(()=>nav.freighter.lifts[0].y===0,7,'main lift lowers');
@@ -302,9 +302,9 @@ test('Atlas docks at its own eye height, carries a rider to the hangar deck and 
   walkUntil('KeyS',()=>nav.toShipLocal().z<1.2);press('KeyF');
   advanceUntil(()=>nav.freighter.lifts[0].y===4,7,'main lift raises rider');near(nav.toShipLocal().y,5.75);
   walkUntil('KeyS',()=>nav.toShipLocal().z<-9);press('KeyF');assert.equal(nav.mode,'landed');
-  nav.freighter.toggle('port');press('KeyL');assert.equal(nav.mode,'landed','cannot launch with moving cargo lift');
-  advance(6);press('KeyL');assert.equal(nav.mode,'landed','cannot launch with raised cargo lift');
-  nav.freighter.toggle('port');advance(6);press('KeyL');assert.equal(nav.mode,'flight');
+  nav.freighter.toggle('port');press('KeyB');assert.equal(nav.mode,'landed','cannot launch with moving cargo lift');
+  advance(6);press('KeyB');assert.equal(nav.mode,'landed','cannot launch with raised cargo lift');
+  nav.freighter.toggle('port');advance(6);press('KeyB');assert.equal(nav.mode,'flight');
   advanceUntil(()=>!nav.stationLift,3,'Atlas lifts clear of deck');
   assert.ok(nav.deckClearance>=6.5);assert.ok(nav.deckClearance+9.8-5.55<station.interiorBox.max.y-station.interiorBox.min.y);
 });
@@ -316,7 +316,7 @@ for(const layout of [SHIP_LAYOUT,FREIGHTER_LAYOUT])test(`${layout===SHIP_LAYOUT?
   if(layout===FREIGHTER_LAYOUT){nav.shipId='atlas';nav.freighter=new FreighterSystems();}
   nav.position.copy(station.toWorld(new THREE.Vector3(station.padLocal.x,station.interiorBox.min.y+layout.seatEye[1],station.padLocal.z+layout.seatEye[2]),new THREE.Vector3()));
   nav.orientation.copy(station.padQuaternion);nav.dock();assert.equal(nav.mode,'landed');
-  press('KeyL');assert.equal(station.doorCommand,'open','launch requests an open exit');
+  press('KeyB');assert.equal(station.doorCommand,'open','launch requests an open exit');
   station.doorMixer.update(6);station.updateDoorColliders();
   // A long simulation frame must stop at the same height as a high-FPS launch.
   nav.advanceFlight(.4);nav.advanceFlight(.4);
@@ -336,7 +336,7 @@ test('obstructed automatic lift stops once and releases pilot translation',async
   const {station}=await createStation();t.after(()=>station.dispose());
   const {navigation:nav,press,keyDown,advance}=setupNavigation(t,station);
   nav.position.copy(station.toWorld(new THREE.Vector3(0,station.interiorBox.min.y+SHIP_LAYOUT.seatEye[1],station.padLocal.z+SHIP_LAYOUT.seatEye[2]),new THREE.Vector3()));
-  nav.orientation.copy(station.padQuaternion);nav.dock();press('KeyL');
+  nav.orientation.copy(station.padQuaternion);nav.dock();press('KeyB');
   station.doorMixer.update(6);station.updateDoorColliders();
   // A low obstruction above the docked hull reproduces contact during lift.
   const ceiling=station.interiorBox.min.y+SHIP_LAYOUT.flightBounds.max[1]+.3;
@@ -352,7 +352,7 @@ test('a shallow downward departure is not captured by the planetary landing thre
   const {station}=await createStation();t.after(()=>station.dispose());
   const {navigation:nav,press}=setupNavigation(t,station);
   nav.position.copy(station.toWorld(new THREE.Vector3(0,station.interiorBox.min.y+SHIP_LAYOUT.seatEye[1],station.padLocal.z+SHIP_LAYOUT.seatEye[2]),new THREE.Vector3()));
-  nav.orientation.copy(station.padQuaternion);nav.dock();press('KeyL');
+  nav.orientation.copy(station.padQuaternion);nav.dock();press('KeyB');
   station.doorMixer.update(6);station.updateDoorColliders();nav.advanceFlight(.4);nav.advanceFlight(.1);
   nav.look(0,-Math.PI/90);
   for(let i=0;i<50;i++)nav.advanceFlight(1/60,{moveForward:1});

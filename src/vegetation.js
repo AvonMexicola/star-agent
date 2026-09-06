@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { DistantMeadow } from './distant-meadow.js';
 import { Meadow } from './meadow.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createBranchGeometry, createNeedleTexture, addFoliageWind, createTreeImpostor } from './foliage.js';
@@ -114,7 +115,7 @@ export class Vegetation {
     }
     rock.computeVertexNormals();
     rock.translate(0, .24, 0);
-    this.meadow = new Meadow(scene, this);
+    this.meadow = new Meadow(scene, this);this.distantMeadow=new DistantMeadow(scene,this);
     this.rocks = this.makeMesh(rock, { color: 0xffffff, roughness: .9, bumpMap: this.surfaceTexture, bumpScale: .055 }, ROCK_LIMIT);
     for(const mesh of this.treeMeshes.flat()) {
       addVegetationFade(mesh.material,this.lodCamera,this.windTime);
@@ -169,6 +170,7 @@ export class Vegetation {
   }
 
   update(worldPosition, renderOrigin, elapsedSeconds, walking = false, downwash = null) {
+    this.distantMeadow.update(worldPosition,renderOrigin,elapsedSeconds);
     this.meadow.update(worldPosition, renderOrigin, elapsedSeconds, walking, downwash);
     this.windTime.value = elapsedSeconds;
     const distance=worldPosition.length();
@@ -198,7 +200,7 @@ export class Vegetation {
     this.exclusionDirty=false;
     this.lodCamera.value.copy(worldPosition).sub(this.origin);
     this.group.position.copy(this.origin).sub(renderOrigin);
-    this.stats.meadow = this.meadow.stats;
+    this.stats.meadow = this.meadow.stats;this.stats.distantMeadow=this.distantMeadow.stats;
     this.stats.pendingTiles=this.stream.pending;this.stats.residentTiles=this.stream.tiles.size;
     this.stats.generatedTiles=this.stream.generated;this.stats.error=this.stream.error;
   }
@@ -206,7 +208,10 @@ export class Vegetation {
   // Each latitude row has a fixed, integer number of longitude cells. Sampling
   // around a new viewer position therefore preserves every shared world's cell.
   // Longitude wraps cleanly, and spacing stays useful at high latitudes too.
-  scatter(center, radius, spacing, seed, visit) {
+  scatter(center,radius,spacing,seed,visit){
+    for(const r of this.scatterRecords(center,radius,spacing,seed))visit(r.x,r.y,r.z,r.col,r.row,r.a,r.b);
+  }
+  *scatterRecords(center, radius, spacing, seed) {
     const latitude = Math.asin(THREE.MathUtils.clamp(center.y, -1, 1));
     const longitude = Math.atan2(center.x, center.z);
     const rowSize = spacing / RADIUS;
@@ -229,7 +234,7 @@ export class Vegetation {
         const x = cosLat * Math.sin(lon), y = Math.sin(lat), z = cosLat * Math.cos(lon);
         const dx = (x - center.x) * RADIUS, dy = (y - center.y) * RADIUS, dz = (z - center.z) * RADIUS;
         if (dx * dx + dy * dy + dz * dz > radius * radius) continue;
-        visit(x, y, z, wrapped, row, a, b);
+        yield {x,y,z,col:wrapped,row,a,b};
       }
     }
   }
@@ -288,18 +293,6 @@ export class Vegetation {
       if(!record)record={h:terrainHeight(x,y,z),born:this.windTime.value};
       nextCache.set(key,record);return record;
     };
-    this.scatter(center, 135, 3.2, 1933, (x, y, z, col, row, a, b) => {
-      if (grassTufts >= GRASS_LIMIT || Math.abs(y) > .84 || this.isExcluded(x, y, z)) return;
-      if(hash(col,row,2111)>.55)return;
-      const record=sample(`grass/${col}/${row}`,x,y,z),h=record.h;
-      if(h<2||h>2200)return;
-      const size = .22 + a * .36;
-      this.place(this.grass, grassTufts, x, y, z, h - .025, .3 + b*.5, size, .3 + b*.5, b * TAU);
-      this.color.setRGB(.11 + a * .10, .16 + b * .09, .045 + a * .045);
-      this.grass.geometry.attributes.instanceBirth.setX(grassTufts,record.born+a*.2);
-      this.grass.setColorAt(grassTufts++, this.color);
-    });
-
     this.scatter(center, 300, 25, 3011, (x, y, z, col, row, a, b) => {
       if (rocks >= ROCK_LIMIT || a > .45 || this.isExcluded(x, y, z)) return;
       const record=sample(`rock/${col}/${row}`,x,y,z),h=record.h;
@@ -322,7 +315,7 @@ export class Vegetation {
   dispose() {
     this.stream.dispose();
     this.rocks.customDepthMaterial.dispose();
-    this.meadow.dispose();
+    this.meadow.dispose();this.distantMeadow.dispose();
     for (const mesh of [...this.treeMeshes.flat(), this.grass, this.rocks]) {
       mesh.geometry.dispose();
       mesh.material.dispose();
