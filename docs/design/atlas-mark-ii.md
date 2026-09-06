@@ -48,12 +48,23 @@ npm run test:browser -- -c scripts/atlas-mark-ii.config.js
 ATLAS_HARDWARE=1 npm run test:browser -- -c scripts/atlas-mark-ii.config.js
 ```
 
-This inspection scene is independent of the live fleet, saves and flight controls. Flight integration requires a deliberate new ship layout in `boarding.js`, navigation/collision ownership, powered-cabin behavior, hangar-fit validation, cargo mechanics, controller testing and graphics budget approval. The dedicated walker uses 39 authored furniture/bulkhead AABBs, platform rails, empty-shaft barriers, visible landing gates and closed-door boundaries. These still require deliberate integration with live gameplay physics; a standalone walkthrough is not a full gameplay physics certification.
+This inspection scene is independent of the live fleet, saves and flight controls. Flight integration requires a deliberate new ship layout in `boarding.js`, navigation/collision ownership, powered-cabin behavior, hangar-fit validation, cargo mechanics, controller testing and graphics budget approval. The dedicated walker uses 55 authored furniture/bulkhead AABBs, platform rails, empty-shaft barriers, visible landing gates and closed-door boundaries. These still require deliberate integration with live gameplay physics; a standalone walkthrough is not a full gameplay physics certification.
 
 ## Revision after the first walkthrough
 
 The first candidate was a functional blockout with an initial material pass; its visual quality did not meet the requested baseline. The user identified ferry-like windows, gaps beneath the canopy and at door/ceiling joints, and a galley island obstructing circulation. The revised source replaces the glazing band with a recessed raked trapezoid and small angular quarter panes, shares pressure-face boundaries, adds door/ceiling seals, and tapers both the bridge floor and walker boundary. Seven bounded ray tests inspect the exported mesh at the reported pressure interfaces; they are not a complete manifold or atmosphere-simulation certification.
 
-The galley now uses a wall-mounted mess leaf with no island or stools. The tested capsule has 1.00 m through the doorway, 1.64 m along the galley aisle and 0.95 m at the hygiene turn. Three-dimensional furniture remains solid in the standalone walker.
+The galley now uses a wall-mounted mess leaf with no island or stools. The tested capsule has 0.96 m through the doorway, 1.60 m along the galley aisle and 0.95 m at the hygiene turn. Three-dimensional furniture remains solid in the standalone walker.
 
 `assets/atlas-mark-ii/design/shape-study.png` is an AI-generated **design study, not an in-game render**. Its prompt is retained beside it. It guides proportions and construction hierarchy; dimension annotations in the concept are not authoritative. The layout JSON remains the dimensional contract. Actual browser evidence is in `docs/qa/atlas-mark-ii/`.
+
+
+## Upper-deck construction
+
+The crew compartment now has its own forward/aft walls and outboard liner,
+closed berth backs, chamfered pressure frames and removable ceiling/wall panels.
+The same crown family continues through corridor, galley and bridge. The original
+outer hull and drive-pod geometry are retained. Door-frame faces project beyond
+partition ends to remove their coplanar flicker. The complete physical browser
+route reaches the last bunk, meets the aft wall and returns through the side door.
+See [the upper-deck production record](../qa/atlas-mark-ii/upper-deck-record.md).

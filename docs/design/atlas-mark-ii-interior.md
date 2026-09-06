@@ -27,8 +27,8 @@ room bounds, interaction points, and the moving elevator aperture.
   and port partition. These rooms use the 12.75 m upper ceiling and keep their
   highest fixed light housings at or below 12.70 m.
 - The galley mess counter folds against the cabinet wall and has no floor
-  supports. After 0.3 m capsule expansion, the galley doorway leaves 1.00 m,
-  the main aisle leaves 1.64 m, and the turn into hygiene leaves 0.95 m for
+  supports. After 0.3 m capsule expansion, the galley doorway leaves .96 m,
+  the main aisle leaves 1.60 m, and the turn into hygiene leaves 0.95 m for
   capsule-centre travel.
 
 ## Walking collision
@@ -51,3 +51,21 @@ The pilot seat collider stops just forward of the standing interaction point.
 After the runtime's 0.3 m capsule expansion, its aft boundary is `z=-20.51`,
 leaving the authoritative stand point at `z=-20.5` reachable without allowing
 the player through the seat shell.
+
+## Upper-deck construction revision
+
+`upper_deck.py` adds explicit crew fore/aft end walls and an outboard liner;
+these four room-closure meshes (including the galley forward wall) consume their
+bounds directly from `interior-colliders.json`. The six bunks now have enclosed
+backs and chamfered end shells. A shared crown profile supplies structural
+shoulders and inset flanges in crew, corridor, mess and bridge. Crew wall/ceiling
+cassettes and the aft environmental cover give those frames attached equipment.
+All equipment is visual detail; no life-support or privacy-curtain controls are
+implemented in this pass.
+
+The walker has 55 fixed collider envelopes. The inboard crew wall includes the
+frame feet and panel thickness. Galley access covers are recessed to retain at
+least 1.60 m for capsule-centre travel. The entire crew aisle is traversable at
+x=-3.1 from z=3 to z=16.2, including past the fold desk. Physical and exported-mesh
+checks cover that path and both previously open crew ends. Ceiling structure
+stays above the standing envelope. See `docs/qa/atlas-mark-ii/upper-deck-record.md`.

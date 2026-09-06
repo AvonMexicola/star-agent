@@ -109,6 +109,18 @@ test('loads the authored asset and completes the physical aft-ramp-to-upper-deck
   expect(crewPosition[1]).toBeCloseTo(11.25, 1);
   await page.screenshot({ path: '/tmp/atlas-mark-ii-crew-walk.png', timeout: 60000 });
 
+  // Walk the entire bunk aisle, meet the new physical aft wall, then return
+  // through the same side doorway. No repositioning or camera preset shortcuts.
+  await moveUntil(page, 'KeyS', 'z', 'greater', 15);
+  await precisionMoveUntil(page, 'KeyS', 'z', 'greater', 16);
+  await page.keyboard.press('KeyS', { delay: 500 });
+  const aftCrew = await page.evaluate(() => window.atlasMarkIIStudio.walker.position.toArray());
+  expect(aftCrew[2]).toBeGreaterThan(16);
+  expect(aftCrew[2]).toBeLessThan(16.41);
+  await page.screenshot({ path: '/tmp/atlas-mark-ii-crew-aft-walk.png', timeout: 60000 });
+  await moveUntil(page, 'KeyW', 'z', 'less', 4);
+  await precisionMoveUntil(page, 'KeyW', 'z', 'less', 3.2);
+
   await precisionMoveUntil(page, 'KeyD', 'x', 'greater', 2.2);
   await moveUntil(page, 'KeyS', 'z', 'greater', 13);
   await precisionMoveUntil(page, 'KeyS', 'z', 'greater', 14);

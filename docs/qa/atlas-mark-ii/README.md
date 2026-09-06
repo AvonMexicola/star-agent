@@ -9,15 +9,20 @@ This is an original ship asset and dedicated inspection/walking scene. It is not
 - Through cargo hold, two folding loading ramps, crew elevator with sliding landing gates, upper bridge, six bunks, galley and hygiene space.
 - Two generated albedo sources plus independently authored normal/ORM textures, including upholstery weave. Exact source prompts and hashes are in `assets/atlas-mark-ii/textures/provenance.json` and `derivatives.json`.
 - Three authored S3 interfaces; a shared S1/S3 attachment standard with provisional future weapon envelopes. No weapons installed.
-- Dedicated walker with 39 fixed furniture/bulkhead AABBs, ramp boundaries, permanent lift rails, empty-shaft barriers and gate-before-lift interlocks.
+- Dedicated walker with 55 fixed furniture/bulkhead AABBs, ramp boundaries, permanent lift rails, empty-shaft barriers and gate-before-lift interlocks.
+
+The upper-deck construction pass adds explicit crew room ends and a back liner,
+chamfered pressure crowns across crew/corridor/mess/bridge, enclosed bunk
+surrounds and removable service panels. See the [upper-deck production record](upper-deck-record.md)
+for scope, intermediate defects and physical clearance checks.
 
 ## Measured asset budgets
 
 | Asset | Triangles | Mesh batches | Embedded GLB bytes |
 |---|---:|---:|---:|
-| Full authoring detail | 398,608 | 154 | 36,736,924 |
-| Distance candidate 1 | 128,387 | 154 | 13,325,672 |
-| Distance candidate 2 | 40,625 | 154 | 3,974,280 |
+| Full authoring detail | 426,504 | 157 | 38,890,964 |
+| Distance candidate 1 | 137,312 | 157 | 14,128,944 |
+| Distance candidate 2 | 43,384 | 157 | 4,194,540 |
 
 The hero has 13 materials and 10 textures. The full-detail material maps are 1024 px; distance candidates use 512 / 256 px derivatives. Geometry, UVs and hashes are recorded by `assets/atlas-mark-ii/manifest.json`. The studio loads the hero only. Distance switching, attachment clearance in gameplay and LOD interior quality are not approved by these measurements.
 
@@ -27,11 +32,17 @@ The hero exceeds the repository's older 60k-triangle / 4 MB ship budget. This is
 
 Blender 5.2.0 LTS, Node v26.7.0, Chromium 151.0.7922.173 on Linux. Final screenshots use AMD Radeon 860M through ANGLE OpenGL ES 3.2, 1440 × 900, device pixel ratio 1. Earlier retained first-pass evidence used ANGLE Vulkan SwiftShader. `render-environment.json` records the actual renderer and loaded asset statistics. No laptop-GPU FPS claim is made.
 
-The final exported asset passes all 180 unit tests, including actual GLB metre scale, named moving pivots, closed transforms, lift safety-bar geometry, mount world transforms and flange geometry, tapered bridge floor/cheeks, seven bounded pressure-interface rays, material factor preservation and nonconstant exported contact shading. The production Vite build passes. The hardware production browser suite passes 4/4 with zero captured page or console errors. The main production app also boots into flight with its ship asset ready and no captured errors.
+The upper-deck export passes all 181 unit tests, including actual GLB metre scale, named moving pivots, closed transforms, lift safety-bar geometry, mount world transforms and flange geometry, tapered bridge floor/cheeks, ten bounded pressure/room-interface rays and twelve full-length bunk-aisle geometry sweeps, material factor preservation and nonconstant exported contact shading. The production Vite build passes. The hardware production browser suite passes 4/4 with zero captured page or console errors. The unchanged main production app previously passed its flight-boot smoke check; this pass targets the asset studio.
+
+The current upper-deck candidate is hero `659b5466…`; all four hardware browser
+cases were rerun and passed in 1.6 minutes, including the extended walk to the last
+bunk, collision with the aft wall and return through the crew doorway. The seven
+preset captures were refreshed on this exact export. The full hash and retained
+intermediate failures are in [the upper-deck record](upper-deck-record.md).
 
 The `final-*.png` set contains actual production-browser renders. The first-pass images and Opus review are retained separately to make the review history inspectable. Still images cannot establish motion quality.
 
-The four hardware browser cases completed in 1.6 minutes: physical aft ramp → cargo → crew lift → bridge → crew room → galley aisle → hygiene basin approach at 480 × 300; seven presets and mount overlay at 1440 × 900; phone at 390 × 844; injected controller at 720 × 450. No physical Xbox hardware test is claimed. The functional suite used hero `81ccc96f…`; afterward only the steel mess-leaf edge was inset 25 mm to eliminate its coplanar overlap with the dark nosing. The assembly boundary and collider stayed fixed. Export tests and a focused galley render were repeated for that correction.
+The earlier four hardware browser cases completed in 1.6 minutes: physical aft ramp → cargo → crew lift → bridge → crew room → galley aisle → hygiene basin approach at 480 × 300; seven presets and mount overlay at 1440 × 900; phone at 390 × 844; injected controller at 720 × 450. No physical Xbox hardware test is claimed. The functional suite used hero `81ccc96f…`; afterward only the steel mess-leaf edge was inset 25 mm to eliminate its coplanar overlap with the dark nosing. The assembly boundary and collider stayed fixed. Export tests and a focused galley render were repeated for that correction.
 
 Reproduce the hardware suite on a suitable Linux host:
 

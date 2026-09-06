@@ -685,7 +685,7 @@ def build_interior(g, m, layout):
               (1.36, .018, .11), mint, bevel=.012, parent=bridge_root)
 
     # ---------------------------------------------------------------- crew quarters
-    # Port partition is segmented for a 1.4 m doorway at the forward end.
+    # Port partition is segmented for a 1.6 m structural opening at the forward end.
     crew_partition_x = crew["maxX"] + .08
     for index, (min_z, max_z) in enumerate(((crew["minZ"], 2.2), (3.8, crew["maxZ"]))):
         g.box(f"Crew corridor partition {index}",
@@ -694,7 +694,7 @@ def build_interior(g, m, layout):
     for side in (-1, 1):
         g.box(f"Crew doorway jamb {side:+d}",
               (crew_partition_x, upper_floor + 1.45, 3.0 + side * .88),
-              (.28, 2.90, .16), steel, bevel=.035, parent=crew_root)
+              (.28, 2.90, .20), steel, bevel=.035, parent=crew_root)
     g.box("Crew doorway lintel", (crew_partition_x, upper_ceiling - .18, 3.0),
           (.28, .28, 1.92), steel, bevel=.04, parent=crew_root)
 
@@ -709,10 +709,6 @@ def build_interior(g, m, layout):
                   (1.64, .30, .18), petrol, bevel=.07, parent=crew_root)
             g.box(f"Crew bunk reading light {bunk} {level}", (-4.12, y + .62, z - 1.12),
                   (.035, .12, .34), mint, bevel=.02, parent=crew_root)
-        for end in (-1, 1):
-            g.box(f"Crew bunk divider {bunk} {end:+d}", (-5.34, upper_floor + 1.57,
-                                                          z + end * 1.62),
-                  (2.34, 3.00, .09), dark, bevel=.035, parent=crew_root)
         g.rod(f"Crew bunk ladder {bunk}", (-3.98, upper_floor + .12, z + 1.22),
               (-3.98, upper_floor + 2.86, z + 1.22), .045,
               steel, vertices=10, parent=crew_root)
@@ -750,7 +746,7 @@ def build_interior(g, m, layout):
         for side in (-1, 1):
             g.box(f"Starboard doorway {doorway} jamb {side:+d}",
                   (starboard_partition_x, upper_floor + 1.45, z + side * .88),
-                  (.28, 2.90, .16), steel, bevel=.035,
+                  (.28, 2.90, .20), steel, bevel=.035,
                   parent=galley_root if doorway == 0 else hygiene_root)
         g.box(f"Starboard doorway {doorway} lintel", (starboard_partition_x,
                                                        upper_ceiling - .18, z),
@@ -909,6 +905,9 @@ def build_interior(g, m, layout):
            .38, warning, parent=cargo_root)
     g.text("Upper lift registry", "CREW LIFT", (3.0, upper_floor + .035, -4.0),
            .28, warning, parent=upper_root)
+
+    from upper_deck import build_upper_deck
+    build_upper_deck(g, m, layout, upper_root, crew_root, galley_root, bridge_root)
 
     return {
         "root": interior_root,

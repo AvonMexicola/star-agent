@@ -600,3 +600,43 @@ acne (shadow-off removed it, normal-map-off did not). Bias is now -0.0005 with
 again with actual shadows and zero errors; before/final evidence is retained.
 
 Published as draft PR #30: https://github.com/AvonMexicola/star-agent/pull/30 . Preserve its draft status until independent art review and fleet integration are complete.
+
+
+## Atlas upper-deck refinement in progress — 2026-09-06
+
+Root owns only /tmp/star-agent-atlas-mark-ii, feat/atlas-mark-ii (draft PR30):
+crew room end-wall closure, shaped pressure frames, bunk surrounds and upper
+ceiling/service liners. Matching collision and exported-geometry checks belong
+to this lane. Preserve approved exterior/nacelles and all shared runtime work.
+First review view is the crew aisle at standing eye height; validate the actual
+Blender export, full physical boarding route and upper-deck clearance before
+updating the stable 5250 preview. No main fleet integration or merge this pass.
+
+
+## READY FOR REVIEW: Atlas upper-deck construction — 2026-09-06
+
+Draft PR30 / feat/atlas-mark-ii now has explicit crew fore/aft walls and an
+outboard liner, enclosed berth backs and shaped end shells, chamfered pressure
+frames in crew/corridor/mess/bridge, removable service cassettes and a visible
+aft environmental panel. New Blender source: upper_deck.py. Approved exterior
+and nacelle geometry preserved. The additional corridor render exposed old
+coplanar jamb/partition faces; jambs now project 20 mm and have physical
+colliders. Galley aisle retains 1.60 m for capsule-centre travel; side doorways
+retain 0.96 m. There are 55 authored fixed collider envelopes.
+
+Final hero SHA 659b54660075ff1adb759d1c1141dfbc06c8aba6302190766756cec016fc4a1f:
+426,504 triangles, 157 batches, 13 materials, 10 textures, 38,890,964 bytes.
+181 unit tests and production build pass. All four hardware browser cases pass
+again (1.6 min), zero captured page/console errors. Extended physical route
+reaches the last bunk, stops at its aft wall and returns through the doorway
+before visiting galley/hygiene. Actual export tests also check room closure,
+standing aisle clearance and depth separation at both door-frame junctions.
+Chromium151 / AMD Radeon860M / ANGLE GL, inspection1440x900 DPR1. No FPS or
+physical-controller claim. Final images, correction history and exact hashes:
+docs/qa/atlas-mark-ii/upper-deck-record.md and README.md.
+
+Stable http://localhost:5250/dev/atlas-mark-ii.html serves the verified final
+hero (user unit star-agent-atlas-mark-ii-preview.service). Select CREW or use
+physical walkthrough. Remains an over-budget standalone authoring candidate;
+no independent art approval, live fleet installation, merge or deployment.
+Fable/Claude retain review and integration ownership.

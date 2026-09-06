@@ -1,8 +1,8 @@
 {
   "errors": [],
   "stats": {
-    "meshes": 154,
-    "triangles": 398608,
+    "meshes": 157,
+    "triangles": 426504,
     "materials": 13,
     "textures": 10
   },
@@ -13,8 +13,8 @@
   ],
   "dpr": 1,
   "browser": "Chromium 151.0.7922.173",
-  "assetSha256": "b021dd553424647aec1364e1b184ca3cd243ce499074c1a2e48302a4c60672e0",
-  "functionalSuiteAssetSha256": "81ccc96f00fd0fb769959d0b8383fdb841c9f9221a9e7870ecb37916f92c1527",
+  "assetSha256": "659b54660075ff1adb759d1c1141dfbc06c8aba6302190766756cec016fc4a1f",
+  "functionalSuiteAssetSha256": "659b54660075ff1adb759d1c1141dfbc06c8aba6302190766756cec016fc4a1f",
   "functionalViewport": [
     480,
     300

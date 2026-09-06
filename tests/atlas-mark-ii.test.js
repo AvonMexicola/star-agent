@@ -436,6 +436,19 @@ test('tapered bridge cheeks keep the full walker capsule inside the pressure foo
     'the rectangular upper-deck fallback does not project floor beyond a bridge cheek');
 });
 
+test('crew end walls block escape while the full bunk aisle remains reachable', () => {
+  const systems = new AtlasMarkIISystems();settle(systems);
+  const y = layout.upper.floor + layout.eyeHeight;
+  const doorway = point(0, y, 3);
+  const entry = point(-3.1, y, 3);
+  const aft = point(-3.1, y, 16.2);
+  assert.deepEqual(systems.constrain(doorway, entry), entry, 'crew doorway admits a standing capsule');
+  assert.deepEqual(systems.constrain(entry, aft), aft, 'all three berths are accessible past the fold desk');
+  assert.deepEqual(systems.constrain(aft, point(-3.1, y, 17.6)), aft, 'aft bulkhead blocks escape');
+  assert.deepEqual(systems.constrain(entry, point(-3.1, y, 0)), entry, 'forward bulkhead blocks escape');
+  assert.deepEqual(systems.constrain(aft, entry), entry, 'the same aisle permits return to the doorway');
+});
+
 test('galley and hygiene circulation stays capsule-clear while fixtures remain solid', () => {
   const systems = new AtlasMarkIISystems();settle(systems);
   const upperEye = layout.upper.floor + layout.eyeHeight;
@@ -603,6 +616,14 @@ test('exported pressure shell closes the bridge, roof seam, cargo doors and aft 
 
   const checks = [
     {
+      label: 'crew forward wall at standing height', origin: [-3.1, 11.25, 2], direction: [0, 0, -1],
+      range: [0.8, 1.1], ancestor: 'InteriorCrew',
+    },
+    {
+      label: 'crew aft environmental bulkhead', origin: [-3.1, 11.25, 16], direction: [0, 0, 1],
+      range: [0.65, 1.1], ancestor: 'InteriorCrew',
+    },
+    {
       label: 'lower cockpit pressure skirt', origin: [0, 9.9, -28], direction: [0, 0, 1],
       range: [1.9, 2.8], ancestor: 'PressureBridge',
     },
@@ -625,6 +646,31 @@ test('exported pressure shell closes the bridge, roof seam, cargo doors and aft 
     }
   }
   for (const check of checks) pressureRayHit(scene, check);
+  for (const x of [-1.42, 1.42]) {
+    const hits = new THREE.Raycaster(point(x, 11, 3), point(0, 0, -1), .001, 1.5)
+      .intersectObject(scene, true);
+    assert.ok(hits.length >= 2, 'door jamb and wall are both present');
+    const jamb = hits[0];
+    const wall = hits.find(hit => hit.object !== jamb.object);
+    assert.ok(wall && wall.distance - jamb.distance >= .015,
+      `door jamb at x=${x} overlaps the partition face in depth and can flicker`);
+  }
+  // The pre-existing removable service panel sits in front of the liner.
+  // Target the room structure so it cannot conceal a missing back wall.
+  pressureRayHit(scene.getObjectByName('InteriorCrew'), {
+    label: 'crew outboard liner between bunks', origin: [-6.1, 10.7, 8.35], direction: [-1, 0, 0],
+    range: [0.25, 0.5], ancestor: 'InteriorCrew',
+  });
+
+  // Check actual exported surfaces across the capsule width and body height,
+  // independently of collider JSON: ceiling haunches cannot become ghost obstacles.
+  for (const x of [-3.4, -3.1, -2.8]) {
+    for (const y of [9.7, 10.4, 11.25, 11.5]) {
+      const hits = new THREE.Raycaster(point(x, y, 3), point(0, 0, 1), .001, 13.2)
+        .intersectObject(scene, true);
+      assert.equal(hits.length, 0, `standing bunk-aisle sweep at x=${x}, y=${y} meets geometry`);
+    }
+  }
 
   const upperDeckHits = x => new THREE.Raycaster(
     point(x, 10, -24),
