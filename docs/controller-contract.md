@@ -17,6 +17,7 @@ mapping, not operating-system Bluetooth status.
 | Dialog | Right stick | Scroll |
 | Flight / walking | Left / right stick | Move / aim |
 | Flight | RT / LT | Rise / descend |
+| Flight | A / ✕ | Fire selected ship weapon (pulse / solar lance / singularity) |
 | Flight | LB / RB | Roll |
 | Flight | Y / X | Land or launch / interact |
 | Flight | B / right-stick click | Brake / flight assist |
@@ -25,6 +26,9 @@ mapping, not operating-system Bluetooth status.
 | Walking / EVA | RT | Fire equipped weapon or mining tool |
 | Walking / EVA | D-pad left | Cycle weapon 1, weapon 2 and tool |
 | Walking / EVA | D-pad up / down | Select next quick slot / use selected item |
+
+| Walking / EVA | D-pad right | Equip or holster held tool |
+| Walking / EVA | RT | Fire equipped cutter, carbine or sidearm |
 | EVA | A / B | Rise / descend |
 | EVA | LT | Brake |
 | EVA | LB / RB | Roll |
@@ -122,3 +126,17 @@ shortcuts, a held RT across inventory closure and return to the backpack.
 Medical success uses an injured-save fixture in `loadout-ui.spec.js`; no natural
 injury source is claimed. Shared interruption tests continue to cover focus and
 device reconnect. Physical Xbox testing remains separate from injected inputs.
+
+## Energy arsenal follow-up (PR #27)
+
+Command menu actions equip each handheld tool outside the cabin and select each
+ship weapon in flight. Disabled actions are skipped by the shared focus router.
+The effects/input adapter owns A firing only in flight, where A had no existing
+action; navigation retains A jump/EVA rise. RT retains flight ascent and fires
+the equipped tool only on foot or in EVA. No raw second Gamepad poll is used.
+Equipment/weapon changes suspend shared input until neutral, as do menu closes.
+The new route is `scripts/controller-effects.spec.js`: controller-only ship
+selection/fire, physical lunar landing/exit/approach, both gun selections and
+impacts, cutter mining, cargo UI and return. It also covers held RT across focus,
+disconnect, replacement and unsupported mapping. Debug state is read only for
+steering and assertions; no physical controller testing is claimed.
