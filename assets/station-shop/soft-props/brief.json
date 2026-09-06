@@ -1,10 +1,9 @@
 {
   "version": 1,
-  "status": "prepared-not-generated",
+  "status": "geometry-generated-provider-finishing",
   "basisCommit": "46b978ff112feb358c5daf1310809b4257bcdfaa",
   "authorization": "Cees: feel free to use meshy to make more props",
   "provider": "Meshy",
-  "generationJobs": [],
   "intake": {
     "maxTrianglesPerProp": 8000,
     "maxGlbBytesPerProp": 1000000,
@@ -20,18 +19,47 @@
     {
       "id": "kestrel-maintenance-roll",
       "prompt": "One isolated compact maintenance tool roll, partially rolled closed, for an inhabited orbital station trade counter. Heavy ochre waxed canvas with charcoal fabric pockets, a few short enclosed tool silhouettes under the cloth, two restrained dark webbing straps and small brushed-metal buckles. Clearly readable rolled textile shape, compressed folds, stitched hems, softened corners, seam grime and restrained oil-dark wear where hands and work surfaces touch. Practical manufactured everyday equipment, realistic human scale. Flat stable underside. No loose trailing straps, no scattered tools, no surrounding scene, no stand, no human, no lettering, logos or emissive parts. PBR game prop with clear cloth versus metal roughness; neutral unbaked lighting.",
-      "targetSizeMetres": [0.32, 0.13, 0.46],
-      "proposedHubBasePosition": [12.04, -6.908, -0.25],
+      "targetSizeMetres": [
+        0.32,
+        0.13,
+        0.46
+      ],
+      "proposedHubBasePosition": [
+        12.04,
+        -6.908,
+        -0.25
+      ],
       "support": "ComponentsCounter rubber work insert; authored top Y=-6.908",
-      "intent": "Trade-counter work-in-progress, clear of A5 holders, care note and purchase terminal"
+      "intent": "Trade-counter work-in-progress, clear of A5 holders, care note and purchase terminal",
+      "preferredProviderMode": "Low Poly",
+      "targetTriangles": 2500,
+      "maxTriangles": 4000
     },
     {
       "id": "watchkeep-folded-protective-jacket",
       "prompt": "One isolated neatly folded but well-used protective work jacket, laid flat as a compact retail sample. Petrol-blue heavy technical textile with restrained ivory reinforcement patches and matte charcoal trim, padded seams, double stitched hems, folded tucked-in sleeves, a short folded collar, compressed fabric layers and natural asymmetric creases. Practical orbital station security supplier equipment, believable cloth thickness and human scale. Subtle abrasion at raised folds, darker grime in seams, no exaggerated damage. Flat stable underside. No person, mannequin, hanger, armour shell, weapon, surrounding scene, lettering, logos or glowing parts. PBR game prop with soft cloth material response and neutral unbaked lighting.",
-      "targetSizeMetres": [0.38, 0.12, 0.52],
-      "proposedHubBasePosition": [-12.04, -6.908, -0.25],
+      "targetSizeMetres": [
+        0.38,
+        0.12,
+        0.52
+      ],
+      "proposedHubBasePosition": [
+        -12.04,
+        -6.908,
+        -0.25
+      ],
       "support": "ArmoryCounter rubber work insert; authored top Y=-6.908",
-      "intent": "Tactile protective-clothing sample connecting WATCHKEEP posters to physical merchandise"
+      "intent": "Tactile protective-clothing sample connecting WATCHKEEP posters to physical merchandise",
+      "preferredProviderMode": "Low Poly",
+      "targetTriangles": 1500,
+      "maxTriangles": 2000
     }
-  ]
+  ],
+  "userSteering": [
+    {
+      "quote": "you can use the low poly mode for... folded jackets ;)",
+      "interpretation": "Prefer Meshy Low Poly mode for soft dressing props; keep fabric detail in PBR maps and reserve geometry for silhouette."
+    }
+  ],
+  "generationReceipt": "generation-receipt.json"
 }

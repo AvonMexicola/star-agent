@@ -702,3 +702,14 @@ new review are claimed. Resume through the Meshy-capable browser lane when
 available, retaining source/job provenance and Astra review. The existing
 reviewed local shop build and production remain unchanged. This is a manager
 notification of prepared work and the actual blocker, not READY FOR REVIEW.
+
+
+## USER CORRECTION — GPT BRIDGE FOR MESHY
+
+Cees explicitly said the Meshy bridge should use GPT. The prior Claude Chrome
+check was the wrong route; its session limit does not establish GPT/Meshy
+unavailability. A gpt-6-astra Codex helper has now connected the configured
+Node REPL / browser integration to Chrome and is checking Meshy access. Use
+this GPT route going forward, not the older Claude-browser routing notes.
+No generation or Meshy login is claimed until verified. Prop briefs remain
+in /tmp/star-agent-retail-props, assets/station-shop/soft-props/.

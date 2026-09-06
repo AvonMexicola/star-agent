@@ -344,3 +344,12 @@ journey. Exact provenance and the final independent disposition belong to the
 corrective record and Astra follow-up, not an inferred waiver.
 
 Final receipt: independent Astra review of025e587 scores the affected shops4.00/5 (all six criteria4). The broader PR remains unapproved due to inherited world/performance concerns. See docs/qa/station-shop-enclosure-astra-review.md for exact evidence and bounded motion limitations.
+
+
+## User correction: GPT browser bridge for Meshy
+
+Cees explicitly instructed: use GPT for the Meshy bridge. The initial Claude
+Chrome capability check was the wrong route. Its session limit is not evidence
+that the GPT bridge or Meshy is unavailable. Use the configured GPT/Astra Codex
+browser integration, verify actual connection/login, and retain exact job
+provenance. Do not revert to Claude based on older handoff routing notes.
