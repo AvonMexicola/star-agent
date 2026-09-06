@@ -42,6 +42,8 @@ test('heading drive, real gear and lights, held rifle, and persisted meadow opti
   await page.screenshot({path:`${output}/meadow-160m.png`});
   const state=await page.evaluate(()=>window.starAgent.state);
   expect(state.vegetation.distantMeadow.clusters).toBeGreaterThan(30000);
+  expect(state.vegetation.distantMeadow.middle.clusters).toBeGreaterThan(20000);
+  expect(state.vegetation.distantMeadow.middle.pending).toBe(0);
   const backend=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);});
   await writeFile(`${output}/environment.json`,JSON.stringify({browser:browser.version(),backend,viewport:[1440,900],state,errors},null,2));
   expect(errors).toEqual([]);

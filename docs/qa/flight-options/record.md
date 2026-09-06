@@ -30,15 +30,19 @@ calibrated hand socket, preserving ammo, heat and firing authority. A final wris
 correction aligns the barrel to the aim ray, with a two-joint support-arm solve.
 Cabin/menu inactivity holsters the item and clears the aiming pose.
 
-The original 10 m interactive meadow stays detailed. A second InstancedMesh uses
-three crossed, procedurally masked cards per cluster for distant grass. Placement
+The original 10 m interactive meadow stays detailed. An intermediate InstancedMesh
+uses five tapered triangle blades per tuft out to28m, overlapping the near blades
+at6–10m. A distant InstancedMesh uses three crossed, procedurally masked cards per
+cluster, overlapping the intermediate blades at20–28m. Placement
 uses the shared deterministic spherical grid and canonical terrain; local doubles
 are subtracted before instance floats. Enumeration, sampling and matrix preparation
-share a 2 ms / 512-candidate frame budget. The previous mesh remains until its
-replacement is ready, with a 20 m preload margin. Range defaults to80m, density75%;
+share a2ms frame budget (0.8ms intermediate /1.2ms distant, each capped at512
+candidates). Each previous mesh remains until its replacement is ready, with
+10m intermediate and20m distant preload margins. Root-to-tip color gradients and
+lighting agree across the layers; canonical-world wind phase survives rebasing. Range defaults to80m, density75%;
 40/80/160m and50/75/100% are user-selectable. Far grass is a cheaper representation,
 not the detailed mesh replicated to the horizon. The current lower presets change
-the distant layer; the original near blade density is retained.
+the intermediate/distant layers; the original near blade density is retained.
 
 ## Proceedings
 
@@ -71,7 +75,7 @@ remain outside this batch; this record does not certify them as fixed.
 
 ## Recorded checks
 
-- Final unit pass before visual polish: `npm test`, **466/466**.
+- Final unit pass after the station targeting correction: `npm test`, **467/467**.
 - New feature browser suite: **2/2**, production build, Chromium151.0.7922.173,
   AMD Radeon860M hardware ANGLE/OpenGL ES3.2, viewport1440×900, captured render
   scale0.8. Includes persisted settings reload, actual weapon selection, both
@@ -106,3 +110,18 @@ Representative screenshots: [desktop settings](graphics-desktop.png),
 [phone settings](graphics-phone.png), [160m meadow](meadow-160m.png),
 [held rifle](character-rifle.png), [controller firing](controller-rifle-fire.png).
 See the independent reports for full-scale art captures and exact viewpoint metadata.
+
+
+## Grass transition follow-through
+
+The second independent review of89ce649 scored **3.83/5, changes required**;
+[second-review.md](second-review.md) retains the exact report. Matching diffuse
+lighting alone left crossed clusters visibly different from fine grass inside
+walking distance. The follow-up adds the intermediate blade layer described
+above, moves the card overlap to20–28m, and matches root-to-tip color. Stable
+world-derived wind phases prevent a visible phase reset when a field is rebased.
+The production build and affected browser fixture passed again (**1/1**) with
+both intermediate and distant fields populated and completely published. No
+console/page errors were recorded. This rerun follows the earlier full2/2 feature
+suite; unaffected controller behavior was not gratuitously rerun for grass geometry.
+The final independent walking review is pending.
