@@ -86,6 +86,8 @@ test('independent space fields and resource gains commit atomically with bounded
   assert.equal(store.canEditRock('ring-rock-new'), false);
   assert.equal(store.canEditRock('ring-rock-0'), true);
   assert.equal(store.getRock('ring-rock-new', field).revision, 0);
+  store.releaseRock('ring-rock-new'); assert.equal(store.initialRocks.has('ring-rock-new'), false);
+  store.releaseRock('ring-rock-0'); assert.equal(store.getRock('ring-rock-0', field).revision, 1);
   const mass = store.mass;
   assert.equal(store.commitRock('ring-rock-new', { field, yieldVolume: [.01, 0, 0] }, 0), false);
   assert.equal(store.mass, mass);
