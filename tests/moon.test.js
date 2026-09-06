@@ -5,6 +5,7 @@ import { MOON_RADIUS, MOON_POSITION, MOON_DISTANCE, MOON_MAX_HEIGHT, MOON_LANDIN
 import { bodyAltitude, bodySurfacePoint, bodySurfaceNormal, SELENE } from '../src/celestial.js';
 import { generateMoonPatch, MoonTerrain, MOON_GRID } from '../src/moon-terrain.js';
 import { MoonRings, ringDensity, ringRock, RING_NORMAL } from '../src/moon-rings.js';
+import {RING_RADIUS,RING_WIDTH,RING_THICKNESS} from '../src/ring-world.js';
 import { MoonIce, iceCell } from '../src/moon-ice.js';
 import { FlightAudio } from '../src/audio.js';
 import { RADIUS, SUN_DISTANCE, cubeDirection } from '../src/world.js';
@@ -131,19 +132,19 @@ test('the exploration basin has substantial relief, steep crater walls and a lev
 });
 
 test('ring bands have real gaps and every asteroid stays outside lunar terrain',()=>{
-  assert.ok(ringDensity(1.79)>ringDensity(1.92)*10);
-  assert.ok(ringDensity(2.08)>ringDensity(2.22)*10);
+  assert.ok(ringDensity(RING_RADIUS/MOON_RADIUS)>.5);
+  assert.equal(ringDensity((RING_RADIUS+RING_WIDTH)/MOON_RADIUS),0);
   const normal=new Vector3(...RING_NORMAL);
   for(let i=0;i<1800;i++){
     const rock=ringRock(i),position=new Vector3(...rock.position);assert.deepEqual(rock,ringRock(i));
     assert.ok(position.length()-rock.size*2>MOON_RADIUS+MOON_MAX_HEIGHT);
-    assert.ok(Math.abs(position.dot(normal))<851);
+    assert.ok(Math.abs(position.dot(normal))<RING_THICKNESS/2+.001);
   }
 });
 
 test('ring instances preserve close-range precision when the camera is in the belt',()=>{
   const scene=new Scene(),rings=new MoonRings(scene,12),rock=ringRock(3),origin=new Vector3(...MOON_POSITION).add(new Vector3(...rock.position)).add(new Vector3(5,12,-20));
-  rings.update(origin,0);const matrix=new Matrix4();rings.rocks.getMatrixAt(3,matrix);
+  rings.update(origin,0);const matrix=new Matrix4(),index=rings.local.filter(r=>r.family===rock.family).findIndex(r=>r.id===rock.id);assert.ok(index>=0);rings.near[rock.family].getMatrixAt(index,matrix);
   const translated=new Vector3().setFromMatrixPosition(matrix);assert.ok(translated.distanceTo(new Vector3(-5,-12,20))<.00001);
   rings.dispose();assert.equal(scene.children.length,0);
 });

@@ -465,3 +465,34 @@ separate from the planet seed. The snapshot is browser-local, single-volume and
 not coordinated across tabs/network peers. No debris physics, cave-floor replacement,
 mining of ring rocks, or resource crafting is claimed. See the guide for merge hooks,
 source provenance, validation and remaining independent manager/visual review.
+
+
+## Expedition follow-up: controller, containers, EVA and populated rings
+
+Cees tested first mining and identified missing visible beam/texture, controller
+access and backpack UI. Explicitly authorized a multi-agent implementation team.
+Controller, inventory and EVA lanes are integrated by the expedition root; see
+docs/selene-expedition.md for the concrete feature and storage boundaries.
+
+- All new interactive features require controller actions, visible bindings, modal
+  navigation, disconnect/focus/re-arm safety and a controller-only acceptance route.
+  The contract is now in AGENTS.md and docs/controller-contract.md.
+- One slot/box inventory schema and dialog serve backpack/ship/station/base caches;
+  resource transfers and density edits remain one atomic browser save. New boxes
+  add slots and mineral capacity; the real Crescent field cache exercises base storage.
+- Laser custom shader uses the scene logarithmic depth convention; material wear
+  is generated locally and sampled in tool coordinates. A beam in empty space
+  produces no resources, and impact effects require a validated hit.
+- Selene's versioned ring generator defines 20,971,520 stable descriptors in a 20 km
+  radial by 2 km vertical band. Six family functions drive low-detail silhouettes
+  and editable small-rock fields. Near-cell streaming is bounded to 3,200 descriptors,
+  two live excavation workers, eight persisted space-rock snapshots.
+- Large asteroids remain procedural collision geometry pending chunked mining;
+  small representatives of all six families are hand-mineable in EVA. Preserve this
+  distinction in UI/docs. No massive unbounded mesh allocation or pristine LOD over cuts.
+- EVA uses real hatch/ramp exit and return, suit inertia/thrust/braking and shared
+  obstacle hooks. It adds no remote teleport-to-chair shortcut. Fuel/oxygen and
+  orbital mechanics are not claimed as implemented.
+
+This update replaces no manager review requirement. Final test/evidence counts are
+recorded in the expedition review handoff, not inferred from earlier mining PR #21.

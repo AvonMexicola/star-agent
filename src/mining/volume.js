@@ -21,9 +21,9 @@ export function rockColor(x,y,z){
   const type=mineral(x,y,z),grain=.76+.24*Math.sin(x*31+y*17+z*23)**2;
   return [[.055,.072,.09],[.42,.18,.045],[.26,.54,.66]][type].map(v=>v*grain);
 }
-export function createDensity(){
+export function createDensity(fieldFunction=rockField){
   const field=new Float32Array(SIDE**3);
-  for(let z=0;z<SIDE;z++)for(let y=0;y<SIDE;y++)for(let x=0;x<SIDE;x++)field[index(x,y,z)]=rockField(coord(x),coord(y),coord(z));
+  for(let z=0;z<SIDE;z++)for(let y=0;y<SIDE;y++)for(let x=0;x<SIDE;x++)field[index(x,y,z)]=fieldFunction(coord(x),coord(y),coord(z));
   return field;
 }
 const fill=v=>clamp(.5-v/STEP,0,1);
