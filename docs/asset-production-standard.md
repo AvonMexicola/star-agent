@@ -469,3 +469,16 @@ failed images and reviewer finding. Do not treat a pre-change motion recording
 as evidence of post-change shadow stability.
 
 Final receipt: independent Astra review of025e587 scores the affected shops4.00/5 (all six criteria4). The broader PR remains unapproved due to inherited world/performance concerns. See docs/qa/station-shop-enclosure-astra-review.md for exact evidence and bounded motion limitations.
+
+
+## GPT reference to Meshy correction — 2026-09-07
+
+Cees rejected the first text-to-3D soft-prop pair and specified this replacement
+method: GPT image first, one isometric item on white without shadows, then import
+that image into Meshy Image to 3D. See the
+[soft-prop production record](qa/station-soft-props-record.md). Save the actual
+reference, prompt and hash; confirm the uploaded image and inspect whether the
+reconstruction preserves its silhouette and materials. Retain the failed
+text-to-3D receipts rather than presenting them as accepted reference assets.
+A strong source image improves the direction but does not waive exported-geometry,
+UV, PBR, scale, performance or actual game visual review.

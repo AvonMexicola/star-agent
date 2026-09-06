@@ -1,6 +1,6 @@
 # Meshy shop soft props — production record
 
-**Provider finishing complete; export approval pending. No downloaded model, runtime integration, measured asset budget or
+**Original props rejected by Cees; image-to-3D replacement in progress. No downloaded model, runtime integration, measured asset budget or
 new visual acceptance is claimed.** The existing reviewed shops are unchanged.
 Work is isolated in `/tmp/star-agent-retail-props`, `feat/retail-soft-props`, based
 on the reviewed shop proceedings46b978f. The saved [brief](../../assets/station-shop/soft-props/brief.json)
@@ -113,3 +113,38 @@ screenshots, shader errors, physical purchase/fallback checks and hub GPU/CPU
 measurements. Request independent Astra review of that exact integrated candidate.
 The prior shops'4.00 score does not cover these future props. Preserve failed
 results and update the station pipeline memory and manager handoff on delivery.
+
+## User rejection and GPT-image replacement — 2026-09-07
+
+Cees rejected the final text-to-3D models as visually poor and supplied the
+replacement production method: first make an isometric item reference using GPT
+image on white with no shadows, then import that reference into Meshy. Earlier
+provider completion is preserved as history, not asset approval. The old exports
+are no longer the intended deliverable.
+
+Root used the built-in GPT image tool, one call per prop, and inspected both
+returned images. The new jacket reads as a carefully folded technical garment
+with tucked sleeves, a short collar and structured seams; the ochre roll now
+has closed contents and tight straps instead of the open tool rack. Images are
+saved in assets/station-shop/soft-props/image-to-3d-v2/, alongside exact prompts,
+dimensions, hashes and inspection limitations. Their material relief includes
+self-shading; the jacket has slight grey at its lower edge. These are reference
+inputs for reconstruction, not validated albedo maps or actual game evidence.
+
+The GPT browser helper's first launch failed before connection because its local
+app-server state was read-only in the sandbox. The explicit helper-launch
+escalation was approved; it authorizes uploads and replacement generation,
+excluding GLB downloads. The helper is assigned the new Meshy Image-to-3D
+receipt only. Upload/generation results remain pending until directly observed.
+
+
+Meshy Image to 3D was reached, but the first chooser attempt timed out. After
+inspecting the actual UI and documented troubleshooting, the visible associated
+label opened a chooser. Its documented setFiles call for the jacket reference
+failed with `Error: {"code":-32000,"message":"Not allowed"}` and
+`fileChooser.setFiles failed`. No more specific reason was exposed. The empty
+upload field was verified afterwards; neither replacement job was submitted.
+This is an upload-tool rejection, not a failed Meshy reconstruction or a credit
+issue. No upload bypass or browser settings change was attempted. This attempt
+spent zero Meshy credits; no export or game change occurred. Both original PNGs
+and hashes remain intact for resuming through a functioning permitted upload.

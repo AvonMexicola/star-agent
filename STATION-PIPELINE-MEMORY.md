@@ -383,3 +383,30 @@ assets/station-shop/soft-props/ and docs/qa/station-soft-props-record.md. Browse
 approval rejected the original GLB download; no export or runtime integration
 is claimed. Complete authorized provider edits separately, then obtain approval
 for that specific rejected download before retrying.
+
+
+## Cees correction: GPT image before Meshy — 2026-09-07
+
+The two text-to-3D retail props were rejected by Cees despite completed provider
+texturing and reduction. Their receipts remain failure history; do not reuse
+the provider ready-for-export status as an art approval.
+
+For this organic/soft-prop pipeline, first use GPT image to establish ONE item
+in an isometric view on a white background, with no cast/contact shadow or scene
+props. Save separate images per item and inspect silhouette, fold construction,
+material palette and whole-object framing before upload. Keep exact prompts,
+source PNGs and hashes. User direction supersedes the earlier text-first route.
+
+Upload the selected image through Meshy Image to 3D, confirm the visible thumbnail
+and record source hash plus provider settings. Compare reconstructed geometry
+with that source from multiple angles before remeshing. Retain detailed originals,
+then reduce with silhouette checks and verify UV/PBR maps on the final version.
+A beautiful reference is not proof of a good generated mesh; provider completion
+is not game acceptance. Keep the Blender scale/origin, actual export budgets,
+local resource loading, game-render checks and independent review steps.
+
+The first replacement reference pair is in
+assets/station-shop/soft-props/image-to-3d-v2/. Root generated and inspected both
+with the built-in GPT image tool; Meshy reconstruction remains separately tracked
+in that directory's receipt. The previous export denial is not approval for a
+new download. No rejected original model has entered the game.

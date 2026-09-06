@@ -743,3 +743,26 @@ download approval, export the selected versions, measure/fit and inspect them,
 then integrate and obtain actual game checks and independent Astra review.
 Manager notification via HANDOFF only; no read receipt claimed. Preserve other
 active integration work and the accepted local shop preview at port 5260.
+
+
+## GPT IMAGE → MESHY REPLACEMENT — REFERENCES SAVED, UPLOAD BLOCKED — 2026-09-07
+
+Cees rejected the completed text-to-3D shop props and specified GPT isometric
+images on white with no shadows, then Meshy Image to 3D. Do not integrate the old
+models. Root generated and inspected two new built-in GPT images: a neatly folded
+blue/ivory jacket and a closed ochre canvas roll with two snug straps/buckles.
+Source PNGs, exact prompts, dimensions, hashes and limitations are saved under
+/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/.
+Full proceedings and reusable corrections are in docs/qa/station-soft-props-record.md,
+STATION-PIPELINE-MEMORY.md and docs/asset-production-standard.md on
+feat/retail-soft-props. These references are not game or model review evidence.
+
+GPT browser helper reached Image to 3D. A chooser timeout was corrected through
+the visible upload label, but fileChooser.setFiles then failed with code -32000,
+“Not allowed”; the tool supplied no more specific reason. The upload field stayed
+empty. No replacement generation, new Meshy charges, exports, integration or
+review occurred. Do not confuse this with the earlier export denial or claim
+that extra Meshy credits solve it. Next: restore a permitted reference upload,
+verify the actual thumbnail, reconstruct and inspect the two images, then finish
+geometry/PBR and proceed with measured local intake and independent game review.
+This HANDOFF entry notifies the integration manager; no read receipt claimed.

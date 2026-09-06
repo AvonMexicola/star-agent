@@ -1,6 +1,7 @@
 # Meshy shop soft-prop intake
 
-**Geometry, reduction and PBR texturing completed in Meshy. Export approval is pending. No model
+**Cees rejected the text-to-3D assets on 2026-09-07. Replacement production now
+uses GPT isometric reference images followed by Meshy Image to 3D. No model
 has been downloaded or integrated, and no new asset review is claimed.** Cees authorized Meshy for additional props after the Astra-reviewed
 shop pass. This bounded pair adds soft, used objects to the existing rigid
 fixtures: a Kestrel maintenance roll and folded Watchkeep protective gear.
@@ -115,3 +116,34 @@ The jacket has angular collar edges; the roll's dark pockets still look smoother
 than intended canvas, and its open-pouch silhouette remains. These are review
 items for actual exported assets, not a visual pass. No local provider screenshots
 were saved; recorded observations came from the GPT operator's browser previews.
+
+## User rejection and replacement workflow — 2026-09-07
+
+Cees found both completed text-to-3D assets visually unacceptable. Their previous
+ready-for-export status described provider operations only and is superseded by
+this rejection. Preserve their receipts, but do not integrate those models.
+
+The replacement inputs are separate GPT-generated isometric product references
+on white in image-to-3d-v2/. Exact prompts, source hashes and root observations
+are in [the new prompt record](image-to-3d-v2/prompts.json). The jacket now has
+a compact folded garment silhouette with tucked sleeves; the tool roll encloses
+its contents beneath an ochre canvas flap and two snug webbing straps. These are
+reference images, not game renders or accepted 3D assets.
+
+Use Meshy Image to 3D with each exact image, verify the uploaded thumbnail,
+then compare the resulting geometry and materials with the reference before
+reduction. Keep the source image and original detailed geometry. Inspect the
+final reduced mesh and all PBR maps again; silhouette quality takes precedence
+over hitting an arbitrary low count. A budget exception stays pending review.
+
+
+Meshy Image to 3D was reached, but the first chooser attempt timed out. After
+inspecting the actual UI and documented troubleshooting, the visible associated
+label opened a chooser. Its documented setFiles call for the jacket reference
+failed with `Error: {"code":-32000,"message":"Not allowed"}` and
+`fileChooser.setFiles failed`. No more specific reason was exposed. The empty
+upload field was verified afterwards; neither replacement job was submitted.
+This is an upload-tool rejection, not a failed Meshy reconstruction or a credit
+issue. No upload bypass or browser settings change was attempted. This attempt
+spent zero Meshy credits; no export or game change occurred. Both original PNGs
+and hashes remain intact for resuming through a functioning permitted upload.

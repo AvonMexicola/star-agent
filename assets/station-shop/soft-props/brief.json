@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "provider-finished-export-approval-pending",
+  "status": "originals-rejected-replacement-references-saved-upload-blocked",
   "basisCommit": "46b978ff112feb358c5daf1310809b4257bcdfaa",
   "authorization": "Cees: feel free to use meshy to make more props",
   "provider": "Meshy",
@@ -13,7 +13,7 @@
     "axes": "glTF Y-up, metres; final bounds aligned to hub local X/Y/Z",
     "runtimeDependency": "none; generated assets must be exported and served locally",
     "reviewer": "Astra",
-    "reviewStatus": "not-reviewed"
+    "reviewStatus": "originals-rejected-by-user"
   },
   "props": [
     {
@@ -63,8 +63,13 @@
     {
       "quote": "you can also texture AND reduce the topology after rendering a model in meshy",
       "interpretation": "Finish reduction and PBR texturing on existing Meshy models; retain originals and verify the maps on the final reduced version."
+    },
+    {
+      "quote": "sadly the assets look horrible, not your fault. what works is first using GPT image to make an isometric view of your item on a white blackground with no shadows, then importing that image into meshy and generating your asset.",
+      "interpretation": "Reject the existing text-to-3D outputs; create separate GPT isometric white-background references and upload them to Meshy Image to 3D for replacements. Retain prior failures."
     }
   ],
   "generationReceipt": "generation-receipt.json",
-  "postprocessReceipt": "postprocess-receipt.json"
+  "postprocessReceipt": "postprocess-receipt.json",
+  "imageTo3dReplacement": "image-to-3d-v2/prompts.json"
 }
