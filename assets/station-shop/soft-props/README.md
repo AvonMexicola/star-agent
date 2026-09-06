@@ -1,6 +1,6 @@
 # Meshy shop soft-prop intake
 
-**Geometry generated in Meshy; provider texturing/remesh in progress. No model
+**Geometry, reduction and PBR texturing completed in Meshy. Export approval is pending. No model
 has been downloaded or integrated, and no new asset review is claimed.** Cees authorized Meshy for additional props after the Astra-reviewed
 shop pass. This bounded pair adds soft, used objects to the existing rigid
 fixtures: a Kestrel maintenance roll and folded Watchkeep protective gear.
@@ -27,9 +27,12 @@ establish that GPT browser access is blocked. Cees corrected the route: use GPT
 for the bridge. The GPT Codex helper launched as `gpt-6-astra` and successfully connected the
 Node REPL / OpenAI Chrome integration. Meshy’s workspace and Text-to-3D controls
 loaded. That read-only check did not confirm login/credits and submitted no job.
-A second GPT helper is now checking the account and carrying out the authorized
-two-prop generation/export task. The receipt, when available, records actual
-results; visible controls alone do not establish successful generation.
+The generation helper subsequently confirmed a signed-in session, generated both
+props and recorded the actual settings and credit events in
+[generation-receipt.json](generation-receipt.json). A separate GPT helper performs
+texturing and reduction on those existing versions. Full proceedings, including
+failed UV generation, the colour correction and the export approval rejection,
+are retained in the [production record](../../../../docs/qa/station-soft-props-record.md).
 
 ## Resume and integration contract
 
@@ -85,9 +88,9 @@ normal/roughness maps carry stitches and wear. Inspect the cleaned render before
 accepting any reduction; the original8k intake cap is an outer limit, not a target.
 
 Cees further clarified that the completed Meshy model can be textured and
-reduced in Meshy itself. Next use the existing generated model versions for
-provider texturing and Remesh/Low Poly; preserve the original geometry and
-record each derived version. Blender remains for final orientation, metre-scale
+reduced in Meshy itself. The GPT operator uses the existing generated model
+versions for provider texturing and Remesh, preserving the original geometry
+and recording each derived version in postprocess-receipt.json. Blender remains for final orientation, metre-scale
 placement and validation, not the default substitute for Meshy postprocessing.
 The denied browser-download action remains separate from these authorized
 in-browser edits; do not retry or bypass that denial during postprocessing.
@@ -98,3 +101,17 @@ the per-prop cap. It preserves the native source and emits a measured candidate
 with1024² WebP PBR textures. Python syntax was checked; this script has not run
 on the actual props because the GLBs have not been downloaded. It is not evidence
 of budget compliance, exported UV correctness or visual acceptance.
+
+## Provider completion
+
+Both selected derived versions now show all four PBR map previews. Meshy's
+Triangle/Faces readout is 1,207 for the blue jacket and 2,571 for the ochre tool
+roll. Actual GLB counts remain unmeasured. See [postprocess-receipt.json](postprocess-receipt.json)
+for exact version recovery steps, all texture prompts, failed checks and retained
+visual limitations. Generation/UV work cost a net 45 credits; subsequent provider
+finishing cost 45, for 90 total. No purchase or top-up occurred.
+
+The jacket has angular collar edges; the roll's dark pockets still look smoother
+than intended canvas, and its open-pouch silhouette remains. These are review
+items for actual exported assets, not a visual pass. No local provider screenshots
+were saved; recorded observations came from the GPT operator's browser previews.

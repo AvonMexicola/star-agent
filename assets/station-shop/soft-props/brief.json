@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "geometry-generated-provider-finishing",
+  "status": "provider-finished-export-approval-pending",
   "basisCommit": "46b978ff112feb358c5daf1310809b4257bcdfaa",
   "authorization": "Cees: feel free to use meshy to make more props",
   "provider": "Meshy",
@@ -59,7 +59,12 @@
     {
       "quote": "you can use the low poly mode for... folded jackets ;)",
       "interpretation": "Prefer Meshy Low Poly mode for soft dressing props; keep fabric detail in PBR maps and reserve geometry for silhouette."
+    },
+    {
+      "quote": "you can also texture AND reduce the topology after rendering a model in meshy",
+      "interpretation": "Finish reduction and PBR texturing on existing Meshy models; retain originals and verify the maps on the final reduced version."
     }
   ],
-  "generationReceipt": "generation-receipt.json"
+  "generationReceipt": "generation-receipt.json",
+  "postprocessReceipt": "postprocess-receipt.json"
 }

@@ -353,3 +353,33 @@ Chrome capability check was the wrong route. Its session limit is not evidence
 that the GPT bridge or Meshy is unavailable. Use the configured GPT/Astra Codex
 browser integration, verify actual connection/login, and retain exact job
 provenance. Do not revert to Claude based on older handoff routing notes.
+
+
+## Meshy soft-prop finishing — 2026-09-06
+
+Cees explicitly authorized texturing and topology reduction on generated Meshy
+models. Use the GPT/Astra browser bridge and existing versions. For the bounded
+shop pair, Fixed / Custom / Triangle remesh targets of 1,500 and 2,500 produced
+UI counts of 1,207 jacket faces and 2,571 tool-roll faces. A target is approximate;
+measure actual GLB triangles after export. Preserve originals and rejected versions.
+
+Inspect UV and every PBR map again after reduction. In this run, the jacket's
+initial UV generation failed/refunded; UV generation on its reduced version
+succeeded. Reducing the textured roll retained colour, roughness and metallic
+previews but lost the Normal preview, requiring a final PBR texture pass. Finish
+topology first when practical, then verify texturing on that exact derived mesh.
+The first jacket texture missed its requested palette; a focused colour retry
+restored blue fabric and pale patches. Provider success does not establish art
+acceptance, correct exported maps, or game integration.
+
+Meshy 7 Flagship offered a minimum 2K source texture size in this session. Keep
+that source outside public and derive the project's 1024² runtime maps during
+local intake. Preserve already compliant provider topology instead of applying
+a second unconditional Blender decimation. Check angular collars/folds at the
+actual fitted counter size and obtain independent Astra review in the game.
+
+Exact settings, prompts, failures and recovery instructions live in
+assets/station-shop/soft-props/ and docs/qa/station-soft-props-record.md. Browser
+approval rejected the original GLB download; no export or runtime integration
+is claimed. Complete authorized provider edits separately, then obtain approval
+for that specific rejected download before retrying.

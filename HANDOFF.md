@@ -713,3 +713,33 @@ Node REPL / browser integration to Chrome and is checking Meshy access. Use
 this GPT route going forward, not the older Claude-browser routing notes.
 No generation or Meshy login is claimed until verified. Prop briefs remain
 in /tmp/star-agent-retail-props, assets/station-shop/soft-props/.
+
+
+## MESHY SOFT PROPS — PROVIDER FINISHED, EXPORT APPROVAL PENDING — 2026-09-06
+
+Update to the earlier access-blocked entries: the GPT/Astra browser bridge
+worked. Both original models were generated, then textured and reduced in Meshy.
+Selected blue Watchkeep jacket: 1,207 Triangle/Faces; ochre Kestrel tool roll:
+2,571. Both show Base Color, Roughness, Metallic and Normal map previews.
+These are provider UI counts, not measured GLB budgets. Total net Meshy cost:
+90 credits including UV failure/refund and texture corrections; no top-ups.
+
+Preserved failures: first jacket UV failed/refunded; UV recovery on its reduced
+version succeeded. First jacket texture missed its palette; a retry restored blue.
+Roll reduction lost the Normal preview; texturing the reduced mesh restored it.
+Remaining review items include angular jacket collar/folds and smooth roll
+pockets/weak buckle material definition. No independent prop acceptance claimed.
+
+All prompts, settings, recovery steps and observations are retained in
+/tmp/star-agent-retail-props/assets/station-shop/soft-props/; proceedings are in
+docs/qa/station-soft-props-record.md and STATION-PIPELINE-MEMORY.md on
+feat/retail-soft-props. The local optional loader and Blender intake are prepared,
+but no model is downloaded, imported by the game, merged or deployed.
+
+The previous GLB download was rejected by automatic/browser approval; the tool
+reported “The user declined permission for this action.” No retry or alternate
+export bypass was attempted during finishing. Next: resolve that specific
+download approval, export the selected versions, measure/fit and inspect them,
+then integrate and obtain actual game checks and independent Astra review.
+Manager notification via HANDOFF only; no read receipt claimed. Preserve other
+active integration work and the accepted local shop preview at port 5260.
