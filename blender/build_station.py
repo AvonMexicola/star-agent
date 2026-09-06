@@ -941,11 +941,15 @@ if DETAIL:
     # bake multiplies into COLOR_0.
     DECK.data.transform(Matrix.Scale(0.37 / 0.4, 4, (0, 0, 1)) @ Matrix.Translation((0, 0, -0.015 / (0.37 / 0.4))))
     plates = Batch('LandingDeckPlates')
-    for i in range(21):
-        for j in range(24):
-            x0, y0 = -HX + i * 2.0, HY0 + j * 2.0
-            verts = [Vector((x0 + 0.025, y0 + 0.025, DECK_TOP)), Vector((x0 + 1.975, y0 + 0.025, DECK_TOP)),
-                     Vector((x0 + 1.975, y0 + 1.975, DECK_TOP)), Vector((x0 + 0.025, y0 + 1.975, DECK_TOP))]
+    # The 2 m grid is offset by 0.5 m so seams fall on x = ±0.5 + 2k / y = 0.5 + 2k: the walkable
+    # regression ray at (17, 12) and the pad centre land on plate tops, never in a seam.
+    for i in range(23):
+        for j in range(26):
+            x0, y0 = -HX - 1.5 + i * 2.0, HY0 - 1.5 + j * 2.0
+            xa, xb = max(x0 + 0.025, -HX + 0.025), min(x0 + 1.975, HX - 0.025)
+            ya, yb = max(y0 + 0.025, HY0 + 0.025), min(y0 + 1.975, HY1 - 0.025)
+            if xb - xa < 0.2 or yb - ya < 0.2: continue
+            verts = [Vector((xa, ya, DECK_TOP)), Vector((xb, ya, DECK_TOP)), Vector((xb, yb, DECK_TOP)), Vector((xa, yb, DECK_TOP))]
             plates.add((verts, [(0, 1, 2, 3)], [False]), 'Deck')
     DECK = join([DECK, plates.build()], 'LandingDeck')
     tint = DECK.data.color_attributes.new('Tint', 'FLOAT_COLOR', 'CORNER')
@@ -1221,6 +1225,10 @@ def split_by_material(skip=('HangarDoor',)):
         for n in set(bpy.data.objects) - before:
             if len(n.data.polygons):   # separate() keeps every slot; name the part after the slot it uses
                 n.name = f'{o.name}_{n.data.materials[n.data.polygons[0].material_index].name}'
+            # Keep the hierarchy: parts stay children of the source object so a recursive lookup by the
+            # original name (e.g. `scene.getObjectByName('Hull')` + raycast) still covers the whole mesh.
+            n.parent = o
+            n.matrix_parent_inverse = o.matrix_world.inverted()
             if n not in OBJECTS: OBJECTS.append(n)
     bpy.ops.object.select_all(action='DESELECT')
 
