@@ -2,6 +2,8 @@
 export const RADIUS = 6_371_000 / 4;
 export const ATMOSPHERE_HEIGHT = 70_000;
 export const SUN_DISTANCE = 25_000_000_000;
+export const SUN_RADIUS = 240_000_000;
+export const SUN_ANGULAR_RADIUS = Math.asin(SUN_RADIUS / SUN_DISTANCE);
 export const SUN_DIRECTION = [.9,.35,.12].map(v=>v/Math.hypot(.9,.35,.12));
 import { SEED } from './generation.js';
 export { SEED } from './generation.js';

@@ -9,3 +9,5 @@
 @media(max-width:740px){.system-map-header{padding:20px}.system-map-header h2{font-size:24px}.system-map-layout{grid-template-columns:1fr}.system-chart{min-height:280px}.map-destination{border-left:0;border-top:1px solid #8dc1bd26;padding:20px}.map-destination dl{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.map-selene{left:67%;top:8%}.map-aeon{left:39%;top:38%}.map-pyre{left:14%;top:12%}.map-body{gap:10px}.map-aeon i{width:53px;height:53px}.map-chart-caption span:first-child{display:none}.map-chart-caption{justify-content:flex-end}.system-map-footer{padding:15px 20px;flex-wrap:wrap}.system-map-footer span:last-child{display:none}}
 
 body.drive-active #course-guidance{visibility:hidden}
+
+.map-body.map-star{left:3%;top:47%;color:#efcfa0}.map-body.map-star i{width:45px;height:45px;margin-bottom:0;background:radial-gradient(circle at 38% 35%,#fff7cf,#ffb54e 60%,#d64722);box-shadow:0 0 30px #ffa83b70,0 0 70px #ef76252f}.map-body.map-star[aria-pressed=true]{background:#fda3470e}@media(max-width:740px){.map-body.map-star{left:0;top:43%}}
