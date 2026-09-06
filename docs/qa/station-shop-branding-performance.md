@@ -40,3 +40,63 @@ Evidence SHA-256:
 - `6aa3c69d1d536a7c311648c941f3ad35a02776ad0716d4aaea2d0bfed56a1039` — `/tmp/star-agent-shop-retail-ab/retail-comparison.json`
 
 Only the profiling script changed: `--retail-comparison` adds the reproducible eight-block visibility experiment and writes the paired summary beside its raw evidence. The existing default profiling path is preserved. Script syntax and `git diff --check` passed; the hardware run completed successfully.
+
+## Corrective candidate 29885c9
+
+After the actual shop ceilings, varied stock and revised two-light placement,
+the canonical measurement ran once more on the exact production bundle
+`index-BJaVs6Cv.js` (SHA256
+`e0a95c936d4c421e3deee8e51b1fa506255de0f9931c984398048c58b8267c49`).
+The preceding slower samples and A/B experiment remain historical evidence.
+This new run does not remeasure the isolated cost of retail graphics.
+
+```sh
+node scripts/station-performance-check.mjs --url http://127.0.0.1:5260 --out /tmp/star-agent-shop-enclosure-performance
+```
+
+Same Chromium151.0.7922.173 / AMD Radeon860M / ANGLE OpenGL ES3.2,
+1440×900 drawing buffer and viewport, DPR1 and render scale1. Thirty warm
+frames precede each block. GPU elapsed queries, CPU callback wall time and RAF
+cadence remain separate; no simultaneous root-team browser/video job ran.
+
+| View | Valid GPU samples | Draws | Triangles | GPU median / p95 ms | CPU median / p95 ms | RAF median / p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Hangar opening t=10 | 61 | 505 | 684953 | 8.387 / 8.626 | 5.700 / 7.000 | 16.700 / 16.700 |
+| Central hub fixed fixture | 60 | 269 | 479478 | 4.934 / 5.286 | 5.050 / 5.500 | 16.700 / 16.700 |
+
+Zero disjoint, unavailable, invalid or busy queries; zero browser errors/warnings
+and no script failure. This run's measured station work fits the10ms GPU target,
+but does not erase prior slower results or establish every camera/device's cost.
+The shop kit adds geometry while retaining eight GLB material batches and two
+existing shadow maps; full-view counts include shadows and other station/world
+rendering. The unrelated whole-PR orbit budget remains outside this correction.
+
+Raw evidence: `/tmp/star-agent-shop-enclosure-performance/evidence.json`, SHA256
+`d23e583f66cd542069778c483bdb36596712540da6df653e01bcbe46805f71ec`.
+
+## Final shadow candidate 025e587
+
+The two shop shadow maps are now1024², with corrected depth/normal bias to
+remove poster banding. A final canonical run measured this exact bundle:
+`index-mk6QIuGf.js`, SHA256
+`bde5924fa0c3bacbe03f03a87ea2946e0ff4583c207fa50a7c81f8b27dcec0e7`.
+Same browser, GPU, backend,1440×900/DPR1/render scale1 and30 warm frames as above.
+
+```sh
+node scripts/station-performance-check.mjs --url http://127.0.0.1:5260 --out /tmp/star-agent-shop-shadow-performance
+```
+
+| View | Valid GPU samples | Draws | Triangles | GPU median / p95 ms | CPU median / p95 ms | RAF median / p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Hangar opening t=10 | 60 | 505 | 684953 | 7.992 / 9.050 | 7.400 / 12.000 | 16.700 / 16.800 |
+| Central hub fixed fixture | 60 | 269 | 479478 | 5.314 / 5.754 | 6.500 / 10.100 | 16.700 / 16.700 |
+
+Zero discarded queries, browser errors/warnings or failure. GPU medians and p95
+remain under10ms in these two fixtures; CPU p95 reaches12ms in the hangar and
+10.1ms in the hub, so this is not an all-samples/all-pipeline budget pass. The
+separate runs are not a controlled shadow-cost A/B comparison. Geometry counts
+are unchanged from29885c9. Higher shadow resolution applies only to the occupied
+hub’s existing two maps, not all twenty bays. No user application was stopped.
+
+Evidence `/tmp/star-agent-shop-shadow-performance/evidence.json`, SHA256
+`1cd4d2aca428a8139122fd152e6130ec03adb485ebe44a6696d3f5bb8daa02bd`.

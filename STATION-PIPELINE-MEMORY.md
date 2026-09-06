@@ -290,3 +290,57 @@ Verify the visible brand and served bundle, not merely a recent file timestamp.
 For noisy performance, alternate graphics on/off in one camera and preserve all
 pairs. GPU timer values, CPU callback time and RAF cadence remain distinct; other
 active browser work can invalidate a comparison across separate runs.
+
+## Shop enclosure and stock correction — 2026-09-06
+
+The [independent Astra review](docs/qa/station-shop-branding-astra-review.md)
+rejected candidate `435f116`: affected station/shop quality averaged 3.50/5;
+upper shops read as open to space and repeated rifles/canisters looked like
+prototype inventory. Cees authorized Astra as the reviewer substitution, without
+waiving the numerical quality bar. Keep that failed report. Corrected candidate
+`29885c9` is documented in the
+[enclosure correction record](docs/qa/station-shop-enclosure-record.md);
+independent follow-up remains pending at this entry, not accepted by inference
+from the rebuild, tests or author captures.
+
+Give enclosed retail spaces their own physical ceilings. A high station hull
+roof does not close the visible gap above a low shop wall. The corrected kit has
+continuous ceiling skins, recessed panels, beams and end-wall downstands. Its
+lowest underside is Y=-4.68 above floor Y=-8, leaving 3.32 m headroom. Runtime
+fixtures sit below that opaque ceiling, around Y=-4.8. Check upward and oblique
+entry rays, wall-to-roof overlaps and actual lit walking views; adding a roof can
+otherwise hide the lights that previously illuminated the shop.
+
+Stock should communicate different purposes and agree with printed categories:
+longarms, sidearms and field equipment in WATCHKEEP; filters, avionics and repair
+equipment in KESTREL. The correction uses two long rifles, three independently
+constructed compact sidearms, handled/latching cases and varied component
+silhouettes. Count major items and measure their human-scale dimensions in the
+real export. Labels describe decorative display stock; the purchase catalogue
+still belongs to the actual shop modal.
+
+Preserve each print anchor's complete transform, including tilted A5 paper
+orientation. Test the mounted face and all corners against actual backing
+triangles, not just anchor positions or assembly bounds. A print can have the
+right transform yet remain buried in an inherited wall or cloth substrate;
+allow clearance for the whole intended cloth wave as well as the static plane.
+
+Give every capture run a unique output directory containing its candidate and
+run identifier, with distinct paths per test/view. Retain capture time, served
+bundle, camera/backend and source video provenance. Follow the
+[motion evidence record](docs/qa/station-shop-motion.md) for timestamped event
+windows covering walking, doors, travel and UI transitions. Preserve original
+video and extraction commands; sampled contact sheets are not every rendered
+frame, and playback cadence is not GPU timing. Motion capture and independent
+follow-up were still pending when this correction entry was written.
+
+Shadow follow-up runtime025e587 changes only the two concourse spotlights’ shadow
+settings:1024² maps, depth bias−0.001 and normal bias0.04. Astra caught poster/tile
+banding on29885c9; root’s bias-only trial cleared paper but left coarse rack
+shadows before the resolution refinement. Final GPU medians at1440×900/AMD860M
+were5.314ms hub and7.992ms hangar; CPU p95 remains10.1/12ms respectively. Keep
+these separate from the earlier slower runs and the recorded29885c9 interaction
+journey. Exact provenance and the final independent disposition belong to the
+corrective record and Astra follow-up, not an inferred waiver.
+
+Final receipt: independent Astra review of025e587 scores the affected shops4.00/5 (all six criteria4). The broader PR remains unapproved due to inherited world/performance concerns. See docs/qa/station-shop-enclosure-astra-review.md for exact evidence and bounded motion limitations.

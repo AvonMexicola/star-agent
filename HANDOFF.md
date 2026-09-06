@@ -610,3 +610,77 @@ request. Its title and body now describe the furnished shops, elevator fit,
 measured performance, source assets, complete record and outstanding Opus gate.
 The isolated worktree was clean after those commits. The following receipt-only
 commit changes no runtime or served asset.
+
+
+## READY FOR REVIEW — BRANDED STATION SHOPS — 2026-09-06
+
+Runtime 435f116 is published to PR20 / origin/feat/hangar-finish from the isolated
+/tmp/star-agent-concourse-work. Cees requested shop identity, posters, textures,
+banners, A5 holders and dirty carpet. WATCHKEEP ARMORY and KESTREL SHIPWORKS now
+have original campaign art, deterministic type, real Blender print hardware,
+worn textile floor coverings and matching accessible purchase menus. Elevator
+GLB SHA 981a229d is unchanged. Physical purchase/cargo routes remain operational.
+
+178 unit tests across 24 files, build, four affected browser cases and fourteen final
+actual-game views pass; isolated branded desktop/mobile evidence was visually
+checked after shared historical /tmp filenames were overwritten by another run.
+Retail rendering is 3 batches / 604 triangles / 4 bounded textures; concourse 25 assemblies,
+44,668 triangles / 8 batches. Alternating retail ON/OFF GPU differences have mixed
+signs; no reproducible multi-ms retail regression. Unchanged hangar timing still
+exceeds 10 ms in the noisy rerun, openly recorded.
+
+Sources/prompts: assets/station-shop/ . Complete proceedings, failed checks/fixes,
+screenshots and profiles: docs/qa/station-shop-branding-record.md and
+station-shop-branding-performance.md. Source and encoding instructions are
+preserved; asset-production-standard.md and STATION-PIPELINE-MEMORY.md updated.
+
+Cees explicitly requested “Use astra instead” for the independent visual review.
+Astra is reviewing 435f116 with its own captures and the same numerical rubric.
+This changes reviewer selection for this task, not the acceptance thresholds.
+No score/waiver/merge is claimed before its result. The interrupted Opus launch
+produced no recorded review. Final review will be station-shop-branding-astra-review.md.
+
+Integration manager: this is a new continuation after the earlier station/ship
+intake, not authorization to overwrite PR34's newer input, equipment, world or
+departure work. Reconcile only the retail changes and preserve PM's outstanding
+PR34 blockers, including the shop enclosure appearance. PR20 remains open.
+Local candidate http://127.0.0.1:5260/ ; actual shop images /review/shops/ .
+This HANDOFF update is the manager notification; no external read receipt exists.
+
+
+## READY FOR REVIEW: ASTRA-REVIEWED SHOP CORRECTION — 2026-09-06
+
+Final runtime025e587 follows branded-shop435f116 and enclosure29885c9 on PR20,
+origin/feat/hangar-finish. Cees selected Astra instead of Opus. Independent Astra
+review now scores the affected shops4/4/4/4/4/4 =4.00 PASS, with its own14 final
+captures and bounded interaction-motion evidence. Original3.50 failure and the
+intermediate shadow-band finding are preserved. Whole-PR merge approval remains
+NO: inherited orbit/coast findings and CPU timing tails are not waived.
+
+Changes: sealed low shop ceilings with cassettes/beams/vents; varied labelled
+weapons/cases/filters/avionics; balanced fixtures below ceilings; readable ivory
+rear branding; corrected poster shadow banding using the existing two shop lights
+with1024² shadow maps. Concourse51,888triangles/8draws/27budgeted assemblies,
+77static boxes; elevator SHA981a229d remains byte-identical. Purchases and all
+existing station/ship gameplay are unchanged by the final shadow correction.
+
+All24 unit-test files and build pass. Corrected29885 resource/mobile browser
+cases pass17.9s; fullscale physical/controller/purchase/cargo/reload recording
+passes48.6s. Final025e58714-view capture has zero browser errors/warnings.
+AMD860M/Chromium151/ANGLE GL at1440×900 scale1: hub269draws/479478tris,
+GPU5.314ms median/5.754p95, CPU6.5/10.1ms; hangar505/684953,
+GPU7.992/9.050ms, CPU7.4/12.0ms. Prior slower runs retained, no universal pass.
+
+Complete record: docs/qa/station-shop-enclosure-record.md; independent final:
+station-shop-enclosure-astra-review.md; bounded motion: station-shop-motion.md;
+profiles: station-shop-branding-performance.md. Original art/prompts in
+assets/station-shop/. STATION-PIPELINE-MEMORY.md and asset-production-standard.md
+carry reusable lessons, including rejected iterations. Portable motion tools
+now preserve unique output paths; temporary source video/trace retention is explicit.
+
+Integration manager: reconcile this retail-only continuation with PR34 and the
+newer fighter/input/world work; do not overwrite those lanes. PR20 remains open;
+no merge/deployment is claimed. Local playable candidate http://127.0.0.1:5260/;
+final actual-game interiors /review/shops/armory-interior.webp and
+/review/shops/components-interior.webp. This file update is the manager
+notification; it does not imply a read receipt.
