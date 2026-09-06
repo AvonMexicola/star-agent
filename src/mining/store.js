@@ -26,6 +26,7 @@ export class MiningStore {
     const initialState = this.state;
     try {
       const raw = storage?.getItem(MINING_KEY);this.persistedRaw=raw??null;
+      if(!raw&&legacy.persistenceBlocked){this.blocked=true;this.saved=false;this.warning=legacy.loadError;return;}
       if (raw) {
         const d = JSON.parse(raw); const rawField = d.field; d.field = decodeField(d.field);
         if (typeof rawField === 'string') this.encodedFields.set(d.field, rawField);

@@ -16,19 +16,19 @@ export function createSystemMap(nav, onTarget = () => {}) {
   dialog.id = 'system-map';
   dialog.setAttribute('aria-labelledby', 'system-map-title');
   dialog.innerHTML = `
-    <div class="dialog-top system-map-header"><div><span class="eyebrow">NAVIGATION / LOCAL SYSTEM</span><h2 id="system-map-title">Aeon <span>/ Selene</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
+    <div class="dialog-top system-map-header"><div><span class="eyebrow">NAVIGATION / LOCAL SYSTEM</span><h2 id="system-map-title">Aeon <span>/ Selene / Pyre</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
     <div class="system-map-layout">
-      <section class="map-chart-panel" aria-label="Aeon and Selene navigation chart">
-        <div class="map-chart-top"><span class="eyebrow">PLANET + MOON</span><span id="map-star-distance"></span></div>
+      <section class="map-chart-panel" aria-label="Aeon, Selene and Pyre navigation chart">
+        <div class="map-chart-top"><span class="eyebrow">LOCAL WORLDS</span><span id="map-star-distance"></span></div>
         <div class="system-chart">
-          <svg id="map-chart" role="img" aria-label="Projected body positions, ship and plotted route"><defs id="map-defs"></defs><g id="map-zones"></g><path id="map-full-route"/><path id="map-route"/><path id="map-arrival-leader"/><path id="map-arrival" d="M-3,-4 L3,0 L-3,4 Z"/><g id="map-ship"><path d="M0,-8 L6,6 L0,3 L-6,6 Z"/><path class="map-crosshair" d="M-14,0 H-9 M9,0 H14 M0,-16 V-11 M0,10 V15"/></g></svg>
+          <svg id="map-chart" role="img" aria-label="Projected body positions, ship and plotted route"><defs id="map-defs"></defs><g id="map-zones"></g><g id="map-marker-leaders"></g><path id="map-full-route"/><path id="map-route"/><path id="map-arrival-leader"/><path id="map-arrival" d="M-3,-4 L3,0 L-3,4 Z"/><g id="map-ship"><path d="M0,-8 L6,6 L0,3 L-6,6 Z"/><path class="map-crosshair" d="M-14,0 H-9 M9,0 H14 M0,-16 V-11 M0,10 V15"/></g></svg>
           ${TRAVEL_TARGETS.map(t => `<button class="map-body" data-travel-target="${t.id}" aria-label="Select ${t.name}"><i></i><span>${t.name.toUpperCase()}<small>${t.airless ? 'MOON' : 'PLANET'}</small></span></button>`).join('')}
           <span id="map-ship-label">YOU <small>SHIP POSITION</small></span>
           <span id="map-arrival-label">APPROACH</span>
         </div>
         <div class="map-chart-tools"><div id="map-scale"><i></i><span></span></div><div class="map-zoom" aria-label="Chart zoom"><button id="map-zoom-out" aria-label="Zoom out">−</button><button id="map-fit">FIT</button><button id="map-zoom-in" aria-label="Zoom in on selected world">+</button></div></div>
         <div class="map-legend"><span><i class="legend-ship">△</i> Ship</span><span><i class="legend-route"></i> Course</span><span><i class="legend-zone"></i> Drive exclusion</span></div>
-        <p class="map-projection-note">Aeon–Selene plane · true positions and scale · small body markers enlarged for selection. Exclusion: ${TRAVEL_TARGETS.map(t => `${t.name} ${formatRange(t.exclusionRadius - t.radius)}`).join(' / ')} above the surface. <span id="map-depth"></span></p>
+        <p class="map-projection-note">Aeon–Selene plane · true positions and scale · small body markers enlarged and separated for selection; leader lines show their true positions. Exclusion: ${TRAVEL_TARGETS.map(t => `${t.name} ${formatRange(t.exclusionRadius - t.radius)}`).join(' / ')} above the surface. <span id="map-depth"></span></p>
       </section>
       <section class="map-destination" aria-label="Selected destination">
         <span class="eyebrow">PLOTTED DESTINATION</span><h3 id="map-target-name">Where next?</h3><p id="map-target-description">Select a world on the map to plot an approach.</p>
@@ -69,13 +69,24 @@ export function createSystemMap(nav, onTarget = () => {}) {
       const p = project(t.center);
       return `<circle class="map-exclusion" cx="${p.x}" cy="${p.y}" r="${t.exclusionRadius / metersPerPixel}"/><circle class="map-surface ${t.id === target?.id ? 'selected' : ''}" fill="url(#map-light-${t.id})" cx="${p.x}" cy="${p.y}" r="${t.radius / metersPerPixel}"/>`;
     }).join('');
+    const placed=[],leaders=[];
     buttons.forEach((button, i) => {
       const t = TRAVEL_TARGETS[i], p = project(t.center);
       button.hidden = p.x < -22 || p.x > width + 22 || p.y < -22 || p.y > height + 22;
-      button.style.left = `${p.x}px`; button.style.top = `${p.y}px`;
+      let x=p.x,y=p.y;
+      // A system-wide fit compresses Aeon and Selene below touch-target size.
+      // Move only their selection markers; real body circles and routes stay put.
+      for(const q of placed)if(Math.abs(x-q.x)<64&&Math.abs(y-q.y)<52){
+        const right=q.x+76,left=q.x-76;
+        if(right<width-26)x=right;else if(left>26)x=left;else y=Math.min(height-65,q.y+76);
+      }
+      if(!button.hidden)placed.push({x,y});
+      if(Math.hypot(x-p.x,y-p.y)>1)leaders.push(`<path d="M${point(p)} L${x},${y}"/>`);
+      button.style.left = `${x}px`; button.style.top = `${y}px`;
       button.classList.toggle('marker-enlarged', t.radius * 2 / metersPerPixel < 8);
       button.style.setProperty('--label-offset', `${Math.max(36, t.radius / metersPerPixel + 12)}px`);
     });
+    el('map-marker-leaders').innerHTML=leaders.join('');
     const heading = nav.travel?.plan.direction ?? new Vector3(0, 0, -1).applyQuaternion(nav.orientation);
     const ahead = project(nav.position.clone().addScaledVector(heading, 100000));
     const headingAngle = Math.atan2(ahead.y - ship.y, ahead.x - ship.x) * 180 / Math.PI + 90;

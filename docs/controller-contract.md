@@ -117,7 +117,7 @@ In walking/EVA, D-pad left cycles held slots; right selects or holsters the tool
 Up selects the next quick slot and down uses it. These are edge actions, not
 held repeat actions. Flight still uses up/down for speed and RT/LT for translation.
 Slot changes explicitly suspend gameplay until controls return to neutral.
-Keyboard 1/2/3 draws the held slots, 4–7 uses a quick item and K opens Equipment.
+Keyboard 1/2/3 draws the held slots, 5–8 uses a quick item (4 changes camera) and K opens Equipment.
 On-screen shortcut buttons and inventory actions retain pointer/touch support.
 
 `loadout.spec.js` covers a complete controller-only equipment and Selene journey,

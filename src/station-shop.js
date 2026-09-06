@@ -1,5 +1,3 @@
-import { GamepadInput } from './gamepad.js';
-
 /** Local station stock. Purchases grant stored cargo, never combat or ship stats. */
 export const STARTER_CREDITS = 1500;
 export const STATION_SHOPS = Object.freeze({
@@ -32,23 +30,4 @@ export function initialShopStock() {
 }
 export function purchaseStationItem(inventory, shopId, itemId) {
   return inventory.purchase(shopId, itemId);
-}
-
-
-/** Dialog-only controller edges; the UI owns its polling lifetime. */
-export class StationShopController {
-  constructor(read) { this.input = new GamepadInput(read); this.direction = 0; }
-  reset() { this.input.suspend(); this.direction = 0; }
-  poll(focused = true) {
-    const pad = this.input.poll({ focused, enabled: true });
-    if (!this.input.armed) { this.direction = 0; return null; }
-    const direction = pad.forward < -.5 ? 1 : pad.forward > .5 ? -1 : 0;
-    const stickEdge = direction && direction !== this.direction;
-    this.direction = direction;
-    if (pad.pressed.has(1) || pad.pressed.has(9)) return 'close';
-    if (pad.pressed.has(13) || pad.pressed.has(15) || stickEdge && direction === 1) return 'next';
-    if (pad.pressed.has(12) || pad.pressed.has(14) || stickEdge && direction === -1) return 'previous';
-    if (pad.pressed.has(0)) return 'activate';
-    return null;
-  }
 }

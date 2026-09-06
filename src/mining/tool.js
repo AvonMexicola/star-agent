@@ -47,7 +47,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       hit=active&&isMining?rock.raycast(nav.position,direction):null;
       lamp.visible=active&&selected;lamp.position.set(.15,-.18,0).applyQuaternion(nav.orientation);lamp.target.position.copy(direction).multiplyScalar(6);
       recoil*=Math.exp(-dt*18);
-      mount.position.set(equipment.equipped==='sidearm-pistol'?.25:.29,equipment.equipped==='sidearm-pistol'?-.25:-.35,-.47+recoil).applyQuaternion(nav.orientation);mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
+      mount.position.set(equipment.equipped==='sidearm-pistol'?.25:.29,equipment.equipped==='sidearm-pistol'?-.25:-.35,-.47+recoil).applyQuaternion(nav.orientation);mount.position.add(nav.position.clone().sub(origin));mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
       equipment.setRenderOrigin(origin);equipment.holster(!active||!selected);
       // Check muzzle obstruction too, so a close edge cannot be mined through.
       const muzzle=equipment.muzzleWorldPosition();

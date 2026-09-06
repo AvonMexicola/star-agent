@@ -38,3 +38,9 @@ test('unreadable storage blocks changes without throwing during game startup',()
  const store=new MiningStore(disk),inventory=new ShipInventory(disk);bindStationLedger(inventory,store);
  assert.equal(store.blocked,true);assert.equal(store.saved,false);assert.equal(inventory.purchase(shopId,offer.itemId).ok,false);
 });
+test('corrupt legacy manifest cannot become a new zero-credit mining ledger',()=>{
+ const data=new Map([[INVENTORY_KEY,'corrupt legacy']]);const disk={getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v)};
+ const store=new MiningStore(disk),inventory=new ShipInventory(disk);bindStationLedger(inventory,store);
+ assert.equal(store.blocked,true);assert.equal(inventory.persistenceBlocked,true);assert.equal(store.write(store.state),false);
+ assert.equal(disk.getItem(MINING_KEY),null);assert.equal(disk.getItem(INVENTORY_KEY),'corrupt legacy');
+});

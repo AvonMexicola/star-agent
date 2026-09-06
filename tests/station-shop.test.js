@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ShipInventory, INVENTORY_KEY } from '../src/ship-inventory.js';
-import { STARTER_CREDITS, purchaseStationItem, StationShopController } from '../src/station-shop.js';
+import { STARTER_CREDITS, purchaseStationItem } from '../src/station-shop.js';
 import { Fleet, FLEET_KEY } from '../src/fleet.js';
 
 function storage() {
@@ -130,28 +130,4 @@ test('purchase refuses an already changed saved manifest instead of overwriting 
   const before = second.snapshot, raw = disk.getItem(INVENTORY_KEY);
   assert.equal(second.purchase('weapons', 'sidearm').ok, false);
   assert.deepEqual(second.snapshot, before); assert.equal(disk.getItem(INVENTORY_KEY), raw);
-});
-
-
-test('shop controller requires neutral input and emits one action per button or stick edge', () => {
-  const pad = { id: 'shop', index: 0, connected: true, mapping: 'standard', axes: [0, 0, 0, 0],
-    buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
-  const button = (id, pressed) => { pad.buttons[id] = { pressed, value: Number(pressed) }; };
-  const controller = new StationShopController(() => [pad]);
-  button(0, true);
-  assert.equal(controller.poll(), null, 'held entry button cannot buy');
-  button(0, false); assert.equal(controller.poll(), null);
-  button(13, true); assert.equal(controller.poll(), 'next'); assert.equal(controller.poll(), null);
-  button(13, false); controller.poll();
-  button(0, true); assert.equal(controller.poll(), 'activate'); assert.equal(controller.poll(), null);
-  button(0, false); controller.poll();
-  pad.axes[1] = .9; assert.equal(controller.poll(), 'next'); assert.equal(controller.poll(), null);
-  pad.axes[1] = 0; controller.poll(); pad.axes[1] = -.9; assert.equal(controller.poll(), 'previous');
-  assert.equal(controller.poll(false), null, 'blur discards controller actions');
-  assert.equal(controller.poll(), null, 'held stick cannot rearm on focus');
-  pad.axes[1] = 0; controller.poll();
-  button(1, true); assert.equal(controller.poll(), 'close');
-  controller.reset(); assert.equal(controller.poll(), null, 'held back cannot affect a reopened dialog');
-  button(1, false); controller.poll(); button(9, true); assert.equal(controller.poll(), 'close');
-  pad.connected = false; assert.equal(controller.poll(), null);
 });

@@ -46,8 +46,10 @@ Xbox acceptance. Consolidation is not a claim of finished Star Citizen fidelity.
 ## Verification and publication
 
 The full unit suite and production build passed before the last focused controller
-fixes. Combined browser checks found duplicate shop controller polling and an
-outdated two-body map focus expectation; these are being corrected and retested.
+fixes. Combined browser checks found duplicate shop controller polling and overlapping map touch targets after adding Pyre, and missing controller Menu-close
+handling. Their focused browser reruns passed. The independent functional review
+then identified controller crash recovery and corrupt legacy-save handling; those
+fixes and final checks are recorded in the review follow-up.
 Final results, review verdict and screenshots will be recorded here before merge.
 
 Run the production preview on port 5280, then:

@@ -469,10 +469,10 @@ export class Navigation {
       // Assisted travel and inertial flight share the same swept collision path.
   }
   update(dt){
-    if(this.mode==='crashed')return;
     this.engineAcceleration.set(0,0,0);
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(document.querySelector('dialog[open]'))});
     this.onControllerInput?.(pad,dt);
+    if(this.mode==='crashed')return;
     this.toolTrigger=pad.mine||0;
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;

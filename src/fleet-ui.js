@@ -25,5 +25,5 @@ export function createFleetUI(nav, fleet, selectShip) {
     const result=await selectShip(id);render();dialog.querySelector('.fleet-message').textContent=result;
   });
   document.addEventListener('keydown',event=>{if(event.code==='KeyG'&&!event.repeat&&nav.mode!=='eva'&&(nav.mode!=='walk'||nav.insideShip)){if(dialog.open)dialog.close();else open();}});
-  return {get open(){return dialog.open;}};
+  return {openMenu:open,get open(){return dialog.open;}};
 }

@@ -16,3 +16,5 @@
 #system-map[open]{display:flex;flex-direction:column;animation:map-enter .16s ease-out}.system-map-header{box-shadow:0 8px 12px var(--dialog-solid)}@keyframes map-enter{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}@media(prefers-reduced-motion:reduce){#system-map[open]{display:flex;flex-direction:column;animation:none}}
 
 .system-map-header,.system-map-footer{flex-shrink:0}.system-map-layout{flex:1}
+
+#map-marker-leaders{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3;pointer-events:none}

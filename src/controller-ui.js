@@ -2,7 +2,7 @@ import './controller-ui.css';
 
 const selector = 'summary, button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), [tabindex="0"]';
 const visible = el => !el.closest('[hidden], [inert]') && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
-const controls = dialog => [...dialog.querySelectorAll(selector)].filter(el => visible(el) && el.getAttribute('aria-disabled') !== 'true');
+const controls = dialog => [...dialog.querySelectorAll(selector)].filter(visible);
 
 /** Every native dialog gets the same controller focus/activate/back behavior.
  * Features keep their real click handlers; this never synthesizes keyboard mining.
@@ -79,7 +79,7 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
     if (pad.ui.scroll) dialog.scrollTop += pad.ui.scroll * dt * 480;
     if (pad.ui.pressed.has(0)) {
       const target = document.activeElement;
-      if (items.includes(target)) target.click();
+      if (items.includes(target) && target.getAttribute('aria-disabled') !== 'true') target.click();
     }
   }
   // Keyboard/mouse can resume normal native focus without a stale controller halo.

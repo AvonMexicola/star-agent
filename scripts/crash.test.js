@@ -244,3 +244,10 @@ test('crash state latches controls, then orbit and transit permit a second crash
   assert.equal(navigation.crash, null);
   near(navigation.velocity.length(), 0);
 });
+
+test('crashed hull remains stationary while controller recovery menus still receive input',t=>{
+  const {navigation}=setup(t);stageImpact(navigation,findDestinations().forest,30);navigation.update(1/60);
+  assert.equal(navigation.mode,'crashed');const position=navigation.position.clone();let polls=0;
+  navigation.onControllerInput=()=>polls++;
+  navigation.update(1/60);assert.equal(polls,1);assert.ok(navigation.position.equals(position));
+});
