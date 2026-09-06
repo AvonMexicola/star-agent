@@ -3,6 +3,11 @@
 Design draft · 2026-09-06 · requested by Cees after the sparse Selene ring.
 This is a proposed direction, not implemented gameplay or settled balance.
 
+The later [base-building plan](base-building-plan.md) makes construction the first
+delivery: floors/walls/doors/windows/stairs, mainframe, universal local feedstocks,
+then engineering stations and power. It develops the tool/tech tree below, with
+Aeon as the easiest settlement and Selene/Pyre as harder but locally supplied sites.
+
 The intended loop is **discover → gather → process → craft → train → reach a new
 environment → bring something valuable home**. Upgrades should change where the
 player can go and what they can do. Existing destinations should stay useful after
