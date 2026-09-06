@@ -131,3 +131,12 @@ The transient user service `star-agent-concourse-preview.service` serves
 remains the prior candidate for comparison. Curated images can also be opened
 from the new preview's `/review/` directory. This is a local playable preview,
 not a production deployment or manager read receipt.
+
+
+Publication receipt: runtime 9e5a713 and full proceedings 27077ec were pushed
+by fast-forward to `origin/feat/hangar-finish`. GitHub confirmed PR #20 OPEN at
+27077ece690f64fa9c613d6c7c2cef7ec0a78938, with no merged timestamp or auto-merge
+request. Its title and body now describe the furnished shops, elevator fit,
+measured performance, source assets, complete record and outstanding Opus gate.
+The isolated worktree was clean after those commits. The following receipt-only
+commit changes no runtime or served asset.
