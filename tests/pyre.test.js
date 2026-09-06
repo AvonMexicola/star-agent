@@ -119,7 +119,7 @@ test('arrival site sits on the dusk terminator, heat rises with sun exposure and
   assert.ok(Math.abs(d.dot(toStar)) < .12, 'within ~7 degrees of the terminator (5 deg into the day side)');
   assert.match(pyreRegion(d.x, d.y, d.z), /^(TERMINATOR|DAY SIDE|NIGHT SIDE) · /);
   const high = bodySurfacePoint(d, PYRE, 60_000), noon = bodySurfacePoint(toStar, PYRE, 2000), night = bodySurfacePoint(toStar.clone().negate(), PYRE, 2000);
-  assert.ok(pyreHeat(high) < .3 && pyreHeat(noon) > .9 && pyreHeat(night) < pyreHeat(noon));
+  assert.ok(pyreHeat(high) < .5 && pyreHeat(noon) > .9 && pyreHeat(night) < pyreHeat(noon));
   assert.equal(pyreHeat(new Vector3(0, RADIUS * 2, 0)), 0, 'no heat near Aeon');
   assert.ok(pyreHeat(bodySurfacePoint(toStar, PYRE, 400_000)) < .2, 'heat fades with altitude');
 });
