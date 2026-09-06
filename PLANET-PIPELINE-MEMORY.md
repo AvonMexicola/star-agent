@@ -689,3 +689,33 @@ The regional controller trip recovered 3.108 kg copper from a generated outcrop
 101.52 m beyond the nearest named site and preserved cuts/cargo after reload.
 Current evidence: `docs/qa/expedition/ship-marker/` and `regional-deposits/`.
 Dedicated preview http://127.0.0.1:5213/ serves `index-ChFNEySb.js`.
+
+
+## Mining particle integration — 2026-09-06
+
+The current expedition cutter reuses `a81b75e` / PR27's shared ParticlePool,
+EnergyEffects and EnergyBloom. `docs/mining-particles.md` defines the contract.
+Equipment still owns heat, muzzle calibration and validated cuts; old equipment
+VFX is hidden only with a director. A single 1,024-instance pool drives plasma
+contact sparks, dust and mineral-colored fragments attracted to the tool.
+`MineableRock.onExtract` fires only after successful save plus mesh/collider
+publication; request-time position/normal survive asynchronous completion.
+Field forwarding covers ground, province, regional and space rocks. Visuals
+cannot award inventory. Misses have no contact/collection; modal/focus/transit
+suspends effects and the existing controller neutral-arm rules remain in force.
+
+RT/T/mouse/touch routes work. Energy glow and Reduced particle motion settings
+are in Controls and help, reachable with controller focus and A. These settings
+are per session; OS reduced-motion preference supplies the startup default.
+
+Verification: all 29 numerical files; five distinct production browser checks
+pass across the four-journey run and corrected focused regression rerun. The
+first regression run's mobile bounding-box timing failure is documented in QA.
+Evidence: `docs/qa/expedition/mining-particles/`. Preview 5213 now serves
+`index-DY2p5nPi.js`, superseding the earlier asset hash above.
+
+Manager integration: PR27 has ongoing independent flight/weapon edits; preserve
+that work, current regional deposits and recovery marker. Retain one director
+and bloom pass when combining branches, plus all regional extraction callbacks.
+This integration enables mining effects; it does not add weapon damage or flight
+bindings. No manager review acceptance, merge or public deployment is claimed.

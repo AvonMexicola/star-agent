@@ -78,8 +78,10 @@ test('regional streaming selects the nearest or aimed outcrop, preserves physica
   const descriptors=field.regionalDescriptors;field.update(origin.clone());assert.equal(field.regionalDescriptors,descriptors,'cached query is retained in the same spatial cell');
   const rock=field.active,eye=rock.toWorld(new Vector3(0,.55,4)),direction=rock.toWorld(new Vector3(0,.55,0)).sub(eye).normalize();
   field.update(eye);const inspection=field.inspectTarget(eye,direction);assert.equal(inspection.rockId,rock.rockId);assert.equal(inspection.status,'ready');assert.equal(field.active,rock);
+  const events=[];field.onExtract=data=>events.push(data);
   const hit=field.raycast(eye,direction);assert.equal(hit.rock,rock);field.onMine({point:hit.point,dt:.1,target:rock},direction);
   assert.equal(rock.snapshot.revision,1);assert.ok(field.store.mass>0);
+  assert.equal(events.length,1);assert.ok(events[0].point.distanceTo(hit.point)<.036);assert.ok(events[0].yields.some(n=>n>0));
   assert.deepEqual(rock.worker.job.resourceWeights,rock.descriptor.resourceWeights);
   assert.ok(field.constrainEVA(rock.toWorld(new Vector3(-4,0,0)),rock.toWorld(new Vector3(4,0,0))).hit);
   assert.ok(field.constrainWalker(rock.toWorld(new Vector3(-4,1.5,0)),rock.toWorld(new Vector3(4,1.5,0))).hit);

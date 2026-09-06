@@ -75,8 +75,9 @@ test('controller walks beyond the named Copper Ejecta site, mines a regional cop
   expect(Math.hypot(...before.position.map((v,i)=>v-beforeWalk[i]))).toBeGreaterThan(50);
   if(!await page.evaluate(()=>window.starAgent.state.mining.tool.selected))await tap(page,15);
   await button(page,7,true);await page.waitForFunction(({id,revision})=>window.starAgent.state.mining.activeRock===id&&window.starAgent.state.mining.activeRevision>=revision+4,{id:chosen.id,revision:before.revision});
-  await page.waitForFunction(()=>window.starAgent.state.mining.tool.beaming);await page.screenshot({path:`${evidence}/regional-copper-controller-beam.png`});await button(page,7,false);
+  await page.waitForFunction(()=>window.starAgent.state.mining.tool.beaming);await page.waitForFunction(()=>{const e=window.starAgent.state.effects;return e.beamVisible&&e.miningContacts>0&&e.collectedBursts>0&&e.particles>0;});await page.screenshot({path:`${evidence}/regional-copper-controller-beam.png`});await button(page,7,false);
   await page.waitForFunction(()=>!window.starAgent.state.mining.pending);
+  const effects=await page.evaluate(()=>window.starAgent.state.effects);
   const mined=await page.evaluate(()=>window.starAgent.state.mining),gain=mined.pack.map((v,i)=>v-before.pack[i]);
   expect(gain[1]).toBeGreaterThan(.1);expect(gain[1]).toBeGreaterThan(gain[0]);expect(gain[1]).toBeGreaterThan(gain[2]);expect(mined.saved).toBe(true);
   await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await expect(page.locator('#cargo-dialog [data-item="copper"][data-from="pack"]').first()).toBeVisible();
@@ -87,5 +88,5 @@ test('controller walks beyond the named Copper Ejecta site, mines a regional cop
   const restored=await page.evaluate(({key,id})=>{const data=JSON.parse(localStorage.getItem(key));return {rock:data.rocks[id],pack:window.starAgent.state.mining.pack};},{key:saveKey,id:chosen.id});expect(restored).toEqual(saved);
   await tap(page,8);await expect(page.locator('#cargo-dialog [data-item="copper"][data-from="pack"]').first()).toBeVisible();await page.screenshot({path:`${evidence}/regional-copper-backpack-after-reload.png`});await tap(page,1);await expect(page.locator('#cargo-dialog')).not.toBeVisible();
   const environment=await page.evaluate(()=>{const gl=document.getElementById('viewport').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return {renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),renderScale:window.starAgent.state.renderScale};});
-  await writeFile(`${evidence}/evidence.json`,JSON.stringify({browser:browser.version(),viewport:page.viewportSize(),environment,input:'Injected standard Gamepad; no keyboard/mouse or debug gameplay mutation. Reload checks saved field and cargo, not a second physical return.',chosen,beforeWalk,walk,before,mined,gain,savedRevision:saved.rock.revision,saveRestored:true,errors},null,2));expect(errors).toEqual([]);
+  await writeFile(`${evidence}/evidence.json`,JSON.stringify({browser:browser.version(),viewport:page.viewportSize(),environment,input:'Injected standard Gamepad; no keyboard/mouse or debug gameplay mutation. Reload checks saved field and cargo, not a second physical return.',chosen,beforeWalk,walk,before,effects,mined,gain,savedRevision:saved.rock.revision,saveRestored:true,errors},null,2));expect(errors).toEqual([]);
 });

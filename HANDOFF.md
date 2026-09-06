@@ -713,3 +713,26 @@ and new capacity/permission rules are not implemented yet. Full memory and prior
 progression draft link the change. Preserve shared station/gear, ship-power and
 Atlas lanes; Fable/Claude retain review/integration/merge/deploy. This file notice
 is not manager acknowledgment or a public deployment claim.
+
+
+## READY FOR REVIEW: new particles connected to expedition mining — 2026-09-06
+
+Cees requested the new mining particle system in the playable tool. PR24 now
+reuses PR27/a81b75e's plasma beam, sparks/dust, mineral collection and HDR bloom.
+Committed extraction forwarding includes the newer regional deposits, alongside
+Crescent, province and ring rocks. Actual saved cuts drive collection bursts;
+visuals never award minerals. RT/T/mouse/touch bindings remain the same. The
+controller can toggle glow and reduced particle motion in Controls and help.
+
+All 29 numerical files and five distinct production browser checks pass, including
+three full controller surface routes, physical space mining and the focused
+mouse/touch/interruption/settings regression. Its initial mobile visibility race
+was corrected in the test and rerun; QA records that failure. No page/console
+errors in final cases. Browser151/SwiftShader, desktop1440x900/mobile390x844;
+no hardware FPS or physical Xbox claim. Curated evidence and full contract:
+docs/qa/expedition/mining-particles/ and docs/mining-particles.md.
+
+Preview http://127.0.0.1:5213/ serves index-DY2p5nPi.js. During PR27 integration,
+keep one shared EnergyEffects director/bloom pass and retain regional forwarding.
+The actively edited effects worktree, shared gear and ship lanes were untouched.
+Fable/Claude retain independent review, integration, merge and deployment.

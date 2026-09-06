@@ -5,12 +5,12 @@ import './mining.css';
 
 /** First-person socket adapter for the existing Equipment implementation. A full
  * character rig can later supply its hand sockets and the same validated onMine. */
-export function createMiningTool({scene,camera,canvas,nav,rock}){
+export function createMiningTool({scene,camera,canvas,nav,rock,effects=null}){
   const mount=new THREE.Group(),hand=new THREE.Bone(),back=new THREE.Bone();hand.name='RightHand';back.name='Spine2';
   hand.rotation.y=-Math.PI/2;back.visible=false;mount.add(hand,back);scene.add(mount);
   const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:{'mining-laser-tool':{position:[0,0,0],rotation:[0,0,0]}}}}};
   let hit=null,held=false,selected=true,active=false,mouseArmed=false,direction=new THREE.Vector3();
-  const equipment=new Equipment({skeleton:{bones:[hand,back]}},scene,{camera,sockets,onMine:data=>{if(hit&&active)rock.onMine({...data,point:hit.point.clone(),target:hit.rock},direction);}});
+  const equipment=new Equipment({skeleton:{bones:[hand,back]}},scene,{camera,sockets,onMine:data=>{if(hit&&active)rock.onMine({...data,point:hit.point.clone(),normal:hit.normal?.clone(),target:hit.rock},direction);}});
   equipment.equip('mining-laser-tool');
   const lamp=new THREE.SpotLight(new THREE.Color(.82,.93,1),4,12,.58,.6,2);
   lamp.castShadow=true;lamp.shadow.mapSize.set(512,512);lamp.shadow.camera.near=.1;lamp.shadow.camera.far=12;lamp.shadow.bias=-.0002;lamp.shadow.normalBias=.015;
@@ -47,6 +47,12 @@ export function createMiningTool({scene,camera,canvas,nav,rock}){
       if(hit&&muzzle){const to=hit.point.clone().sub(muzzle),length=to.length(),muzzleHit=rock.raycast(muzzle,to.normalize(),length+.1);if(muzzleHit&&muzzleHit.point.distanceTo(hit.point)>.22)hit=null;}
       const firing=active&&selected&&Boolean(held||nav.keys.has('KeyT')||nav.toolTrigger>.1)&&rock.store.free>.001&&!rock.error&&!rock.store.blocked;
       equipment.update(dt,{firing,hasHit:Boolean(hit),targetWorldPoint:hit?.point??(inspected?.distance<=8?inspected.point:null)??nav.position.clone().addScaledVector(direction,8)});
+      if(effects){
+        // Equipment still owns muzzle calibration, heat and validated cut requests.
+        equipment.vfx.visible=false;
+        const start=equipment.muzzleWorldPosition();
+        effects.miningInput=start&&equipment.beaming?{active:true,start,end:hit?.point.clone()??start.clone().addScaledVector(direction,8),hit:Boolean(hit),normal:hit?.normal?.clone()}:null;
+      }
       if(!firing)rock.budget=0;
       if(!active)return;
       const local=rock.position.clone().sub(nav.position).applyQuaternion(nav.orientation.clone().invert()),angle=Math.atan2(local.x,-local.z)*180/Math.PI;

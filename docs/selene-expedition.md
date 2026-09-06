@@ -148,3 +148,11 @@ Current v2 browser evidence must be recorded against the final integrated build;
 earlier dense-ring screenshots and passing runs describe that earlier version.
 Functional and renderer evidence is recorded separately from independent manager
 visual approval. Fable/Claude retain integration, review, merge and deployment.
+
+## Mining particles
+
+The cutter now uses the shared plasma, sparks and mineral-collection particle
+system on Selene outcrops and mineable ring rocks. RT / T / mouse and the touch
+button retain their bindings. Controls and help offers Energy glow and Reduced
+particle motion; both also work through controller focus and A. See
+[mining particles](mining-particles.md) for the saved-cut and rendering contracts.

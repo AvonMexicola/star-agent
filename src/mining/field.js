@@ -11,6 +11,7 @@ import {nearbySurfaceDeposits,surfaceDepositCell,SURFACE_DEPOSIT_RANGE,SURFACE_D
 export class MiningField {
   constructor(scene,storage,rings){
     this.scene=scene;this.rings=rings;this.ground=new MineableRock(scene,storage);this.store=this.ground.store;
+    this.extracted=data=>this.onExtract?.(data);this.ground.onExtract=this.extracted;
     // Preserve only previously edited v1 rocks. Their original coordinates and
     // saved fields survive the sparse v2 layout; negative runtime ids cannot
     // collide with the new population's positive ids.
@@ -48,6 +49,7 @@ export class MiningField {
       const p=this.surfaceSurvey,up=bodySurfaceNormal(p.position,SELENE),right=new THREE.Vector3().crossVectors(Math.abs(up.y)<.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0),up).normalize();
       const quaternion=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right,up,right.clone().cross(up).normalize()));
       this.surfaceRock=new MineableRock(this.scene,null,{store:this.store,rockId:p.rockId,position:p.position,quaternion,initialField:createDensity(),resourceWeights:moonResources(...p.direction).weights});
+      this.surfaceRock.onExtract=this.extracted;
       this.surfaceRock.descriptor=p;this.surfaceRock.group.name=`${p.name} survey outcrop`;
     }
     this.surfaceRock?.update(origin);
@@ -91,7 +93,7 @@ export class MiningField {
     for(const d of priority.slice(0,SURFACE_DEPOSIT_WORKERS)){
       if(this.regionalRocks.has(d.id)||this.regionalRocks.size>=SURFACE_DEPOSIT_WORKERS)continue;
       const rock=new MineableRock(this.scene,null,{store:this.store,rockId:d.id,position:d.position,quaternion:d.quaternion,initialField:createDensity((x,y,z)=>asteroidField(x,y,z,d.variant)),resourceWeights:d.resourceWeights});
-      rock.descriptor=d;rock.group.name=`${d.name} ${d.id}`;this.regionalRocks.set(d.id,rock);
+      rock.onExtract=this.extracted;rock.descriptor=d;rock.group.name=`${d.name} ${d.id}`;this.regionalRocks.set(d.id,rock);
     }
     for(const rock of this.regionalRocks.values())rock.update(origin);
     this.nearestRegional=nearby[0]??null;
@@ -110,7 +112,7 @@ export class MiningField {
     }
     const quaternion=new THREE.Quaternion().setFromEuler(new THREE.Euler(...descriptor.rotation));
     const rock=new MineableRock(this.scene,null,{store:this.store,rockId:descriptor.key,position:new THREE.Vector3(...descriptor.position).add(new THREE.Vector3(...MOON_POSITION)),quaternion,initialField:createDensity((x,y,z)=>asteroidField(x,y,z,descriptor.family)),space:true});
-    rock.descriptor=descriptor;this.cache.set(descriptor.id,rock);rock.update(origin);
+    rock.onExtract=this.extracted;rock.descriptor=descriptor;this.cache.set(descriptor.id,rock);rock.update(origin);
     if(rock.ready)this.rings.hiddenIds.add(descriptor.id);
     return rock;
   }

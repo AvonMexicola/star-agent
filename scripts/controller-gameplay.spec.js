@@ -18,7 +18,7 @@ async function aimAtDeposit(page) {
   throw new Error('Controller aim did not converge');
 }
 for(const destination of ['moon','resource-copper-ejecta-province']) test(`${destination}: controller alone transits, lands, walks out, aims, equips, mines with a visible beam and opens backpack`,async({page,browser})=>{
-  test.setTimeout(300000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  test.setTimeout(300000);const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await mkdir(evidence,{recursive:true});
   await page.addInitScript(()=>{window.testPad={id:'Automated standard Xbox',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.testPad];});
   await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed&&window.starAgent.state.mining.ready);
@@ -41,14 +41,15 @@ for(const destination of ['moon','resource-copper-ejecta-province']) test(`${des
   await tap(page,15);expect(await page.evaluate(()=>window.starAgent.state.mining.tool.selected)).toBe(true);
   const revision=await page.evaluate(()=>window.starAgent.state.mining.activeRevision);
   await setButton(page,7,true);await page.waitForFunction(({revision,cuts})=>window.starAgent.state.mining.activeRevision>=revision+cuts,{revision,cuts:destination==='moon'?1:4});
-  await page.waitForFunction(()=>window.starAgent.state.mining.tool.beaming);
+  await page.waitForFunction(()=>window.starAgent.state.mining.tool.beaming);await page.waitForFunction(()=>{const e=window.starAgent.state.effects;return e.beamVisible&&e.miningContacts>0&&e.collectedBursts>0&&e.particles>0;});
   await page.screenshot({path:`${evidence}/${destination}-controller-held-beam.png`});
   await setButton(page,7,false);await page.waitForFunction(()=>!window.starAgent.state.mining.pending);
+  const effects=await page.evaluate(()=>window.starAgent.state.effects);
   const mined=await page.evaluate(()=>window.starAgent.state.mining);expect(mined.pack.reduce((a,b)=>a+b,0)).toBeGreaterThan(0);
   if(destination!=='moon'){expect(mined.pack[1]).toBeGreaterThan(mined.pack[0]);expect(mined.pack[1]).toBeGreaterThan(mined.pack[2]);}
   await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await page.screenshot({path:`${evidence}/${destination}-controller-backpack.png`});
   await tap(page,13);expect(await page.locator('#cargo-dialog [data-controller-selected]').count()).toBe(1);
   await tap(page,1);await expect(page.locator('#cargo-dialog')).not.toBeVisible();
-  await writeFile(`${evidence}/${destination}-controller-gameplay.json`,JSON.stringify({browser:browser.version(),input:'Injected W3C standard Gamepad; no physical controller used',viewport:page.viewportSize(),mined,errors},null,2));
+  await writeFile(`${evidence}/${destination}-controller-gameplay.json`,JSON.stringify({browser:browser.version(),input:'Injected W3C standard Gamepad; no physical controller used',viewport:page.viewportSize(),effects,mined,errors},null,2));
   expect(errors).toEqual([]);
 });

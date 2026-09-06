@@ -28,7 +28,7 @@ test('ring survey, physical EVA exit, thruster approach, Xbox asteroid mining an
   const before=await page.evaluate(()=>({revision:window.starAgent.state.mining.activeRevision,mass:window.starAgent.state.mining.pack.reduce((a,b)=>a+b,0),position:window.starAgent.state.position}));
   await page.evaluate(()=>window.spacePad.buttons[7]={pressed:true,value:1});
   await page.waitForFunction(previous=>window.starAgent.state.mining.activeRevision>=previous+3,before.revision,{timeout:60000});
-  await page.waitForFunction(()=>window.starAgent.state.mining.tool.beaming);await page.screenshot({path:`${evidence}/space-laser.png`});
+  await page.waitForFunction(()=>window.starAgent.state.mining.tool.beaming);await page.waitForFunction(()=>{const e=window.starAgent.state.effects;return e.beamVisible&&e.miningContacts>0&&e.collectedBursts>0&&e.particles>0;});await page.screenshot({path:`${evidence}/space-laser.png`});
   await page.evaluate(()=>window.spacePad.buttons[7]={pressed:false,value:0});
   await page.waitForFunction(()=>window.starAgent.state.mining.spaceRocks.every(rock=>!rock.pending));
   const mined=await page.evaluate(()=>window.starAgent.state);

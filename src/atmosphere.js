@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RADIUS, ATMOSPHERE_HEIGHT } from './world.js';
 import { createCloudNoise, cloudShader } from './cloud-volume.js';
+import { EnergyBloom } from './effects/bloom.js';
 
 // Single-scattering integration in planet-radius units. Rayleigh + Henyey-Greenstein
 // Mie scattering, exponential density, sunlight extinction and planet shadow.
@@ -17,6 +18,10 @@ uniform float logFar;
 uniform float radius;
 uniform float atmosphereRadius;
 uniform float exposure;
+uniform sampler2D bloomNear;
+uniform sampler2D bloomMid;
+uniform sampler2D bloomWide;
+uniform float bloomStrength;
 varying vec2 vUv;
 const vec3 BETA_R=vec3(5.802e-6,13.558e-6,33.100e-6);
 const vec3 BETA_M=vec3(3.996e-6);
@@ -86,6 +91,7 @@ void main(){
   }
   vec4 clouds=cloudRadiance(cameraPlanet,rd,distanceToScene,sunDot);
   color=color*(1.0-clouds.a)+clouds.rgb;
+  color+=bloomStrength*(texture2D(bloomNear,vUv).rgb*.35+texture2D(bloomMid,vUv).rgb*.4+texture2D(bloomWide,vUv).rgb*.5);
   color=aces(color*exposure);
   color=pow(color,vec3(1.0/2.2));
   float dither=(hash(vec3(gl_FragCoord.xy,0.0))-.5)/255.0;
@@ -95,20 +101,24 @@ void main(){
 export class Atmosphere {
   constructor(renderer){
     this.renderer=renderer;
+    this.bloom=new EnergyBloom(renderer);
     this.cloudNoise=createCloudNoise();
     this.target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true});
     this.target.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
     this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
     this.material.uniforms.cloudNoise={value:this.cloudNoise};this.material.uniforms.cloudTime={value:0};
+    ['bloomNear','bloomMid','bloomWide'].forEach((key,i)=>this.material.uniforms[key]={value:this.bloom.textures[i]});
+    this.material.uniforms.bloomStrength={value:.65};
     this.scene=new THREE.Scene();const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),this.material);quad.frustumCulled=false;this.scene.add(quad);this.camera=new THREE.Camera();
   }
-  resize(w,h){this.target.setSize(w,h);this.material.uniforms.resolution.value.set(w,h);}
+  resize(w,h){this.target.setSize(w,h);this.bloom.resize(w,h);this.material.uniforms.resolution.value.set(w,h);}
   render(scene,camera,worldPosition,sunDirection,elapsed=0){
     camera.updateMatrixWorld();const u=this.material.uniforms;
     u.cloudTime.value=elapsed;
     u.inverseProjection.value.copy(camera.projectionMatrixInverse);u.cameraRotation.value.setFromMatrix4(camera.matrixWorld);u.cameraPlanet.value.copy(worldPosition).multiplyScalar(1/RADIUS);u.sunDirection.value.copy(sunDirection);u.logFar.value=Math.log2(camera.far+1);
     this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,0);this.renderer.clear();this.renderer.render(scene,camera);
+    this.bloom.render(this.target.texture);u.bloomStrength.value=this.bloom.enabled?.65:0;
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);
   }
-  dispose(){this.target.dispose();this.cloudNoise.dispose();this.material.dispose();this.scene.children[0].geometry.dispose();}
+  dispose(){this.bloom.dispose();this.target.dispose();this.cloudNoise.dispose();this.material.dispose();this.scene.children[0].geometry.dispose();}
 }
