@@ -649,3 +649,26 @@ docs/qa/expedition/sparse-ring/; full contracts in PLANET-PIPELINE-MEMORY.md.
 Preserve shared station/gear changes and the separate ship-power-cabin lane.
 Fable/Claude retain independent visual review, integration, merge and deployment.
 This file handoff is not a claim of manager acknowledgment or public deployment.
+
+
+## Design ready for review — crafting, skills and expedition progression (2026-09-06)
+
+Cees asked to start thinking about material tiers, upgraded suits for valuable
+hot-planet mining, and dangerous cave fauna with special loot. Recorded a concrete
+draft at docs/design/progression-crafting-skills.md in the expedition worktree
+(/tmp/star-agent-expedition-work, feat/selene-expedition / PR #24), linked from
+PLANET-PIPELINE-MEMORY.md. No runtime change or implementation claim.
+
+Proposal: four material tiers; Pyre industrial and Aeon cave/biological branches;
+practical training in Extraction, Fabrication, Survey and Field operations; shared
+box inventory for recipes/modules/loot. The initial Pyre suit must use materials
+obtainable outside Pyre. Cave creatures have readable threats and biological loot
+with noncombat alternatives. Start with station refining and one useful crafted
+mining heat-sink, then suit hazards, one Pyre expedition and one complete cave.
+
+The draft calls out the current three-mineral/fixed-supply save migration, atomic
+crafting/training/loot, cave-owned collision and complete controller journeys.
+Balance, creature/material names and economic prices remain proposals. Preserve
+the independent ship-power, Atlas and station lanes. Design docs were reviewed
+against current modules and local links checked; no gameplay tests were needed
+for this documentation-only addition. Manager acceptance is not assumed.

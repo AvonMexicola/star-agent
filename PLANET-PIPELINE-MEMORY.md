@@ -609,3 +609,25 @@ browser checks pass across the integrated run and targeted reruns, including
 actual ice pixels, full ring dimensions, LOD continuity and space mining. Current
 review evidence and exact fixture provenance: `docs/qa/expedition/sparse-ring/`.
 Preview asset: `index-N8I1Odnu.js` at http://127.0.0.1:5213/ .
+
+
+## Proposed progression — crafting, training, Pyre and Aeon caves
+
+Cees requested material tiers, crafting and skill training, with valuable ore on
+the hot inner planet requiring suit upgrades, plus dangerous Aeon cave fauna and
+special loot. The concrete design draft is
+[Expedition progression](docs/design/progression-crafting-skills.md). This is
+future design, not a claim that crafting, Pyre hazards or creature combat exists.
+
+Use four material tiers, with parallel Pyre industrial and Aeon cave/biological
+branches. Build the first heat-protection kit entirely from accessible materials;
+never require Pyre ore to unlock the first Pyre expedition. Training should credit
+committed recovery, practical milestones and discoveries, not held-trigger time.
+Reuse the shared box UI and controller router for recipes, modules and loot.
+
+First proposed slice: migrate the three-resource/fixed-supply save model safely,
+add station refining and a useful mining-laser heat-sink recipe, fit the result,
+and validate the full controller mining/crafting/reload journey. Then prove suit
+thermal behavior before the first Pyre site. Prove one cave entrance and unified
+collision before adding a creature and its biological recipe. Preserve all old
+cuts/cargo/boxes, atomic transactions, save identities and input suppression.
