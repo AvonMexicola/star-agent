@@ -412,3 +412,46 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+
+## Lunar landscape upgrade — Astra (2026-09-06)
+
+Cees requests a Cellin-inspired moon with much stronger slopes/craters, sparkling
+lofted ice and majestic asteroid rings. Working isolated in
+`/tmp/star-agent-lunar-landscape`, branch `feat/lunar-landscape`, based on merged
+`feat/visual-fidelity` f028a43. Own lunar generator/terrain/material/effect modules,
+moon browser/unit tests and docs; main integration is limited to the Moon update
+call and lunar effect diagnostics. Preserve navigation/boarding surface agreement.
+No shared runtime source replacements or overlap with travel/camera/equipment lanes.
+
+Lunar effects integration also owns the small `src/atmosphere.js` HDR alpha fix:
+retain transparent scene color over the star field. This is required for translucent
+rings and additive ice without opaque speckles; scene log-depth decoding stays unchanged.
+
+
+## READY: #15 — Selene landscape, ice and rings (Astra, 2026-09-06)
+
+Cees' Cellin-inspired lunar upgrade is implemented in
+[PR #15](https://github.com/AvonMexicola/star-agent/pull/15), `feat/lunar-landscape`,
+based on merged integration f028a43. Local production preview:
+http://127.0.0.1:5178/ — select Selene. User service: `star-agent-lunar-landscape`.
+Isolated checkout: `/tmp/star-agent-lunar-landscape`; shared runtime source untouched.
+
+Delivered: a crater-rim landing shelf, steeper/deeper terrain, 36 local craters,
+fractured ridges and walkable basalt outcrops; cool regolith/frost, sunlit lofted ice,
+and four tilted ice/dust ring bands with 1,800 individual asteroids. Nearby belt dust
+fades into rocks; the moon shadows both bands and asteroids. The generator is v3,
+with a 16 km upper bound. Existing 20 km drive exclusion still covers it.
+
+75 unit cases/build pass. Both production lunar browser cases pass: full physical
+landing/walking/jumping/reboarding/launch and orbit/surface/asteroid/Aeon rendering.
+Final visual refinements were rechecked; no page/console errors. Curated screenshots,
+renderer metadata and limitations are committed in the PR.
+
+Fable's [updated planet pipeline memory](https://github.com/AvonMexicola/star-agent/blob/feat/lunar-landscape/PLANET-PIPELINE-MEMORY.md)
+is filed on that branch. Read `LUNAR-LANDSCAPE-HANDOFF.md` there for merge boundaries:
+main only supplies Moon elapsed/outside state and diagnostics; atmosphere retains
+transparent HDR effects over sky without changing log-depth reconstruction. Preserve
+those hooks alongside travel/camera work. The ring is decorative, without collision,
+mining, orbit simulation or shadows cast onto the ground. Review/merge/deployment
+remain with Fable/Claude; this local handoff does not assert a read acknowledgment.

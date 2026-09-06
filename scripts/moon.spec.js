@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { ringRock, RING_NORMAL } from '../src/moon-rings.js';
 import { mkdir, writeFile } from 'node:fs/promises';
 
-const evidence='/tmp/star-agent-moon-evidence';
+const evidence='/tmp/star-agent-lunar-landscape-evidence';
 test('Selene landing, ramp exploration, lunar jump, reboarding and launch render correctly',async({page,browser})=>{
   test.setTimeout(300000);
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
@@ -29,7 +30,7 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
   await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>12);await page.keyboard.up('w');await page.keyboard.press('x');
   const outside=await page.evaluate(()=>window.starAgent.state);
-  expect(outside.insideShip).toBe(false);expect(outside.altitude).toBeCloseTo(1.75,5);
+  expect(outside.moon.effects.ringAsteroids).toBe(1800);expect(outside.moon.effects.iceParticles).toBeGreaterThan(0);expect(outside.insideShip).toBe(false);expect(outside.altitude).toBeCloseTo(1.75,5);
   await expect(page.locator('#mode-label')).toHaveText('LUNAR EXPLORATION');
   await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/surface.png`});
   await page.keyboard.down('Space');await page.waitForFunction(()=>window.starAgent.navigation.jumpHeight>.1);await page.keyboard.up('Space');
@@ -49,5 +50,46 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   expect(await page.evaluate(()=>window.starAgent.state.body)).toBe('aeon');
   const gpu=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return {renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),viewport:[innerWidth,innerHeight]};});
   await writeFile(`${evidence}/environment.json`,JSON.stringify({browser:browser.version(),...gpu,landed,outside,errors},null,2));
+  expect(errors).toEqual([]);
+});
+
+
+test('lunar rings, crater slopes and sunlit ice render from orbit and the surface',async({page,browser})=>{
+  test.setTimeout(240000);const errors=[];
+  page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
+  await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
+  await page.evaluate(()=>window.starAgent.setRenderScale(.8));await mkdir(evidence,{recursive:true});
+  await page.keyboard.press('Tab');
+  await page.evaluate(()=>{
+    const nav=window.starAgent.navigation,center=nav.position.clone().fromArray(window.starAgent.state.moon.position);
+    const direction=nav.position.clone().set(.45,.22,.87).normalize();nav.orbit();
+    nav.position.copy(center).addScaledVector(direction,window.starAgent.state.moon.radius*4.7);
+    nav.orientToward(center,nav.position.clone().set(0,1,0));
+  });
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=3&&window.starAgent.state.moon.effects.terrainBuilds===0);await page.screenshot({path:`${evidence}/rings-orbit.png`});
+  await page.evaluate(()=>window.starAgent.navigation.transitMoon(600));
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=11);await page.waitForTimeout(1200);
+  await page.screenshot({path:`${evidence}/crater-approach.png`});
+  // Look aft from the landing shelf toward the new impact basin and ring arc.
+  await page.evaluate(()=>{
+    const nav=window.starAgent.navigation;nav.transitMoon(1.75);nav.enabled=false;
+    const up=nav.normal,east=nav.position.clone().set(0,1,0).cross(up).normalize();
+    nav.orientToward(nav.position.clone().addScaledVector(east,-1000).addScaledVector(up,120),up);
+  });
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=16);await page.waitForTimeout(2500);await page.screenshot({path:`${evidence}/craters-and-ice.png`});
+  const a=await page.screenshot();await page.waitForTimeout(1200);const b=await page.screenshot();expect(a.equals(b)).toBe(false);
+  const surface=await page.evaluate(()=>window.starAgent.state);expect(surface.moon.effects.iceParticles).toBeGreaterThan(0);
+  const rock=ringRock(5);
+  await page.evaluate(({rock,normal})=>{
+    const nav=window.starAgent.navigation,center=nav.position.clone().fromArray(window.starAgent.state.moon.position),target=center.clone().add(nav.position.clone().fromArray(rock.position));
+    nav.orbit();nav.enabled=false;nav.position.copy(target).addScaledVector(target.clone().sub(center).normalize(),rock.size*6).addScaledVector(nav.position.clone().fromArray(normal),rock.size*3);
+    nav.orientToward(target,nav.position.clone().fromArray(normal));
+  },{rock,normal:RING_NORMAL});
+  await page.waitForTimeout(1500);await page.screenshot({path:`${evidence}/asteroid-close.png`});
+  await page.evaluate(()=>window.starAgent.transit('coast'));
+  await page.waitForFunction(()=>!window.starAgent.state.transiting&&window.starAgent.state.lod>=12);
+  await page.waitForTimeout(1500);await page.screenshot({path:`${evidence}/aeon-coast-after-effects.png`});
+  const aeon=await page.evaluate(()=>window.starAgent.state);expect(aeon.body).toBe('aeon');expect(aeon.atmosphereFraction).toBeGreaterThan(.9);
+  await writeFile(`${evidence}/visual-state.json`,JSON.stringify({browser:browser.version(),surface,errors},null,2));
   expect(errors).toEqual([]);
 });

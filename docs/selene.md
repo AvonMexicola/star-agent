@@ -1,5 +1,8 @@
 # Land and explore Selene
 
+The [landscape upgrade](selene-landscape.md) adds a crater-rim landing site, rugged
+terrain, sunlit ice particles and an asteroid ring.
+
 Click **Selene** in the destination list to arrive 180 m above the lunar surface.
 Shift-click sets a course instead, allowing you to fly there continuously.
 

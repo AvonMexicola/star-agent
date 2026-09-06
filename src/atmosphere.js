@@ -43,14 +43,18 @@ void main(){
   float depth=texture2D(sceneDepth,vUv).r;
   bool ground=depth<.999999;
   float distanceToScene=ground?(exp2(depth*logFar)-1.0)/max(.0001,-viewRay.z)/radius:1e9;
-  vec3 original=texture2D(sceneColor,vUv).rgb;
+  vec4 original=texture2D(sceneColor,vUv);
   float daylight=smoothstep(-.12,.2,dot(normalize(cameraPlanet),sunDirection))
     *exp(-max(0.0,length(cameraPlanet)-1.0)*radius/35000.0);
-  vec3 color=ground?original:stars(rd)*(1.0-daylight);
+  // The HDR target is cleared transparent. Its color already contains the
+  // premultiplied contribution of transparent rings and additive ice; retain
+  // it over empty sky as well as over opaque geometry.
+  float skyCoverage=1.0-clamp(original.a,0.0,1.0);
+  vec3 color=original.rgb+stars(rd)*(1.0-daylight)*skyCoverage;
   float sunDot=dot(rd,sunDirection);
   // A 120,000-km stellar radius at 25 million km: angular radius 0.0048 rad.
   float disk=smoothstep(cos(.0050),cos(.0046),sunDot);
-  if(!ground)color+=vec3(18.0,15.5,12.5)*disk;
+  if(!ground)color+=vec3(18.0,15.5,12.5)*disk*skyCoverage;
   vec2 hit=sphere(cameraPlanet,rd,atmosphereRadius);
   float start=max(0.0,hit.x),finish=min(distanceToScene,hit.y);
   if(finish>start && hit.y>0.0){
@@ -103,7 +107,7 @@ export class Atmosphere {
     camera.updateMatrixWorld();const u=this.material.uniforms;
     u.cloudTime.value=elapsed;
     u.inverseProjection.value.copy(camera.projectionMatrixInverse);u.cameraRotation.value.setFromMatrix4(camera.matrixWorld);u.cameraPlanet.value.copy(worldPosition).multiplyScalar(1/RADIUS);u.sunDirection.value.copy(sunDirection);u.logFar.value=Math.log2(camera.far+1);
-    this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,1);this.renderer.clear();this.renderer.render(scene,camera);
+    this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,0);this.renderer.clear();this.renderer.render(scene,camera);
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);
   }
   dispose(){this.target.dispose();this.cloudNoise.dispose();this.material.dispose();this.scene.children[0].geometry.dispose();}
