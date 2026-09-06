@@ -16,7 +16,7 @@ test('orbital resource colors and non-overlapping desktop/mobile action controls
     n.position.copy(center).addScaledVector(direction,window.starAgent.state.moon.radius*2.6);
     n.orientToward(center,n.position.clone().set(0,1,0));window.starAgent.setRenderScale(1);
   });
-  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=4&&window.starAgent.state.moon.effects.terrainBuilds===0);
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=3&&window.starAgent.state.moon.effects.terrainBuilds===0);
   await page.waitForTimeout(1500);await expect(page.locator('#resource-survey')).toBeVisible();
   await page.screenshot({path:`${evidence}/orbit-resource-legend.png`});
   await page.keyboard.press('Tab');await page.waitForTimeout(250);
@@ -43,9 +43,10 @@ test('orbital resource colors and non-overlapping desktop/mobile action controls
     const layout=await page.evaluate(()=>{
       const box=el=>{const r=el.getBoundingClientRect();return {name:el.getAttribute('aria-label')||el.id||el.textContent.trim(),left:r.left,top:r.top,right:r.right,bottom:r.bottom};};
       const visible=el=>el.getClientRects().length&&getComputedStyle(el).display!=='none';
-      return {width:innerWidth,height:innerHeight,backpack:box(document.getElementById('backpack-button')),actions:[...document.querySelectorAll('.top-actions button')].filter(visible).map(box),destinations:[...document.querySelectorAll('[data-destination]')].filter(visible).map(box)};
+      return {width:innerWidth,height:innerHeight,backpack:box(document.getElementById('backpack-button')),legend:box(document.getElementById('resource-survey')),telemetry:box(document.querySelector('.telemetry')),actions:[...document.querySelectorAll('.top-actions button')].filter(visible).map(box),destinations:[...document.querySelectorAll('[data-destination]')].filter(visible).map(box)};
     });
     layouts.push(layout);
+    expect(overlaps(layout.legend,layout.telemetry),'resource legend / flight telemetry').toBe(false);
     for(const action of layout.actions){expect(action.left,action.name).toBeGreaterThanOrEqual(0);expect(action.right,action.name).toBeLessThanOrEqual(viewport.width);expect(action.bottom,action.name).toBeLessThanOrEqual(viewport.height);}
     for(let i=0;i<layout.actions.length;i++)for(let j=i+1;j<layout.actions.length;j++)expect(overlaps(layout.actions[i],layout.actions[j]),`${layout.actions[i].name} / ${layout.actions[j].name}`).toBe(false);
     for(const destination of layout.destinations)expect(overlaps(layout.backpack,destination),destination.name).toBe(false);

@@ -1,0 +1,401 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "renderScale": 0.65,
+  "aiming": "Debug orientation only; Ring Survey UI transit and all suit translation are player inputs",
+  "before": {
+    "revision": 0,
+    "mass": 0,
+    "position": [
+      -1606121.1544724442,
+      -230175.80419563298,
+      -24271391.228663296
+    ]
+  },
+  "mined": {
+    "fieldCache": [
+      -2193722.031164278,
+      95037.35990439725,
+      -23505089.8778173
+    ],
+    "containers": {
+      "open": false,
+      "target": null,
+      "containers": [
+        {
+          "id": "pack",
+          "name": "Backpack",
+          "kind": "backpack",
+          "boxes": 1,
+          "items": {
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0,
+            "basalt": 1.2230638764931427,
+            "copper": 1.906941869390721,
+            "ice": 0
+          }
+        },
+        {
+          "id": "ship",
+          "name": "Nomad cargo",
+          "kind": "ship",
+          "boxes": 4,
+          "items": {
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          }
+        },
+        {
+          "id": "station",
+          "name": "Aeon orbital locker",
+          "kind": "station",
+          "items": {
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        },
+        {
+          "id": "crescent-cache",
+          "name": "Crescent field cache",
+          "kind": "base",
+          "items": {
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        }
+      ],
+      "saved": true,
+      "warning": ""
+    },
+    "eva": {
+      "active": true,
+      "spaceParked": true,
+      "braking": false,
+      "shipDistance": 40.24615866584729,
+      "speed": 0
+    },
+    "rings": {
+      "population": 20971520,
+      "width": 20000,
+      "thickness": 2000,
+      "families": 6,
+      "nearby": 2400,
+      "rendered": 5470,
+      "promoted": 1
+    },
+    "mining": {
+      "resourceWeights": null,
+      "resourceVersion": 1,
+      "ready": true,
+      "pending": false,
+      "revision": 7,
+      "position": [
+        -1606119.8679556837,
+        -230175.73489802756,
+        -24271395.879637428
+      ],
+      "pack": [
+        1.2230638764931427,
+        1.906941869390721,
+        0
+      ],
+      "ship": [
+        0,
+        0,
+        0
+      ],
+      "saved": true,
+      "error": "",
+      "triangles": 13488,
+      "meshMs": 150.09999999403954,
+      "publishMs": 3.7999999970197678,
+      "groundRevision": 0,
+      "space": true,
+      "targetName": "Ice aggregate",
+      "activeRock": "selene-ring-v1-523645",
+      "activeRevision": 7,
+      "activePosition": [
+        -1606119.8679556837,
+        -230175.73489802756,
+        -24271395.879637428
+      ],
+      "debrisBrake": false,
+      "surfaceRock": null,
+      "spaceRocks": [
+        {
+          "id": "selene-ring-v1-523645",
+          "resourceWeights": null,
+          "resourceVersion": 1,
+          "ready": true,
+          "pending": false,
+          "revision": 7,
+          "position": [
+            -1606119.8679556837,
+            -230175.73489802756,
+            -24271395.879637428
+          ],
+          "pack": [
+            1.2230638764931427,
+            1.906941869390721,
+            0
+          ],
+          "ship": [
+            0,
+            0,
+            0
+          ],
+          "saved": true,
+          "error": "",
+          "triangles": 13488,
+          "meshMs": 150.09999999403954,
+          "publishMs": 3.7999999970197678
+        }
+      ],
+      "tool": {
+        "active": true,
+        "hit": null,
+        "heat": 0.5658450000000015,
+        "beaming": true,
+        "selected": true,
+        "toolError": null
+      }
+    },
+    "moon": {
+      "resources": {
+        "weights": [
+          0.965,
+          0.015,
+          0.02
+        ],
+        "dominant": "basalt",
+        "province": "BASALT HIGHLANDS"
+      },
+      "resourceProvinces": [
+        {
+          "id": "frostwall-ice-province",
+          "name": "FROSTWALL ICE PROVINCE",
+          "resource": "ice",
+          "direction": [
+            0.5198237065902184,
+            0.49384372586223446,
+            0.6970664878570142
+          ],
+          "radius": 145000
+        },
+        {
+          "id": "copper-ejecta-province",
+          "name": "COPPER EJECTA PROVINCE",
+          "resource": "copper",
+          "direction": [
+            0.6388541507273584,
+            -0.06817686213409602,
+            0.766301043694953
+          ],
+          "radius": 150000
+        },
+        {
+          "id": "north-glass-fields",
+          "name": "NORTH GLASS FIELDS",
+          "resource": "ice",
+          "direction": [
+            -0.3014352341778188,
+            0.833970814558632,
+            -0.4622006924059889
+          ],
+          "radius": 120000
+        },
+        {
+          "id": "far-copper-basins",
+          "name": "FAR COPPER BASINS",
+          "resource": "copper",
+          "direction": [
+            -0.9007773489355771,
+            -0.30708318713712857,
+            0.30708318713712857
+          ],
+          "radius": 135000
+        },
+        {
+          "id": "south-ice-fields",
+          "name": "SOUTH ICE FIELDS",
+          "resource": "ice",
+          "direction": [
+            0.10178149998272808,
+            -0.9872805498324623,
+            0.12213779997927368
+          ],
+          "radius": 95000
+        }
+      ],
+      "effects": {
+        "ringAsteroids": 20971520,
+        "ringRendered": 5470,
+        "terrainBuilds": 0,
+        "iceParticles": 0,
+        "generatorVersion": 4
+      },
+      "position": [
+        -2388089.256503974,
+        0,
+        -23880892.565039743
+      ],
+      "radius": 434350,
+      "altitude": 467564.84141414054,
+      "patches": 181,
+      "lod": 3,
+      "distance": 903849.6665506272
+    },
+    "controller": {
+      "id": "Standard Xbox space mining test",
+      "connected": true,
+      "active": true,
+      "armed": true,
+      "status": "Controller ready · Menu / Options opens the command menu."
+    },
+    "body": "selene",
+    "seed": 7291,
+    "generatorVersion": 2,
+    "position": [
+      -1606121.1544724442,
+      -230175.80419563298,
+      -24271391.228663296
+    ],
+    "altitude": 467564.84141414054,
+    "speed": 0,
+    "mode": "eva",
+    "autoland": false,
+    "flightAssist": true,
+    "flightRegime": "SPACE",
+    "atmosphereFraction": 0,
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "angularVelocity": [
+      0,
+      0,
+      0
+    ],
+    "groundHeight": 1934.8251364866794,
+    "biome": "SELENE · FAR HIGHLANDS",
+    "sunDistance": 25004572810.811214,
+    "patches": 246,
+    "lod": 3,
+    "pending": 0,
+    "vegetation": {
+      "trees": 0,
+      "grassTufts": 0,
+      "rocks": 0,
+      "rebuilds": 0
+    },
+    "drawCalls": 35,
+    "triangles": 749846,
+    "ready": true,
+    "transiting": false,
+    "fps": 4,
+    "shipAsset": "ready",
+    "storageOpen": false,
+    "storageProgress": 0,
+    "inventory": {
+      "ship": {
+        "repair": 3,
+        "ration": 12,
+        "sample": 6,
+        "scanner": 1
+      },
+      "pack": {
+        "repair": 0,
+        "ration": 2,
+        "sample": 0,
+        "scanner": 0
+      },
+      "shipMass": 33,
+      "packMass": 1,
+      "saved": true
+    },
+    "mfds": [
+      {
+        "title": "FLIGHT",
+        "values": [
+          "VELOCITY: 0.0 m/s",
+          "ALTITUDE AGL: 467.6 km",
+          "FLIGHT CONTROL: EVA"
+        ]
+      },
+      {
+        "title": "NAVIGATION",
+        "values": [
+          "COURSE: FREE EXPLORATION",
+          "BEARING: NO COURSE",
+          "POSITION: -14.75 / 116.54"
+        ]
+      },
+      {
+        "title": "SYSTEMS",
+        "values": [
+          "ENVIRONMENT: SPACE",
+          "HATCH / RAMP: OPEN / DEPLOYED",
+          "LOCAL VERTICAL: 0.0 m/s"
+        ]
+      },
+      {
+        "title": "CARGO",
+        "values": [
+          "SHIP STORAGE: 33.0 / 120 kg",
+          "BACKPACK: 1.0 / 20 kg",
+          "ACCESS: STARBOARD CABIN"
+        ]
+      }
+    ],
+    "doorOpen": true,
+    "doorProgress": 1,
+    "insideShip": false,
+    "station": {
+      "ready": true,
+      "error": null,
+      "doorsOpen": 0,
+      "distance": 25871778.682523258,
+      "local": [
+        -5677915.904749069,
+        -23772351.653064653,
+        -8484426.914005257
+      ],
+      "deckClearance": -23772343.653064653,
+      "docked": false,
+      "lifting": false,
+      "canDock": false
+    },
+    "shipLocal": [
+      -1.2865167590786408,
+      2.4807023972971014,
+      -40.14902586117388
+    ],
+    "interaction": "EVA · 40 M TO SHIP · G / Y · SUIT THRUSTERS",
+    "renderScale": 0.65
+  },
+  "errors": []
+}

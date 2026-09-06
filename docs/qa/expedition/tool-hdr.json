@@ -1,0 +1,44 @@
+{
+  "browser": "151.0.7922.173",
+  "viewport": {
+    "width": 1000,
+    "height": 700
+  },
+  "meta": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "logDepth": true,
+    "hdrType": 1016,
+    "textures": 1,
+    "muzzle": [
+      0.2900000065565109,
+      -0.2099999999627471,
+      -1.0699999999999998
+    ],
+    "target": [
+      0,
+      0,
+      -4
+    ],
+    "beamEnd": [
+      5.495603971894525e-15,
+      -3.969047313034935e-15,
+      -4.000000000000002
+    ]
+  },
+  "materialDiff": {
+    "count": 3214,
+    "total": 273990,
+    "max": 51
+  },
+  "beamDiff": {
+    "count": 4677,
+    "total": 1003823,
+    "max": 229
+  },
+  "blocked": {
+    "count": 0,
+    "total": 0,
+    "max": 0
+  },
+  "errors": []
+}

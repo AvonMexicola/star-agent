@@ -126,7 +126,7 @@ try {
     const hints=controller?(onFoot?[['LS','MOVE'],['RS','LOOK'],['RT','MINE'],[eva?'A / B':'A',eva?'RISE / LOWER':'JUMP'],['X','INTERACT'],[eva?'LT':'Y',eva?'BRAKE':'SUIT'],['D-PAD →','TOOL'],['VIEW','BACKPACK'],['MENU','COMMANDS']]:[['LS','MOVE'],['RS','LOOK'],['RT / LT','UP / DOWN'],['Y','LAND / LAUNCH'],['X','INTERACT / EVA'],['MENU','COMMANDS']]):onFoot?[['WASD','MOVE'],[eva?'SPACE / C':'SPACE',eva?'RISE / LOWER':'JUMP'],['T / MOUSE','MINE'],['F','INTERACT'],['I','BACKPACK'],['M','MENU']]:[['WASD','MOVE'],['SPACE / C','UP / DOWN'],['L','LAND / LAUNCH'],['F','INTERACT / EVA'],['M','MENU']];
     const hintsNode=$(controller?'controller-hints':'keyboard-hints'),hintMode=`${controller}-${nav.mode}`;
     if(hintsNode.dataset.mode!==hintMode){hintsNode.innerHTML=hints.map(([key,label])=>`<span><kbd>${key}</kbd> ${label}</span>`).join('');hintsNode.dataset.mode=hintMode;}
-    const nearMoon=nav.body.airless;
+    const nearMoon=nav.body.airless;document.body.classList.toggle('surveying-moon',nearMoon);
     const resources=nearMoon?moonResources(...nav.normal.toArray()):null;resourceLegend.hidden=!nearMoon||onFoot;
     if(resources)resourceLegend.querySelector('p').textContent=`Below: ${resources.province} · ${resources.dominant.toUpperCase()} RICH`;
     const alt=nav.altitude,speed=nav.speed,n=nav.normal,flightEnv=nav.flightEnvironment;

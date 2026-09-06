@@ -1,0 +1,98 @@
+{
+  "browser": "151.0.7922.173",
+  "input": "Injected W3C standard Gamepad; no physical controller used",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "mined": {
+    "resourceWeights": [
+      0.04499999999999994,
+      0.935,
+      0.02
+    ],
+    "resourceVersion": "1.1",
+    "ready": true,
+    "pending": false,
+    "revision": 7,
+    "position": [
+      -2109512.6746714185,
+      -29728.972085040434,
+      -23546741.92179165
+    ],
+    "pack": [
+      0.1959346000221558,
+      2.6412530463639996,
+      0.1026190342818154
+    ],
+    "ship": [
+      0,
+      0,
+      0
+    ],
+    "saved": true,
+    "error": "",
+    "triangles": 25396,
+    "meshMs": 367.20000000298023,
+    "publishMs": 10.200000002980232,
+    "groundRevision": 0,
+    "space": false,
+    "targetName": "COPPER EJECTA PROVINCE",
+    "activeRock": "selene-resource-v1-copper-ejecta-province",
+    "activeRevision": 7,
+    "activePosition": [
+      -2109512.6746714185,
+      -29728.972085040434,
+      -23546741.92179165
+    ],
+    "debrisBrake": false,
+    "surfaceRock": {
+      "id": "selene-resource-v1-copper-ejecta-province",
+      "name": "COPPER EJECTA PROVINCE",
+      "direction": [
+        0.6388541507273584,
+        -0.06817686213409602,
+        0.766301043694953
+      ],
+      "resourceWeights": [
+        0.04499999999999994,
+        0.935,
+        0.02
+      ],
+      "resourceVersion": "1.1",
+      "ready": true,
+      "pending": false,
+      "revision": 7,
+      "position": [
+        -2109512.6746714185,
+        -29728.972085040434,
+        -23546741.92179165
+      ],
+      "pack": [
+        0.1959346000221558,
+        2.6412530463639996,
+        0.1026190342818154
+      ],
+      "ship": [
+        0,
+        0,
+        0
+      ],
+      "saved": true,
+      "error": "",
+      "triangles": 25396,
+      "meshMs": 367.20000000298023,
+      "publishMs": 10.200000002980232
+    },
+    "spaceRocks": [],
+    "tool": {
+      "active": true,
+      "hit": null,
+      "heat": 0.5716899999999979,
+      "beaming": true,
+      "selected": true,
+      "toolError": null
+    }
+  },
+  "errors": []
+}

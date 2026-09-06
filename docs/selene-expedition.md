@@ -75,7 +75,9 @@ The browser does not allocate twenty million objects. A distant dust aggregate
 and sampled instances provide the orbital view; at most 3,200 actual descriptors
 in nearby cells supply close geometry. Six shared meshes at each detail level
 keep draw calls bounded. Positions are computed in doubles and subtract the camera
-origin before upload. Neighboring cells wrap around the ring seam.
+origin before upload. Neighboring cells wrap around the ring seam. Fast flight into the belt brakes at
+its boundary; local ship movement is limited to 400 m/s inside the debris band,
+including boosted and inertial flight.
 
 Nearby small rocks promote to at most two live 32³-cell excavation domains. Their
 low-detail silhouettes and mineable fields sample the same continuous shape

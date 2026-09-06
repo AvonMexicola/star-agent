@@ -553,3 +553,46 @@ Equipment module/model/socket data adopted from manager commit 9930e82; preserve
 newer gear and concurrent main/navigation/UI integration hooks during merge.
 Fable/Claude own integration, independent Opus visual review, merge and deployment.
 This handoff does not assert a manager read receipt or visual approval.
+
+
+## IMPLEMENTATION READY — Selene expedition and resource geography (Astra, 2026-09-06)
+
+Cees explicitly authorized controller, inventory and EVA agents, procedural ring
+mining, and orbital colors that reveal resource locations. Integrated branch:
+feat/selene-expedition, isolated at /tmp/star-agent-expedition-work, stacked on
+feat/selene-mining / PR #21 (itself research #18 and lunar #15). Dedicated preview:
+http://127.0.0.1:5213/ via star-agent-expedition.service, verified final asset
+index-EcwN-ktI.js. Earlier previews are intact.
+
+Implemented standard-controller command/dialog routing and complete Crescent plus
+Copper Ejecta controller journeys; visible textured laser and log-depth beam;
+shared finite box/stack storage for backpack, ship, station and physical base cache;
+atomic cuts/cargo/transfers; physical hatch/ramp EVA with inertia, thrust and braking;
+20,971,520 deterministic ring descriptors with bounded LOD, six asteroid families
+and editable small rocks; and five mineral provinces whose orbital/ground colors,
+outcrop seams and collected resources share one authoritative geological field.
+Ring width is 20 km radial by 2 km vertical; local ship speed is limited to 400 m/s.
+
+Final validation: 156 numerical cases; all nine distinct production browser checks
+pass across the integrated run and targeted reruns. The initial orbital fixture
+incorrectly expected LOD 4 at a LOD 3 viewpoint; corrected, then final resource
+appearance/layout, EVA and space mining passed. Separate controller-modal and HDR
+texture/beam fixtures pass. Real screenshots, GPU/backend/input provenance and
+specific limitations are in docs/qa/expedition/. Browser is Chromium 151 on
+SwiftShader; this is not hardware FPS approval. Physical Xbox button sequencing
+has not been performed; injected full controller routes are explicitly distinguished.
+
+Updated complete memory: PLANET-PIPELINE-MEMORY.md. Guides:
+docs/selene-expedition.md, docs/resource-geology.md, docs/controller-contract.md,
+docs/container-inventory.md and docs/character-eva.md. AGENTS.md now requires
+controller support for every new playable feature through its whole journey.
+
+Preserve newer manager gear/station/navigation work when integrating common
+main/navigation/gamepad/equipment/UI hooks. Equipment derives from manager 9930e82;
+this branch repairs its beam/material feedback, without replacing the gear lane.
+The shared checkout's unrelated station and gear changes were not overwritten.
+Large asteroids and terrain are not excavatable; at most two ring and one provincial
+workers join Crescent, and eight additional deposits can retain edits. Boxes are
+free prototype mounts; fuel/oxygen, crafting, multiplayer and N-body physics are
+not implemented. Fable/Claude retain independent visual review, integration,
+merge and deployment. This handoff does not claim a manager read receipt.

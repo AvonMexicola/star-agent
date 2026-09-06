@@ -32,11 +32,18 @@ survey routes and resource-biased deposits. `MOON_RESOURCE_VERSION` is 1; geomet
 remains at the existing terrain generator version.
 
 The API identifies the local material profile; it does not turn the entire
-heightfield into an excavatable volume. Individual mineable outcrops must use
-this same profile for their material and collected yield. The expedition's mining
-integration owns that connection and its save behavior.
+heightfield into an excavatable volume. The expedition now streams one representative
+outcrop at each province center, with at most one live provincial worker. Named
+survey routes in the shared command menu place the ship beside the outcrop.
 
-Verified by the four tests in `tests/resource-geology.test.js` and the existing
+The mineral classifier uses each outcrop's weights to create discrete warped seams.
+The CPU mesher, fragment shader and carve rewards share that classifier. New surface
+outcrops and Crescent sample the canonical map; space rocks keep their existing
+mixed seams. The shared inventory save commits carved density and mineral collection
+together. Five province routes, small ring rocks and Crescent share the same laser
+and backpack interface.
+
+Verified by the five tests in `tests/resource-geology.test.js` and the existing
 15 moon tests: wide province cores and orbital sampling, mineral/color agreement,
 local landmarks and seam continuity, unchanged historical height fixtures, and
 exact use of the canonical colors by generated ground patches. Browser appearance
