@@ -185,6 +185,11 @@ Pyre surface hazards, cave exploration and creature combat are proposals here.
 
 ## Build order and acceptance
 
+Later user priority: [cargo and the base mainframe](cargo-and-base-mainframe.md)
+moves a small buildable base/storage slice ahead of this crafting-first sequence,
+after the ship recovery marker and regional mineral deposits. The progression
+contracts below still apply when their respective systems are implemented.
+
 1. **One useful crafted upgrade:** item/save migration, station workbench, the
    conductor/ceramic/heat-sink chain and an Extraction/Fabrication milestone.
    Mine → transfer → refine → craft → fit → mine → reload using controller alone.

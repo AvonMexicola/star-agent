@@ -631,3 +631,24 @@ and validate the full controller mining/crafting/reload journey. Then prove suit
 thermal behavior before the first Pyre site. Prove one cave entrance and unified
 collision before adding a creature and its biological recipe. Preserve all old
 cuts/cargo/boxes, atomic transactions, save identities and input suppression.
+
+
+## Carrying limits, mainframe permissions and recovery guidance — 2026-09-06
+
+Cees prioritizes finding a ship after leaving it in space, then practical base
+building and mineral deposits matching regional geology. Implement the recovery
+beacon automatically in outside walk/EVA modes: range to the actual rear ramp,
+on-screen diamond, bounded direction arrow including targets behind the player,
+and hide after boarding. Project relative double coordinates in the suit frame;
+follow the current ship pose, not a cached departure position. The independent
+Nomad/Atlas power lane must supply its active hull name and entry transform when
+integrating. The expedition branch's current physical ship remains the Nomad.
+
+[Cargo and the base mainframe](docs/design/cargo-and-base-mainframe.md) records the
+new design priority. Unify mass/volume/slots while preserving existing supplies;
+ship payload is hull-specific and base storage comes from physical containers. A
+mainframe grants building rights in one bounded claim; owner/builder/visitor roles
+and door/storage permissions are distinct. Local ownership is not secure shared
+multiplayer authorization. First base slice: finite starter kit, core, snapped
+shelter, crate, actual mineral transfer, leave/return/reload using a controller.
+These capacity, claim and construction rules remain proposals, not runtime work.

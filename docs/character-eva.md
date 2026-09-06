@@ -28,6 +28,14 @@ with no planetary upright correction during EVA. Positions and integration remai
 JavaScript doubles. This prototype has unlimited suit propellant, no oxygen clock,
 and gravity compensation; it is not a ballistic orbital-flight simulation.
 
+An automatic **NOMAD** recovery beacon appears while outside the ship, including
+when it is off-screen or hidden by scenery. A diamond marks the rear ramp when
+in view; an edge arrow points toward it when outside the view, with **TURN BACK**
+when it is behind you. The label shows distance to the ramp in metres or kilometres.
+It requires no button or controller binding. The beacon follows the current ship
+pose, remains available throughout EVA, and hides inside the cabin or pilot seat.
+Photo mode hides it with the HUD. It is guidance, not an obstacle-free autopilot.
+
 To return, brake, align with the **open rear ramp**, and approach below **4 m/s**
 at its deck height. Boots attach locally (within 45 cm of the deck eye height),
 and walking resumes. Walk through the cabin to the chair and press F / X to resume
@@ -53,3 +61,15 @@ runs the physical keyboard journey on a production build, on isolated port 4203,
 and records its browser/renderer and screenshot in `/tmp/star-agent-eva-evidence`.
 The screenshot changes only camera orientation to show the parked ship; the
 boarding journey does not reset or teleport the player position.
+
+Recovery marker implementation: `src/ship-marker.js` and its pure projection helper.
+Root passes the Nomad rear-ramp point from `SHIP_LAYOUT`; integrations with another
+active ship must supply its name, actual hull pose and entry point. Do not freeze
+the ship pose at the moment of EVA exit. `state.shipMarker` exposes the marker
+position, visibility, distance and target for read-only verification.
+
+`scripts/ship-marker.spec.js` exercises a complete controller-only space exit,
+coast/brake, off-screen and on-screen beacon, backpack close, phone layout and
+physical return/reseat. All movement, turns and interactions use injected standard
+Gamepad input; debug state is read only for steering and assertions. Physical Xbox
+button sequencing remains unverified.
