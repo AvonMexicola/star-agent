@@ -33,7 +33,7 @@ test('aiming the third-nearest small asteroid promotes and mines it across all s
     field.aimedDescriptor=null;field.update(origin);
     assert.equal(field.cache.has(target.id),false,'nearest-only streaming omits the aimed third rock');
     const inspected=field.inspectTarget(origin,direction);
-    assert.equal(inspected.rockId,target.key);assert.equal(inspected.status,'ready');assert.ok(field.cache.size<=2);
+    assert.match(target.key,/^selene-ring-v2-/);assert.equal(inspected.rockId,target.key);assert.equal(inspected.status,'ready');assert.ok(field.cache.size<=2);
     const hit=field.raycast(origin,direction);assert.equal(hit.rock.rockId,target.key);
     field.onMine({point:hit.point,dt:.1,target:hit.rock},direction);
     assert.equal(field.store.state.rocks[target.key].revision,1);assert.ok(field.store.mass>0);

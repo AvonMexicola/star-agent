@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {MineableRock} from './rock.js';
 import {createDensity} from './volume.js';
-import {asteroidField,ringRock,ringPathIntervals,ringCellAt,nearbyAsteroids} from '../ring-world.js';
+import {asteroidField,asteroidDescriptorV1,LEGACY_RING_POPULATION,RING_POPULATION,ringRock,ringPathIntervals,ringCellAt,nearbyAsteroids} from '../ring-world.js';
 import {MOON_POSITION,MOON_RADIUS,RESOURCE_PROVINCES,moonResources} from '../moon-world.js';
 import {bodySurfacePoint,bodySurfaceNormal,SELENE} from '../celestial.js';
 import {FieldCache} from '../inventory-cache.js';
@@ -10,6 +10,21 @@ import {FieldCache} from '../inventory-cache.js';
 export class MiningField {
   constructor(scene,storage,rings){
     this.scene=scene;this.rings=rings;this.ground=new MineableRock(scene,storage);this.store=this.ground.store;
+    // Preserve only previously edited v1 rocks. Their original coordinates and
+    // saved fields survive the sparse v2 layout; negative runtime ids cannot
+    // collide with the new population's positive ids.
+    this.legacyDescriptors=Object.keys(this.store.state.rocks??{}).flatMap(key=>{
+      const match=/^selene-ring-v1-(\d+)$/.exec(key),id=match?Number(match[1]):-1;
+      if(!Number.isSafeInteger(id)||id<0||id>=LEGACY_RING_POPULATION)return [];
+      const descriptor=asteroidDescriptorV1(id);
+      return [{...descriptor,id:-(id+1),legacy:true,variant:0}];
+    });
+    this.rings.legacyDescriptors=this.legacyDescriptors;
+    for(const descriptor of this.legacyDescriptors)this.rings.hiddenIds.add(descriptor.id);
+    for(const key of Object.keys(this.store.state.rocks??{})){
+      const match=/^selene-ring-v2-(\d+)$/.exec(key),id=match?Number(match[1]):-1;
+      if(Number.isSafeInteger(id)&&id>=0&&id<RING_POPULATION)this.rings.hiddenIds.add(id);
+    }
     this.fieldCache=new FieldCache(scene,this.ground.position);
     this.surfaceRock=null;this.surfaceSurvey=null;
     this.provinces=RESOURCE_PROVINCES.map(province=>({...province,rockId:`selene-resource-v1-${province.id}`,position:bodySurfacePoint(new THREE.Vector3(...province.direction),SELENE,1.35)}));
@@ -46,7 +61,12 @@ export class MiningField {
     // Pending jobs are never discarded; the aim waits until an idle slot opens.
     for(const r of priority.slice(0,2))if(wanted.has(r.id))this.promoteSpaceRock(r,origin);
     this.rings.hiddenIds.clear();
-    for(const key of Object.keys(this.store.state.rocks??{}))if(key.startsWith('selene-ring-v1-'))this.rings.hiddenIds.add(Number(key.slice(15)));
+    for(const key of Object.keys(this.store.state.rocks??{})){
+      // A live descriptor is authoritative, including injected test domains.
+      const known=[...this.cache.values()].find(rock=>rock.rockId===key)?.descriptor??this.legacyDescriptors.find(r=>r.key===key);
+      const current=/^selene-ring-v2-(\d+)$/.exec(key),id=known?.id??(current?Number(current[1]):null);
+      if(id!==null&&Number.isSafeInteger(id)&&(known||id>=0&&id<RING_POPULATION))this.rings.hiddenIds.add(id);
+    }
     for(const [id,rock] of this.cache){rock.update(origin);if(rock.ready)this.rings.hiddenIds.add(id);}
     if(this.aimedDescriptor){this.surveyDescriptor=this.aimedDescriptor;this.surveyPosition=new THREE.Vector3(...this.aimedDescriptor.position).add(center);}
     this.active=this.spaceMode&&candidates.length?(this.cache.get(this.surveyDescriptor?.id)??this.ground):(this.surfaceRock&&this.surfaceRock.rockId===this.surfaceSurvey?.rockId?this.surfaceRock:this.ground);
@@ -134,7 +154,12 @@ export class MiningField {
   constrainSpace(previous,proposed,radius){
     let point=proposed.clone(),hit=false;const center=new THREE.Vector3(...MOON_POSITION);
     const key=ringCellAt(previous).join(':');
-    if(this.collisionKey!==key){this.collisionKey=key;this.collisionDescriptors=key===this.rings.cellKey?this.rings.local:nearbyAsteroids(previous,2);}
+    if(this.collisionKey!==key){
+      this.collisionKey=key;
+      const streamed=key===this.rings.cellKey?this.rings.local:nearbyAsteroids(previous,2);
+      const ids=new Set(streamed.map(r=>r.id));
+      this.collisionDescriptors=[...streamed,...this.legacyDescriptors.filter(r=>!ids.has(r.id))];
+    }
     for(const r of this.collisionDescriptors){
       const edited=this.cache.get(r.id);
       if(edited?.ready){const result=radius<1?edited.constrainEVA(previous,point):edited.constrainFlight(previous,point);if(result.hit){point=result.point;hit=true;}continue;}
