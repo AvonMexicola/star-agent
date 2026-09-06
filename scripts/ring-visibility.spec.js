@@ -104,6 +104,15 @@ test('large ring bodies retain visible geometry through distance bands and cell 
   const iceOutside=await page.evaluate(()=>{const p=window.starAgent.navigation.surfaceObstacles.rings.scene.getObjectByName('Sunlit ring micro-ice');return {...window.starAgent.state.rings.ice,visible:p.visible,drawCount:p.geometry.drawRange.count};});
   expect(iceOutside.visible).toBe(false);expect(iceOutside.drawCount).toBe(0);await page.screenshot({path:`${evidence}/outside-ring-no-ice.png`});
   const ice={inside:iceInside,pixels:icePixels,boundaryFrames:iceBoundaryFrames,outside:iceOutside,commonParticles:common.length,maximumDrift,driftLimit};
+  // Several million metres away, the overview shows the full ring and moon.
+  // Individual asteroid visibility is bounded to80km; the distant ring band is
+  // the aggregate representation at this explicitly labeled orbital scale.
+  const overviewPosition=center.clone().addScaledVector(normal,2900000).addScaledVector(radial,1300000);
+  await place(page,overviewPosition,center);
+  await page.waitForFunction(()=>window.starAgent.state.moon.lod>=3&&window.starAgent.state.moon.effects.terrainBuilds===0);
+  const overview=await page.evaluate(()=>({position:window.starAgent.state.position,moonDiameter:window.starAgent.state.moon.radius*2,rings:window.starAgent.state.rings,representation:'Aggregate ring band viewed beyond the80km individual-rock envelope'}));
+  expect(overview.rings.outerDiameter).toBe(1826896);expect(overview.moonDiameter).toBe(868700);expect(overview.rings.width).toBe(20000);
+  await page.screenshot({path:`${evidence}/full-ring-and-moon-overview.png`});
   const environment=await page.evaluate(()=>{const gl=document.getElementById('viewport').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return {renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),renderScale:window.starAgent.state.renderScale};});
-  await writeFile(`${evidence}/evidence.json`,JSON.stringify({browser:browser.version(),viewport:page.viewportSize(),environment,fixture:'Debug camera views of deterministic generated bodies; no synthetic asteroid placement',hero,frames,wide,boundary:boundary.toArray(),snapshots,ice,errors},null,2));expect(errors).toEqual([]);
+  await writeFile(`${evidence}/evidence.json`,JSON.stringify({browser:browser.version(),viewport:page.viewportSize(),environment,fixture:'Debug camera views of deterministic generated bodies; no synthetic asteroid placement',hero,frames,wide,boundary:boundary.toArray(),snapshots,ice,overview,errors},null,2));expect(errors).toEqual([]);
 });
