@@ -1,0 +1,111 @@
+{
+  "browser": "151.0.7922.173",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "meta": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "renderScale": 0.65
+  },
+  "fixture": "Synthetic positions/scales only; real generated meshes, worker promotion, RT carving and backpack",
+  "descriptors": [
+    {
+      "id": 120001,
+      "key": "selene-ring-v1-120001",
+      "name": "Near basalt",
+      "family": 0,
+      "size": 1,
+      "mineable": true,
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "position": [
+        -777012.0449257665,
+        229407.56604472687,
+        399776.29787637293
+      ]
+    },
+    {
+      "id": 120002,
+      "key": "selene-ring-v1-120002",
+      "name": "Near ice",
+      "family": 2,
+      "size": 1,
+      "mineable": true,
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "position": [
+        -777006.0449257665,
+        229407.56604472687,
+        399776.29787637293
+      ]
+    },
+    {
+      "id": 120003,
+      "key": "selene-ring-v1-120003",
+      "name": "Aimed copper",
+      "family": 1,
+      "size": 1,
+      "mineable": true,
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "position": [
+        -777009.0449257665,
+        229407.56604472687,
+        399782.29787637293
+      ]
+    },
+    {
+      "id": 120004,
+      "key": "selene-ring-v1-120004",
+      "name": "Large shale",
+      "family": 3,
+      "size": 20,
+      "mineable": false,
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "position": [
+        -776974.0449257665,
+        229407.56604472687,
+        399795.29787637293
+      ]
+    }
+  ],
+  "initialCache": [
+    120001,
+    120002
+  ],
+  "before": {
+    "revision": 0,
+    "mass": 0
+  },
+  "mined": {
+    "revision": 6,
+    "mass": 2.8299908355111256,
+    "inspection": {
+      "status": "ready",
+      "name": "Aimed copper",
+      "distance": 7.079900003969669,
+      "mineable": true,
+      "rockId": "selene-ring-v1-120003",
+      "point": [
+        -3165098.3014297406,
+        229407.56604472687,
+        -23481110.187263366
+      ]
+    }
+  },
+  "errors": []
+}

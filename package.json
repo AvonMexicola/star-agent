@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test tests/mining.test.js tests/equipment.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js",
+    "test": "node --test tests/energy-effects.test.js tests/regional-deposits.test.js tests/ship-marker.test.js tests/ring-ice.test.js tests/asteroid-appearance.test.js tests/ring-spacing.test.js tests/legacy-ring.test.js tests/asteroid-targeting.test.js tests/space-steering.test.js tests/debris-flight.test.js tests/resource-geology.test.js tests/resource-deposits.test.js tests/resource-mining.test.js tests/tool-visual/materials.test.js tests/eva.test.js tests/ring-world.test.js tests/space-mining.test.js tests/container-inventory.test.js tests/mining.test.js tests/equipment.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js",
     "test:browser": "playwright test"
   },
   "dependencies": {

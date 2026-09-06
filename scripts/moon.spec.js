@@ -31,7 +31,7 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
   await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>12);await page.keyboard.up('w');await page.keyboard.press('x');
   const outside=await page.evaluate(()=>window.starAgent.state);
-  expect(outside.moon.effects.ringAsteroids).toBe(1800);expect(outside.moon.effects.iceParticles).toBeGreaterThan(0);expect(outside.insideShip).toBe(false);expect(outside.altitude).toBeCloseTo(1.75,5);
+  expect(outside.moon.effects.ringAsteroids).toBe(14_336);expect(outside.moon.effects.iceParticles).toBeGreaterThan(0);expect(outside.insideShip).toBe(false);expect(outside.altitude).toBeCloseTo(1.75,5);
   await expect(page.locator('#mode-label')).toHaveText('LUNAR EXPLORATION');
   await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/surface.png`});
   await page.keyboard.down('Space');await page.waitForFunction(()=>window.starAgent.navigation.jumpHeight>.1);await page.keyboard.up('Space');

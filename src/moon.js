@@ -73,6 +73,6 @@ export class Moon {
     this.material.color.setScalar(.035+.965*visibility);
   }
   get ready(){return this.terrain.ready;}
-  get effects(){return {ringAsteroids:this.rings.descriptors.length,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:MOON_GENERATOR_VERSION};}
+  get effects(){return {ringAsteroids:this.rings.state.population,ringRendered:this.rings.state.rendered,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:MOON_GENERATOR_VERSION};}
   dispose(){this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.material.dispose();}
 }

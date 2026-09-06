@@ -1,0 +1,51 @@
+{
+  "browser": "151.0.7922.173",
+  "environment": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "renderScale": 0.65
+  },
+  "input": "Injected standard Gamepad; no keyboard, pointer or debug gameplay mutations. Read-only diagnostics guide stick aiming. No physical Xbox sequence.",
+  "behind": {
+    "visible": true,
+    "x": 719.9999903308704,
+    "y": 180,
+    "angle": -90.00000205185304,
+    "onScreen": false,
+    "behind": true,
+    "distance": 27.122823401071066,
+    "target": [
+      1771091.0087041191,
+      1525309.809716595,
+      3798113.7825712045
+    ],
+    "shipName": "Nomad"
+  },
+  "ahead": {
+    "visible": true,
+    "x": 717.1257834016493,
+    "y": 460.5697429144873,
+    "angle": 105.2125236208895,
+    "onScreen": true,
+    "behind": false,
+    "distance": 27.122823401071066,
+    "target": [
+      1771091.0087041191,
+      1525309.809716595,
+      3798113.7825712045
+    ],
+    "shipName": "Nomad"
+  },
+  "phone": {
+    "x": 105.296875,
+    "y": 417.90625,
+    "width": 174,
+    "height": 70
+  },
+  "final": {
+    "mode": "flight",
+    "marker": {
+      "visible": false
+    }
+  },
+  "errors": []
+}

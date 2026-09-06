@@ -37,6 +37,70 @@ const east=new Vector3().crossVectors(new Vector3(0,1,0),landing).normalize();
 const north=new Vector3().crossVectors(landing,east).normalize();
 export const LANDING_FRAME=Object.freeze({east:Object.freeze(east.toArray()),north:Object.freeze(north.toArray())});
 const localDirection=(x,z)=>landing.clone().addScaledVector(east,x/MOON_RADIUS).addScaledVector(north,z/MOON_RADIUS).normalize().toArray();
+// Resource provinces are spherical, named geology rather than an unrelated UV
+// texture. Their 80–150 km radii remain sampled by the orbital terrain LODs.
+export const MOON_RESOURCE_VERSION=1;
+export const MOON_RESOURCE_PALETTE=Object.freeze({basalt:Object.freeze([.025,.037,.057]),copper:Object.freeze([.38,.10,.025]),ice:Object.freeze([.43,.68,.83])});
+export const RESOURCE_PROVINCES=Object.freeze([
+  ['FROSTWALL ICE PROVINCE','ice',localDirection(65000,135000),145000],
+  ['COPPER EJECTA PROVINCE','copper',localDirection(100000,-130000),150000],
+  ['NORTH GLASS FIELDS','ice',new Vector3(-.3,.83,-.46).normalize().toArray(),120000],
+  ['FAR COPPER BASINS','copper',new Vector3(-.88,-.3,.3).normalize().toArray(),135000],
+  ['SOUTH ICE FIELDS','ice',new Vector3(.1,-.97,.12).normalize().toArray(),95000],
+].map(([name,resource,direction,radius])=>Object.freeze({id:name.toLowerCase().replaceAll(' ','-'),name,resource,direction:Object.freeze(direction),radius})));
+
+const provinceFrames=RESOURCE_PROVINCES.map((p,index)=>{
+  const direction=new Vector3(...p.direction),u=new Vector3().crossVectors(Math.abs(direction.y)<.9?new Vector3(0,1,0):new Vector3(1,0,0),direction).normalize();
+  return {u:u.toArray(),v:new Vector3().crossVectors(direction,u).normalize().toArray(),phase:index*1.73};
+});
+
+/** Normalized lunar direction -> collectible mineral fractions [basalt,copper,ice].
+ * This cheap classifier is also the authority for orbital and walking colors. */
+export function moonResources(x,y,z){
+  let copper=0,ice=0,province='BASALT HIGHLANDS',strongest=0,coreProvince=null,corePriority=0,stratigraphy=null;
+  const landingDot=x*landing.x+y*landing.y+z*landing.z;
+  const localOnly=landingDot>0&&(1-landingDot*landingDot)*MOON_RADIUS*MOON_RADIUS<18000*18000;
+  for(let index=0;!localOnly&&index<RESOURCE_PROVINCES.length;index++){
+    const p=RESOURCE_PROVINCES[index],frame=provinceFrames[index];
+    const dot=x*p.direction[0]+y*p.direction[1]+z*p.direction[2],r=p.radius/MOON_RADIUS;
+    if(dot<1-r*r*2)continue;
+    const distance=Math.sqrt(Math.max(0,2-2*dot))*MOON_RADIUS;
+    // One shared geological sample, not extra noise octaves for every district.
+    stratigraphy ??= .38+.62*noise(x*22+11,y*22-4,z*22+7);
+    const u=(x*frame.u[0]+y*frame.u[1]+z*frame.u[2])/r,v=(x*frame.v[0]+y*frame.v[1]+z*frame.v[2])/r;
+    const wu=u+.23*Math.sin(v*6+frame.phase)+.12*Math.sin(u*11-v*8),wv=v+.19*Math.sin(u*5-v*3)+.08*Math.sin(v*14+frame.phase);
+    const basin=1-smooth(.25,1.08,Math.hypot(wu/1.2,wv*1.25));
+    // Long sinuous faults and diagonal tributaries join the core to satellite
+    // exposures. Variable strength opens dark basalt channels through the field.
+    const trunk=(1-smooth(.80,1.65,Math.abs(u)))*(1-smooth(.06,.30,Math.abs(v+.30*Math.sin(u*4+frame.phase)+.14*Math.sin(u*9))));
+    const branch=(1-smooth(.75,1.5,Math.hypot(u,v)))*(1-smooth(.025,.19,Math.abs(v-.65*u-.20*Math.sin(u*6+frame.phase))));
+    const core=1-smooth(40000,65000,distance*(1+.12*Math.sin(u*7+frame.phase)*Math.sin(v*6)));
+    if(core>corePriority){coreProvince=p;corePriority=core;}
+    const strength=Math.max(core,basin*stratigraphy,trunk*.82*stratigraphy,branch*.76*stratigraphy);
+    if(p.resource==='ice')ice=Math.max(ice,strength);else copper=Math.max(copper,strength);
+    if(strength>strongest){strongest=strength;province=p.name;}
+  }
+  // Keep every survey anchor and its 35 km test core exactly the same profile;
+  // neighbouring province tendrils cannot alter already-authored mining yields.
+  if(coreProvince){ice=ice*(1-corePriority)+Number(coreProvince.resource==='ice')*corePriority;copper=copper*(1-corePriority)+Number(coreProvince.resource==='copper')*corePriority;if(corePriority>.5)province=coreProvince.name;}
+  const dot=x*landing.x+y*landing.y+z*landing.z;
+  if(dot>.997){
+    const u=(x*east.x+y*east.y+z*east.z)*MOON_RADIUS,v=(x*north.x+y*north.y+z*north.z)*MOON_RADIUS;
+    const regional=1-smooth(18000,28000,Math.hypot(u,v));
+    copper*=1-regional;ice*=1-regional;
+    const fault=u+220-Math.sin(v/900)*380-Math.sin(v/240)*65;
+    const localIce=Math.max(1-smooth(90,260,Math.abs(fault)),1-smooth(3000,5000,Math.hypot(u-5400,v-11500)))*regional;
+    const localCopper=(1-smooth(1000,2700,Math.hypot(u-2600,v+3400)))*regional;
+    const obsidian=(1-smooth(3000,5000,Math.hypot(u+7600,v+5300)))*regional;
+    copper=Math.max(copper,localCopper)*(1-obsidian);ice=Math.max(ice,localIce)*(1-obsidian);
+    if(regional>.5)province=moonRegion(x,y,z);
+  }
+  let c=.015+copper*.92,i=.02+ice*.94;
+  if(c+i>.98){const scale=.98/(c+i);c*=scale;i*=scale;}
+  const weights=[1-c-i,c,i],dominant=c>weights[0]&&c>=i?'copper':i>weights[0]?'ice':'basalt';
+  return {weights,dominant,province};
+}
+
 export const LOCAL_CRATERS=Object.freeze([
   [-1350,100,1354,1350],[-3400,1200,1900,1650],[1800,2300,1250,980],
   [-280,-480,145,43],[-490,570,210,78],[460,-210,95,32],
@@ -112,13 +176,10 @@ function relief(x,y,z){
   // belong in the mipmapped fragment material, not aliased vertex noise.
   const veins=smooth(.47,.64,noise(x*720+8,y*720-5,z*720+2));
   const ice=Math.min(1,Math.max(capIce*.88,frost*(.55+veins*.45)+veins*.15*(1-obsidian)));
-  const base=[.115,.135,.17].map((v,i)=>v*(1-basalt)+[.019,.028,.046][i]*basalt);
-  const color=base.map((v,i)=>{
-    v=v*(1-ochre)+[.25,.105,.046][i]*ochre;
-    v=v*(1-ice)+[.32,.56,.72][i]*ice;
-    return v*(.80+veins*.32)+fresh*.18;
-  });
-  return {height,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075-rock*.05)),frost:ice,color};
+  const resources=moonResources(x,y,z);
+  const palette=MOON_RESOURCE_PALETTE;
+  const color=[0,1,2].map(i=>(palette.basalt[i]*resources.weights[0]+palette.copper[i]*resources.weights[1]+palette.ice[i]*resources.weights[2])*(.80+veins*.32)+fresh*.10);
+  return {height,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075-rock*.05)),frost:Math.max(ice*.15,resources.weights[2]),color,resources,resource:resources.dominant};
 }
 const landingHeight=relief(landing.x,landing.y,landing.z).height;
 /** Direction-based color and canonical geometry remain continuous at UV seams. */

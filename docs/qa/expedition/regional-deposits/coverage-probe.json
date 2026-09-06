@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-06",
+  "implementation": "baccba2",
+  "method": "5000 quasi-uniform directions: y=1-2*(i+0.5)/5000; angle=i*2.399963229728653; xz radius=sqrt(1-y*y). Select moonResources copper fraction>=0.7, place at canonical surface+1.75m, query nearbySurfaceDeposits radius400m.",
+  "eligibleCopperSites": 44,
+  "sitesWithMatchingCopperOutcrop": 44,
+  "maximumNearestCopperDistanceMetres": 160.26018856829572,
+  "meanCandidateCount": 14.295454545454545,
+  "scope": "Sampled coverage, not an exhaustive bound for every slope or province boundary."
+}
