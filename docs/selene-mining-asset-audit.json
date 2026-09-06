@@ -1,0 +1,46 @@
+{
+  "assets": [
+    {
+      "name": "boulder-cracked",
+      "bytes": 496176,
+      "storedMeshTriangles": 9999,
+      "materials": 1,
+      "sha256": "c5a8c4663bf94e071ff14ea3d20944cb5815dbfeb8a47f58d420f23e1613238e",
+      "topologyValidated": false
+    },
+    {
+      "name": "boulder-layered",
+      "bytes": 483664,
+      "storedMeshTriangles": 10000,
+      "materials": 1,
+      "sha256": "f91932d6ed5008431cb734993e24174593dc3ffc618ff92c1101ee8e28704627",
+      "topologyValidated": false
+    },
+    {
+      "name": "rock-arch",
+      "bytes": 584416,
+      "storedMeshTriangles": 10000,
+      "materials": 1,
+      "sha256": "7c32c89f279c8a1beed71e8cd22cac6ccb64a634e445ebc16d63d81519283c06",
+      "topologyValidated": false
+    },
+    {
+      "name": "crystal-cluster",
+      "bytes": 490432,
+      "storedMeshTriangles": 10000,
+      "materials": 1,
+      "sha256": "821e2f25ef9b2565d9015d62ee7e8b4f0aba8f3748ee376d8256ecd05658cde4",
+      "topologyValidated": false
+    }
+  ],
+  "calculations": {
+    "cellsPerChunk": 32768,
+    "cornerSamples": 35937,
+    "densityFloat32Bytes": 143748,
+    "materialUint8PerCellBytes": 32768,
+    "densityAndMaterialKiB": 172.37890625,
+    "densityWithOneSampleHaloAndMaterialKiB": 199.48046875,
+    "denseOneKmCubeAtQuarterMetreDensityGB": 256.0
+  },
+  "note": "Arithmetic and GLB metadata only; no runtime mining benchmark or topology test."
+}

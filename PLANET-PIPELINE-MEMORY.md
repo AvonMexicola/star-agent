@@ -1,7 +1,8 @@
 # Star Agent planet creation pipeline — durable project memory
 
-Updated 2026-09-06: lunar generator v3 adds the crater-rim landscape, lofted ice
-and asteroid rings. See the newest section below and `docs/selene-landscape.md`.
+Updated 2026-09-06: lunar generator v4 adds distinct geology and extreme relief
+to the crater landscape, ice and rings. Mining research below is a proposal, not
+an implemented feature. See `docs/selene-landscape.md` for the playable terrain.
 Earlier delivery records describe their historical branch state.
 
 Recorded 2026-09-05 for Fable 5.1, the project manager, humans and future coding
@@ -402,3 +403,33 @@ Chromium shaders. Full suite: 77 unit cases across nine test files. Production
 lunar journey and render tour pass; the final shader/cache refinements receive a
 new render tour. Evidence includes docs/selene-geology.png and updated crater view.
 Use LUNAR-LANDSCAPE-HANDOFF.md and PR #15 for integration boundaries and delivery.
+
+
+## Mineable assets and mountain research — 2026-09-06
+
+Cees requested No Man's Sky-inspired mineable rocks and Selene ridges/mountains,
+with freedom to choose an alternative to voxels. The primary-source research and
+proposed implementation are in [docs/selene-mining-research.md](docs/selene-mining-research.md).
+This is research only, not an implemented miner or a measured performance result.
+
+Recommendation: keep the global heightfield, improve connected ridge morphology,
+and introduce smooth scalar-field chunks for local mineable rocks/outcrops. Start
+with worker Marching Cubes; compare Dual Contouring if sharp faces warrant it.
+No Man's Sky's 2024 notes name Dual Marching Cubes, a distinct algorithm. Retain
+WebGL2 initially because renderer migration would require porting custom shaders.
+
+Read Phase 6 and the shared equipment lane before implementation. The existing
+onMine callback reports a beam endpoint and m³/s budget; it needs a validated hit,
+coalesced removal budget, actual removed-material accounting and ore inventory.
+Mesh geometry alone is not a mineable asset. Local rock metadata and reproducible
+chunk memory arithmetic are filed in docs/selene-mining-asset-audit.json and
+scripts/research/audit-mining-assets.py. Topology and runtime speed remain untested.
+
+Key contracts: retain matching mesh/collision revisions, reject stale worker jobs,
+keep edits across distant proxy swaps, compact growing edit logs, and prevent
+repeated empty-space mining/replay from granting resources. Terrain excavation
+must replace both visible surface and radial collision in its owned domain;
+shader-only holes leave an invisible floor. Prototype an independent rock first.
+A 32-cell chunk needs 33 corner samples per axis; choose 0.125–0.25 m cells for
+small rocks, and budget mesh/collision/halo memory in addition to density arrays.
+The roadmap's <4 ms meshing claim is a target awaiting measurement.
