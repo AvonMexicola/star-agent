@@ -15,7 +15,7 @@ export class Navigation {
     this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
     this.station=null;this.dockedAtStation=false;this.stationLift=false;
-    this.flightAssist=true;this.angularVelocity=new THREE.Vector3();
+    this.flightAssist=true;this.angularVelocity=new THREE.Vector3();this.engineAcceleration=new THREE.Vector3();
     this.orbit();
     document.addEventListener('pointerlockchange',()=>{this.locked=document.pointerLockElement===canvas;document.body.classList.toggle('piloting',this.locked);if(!this.locked)this.keys.clear();});
     document.addEventListener('mousemove',e=>{if(this.locked&&this.enabled){this.controllerActive=false;this.look(-e.movementX*.0018,-e.movementY*.0018);}});
@@ -173,6 +173,7 @@ export class Navigation {
     }
   }
   update(dt){
+    this.engineAcceleration.set(0,0,0);
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]')});
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;
@@ -234,6 +235,7 @@ export class Navigation {
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
       const altitude=this.altitude;
+      if(this.autoland||this.stationLift)this.engineAcceleration.copy(this.flightEnvironment.gravity).negate();
       if(this.stationLift){
         this.velocity.copy(this.station.up).multiplyScalar(3);
         if(this.deckClearance>=6){this.stationLift=false;this.velocity.set(0,0,0);}
@@ -258,6 +260,7 @@ export class Navigation {
           translation:new THREE.Vector3(strafe,vertical,-moveForward),
           rotation:new THREE.Vector3(tilt,turn,-roll),
           boost:this.boost,maxSpeed:this.flightAssist?approachLimit:Math.min(FLIGHT.travelSpeed,approachLimit)},this.flightEnvironment,dt);
+        this.engineAcceleration.copy(flight.engineAcceleration);
         this.velocity.copy(flight.velocity);this.orientation.copy(flight.orientation);this.angularVelocity.copy(flight.angularVelocity);
         if(this.flightAssist&&roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation);}
       }

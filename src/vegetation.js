@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Meadow } from './meadow.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createBranchGeometry, createNeedleTexture, addFoliageWind, createTreeImpostor } from './foliage.js';
 import { createSurfaceTexture } from './surface-materials.js';
@@ -107,6 +108,7 @@ export class Vegetation {
     }
     rock.computeVertexNormals();
     rock.translate(0, .24, 0);
+    this.meadow = new Meadow(scene, this);
     this.rocks = this.makeMesh(rock, { color: 0xffffff, roughness: .9, bumpMap: this.surfaceTexture, bumpScale: .055 }, ROCK_LIMIT);
   }
 
@@ -151,7 +153,8 @@ export class Vegetation {
     return dx * dx + dy * dy + dz * dz < radius * radius;
   }
 
-  update(worldPosition, renderOrigin, elapsedSeconds) {
+  update(worldPosition, renderOrigin, elapsedSeconds, walking = false, downwash = null) {
+    this.meadow.update(worldPosition, renderOrigin, elapsedSeconds, walking, downwash);
     this.windTime.value = elapsedSeconds;
     const distance = worldPosition.length();
     if (distance < 1) { this.group.visible = false; return; }
@@ -169,6 +172,7 @@ export class Vegetation {
     }
     this.lodCamera.value.copy(worldPosition).sub(this.origin);
     this.group.position.copy(this.origin).sub(renderOrigin);
+    this.stats.meadow = this.meadow.stats;
   }
 
   // Each latitude row has a fixed, integer number of longitude cells. Sampling
@@ -291,6 +295,7 @@ export class Vegetation {
   }
 
   dispose() {
+    this.meadow.dispose();
     for (const mesh of [...this.treeMeshes.flat(), this.grass, this.rocks]) {
       mesh.geometry.dispose();
       mesh.material.dispose();
