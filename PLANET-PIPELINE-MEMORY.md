@@ -433,3 +433,35 @@ shader-only holes leave an invisible floor. Prototype an independent rock first.
 A 32-cell chunk needs 33 corner samples per axis; choose 0.125–0.25 m cells for
 small rocks, and budget mesh/collision/halo memory in addition to density arrays.
 The roadmap's <4 ms meshing claim is a target awaiting measurement.
+
+
+## First mineable rock implementation — 2026-09-06
+
+Playable implementation is documented in [docs/selene-mining.md](docs/selene-mining.md).
+A single 4 m volume at Crescent Rim uses 32³ cells / 0.125 m sampling, interior
+copper/ice/basalt fields, budgeted subtraction, saved sample containers and the
+existing Equipment mining laser. The first mesher uses a consistent tetrahedral
+split, not the research's proposed Marching Cubes/optional Dual Contouring path.
+Closure tests cover the uncut and carved mesh. This is a bounded proof of mining,
+not a whole-planet voxel conversion.
+
+The worker prepares geometry, packed triangle collision hierarchy and compact
+float snapshot together. Main publishes the mesh/collider only after saving the
+matching field + cargo transaction. Stale results cannot overwrite current state.
+The first render exposed a main-thread stall from building collision and encoding
+JSON there; moving both preparations into the worker reduced publication overhead.
+Measure worker and publish latency separately; no <4 ms worker claim is established.
+
+Navigation's optional surfaceObstacles hook sweeps the player capsule and adds
+support-aware jumping. Removing support makes the player fall under lunar gravity.
+Ship contact uses a conservative clearance sphere. Material color at cut faces is
+procedural in rock-local coordinates, independent of exterior UVs. The survey
+pouch/locker has dedicated 12/48 kg capacities and is accessed through cargo UI.
+Resource mass represents gameplay concentrate, not actual bulk geological density.
+
+Preview is a dedicated star-agent-mining service on http://127.0.0.1:5203/.
+The existing 5180 geology preview is preserved. Save ID and generator version are
+separate from the planet seed. The snapshot is browser-local, single-volume and
+not coordinated across tabs/network peers. No debris physics, cave-floor replacement,
+mining of ring rocks, or resource crafting is claimed. See the guide for merge hooks,
+source provenance, validation and remaining independent manager/visual review.

@@ -37,6 +37,14 @@ test('land, walk to the deposit, mine with the laser, persist cuts and stow coll
   await page.waitForFunction(()=>!window.starAgent.state.mining.pending);
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(500);await page.screenshot({path:`${evidence}/phone.png`});
   const bounds=await page.locator('#mining-panel').boundingBox();expect(bounds.x).toBeGreaterThanOrEqual(0);expect(bounds.x+bounds.width).toBeLessThanOrEqual(390);
+  // Real touch input holds the same accessible mining button.
+  await page.evaluate(()=>window.starAgent.navigation.look(.07,.035));
+  await page.waitForFunction(()=>window.starAgent.state.mining.tool.hit!==null);
+  const trigger=await page.locator('.mining-trigger').boundingBox(),preTouch=await page.evaluate(()=>window.starAgent.state.mining.revision);
+  const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:trigger.x+trigger.width/2,y:trigger.y+trigger.height/2}]});
+  await page.waitForFunction(previous=>window.starAgent.state.mining.revision>previous,preTouch);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForFunction(()=>!window.starAgent.state.mining.pending);
   // The survey container is integrated with the real cargo dialog. Restore a
   // landed ship after reload, then enter its storage interaction position.
   await page.evaluate(()=>{const n=window.starAgent.navigation;n.transitMoon(3.2);n.touchDown();n.embark();n.position.copy(n.fromShipLocal(n.position.clone().set(.4,2.75,1.15)));n.openInventory();});

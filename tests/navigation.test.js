@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { Navigation } from '../src/navigation.js';
+import { MineableRock } from '../src/mining/rock.js';
+import { createDensity, meshVolume } from '../src/mining/volume.js';
+import { RockCollision } from '../src/mining/collision.js';
 import { RADIUS, terrainHeight, findDestinations, latLonDirection } from '../src/world.js';
 import { SELENE, bodySurfacePoint, bodyAltitude } from '../src/celestial.js';
 import { MOON_RADIUS, MOON_POSITION, MOON_LANDING_DIRECTION } from '../src/moon-world.js';
@@ -333,4 +336,16 @@ test('walking beyond the landing shelf follows the steep crater terrain',t=>{
   keyDown('KeyW');advance(90,()=>near(nav.altitude,1.75,1e-5));keyUp('KeyW');
   assert.ok(Math.abs(nav.groundHeight-start)>30,'walking descends into the basin');
   assert.equal(nav.mode,'walk');assert.equal(nav.body.id,'selene');
+});
+
+
+test('lunar walking lands on a mineable rock and falls when that support is removed',t=>{
+  const {navigation:nav,advance}=setup(t),scene=new THREE.Scene(),worker={postMessage(d){this.job=d;},terminate(){}};
+  const rock=new MineableRock(scene,{getItem:()=>null,setItem(){}},{worker});
+  const field=createDensity(),mesh=meshVolume(field);rock.receive({id:worker.job.id,field,...mesh,collision:new RockCollision(mesh.positions).pack()});
+  nav.surfaceObstacles=rock;nav.transitMoon();nav.mode='walk';nav.shipPosition=null;
+  nav.position.copy(rock.toWorld(new THREE.Vector3(.35,5,.15)));nav.jumpHeight=nav.altitude-1.75;nav.jumpVelocity=0;
+  advance(4);const supported=nav.altitude;assert.ok(supported>3.8&&supported<5,'the walker stands on the rock');
+  assert.ok(rock.grounded);rock.collision=new RockCollision(new Float32Array());
+  advance(4);near(nav.altitude,1.75,1e-5);assert.ok(nav.altitude<supported-1.5);rock.dispose();
 });

@@ -2,6 +2,9 @@
 
 Research date: 2026-09-06. Status: recommendation and implementation plan, **not an implemented mining system**. Requested by Cees, with No Man's Sky as a reference and technology choice open. Based on lunar PR #15 (`ea7c35b`) plus read-only inspection of the shared equipment/assets lane.
 
+The subsequent first playable slice is recorded in [the mining guide](selene-mining.md).
+This research document retains its original proposals and unmeasured targets.
+
 ## Recommendation
 
 Use a **hybrid terrain system**: retain Selene's streamed heightfield for planetary scale and most mountain ranges; add locally sampled, smooth volumetric rocks and ore outcrops that can be carved. Render those volumes as ordinary triangle meshes. Use static mesh formations for non-excavatable arches, fractured cliff details and distant scenery. Reserve local terrain replacement for a subsequent cave/excavation slice.

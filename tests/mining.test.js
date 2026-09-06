@@ -68,3 +68,13 @@ test('fixed tetrahedral meshing produces closed exterior and carved surfaces',()
     assert.ok([...edges.values()].every(n=>n===2),'each welded edge has exactly two incident triangles');
   }
 });
+
+
+test('worker-packed collision hierarchy matches the original mesh queries',()=>{
+  const packed=new RockCollision(mesh.positions,collision.pack());
+  for(const x of [-.8,0,.7]){
+    const origin=new Vector3(x,.5,4),direction=new Vector3(0,0,-1);
+    assert.ok(Math.abs(packed.raycast(origin,direction,8).distance-collision.raycast(origin,direction,8).distance)<1e-6);
+    assert.ok(packed.sweep(origin,new Vector3(x,.5,-4)).point.distanceTo(collision.sweep(origin,new Vector3(x,.5,-4)).point)<.02);
+  }
+});

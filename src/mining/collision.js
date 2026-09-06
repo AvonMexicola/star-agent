@@ -25,17 +25,41 @@ function tree(items){
   return {box,left:tree(items.slice(0,mid)),right:tree(items.slice(mid))};
 }
 export class RockCollision {
-  constructor(positions){
+  constructor(positions,packed=null){
+    this.positions=positions;this.cache=new Map();this.packed=packed;
+    if(packed)return;
     const triangles=[];
-    for(let i=0;i<positions.length;i+=9){const triangle=new Triangle(new Vector3().fromArray(positions,i),new Vector3().fromArray(positions,i+3),new Vector3().fromArray(positions,i+6));if(triangle.getArea()<1e-12)continue;const box=new Box3().setFromPoints([triangle.a,triangle.b,triangle.c]);triangles.push({triangle,box,center:box.getCenter(v())});}
+    for(let i=0;i<positions.length;i+=9){const triangle=new Triangle(new Vector3().fromArray(positions,i),new Vector3().fromArray(positions,i+3),new Vector3().fromArray(positions,i+6));if(triangle.getArea()<1e-12)continue;const box=new Box3().setFromPoints([triangle.a,triangle.b,triangle.c]);triangles.push({id:i/9,triangle,box,center:box.getCenter(v())});}
     this.root=tree(triangles);
   }
-  query(box){const found=[];const visit=node=>{if(!node.box.intersectsBox(box))return;if(node.items){for(const item of node.items)if(item.box.intersectsBox(box))found.push(item.triangle);}else{visit(node.left);visit(node.right);}};visit(this.root);return found;}
+  pack(){
+    const nodes=[],indices=[];
+    const visit=node=>{const id=nodes.length/10;nodes.push(node.box.min.x,node.box.min.y,node.box.min.z,node.box.max.x,node.box.max.y,node.box.max.z,-1,-1,0,0);
+      if(node.items){nodes[id*10+8]=indices.length;nodes[id*10+9]=node.items.length;for(const item of node.items)indices.push(item.id);}
+      else{nodes[id*10+6]=visit(node.left);nodes[id*10+7]=visit(node.right);}return id;
+    };visit(this.root);return {nodes:new Float32Array(nodes),indices:new Uint32Array(indices)};
+  }
+  query(box){
+    const found=[];
+    if(this.packed){
+      const {nodes,indices}=this.packed;
+      const visit=id=>{const i=id*10;if(nodes[i]>box.max.x||nodes[i+1]>box.max.y||nodes[i+2]>box.max.z||nodes[i+3]<box.min.x||nodes[i+4]<box.min.y||nodes[i+5]<box.min.z)return;
+        if(nodes[i+6]<0){for(let j=0;j<nodes[i+9];j++){const id=indices[nodes[i+8]+j];let tri=this.cache.get(id);if(!tri){const i=id*9;tri=new Triangle(new Vector3().fromArray(this.positions,i),new Vector3().fromArray(this.positions,i+3),new Vector3().fromArray(this.positions,i+6));this.cache.set(id,tri);}found.push(tri);}}
+        else{visit(nodes[i+6]);visit(nodes[i+7]);}
+      };visit(0);return found;
+    }
+    const visit=node=>{if(!node.box.intersectsBox(box))return;if(node.items){for(const item of node.items)if(item.box.intersectsBox(box))found.push(item.triangle);}else{visit(node.left);visit(node.right);}};visit(this.root);return found;
+  }
   raycast(origin,direction,range){
     const ray=new Ray(origin,direction),end=origin.clone().addScaledVector(direction,range),box=new Box3().setFromPoints([origin,end]).expandByScalar(.001);
     let distance=range,point=null,normal=null;
     for(const tri of this.query(box)){const hit=ray.intersectTriangle(tri.a,tri.b,tri.c,false,v());if(hit&&hit.distanceTo(origin)<distance){distance=hit.distanceTo(origin);point=hit;normal=tri.getNormal(v());}}
     return point?{point,normal,distance}:null;
+  }
+  groundedAt(point){
+    const a=point.clone().add(new Vector3(0,-1.5,0)),b=point.clone().add(new Vector3(0,-.25,0)),box=new Box3().setFromPoints([a,b]).expandByScalar(.265);
+    for(const triangle of this.query(box)){const contact=closest(triangle,a,b);if(contact.distance<.262&&contact.normal.y>.55)return true;}
+    return false;
   }
   /** Conservative advancement of a vertical capsule against the published mesh. */
   sweep(previous,proposed,{radius=.25,height=1.75}={}){

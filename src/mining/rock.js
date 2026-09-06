@@ -20,6 +20,9 @@ export class MineableRock {
       shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vRockPoint;').replace('#include <color_fragment>',`#include <color_fragment>
         float grain=sin(vRockPoint.x*137.0+sin(vRockPoint.z*81.0))*sin(vRockPoint.y*119.0+vRockPoint.z*67.0);
         float fade=1.0-smoothstep(.2,1.0,length(fwidth(vRockPoint))*120.0);
+        float copper=1.0-smoothstep(.205,.235,abs(vRockPoint.x*.7+vRockPoint.y*.32+sin(vRockPoint.z*2.8)*.19));
+        float ice=1.0-smoothstep(.135,.165,abs(vRockPoint.z*.65-vRockPoint.y*.3+sin(vRockPoint.x*3.0)*.12-.58));
+        diffuseColor.rgb=mix(mix(vec3(.055,.072,.09),vec3(.26,.54,.66),ice),vec3(.42,.18,.045),copper);
         diffuseColor.rgb*=1.0+grain*.15*fade;`);
     };
     this.material.customProgramCacheKey=()=> 'mineable-rock-v1';
@@ -35,14 +38,14 @@ export class MineableRock {
     const field=this.store.state.field.slice();this.worker.postMessage({...this.job,field,point,budget},[field.buffer]);return true;
   }
   receive(data){
-    if(!this.job||data.id!==this.job.id)return;
+    if(this.disposed||!this.job||data.id!==this.job.id)return;
     this.pending=false;if(data.error){this.error=data.error;return;}if(data.empty)return;
     const start=performance.now();
     // Prepare the collider before publishing either representation. A rejected
     // save or stale job leaves both visible mesh and collision untouched.
     const geometry=new THREE.BufferGeometry();
     for(const key of ['positions','normals','colors'])geometry.setAttribute({positions:'position',normals:'normal',colors:'color'}[key],new THREE.BufferAttribute(data[key],3));
-    geometry.computeBoundingSphere();const collision=new RockCollision(data.positions);
+    geometry.computeBoundingSphere();const collision=new RockCollision(data.positions,data.collision);
     if(this.job.revision!==this.store.state.revision||(this.job.carving&&!this.store.commit(data,this.job.revision))){geometry.dispose();return;}
     if(this.mesh){const old=this.mesh.geometry;this.mesh.geometry=geometry;old.dispose();}
     else{this.mesh=new THREE.Mesh(geometry,this.material);this.mesh.castShadow=true;this.mesh.receiveShadow=true;this.group.add(this.mesh);}
@@ -70,7 +73,9 @@ export class MineableRock {
   }
   constrainWalker(previous,proposed){
     this.grounded=false;if(!this.ready||previous.distanceTo(this.position)>6&&proposed.distanceTo(this.position)>6)return {point:proposed,hit:false};
-    const result=this.collision.sweep(this.toLocal(previous),this.toLocal(proposed));this.grounded=result.grounded;
+    const a=this.toLocal(previous),b=this.toLocal(proposed),result=this.collision.sweep(a,b);
+    result.grounded ||= b.y<=a.y+1e-5&&this.collision.groundedAt(result.point);
+    this.grounded=result.grounded;
     return {...result,point:this.toWorld(result.point)};
   }
   constrainFlight(previous,proposed){
@@ -84,5 +89,5 @@ export class MineableRock {
   }
   update(origin){this.group.position.copy(this.position).sub(origin);this.group.visible=origin.distanceTo(this.position)<40000;}
   get state(){return {ready:this.ready,pending:this.pending,revision:this.store.state.revision,position:this.position.toArray(),pack:[...this.store.state.pack],ship:[...this.store.state.ship],saved:this.store.saved,error:this.error||this.store.warning,triangles:this.mesh?.geometry.attributes.position.count/3||0,meshMs:this.meshMs,publishMs:this.publishMs};}
-  dispose(){this.worker.terminate();this.mesh?.geometry.dispose();this.material.dispose();this.scene.remove(this.group);}
+  dispose(){this.disposed=true;this.worker.terminate();this.mesh?.geometry.dispose();this.material.dispose();this.scene.remove(this.group);}
 }

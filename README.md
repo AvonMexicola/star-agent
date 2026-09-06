@@ -94,3 +94,5 @@ Flight-model checks cover vacuum momentum, body-axis thrust/torque, density boun
 The browser tests default to system Chromium with ANGLE/SwiftShader. Override `CHROMIUM_PATH` for another executable. Software-rendered test frame rates are not hardware performance claims. Render scale adapts to slow machines; `starAgent.setRenderScale(1)` fixes native scale for visual inspection.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) for contribution and architecture contracts.
+
+First playable Selene mining slice: [mining guide](docs/selene-mining.md).

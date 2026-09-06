@@ -81,3 +81,16 @@ export function meshVolume(field){
   }
   return {positions:new Float32Array(positions),normals:new Float32Array(normals),colors:new Float32Array(colors)};
 }
+
+/** Compact exact float snapshot, prepared off the render thread. */
+export function encodeDensity(field){
+  const bytes=new Uint8Array(field.length*4),view=new DataView(bytes.buffer);
+  for(let i=0;i<field.length;i++)view.setFloat32(i*4,field[i],true);
+  let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+  return btoa(binary);
+}
+export function decodeDensity(encoded){
+  const binary=atob(encoded);if(binary.length!==SIDE**3*4)throw Error('Invalid density snapshot');
+  const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0)),view=new DataView(bytes.buffer),field=new Float32Array(SIDE**3);
+  for(let i=0;i<field.length;i++)field[i]=view.getFloat32(i*4,true);return field;
+}
