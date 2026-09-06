@@ -67,19 +67,30 @@ containers reject the operation without losing or duplicating items.
 
 ## Ring population and mining boundaries
 
-The ring has a **20,000 m radial width** and **2,000 m vertical thickness**, centered
-at 2.08 Selene radii. Its versioned generator describes **20,971,520 asteroids**:
-8,192 angular cells × 20 radial cells × 4 vertical cells × 32 rocks. Stable IDs
-produce repeatable positions, orientations and six shape families: angular basalt,
-copper breccia, ice aggregates, layered shale, pitted basalt and fractured outcrops.
+Selene's sparse v2 ring has **14,336 bodies** across a **20 km radial width** and
+**2 km vertical thickness**. Its physical outer diameter is **1,826.896 km**,
+centered at 2.08 Selene radii. A staggered 2,048 × 7 × 1 cell layout with bounded
+position jitter replaces the original dense v1 population. Exhaustive neighboring
+cell checks, including the angular seam, measure **2,132.11 m minimum clearance**
+between conservative asteroid bounds: approximately two kilometres of clear space.
 
-The browser does not allocate twenty million objects. A distant dust aggregate
-and sampled instances provide the orbital view; at most 3,200 actual descriptors
-in nearby cells supply close geometry. Six shared meshes at each detail level
-keep draw calls bounded. Positions are computed in doubles and subtract the camera
-origin before upload. Neighboring cells wrap around the ring seam. Fast flight into the belt brakes at
-its boundary; local ship movement is limited to 400 m/s inside the debris band,
-including boosted and inertial flight.
+Three quarters of the bodies are large geological rocks; one quarter retains the
+original small, hand-mineable shapes. Six geological families each have four large
+variants: **24 fractured shapes** with triplanar stone, strata, mineral and ice
+materials. The families remain angular basalt, copper breccia, ice aggregates,
+layered shale, pitted basalt and fractured outcrops.
+
+The renderer retains the full deterministic descriptor population. Crossing a
+streaming cell does not resample a different set of distant rocks. Individual
+asteroids draw out to **80 km**, using three geometry detail bands around
+**4 km, 16 km and 80 km**. Detail transitions fade across 3.2–4.8 km and 14–18 km;
+the outer visibility fade runs from 64–80 km. Shared instanced geometry keeps the
+scene bounded, while the distant unresolved ring aggregate supplies the orbital
+view. World positions subtract the camera origin in doubles before GPU upload.
+
+Fast flight into the belt brakes at its boundary. Local ship movement is limited
+to 400 m/s inside the debris band, including boosted and inertial flight. Holding
+Xbox B brakes drift and thrust while still allowing manual aiming and roll.
 
 Aiming at a nearby small rock prioritizes it for preparation; the HUD reports
 preparation, range, save capacity or a large asteroid that cannot be hand-mined.
@@ -92,11 +103,30 @@ its cut when approached again. Edits and collection share the surface mining
 transaction. Up to eight surveyed surface or space deposits can currently retain edits in browser
 storage; previously saved deposits remain mineable when that limit is reached.
 
-The larger ring boulders currently provide procedural geometry and conservative
+The larger ring boulders currently provide procedural geometry and triangle
 collision. Hand mining is implemented for the small rocks across all six shape
 families. Large asteroid excavation needs chunked surfaces and a larger mining
 system. There is no fragment physics, orbital N-body simulation, multiplayer,
 planet/cave excavation or unlimited excavation storage in this slice.
+
+Previously edited v1 asteroids remain at their original coordinates with their
+saved cuts and collected cargo. Up to eight legacy deposits can survive alongside
+the v2 population, within the shared save limit. These preserved player edits are
+an explicit exception to the new spacing rule; they are not relocated to fit a
+new layout. Runtime IDs keep the two generations separate, and restoration does
+not award more resources or rewrite the old save merely to load it.
+
+## Sunlit ice inside the belt
+
+`RingIce` adds world-anchored micro-ice glints only inside the ring's finite radial
+and vertical bounds. At most **1,200 visual particles** occupy a **104 m radius**
+around the observer, with an inner exclusion of **12 m** to keep flakes clear of
+the cabin. Distance and ring-edge fades avoid a hard particle bubble. Slow motion
+and phase remain attached to deterministic world cells through camera turns and
+origin rebases. Facets respond to sunlight and dim in the moon's shadow.
+
+These micro-particles add visual detail to the airless belt. They have no
+collision or mining rewards and do not change the two-kilometre asteroid spacing.
 
 ## Review
 
@@ -106,5 +136,7 @@ journeys validate real action routing; they do not substitute for a physical Xbo
 hardware playtest. The local OS recognizes the Xbox Wireless Controller, while
 physical button sequencing in the browser remains a user validation step.
 
+Current v2 browser evidence must be recorded against the final integrated build;
+earlier dense-ring screenshots and passing runs describe that earlier version.
 Functional and renderer evidence is recorded separately from independent manager
 visual approval. Fable/Claude retain integration, review, merge and deployment.

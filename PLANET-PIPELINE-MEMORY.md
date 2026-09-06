@@ -1,9 +1,11 @@
 # Star Agent planet creation pipeline — durable project memory
 
-Updated 2026-09-06: lunar generator v4 adds distinct geology and extreme relief
-to the crater landscape, ice and rings. Mining research below is a proposal, not
-an implemented feature. See `docs/selene-landscape.md` for the playable terrain.
-Earlier delivery records describe their historical branch state.
+Updated 2026-09-06: the current expedition combines lunar terrain v4, resource
+geography, surface/space mining, controller navigation, containers and character
+EVA with the sparse ring generator v2. See `docs/selene-expedition.md` for current
+boundaries. Earlier dated delivery records and the original mining research below
+describe their historical branch state; their decorative-only ring scope and
+former population counts are not current implementation limits.
 
 Recorded 2026-09-05 for Fable 5.1, the project manager, humans and future coding
 agents. Reference bodies: Aeon and landable Selene, [moon PR #7](https://github.com/AvonMexicola/star-agent/pull/7).
@@ -483,10 +485,12 @@ docs/selene-expedition.md for the concrete feature and storage boundaries.
 - Laser custom shader uses the scene logarithmic depth convention; material wear
   is generated locally and sampled in tool coordinates. A beam in empty space
   produces no resources, and impact effects require a validated hit.
-- Selene's versioned ring generator defines 20,971,520 stable descriptors in a 20 km
-  radial by 2 km vertical band. Six family functions drive low-detail silhouettes
-  and editable small-rock fields. Near-cell streaming is bounded to 3,200 descriptors,
-  two live ring excavation workers, eight persisted additional survey snapshots.
+- Current ring generator v2 retains 14,336 stable descriptors in a 20 km radial
+  by 2 km vertical band, with at least 2,132.11 m neighboring bounding clearance.
+  It supersedes the initial expedition's 20,971,520-descriptor v1 population.
+  Large rocks have 24 fractured variants and three geometry LODs out to 80 km;
+  original small-rock shapes remain editable. Excavation retains two live ring
+  workers and eight persisted additional survey snapshots shared with provinces.
 - Large asteroids remain procedural collision geometry pending chunked mining;
   small representatives of all six families are hand-mineable in EVA. Preserve this
   distinction in UI/docs. No massive unbounded mesh allocation or pristine LOD over cuts.
@@ -544,3 +548,58 @@ visible asteroid geometry; broad spheres are only candidate filters. Static larg
 asteroids must explicitly report unavailable hand mining. Retain bounded workers,
 pending-job safety and atomic edits; a targeting fix must not duplicate resources
 or silently restore a pristine shell over an excavated rock.
+
+
+## Sparse navigable ring revision — 2026-09-06, ring generator v2
+
+Cees requested a sparse Yela-style belt with approximately two kilometres between
+asteroids, longer draw distance and sunlight glinting from nearby ice. The current
+layout is 2,048 angular cells × 7 radial cells × 1 vertical cell × 1 body: **14,336
+bodies**. Adjacent radial rows are staggered by half an angular cell. Tangential
+and radial jitter stay within ±70 m, with height jitter within ±500 m. The nominal
+band remains 20 km wide and 2 km thick at radius 903.448 km, giving an outer
+physical diameter of **1,826.896 km**. Do not confuse that diameter with draw range.
+
+V2 neighboring-cell checks cover every potentially nearest pair and the ring seam.
+The minimum measured clearance between bounds of radius `1.95 * descriptor.size`
+is **2,132.1115 m**. Keep every rendered variant inside that bound when changing
+geometry. Three quarters of descriptors are large rocks with size parameters
+24–140; one quarter is small and mineable. `ringRock(5)` remains a small survey
+target. Six families × four variants supply 24 large geological shapes with
+fracture planes, layered surfaces and triplanar mineral/stone/ice materials.
+The original `asteroidField` remains the small-rock geometry and mining authority.
+
+`MoonRings` retains the full deterministic v2 descriptor population. Local cells
+select interaction candidates; they must not replace the population used for
+long-distance drawing. Individual rocks remain visible to 80 km. Near/mid/far
+geometry boundaries are nominally 4/16/80 km, with complementary fades through
+3.2–4.8 km and 14–18 km, and a visibility fade through 64–80 km. A camera cell
+crossing must preserve unrelated distant IDs and geometry. Positions continue to
+subtract the double-precision camera origin before entering GPU buffers.
+
+Saved v1 cuts are not migrated onto v2 asteroid positions. `asteroidDescriptorV1`
+reproduces their original positions, orientations and family exactly. MiningField
+attaches at most eight saved legacy descriptors to `rings.legacyDescriptors`
+before the first frame. Their runtime IDs are `-(oldId + 1)` and their storage
+keys remain `selene-ring-v1-*`; v2 uses positive runtime IDs and `selene-ring-v2-*`
+keys. Hidden instances and collision fallbacks retain both generations without
+awarding resources during restoration. Legacy player-edited deposits are an
+explicit exception to the v2 spacing rule because preserving their positions and
+cuts takes priority. Provincial and ring snapshots still share the eight-slot cap.
+
+`src/ring-ice.js` owns `RingIce`, separate from the larger rock population and from
+surface ice in `moon-ice.js`. Its deterministic 32 m world cells anchor slow-moving
+sunlit facets; rendering keeps at most 1,200 particles inside a 104 m observer
+radius and excludes the inner 12 m around the cabin. Radial/vertical ring edges,
+inner clearance and outer distance fade smoothly. Camera turns and origin rebases
+must not reset particle identity, position phase or sunlight response. Shader
+facets produce glints and dim in lunar shadow using the existing logarithmic depth
+and additive compositing conventions. These particles are visual only: no solid
+collision, excavation or resource awards.
+
+The original 20-million-body design and earlier screenshots remain historical
+v1 evidence. Do not cite those runs as validation of this revision. Numerical
+spacing, legacy-save and descriptor tests support their specific invariants;
+final v2 shader, LOD, visibility, ice and controller browser evidence belongs in
+the current expedition QA record and manager handoff. Independent visual approval
+is a separate review result and is not claimed by this memory update.
