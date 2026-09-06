@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { MOON_RADIUS, MOON_POSITION } from './moon-world.js';
 import { SUN_DIRECTION } from './world.js';
+import { RockCollision } from './mining/collision.js';
 import { RING_WIDTH,RING_THICKNESS,RING_RADIUS,RING_ROTATION,RING_NORMAL,RING_POPULATION,ASTEROID_FAMILIES,ringRock,nearbyAsteroids,ringCellAt,asteroidField } from './ring-world.js';
 export {RING_NORMAL,ringRock};
 export const RING_INNER=(RING_RADIUS-RING_WIDTH/2)/MOON_RADIUS,RING_OUTER=(RING_RADIUS+RING_WIDTH/2)/MOON_RADIUS;
@@ -17,7 +18,7 @@ export function asteroidGeometry(family,detail=1){
 const COLORS=[0x59616b,0x986548,0xb7d7df,0x77716a,0x35383d,0x797e85];
 export class MoonRings {
   constructor(scene,count=3072){
-    this.scene=scene;this.center=new THREE.Vector3(...MOON_POSITION);this.hiddenIds=new Set();this.local=[];this.cellKey='';this.transform=new THREE.Object3D();
+    this.scene=scene;this.center=new THREE.Vector3(...MOON_POSITION);this.hiddenIds=new Set();this.local=[];this.cellKey='';this.shapeColliders=new Map();this.transform=new THREE.Object3D();
     this.descriptors=Array.from({length:count},(_,i)=>ringRock(i));
     this.rockOrigin={value:new THREE.Vector3()};
     this.rockMaterial=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.85,metalness:.14,envMapIntensity:.2});
@@ -75,6 +76,48 @@ export class MoonRings {
       t.position.fromArray(rock.position).add(this.center).sub(origin);t.rotation.set(...rock.rotation);t.scale.setScalar(rock.size);t.updateMatrix();mesh.setMatrixAt(i,t.matrix);mesh.setColorAt(i,new THREE.Color(COLORS[rock.family]));
     }
     batches.forEach((mesh,i)=>{mesh.count=counts[i];mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;});
+  }
+  descriptorFrame(rock){
+    const rotation=new THREE.Quaternion().setFromEuler(new THREE.Euler(...rock.rotation));
+    return {position:new THREE.Vector3(...rock.position).add(this.center),rotation,inverse:rotation.clone().invert()};
+  }
+  /** Exact triangles of the visible near LOD, not its oversized broad-phase sphere. */
+  raycastDescriptor(rock,origin,direction,range=8){
+    const frame=this.descriptorFrame(rock),scale=rock.size,geometry=this.near[rock.family].geometry;
+    const a=origin.clone().sub(frame.position).applyQuaternion(frame.inverse).divideScalar(scale);
+    const d=direction.clone().applyQuaternion(frame.inverse).normalize(),ray=new THREE.Ray(a,d);
+    const radius=geometry.boundingSphere.radius;
+    if(a.distanceTo(geometry.boundingSphere.center)>range/scale+radius||ray.distanceSqToPoint(geometry.boundingSphere.center)>radius*radius)return null;
+    const p=geometry.attributes.position,v=[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()],point=new THREE.Vector3();
+    let distance=range/scale,nearest=null,normal=null;
+    for(let i=0;i<p.count;i+=3){
+      for(let j=0;j<3;j++)v[j].fromBufferAttribute(p,i+j);
+      if(!ray.intersectTriangle(v[0],v[1],v[2],true,point))continue;
+      const next=a.distanceTo(point);if(next>distance)continue;
+      distance=next;nearest=point.clone();normal=v[1].clone().sub(v[0]).cross(v[2].clone().sub(v[0])).normalize();
+    }
+    if(!nearest)return null;
+    return {descriptor:rock,distance:distance*scale,point:nearest.multiplyScalar(scale).applyQuaternion(frame.rotation).add(frame.position),normal:normal.applyQuaternion(frame.rotation)};
+  }
+  raycast(origin,direction,range=8,{exclude=null,includeHidden=false}={}){
+    let nearest=null;
+    for(const rock of this.local){
+      if(exclude?.has(rock.id)||!includeHidden&&this.hiddenIds.has(rock.id))continue;
+      const center=new THREE.Vector3(...rock.position).add(this.center);
+      if(center.distanceTo(origin)>range+rock.size*1.95)continue;
+      const hit=this.raycastDescriptor(rock,origin,direction,nearest?.distance??range);
+      if(hit)nearest=hit;
+    }
+    return nearest;
+  }
+  constrainDescriptor(rock,previous,proposed,radius){
+    const frame=this.descriptorFrame(rock),scale=rock.size;
+    const a=previous.clone().sub(frame.position).applyQuaternion(frame.inverse).divideScalar(scale),b=proposed.clone().sub(frame.position).applyQuaternion(frame.inverse).divideScalar(scale);
+    const reach=this.near[rock.family].geometry.boundingSphere.radius+radius/scale;
+    if(new THREE.Line3(a,b).closestPointToPoint(new THREE.Vector3(),true,new THREE.Vector3()).length()>reach)return {point:proposed,hit:false};
+    if(!this.shapeColliders.has(rock.family))this.shapeColliders.set(rock.family,new RockCollision(this.near[rock.family].geometry.attributes.position.array));
+    const r=radius/scale,lift=new THREE.Vector3(0,r,0),result=this.shapeColliders.get(rock.family).sweep(a.add(lift),b.add(lift),{radius:r,height:r*2});
+    return {...result,point:result.point.sub(lift).multiplyScalar(scale).applyQuaternion(frame.rotation).add(frame.position)};
   }
   update(origin){
     this.band.position.copy(this.center).sub(origin);this.rockOrigin.value.copy(origin).sub(this.center);

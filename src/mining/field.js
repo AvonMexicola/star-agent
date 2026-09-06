@@ -13,7 +13,7 @@ export class MiningField {
     this.fieldCache=new FieldCache(scene,this.ground.position);
     this.surfaceRock=null;this.surfaceSurvey=null;
     this.provinces=RESOURCE_PROVINCES.map(province=>({...province,rockId:`selene-resource-v1-${province.id}`,position:bodySurfacePoint(new THREE.Vector3(...province.direction),SELENE,1.35)}));
-    this.cache=new Map();this.active=this.ground;this.target=null;this.spaceMode=false;
+    this.cache=new Map();this.aimedDescriptor=null;this.inspectState=null;this.active=this.ground;this.target=null;this.spaceMode=false;
   }
   get position(){return this.spaceMode&&this.surveyPosition?this.surveyPosition:this.surfaceSurvey?.position??this.active.position;}
   get error(){return this.active.error;}
@@ -38,34 +38,72 @@ export class MiningField {
     const center=new THREE.Vector3(...MOON_POSITION),candidates=this.rings.local.filter(r=>r.mineable).map(r=>({r,d:new THREE.Vector3(...r.position).add(center).distanceTo(origin)})).sort((a,b)=>a.d-b.d);
     this.spaceMode=this.rings.local.length>0;
     this.surveyDescriptor=candidates[0]?.r;this.surveyPosition=this.surveyDescriptor?new THREE.Vector3(...this.surveyDescriptor.position).add(center):null;
-    const wanted=new Set(candidates.slice(0,2).filter(c=>c.d<90).map(c=>c.r.id));
-    for(const [id,rock] of this.cache){if(!wanted.has(id)&&!rock.pending){rock.dispose();this.cache.delete(id);this.store.releaseRock?.(rock.rockId);}}
-    // Only two live worker volumes. Saved distant rocks stay suppressed in the
-    // instance LOD, so a pristine shell never grows back over a saved cavity.
-    for(const {r,d} of candidates.slice(0,2)){
-      if(d>90||this.cache.has(r.id)||this.cache.size>=2)continue;
-      const quaternion=new THREE.Quaternion().setFromEuler(new THREE.Euler(...r.rotation));
-      const rock=new MineableRock(this.scene,null,{store:this.store,rockId:r.key,position:new THREE.Vector3(...r.position).add(center),quaternion,initialField:createDensity((x,y,z)=>asteroidField(x,y,z,r.family)),space:true});
-      rock.descriptor=r;this.cache.set(r.id,rock);
-    }
+    if(this.aimedDescriptor&&!candidates.some(c=>c.r.id===this.aimedDescriptor.id&&c.d<90))this.aimedDescriptor=null;
+    const priority=this.aimedDescriptor?[this.aimedDescriptor,...candidates.map(c=>c.r).filter(r=>r.id!==this.aimedDescriptor.id)]:candidates.map(c=>c.r);
+    const wanted=new Set(priority.slice(0,2).filter(r=>new THREE.Vector3(...r.position).add(center).distanceTo(origin)<90).map(r=>r.id));
+    for(const [id,rock] of this.cache){if(!wanted.has(id)&&!rock.pending)this.releaseSpaceRock(id);}
+    // Aim gets the first slot. A second nearest deposit streams in ahead of time.
+    // Pending jobs are never discarded; the aim waits until an idle slot opens.
+    for(const r of priority.slice(0,2))if(wanted.has(r.id))this.promoteSpaceRock(r,origin);
     this.rings.hiddenIds.clear();
     for(const key of Object.keys(this.store.state.rocks??{}))if(key.startsWith('selene-ring-v1-'))this.rings.hiddenIds.add(Number(key.slice(15)));
     for(const [id,rock] of this.cache){rock.update(origin);if(rock.ready)this.rings.hiddenIds.add(id);}
-    this.active=this.spaceMode&&candidates.length?(this.cache.get(candidates[0].r.id)??this.ground):(this.surfaceRock&&this.surfaceRock.rockId===this.surfaceSurvey?.rockId?this.surfaceRock:this.ground);
+    if(this.aimedDescriptor){this.surveyDescriptor=this.aimedDescriptor;this.surveyPosition=new THREE.Vector3(...this.aimedDescriptor.position).add(center);}
+    this.active=this.spaceMode&&candidates.length?(this.cache.get(this.surveyDescriptor?.id)??this.ground):(this.surfaceRock&&this.surfaceRock.rockId===this.surfaceSurvey?.rockId?this.surfaceRock:this.ground);
     this.ground.update(origin);this.fieldCache.update(origin);
   }
-  raycast(origin,direction,range=8){
-    let nearest=null;for(const rock of [this.ground,...(this.surfaceRock?[this.surfaceRock]:[]),...this.cache.values()]){
+  releaseSpaceRock(id){
+    const rock=this.cache.get(id);if(!rock||rock.pending)return false;
+    rock.dispose();this.cache.delete(id);this.store.releaseRock?.(rock.rockId);return true;
+  }
+  promoteSpaceRock(descriptor,origin){
+    if(this.cache.has(descriptor.id))return this.cache.get(descriptor.id);
+    if(!descriptor.mineable)return null;
+    if(this.cache.size>=2){
+      const replace=[...this.cache.values()].filter(r=>!r.pending&&r.descriptor.id!==this.aimedDescriptor?.id).sort((a,b)=>b.position.distanceTo(origin)-a.position.distanceTo(origin))[0];
+      if(!replace||!this.releaseSpaceRock(replace.descriptor.id))return null;
+    }
+    const quaternion=new THREE.Quaternion().setFromEuler(new THREE.Euler(...descriptor.rotation));
+    const rock=new MineableRock(this.scene,null,{store:this.store,rockId:descriptor.key,position:new THREE.Vector3(...descriptor.position).add(new THREE.Vector3(...MOON_POSITION)),quaternion,initialField:createDensity((x,y,z)=>asteroidField(x,y,z,descriptor.family)),space:true});
+    rock.descriptor=descriptor;this.cache.set(descriptor.id,rock);rock.update(origin);
+    if(rock.ready)this.rings.hiddenIds.add(descriptor.id);
+    return rock;
+  }
+  readyRaycast(origin,direction,range=8){
+    let nearest=null;
+    for(const rock of [this.ground,...(this.surfaceRock?[this.surfaceRock]:[]),...this.cache.values()]){
       const hit=rock.raycast(origin,direction,range);if(hit&&(!nearest||hit.distance<nearest.distance))nearest={...hit,rock};
     }
+    return nearest;
+  }
+  /** Camera-only inspection selects streamed deposits. Muzzle queries never change priority. */
+  inspectTarget(origin,direction,range=8){
+    const probe=Math.max(range,80),ready=this.readyRaycast(origin,direction,probe);
+    const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
+    const raw=this.rings.raycast?.(origin,direction,probe,{exclude,includeHidden:true});
+    const hit=ready&&(!raw||ready.distance<=raw.distance)?ready:raw;
+    if(!hit||this.fieldCache.raycast(origin,direction,hit.distance)){this.aimedDescriptor=null;this.inspectState=null;return null;}
+    const descriptor=hit.descriptor??hit.rock?.descriptor;
+    if(!descriptor||hit.rock&&!hit.rock.space){
+      this.aimedDescriptor=null;
+      return this.inspectState={status:hit.distance>range?'out-of-range':'ready',name:descriptor?.name??'Crescent deposit',distance:hit.distance,mineable:true,rockId:hit.rock.rockId,point:hit.point};
+    }
+    this.aimedDescriptor=descriptor.mineable?descriptor:null;
+    let status=!descriptor.mineable?'too-large':hit.distance>range?'out-of-range':'preparing';
+    let rock=hit.rock??this.cache.get(descriptor.id);
+    if(descriptor.mineable&&hit.distance<=range){
+      if(!this.store.canEditRock(descriptor.key))status='save-full';
+      else{rock??=this.promoteSpaceRock(descriptor,origin);status=rock?.ready?'ready':'preparing';}
+    }
+    if(descriptor.mineable){this.surveyDescriptor=descriptor;this.surveyPosition=new THREE.Vector3(...descriptor.position).add(new THREE.Vector3(...MOON_POSITION));if(rock)this.active=rock;}
+    return this.inspectState={status,name:descriptor.name,distance:hit.distance,mineable:descriptor.mineable,rockId:descriptor.key,point:hit.point};
+  }
+  raycast(origin,direction,range=8){
+    let nearest=this.readyRaycast(origin,direction,range);
     if(nearest&&this.fieldCache.raycast(origin,direction,nearest.distance))nearest=null;
     if(nearest){
-      const ray=new THREE.Ray(origin,direction),center=new THREE.Vector3(...MOON_POSITION);
-      for(const r of this.rings.local){
-        if(r.id===nearest.rock.descriptor?.id||this.cache.get(r.id)?.ready||this.rings.hiddenIds.has(r.id))continue;
-        const point=ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(...r.position).add(center),r.size*1.95),new THREE.Vector3());
-        if(point&&point.distanceTo(origin)<nearest.distance){nearest=null;break;}
-      }
+      const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
+      if(this.rings.raycast?.(origin,direction,nearest.distance,{exclude}))nearest=null;
     }
     this.target=nearest?.rock??null;return nearest;
   }
@@ -100,18 +138,17 @@ export class MiningField {
     for(const r of this.collisionDescriptors){
       const edited=this.cache.get(r.id);
       if(edited?.ready){const result=radius<1?edited.constrainEVA(previous,point):edited.constrainFlight(previous,point);if(result.hit){point=result.point;hit=true;}continue;}
-      // Unpromoted populations use a conservative bounding sphere. The active
-      // editable rock switches to the actual carved triangle collision.
-      const c=new THREE.Vector3(...r.position).add(center),start=previous.clone().sub(c),step=point.clone().sub(previous),reach=r.size*1.95+radius;
-      const aa=step.lengthSq(),bb=start.dot(step),cc=start.lengthSq()-reach*reach;
-      if(cc<0&&this.rings.hiddenIds.has(r.id))return {point:previous.clone(),hit:true};
-      if(aa<1e-12)continue;const disc=bb*bb-aa*cc;if(disc<0||bb>=0)continue;
-      const t=(-bb-Math.sqrt(disc))/aa;if(t<0||t>1)continue;
-      point.copy(previous).addScaledVector(step,Math.max(0,t-.001));hit=true;
+      // Saved, not-yet-restored domains remain conservative until their edited
+      // collider is ready. Other rocks collide with their actual visible mesh.
+      const c=new THREE.Vector3(...r.position).add(center),start=previous.clone().sub(c),reach=r.size*1.95+radius;
+      if(start.lengthSq()<reach*reach&&this.rings.hiddenIds.has(r.id))return {point:previous.clone(),hit:true};
+      if(new THREE.Line3(previous,point).closestPointToPoint(c,true,new THREE.Vector3()).distanceToSquared(c)>reach*reach)continue;
+      const result=this.rings.constrainDescriptor(r,previous,point,radius);
+      if(result.hit){point=result.point;hit=true;}
     }
     return {point,hit};
   }
-  get state(){return {...this.active.state,pending:this.pending,groundRevision:this.ground.snapshot.revision,space:this.spaceMode,targetName:this.targetName,activeRock:this.surveyDescriptor?.key??this.active.rockId,activeRevision:this.surveyDescriptor?this.store.state.rocks?.[this.surveyDescriptor.key]?.revision??0:this.active.snapshot.revision,activePosition:this.position.toArray(),debrisBrake:Boolean(this.debrisBrake),surfaceRock:this.surfaceRock?{id:this.surfaceRock.rockId,name:this.surfaceRock.descriptor.name,direction:this.surfaceRock.descriptor.direction,...this.surfaceRock.state}:null,spaceRocks:[...this.cache.values()].map(r=>({id:r.rockId,...r.state}))};}
+  get state(){return {...this.active.state,inspection:this.inspectState?{...this.inspectState,point:this.inspectState.point.toArray()}:null,pending:this.pending,groundRevision:this.ground.snapshot.revision,space:this.spaceMode,targetName:this.targetName,activeRock:this.surveyDescriptor?.key??this.active.rockId,activeRevision:this.surveyDescriptor?this.store.state.rocks?.[this.surveyDescriptor.key]?.revision??0:this.active.snapshot.revision,activePosition:this.position.toArray(),debrisBrake:Boolean(this.debrisBrake),surfaceRock:this.surfaceRock?{id:this.surfaceRock.rockId,name:this.surfaceRock.descriptor.name,direction:this.surfaceRock.descriptor.direction,...this.surfaceRock.state}:null,spaceRocks:[...this.cache.values()].map(r=>({id:r.rockId,...r.state}))};}
   dispose(){this.surfaceRock?.dispose();this.fieldCache.dispose();this.ground.dispose();for(const rock of this.cache.values())rock.dispose();}
 }
 
