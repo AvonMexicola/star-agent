@@ -40,7 +40,7 @@ Logs: /tmp/star-agent-utility-hotkeys-{unit,build,browser,boarding}.log and
 checks use Chromium151 and hardware AMD Radeon860M ANGLE/OpenGL ES3.2;1440×900.
 No FPS claim or physical controller hardware testing. Shader/ship/world assets
 are unchanged in this follow-up. Independent source assertions passed; bounded
-HUD/help desktop and phone visual review is pending.
+HUD/help desktop and phone review is recorded below.
 
 [Builder HUD capture](hud-builder.png). Production is unchanged; no merge or
 public deployment is claimed. Keyboard controls remain as in flight options.
@@ -52,3 +52,17 @@ screens. Exact report: [first-review.md](first-review.md). The correction adds a
 scoped panel using the existing opaque dialog color token, inherited text color,
 11px desktop /12px phone type, and wrapping. It only styles the held-modifier
 legend. The production build passes; final browser re-review follows.
+
+
+Final runtime0a71f78 passes independent functional and bounded visual review at
+**4.0/5, all six criteria4**. [Exact report](final-review.md). The held legend is
+readable over clouds/MFDs, wraps into two rows at390×844 and one at1440/1600×900,
+and clears on release. The Graphics chord opens the real dialog; neutral release
+and B return to play. No horizontal overflow or browser errors/warnings measured.
+Scene scale1 on hardware AMD Radeon860M/ANGLE GL, Chromium151. Independent input
+suite14/14 passed. The ordinary HUD and inherited whole-scene budgets remain outside
+this scoped approval. No production deployment or physical-device claim.
+
+Final images: [desktop](desktop-final.png), [phone](phone-final.png),
+[direct Graphics](phone-graphics.png). PR38 includes the implementation, input
+regressions, earlier rejected evidence and final report. Preview5290 remains ready.
