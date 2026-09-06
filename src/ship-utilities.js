@@ -1,12 +1,13 @@
 import * as THREE from 'three';
+import { gearStep } from './gear-flight.js';
 
 /** Animate the authored telescoping assemblies, retaining the conservative
  * deployed collision envelope throughout motion and for navigation safety. */
 export function installLandingGear(ship) {
   let gears=[], progress=1;
   ship.readyPromise.then(model=>{model?.traverse(node=>{if(!node.isMesh&&node.name.startsWith('LandingGear_'))gears.push(node);});});
-  ship.updateGear=(dt,deployed)=>{
-    progress=THREE.MathUtils.clamp(progress+(deployed?1:-1)*Math.min(.1,Math.max(0,dt))/1.8,0,1);
+  ship.updateGear=(dt,deployed,authoritativeProgress)=>{
+    progress=authoritativeProgress??gearStep(progress,deployed,dt);
     const eased=progress*progress*(3-2*progress);
     for(const node of gears)node.scale.y=.08+.92*eased;
     ship.userData.gearProgress=progress;ship.userData.gearAssemblies=gears.length;

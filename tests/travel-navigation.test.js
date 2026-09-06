@@ -195,6 +195,8 @@ test('N requires an outward safe heading, spools without a target and N drops ou
 
 test('G and L are contextual utilities; landing assist deploys gear; B retains launch',t=>{
   const {navigation:n,press}=setup(t);
+  assert.equal(n.gearDeployed,false); // Orbital entry is already configured for cruise.
+  press('KeyG');assert.equal(n.gearDeployed,true);
   press('KeyG');assert.equal(n.gearDeployed,false);
   press('KeyL');assert.equal(n.shipLightsOn,true);assert.equal(n.autoland,false);
   n.transit(destinations.coast,100);press('KeyB');assert.equal(n.autoland,true);assert.equal(n.gearDeployed,true);

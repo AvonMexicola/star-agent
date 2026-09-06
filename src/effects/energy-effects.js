@@ -114,7 +114,7 @@ export class EnergyEffects {
     for(const l of this.lances){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;}
     this.beam.mesh.visible=false;for(const jet of this.jets)jet.mesh.visible=false;this.light.intensity=0;
   }
-  update(dt,{origin,camera,shipPosition,shipQuaternion,velocity=ZERO,flying=false,boost=false,throttle=0,mining=null,collector=origin,suspended=false}={}){
+  update(dt,{origin,camera,shipPosition,shipQuaternion,velocity=ZERO,flying=false,inSpace=false,relativistic=false,boost=false,throttle=0,mining=null,collector=origin,suspended=false}={}){
     dt=clamp(Number.isFinite(dt)?dt:0,0,.1);this.time+=dt;
     // Quick transit/long camera jumps must not leave a line across the solar system.
     if(suspended||(this._previousOrigin&&origin.distanceTo(this._previousOrigin)>Math.max(2000,velocity.length()*dt*4)))this.reset();
@@ -181,10 +181,12 @@ export class EnergyEffects {
         }
       }else this.particles.emit(b.p,this._v,{color:b.tint,life:.045,size:.12*b.power,kind:1,stretch:.025,gain:3});
     }
-    const speed=velocity.length(),targetTravel=flying&&!this.reducedMotion?clamp(Math.log10(Math.max(1,speed)/350)/2.5,0,1):0;
+    const speed=velocity.length(),targetTravel=flying&&inSpace&&!relativistic&&!this.reducedMotion?clamp(Math.log10(Math.max(1,speed)/25)/3,0,1):0;
     this.travel+=(targetTravel-this.travel)*(1-Math.exp(-dt*3));
-    this.slipstream.update({origin,eye:origin.clone().add(camera?.position??ZERO),velocity,intensity:this.travel,time:this.time,reducedMotion:this.reducedMotion},dt);
-    if(this.travel>.01&&camera){
+    // Ordinary velocity never generates an energy tunnel. TravelEffects owns
+    // the sole relativistic tunnel; this layer supplies sparse space dust.
+    this.slipstream.update({origin,eye:origin.clone().add(camera?.position??ZERO),velocity,intensity:0,time:this.time,reducedMotion:this.reducedMotion},dt);
+    if(this.travel>.01&&camera&&inSpace&&!relativistic&&flying){
       // A camera-local dust neighborhood, aligned with actual velocity (including reverse/strafe).
       const forward=velocity.clone().normalize(),right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion),up=new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion);
       const count=this.budget('travel',this.travel*340,dt);
@@ -192,12 +194,12 @@ export class EnergyEffects {
         const angle=this.random()*Math.PI*2,r=9+this.random()*55;
         const pos=origin.clone().addScaledVector(forward,90+this.random()*80).addScaledVector(right,Math.cos(angle)*r).addScaledVector(up,Math.sin(angle)*r);
         this._v.copy(forward).multiplyScalar(-100-this.travel*240);
-        const p=this.particles.emit(pos,this._v,{color:i%5?0x519bde:0xb3cfff,life:.65,size:.14+this.travel*.3,kind:1,stretch:.04+this.travel*.16,gain:1.6});
+        const p=this.particles.emit(pos,this._v,{color:i%5?0xb8c4cf:0xe0e8ef,life:.65,size:.06+this.travel*.12,kind:1,stretch:.02+this.travel*.06,gain:.8});
         p.cameraLocal=true;
       }
     }
     this.particles.update(dt,origin,this._collector);
   }
-  get state(){return {particles:this.particles.count,capacity:this.particles.capacity,boost:this.boost,travel:this.travel,bolts:this.bolts.length,miningContacts:this.miningContacts,collectedBursts:this.collectedBursts,weaponShots:this.weaponShots,weaponImpacts:this.weaponImpacts,lastWeapon:this.lastWeapon,lances:this.lances.filter(l=>l.active).length,slipstream:this.slipstream.material.uniforms.drive.value,reducedMotion:this.reducedMotion};}
+  get state(){return {spaceDust:this.particles.slots.filter(p=>p.alive&&p.cameraLocal).length,particles:this.particles.count,capacity:this.particles.capacity,boost:this.boost,travel:this.travel,bolts:this.bolts.length,miningContacts:this.miningContacts,collectedBursts:this.collectedBursts,weaponShots:this.weaponShots,weaponImpacts:this.weaponImpacts,lastWeapon:this.lastWeapon,lances:this.lances.filter(l=>l.active).length,slipstream:this.slipstream.material.uniforms.drive.value,reducedMotion:this.reducedMotion};}
   dispose(){this.slipstream.dispose();this.lances.forEach(l=>{l.shell.dispose();l.core.dispose();});this.particles.dispose();this.beam.dispose();this.jets.forEach(j=>j.dispose());this.light.removeFromParent();}
 }

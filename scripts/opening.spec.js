@@ -102,10 +102,24 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   await page.waitForFunction(()=>window.starAgent.state.mode==='flight'&&!window.starAgent.state.station.lifting);
   const hover=await page.evaluate(()=>window.starAgent.state.station.deckClearance);
   expect(hover).toBeCloseTo(3.55,3);
+  await expect(page.locator('#gear-flight-prompt')).toContainText(controller?'LB+RB + D-PAD ↓':'PRESS G');
   await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.speed>19);
   await page.waitForFunction(()=>window.starAgent.state.station.local[2]<-100);
   expect(await page.evaluate(()=>window.starAgent.state.station.deckClearance)).toBeCloseTo(hover,3);
+  expect(await page.evaluate(()=>window.starAgent.state.speed)).toBeLessThanOrEqual(35.001);
+  await page.screenshot({path:`/tmp/star-agent-gear-down-${controller?'controller':'keyboard'}.png`});
+  if(controller){
+    const set=async(index,down)=>{await page.evaluate(({index,down})=>{window.departurePad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});};
+    await set(4,true);await set(5,true);await set(13,true);await set(13,false);await set(4,false);await set(5,false);
+  }else await page.keyboard.press('g');
+  await expect(page.locator('#gear-flight-prompt')).toContainText('RETRACTING');
+  expect(await page.evaluate(()=>window.starAgent.state.speedProfile.limit)).toBeLessThanOrEqual(35);
+  await page.waitForFunction(()=>window.starAgent.state.utilities.gearProgress===0);
+  await expect(page.locator('#gear-flight-prompt')).toBeHidden();
+  await page.waitForFunction(()=>window.starAgent.state.speed>80);
+  expect(await page.evaluate(()=>window.starAgent.state.effects.slipstream)).toBe(0);
+  expect(await page.evaluate(()=>window.starAgent.state.tunnel.visible)).toBe(false);
   await controls.up('w');await controls.press('x');
   await page.screenshot({path:`/tmp/star-agent-opening-launch-${controller?'controller':'keyboard'}.png`});
   expect(errors).toEqual([]);

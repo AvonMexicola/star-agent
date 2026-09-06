@@ -49,7 +49,7 @@ export function createFlightEffects({effects,nav,mining,camera}){
       }
       collector.set(.2,-.35,-.15).applyQuaternion(nav.orientation).add(nav.position);
       const throttle=active?Math.max(nav.keys.has('KeyW')?1:0,Math.min(1,Math.abs(nav.velocity.dot(forward))/200)):0;
-      effects.update(dt,{origin,camera,shipPosition:position,shipQuaternion:nav.orientation,velocity:nav.velocity,flying:active,boost:nav.boost,throttle,mining:effects.miningInput,collector,suspended:suspended||!nav.focused||document.hidden});
+      effects.update(dt,{origin,camera,shipPosition:position,shipQuaternion:nav.orientation,velocity:nav.velocity,flying:active,inSpace:nav.flightEnvironment.regime==='SPACE'&&nav.stationDistance>500,relativistic:Boolean(nav.travel),boost:nav.boost,throttle,mining:effects.miningInput,collector,suspended:suspended||!nav.focused||document.hidden});
     },
   };
 }

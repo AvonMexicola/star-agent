@@ -85,7 +85,7 @@ test('regular flight crosses the atmosphere, lands and climbs back to space with
     for (const threshold of [70000,10000,1500,100]) if (nav.altitude < threshold) layers.add(threshold);
   }
   assert.equal(nav.mode, 'landed'); assert.equal(layers.size, 4);
-  nav.keys.clear(); nav.landOrLaunch(); nav.keys.add('Space'); nav.keys.add('ShiftLeft');
+  nav.keys.clear(); nav.landOrLaunch(); nav.toggleGear(); nav.keys.add('Space'); nav.keys.add('ShiftLeft');
   for (let frame = 0; frame < 60 * 600 && nav.altitude < 100000; frame++) nav.update(1/60);
   assert.equal(nav.mode, 'flight'); assert.ok(nav.altitude > 70000);
 });

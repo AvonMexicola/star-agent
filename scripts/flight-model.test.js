@@ -110,7 +110,7 @@ test('V toggles inertial navigation, preserves coasting and gates changes while 
   press('KeyB');assert.equal(nav.autoland,true);near(nav.angularVelocity.length(),0);
   nav.station=null;nav.autoland=false;
   // The new force path must cross the atmosphere without a transit or state reset.
-  nav.mode='flight';nav.flightAssist=false;nav.position.set(0,RADIUS+70010,0);nav.velocity.set(0,-300,0);
+  nav.mode='flight';nav.flightAssist=false;nav.toggleGear();for(let i=0;i<120;i++)nav.update(1/60);assert.equal(nav.gearLimited,false);nav.position.set(0,RADIUS+70010,0);nav.velocity.set(0,-300,0);
   nav.transit=nav.orbit=()=>assert.fail('inertial descent invoked a teleport');
   assert.equal(nav.flightEnvironment.regime,'SPACE');
   for(let i=0;i<120;i++){

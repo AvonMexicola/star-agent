@@ -9,12 +9,13 @@ test('heading drive, real gear and lights, held rifle, and persisted meadow opti
   await page.evaluate(()=>window.starAgent.setRenderScale(.8));
   // Controlled orbital fixture for visual/mechanical inspection, not a boarding journey.
   await page.evaluate(()=>{const n=window.starAgent.navigation,up=n.normal;n.orientToward(n.position.clone().add(up),up.clone().set(up.y,up.z,up.x));});
-  await page.keyboard.press('4');await page.keyboard.press('g');
+  await page.keyboard.press('4'); // Orbital entry already has gear stowed.
   await page.waitForFunction(()=>window.starAgent.state.utilities.gearProgress===0);
   expect((await page.evaluate(()=>window.starAgent.state)).utilities.gearAssemblies).toBe(4);
   await page.screenshot({path:`${output}/nomad-gear-up.png`});
   await page.keyboard.press('g');await page.waitForFunction(()=>window.starAgent.state.utilities.gearProgress===1);
   await page.screenshot({path:`${output}/nomad-gear-down.png`});
+  await page.keyboard.press('g');await page.waitForFunction(()=>window.starAgent.state.utilities.gearProgress===0);
   await page.keyboard.press('n');await page.waitForFunction(()=>window.starAgent.state.travel?.phase==='accelerating');
   await page.screenshot({path:`${output}/heading-drive.png`});
   await page.keyboard.press('n');await page.waitForFunction(()=>window.starAgent.state.travel===null);
@@ -68,12 +69,19 @@ test('controller-only orbital heading, utilities and graphics menu return safely
   };
   // Start through the supported orbital entry; no debug positioning or navigation calls.
   await page.goto('/?intro=0&debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed);
+  await page.evaluate(()=>{window.optionPad.axes[1]=-1;});
+  await page.waitForFunction(()=>window.starAgent.state.speed>900&&window.starAgent.state.effects.spaceDust>10);
+  expect(await page.evaluate(()=>window.starAgent.state.effects.slipstream)).toBe(0);
+  expect(await page.evaluate(()=>window.starAgent.state.tunnel.visible)).toBe(false);
+  await page.screenshot({path:`${output}/controller-normal-space-dust.png`});
+  await page.evaluate(()=>{window.optionPad.axes[1]=0;});await tap(1);
   // Aim away using only the right stick. Read orientation solely as steering feedback.
   await page.evaluate(()=>{window.optionPad.axes[2]=1;});
   await page.waitForFunction(()=>{const n=window.starAgent.navigation,q=n.orientation,up=n.normal;return -(2*(q.x*q.z+q.w*q.y)*up.x+2*(q.y*q.z-q.w*q.x)*up.y+(1-2*(q.x*q.x+q.y*q.y))*up.z)>.2;});
   await page.evaluate(()=>{window.optionPad.axes[2]=0;});await frames();
   const throttle=await page.evaluate(()=>window.starAgent.navigation.speedScale);
-  await chord(13);await page.waitForFunction(()=>!window.starAgent.state.utilities.gearDeployed);
+  await chord(13);await page.waitForFunction(()=>window.starAgent.state.utilities.gearProgress===1);
+  await chord(13);await page.waitForFunction(()=>window.starAgent.state.utilities.gearProgress===0);
   expect(await page.evaluate(()=>window.starAgent.navigation.speedScale)).toBe(throttle);
   await chord(15);await page.waitForFunction(()=>window.starAgent.state.camera.mode==='external');
   await page.evaluate(()=>{for(const i of [4,5])window.optionPad.buttons[i]={pressed:true,value:1};});await frames();
@@ -98,9 +106,11 @@ test('controller-only orbital heading, utilities and graphics menu return safely
   }
   await chord(12);await page.waitForFunction(()=>window.starAgent.state.travel?.manual);
   await page.waitForFunction(()=>window.starAgent.state.travel?.phase==='accelerating');
+  await page.waitForFunction(()=>window.starAgent.state.tunnel.visible);
+  expect(await page.evaluate(()=>window.starAgent.state.effects.slipstream)).toBe(0);
   await page.screenshot({path:`${output}/controller-heading-drive.png`});
   await chord(12);await page.waitForFunction(()=>window.starAgent.state.travel?.aborting||window.starAgent.state.travel===null);
-  await page.waitForFunction(()=>window.starAgent.state.travel===null);
+  await page.waitForFunction(()=>window.starAgent.state.travel===null&&!window.starAgent.state.tunnel.visible);
   await chord(9);await expect(page.locator('#graphics-settings')).toBeVisible();
   await frames();expect(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)).toBe('grassDistance');
   await tap(0);expect((await page.evaluate(()=>window.starAgent.state)).graphics.grassDistance).toBe(160);

@@ -45,9 +45,9 @@ test('transit reset and suspended frames clear trails, light, jets and bolts',()
 });
 test('travel responds to speed and reduced motion suppresses speed streaks',()=>{
  const fx=new EnergyEffects(new THREE.Scene()),camera=new THREE.PerspectiveCamera();
- for(let i=0;i<60;i++)fx.update(1/60,{origin:v(),camera,flying:true,velocity:v(0,0,-1e6)});
+ for(let i=0;i<60;i++)fx.update(1/60,{origin:v(),camera,flying:true,inSpace:true,velocity:v(0,0,-1e6)});
  assert.ok(fx.state.travel>.8);assert.ok(fx.state.particles>10);
- fx.reducedMotion=true;fx.reset();fx.update(.1,{origin:v(),camera,flying:true,velocity:v(0,0,-1e6)});
+ fx.reducedMotion=true;fx.reset();fx.update(.1,{origin:v(),camera,flying:true,inSpace:true,velocity:v(0,0,-1e6)});
  assert.equal(fx.state.travel,0);assert.equal(fx.state.particles,0);fx.dispose();
 });
 

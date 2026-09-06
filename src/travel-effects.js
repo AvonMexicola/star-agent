@@ -56,7 +56,8 @@ export class TravelEffects {
     }
     this.uniforms.intensity.value = THREE.MathUtils.lerp(this.uniforms.intensity.value, target, 1 - Math.exp(-5 * Math.max(0, dt)));
     this.uniforms.speed.value = (state?.speed || 0) / LIGHT_SPEED;
-    this.mesh.visible = this.uniforms.intensity.value > .005;
+    if(!nav.travel)this.uniforms.intensity.value=0;
+    this.mesh.visible = Boolean(nav.travel)&&this.uniforms.intensity.value > .005;
     this.mesh.position.copy(camera.position); this.mesh.quaternion.copy(camera.quaternion);
   }
   // The atmosphere replaces pixels with no world depth with its sky. Composite

@@ -1,3 +1,4 @@
+import { gearPrompt } from './gear-flight.js';
 import { RenderResolution, fullscreenViewport } from './render-resolution.js';
 import { createGraphicsSettings } from './graphics-settings.js';
 import { createUtilityLights, installLandingGear } from './ship-utilities.js';
@@ -267,6 +268,7 @@ try {
     resizePending=true;
   }});
   const graphicsButton=document.createElement('button');graphicsButton.type='button';graphicsButton.id='graphics-button';graphicsButton.textContent='GRAPHICS';graphicsButton.addEventListener('click',()=>graphicsSettings.open());document.querySelector('.top-actions').prepend(graphicsButton);
+  const gearNotice=document.createElement('div');gearNotice.id='gear-flight-prompt';gearNotice.setAttribute('role','status');gearNotice.hidden=true;document.body.append(gearNotice);
   const utilityStatus=document.createElement('div');utilityStatus.id='ship-utility-status';document.querySelector('.telemetry').append(utilityStatus);
   const controllerUI=createControllerUI({nav,actions:[
     {id:'free-drive',label:'Heading drive · N / LB+RB + ↑',activate:()=>nav.travel?nav.cancelTravel():nav.beginFreeTravel(),enabled:()=>Boolean(nav.travel)||nav.mode==='flight'},
@@ -283,6 +285,7 @@ try {
   });
   function updateHud(time){
     const controller=nav.controllerActive;
+    const departurePrompt=gearPrompt(nav,controller);if(gearNotice.textContent!==departurePrompt)gearNotice.textContent=departurePrompt;gearNotice.hidden=!departurePrompt||Boolean(document.querySelector('dialog[open]'));
     utilityStatus.textContent=(nav.mode==='walk'||nav.mode==='eva')?`LIGHT ${nav.flashlightOn?'ON':'OFF'} · ${controller?'LB+RB + ←':'L'}`:`GEAR ${nav.gearDeployed?'DOWN':'UP'} · LIGHTS ${nav.shipLightsOn?'ON':'OFF'} · ${controller?'LB+RB SHORTCUTS':'N DRIVE'}`;
     document.body.classList.toggle('piloting',nav.locked||controller);
     $('controller-status').textContent=nav.gamepad.status;
@@ -404,7 +407,7 @@ try {
       ship.setDoor(nav.doorOpen);ship.update(dt);
       ship.updateDisplays(dt,nav,inventory,course);
     }
-    ship.updateGear(dt,nav.gearDeployed);utilityLights.update(nav,origin);
+    ship.updateGear(dt,nav.gearDeployed,nav.gearProgress);utilityLights.update(nav,origin);
     ship.userData.reentryHeating.update({density:nav.flightEnvironment.density,velocity:nav.cabinFlight?nav.shipVelocity:nav.velocity,active:nav.mode==='flight'||nav.cabinFlight,reset:transiting},dt,camera);
     document.body.classList.toggle('crashed',nav.mode==='crashed');
     $('crash-panel').hidden=nav.mode!=='crashed';

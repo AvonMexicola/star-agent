@@ -3,6 +3,7 @@ import { PYRE_MAX_HEIGHT } from './pyre-world.js';
 import { Vector3 } from 'three';
 import { AEON, SELENE, PYRE } from './celestial.js';
 import { shipHandling } from './ship-handling.js';
+import { GEAR_FLIGHT } from './gear-flight.js';
 
 export const LIGHT_SPEED = 299_792_458;
 export const TRAVEL = Object.freeze({
@@ -50,6 +51,7 @@ export function stationSpeedLimit(distance = Infinity) {
 /** Speed policy shared by manual flight and the travel-entry UI. */
 export function flightSpeedProfile({
   shipId = 'nomad',
+  gearLimited = false,
   airless = false,
   altitude = 0,
   clearance = altitude,
@@ -67,7 +69,7 @@ export function flightSpeedProfile({
   const requested = boost ? boosted : cruise;
   const floorLimit = floorClearance === Infinity ? Infinity : 25 + floorClearance * .5;
   const stationLimit = stationSpeedLimit(stationDistance);
-  const limit = Math.min(requested, floorLimit, stationLimit);
+  const limit = Math.min(requested, floorLimit, stationLimit, gearLimited?GEAR_FLIGHT.speed:Infinity);
   const throttleAmount = Number.isNaN(throttle) || typeof throttle !== 'number'
     ? 1 : clamp(throttle, .05, 1);
   const speed = limit * throttleAmount;

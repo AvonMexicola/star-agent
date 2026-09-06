@@ -52,3 +52,6 @@ body.crashed:after{background:radial-gradient(ellipse at center,transparent 25%,
 #loading-progress{width:min(260px,70vw);height:4px;margin-top:24px;border:0;border-radius:2px;accent-color:var(--mint);background:var(--line)}
 #loading-progress::-webkit-progress-bar{background:var(--line);border-radius:2px}#loading-progress::-webkit-progress-value{background:var(--mint);border-radius:2px}#loading-progress::-moz-progress-bar{background:var(--mint);border-radius:2px}
 #loading-status{max-width:85vw;text-align:center}
+
+#gear-flight-prompt { position:fixed; bottom:7rem; left:50%; transform:translateX(-50%); z-index:12; max-width:calc(100vw - 2rem); width:max-content; padding:.8rem 1rem; border:1px solid var(--line); background:var(--dialog-solid); color:var(--mint); font-size:12px; line-height:1.6; text-align:center; pointer-events:none; }
+#gear-flight-prompt[hidden] { display:none; }
