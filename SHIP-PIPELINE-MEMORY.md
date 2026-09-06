@@ -632,3 +632,22 @@ elevators, rotating ring collision and schema-2 warehouse transfers. Ship storag
 uses the same manifest and capacity rules. The Atlas docking/launch envelope must
 stay clear when adding hangar furniture or hanging signs. This station work is
 stacked on PR #14; the manager owns integration and deployment.
+
+### Asset budget and editable-source checkpoint — 2026-09-06
+
+The PR20 integration's `0d75c3f` reduces Nomad's small bevels (width at most .04 m)
+from three to two segments while retaining its explicit six-segment pilot chair;
+Atlas uses two segments for its manufactured bevels. Both runtime GLBs and tracked
+editable `.blend` files were rebuilt from the checked-in scripts. Nomad is
+57,784 triangles / 3,783,616 bytes; Atlas is 58,460 / 3,770,128. No functional
+geometry or UV stream was removed. Names, transforms, materials and lift origins
+remain unchanged; millimetre-scale bevel sampling differences are documented in
+[the production record](docs/qa/hangar-production-record.md).
+
+Repeat exports preserved positions, normals, indices and JSON, with generated UV
+rounding differences up to 1.19e-7; do not claim byte-identical output. Always check
+both geometry and encoded byte budgets before accepting a hero asset. The final
+0d75c3f production journey suite passed all 18 cases; visual acceptance and any
+later art correction remain tracked in the same record. The original Opus review
+failed at 3.67; its later attempt stopped at the service's session limit. Neither
+an attempted review nor this memory file constitutes merge approval.

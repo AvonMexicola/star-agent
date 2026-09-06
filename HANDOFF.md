@@ -505,3 +505,51 @@ The proceedings retain the controller timing failure, interrupted first tour,
 exterior performance regression and their verified corrections. Raw reports stay
 in `/tmp`; no independent visual score, hardware performance approval or final
 merge is claimed. Opus review/explicit Cees exception remains the final decision.
+
+
+## READY FOR REVIEW: final station candidate and asset production record — 2026-09-06
+
+TO Fable 5.1 manager: Cees requested the merge and a complete asset pipeline
+record for reuse. PR20 integrates default 85aa836, the modular twenty-bay station,
+finished hangar, Nomad and Atlas. Runtime is 1eeb302 (parent 0d75c3f; integration
+merge 7ddef61). Isolated checkout: /tmp/star-agent-hangar-current. Preserve the
+shared checkout's unrelated gear/controller work; no shared branch was switched.
+
+The reusable entry point is docs/asset-production-standard.md, already linked
+from AGENTS.md. Complete proceedings: docs/qa/hangar-production-record.md.
+Functional results, AMD timing tables, pixelmatch comparison, the original
+3.67 Opus review, incomplete later review, source-art provenance and twelve
+curated new/before images are under docs/qa/. SHIP-PIPELINE-MEMORY.md and
+STATION-PIPELINE-MEMORY.md include the final lessons. This is a file handoff,
+not a claimed manager read receipt.
+
+Verified: all 21 unit-test files and build pass; 18 production browser cases at
+0d75c3f (4.9 minutes), then two focused production checks after the ceiling fix
+at 1eeb302 (28.7 seconds). Eight final AMD views completed with zero errors,
+warnings, request failures or unexpected lifecycle failures. Image comparison
+found covered ceiling diffusers; the visibility test failed before correction
+and passed afterward, alongside both floor tests. Named hierarchy, door ownership
+and vertex AO are preserved; distant geometry batches retain every triangle.
+Nomad: 57,784 triangles / 3,783,616 bytes. Atlas: 58,460 / 3,770,128, with rebuilt
+editable .blend files and the Nomad chair retained. Every prop assembly meets
+10k triangles / 1 MB.
+
+Latest AMD 860M measurement at 1440x900, scale 1: affected GPU p95 <=9.339 ms,
+CPU callback p95 <=6.8 ms; the menu issues zero WebGL draws across 60 callbacks.
+Earlier much slower measurements remain recorded; their cause is unconfirmed.
+Orbit still inherits 477 draws against the 300 budget. No GPU timing claim uses
+RAF/vsync intervals.
+
+Merge is NOT complete: the original Opus review failed at 3.67; the final Opus 5
+attempt (session 20c55ac0-2541-4775-93cd-a8dce1d1af55) ended without a rubric at
+its session limit, reporting a 19:00 Amsterdam reset. No waiver or final visual
+approval is inferred. Repeat independent review with its own captures from the
+stable host preview; root captures cannot replace it. PR20 remains open/unmerged.
+
+Latest playable preview: http://127.0.0.1:5249/ (W takes control; F interacts).
+The transient user unit star-agent-hangar-current-preview.service serves
+/tmp/star-agent-hangar-current-build. Host HTTP 200 was verified. A restricted
+namespace connection failure does not establish that a host service stopped.
+To stop this specific preview when finished:
+systemctl --user stop star-agent-hangar-current-preview.service
+Port 5239 was a historical candidate. No production deployment is claimed.

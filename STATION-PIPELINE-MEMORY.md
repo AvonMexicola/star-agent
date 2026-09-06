@@ -204,3 +204,34 @@ The modular GLBs keep the structural slab below the authored deck. The separate
 manager hull refinement in PR #22 is not part of this merge candidate. Use
 `scripts/hangar-merge.config.js` for combined checks and
 `scripts/hangar-integration-tour.mjs` for reproducible production captures.
+
+## Detailed hull and final review checkpoint — 2026-09-06
+
+The preceding 029cae8/PR22 separation describes an earlier checkpoint. Integration
+commit `7ddef61` includes default `85aa836`, including the manufactured hull,
+recessed coffers, deck plates and baked AO. Keep named Hull/HangarInterior parent
+groups over split material primitives; preserve COLOR_0 using cached vertex-color
+material variants. Distant geometry may batch only when material, vertex layout,
+index format and door ownership agree. Independent berth doors remain separate.
+
+The screenshot comparison at `0d75c3f` caught decorative ceiling sheets covering
+the new recessed light apertures. `1eeb302` removes those redundant sheets while
+retaining the shell coffers, beams and small service strips. Upward visibility rays
+from the walking floor now reach eight sampled diffusers; both LOD deck/floor
+checks still pass. This is a reusable integration lesson: material correctness
+alone does not prove that an authored light is physically visible.
+
+The current review preview is the host user service
+`star-agent-hangar-current-preview.service` at `http://127.0.0.1:5249/`, serving
+`/tmp/star-agent-hangar-current-build`. Check it from the browser's host network;
+a restricted namespace connection failure is not proof that the service stopped.
+The earlier 5239 preview is historical. The independent Opus re-review remains
+incomplete after its session limit; root's captures are labelled separately.
+
+Use [the production record](docs/qa/hangar-production-record.md),
+[hardware evidence](docs/qa/hangar-hardware-review.md), and
+[before/after comparison](docs/qa/hangar-visual-comparison.md) for exact candidate
+hashes, real checks, open gates and eventual merge outcome. The reusable
+[asset production standard](docs/asset-production-standard.md) remains the
+entry point for the next asset; preserve failures and resolved findings as well
+as passing screenshots.

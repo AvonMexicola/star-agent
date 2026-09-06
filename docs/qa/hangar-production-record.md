@@ -13,12 +13,18 @@ specific reference case, not a declaration that all station art is finished.
 [verbatim review](hangar-opus-review-2026-09-06.md) is archived separately.
 The default branch subsequently advanced through `7e7194a` to `85aa836`; its
 detailed hull and baked vertex ambient occlusion are integrated with the hangar
-finish at candidate `7ddef61db8b2626679266ea64568c1b0a01006e3` in the isolated
-`/tmp/star-agent-hangar-current` worktree. The current production build, 21 unit
-test files and 18 production browser checks pass. Ceiling, sign and ring
-corrections are implemented but await actual game visual verification; hardware performance acceptance remains pending. Historical
-passes below remain attributed to their original candidate. The candidate merge
-commit exists; PR merge into the default branch and deployment are not claimed.
+finish at merge `7ddef61`, followed by ship-budget revision `0d75c3f` and
+ceiling-visibility correction `1eeb3022cbdd8483a81f35b1cb15d3863161b323`, in the
+isolated `/tmp/star-agent-hangar-current` worktree. The latest production build
+and 21 unit test files pass. Root's complete production suite passed 18 checks
+in 4.9m at `0d75c3f`; the ceiling correction's three visibility tests pass after
+failing before the fix. The completed coffer hardware sample passes affected hangar count/timing
+budgets; the coffer tour and focused browser checks remain pending. Independent visual acceptance is **BLOCKED by reviewer quota**:
+the attempt ended without a rubric and reported a 19:00 Amsterdam reset. Earlier
+hardware failures remain recorded with an unconfirmed slowdown cause; the current
+passing sample does not establish stable cross-session performance.
+Historical passes remain attributed to their original candidate. The candidate
+merge exists; PR merge into the default branch and deployment are not claimed.
 
 **Historical checkpoint:** runtime candidate `7a73ecfb50c801dab55de5b5eb5f357aa15d6ad8` for
 [PR #20](https://github.com/AvonMexicola/star-agent/pull/20), based on integration
@@ -456,8 +462,9 @@ regression. Its isolated production server used port 5248.
 
 The latest review preview is `http://127.0.0.1:5249/`. Port 5239 remains the old
 `4da1a5d` reviewed candidate, runtime `7a73ecf`; it must not supply evidence for
-the new revision. Final hardware captures under
-`/tmp/star-agent-hangar-hardware-final` and independent Opus re-review are pending.
+the new revision. Later hardware captures under
+`/tmp/star-agent-hangar-hardware-final` and `/tmp/star-agent-hangar-hardware-budget`
+are complete and recorded below; independent Opus re-review remains pending.
 Hardware browser regression success is not a frame-budget measurement.
 
 ### Current acceptance boundary
@@ -465,12 +472,154 @@ Hardware browser regression success is not a frame-budget measurement.
 | Gate | Current disposition |
 |---|---|
 | Revised export/material contracts | Grouped required nodes, 83 coloured primitives preserved, LOD 48 → 27 at 6,932 triangles; final integrated verification remains the lead's responsibility |
-| Ceiling/sign/ring appearance | Implemented; actual game captures and visual review pending |
-| Independent visual acceptance | Historical candidate FAILED at 3.67; no pass or waiver recorded for the revision |
-| Hardware performance | AMD Radeon 860M / ANGLE GL available; benchmark and budget disposition pending |
-| Final combined regression/build | PASS at `7ddef61`: production build, 21 unit test files, 18 production browser checks in 5.0m; hardware and visual gates remain separate |
+| Ceiling/sign/ring appearance | Root completed eight final production views, inspected by the implementation team; corrected diffusers are visible. Independent visual acceptance remains blocked |
+| Independent visual acceptance | BLOCKED: incomplete re-review ended with a session limit reporting 19:00 Amsterdam reset; historical candidate FAILED at 3.67, no new rubric/pass/waiver |
+| Hardware performance | Current `1eeb302` affected-view sample PASS: GPU p95 ≤9.339 ms, CPU p95 ≤6.800 ms, hangar counts within limits. Earlier failures/variance retained without a confirmed cause; modal passes, orbit 477 draws still fails inherited 300-draw budget |
+| Final combined regression/build | Build and 21 unit files PASS at `1eeb302`; diffuser and two floor tests PASS after reproducing the visibility failure. Root full browser suite: 18 PASS in 4.9m at `0d75c3f`; latest two focused browser cases PASS in 28.7s |
 | Merge/deployment | Candidate merge `7ddef61` exists; PR merge into the default branch and deployment are not recorded |
 
 The integration lead will append the final served candidate, commands, evidence,
 review result and any verified merge/deployment outcome. This checkpoint claims
 neither completed polish nor a completed acceptance cycle.
+
+
+## Ship-budget revision and later hardware results
+
+Candidate `0d75c3f8d61c33a87ab660c6fb1ec567db0760f2` follows `7ddef61` and
+implements the bounded ship bevel reductions evaluated in the hardware audit.
+Nomad reduces bevels up to 0.04 m from three to two segments, retaining wider
+three-segment edges and its six-segment pilot chair. Atlas reduces default bevels
+from three to two segments. No functional parts are removed; materials, UVs,
+node names, parent relationships and transforms are retained. These tessellation
+changes are a quality tradeoff requiring visual review, not lossless optimization.
+
+| Rebuilt source/runtime asset | Nomad | Atlas |
+| --- | ---: | ---: |
+| GLB triangles | 57,784 | 58,460 |
+| GLB bytes | 3,783,616 | 3,770,128 |
+| Editable `.blend` bytes | 903,013 | 796,496 |
+| Individual ship 60k-triangle / 4 MB gate | PASS | PASS |
+
+The builders regenerate both editable `.blend` and runtime GLB by default; the
+explicit `-- --runtime-only` option skips source saving. The
+[Nomad record](../nomad-ship.md#mesh-budget-refinement--2026-09-06) records unchanged
+overall bounds and at most 1.990 mm individual-mesh differences. The
+[Atlas record](../atlas-freighter.md#mesh-budget-refinement--2026-09-06) records a
+1.652 mm inward nose-bound shift and otherwise unchanged overall bounds. Focused
+ship inventory, freighter and navigation checks passed, including moving-node
+origins, lift layouts and the flight envelope. Prior ship screenshots remain
+historical evidence; final revised-ship visual acceptance is pending.
+
+The props agent compared repeated exports: JSON, positions, normals and indices
+were identical. Generated UV values differed by at most **5.96×10⁻⁸ for Nomad**
+and **1.19×10⁻⁷ for Atlas**, so exact geometry reproduced but binary GLB SHA values
+differed. The raw source audit is `/tmp/star-agent-ship-budget-audit.json`.
+Record this numerical export limit instead of claiming byte-identical rebuilds
+or removing retained UVs solely to force a matching hash.
+
+Two subsequent AMD Radeon 860M / ANGLE GL runs are now complete:
+`/tmp/star-agent-hangar-hardware-final/evidence.json` at `7ddef61`, then
+`/tmp/star-agent-hangar-hardware-budget/evidence.json` at `0d75c3f`. The
+[hardware review](hangar-hardware-review.md#later-measurements-and-current-disposition)
+retains their actual CPU/GPU medians, p95 values, counts, sample sizes and earlier
+results. Both newer runs confirm the H help dialog issues zero WebGL draws across
+60 of 60 callbacks. Individual ship and prop budgets pass; the inherited orbit
+draw budget still fails at 477 versus 300.
+
+The latest affected-view GPU medians range from 14.698 to 19.040 ms and GPU p95
+from 18.011 to 26.564 ms. CPU medians and p95 also exceed 10 ms. The frame gate is
+**not established; this measured run fails**. Even orbit's unchanged 477 draws /
+304,642 triangles shifted from an initial 3.005 ms GPU median to 9.957 ms. No
+cause is confirmed; these results do not establish user activity, thermal state
+or a particular runtime defect as the explanation.
+
+At `0d75c3f`, the integration lead reports the build and 21 unit files pass.
+The earlier eighteen-case browser pass belongs to `7ddef61`; root subsequently
+completed the full eighteen-case suite at `0d75c3f` in 4.9m, as detailed below.
+Opus's own attempted run did not complete and supplied no new rubric. No visual
+pass, performance exception, PR merge or deployment is claimed.
+
+
+## Ceiling visibility correction and final review interruption
+
+Root's full production browser suite against `0d75c3f` completed **18 passed
+(4.9m)**, recorded in `/tmp/star-agent-hangar-budget-browser.log`, using
+`/tmp/star-agent-hangar-review-live.config.mjs`. It remains distinct from the
+independent reviewer's attempt, whose full suite did not complete.
+
+The Opus re-review ended with a reported session limit and a reset at **19:00
+Europe/Amsterdam**. This is the tool's reported time, not a guarantee that service
+will resume then. Partial captures and denied/incomplete commands supplied no
+complete tour, rubric or approval. The
+[exact attempt status](hangar-opus-rereview-attempt.md) retains what ran and failed.
+The visual gate is **BLOCKED by quota**, with no inferred waiver and no merge.
+
+Actual image comparison then exposed a separate geometry defect: decorative
+ceiling panels occluded the recessed diffusers. Commit
+`1eeb3022cbdd8483a81f35b1cb15d3863161b323`, parent `0d75c3f`, fixes that clearance.
+Its rebuilt station hero contains **89,944 triangles**. The visibility test failed
+on the prior geometry; all three focused tests pass on the correction. The full
+21-unit-file suite and production build also pass. This establishes the geometry
+regression and functional checks; the subsequent completed capture and measurement are recorded below. They do not replace an independent visual score.
+
+The preview now runs as `star-agent-hangar-current-preview.service`, serving the
+production build on `http://127.0.0.1:5249/`; root's host-network check returned
+HTTP 200. Port 5239 remains the old `4da1a5d` / runtime `7a73ecf` candidate.
+A restricted-network connection failure does not establish that this host service
+has stopped. The preview's persistence and reachability do not imply deployment.
+
+At that intermediate checkpoint, the coffer hardware run was in progress and the root tour and two focused browser cases were planned next. No partial evidence is accepted as a completed result. The final served
+runtime is `1eeb302`; a subsequent documentation-only commit may change HEAD
+without changing that runtime. Final measurements and checks will be appended
+when complete; no successful outcome is assumed.
+
+
+### Completed coffer hardware sample
+
+The hardware run at served runtime `1eeb302` completed with exit 0 and evidence
+timestamp **2026-09-06 13:55:13.762 UTC** in
+`/tmp/star-agent-hangar-hardware-coffers/evidence.json`. AMD Radeon 860M / ANGLE
+GL, Chromium 151.0.7922.173, 1440×900 and render scale 1 are recorded. Every
+rendered view has 60 valid GPU samples, with zero errors, warnings, diagnostics,
+discarded queries or timer errors and no capture failure.
+
+The four affected views meet the hangar count and measured timing budgets:
+GPU p95 is at most **9.339 ms**, CPU callback p95 at most **6.800 ms**, with
+400–488 draws and 557,720–675,505 triangles. The menu again passes with **60/60
+callbacks issuing zero WebGL draws**. Orbit is 477 draws / 304,642 triangles,
+GPU median/p95 3.601/3.981 ms and CPU median/p95 6.100/7.500 ms; its inherited
+300-draw budget still fails. The [hardware table](hangar-hardware-review.md#completed-coffer-measurement-1eeb302)
+contains each affected view's exact rounded median and p95.
+
+This current sample **passes the affected hangar budgets**, without claiming
+stable performance across sessions. Earlier slower results remain recorded and
+their cause is unconfirmed. CPU/GPU costs overlap and are not summed. The root
+coffer tour and two focused browser cases subsequently completed, as recorded below. Independent
+visual acceptance remains blocked by quota; no new rubric, waiver or merge is
+recorded. Documentation-only commits do not change the tested runtime `1eeb302`.
+
+
+### Final root captures and bounded checks
+
+At runtime `1eeb302`, the full eight-view AMD production tour completed with zero
+errors, warnings, request failures or unexpected lifecycle closures. Root inspected
+the corrected gallery: framed ceiling diffusers are now visible through the shell
+coffers. Both focused production browser cases passed in **28.7 seconds**: finished
+service-corner materials/props/prints/shadows and a clear floor while the camera
+origin moves at eye height. The earlier complete **18-case** production journey
+suite passed at `0d75c3f` in **4.9 minutes**; no runtime interaction code changed in
+the final ceiling-only correction.
+
+Final capture command: `node scripts/hangar-integration-tour.mjs --url http://127.0.0.1:5249 --out /tmp/star-agent-hangar-coffer-tour --extras --perf1440 --hardware`.
+Focused check command: `npm run test:browser -- -c /tmp/star-agent-hangar-review-live.config.mjs scripts/hangar-finish.spec.js scripts/opening.spec.js -g 'finished service corner|hangar floor remains clear'`.
+The [visual comparison](hangar-visual-comparison.md) contains exact image hashes,
+matched backend/viewpoints, intentional differences, and the first comparison's
+ceiling defect followed by its correction. No historical baseline was silently
+replaced. The pipeline memories link this complete record for future assets.
+
+**Delivery remains PR20, open and unmerged.** The independent final Opus rubric is
+blocked by the reported session quota; the first completed review remains a 3.67
+failure on its historical candidate. The inherited orbit's 477 draw calls exceed
+the 300-call budget. No exception, final visual pass or production deployment is
+inferred. The latest measured hangar sample, ship budgets and functional checks
+are passing; timing variation and all earlier failures remain in the record.

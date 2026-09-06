@@ -4,20 +4,67 @@ PR #20 combines the Nomad cockpit refinement, unlockable Atlas, twenty modular
 hangars, central hub, cargo transfer and manufactured service-corner finish with
 the current opening, system travel, water, player menu and controller handoff.
 
-**Current runtime candidate:** `7ddef61db8b2626679266ea64568c1b0a01006e3`,
-a merge of the reviewed `4da1a5d` stack and default branch `85aa836`. It includes
-the newer detailed hull and the subsequent review corrections. The production
-build, **21 unit test files** and **18 production browser checks** pass. Final
-hardware measurements and independent Opus re-review remain pending. This merge
-commit exists on the candidate branch; it is not evidence that PR #20 has merged
-into the default branch or been deployed.
+**Current runtime candidate:** `1eeb3022cbdd8483a81f35b1cb15d3863161b323`,
+following ship-budget revision `0d75c3f` and integration merge `7ddef61` with
+default `85aa836`. The latest correction keeps decorative ceiling panels from
+occluding the recessed diffusers. The full **21 unit test files** and production
+build pass at `1eeb302`; the focused ceiling visibility regression failed before
+the correction; the diffuser test and both floor tests pass afterward. The complete root production
+browser suite passed **18 checks in 4.9m at `0d75c3f`**. The completed coffer hardware sample passes affected hangar count/timing
+budgets. The completed eight-view coffer tour has zero browser diagnostics, and both focused production browser cases passed in 28.7 seconds.
 
-The current review preview is `http://127.0.0.1:5249/`. The older
-`http://127.0.0.1:5239/` serves the historical `4da1a5d` candidate (runtime
-`7a73ecf`); do not use it to judge the revision. The automated browser run used
-its own production server on port **5248**.
+Independent Opus re-review is **BLOCKED by the reported session quota**. The
+[attempt record](hangar-opus-rereview-attempt.md) preserves its incomplete work
+and reported reset at 19:00 Europe/Amsterdam; no new rubric or approval exists.
+Earlier hardware failures and unexplained timing variation are retained; the
+current bounded sample passes without establishing stability across sessions. No PR merge or deployment is claimed.
 
-## Current candidate verification: 7ddef61
+The current review preview is `http://127.0.0.1:5249/`, served by the persistent
+user service `star-agent-hangar-current-preview.service`; the integration lead's
+host-network check returned HTTP 200. This is a local preview, not deployment.
+The older `http://127.0.0.1:5239/` remains the historical `4da1a5d` candidate
+(runtime `7a73ecf`). The earlier automated `7ddef61` run used port 5248.
+
+## Current correction and verification: 1eeb302
+
+Actual image comparison exposed a ceiling geometry problem: decorative coffers
+covered recessed lights. The bounded correction changes their clearance, retaining
+the diffusers and their authored emission. The rebuilt station hero is **89,944
+triangles**. A visibility regression failed on the old geometry and passes all
+three focused tests on the correction; the full 21-unit-file suite and build
+also pass. The completed hardware evidence under
+`/tmp/star-agent-hangar-hardware-coffers` records 60 GPU samples per rendered view:
+affected GPU p95 ≤9.339 ms, CPU callback p95 ≤6.800 ms, 400–488 draws and
+557,720–675,505 triangles. The affected hangar sample passes; all diagnostics and
+discarded-query counts are zero. The menu again passes 60/60 zero-draw callbacks.
+[Exact measurements and limits](hangar-hardware-review.md#completed-coffer-measurement-1eeb302)
+retain the earlier variance without attributing its cause. Orbit still fails the
+inherited draw budget at 477. Root completed all eight views in `/tmp/star-agent-hangar-coffer-tour` with zero errors, warnings, request failures or lifecycle failures. Both focused production cases (finished corner rendering and floor visibility) passed in 28.7 seconds; see `/tmp/star-agent-hangar-coffer-browser.log`. The [matched image comparison](hangar-visual-comparison.md) preserves the finding and corrected captures.
+
+At the preceding `0d75c3f` checkpoint, root ran
+`npm run test:browser -- -c /tmp/star-agent-hangar-review-live.config.mjs` and
+recorded **18 passed (4.9m)** in `/tmp/star-agent-hangar-budget-browser.log`.
+This is root's complete production suite, separate from Opus's unfinished run.
+The ceiling correction passed its bounded follow-up checks; the older full suite remains attributed to the runtime it tested.
+
+## Previous asset and performance checkpoint: 0d75c3f
+
+Nomad now has 57,784 triangles / 3,783,616 bytes; Atlas has 58,460 triangles /
+3,770,128 bytes. Both meet the individual ship budgets while retaining UVs,
+functional parts and editable Blender sources. The rebuilt ships' visual review
+is blocked by reviewer quota; [production proceedings](hangar-production-record.md#ship-budget-revision-and-later-hardware-results)
+record the bevel tradeoffs and reproducibility limits.
+
+The [hardware ledger](hangar-hardware-review.md#later-measurements-and-current-disposition)
+preserves the earlier runs. At `0d75c3f`, the affected views had GPU medians of
+14.698–19.040 ms and p95 values of 18.011–26.564 ms; CPU callback medians and p95
+also exceed 10 ms. At that checkpoint, frame-budget acceptance was **not established; the run failed**. Orbit remains at 477 draws / 304,642 triangles, with GPU median changing
+from 3.005 ms initially to 9.957 ms; the cause is unconfirmed. The H help dialog
+now passes with 60/60 callbacks issuing zero actual WebGL draws. Ship/prop budget
+passes and the modal correction do not resolve the scene timing or inherited
+orbit draw-budget failure.
+
+## Completed combined verification: 7ddef61
 
 - `npm test`: **21 test files pass**, as reported by the integration lead. This
   Node reporter count is not an inferred count of individual assertions/cases.
@@ -29,10 +76,10 @@ its own production server on port **5248**.
   Coverage retains the prior opening, Atlas, service, fallback, boarding,
   controller, phone and continuous-travel journeys, and adds the modal
   zero-draw regression.
-- The final hardware benchmark is being captured separately under
-  `/tmp/star-agent-hangar-hardware-final`. Its results and performance acceptance
-  are **pending**, as is the independent Opus re-review. Successful browser
-  journeys on hardware do not by themselves establish the frame-time budget.
+- Its later hardware run is recorded under `/tmp/star-agent-hangar-hardware-final`.
+  Opening and cockpit GPU p95 exceeded 10 ms; see the hardware ledger for exact
+  CPU/GPU summaries and the still slower subsequent `0d75c3f` run. Successful
+  browser journeys do not by themselves establish the frame-time budget.
 
 The completed earlier Opus review scored **3.67: not mergeable** at `4da1a5d`
 (runtime `7a73ecf`). Its [verbatim report](hangar-opus-review-2026-09-06.md) and
@@ -154,9 +201,11 @@ remains. Full reports and failed-run evidence stay in `/tmp`.
 The first Opus invocation returned HTTP 429 with a session reset at 13:50
 Europe/Amsterdam on 2026-09-06. The later completed review of `4da1a5d` scored
 **3.67 and failed acceptance**; the original pending label is superseded by the
-[archived report](hangar-opus-review-2026-09-06.md). The revised `7ddef61`
-candidate requires its own review, which is pending alongside final hardware
-performance acceptance. `QUALITY.md` requires a passing rubric or an explicit
+[archived report](hangar-opus-review-2026-09-06.md). The newer candidate requires its own completed review. The attempt at `0d75c3f`
+ended without a rubric after a reported session limit; the current `1eeb302`
+visual gate is BLOCKED pending reviewer availability. The latest affected-view hardware sample passes its measured count/timing
+budgets, with earlier unexplained variance retained and orbit's draw-budget
+failure still open. `QUALITY.md` requires a passing rubric or an explicit
 Cees “polish later” decision before merge. No new review score is claimed.
 
 The operations gallery remains decorative architecture with static graphics.
