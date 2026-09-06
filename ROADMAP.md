@@ -190,6 +190,8 @@ Exit criteria: 50 players formation-flying around the station at 20 Hz with < 15
 
 **Goal:** Rust/Dune-style modular building; harvest → refine → craft; caves with rare items.
 
+- **Design plan: `docs/design/base-building.md`** (Mainframe = tool cupboard, slices B1–B6, Tier-1 piece set, tool
+  tiers, materials-by-world table, power). Build in slice order.
 - **Building**: socket-snapped pieces (foundation 4 m, wall, doorway, window, roof, ramp, pillar, gate; tiers wood → stone → metal), placed against `terrainHeight` with a levelling foundation; 1 000-piece bases; server-validated placement; ownership + **access code**.
 - **Interference shield**: base core projects a sphere (radius by tier, 150–600 m); ships without the code get a "NO ENTRY" MFD warning at 2 R and are pushed out/engines cut inside R; players on foot can still walk in (raids), so walls matter. Visual: faint hex-bubble shader at the boundary.
 - **Resources**: wood (trees — chopping removes the instance via the existing exclusion system and regrows), stone (rocks/cliffs), metal ore (veins in cliffs and caves, ring asteroids), crystals (caves only). Tools: hatchet, pick, **mining laser** (beam + heat, works on ore and asteroids).
