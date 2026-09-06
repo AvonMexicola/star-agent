@@ -36,7 +36,7 @@ export function generatePyrePatch({ face, level, ix, iy }) {
       if (normal[0] * d[0] + normal[1] * d[1] + normal[2] * d[2] < 0) normal = normal.map(v => -v);
       entry.normal = normal;
     }
-    data.set([sample.activity, sample.fresh, sample.sulphur, sample.height], index * 4);
+    data.set([sample.activity, sample.fresh, sample.sulphur, sample.glow], index * 4);
     if (!skirt) { maxHeight = Math.max(maxHeight, sample.height); minHeight = Math.min(minHeight, sample.height); }
     for (let axis = 0; axis < 3; axis++) {
       const value = p[axis] - d[axis] * skirt - center[axis], k = index * 3 + axis;

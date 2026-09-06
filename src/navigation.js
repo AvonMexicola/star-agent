@@ -183,8 +183,11 @@ export class Navigation {
     const sun=this.sunDirection,along=new THREE.Vector3().crossVectors(d,sun).normalize();
     if(along.lengthSq()<.5)along.crossVectors(Math.abs(d.y)<.9?UP:RIGHT,d).normalize();
     if(along.dot(new THREE.Vector3(...pyreFrame().y))<0)along.negate();
+    // Turn 40 degrees from north toward the night side (away from the star) so the lava fields are ahead-left.
+    const west=sun.clone().addScaledVector(d,-sun.dot(d)).normalize().negate();
+    const view=along.multiplyScalar(Math.cos(.7)).addScaledVector(west,Math.sin(.7)).normalize();
     const dip=Math.acos(PYRE.radius/(PYRE.radius+Math.max(0,altitude))),pitch=Math.min(1.3,dip+.06);
-    this.orientToward(this.position.clone().addScaledVector(along,1000*Math.cos(pitch)).addScaledVector(d,-1000*Math.sin(pitch)),d);
+    this.orientToward(this.position.clone().addScaledVector(view,1000*Math.cos(pitch)).addScaledVector(d,-1000*Math.sin(pitch)),d);
     this.jumpHeight=0;this.jumpVelocity=0;
   }
   get stationDistance(){return this.station?.ready?this.position.distanceTo(this.station.worldPosition):Infinity;}

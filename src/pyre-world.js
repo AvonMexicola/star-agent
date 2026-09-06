@@ -18,10 +18,10 @@ export const AEON_YEAR_SECONDS = 120 * 86400;
 export const PYRE_PERIOD_SECONDS = AEON_YEAR_SECONDS * (PYRE_ORBIT_RADIUS / SUN_DISTANCE) ** 1.5;
 /** Thin CO2 air: density, scale heights and scattering coefficients in SI units. */
 export const PYRE_ATMOSPHERE = Object.freeze({
-  height: 45_000, planeHeight: 12_000, seaLevelDensity: .09, scaleHeight: 6_000, mieScaleHeight: 2_600,
-  betaR: Object.freeze([2.4e-6, 4.2e-6, 8.0e-6]), betaM: Object.freeze([1.7e-5, 1.15e-5, 6.2e-6]), g: .70, gain: 11,
+  height: 45_000, planeHeight: 12_000, seaLevelDensity: .09, scaleHeight: 6_000, mieScaleHeight: 2_000,
+  betaR: Object.freeze([2.0e-6, 3.4e-6, 6.4e-6]), betaM: Object.freeze([6.5e-6, 4.4e-6, 2.4e-6]), g: .70, gain: 11,
 });
-export const PYRE_LIGHTING = Object.freeze({ sky: 0x9c6a48, ground: 0x2b1510, ambientNight: .06, ambientDay: .24, environment: .05 });
+export const PYRE_LIGHTING = Object.freeze({ sky: 0xa8704c, ground: 0x3a1a10, ambientNight: .15, ambientDay: .3, environment: .06 });
 
 const STAR = new Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
 // Ecliptic normal: perpendicular to the star direction, as close to Aeon's north as possible.
@@ -135,8 +135,8 @@ export const CRATERS = Object.freeze(Array.from({ length: 56 }, () => {
   const radius = .0028 + random() ** 2 * .032;
   return Object.freeze({ direction: Object.freeze([r * Math.cos(angle), y, r * Math.sin(angle)]), radius, depth: radius * PYRE_RADIUS * .07 });
 }));
-/** Body-frame landing site: on the dusk terminator in the Throne Flows, 104 km from Cinder Throne. */
-export const PYRE_LANDING_BODY_DIRECTION = Object.freeze(pyreLatLon(13.5, -94.5));
+/** Body-frame landing site: 5 degrees into the day side of the dusk terminator, between Cinder Throne and the Throne Flows. */
+export const PYRE_LANDING_BODY_DIRECTION = Object.freeze(pyreLatLon(13.5, -85));
 export const PYRE_ARRIVAL_ALTITUDE = 60_000;
 /** World-frame landing direction for the current epoch. */
 export function pyreLandingDirection() { return fromPyreBody(...PYRE_LANDING_BODY_DIRECTION); }
@@ -161,7 +161,7 @@ export function pyreSurfaceBody(x, y, z) {
   // Fault scarps along an iso-line of a broad field, where a regional mask allows.
   const fault = qnoise(x * 14 + 21.3, y * 14 - 6.6, z * 14 + 9.9) - .5, faultMask = smooth(.42, .62, qnoise(x * 7.3 - 3.1, y * 7.3 + 2.9, z * 7.3 - 7.7));
   height += smooth(-.012, .012, fault) * 140 * faultMask;
-  let activity = 0, fresh = 0, sulphur = 0, region = 'BASALT PLAINS', volcanic = 0, calderaHeat = 0;
+  let activity = 0, fresh = 0, sulphur = 0, glow = 0, region = 'BASALT PLAINS', volcanic = 0, calderaHeat = 0;
   for (const v of VOLCANOES) {
     const dot = x * v.direction[0] + y * v.direction[1] + z * v.direction[2];
     if (dot < 1 - v.radius * v.radius * 1.2) continue;
@@ -183,7 +183,7 @@ export function pyreSurfaceBody(x, y, z) {
       calderaHeat = Math.max(calderaHeat, 1 - smooth(.03, .07, r));
       activity = Math.max(activity, channel * (1 - smooth(.45, .95, r)) * .9);
       fresh = Math.max(fresh, (1 - smooth(.35, 1.05, r)) * smooth(.35, .6, qnoise(x * 120 + 7, y * 120 - 3, z * 120 + 1)));
-      sulphur = Math.max(sulphur, (1 - smooth(.05, .22, r)) * smooth(.52, .8, qnoise(x * 1500 + 2, y * 1500 + 4, z * 1500 - 3)) * .85);
+      sulphur = Math.max(sulphur, (1 - smooth(.05, .22, r)) * smooth(.6, .85, qnoise(x * 1500 + 2, y * 1500 + 4, z * 1500 - 3)) * .6);
     }
     if (r < .09) region = 'CALDERA'; else if (r < 1.05) region = v.name;
   }
@@ -198,17 +198,20 @@ export function pyreSurfaceBody(x, y, z) {
     if (dot < 1 - f.radius * f.radius * 1.4) continue;
     const r = chord([x, y, z], f.direction) / f.radius;
     const edge = 1 + .35 * (qnoise(x * 60 + 4, y * 60 - 1, z * 60 + 6) - .5);
-    const field = (1 - smooth(.55, 1.05, r * edge)) * (1 - .6 * highland);
+    const field = (1 - smooth(.55, 1.05, r * edge)) * (1 - .35 * highland);
     if (field <= 0) continue;
     // Lava lakes (5 km patches) and rivers (bright ridged channels) give the glow structure at every range.
     const lakes = smooth(.5, .74, fbm(x * 230 + 1, y * 230 + 2, z * 230 + 3, 3) + .5);
     const rivers = smooth(.62, .96, ridged(x * 760 + 9, y * 760 - 4, z * 760 + 7, 2));
     activity = Math.max(activity, field * Math.max(rivers, lakes * .85, .16));
+    // Smooth glow for distant views: lakes and the field's broad heat, without the thin rivers that alias at coarse LODs.
+    glow = Math.max(glow, field * (.22 + .78 * lakes));
     fresh = Math.max(fresh, field * smooth(.3, .7, lakes + rivers * .5));
     if (field > .3) region = f.name;
   }
   activity = Math.max(activity, calderaHeat);
   fresh = Math.max(fresh, calderaHeat);
+  glow = Math.max(glow, calderaHeat);
   // Oxidised ochre plains, away from fresh flows and the highlands.
   const oxide = smooth(.46, .66, qnoise(x * 23 + 9.4, y * 23 - 5.5, z * 23 + 2.2) + (broad) * .3) * plains * (1 - fresh);
   // Metre-scale relief: 30 m and 8 m bands, rougher (a'a clinker) on fresh flows.
@@ -238,13 +241,26 @@ export function pyreSurfaceBody(x, y, z) {
   color = color.map((v, i) => v * (1 - oxide) + ochre[i] * oxide);
   color = color.map((v, i) => v * (1 - fresh) + glass[i] * fresh);
   color = color.map((v, i) => v * (1 - sulphur) + yellow[i] * sulphur);
-  return { height, color, activity, fresh, sulphur, oxide, region };
+  return { height, color, activity, fresh, sulphur, oxide, glow, region };
 }
 /** World-frame sampler: rendering, contact and walking all use this one. */
 export function pyreSurface(x, y, z) { return pyreSurfaceBody(...toPyreBody(x, y, z)); }
 export function pyreRegion(x, y, z) {
   const b = toPyreBody(x, y, z);
   return `${b[2] > .04 ? 'DAY SIDE' : b[2] < -.04 ? 'NIGHT SIDE' : 'TERMINATOR'} · ${pyreSurfaceBody(...b).region}`;
+}
+
+/** Spiral search around a landmark for a body-frame direction whose activity is in [low, high]. */
+export function findHotSpot(landmark, low = .45, high = .7) {
+  let best = null, bestScore = Infinity;
+  for (let i = 0; i < 900; i++) {
+    const t = i / 900, radius = t * landmark.radius * .9, angle = i * 2.39996;
+    const d = landmark.direction.map((v, k) => v + landmark.east[k] * Math.cos(angle) * radius + landmark.north[k] * Math.sin(angle) * radius);
+    const l = Math.hypot(...d), dir = d.map(v => v / l), a = pyreSurfaceBody(...dir).activity;
+    const score = a < low ? low - a : a > high ? a - high : 0;
+    if (score < bestScore) { bestScore = score; best = dir; if (score === 0) break; }
+  }
+  return best;
 }
 
 export function pyreOffset(position) { return position.clone().sub(new Vector3(...PYRE_POSITION)); }
@@ -304,7 +320,7 @@ export function bakePyreMaps(width = 1024, height = 512) {
     for (let col = 0; col < width; col++) {
       const phi = (col / width - .5) * Math.PI * 2, x = Math.sin(phi) * sin, z = Math.cos(phi) * sin;
       const s = pyreSurfaceBody(x, y, z), i = (row * width + col) * 4;
-      data[i] = Math.round(255 * Math.min(1, s.activity)); data[i + 1] = Math.round(255 * Math.min(1, s.fresh));
+      data[i] = Math.round(255 * Math.min(1, s.glow)); data[i + 1] = Math.round(255 * Math.min(1, s.fresh));
       data[i + 2] = Math.round(255 * Math.min(1, s.sulphur)); data[i + 3] = Math.round(255 * Math.min(1, s.oxide));
     }
   }
