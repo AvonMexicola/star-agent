@@ -7,7 +7,7 @@ export const MOON_DISTANCE = 24_000_000;
 export const MOON_POSITION = Object.freeze(new Vector3(-.1, 0, -1).normalize().multiplyScalar(MOON_DISTANCE).toArray());
 export const MOON_MAX_HEIGHT = 16_000;
 export const MOON_GRAVITY = 1.62;
-export const MOON_GENERATOR_VERSION = 3;
+export const MOON_GENERATOR_VERSION = 4;
 export const MOON_LANDING_DIRECTION = Object.freeze(new Vector3(.45,.22,.87).normalize().toArray());
 export const MOON_NAME = 'Selene';
 
@@ -38,7 +38,7 @@ const north=new Vector3().crossVectors(landing,east).normalize();
 export const LANDING_FRAME=Object.freeze({east:Object.freeze(east.toArray()),north:Object.freeze(north.toArray())});
 const localDirection=(x,z)=>landing.clone().addScaledVector(east,x/MOON_RADIUS).addScaledVector(north,z/MOON_RADIUS).normalize().toArray();
 export const LOCAL_CRATERS=Object.freeze([
-  [-1350,100,1354,520],[-3400,1200,1900,740],[1800,2300,1250,510],
+  [-1350,100,1354,1350],[-3400,1200,1900,1650],[1800,2300,1250,980],
   [-280,-480,145,43],[-490,570,210,78],[460,-210,95,32],
   [-6000,-2500,3100,1100],[2600,-3400,2100,760],
   ...Array.from({length:28},(_,i)=>{
@@ -57,7 +57,7 @@ function relief(x,y,z){
   height+=(noise(x*720+13,y*720-9,z*720+3)-.5)*165;
   height+=(noise(x*2500-2,y*2500+5,z*2500+8)-.5)*18;
   height+=(noise(x*18000+6,y*18000-2,z*18000+8)-.5)*.9;
-  let fresh=0,rock=0;
+  let fresh=0,rock=0,glacier=0,ochre=0,obsidian=0,capIce=0;
   const crater=(c,local)=>{
     const dot=x*c.direction[0]+y*c.direction[1]+z*c.direction[2];
     if(dot<1-c.radius*c.radius*1.45)return;
@@ -85,14 +85,38 @@ function relief(x,y,z){
       const shape=1-smooth(.05,1,dist);
       height+=radius*.55*shape;rock=Math.max(rock,shape);
     }
+    // A sinuous ice-filled fault gives explorers a continuous ground landmark.
+    // Its broad trough and tributaries are geometry, with the same ice mask used
+    // for the material. Blend all regional additions out before the cap boundary.
+    const regional=1-smooth(18000,28000,Math.hypot(u,v));
+    const fault=u+220-Math.sin(v/900)*380-Math.sin(v/240)*65;
+    glacier=(1-smooth(90,260,Math.abs(fault)))*regional;
+    height-=glacier*180;
+    ochre=(1-smooth(1000,2700,Math.hypot(u-2600,v+3400)))*regional;
+    obsidian=(1-smooth(3000,5000,Math.hypot(u+7600,v+5300)))*regional;
+    capIce=(1-smooth(3000,5000,Math.hypot(u-5400,v-11500)))*regional;
     // Fractured peaks beyond the basin: silhouettes are geometry, not a sky card.
-    for(const [a,b,r,h] of [[-2300,-1900,1800,1600],[-4200,3400,2200,2100],[2200,4600,2700,1900]]){
-      const distance=Math.hypot(u-a,v-b)/r;
-      height+=h*Math.pow(Math.max(0,1-distance),1.5)*( .63+Math.pow(ridge(780,8,-3,5),2)*.37);
+    for(const [a,b,r,h] of [[-7600,-5300,4800,6800],[-11000,6500,5200,7600],[5400,11500,5200,6200]]){
+      const du=u-a,dv=v-b,angle=Math.atan2(dv,du);
+      const distance=Math.hypot(du,dv)/(r*(1+.16*Math.sin(angle*5)+.08*Math.cos(angle*9)));
+      const envelope=Math.pow(Math.max(0,1-distance),1.05);
+      const gullies=.73+.27*Math.pow(ridge(460,8,-3,5),2);
+      height+=h*envelope*gullies;
     }
   }
-  const frost=smooth(.46,.73,noise(x*38-7,y*38+2,z*38+8)+fresh*.6)*(1-rock*.7);
-  return {height,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075-rock*.05)),frost};
+  const frost=Math.max(glacier,capIce*.88,smooth(.50,.77,noise(x*38-7,y*38+2,z*38+8)+fresh*.6)*.7)*(1-rock*.7);
+  const basalt=Math.max(rock,obsidian,1-smooth(.30,.62,detail));
+  // Materials are sampled at every terrain vertex, including centimetre LODs.
+  // Ground identity must never depend on a kilometre-wide orbital texture pixel.
+  const veins=smooth(.47,.64,noise(x*35000+8,y*35000-5,z*35000+2));
+  const ice=Math.min(1,Math.max(capIce*.88,frost*(.55+veins*.45)+veins*.15*(1-obsidian)));
+  const base=[.115,.135,.17].map((v,i)=>v*(1-basalt)+[.019,.028,.046][i]*basalt);
+  const color=base.map((v,i)=>{
+    v=v*(1-ochre)+[.25,.105,.046][i]*ochre;
+    v=v*(1-ice)+[.32,.56,.72][i]*ice;
+    return v*(.80+veins*.32)+fresh*.18;
+  });
+  return {height,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075-rock*.05)),frost:ice,color};
 }
 const landingHeight=relief(landing.x,landing.y,landing.z).height;
 /** Direction-based color and canonical geometry remain continuous at UV seams. */
@@ -103,6 +127,20 @@ export function moonSurface(x,y,z){
     sample.height=landingHeight+(sample.height-landingHeight)*smooth(35,150,distance);
   }
   return sample;
+}
+
+/** Named, fixed geological districts provide an orientation cue while exploring. */
+export function moonRegion(x,y,z){
+  const u=(x*east.x+y*east.y+z*east.z)*MOON_RADIUS,v=(x*north.x+y*north.y+z*north.z)*MOON_RADIUS;
+  if(x*landing.x+y*landing.y+z*landing.z<.997)return 'FAR HIGHLANDS';
+  if(Math.hypot(u,v)<180)return 'CRESCENT RIM';
+  if(Math.hypot(u+7600,v+5300)<2700)return 'OBSIDIAN CROWN';
+  if(Math.hypot(u+11000,v-6500)<3000)return 'TWIN SPIRES';
+  if(Math.hypot(u-5400,v-11500)<3200)return 'FROSTWALL';
+  if(Math.hypot(u-2600,v+3400)<2700)return 'COPPER EJECTA';
+  if(Math.abs(u+220-Math.sin(v/900)*380-Math.sin(v/240)*65)<300)return 'GLASS RIFT';
+  if(Math.hypot(u+1350,v-100)<1500)return 'CRESCENT BASIN';
+  return 'ASH HIGHLANDS';
 }
 
 export function moonOffset(position) { return position.clone().sub(new Vector3(...MOON_POSITION)); }

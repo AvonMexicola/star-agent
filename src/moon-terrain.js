@@ -10,7 +10,7 @@ const normalized=(x,y,z)=>{const l=Math.hypot(x,y,z);return [x/l,y/l,z/l];};
 export function generateMoonPatch({face,level,ix,iy}) {
   const size=2/2**level,u0=-1+ix*size,v0=-1+iy*size;
   const d=cubeDirection(face,u0+size/2,v0+size/2),centerRadius=MOON_RADIUS+moonSurface(...d).height,center=d.map(v=>v*centerRadius);
-  const count=(MOON_GRID+1)**2+4*(MOON_GRID+1),positions=new Float32Array(count*3),normals=new Float32Array(count*3),directions=new Float32Array(count*3),points=new Float32Array(count*3),surface=new Float32Array(count*2);
+  const count=(MOON_GRID+1)**2+4*(MOON_GRID+1),positions=new Float32Array(count*3),normals=new Float32Array(count*3),directions=new Float32Array(count*3),points=new Float32Array(count*3),colors=new Float32Array(count*3),surface=new Float32Array(count*2);
   const stride=MOON_GRID+3,samples=[];
   for(let y=-1;y<=MOON_GRID+1;y++)for(let x=-1;x<=MOON_GRID+1;x++){
     const d=cubeDirection(face,u0+size*x/MOON_GRID,v0+size*y/MOON_GRID),sample=moonSurface(...d);
@@ -29,7 +29,7 @@ export function generateMoonPatch({face,level,ix,iy}) {
     surface[index*2]=sample.height;surface[index*2+1]=sample.frost;
     for(let axis=0;axis<3;axis++){
       const value=p[axis]-d[axis]*skirt-center[axis],k=index*3+axis;
-      positions[k]=value;directions[k]=d[axis];normals[k]=data.normal[axis];
+      colors[k]=sample.color[axis];positions[k]=value;directions[k]=d[axis];normals[k]=data.normal[axis];
       points[k]=value+((center[axis]%256)+256)%256;
     }
   };
@@ -39,7 +39,7 @@ export function generateMoonPatch({face,level,ix,iy}) {
   const edges=[Array.from({length:MOON_GRID+1},(_,i)=>i),Array.from({length:MOON_GRID+1},(_,i)=>i*(MOON_GRID+1)+MOON_GRID),Array.from({length:MOON_GRID+1},(_,i)=>MOON_GRID*(MOON_GRID+1)+MOON_GRID-i),Array.from({length:MOON_GRID+1},(_,i)=>(MOON_GRID-i)*(MOON_GRID+1))];
   let next=(MOON_GRID+1)**2;
   for(const edge of edges){const start=next;for(const index of edge)write(next++,index%(MOON_GRID+1),Math.floor(index/(MOON_GRID+1)),Math.max(.15,size*MOON_RADIUS*.18));for(let i=0;i<MOON_GRID;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
-  return {center,positions,normals,directions,points,surface,indices:new Uint16Array(indices)};
+  return {center,positions,normals,directions,points,colors,surface,indices:new Uint16Array(indices)};
 }
 
 export class MoonTerrain {
@@ -57,7 +57,7 @@ export class MoonTerrain {
   build(node){
     if(node.mesh)return;
     const data=generateMoonPatch(node),geometry=new THREE.BufferGeometry();
-    for(const [name,values] of [['position',data.positions],['normal',data.normals],['moonDirection',data.directions],['moonPoint',data.points]])geometry.setAttribute(name,new THREE.BufferAttribute(values,3));
+    for(const [name,values] of [['position',data.positions],['normal',data.normals],['moonDirection',data.directions],['moonPoint',data.points],['color',data.colors]])geometry.setAttribute(name,new THREE.BufferAttribute(values,3));
     geometry.setAttribute('moonSurfaceData',new THREE.BufferAttribute(data.surface,2));
     geometry.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(data.positions.length/3*2),2));
     geometry.setIndex(new THREE.BufferAttribute(data.indices,1));geometry.computeBoundingSphere();

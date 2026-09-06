@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Vector3, Scene, MeshBasicMaterial, Matrix4 } from 'three';
-import { MOON_RADIUS, MOON_POSITION, MOON_DISTANCE, MOON_MAX_HEIGHT, MOON_LANDING_DIRECTION, LANDING_FRAME, LOCAL_CRATERS, CRATERS, moonSurface, moonAltitude, moonApproach, constrainMoonStep } from '../src/moon-world.js';
+import { MOON_RADIUS, MOON_POSITION, MOON_DISTANCE, MOON_MAX_HEIGHT, MOON_LANDING_DIRECTION, LANDING_FRAME, LOCAL_CRATERS, CRATERS, moonSurface, moonRegion, moonAltitude, moonApproach, constrainMoonStep } from '../src/moon-world.js';
 import { bodyAltitude, bodySurfacePoint, bodySurfaceNormal, SELENE } from '../src/celestial.js';
 import { generateMoonPatch, MoonTerrain, MOON_GRID } from '../src/moon-terrain.js';
 import { MoonRings, ringDensity, ringRock, RING_NORMAL } from '../src/moon-rings.js';
@@ -116,13 +116,13 @@ test('the exploration basin has substantial relief, steep crater walls and a lev
   const landing=new Vector3(...MOON_LANDING_DIRECTION),east=new Vector3(...LANDING_FRAME.east),north=new Vector3(...LANDING_FRAME.north);
   const sample=(x,z)=>{const d=landing.clone().addScaledVector(east,x/MOON_RADIUS).addScaledVector(north,z/MOON_RADIUS).normalize();return moonSurface(...d.toArray()).height;};
   let minimum=Infinity,maximum=-Infinity,steep=0;
-  for(let x=-7000;x<=7000;x+=200)for(let z=-7000;z<=7000;z+=200){
+  for(let x=-14000;x<=14000;x+=200)for(let z=-14000;z<=14000;z+=200){
     const h=sample(x,z);minimum=Math.min(minimum,h);maximum=Math.max(maximum,h);
     const slope=Math.hypot((sample(x+5,z)-sample(x-5,z))/10,(sample(x,z+5)-sample(x,z-5))/10);
     if(slope>Math.tan(Math.PI/9))steep++;
     assert.ok(h<MOON_MAX_HEIGHT);
   }
-  assert.ok(maximum-minimum>1800,'landscape has kilometre-scale relief');
+  assert.ok(maximum-minimum>7500,'exploration terrain spans over 7.5 km vertically');
   assert.ok(steep>50,'many slopes exceed twenty degrees');
   for(const [x,z] of [[0,0],[20,0],[-20,0],[0,20],[0,-20]])assert.ok(Math.abs(sample(x,z)-sample(0,0))<.0001);
   const c=LOCAL_CRATERS[0],d=new Vector3(...c.direction),tangent=new Vector3().crossVectors(d,new Vector3(0,1,0)).normalize();
@@ -155,4 +155,21 @@ test('ice cells are stable across rebases, stay above terrain and disappear insi
   ice.update(point,point.clone().add(new Vector3(3,5,7)),2,true);assert.deepEqual(ice.geometry.attributes.position.array,before);
   for(const particle of ice.descriptors){const world=new Vector3(...particle.position).add(center);assert.ok(bodyAltitude(world,SELENE)>.59);}
   ice.update(point,point,3,false);assert.equal(ice.points.visible,false);ice.dispose();assert.equal(scene.children.length,0);
+});
+
+
+test('geological districts have distinct materials and labels at walking and flight scale',()=>{
+  const landing=new Vector3(...MOON_LANDING_DIRECTION),east=new Vector3(...LANDING_FRAME.east),north=new Vector3(...LANDING_FRAME.north);
+  const sample=(u,v)=>{const d=landing.clone().addScaledVector(east,u/MOON_RADIUS).addScaledVector(north,v/MOON_RADIUS).normalize();return {...moonSurface(...d.toArray()),region:moonRegion(...d.toArray())};};
+  const ice=sample(-220,0),rock=sample(-7600,-5300),copper=sample(2600,-3400),frostwall=sample(5400,11500);
+  assert.equal(sample(0,0).region,'CRESCENT RIM');assert.equal(ice.region,'GLASS RIFT');
+  assert.equal(rock.region,'OBSIDIAN CROWN');assert.equal(copper.region,'COPPER EJECTA');assert.equal(frostwall.region,'FROSTWALL');
+  assert.ok(ice.color[2]>rock.color[2]*4,'ice and obsidian read as distinct regions');
+  assert.ok(copper.color[0]>copper.color[2]*3,'copper ejecta has a distinct warm mineral tint');
+  assert.ok(frostwall.frost>.65,'Frostwall visibly carries ice');
+  const colors=Array.from({length:20},(_,i)=>sample(i-10,0).color[2]);
+  assert.ok(Math.max(...colors)-Math.min(...colors)>.03,'ground materials vary inside the landing shelf');
+  // Region materials, like heights, stay continuous across a patch boundary.
+  const a=generateMoonPatch({face:4,level:15,ix:13000,iy:18000}),b=generateMoonPatch({face:4,level:15,ix:13001,iy:18000});
+  for(let y=0;y<=MOON_GRID;y++)assert.deepEqual(a.colors.slice((y*(MOON_GRID+1)+MOON_GRID)*3,(y*(MOON_GRID+1)+MOON_GRID)*3+3),b.colors.slice(y*(MOON_GRID+1)*3,y*(MOON_GRID+1)*3+3));
 });

@@ -455,3 +455,14 @@ transparent HDR effects over sky without changing log-depth reconstruction. Pres
 those hooks alongside travel/camera work. The ring is decorative, without collision,
 mining, orbit simulation or shadows cast onto the ground. Review/merge/deployment
 remain with Fable/Claude; this local handoff does not assert a read acknowledgment.
+
+
+## Selene surface identity follow-up — Astra (2026-09-06)
+
+Cees reports uniform beige terrain and insufficient extreme elevations. Continuing
+PR #15 in /tmp/star-agent-lunar-landscape. Own moon-world/moon-terrain/moon material,
+lunar tests and evidence/docs; main.js changes only lunar biome label/diagnostics.
+5178 is occupied by opening-work: the earlier lunar preview claim was incorrect
+(the lunar service failed on its occupied port). Will use dedicated port 5180,
+leaving opening preview intact. Implement canonical contrasting geological regions,
+glacial channels and larger mountain relief; verify rendered surface and landing.

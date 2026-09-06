@@ -24,7 +24,8 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:90000});
   await page.waitForFunction(()=>window.starAgent.state.moon.lod>=14);
   const landed=await page.evaluate(()=>window.starAgent.state);
-  expect(landed.body).toBe('selene');expect(landed.biome).toBe('SELENE · AIRLESS MOON');expect(landed.atmosphereFraction).toBe(0);
+  await expect(page.locator('#biome')).toHaveText('SELENE · CRESCENT RIM');
+  expect(landed.moon.effects.generatorVersion).toBe(4);expect(landed.body).toBe('selene');expect(landed.biome).toBe('SELENE · CRESCENT RIM');expect(landed.atmosphereFraction).toBe(0);
   await page.keyboard.press('f');
   await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>2.3);await page.keyboard.up('w');await page.keyboard.press('x');
   await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
@@ -79,6 +80,13 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
   await page.waitForFunction(()=>window.starAgent.state.moon.lod>=16);await page.waitForTimeout(2500);await page.screenshot({path:`${evidence}/craters-and-ice.png`});
   const a=await page.screenshot();await page.waitForTimeout(1200);const b=await page.screenshot();expect(a.equals(b)).toBe(false);
   const surface=await page.evaluate(()=>window.starAgent.state);expect(surface.moon.effects.iceParticles).toBeGreaterThan(0);
+  // A low-flight survey shows the rift, crater floor and distinct mountain districts together.
+  await page.evaluate(()=>{
+    const nav=window.starAgent.navigation,up=nav.normal.clone(),east=nav.position.clone().set(0,1,0).cross(up).normalize(),north=up.clone().cross(east);
+    const shelf=nav.position.clone();nav.position.addScaledVector(up,7000).addScaledVector(east,6500).addScaledVector(north,-7500);
+    nav.orientToward(shelf.clone().addScaledVector(east,-1800),up);
+  });
+  await page.waitForTimeout(5000);await page.screenshot({path:`${evidence}/geology-survey.png`});
   const rock=ringRock(5);
   await page.evaluate(({rock,normal})=>{
     const nav=window.starAgent.navigation,center=nav.position.clone().fromArray(window.starAgent.state.moon.position),target=center.clone().add(nav.position.clone().fromArray(rock.position));
