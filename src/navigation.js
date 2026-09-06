@@ -81,11 +81,13 @@ export class Navigation {
   get interaction(){
     if(this.mode==='landed')return 'F · LEAVE PILOT SEAT';
     if(this.mode!=='walk'||!this.shipPosition)return '';
+    const service=this.station?.interaction?.(this);if(service)return service.label;
     const hit=this.shipInteraction(this.toShipLocal());
     if(hit?.startsWith('lift:')){const lift=this.freighter.lifts.find(l=>l.id===hit.slice(5));return `F · ${lift.name.toUpperCase()} · ${Math.abs(lift.y-lift.target)>.001?'MOVING':lift.y===lift.low?'RAISE':'LOWER'}`;}
     if(hit==='seat')return 'F · SIT IN PILOT CHAIR';
     if(hit==='storage')return 'F · OPEN CARGO STORAGE';
     if(hit==='door')return this.doorOpen?'F · CLOSE HATCH & RAMP':'F · OPEN HATCH & LOWER RAMP';
+    if(this.dockedAtStation&&!this.insideShip)return this.station?.location==='hub'?'CENTRAL CONCOURSE · ELEVATORS AT REAR':'CARGO TERMINAL & CENTRAL HUB · AFT WALL';
     if(this.freighter)return this.insideShip?'F AT LIFT CONTROLS · G FLEET':'APPROACH THE REAR ELEVATOR · F TO CALL';
     return this.insideShip?'WALK AFT TO THE HATCH':'APPROACH THE REAR HATCH TO BOARD';
   }
@@ -162,6 +164,7 @@ export class Navigation {
     this.notify(this.freighter?'Touchdown. F leaves the pilot chair; walk aft to lower the belly elevator.':'Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
   }
   embark(){
+    if(this.mode==='walk'&&this.stationAction?.())return;
     if(this.mode==='flight'){this.notify('Land your ship before disembarking. Press L near the surface.');return;}
     if(this.mode==='landed'){
       this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.stand)));

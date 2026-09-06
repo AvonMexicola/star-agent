@@ -51,6 +51,8 @@ Shift + click **Aeon Orbital** to set a course for continuous flight, or click i
 
 F stands from the chair. Walk aft, use F at the hatch, wait for the ramp and walk onto the hangar deck. Return up the ramp to the chair and press F to sit. L lifts the ship gently to bay clearance; reverse with S to leave through the doors. Walking stays on the supported deck; jumping into space is not part of this prototype.
 
+The port has twenty numbered modular berths and two slowly rotating rings, each 2.9 km across. Walk to the aft cargo terminal and press F to transfer supplies between your ship and a persistent station warehouse. **Take all** moves everything that fits; the ship crate also has Take all and Stow all. At the aft elevator, F calls the door. Walk inside, press F and choose the central concourse or another berth. Your ship remains parked in its original bay. The concourse has a directory, seating and panoramic glazing. These are single-player spaces; multiplayer berth assignment is not implemented. See [the station guide](docs/aeon-orbital-port.md) and [authoring pipeline](STATION-PIPELINE-MEMORY.md).
+
 ## Visit Selene
 
 Selene is a procedural, cratered moon with a 434.35 km radius, held at a fixed position 24,000 km from Aeon’s centre. Its orbit is compressed for the prototype; this is not an astronomical simulation. Broad dark plains, crater bowls, bright rims and surface relief share one deterministic lunar surface function. The moon uses the scene’s sunlight and atmosphere/depth rendering, so its phase and visibility change with your viewpoint.
@@ -70,7 +72,7 @@ See the [lunar exploration guide](docs/selene.md) and [complete planet pipeline 
 - Water uses filtered wave normals, Fresnel sky reflection, sun glints, depth-coloured shallows and animated shoreline foam. Shore depth comes from the same terrain mesh; wave detail does not displace sea level.
 - The HDR atmosphere uses Rayleigh/Mie single scattering and logarithmic scene depth. Seeded volumetric clouds occupy a layer from 1.8–4.6 km and composite against that same depth, allowing continuous flight through them.
 
-The current cloud integrator uses 16 samples and approximate self-shadowing. It can show banding at grazing angles; temporal reconstruction and cloud shadows on terrain are not implemented. Water reflects an analytic sky, without scene reflections or refraction. Distant trees are crossed silhouettes; tree collision, higher quality assets and broader shadow coverage remain work toward the visual target. Flight physics is an initial model: assisted travel is the default, with optional inertial flight. Landing gear suspension, aerodynamic control surfaces and re-entry heating are not implemented; swimming is not implemented. Aeon Orbital is a fixed station 100 km above the coast. Its hangar is playable; the ring, side rooms and catwalks are scenery. EVA and moving-station passenger physics are not implemented. Station collision uses conservative bounds around model triangles, including the animated hangar doors.
+The current cloud integrator uses 16 samples and approximate self-shadowing. It can show banding at grazing angles; temporal reconstruction and cloud shadows on terrain are not implemented. Water reflects an analytic sky, without scene reflections or refraction. Distant trees are crossed silhouettes; tree collision, higher quality assets and broader shadow coverage remain work toward the visual target. Flight physics is an initial model: assisted travel is the default, with optional inertial flight. Landing gear suspension, aerodynamic control surfaces and re-entry heating are not implemented; swimming is not implemented. Aeon Orbital is a fixed station 100 km above the coast. Its twenty hangars and central hub are playable; ring interiors, side rooms and catwalks are scenery. Passenger elevators use explicit transit. EVA and moving-station passenger physics are not implemented. Station collision uses conservative bounds around model triangles, including the animated hangar doors.
 
 ## Verify
 
@@ -82,6 +84,7 @@ npm run test:browser -- -c scripts/inspect.config.js
 npm run test:browser -- -c scripts/fidelity.config.js
 npm run test:browser -- -c scripts/surface-detail.config.js
 npm run test:browser -- -c scripts/station.config.js
+npm run test:browser -- -c scripts/hangar.config.js
 npm run test:browser -- -c scripts/flight-model.config.js
 ```
 

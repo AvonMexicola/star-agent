@@ -617,3 +617,13 @@ Keep the manager handoff append-only. Commit/push at each green checkpoint or at
 least every 30 minutes per the current team policy. The initial implementation
 checkpoint was 3e5ef97. See `docs/atlas-freighter.md`, the final PR and the appended
 HANDOFF entry for final validation, screenshot links and deployment status.
+
+
+### Modular station integration (2026-09-06)
+
+See [STATION-PIPELINE-MEMORY.md](STATION-PIPELINE-MEMORY.md) for the twenty-berth
+orbital port, shared/instanced station assets, clear floor contract, passenger
+elevators, rotating ring collision and schema-2 warehouse transfers. Ship storage
+uses the same manifest and capacity rules. The Atlas docking/launch envelope must
+stay clear when adding hangar furniture or hanging signs. This station work is
+stacked on PR #14; the manager owns integration and deployment.
