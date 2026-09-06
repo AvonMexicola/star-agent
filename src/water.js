@@ -1,77 +1,131 @@
 import * as THREE from 'three';
+import { WATER_ROTATION, createWaterAnchors, updateWaterAnchors } from './water-field.js';
 
-// Sea level remains the shared world's zero-height surface. Wave slopes are
-// optical detail; shore depth comes from the terrain worker, not a second floor.
-export function createWaterMaterial(surfaceTexture) {
-  return new THREE.ShaderMaterial({
-    side: THREE.DoubleSide,
-    uniforms: { waveTexture: { value: surfaceTexture }, sunDirection: { value: new THREE.Vector3() }, time: { value: 0 }, altitude: { value: 1e6 } },
-    vertexShader: `
+// Optical waves only. The shared terrain still owns shore depth and sea level.
+export function createWaterMaterial() {
+  const anchors=createWaterAnchors();
+  const material=new THREE.ShaderMaterial({
+    side:THREE.DoubleSide,
+    uniforms:{
+      sunDirection:{value:new THREE.Vector3(1,0,0)},time:{value:0},altitude:{value:1e6},
+      waterRotation:{value:WATER_ROTATION},
+      waveCells:{value:anchors.cells},waveFractions:{value:anchors.fractions},
+    },
+    vertexShader:`
       #include <common>
       #include <logdepthbuf_pars_vertex>
       attribute vec3 direction;
-      attribute vec3 surfacePoint;
       attribute float terrainHeight;
-      varying vec3 vDirection, vWorld, vWaterPoint;
+      varying vec3 vDirection,vWorld;
       varying float vFloor;
-      void main() {
-        vDirection=direction; vWaterPoint=surfacePoint; vFloor=terrainHeight;
-        vec4 world=modelMatrix*vec4(position,1.0); vWorld=world.xyz;
+      void main(){
+        vDirection=direction;vFloor=terrainHeight;
+        vec4 world=modelMatrix*vec4(position,1.0);vWorld=world.xyz;
         gl_Position=projectionMatrix*viewMatrix*world;
         #include <logdepthbuf_vertex>
       }`,
-    fragmentShader: `
+    fragmentShader:`
       #include <common>
       #include <logdepthbuf_pars_fragment>
-      uniform sampler2D waveTexture;
       uniform vec3 sunDirection;
-      uniform float time, altitude;
-      varying vec3 vDirection, vWorld, vWaterPoint;
+      uniform mat3 waterRotation;
+      uniform ivec3 waveCells[5];
+      uniform vec3 waveFractions[5];
+      varying vec3 vDirection,vWorld;
       varying float vFloor;
-      // Texture periods divide the 256 m CPU wrap; mipmaps filter distant ripples.
-      vec3 waveField(vec3 p, vec3 w) {
-        return texture2D(waveTexture,p.yz).rgb*w.x+texture2D(waveTexture,p.zx).rgb*w.y+texture2D(waveTexture,p.xy).rgb*w.z;
+
+      float cellHash(uvec3 p,uint seed){
+        uint h=p.x*1597334677u ^ p.y*3812015801u ^ p.z*2798796415u ^ seed;
+        h^=h>>16u;h*=2246822519u;h^=h>>13u;h*=3266489917u;h^=h>>16u;
+        return float(h>>8u)*(1.0/16777216.0);
       }
-      void main() {
+      // Nonperiodic quintic value noise and its analytic gradient. CPU integer
+      // cells + local fractional coordinates avoid large float world positions.
+      vec4 field(vec3 p,ivec3 anchor,uint seed){
+        uvec3 i=uvec3(ivec3(floor(p)))+uvec3(anchor);vec3 f=fract(p);
+        vec3 u=f*f*f*(f*(f*6.0-15.0)+10.0);
+        vec3 d=30.0*f*f*(f*(f-2.0)+1.0);
+        float a=cellHash(i,seed),b=cellHash(i+uvec3(1,0,0),seed);
+        float c=cellHash(i+uvec3(0,1,0),seed),e=cellHash(i+uvec3(1,1,0),seed);
+        float g=cellHash(i+uvec3(0,0,1),seed),h=cellHash(i+uvec3(1,0,1),seed);
+        float j=cellHash(i+uvec3(0,1,1),seed),k=cellHash(i+uvec3(1,1,1),seed);
+        float lo=mix(mix(a,b,u.x),mix(c,e,u.x),u.y);
+        float hi=mix(mix(g,h,u.x),mix(j,k,u.x),u.y);
+        vec3 grad=vec3(
+          mix(mix(b-a,e-c,u.y),mix(h-g,k-j,u.y),u.z),
+          mix(mix(c-a,e-b,u.x),mix(j-g,k-h,u.x),u.z),
+          hi-lo)*d;
+        return vec4(grad,mix(lo,hi,u.z));
+      }
+      void addBand(inout vec3 gradient,inout float variance,inout float crest,
+                   vec3 local,float size,int layer,float strength,float footprint){
+        float resolved=1.0-smoothstep(size*.12,size*.65,footprint);
+        variance+=strength*strength*.22*(1.0-resolved*resolved);
+        if(resolved>.001){
+          vec4 wave=field(local/size+waveFractions[layer],waveCells[layer],uint(layer)*1013u+7291u);
+          gradient+=wave.xyz*strength*resolved;
+          crest+=max(0.0,wave.w-.55)*resolved;
+        }
+      }
+      void main(){
         #include <logdepthbuf_fragment>
-        vec3 radial=normalize(vDirection);
-        vec3 view=normalize(cameraPosition-vWorld);
-        float range=length(cameraPosition-vWorld);
-        vec3 p=vWaterPoint;
-        vec3 weights=pow(abs(radial),vec3(6.0)); weights/=dot(weights,vec3(1.0));
-        vec3 broad=waveField((p+vec3(time*.7,0.0,time*.4))/64.0,weights)-.5;
-        vec3 chop=waveField((p+vec3(-time*.3,time*.2,time*.5))/16.0,weights)-.5;
-        vec3 ripple=waveField((p+vec3(time*.12,time*.1,-time*.08))/4.0,weights)-.5;
-        float fine=1.0-smoothstep(40.0,250.0,range);
-        float swell=1.0-smoothstep(1800.0,18000.0,range);
-        vec3 slope=(broad*.32+chop*.22+ripple*.12*fine)*swell;
+        vec3 radial=normalize(vDirection),toEye=cameraPosition-vWorld;
+        vec3 view=normalize(toEye);
+        // Actual pixel footprint includes grazing angle, FOV and render scale.
+        float footprint=max(length(dFdx(vWorld)),length(dFdy(vWorld)));
+        vec3 local=waterRotation*vWorld,gradient=vec3(0.0);
+        float variance=0.0,crest=0.0;
+        addBand(gradient,variance,crest,local,1.7,0,.10,footprint);
+        addBand(gradient,variance,crest,local,8.3,1,.14,footprint);
+        addBand(gradient,variance,crest,local,37.0,2,.17,footprint);
+        addBand(gradient,variance,crest,local,173.0,3,.12,footprint);
+        // The large field changes wind roughness, never giant repeating normals.
+        float windResolved=1.0-smoothstep(6100.0*.12,6100.0*.65,footprint);
+        float wind=.5;
+        if(windResolved>.001)wind=mix(.5,field(local/6100.0+waveFractions[4],waveCells[4],5917u).w,windResolved);
+        vec3 slope=transpose(waterRotation)*gradient;
         slope-=radial*dot(radial,slope);
         vec3 n=normalize(radial-slope);
-        float depth=max(0.0,-vFloor);
-        float shallow=exp(-depth*.065);
-        float daylight=smoothstep(-.08,.25,dot(radial,sunDirection));
-        float light=max(dot(n,sunDirection),0.0);
-        vec3 body=mix(vec3(.004,.025,.045),vec3(.045,.24,.19),shallow)*(.15+light*.85);
-        vec3 reflection=reflect(-view,n);
-        float skyHeight=max(0.0,dot(reflection,radial));
-        vec3 sky=mix(vec3(.36,.48,.57),vec3(.055,.17,.33),pow(skyHeight,.45))*daylight;
-        float fresnel=.0204+.9796*pow(1.0-max(dot(n,view),0.0),5.0);
-        vec3 halfway=normalize(view+sunDirection);
-        float nh=max(dot(n,halfway),0.0), nv=max(dot(n,view),.02);
-        float rough=mix(.12,.065,fine), a2=rough*rough*rough*rough;
-        float denominator=nh*nh*(a2-1.0)+1.0;
-        float distribution=a2/(3.141593*denominator*denominator);
-        float visibility=1.0/(4.0*max(.08,nv+light-nv*light));
-        vec3 glint=vec3(1.0,.87,.66)*min(12.0,distribution*visibility*.035)*light*daylight;
-        // Broken advancing foam bands follow the actual submerged slope.
-        float shoreline=(1.0-smoothstep(.15,1.5,depth))*smoothstep(-.4,.05,-vFloor);
-        float band=sin(depth*5.5-time*1.6+broad.g*4.0+chop.r*3.0);
-        float foam=shoreline*smoothstep(.35,.85,band)*(.65+.7*ripple.g);
+        vec3 sun=normalize(sunDirection);
+        float daylight=smoothstep(-.10,.22,dot(radial,sun));
+        float nl=max(dot(n,sun),0.0),nv=max(dot(n,view),.001);
+        float depth=max(0.0,-vFloor),shallow=exp(-depth*.045);
+        vec3 absorption=mix(vec3(.003,.020,.037),vec3(.032,.22,.19),shallow);
+        vec3 body=absorption*(.16+.84*nl);
+        vec3 reflected=reflect(-view,n);
+        float skyHeight=max(0.0,dot(reflected,radial));
+        vec3 sky=mix(vec3(.34,.47,.59),vec3(.035,.105,.23),pow(skyHeight,.5))*daylight;
+        sky+=vec3(.001,.002,.005);
+        float fresnel=.0204+.9796*pow(1.0-nv,5.0);
+        vec3 halfVector=view+sun;
+        halfVector*=inversesqrt(max(dot(halfVector,halfVector),1e-8));
+        float nh=max(dot(n,halfVector),0.0),vh=max(dot(view,halfVector),0.0);
+        // Unresolved wave energy becomes microfacet variance, avoiding distant
+        // pin-sharp tiled glints or a sudden glass-smooth ocean at an LOD cutoff.
+        float alpha2=.00014+variance*(.38+.32*wind);
+        float den=nh*nh*(alpha2-1.0)+1.0;
+        float distribution=alpha2/(3.141593*den*den);
+        float gv=2.0*nv/(nv+sqrt(alpha2+(1.0-alpha2)*nv*nv));
+        float gl=2.0*nl/(nl+sqrt(alpha2+(1.0-alpha2)*nl*nl)+.00001);
+        float fs=.0204+.9796*pow(1.0-vh,5.0);
+        vec3 glint=vec3(1.0,.90,.73)*distribution*gv*gl*fs/max(.004,4.0*nv)*2.2*daylight;
         vec3 color=mix(body,sky,fresnel)+glint;
-        color=mix(color,vec3(.65,.73,.70)*(.25+light),foam*.65);
+        float shore=(1.0-smoothstep(.2,2.0,depth))*smoothstep(-.4,.05,-vFloor);
+        float nearDetail=1.0-smoothstep(2.0,12.0,footprint);
+        float foam=shore*smoothstep(.05,.35,crest)*nearDetail;
+        foam+=smoothstep(.35,.56,length(slope))*smoothstep(.25,.7,crest)*nearDetail*.12;
+        color=mix(color,vec3(.62,.72,.72)*(.25+nl),clamp(foam,0.0,.8));
         float ice=smoothstep(.83,.9,abs(radial.y));
-        color=mix(color,vec3(.75,.84,.87)*(.22+max(dot(radial,sunDirection),0.0)*1.2),ice);
+        color=mix(color,vec3(.75,.84,.87)*(.22+max(dot(radial,sun),0.0)*1.2),ice);
         gl_FragColor=vec4(color,1.0);
       }`,
   });
+  material.userData.waterAnchors=anchors;
+  return material;
+}
+
+export function updateWaterMaterial(material,origin,sunDirection,time,altitude){
+  updateWaterAnchors(material.userData.waterAnchors,origin,time);
+  material.uniforms.sunDirection.value.copy(sunDirection);
+  material.uniforms.time.value=time;material.uniforms.altitude.value=altitude;
 }
