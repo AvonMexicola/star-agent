@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RADIUS, MAX_LEVEL, cubeDirection, terrainHeight } from './world.js';
 import { createWaterMaterial } from './water.js';
 import { createGroundTextures } from './ground-textures.js';
+import { acquireTerrainMaps } from './terrain-maps.js';
 import { SEED } from './generation.js';
 import { createSurfaceTexture, configureTerrainMaterial } from './surface-materials.js';
 
@@ -18,7 +19,8 @@ export class Planet {
     // Small-scale surface grain in metres, independent of the patch LOD.
     this.surfaceTexture=createSurfaceTexture();
     this.groundTextures=createGroundTextures();
-    configureTerrainMaterial(this.landMaterial,this.surfaceTexture,this.albedoUniform,this.albedoReady,this.groundTextures);
+    this.terrainMaps=acquireTerrainMaps();
+    configureTerrainMaterial(this.landMaterial,this.surfaceTexture,this.albedoUniform,this.albedoReady,this.groundTextures,this.terrainMaps);
     this.waterMaterial=createWaterMaterial(this.surfaceTexture);
     for(let i=0;i<Math.min(3,Math.max(1,(navigator.hardwareConcurrency||4)-2));i++){
       const worker=new Worker(new URL('./terrain.worker.js',import.meta.url),{type:'module'});
@@ -107,5 +109,5 @@ export class Planet {
   }
   get ready(){return this.roots.every(n=>n.mesh);}
   get pending(){return this.queue.length+this.jobs.size;}
-  dispose(){this.albedoWorker.terminate();this.albedoUniform.value.dispose();this.surfaceTexture.dispose();this.groundTextures.dispose();for(const slot of this.workers)slot.worker.terminate();for(const n of this.nodes.values())if(n.mesh){n.mesh.traverse(o=>o.geometry?.dispose());this.scene.remove(n.mesh);}this.landMaterial.dispose();this.waterMaterial.dispose();}
+  dispose(){this.albedoWorker.terminate();this.albedoUniform.value.dispose();this.surfaceTexture.dispose();this.groundTextures.dispose();this.terrainMaps.dispose();for(const slot of this.workers)slot.worker.terminate();for(const n of this.nodes.values())if(n.mesh){n.mesh.traverse(o=>o.geometry?.dispose());this.scene.remove(n.mesh);}this.landMaterial.dispose();this.waterMaterial.dispose();}
 }

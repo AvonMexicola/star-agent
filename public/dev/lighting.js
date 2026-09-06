@@ -87,9 +87,11 @@ const landMaterial = new THREE.MeshStandardMaterial({
 // the bench proves registerMaterial() chains onto it instead of replacing it.
 if (new URLSearchParams(location.search).has('terrainMat')) {
   const { createSurfaceTexture, configureTerrainMaterial } = await import('/src/surface-materials.js');
+  const { createGroundTextures } = await import('/src/ground-textures.js');
+  const { acquireTerrainMaps } = await import('/src/terrain-maps.js');
   const albedo = new THREE.DataTexture(new Uint8Array([100, 110, 70, 255]), 1, 1);
   albedo.needsUpdate = true;
-  configureTerrainMaterial(landMaterial, createSurfaceTexture(), { value: albedo }, { value: 0 });
+  configureTerrainMaterial(landMaterial, createSurfaceTexture(), { value: albedo }, { value: 0 }, createGroundTextures(), acquireTerrainMaps());
 }
 
 const origin = new THREE.Vector3();
@@ -103,6 +105,7 @@ function buildPatch(face, level, ix, iy) {
   geometry.setAttribute('normal', new THREE.BufferAttribute(data.normals, 3));
   geometry.setAttribute('color', new THREE.BufferAttribute(data.colors, 3));
   geometry.setAttribute('direction', new THREE.BufferAttribute(data.directions, 3));
+  geometry.setAttribute('terrainHeight', new THREE.BufferAttribute(data.heights, 1));
   // planet.js builds this the same way, so the real terrain shader is exercised.
   const surfacePoints = new Float32Array(data.positions.length);
   for (let i = 0; i < surfacePoints.length; i++) {
