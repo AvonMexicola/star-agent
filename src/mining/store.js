@@ -97,6 +97,7 @@ export class MiningStore {
     }
     return this.initialRocks.get(id);
   }
+  releaseRock(id) { this.initialRocks.delete(id); }
   canEditRock(id) { return safeId(id) && !this.blocked && (id === ROCK_ID || Object.hasOwn(this.state.rocks, id) || Object.keys(this.state.rocks).length < MAX_SAVED_ROCKS); }
   commitRock(id, result, revision) {
     if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : 'Rock save slots are full (8 space deposits). Existing deposits remain mineable.'; return false; }
