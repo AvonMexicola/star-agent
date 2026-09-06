@@ -2,6 +2,7 @@
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const finite = value => Number.isFinite(value) ? value : 0;
 export const STICK_DEADZONE = .16;
+const UTILITY_SHORTCUTS = new Map([[12,'free-drive'],[13,'gear'],[14,'lights'],[15,'camera-view'],[9,'graphics']]);
 
 export function stick(x, y) {
   x = clamp(finite(x), -1, 1); y = clamp(finite(y), -1, 1);
@@ -13,10 +14,11 @@ export function stick(x, y) {
 const value = button => clamp(finite(button?.value ?? (button?.pressed ? 1 : 0)), 0, 1);
 const trigger = button => Math.max(0, (value(button) - .05) / .95);
 const empty = () => ({ strafe: 0, forward: 0, yaw: 0, pitch: 0, vertical: 0, roll: 0,
-  boost: false, jump: false, brake: false, speed: 0, scroll: 0, mine: 0, evaVertical: 0, evaBrake: false, ui: null, pressed: new Set(), menuPressed: new Set(), used: false });
+  boost: false, jump: false, brake: false, speed: 0, scroll: 0, mine: 0, evaVertical: 0, evaBrake: false, ui: null, shortcuts: new Set(), shortcutModifier: false, pressed: new Set(), menuPressed: new Set(), used: false });
 
 export class GamepadInput {
   constructor(read = () => globalThis.navigator?.getGamepads?.() ?? []) {
+    this.shortcutHeld = new Set(); this.utilityChord = false;
     this.read = read; this.id = null; this.index = null; this.connected = false;
     this.uiArmed = false; this.wasUI = false; this.armed = false; this.previous = []; this.status = 'Connect a controller and press a button.';
   }
@@ -71,12 +73,24 @@ export class GamepadInput {
         result.scroll=lookY;
         result.menuPressed=new Set([...pressed].filter(index=>[0,1,12,13,14,15].includes(index)));
       }
-      if (pressed.has(9)) result.pressed.add(9);
+      if (pressed.has(9)&&!(buttons[4]&&buttons[5])) result.pressed.add(9);
       return result;
     }
-    return { ui: null, evaVertical: Number(buttons[0] ?? false) - Number(buttons[1] ?? false), evaBrake: down > .1, mine: up, strafe, forward: -moveY, yaw: -lookX, pitch: -lookY, vertical: up - down,
-      roll: Number(buttons[5] ?? false) - Number(buttons[4] ?? false),
+    // Latch both shoulders until both release, so releasing a chord in either
+    // order cannot produce a stray roll. Consumed D-pad holds cannot become
+    // throttle/tool actions when the modifier releases first.
+    for(const index of this.shortcutHeld)if(!buttons[index])this.shortcutHeld.delete(index);
+    this.utilityChord = Boolean(buttons[4]&&buttons[5]) || (this.utilityChord&&Boolean(buttons[4]||buttons[5]));
+    const shortcuts=new Set();
+    if(this.utilityChord)for(const [index,action] of UTILITY_SHORTCUTS){
+      if(buttons[4]&&buttons[5]&&pressed.has(index))shortcuts.add(action);
+      if(buttons[index])this.shortcutHeld.add(index);
+    }
+    for(const index of this.shortcutHeld)pressed.delete(index);
+    const speed=this.utilityChord?0:Number(Boolean(buttons[12])&&!this.shortcutHeld.has(12))-Number(Boolean(buttons[13])&&!this.shortcutHeld.has(13));
+    return { ui: null, shortcuts, shortcutModifier: this.utilityChord, evaVertical: Number(buttons[0] ?? false) - Number(buttons[1] ?? false), evaBrake: down > .1, mine: up, strafe, forward: -moveY, yaw: -lookX, pitch: -lookY, vertical: up - down,
+      roll: this.utilityChord?0:Number(buttons[5] ?? false) - Number(buttons[4] ?? false),
       boost: Boolean(buttons[10]), jump: Boolean(buttons[0]), brake: Boolean(buttons[1]),
-      scroll: 0, menuPressed: new Set(), speed: Number(buttons[12] ?? false) - Number(buttons[13] ?? false), pressed, used: !neutral };
+      scroll: 0, menuPressed: new Set(), speed, pressed, used: !neutral };
   }
 }

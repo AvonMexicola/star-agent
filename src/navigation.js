@@ -508,6 +508,7 @@ export class Navigation {
   update(dt){
     this.engineAcceleration.set(0,0,0);
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(document.querySelector('dialog[open]'))});
+    this.controllerShortcutModifier=Boolean(pad.shortcutModifier);
     this.onControllerInput?.(pad,dt);
     if(this.mode==='crashed')return;
     this.toolTrigger=pad.mine||0;

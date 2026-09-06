@@ -49,6 +49,16 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
     if (!dialog) {
       if (activeDialog) { clearFocus(); activeDialog = null; }
       if (!nav.enabled) return;
+      if(pad.shortcuts?.size){
+        for(const id of pad.shortcuts){
+          const action=actions.find(action=>action.id===id);
+          if(!action)continue;
+          if(action.enabled&&!action.enabled())nav.notify?.('That shortcut is unavailable in the current mode.');
+          else action.activate();
+          if(document.querySelector('dialog[open]'))break;
+        }
+        return;
+      }
       if (pad.pressed.has(9)) open();
       else if (pad.pressed.has(8)) openBackpack();
       else if (nav.mode === 'walk' || nav.mode === 'eva') {

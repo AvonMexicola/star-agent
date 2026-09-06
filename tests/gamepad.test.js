@@ -129,3 +129,56 @@ test('map input requires neutral, stays separate from flight, and disarms after 
   assert.equal(input.poll({enabled: false, ui: true, focused: false}).ui, null);
   assert.equal(input.poll({enabled: false, ui: true}).ui, null, 'focus regain requires neutral');
 });
+
+
+test('utility chords are one-shot and do not leak D-pad, menu or shoulder actions', () => {
+  for(const [index,action] of [[12,'free-drive'],[13,'gear'],[14,'lights'],[15,'camera-view'],[9,'graphics']]){
+    const pad=controller(),input=new GamepadInput(()=>[pad]);input.poll();
+    button(pad,4,true);button(pad,5,true);input.poll();button(pad,index,true);
+    const result=input.poll();assert.deepEqual([...result.shortcuts],[action]);
+    assert.equal(result.pressed.has(index),false);assert.equal(result.roll,0);assert.equal(result.speed,0);
+    assert.equal(input.poll().shortcuts.size,0,'holding a toggle must not repeat');
+    button(pad,4,false);assert.equal(input.poll().roll,0,'first shoulder release must not roll');
+    button(pad,5,false);const held=input.poll();assert.equal(held.speed,0);assert.equal(held.pressed.has(index),false);
+    button(pad,index,false);input.poll();button(pad,index,true);
+    assert.equal(input.poll().pressed.has(index),true,'plain action returns after button release');
+  }
+});
+
+test('utility shortcuts cannot replay across modal, focus, suspend or device changes', () => {
+  for(const interruption of ['modal','focus','suspend','disconnect','replacement']){
+    let pads=[controller()];const pad=pads[0],input=new GamepadInput(()=>pads);input.poll();
+    button(pad,4,true);button(pad,5,true);button(pad,14,true);
+    assert.deepEqual([...input.poll().shortcuts],['lights']);
+    if(interruption==='modal')input.poll({ui:true,enabled:false});
+    if(interruption==='focus')input.poll({focused:false});
+    if(interruption==='suspend')input.suspend();
+    if(interruption==='disconnect'){pads=[];input.poll();pads=[pad];}
+    if(interruption==='replacement')pad.id='Replacement device';
+    assert.equal(input.poll().shortcuts.size,0,interruption);
+    button(pad,14,false);input.poll();button(pad,14,true);
+    assert.equal(input.poll().shortcuts.size,0,'releasing only the action does not rearm a held modifier');
+    pad.buttons.forEach((_,i)=>button(pad,i,false));input.poll();
+    button(pad,4,true);button(pad,5,true);button(pad,14,true);
+    assert.deepEqual([...input.poll().shortcuts],['lights']);
+  }
+});
+
+test('plain roll, map/equipment and throttle remain independent of utility shortcuts', () => {
+  const pad=controller(),input=new GamepadInput(()=>[pad]);input.poll();
+  button(pad,4,true);assert.equal(input.poll().roll,-1);button(pad,4,false);input.poll();
+  button(pad,5,true);assert.equal(input.poll().roll,1);button(pad,5,false);input.poll();
+  button(pad,12,true);assert.equal(input.poll().speed,1);button(pad,12,false);input.poll();
+  button(pad,14,true);assert.equal(input.poll().pressed.has(14),true);
+  button(pad,4,true);button(pad,5,true);
+  assert.equal(input.poll().shortcuts.size,0,'a D-pad action held before the chord is not a new command');
+});
+
+
+test('unarmed Graphics chord cannot open the ordinary menu instead', () => {
+  const pad=controller(),input=new GamepadInput(()=>[pad]);
+  for(const i of [4,5,9])button(pad,i,true);
+  const result=input.poll();assert.equal(result.shortcuts.size,0);assert.equal(result.pressed.has(9),false);
+  for(const i of [4,5,9])button(pad,i,false);input.poll();
+  button(pad,9,true);assert.equal(input.poll({enabled:false}).pressed.has(9),true,'plain Menu still works in paused help');
+});

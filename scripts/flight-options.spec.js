@@ -60,14 +60,11 @@ test('controller-only orbital heading, utilities and graphics menu return safely
   const frames=()=>page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
   const button=async(index,down)=>{await page.evaluate(({index,down})=>{window.optionPad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await frames();};
   const tap=async i=>{await button(i,true);await button(i,false);};
-  const command=async key=>{
-    await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(9);
-    await expect(page.locator('#controller-menu')).toBeVisible();
-    for(let i=0;i<45;i++){
-      if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key))break;
-      await tap(13);
-    }
-    expect(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)).toBe(key);await tap(0);
+  const chord=async index=>{
+    await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+    await page.evaluate(()=>{for(const i of [4,5])window.optionPad.buttons[i]={pressed:true,value:1};});await frames();
+    await tap(index);
+    await page.evaluate(()=>{for(const i of [4,5])window.optionPad.buttons[i]={pressed:false,value:0};});await frames();
   };
   // Start through the supported orbital entry; no debug positioning or navigation calls.
   await page.goto('/?intro=0&debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed);
@@ -75,24 +72,49 @@ test('controller-only orbital heading, utilities and graphics menu return safely
   await page.evaluate(()=>{window.optionPad.axes[2]=1;});
   await page.waitForFunction(()=>{const n=window.starAgent.navigation,q=n.orientation,up=n.normal;return -(2*(q.x*q.z+q.w*q.y)*up.x+2*(q.y*q.z-q.w*q.x)*up.y+(1-2*(q.x*q.x+q.y*q.y))*up.z)>.2;});
   await page.evaluate(()=>{window.optionPad.axes[2]=0;});await frames();
-  await command('gear');await page.waitForFunction(()=>!window.starAgent.state.utilities.gearDeployed);
-  await command('lights');await page.waitForFunction(()=>window.starAgent.state.utilities.ship);
-  await command('free-drive');await page.waitForFunction(()=>window.starAgent.state.travel?.manual);
+  const throttle=await page.evaluate(()=>window.starAgent.navigation.speedScale);
+  await chord(13);await page.waitForFunction(()=>!window.starAgent.state.utilities.gearDeployed);
+  expect(await page.evaluate(()=>window.starAgent.navigation.speedScale)).toBe(throttle);
+  await chord(15);await page.waitForFunction(()=>window.starAgent.state.camera.mode==='external');
+  await page.evaluate(()=>{for(const i of [4,5])window.optionPad.buttons[i]={pressed:true,value:1};});await frames();
+  await expect(page.locator('#controller-hints')).toContainText('DRIVE ON / OFF');
+  await page.screenshot({path:`${output}/controller-utility-shortcuts.png`});
+  await page.evaluate(()=>{for(const i of [4,5])window.optionPad.buttons[i]={pressed:false,value:0};});await frames();
+  await chord(14);await page.waitForFunction(()=>window.starAgent.state.utilities.ship);
+  expect((await page.evaluate(()=>window.starAgent.state)).mapOpen).toBe(false);
+  await expect(page.locator('#controller-menu')).not.toBeVisible();
+  for(const interruption of ['focus','disconnect','replacement']){
+    await page.evaluate(()=>{for(const i of [4,5,14])window.optionPad.buttons[i]={pressed:true,value:1};});await frames();
+    const lit=await page.evaluate(()=>window.starAgent.state.utilities.ship);
+    if(interruption==='focus')await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+    if(interruption==='disconnect')await page.evaluate(()=>{window.optionPad.connected=false;});
+    if(interruption==='replacement')await page.evaluate(()=>{window.optionPad.id+=' replacement';});
+    await frames();
+    await page.evaluate(()=>{window.optionPad.connected=true;window.dispatchEvent(new Event('focus'));});await frames();
+    await tap(14);expect(await page.evaluate(()=>window.starAgent.state.utilities.ship)).toBe(lit);
+    expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+    await page.evaluate(()=>{for(const i of [4,5,14])window.optionPad.buttons[i]={pressed:false,value:0};});await frames();
+    await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  }
+  await chord(12);await page.waitForFunction(()=>window.starAgent.state.travel?.manual);
   await page.waitForFunction(()=>window.starAgent.state.travel?.phase==='accelerating');
   await page.screenshot({path:`${output}/controller-heading-drive.png`});
-  await button(1,true);await page.waitForFunction(()=>window.starAgent.state.travel?.aborting||window.starAgent.state.travel===null);await button(1,false);
+  await chord(12);await page.waitForFunction(()=>window.starAgent.state.travel?.aborting||window.starAgent.state.travel===null);
   await page.waitForFunction(()=>window.starAgent.state.travel===null);
-  await command('graphics');await expect(page.locator('#graphics-settings')).toBeVisible();
+  await chord(9);await expect(page.locator('#graphics-settings')).toBeVisible();
   await frames();expect(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)).toBe('grassDistance');
   await tap(0);expect((await page.evaluate(()=>window.starAgent.state)).graphics.grassDistance).toBe(160);
   await tap(13);await tap(0);expect((await page.evaluate(()=>window.starAgent.state)).graphics.grassDensity).toBe(1);
   await page.screenshot({path:`${output}/controller-graphics-focus.png`});
   // Held ascent across modal closure must not replay until neutral is restored.
+  const lightBeforeClose=await page.evaluate(()=>window.starAgent.state.utilities.ship);
+  await page.evaluate(()=>{for(const i of [4,5,14])window.optionPad.buttons[i]={pressed:true,value:1};});await frames();
   await button(7,true);await tap(1);await frames();
+  expect(await page.evaluate(()=>window.starAgent.state.utilities.ship)).toBe(lightBeforeClose);
   expect((await page.evaluate(()=>window.starAgent.state)).speed).toBeLessThan(1);
   expect((await page.evaluate(()=>window.starAgent.state)).controller.armed).toBe(false);
-  await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  await button(7,false);await page.evaluate(()=>{for(const i of [4,5,14])window.optionPad.buttons[i]={pressed:false,value:0};});await frames();await page.waitForFunction(()=>window.starAgent.state.controller.armed);
   await button(7,true);await page.waitForFunction(()=>window.starAgent.state.speed>1);await button(7,false);await tap(1);
-  await command('gear');await page.waitForFunction(()=>window.starAgent.state.utilities.gearDeployed);
+  await chord(13);await page.waitForFunction(()=>window.starAgent.state.utilities.gearDeployed);
   expect(errors).toEqual([]);
 });

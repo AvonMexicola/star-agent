@@ -63,19 +63,21 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
     const padFrames=()=>page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
     const padButton=async(index,down)=>{await page.evaluate(({index,down})=>{window.departurePad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await padFrames();};
     const tap=async index=>{await padButton(index,true);await padButton(index,false);};
-    const command=async key=>{
-      await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(9);await expect(page.locator('#controller-menu')).toBeVisible();
-      for(let i=0;i<45;i++){if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key))break;await tap(13);}
-      expect(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)).toBe(key);await tap(0);
+    const chord=async index=>{
+      await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+      await page.evaluate(()=>{for(const i of [4,5])window.departurePad.buttons[i]={pressed:true,value:1};});await padFrames();
+      await tap(index);
+      await page.evaluate(()=>{for(const i of [4,5])window.departurePad.buttons[i]={pressed:false,value:0};});await padFrames();
     };
     await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(14);
     await page.waitForFunction(()=>window.starAgent.state.mining.tool.item==='rifle-laser');
-    await command('camera-view');await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='character-hand');
+    await chord(15);await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='character-hand');
     const ammo=await page.evaluate(()=>window.starAgent.state.mining.tool.ammo);
     await page.waitForFunction(()=>window.starAgent.state.controller.armed);await padButton(7,true);
     await page.waitForFunction(before=>window.starAgent.state.mining.tool.ammo<before,ammo);
     await page.screenshot({path:'/tmp/star-agent-controller-held-rifle.png'});await padButton(7,false);
-    await command('lights');await page.waitForFunction(()=>window.starAgent.state.utilities.suit);
+    await chord(14);await page.waitForFunction(()=>window.starAgent.state.utilities.suit);
+    expect(await page.evaluate(()=>window.starAgent.state.mining.tool.item)).toBe('rifle-laser');
     await page.screenshot({path:'/tmp/star-agent-controller-flashlight.png'});
   }
   // Walk along the starboard side to the aft hatch, then centre on the ramp.

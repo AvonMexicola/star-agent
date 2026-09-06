@@ -143,7 +143,7 @@ steering and assertions; no physical controller testing is claimed.
 
 ## Heading drive, utilities and graphics
 
-Menu → “N · Spool / disengage heading drive” starts along the current ship heading;
+Menu → “Heading drive” starts along the current ship heading;
 B brakes out of either travel mode. Aim along the horizon or away from the nearest
 world. Entry needs 20 km altitude or no atmosphere, plus a safe terrain/station
 path. M / the map retains selected-destination travel with J.
@@ -162,3 +162,30 @@ alignment, drive spool/brake, gear/lights, graphics changes and held ascent acro
 modal closure. `scripts/opening.spec.js` extends the physical controller boarding
 journey with third-person rifle selection/fire, flashlight and cabin holstering.
 These use injected standard Gamepad input; physical device testing is separate.
+
+
+## Direct utility shortcuts
+
+Hold **LB + RB** (PlayStation **L1 + R1**), then press:
+
+| Button | Action |
+|---|---|
+|D-pad ↑|Spool / disengage free-heading relativistic drive|
+|D-pad ↓|Deploy / retract landing gear|
+|D-pad ←|Toggle ship lights / on-foot flashlight|
+|D-pad →|Toggle cockpit/external or first/third-person camera|
+|Menu / Options|Open Graphics settings|
+
+Hold the modifier to see this legend on the gameplay HUD. These invoke the same
+command-menu actions and eligibility checks; the drive/gear shortcuts require
+the appropriate pilot state. Each press toggles once. Plain LB/RB still roll,
+plain D-pad retains map/equipment/throttle/quick items, and plain Menu/View retain
+command menu/backpack. Release both shoulders to leave the shortcut layer.
+Consumed D-pad holds remain suppressed until that D-pad button releases, avoiding
+accidental throttle or equipment activation after releasing the modifier first.
+
+After focus, dialog, disconnect or device replacement, release all controls before
+shortcuts rearm. The Graphics chord is suppressed while unarmed rather than
+opening the ordinary command menu. Standard Menu remains available in paused help.
+The controller-only orbital and physical opening/boarding journeys in
+`flight-options.spec.js` and `opening.spec.js` now use these direct shortcuts.
