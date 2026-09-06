@@ -27,7 +27,7 @@ test('reticle promotes the third generated rock and rejects an actually obstruct
     rings.update=function(renderOrigin){
       this.band.visible=false;this.rockOrigin.value.copy(renderOrigin).sub(this.center);
       this.local=descriptors;this.localIds=new Set(descriptors.map(r=>r.id));
-      for(const mesh of this.far)mesh.count=0;
+      for(const mesh of [...this.far,...this.mid])mesh.count=0;
       this.publish(descriptors,this.near,renderOrigin);
     };
     n.mode='eva';n.shipPosition=null;n.insideShip=false;n.spaceParked=false;n.velocity.set(0,0,0);n.angularVelocity.set(0,0,0);n.enabled=true;

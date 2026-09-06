@@ -144,7 +144,7 @@ test('ring bands have real gaps and every asteroid stays outside lunar terrain',
 
 test('ring instances preserve close-range precision when the camera is in the belt',()=>{
   const scene=new Scene(),rings=new MoonRings(scene,12),rock=ringRock(3),origin=new Vector3(...MOON_POSITION).add(new Vector3(...rock.position)).add(new Vector3(5,12,-20));
-  rings.update(origin,0);const matrix=new Matrix4(),index=rings.local.filter(r=>r.family===rock.family).findIndex(r=>r.id===rock.id);assert.ok(index>=0);rings.near[rock.family].getMatrixAt(index,matrix);
+  rings.update(origin,0);const matrix=new Matrix4(),mesh=rings.near[rings.geometryIndex(rock)],index=mesh.userData.ids.indexOf(rock.id);assert.ok(index>=0);mesh.getMatrixAt(index,matrix);
   const translated=new Vector3().setFromMatrixPosition(matrix);assert.ok(translated.distanceTo(new Vector3(-5,-12,20))<.00001);
   rings.dispose();assert.equal(scene.children.length,0);
 });

@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import {Vector3,Scene} from 'three';
 import {RING_POPULATION,RING_RADIUS,RING_WIDTH,RING_THICKNESS,RING_NORMAL,ASTEROID_FAMILIES,asteroidDescriptor,nearbyAsteroids,asteroidField,ringRock,ringCellAt,ringPathIntervals} from '../src/ring-world.js';
 import {MOON_POSITION} from '../src/moon-world.js';
-import {MoonRings,asteroidGeometry} from '../src/moon-rings.js';
+import {MoonRings,asteroidGeometry,asteroidLOD} from '../src/moon-rings.js';
 import {createDensity,meshVolume,carve} from '../src/mining/volume.js';
 
-test('twenty million stable descriptors fill a 20 km by 2 km ring without materializing the population',()=>{
-  assert.equal(RING_POPULATION,20971520);assert.equal(RING_WIDTH,20000);
+test('sparse stable descriptors fill a 20 km by 2 km ring without materializing the population',()=>{
+  assert.equal(RING_POPULATION,14336);assert.equal(RING_WIDTH,20000);
   const normal=new Vector3(...RING_NORMAL),types=new Set();
   for(let i=0;i<2000;i++){
     const r=asteroidDescriptor((i*104729)%RING_POPULATION),p=new Vector3(...r.position),height=p.dot(normal),radius=p.clone().addScaledVector(normal,-height).length();
@@ -20,7 +20,7 @@ test('cell streaming contains the approached rock, remains bounded and survives 
   const near=nearbyAsteroids(point,2);assert.ok(near.some(r=>r.id===descriptor.id));assert.ok(near.length<=3200);assert.equal(new Set(near.map(r=>r.id)).size,near.length);
   const scene=new Scene(),rings=new MoonRings(scene,48);rings.update(point);const before=rings.local;
   rings.update(point.clone().add(new Vector3(.001,.001,.001)));assert.equal(rings.local,before);
-  rings.hiddenIds.add(descriptor.id);rings.update(point);assert.equal(rings.state.rendered,48-rings.descriptors.filter(r=>rings.localIds.has(r.id)).length+near.length-1);
+  rings.hiddenIds.add(descriptor.id);rings.update(point);assert.ok(!rings.state.visibleIds.includes(descriptor.id));assert.ok(rings.state.rendered>0);
   rings.update(new Vector3(0,0,0));assert.equal(rings.local.length,0);assert.ok(rings.state.rendered<=48);rings.dispose();assert.equal(scene.children.length,0);
 });
 test('every procedural rock family has a finite shared silhouette and editable interior',()=>{
@@ -41,4 +41,13 @@ test('finite ring segment intervals detect full high-speed crossings and reject 
   assert.equal(intervals.length,1);assert.ok(intervals[0][0]>.4&&intervals[0][1]<.6);
   assert.deepEqual(ringPathIntervals(p.clone().addScaledVector(normal,20000),p.clone().addScaledVector(normal,10000)),[]);
   assert.deepEqual(ringPathIntervals(new Vector3(),new Vector3(1,2,3)),[]);
+});
+
+
+test('asteroid LOD crossfades cover both transition bands and fade only at the 80 km boundary',()=>{
+  for(let distance=0;distance<80000;distance+=137){
+    const levels=asteroidLOD(distance);assert.ok(levels.length>0&&levels.length<=2);
+    if(levels.length===2){assert.ok(Math.abs(levels[0].fade+(Math.abs(levels[1].fade))-1)<1e-12);assert.ok(levels[0].level<levels[1].level);}
+  }
+  assert.deepEqual(asteroidLOD(80000),[]);assert.equal(asteroidLOD(60000)[0].fade,1);assert.ok(asteroidLOD(79000)[0].fade<.1);
 });

@@ -22,7 +22,9 @@ test('ring survey, physical EVA exit, thruster approach, Xbox asteroid mining an
   expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('eva');
   await page.screenshot({path:`${evidence}/space-before.png`});
   await page.evaluate(()=>{window.spacePad={id:'Standard Xbox space mining test',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.spacePad];});
-  await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  // Wait for this injected device to replace any OS-enumerated controller and
+  // complete its neutral poll before pressing RT (held-connect suppression).
+  await page.waitForFunction(()=>window.starAgent.state.controller.id===window.spacePad.id&&window.starAgent.state.controller.connected&&window.starAgent.state.controller.armed);
   const before=await page.evaluate(()=>({revision:window.starAgent.state.mining.activeRevision,mass:window.starAgent.state.mining.pack.reduce((a,b)=>a+b,0),position:window.starAgent.state.position}));
   await page.evaluate(()=>window.spacePad.buttons[7]={pressed:true,value:1});
   await page.waitForFunction(previous=>window.starAgent.state.mining.activeRevision>=previous+3,before.revision,{timeout:60000});
@@ -31,7 +33,7 @@ test('ring survey, physical EVA exit, thruster approach, Xbox asteroid mining an
   await page.waitForFunction(()=>window.starAgent.state.mining.spaceRocks.every(rock=>!rock.pending));
   const mined=await page.evaluate(()=>window.starAgent.state);
   expect(mined.mining.pack.reduce((a,b)=>a+b,0)).toBeGreaterThan(before.mass);
-  expect(mined.speed).toBeLessThan(.01);expect(mined.mining.tool.toolError).toBe(null);expect(mined.mining.activeRock).toMatch(/^selene-ring-v1-/);
+  expect(mined.speed).toBeLessThan(.01);expect(mined.mining.tool.toolError).toBe(null);expect(mined.mining.activeRock).toMatch(/^selene-ring-v2-/);
   // View opens the actual shared backpack dialog; the collected items are
   // visible without approaching the ship or a separate survey-only interface.
   await page.evaluate(()=>window.spacePad.buttons[8]={pressed:true,value:1});await page.waitForFunction(()=>window.starAgent.navigation.gamepad.previous[8]);await page.evaluate(()=>window.spacePad.buttons[8]={pressed:false,value:0});
