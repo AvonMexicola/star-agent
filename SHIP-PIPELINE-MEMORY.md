@@ -7,6 +7,11 @@ This is reusable project memory for humans, Fable 5.1 and future coding agents.
 It records the implemented pipeline and lessons from its delivery. Check current
 source and PR status before reusing historical dimensions or integration details.
 
+Cees's asset workflow reference now lives in
+[the asset production standard](docs/asset-production-standard.md), with a
+[complete hangar production record](docs/qa/hangar-production-record.md).
+Use those alongside this ship-specific memory and the current `QUALITY.md`.
+
 ## Start here
 
 The proven route is:

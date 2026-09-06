@@ -4,6 +4,11 @@ Scope: the `feat/modular-hangar` branch, stacked on `feat/unlockable-freighter`
 (PR #14). This is the station counterpart to `SHIP-PIPELINE-MEMORY.md`.
 Do not treat this branch as deployed until the manager integrates it.
 
+For the reusable workflow designated by Cees, read
+[the asset production standard](docs/asset-production-standard.md) and
+[the hangar production record](docs/qa/hangar-production-record.md). The integration
+addendum below updates this original modular-port record without erasing its history.
+
 ## Product and ownership
 
 Cees requested a much more detailed hangar, clear walking floors, cargo transfer

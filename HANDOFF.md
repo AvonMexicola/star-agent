@@ -485,3 +485,23 @@ and limitations belong in `docs/qa/hangar-integration.md`. The Opus invocation
 returned HTTP 429, reset 13:50 Amsterdam; no visual review score is claimed.
 `QUALITY.md` still requires the independent rubric or Cees's explicit waiver
 before final merge. This entry is a review handoff, not a merge/deployment claim.
+
+### Final local verification and production standard
+
+Runtime candidate `7a73ecf` is pushed to PR #20, now based on
+`feat/visual-fidelity` (`029cae8`). The exterior shares the existing 600 km camera
+cutoff; the orbit tour confirms removal of 93 unnecessary draws and exactly
+restores the base 477 draws / 304,642 triangles. Full units: **152 pass**. Build
+passes. **17 distinct browser cases pass** across the recorded runs/reruns;
+the final render-only cutoff additionally has collision/visibility tests and a
+complete eight-view production tour. Tour completed 13:05:50 Amsterdam with no
+errors, warnings, failed requests or unexpected closures. Curated scene and
+desktop/phone captures are in `docs/qa/hangar-integration/`.
+
+Cees requested a complete record as the standard for other assets. READY FOR
+REVIEW: `docs/asset-production-standard.md`, `docs/qa/hangar-production-record.md`,
+`docs/qa/hangar-integration.md`, linked from `AGENTS.md` and both pipeline memories.
+The proceedings retain the controller timing failure, interrupted first tour,
+exterior performance regression and their verified corrections. Raw reports stay
+in `/tmp`; no independent visual score, hardware performance approval or final
+merge is claimed. Opus review/explicit Cees exception remains the final decision.
