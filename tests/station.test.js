@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Station } from '../src/station.js';
 import { Navigation } from '../src/navigation.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
+import { FREIGHTER_LAYOUT, FreighterSystems } from '../src/freighter-layout.js';
 
 if (!globalThis.ProgressEvent) {
   globalThis.ProgressEvent = class ProgressEvent {
@@ -254,4 +255,27 @@ test('L docks in the bay, then the cabin, hatch, ramp, deck, return and launch r
   advanceUntil(() => !navigation.stationLift, 3, 'launch reaches safe bay clearance');
   assert.ok(navigation.deckClearance >= 6 - 0.05, 'launch stops its vertical lift below the ceiling');
   assert.ok(navigation.stationLocal.y < station.interiorBox.max.y, 'launch remains inside the hangar clear volume');
+});
+
+test('Atlas docks at its own eye height, carries a rider to the hangar deck and interlocks launch', async t => {
+  const {station}=await createStation();t.after(()=>station.dispose());
+  const {navigation:nav,press,advance,advanceUntil,walkUntil}=setupNavigation(t,station);
+  nav.shipId='atlas';nav.layout=FREIGHTER_LAYOUT;nav.freighter=new FreighterSystems();
+  const centre=station.interiorBox.getCenter(new THREE.Vector3());
+  nav.position.copy(localToWorld(station,centre.x,station.interiorBox.min.y+7,centre.z+FREIGHTER_LAYOUT.seatEye[2]));
+  nav.orientation.copy(station.quaternion);
+  press('KeyL');advance(8);assert.equal(nav.mode,'landed',JSON.stringify({canDock:nav.canDock,clearance:nav.deckClearance,local:nav.stationLocal.toArray(),box:station.interiorBox,autoland:nav.autoland}));
+  near(nav.deckClearance,5.55);press('KeyF');
+  walkUntil('KeyW',()=>nav.toShipLocal().z>.8);press('KeyF');
+  advanceUntil(()=>nav.freighter.lifts[0].y===0,7,'main lift lowers');
+  near(nav.toShipLocal().y,1.75);walkUntil('KeyW',()=>nav.toShipLocal().z>10.5);
+  assert.equal(nav.insideShip,false);near(nav.deckClearance,1.75);
+  walkUntil('KeyS',()=>nav.toShipLocal().z<1.2);press('KeyF');
+  advanceUntil(()=>nav.freighter.lifts[0].y===4,7,'main lift raises rider');near(nav.toShipLocal().y,5.75);
+  walkUntil('KeyS',()=>nav.toShipLocal().z<-9);press('KeyF');assert.equal(nav.mode,'landed');
+  nav.freighter.toggle('port');press('KeyL');assert.equal(nav.mode,'landed','cannot launch with moving cargo lift');
+  advance(6);press('KeyL');assert.equal(nav.mode,'landed','cannot launch with raised cargo lift');
+  nav.freighter.toggle('port');advance(6);press('KeyL');assert.equal(nav.mode,'flight');
+  advanceUntil(()=>!nav.stationLift,3,'Atlas lifts clear of deck');
+  assert.ok(nav.deckClearance>=6.5);assert.ok(nav.deckClearance+9.8-5.55<station.interiorBox.max.y-station.interiorBox.min.y);
 });

@@ -66,4 +66,10 @@ test('Blender asset fits the navigation envelope with a correctly placed movable
   const hinge = lid.getWorldPosition(new THREE.Vector3());
   assert.ok(hinge.distanceTo(new THREE.Vector3(1.65, 1.98, 1.15)) < 1e-5);
   assert.ok(new THREE.Box3().setFromObject(lid).getSize(new THREE.Vector3()).length() < 2, 'lid transforms remain ship local');
+  const chair=scene.getObjectByName('PilotChair');assert.ok(chair,'Blender pilot chair is present');
+  const chairBounds=new THREE.Box3().setFromObject(chair);
+  assert.ok(chairBounds.max.z<-2,'seat shell stays clear of the rear standing aisle');
+  const sightline=new THREE.Raycaster(new THREE.Vector3(...SHIP_LAYOUT.seatEye),new THREE.Vector3(0,0,-1),0,8);
+  const opaque=sightline.intersectObject(scene,true).filter(hit=>!hit.object.material.transparent);
+  assert.equal(opaque.length,0,'centre windscreen remains clear of opaque struts');
 });
