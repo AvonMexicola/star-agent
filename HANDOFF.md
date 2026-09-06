@@ -1243,3 +1243,8 @@ its three unique handoffs and landing-gear solver/tests. That solver remains
 unwired, exactly as LANDING-GEAR-HANDOFF documents. Deleted legacy albedo.worker
 is superseded by orbital-surface workers and remains deleted. Shared working
 directory uncommitted station and equipment art was not included.
+
+
+## Terrain and ground detail — READY FOR REVIEW
+
+Astra: feat/terrain-transitions is stacked on forest PR #6, isolated at /tmp/star-agent-terrain-work. Land/water/shadow parent-triangle morphs, 0.6 s wall-time split/merge, 1.8/2.3 hysteresis, retained parents/skirts, and terrain-material.js ground detail are integrated. 69 unit checks, production terrain/ground inspection, focused shallow-water inspection and four general Chromium cases pass. Original fine buffers remain byte-identical across eight regression fixtures. Review notes/screenshots and limitations: TERRAIN-HANDOFF.md and docs/images/terrain-*.png. Preview http://localhost:5176/?seed=7291. main.js changes are diagnostics only; preserve other branches’ ShipState/controller/moon/ship hooks when integrating. No merge or production deployment by Astra.

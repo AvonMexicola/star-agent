@@ -45,32 +45,34 @@ export function cubeDirection(face,u,v) {
 }
 export function latLonDirection(lat,lon){const a=lat*Math.PI/180,b=lon*Math.PI/180;return [Math.cos(a)*Math.sin(b),Math.sin(a),Math.cos(a)*Math.cos(b)];}
 
-export function generatePatch({face,level,ix,iy,grid=GRID,surfaceDetail=false}) {
-  validateTerrainGrid(grid);
+export function generatePatch({face,level,ix,iy,grid=GRID,parentGrid=grid,surfaceDetail=false}) {
+  validateTerrainGrid(grid);validateTerrainGrid(parentGrid);
   const size=2/2**level,u0=-1+ix*size,v0=-1+iy*size;
   const center=cubeDirection(face,u0+size/2,v0+size/2).map(v=>v*RADIUS);
   const count=(grid+1)**2+4*(grid+1);
   const positions=new Float32Array(count*3),normals=new Float32Array(count*3),colors=new Float32Array(count*3);
   const directions=new Float32Array(count*3),waterPositions=new Float32Array(count*3);
   const heights=new Float32Array(count);
-  const step=Math.max(.4,Math.min(200,size*RADIUS/grid*.5));
-  function write(index,u,v,skirt=0) {
-    const d=cubeDirection(face,u,v),h=terrainHeight(...d),r=RADIUS+h-skirt;
-    const k=index*3;
-    for(let a=0;a<3;a++){positions[k+a]=d[a]*r-center[a];directions[k+a]=d[a];waterPositions[k+a]=d[a]*(RADIUS-skirt)-center[a];}
-    heights[index]=h;
-    // Tangent-space finite differences remain stable at metre-scale resolution.
+  function sample(u,v,sampleLevel,sampleGrid) {
+    const d=cubeDirection(face,u,v),h=terrainHeight(...d);
+    const step=Math.max(.4,Math.min(200,(2/2**sampleLevel)*RADIUS/sampleGrid*.5));
     let tx=d[2],ty=0,tz=-d[0];let len=Math.hypot(tx,tz);
     if(len<.01){tx=1;tz=0;len=1;}tx/=len;tz/=len;
     const bx=d[1]*tz,by=d[2]*tx-d[0]*tz,bz=-d[1]*tx;
     const eps=step/RADIUS;
     const heightOffset=(ax,ay,az)=>{const nx=d[0]+ax*eps,ny=d[1]+ay*eps,nz=d[2]+az*eps,l=Math.hypot(nx,ny,nz);return terrainHeight(nx/l,ny/l,nz/l);};
-    const normalDetail=smoothstep(2,7,level);
+    const normalDetail=smoothstep(2,7,sampleLevel);
     const dhT=(heightOffset(tx,ty,tz)-heightOffset(-tx,-ty,-tz))/(2*step)*normalDetail;
     const dhB=(heightOffset(bx,by,bz)-heightOffset(-bx,-by,-bz))/(2*step)*normalDetail;
-    colors.set(surfaceColor(...d,h,Math.atan(Math.hypot(dhT,dhB))),k);
+    const color=surfaceColor(...d,h,Math.atan(Math.hypot(dhT,dhB)));
     const nx=d[0]-tx*dhT-bx*dhB,ny=d[1]-ty*dhT-by*dhB,nz=d[2]-tz*dhT-bz*dhB;
-    const nl=Math.hypot(nx,ny,nz);normals.set([nx/nl,ny/nl,nz/nl],k);
+    const nl=Math.hypot(nx,ny,nz);
+    return {d,h,color,normal:[nx/nl,ny/nl,nz/nl]};
+  }
+  function write(index,u,v,skirt=0) {
+    const {d,h,color,normal}=sample(u,v,level,grid),k=index*3;
+    for(let a=0;a<3;a++){positions[k+a]=d[a]*(RADIUS+h-skirt)-center[a];directions[k+a]=d[a];waterPositions[k+a]=d[a]*(RADIUS-skirt)-center[a];}
+    heights[index]=h;normals.set(normal,k);colors.set(color,k);
   }
   for(let j=0;j<=grid;j++)for(let i=0;i<=grid;i++)write(j*(grid+1)+i,u0+size*i/grid,v0+size*j/grid);
   const indices=[];
@@ -79,8 +81,55 @@ export function generatePatch({face,level,ix,iy,grid=GRID,surfaceDetail=false}) 
   let next=(grid+1)**2;
   const depth=Math.max(4,size*RADIUS*.045);
   for(const edge of edges){const start=next;for(const src of edge){const i=src%(grid+1),j=Math.floor(src/(grid+1));write(next++,u0+size*i/grid,v0+size*j/grid,depth);}for(let i=0;i<grid;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
+  // Child vertices start on the actual parent triangles (including its b–c
+  // diagonal), not a bilinear height field. Reconstruct the parent's stored local
+  // Float32 vertices in doubles before converting to this child's local frame.
+  const parentPositions=positions.slice(),parentWaterPositions=waterPositions.slice();
+  const parentNormals=normals.slice(),parentColors=colors.slice(),parentHeights=heights.slice();
+  if(level>0){
+    const parentSize=size*2,pu0=-1+Math.floor(ix/2)*parentSize,pv0=-1+Math.floor(iy/2)*parentSize;
+    const parentCenter=cubeDirection(face,pu0+parentSize/2,pv0+parentSize/2).map(v=>v*RADIUS);
+    const cache=new Map();
+    const parentVertex=(i,j)=>{
+      const key=j*(parentGrid+1)+i;
+      if(!cache.has(key)){
+        const q=sample(pu0+parentSize*i/parentGrid,pv0+parentSize*j/parentGrid,level-1,parentGrid);
+        q.position=q.d.map((d,a)=>Math.fround(d*(RADIUS+q.h)-parentCenter[a])+parentCenter[a]-center[a]);
+        q.water=q.d.map((d,a)=>Math.fround(d*RADIUS-parentCenter[a])+parentCenter[a]-center[a]);
+        q.normal=q.normal.map(Math.fround);q.color=q.color.map(Math.fround);q.h=Math.fround(q.h);
+        cache.set(key,q);
+      }
+      return cache.get(key);
+    };
+    for(let j=0;j<=grid;j++)for(let i=0;i<=grid;i++){
+      const px=(ix%2)*parentGrid/2+i*parentGrid/(2*grid),py=(iy%2)*parentGrid/2+j*parentGrid/(2*grid);
+      const x=Math.min(parentGrid-1,Math.floor(px)),y=Math.min(parentGrid-1,Math.floor(py)),fx=px-x,fy=py-y;
+      const terms=fx+fy<=1?[[x,y,1-fx-fy],[x+1,y,fx],[x,y+1,fy]]:[[x+1,y,1-fy],[x+1,y+1,fx+fy-1],[x,y+1,1-fx]];
+      const vertex=j*(grid+1)+i,k=vertex*3;
+      parentHeights[vertex]=0;
+      for(let a=0;a<3;a++){parentPositions[k+a]=0;parentWaterPositions[k+a]=0;parentNormals[k+a]=0;parentColors[k+a]=0;}
+      // Accumulate in doubles so rounding happens only after interpolation.
+      const qs=terms.map(([x,y,w])=>[parentVertex(x,y),w]);
+      parentHeights[vertex]=qs.reduce((sum,[q,w])=>sum+q.h*w,0);
+      for(let a=0;a<3;a++){
+        parentPositions[k+a]=qs.reduce((sum,[q,w])=>sum+q.position[a]*w,0);
+        parentWaterPositions[k+a]=qs.reduce((sum,[q,w])=>sum+q.water[a]*w,0);
+        parentNormals[k+a]=qs.reduce((sum,[q,w])=>sum+q.normal[a]*w,0);
+        parentColors[k+a]=qs.reduce((sum,[q,w])=>sum+q.color[a]*w,0);
+      }
+    }
+    let skirt=(grid+1)**2;
+    for(const edge of edges)for(const src of edge){
+      for(let a=0;a<3;a++){
+        parentPositions[skirt*3+a]=parentPositions[src*3+a]-directions[src*3+a]*depth;
+        parentWaterPositions[skirt*3+a]=parentWaterPositions[src*3+a]-directions[src*3+a]*depth;
+        parentNormals[skirt*3+a]=parentNormals[src*3+a];parentColors[skirt*3+a]=parentColors[src*3+a];
+      }
+      parentHeights[skirt]=parentHeights[src];skirt++;
+    }
+  }
   const field=surfaceDetail?generatePatchSurface({face,level,ix,iy,radius:RADIUS,directionAt:cubeDirection,sample:(...d)=>({height:terrainHeight(...d)}),colorAt:surfaceColor}):null;
-  return {center,positions,normals,colors,directions,waterPositions,heights,indices:new Uint16Array(indices),field};
+  return {center,positions,normals,colors,directions,waterPositions,heights,parentPositions,parentWaterPositions,parentNormals,parentColors,parentHeights,indices:new Uint16Array(indices),field};
 }
 
 export function findDestinations() {
