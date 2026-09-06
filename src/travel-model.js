@@ -2,6 +2,7 @@ import { MOON_MAX_HEIGHT, constrainMoonStep } from './moon-world.js';
 import { PYRE_MAX_HEIGHT } from './pyre-world.js';
 import { Vector3 } from 'three';
 import { AEON, SELENE, PYRE } from './celestial.js';
+import { shipHandling } from './ship-handling.js';
 
 export const LIGHT_SPEED = 299_792_458;
 export const TRAVEL = Object.freeze({
@@ -48,6 +49,7 @@ export function stationSpeedLimit(distance = Infinity) {
 
 /** Speed policy shared by manual flight and the travel-entry UI. */
 export function flightSpeedProfile({
+  shipId = 'nomad',
   airless = false,
   altitude = 0,
   clearance = altitude,
@@ -60,8 +62,8 @@ export function flightSpeedProfile({
   const lower = airless ? 2_000 : 20_000;
   const upper = airless ? 20_000 : 70_000;
   const blend = smoothstep(lower, upper, height);
-  const cruise = 250 + (3_000 - 250) * blend;
-  const boosted = 400 + (9_000 - 400) * blend;
+  const cruise = (250 + (3_000 - 250) * blend) * shipHandling(shipId).speed;
+  const boosted = (400 + (9_000 - 400) * blend) * shipHandling(shipId).speed;
   const requested = boost ? boosted : cruise;
   const floorLimit = floorClearance === Infinity ? Infinity : 25 + floorClearance * .5;
   const stationLimit = stationSpeedLimit(stationDistance);

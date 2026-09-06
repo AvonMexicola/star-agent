@@ -1,3 +1,4 @@
+import { shipHandling, steeringStep } from './ship-handling.js';
 import * as THREE from 'three';
 import { ringPathIntervals } from './ring-world.js';
 import { stepEVA, constrainEVAShip, canAttachRamp } from './eva.js';
@@ -24,7 +25,7 @@ export class Navigation {
     this.gamepad=new GamepadInput();this.controllerActive=false;this.focused=true;
     this.physicalKeys=new Set();this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
-    this.shipId='nomad';this.layout=SHIP_LAYOUT;this.freighter=null;
+    this.shipId='nomad';this.pendingLook=new THREE.Vector2();this.frameLook=new THREE.Vector2();this.assistedTurn=new THREE.Vector3();this.layout=SHIP_LAYOUT;this.freighter=null;
     this.station=null;this.dockedAtStation=false;this.stationLift=false;
     this.spaceParked=false;this.evaBraking=false;this.surfaceObstacles=null;this.toolTrigger=0;
     this.flightAssist=true;this.angularVelocity=new THREE.Vector3();
@@ -39,7 +40,7 @@ export class Navigation {
     document.addEventListener('mousemove',e=>{if(this.locked&&this.enabled){this.controllerActive=false;this.look(-e.movementX*.0018,-e.movementY*.0018);}});
     document.addEventListener('keydown',e=>{
       this.physicalKeys.add(e.code);
-      if(!this.enabled||document.querySelector('dialog[open]'))return;
+      if(!this.enabled||document.querySelector('dialog[open]')){this.resetSteering();return;}
       if(this.openingActive){this.onOpeningKey?.(e);return;}
       if(['Space','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
     if(this.mode==='crashed')return;
@@ -56,26 +57,32 @@ export class Navigation {
       if(e.code==='KeyX'&&this.mode!=='eva')this.brake();
     });
     document.addEventListener('keyup',e=>{this.keys.delete(e.code);this.physicalKeys.delete(e.code);});
-    window.addEventListener('blur',()=>{this.focused=false;this.physicalKeys.clear();this.gamepad.suspend();this.keys.clear();if(this.powered&&this.flightAssist)this.velocity.set(0,0,0);});
+    window.addEventListener('blur',()=>{this.focused=false;this.resetSteering();this.physicalKeys.clear();this.gamepad.suspend();this.keys.clear();if(this.powered&&this.flightAssist)this.velocity.set(0,0,0);});
     window.addEventListener('focus',()=>{this.focused=true;});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden){this.gamepad.suspend();this.keys.clear();}});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){this.resetSteering();this.gamepad.suspend();this.keys.clear();}});
     canvas.addEventListener('wheel',e=>{if(!this.locked||this.travel)return;e.preventDefault();this.speedScale=clamp(this.speedScale*Math.exp(-e.deltaY*.002),.05,1);this.notify(`Throttle ${Math.round(this.speedScale*100)}%`);},{passive:false});
   }
   get canTogglePower(){return !this.openingActive&&!this.travel&&(this.mode==='flight'||this.mode==='landed');}
   get shipSpeed(){return this.cabinFlight?this.shipVelocity.length():this.mode==='walk'?0:this.speed;}
   togglePower(){
     if(!this.canTogglePower){this.notify(this.travel?'Disengage the travel drive before switching main power.':'Return to the pilot chair to switch main power.');return false;}
-    this.powered=!this.powered;this.boost=false;this.keys.clear();
+    this.powered=!this.powered;this.resetSteering();this.boost=false;this.keys.clear();
     if(!this.powered){this.autoland=false;this.stationLift=false;}
     this.notify(this.powered?'Main power on. Propulsion available.':'Main power off. Propulsion disabled; emergency cabin power remains.');
     return true;
   }
   brake(){
     if(this.mode==='flight'&&!this.powered){this.notify('Main power off. Power on with P to use ship brakes.');return;}
-    this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;
+    this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;this.resetSteering();
     this.notify(this.cabinFlight?'Stopped walking. Ship remains on course.':'Brakes engaged.');
   }
-  resetCabinFlight(){this.cabinFlight=false;this.shipVelocity.set(0,0,0);this.shipAngularVelocity.set(0,0,0);this.cruiseVelocity.set(0,0,0);}
+  beginFrame(dt){
+    // Mouse deltas arrive once per rendered frame. Spread their requested rate
+    // across every physics substep before applying the hull's turn-rate cap.
+    this.frameLook.copy(this.pendingLook).multiplyScalar(dt>0?1/dt:0);this.pendingLook.set(0,0);
+  }
+  resetSteering(){this.frameLook.set(0,0);this.pendingLook.set(0,0);this.assistedTurn.set(0,0,0);}
+  resetCabinFlight(){this.resetSteering();this.cabinFlight=false;this.shipVelocity.set(0,0,0);this.shipAngularVelocity.set(0,0,0);this.cruiseVelocity.set(0,0,0);}
   crashAt(impact,normal){
     if(this.mode!=='flight'||!impact.crashed)return false;
     this.crash={...impact,position:this.position.toArray(),normal:normal.toArray()};
@@ -90,7 +97,7 @@ export class Navigation {
   toggleFlightAssist(){
     if(!this.powered){this.notify('Power on with P to enable flight control.');return;}
     if(this.travel||this.mode!=='flight'||this.autoland||this.stationLift){this.notify('Change flight assist while freely flying.');return;}
-    this.flightAssist=!this.flightAssist;this.angularVelocity.set(0,0,0);
+    this.flightAssist=!this.flightAssist;this.resetSteering();this.angularVelocity.set(0,0,0);
     this.notify(this.flightAssist?'Flight assist on. Releasing thrust brakes the ship.':'Inertial flight. Release thrust to coast; X brakes. V restores assist.');
   }
   get flightEnvironment(){
@@ -103,7 +110,7 @@ export class Navigation {
   }
   capture(){if(!this.enabled||this.mode==='crashed')return;try{const result=this.canvas.requestPointerLock();result?.catch(()=>this.notify('Mouse capture unavailable. Drag to look, or use the arrow keys.'));}catch{this.notify('Use arrow keys to steer.');}}
   get speedProfile(){
-    return flightSpeedProfile({airless:this.body.airless,altitude:this.flightEnvironment.altitude,
+    return flightSpeedProfile({shipId:this.shipId,airless:this.body.airless,altitude:this.flightEnvironment.altitude,
       clearance:this.altitude,stationDistance:this.stationDistance,boost:this.boost,throttle:this.speedScale});
   }
   toggleLights(){
@@ -205,9 +212,15 @@ export class Navigation {
   look(yaw,pitch,direct=this.brakeFlight??false){
     if(this.mode==='crashed'||this.travel||this.openingActive||!this.enabled)return;
     if(this.mode==='flight'&&!this.powered)return;
+    const handling=shipHandling(this.shipId);
+    if(this.mode==='flight'){yaw*=handling.turn;pitch*=handling.turn;}
+    if(!direct&&this.mode==='flight'&&this.flightAssist&&!this.autoland&&!this.stationLift&&handling.steeringLag){this.pendingLook.x+=yaw;this.pendingLook.y+=pitch;return;}
     if(!direct&&this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
       this.angularVelocity.x+=pitch*4;this.angularVelocity.y+=yaw*4;return;
     }
+    this.applyLook(yaw,pitch);
+  }
+  applyLook(yaw,pitch){
     // Spacecraft and EVA yaw around their own up axis, so horizontal input
     // always turns the nose sideways even when the nearest moon is overhead.
     // Surface walking and assisted atmospheric flight retain gravity-relative yaw.
@@ -362,6 +375,7 @@ export class Navigation {
     if(this.mode==='walk'&&!this.cabinFlight&&this.stationAction?.())return;
     if(this.mode==='flight'){
       if(this.autoland||this.stationLift){this.notify('Finish landing or undocking before leaving the pilot seat.');return;}
+      this.resetSteering();
       this.shipOrientation.copy(this.orientation);
       this.shipPosition=this.position.clone().sub(new THREE.Vector3(...this.layout.seatEye).applyQuaternion(this.shipOrientation));
       this.shipVelocity.copy(this.velocity);this.shipAngularVelocity.copy(this.angularVelocity);this.cruiseVelocity.copy(this.velocity);
@@ -424,6 +438,14 @@ export class Navigation {
   // Shared physics and swept contacts for piloted flight and an occupied cabin.
   // position is the pilot-eye reference for both; no second collision floor.
   advanceFlight(dt,{moveForward=0,strafe=0,vertical=0,turn=0,tilt=0,roll=0,cruiseTarget=null}={}){
+    const handling=shipHandling(this.shipId);
+    if(this.powered&&this.flightAssist&&!this.autoland&&!this.stationLift&&!this.brakeFlight&&handling.steeringLag&&dt>0){
+      const targets=[this.frameLook.y+this.pendingLook.y/dt,this.frameLook.x+this.pendingLook.x/dt,-roll*.8*handling.turn];
+      const angles=targets.map((target,i)=>{const result=steeringStep(this.assistedTurn.getComponent(i),clamp(target,-handling.turn*1.2,handling.turn*1.2),dt,handling.steeringLag);this.assistedTurn.setComponent(i,result.rate);return result.angle;});
+      this.applyLook(angles[1],angles[0]);
+      this.orientation.multiply(rotation.setFromAxisAngle(new THREE.Vector3(0,0,1),angles[2])).normalize();
+      this.pendingLook.set(0,0);
+    }else this.resetSteering();
     const oldNormal=this.normal;
     const forward=FORWARD.clone().applyQuaternion(this.orientation),right=RIGHT.clone().applyQuaternion(this.orientation);
     const input=forward.clone().multiplyScalar(moveForward).addScaledVector(right,strafe);
@@ -431,7 +453,7 @@ export class Navigation {
       if(this.autoland||this.stationLift)this.engineAcceleration.copy(this.flightEnvironment.gravity).negate();
       if(this.brakeFlight&&this.powered){
         this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
-        if(roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation).normalize();}
+        if(roll){rotation.setFromAxisAngle(forward,roll*dt*.8*handling.turn);this.orientation.premultiply(rotation).normalize();}
       }else if(this.stationLift){
         // Lift the landing gear one metre, rather than raising every pilot eye
         // to six metres. Limit the final step so low frame rates cannot overshoot.
@@ -453,13 +475,13 @@ export class Navigation {
         if(this.powered&&this.speed>stationLimit)this.velocity.setLength(stationLimit);
         // Assisted flight brakes toward lower commanded limits continuously.
         // Retain the swept guard for overspeed states loaded from older builds.
-        const flight=stepFlight(this,{assist:this.powered&&this.flightAssist,targetVelocity:cruiseTarget??input.multiplyScalar(maxSpeed),
+        const flight=stepFlight(this,{shipId:this.shipId,assist:this.powered&&this.flightAssist,targetVelocity:cruiseTarget??input.multiplyScalar(maxSpeed),
           translation:this.powered?new THREE.Vector3(strafe,vertical,-moveForward):new THREE.Vector3(),
           rotation:this.powered?new THREE.Vector3(tilt,turn,-roll):new THREE.Vector3(),
           boost:this.powered&&this.boost,maxSpeed:!this.powered?Infinity:Math.max(this.speed,profile.limit)},this.flightEnvironment,dt);
         this.engineAcceleration.copy(flight.engineAcceleration);
         this.velocity.copy(flight.velocity);this.orientation.copy(flight.orientation);this.angularVelocity.copy(flight.angularVelocity);
-        if(this.powered&&this.flightAssist&&roll){rotation.setFromAxisAngle(forward,roll*dt*.8);this.orientation.premultiply(rotation);}
+        if(this.powered&&this.flightAssist&&!handling.steeringLag&&roll){rotation.setFromAxisAngle(forward,roll*dt*.8*handling.turn);this.orientation.premultiply(rotation);}
       }
       // Adaptive substeps prevent high-speed descent tunnelling through the globe.
       const steps=clamp(Math.ceil(this.speed*dt/Math.max(10,altitude*.2)),1,96);
@@ -516,14 +538,14 @@ export class Navigation {
     if(pad.used)this.controllerActive=true;
     if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
-    if(!this.enabled||document.querySelector('dialog[open]'))return;
+    if(!this.enabled||document.querySelector('dialog[open]')){this.resetSteering();return;}
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
-    if(this.travel){if(pad.brake)this.cancelTravel();this.updateTravel(dt);return;}
+    if(this.travel){this.resetSteering();if(pad.brake)this.cancelTravel();this.updateTravel(dt);return;}
     if(pad.pressed.has(11))this.toggleFlightAssist();
     if(pad.pressed.has(3)){if(this.mode==='eva'||(this.mode==='walk'&&!this.insideShip))this.toggleEVA();else this.landOrLaunch();}
     if(pad.pressed.has(2))this.embark();
     // Interactions may open a modal and disable navigation in this same frame.
-    if(!this.enabled||document.querySelector('dialog[open]'))return;
+    if(!this.enabled||document.querySelector('dialog[open]')){this.resetSteering();return;}
     if(pad.brake&&this.mode!=='eva'&&(this.powered||this.mode!=='flight')){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;}
     if(this.mode==='flight'&&pad.speed)this.speedScale=clamp(this.speedScale*Math.exp(pad.speed*dt),.05,1);
     const axis=(positive,negative,analog=0)=>clamp(Number(this.keys.has(positive))-Number(this.keys.has(negative))+analog,-1,1);

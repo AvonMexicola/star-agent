@@ -314,7 +314,9 @@ for (const shipId of ['nomad', 'atlas']) {
         nav.gamepad.poll();
         if (key) keyDown(key);
         else pad.buttons[button] = {pressed: true, value: 1};
-        advance(.25);
+        // Heavy ships build angular speed more slowly; check direction after
+        // enough sustained input for every hull to show a visible bank.
+        advance(.5);
         const rightWing = new THREE.Vector3(1, 0, 0).applyQuaternion(nav.orientation);
         assert.ok(rightWing.y * rightWingSign > .04,
           `${label}: bank ${rightWingSign > 0 ? 'left (right wing rises)' : 'right (right wing drops)'}, actual wing y=${rightWing.y}`);

@@ -351,7 +351,7 @@ try {
     if(document.hidden||opening?.phase==='loading'){resolution.resetMeasurements();return;}
     if(systemMap.open){resolution.resetMeasurements();nav.update(0);return;}
     elapsed+=dt;
-    const steps=nav.travel||opening?.active?1:Math.max(1,Math.ceil(dt/.025));if(firstReady)for(let i=0;i<steps;i++)nav.update(dt/steps);
+    const steps=nav.travel||opening?.active?1:Math.max(1,Math.ceil(dt/.025));nav.beginFrame(dt);if(firstReady)for(let i=0;i<steps;i++)nav.update(dt/steps);
     if(systemMap.open){resolution.resetMeasurements();return;}
     opening?.update(firstReady?dt:0);
     shipPowerUI.update();
