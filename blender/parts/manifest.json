@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "coordinates": "metres, Y up",
+  "parts": [
+    {"id":"service-hatch","source":"service.py:hatch","description":"Gasket, bevelled cover, recessed latch and two hinges; width/depth parameters."},
+    {"id":"louvred-vent","source":"service.py:vent","description":"Dark recess with count derived from length and 120mm louvre spacing."},
+    {"id":"rivet-row","source":"service.py:rivet_row","description":"Geometry Nodes line distribution, eight-sided 26mm captive heads."},
+    {"id":"routed-cable","source":"service.py:cable","description":"Editable Bezier loom, Geometry Nodes circular profile and capped ends."}
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "basecolorSource": "Blender procedural only \u2014 Meshy pending",
+  "packedChannels": {
+    "R": "Blender contact AO",
+    "G": "procedural-roughness.png",
+    "B": "procedural-metallic.png"
+  },
+  "resolution": [
+    1024,
+    1024
+  ],
+  "sources": {
+    "procedural-basecolor.png": {
+      "sha256": "36d2a8972d781610519ae482faf250cf0fb2d0c3c8cf17e7ee171710d6e0532e",
+      "bytes": 687314
+    },
+    "procedural-normal.png": {
+      "sha256": "3028dd7a03f13086d6d07c63873f36913383a58c7f6650cfa1b7c3bb236f4cc4",
+      "bytes": 479637
+    },
+    "procedural-roughness.png": {
+      "sha256": "172537379958bc09289d3b72fed084e985184f98a348d6095b210e24c1787224",
+      "bytes": 585765
+    },
+    "procedural-metallic.png": {
+      "sha256": "215ed6396f1c6ad4b4c9b0008e235054a5ee39ea11c8865cb325c3127f6f53e6",
+      "bytes": 140440
+    },
+    "procedural-ao.png": {
+      "sha256": "f91ffdc35a8796f2dea55ed67e4c892c1d0eba2416768f15225e167c69dd5436",
+      "bytes": 508952
+    }
+  },
+  "uvLayoutSha256": "91899f96b0de0221e206455e5c46659f0768a3d9a9e71c78bc674d6e80389b6d"
+}

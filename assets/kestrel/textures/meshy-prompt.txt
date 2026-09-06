@@ -1,0 +1,14 @@
+PLANNED PROMPT — NOT YET SUBMITTED. Required Meshy texture pass is pending.
+
+Texture this original single-seat spacecraft while preserving the uploaded
+geometry, original UV layout and broad material placement. Ivory ceramic armour
+over graphite polymer and brushed titanium structure. Restrained pale-mint
+identification bands and small technical stencils: KESTREL, KS-134, NO STEP,
+service arrows and access-panel numbers. No real brands or copied franchise logos.
+Keep markings aligned with panels and readable at the final 1024 texture size.
+Use subtle panel-to-panel roughness variation, fine brushed-metal direction,
+contact grime around fasteners/vents and modest scuffing at service edges and
+ladder treads. A maintained working interceptor, with clean broad armour planes.
+Keep the cockpit liner dark and engines metallic. Preserve the existing physical
+recesses and panel geometry. PBR base colour, roughness, metallic and tangent-space
+normal maps; no baked lighting, cast shadows, glare or invented geometry.

@@ -1,0 +1,30 @@
+{
+  "version":1,
+  "id":"kestrel",
+  "name":"Kestrel",
+  "role":"Single-seat interceptor",
+  "massKg":9000,
+  "coordinates":{"up":"+Y","forward":"-Z","origin":"ground-contact plane"},
+  "dimensions":{"length":13.5,"span":9,"landedHeight":3.2,"bellyClearance":0.9},
+  "budget":{"triangles":60000,"glbBytes":4000000,"textureEdge":1024},
+  "animations":{"CanopyOpen":3,"GearDown":1.2,"LadderDown":1.8},
+  "pilotEye":[0,2.49,-1.9],
+  "screens":{"count":4,"aspect":[4,3],"texturePixels":[512,384]},
+  "hardpoints":["HP_Nose","HP_WingL","HP_WingR","HP_Belly"],
+  "rcs":[
+    {"name":"RCS_NoseL_Up","position":[-0.38,1.98,-4.8],"direction":[0,1,0]},
+    {"name":"RCS_NoseR_Up","position":[0.38,1.98,-4.8],"direction":[0,1,0]},
+    {"name":"RCS_NoseL_Out","position":[-0.42,1.65,-4.8],"direction":[-1,0,0]},
+    {"name":"RCS_NoseR_Out","position":[0.42,1.65,-4.8],"direction":[1,0,0]},
+    {"name":"RCS_AftL_Down","position":[-1.26,1.04,4.8],"direction":[0,-1,0]},
+    {"name":"RCS_AftR_Down","position":[1.26,1.04,4.8],"direction":[0,-1,0]},
+    {"name":"RCS_AftL_Out","position":[-1.85,1.62,4.8],"direction":[-1,0,0]},
+    {"name":"RCS_AftR_Out","position":[1.85,1.62,4.8],"direction":[1,0,0]},
+    {"name":"RCS_WingL_Fwd","position":[-4.25,1.82,2.51],"direction":[0,0,-1]},
+    {"name":"RCS_WingR_Fwd","position":[4.25,1.82,2.51],"direction":[0,0,-1]},
+    {"name":"RCS_WingL_Aft","position":[-4.1,1.82,4.57],"direction":[0,0,1]},
+    {"name":"RCS_WingR_Aft","position":[4.1,1.82,4.57],"direction":[0,0,1]}
+  ],
+  "placeholders":{"fuelCapacity":0,"heatCapacity":0},
+  "integration":"asset-only; navigation, ladder traversal and flight tuning belong to a separate PR"
+}
