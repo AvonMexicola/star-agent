@@ -26,6 +26,7 @@ test('W dismisses launcher; H exposes collapsed shortcuts without restoring it',
   expect(await page.evaluate(()=>window.starAgent.navigation.enabled)).toBe(false);
   await page.keyboard.press('m');await playerOnly(page);expect(await page.evaluate(()=>window.starAgent.navigation.enabled)).toBe(true);
   await page.keyboard.press('h');await page.locator('#quick-transit-menu > summary').click();await page.locator('[data-destination="orbit"]').click();
+  await page.keyboard.press('h');await expect(page.locator('#help-dialog')).toBeHidden();
   await page.waitForFunction(()=>!window.starAgent.state.transiting);await playerOnly(page);
   await page.keyboard.press('h');await page.setViewportSize({width:390,height:844});await page.locator('#quick-transit-menu > summary').click();
   const bounds=await page.locator('.destination').evaluateAll(nodes=>nodes.map(n=>{const b=n.getBoundingClientRect();return [b.left,b.right];}));

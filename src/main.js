@@ -100,7 +100,7 @@ try {
   canvas.addEventListener('pointerup',()=>dragging=false);
   canvas.addEventListener('pointermove',e=>{if(dragging&&!nav.locked)nav.look(-e.movementX*.002,-e.movementY*.002);});
   const help=$('help-dialog');
-  function openHelp(){if(opening?.active||inventoryUI.open||systemMap.open)return;if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.enabled=false;help.showModal();}
+  function openHelp(){if(transiting||opening?.active||inventoryUI.open||systemMap.open)return;if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.enabled=false;help.showModal();}
   function closeHelp(){help.close();nav.enabled=!transiting;}
   $('help-button').addEventListener('click',openHelp);$('close-help').addEventListener('click',closeHelp);help.addEventListener('close',()=>{
     $('quick-transit-menu').open=false;

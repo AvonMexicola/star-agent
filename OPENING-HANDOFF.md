@@ -142,3 +142,13 @@ without teleport, quick transit, map pause/resume and mobile dropdown bounds.
 Browser: Chromium 151 / ANGLE Vulkan SwiftShader, 1440x900 desktop and 390x844
 mobile; scene scale .55 in the dedicated UI tour. Existing journey tests were
 adapted to enter the dropdown instead of targeting removed onscreen rows.
+
+All seven standard Chromium integration cases pass in one run after the menu
+adaptation (controller flight, physical forest journey, two drive/map cases and
+three seed/transit/boot smoke cases). Review additionally prevents keyboard H
+from opening options during quick transit; controller Menu already had this guard.
+
+The final opening-to-cockpit physical journey also passes with launcher chrome
+hidden and cockpit displays visible. The final keyboard/menu UI case passes again
+after the H-during-transit guard; it exercises that guard as well. Updated preview
+is available on 5178. README and station guide describe the new menu location.

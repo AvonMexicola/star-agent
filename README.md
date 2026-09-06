@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. WebGL 2, a desktop keyboard and mouse, and hardware acceleration are recommended. Core play needs no account, API key, hosted service, or paid asset. Audio starts only after pressing the sound button.
+Open the URL printed by Vite. WebGL 2, a desktop keyboard and mouse, and hardware acceleration are recommended. Core play needs no account, API key, hosted service, or paid asset. Audio starts only after a user gesture: keyboard handover in the opening, or Sound in the H options panel.
 
 ## Explore and share
 
@@ -19,9 +19,9 @@ The default seed is `7291`. Open `/?seed=42` for another planet, or enter a seed
 
 The active terrain generator is version **2**. Its expanded landforms differ from the original generator even with the same seed. Future generation changes must update that version; old algorithms are not archived by the seed URL.
 
-The default opening starts inside the station hangar. Press W (or move the controller stick) to blend into first person, walk to the rear hatch, and board. Use ?intro=0 for the previous orbital start. See the [station opening guide](docs/station-opening.md).
+The default opening starts inside the station hangar. Press W (or move the controller stick) to blend into first person, walk to the rear hatch, and board. Taking control dismisses the launcher controls while retaining the player HUD and cockpit displays. Use ?intro=0 for the previous orbital start. See the [station opening guide](docs/station-opening.md).
 
-WASD moves, mouse or arrow keys steer, Space/C ascends/descends, Shift boosts, X brakes, and the mouse wheel adjusts assisted flight speed. Shift + click a destination to set a bearing and distance for **continuous flight**. Climb when the destination lies beyond the horizon. A plain destination click performs optional quick transit; ordinary flight does not use it.
+WASD moves, mouse or arrow keys steer, Space/C ascends/descends, Shift boosts, X brakes, and the mouse wheel adjusts assisted flight speed. Open H (controller Menu/Options) and expand **Quick transit** for location shortcuts. Shift + click a destination to set a bearing and distance for **continuous flight**. Climb when the destination lies beyond the horizon. A plain destination click performs optional quick transit; ordinary flight does not use it.
 
 Press **V** while freely flying to toggle inertial flight. Releasing thrust then preserves momentum; arrow keys and Q/E apply rotational thrust, and mouse movements adjust rotation rate. Space/C thrust along the ship's up/down axis in this mode. **X** stops translation and rotation; **V** restores assisted braking. Inertial flight includes inverse-square gravity (9.81 m/s² at sea level), density-dependent drag, banked wing lift and loss of lift beyond stall angle. It shares the atmospheric/space speed limits below and retains the station approach speed limit. Assisted mode remains the default, with gravity/aero compensation and altitude-scaled travel speed. The transition readout maps 70–20 km above sea level to ATMO 0–100%; it is a regime blend, not air density. Orbit/quick-transit resets assist to on.
 
