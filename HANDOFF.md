@@ -412,3 +412,13 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+## Fable 5.1 — the star (feat/sun, 2026-09-06)
+
+READY FOR REVIEW: `src/sun.js`, `src/atmosphere.js`, `src/world.js`, `src/celestial.js`, `src/travel-model.js`,
+`src/system-map.js`, `src/system-map.css`, `src/navigation.js`, `src/main.js`, `index.html`, `src/style.css`,
+`tests/sun.test.js`, `scripts/sun.spec.js`, `scripts/sun.config.js`, `docs/sun.md`, `docs/qa/sun/`.
+Part A (sun 2× apparent diameter from Aeon) is its own commit. Registry touch points shared with `feat/pyre`
+are append-only: `TRAVEL_TARGETS` (one `targetFrom(STAR, …)` line), `celestial.js` (`STAR` export after `SELENE`),
+`system-map.js` (the `.map-star` div became a `data-travel-target="star"` button + one description branch),
+`index.html` (destination 08 after Selene), `main.js` `transit()` (`name==='star'` branches).

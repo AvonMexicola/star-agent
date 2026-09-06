@@ -135,7 +135,7 @@ void main(){
   float band=exp(-pow(d.y/.42,2.0))*(1.0-exp(-pow(d.y/.08,2.0)));
   float group=smoothstep(.50,.60,fbm(d*3.0+vec3(7.0)))*band;
   vec2 sc=cells(d*7.0+vec3(31.0),0.0);
-  float penumbra=smoothstep(.42,.20,sc.x)*group,umbra=smoothstep(.22,.11,sc.x)*group;
+  float penumbra=smoothstep(.50,.26,sc.x)*group,umbra=smoothstep(.30,.14,sc.x)*group;
   float fibril=.5+.5*sin(atan(d.y,d.x)*60.0+fbm(d*80.0)*12.0);
   float shade=mix(1.0,.42+.14*fibril,penumbra);shade=mix(shade,.05,umbra);
   // Faculae brighten toward the limb where the hot walls of granules become visible.
