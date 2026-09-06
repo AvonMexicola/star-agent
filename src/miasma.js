@@ -1,3 +1,4 @@
+import { MiasmaFlora } from './miasma-flora.js';
 import { MineralFragments } from './mineral-fragments.js';
 import * as THREE from 'three';
 import { PyreTerrain } from './pyre-terrain.js';
@@ -16,7 +17,7 @@ const weather = `
     d.xz=mat2(cos(angle),-sin(angle),sin(angle),cos(angle))*d.xz;
     vec3 p=d*9.0+vec3(mf(d*5.0),mf(d*5.0+19.0),mf(d*5.0-7.0))*3.0;
     float belts=sin(d.y*24.0+mf(d*8.0)*8.0)*.075;
-    return smoothstep(.38,.67,mf(p)+belts);
+    return smoothstep(.53,.74,mf(p)+belts);
   }
 `;
 const mapTexture=(pixels,width,height,space=THREE.NoColorSpace)=>{
@@ -27,7 +28,7 @@ export class Miasma {
   constructor(scene) {
     this.scene=scene;this.worldPosition=new THREE.Vector3(...MIASMA_POSITION);
     this.group=new THREE.Group();this.group.name='Miasma';scene.add(this.group);
-    this.fragments=new MineralFragments(this.group);
+    this.fragments=new MineralFragments(this.group);this.flora=new MiasmaFlora(this.group);
     this.time={value:0};this.mapsReady={value:0};
     this.color={value:mapTexture(new Uint8Array([140,140,50,255]),1,1,THREE.SRGBColorSpace)};
     this.normal={value:mapTexture(new Uint8Array([128,128,255,255]),1,1)};
@@ -50,7 +51,7 @@ export class Miasma {
           float detail=1.0-smoothstep(100.0,2400.0,range);
           float grains=mn(mPoint*3.0),plates=mf(mPoint*.14),cracks=1.0-smoothstep(.015,.07,abs(plates-.48));
           diffuseColor.rgb*=mix(1.0,.73+plates*.45+grains*.22-cracks*.3,detail);
-          diffuseColor.rgb*=1.0-mCloud(d,mTime)*.18;
+          diffuseColor.rgb*=1.0-mCloud(d,mTime)*.07;
           mRelief=(grains*.02+plates*.16-cracks*.04)*detail;`)
         .replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
           vec3 q0=dFdx(-vViewPosition),q1=dFdy(-vViewPosition),r1=cross(q1,normal),r2=cross(normal,q0);
@@ -71,18 +72,19 @@ export class Miasma {
         .replace('#include <color_fragment>',`#include <color_fragment>
           float cover=mCloud(normalize(mDirection),mTime);
           diffuseColor.rgb=mix(vec3(.12,.19,.055),vec3(.72,.68,.32),cover);
-          diffuseColor.a=cover*.78;if(diffuseColor.a<.025)discard;`);
+          diffuseColor.a=cover*.22;if(diffuseColor.a<.025)discard;`);
     };
     this.cloudMaterial.customProgramCacheKey=()=> 'miasma-weather-v1';
     this.clouds=new THREE.Mesh(new THREE.SphereGeometry(1,128,80),this.cloudMaterial);
-    this.clouds.name='Miasma sulphur aerosol clouds';this.clouds.scale.setScalar(MIASMA_RADIUS+8500);this.group.add(this.clouds);
+    this.clouds.name='Miasma sulphur aerosol clouds';this.clouds.scale.setScalar(MIASMA_RADIUS+5200);this.group.add(this.clouds);
   }
   update(position,origin,elapsed,shipPosition=null) {
     this.distance=position.distanceTo(this.worldPosition);this.group.visible=this.distance<3e8;this.time.value=elapsed;
     if(!this.group.visible)return;
     this.terrain.update(position,origin);this.fragments.update(position,origin,this.terrain.altitude,shipPosition);this.clouds.position.copy(this.worldPosition).sub(origin);
+    this.flora.update(position,origin,this.terrain.altitude,elapsed,shipPosition);
   }
   get ready(){return this.terrain.ready&&this.mapsReady.value===1;}
-  get state(){return {position:this.worldPosition.toArray(),radius:MIASMA_RADIUS,distance:this.distance,visible:this.group.visible,ready:this.ready,mapsReady:this.mapsReady.value===1,patches:this.terrain.visibleCount,lod:this.terrain.maxLevel,pending:this.terrain.pending,morphing:this.terrain.morphing,error:this.terrain.error,fragments:this.fragments.count,surfaceAltitude:this.terrain.altitude,weatherTime:this.time.value};}
-  dispose(){this.fragments.dispose();this.terrain.dispose();this.color.value.dispose();this.normal.value.dispose();this.clouds.geometry.dispose();this.cloudMaterial.dispose();this.material.dispose();this.scene.remove(this.group);}
+  get state(){return {position:this.worldPosition.toArray(),radius:MIASMA_RADIUS,distance:this.distance,visible:this.group.visible,ready:this.ready,mapsReady:this.mapsReady.value===1,patches:this.terrain.visibleCount,lod:this.terrain.maxLevel,pending:this.terrain.pending,morphing:this.terrain.morphing,error:this.terrain.error,fragments:this.fragments.count,flora:this.flora.state,surfaceAltitude:this.terrain.altitude,weatherTime:this.time.value};}
+  dispose(){this.flora.dispose();this.fragments.dispose();this.terrain.dispose();this.color.value.dispose();this.normal.value.dispose();this.clouds.geometry.dispose();this.cloudMaterial.dispose();this.material.dispose();this.scene.remove(this.group);}
 }

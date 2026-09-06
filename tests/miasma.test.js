@@ -72,3 +72,22 @@ test('mineral fragments wrap the seam and remain deterministic near both poles',
   const a=collect();assert.ok(a.length>500&&a.length<5000);assert.equal(new Set(a).size,a.length);assert.deepEqual(a,collect());
  }
 });
+
+test('alien flora follows the canonical floor and leaves the landing area clear',async()=>{
+ const {floraCandidates}=await import('../src/miasma-flora.js');const seen=new Set();
+ for(const site of MIASMA_SITES){
+  const up=new Vector3(...site.direction),plants=floraCandidates(up);assert.deepEqual(plants,floraCandidates(up));assert.ok(plants.length>5);
+  for(const plant of plants)seen.add(plant.species);
+  for(const p of plants){const point=new Vector3(...p.point),d=point.clone().normalize();assert.ok(Math.abs(point.length()-MIASMA_RADIUS-miasmaSurface(...d.toArray()).height)<.00001);}
+  const ship=up.clone().multiplyScalar(MIASMA_RADIUS+miasmaSurface(...up.toArray()).height+3.2);
+  for(const p of floraCandidates(up,ship))assert.ok(new Vector3(...p.point).distanceTo(ship)>22);
+ }
+ assert.equal(seen.size,4);
+});
+
+test('Miasma thin air has low surface density and vanishes smoothly at its upper boundary',async()=>{
+ const {MIASMA_ATMOSPHERE:air}=await import('../src/miasma-world.js');const {environmentAt}=await import('../src/flight-model.js');
+ assert.ok(air.seaLevelDensity<.1);assert.ok(air.height<=20000);
+ const sample=alt=>environmentAt(new Vector3(0,MIASMA_RADIUS+alt,0),MIASMA_RADIUS,air,2.1);
+ assert.equal(sample(air.height).density,0);assert.equal(sample(air.height).regime,'SPACE');assert.ok(sample(air.height-1).density<1e-9);assert.ok(sample(0).density>sample(5000).density);
+});

@@ -4,8 +4,8 @@ const CENTER=new THREE.Vector3(...MIASMA_POSITION),UP=new THREE.Vector3(0,1,0),T
 const hash=(x,y,salt)=>{let h=Math.imul(x,374761393)^Math.imul(y,668265263)^salt;h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))>>>0)/4294967295;};
 /** Stable wrapped latitude rows, adapted from the Selene surface-stones work.
  * Candidate placement is independent of camera heading and remains stable on return. */
-export function scatterMinerals(center,visit){
-  const spacing=1.65,range=78,step=spacing/MIASMA_RADIUS,angular=(range+spacing*2)/MIASMA_RADIUS;
+export function scatterMinerals(center,visit,{spacing=1.65,range=78,density=.43,seed=713}={}){
+  const step=spacing/MIASMA_RADIUS,angular=(range+spacing*2)/MIASMA_RADIUS;
   const lat0=Math.asin(THREE.MathUtils.clamp(center.y,-1,1)),lon0=Math.atan2(center.x,center.z);
   for(let row=Math.floor((lat0-angular)/step);row<=Math.ceil((lat0+angular)/step);row++){
     const lat=(row+.5)*step;if(Math.abs(lat)>=Math.PI/2)continue;
@@ -13,9 +13,9 @@ export function scatterMinerals(center,visit){
     const extent=den<1e-13?Math.PI:Math.acos(THREE.MathUtils.clamp((Math.cos(angular)-Math.sin(lat0)*Math.sin(lat))/den,-1,1));
     const reach=Math.ceil(extent/delta)+2,origin=Math.floor((lon0+Math.PI)/delta),count=Math.min(columns,reach*2+1);
     for(let i=0;i<count;i++){
-      const col=((origin-reach+i)%columns+columns)%columns,a=hash(col,row,713),b=hash(col,row,1717);
-      if(a>.43)continue;
-      const lat=(row+.15+a/.43*.7)*step,lon=(col+.15+b*.7)*delta-Math.PI;if(Math.abs(lat)>=Math.PI/2)continue;
+      const col=((origin-reach+i)%columns+columns)%columns,a=hash(col,row,seed),b=hash(col,row,seed+1004);
+      if(a>density)continue;
+      const lat=(row+.15+a/density*.7)*step,lon=(col+.15+b*.7)*delta-Math.PI;if(Math.abs(lat)>=Math.PI/2)continue;
       const d=new THREE.Vector3(Math.cos(lat)*Math.sin(lon),Math.sin(lat),Math.cos(lat)*Math.cos(lon));
       if(d.distanceTo(center)*MIASMA_RADIUS>range)continue;visit(d,col,row,a,b);
     }

@@ -18,8 +18,8 @@ export const MIASMA_POSITION = Object.freeze(new Vector3(...PYRE_POSITION)
   .addScaledVector(north, MIASMA_ORBIT_RADIUS * .25)
   .addScaledVector(towardAeon, -MIASMA_ORBIT_RADIUS * Math.sqrt(1 - .58 ** 2 - .25 ** 2)).toArray());
 export const MIASMA_ATMOSPHERE = Object.freeze({
-  height: 32_000, planeHeight: 14_000, seaLevelDensity: .42, scaleHeight: 5200, mieScaleHeight: 3600,
-  betaR: Object.freeze([9e-6, 13e-6, 4e-6]), betaM: Object.freeze([19e-6, 24e-6, 7e-6]), g: .64, gain: 9,
+  height: 18_000, planeHeight: 6500, seaLevelDensity: .065, scaleHeight: 2800, mieScaleHeight: 1400,
+  betaR: Object.freeze([3.0e-6, 4.2e-6, 1.2e-6]), betaM: Object.freeze([8e-6, 10e-6, 2.8e-6]), g: .68, gain: 8,
 });
 export const MIASMA_LIGHTING = Object.freeze({ sky: 0xbfc883, ground: 0x373c20, ambientNight: .018, ambientDay: .2, environment: .04 });
 export const MIASMA_RESOURCE_IDS = Object.freeze(['sulphur', 'silicate', 'copper']);
