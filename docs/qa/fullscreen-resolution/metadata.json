@@ -1,0 +1,77 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "windowed": {
+    "policy": {
+      "automatic": true,
+      "fullscreen": false,
+      "scale": 1,
+      "pixelRatio": 1.25,
+      "width": 1250,
+      "height": 812
+    },
+    "buffer": [
+      1250,
+      812
+    ],
+    "viewport": [
+      1000,
+      650
+    ],
+    "aspect": 52,
+    "graphics": {
+      "grassDistance": 80,
+      "grassDensity": 0.75,
+      "resolution": "auto"
+    }
+  },
+  "full": {
+    "policy": {
+      "automatic": true,
+      "fullscreen": true,
+      "scale": 1,
+      "pixelRatio": 2,
+      "width": 2000,
+      "height": 1300
+    },
+    "buffer": [
+      2000,
+      1300
+    ],
+    "viewport": [
+      1000,
+      650
+    ],
+    "aspect": 52,
+    "graphics": {
+      "grassDistance": 80,
+      "grassDensity": 0.75,
+      "resolution": "auto"
+    }
+  },
+  "manual": {
+    "policy": {
+      "automatic": false,
+      "fullscreen": true,
+      "scale": 0.6,
+      "pixelRatio": 2,
+      "width": 1200,
+      "height": 780
+    },
+    "buffer": [
+      1200,
+      780
+    ],
+    "viewport": [
+      1000,
+      650
+    ],
+    "aspect": 52,
+    "graphics": {
+      "grassDistance": 80,
+      "grassDensity": 0.75,
+      "resolution": 0.6
+    }
+  },
+  "errors": []
+}
