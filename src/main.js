@@ -10,7 +10,7 @@ import { Planet } from './planet.js';
 import { Moon } from './moon.js';
 import { MOON_RADIUS, MOON_POSITION, MOON_LANDING_DIRECTION } from './moon-world.js';
 import { Pyre, PYRE_MESH_RANGE } from './pyre.js';
-import { PYRE_RADIUS, PYRE_POSITION, PYRE_ATMOSPHERE, PYRE_LIGHTING, PYRE_EPOCH, PYRE_GENERATOR_VERSION, VOLCANOES, LAVA_FIELDS, pyreLandingDirection, fromPyreBody, pyreRegion, pyreResources, pyreHeat } from './pyre-world.js';
+import { PYRE_RADIUS, PYRE_POSITION, PYRE_ARRIVAL_ALTITUDE, PYRE_ATMOSPHERE, PYRE_LIGHTING, PYRE_EPOCH, PYRE_GENERATOR_VERSION, VOLCANOES, LAVA_FIELDS, pyreLandingDirection, fromPyreBody, pyreRegion, pyreResources, pyreHeat } from './pyre-world.js';
 import { Atmosphere } from './atmosphere.js';
 import { Station } from './station.js';
 import { SELENE, PYRE, bodySurfacePoint, bodyAltitude } from './celestial.js';
@@ -81,7 +81,7 @@ try {
   });
   function setCourse(name){
     if(name==='moon'){course={name,point:bodySurfacePoint(new THREE.Vector3(...MOON_LANDING_DIRECTION),SELENE,180),direction:new THREE.Vector3(...MOON_POSITION).normalize()};$('course-guidance').hidden=false;notify('Course set for Selene. Fly to the lunar approach marker.');return;}
-    if(name==='pyre'){course={name,point:bodySurfacePoint(new THREE.Vector3(...pyreLandingDirection()),PYRE,60000),direction:new THREE.Vector3(...PYRE_POSITION).normalize()};$('course-guidance').hidden=false;notify('Course set for Pyre. Use the system map drive (M) for the 18 M km crossing.');return;}
+    if(name==='pyre'){course={name,point:bodySurfacePoint(new THREE.Vector3(...pyreLandingDirection()),PYRE,PYRE_ARRIVAL_ALTITUDE),direction:new THREE.Vector3(...PYRE_POSITION).normalize()};$('course-guidance').hidden=false;notify('Course set for Pyre. Use the system map drive (M) for the 18 M km crossing.');return;}
     if(name==='station'){
       if(!station.ready)return;
       course={name,point:station.approachWorldPosition.clone(),direction:station.direction.clone()};
@@ -138,7 +138,7 @@ try {
     const limit=name==='pyre'?12000:6500;
     while(performance.now()-started<limit){await new Promise(r=>setTimeout(r,150));if(performance.now()-started>1100 && planet.pending<4 && (name==='moon'?moon.terrain.maxLevel>=14:name==='pyre'?pyre.ready:name==='orbit'||name==='station'||planet.maxVisibleLevel>=12))break;}
     $('transit').classList.remove('active');transiting=false;nav.enabled=true;
-    notify(name==='moon'?'Selene descent. L lands; F leaves the chair. Open the rear hatch and walk down the ramp to explore.':name==='pyre'?'Pyre, dusk terminator at 60 km. The lava fields glow ahead; the day side is 400 °C — watch the hull temperature.':name==='station'?'Station approach. W enters the bay; X brakes. Over the central pad, L docks.':name==='orbit'?'High orbit. Click to fly. W approaches Aeon; Space moves away.':'Arrival complete. Click to fly · L lands · F leaves the pilot chair.');
+    notify(name==='moon'?'Selene descent. L lands; F leaves the chair. Open the rear hatch and walk down the ramp to explore.':name==='pyre'?`Pyre, ${PYRE_ARRIVAL_ALTITUDE/1000} km above the dusk terminator. Cinder Throne and the lava fields lie ahead. Descend to explore.`:name==='station'?'Station approach. W enters the bay; X brakes. Over the central pad, L docks.':name==='orbit'?'High orbit. Click to fly. W approaches Aeon; Space moves away.':'Arrival complete. Click to fly · L lands · F leaves the pilot chair.');
   }
   for(const button of document.querySelectorAll('[data-destination]'))button.addEventListener('click',event=>{
     closeHelp();
