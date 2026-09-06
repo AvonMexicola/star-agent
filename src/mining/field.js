@@ -5,6 +5,7 @@ import {asteroidField,asteroidDescriptorV1,LEGACY_RING_POPULATION,RING_POPULATIO
 import {MOON_POSITION,MOON_RADIUS,RESOURCE_PROVINCES,moonResources} from '../moon-world.js';
 import {bodySurfacePoint,bodySurfaceNormal,SELENE} from '../celestial.js';
 import {FieldCache} from '../inventory-cache.js';
+import {nearbySurfaceDeposits,surfaceDepositCell,SURFACE_DEPOSIT_RANGE,SURFACE_DEPOSIT_WORKERS,SURFACE_DEPOSIT_SPACING} from './surface-deposits.js';
 
 /** Bounded live excavation domains over the deterministic ring population. */
 export class MiningField {
@@ -26,17 +27,17 @@ export class MiningField {
       if(Number.isSafeInteger(id)&&id>=0&&id<RING_POPULATION)this.rings.hiddenIds.add(id);
     }
     this.fieldCache=new FieldCache(scene,this.ground.position);
-    this.surfaceRock=null;this.surfaceSurvey=null;
+    this.surfaceRock=null;this.surfaceSurvey=null;this.regionalRocks=new Map();this.regionalDescriptors=[];this.regionalAimed=null;
     this.provinces=RESOURCE_PROVINCES.map(province=>({...province,rockId:`selene-resource-v1-${province.id}`,position:bodySurfacePoint(new THREE.Vector3(...province.direction),SELENE,1.35)}));
     this.cache=new Map();this.aimedDescriptor=null;this.inspectState=null;this.active=this.ground;this.target=null;this.spaceMode=false;
   }
-  get position(){return this.spaceMode&&this.surveyPosition?this.surveyPosition:this.surfaceSurvey?.position??this.active.position;}
+  get position(){return this.spaceMode&&this.surveyPosition?this.surveyPosition:this.active.position;}
   get error(){return this.active.error;}
   get pending(){return this.active.pending;}
   get budget(){return this.active.budget;}
-  set budget(value){this.ground.budget=value;if(this.surfaceRock)this.surfaceRock.budget=value;for(const rock of this.cache.values())rock.budget=value;}
-  get grounded(){return this.ground.grounded||this.surfaceRock?.grounded||this.fieldCache.grounded;}
-  get targetName(){return this.spaceMode?(this.surveyDescriptor?.name??'Ring survey'):this.surfaceSurvey?.name??'Crescent deposit';}
+  set budget(value){this.ground.budget=value;if(this.surfaceRock)this.surfaceRock.budget=value;for(const rock of [...this.cache.values(),...this.regionalRocks.values()])rock.budget=value;}
+  get grounded(){return this.ground.grounded||this.surfaceRock?.grounded||[...this.regionalRocks.values()].some(r=>r.grounded)||this.fieldCache.grounded;}
+  get targetName(){return this.spaceMode?(this.surveyDescriptor?.name??'Ring survey'):this.active.descriptor?.name??'Crescent deposit';}
   update(origin){
     const nearestProvince=this.provinces.map(p=>({p,d:p.position.distanceTo(origin)})).sort((a,b)=>a.d-b.d)[0];
     this.surfaceSurvey=nearestProvince?.d<40000?nearestProvince.p:null;
@@ -50,6 +51,7 @@ export class MiningField {
       this.surfaceRock.descriptor=p;this.surfaceRock.group.name=`${p.name} survey outcrop`;
     }
     this.surfaceRock?.update(origin);
+    this.updateRegionalDeposits(origin);
     const center=new THREE.Vector3(...MOON_POSITION),candidates=this.rings.local.filter(r=>r.mineable).map(r=>({r,d:new THREE.Vector3(...r.position).add(center).distanceTo(origin)})).sort((a,b)=>a.d-b.d);
     this.spaceMode=this.rings.local.length>0;
     this.surveyDescriptor=candidates[0]?.r;this.surveyPosition=this.surveyDescriptor?new THREE.Vector3(...this.surveyDescriptor.position).add(center):null;
@@ -69,8 +71,31 @@ export class MiningField {
     }
     for(const [id,rock] of this.cache){rock.update(origin);if(rock.ready)this.rings.hiddenIds.add(id);}
     if(this.aimedDescriptor){this.surveyDescriptor=this.aimedDescriptor;this.surveyPosition=new THREE.Vector3(...this.aimedDescriptor.position).add(center);}
-    this.active=this.spaceMode&&candidates.length?(this.cache.get(this.surveyDescriptor?.id)??this.ground):(this.surfaceRock&&this.surfaceRock.rockId===this.surfaceSurvey?.rockId?this.surfaceRock:this.ground);
+    this.active=this.spaceMode&&candidates.length?(this.cache.get(this.surveyDescriptor?.id)??this.ground):(this.regionalRocks.get(this.regionalAimed)??[this.ground,...(this.surfaceRock&&this.surfaceRock.rockId===this.surfaceSurvey?.rockId?[this.surfaceRock]:[]),...this.regionalRocks.values()].sort((a,b)=>a.position.distanceToSquared(origin)-b.position.distanceToSquared(origin))[0]);
     this.ground.update(origin);this.fieldCache.update(origin);
+  }
+  updateRegionalDeposits(origin){
+    const key=`${surfaceDepositCell(origin).join(':')}:${Math.floor(origin.distanceTo(new THREE.Vector3(...MOON_POSITION))/SURFACE_DEPOSIT_SPACING)}`;
+    if(this.regionalQueryKey!==key){
+      this.regionalQueryKey=key;this.regionalQueryOrigin=origin.clone();
+      this.regionalDescriptors=nearbySurfaceDeposits(origin,SURFACE_DEPOSIT_RANGE+2*SURFACE_DEPOSIT_SPACING);
+    }
+    const nearby=this.regionalDescriptors.filter(d=>d.position.distanceTo(origin)<SURFACE_DEPOSIT_RANGE).sort((a,b)=>a.position.distanceToSquared(origin)-b.position.distanceToSquared(origin));
+    if(this.regionalAimed&&!nearby.some(d=>d.id===this.regionalAimed&&d.position.distanceTo(origin)<80))this.regionalAimed=null;
+    const priority=this.regionalAimed?[...nearby.filter(d=>d.id===this.regionalAimed),...nearby.filter(d=>d.id!==this.regionalAimed)]:nearby;
+    const wanted=new Set(priority.slice(0,SURFACE_DEPOSIT_WORKERS).map(d=>d.id));
+    for(const [id,rock] of this.regionalRocks){
+      if(wanted.has(id)||rock.pending)continue;
+      rock.dispose();this.regionalRocks.delete(id);this.store.releaseRock?.(id);
+    }
+    for(const d of priority.slice(0,SURFACE_DEPOSIT_WORKERS)){
+      if(this.regionalRocks.has(d.id)||this.regionalRocks.size>=SURFACE_DEPOSIT_WORKERS)continue;
+      const rock=new MineableRock(this.scene,null,{store:this.store,rockId:d.id,position:d.position,quaternion:d.quaternion,initialField:createDensity((x,y,z)=>asteroidField(x,y,z,d.variant)),resourceWeights:d.resourceWeights});
+      rock.descriptor=d;rock.group.name=`${d.name} ${d.id}`;this.regionalRocks.set(d.id,rock);
+    }
+    for(const rock of this.regionalRocks.values())rock.update(origin);
+    this.nearestRegional=nearby[0]??null;
+    this.regionalOrigin=origin.clone();
   }
   releaseSpaceRock(id){
     const rock=this.cache.get(id);if(!rock||rock.pending)return false;
@@ -91,7 +116,7 @@ export class MiningField {
   }
   readyRaycast(origin,direction,range=8){
     let nearest=null;
-    for(const rock of [this.ground,...(this.surfaceRock?[this.surfaceRock]:[]),...this.cache.values()]){
+    for(const rock of [this.ground,...(this.surfaceRock?[this.surfaceRock]:[]),...this.regionalRocks.values(),...this.cache.values()]){
       const hit=rock.raycast(origin,direction,range);if(hit&&(!nearest||hit.distance<nearest.distance))nearest={...hit,rock};
     }
     return nearest;
@@ -102,11 +127,11 @@ export class MiningField {
     const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
     const raw=this.rings.raycast?.(origin,direction,probe,{exclude,includeHidden:true});
     const hit=ready&&(!raw||ready.distance<=raw.distance)?ready:raw;
-    if(!hit||this.fieldCache.raycast(origin,direction,hit.distance)){this.aimedDescriptor=null;this.inspectState=null;return null;}
+    if(!hit||this.fieldCache.raycast(origin,direction,hit.distance)){this.aimedDescriptor=null;this.regionalAimed=null;this.inspectState=null;return null;}
     const descriptor=hit.descriptor??hit.rock?.descriptor;
     if(!descriptor||hit.rock&&!hit.rock.space){
-      this.aimedDescriptor=null;
-      return this.inspectState={status:hit.distance>range?'out-of-range':'ready',name:descriptor?.name??'Crescent deposit',distance:hit.distance,mineable:true,rockId:hit.rock.rockId,point:hit.point};
+      this.aimedDescriptor=null;this.regionalAimed=descriptor?.regional?descriptor.id:null;this.active=hit.rock;
+      return this.inspectState={status:hit.distance>range?'out-of-range':!this.store.canEditRock(hit.rock.rockId)?'save-full':'ready',name:descriptor?.name??'Crescent deposit',distance:hit.distance,mineable:true,rockId:hit.rock.rockId,point:hit.point};
     }
     this.aimedDescriptor=descriptor.mineable?descriptor:null;
     let status=!descriptor.mineable?'too-large':hit.distance>range?'out-of-range':'preparing';
@@ -130,9 +155,9 @@ export class MiningField {
   onMine(data,direction){(data.target??this.target)?.onMine(data,direction);}
   constrainSurface(method,a,b){
     let point=b,hit=false,grounded=false;
-    for(const rock of [this.ground,...(this.surfaceRock?[this.surfaceRock]:[]),this.fieldCache]){
+    for(const rock of [this.ground,...(this.surfaceRock?[this.surfaceRock]:[]),...this.regionalRocks.values(),this.fieldCache]){
       let result;
-      if(rock===this.surfaceRock&&!rock.ready){
+      if((rock===this.surfaceRock||rock.descriptor?.regional)&&!rock.ready){
         // While a saved outcrop is remeshed, keep its small local excavation
         // domain solid instead of allowing the suit or ship to enter it.
         const reach=method==='constrainFlight'?12.2:method==='constrainWalker'?3.75:2.55;
@@ -173,8 +198,8 @@ export class MiningField {
     }
     return {point,hit};
   }
-  get state(){return {...this.active.state,inspection:this.inspectState?{...this.inspectState,point:this.inspectState.point.toArray()}:null,pending:this.pending,groundRevision:this.ground.snapshot.revision,space:this.spaceMode,targetName:this.targetName,activeRock:this.surveyDescriptor?.key??this.active.rockId,activeRevision:this.surveyDescriptor?this.store.state.rocks?.[this.surveyDescriptor.key]?.revision??0:this.active.snapshot.revision,activePosition:this.position.toArray(),debrisBrake:Boolean(this.debrisBrake),surfaceRock:this.surfaceRock?{id:this.surfaceRock.rockId,name:this.surfaceRock.descriptor.name,direction:this.surfaceRock.descriptor.direction,...this.surfaceRock.state}:null,spaceRocks:[...this.cache.values()].map(r=>({id:r.rockId,...r.state}))};}
-  dispose(){this.surfaceRock?.dispose();this.fieldCache.dispose();this.ground.dispose();for(const rock of this.cache.values())rock.dispose();}
+  get state(){return {...this.active.state,inspection:this.inspectState?{...this.inspectState,point:this.inspectState.point.toArray()}:null,pending:this.pending,groundRevision:this.ground.snapshot.revision,space:this.spaceMode,targetName:this.targetName,activeRock:this.surveyDescriptor?.key??this.active.rockId,activeRevision:this.surveyDescriptor?this.store.state.rocks?.[this.surveyDescriptor.key]?.revision??0:this.active.snapshot.revision,activePosition:this.position.toArray(),debrisBrake:Boolean(this.debrisBrake),surfaceRock:this.surfaceRock?{id:this.surfaceRock.rockId,name:this.surfaceRock.descriptor.name,direction:this.surfaceRock.descriptor.direction,...this.surfaceRock.state}:null,nearestRegional:this.nearestRegional?{id:this.nearestRegional.id,name:this.nearestRegional.name,position:this.nearestRegional.position.toArray(),direction:this.nearestRegional.direction,dominant:this.nearestRegional.dominant,resourceWeights:this.nearestRegional.resourceWeights,distance:this.nearestRegional.position.distanceTo(this.regionalOrigin),ready:Boolean(this.regionalRocks.get(this.nearestRegional.id)?.ready)}:null,regionalDeposits:[...this.regionalRocks.values()].map(r=>({id:r.rockId,name:r.descriptor.name,dominant:r.descriptor.dominant,variant:r.descriptor.variant,distance:r.position.distanceTo(this.regionalOrigin),...r.state})),spaceRocks:[...this.cache.values()].map(r=>({id:r.rockId,...r.state}))};}
+  dispose(){this.surfaceRock?.dispose();this.fieldCache.dispose();this.ground.dispose();for(const rock of [...this.cache.values(),...this.regionalRocks.values()])rock.dispose();}
 }
 
 export function ringSurveyPoint(){const rock=ringRock(5);return new THREE.Vector3(...rock.position).add(new THREE.Vector3(...MOON_POSITION));}
