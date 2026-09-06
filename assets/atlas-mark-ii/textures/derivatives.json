@@ -1,0 +1,86 @@
+{
+  "seed": 7291,
+  "method": "periodic independent microheight normals; authored roughness/metallic; ImageMagick albedo resize",
+  "files": {
+    "ceramic-albedo.png": {
+      "bytes": 1276994,
+      "sha256": "d30d3290e89a96ada25237b298770866fab4cd4d83e04add0b8361afc5e995b1",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "ceramic-normal.png": {
+      "bytes": 796335,
+      "sha256": "d67eba54f85bf97297a2e17cb615a0ae3bc4466b0072050b96d3ea97eafdd5c7",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "ceramic-orm.png": {
+      "bytes": 634472,
+      "sha256": "5dce1ea573f5755ff737d7079496da697b55a36e6d667823dd369cba883486f9",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "cloth-normal.png": {
+      "bytes": 1204842,
+      "sha256": "6dc550632827ee34eb64ec659c56877772c5494026bbf952703c1d0bb960f01c",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "cloth-orm.png": {
+      "bytes": 327966,
+      "sha256": "affdc7c2f0082a3cd54f9e4a18d70fb08c8417684f893e7f6d9877c28817dcb7",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "deck-albedo.png": {
+      "bytes": 1950328,
+      "sha256": "7c07f090b104f55c05e79297d5ab735a43dfbd7f9b1cff6b043bb4b0ff668aec",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "deck-normal.png": {
+      "bytes": 1458655,
+      "sha256": "a43dc19ad00c9f2733159625cabf23ce0e65b4ad130e8c23268ed34082628235",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "deck-orm.png": {
+      "bytes": 634030,
+      "sha256": "d45834ea08a6a82c4bc7bea58d9db40e1dff3896fd566997dea20ba9031387f5",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "steel-normal.png": {
+      "bytes": 1001635,
+      "sha256": "dc366d54e6949913769f9a9c291ed16edcc3175ebbe4d0522746471114685548",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    },
+    "steel-orm.png": {
+      "bytes": 669161,
+      "sha256": "0c5f4032ca6b2896bcc454314d73da252f7426d5610050066c346acb5791c6b4",
+      "dimensions": [
+        1024,
+        1024
+      ]
+    }
+  }
+}

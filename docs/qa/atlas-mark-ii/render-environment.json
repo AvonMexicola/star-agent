@@ -1,0 +1,30 @@
+{
+  "errors": [],
+  "stats": {
+    "meshes": 154,
+    "triangles": 398608,
+    "materials": 13,
+    "textures": 10
+  },
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "viewport": [
+    1440,
+    900
+  ],
+  "dpr": 1,
+  "browser": "Chromium 151.0.7922.173",
+  "assetSha256": "b021dd553424647aec1364e1b184ca3cd243ce499074c1a2e48302a4c60672e0",
+  "functionalSuiteAssetSha256": "81ccc96f00fd0fb769959d0b8383fdb841c9f9221a9e7870ecb37916f92c1527",
+  "functionalViewport": [
+    480,
+    300
+  ],
+  "controllerViewport": [
+    720,
+    450
+  ],
+  "phoneViewport": [
+    390,
+    844
+  ]
+}

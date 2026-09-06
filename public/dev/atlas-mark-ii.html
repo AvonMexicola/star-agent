@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#03070c">
+  <title>Atlas Mark II / Shipyard inspection</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/assets/atlas-mark-ii-studio.css">
+</head>
+<body class="atlas-studio is-loading">
+  <canvas id="viewport" aria-label="Interactive three-dimensional Atlas Mark II inspection"></canvas>
+
+  <div class="studio-chrome" aria-live="polite">
+    <header class="studio-header">
+      <a class="studio-brand" href="/" aria-label="Star Agent home">
+        <span class="studio-mark" aria-hidden="true">✦</span>
+        <span>STAR <b>AGENT</b></span>
+      </a>
+      <div class="bay-label">
+        <span>SHIPYARD 04</span>
+        <strong>ASSET INSPECTION BAY</strong>
+      </div>
+      <div class="header-actions">
+        <span class="desktop-hint">DRAG TO ORBIT · SCROLL TO DOLLY</span>
+        <button id="details-toggle" type="button" aria-pressed="true">DETAILS</button>
+        <button id="mount-toggle" type="button" aria-pressed="false">S3 MOUNTS</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="identity-panel" aria-labelledby="ship-name">
+        <p class="section-label"><i></i> ORIGINAL SHIP ASSET / 02</p>
+        <h1 id="ship-name">ATLAS<br><span>MARK II</span></h1>
+        <p class="ship-role">64 M HEAVY LOGISTICS VESSEL</p>
+        <dl class="dimensions">
+          <div><dt>LENGTH</dt><dd>64.0 <small>M</small></dd></div>
+          <div><dt>BEAM</dt><dd>36.0 <small>M</small></dd></div>
+          <div><dt>HEIGHT</dt><dd>16.0 <small>M</small></dd></div>
+        </dl>
+        <p class="scene-note">Inspection-bay test scene. Flight integration is outside this viewer.</p>
+      </section>
+
+      <aside class="asset-panel" aria-label="Asset status and model statistics">
+        <div class="panel-heading"><span class="status-lamp"></span><span>ASSET STATUS</span><b id="asset-state">LOADING</b></div>
+        <dl class="asset-stats">
+          <div><dt>MESHES</dt><dd id="stat-meshes">—</dd></div>
+          <div><dt>TRIANGLES</dt><dd id="stat-triangles">—</dd></div>
+          <div><dt>MATERIALS</dt><dd id="stat-materials">—</dd></div>
+          <div><dt>TEXTURES</dt><dd id="stat-textures">—</dd></div>
+        </dl>
+        <div class="deck-diagram" aria-label="Deck plan">
+          <span class="deck upper"><b>09.5</b> UPPER / BRIDGE</span>
+          <span class="deck cargo"><b>02.6</b> CARGO DECK</span>
+          <i class="lift-line"></i>
+          <small>CREW LIFT</small>
+        </div>
+      </aside>
+
+      <div id="mount-overlay" class="mount-overlay" aria-hidden="true">
+        <div class="mount-pin" data-mount="dorsal-port"><i></i><span>S3 / DORSAL PORT</span></div>
+        <div class="mount-pin" data-mount="dorsal-starboard"><i></i><span>S3 / DORSAL STARBOARD</span></div>
+        <div class="mount-pin" data-mount="aft-defence"><i></i><span>S3 / AFT DEFENCE</span></div>
+      </div>
+
+      <div class="walk-hud" aria-hidden="true">
+        <div class="walk-reticle"><i></i></div>
+        <div id="interaction-prompt" class="interaction-prompt" hidden><kbd>F</kbd><span>INTERACT</span></div>
+        <div class="walk-help"><span><kbd>WASD</kbd> MOVE</span><span><kbd>SHIFT</kbd> SLOW WALK</span><span><kbd>← ↑ ↓ →</kbd> LOOK</span><span><kbd>F</kbd> INTERACT</span><span><kbd>ESC</kbd> RELEASE MOUSE</span></div>
+        <div class="touch-controls" aria-label="Walk controls">
+          <button type="button" data-hold="KeyW" aria-label="Walk forward">▲</button>
+          <button type="button" data-hold="KeyA" aria-label="Step left">◀</button>
+          <button type="button" data-touch-interact aria-label="Interact">F</button>
+          <button type="button" data-hold="KeyD" aria-label="Step right">▶</button>
+          <button type="button" data-hold="KeyS" aria-label="Walk backward">▼</button>
+        </div>
+      </div>
+
+      <nav class="view-dock" aria-label="Inspection views">
+        <div class="view-heading"><span>INSPECTION VIEW</span><b id="view-name">EXTERIOR / PORT QUARTER</b></div>
+        <div class="view-actions">
+          <button class="view-button active" type="button" data-view="exterior"><span>01</span>EXTERIOR</button>
+          <button class="view-button" type="button" data-view="aft"><span>02</span>AFT</button>
+          <button class="view-button" type="button" data-view="cargo"><span>03</span>CARGO</button>
+          <button class="view-button" type="button" data-view="bridge"><span>04</span>BRIDGE</button>
+          <button class="view-button" type="button" data-view="crew"><span>05</span>CREW</button>
+          <button class="view-button" type="button" data-view="galley"><span>06</span>GALLEY</button>
+          <button class="view-button" type="button" data-view="mounts"><span>07</span>MOUNTS</button>
+          <button id="walk-button" class="walk-button" type="button"><i></i><span><b>PHYSICAL WALKTHROUGH</b><small>AFT GROUND APPROACH</small></span><strong>ENTER</strong></button>
+        </div>
+      </nav>
+
+      <div id="scale-reference" class="scale-label"><i></i><span><b>1.8 M</b> SCALE REFERENCE</span></div>
+      <div id="studio-message" class="studio-message" role="status" hidden></div>
+    </main>
+  </div>
+
+  <div id="loading" class="studio-loading" role="status">
+    <div class="loading-glyph" aria-hidden="true"><i></i><i></i><i></i></div>
+    <p>ATLAS MARK II</p>
+    <span id="loading-detail">READING SHIP ASSET</span>
+  </div>
+
+  <script type="module" src="/assets/atlas-mark-ii-studio.js"></script>
+</body>
+</html>

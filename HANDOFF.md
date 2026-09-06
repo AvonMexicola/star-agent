@@ -556,3 +556,45 @@ roll checks pass, Chromium 151/ANGLE Vulkan SwiftShader, no errors/warnings.
 Evidence and limitation notes: docs/qa/ship-power.md, paired roll screenshots.
 Previews 5245 (Nomad) and 5244 (Atlas) serve rebuilt output; reload to apply.
 Shared root runtime and yaw/pitch inputs were preserved; no main/Vercel deploy.
+
+### Atlas Mark II — original Blender asset and physical studio (2026-09-06)
+
+Isolated branch feat/atlas-mark-ii, stacked on PR #25 / 8c48317. All source/asset
+work is under assets/atlas-mark-ii, public/models/atlas-mark-ii,
+public/textures/atlas-mark-ii, standalone atlas-mark-ii studio/systems/tests,
+and design/QA documents. Main fleet, navigation, station and other worktrees
+remain independent. Manager integration and art approval are still required.
+
+Editable Blender 5.2 source plus parametric mesh, PBR, UV and contact-bake pipeline;
+through cargo hold, two folding ramps, interlocked crew lift, upper bridge/crew/
+galley/hygiene. S1/S3 standard and three S3 attachment interfaces, no weapons.
+User rejection of the first blockout led to a wedge canopy, sealed reported
+pressure joints, tapered bridge sole/collision, sloped bow/stern, octagonal
+mechanical exhausts and a wall mess leaf with clear circulation. A final 25 mm
+inward steel-leaf change removes coplanar trim flicker without changing bounds.
+
+180 unit tests and production build pass. Four hardware production cases pass:
+physical aft ramp→cargo→lift→bridge→crew→galley/hygiene, seven inspection presets,
+phone and injected controller. Chromium 151 / AMD Radeon 860M / ANGLE GL; no page
+or console errors. Full functional suite used 81ccc96f; final trim model is
+b021dd55, with repeated export tests and focused visual/phone checks. Actual
+renders, measured bytes/triangles and limitations: docs/qa/atlas-mark-ii/.
+No hardware-controller or FPS claim. Static shadows update for animated parts
+and reuse their maps during camera-only movement.
+
+Full asset: 398,608 triangles, 154 batches, 13 materials, 10 textures, 36,736,924 bytes;
+LOD1: 128,387 triangles / 13,325,672 bytes; LOD2: 40,625 triangles / 3,974,280 bytes. Above existing hero
+budget; no budget waiver. Initial independent Opus review was 2.4/5; a later
+attempt hit the session limit, so no current independent visual approval exists.
+Keep draft. Interiors and the long upper-hull rhythm still need art refinement;
+automatic LODs, hardware budgeting and live fleet/boarding integration remain.
+
+Preview: http://localhost:5250/dev/atlas-mark-ii.html . Stable transient user
+service star-agent-atlas-mark-ii-preview.service serves this worktree's dist.
+Stop only this preview with systemctl --user stop star-agent-atlas-mark-ii-preview.service.
+No merge or public deployment is included.
+
+Final shallow-angle render review also isolated broad hull striping to key-shadow
+acne (shadow-off removed it, normal-map-off did not). Bias is now -0.0005 with
+0.06 m normal bias for the 92 m key frustum. Seven final production views passed
+again with actual shadows and zero errors; before/final evidence is retained.
