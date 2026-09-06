@@ -1,3 +1,4 @@
+import { rockFormationHeight } from './rock-formations.js';
 // Terrain v2 — multi-scale procedural relief for the quarter-Earth planet.
 //
 // Design: a chain of band-limited noise terms, each responsible for one octave
@@ -19,9 +20,10 @@
 //
 // hash/noise/fbm/smoothstep/clamp are imported from world.js so the world seed
 // stays shared with everything else in the app.
+import { SEED } from './generation.js';
 import { clamp, smoothstep, hash, noise, fbm } from './world.js';
 
-export const TERRAIN_VERSION = 2;
+export const TERRAIN_VERSION = 3;
 
 /** Continental-field value that maps to sea level; tuned for ~49% ocean. */
 const SEA = 0.5075;
@@ -209,6 +211,8 @@ export function terrainHeight(x, y, z) {
     h = h * (1 - iceMask) + iceMask * Math.max(h * 0.35 + ice, 45);
   }
 
+  // Keep shorelines and ice sheets intact; outcrops break up inland terrain.
+  h += rockFormationHeight(x,y,z,1592750,SEED) * smoothstep(10,70,h) * (1-polar);
   return h;
 }
 

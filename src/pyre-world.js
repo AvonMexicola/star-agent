@@ -1,3 +1,4 @@
+import { rockFormationHeight } from './rock-formations.js';
 import { constrainTerrainStep } from './terrain-contact.js';
 import { bakeSurfaceMaps } from './surface-maps.js';
 import { Vector3 } from 'three';
@@ -13,7 +14,7 @@ export const PYRE_RADIUS = 1_200_000;
 export const PYRE_ORBIT_RADIUS = 10_000_000_000;
 export const PYRE_GRAVITY = 7.6;
 export const PYRE_MAX_HEIGHT = 9_000;
-export const PYRE_GENERATOR_VERSION = 3;
+export const PYRE_GENERATOR_VERSION = 4;
 export const PYRE_RESOURCE_VERSION = 1;
 export const PYRE_RESOURCE_IDS=Object.freeze(['basalt','oxide','sulphur']);
 export const PYRE_RESOURCE_PALETTE=Object.freeze({basalt:[.082,.076,.07],oxide:[.28,.12,.048],sulphur:[.56,.43,.09]});
@@ -240,13 +241,15 @@ export function pyreSurfaceBody(x, y, z) {
       if (dist < 1) height += (1 - dist * dist) * radius * 60 * .28 * Math.max(activity, fresh);
     }
   }
+  const rocks=rockFormationHeight(x,y,z,PYRE_RADIUS,0x50595245)*(1-smooth(.1,.6,activity));
+  height+=rocks;
   if (region === 'BASALT PLAINS' && highland > .55) region = 'BASALT HIGHLANDS';
   else if (region === 'BASALT PLAINS' && oxide > .5) region = 'OXIDISED PLAINS';
   // Palette (linear RGB): charcoal basalt, ochre oxidation, sulphur, glassy fresh flows.
   const tone = .8 + .4 * qnoise(x * 350 + 2, y * 350 + 7, z * 350 - 5);
   // As on Selene, visual provinces and surveys share one normalized mineral field.
   const resources=resourceProfile(PYRE_RESOURCE_IDS,[(1-oxide)*(1-sulphur),oxide*(1-sulphur),sulphur],region);
-  const color=resourceColor(resources,PYRE_RESOURCE_PALETTE).map(v=>v*tone*(1+highland*.3)*(1-fresh*.48));
+  const color=resourceColor(resources,PYRE_RESOURCE_PALETTE).map(v=>v*tone*(1+highland*.3)*(1-fresh*.48)*(1-smooth(.3,3,rocks)*.28));
   return { height, color, activity, fresh, sulphur, oxide, region, resources, resource:resources.dominant };
 
 }

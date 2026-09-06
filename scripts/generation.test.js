@@ -83,7 +83,10 @@ test('flight can cross between forest and coast coordinates using steering and t
   nav.keys.add('KeyW');nav.keys.add('ShiftLeft');
   const target=new THREE.Vector3(...destinations.coast);
   let angle=Infinity;
-  for(let frame=0;frame<60*120;frame++){
+  // Seeded outcrops can change which safe forest site wins the destination search.
+  // Budget for the actual arc length instead of assuming the old pair of sites.
+  const travelSeconds=120+nav.normal.angleTo(target)*RADIUS/10000;
+  for(let frame=0;frame<60*travelSeconds;frame++){
     const normal=nav.normal;
     angle=normal.angleTo(target);
     if(angle<.001)break;
