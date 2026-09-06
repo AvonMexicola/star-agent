@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { ringPathIntervals } from './ring-world.js';
 import { stepEVA, constrainEVAShip, canAttachRamp } from './eva.js';
 import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
@@ -9,6 +10,10 @@ import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './bo
 
 const UP=new THREE.Vector3(0,1,0),FORWARD=new THREE.Vector3(0,0,-1),RIGHT=new THREE.Vector3(1,0,0);
 const rotation=new THREE.Quaternion(),matrix=new THREE.Matrix4();
+// The narrow finite belt gets a local maneuvering envelope. The extra 300 m
+// margin also captures a ship stopped just before the swept debris-entry brake.
+export const DEBRIS_SPEED_LIMIT=400;
+export function debrisSpeedLimit(position){return ringPathIntervals(position,position,600).length?DEBRIS_SPEED_LIMIT:Infinity;}
 export class Navigation {
   constructor(canvas,notify){
     this.canvas=canvas;this.notify=notify;this.position=new THREE.Vector3();this.orientation=new THREE.Quaternion();this.velocity=new THREE.Vector3();
@@ -75,6 +80,7 @@ export class Navigation {
   get groundHeight(){return bodyHeight(this.normal,this.body);}
   get altitude(){return Math.max(0,bodyAltitude(this.position,this.body));}
   get speed(){return this.velocity.length();}
+  get debrisSpeedLimit(){return debrisSpeedLimit(this.position);}
   get sunDirection(){return new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).sub(this.position).normalize();}
   toShipLocal(point=this.position){return this.shipPosition?point.clone().sub(this.shipPosition).applyQuaternion(this.shipOrientation.clone().invert()):null;}
   fromShipLocal(point){return point.clone().applyQuaternion(this.shipOrientation).add(this.shipPosition);}
@@ -307,7 +313,7 @@ export class Navigation {
         input.addScaledVector(oldNormal,vertical);input.clampLength(0,1);
         const cruise=clamp(altitude*.65+25,12,4_000_000)*this.speedScale*(this.boost?7:1);
         const stationLimit=this.stationDistance<20000?Math.max(6,(this.stationDistance-65)*.18):Infinity;
-        const approachLimit=stationLimit;
+        const approachLimit=Math.min(stationLimit,this.debrisSpeedLimit);
         const maxSpeed=Math.min(cruise,approachLimit);
         if(this.velocity.length()>approachLimit)this.velocity.setLength(approachLimit);
         const roll=axis('KeyQ','KeyE',pad.roll);
@@ -323,7 +329,7 @@ export class Navigation {
       for(let i=0;i<steps;i++){
         const previous=this.position.clone(),proposed=previous.clone().addScaledVector(this.velocity,dt/steps);
         const rockHit=this.surfaceObstacles?.constrainFlight(previous,proposed);
-        if(rockHit?.hit){this.position.copy(rockHit.point);this.velocity.set(0,0,0);this.autoland=false;break;}
+        if(rockHit?.hit){this.position.copy(rockHit.point);this.velocity.set(0,0,0);this.autoland=false;if(rockHit.debrisBrake)this.notify('Debris proximity brake. Approach the asteroid belt at controlled speed.');break;}
         const lunar=constrainMoonStep(previous,proposed);
         if(lunar.hit){
           this.position.copy(lunar.point);this.touchDown();break;
