@@ -4,7 +4,7 @@ This evidence accompanies the controller, inventory, EVA, ring population and
 resource geography implementation. It is implementation review material;
 independent Fable/Claude visual approval remains pending.
 
-## Automated checks
+## Initial expedition checks (before the sparse-ring revision)
 
 - `npm test` passes all 20 test files. An explicit run with
   `--test-isolation=none` reports **156 passing cases**.
@@ -62,3 +62,6 @@ separate inventory fixture.
 
 Player-reported surface tool, asteroid selection and ring steering fixes have
 additional [regression evidence](regressions/README.md).
+
+The revised sparse population, long draw distance and fine ice have current
+[sparse-ring evidence](sparse-ring/README.md).

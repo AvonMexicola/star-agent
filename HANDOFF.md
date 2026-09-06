@@ -621,3 +621,31 @@ Evidence: docs/qa/expedition/regressions/ in the expedition worktree / PR.
 Memory and docs/space-steering.md record the corrected contracts. Preview remains
 http://127.0.0.1:5213/ with final index-DGnB0h5g.js. No shared navigation/gear/station
 or ship-power lane was overwritten. Fable/Claude retain review and integration.
+
+
+## Sparse Selene ring and sunlit grains — 2026-09-06
+
+Cees requested roughly 2 km asteroid spacing, better draw distance/Yela-inspired
+rock surfaces, a huge physical ring and fine sunlit ice inside it. Implemented in
+/tmp/star-agent-expedition-work / feat/selene-expedition / draft PR #24. Code head
+0f7f1f1; dedicated preview http://127.0.0.1:5213/ serves index-N8I1Odnu.js.
+
+V2 has 14,336 deterministic bodies and minimum 2,132.11 m bounding clearance,
+while retaining the 1,826.896 km outer diameter and 20 km wide / 2 km thick band.
+Three fading geometry levels retain large rocks through 80 km; 24 geological
+variants have fractured gray surfaces. Fine world-anchored ice glints render only
+inside the ring, with 12 m cabin clearance and bounded 104 m particle neighborhood.
+Small rocks remain mineable; saved v1 cuts retain their coordinates and cargo,
+with preserved edits explicitly excepted from the new spacing rule.
+
+All 26 numerical test files pass. Five distinct production browser checks pass
+across the integrated run and targeted reruns: ring geometry/ice, remote tool
+equip, held-B yaw, aimed-worker promotion/large-body feedback and physical EVA
+plus RT mining/backpack. The space fixture was corrected to wait for its own
+injected controller identity and neutral poll. Final GPU captures have no errors;
+no physical Xbox sequence or hardware FPS approval is claimed. Curated evidence:
+docs/qa/expedition/sparse-ring/; full contracts in PLANET-PIPELINE-MEMORY.md.
+
+Preserve shared station/gear changes and the separate ship-power-cabin lane.
+Fable/Claude retain independent visual review, integration, merge and deployment.
+This file handoff is not a claim of manager acknowledgment or public deployment.

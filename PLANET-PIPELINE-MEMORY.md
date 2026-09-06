@@ -603,3 +603,9 @@ spacing, legacy-save and descriptor tests support their specific invariants;
 final v2 shader, LOD, visibility, ice and controller browser evidence belongs in
 the current expedition QA record and manager handoff. Independent visual approval
 is a separate review result and is not claimed by this memory update.
+
+Final v2 verification: all 26 numerical files pass; five distinct production
+browser checks pass across the integrated run and targeted reruns, including
+actual ice pixels, full ring dimensions, LOD continuity and space mining. Current
+review evidence and exact fixture provenance: `docs/qa/expedition/sparse-ring/`.
+Preview asset: `index-N8I1Odnu.js` at http://127.0.0.1:5213/ .
