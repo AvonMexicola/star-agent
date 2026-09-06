@@ -1230,3 +1230,14 @@ floor tests remain the later furnished PR20 versions, which already include
 the recovered hull hierarchy and plate treatment. Older PR22 assets must not
 replace the furnished station. assets/station/hull-manifest.json explicitly
 records historical hashes; current station production record is authoritative.
+
+
+## Shared snapshot reconciliation — 2026-09-06
+
+The feat/controller-support snapshot predates the current feature branches.
+Its controller, moon, ship, crash and inventory implementations are superseded
+by the integrated versions; old copies were not restored over them. Preserved
+its three unique handoffs and landing-gear solver/tests. That solver remains
+unwired, exactly as LANDING-GEAR-HANDOFF documents. Deleted legacy albedo.worker
+is superseded by orbital-surface workers and remains deleted. Shared working
+directory uncommitted station and equipment art was not included.
