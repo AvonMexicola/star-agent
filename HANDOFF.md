@@ -466,6 +466,9 @@ source and bundled assets are identical to the reviewed `5bb71fe` preview.
 The unrelated PR34 consolidation and shared dirty worktree are not part of this
 release. The next requested atmosphere polish will be a separate follow-up.
 
-153 unit tests and the production build pass on the combined checkout. The
-existing four-world rock screenshots and shader/fallback verification apply
-unchanged; the general production browser suite is running before the merge.
+153 unit tests, the production build and all seven general production browser
+tests pass on the combined checkout (4.7 minutes). These include keyboard and
+injected-controller flight/boarding, continuous travel, narrow-screen map and
+seed/reload checks. The existing four-world rock screenshots and shader/fallback
+verification apply unchanged. Browser: Chromium 151, ANGLE Vulkan SwiftShader;
+this is rendering/function verification, not a hardware FPS claim.
