@@ -116,3 +116,58 @@ test('a late play resolution after mute or disposal cannot resurrect audio', asy
   assert.equal(music.state.file, null);
   assert.equal(music.state.pending, null);
 });
+
+test('browser activation denial waits for a fresh gesture without blacklisting the score', async () => {
+  let allowed=false;
+  const {music,media}=fixture(()=>allowed?Promise.resolve():Promise.reject(Object.assign(new Error('gesture required'),{name:'NotAllowedError'})));
+  music.setEnabled(true);music.update(orbit);await flush();
+  assert.equal(music.state.activationRequired,true);assert.deepEqual(music.state.failed,[]);
+  for(let i=0;i<60;i++)music.update(orbit);
+  assert.equal(media.reduce((n,item)=>n+item.plays,0),1,'render frames do not retry blocked media');
+  allowed=true;music.unlock();music.update(orbit);await flush();
+  assert.equal(music.state.activationRequired,false);assert.equal(music.state.file,'blue-horizon-1.mp3');
+  assert.equal(music.state.paused,false);music.dispose();
+});
+
+test('a synchronous autoplay exception also remains retryable', async () => {
+  let blocked=true;
+  const {music}=fixture(()=>{if(blocked)throw Object.assign(new Error('interrupted'),{name:'AbortError'});return Promise.resolve();});
+  music.setEnabled(true);assert.doesNotThrow(()=>music.update(travel));
+  assert.equal(music.state.activationRequired,true);assert.deepEqual(music.state.failed,[]);
+  blocked=false;music.unlock();music.update(travel);await flush();
+  assert.equal(music.state.file,'between-worlds-1.mp3');music.dispose();
+});
+
+test('an interrupted resume preserves playback and fade clocks until activation returns', async () => {
+  let blocked=false;
+  const {music,context}=fixture(()=>blocked?Promise.reject(Object.assign(new Error('interrupted'),{name:'AbortError'})):Promise.resolve());
+  music.setEnabled(true);music.update(orbit);await flush();
+  context.currentTime=3;music.update(orbit);music.active.media.currentTime=20;
+  const gain=music.active.gain.gain.value;
+  music.setEnabled(false);context.currentTime=30;blocked=true;
+  music.setEnabled(true);await flush();
+  assert.equal(music.state.activationRequired,true);assert.equal(music.state.time,20);
+  context.currentTime=90;music.update(orbit);assert.equal(music.active.gain.gain.value,gain);
+  blocked=false;music.unlock();music.update(orbit);await flush();
+  assert.equal(music.active.gain.gain.value,gain,'fade remains at the point where playback paused');
+  assert.equal(music.state.time,20);assert.deepEqual(music.state.failed,[]);music.dispose();
+});
+
+test('a stale resume rejection cannot erase a later successful resume',async()=>{
+  let rejectResume;
+  const {music}=fixture(item=>item.plays===2?new Promise((_resolve,reject)=>{rejectResume=reject;}):Promise.resolve());
+  music.setEnabled(true);music.update(orbit);await flush();
+  music.setEnabled(false);music.setEnabled(true);
+  music.setEnabled(false);music.setEnabled(true);await flush();
+  rejectResume(new Error('old media operation was canceled'));await flush();
+  assert.equal(music.state.file,'blue-horizon-1.mp3');assert.deepEqual(music.state.failed,[]);
+  assert.equal(music.state.paused,false);music.dispose();
+});
+
+test('music selection is shared by all hulls and follows unpowered navigation too',()=>{
+  for(const shipId of ['atlas','kestrel','nomad']){
+    assert.equal(musicScene({...travel,shipId,powered:false}),'travel');
+    assert.equal(musicScene({...orbit,shipId}),'orbit');
+    assert.equal(musicScene({shipId,altitude:60000,verticalSpeed:-20}),'descent');
+  }
+});

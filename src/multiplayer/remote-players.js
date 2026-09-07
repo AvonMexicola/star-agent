@@ -7,12 +7,13 @@ import { Character } from '../character.js';
 import { PLAYER_AVATAR } from '../player-avatar.js';
 import { Equipment, HELD_ITEMS } from '../equipment.js';
 import { SHIP_LAYOUT } from '../boarding.js';
-import { FREIGHTER_LAYOUT } from '../freighter-layout.js';
+import { FREIGHTER_LAYOUT, FreighterSystems } from '../freighter-layout.js';
+import { ATLAS_MODEL_URL } from '../atlas-gameplay.js';
 import { BODIES } from '../celestial.js';
 import { SUIT_COLORS } from './protocol.js';
 
 export const PLAYER_COLORS = SUIT_COLORS;
-const SHIP_URLS = { nomad: '/models/nomad.glb', atlas: '/models/atlas.glb' };
+export const SHIP_URLS = Object.freeze({ nomad: '/models/nomad.glb', atlas: `/${ATLAS_MODEL_URL}` });
 const FORWARD = new THREE.Vector3(0, 0, -1);
 const UP = new THREE.Vector3(0, 1, 0);
 const NO_FIRE = Object.freeze({ firing: false });
@@ -223,7 +224,7 @@ export class RemotePlayers {
       targetOrientation: new THREE.Quaternion().fromArray(peer.orientation),
       shipPosition: new THREE.Vector3(), shipTarget: new THREE.Vector3(),
       shipOrientation: new THREE.Quaternion(), shipTargetOrientation: new THREE.Quaternion(),
-      ship: new THREE.Group(), shipId: null, shipModel: null, shipToken: 0, gears: [],
+      ship: new THREE.Group(), shipId: null, shipModel: null, shipToken: 0, gears: [], atlasSystems: null, atlasNodes: [],
       body: null, physicsUp: new THREE.Vector3(), hasPhysicsUp: false,
       animationInput: { speed: 0, grounded: true, health: 1, dead: false, aiming: 'none', firing: false },
       gearScale: 1,
@@ -265,6 +266,7 @@ export class RemotePlayers {
     releaseClone(entry.shipModel, false);
     entry.shipModel = null;
     entry.gears = [];
+    entry.atlasSystems = null;entry.atlasNodes = [];
     const token = ++entry.shipToken;
     entry.ship.userData.assetStatus = 'loading';
     this._asset(SHIP_URLS[shipId]).then(gltf => {
@@ -279,13 +281,34 @@ export class RemotePlayers {
         if (node.matrixAutoUpdate) node.updateMatrix();
         node.matrixAutoUpdate = false;
       });
+      if (shipId === 'atlas') {
+        const systems = entry.atlasSystems = new FreighterSystems();
+        systems.bind(entry.shipModel);
+        // Only actuators change their local matrices; the rest of the authored
+        // hull keeps the checked static transform cache used by remote ships.
+        const moving = [systems.elevator.nodeObject, ...systems.gates.map(g => g.nodeObject),
+          ...systems.ramps.flatMap(r => [r.nodeObject, r.tipNodeObject, r.sealNodeObject]),
+          ...systems.gear.legs.flatMap(l => [l.nodeObject, l.footObject, ...l.doors.map(d => d.nodeObject)])];
+        entry.atlasNodes = moving.filter(Boolean);
+        this._applyAtlas(entry);
+      }
       entry.ship.add(entry.shipModel);
       entry.ship.userData.assetStatus = 'ready';
-    }, error => {
+    }).catch(error => {
       if (entry.disposed || token !== entry.shipToken) return;
       entry.ship.userData.assetStatus = 'error';
       entry.ship.userData.assetError = String(error?.message || error);
     });
+  }
+
+  _applyAtlas(entry) {
+    if (!entry.atlasSystems) return;
+    for (const node of entry.atlasNodes) node.matrixAutoUpdate = true;
+    entry.atlasSystems.applySnapshot(entry.peer.freighter);
+    entry.atlasSystems.setGear(entry.peer.gearProgress ?? 1,
+      entry.peer.gearDeployed ?? (entry.peer.gearProgress ?? 1) >= .5);
+    entry.atlasSystems.applyTransforms();
+    for (const node of entry.atlasNodes) node.matrixAutoUpdate = false;
   }
 
   /** Replace the full public peer snapshot (including self is fine). */
@@ -320,6 +343,7 @@ export class RemotePlayers {
       }
       if (changedColor && entry.character.model) tintCharacterSuit(entry.character.model, this.palette[peer.colorIndex] || this.palette[0]);
       this._setShipTarget(entry);
+      this._applyAtlas(entry);
       const weapon = HELD_ITEMS.includes(peer.weapon) && (peer.mode === 'walk' || peer.mode === 'eva') ? peer.weapon : null;
       if (entry.equipment.equipped !== weapon) {
         if (weapon) entry.equipment.equip(weapon);
@@ -352,7 +376,7 @@ export class RemotePlayers {
         const body = entry.body;
         if (entry.hasPhysicsUp) {
           this._up.copy(entry.physicsUp);
-        } else if (peer.shipPosition && entry.position.distanceToSquared(entry.shipPosition) < 625) {
+        } else if (peer.shipPosition && entry.position.distanceToSquared(entry.shipPosition) < (entry.shipId === 'atlas' ? 2500 : 625)) {
           this._up.copy(UP).applyQuaternion(entry.shipOrientation);
         } else if (body) {
           this._up.copy(entry.position).sub(this._shipOffset.fromArray(body.center)).normalize();

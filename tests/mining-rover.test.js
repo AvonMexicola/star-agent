@@ -20,28 +20,17 @@ test('paused, malformed and long frames cannot silently exhaust or recharge a ro
 });
 
 import {Vector3,Quaternion} from 'three';
-import {FreighterSystems} from '../src/freighter-layout.js';
-import {sampleRoverSupport,roverLiftMayMove} from '../src/rover-support.js';
+import {roverLiftMayMove} from '../src/rover-support.js';
 import {createRoverPhysics} from '../src/rover-physics.js';
 const frame={position:new Vector3(25e9,2000,3000),quaternion:new Quaternion()};
 const world=p=>new Vector3(...p).add(frame.position);
-test('rover support agrees with all three actual Atlas lifts and never fills a raised lift hole',()=>{
-  const freighter=new FreighterSystems(),query=p=>sampleRoverSupport(world(p),{freighter,frame});
-  assert.equal(query([0,4,5]).source,'atlas-lift:main');
-  assert.equal(query([4.8,4,-4.5]).source,'atlas-lift:starboard');
-  assert.equal(query([-4.8,4,-4.5]).source,'atlas-lift:port');
-  const side=freighter.lifts.find(l=>l.id==='starboard');side.y=7;side.target=7;
-  assert.equal(query([4.8,4,-4.5]),null);assert.equal(query([4.8,7,-4.5]).source,'atlas-lift:starboard');
-  assert.equal(query([0,4,-3]).source,'atlas-deck');assert.equal(query([0,3,5]),null);
-});
-test('every lift caller rejects a straddling or underneath rover, while fully carried parking and a clear platform work',()=>{
-  const f=new FreighterSystems(),lift=f.lifts[0];let p=world(L.atlas.park);
+test('the legacy platform guard rejects a straddling or underneath rover but permits fully carried parking',()=>{
+  const lift={id:'main',minX:-4,maxX:4,minZ:0,maxZ:10,low:0,high:4};let p=world(L.atlas.park);
   const state={position:p,quaternion:new Quaternion().setFromAxisAngle(new Vector3(0,1,0),Math.PI),wheels:Array.from({length:4},()=>({source:'atlas-lift:main'})),speed:0};
-  f.canMove=l=>roverLiftMayMove(state,l,frame);
-  assert.equal(f.toggle('main',new Vector3(0,5.75,-1)),true);lift.target=lift.y;
-  state.position=world([-1.6,4,9]);assert.equal(f.toggle('main',new Vector3(0,5.75,-1)),false);
-  state.position=world([-1.6,0,5]);state.wheels.forEach(w=>w.source='terrain');assert.equal(f.toggle('main',null),false);
-  state.position=world([-1.6,0,15]);assert.equal(f.toggle('main',null),true);
+  assert.equal(roverLiftMayMove(state,lift,frame),true);
+  state.position=world([-1.6,4,9]);assert.equal(roverLiftMayMove(state,lift,frame),false);
+  state.position=world([-1.6,0,5]);state.wheels.forEach(w=>w.source='terrain');assert.equal(roverLiftMayMove(state,lift,frame),false);
+  state.position=world([-1.6,0,15]);assert.equal(roverLiftMayMove(state,lift,frame),true);
 });
 test('substep time survives stationary carrier rebasing at 240 Hz',()=>{
   const up=new Vector3(0,1,0),p=createRoverPhysics({sampleSupport:q=>({point:new Vector3(q.x,0,q.z),normal:up,source:'atlas-lift:main'})});

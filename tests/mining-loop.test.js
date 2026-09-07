@@ -79,7 +79,7 @@ test('malformed persisted XP blocks mining and retains the original save', () =>
 
 test('full stack slots reject an otherwise mass-affordable cut without XP or density changes', () => {
   const {store,disk}=setup();
-  const items={...emptyItems(),...Object.fromEntries([...PROCESSED_IDS,'copper','ice'].map(id=>[id,1]))};
+  const items={...emptyItems(),...Object.fromEntries([...PROCESSED_IDS.slice(0,6),'copper','ice'].map(id=>[id,1]))};
   const filled=store.withItems(store.state,'pack',items);
   assert.equal(store.validContainers(filled),true);assert.equal(store.write(filled),true);
   assert.equal(stacksFor(store.container('pack').items).length,8);

@@ -1,3 +1,7 @@
+import {mountHeight,mountReason} from './mounts.js';
+import {planRemoval} from './removal.js';
+import {pruneBaseStorage} from './power-system.js';
+import {initialPower,POWER_PARTS} from './power.js';
 import {isPanel,footprint,wallOnPanel,wallEdge,wallCandidates,roofCandidates,attachedPanels,structuralReason} from './structure.js';
 import {contains,volumesOverlap,rayPrism,distanceToPolygon} from './polygons.js';
 import { shipCargoAccess } from '../inventory/ship-access.js';
@@ -6,7 +10,7 @@ import { bodyAt, bodyAltitude, bodyOffset, bodySurfacePoint, BODIES } from '../c
 import { terrainHeight } from '../world.js';
 import { PIECES, GRID, STOREY } from './definitions.js';
 import { getWorldBoxes, getPlacementBoxes, getPlacementBounds, capsuleIntersectsBox, constrainBuildStep } from './collision.js';
-import { createBuildVisual, setDoorOpen, createBuildGhost, setBuildGhostValid, disposeBuildGhost, disposeBuildVisual, setBuildOpacity } from './visuals.js';
+import { setBuildPowered, createBuildVisual, setDoorOpen, createBuildGhost, setBuildGhostValid, disposeBuildGhost, disposeBuildVisual, setBuildOpacity } from './visuals.js';
 import { DoorMotion, buildOpacity, serviceLightFade, nightFactor, nearestServiceLights, MAX_SERVICE_LIGHTS } from './motion.js';
 import { updateMainframeDisplay } from './mainframe-display.js';
 import { withClaimAnchor, restoreBuildAnchors } from './anchors.js';
@@ -19,7 +23,7 @@ const overlap=volumesOverlap;
 const bufferId=(claim,piece)=>piece.type==='mainframe'?`build-core-${claim.id.split('-').at(-1)}`:`build-crate-${piece.id.split('-').at(-1)}`;
 export class BuildSystem {
   constructor({scene,nav,store,render=true,supplySources=()=>[]}){
-    this.supplySources=supplySources;this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.pieceId='mainframe';this.turn=0;this.height=0;this.snap=0;
+    this.supplySources=supplySources;this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.removing=false;this.removalPending=false;this.pieceId='mainframe';this.turn=0;this.height=0;this.snap=0;
     this.doorMotion=new DoorMotion();this.ghostRequest=0;this.ghostModel=null;this.ghostFactory=createBuildGhost;this.ghostDisposer=disposeBuildGhost;this.disposed=false;this.claimVisibility=[];
     this.groups=new Map();this.models=new Map();this.registered=new Set();this.grounded=false;this.error='';this.preview=null;this.revision=0;
     const restored=store.state.build!==undefined&&!validBuild(store.state.build)?{ok:false,message:'Base save is invalid. Original data retained; construction paused.'}:restoreBuildAnchors(store.state.build);
@@ -27,6 +31,7 @@ export class BuildSystem {
     if(this.blocked)this.error=restored.message||'Base save is invalid. Original data retained; construction paused.';
     else if(restored.build!==undefined)store.state={...store.state,build:restored.build};
     this.ghost=new THREE.Group();this.ghost.name='Construction preview';if(render)scene.add(this.ghost);
+    this.removeRoot=new THREE.Group();this.removeOutline=new THREE.Box3Helper(new THREE.Box3(),0xffa36c);this.removeRoot.add(this.removeOutline);this.removeRoot.visible=false;if(render)scene.add(this.removeRoot);
     const ringPoints=Array.from({length:96},(_,i)=>new THREE.Vector3(Math.cos(i*Math.PI/48)*CLAIM_RADIUS,.1,Math.sin(i*Math.PI/48)*CLAIM_RADIUS));
     this.boundary=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(ringPoints),new THREE.LineBasicMaterial({color:0xb6efd1,transparent:true,opacity:.55,depthWrite:false}));
     this.boundary.visible=false;if(render)scene.add(this.boundary);
@@ -38,19 +43,20 @@ export class BuildSystem {
   }
   get data(){return this.store.state.build??emptyBuild();}
   get claims(){return this.blocked?[]:this.data.claims;}
-  get state(){return {controllerAvailable:this.controllerAvailable,active:this.active,pieceId:this.pieceId,preview:this.preview?{pieceId:this.pieceId,valid:this.preview.valid,reason:this.preview.reason,cost:this.preview.cost,sources:this.preview.sources,rotation:this.preview.piece.rotation,position:this.preview.position,claimId:this.preview.claim?.id??null}:null,claims:structuredClone(this.claims),pieceCount:this.claims.reduce((s,c)=>s+c.pieces.length,0),error:this.error,grounded:this.grounded,visuals:this.visualDiagnostics,assetsReady:this.models.size>0&&[...this.models.values()].every(m=>m.ready),materials:this.store.container('pack')?.items};}
-  get visualDiagnostics(){return {doors:[...this.doorMotion.doors].map(([id,d])=>({id,target:Boolean(d.target),fraction:d.fraction,colliderFraction:d.fraction,blocked:d.blocked})),ghost:{pieceId:this.ghost.userData.piece??null,ready:Boolean(this.ghostModel),meshes:this.ghostModel?(()=>{let count=0;this.ghostModel.traverse(o=>{if(o.isMesh)count++;});return count;})():0},claims:this.claimVisibility,lights:{active:this.serviceLights.filter(l=>l.visible).length,max:MAX_SERVICE_LIGHTS,work:this.workLight.visible}};}
+  get state(){return {controllerAvailable:this.controllerAvailable,active:this.active,removing:this.removing,pieceId:this.pieceId,preview:this.preview?{pieceId:this.pieceId,valid:this.preview.valid,reason:this.preview.reason,cost:this.preview.cost,sources:this.preview.sources,rotation:this.preview.piece?.rotation,position:this.preview.position,claimId:this.preview.claim?.id??null}:null,claims:structuredClone(this.claims),pieceCount:this.claims.reduce((s,c)=>s+c.pieces.length,0),error:this.error,grounded:this.grounded,visuals:this.visualDiagnostics,assetsReady:this.models.size>0&&[...this.models.values()].every(m=>m.ready),materials:this.store.container('pack')?.items};}
+  get visualDiagnostics(){return {doors:[...this.doorMotion.doors].map(([id,d])=>({id,target:Boolean(d.target),fraction:d.fraction,colliderFraction:d.fraction,blocked:d.blocked})),ghost:{pieceId:this.ghost.userData.piece??null,ready:Boolean(this.ghostModel),meshes:this.ghostModel?(()=>{let count=0;this.ghostModel.traverse(o=>{if(o.isMesh)count++;});return count;})():0},claims:this.claimVisibility,lights:{active:this.serviceLights.filter(l=>l.visible).length,fixtures:this.serviceLights.filter(l=>l.visible).map(l=>({id:l.userData.fixtureId,intensity:l.intensity})),max:MAX_SERVICE_LIGHTS,work:this.workLight.visible}};}
   canBuild(){return !this.nav.multiplayer?.connected&&!this.nav.openingActive&&this.nav.mode==='walk'&&!this.nav.insideShip&&!this.nav.dockedAtStation&&!this.nav.travel&&this.nav.altitude<80;}
   get controllerAvailable(){
     if(this.blocked||this.store.blocked||!this.canBuild())return false;
     return this.claims.some(c=>c.owner===LOCAL_OWNER&&c.body===this.nav.body.id&&c.pieces.some(p=>p.type==='mainframe'&&this.nav.position.distanceTo(this.toWorld(v(p.position),c))<=c.radius));
   }
   begin(id=this.pieceId){if(!this.canBuild())return {ok:false,message:'Leave the ship and stand on a planetary surface to build.'};if(this.blocked||this.store.blocked)return {ok:false,message:this.error||this.store.warning};this.active=true;this.nav.buildActive=true;this.nav.keys.clear();this.nav.gamepad.suspend();return this.select(id);}
-  select(id){if(!PIECES[id])return {ok:false,message:'Choose a building piece.'};this.pieceId=id;this.snap=0;this.height=0;this.refreshPreview();return {ok:true};}
-  cancel(){this.active=false;this.nav.buildActive=false;this.preview=null;this.ghost.visible=false;this.boundary.visible=false;this.workLight.visible=false;this.nav.keys.clear();this.nav.toolTrigger=0;this.nav.gamepad.suspend();}
-  rotate(delta){this.turn=((this.turn+delta*(PIECES[this.pieceId].category==='wall'?2:1))%4+4)%4;this.refreshPreview();}
-  cycleSnap(){this.snap++;this.refreshPreview();}
-  adjustHeight(delta){const foundation=PIECES[this.pieceId].category==='foundation';this.height=THREE.MathUtils.clamp(this.height+(foundation?delta:Math.sign(delta)*STOREY),foundation?-.2:0,24);this.refreshPreview();}
+  select(id){if(!PIECES[id])return {ok:false,message:'Choose a building piece.'};this.removing=false;this.pieceId=id;this.snap=0;this.height=0;this.refreshPreview();return {ok:true};}
+  beginRemoval(){const result=this.begin(this.pieceId);if(!result.ok)return result;this.removing=true;this.refreshPreview();return {ok:true};}
+  cancel(){this.active=false;this.removing=false;this.nav.buildActive=false;this.preview=null;this.ghost.visible=false;this.removeRoot.visible=false;this.boundary.visible=false;this.workLight.visible=false;this.nav.keys.clear();this.nav.toolTrigger=0;this.nav.gamepad.suspend();}
+  rotate(delta){if(this.removing)return;this.turn=((this.turn+delta*(PIECES[this.pieceId].category==='wall'?2:1))%4+4)%4;this.refreshPreview();}
+  cycleSnap(){if(this.removing)return;this.snap++;this.refreshPreview();}
+  adjustHeight(delta){if(this.removing||PIECES[this.pieceId].mount)return;const foundation=PIECES[this.pieceId].category==='foundation';this.height=THREE.MathUtils.clamp(this.height+(foundation?delta:Math.sign(delta)*STOREY),foundation?-.2:0,24);this.refreshPreview();}
   toLocal(point,c){return point.clone().sub(v(c.origin)).applyQuaternion(q(c.quaternion).invert());}
   toWorld(point,c){return point.clone().applyQuaternion(q(c.quaternion)).add(v(c.origin));}
   nearestClaim(point=this.nav.position){return this.claims.filter(c=>c.body===bodyAt(point).id).map(c=>({c,d:this.toLocal(point,c).length()})).filter(x=>x.d<x.c.radius+15).sort((a,b)=>a.d-b.d)[0]?.c??null;}
@@ -71,6 +77,7 @@ export class BuildSystem {
   candidates(claim,target){
     const def=PIECES[this.pieceId],local=this.toLocal(target,claim),rotation=this.turn*Math.PI/2;
     const panels=claim.pieces.filter(isPanel),sort=items=>{const unique=new Map(items.map(p=>[[...p.position,p.rotation].map(v=>Math.round(v*10000)).join(','),p]));return [...unique.values()].sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));};
+    if(def.mount){return sort(claim.pieces.filter(p=>PIECES[p.type].category==='floor').map(p=>({position:def.mount==='ceiling'?[Math.round(local.x*2)/2,mountHeight(p,def.mount),Math.round(local.z*2)/2]:[p.position[0],mountHeight(p,def.mount),p.position[2]],rotation:['triangle','quarter'].includes(def.shape)?p.rotation:p.rotation+rotation})));}
     if(def.category==='wall'){
       local.y+=this.height;
       const stacked=claim.pieces.filter(p=>PIECES[p.type].category==='wall'&&(PIECES[p.type].shape==='quarter')===(def.shape==='quarter')&&PIECES[p.type].footprint[0]===def.footprint[0]).map(p=>({position:[p.position[0],p.position[1]+PIECES[p.type].height,p.position[2]],rotation:(p.rotation??0)+(def.shape==='quarter'?0:Math.floor(this.turn/2)*Math.PI)}));
@@ -106,6 +113,7 @@ export class BuildSystem {
 
   refreshPreview(){
     if(!this.active)return;
+    if(this.removing)return this.refreshRemoval();
     const target=this.target();let claim=this.pieceId==='mainframe'?this.newClaim(target):this.nearestClaim(target);
     if(claim&&PIECES[this.pieceId].padSize==='L')claim={...claim,radius:96};
     const candidates=claim?(this.pieceId==='mainframe'?[{position:[0,0,0],rotation:(this.turn+2)%4*Math.PI/2}]:this.candidates(claim,target)):[];
@@ -113,7 +121,7 @@ export class BuildSystem {
     const p={type:this.pieceId,id:`build-piece-${this.data.nextId+(this.pieceId==='mainframe'?1:0)}`,position:candidate?.position??[0,0,0],rotation:candidate?.rotation??0,doorOpen:false};
     const actor=claim?this.toLocal(this.nav.position,claim):null;
     const sources=claim?.useBuffer&&this.pieceId!=='mainframe'&&Math.hypot(actor.x,actor.z)<=claim.radius?['pack',bufferId(claim,claim.pieces.find(p=>p.type==='mainframe'))]:['pack'];
-    let reason=!claim?'Place a mainframe to establish building rights.':!candidate?'Place a supporting foundation first.':this.validate(claim,p);
+    let reason=!claim?'Place a mainframe to establish building rights.':!candidate?(PIECES[this.pieceId].mount?'Build a supported ceiling first.':'Place a supporting foundation first.'):this.validate(claim,p);
     if(shipCargoAccess(this.nav).available)sources.push('ship');
     sources.push(...this.supplySources());
     const cost=PIECES[p.type].cost,resources=planCost(this.store,this.store.state,cost,sources);
@@ -154,6 +162,7 @@ export class BuildSystem {
       return getPlacementBoxes(old).some(a=>boxes.some(b=>overlap(a,b)&&!((corner||seated)&&a.kind!=='doorSweep'&&b.kind!=='doorSweep')));
     }))return 'That space or socket is occupied.';
     const def=PIECES[p.type];
+    if(def.mount)return mountReason(p,c.pieces);
     if(def.category==='foundation'||def.category==='utility'){
       const samples=[...footprint(p),[p.position[0],p.position[2]]];
       for(const [x,z] of samples){
@@ -166,11 +175,27 @@ export class BuildSystem {
 
     return null;
   }
+  refreshRemoval(){
+    const hit=this.raycast(this.nav.position,FORWARD.clone().applyQuaternion(this.nav.orientation),12),claim=this.claims.find(c=>c.id===hit?.claimId),piece=claim?.pieces.find(p=>p.id===hit.pieceId);
+    const key=`${claim?.id}/${piece?.id}`;if(this._removalData!==this.data||this._removalKey!==key){this._removalData=this.data;this._removalKey=key;this._removalPlan=piece?planRemoval(this.data,this.store.state.remote,claim.id,piece.id):{ok:false,message:'Aim at a building piece within 12 m.'};}
+    const plan=this._removalPlan;this.preview={removing:true,pieceId:piece?.type??this.pieceId,piece,claim,position:piece?this.toWorld(v(piece.position),claim).toArray():this.nav.position.toArray(),valid:plan.ok&&!this.removalPending,reason:this.removalPending?'Removing…':plan.ok?`Remove ${PIECES[piece.type].label} permanently · no refund`:plan.message,cost:{},sources:[]};
+    this.updateGhost();return this.preview;
+  }
+  async remove(){
+    if(this.removalPending)return {ok:false,message:'Removal in progress.'};if(!this.canBuild()||this.blocked||this.store.blocked)return {ok:false,message:'Construction is unavailable.'};
+    this._removalData=null;this.refreshRemoval();const preview=this.preview;if(!preview?.valid)return {ok:false,message:preview?.reason};
+    this.removalPending=true;let result;try{
+      if(this.power?.cloud?.enabled)result=await this.power.cloud.action(preview.claim.id,'remove',preview.piece.id);
+      else {const plan=this._removalPlan,ok=this.store.write({...pruneBaseStorage(this.store.state,plan.build.claims),build:plan.build});result={ok,message:ok?plan.message:this.store.warning};}
+      if(result.ok){this.revision++;this._syncedData=null;this.sync();}return result;
+    }finally{this.removalPending=false;this.nav.gamepad.suspend();if(this.active)this.refreshPreview();}
+  }
   place(){
+    if(this.removing)return this.remove();
     this.refreshPreview();const preview=this.preview;if(!preview?.valid)return {ok:false,message:preview?.reason??'Enter build mode first.'};
     const c=structuredClone(preview.claim),p=structuredClone(preview.piece),data=structuredClone(this.data);
     const paid=planCost(this.store,this.store.state,preview.cost,preview.sources);if(!paid.ok)return paid;
-    c.pieces.push(p);if(p.type==='mainframe'){data.claims.push(c);data.nextId+=2;}else{data.claims=data.claims.map(old=>old.id===c.id?c:old);data.nextId++;}
+    c.pieces.push(p);if(p.type==='mainframe'){c.power=initialPower(Date.now());data.claims.push(c);data.nextId+=2;}else{data.claims=data.claims.map(old=>old.id===c.id?c:old);data.nextId++;}
     let next={...paid.next,build:data};
     if(['mainframe','crate','rack'].includes(p.type))next=addBuildContainer(next,bufferId(c,p),p.type==='mainframe'?`${c.name} supplies`:`${c.name} ${PIECES[p.type].label} ${p.id.split('-').at(-1)}`,PIECES[p.type].storageBoxes??2);
     if(!validBuild(data)||!this.store.validContainers(next))return {ok:false,message:'Building or storage limits reached.'};
@@ -188,17 +213,21 @@ export class BuildSystem {
   }
   sync(){
     if(this.disposed)return;
+    if(this._syncedData===this.data)return;this._syncedData=this.data;
+    const alive=new Set(this.claims.flatMap(c=>c.pieces.map(p=>p.id)));
+    for(const [id,entry] of this.models)if(!alive.has(id)){if(entry.group)disposeBuildVisual(entry.group);this.models.delete(id);this.registered.delete(id);this.doorMotion.doors.delete(id);}
+    for(const [id,group] of this.groups)if(!this.claims.some(c=>c.id===id)){group.removeFromParent();this.groups.delete(id);}
     for(const c of this.claims){
       let group=this.groups.get(c.id);if(!group){group=new THREE.Group();group.name=c.name;group.quaternion.fromArray(c.quaternion);this.groups.set(c.id,group);if(this.render)this.scene.add(group);}
       for(const p of c.pieces){
         if(Boolean(PIECES[p.type].door))this.doorMotion.ensure(p.id,p.doorOpen);
         if(this.render&&!this.models.has(p.id)){
-          const entry={ready:false,group:null};this.models.set(p.id,entry);
-          createBuildVisual(p).then(model=>{if(this.disposed){disposeBuildVisual(model);return;}entry.group=model;entry.ready=true;model.position.fromArray(p.position);model.rotation.y=p.rotation;group.add(model);setDoorOpen(model,this.doorFraction(p));}).catch(e=>{this.error=`Building asset unavailable: ${e.message}`;});
+          const entry={ready:false,group:null,pieceId:p.id};this.models.set(p.id,entry);
+          createBuildVisual(p).then(model=>{if(this.disposed||!this.claims.some(c=>c.pieces.some(p=>p.id===entry.pieceId))){disposeBuildVisual(model);return;}entry.group=model;entry.rotor=model.getObjectByName('TurbineRotor');entry.ready=true;this._syncedData=null;model.position.fromArray(p.position);model.rotation.y=p.rotation;group.add(model);setDoorOpen(model,this.doorFraction(p));}).catch(e=>{this.error=`Building asset unavailable: ${e.message}`;});
         }
-        const model=this.models.get(p.id)?.group;if(model){const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
+        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,(!this.power||this.power.status(c).powered)&&(!PIECES[p.type].light||p.lightOn!==false));const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
         if(['mainframe','crate','rack'].includes(p.type)&&this.onRegisterContainer&&!this.registered.has(p.id)){
-          const id=bufferId(c,p),registered=this.onRegisterContainer({id,name:this.store.container(id)?.name??c.name,kind:'base',boxes:PIECES[p.type].storageBoxes??2,available:()=>this.nav.mode==='walk'&&!this.nav.insideShip&&(this.nav.position.distanceTo(this.toWorld(v(p.position),c))<4||this.terminalAccess(c))});
+          const id=bufferId(c,p),registered=this.onRegisterContainer({id,name:this.store.container(id)?.name??c.name,kind:'base',boxes:PIECES[p.type].storageBoxes??2,available:()=>this.claims.some(c=>c.pieces.some(piece=>piece.id===p.id))&&this.nav.mode==='walk'&&!this.nav.insideShip&&(this.nav.position.distanceTo(this.toWorld(v(p.position),c))<4||this.terminalAccess(c))});
           if(registered!==false)this.registered.add(p.id);
         }
       }
@@ -222,6 +251,8 @@ export class BuildSystem {
   }
   updateGhost(){
     if(!this.render||!this.preview||this.disposed)return;
+    this.removeRoot.visible=this.active&&this.removing&&Boolean(this.preview.piece);
+    if(this.removing){this.ghost.visible=false;this.boundary.visible=false;if(this.preview.piece){const bounds=getPlacementBounds(this.preview.piece);this.removeOutline.box.min.fromArray(bounds.min);this.removeOutline.box.max.fromArray(bounds.max);this.removeOutline.material.color.set(this.preview.valid?0xffa36c:0xf06a74);this.removeRoot.position.fromArray(this.preview.claim.origin).sub(this._origin);this.removeRoot.quaternion.fromArray(this.preview.claim.quaternion);}return;}
     const key=this.pieceId;
     if(this.ghost.userData.piece!==key){
       this.ghost.userData.piece=key;const request=++this.ghostRequest;
@@ -243,11 +274,13 @@ export class BuildSystem {
     this._origin.copy(origin);this.sync();this.claimVisibility=[];const fixtures=[];
     for(const c of this.claims){
       const group=this.groups.get(c.id),distance=v(c.origin).distanceTo(this.nav.position),opacity=buildOpacity(distance);group.position.fromArray(c.origin).sub(origin);group.visible=opacity>0;this.claimVisibility.push({id:c.id,distance,opacity});
+      if(opacity<=0)continue;
+      const powered=!this.power||this.power.status(c).powered;
       for(const p of c.pieces){
         if(Boolean(PIECES[p.type].door)){const wasBlocked=this.doorMotion.doors.get(p.id)?.blocked;this.doorMotion.update(p.id,p.doorOpen,dt,(previous,next)=>this.canCloseDoor(c,p,previous,next));if(!wasBlocked&&this.doorMotion.doors.get(p.id).blocked)this.nav.notify?.('Closing paused · step clear of the doorway.');}
-        const model=this.models.get(p.id)?.group;if(model){setDoorOpen(model,this.doorFraction(p));setBuildOpacity(model,opacity);}
-        if(opacity>0&&['doorway','mainframe'].includes(p.type)){
-          const offset=Boolean(PIECES[p.type].door)?v([0,2.36,-.30]):v([0,1.50,-.56]),position=this.toWorld(offset.applyAxisAngle(UP,p.rotation).add(v(p.position)),c);
+        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,powered&&(!PIECES[p.type].light||p.lightOn!==false));const rotor=this.models.get(p.id)?.rotor;if(rotor&&!BODIES.find(b=>b.id===c.body)?.airless)rotor.rotation.y+=dt;if(PIECES[p.type].door)setDoorOpen(model,this.doorFraction(p));if(model.userData.buildOpacity!==opacity){setBuildOpacity(model,opacity);model.userData.buildOpacity=opacity;}}
+        if(opacity>0&&powered&&(['doorway','mainframe'].includes(p.type)||PIECES[p.type].light&&p.lightOn!==false)){
+          const offset=PIECES[p.type].light?v([0,-.20,0]):Boolean(PIECES[p.type].door)?v([0,2.36,-.30]):v([0,1.50,-.56]),position=this.toWorld(offset.applyAxisAngle(UP,p.rotation).add(v(p.position)),c);
           fixtures.push({id:p.id,type:p.type,position,distance:position.distanceTo(this.nav.position),opacity});
         }
       }
@@ -257,17 +290,17 @@ export class BuildSystem {
     this.workLight.visible=this.active&&this.nav.enabled&&this.nav.focused&&dark>.01;this.workLight.intensity=4*dark;
     if(this.workLight.visible){this.workLight.position.copy(this.nav.position).sub(origin);this.workLight.target.position.copy(this.workLight.position).add(FORWARD.clone().applyQuaternion(this.nav.orientation).multiplyScalar(8));}
     const selected=nearestServiceLights(fixtures);
-    this.serviceLights.forEach((light,i)=>{const fixture=selected[i];light.visible=Boolean(fixture);if(fixture){light.position.copy(fixture.position).sub(origin);light.distance=fixture.type==='doorway'?6:4;light.intensity=(fixture.type==='doorway'?8:1.25)*(.35+.65*dark)*serviceLightFade(fixture.distance)*fixture.opacity;}});
+    this.serviceLights.forEach((light,i)=>{const fixture=selected[i];light.visible=Boolean(fixture);if(fixture){light.userData.fixtureId=fixture.id;light.position.copy(fixture.position).sub(origin);light.color.set(PIECES[fixture.type]?.light?0xffe5bd:0xb6efd1);light.distance=PIECES[fixture.type]?.light?12:fixture.type==='doorway'?6:4;light.intensity=(PIECES[fixture.type]?.light?18:fixture.type==='doorway'?8:1.25)*(PIECES[fixture.type]?.light?1:.35+.65*dark)*serviceLightFade(fixture.distance)*fixture.opacity;}});
     if(this.active){this._lastPreview+=dt;if(this._lastPreview>.08){this._lastPreview=0;this.refreshPreview();}else this.updateGhost();}
   }
   dispose(){
-    this.disposed=true;this.ghostRequest++;if(this.ghostModel)this.ghostDisposer(this.ghostModel);this.ghostModel=null;this.ghost.clear();for(const entry of this.models.values())if(entry.group)disposeBuildVisual(entry.group);this.models.clear();this.scene.remove(this.ghost,this.boundary,this.workLight,this.workLight.target,...this.serviceLights,...this.groups.values());this.boundary.geometry.dispose();this.boundary.material.dispose();this.workLight.dispose();this.serviceLights.forEach(l=>l.dispose());
+    this.disposed=true;this.ghostRequest++;if(this.ghostModel)this.ghostDisposer(this.ghostModel);this.ghostModel=null;this.ghost.clear();for(const entry of this.models.values())if(entry.group)disposeBuildVisual(entry.group);this.models.clear();this.removeOutline.geometry.dispose();this.removeOutline.material.dispose();this.scene.remove(this.removeRoot,this.ghost,this.boundary,this.workLight,this.workLight.target,...this.serviceLights,...this.groups.values());this.boundary.geometry.dispose();this.boundary.material.dispose();this.workLight.dispose();this.serviceLights.forEach(l=>l.dispose());
   }
-  landingSurface(){
+  landingSurface({position=this.nav.position,orientation=this.nav.orientation}={}){
     const nav=this.nav;if(!nav.layout?.flightBounds)return null;
-    for(const c of this.claims){if(c.body!==nav.body.id)continue;const local=this.toLocal(nav.position,c);
+    for(const c of this.claims){if(c.body!==bodyAt(position).id)continue;const local=this.toLocal(position,c);
       for(const p of c.pieces){if(!p.landingPad||!PIECES[p.type].padSize)continue;
-        const normal=UP.clone().applyQuaternion(q(c.quaternion)),forward=FORWARD.clone().applyQuaternion(nav.orientation).projectOnPlane(normal).normalize();if(forward.lengthSq()<.5)continue;
+        const normal=UP.clone().applyQuaternion(q(c.quaternion)),forward=FORWARD.clone().applyQuaternion(orientation).projectOnPlane(normal).normalize();if(forward.lengthSq()<.5)continue;
         const attitude=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(),forward,normal));
         const transform=q(c.quaternion).invert().multiply(attitude),corners=[];
         for(const x of [nav.layout.flightBounds.min[0]-1,nav.layout.flightBounds.max[0]+1])for(const z of [nav.layout.flightBounds.min[2]-1,nav.layout.flightBounds.max[2]+1])corners.push(v([x,0,z]).applyQuaternion(transform).add(v([local.x,p.position[1],local.z])));
@@ -278,7 +311,7 @@ export class BuildSystem {
       }
     }return null;
   }
-  terminalAccess(c){c=this.claims.find(claim=>claim.id===c.id)??c;return c.owner===LOCAL_OWNER&&c.pieces.some(p=>p.type==='terminal'&&this.nav.position.distanceTo(this.toWorld(v(p.position),c))<4);}
+  terminalAccess(c){c=this.claims.find(claim=>claim.id===c.id)??c;return c.owner===LOCAL_OWNER&&(!this.power||this.power.status(c).powered)&&c.pieces.some(p=>p.type==='terminal'&&this.nav.position.distanceTo(this.toWorld(v(p.position),c))<4);}
   setLandingPad(claimId,pieceId,enabled){
     const c=this.claims.find(c=>c.id===claimId),p=c?.pieces.find(p=>p.id===pieceId);
     if(!p||!PIECES[p.type].padSize||!this.canBuild()||distanceToPolygon(footprint(p),...this.toLocal(this.nav.position,c).toArray().filter((_,i)=>i!==1))>4)return {ok:false,message:'Approach this pad to change its designation.'};
@@ -288,16 +321,20 @@ export class BuildSystem {
   nearbyInteraction(){
     if(this.active||this.nav.mode!=='walk'||this.nav.insideShip)return null;
     const dir=FORWARD.clone().applyQuaternion(this.nav.orientation);
-    return this.claims.flatMap(c=>c.pieces.filter(p=>(['mainframe','crate','rack','terminal'].includes(p.type)||PIECES[p.type].door)).map(p=>{const point=this.toWorld(v(p.position).addScaledVector(UP,.8),c),delta=point.sub(this.nav.position);return {c,p,d:delta.length(),f:delta.normalize().dot(dir)};})).filter(x=>x.d<3.5&&x.f>.15).sort((a,b)=>b.f-a.f||a.d-b.d)[0]??this.claims.flatMap(c=>c.pieces.filter(p=>PIECES[p.type].padSize).map(p=>{const local=this.toLocal(this.nav.position,c);return {c,p,d:Math.hypot(distanceToPolygon(footprint(p),local.x,local.z),local.y-p.position[1])};})).find(hit=>hit.d<3.5)??null;
+    return this.claims.flatMap(c=>c.pieces.filter(p=>(['mainframe','crate','rack','terminal'].includes(p.type)||POWER_PARTS[p.type]||PIECES[p.type].light||PIECES[p.type].door)).map(p=>{const point=this.toWorld(v(p.position).addScaledVector(UP,PIECES[p.type].light?-.06:.8),c),delta=point.sub(this.nav.position);return {c,p,d:delta.length(),f:delta.normalize().dot(dir)};})).filter(x=>x.d<3.5&&x.f>.15).sort((a,b)=>b.f-a.f||a.d-b.d)[0]??this.claims.flatMap(c=>c.pieces.filter(p=>PIECES[p.type].padSize).map(p=>{const local=this.toLocal(this.nav.position,c);return {c,p,d:Math.hypot(distanceToPolygon(footprint(p),local.x,local.z),local.y-p.position[1])};})).find(hit=>hit.d<3.5)??null;
   }
-  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':hit.p.doorOpen?'Close':'Open')+' base door':hit.p.type==='mainframe'?'Base mainframe':hit.p.type==='terminal'?'Inventory terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
+  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${PIECES[hit.p.type].light?`Switch ceiling light ${hit.p.lightOn===false?'on':'off'}`:Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':hit.p.doorOpen?'Close':'Open')+' base door':(hit.p.type==='mainframe'||POWER_PARTS[hit.p.type])?'Base mainframe / power':hit.p.type==='terminal'?'Inventory terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
   interact(){
     const hit=this.nearbyInteraction();if(!hit)return false;
     const {c,p}=hit;
+    if(PIECES[p.type].light){const data=structuredClone(this.data),lamp=data.claims.find(a=>a.id===c.id).pieces.find(a=>a.id===p.id);lamp.lightOn=p.lightOn===false;if(this.store.write({...this.store.state,build:data})){this.sync();this.nav.gamepad.suspend();this.nav.notify(lamp.lightOn?'Ceiling light on.':'Ceiling light off.');}else this.nav.notify(this.store.warning);return true;}
+    if(POWER_PARTS[p.type]){const core=c.pieces.find(p=>p.type==='mainframe');this.onMainframe?.({...structuredClone(c),bufferId:bufferId(c,core)});return true;}
     if(p.type==='mainframe'){this.onMainframe?.({...structuredClone(c),bufferId:bufferId(c,p)});return true;}
+    if(p.type==='terminal'&&this.power&&!this.power.status(c).powered){this.nav.notify('Terminal has no power. Open storage directly or restore generation.');return true;}
     if(p.type==='terminal'){this.onMainframe?.({...structuredClone(c),terminal:true,containers:c.pieces.filter(a=>['mainframe','crate','rack'].includes(a.type)).map(a=>({id:bufferId(c,a),name:this.store.container(bufferId(c,a))?.name}))});return true;}
     if(PIECES[p.type].padSize){this.onMainframe?.({...structuredClone(c),pad:{id:p.id,size:PIECES[p.type].padSize,enabled:Boolean(p.landingPad)}});return true;}
     if(['crate','rack'].includes(p.type)){this.onOpenStorage?.(bufferId(c,p));return true;}
+    if(p.type==='hangar-door'&&this.power&&!this.power.status(c).powered){this.nav.notify('Hangar motor has no power. Restore generation.');return true;}
     if(p.doorOpen){const feet=this.toLocal(this.nav.position,c).addScaledVector(UP,-(this.nav.layout?.eyeHeight??1.65));if(getWorldBoxes({...p,doorOpen:false}).some(b=>capsuleIntersectsBox(feet,.35,1.8,b))){this.nav.notify('Step clear of the doorway before closing.');return true;}}
     this.doorMotion.ensure(p.id,p.doorOpen);
     const data=structuredClone(this.data),piece=data.claims.find(a=>a.id===c.id).pieces.find(a=>a.id===p.id);piece.doorOpen=!piece.doorOpen;
@@ -337,13 +374,13 @@ export class BuildSystem {
               if(d<gap){gap=d;outward=dir.getComponent(axis)*(side==='min'?-1:1);}
             }
             if(outward>=-1e-8)continue;
-            const distance=0;if(!nearest||distance<nearest.distance)nearest={distance,point:start.clone(),normal:direction.clone().negate(),building:true};continue;
+            const distance=0;if(!nearest||distance<nearest.distance)nearest={distance,point:start.clone(),normal:direction.clone().negate(),building:true,claimId:c.id,pieceId:p.id};continue;
           }
         }
         const exact=offsets?null:rayPrism(local,dir,b);const point=offsets?ray.intersectBox(box,new THREE.Vector3()):exact===null?null:ray.at(exact,new THREE.Vector3());if(!point)continue;
         const distance=point.distanceTo(local);if(distance>range||nearest&&distance>=nearest.distance)continue;
         const normal=new THREE.Vector3();let error=Infinity;for(let axis=0;axis<3;axis++)for(const side of ['min','max']){const gap=Math.abs(point.getComponent(axis)-box[side].getComponent(axis));if(gap<error){error=gap;normal.set(0,0,0).setComponent(axis,side==='min'?-1:1);}}
-        nearest={distance,point:this.toWorld(point,c),normal:normal.applyQuaternion(q(c.quaternion)),building:true};
+        nearest={distance,point:this.toWorld(point,c),normal:normal.applyQuaternion(q(c.quaternion)),building:true,claimId:c.id,pieceId:p.id};
       }
     }return nearest;
   }

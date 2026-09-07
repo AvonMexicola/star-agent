@@ -123,6 +123,7 @@ export class AtlasMarkIISystems {
     this.capsuleRadius = source.capsuleRadius;
     this.ramps = source.ramps.map(definition => ({
       ...definition,
+      nominalOpenAngle: definition.openAngle,
       pivot: [...definition.pivot],
       control: [...definition.control],
       angle: definition.closedAngle,
@@ -184,12 +185,15 @@ export class AtlasMarkIISystems {
       ramp.nodeObject = root.getObjectByName(ramp.node);
       if (!ramp.nodeObject) missing.push(ramp.node);
       ramp.tipNodeObject = ramp.tipNode ? root.getObjectByName(ramp.tipNode) : null;
+      if (ramp.tipNode && !ramp.tipNodeObject) missing.push(ramp.tipNode);
       ramp.sealNodeObject = root.getObjectByName(ramp.headerSeal.node);
       if (!ramp.sealNodeObject) missing.push(ramp.headerSeal.node);
     }
     this.elevator.nodeObject = root.getObjectByName(this.elevator.node);
     if (!this.elevator.nodeObject) missing.push(this.elevator.node);
-    for (const gate of this.gates) gate.nodeObject = root.getObjectByName(gate.node);
+    for (const gate of this.gates) {
+      gate.nodeObject = root.getObjectByName(gate.node);if (!gate.nodeObject) missing.push(gate.node);
+    }
     this.elevator.gateObjects = this.gates.map(gate => gate.nodeObject).filter(Boolean);
     for (const leg of this.gear.legs) {
       leg.nodeObject = root.getObjectByName(leg.node);
@@ -250,6 +254,7 @@ export class AtlasMarkIISystems {
         pivot: [...ramp.pivot],
         angle: ramp.angle,
         target: ramp.target,
+        openAngle: ramp.openAngle,
         progress: rampProgress(ramp),
         moving: ramp.moving,
         tipAngle: ramp.tipAngle,
@@ -365,6 +370,15 @@ export class AtlasMarkIISystems {
     return carry;
   }
 
+  setRampOpenAngle(id, angle) {
+    const ramp = this.ramps.find(item => item.id === id);
+    if (!ramp || !Number.isFinite(angle) || near(angle, ramp.openAngle)) return;
+    const opening = near(ramp.target, ramp.openAngle);
+    ramp.openAngle = angle;
+    if (opening) ramp.target = angle;
+    ramp.moving = !near(ramp.angle, ramp.target);
+  }
+
   openRampAt(point) {
     for (const ramp of this.ramps) {
       if (ramp.moving || !near(ramp.angle, ramp.openAngle)) continue;
@@ -376,17 +390,26 @@ export class AtlasMarkIISystems {
     return null;
   }
 
+  /** Geometry query independent of a walker's height, for swept jump landing.
+   * The deployed toe unfolds to the same plane as the main six-metre panel. */
+  rampSurfaceAt(point) {
+    const ramp = this.openRampAt(point);if (!ramp) return null;
+    return {
+      y: ramp.pivot[1] - (point.z - ramp.pivot[2]) * Math.tan(ramp.angle),
+      normal: new THREE.Vector3(0, Math.cos(ramp.angle), Math.sin(ramp.angle)),
+      source: `atlas-ramp:${ramp.id}`, ramp: ramp.id,
+    };
+  }
+
   floorAt(localPoint) {
     if (!localPoint) return null;
     const foot = localPoint.y - this.eyeHeight;
     if (inside(localPoint, this.elevatorBounds)) {
       return near(foot, this.elevator.y, SUPPORT_TOLERANCE) ? this.elevator.y : null;
     }
-    const ramp = this.openRampAt(localPoint);
-    if (ramp) {
-      const distance = (localPoint.z - ramp.pivot[2]) * ramp.outward;
-      const floor = ramp.pivot[1] - ramp.outward * distance * Math.tan(ramp.openAngle);
-      return near(foot, floor, SUPPORT_TOLERANCE) ? floor : null;
+    const surface = this.rampSurfaceAt(localPoint);
+    if (surface) {
+      return near(foot, surface.y, SUPPORT_TOLERANCE) ? surface.y : null;
     }
     const bridgeFootprint = this.layout.bridge?.pressureFootprint;
     const outsideBridge = bridgeFootprint && localPoint.z < bridgeFootprint.aftZ

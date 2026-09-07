@@ -1,0 +1,12 @@
+{
+  "runtimeSha256": "8f5052adf0b6d32c26e41d3cf379cb595b18b064f5af2dc6a68a7a2ace579537",
+  "bytes": 1579416,
+  "independentFullBuilds": 2,
+  "byteIdentical": true,
+  "blender": "5.2.0 LTS fbe6228777e7",
+  "kind": "Fresh private numerical export; published GLB/Blend/manifest never overwritten",
+  "privateArtifact": "test-results/kestrel-rebuild/runtime/kestrel-shopkeeper.glb",
+  "failedAttempt": "First private /tmp export stopped with OSError122 disk quota writing duplicate source albedo; no successful pass claimed for it. Only owned failed scratch was removed.",
+  "successfulRetry": "Removed combined and derived GLB/albedo intermediates after use to reduce peak disk space; export logic unchanged. Completed scratch subsequently moved to ignored project-drive test-results/kestrel-rebuild.",
+  "historicalBaselineReceipt": "rebuild-receipt-original.json"
+}

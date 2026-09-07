@@ -142,7 +142,7 @@ test('hangar and door audio fades use the existing graph without autoplay', t =>
   assert.equal(contextsCreated, 0);
   assert.equal(audio.context, null, 'update never creates or resumes an audio context');
 
-  audio.context = { currentTime: 12 };
+  audio.context = { currentTime: 12, state: 'running' };
   audio.enabled = true;
   audio.hum = { gain: parameter() };
   audio.overtoneGain = { gain: parameter() };

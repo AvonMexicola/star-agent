@@ -17,10 +17,12 @@ export function describeAtlasControl(systems, position, seated = false) {
     const ramp = systems.ramps.find(item => id === `ramp:${item.id}`);
     const state = ramp.moving ? ramp.target === ramp.openAngle ? 'opening' : 'closing'
       : Math.abs(ramp.angle - ramp.closedAngle) < .001 ? 'closed' : 'open';
+    const exterior = systems.exteriorRampCallAt?.(position);
     const [x, y, z] = ramp.control;
     return { id, target: `${ramp.id === 'front' ? 'Forward' : 'Aft'} loading ramp`,
-      anchor: [x, y + 1.13, z - ramp.outward * .29], ...controlAction('ramp', state) };
+      anchor: exterior?.anchor ?? [x, y + 1.13, z - ramp.outward * .29], ...controlAction('ramp', state) };
   }
+  if (id === 'storage') return null;
   let state;
   if (lift.moving) state = lift.waitingForGates ? 'securing' : 'moving';
   else if (onLift) state = Math.abs(lift.y - lift.low) < .2 ? 'up' : 'down';

@@ -1,0 +1,53 @@
+{
+  "runtimeSha256": "8f5052adf0b6d32c26e41d3cf379cb595b18b064f5af2dc6a68a7a2ace579537",
+  "kind": "Actual exported GLB reimport, Blender5.2 Cycles CPU studio; NOT GAME",
+  "resolution": [
+    800,
+    900
+  ],
+  "samples": 16,
+  "maximumThreads": 4,
+  "views": [
+    {
+      "path": "review/front-oblique.webp",
+      "sha256": "006abf2f27e54f7288163f1d56e67174343b555beba92e4d5915381f2db913bb"
+    },
+    {
+      "path": "review/back-oblique.webp",
+      "sha256": "6d13f28698a1498631068496d7143724ead6072f419d68681a52d6d69ecd28d0"
+    },
+    {
+      "path": "review/face-detail.webp",
+      "sha256": "fb96a108065b0c3c8d7d8437022ce4e905320ec4ead46d7345c099f0215b551d"
+    },
+    {
+      "path": "review/idle-02-mid.webp",
+      "sha256": "841a17e9d6b5eec57bceb6d755df9192b8ead2f7cc24371ca9855e91bd08f5de"
+    },
+    {
+      "path": "review/idle-03-mid.webp",
+      "sha256": "d45ceb2067583ecf601f61fc7fc2454ddfaa9ee8e9087afb9a174bbf2aefa6cd"
+    },
+    {
+      "path": "review/idle-11-mid.webp",
+      "sha256": "5515c1c61436cb8fc47b8b303cc3ca01d5fb8a0fdf475c1077cebb65aea47ac1"
+    },
+    {
+      "path": "review/idle-12-mid.webp",
+      "sha256": "2e82a7227a7a4736ced01931a3ef095a3fe152b1e8e2c31064ed04f8ab18b89a"
+    }
+  ],
+  "controlledBefore": {
+    "runtimeSha256": "cb6238203ea14e55789ece92d912af04a087bf546960ab540e8597b366fb1e97",
+    "path": "review/before-resting-front-oblique.webp",
+    "sha256": "d44d8d4c58f88d64c2dac28889537336fb54a5ea97a21900d8bba84ad8d2c8b3",
+    "setup": "same corrected-material studio/camera, original resting arm tracks"
+  },
+  "authorReview": "All seven corrected studios viewed; relaxed arm hang, consistent resting hand orientation, no observed cuff tear or obvious thigh penetration in these angles. Raised idle03 gesture preserved. No claim of perfect palm/finger anatomy or every-frame browser acceptance.",
+  "animatedReduction": {
+    "samples": 20,
+    "maximumMetres": 0.005541014434712452,
+    "worstP95Metres": 0.0014808002679910233,
+    "comparison": "same corrected arm tracks on source and reduced geometry"
+  }
+}

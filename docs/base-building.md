@@ -144,7 +144,7 @@ save. **Command menu → Return to regular game** restores your ordinary save.
 
 Keyboard **B** or controller **B** near the mainframe opens the palette. Select with
 left stick / A, place with A, rotate with LT/RT, and exit with X. Existing support,
-collision and 64-piece-per-site limits still apply. Nine foundations plus the
+collision and 1,024-piece-per-site limits still apply. Nine foundations plus the
 mainframe use ten of the starting site's slots.
 
 
@@ -189,12 +189,13 @@ embed in ground when joining a 0.3 m-high foundation.
 | Pad | Foundation | Intended ship footprint |
 | --- | --- | --- |
 | S |16×16m | Nomad12.1×11.1m |
-| M |32×40m | Atlas19×30m |
-| L |48×72m | Future heavy38×60m: four times Atlas footprint area |
+| M |32×40m | Nomad12.1×11.1m, with more working space |
+| L |48×72m | Atlas36×64m |
 
-The large ship is a sizing reference, not a newly playable ship. Pad profiles
-currently use the flying Nomad/Atlas collision layouts on this branch. Landing
-clearance includes 1 m around the full ship footprint. Rotated ships must still fit.
+The current playable Atlas requires the large pad; it does not fit the medium
+foundation. A centred Atlas has 6 m of lateral and 4 m of longitudinal clearance
+on each side of the large pad. Landing checks use the full current ship footprint
+with at least 1 m of clearance around it. Rotated ships must still fit.
 
 Aim at the near edge when placing pad prefabs; their centres extend
 beyond normal tool reach. Place the foundation, leave build mode, approach or stand on it and press **X/F →
@@ -207,7 +208,62 @@ route or pressure sealing is added.
 Pad piers extend 8 m below the deck for uneven terrain. Choose a site where the
 whole deck clears terrain and the supports reach it; use foundation height
 adjustment if needed. Large-pad placement expands a 64 m claim to 96 m atomically,
-unless it overlaps another claim. Other claims remain 64 m. The 64-piece/site limit
+unless it overlaps another claim. Other claims remain 64 m. The 1,024-piece/site limit
 still applies; a complete prefab pad counts as one piece. In the Selene sandbox,
 the small pad fits west of the starter pad; the large pad fits farther east,
 for example near claim-local X 36/Z 0. Refill the bank between expensive pads.
+
+
+## Base electricity and server saves
+
+Use B → LB/RB → Power to build solar arrays, wind turbines, batteries and fuel
+generators. Batteries start empty and charge from surplus generation. Wind does
+not work on Selene. Solar needs sunlight and clearance above the array. Mine
+Selene surface rocks for helium-3-rich regolith, or survey Pyre outcrops for rare
+uranium-bearing ore; put fuel in mainframe supplies and load0.1 kg batches there.
+
+X/F at a mainframe or power machine shows generation, load, battery energy, fuel
+and health. Once generation and batteries cannot meet demand, the base loses
+health over72 real hours. Restoring power stops decay;5 kg metal stock repairs25
+health. At zero, the base and its stored contents are removed. Manual storage and
+mainframe access remain available without electricity. Sandbox health is protected.
+
+Bases are browser-local until **Connect / restore server base save** is used at
+a mainframe while signed in. An existing account save is restored, with a local
+backup retained first. Connected solo saves upload every ten seconds and restore
+across browsers; server upkeep continues offline. Check the displayed saved/pending
+status before leaving. Multiplayer construction remains disabled in this slice.
+See [power and server-save memory](base-power-pipeline.md) for integration details.
+
+In the build sandbox, open the mainframe and choose **Refill sandbox reactor fuel**
+to supply 1 kg each of uranium and helium-3 feedstock. Build the matching generator,
+then load fuel from that same panel. Regular bases must obtain their fuel by mining.
+
+## Remove tool and larger sites
+
+Sites now allow **1,024 pieces**. The existing 64 m claim radius (96 m for the large
+pad) is unchanged. The save endpoint accepts up to 2 MiB for multiple populated
+solo sites. This allowance is not a measured frame-rate guarantee.
+
+Press **B**, select **Remove tool** below the build wheel, aim at a piece within
+12 m and press **A** to remove that piece. **Enter** and the touch **Remove**
+button do the same. An orange outline marks a removable target; a red outline
+and the HUD explain blocked targets. **X / Esc** exits; **B** returns to the wheel.
+Removal is permanent and currently gives no material refund. It never cascades
+through a structure: remove dependent walls, roofs or equipment first, empty
+storage before removing it, and remove the mainframe last. Held A cannot remove
+the floor behind the piece you just removed. Server-connected sites use a separate
+revision-checked command; stale saves cannot restore a removed piece.
+
+
+## Ceiling lights and rounded roof tiles
+
+Build a supported ceiling first using the Floor, triangle floor or quarter-circle
+floor pieces. In **Roofs**, choose a flat, rounded-edge, rounded-corner, triangle
+or quarter-circle outer tile. It fits over the ceiling; LT/RT or Q/E orient the
+rounded square edges and corners. Each costs 4 kg concrete and 1 kg metal stock.
+
+**Ceiling light** is in Power and Roofs. Aim beneath a ceiling to place it; leave
+build mode, look at the fixture and use **X / F** to switch it. Each enabled lamp
+uses 50 W and follows the base power supply. The switch setting is saved. Remove
+attached lights and roof tiles before removing their supporting ceiling.

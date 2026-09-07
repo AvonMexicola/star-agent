@@ -15,6 +15,7 @@ def mat(name,col,metal=0,rough=.7,emission=0,alpha=1):
  if emission:p.inputs['Emission Color'].default_value=(*col,1);p.inputs['Emission Strength'].default_value=emission
  if alpha<1:m.surface_render_method='DITHERED'
  M[name]=m
+mat('WarmTaskLight',(1,.82,.60),0,.35,3)
 mat('MineralConcrete',(.48,.47,.43));mat('EdgeSteel',(.24,.28,.29),.65,.35);mat('DarkPolymer',(.16,.16,.16),0,.72);mat('WhiteArmour',(.8,.8,.8),.2,.45);mat('MintStatus',(.47,.86,.65),.1,.35,.7);mat('WindowGlass',(.24,.38,.35),.05,.18,alpha=.24)
 # Deterministic metre-scaled form-board colour and independent fine relief textures.
 N=256;random.seed(7281)
@@ -82,7 +83,63 @@ def trim_edge(a,c,y,width=.045,material='EdgeSteel'):
 manifest={'builder':'blender/build_base.py','coordinates':'metres, Y up; origin support surface, wall x width; stair rises toward -Z','source':'original deterministic scripted construction; no external imagery','pieces':{}}
 for id,d in defs.items():
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False);objects=[]
- if id=='rack':
+ if id=='ceiling-light':
+  b('CeilingMount',(0,-.026,0),(.8,.052,.8),'EdgeSteel',.01)
+  b('DiffuserRim',(0,-.072,0),(.76,.092,.76),'WhiteArmour',.016)
+  b('WarmDiffuser',(0,-.114,0),(.66,.012,.66),'WarmTaskLight',.005)
+  for xx in [-.34,.34]:
+   for zz in [-.34,.34]:b('ServiceFastener',(xx,-.115,zz),(.022,.008,.022),'EdgeSteel',.002)
+ elif id.startswith('roof-'):
+  shape=d['roofShape'];height=d['height']
+  if shape in ['edge','corner']:
+   cuts=[-2,2-height]+[2-height+height*math.sin(i*math.pi/48) for i in range(1,25)]
+   xs=cuts if shape=='corner' else [-2,2];zs=cuts
+   def top(x,z):
+    def rounded(v):return math.sqrt(max(0,1-(max(0,v-(2-height))/height)**2))
+    return max(.012,height*rounded(z)*(rounded(x) if shape=='corner' else 1))
+   verts=[(x,-z,top(x,z)) for z in zs for x in xs];n=len(xs);rows=len(zs);faces=[]
+   for z in range(rows-1):
+    for x in range(n-1):a=z*n+x;faces.append((a,a+n,a+n+1,a+1))
+   perimeter=list(range(n))+[z*n+n-1 for z in range(1,rows)]+list(range(rows*n-2,(rows-1)*n-1,-1))+[z*n for z in range(rows-2,0,-1)]
+   bottom=[]
+   for i in perimeter:bottom.append(len(verts));x,y,_=verts[i];verts.append((x,y,0))
+   for j,i in enumerate(perimeter):k=(j+1)%len(perimeter);faces.append((i,perimeter[k],bottom[k],bottom[j]))
+   faces.append(tuple(reversed(bottom)))
+   mesh=bpy.data.meshes.new('RoundedRoofSkin');mesh.from_pydata(verts,[],faces);mesh.update();o=bpy.data.objects.new('RoundedRoofSkin',mesh);bpy.context.collection.objects.link(o);finish_mesh(o,'MineralConcrete',0)
+   # Flat inboard coping seam matches the flat tile, never covers the rounded lip.
+   b('RoofSeam',(-.3 if shape=='corner' else 0,height+.002,-1.96),(3.3 if shape=='corner' else 3.9,.004,.035),'EdgeSteel',0)
+  else:
+   prism('RoofSkin',d['polygon'],0,height,'MineralConcrete',.008)
+   for a,c in zip(d['polygon'],d['polygon'][1:]+d['polygon'][:1]):trim_edge(a,c,height+.003,.025)
+ elif id=='solar-array':
+  for xx in [-1.5,1.5]:
+   for zz in [-.85,.85]:b('AnchoredLeg',(xx,.48,zz),(.12,.96,.12),'EdgeSteel',.012)
+  b('SolarFrame',(0,1.07,0),(3.6,.20,2.4),'WhiteArmour',.025)
+  for xx in range(8):
+   for zz in range(5):b('PhotovoltaicCell',(-1.55+xx*.443,1.177,-.98+zz*.49),(.414,.012,.45),'DarkPolymer',.004)
+  for xx in [-1.4,0,1.4]:b('CollectorBus',(xx,1.19,0),(.022,.006,2.23),'MintStatus',.001)
+  b('PowerJunction',(0,.75,0),(.5,.4,.4),'EdgeSteel',.015)
+ elif id=='wind-turbine':
+  b('Footing',(0,.14,0),(2.1,.28,2.1),'MineralConcrete',.025)
+  b('Tower',(0,2.8,0),(.26,5.2,.26),'WhiteArmour',.025)
+  b('Generator',(0,4.5,0),(.72,2.4,.72),'EdgeSteel',.03)
+  for angle in [0,math.pi/2,math.pi,3*math.pi/2]:
+   x,z=math.cos(angle)*1.08,math.sin(angle)*1.08
+   b('VerticalRotor',(x,4.5,z),(.48,2.8,.48),'WhiteArmour',.07,'Wind')
+   for yy in [3.2,5.8]:
+    arm=rail('RotorArm',(0,yy,0),(x,yy,z));arm['moving']='Wind';arm.data.materials[0]=M['WhiteArmour']
+  b('WindService',(0,.7,-.22),(.18,.28,.05),'MintStatus',.006)
+ elif id in ['battery','uranium-generator','helium-generator']:
+  w,dep=d['footprint'];h=d['height']
+  b('MachineSkid',(0,.10,0),(w,.2,dep),'EdgeSteel',.025)
+  b('SealedEnergyBody',(0,h/2,0),(w-.16,h-.16,dep-.16),'DarkPolymer',.05)
+  for xx in [-w/2+.06,w/2-.06]:b('Shielding',(xx,h/2,0),(.12,h-.2,dep-.08),'WhiteArmour',.02)
+  for yy in [.45,.8,1.15,1.5]:
+   b('CoolingLouvre',(0,yy,dep/2-.04),(w-.32,.05,.06),'EdgeSteel',.008)
+   b('EnergyCellFront',(0,yy,-dep/2+.015),(w-.3,.26,.08),'WhiteArmour',.012)
+  b('StatusMeter',(-w/2+.25,h-.32,-dep/2-.02),(.08,.22,.012),'MintStatus',.002)
+  b('FuelPort',(w/2-.35,h-.4,-dep/2+.01),(.23,.23,.10),'EdgeSteel',.025)
+ elif id=='rack':
   for xx in [-1.15,1.15]:
    for zz in [-.45,.45]:b('RackUpright',(xx,1.2,zz),(.10,2.4,.10),'WhiteArmour',.012)
   for row in range(4):
@@ -238,7 +295,9 @@ for id,d in defs.items():
    leaf=bpy.data.objects.new('DoorLeaf'+side,None);bpy.context.collection.objects.link(leaf);leaf.parent=doorroot;leafroots[side]=leaf
  if id=='hangar-door':
   leaf=bpy.data.objects.new('RollerCurtain',None);bpy.context.collection.objects.link(leaf);leafroots={'Roller':leaf}
- for moving in [False,'Left','Right','Roller']:
+ if id=='wind-turbine':
+  leaf=bpy.data.objects.new('TurbineRotor',None);bpy.context.collection.objects.link(leaf);leafroots={'Wind':leaf}
+ for moving in [False,'Left','Right','Roller','Wind']:
   for material in M.values():
    group=[o for o in objects if o.get('moving')==moving and o.data.materials[0]==material]
    if not group:continue

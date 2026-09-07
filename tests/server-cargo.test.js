@@ -3,6 +3,7 @@ import { createWorld } from '../server/world.js';import { createRoom } from '../
 import { startLocalDatabase } from '../server/local-database.js';import { mkdtemp,rm } from 'node:fs/promises';import { join } from 'node:path';import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { emptyCommerce,ensureAccount,commerceCommand } from '../src/trading/model.js';
+import { AEON_MARKET_ID } from '../src/trading/market.js';
 const worldPromise=createWorld();
 async function setup(t,store=createMemoryStore()){
  const world=await worldPromise;let now=10000;const room=createRoom({world,store,autoStart:false,now:()=>now}),accounts=[],messages=new Map();t.after(()=>room.close());
@@ -28,11 +29,11 @@ test('failed database transaction grants neither crates nor credits and packing 
 });
 test('server supports Atlas cargo hull and blocks2SBU hand pickup',async t=>{
  const f=await setup(t),a=f.room.players.get(f.accounts[0].id);f.terminal(a);
- assert.equal((await f.request(a.id,{action:'cargoHull',hull:'atlas'})).ok,true);assert.equal(a.nav.layout.floorY,4);assert.ok(a.nav.freighter);
+ assert.equal((await f.request(a.id,{action:'cargoHull',hull:'atlas'})).ok,true);assert.equal(a.nav.layout.floorY,2.6);assert.ok(a.nav.freighter);
  assert.equal((await f.request(a.id,{op:'buy',ship:`${a.id}:atlas`,terminal:`station:${a.hangarId}`,resource:'basalt',sbu:64})).ok,true);
  assert.equal(f.room.trading.state.ships[`${a.id}:atlas`].crates[0].sbu,64);
  assert.equal((await f.request(a.id,{op:'buy',ship:`${a.id}:atlas`,terminal:`station:${a.hangarId}`,resource:'basalt',sbu:2})).ok,true);
- const two=f.room.trading.state.ships[`${a.id}:atlas`].crates.find(c=>c.sbu===2);a.nav.position.copy(a.nav.fromShipLocal(new THREE.Vector3(-5,5.75,5.3)));a.nav.insideShip=true;
+ const two=f.room.trading.state.ships[`${a.id}:atlas`].crates.find(c=>c.sbu===2);a.nav.position.copy(a.nav.fromShipLocal(new THREE.Vector3(-2.2,4.35,5.3)));a.nav.insideShip=true;
  const denied=await f.request(a.id,{op:'take',ship:`${a.id}:atlas`,crate:two.id});assert.equal(denied.ok,false);assert.match(denied.error,/Only a 1 SBU/);assert.equal(f.room.trading.state.accounts[a.id].carried,null);
 
 });
@@ -44,8 +45,13 @@ test('isolated PostgreSQL migration, concurrent seller settlement and restart pr
  const ctx={terminal:()=>true,docked:()=>true};const messages=await Promise.allSettled([1,2].map(n=>store.transactCommerce(state=>commerceCommand(state,b.id,{op:'buy',ship:`${b.id}:nomad`,terminal:'trade-1',resource:'basalt',sbu:1,commandId:`sale-${n}`,revision:0},ctx))));assert.equal(messages.filter(m=>m.status==='fulfilled').length,1);
  let state=await store.loadCommerce();assert.equal(state.accounts[a.id].credits,1537);assert.equal(state.accounts[b.id].credits,1463);assert.equal(state.ships[`${b.id}:nomad`].crates.length,1);
  await assert.rejects(store.transactCommerce(s=>{s.accounts[b.id].credits=0;return {state:s,players:{'00000000-0000-0000-0000-000000000000':{version:1}}};}));assert.equal((await store.loadCommerce()).accounts[b.id].credits,1463);
+ const order={op:'buy',ship:`${b.id}:atlas`,terminal:'station:1',resource:'basalt',sbu:2,commandId:'saved-market',revision:state.revision};
+ state=(await store.transactCommerce(current=>commerceCommand(current,b.id,order,ctx))).state;
+ assert.equal(state.markets[AEON_MARKET_ID].stock.basalt,1022);
  const crate=state.ships[`${b.id}:nomad`].crates[0];state=(await store.transactCommerce(current=>commerceCommand(current,b.id,{op:'tractor-grab',ship:`${b.id}:nomad`,crate:crate.id,commandId:'saved-tractor',revision:current.revision},{now:()=>1000,tractor:{grab:()=>({position:[25000000000.125,10,20],quaternion:[0,0,0,1]})}}))).state;assert.equal(state.loose[crate.id].position[0],25000000000.125);
  await store.close();store=await createPostgresStore({connectionString:db.connectionString});assert.deepEqual(await store.loadCommerce(),state);
+ const replay=await store.transactCommerce(current=>commerceCommand(current,b.id,order,ctx));
+ assert.equal(replay.replayed,true);assert.deepEqual(replay.state,state);assert.deepEqual(await store.loadCommerce(),state);
 });
 
 test('player builds a shared surface trading pad, stocks it and earns from a visitor while disconnected',async t=>{
@@ -110,3 +116,39 @@ test('server tractor uses actual aim, saves detached2SBU, arbitrates locks and r
  await f.room.join(f.accounts[0],m=>f.messages.get(a.id).push(m));assert.equal(validCargoCount(f.room.trading.state,c.id),1);
 });
 function validCargoCount(state,id){return Object.values(state.ships).flatMap(s=>s.crates).filter(c=>c.id===id).length+Object.values(state.loose??{}).filter(c=>c.id===id).length;}
+
+test('hub and passenger restrictions stop tractor authority, retain private snapshots and require received neutral before relocking',async t=>{
+ const {crateCentre}=await import('../src/cargo/tractor-physics.js');
+ const f=await setup(t),[a,b]=f.accounts.map(account=>f.room.players.get(account.id)),ship=`${a.id}:nomad`;f.terminal(a);
+ assert.equal((await f.request(a.id,{op:'buy',ship,terminal:`station:${a.hangarId}`,resource:'basalt',sbu:2})).ok,true);
+ const crate=f.room.trading.state.ships[ship].crates[0],point=a.nav.fromShipLocal(crateCentre('nomad',crate));
+ a.nav.position.copy(a.nav.fromShipLocal(new THREE.Vector3(0,2.75,2.7)));
+ a.nav.orientation.setFromUnitVectors(new THREE.Vector3(0,0,-1),point.clone().sub(a.nav.position).normalize());
+ const berthEye=a.nav.position.clone();
+ assert.equal((await f.request(a.id,{action:'equip',weapon:'mining-laser-tool'})).ok,true);
+ assert.equal((await f.request(a.id,{op:'tractor-grab',ship,crate:crate.id})).ok,true);
+ const before=structuredClone(f.room.trading.state);
+ a.nav.position.copy(f.world.station.hub.toWorld(new THREE.Vector3(0,-6.25,0),new THREE.Vector3()));
+ f.room.receive(a.id,{type:'input',sequence:1,input:{fire:true}});
+ assert.equal((await f.request(a.id,{op:'tractor-move',crate:crate.id,distance:3})).ok,false);
+ assert.deepEqual(f.room.trading.state,before);assert.equal(a.weapon,null);
+ const own=f.room.state(a),other=f.room.state(b);
+ assert.equal(own.hub.handsFree,true);assert.equal(other.hub.handsFree,false);
+ assert.equal(own.commerce.account.credits,before.accounts[a.id].credits);
+ assert.equal(other.commerce.account.credits,before.accounts[b.id].credits);
+ assert.notEqual(own.commerce.account,other.commerce.account);assert.notEqual(own.inventory,other.inventory);
+ assert.equal((await f.request(a.id,{op:'tractor-release',crate:crate.id})).ok,true,'stowing equipment never strands a lease');
+ a.nav.position.copy(berthEye);
+ assert.equal((await f.request(a.id,{action:'equip',weapon:'mining-laser-tool'})).ok,true);
+ f.room.receive(a.id,{type:'input',sequence:2,input:{fire:true}});
+ assert.equal((await f.request(a.id,{op:'tractor-grab',ship,crate:crate.id})).ok,false,'held input stays blocked after arrival');
+ a.input.fire=false;
+ assert.equal((await f.request(a.id,{op:'tractor-grab',ship,crate:crate.id})).ok,false,'a timeout reset is not a received neutral packet');
+ f.room.receive(a.id,{type:'input',sequence:3,input:{fire:false}});
+ assert.equal((await f.request(a.id,{op:'tractor-grab',ship,crate:crate.id})).ok,true);
+ a.nav.stationHubTransit={from:'hangar:1',to:'station:hub',phase:'closing',progress:0};
+ for(const op of ['tractor-move','tractor-align','tractor-stow'])assert.equal((await f.request(a.id,{op,ship,crate:crate.id,distance:3})).ok,false,op);
+ assert.equal((await f.request(a.id,{op:'tractor-release',crate:crate.id})).ok,true);
+ assert.equal(validCargoCount(f.room.trading.state,crate.id),1);
+ assert.equal(f.room.trading.state.markets[AEON_MARKET_ID].stock.basalt,1022);
+});

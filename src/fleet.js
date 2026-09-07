@@ -4,7 +4,7 @@ export const FLEET_KEY = 'star-agent.fleet.v1';
 export const SHIPS = Object.freeze({
   nomad: { name: nomad.name, revision: nomad.revision, registry: nomad.revision + " / UTILITY", capacity: 120, description: 'Solo utility ship · walkable cabin & berth · rear cargo access · 120 kg supplies' },
   kestrel: { name: 'Kestrel', registry: '01 / INTERCEPTOR', capacity: 0, description: 'Single pilot · port boarding ladder · agile flight · 4 empty S2 mounts · no cargo hold' },
-  atlas: { name: 'Atlas', registry: '03 / HEAVY LOGISTICS', capacity: 2400, description: '30 m freighter · 8 × 10 m belly elevator · twin cargo lifts · 2,400 kg storage' },
+  atlas: { name: 'Atlas', registry: '03 / HEAVY LOGISTICS', capacity: 2400, description: '64 m heavy freighter · front and aft ramps · crew lift · 512 SBU cargo grid · 2,400 kg supplies' },
 });
 
 /** A first exploration milestone, deliberately independent of a future economy. */

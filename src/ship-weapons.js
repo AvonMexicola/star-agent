@@ -37,7 +37,9 @@ export function loadShipWeaponKit(url=SHIP_WEAPON_KIT_URL){
   return requests.get(url);
 }
 function socketsFor(ship,shipId){
-  if(shipId==='atlas')for(const spec of ATLAS_GUN_MOUNTS){
+  let authoredAtlas=false;
+  if(shipId==='atlas')ship.traverse(node=>{if(node.userData.role==='weapon-mount')authoredAtlas=true;});
+  if(shipId==='atlas'&&!authoredAtlas)for(const spec of ATLAS_GUN_MOUNTS){
     if(ship.getObjectByName(spec.name))continue;
     const node=new THREE.Group();node.name=spec.name;node.position.fromArray(spec.position);
     node.userData={kind:'weapon',size:3,mount:'fixed',foundation:spec.foundation};ship.add(node);

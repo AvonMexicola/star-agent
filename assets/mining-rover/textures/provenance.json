@@ -30,12 +30,12 @@
       "sha256": "a21e9c18334cd2e7d090b58afc6cbaa1eefd882877d2bf4dd3de5668bef9ebe9"
     },
     "surface-orm.png": {
-      "bytes": 818242,
-      "sha256": "5d96ff9ebf493d42f2768e3213e9632873e3d2de2e6291f46494b01da3037ffa"
+      "bytes": 818219,
+      "sha256": "08745be6bcded5f48f44322a87af316a69a3f3515cef2a2d4296522d0ed13921"
     },
     "surface-orm.webp": {
-      "bytes": 544248,
-      "sha256": "a405fea7c8f2262d630ed11ea9c299c707b89daa4115e9a2fe56c51304ed076e"
+      "bytes": 544076,
+      "sha256": "6bbfcea6ac5bda453e7309dcc5d6e48220e1db46288d03ad28f58206be49469f"
     }
   }
 }

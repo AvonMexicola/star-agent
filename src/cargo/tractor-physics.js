@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import { EVA_SHIP_BOXES } from '../eva.js';
-import { LIFTS } from '../freighter-layout.js';
+import { FreighterSystems } from '../freighter-layout.js';
 import { localPoint } from './access.js';
 import { crateBounds,crateSize,placeCrate } from './grid.js';
 import { bodyAltitude } from '../celestial.js';
 import { constrainShipAttachments } from '../ship-attachment-collision.js';
 
+const sealedAtlas=new FreighterSystems();
 export const TRACTOR_RANGE=12,TRACTOR_LEASE_MS=1500,TRACTOR_INTERVAL=.2;
 export const tractorSpeed=sbu=>4/Math.cbrt(sbu);
 const v=a=>new THREE.Vector3(...a),q=a=>new THREE.Quaternion(...a);
@@ -17,15 +18,7 @@ export function tractorHullParts(s){
     {min:[-1.67,3.16,-4],max:[1.67,4.1,3.94]},
     {min:[-1.6,1,-1.1],max:[-.8,1.75,2.2]},
   ]);
-  if(s.hull!=='atlas')return [];
-  return [
-    {min:[-6.3,4,-12.3],max:[-6,9.5,10.3]}, {min:[6,4,-12.3],max:[6.3,9.5,10.3]},
-    {min:[-6,9.3,-12.3],max:[6,9.5,10.3]}, {min:[-6,4,-12.3],max:[6,9.3,-12]},
-    {min:[-6,4,10],max:[6,9.3,10.3]},
-    {min:[-6,3.75,-12],max:[-4,4,10]}, {min:[4,3.75,-12],max:[6,4,10]},
-    {min:[-4,3.75,-12],max:[4,4,0]},
-    ...(s.systems?.lifts??LIFTS.map(l=>({...l,y:l.id==='main'?l.high:l.low}))).map(l=>({min:[l.minX,l.y-.2,l.minZ],max:[l.maxX,l.y,l.maxZ]})),
-  ];
+  return s.hull==='atlas'?(s.systems??sealedAtlas).evaParts:[];
 }
 function halfExtents(sbu,rotation){
   const h=v(crateSize(sbu)).multiplyScalar(.5).addScalar(-.008),m=new THREE.Matrix4().makeRotationFromQuaternion(rotation).elements;
