@@ -1,14 +1,15 @@
 # Social and cargo development integration
 
-2026-09-07 · integration steward · prepared in `feat/dev-social-review`.
-This record covers the checked combined local candidate. All required focused
-social browser cases have passed; the serialized shared preview promotion is next.
+2026-09-07 · integration steward · reviewed in `feat/dev-social-review` and
+integrated into `dev/all-features` at **`f861f8f`**. The refreshed local preview is
+http://127.0.0.1:5178/. This is a local development checkpoint.
 
 ## Source and merge boundaries
 
 The candidate starts with the reviewed content and hosted CI correction through
 `3e39a75`. It combines social runtime through `006c35c`/`6341e5d`, the social
-browser fixture `99fa858`, cargo runtime `3c7af88`, and flight-controls copy
+browser fixture `99fa858` and final reviewed delivery `a4c533d` (draft PR72), cargo
+runtime `3c7af88`, and flight-controls copy
 `f5c6933`. Source-owner records are [social QA](multiplayer-social.md),
 [cargo QA](sbu-cargo.md), and [flight QA](combat-momentum.md).
 
@@ -33,8 +34,11 @@ At `0dc0d31` (later source-owner merges contain documentation/evidence only):
   sockets, reconnect persistence, migrations, race/rollback checks and remote rigs.
 - The production development build passes. Its main bundle is
   `main-BznCPb_L.js`; the inherited large-chunk advisory remains.
-- Repository and whitespace checks pass across the95 changed paths from the
-  previously live dev checkpoint `219a584`.
+- Repository and whitespace checks pass across the original 95 changed paths.
+  Final evidence/documentation expands the range from the previously live dev
+  checkpoint `219a584` to 112 paths; that full range passes too. The final registry
+  check caught cargo's cleared claims list, which was restored to its recorded
+  source paths before promotion without changing runtime code.
 - Earlier focused integration checks pass33 gamepad/dev-launch/character/landmark
   cases. The kick-handshake follow-up passes all four social socket cases.
 
@@ -76,6 +80,23 @@ source-owner production checks; they do not establish a rendered online cargo
 soak or hardware FPS acceptance. Controls-copy review uses the owner's DOM-only
 desktop/phone evidence and does not change the flight input model.
 
-No shared service restart, main merge or public deployment accompanies this
-prepared checkpoint. Local delivery details will be recorded after the serialized
-promotion. No physical-controller or hardware FPS acceptance is claimed.
+## Local delivery
+
+The steward preserved the shared HANDOFF appends in `041129d`, then merged the
+checked source as `f861f8f`. Runtime and social fixtures have no diff from the
+combined tested source. The local Prisma client was regenerated, and the existing
+persistent-preview service restarted once to activate client and API together.
+
+The frontend on 5178 and direct API on 8087 both return healthy HTTP responses.
+Live cargo-grid and protocol source match the committed files exactly; social UI,
+controller help and the rover launcher also match after normalizing Vite's import
+paths. The local database reports migrations **1, 2 and 4** and the three new
+commerce/friendship/block tables. It retains the same cluster directory identity
+and the pre-promotion account/player-state row counts. Only read-only queries
+were used for delivery verification; no test account or chat was inserted there.
+
+The server remains available at http://127.0.0.1:5178/. Refresh the browser for
+protocol 3. Cargo, social and controls follow-up tasks are locally integrated;
+base power, newer rover polish and new fauna/landmark refinements remain outside
+this frozen promotion. Public hosting and main were not updated. No physical-
+controller, ten-human soak, backup-restore or hardware FPS acceptance is claimed.
