@@ -16,8 +16,8 @@ async function activate(page,mode,key){
  }
  throw Error('Could not reach '+key+' using '+mode);
 }
-async function setup(page,context,mode,callsign){
- const errors=[],warnings=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
+async function setup(page,context,mode,callsign,diagnostics){
+ const {errors,warnings}=diagnostics;page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
  await page.addInitScript(controller=>{window.hubPad={id:'Community standard acceptance controller',index:0,connected:controller,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>hubPad.connected?[hubPad]:[]});},mode==='controller');
  const response=await context.request.post('/api/auth/register',{headers:{Origin:origin},data:{email:callsign+'@example.test',callsign,password:'isolated community password'}});expect(response.status()).toBe(201);const account=(await response.json()).account;
  await page.goto('/?debug&intro=0');await expect.poll(()=>page.evaluate(()=>window.starAgent?.state.ready),{timeout:90000}).toBe(true);
@@ -52,11 +52,34 @@ async function walker(page,context,mode){
  }};
 }
 
+
+async function controllerInterruptions(page,context,record){
+ record.interruptions=[];
+ for(const kind of ['focus','disconnect','replacement','unsupported']){
+  await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
+  await page.evaluate(()=>hubPad.buttons[7]={pressed:true,value:1});
+  let blank;
+  if(kind==='focus'){
+   blank=await context.newPage();await blank.goto('about:blank');await blank.bringToFront();
+   await expect.poll(async()=>(await state(page)).focused).toBe(false);
+  }else await page.evaluate(kind=>{if(kind==='disconnect')hubPad.connected=false;if(kind==='replacement')hubPad.id+=' replacement';if(kind==='unsupported')hubPad.mapping='';},kind);
+  await page.waitForTimeout(160);
+  expect((await state(page)).controller.armed).toBe(false);
+  if(blank){await blank.close();await page.bringToFront();await expect.poll(async()=>(await state(page)).focused).toBe(true);}
+  else await page.evaluate(()=>{hubPad.connected=true;hubPad.mapping='standard';});
+  await page.waitForTimeout(200);const held=await state(page);
+  expect(held.controller.armed).toBe(false);expect(heldWeapon(held)).toBeNull();
+  await page.evaluate(()=>hubPad.buttons[7]={pressed:false,value:0});
+  await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
+  record.interruptions.push({kind,heldArmed:held.controller.armed,heldWeapon:heldWeapon(held),releasedArmed:(await state(page)).controller.armed,focusMethod:kind==='focus'?'native browser tab focus':undefined});
+ }
+}
+
 for(const mode of ['controller','keyboard','touch'])test(`${mode}: physical berth, hands-free hub, finite market and return`,async({browser})=>{
  const context=await browser.newContext({viewport:mode==='touch'?{width:390,height:844}:{width:1440,height:900},hasTouch:mode==='touch',isMobile:mode==='touch',deviceScaleFactor:1});
- const page=await context.newPage(),folder=output+'/'+mode;await mkdir(folder,{recursive:true});let diagnostics={},record={mode,started:new Date().toISOString(),poseMutation:false,physicalController:false};
+ const page=await context.newPage(),folder=output+'/'+mode;await mkdir(folder,{recursive:true});let diagnostics={errors:[],warnings:[]},record={mode,started:new Date().toISOString(),poseMutation:false,physicalController:false};
  try{
-  diagnostics=await setup(page,context,mode,'Hub_'+mode+'_'+Date.now().toString().slice(-6));const initial=await state(page),berth=initial.multiplayer.hangar.id,ship=initial.shipPosition;
+  diagnostics=await setup(page,context,mode,'Hub_'+mode+'_'+Date.now().toString().slice(-6),diagnostics);const initial=await state(page),berth=initial.multiplayer.hangar.id,ship=initial.shipPosition;
   const walk=await walker(page,context,mode);await walk.walk(8,-5.32);await walk.walk(8,20.4);await walk.walk(0,20.4);
   await interact(page,mode);await expect.poll(()=>page.evaluate(()=>starAgent.navigation.station.frame.lift.progress)).toBe(1);
   await walk.walk(0,24);await interact(page,mode);await expect(page.locator('#station-elevator-dialog')).toBeVisible();
@@ -82,6 +105,7 @@ for(const mode of ['controller','keyboard','touch'])test(`${mode}: physical bert
   await close(page,mode);await page.waitForTimeout(300);expect(heldWeapon(await state(page))).toBeNull();
   if(mode==='controller'){expect((await state(page)).controller.armed).toBe(false);await page.evaluate(()=>hubPad.buttons[7]={pressed:false,value:0});await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);}
   else if(mode==='keyboard')await page.keyboard.up('KeyT');
+  if(mode==='controller')await controllerInterruptions(page,context,record);
   await walk.walk(0,-8.5);await walk.walk(0,12.5);await walk.walk(0,15.95);await interact(page,mode);
   await activate(page,mode,`elevator-${berth}`);await expect.poll(async()=>(await state(page)).multiplayer.hub?.frame,{timeout:15000}).toBe(`hangar:${berth}`);
   await expect.poll(async()=>(await state(page)).multiplayer.hub?.transit).toBeNull();await walk.walk(0,20.4);await walk.walk(8,20.4);await walk.walk(8,-5.32);

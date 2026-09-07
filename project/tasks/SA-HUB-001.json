@@ -59,7 +59,9 @@
     "src/controller-hints.js",
     "tests/controller-hints.test.js",
     "tests/server-community-persistence.test.js",
-    "scripts/station-defense-review/"
+    "scripts/station-defense-review/",
+    "scripts/community-defense.spec.js",
+    "scripts/community-defense.config.js"
   ],
   "brief": "docs/briefs/aeon-community-hub.md"
 }
