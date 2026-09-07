@@ -42,8 +42,9 @@ test('isolated PostgreSQL migration, concurrent seller settlement and restart pr
  const [a,b]=await Promise.all(['seller','buyer'].map(id=>store.createAccount({email:`${id}@example.test`,callsign:id,passwordHash:'test-only'})));
  await store.transactCommerce(()=>{const state=emptyCommerce();ensureAccount(state,a.id);ensureAccount(state,b.id);state.terminals['trade-1']={id:'trade-1',owner:a.id,position:[0,0,0],stock:{basalt:1},prices:{basalt:37}};return {state};});
  const ctx={terminal:()=>true,docked:()=>true};const messages=await Promise.allSettled([1,2].map(n=>store.transactCommerce(state=>commerceCommand(state,b.id,{op:'buy',ship:`${b.id}:nomad`,terminal:'trade-1',resource:'basalt',sbu:1,commandId:`sale-${n}`,revision:0},ctx))));assert.equal(messages.filter(m=>m.status==='fulfilled').length,1);
- const state=await store.loadCommerce();assert.equal(state.accounts[a.id].credits,1537);assert.equal(state.accounts[b.id].credits,1463);assert.equal(state.ships[`${b.id}:nomad`].crates.length,1);
+ let state=await store.loadCommerce();assert.equal(state.accounts[a.id].credits,1537);assert.equal(state.accounts[b.id].credits,1463);assert.equal(state.ships[`${b.id}:nomad`].crates.length,1);
  await assert.rejects(store.transactCommerce(s=>{s.accounts[b.id].credits=0;return {state:s,players:{'00000000-0000-0000-0000-000000000000':{version:1}}};}));assert.equal((await store.loadCommerce()).accounts[b.id].credits,1463);
+ const crate=state.ships[`${b.id}:nomad`].crates[0];state=(await store.transactCommerce(current=>commerceCommand(current,b.id,{op:'tractor-grab',ship:`${b.id}:nomad`,crate:crate.id,commandId:'saved-tractor',revision:current.revision},{now:()=>1000,tractor:{grab:()=>({position:[25000000000.125,10,20],quaternion:[0,0,0,1]})}}))).state;assert.equal(state.loose[crate.id].position[0],25000000000.125);
  await store.close();store=await createPostgresStore({connectionString:db.connectionString});assert.deepEqual(await store.loadCommerce(),state);
 });
 
@@ -92,3 +93,20 @@ test('authenticated sockets receive committed cargo and reconnect without anothe
  a.ws.close();await until(()=>!room.players.has(a.id));const rejoined=await connect(cookies[0]);await until(()=>rejoined.messages.some(m=>m.type==='state'));
  const saved=rejoined.messages.findLast(m=>m.type==='state').commerce;assert.equal(saved.account.credits,1480);assert.equal(saved.ships.find(s=>s.id===`${a.id}:nomad`).crates.length,1);assert.deepEqual(errors,[]);
 });
+
+test('server tractor uses actual aim, saves detached2SBU, arbitrates locks and reconnects without loss',async t=>{
+ const {crateCentre}=await import('../src/cargo/tractor-physics.js');
+ const f=await setup(t),[a,b]=f.accounts.map(a=>f.room.players.get(a.id)),ship=`${a.id}:nomad`;f.terminal(a);
+ assert.equal((await f.request(a.id,{op:'buy',ship,terminal:`station:${a.hangarId}`,resource:'basalt',sbu:2})).ok,true);
+ const c=f.room.trading.state.ships[ship].crates[0],point=a.nav.fromShipLocal(crateCentre('nomad',c));
+ for(const p of [a,b]){p.nav.position.copy(a.nav.fromShipLocal(new THREE.Vector3(0,2.75,2.7)));p.nav.orientation.setFromUnitVectors(new THREE.Vector3(0,0,-1),point.clone().sub(p.nav.position).normalize());p.nav.mode='walk';p.nav.insideShip=p===a;p.nav.velocity.set(0,0,0);await f.request(p.id,{action:'equip',weapon:'mining-laser-tool'});}
+ const original=f.store.transactCommerce;f.store.transactCommerce=async()=>{throw Error('isolated write failure');};assert.equal((await f.request(a.id,{op:'tractor-grab',ship,crate:c.id})).ok,false);assert.equal(f.room.trading.state.ships[ship].crates.length,1);f.store.transactCommerce=original;
+ const grabbed=await f.request(a.id,{op:'tractor-grab',ship,crate:c.id,position:[0,0,0]});assert.equal(grabbed.ok,true,grabbed.error);assert.equal(f.room.trading.state.ships[ship].crates.length,0);assert.ok(new THREE.Vector3(...f.room.trading.state.loose[c.id].position).distanceTo(point)<1e-6,'client position ignored');
+ assert.equal((await f.request(b.id,{op:'tractor-grab',ship,crate:c.id})).ok,false);const snapshot=f.room.trading.snapshot(b);assert.equal(snapshot.loose[0].id,c.id);assert.equal(a.nav.carryingCargo,true);
+ const inside=a.nav.insideShip;a.nav.insideShip=false;assert.equal((await f.request(a.id,{action:'cargoHull',hull:'atlas'})).ok,false,'cannot change hull while a tractor is holding cargo');assert.equal(a.nav.shipId,'nomad');a.nav.insideShip=inside;
+ const before=structuredClone(f.room.trading.state.loose[c.id]);f.time();const moved=await f.request(a.id,{op:'tractor-move',crate:c.id,distance:3,position:[0,0,0]});assert.equal(moved.ok,true,moved.error);assert.ok(new THREE.Vector3(...f.room.trading.state.loose[c.id].position).distanceTo(new THREE.Vector3(...before.position))<1);
+ await f.room.leave(a.id);for(let i=0;i<4;i++)f.time();const current=f.room.trading.state.loose[c.id];b.nav.orientation.setFromUnitVectors(new THREE.Vector3(0,0,-1),new THREE.Vector3(...current.position).sub(b.nav.position).normalize());const reclaimed=await f.request(b.id,{op:'tractor-grab',crate:c.id});assert.equal(reclaimed.ok,true,reclaimed.error);
+ const saved=await f.store.loadCommerce();assert.equal(saved.loose[c.id].holder,b.id);assert.equal(saved.ships[ship].crates.length,0);assert.equal(validCargoCount(saved,c.id),1);
+ await f.room.join(f.accounts[0],m=>f.messages.get(a.id).push(m));assert.equal(validCargoCount(f.room.trading.state,c.id),1);
+});
+function validCargoCount(state,id){return Object.values(state.ships).flatMap(s=>s.crates).filter(c=>c.id===id).length+Object.values(state.loose??{}).filter(c=>c.id===id).length;}

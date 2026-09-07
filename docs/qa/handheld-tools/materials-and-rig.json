@@ -1,0 +1,89 @@
+{
+  "browser": "151.0.7922.173",
+  "views": [
+    {
+      "item": "rifle-laser",
+      "calls": 3,
+      "triangles": 9611,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.5524999499320984,
+          -0.08111850172281265,
+          -0.05100000277161598
+        ],
+        "max": [
+          0.2209400087594986,
+          0.22200000286102295,
+          0.053829535841941833
+        ]
+      }
+    },
+    {
+      "item": "sidearm-pistol",
+      "calls": 3,
+      "triangles": 2404,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.15299999713897705,
+          -0.0902111679315567,
+          -0.020999999716877937
+        ],
+        "max": [
+          0.14999999105930328,
+          0.09000000357627869,
+          0.020999999716877937
+        ]
+      }
+    },
+    {
+      "item": "mining-laser-tool",
+      "calls": 4,
+      "triangles": 7868,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.6034999489784241,
+          -0.08065185695886612,
+          -0.09853807836771011
+        ],
+        "max": [
+          0.20900000631809235,
+          0.32350000739097595,
+          0.09853808581829071
+        ]
+      }
+    },
+    {
+      "item": "tractor-beam-tool",
+      "calls": 3,
+      "triangles": 5164,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.6020000576972961,
+          -0.08065185695886612,
+          -0.09099999815225601
+        ],
+        "max": [
+          0.20000000298023224,
+          0.27000001072883606,
+          0.09099999815225601
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "sharedMaps": 3,
+  "physicalController": false
+}

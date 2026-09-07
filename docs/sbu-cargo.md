@@ -43,11 +43,11 @@ Carrying occupies the hands and prevents ship control and weapon/tool use.
 
 Online cargo belongs to the server ledger. Another pilot can take reachable
 1 SBU crates after physically boarding. Closed hulls block walking. Larger crates
-use **Salvage to my ship**: bring your parked receiving ship within 40 m, stand
-within 6 m of the crate, and board or disable the source ship. The receiving grid
-must fit it. This is an initial mechanical transfer action; a crane/tractor-beam
-animation is not implemented. Cargo stays saved when its owner disconnects, but
-disconnected ships are not currently rendered as persistent wrecks.
+use the [handheld tractor beam](cargo-tractor.md): equip it from **Trade → Cargo**,
+aim within 12 m, hold RT / T to guide the container, then F / X secures a compatible
+nearby grid slot. Board or disable another pilot's ship before taking its cargo.
+Released crates remain at their last safe pose and persist after disconnect.
+Disconnected ships are not currently rendered as persistent wrecks.
 
 ## Run a player shop
 
