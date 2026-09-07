@@ -2732,3 +2732,5 @@ runtime integration locks are released; preserve current source when integrating
 the separately pending cargo/base-power/deer/social/rover-polish branches.
 64mAtlas remains studio-only; offline features and pending art/input/performance
 limits are recorded. No owner dirty source was copied after the frozen checkpoints.
+
+SA-INT-002 CI FOLLOW-UP CLAIM: integration steward owns scripts/ci-smoke.spec.js and its QA/HANDOFF records in isolated feat/dev-content-review. PR68 hosted browser reached the running game but expected the former #controller-menu default after Menu; the current registered default is Contracts. Updating the assertion to the actual gameplay dialog while retaining focused-control, held-stick suppression, rearming and all map-target coverage. No shared runtime changes or local GPU job. Hosted CI will verify the narrow test repair. Social UI/router remain SA-SOCIAL-001-owned.
