@@ -69,7 +69,7 @@ class TouchInput{
     await this.update(next);
   }
   async tap(action){
-    const selector={seat:'[data-cabin-interact]',entry:'[data-rover-action="entry"]',lift:'[data-rover-action="lift"]',cargo:'[data-rover-action="cargo"]',close:'#cargo-dialog .inventory-close'}[action];
+    const selector={seat:'[data-cabin-interact]',entry:'[data-rover-action="entry"]',lift:'[data-rover-action="lift"]',cargo:'[data-rover-action="cargo"]',nextContainer:'[data-controller-key="page-containers-next"]',close:'#cargo-dialog .gameplay-resume'}[action];
     expect(this.contacts.has('tap')).toBe(false);
     const tap=await this.center(selector);await this.update(new Map([...this.contacts,['tap',tap]]));
     await this.page.waitForTimeout(70);
@@ -261,8 +261,8 @@ test('Atlas pilot → physical rover → twin mining → ore bins → resumed pl
   await page.addInitScript(()=>{
     const a=window.__roverNativeInput={pointers:new Map(),events:[],focus:[]};
     const keyOf=target=>{
-      const el=target.closest?.('[data-rover-hold],[data-cabin-key],[data-rover-action],[data-cabin-interact],#cargo-dialog .inventory-close');
-      return el?.dataset.roverHold??el?.dataset.cabinKey??(el?.dataset.roverAction?'tap:'+el.dataset.roverAction:el?.matches('.inventory-close')?'tap:close':el?.hasAttribute('data-cabin-interact')?'tap:seat':null);
+      const el=target.closest?.('[data-rover-hold],[data-cabin-key],[data-rover-action],[data-cabin-interact],#cargo-dialog .gameplay-resume,[data-controller-key="page-containers-next"]');
+      return el?.dataset.roverHold??el?.dataset.cabinKey??(el?.dataset.roverAction?'tap:'+el.dataset.roverAction:el?.matches('.gameplay-resume')?'tap:close':el?.dataset.controllerKey==='page-containers-next'?'tap:nextContainer':el?.hasAttribute('data-cabin-interact')?'tap:seat':null);
     };
     for(const type of ['pointerdown','pointerup','pointercancel','gotpointercapture','lostpointercapture'])window.addEventListener(type,e=>{
       const key=a.pointers.get(e.pointerId)??keyOf(e.target);
@@ -310,8 +310,12 @@ test('Atlas pilot → physical rover → twin mining → ore bins → resumed pl
     await input.hold(['mine']);await wait(page,()=>starAgent.state.rover.beaming===2);
     if(phone)nativeInput.cargo.before=await input.mineReceipt();
     await input.tap('cargo');await expect(page.locator('#cargo-dialog')).toBeVisible();await expect(page.locator('#cargo-dialog')).toContainText('Rover mineral bin');
-    await expect(page.getByRole('button',{name:'Atlas cargo',exact:true})).toBeVisible();expect((await state(page)).containers.target).toBe(BIN);await wait(page,()=>starAgent.state.rover.beaming===0);await shot('05-ore-bin-dialog');
+    await expect(page.getByRole('button',{name:'Atlas cargo',exact:true})).toBeVisible();expect((await state(page)).containers.target).toBe(BIN);await wait(page,()=>starAgent.state.rover.beaming===0);
+    // Compact inventory shows one container per page. Use the visible next
+    // control while the original mining finger remains physically held.
+    if(phone)await input.tap('nextContainer');
     await expect(page.locator(`[data-from="${BIN}"][data-item]`).first()).toBeVisible();
+    await shot('05-ore-bin-dialog');
     if(phone){nativeInput.cargo.opened=await input.mineReceipt();expect(nativeInput.cargo.opened.pointer).toBe(nativeInput.cargo.before.pointer);expect(nativeInput.cargo.opened.cdpId).toBe(nativeInput.cargo.before.cdpId);}
     await input.tap('close');await expect(page.locator('#cargo-dialog')).not.toBeVisible();await input.repeatMine();await page.waitForTimeout(400);expect((await state(page)).rover.beaming).toBe(0);
     if(phone){nativeInput.cargo.closed=await input.mineReceipt();expect(nativeInput.cargo.closed.pointer).toBe(nativeInput.cargo.before.pointer);expect(nativeInput.cargo.closed.cdpId).toBe(nativeInput.cargo.before.cdpId);}
