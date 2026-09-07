@@ -2332,3 +2332,11 @@ https://github.com/AvonMexicola/star-agent/pull/64 .
 Local dev retained newer navigation integration; source verification/docs applied
 as6d3abb0. Shared5178 sound studio verified real Pyrebear output and mute0.
 No shared service/database restart or public deployment. Audio file claims released.
+
+SA-WORLD-002 material candidate80f83b8 is committed and ready for its focused
+~3min GPU check on5383. Build,8 landmark/server invariants and repo checks pass;
+actual shader render is still pending, so do not integrate it yet. Scope is one
+runtime material module plus its own fixtures/brief/task; accepted geometry and
+shared hooks have no diff. Combined5523 retains next priority after rover; this
+lane will use the next explicitly released idle window and then publish final
+source + visual evidence for the steward.

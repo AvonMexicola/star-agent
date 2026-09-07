@@ -16,9 +16,17 @@ Open http://127.0.0.1:5178/. The launcher offers Nomad 02, Kestrel and the curre
 30 m Atlas, with station hangar/approach, Aeon coast/forest/highlands/polar/orbit,
 Selene surface/rings, Pyre twilight/surface, Miasma approach/surface and stellar
 observation starts. Choose a ship, choose a location, then Launch test flight.
-F2 or controller Menu → DEV · Ship & location reopens the dialog after taking
+F2 or controller Menu → Dev reopens the dialog after taking
 control. D-pad/left stick selects; A confirms; B returns. Keyboard Tab/Enter and
 touch use the same buttons. No account or ship-unlock milestone is needed.
+
+Dev → Content review collects the expedition character studio, Atlas + Burrow
+rover start, construction sandbox, 64 m Atlas studio, station exterior preview,
+Kestrel counter prop and sound studio. The location pages also include Pyre's
+Pyrebear habitat and Miasma's Sulphurhound habitat. Habitat starts place the ship
+35 m above the ground: land, leave the chair, open the hatch and walk down the ramp.
+The newer character is the default local and remote pilot, including its corrected
+hips and calibrated weapon grips. Press 4, or LB + RB + D-pad right, for third person.
 
 Each launch reloads into an isolated temporary test inventory and unlocked fleet.
 Normal browser progression is neither read nor written. Test-session cargo and
@@ -26,6 +34,18 @@ construction reset when reloading. The current seed is retained in the URL;
 use `?seed=42` or the ordinary controls panel to choose a different world.
 A copied test URL includes its ship and start. This selector is gated by
 `VITE_DEV_TOOLS=1`, set by `dev:all`; ordinary production builds retain their entry.
+
+The supplied construction sandbox is an exception to temporary test inventory:
+it uses its own saved namespace and a refillable 4,608 kg materials bank. Reload
+retains its bases and remaining stock. The ordinary save is separate. B near an
+owned mainframe opens its wheel; LB/RB changes piece categories, A selects/places,
+LT/RT rotates, LB cycles snap and RB jumps during placement. The 21-piece kit
+includes shapes, roofs, storage facilities, hangar doors, ramps and S/M/L pads.
+
+Flight now preserves momentum under finite thruster authority. V / R3 selects
+fly-by-wire or unlocked flight; hold X / LT to brake. Z or Menu → Ship → Combat /
+cruise changes the speed regime. Retract gear and slow into combat limits to fire;
+landing assist requires less than 10 m/s. Atlas needs the most stopping room.
 
 The Atlas Mark II link opens the separate 64 m studio with its latest committed
 geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold; its four mounts now carry S2 guns. Multiplayer currently uses the server's Nomad flight model;
@@ -80,21 +100,27 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Fitted S1 Nomad / S2 Kestrel / S3 Atlas guns, barrel-origin fire | `feat/ship-weapon-fittings` runtime `2faa71c`, review `7cc583c`, combined in `5842404` |
 | Flyable Kestrel and shared Meridian identity | `feat/kestrel-flight` at `e4ec7df` |
 | Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `385c138` (asset/gameplay `9a363cb`) |
-| Construction, mainframes, recipes and polished building pieces | `feat/base-building` at `891c916` |
-| Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
+| Construction sandbox, 21-piece kit, facilities and landing pads | `feat/base-building` at `33b33f2` |
+| Station concourse/shop finishes and installed Kestrel maintenance roll | `feat/retail-soft-props` at `a40baad` |
 | Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
 | Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
-| Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
-| Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
-| Aeon exterior geometry preview, opt-in | `feat/station-exterior` at `eb5184d` (geometry `261ebab`, combined runtime `0880516`, draft PR #55) |
+| Footsteps, weapons, mining, thrust-responsive engines and spatial flybys | `feat/gameplay-audio` at `5a128f3`, construction/fauna audio through `6d3abb0` |
+| Expedition character, corrected hips, hands, animations and studio | Preserved owner checkpoint `0bb6a6a`; combined local/remote binding in `3bd7d61` |
+| Burrow twin-cutter rover aboard Atlas, offline development start | `feat/meridian-mining-rover` at `44eb3a2` |
+| Finite ship momentum, combat/cruise mode and moving muzzle effects | `fix/combat-momentum` at `f1efc01` |
+| Hostile Pyrebear and Sulphurhound habitats, shots, bites and medical recovery | `feat/pyrebear` at `91a2ac0` |
+| Atlas Mark II geometry/gear checkpoint and review, studio only | `feat/atlas-fleet-refresh` at `0b2d852` |
+| Aeon exterior geometry preview and review, opt-in | `feat/station-exterior` at `9d0728f` (draft PR #55) |
 
-Atlas now includes its first committed geometry/gear refresh in the studio. Final
-materials, review and flight integration remain open. Further character production
-is still in its owner worktree without a new feature commit at this snapshot. Pending
-Meshy retail soft-prop candidates are production records, not installed props.
-Check shared HANDOFF.md and feature heads before updating this table.
+These are review checkpoints. The 64 m Atlas remains studio-only; station exterior
+materials, character performance, rover's complete mining/return journey and fauna
+motion/touch acceptance remain open. Rover, construction and wildlife use offline
+state; they are not new multiplayer replication features. The unprovided shop
+jacket and the separately started deer repair are not installed content. See the
+[combined review record](qa/dev-content-review.md) for exact validation and limits.
+Read shared HANDOFF.md and feature heads before updating this table.
 
 ## Updating the shared preview
 

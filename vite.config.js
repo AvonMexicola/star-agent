@@ -24,6 +24,7 @@ function atlasMarkIIStudioDevEntries() {
 
 export default defineConfig({
   base: './',
+  cacheDir: process.env.STAR_AGENT_VITE_CACHE,
   plugins: [atlasMarkIIStudioDevEntries()],
   server: {
     proxy: {
