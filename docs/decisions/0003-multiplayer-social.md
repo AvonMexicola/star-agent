@@ -13,22 +13,22 @@ The UI requires the social-enabled server before enabling chat/friend controls.
 
 `server/social.js` serializes social work within the one ten-player room. Chat is
 not stored in PostgreSQL or sent to later arrivals. Connected clients retain at
-most100 received messages until disconnect. Chat is at most400 Unicode code points
-and1600 UTF-8 bytes, single-line plain text; invisible controls are removed.
-The burst budget is4 messages with one token replenished every2seconds. Friend/
-refresh actions allow20 per minute. Per-account budgets survive reconnect for
-10minutes, retain64 request results and are capped at2048 accounts. Socket payload,
+most 100 received messages until disconnect. Chat is at most 400 Unicode code points
+and 1600 UTF-8 bytes, single-line plain text; invisible controls are removed.
+The burst budget is 4 messages with one token replenished every 2 seconds. Friend/
+refresh actions allow 20 per minute. Per-account budgets survive reconnect for
+10 minutes, retain 64 request results and are capped at 2048 accounts. Socket payload,
 traffic, connection, origin and authentication limits still apply.
 
-Migration004 adds canonical account-pair `friendships` and directed
+Migration 004 adds canonical account-pair `friendships` and directed
 `social_blocks`. Requests require a live-roster target. Persisted relationships
 can be accepted, declined, cancelled, removed or blocked while their peer is
 offline. Crossing requests retain one pending request; neither grants implicit
 consent. PostgreSQL locks the two account rows in ID order. A block and friendship
-deletion are one transaction. Each account has at most100 relationships and100
+deletion are one transaction. Each account has at most 100 relationships and 100
 outgoing blocks. The memory adapter follows the same contract for explicit tests.
 Migrations are discovered by unique numbered filenames; independently authored
-commerce002, base003 and social004 must retain different numbers.
+commerce 002, base 003 and social 004 must retain different numbers.
 
 `store.areFriends(a, b) -> Promise<boolean>` and the service delegate return true
 only for an accepted mutual relation with no block either way. This is the hook
@@ -55,7 +55,8 @@ phrases such as “white power cable.”
 
 Matches never broadcast. High-confidence matches acknowledge rejection privately,
 emit a generic moderation reason, invalidate queued social work and close the
-authenticated socket with4003. Clear quotation/report/condemnation context still
+authenticated socket with 4003. Room membership is released immediately, even
+if the peer refuses to complete the close handshake. Clear quotation/report/condemnation context still
 withholds the term but avoids an automatic kick. There is no permanent ban,
 inventory penalty, moderator inbox, durable report queue or chat archive.
 
