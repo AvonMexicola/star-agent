@@ -122,9 +122,14 @@ for chrome transitions to finish.
 
 ## Work still open
 
-Fresh independent silhouette review is underway, with a required score ≥4.5
-before final materials. The broad dark upper side and bow mouth still need a
-candid art judgment. This checkpoint is intentionally frozen for that review.
+The completed [independent silhouette review](../silhouette-review-01/review.md)
+scored **4.0/5**, below the required 4.5 gate before final materials. It verified
+the served hero hash and recorded sixteen new views. The broad dorsal wall and
+shelf-like deployed gear doors remain the leading visual defects. An actual
+triangle audit also found approximately 55 mm intrusion into both forward S3
+clearance cylinders; aft sockets were clear. Those fixes and a fresh review remain
+open. The user moved the active production task to the station exterior; this
+checkpoint and failed gate are preserved without claiming acceptance.
 
 Unique painting UVs and a validated opaque Meshy shell do not exist yet. The
 current exporter rebuilds metre-scale tile UVs; it must preserve a frozen unique

@@ -65,7 +65,10 @@ export function createGameplayMenu({nav,screens,dev=false}){
     }
     if(dialog.id==='fleet-dialog')paginate(dialog.querySelector('.fleet-ships'),':scope > article','fleet',compact?1:3);
     if(dialog.id==='build-dialog')paginate(dialog.querySelector('.build-content'),':scope > .build-piece,:scope > .build-recipe','construction',2);
-    if(dialog.id==='dev-launcher')paginate(dialog.querySelector('.dev-locations'),':scope > button','test locations',compact?4:8);
+    if(dialog.id==='dev-launcher'){
+      paginate(dialog.querySelector('.dev-locations'),':scope > button','test locations',compact?4:8);
+      const reviews=dialog.querySelector('.dev-review-list');if(reviews)paginate(reviews,':scope > a','content reviews',compact?3:6);
+    }
     if(dialog.id==='multiplayer-comms-dialog')paginate(dialog.querySelector('.mp-roster'),':scope > .mp-pilot','pilots',compact?3:6);
     if(dialog.id==='multiplayer-inventory-dialog')paginate(dialog.querySelector('.mp-inventory-list'),':scope > *:not(.gameplay-pagination)','server items',compact?1:3);
     if(dialog.id==='controller-layout'){
@@ -84,6 +87,7 @@ export function createGameplayMenu({nav,screens,dev=false}){
     header.querySelector('.gameplay-resume').onclick=()=>dialog.close();
     for(const button of header.querySelectorAll('[data-tab]'))button.onclick=()=>open(button.dataset.tab);
     const footer=document.createElement('footer');footer.className='gameplay-footer';footer.innerHTML='<span><kbd>LB / RB</kbd> Tabs <span class="gameplay-keyboard-tabs">· <kbd>[ / ]</kbd> Keyboard tabs</span></span><span>D-pad selects · A confirms · B resumes</span>';
+    if(dialog.id==='build-dialog')footer.firstElementChild.innerHTML='<kbd>LB / RB</kbd> Build tabs · <kbd>[ / ]</kbd> Gameplay tabs';
     dialog.prepend(header);dialog.append(footer);
     const observer=new MutationObserver(schedule);observer.observe(dialog,{attributes:true,attributeFilter:['open','class'],childList:true,subtree:true});
     dialog.addEventListener('close',()=>{nav.gamepad.suspend();if(active())nav.enabled=false;});
@@ -91,7 +95,7 @@ export function createGameplayMenu({nav,screens,dev=false}){
   // Commands already represented by top-level screens are removed from the Ship
   // grid; their real handlers remain available to existing contextual shortcuts.
   const commands=document.querySelector('#controller-menu .controller-command-list');
-  const shipKeys=new Set(['resume','free-drive','gear','lights','camera-view','combat-target','power','fleet','crash-recover','weapon-pulse','weapon-laser','weapon-void','build','recipes','tool']);
+  const shipKeys=new Set(['resume','combat-mode','free-drive','gear','lights','camera-view','wave','combat-target','power','fleet','crash-recover','weapon-pulse','weapon-laser','weapon-void','build','build-sandbox','sandbox-exit','recipes','tool']);
   if(commands)for(const button of commands.children)if(!shipKeys.has(button.dataset.controllerKey)){button.dataset.menuExcluded='true';button.hidden=true;}
   document.addEventListener('keydown',event=>{
     if(event.repeat||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
@@ -103,7 +107,12 @@ export function createGameplayMenu({nav,screens,dev=false}){
   function step(direction){const id=tabFor(active()),index=tabs.findIndex(t=>t.id===id);open(tabs[(index+direction+tabs.length)%tabs.length].id);}
   return {open,get active(){return Boolean(active());},controller(pad){
     if(!active())return false;
-    if(pad.ui?.pressed.has(4)||pad.ui?.pressed.has(5)){step(pad.ui.pressed.has(4)?-1:1);return true;}
+    if(pad.ui?.pressed.has(4)||pad.ui?.pressed.has(5)){
+      // The build wheel owns these edges for its piece categories. Let the
+      // shared dialog router apply its action and neutral-input gate first.
+      if(active()?.controllerAction)return false;
+      step(pad.ui.pressed.has(4)?-1:1);return true;
+    }
     return switching;
   }};
 }

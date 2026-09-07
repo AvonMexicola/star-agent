@@ -1,7 +1,6 @@
 # Meshy shop soft props — production record
 
-**Uploads fixed; image-to-3D candidates generated but unaccepted, awaiting export approval and local review. No downloaded model, runtime integration, measured asset budget or
-new visual acceptance is claimed.** The existing reviewed shops are unchanged.
+**KESTREL is optimized, integrated in the isolated review build and visually accepted by Astra at 4.00/5. Unit/build and four focused browser cases pass (touch after fixture correction). Jacket not downloaded; merge and deployment are separate.** The existing reviewed shops are unchanged.
 Work is isolated in `/tmp/star-agent-retail-props`, `feat/retail-soft-props`, based
 on the reviewed shop proceedings46b978f. The saved [brief](../../assets/station-shop/soft-props/brief.json)
 contains exact original prompts, counter support heights and dimensions.
@@ -275,7 +274,144 @@ and git diff whitespace checks pass. No new game build, shader render, FPS,
 physical interaction test, exported triangle/material/byte budget or independent
 Astra review was run. No runtime import, merge or deployment occurred.
 
-Next: obtain approval for the two new GLB downloads, then inspect native models
-in Blender and the game renderer. Reconcile the jacket budget before automated
+At this historical checkpoint, export approval was pending; the explicit approval
+and fresh browser export outcome are recorded below. Reconcile the jacket budget before automated
 cleanup; apply only minimal overshoot correction to a viable roll. Retain all
 failed variants and budget/appearance issues until actual validation resolves them.
+
+## Explicit download approval; fresh export blocker — 2026-09-07
+
+Cees answered “yes you can” to downloading these two retained originals. That
+approval supersedes the historical refusal for these files. The GPT browser
+operator attempted each normal visible GLB download once, after checking the
+exact original's Triangle/Faces/Vertices counts and four PBR controls. No new
+provider work, credit spending or settings changes were requested.
+
+Both attempts disabled the download controls while processing, timed out waiting
+20 seconds for the documented download event, then displayed `assets.meshy.ai
+is blocked`, `This page has been blocked by Chromium`, `ERR_BLOCKED_BY_CLIENT`.
+No new automatic approval denial was returned. The visible browser error alone
+does not establish which component caused the block. No signed URL fetch, hidden
+API, alternate browser channel or security-setting bypass was attempted.
+
+`assets/station-shop/soft-props/image-to-3d-v2/export-receipt.json` records both
+selections, visible export settings, attempted download method and absent local
+paths. Native GLB resolution/content, size, hashes and headers remain unmeasured
+because no file was obtained. Signed destinations and account details are omitted.
+
+Prepared `blender/review_shop_soft_props.py` imports a source without changing it,
+records evaluated meshes/UVs/materials/images/bounds/transforms, and renders front,
+opposite and underside studio views with a CPU renderer. Images are explicitly
+labelled Blender studio evidence, not game-renderer acceptance. Actual Meshy
+inspection and all game integration remain blocked on local source files.
+
+Read-only static inspection of the installed ChatGPT extension found header-only
+DNR session rules and no explicit Meshy host/download blocking rule. The cause
+therefore remains unattributed; no browser configuration was changed.
+
+Inspector smoke run used the existing helmet-standalone.glb, Blender 5.2.0,
+Cycles CPU / 4 threads, 320×320, 4 samples. All three PNGs rendered, their hashes
+and report were verified, and root inspected all three images. Metadata measured
+7,300 triangles / 7 materials; input SHA remained unchanged. Evidence is in
+/tmp/star-agent-studio-inspector-smoke. This verifies the inspection utility on
+an existing asset only. Blender emitted installed-addon cattrs/registration and
+audio warnings, then lingered after writing its completed report; root terminated
+only this smoke process. A clean Blender process exit is not claimed. Python
+syntax, all prop-receipt JSON and git whitespace checks pass; no new game build
+or browser/performance test was warranted for this utility-and-record change.
+
+## Manual KESTREL delivery and measured runtime candidate — 2026-09-07
+
+Cees downloaded the versions they judged acceptable. The new KESTREL filename
+matched the intended native export; exact header, length, SHA and mesh/material
+counts were verified. Only that current file was copied from Downloads. An older
+kestrel_meshy_clean GLB measured34,768 triangles and was not substituted. The
+requested jacket was not found; clarification was requested while roll work
+continued. Historical browser failures remain in their original receipts.
+
+`manual-import-receipt.json` records source 5,253,528 bytes / 4,145 triangles and
+runtime 268,872 bytes / 4,000 triangles, one material and all three WebP PBR maps.
+Blender source and processed views were inspected from front, rear and underside.
+The source is coherent, with complete underside and continuous straps. Minimal
+cleanup preserves the folds and buckles; runtime 1024px weave is less detailed
+than source 2048px textures. Uniform dimensions are .279×.130×.291m. This is
+small decorative counter stock, not a new purchasable/inventory item.
+
+The optional resource loader now enables KESTREL alone, attaches once under
+hub.group and preserves authored maps/contact shadows. Geometry/material resources
+are shared; no floor collider, berth copy or speculative jacket request is added.
+Focused tests cover successful and failed optional attachment plus collision-tree
+identity. Full npm test: 186 passed. Production build passed with its chunk-size
+warning. Candidate servers: 5262 dev / 5263 production; accepted 5260 unchanged.
+Independent actual-game review and physical shop browser checks follow below.
+
+## Actual-game findings and bounded corrections
+
+The first independent Astra pass loaded the real optimized GLB on Chromium 151 /
+AMD 860M / ANGLE GL at 1440×900, render scale 1. Actual vertex audit measured
+minY=-6.908, matching the insert top; one placement, no berth copies. The reviewer
+scored 3.83 (4/4/3/4/4/4): the displaced dark cast shadow weakened contact. The
+dev-only human-scale viewer also failed a bare Three.js import and lacked a
+favicon. This pass is retained as an intermediate failure, not final acceptance.
+
+Correction: KESTREL receives scene shadows but no longer casts the displaced
+shadow. One lazily shared 64² alpha contact-AO plane within its footprint adds
+approximate soft static contact shading at base+.00075m. No global light/shadow
+bias or physical collision changed. Future jacket shadow policy is untouched.
+The GLB still has one material/4000triangles; runtime contact geometry adds one
+material and 2 triangles. Existing tests verify shared resources, transparent
+texture edges, absence on load failure and collision invariants.
+
+The props page now imports through a source-module dependency bridge, explicitly
+uses the existing favicon and retains true 1m grid squares. Its prior adaptive
+scale made that label incorrect for small props. After these code changes,
+npm test 186/186 and production build pass again; candidate bundle is
+index-CoFnp-fX.js. Independent final captures and browser results follow.
+
+## Final KESTREL delivery and validation
+
+Astra independently captured and inspected 12 final images, including the human
+and true metre grid. Final rubric 4/4/4/4/4/4 =4.00, no item below 3. The final
+game and props viewer record zero console errors/warnings. Final bundle
+index-CoFnp-fX.js SHA256363bf688666e94b55d7bf460e887732e57e4e45917c168c48b893312fb8b8081;
+GLB SHA remains 76d741972c05ddffe76d1c51f6607109cfd3dc265510b9f62876105e4d2357d7.
+Source and runtimestudio plus before/after game images are retained in
+docs/qa/station-soft-props/. Review reasoning, actual metadata and numerical
+timing limits are in docs/qa/station-shop-props-review.md.
+
+Final controlled visibility delta: +2draw calls /+4002submitted triangles.
+Visible291draws/498220triangles versus hidden289/494218. One4000tri mesh plus
+a2tri contact plane; the previous two4000tri shadow submissions are gone.
+Chromium 151.0.7922.173 / AMD Radeon860M / ANGLE GL,1440×900,DPR1,render scale 1.
+Outside browser jobs were active: timings are potentially contended, not a
+causal latency estimate or whole-scene performance approval.
+
+Root ran186 unit tests and production build successfully after runtime fixes.
+Four focused browser cases were exercised on the same final production runtime
+using one worker and hardware GL at full render scale. Concourse resource/UV
+checks and missing-artwork fallback passed. Physical hangar aisle→passenger
+elevator→armory→controller purchase→return→cargo transfer→reload passed 44.2s.
+The touch case initially timed out during docking: its captured UI showed a
+connected controller and open help modal, which pauses play. Isolating host
+gamepads only in that touch context fixed the fixture; the 390×844tap purchase,
+delivery/balance feedback, scrolling and close/resume case passed 11.1s on its
+focused rerun. This is 3 initial passes plus 1 successful corrected-case rerun,
+not a claim that the initial four-test command was green. Hardware Xbox input
+itself was not tested: controller actions use the existing synthetic fixture.
+
+Candidate remains isolated on feat/retail-soft-props, production 5263 and dev 5262.
+Accepted 5260 and shared runtime work were preserved. User-supplied current
+KESTREL was the only confirmed new download; no speculative jacket was enabled.
+All raw provider originals, reference prompts and images, rejected iterations,
+Blender source, cleanup script, measured receipts and review corrections remain
+available as the reusable production record. No additional Meshy credits spent.
+
+## Published review handoff
+
+[Draft PR57](https://github.com/AvonMexicola/star-agent/pull/57) targets
+dev/all-features from feat/retail-soft-props. Runtime/review commit70e4ca7 was
+pushed; final rebuild retains the independently reviewed bundle hash above.
+GitHub mergeability was UNKNOWN at the final read, not a successful merge check.
+The manager handoff records the PR and evidence. No main/shared runtime overwrite,
+merge or deployment was performed. Subsequent integration must reconcile current
+dev changes and retain the stated performance/motion limits.

@@ -1,4 +1,4 @@
-import { TextureLoader, RepeatWrapping, SRGBColorSpace, EdgesGeometry, LineBasicMaterial, LineSegments, Color } from 'three';
+import { CanvasTexture, Mesh, PlaneGeometry, MeshStandardMaterial, TextureLoader, RepeatWrapping, SRGBColorSpace, EdgesGeometry, LineBasicMaterial, LineSegments, Color } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { getPieceDefinition } from './definitions.js';
 const loader=new GLTFLoader(), templates=new Map();
@@ -39,6 +39,7 @@ export function disposeBuildVisual(root) {
   for(const material of root.userData.buildFinish?.materials.values()??[])material.dispose();
   const display=root.userData.statusDisplay;
   if(display){display.texture.dispose();display.mesh.geometry.dispose();display.sourceMaterial.dispose();}
+  const markings=root.getObjectByName('LandingPadMarkings');if(markings){markings.geometry.dispose();markings.material.dispose();root.userData.padMap?.dispose();}
   root.removeFromParent();
 }
 function concreteFinish() {
@@ -60,6 +61,15 @@ export async function createBuildVisual(piece) {
   const root=(await templates.get(def.id)).clone(true);
   root.userData.pieceType=def.id;
   setBuildOpacity(root,1);
+  if(def.padSize){
+    const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1024;const ctx=canvas.getContext('2d');
+    ctx.strokeStyle='#b6efd1';ctx.fillStyle='#b6efd1';ctx.lineWidth=8;ctx.setLineDash([36,20]);ctx.strokeRect(45,45,934,934);ctx.setLineDash([]);
+    ctx.lineWidth=12;ctx.strokeRect(270,270,484,484);ctx.font='bold 72px sans-serif';ctx.textAlign='center';for(const x of [120,904])for(const y of [145,940])ctx.fillText(def.padSize,x,y);ctx.font='bold 210px sans-serif';ctx.textAlign='center';ctx.fillText(def.padSize,512,570);
+    ctx.font='bold 46px sans-serif';ctx.fillText(`${def.padSize==='S'?'NOMAD':def.padSize==='M'?'ATLAS':'HEAVY'} · ${def.footprint.join(' × ')} M`,512,675);
+    for(const z of [120,840])for(const x of [150,512,874]){ctx.beginPath();ctx.moveTo(x-25,z+40);ctx.lineTo(x,z);ctx.lineTo(x+25,z+40);ctx.stroke();}
+    const map=new CanvasTexture(canvas);map.colorSpace=SRGBColorSpace;const markings=new Mesh(new PlaneGeometry(...def.footprint),new MeshStandardMaterial({map,transparent:true,depthWrite:false,roughness:.8,emissive:0xb6efd1,emissiveMap:map,emissiveIntensity:.4}));
+    markings.name='LandingPadMarkings';markings.rotation.x=-Math.PI/2;markings.position.y=.009;markings.visible=Boolean(piece?.landingPad);root.add(markings);root.userData.padMap=map;
+  }
   setDoorOpen(root,Number(piece?.doorOpen??0));
   return root;
 }
@@ -100,6 +110,7 @@ export function disposeBuildGhost(root) {
   disposeBuildVisual(root);
 }
 export function setDoorOpen(root,fraction) {
+  const roller=root.getObjectByName('RollerCurtain');if(roller){const amount=Math.max(0,Math.min(1,fraction))*.96;roller.scale.y=1-amount;roller.position.y=5.39*amount;}
   const distance=Math.max(0,Math.min(1,fraction))*.8;
   const left=root.getObjectByName('DoorLeafLeft'),right=root.getObjectByName('DoorLeafRight');
   if(left)left.position.x=-distance;

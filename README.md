@@ -212,3 +212,11 @@ inputs for integration checks. These controls are absent from production builds.
 Water footsteps represent the existing wet shoreline, not new wading/swimming.
 
 Read the [Aeon field notes](docs/lore.md) for the relativistic drive’s “promise ring.”
+
+The engine score includes a turbine and exhaust layer that spools with actual
+thrust and boost, idles while powered and seated, and fades out on shutdown.
+Metal deck footsteps are muffled, with a soft sole impact and short low ring.
+
+Nearby multiplayer ships have stereo flyby whooshes with Doppler pitch and
+400 m distance fade. Formation flight stays quiet; up to four passes sound at
+once. Audition close, reverse and distant passes in the sound studio.

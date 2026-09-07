@@ -67,7 +67,7 @@ test('placement rejects overlapping claims, complete boundary overflow, player i
  const piece=(type,position)=>({id:'build-piece-99',type,position,rotation:0,doorOpen:false});
  f.nav.position.copy(f.system.toWorld(v([60,1.65,0]),c));assert.match(f.system.validate(c,piece('foundation',[CLAIM_RADIUS-1,.3,0])),/complete piece/);
  f.nav.position.copy(f.system.toWorld(v([4,1.65,0]),c));assert.match(f.system.validate(c,piece('foundation',[4,.3,0])),/Step clear/);
- f.nav.position.copy(f.system.toWorld(v([8,1.65,4]),c));assert.match(f.system.validate(c,piece('floor',[4,3.3,0])),/two supporting walls/);
+ f.nav.position.copy(f.system.toWorld(v([8,1.65,4]),c));assert.match(f.system.validate(c,piece('floor',[4,3.3,0])),/one supported wall/);
 });
 test('legacy saves initialize no free structures and malformed build extensions are retained and paused',()=>{
  const fresh=setup();assert.deepEqual(fresh.system.data,emptyBuild());assert.equal(fresh.system.blocked,false);
@@ -195,4 +195,60 @@ test('placement sound fires once after committed material spend, never for previ
  assert.equal(sounds[0].pieceId,placed.pieceId);assert.equal(sounds[0].claimId,placed.claimId);
  assert.ok(sounds[0].point.distanceTo(f.system.toWorld(v(f.system.claims[0].pieces[0].position),f.system.claims[0]))<.001);
  f.system.sync();assert.equal(sounds.length,1,'reload/sync does not replay placement');
+});
+
+test('controller build shortcut requires on-foot access within an owned mainframe radius',()=>{
+ const f=setup();assert.equal(f.system.controllerAvailable,false);const c=f.core(),core=c.pieces.find(p=>p.type==='mainframe');
+ const center=f.system.toWorld(v(core.position),c);f.nav.position.copy(center).addScaledVector(f.nav.normal,1.65);assert.equal(f.system.controllerAvailable,true);
+ for(const mode of ['flight','landed','eva']){f.nav.mode=mode;assert.equal(f.system.controllerAvailable,false);}f.nav.mode='walk';
+ f.nav.insideShip=true;assert.equal(f.system.controllerAvailable,false);f.nav.insideShip=false;
+ f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),63.9);assert.equal(f.system.controllerAvailable,true);
+ f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),64.1);assert.equal(f.system.controllerAvailable,false);
+ f.nav.position.copy(center);f.nav.dockedAtStation=true;assert.equal(f.system.controllerAvailable,false);f.nav.dockedAtStation=false;
+ f.store.blocked=true;assert.equal(f.system.controllerAvailable,false);
+});
+
+test('one wall supports an open roof and two adjacent panels, but no floating chain',()=>{
+ const f=setup(),c=f.core(),p=(id,type,position)=>({id:`build-piece-${id}`,type,position,rotation:0,doorOpen:false});
+ c.pieces.push(p(3,'foundation',[4,.3,0]),p(4,'wall',[4,.3,2]));
+ for(const [id,x]of [[5,4],[6,8],[7,12]]){const roof=p(id,'floor',[x,3.3,0]);f.nav.shipPosition=null;f.nav.position.copy(f.system.toWorld(v([x,1.95,4]),c));assert.equal(f.system.validate(c,roof),null);c.pieces.push(roof);}
+ const unsupported=p(8,'floor',[16,3.3,0]);assert.match(f.system.validate(c,unsupported),/two panels/);
+ const save={version:1,nextId:9,claims:[c]};assert.equal(validBuild(save),true);c.pieces=c.pieces.filter(p=>p.type!=='wall');assert.equal(validBuild(save),false);
+});
+test('crate targeting uses the aimed floor behind stairs instead of the roof above',()=>{
+ const f=setup(),c=f.core(),p=(id,type,position)=>({id:`build-piece-${id}`,type,position,rotation:0,doorOpen:false});
+ c.pieces.push(p(3,'foundation',[4,.3,0]),p(4,'stairs',[4,.3,0]),p(5,'foundation',[4,.3,-4]),p(6,'wall',[4,.3,-6]),p(7,'floor',[4,3.3,-4]));
+ f.nav.shipPosition=null;f.fund(PIECES.crate.cost);f.aim([4,.3,-3.5]);f.system.select('crate');
+ assert.equal(f.system.preview.piece.position[1],.3);assert.equal(f.system.preview.valid,true,f.system.preview.reason);
+ const occupied={...f.system.preview.piece,position:[4,.3,-1.5]};assert.match(f.system.validate(c,occupied),/occupied/,'the actual solid stair still blocks a crate');
+});
+
+test('rack capacity, terminal access and landing-pad designations persist through the shared store',()=>{
+ const f=setup(),c=f.core();f.fund(PIECES.rack.cost);f.aim([4,0,0]);f.system.select('rack');const rack=f.system.place();assert.equal(rack.ok,true,rack.message);assert.equal(f.store.container('build-crate-3').boxes,8);
+ f.fund(PIECES.terminal.cost);f.aim([8,0,0]);f.system.select('terminal');assert.equal(f.system.place().ok,true);
+ const claim=f.system.claims[0];f.nav.position.copy(f.system.toWorld(v([8,1.65,2]),claim));assert.ok(f.system.terminalAccess(c),'previously registered storage sees newly built terminal');
+ f.nav.position.copy(f.system.toWorld(v([16,1.65,2]),claim));assert.equal(f.system.terminalAccess(c),false);
+ // A valid slab fixture isolates designation persistence from terrain leveling.
+ const next=structuredClone(f.store.state);next.build.claims[0].pieces.push({id:'build-piece-5',type:'foundation-pad-small',position:[24,.3,0],rotation:0,doorOpen:false});next.build.nextId=6;assert.equal(f.store.write(next),true);
+ f.nav.position.copy(f.system.toWorld(v([24,2,0]),claim));assert.equal(f.system.setLandingPad(claim.id,'build-piece-5',true).ok,true);assert.equal(validBuild(f.system.data),true);
+ assert.equal(new MiningStore(f.disk).state.build.claims[0].pieces.find(p=>p.id==='build-piece-5').landingPad,true);
+ f.system.cancel();assert.match(f.system.interaction,/Landing pad/);
+});
+
+test('a large pad is aimed from its near edge and expands its claim only with an atomic paid placement',async()=>{
+ const {prepareSandbox,SANDBOX_BINS}=await import('../src/build/sandbox.js');const f=setup();assert.equal(prepareSandbox(f.store).ok,true);f.system.supplySources=()=>SANDBOX_BINS.map(b=>b.id);f.nav.shipPosition=null;
+ const c=f.system.claims[0];f.target.copy(f.system.toWorld(v([12,.3,0]),c));f.nav.position.copy(f.system.toWorld(v([2,1.75,6]),c));f.system.begin('foundation-pad-large');
+ assert.ok(f.system.preview.piece.position.every((n,i)=>Math.abs(n-[36,.3,0][i])<1e-7));assert.equal(f.system.preview.claim.radius,96);assert.equal(f.system.preview.valid,true,f.system.preview.reason);
+ const before=f.store.state,raw=f.disk.getItem(MINING_KEY),write=f.disk.setItem;f.disk.setItem=()=>{throw Error('quota');};assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);assert.equal(f.system.claims[0].radius,64);assert.equal(f.disk.getItem(MINING_KEY),raw);f.disk.setItem=write;
+ const reloaded=new MiningStore(f.disk),retry=new BuildSystem({scene:new Scene(),nav:f.nav,store:reloaded,render:false,supplySources:()=>SANDBOX_BINS.map(b=>b.id)});retry.target=()=>f.target.clone();retry.begin('foundation-pad-large');assert.equal(retry.place().ok,true);assert.equal(retry.claims[0].radius,96);assert.equal(validBuild(retry.data),true);assert.equal(SANDBOX_BINS.reduce((sum,b)=>sum+(reloaded.container(b.id).items.concrete??0),0),480);
+ const restored=new BuildSystem({scene:new Scene(),nav:f.nav,store:new MiningStore(f.disk),render:false});assert.equal(restored.blocked,false);assert.equal(restored.claims[0].radius,96);
+});
+
+test('aiming at the terminal takes precedence over a slightly nearer rack beside it',()=>{
+ const f=setup(),c=f.core();c.pieces.push({id:'build-piece-3',type:'rack',position:[0,.3,2],rotation:0,doorOpen:false},{id:'build-piece-4',type:'terminal',position:[3,.3,2],rotation:0,doorOpen:false});f.system.cancel();
+ f.nav.position.copy(f.system.toWorld(v([1.4,2.05,4]),c));const target=f.system.toWorld(v([3,1.1,2]),c);f.nav.orientation.setFromRotationMatrix(new Matrix4().lookAt(f.nav.position,target,f.nav.normal));assert.equal(f.system.nearbyInteraction().p.type,'terminal');assert.match(f.system.interaction,/Inventory terminal/);
+});
+
+test('square roof rotation retains trigger quarter turns after socket selection',()=>{
+ const f=setup();f.system.toLocal=p=>p.clone();const claim={pieces:[{type:'foundation',position:[0,.3,0],rotation:0}]};f.system.pieceId='floor';f.system.turn=0;const before=f.system.candidates(claim,v([0,3.3,0]))[0];f.system.rotate(1);const after=f.system.candidates(claim,v([0,3.3,0]))[0];assert.deepEqual(after.position,before.position);assert.ok(Math.abs(after.rotation-before.rotation-Math.PI/2)<1e-9);
 });

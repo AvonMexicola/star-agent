@@ -1,4 +1,5 @@
 import { DEV_SHIPS, DEV_LOCATIONS, devLaunchURL } from './dev-launch-options.js';
+import { sandboxURL } from './build/sandbox.js';
 import './dev-launcher.css';
 
 export function createDevLauncher({nav,options,seed,available=()=>true}){
@@ -9,10 +10,22 @@ export function createDevLauncher({nav,options,seed,available=()=>true}){
   const exteriorLink=document.createElement('a');
   exteriorLink.textContent='Station exterior · geometry preview ↗';
   exteriorLink.dataset.controllerKey='dev-station-exterior';
-  const exteriorURL=new URL(window.location.href);
+  const exteriorURL=new URL(devLaunchURL(window.location.href,{ship:'kestrel',location:'orbit'}));
   for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'kestrel',start:'orbit',stationExterior:'1',exteriorView:'overview',seed:String(seed)}))exteriorURL.searchParams.set(key,value);
   exteriorLink.href=exteriorURL.href;
   dialog.querySelector('.dev-footer').append(exteriorLink);
+  const roverLink=document.createElement('a');roverLink.textContent='Atlas + Burrow mining rover · Selene ↗';roverLink.dataset.controllerKey='dev-mining-rover';const roverURL=new URL(devLaunchURL(window.location.href,{ship:'atlas',location:'moon'}));for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'atlas',start:'moon',rover:'1',seed:String(seed)}))roverURL.searchParams.set(key,value);roverLink.href=roverURL.href;dialog.querySelector('.dev-footer').append(roverLink);
+  const reviews=document.createElement('section');reviews.className='dev-review-list';reviews.hidden=true;reviews.setAttribute('aria-label','Content review pages');
+  for(const [label,href,key] of [
+    ['Atlas + Burrow mining rover · Selene',roverURL.href,'rover'],
+    ['Expedition character · animation studio','/dev/avatar-studio.html','character'],
+    ['Atlas Mark II · 64 m studio preview','/dev/atlas-mark-ii.html','atlas'],
+    ['Station exterior · geometry preview',exteriorURL.href,'station'],
+    ['Construction sandbox · saved supply bank',sandboxURL(window.location.href),'construction'],
+    ['Kestrel counter prop · scale viewer','/dev/props.html?only=kestrel-maintenance-roll','props'],
+    ['Sound studio · engines, flybys & effects','/tests/gameplay-audio.html','sound'],
+  ]){const link=document.createElement('a');link.textContent=label;link.href=href;link.dataset.controllerKey='dev-review-'+key;reviews.append(link);}
+  dialog.append(reviews);
   const shipButtons=[],locationButtons=[];
   const add=(item,parent,kind,handler)=>{const button=document.createElement('button');button.type='button';button.dataset.controllerKey='dev-'+kind+'-'+item.id;button.dataset[kind]=item.id;const title=document.createElement('strong'),detail=document.createElement('span');title.textContent=item.name;detail.textContent=item.detail;button.append(title,detail);button.addEventListener('click',()=>{handler(item.id);render();});parent.append(button);return button;};
   for(const item of DEV_SHIPS)shipButtons.push(add(item,dialog.querySelector('.dev-ships'),'ship',id=>ship=id));

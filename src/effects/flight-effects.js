@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SHIP_LAYOUT } from '../boarding.js';
 import { createWeaponTarget } from './weapon-target.js';
 import { WEAPONS } from './weapons.js';
+import {shipWeaponStatus,stoppingDistance} from '../combat/flight-policy.js';
 
 /** Input/pose adapter. RT fires in flight and on foot; movement stays independent. */
 export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
@@ -9,9 +10,10 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
   const position=new THREE.Vector3(),forward=new THREE.Vector3(),collector=new THREE.Vector3();
   const target=createWeaponTarget({nav,mining});
   const panel=document.createElement('aside');panel.id='ship-weapons';panel.hidden=true;
-  panel.innerHTML='<span>SHIP / ENERGY ARRAY</span><div class="ship-weapon-options"></div><button class="ship-trigger" type="button">HOLD TO FIRE</button><small>T · Fire / 1–3 · Weapon</small>';
+  panel.innerHTML='<span>SHIP / ENERGY ARRAY</span><button class="ship-combat-mode" type="button">COMBAT / CRUISE · Z</button><div class="ship-weapon-options"></div><button class="ship-trigger" type="button">HOLD TO FIRE</button><small>T · Fire / 1–3 · Weapon</small><small class="ship-motion"></small>';
   document.body.append(panel);const trigger=panel.querySelector('.ship-trigger');
   const clear=()=>{keyHeld=false;pointerHeld=false;controllerArmed=false;getShip?.()?.armament?.stop?.();};
+  panel.querySelector('.ship-combat-mode').onclick=()=>{nav.toggleCombatMode();clear();};
   const ready=()=>nav.mode==='flight'&&nav.powered!==false&&!nav.travel&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
   const fireReady=()=>ready()&&!nav.multiplayer?.connected;
   function select(id){if(!WEAPONS[id])return;weapon=id;clear();nav.gamepad.suspend();controllerFire=false;cooldown=.12;}
@@ -32,7 +34,7 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
   return {
     select,
     controller(pad){controllerFire=Boolean(pad.fire>0&&!pad.ui);},
-    get state(){return {weapon,controllerFire,armament:getShip?.()?.armament?.state??null};},
+    get state(){return {weapon,controllerFire,armament:getShip?.()?.armament?.state??null,weaponStatus:shipWeaponStatus(nav),combatMode:nav.combatMode};},
     update(dt,origin,{suspended=false}={}){
       const ship=getShip?.(),armament=ship?.armament;
       if(ship!==lastShip){clear();lastShip=ship;cooldown=.12;}
@@ -40,7 +42,8 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
       armament?.update?.(dt);
       const active=ready()&&!suspended;
       const secured=nav.gearProgress<=.001&&!nav.gearDeployed;
-      const armed=active&&!nav.multiplayer?.connected&&secured&&armament?.status==='ready';
+      const weaponStatus=shipWeaponStatus(nav);
+      const armed=weaponStatus==='WEAPONS READY'&&active&&!nav.multiplayer?.connected&&secured&&armament?.status==='ready';
       panel.hidden=Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
       if(!armed)clear();
       else if(!controllerFire)controllerArmed=true;
@@ -49,15 +52,21 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
       const status=armament?.status==='ready'?'S'+armament.size+' / '+armament.state.mounts.length+' GUNS':'WEAPONS '+(armament?.status==='unavailable'?'UNAVAILABLE':'LOADING');
       panel.querySelector('span').textContent='SHIP / '+status;
       trigger.disabled=!armed;
-      trigger.textContent=!secured?'GEAR DOWN · RAISE TO FIRE':'HOLD TO FIRE';
+      trigger.textContent=!secured?'GEAR DOWN · RAISE TO FIRE':weaponStatus==='WEAPONS READY'?'HOLD TO FIRE':weaponStatus;
       if(!secured)panel.querySelector('small').textContent=nav.controllerActive?'Raise landing gear: Menu → Ship → Gear':'Raise landing gear to fire · G';
+      panel.querySelector('.ship-combat-mode').textContent=`${nav.combatMode?'COMBAT':'CRUISE'} · Z / Menu → Ship`;
+      if(weaponStatus!=='WEAPONS READY')panel.querySelector('small').textContent=weaponStatus;
       position.set(...(nav.layout??SHIP_LAYOUT).seatEye).applyQuaternion(nav.orientation).negate().add(nav.position);
       forward.set(0,0,-1).applyQuaternion(nav.orientation);
+      const drift=nav.velocity.clone().addScaledVector(forward,-nav.velocity.dot(forward)).length();
+      panel.querySelector('.ship-motion').textContent=`DRIFT ${drift.toFixed(0)} m/s · BRAKE ≈ ${Math.round(stoppingDistance(nav)).toLocaleString()} m`;
       cooldown=Math.max(0,cooldown-dt);
       if(armed&&!nav.multiplayer?.connected&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
         const pose=armament.nextMuzzle({origin}),{position:start,direction,profile}=pose;
-        const hit=target(start,direction,origin,profile.range);
-        if(!onFire?.(start,direction,weapon,hit,profile))effects.fire(start,direction,{hit,weapon,muzzle:false,speed:profile.speed,range:profile.range,power:profile.power,color:profile.color,size:profile.size,pitch:profile.soundPitch});
+        const trajectory=Number.isFinite(profile.speed)?direction.clone().multiplyScalar(profile.speed).add(nav.velocity).normalize():direction;
+        const hit=target(start,trajectory,origin,profile.range);
+        const muzzlePosition=()=>nav.mode==='flight'&&getShip?.()===ship&&armament.state.type===pose.type?armament.muzzle(pose.index,{origin,type:pose.type})?.position:null;
+        if(!onFire?.(start,direction,weapon,hit,profile,nav.velocity,muzzlePosition))effects.fire(start,direction,{hit,weapon,muzzle:false,muzzlePosition,velocity:nav.velocity,speed:profile.speed,range:profile.range,power:profile.power,color:profile.color,size:profile.size,pitch:profile.soundPitch});
         armament.fired(pose);cooldown=profile.interval;
       }
       collector.set(.2,-.35,-.15).applyQuaternion(nav.orientation).add(nav.position);

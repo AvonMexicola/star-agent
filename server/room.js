@@ -8,7 +8,7 @@ import { shoot } from './combat.js';
 
 const STEP=1/30, LEASE_MS=180000, DROP_MS=300000;
 const VECTOR_KEYS=['position','velocity','shipVelocity','angularVelocity','shipAngularVelocity'];
-const BOOL_KEYS=['gearDeployed','powered','cabinFlight','insideShip','dockedAtStation','stationLift','doorOpen','shipLightsOn','flashlightOn','flightAssist','spaceParked','autoland'];
+const BOOL_KEYS=['gearDeployed','powered','cabinFlight','insideShip','dockedAtStation','stationLift','doorOpen','shipLightsOn','flashlightOn','flightAssist','combatMode','spaceParked','autoland'];
 const FLOAT_KEYS=['gearProgress','doorProgress','speedScale','jumpHeight','jumpVelocity'];
 const failure=(message,code)=>Object.assign(new Error(message),{code});
 export function playerSnapshot(p) {
@@ -114,7 +114,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   function action(p,m){
     if(p.busy||p.health<=0||p.shipHealth<=0)return;
     const n=p.nav;
-    const actions={gear:'toggleGear',lights:'toggleLights',power:'togglePower',assist:'toggleFlightAssist',land:'landOrLaunch',interact:'embark',eva:'toggleEVA',brake:'brake',cancelTravel:'cancelTravel'};
+    const actions={gear:'toggleGear',lights:'toggleLights',power:'togglePower',assist:'toggleFlightAssist',combat:'toggleCombatMode',land:'landOrLaunch',interact:'embark',eva:'toggleEVA',brake:'brake',cancelTravel:'cancelTravel'};
     if(Object.hasOwn(actions,m.action))n[actions[m.action]]();
     else if(m.action==='travel')n.travel?n.cancelTravel():n.beginFreeTravel();
     else if(m.action==='target'&&TRAVEL_TARGETS.some(t=>t.id===m.target)){n.travelTarget=m.target;n.beginTravel();}
