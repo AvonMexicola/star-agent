@@ -84,6 +84,7 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
 | Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
+| Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
 | Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
