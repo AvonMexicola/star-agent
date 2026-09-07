@@ -7,16 +7,17 @@ import {landmarkCells,landmarkDescriptor,nearbyLandmarks,LANDMARK_RANGE,LANDMARK
 
 const CAPACITY=256;
 export class LandmarkRocks {
-  constructor(scene,{clearings=[]}={}){
+  constructor(scene,{clearings=[],render=true}={}){
+    this.render=render;
     this.group=new THREE.Group();this.group.name='Aeon landmark bedrock';scene.add(this.group);
     this.templates=new Map();this.descriptors=new Map();this.queue=[];this.requested=new Set();this.grounded=false;
     // Existing authored outposts win over newly introduced scenery. Capture
     // restored claims once, so placing a new piece cannot make a rock disappear.
     this.clearings=clearings.map(c=>({position:new THREE.Vector3(...c.position),radius:c.radius}));
-    this.materials=[0,1,2,3].map(level=>{const material=createLandmarkMaterial();addLandmarkFade(material,level);return material;});
-    this.depths=[0,1,2,3].map(level=>{const material=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking});addLandmarkFade(material,level);return material;});
+    this.materials=render?[0,1,2,3].map(level=>{const material=createLandmarkMaterial();addLandmarkFade(material,level);return material;}):[];
+    this.depths=render?[0,1,2,3].map(level=>{const material=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking});addLandmarkFade(material,level);return material;}):[];
     this.stats={resident:0,visible:0,pending:0,triangles:0,draws:0,nearest:null};
-    if(typeof Worker!=='undefined'){
+    if(render&&typeof Worker!=='undefined'){
       this.worker=new Worker(new URL('./landmark.worker.js',import.meta.url),{type:'module'});
       this.worker.onmessage=({data})=>{
         const g=new THREE.BufferGeometry();
@@ -30,11 +31,12 @@ export class LandmarkRocks {
     if(!this.templates.has(variant))this.templates.set(variant,{geometries:[],meshes:[],collision:null});
     return this.templates.get(variant);
   }
-  protected(d){return this.clearings.some(c=>d.position.distanceTo(c.position)<c.radius+d.footprint+12);}
+  protected(d){return (this.useClearings?.()??true)&&this.clearings.some(c=>d.position.distanceTo(c.position)<c.radius+d.footprint+12);}
   publish(variant,lod,geometry){
     const entry=this.entry(variant);
     if(entry.geometries[lod]){geometry.dispose();return;}
     entry.geometries[lod]=geometry;
+    if(!this.render)return;
     const levels=lod===2?[2,3]:[lod];
     for(const level of levels){
       const mesh=new THREE.InstancedMesh(geometry,this.materials[level],CAPACITY);
@@ -53,6 +55,8 @@ export class LandmarkRocks {
   }
   collider(d){const entry=this.entry(d.variant);return entry.collision??=new RockCollision(this.geometry(d.variant).attributes.position.array);}
   update(origin,camera){
+    const clearingMode=this.useClearings?.()??true;
+    if(clearingMode!==this.clearingMode){this.clearingMode=clearingMode;this.queryOrigin=null;this.descriptors.clear();}
     for(const entry of this.templates.values())for(const mesh of entry.meshes)if(mesh)mesh.count=0;
     const altitude=origin.length()-RADIUS;
     this.group.visible=Math.abs(altitude)<12000;
@@ -71,6 +75,7 @@ export class LandmarkRocks {
     if(camera){camera.updateMatrixWorld();frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));}
     let visible=0,nearest=null,fallbackBuilt=false;
     for(const d of this.descriptors.values()){
+      if(this.protected(d))continue;
       const distance=d.position.distanceTo(origin);if(distance>LANDMARK_RANGE)continue;
       if(!nearest||distance<nearest.distance)nearest={id:d.id,name:d.name,position:d.position.toArray(),variant:d.variant,scale:d.scale,distance};
       local.copy(d.position).sub(origin);sphere.set(local,LANDMARK_BOUND);
@@ -141,12 +146,14 @@ export class LandmarkRocks {
 }
 
 export function createLandmarkObstacles(base,landmarks,nav){
+  let grounded=false;
   function constrain(method,a,b,options){
     const prior=base[method](a,b),result=landmarks.constrain(a,prior?.point??b,options);
+    grounded=result.grounded;
     return {...prior,...result,hit:Boolean(prior?.hit||result.hit),grounded:Boolean(prior?.grounded||result.grounded)};
   }
   return {
-    get grounded(){return base.grounded||landmarks.grounded;},
+    get grounded(){return base.grounded||grounded;},
     constrainWalker(a,b){return constrain('constrainWalker',a,b,{radius:.25,height:nav.layout.eyeHeight+.1});},
     constrainEVA(a,b){return constrain('constrainEVA',a,b,{radius:.35,height:.7,lift:.35});},
     constrainFlight(a,b){

@@ -36,12 +36,32 @@ const forms=[
     [[-18,22,23,7,-35],[0,24,23,7,-35],[17,20,21,10,-36],[30,13,15,14,-37],[34,2,3,13,-37]],
   ],
 ];
+// A buried root skirt spans the existing terrain LOD's height error. Its top
+// profile stays in the same place; the canonical ground still owns the floor.
+for(const parts of forms)for(const profile of parts)if(profile[0][0]<0)profile[0][0]=-64;
 const mix=(a,b,t)=>a+(b-a)*t;
 function erosion(x,y,z,seed){
   const ix=Math.floor(x),iy=Math.floor(y),iz=Math.floor(z),smooth=t=>t*t*(3-2*t),u=smooth(x-ix),v=smooth(y-iy),w=smooth(z-iz);
   const hash=(a,b,c)=>{let h=Math.imul(a,374761393)^Math.imul(b,668265263)^Math.imul(c,1442695041)^seed;h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))>>>0)/4294967296;};
   const layer=k=>mix(mix(hash(ix,iy,k),hash(ix+1,iy,k),u),mix(hash(ix,iy+1,k),hash(ix+1,iy+1,k),u),v);
   return layer(iz)*(1-w)+layer(iz+1)*w;
+}
+
+/** Conservative plant-volume exclusion from the same loft profiles. Grass can
+ * grow in an open shelter; a tree is tested through its crown height too. */
+export function landmarkOccupies(variant,x,y,z,margin=0,height=1){
+  const version=Math.floor(variant/6),family=variant%6;
+  x/=version?1.09:1;z/=version?.92:1;y/=version?.92:1;height/=version?.92:1;
+  for(const [part,profile] of forms[family].entries())for(let i=0;i<profile.length-1;i++){
+    const a=profile[i],b=profile[i+1],lo=Math.max(y,a[0]),hi=Math.min(y+height,b[0]);if(lo>hi)continue;
+    for(const yy of [lo,(lo+hi)/2,hi]){
+      const t=(yy-a[0])/(b[0]-a[0]),r=a.map((n,j)=>mix(n,b[j],t)),phase=variant*1.711+part*2.39;
+      const cx=r[3]+(version?Math.sin(yy*.023+phase)*5:0),power=3.1+.45*Math.sin(phase);
+      const padding=margin+7; // Bounds fluting, erosion and close chips.
+      if((Math.abs(x-cx)/(r[1]+padding))**power+(Math.abs(z-r[4])/(r[2]+padding))**power<1)return true;
+    }
+  }
+  return false;
 }
 
 /** Original procedural geometry; no imported mesh. All LODs sample the same

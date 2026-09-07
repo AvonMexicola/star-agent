@@ -10,7 +10,8 @@
   "updated": "2026-09-07",
   "areas": [
     "world",
-    "rendering"
+    "rendering",
+    "multiplayer"
   ],
   "claims": [
     "src/landmark-distribution.js",
@@ -27,7 +28,9 @@
     "src/landmark.worker.js",
     "src/mining/aeon-stones.js",
     "package.json",
-    "project/areas.json"
+    "project/areas.json",
+    "server/world.js",
+    "tests/server-landmarks.test.js"
   ],
   "brief": "docs/briefs/landmark-rocks.md"
 }
