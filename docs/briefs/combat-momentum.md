@@ -8,4 +8,4 @@ Fly-by-wire retains hover/aero compensation as a separate reserve, bounds comman
 
 Validation and integration are recorded in the final QA and handoff.
 
-Final runtime is 6f8b195. The combined integration steward SA-INT-002 has incorporated this runtime in its candidate. Shared main wiring is released; the owner retains the final patrol fixture/evidence handoff. No further gameplay source changes are planned.
+Final runtime is 6f8b195. The combined integration steward SA-INT-002 has incorporated this runtime in its candidate. Shared main wiring is released; the final patrol and evidence are complete. Runtime ownership is released to the integration steward. No further gameplay source changes are planned.
