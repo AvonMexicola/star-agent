@@ -372,3 +372,21 @@ terrain-edge retreat fix. The repaired deer viewer is also served by this local
 build. See [integration evidence and captures](qa/wildlife-integration.md).
 Animals remain offline and session-local; public hosting was not updated by this
 integration.
+
+
+### Player and multiplayer CPU optimisation
+
+The checked player optimisation preserves current assets, animation cadence,
+rendering quality, network rates and physical authority. It removes duplicate
+server snapshot construction, rig/equipment allocations, static remote hull
+transform composition, repeated exact-position terrain sampling and unchanged
+multiplayer manifest rebuilding. The cache includes the world seed. Measured
+CPU workloads improve while before/after nine-player and nine-hull captures
+remain pixel-identical. See [measurements, regressions and limitations](qa/player-performance/README.md).
+No protocol/save migration or public deployment accompanies this change.
+
+Player optimisation is live at http://127.0.0.1:5178/ from runtime `af419c7`.
+The preview/API restarted once with the same persistent database. Refresh the
+client to use the updated modules. Final combined checks pass 876 unit tests,
+125 SQL-enabled multiplayer/UI tests and the production build; two focused
+browser comparisons preserve exact pixels and controller/state behaviour.
