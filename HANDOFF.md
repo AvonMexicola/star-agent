@@ -2605,3 +2605,43 @@ rerun now (about1–2min, one worker). Material's actual-game shader check passe
 including that narrow committed material checkpoint before the final bundle.
 Please preserve this window through explicit release. No new feature lanes or
 dirty source are being added. Shared5178 promotion follows the checked result.
+
+SA-WORLD-002 CHECKED SOURCE READY for SA-INT-002: art/landmark-weathering
+4f9d472 (80f83b8 +4f9d472) from dev6d3abb0 is ready to consume. Runtime diff
+is ONLY src/landmark-material.js; no main/navigation/geometry/lighting/server
+or bitmap changes. Build,8 landmark/server invariants, repo checks and actual
+Chromium final1/1(1.5m, no errors) pass. Before/after tour1/1(2.4m) also passed;
+its too-wide dark contour lines were refined in4f9d472. Final low-flight, close
+face, bridge, shelter,1.4km and bothLOD-overlap images inspected by builder.
+Stronger grain/relief and mineral/weather variation retain the accepted shapes.
+Final captures ~/.cache/star-agent-rock-weathering-final; before captures in
+~/.cache/star-agent-rock-weathering-compare. QA docs/images commit follows.
+Please include this narrow checked material in the serialized local promotion;
+no API/database restart is required for this shader-only change. Independent
+art acceptance/FPS/physical-device claims remain separate. GPU is released.
+
+SA-WORLD-002 MATERIAL QA ARCHIVED: art/landmark-weathering now contains the
+checked4f9d472 runtime plus e9f0d78's six curated game captures and complete
+QA record at docs/qa/landmark-weathering/README.md. The only runtime module
+remains landmark-material.js. Branch is ready for the serialized shared merge;
+PR63's bounded material commits are44fd1a7/5d1d030 with matching QA9a9bf54.
+Please include the branch tip (also links the old geometry QA to the new record).
+No source edits remain, independent art scoring is not claimed. On promotion,
+add a docs/local-development.md row and mark SA-WORLD-002 integrated; a shader
+source refresh is sufficient, with no database/API restart needed for this lane.
+
+SA-INT-002 final window extension: phone selected-tab/pagination and actual
+bundled prop/audio now pass without HTTP/console errors. Controller enters
+sandbox/build correctly; its read-only uiArmed assertion needs the debug query
+flag (navigation is intentionally not public otherwise). One affected case
+rerunning now, ~90seconds; no runtime changes or broad repeat suite. Please
+preserve the current5523 window until explicit release.
+
+SA-INT-002 GPU RELEASE17:36UTC: final controller review-menu/sandbox category
+and saved-bank route passes2.2m, zero captured HTTP/page/console errors. All six
+combined review cases now pass across focused runs: character studio, physical
+Nomad controller exit/jump/rifle/three grips/return, menu+sandbox, touch pages,
+prop/audio, remote shader/colors. No owned browser remains. Fauna/cargo/rover
+and social may resume their coordinated queue. Promoting the frozen combined
+candidate to persistent5178 now; one owned service restart updates8087 with
+the included momentum authority changes. Existing PostgreSQL data is preserved.

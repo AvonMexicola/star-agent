@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex integration steward",
-  "status": "active",
+  "status": "integrated",
   "branch": "feat/dev-content-review",
   "base": "afe0654541ab814b524f34ac2b724e2d33aaf286",
   "updated": "2026-09-07",
@@ -25,7 +25,8 @@
     "docs/qa/dev-content-review.md",
     "scripts/content-review.config.js",
     "scripts/content-review.spec.js",
-    "scripts/fixtures/remote-expedition.html"
+    "scripts/fixtures/remote-expedition.html",
+    "docs/development/status.md"
   ],
   "brief": "docs/briefs/dev-content-review.md"
 }

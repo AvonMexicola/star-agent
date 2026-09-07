@@ -50,7 +50,7 @@ test('new character physically leaves the Nomad, jumps, holds its weapons and re
 
 test('content review links, construction categories and isolated sandbox saves survive the combined menu',async({page})=>{
  const log=diagnostics(page),pad=await controller(page);
- await page.goto('/?seed=7291');await ready(page);await expect(page.locator('#dev-launcher')).toBeVisible();await frames(page,10);
+ await page.goto('/?seed=7291&debug');await ready(page);await expect(page.locator('#dev-launcher')).toBeVisible();await frames(page,10);
  await pad.choose('dev-page-review');await expect(page.locator('.dev-review-list')).toBeVisible();await expect(page.locator('[data-dev-page=review]')).toHaveAttribute('aria-pressed','true');
  await frames(page,15);await page.screenshot({path:join(output,'content-review-desktop.png')});
  const routes=await page.locator('.dev-review-list>a').evaluateAll(links=>links.map(a=>({key:a.dataset.controllerKey,href:a.href})));
