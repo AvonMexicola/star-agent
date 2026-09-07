@@ -1800,3 +1800,73 @@ shared `AGENTS.md` edit remains unstaged and untouched.
 Final combined patrol browser regression: all three cases pass in 4.4 minutes
 at `b3f1a87`, including keyboard/pointer fire, NPC-caused loss, recovery and phone
 console layout. Refreshed captures are in `docs/qa/space-combat/`.
+
+## READY FOR REVIEW — Aeon exterior geometry preview — 2026-09-07
+
+READY FOR REVIEW: `blender/build_station_exterior.py`, `blender/pack_rigid_geometry.py`,
+`assets/station/exterior/`, `public/models/station-exterior*.glb`,
+`src/station-exterior.js`, narrow station/launcher integration and corresponding
+tests; source and actual-render evidence in `docs/qa/station-exterior/`.
+Isolated branch `feat/station-exterior` starts from `dev/all-features` at `8576e99`.
+
+The first exterior geometry pass replaces the two segmented wheels with continuous
+pressure rings, paired truss spokes and separate fixed/rotating bearings. A
+reinforced spine, twenty support bridges, reactor housings and radiators retain
+all existing bay frames and the concourse. The new geometry requires explicit
+`?dev=1&stationExterior=1`; the local launcher's labelled geometry-preview link
+starts a Kestrel overview with ordinary flight controls. Other test starts clear
+the one-shot overview. Original bay/door/interior assets are unchanged.
+
+Final hero SHA `5b39b183…b76e6` and distant SHA `ec98e225…ffdcb` total 3,806,864 bytes.
+Visible assembled geometry is 96,704/54,944 triangles and 22 material draws. Hero-only
+collision persists across render detail changes. Independent CPU review passes
+22 station tests, 21 room volumes, 48 sampled ring poses, 60 approach sweeps and optional
+loading/fallback cases. Two discovered defects were fixed and independently
+rechecked. Author Chromium scene/input cases pass 2/2 with zero browser errors or
+warnings, including injected Gamepad entry/menu return/held-input suppression
+and 390×844 touch entry. No physical-controller or FPS claim.
+
+Silhouette review improved 3.0→4.0; materials 2.8 remain unfinished. Final painting,
+bearing/centre/rim detail hierarchy, complete art acceptance and hardware timing
+remain open. This is a development checkpoint, not a finished-art or production
+merge request. Shared-build integration and its validation follow separately.
+
+Aeon stones QA queue 2026-09-07T10:49:04.038194+00:00: PR54 is ready for its final ~3-minute production browser pass (trunk exclusion + current dev integration). Previous GPU claim was interrupted by subsequent retail and station runs. Please yield the automated GPU after the currently running station exterior LOD review; root will append release immediately after the focused Aeon job. 661 unit tests/build already pass; local5178 integration awaits this check.
+
+Station exterior combined verification: source `261ebab` was reconciled with
+`dev/all-features` `7bd4bd5` in `0880516`, preserving current combat. Final npm test
+passes 664/664; production build passes; all three Chromium cases pass in 4.9 minutes
+with zero browser diagnostics, including the physical Kestrel bay departure.
+Independent final LOD review retains silhouette 4.0 and closes its two sampled
+far-view count concerns. Final art/material/timing gates remain open. The current
+production review is http://127.0.0.1:5400/?dev=1&intro=0&ship=kestrel&start=orbit&stationExterior=1&exteriorView=overview&seed=7291.
+Selected evidence: `docs/qa/station-exterior/integrated-flight/`. GPU released.
+
+
+## READY FOR REVIEW — Aeon mineable stones — 2026-09-07
+
+Cees requested replacement of the pale decorative Aeon pebbles with mineable
+concrete feedstock. Feature `feat/aeon-mineable-stones` at `554cb17`, draft PR
+https://github.com/AvonMexicola/star-agent/pull/54. Source: new `src/mining/aeon-stones.js`,
+`loose-stones.js`, `stone-material.js`; scoped field/rock integration, shared map
+lease and removal of Vegetation's old stone layer. Reuses existing CC0 Rock030
+maps, six seeded density shapes, canonical ground and actual forest trunk records.
+Exact nearby meshes, collision and saved cuts agree; three regional workers remain
+bounded. Basalt feeds the existing aggregate/binder/concrete recipes and finite
+inventory. The sixteen-edited-rock save limit still applies.
+
+Merged locally into dev/all-features at `b4468d4`, retaining the concurrent station
+exterior preview and dirty AGENTS.md edit. Shared http://127.0.0.1:5178/ serves the
+new modules. Integrated 668/668 unit tests and production build pass; actual merged
+local 6/55/100 m render check passes in58.9s, zero page/console errors. Feature
+controller journey passes in1.7m: explicit Menu transit, physical landing and cabin
+exit, stick aim/walk, RT mining2.098kg, native aggregate/binder processing, exact
+remainder, backpack and return. Held RT menu/focus/reconnect and390x844 recipe
+layout pass. Complete10kg concrete/mass conservation is covered by finite-stone
+unit tests. Chromium151 / AMD860M ANGLE GLES3.2, scale1; no physical-controller,
+isolated frame-time or independent art approval claim. QA, actual images and
+retained fixture-failure explanations: docs/qa/aeon-stones.md. No production deploy.
+The launcher intentionally resets its temporary inventory/cuts on reload; ordinary
+offline saves persist. GPU QA is now released; all this lane's browser jobs exited.
+Remote dev concurrently acquired the governance PR52 commits; those unrelated
+policy updates were not overwritten or force-pushed during local integration.

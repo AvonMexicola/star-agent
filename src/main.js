@@ -33,6 +33,7 @@ import { MOON_RADIUS, MOON_POSITION, MOON_LANDING_DIRECTION, moonRegion, moonRes
 import { EnergyEffects } from './effects/energy-effects.js';
 import { Atmosphere } from './atmosphere.js';
 import { StationComplex } from './station-complex.js';
+import { placeStationExteriorPreview } from './station-exterior.js';
 import { createStationServices } from './station-services.js';
 import { SELENE, PYRE, MIASMA, bodySurfacePoint, bodyAltitude } from './celestial.js';
 import { Pyre, PYRE_MESH_RANGE } from './pyre.js';
@@ -104,7 +105,8 @@ try {
     for(const element of document.querySelectorAll('.topbar,.mission-panel,.statusbar'))element.inert=true;
   }
   nav.onTakeControl=enterPlayerInterface;
-  const station=new StationComplex(scene,introEnabled?openingStationOptions():{});nav.station=station;station.nav=nav;
+  const station=new StationComplex(scene,{...(introEnabled?openingStationOptions():{}),
+    exteriorRefresh:new URLSearchParams(location.search).get('dev')==='1'&&new URLSearchParams(location.search).get('stationExterior')==='1'});nav.station=station;station.nav=nav;
   const crashEffects=new CrashEffects(scene);
   const stationButton=$('station-destination');
   station.readyPromise.then(()=>{if(station.finishStatus!=='ready'){weatherShip(station.pods[0].model,planet.surfaceTexture);weatherShip(station.hub.group,planet.surfaceTexture);}stationButton.disabled=false;stationButton.querySelector('small').textContent='HANGAR · DOCK & EXPLORE';}).catch(()=>{stationButton.querySelector('small').textContent='STATION UNAVAILABLE';notify('Station unavailable. Planet flight is still available.');});
@@ -654,7 +656,16 @@ try {
         $('loading').classList.add('hidden');
         if(devLauncher){
           devLauncher.ready();
-          if(devOptions.autoStart){enterPlayerInterface();canvas.focus({preventScroll:true});if(devOptions.location!=='hangar')transit(devOptions.location).catch(error=>{nav.enabled=true;notify('Test start failed: '+error.message);});}
+          if(devOptions.autoStart){
+            enterPlayerInterface();canvas.focus({preventScroll:true});
+            const launch=devOptions.location!=='hangar'?transit(devOptions.location):Promise.resolve();
+            launch.then(()=>{
+              if(new URLSearchParams(location.search).get('exteriorView')==='overview'&&station.exterior.authored){
+                placeStationExteriorPreview(nav,innerWidth/innerHeight);
+                notify('Station exterior · geometry preview. Fly freely; F2 opens test locations.');
+              }
+            }).catch(error=>{nav.enabled=true;notify('Test start failed: '+error.message);});
+          }
           else devLauncher.open();
         }else if(multiplayerEntry)multiplayerUI.openAccount();
       }

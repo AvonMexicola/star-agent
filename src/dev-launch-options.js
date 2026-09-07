@@ -30,5 +30,6 @@ export function devLaunchOptions(search,enabled){
 export function devLaunchURL(href,{ship,location}){
   if(!DEV_SHIPS.some(s=>s.id===ship)||!DEV_LOCATIONS.some(s=>s.id===location))throw new Error('Choose a test ship and location.');
   const url=new URL(href);url.searchParams.set('dev','1');url.searchParams.set('intro','0');url.searchParams.set('ship',ship);url.searchParams.set('start',location);
+  url.searchParams.delete('exteriorView'); // The overview is a one-shot inspection start.
   return url.href;
 }

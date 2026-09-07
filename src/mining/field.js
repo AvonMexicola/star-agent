@@ -6,6 +6,8 @@ import {MOON_POSITION,MOON_RADIUS,RESOURCE_PROVINCES,moonResources} from '../moo
 import {bodySurfacePoint,bodySurfaceNormal,bodyAt,SELENE} from '../celestial.js';
 import {nearbyConstructionDeposits,constructionDepositCell} from './construction-deposits.js';
 import {FieldCache} from '../inventory-cache.js';
+import {LooseStones} from './loose-stones.js';
+import {createStoneMaterial} from './stone-material.js';
 import {nearbySurfaceDeposits,surfaceDepositCell,SURFACE_DEPOSIT_RANGE,SURFACE_DEPOSIT_WORKERS,SURFACE_DEPOSIT_SPACING} from './surface-deposits.js';
 
 /** Bounded live excavation domains over the deterministic ring population. */
@@ -29,6 +31,7 @@ export class MiningField {
       if(Number.isSafeInteger(id)&&id>=0&&id<RING_POPULATION)this.rings.hiddenIds.add(id);
     }
     this.fieldCache=new FieldCache(scene,this.ground.position);
+    this.stones=new LooseStones(scene,this.store);
     this.surfaceRock=null;this.surfaceSurvey=null;this.regionalRocks=new Map();this.regionalDescriptors=[];this.regionalAimed=null;
     this.provinces=RESOURCE_PROVINCES.map(province=>({...province,rockId:`selene-resource-v1-${province.id}`,position:bodySurfacePoint(new THREE.Vector3(...province.direction),SELENE,1.35)}));
     this.cache=new Map();this.aimedDescriptor=null;this.inspectState=null;this.active=this.ground;this.target=null;this.spaceMode=false;
@@ -87,7 +90,7 @@ export class MiningField {
       this.regionalQueryKey=key;this.regionalQueryOrigin=origin.clone();
       this.regionalDescriptors=body.id==='selene'?nearbySurfaceDeposits(origin,SURFACE_DEPOSIT_RANGE+2*SURFACE_DEPOSIT_SPACING):nearbyConstructionDeposits(origin,SURFACE_DEPOSIT_RANGE+2*SURFACE_DEPOSIT_SPACING);
     }
-    const nearby=this.regionalDescriptors.filter(d=>d.position.distanceTo(origin)<SURFACE_DEPOSIT_RANGE).sort((a,b)=>a.position.distanceToSquared(origin)-b.position.distanceToSquared(origin));
+    const nearby=[...this.regionalDescriptors,...this.stones.query(origin)].filter(d=>d.position.distanceTo(origin)<SURFACE_DEPOSIT_RANGE).sort((a,b)=>a.position.distanceToSquared(origin)-b.position.distanceToSquared(origin));
     if(this.regionalAimed&&!nearby.some(d=>d.id===this.regionalAimed&&d.position.distanceTo(origin)<80))this.regionalAimed=null;
     const priority=this.regionalAimed?[...nearby.filter(d=>d.id===this.regionalAimed),...nearby.filter(d=>d.id!==this.regionalAimed)]:nearby;
     const wanted=new Set(priority.slice(0,SURFACE_DEPOSIT_WORKERS).map(d=>d.id));
@@ -97,10 +100,11 @@ export class MiningField {
     }
     for(const d of priority.slice(0,SURFACE_DEPOSIT_WORKERS)){
       if(this.regionalRocks.has(d.id)||this.regionalRocks.size>=SURFACE_DEPOSIT_WORKERS)continue;
-      const rock=new MineableRock(this.scene,null,{store:this.store,rockId:d.id,position:d.position,quaternion:d.quaternion,initialField:createDensity((x,y,z)=>asteroidField(x,y,z,d.variant)),resourceWeights:d.resourceWeights});
+      const rock=new MineableRock(this.scene,null,{store:this.store,rockId:d.id,position:d.position,quaternion:d.quaternion,initialField:d.looseStone?this.stones.initialField(d):createDensity((x,y,z)=>asteroidField(x,y,z,d.variant)),resourceWeights:d.resourceWeights,...(d.looseStone?{material:createStoneMaterial()}:{})});
       rock.onExtract=this.extracted;rock.descriptor=d;rock.group.name=`${d.name} ${d.id}`;this.regionalRocks.set(d.id,rock);
     }
     for(const rock of this.regionalRocks.values())rock.update(origin);
+    this.stones.update(origin,this.regionalRocks);
     this.nearestRegional=nearby[0]??null;
     this.regionalOrigin=origin.clone();
   }
@@ -132,10 +136,17 @@ export class MiningField {
   inspectTarget(origin,direction,range=8){
     const probe=Math.max(range,80),ready=this.readyRaycast(origin,direction,probe);
     const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
-    const raw=this.rings.raycast?.(origin,direction,probe,{exclude,includeHidden:true});
+    const ring=this.rings.raycast?.(origin,direction,probe,{exclude,includeHidden:true});
+    const stone=this.stones.raycast(origin,direction,probe,new Set([...this.regionalRocks].filter(([,r])=>r.ready).map(([id])=>id)));
+    const raw=stone&&(!ring||stone.distance<ring.distance)?stone:ring;
     const hit=ready&&(!raw||ready.distance<=raw.distance)?ready:raw;
     if(!hit||this.fieldCache.raycast(origin,direction,hit.distance)){this.aimedDescriptor=null;this.regionalAimed=null;this.inspectState=null;return null;}
     const descriptor=hit.descriptor??hit.rock?.descriptor;
+    if(descriptor?.looseStone&&!hit.rock){
+      this.aimedDescriptor=null;this.regionalAimed=descriptor.id;
+      const rock=this.regionalRocks.get(descriptor.id);if(rock)this.active=rock;
+      return this.inspectState={status:hit.distance>range?'out-of-range':!this.store.canEditRock(descriptor.id)?'save-full':'preparing',name:descriptor.name,distance:hit.distance,mineable:true,rockId:descriptor.id,point:hit.point};
+    }
     if(!descriptor||hit.rock&&!hit.rock.space){
       this.aimedDescriptor=null;this.regionalAimed=descriptor?.regional?descriptor.id:null;this.active=hit.rock;
       return this.inspectState={status:hit.distance>range?'out-of-range':!this.store.canEditRock(hit.rock.rockId)?'save-full':'ready',name:descriptor?.name??'Crescent deposit',distance:hit.distance,mineable:true,rockId:hit.rock.rockId,point:hit.point};
@@ -156,6 +167,7 @@ export class MiningField {
     if(nearest){
       const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
       if(this.rings.raycast?.(origin,direction,nearest.distance,{exclude}))nearest=null;
+      if(nearest&&this.stones.raycast(origin,direction,nearest.distance,new Set([...this.regionalRocks].filter(([,r])=>r.ready).map(([id])=>id))))nearest=null;
     }
     this.target=nearest?.rock??null;return nearest;
   }
@@ -174,7 +186,8 @@ export class MiningField {
       }else result=rock[method](a,point);
       point=result.point;hit ||= result.hit;grounded ||= Boolean(result.grounded);
     }
-    return {point,hit,grounded};
+    const stones=this.stones.constrain(method,a,point,new Set([...this.regionalRocks.keys()]));
+    return {point:stones.point,hit:hit||stones.hit,grounded:grounded||stones.grounded};
   }
   constrainWalker(a,b){return this.constrainSurface('constrainWalker',a,b);}
   constrainEVA(a,b){const surface=this.constrainSurface('constrainEVA',a,b);return surface.hit?surface:this.constrainSpace(a,b,.35);}
@@ -205,8 +218,8 @@ export class MiningField {
     }
     return {point,hit};
   }
-  get state(){return {...this.active.state,inspection:this.inspectState?{...this.inspectState,point:this.inspectState.point.toArray()}:null,pending:this.pending,groundRevision:this.ground.snapshot.revision,space:this.spaceMode,targetName:this.targetName,activeRock:this.surveyDescriptor?.key??this.active.rockId,activeRevision:this.surveyDescriptor?this.store.state.rocks?.[this.surveyDescriptor.key]?.revision??0:this.active.snapshot.revision,activePosition:this.position.toArray(),debrisBrake:Boolean(this.debrisBrake),surfaceRock:this.surfaceRock?{id:this.surfaceRock.rockId,name:this.surfaceRock.descriptor.name,direction:this.surfaceRock.descriptor.direction,...this.surfaceRock.state}:null,nearestRegional:this.nearestRegional?{id:this.nearestRegional.id,name:this.nearestRegional.name,position:this.nearestRegional.position.toArray(),direction:this.nearestRegional.direction,dominant:this.nearestRegional.dominant,resourceWeights:this.nearestRegional.resourceWeights,distance:this.nearestRegional.position.distanceTo(this.regionalOrigin),ready:Boolean(this.regionalRocks.get(this.nearestRegional.id)?.ready)}:null,regionalDeposits:[...this.regionalRocks.values()].map(r=>({id:r.rockId,name:r.descriptor.name,dominant:r.descriptor.dominant,variant:r.descriptor.variant,distance:r.position.distanceTo(this.regionalOrigin),...r.state})),spaceRocks:[...this.cache.values()].map(r=>({id:r.rockId,...r.state}))};}
-  dispose(){this.surfaceRock?.dispose();this.fieldCache.dispose();this.ground.dispose();for(const rock of [...this.cache.values(),...this.regionalRocks.values()])rock.dispose();}
+  get state(){return {...this.active.state,looseStones:this.stones.stats,inspection:this.inspectState?{...this.inspectState,point:this.inspectState.point.toArray()}:null,pending:this.pending,groundRevision:this.ground.snapshot.revision,space:this.spaceMode,targetName:this.targetName,activeRock:this.surveyDescriptor?.key??this.active.rockId,activeRevision:this.surveyDescriptor?this.store.state.rocks?.[this.surveyDescriptor.key]?.revision??0:this.active.snapshot.revision,activePosition:this.position.toArray(),debrisBrake:Boolean(this.debrisBrake),surfaceRock:this.surfaceRock?{id:this.surfaceRock.rockId,name:this.surfaceRock.descriptor.name,direction:this.surfaceRock.descriptor.direction,...this.surfaceRock.state}:null,nearestRegional:this.nearestRegional?{id:this.nearestRegional.id,name:this.nearestRegional.name,position:this.nearestRegional.position.toArray(),direction:this.nearestRegional.direction,dominant:this.nearestRegional.dominant,resourceWeights:this.nearestRegional.resourceWeights,distance:this.nearestRegional.position.distanceTo(this.regionalOrigin),ready:Boolean(this.regionalRocks.get(this.nearestRegional.id)?.ready)}:null,regionalDeposits:[...this.regionalRocks.values()].map(r=>({id:r.rockId,name:r.descriptor.name,dominant:r.descriptor.dominant,variant:r.descriptor.variant,distance:r.position.distanceTo(this.regionalOrigin),...r.state})),spaceRocks:[...this.cache.values()].map(r=>({id:r.rockId,...r.state}))};}
+  dispose(){this.surfaceRock?.dispose();this.fieldCache.dispose();this.ground.dispose();this.stones.dispose();for(const rock of [...this.cache.values(),...this.regionalRocks.values()])rock.dispose();}
 }
 
 export function ringSurveyPoint(){const rock=ringRock(5);return new THREE.Vector3(...rock.position).add(new THREE.Vector3(...MOON_POSITION));}
