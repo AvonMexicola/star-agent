@@ -107,7 +107,7 @@ test('polished exports retain concrete vertex wear, shared status emitters and b
    concrete=true;assert.equal(o.material.vertexColors,true,id);const colors=o.geometry.getAttribute('color');assert.ok(colors,id);
    for(let i=0;i<colors.count;i++){min=Math.min(min,colors.getX(i));max=Math.max(max,colors.getX(i));}
   }});
-  if(concrete){assert.ok(max-min>.05,`${id} spatial wear variation`);assert.ok(materials.has('WhiteArmour'));assert.ok(materials.has('MintStatus'));}
+  if(concrete){assert.ok(max-min>.05,`${id} spatial wear variation`);if(PIECES[id].roofShape)assert.ok(materials.has('EdgeSteel'),`${id} passive roof coping`);else{assert.ok(materials.has('WhiteArmour'));assert.ok(materials.has('MintStatus'));}}
   if(['mainframe','doorway'].includes(id)){const status=json.materials.find(m=>m.name==='MintStatus');assert.ok(status.emissiveFactor.some(v=>v>0),`${id} authored light diffuser`);}
   assert.ok(json.materials.length<=6,id);assert.ok(json.meshes.length<=(id==='doorway'?10:5),id);
  }
@@ -126,4 +126,19 @@ test('rear service overlays and floor status layers have distinct visible depths
   assert.ok(yFor('MintStatus')>yFor('WhiteArmour')+.0003,`${id} status above armour`);
   assert.ok(yFor('WhiteArmour')>yFor('MineralConcrete')+.001,`${id} armour above concrete`);
  }
+});
+
+test('authored triangular, curved and ramp surfaces agree with physical support and leave corners empty',async()=>{
+ const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');const {Raycaster,Vector3}=await import('three');
+ for(const id of ['foundation-triangle','floor-triangle','foundation-quarter','floor-quarter','foundation-ramp']){
+  const {bytes}=glb(id),scene=(await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;scene.updateMatrixWorld(true);
+  for(const [x,z]of [[0,-.8],[0,0],[.2,.8]]){const hits=new Raycaster(new Vector3(x,3,z),new Vector3(0,-1,0)).intersectObject(scene,true);assert.ok(hits.length,id);assert.ok(Math.abs(hits[0].point.y-sampleLocalSupport(id,x,z))<.025,`${id}: exported top matches walking support`);}
+  if(id!=='foundation-ramp'){const hits=new Raycaster(new Vector3(1.8,3,1.8),new Vector3(0,-1,0)).intersectObject(scene,true);assert.equal(hits.length,0,`${id}: no invisible corner`);}
+ }
+});
+
+test('a character can step off a diagonal slab corner without getting caught while falling',()=>{
+ const slab={type:'foundation',position:[-4,.3,4],rotation:0};let p=[-6.0257,2.0491,6.2289];
+ for(let i=0;i<20;i++)p=constrainBuildStep(p,[p[0]-.04,p[1]-.02,p[2]+.025],[slab],{eyeHeight:1.75}).point;
+ assert.ok(p[0]<-6.7,JSON.stringify(p));assert.ok(p[2]>6.6,JSON.stringify(p));
 });

@@ -1,0 +1,350 @@
+{
+  "id": "kestrel-shopkeeper",
+  "displayName": "Kestrel shopkeeper",
+  "asset": {
+    "path": "public/models/characters/kestrel-shopkeeper.glb",
+    "bytes": 1511512,
+    "sha256": "cb6238203ea14e55789ece92d912af04a087bf546960ab540e8597b366fb1e97"
+  },
+  "sourceArchive": {
+    "path": "assets/characters/kestrel-shopkeeper/source/source-animation-pack.zip",
+    "bytes": 49087379,
+    "sha256": "549dc3627433c39238861af916d2cda52f44e92a0367f7ab5c69a7e5d33adc78"
+  },
+  "idleClips": [
+    {
+      "name": "idle-02",
+      "duration": 2.366666555404663,
+      "source": {
+        "path": "assets/characters/kestrel-shopkeeper/source/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_02_withSkin.glb",
+        "bytes": 8472900,
+        "sha256": "21f03f6fb2650039ccec8ee53cc6a18ce299938190cdb6161c1d99fa382c0e31"
+      }
+    },
+    {
+      "name": "idle-03",
+      "duration": 5.366666793823242,
+      "source": {
+        "path": "assets/characters/kestrel-shopkeeper/source/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_03_withSkin.glb",
+        "bytes": 8511144,
+        "sha256": "138ad73260901eea15ab3afec06eff55d363ed5ba758436369c8c8960e21bd18"
+      }
+    },
+    {
+      "name": "idle-11",
+      "duration": 1.9333332777023315,
+      "source": {
+        "path": "assets/characters/kestrel-shopkeeper/source/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_11_withSkin.glb",
+        "bytes": 8468108,
+        "sha256": "2b42751b974a72bababf052b3ccf76955ee2584974d0fb8ea60b4d666f55e827"
+      }
+    },
+    {
+      "name": "idle-12",
+      "duration": 6.0333333015441895,
+      "source": {
+        "path": "assets/characters/kestrel-shopkeeper/source/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_12_withSkin.glb",
+        "bytes": 8513416,
+        "sha256": "23d514d35b96335f490693c0438cb454549dbcd56ad19390e2ea23489396042c"
+      }
+    }
+  ],
+  "dimensions": {
+    "width": 1.7411633729934692,
+    "height": 2.217550253495574,
+    "length": 1.5753154754638672
+  },
+  "boundsMetres": {
+    "min": [
+      -0.937677800655365,
+      -0.00012681446969509125,
+      -0.7056881189346313
+    ],
+    "max": [
+      0.8034855723381042,
+      2.217423439025879,
+      0.8696273565292358
+    ]
+  },
+  "triangles": 19699,
+  "vertices": 14894,
+  "materials": 1,
+  "skins": 1,
+  "joints": 24,
+  "texture": {
+    "format": "WebP",
+    "maximumEdge": 1024,
+    "sourceAlbedoPreserved": true
+  },
+  "material": {
+    "emission": 0,
+    "metallic": 0,
+    "roughness": 0.72,
+    "reason": "Remove source full-albedo self-light and default-metal error; matte mixed workwear finish"
+  },
+  "normalization": {
+    "anatomicalLandmark": "Idle-02 initial head/hair crown over boot soles",
+    "targetHeightMetres": 1.8,
+    "scale": 1.1277067422016647,
+    "facing": "-Z",
+    "up": "+Y",
+    "sourceCenterXZ": [
+      0.0215606689453125,
+      0.0025115907192230225
+    ],
+    "rootTravelRemoved": false,
+    "reason": "Closed idle loops retain authored horizontal weight shifts; only sub-centimetre sole grounding is added."
+  },
+  "grounding": [
+    {
+      "name": "idle-02",
+      "sourceMinimumGround": 0.009854511357843876,
+      "sourceMaximumGround": 0.01130206324160099,
+      "samples": 72,
+      "wrapperTranslationYRange": [
+        -0.012745412918343038,
+        -0.01111299889934342
+      ]
+    },
+    {
+      "name": "idle-03",
+      "sourceMinimumGround": 0.008958522230386734,
+      "sourceMaximumGround": 0.029469674453139305,
+      "samples": 163,
+      "wrapperTranslationYRange": [
+        -0.03323315057129335,
+        -0.010102585919370615
+      ]
+    },
+    {
+      "name": "idle-11",
+      "sourceMinimumGround": 0.06777667999267578,
+      "sourceMaximumGround": 0.06828364729881287,
+      "samples": 59,
+      "wrapperTranslationYRange": [
+        -0.07700392944099176,
+        -0.07643221899178515
+      ]
+    },
+    {
+      "name": "idle-12",
+      "sourceMinimumGround": -0.007017423398792744,
+      "sourceMaximumGround": -0.005936519242823124,
+      "samples": 182,
+      "wrapperTranslationYRange": [
+        0.006694652775341558,
+        0.007913595679702299
+      ]
+    }
+  ],
+  "optimization": {
+    "sourceTriangles": 31252,
+    "runtimeTriangles": 19699,
+    "runtimeVertices": 14894,
+    "protectedSourceVertices": 5193,
+    "sourceBlenderCorrespondenceMax": 4.144121669469314e-05,
+    "restSurfaceErrorLocalMax": 0.51922607421875,
+    "restSurfaceErrorLocalP95": 0.1276615560054779,
+    "protectedRestSurfaceErrorLocalMax": 0.0,
+    "maxDiscardedSkinWeight": 0.0034319553524255753,
+    "uvVFlipForGltf": true,
+    "sourceToBlenderMesh": [
+      [
+        100.00000854106578,
+        4.3982088851079207e-07,
+        -1.3882819266815398e-05,
+        -1.640328733616957e-06
+      ],
+      [
+        -1.787321272066924e-06,
+        3.098378432930815e-06,
+        -100.00001613527783,
+        -5.023110219326554e-06
+      ],
+      [
+        -1.3360973194861575e-05,
+        100.00002224324801,
+        -2.3603823260387458e-06,
+        -1.8131350330463647e-05
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "validation": {
+    "kind": "actual runtime GLB Blender reimport, CPU skin evaluation",
+    "samplesHz": 60,
+    "clips": [
+      {
+        "name": "idle-02",
+        "duration": 2.366666555404663,
+        "sampleCount": 143,
+        "bounds": {
+          "min": [
+            -0.6711742877960205,
+            -8.838251233100891e-07,
+            -0.3005920946598053
+          ],
+          "max": [
+            0.6821227073669434,
+            1.8000000715255737,
+            0.29875946044921875
+          ]
+        },
+        "minimumGroundY": -8.838251233100891e-07,
+        "maximumGroundY": 2.5425106287002563e-07,
+        "loopEndpointMaxVertexDistance": 4.271197894026381e-05
+      },
+      {
+        "name": "idle-03",
+        "duration": 5.366666793823242,
+        "sampleCount": 324,
+        "bounds": {
+          "min": [
+            -0.937677800655365,
+            -0.00012681446969509125,
+            -0.7056881189346313
+          ],
+          "max": [
+            0.8034855723381042,
+            2.217423439025879,
+            0.8696273565292358
+          ]
+        },
+        "minimumGroundY": -0.00012681446969509125,
+        "maximumGroundY": 0.00013304874300956726,
+        "loopEndpointMaxVertexDistance": 2.7931331341689044e-06
+      },
+      {
+        "name": "idle-11",
+        "duration": 1.9333332777023315,
+        "sampleCount": 117,
+        "bounds": {
+          "min": [
+            -0.5130975246429443,
+            -7.152557373046875e-07,
+            -0.29640939831733704
+          ],
+          "max": [
+            0.6103280782699585,
+            1.8278725147247314,
+            0.29506829380989075
+          ]
+        },
+        "minimumGroundY": -7.152557373046875e-07,
+        "maximumGroundY": 1.4156103134155273e-07,
+        "loopEndpointMaxVertexDistance": 0.002468532580007812
+      },
+      {
+        "name": "idle-12",
+        "duration": 6.0333333015441895,
+        "sampleCount": 363,
+        "bounds": {
+          "min": [
+            -0.6334724426269531,
+            -2.752058207988739e-07,
+            -0.3151845932006836
+          ],
+          "max": [
+            0.6003304719924927,
+            1.8504621982574463,
+            0.24166856706142426
+          ]
+        },
+        "minimumGroundY": -2.752058207988739e-07,
+        "maximumGroundY": 2.630986273288727e-07,
+        "loopEndpointMaxVertexDistance": 0.00025494117511435125
+      }
+    ],
+    "gameEvidence": false,
+    "preservation": {
+      "originalAnimationChannelsPerClip": 72,
+      "originalAnimationFloatBuffers": "byte-identical",
+      "originalNodesAndSkin": "identical before one outer normalization node",
+      "inverseBindBuffer": "byte-identical",
+      "geometry": "derived protected reduction; source archive unchanged"
+    },
+    "crossfades": [
+      {
+        "from": "idle-02",
+        "to": "idle-03",
+        "duration": 0.65,
+        "minimumGroundY": -0.0023601828143000603,
+        "maximumGroundY": -6.51925802230835e-08,
+        "bounds": {
+          "min": [
+            -0.687014102935791,
+            -0.0023601828143000603,
+            -0.6547302603721619
+          ],
+          "max": [
+            0.7121390700340271,
+            1.9667353630065918,
+            0.297726571559906
+          ]
+        }
+      },
+      {
+        "from": "idle-03",
+        "to": "idle-11",
+        "duration": 0.65,
+        "minimumGroundY": -0.0027401968836784363,
+        "maximumGroundY": 7.061287760734558e-06,
+        "bounds": {
+          "min": [
+            -0.5818368792533875,
+            -0.0027401968836784363,
+            -0.642481803894043
+          ],
+          "max": [
+            0.70134037733078,
+            1.8271459341049194,
+            0.30028027296066284
+          ]
+        }
+      },
+      {
+        "from": "idle-11",
+        "to": "idle-12",
+        "duration": 0.65,
+        "minimumGroundY": -0.0009883791208267212,
+        "maximumGroundY": 3.487803041934967e-07,
+        "bounds": {
+          "min": [
+            -0.6164682507514954,
+            -0.0009883791208267212,
+            -0.31514808535575867
+          ],
+          "max": [
+            0.6090134382247925,
+            1.849083662033081,
+            0.28101980686187744
+          ]
+        }
+      },
+      {
+        "from": "idle-12",
+        "to": "idle-02",
+        "duration": 0.65,
+        "minimumGroundY": -0.0035335426218807697,
+        "maximumGroundY": 3.4458935260772705e-07,
+        "bounds": {
+          "min": [
+            -0.6685714721679688,
+            -0.0035335426218807697,
+            -0.3150395452976227
+          ],
+          "max": [
+            0.6791268587112427,
+            1.8500820398330688,
+            0.29869070649147034
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -337,7 +337,7 @@ follow-up were still pending when this correction entry was written.
 Shadow follow-up runtime025e587 changes only the two concourse spotlights’ shadow
 settings:1024² maps, depth bias−0.001 and normal bias0.04. Astra caught poster/tile
 banding on29885c9; root’s bias-only trial cleared paper but left coarse rack
-shadows before the resolution refinement. Final GPU medians at1440×900/AMD860M
+shadows before the resolution refinement. Final GPU medians at 1440×900/AMD 860M
 were5.314ms hub and7.992ms hangar; CPU p95 remains10.1/12ms respectively. Keep
 these separate from the earlier slower runs and the recorded29885c9 interaction
 journey. Exact provenance and the final independent disposition belong to the
@@ -475,3 +475,72 @@ review passes the corrected geometry, optional-load fallback and LOD physics.
 See `docs/qa/station-exterior/production-record.md` for exact hashes, failed checks,
 actual Chromium images and input coverage. Silhouette 4.0/5 is a geometry-direction
 score; materials 2.8/5, final art approval and hardware timing remain pending.
+
+
+## Approved export is separate from browser download capability — 2026-09-07
+
+Cees explicitly approved downloading the two retained GPT-image/T2 originals.
+Both normal UI exports were then attempted and failed with Chromium
+ERR_BLOCKED_BY_CLIENT at assets.meshy.ai; no files arrived. This is a new observed
+browser block, not a continuation of the historical user refusal. Preserve
+export-receipt.json; do not ask for the same approval again merely because an
+older receipt says downloads were denied. Do not infer the responsible blocker
+from the generic error or bypass browser security. Upload access already works.
+
+Once native GLBs are local, use blender/review_shop_soft_props.py for three
+labelled studio views and mesh/UV/material/bounds metadata, then the existing
+finish_shop_soft_prop.py intake. A prepared inspector or studio render is not
+proof of actual Meshy source quality, game scale, performance or art acceptance.
+
+
+## Manual selected GLB intake and conservative cleanup — 2026-09-07
+
+Cees manually downloaded the acceptable KESTREL GPT-image T2 original. Its
+4,145-triangle count matched the intended candidate; file hash and native contents
+were checked before copying into versioned raw/. Do not substitute a similarly
+named older download: the earlier kestrel_meshy_clean file has 34,768 triangles.
+Only KESTREL is currently located; jacket availability remains separate.
+
+Source: one material, finite UVs, 2048px base-color/metallic-roughness/normal maps.
+Inspect three studio angles before reduction: an attractive top alone can hide
+a hollow bottom or collapsed folded end. This original has a complete underside
+and coherent strap/fold geometry. The prepared Blender intake trimmed just 145
+triangles to 4,000, uniformly fit dimensions to about .279×.130×.291m, set a
+base-centre origin and exported three 1024px WebP maps in a 268,872-byte GLB.
+The source remains intact. Studio reimport checks orientation, retained detail,
+UVs and textures; actual game placement/shadows/materials and review remain the
+next gate, never inferred from a successful export.
+
+For this installed Blender build, use `env ALSOFT_DRIVERS=null` for headless
+CPU inspection/cleanup. `-noaudio` alone still let OpenAL/PipeWire hang during
+shutdown. This is a process-local audio selection; it does not change desktop
+settings. Both cleanup and cleaned studio render exited 0 with that setting.
+Installed-addon cattrs/registration warnings are separate and were not repaired
+as part of the prop work.
+
+
+First actual-game review found a detached dark shadow despite mesh minY and
+authored insert top both equalling -6.908m. Do not move an accurately supported
+asset downward merely to conceal light bias. This small static sample now keeps
+shadow receiving, disables its dynamic caster, and uses one shared 64² feathered
+contact-AO plane at base+.00075m, inside its .26×.27m footprint. It is explicitly
+approximate static contact shading, not a dynamic light shadow. Global lights
+and other merchandise remain unchanged. Count that extra 2-triangle draw and
+material separately from the 4000-triangle, one-material exported GLB.
+
+The dev-only props page also needed a Vite-resolved dependency bridge for the
+GLTFLoader's bare Three.js import. Raw public JavaScript cannot assume addon
+imports are transformed. Its adaptive grid had misleading 1m wording; the grid
+is now actually fixed to 1m cells alongside the 1.8m human silhouette. Validate
+reference graphics themselves before using their labels as scale evidence.
+
+
+The completed KESTREL example passed independent Astra visual review4.00/5
+after the contact/viewer corrections,186unit tests, build and four focused
+browser cases (touch after isolating host-controller input). Preserve the first
+failed touch attempt as fixture history; avoid overwriting earlier test output
+when a focused rerun uses the same Playwright outputDir. Final screenshots and
+review are in docs/qa/station-soft-props/ and station-shop-props-review.md.
+Draft integration PR57 contains the source-to-game pipeline. This is the current
+worked example for future small static props; it is not a whole-scene performance
+waiver or proof that every Meshy result will pass.

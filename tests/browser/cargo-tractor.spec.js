@@ -1,0 +1,78 @@
+import {test,expect} from '@playwright/test';import {mkdir,writeFile} from 'node:fs/promises';
+const evidence=process.env.TOOL_ART_EVIDENCE||'/home/cees/.cache/star-agent-tractor/evidence';
+const frames=p=>p.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
+async function setup(page,hull='nomad',fixture=false){
+ await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ await page.addInitScript(()=>{window.cargoPad={id:'SBU standard Gamepad',mapping:'standard',index:0,connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>[window.cargoPad]});});await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
+ await page.goto(`/?dev=1&ship=${hull}&start=hangar&intro=0&debug&seed=7291${fixture?'&cargo-test=1':''}`);await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&window.starAgent.state.controller.armed&&!window.starAgent.state.transiting,undefined,{timeout:90000});
+ expect(await page.evaluate(()=>window.starAgent.state.dev)).not.toBe(null);expect(await page.evaluate(()=>window.starAgent.state.station.docked)).toBe(true);
+ const button=async(i,pressed)=>{await page.evaluate(({i,pressed})=>window.cargoPad.buttons[i]={pressed,value:+pressed},{i,pressed});await frames(page);};const tap=async i=>{await button(i,true);await button(i,false);};
+ const choose=async key=>{for(let i=0;i<75;i++){if(await page.evaluate(k=>document.activeElement?.dataset.controllerKey===k,key)){await tap(0);return;}await tap(13);}throw Error(`Missing controller action ${key}`);};
+ return {tap,button,choose,errors};
+}
+/** Read-only pose feedback, writes standard sticks only. */
+async function walk(page,target,frame='ship',look=null){
+ await page.evaluate(({target,frame,look})=>{window.cargoWalkDone=false;window.cargoWalkTimer=setInterval(()=>{const n=window.starAgent.navigation,pad=window.cargoPad,goal=frame==='world'?n.position.clone().fromArray(target):frame==='ship'?n.fromShipLocal(n.position.clone().fromArray(target)):n.station.toWorld(n.position.clone().fromArray(target),n.position.clone());const delta=goal.sub(n.position),up=frame==='world'?n.normal:n.station?.up??n.normal;delta.projectOnPlane(up);if(delta.length()<.2){pad.axes=[0,0,0,0];window.cargoWalkDone=true;clearInterval(window.cargoWalkTimer);return;}const local=delta.applyQuaternion(n.orientation.clone().invert());pad.axes[0]=Math.max(-1,Math.min(1,local.x));pad.axes[1]=Math.max(-1,Math.min(1,local.z));pad.axes[2]=0;pad.axes[3]=0;},30);},{target,frame,look});
+ try{await page.waitForFunction(()=>window.cargoWalkDone,undefined,{timeout:35000});}catch(e){console.log('Walk failed',target,await page.evaluate(()=>({position:window.starAgent.state.position,local:window.starAgent.state.shipLocal,station:window.starAgent.state.station.local,mode:window.starAgent.state.mode,interaction:window.starAgent.state.interaction})));throw e;}finally{await page.evaluate(()=>{clearInterval(window.cargoWalkTimer);window.cargoPad.axes=[0,0,0,0];});}await frames(page);
+}
+async function fit(page){const result=await page.evaluate(()=>{const d=document.querySelector('#trading-dialog'),r=d.getBoundingClientRect(),c=d.querySelector('.gameplay-content')??d;return {width:[c.clientWidth,c.scrollWidth],height:[c.clientHeight,c.scrollHeight],rows:[...d.querySelectorAll('.trade-content article')].flatMap(row=>{const r=row.getBoundingClientRect();return [...row.querySelectorAll('button')].filter(b=>b.getBoundingClientRect().bottom>r.bottom+2).map(b=>b.textContent);}),clipped:[...d.querySelectorAll('button')].filter(e=>e.getClientRects().length).filter(e=>{const b=e.getBoundingClientRect();return b.top<r.top-2||b.bottom>r.bottom+2||b.left<r.left-2||b.right>r.right+2;}).map(b=>b.textContent)};});expect(result.clipped).toEqual([]);expect(result.rows).toEqual([]);expect(result.height[1]).toBeLessThanOrEqual(result.height[0]+2);return result;}
+async function aim(page,point){await page.evaluate(point=>{window.cargoAimDone=false;window.cargoAimTimer=setInterval(()=>{const n=window.starAgent.navigation,pad=window.cargoPad,target=n.fromShipLocal(n.position.clone().fromArray(point)).sub(n.position).applyQuaternion(n.orientation.clone().invert()),yaw=Math.atan2(target.x,-target.z),pitch=Math.atan2(target.y,Math.hypot(target.x,target.z));if(Math.abs(yaw)<.02&&Math.abs(pitch)<.02){pad.axes=[0,0,0,0];clearInterval(window.cargoAimTimer);window.cargoAimDone=true;return;}const a=x=>Math.abs(x)<.015?0:Math.sign(x)*Math.min(1,.19+Math.abs(x)*2);pad.axes[2]=a(yaw);pad.axes[3]=a(-pitch);},30);},point);await page.waitForFunction(()=>window.cargoAimDone,undefined,{timeout:12000});await frames(page);}
+async function shipment(page,hull,size){
+ const {MiningStore}=await import('../../src/mining/store.js'),{emptyCommerce,ensureAccount}=await import('../../src/trading/model.js'),{placeCrate}=await import('../../src/cargo/grid.js');
+ const values=new Map(),storage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v)},store=new MiningStore(storage),s=emptyCommerce();ensureAccount(s,'local-player');s.ships[`local-player:${hull}`].crates.push(placeCrate(hull,[],{id:'tractor-fixture',resource:'copper',sbu:size}));store.write({...store.state,commerce:s});await page.addInitScript(entries=>{window.__starAgentCargoTestSeed=entries;},[...values]);
+}
+test('controller physically reaches2SBU, equips tractor, moves, safely interrupts and secures it',async({page,browser})=>{
+ await shipment(page,'nomad',2);const {tap,button,choose,errors}=await setup(page,'nomad',true);
+ await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');await walk(page,[0,2.75,2.6]);await aim(page,[1.24,1.3,2.76]);await tap(9);await choose('tab-trade');await choose('view-cargo');await fit(page);await choose('equip-tractor');await page.waitForFunction(()=>window.starAgent.state.trading.tractor.active&&window.starAgent.state.controller.armed);
+ await button(7,true);await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held&&window.starAgent.state.trading.tractor.beam,undefined,{timeout:12000});
+ const initial=await page.evaluate(()=>window.starAgent.state.trading.loose[0].position);await tap(12);await page.waitForFunction(initial=>Math.hypot(...window.starAgent.state.trading.loose[0].position.map((v,i)=>v-initial[i]))>.3,initial,{timeout:6000});
+ expect(await page.evaluate(()=>window.starAgent.state.mining.tool.item)).toBe('tractor-beam-tool');await page.screenshot({path:`${evidence}/nomad-tractor.png`});expect(await page.evaluate(()=>window.starAgent.state.trading.account.carried)).toBe(null);expect(await page.evaluate(()=>window.starAgent.state.mining.tool.beaming)).toBe(false);
+ await tap(9);await expect(page.locator('dialog[open]')).toBeVisible();await page.waitForFunction(()=>!window.starAgent.state.trading.loose[0].holder);const stopped=await page.evaluate(()=>window.starAgent.state.trading.loose[0].position);
+ await button(7,false);await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await button(7,true);await tap(1);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);expect(await page.evaluate(()=>window.starAgent.state.trading.loose[0].position)).toEqual(stopped);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ const local=await page.evaluate(()=>window.starAgent.navigation.toShipLocal(window.starAgent.navigation.position.clone().fromArray(window.starAgent.state.trading.loose[0].position)).toArray());await aim(page,local);await button(7,true);await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held&&window.starAgent.state.trading.tractor.slot);await tap(2);await page.waitForFunction(()=>window.starAgent.state.trading.loose.length===0);expect(await page.evaluate(()=>window.starAgent.state.trading.ships.find(s=>s.hull==='nomad').crates[0].sbu)).toBe(2);await button(7,false);await tap(15);expect(await page.evaluate(()=>window.starAgent.state.trading.tractor.active)).toBe(false);
+ await tap(9);await choose('tab-trade');await choose('view-cargo');await page.setViewportSize({width:390,height:844});await fit(page);await page.screenshot({path:`${evidence}/tractor-cargo-phone.png`});await tap(1);expect(errors).toEqual([]);await writeFile(`${evidence}/controller.json`,JSON.stringify({browser:browser.version(),errors,fixture:'2SBU shipment preloaded; all subsequent equipment, movement and UI use standard Gamepad',physicalController:false,state:await page.evaluate(()=>window.starAgent.state)},null,2));
+});
+test('Atlas64SBU tractor is visible, moves physically, and touch can release/relock/secure it',async({page,browser})=>{
+ await shipment(page,'atlas',64);const {tap,errors}=await setup(page,'atlas',true);
+ // Same physical upper-deck/crew-lift route as fleet-development.spec.js.
+ // Read navigation for feedback; only the standard Gamepad receives writes.
+ const walkAtlas=async(x,z)=>{
+  const started=Date.now();
+  try{
+   while(Date.now()-started<35000){
+    const distance=await page.evaluate(({x,z})=>{
+     const n=window.starAgent.navigation,p=n.toShipLocal(),d=n.position.clone().set(x-p.x,0,z-p.z),distance=d.length();
+     d.applyQuaternion(n.shipOrientation).applyQuaternion(n.orientation.clone().invert());
+     const speed=distance>.7?.7:.3;
+     window.cargoPad.axes[0]=distance>.14?d.x/distance*speed:0;
+     window.cargoPad.axes[1]=distance>.14?d.z/distance*speed:0;
+     return distance;
+    },{x,z});
+    if(distance<.14){await tap(6);return;}
+    await frames(page);
+   }
+   throw Error(`Physical Atlas walk to ${x},${z} stopped at ${await page.evaluate(()=>window.starAgent.state.shipLocal)}`);
+  }finally{await page.evaluate(()=>window.cargoPad.axes.fill(0));}
+ };
+ const liftReady=async y=>page.waitForFunction(y=>{const lift=window.starAgent.state.lifts?.elevator;return lift&&Math.abs(lift.y-y)<.01&&!lift.moving&&lift.gates.every(g=>!g.moving);},y,{timeout:15000});
+ await page.waitForFunction(()=>window.starAgent.state.shipAsset==='ready');
+ await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
+ await walkAtlas(0,-20.5);await walkAtlas(0,-6.3);await walkAtlas(3.4,-6.3);
+ await tap(2);await liftReady(9.5);
+ await walkAtlas(3.4,-4);await walkAtlas(5.5,-4);await tap(2);await liftReady(2.6);
+ await walkAtlas(0,-4);
+ expect(await page.evaluate(()=>window.starAgent.state.shipLocal[1])).toBeCloseTo(4.35,1);
+ expect(await page.evaluate(()=>window.starAgent.state.insideShip)).toBe(true);
+ // Aim at the actual saved grid placement, without moving the player or crate.
+ const {crateBounds}=await import('../../src/cargo/grid.js');
+ const crate=await page.evaluate(()=>window.starAgent.state.trading.ships.find(s=>s.hull==='atlas').crates.find(c=>c.id==='tractor-fixture'));
+ expect(crate.sbu).toBe(64);
+ const placed=crateBounds('atlas',crate),centre=placed.min.map((v,i)=>(v+placed.max[i])/2);
+ await walkAtlas(0,centre[2]);await aim(page,centre);
+ await page.keyboard.press('Escape');await page.locator('dialog[open] [data-controller-key="tab-trade"]').click();await page.locator('#trading-dialog [data-controller-key="view-cargo"]').click();await page.locator('[data-controller-key="equip-tractor"]').click();await page.waitForFunction(()=>window.starAgent.state.trading.tractor.active);await page.keyboard.down('t');await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held);const before=await page.evaluate(()=>window.starAgent.state.trading.loose[0].position);await page.keyboard.press('[');await page.waitForFunction(p=>Math.hypot(...window.starAgent.state.trading.loose[0].position.map((x,i)=>x-p[i]))>.3,before);await page.screenshot({path:`${evidence}/atlas-tractor.png`});await page.keyboard.up('t');await page.waitForFunction(()=>!window.starAgent.state.trading.loose[0].holder);
+ await page.setViewportSize({width:390,height:844});const local=await page.evaluate(()=>window.starAgent.navigation.toShipLocal(window.starAgent.navigation.position.clone().fromArray(window.starAgent.state.trading.loose[0].position)).toArray());await aim(page,local);
+ const cdp=await page.context().newCDPSession(page),box=await page.locator('[data-tractor="power"]').boundingBox(),p={x:box.x+box.width/2,y:box.y+box.height/2};await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p,id:7}]});await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held&&window.starAgent.state.trading.tractor.beam);await page.screenshot({path:`${evidence}/tractor-phone.png`});
+ const bounds=await page.locator('#tractor-panel').evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth,bottom:e.getBoundingClientRect().bottom}));expect(bounds.scroll).toBeLessThanOrEqual(bounds.width);expect(bounds.bottom).toBeLessThan(844);
+ // A second native touch secures while the first powers the beam.
+ const stow=await page.locator('[data-tractor="stow"]').boundingBox(),s={x:stow.x+stow.width/2,y:stow.y+stow.height/2};await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p,id:7},{...s,id:8}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[{...p,id:7}]});await page.waitForFunction(()=>window.starAgent.state.trading.loose.length===0);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.locator('[data-tractor="exit"]').click();expect(await page.evaluate(()=>window.starAgent.state.trading.ships.find(s=>s.hull==='atlas').crates[0].sbu)).toBe(64);expect(errors).toEqual([]);await writeFile(`${evidence}/atlas-touch.json`,JSON.stringify({browser:browser.version(),errors,fixture:'one64SBU shipment preloaded; real physical approach uses Gamepad, tractor uses keyboard and native touch',state:await page.evaluate(()=>window.starAgent.state)},null,2));
+});

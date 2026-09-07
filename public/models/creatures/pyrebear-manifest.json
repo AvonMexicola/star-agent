@@ -1,0 +1,417 @@
+{
+  "id": "pyrebear",
+  "status": "development-candidate; independent/game review pending",
+  "source": {
+    "path": "assets/creatures/pyrebear/source/pyrebear-walking.glb",
+    "bytes": 7885512,
+    "sha256": "b6125970f013a62ee02b294308ff4dbf4de6c0e28915efc7d1e18ab0e31d9dd8"
+  },
+  "runtime": {
+    "path": "public/models/creatures/pyrebear.glb",
+    "bytes": 1044532,
+    "sha256": "30afc5a9459538fbab2954a38369f42df25ecfde032d7b819f60bf1e1f8639e6"
+  },
+  "builder": "blender/finish_pyrebear.py",
+  "coordinates": "glTF Y-up, metres, front -Z; base-centre across the sampled walk envelope",
+  "triangles": 14331,
+  "vertices": 9853,
+  "materials": 1,
+  "drawPrimitives": 1,
+  "joints": 27,
+  "texture": {
+    "file": "/models/creatures/pyrebear.glb (embedded)",
+    "format": "WebP",
+    "maxEdge": 1024,
+    "maps": [
+      "authored baseColor only"
+    ],
+    "roughness": 0.85,
+    "metalness": 0,
+    "emissive": 0
+  },
+  "shoulderHeightMetres": 1.65,
+  "shoulderMeasurement": "Phase-0 dorsal skin maximum within 20% total width and 7.5% depth of chest joint, relative to grounded phase-0 skin minimum; root base uses full61-sample envelope with per-phase grounding",
+  "boundsMetres": {
+    "min": [
+      -1.088047742843628,
+      -1.642450797589845e-07,
+      -1.6056162118911743
+    ],
+    "max": [
+      1.0880475044250488,
+      1.8354132175445557,
+      1.605638861656189
+    ]
+  },
+  "sizeMetres": [
+    2.1760952472686768,
+    1.8354133817896354,
+    3.2112550735473633
+  ],
+  "dimensions": {
+    "width": 2.1760952472686768,
+    "height": 1.8354133817896354,
+    "length": 3.2112550735473633
+  },
+  "gaitSpeed": 1.5,
+  "deathDuration": 1.8,
+  "collision": {
+    "halfWidth": 1.088047742843628,
+    "halfLength": 1.605638861656189,
+    "height": 1.8354132175445557
+  },
+  "animation": {
+    "name": "walk",
+    "sourceName": "Armature|Unreal Take|baselayer",
+    "durationSeconds": 1.0,
+    "channels": 82,
+    "sourceJointChannels": 81,
+    "inPlace": true,
+    "horizontalRootSpanMetres": [
+      5.122274160385132e-09,
+      3.2782554626464844e-07
+    ],
+    "verticalRootBobMetres": 0.16704070568084717,
+    "rootMotionEdit": "Source is horizontally in-place. One new wrapper translation track grounds each sampled pose; all81 source joint channels/samplers and non-image buffer data remain intact.",
+    "estimatedWalkSpeedMetresPerSecond": 1.4992189407348286,
+    "recommendedWalkSpeedMetresPerSecond": 1.5,
+    "speedMethod": "Median positive backward sole-centre speed across samples in the lowest35% of each weighted foot region height range",
+    "footMinYRange": [
+      -1.642450797589845e-07,
+      3.6796240010517067e-07
+    ],
+    "sampleCount": 241,
+    "denseSampleCount": 481,
+    "denseGroundMinimumMetres": -0.0008174219401553273,
+    "denseGroundMaximumMetres": 0.003907493315637112
+  },
+  "normalization": {
+    "uniformScale": 597.1100152030976,
+    "sourceBaseBlender": [
+      -8.983886800706387e-06,
+      -0.0003736120415851474,
+      -0.0003032661334145814
+    ],
+    "sourceShoulderTopBlenderZ": 0.002673584967851639,
+    "wrapperNode": {
+      "name": "pyrebearRoot",
+      "children": [
+        28
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "scale": [
+        597.1100152030976,
+        597.1100152030976,
+        597.1100152030976
+      ],
+      "translation": [
+        -0.005364368784152699,
+        0.18108324553376534,
+        0.2230874918309677
+      ],
+      "extras": {
+        "origin": "base-centre over full sampled walk",
+        "front": "-Z",
+        "units": "metres",
+        "assetStatus": "development-candidate"
+      }
+    },
+    "sourceObjectTransforms": [
+      {
+        "name": "Armature",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "char1",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "allNonImageBufferViewsPreservedSha256": {
+      "0": "c67354fd96f01097bedefa8770d540dd8d133dcac6a51c5f552f0ef727ace97c",
+      "1": "aa8855e441b0b0a779bc483e69f2760d16a404ed83ce6f19e9c6bd142bb10e52",
+      "2": "17e9c9a4c6dfa9eeffa1c7fb2b1485c2df3f2396d37d81a03cbcf57554d29d5b",
+      "3": "7ca18fcffbcfb6c2b98fa4471a41036ecfed526a4ead4afd6356d77e7d4aba02",
+      "4": "cc5a7a8c13e121c42816b093a5a213e06a95c574cee81241576098a16fd99c03",
+      "5": "2dfad0adfd028c17b88fe6b9219a80931d08f43a18e9c5db57dcec3bdc2b9cab",
+      "7": "2c9a4e30ec1c95f072c6eb3e788fc5f9454cec9d270690c43611d1a862856122",
+      "8": "ad1bd086a0eb3d329064d763c58b134bdebf8e6036407109f9475b3f6e1b8b67",
+      "9": "aa6176e0677157ecfcb9c49b34225f4bf4a6fa63797d24cdfa0b127f06fe7202",
+      "10": "0085d6f444d9e1c38c54e39e96a34da90249d48bac2f8003859433dcf1e2263a",
+      "11": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+      "12": "3b79eced4269055875b7a3f71970dab73dc846e258797f4181a5aaac132237ca",
+      "13": "7bce7599d784ae8c0373c1d35a6ff17d7e596c6acaf2147eaca18cf562e2fdac",
+      "14": "da6f1083e2de5ba3e436aa911ca8fd593f03327b3af3bcd728e02a15ae8965ba",
+      "15": "1bfe3ee135785c784dbb1b353c2200cb7699744ba8fe9b5ca7c16ca65b42a964",
+      "16": "131bdd46598bffc07ad43da0b1722ac7480fdfb789fe8d95fa9365362aed7380",
+      "17": "771912359db91c76c912914f793a5703b145b917ee5a50e103438f14d2d7f4d3",
+      "18": "59082159bca85759a56023039ca657360c3db9b0c45ee644e81d9c1d7ca73e74",
+      "19": "fb3dbd750afcbf33ad25c9244d4a07f82a1e09137e6939c3a95c4b38499e3e7c",
+      "20": "7b1c05eb448164542257253664496a4d4e7ce0e0a55769707bb97d0b11e0b938",
+      "21": "e6ee745fdaf1d1f4c3aec3c9fdbea76e9f2f7f5e78968f1c95c613d240083f75",
+      "22": "b6d1bb62320a18305b3ff74d1bf3d0b21b35408ca2454bde618016107a11bf3e",
+      "23": "79efd158a5120789f55de32cebf43db28f71e580c9a89d30d1f3e5059af6c906",
+      "24": "aac6366bc2e9c3ab23a5c8a24d6fd5b91323b3a02de20f61babc2bd5f1c3d5bf",
+      "25": "e3dc98b3112e682503a3cc29501dc3abcc8d39d0618175a0ea77e302a0b51df7",
+      "26": "c79e7a312f965ff9d527078504599c2bdfd6dd3fa29aceed5f3c5ee342f7be4d",
+      "27": "5510727ff39c00c7ed957b5fc7dcd02cedf487b5233fbde9b2c48ab361bcbdcf",
+      "28": "61f36bb1fbcf5bd998e5730dcddf4e56e1800b76a9579486cc5e81ce1ae52920",
+      "29": "b817a8e430ef0e8974d8e9249563c5936e9fa11bff36857339c39d1e0db84dd5",
+      "30": "f211e66f2cf6e28e36e197d9867bd1e7f551d376a758d46d6593bdd812e64f03",
+      "31": "924d615f1f2d4c83abcee9668913527b126eba342b39b67ea763348be250474a",
+      "32": "53f926d5dff4e86b54109f157c8f0da9a5de592943968a98d89a835ca28d587a",
+      "33": "bd2052db757faaea08696dcc9156ca6cb763baf61642f99346018ba85951f32a",
+      "34": "ad87a3c8aab9e7b9ffa823fbcf338a5b49f2bfbb04ee90bb79c6eafa9f856593",
+      "35": "df683a22853d828c6b5f5c31a3d3d7db85b88744e5974bc8204a5498288f1811",
+      "36": "eea817d0f70c0e4a77c8eeab87c2b6cd3e7f0a69e7581264282d9dcd5a7863c6",
+      "37": "d5de1b40421b5e2cf8e962423e008074d64834296535cfd9cb1ce5b5789fc23c",
+      "38": "0fe33f408b2c67f3b42659b2e3bd755e634527184e21b0f8e72cee80c4151529",
+      "39": "1f1355ff33b39246d8511ea306989f6de866cf543374e56c128f80d5d273840c",
+      "40": "96119dade6dbb53d7ddf3ac166b5e6753eaeedb3419e3134eb4d98dfab258c63",
+      "41": "42991a33e31c7eba19df6a946f4a28ab2075f1a5bbaa9692613c367b56dca60f",
+      "42": "c34a1d566f3190e7bd8ffaf508d824ce80004e68827115e81fe9655338654802",
+      "43": "1644d17a3349b8de0bc6d6b63eda60a5c69d282c00dbb8647c86b4975c5a0fa0",
+      "44": "59f9342752f6b6630189b875a12cf1f6b840b51859edf4455616c645577aa7f3",
+      "45": "2bb9afa0feb2b7e05db2b42b61f1c847bd81f2c3455e32f93b0a7451fba40233",
+      "46": "7a069650766ba9445b2826df9d27ccaed8ebd13ac7468471fca0b26d64da473e",
+      "47": "49c217190fe6750f2c06fe0db873c25cb36393e1f91ab2371c0efe172f61994b",
+      "48": "b90664749c43223021eb990d881ac09bafaef50c219461c7e3ee5b8b5bf64547",
+      "49": "1cdebb6e37d9bb5ffbb9ae6418952e711f842bde8a99598e3dfa41296fb7c54b",
+      "50": "ba03a155db4bbd1e552a42ce19c70c0d4797fe600591103396867d29baa83abe",
+      "51": "299e9ccd05bb52dc80d7ebf758f09236421fad533f97205556b93710cb9f83a9",
+      "52": "7b48093c541de4eb2bdce6c1f714afa4edc7e6e10dd71a0e906aabb8600fb832",
+      "53": "e2c8c39717555e7a4ac6dceb2bcf71eca7c33ae1de3f0f97146c9bf55d643efc",
+      "54": "a2e726ab073bb841d5fbd1e85343666b9178a26cddefde84bc6fa2e37cb943ce",
+      "55": "576c6a1fdf17798a3d21d7ccbad1a0eb46215d6bbe538f7c6bb8407e83565140",
+      "56": "0981ddd34eae4664e2d6107f007e618909a2efdf303667366a81171bfd17aafc",
+      "57": "2af722afc3288f6f2cd528c1265ee1a78f3df60415e574ec2330852f7ab32ed1",
+      "58": "87c9d9cc1af9753a18fd3aad28e0137612b15f0f21ebd6473ab69088fe2dd677",
+      "59": "bbec7ac25fffe1936511baec443f170f6fb4b6455ae38491ba4b256eb1fe376c",
+      "60": "fd964cdd25894c74deb36144ce1a8bf11c3c745df108d5e8a81adb385da157df",
+      "61": "64c14289a3938e821bb2749a2ca9189fb82f46ae6208c05e48b632dd7a1867fb",
+      "62": "0c9f4ab0d735f2f9ccc886e78020b4d071834101b7f8bd64ed4a280f8eb04ee0",
+      "63": "ab26aa988166b476728940d0d4c5827bc128cd70716f8cf1e020cfb4a09dc1cb",
+      "64": "f1d705407d34ed5e14e2558e9329dc76eebb9468329d8d401a9186c266e01305",
+      "65": "dfa86502a7e39c7ad999376fdc7fe4483346da9e43a9bb914688a3ae47dfc49c",
+      "66": "375105d728f9f56682c69b21a53f84c2d06b44e0da568bca94defc77dc8571c2",
+      "67": "91732d49d4caa11ace7d5954639cbed840c8d80caada1f3dfcfb86dfbe0da57e",
+      "68": "eb1ca570b10d7ff8fde9c5b24939eee6dba8870184893fc74413a4fd5c117fb6",
+      "69": "d8aaca25af355bb736677a637fe21c6d06797056feb47ba27a154e553f13342d",
+      "70": "fff378b6579a25d73216fb99303e3bb1acdd60c34173346f087acf3930f1d36b",
+      "71": "15db4d794ff2d752996f9f08d8ee1b63356321830b5a8432d8d6c4ce568c6a09",
+      "72": "5e0d6b2f41b315ae552207a690580c6d2da5cfe5c3a0e1df87cb1b67c2a856d8",
+      "73": "173eef38c2e12043dedf0ded0a6a045b4eb13459928a879220b59553fbfec624",
+      "74": "875d73cccf75be98bf5cdd4f2b8efdd244c2941fe16be556e0a8974b54adf6c5",
+      "75": "14d39e012cb434a9cd9d4445a15106dfb8384be25de283e12fbdd471c8c9414a",
+      "76": "18849e2c50bc5abf191b6eab2dbad2b7268d4da8533dbcce797349e41c46dfac",
+      "77": "c76b0ca8b01f2a26ba38bb371c538214f13510a87f65a5bb9e510d4a73b98769",
+      "78": "91a282a69d258f78931ec51fc9022cac72da75fa0f3f429fd3669caab3b4c948",
+      "79": "dfe8a82b97d2109cb108c070cdda365c644345cb16237b380b878c2302033fe2",
+      "80": "f6913a82efc3dac2860f20a66494e9041d6409c6d0d22338a48075516f5719a4",
+      "81": "b80242a04fe9c64a5c9646470b94a8db25ab656263e47fce3444193eed6f4f3c",
+      "82": "f43698f4a6c6a01b140688f3598d8f4db295b5e9cbf0b1a94ebda1f908b32645",
+      "83": "4cee136f192c7158dd298702e348787ae37cb7ef8cda0a3c08d7a4c266e0a0a3",
+      "84": "47c9394245fd02a16f87c8327d5f1c3c899c9ef78a06cf62303836ff36010ac5",
+      "85": "0074859a2b642fcb7e781a9ae1c3d675de3535d6e23dc629846979f184e743e8",
+      "86": "70f750b8e2797d7868f44482c20d7ace0724cdcd27c9911caba7fea549010612",
+      "87": "ec051aaa64dae298a14a08017479649f3622d1f2494ef4732462df38888c9a58",
+      "88": "ca7c047fcb8b09541c695cad7700b62e18ca2effc15c6fb0644efd47da8ec7e4",
+      "89": "b4cd17304fb439505ffd79d5dfe0548d319b6df7ba415ab2eea448dc786f396c",
+      "90": "1995f45a3cea952fc91fb24e54ec84bb053bf73527a6dd92ad49329f17117918"
+    },
+    "allSourceSkinsAccessorsMeshJointChannelsSamplersUnchanged": true,
+    "blenderRuntimeReimportMaxBoundsErrorMetres": 5.960464477539062e-07,
+    "helperExcludedFromBounds": [
+      "Icosphere"
+    ],
+    "actualSampleReport": "assets/creatures/pyrebear/deformation-samples.json"
+  },
+  "limitations": [
+    "One supplied walk and one Blender-authored death; no attack/idle animation authored.",
+    "Studio renders do not establish browser shading, gameplay, performance or independent visual acceptance.",
+    "Gait ground clearance is sampled, not continuously proven; terrain placement belongs to runtime."
+  ],
+  "death": {
+    "name": "death",
+    "durationSeconds": 1.8,
+    "loop": false,
+    "holdFinalPose": true,
+    "authoring": "Blender forward-kneel/belly collapse, 12-degree lean, folded joint-length-constrained limbs, lowered chest/head/pelvis and relaxed tail; broad torso support with small measured local contact intersections",
+    "boundsMetres": {
+      "min": [
+        -1.2880423069000244,
+        -0.025646386668086052,
+        -1.5764330625534058
+      ],
+      "max": [
+        1.3421926498413086,
+        1.7088558673858643,
+        1.6057438850402832
+      ]
+    },
+    "finalBoundsMetres": {
+      "min": [
+        -1.2877072095870972,
+        -0.025646386668086052,
+        -1.5274957418441772
+      ],
+      "max": [
+        1.3421926498413086,
+        1.3874775171279907,
+        1.5948472023010254
+      ]
+    },
+    "groundMinimumMetres": -0.025646386668086052,
+    "reimportBoundsErrorMetres": 8.64081084728241e-06,
+    "denseSampleCount": 121,
+    "denseGroundMinimumMetres": -0.025646386668086052
+  },
+  "studio": {
+    "renderer": "Blender 5.2.0 LTS Cycles CPU",
+    "samples": 12,
+    "threads": 4,
+    "resolution": [
+      800,
+      600
+    ],
+    "views": [
+      {
+        "path": "assets/creatures/pyrebear/review/front.webp",
+        "phase": 0,
+        "cameraBlender": [
+          0.0,
+          6.0,
+          2.3499999046325684
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/side.webp",
+        "phase": 0,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          2.1500000953674316
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/walk-000.webp",
+        "phase": 0,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.4499998092651367
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/walk-025.webp",
+        "phase": 0.25,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.4499998092651367
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/walk-050.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.4499998092651367
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/walk-075.webp",
+        "phase": 0.75,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.4499998092651367
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/death-mid.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.4499998092651367
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/death-final.webp",
+        "phase": 1,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.4499998092651367
+        ]
+      },
+      {
+        "path": "assets/creatures/pyrebear/review/death-side.webp",
+        "phase": 1,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          2.1500000953674316
+        ]
+      }
+    ]
+  }
+}

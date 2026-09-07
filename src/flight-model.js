@@ -63,7 +63,20 @@ export function step(state, controls, env, dt) {
   const engineAcceleration = new Vector3();
   const handling = shipHandling(controls.shipId);
   if (controls.assist) {
-    velocity.lerp(controls.targetVelocity || new Vector3(), 1 - Math.exp(-handling.assistResponse * dt));
+    // Fly-by-wire commands velocity, but correction is limited by the hull's
+    // actual manoeuvring authority. Hover compensation is a separate reserve.
+    const target = controls.targetVelocity || new Vector3();
+    const inverse = orientation.clone().invert();
+    const count = Math.max(1, Math.ceil(dt * 120)), h = dt / count;
+    const authority = (controls.brake ? 1.5 : controls.boost ? 3 : 1);
+    for (let i = 0; i < count; i++) {
+      const correction = target.clone().sub(velocity).applyQuaternion(inverse);
+      const fraction = 1 - Math.exp(-handling.assistResponse * h);
+      correction.multiplyScalar(fraction);
+      const load = Math.hypot(correction.x / handling.rcs, correction.y / handling.rcs, correction.z / handling.thrust);
+      if (load > authority * h) correction.multiplyScalar(authority * h / load);
+      velocity.add(correction.applyQuaternion(orientation));
+    }
     angularVelocity.multiplyScalar(Math.exp(-8 * dt));
     if (dt > 0) engineAcceleration.copy(velocity).sub(state.velocity).divideScalar(dt).sub(env.gravity || new Vector3());
   } else if (dt > 0) {
@@ -91,6 +104,15 @@ export function step(state, controls, env, dt) {
       velocity.multiplyScalar(1 / (1 + drag * velocity.length() * h));
     }
   }
-  if (dt > 0 && Number.isFinite(controls.maxSpeed)) velocity.clampLength(0, Math.max(0, controls.maxSpeed));
+  if (dt > 0 && !controls.assist && Number.isFinite(controls.maxSpeed)) {
+    const limit = Math.max(0, controls.maxSpeed), before = state.velocity.length();
+    // A lower speed selection is a thruster command, never a velocity reset.
+    // At the cap, reject additional outward thrust; existing overspeed bleeds off.
+    const allowed = Math.max(limit, before - handling.rcs * dt);
+    if (velocity.length() > allowed) {
+      const beforeLimit=velocity.clone();velocity.setLength(allowed);
+      engineAcceleration.add(velocity.clone().sub(beforeLimit).divideScalar(dt));
+    }
+  }
   return { velocity, orientation, angularVelocity, engineAcceleration, ...aerodynamics(velocity, orientation, env.density) };
 }

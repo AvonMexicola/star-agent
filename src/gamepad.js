@@ -14,7 +14,7 @@ export function stick(x, y) {
 const value = button => clamp(finite(button?.value ?? (button?.pressed ? 1 : 0)), 0, 1);
 const trigger = button => Math.max(0, (value(button) - .05) / .95);
 const empty = () => ({ strafe: 0, forward: 0, yaw: 0, pitch: 0, vertical: 0, roll: 0,
-  boost: false, jump: false, brake: false, speed: 0, scroll: 0, mine: 0, evaVertical: 0, evaBrake: false, ui: null, shortcuts: new Set(), shortcutModifier: false, pressed: new Set(), menuPressed: new Set(), used: false });
+  boost: false, jump: false, brake: false, speed: 0, scroll: 0, mine: 0, fire: 0, evaVertical: 0, evaBrake: false, ui: null, shortcuts: new Set(), shortcutModifier: false, pressed: new Set(), menuPressed: new Set(), used: false });
 
 export class GamepadInput {
   constructor(read = () => globalThis.navigator?.getGamepads?.() ?? []) {
@@ -56,7 +56,7 @@ export class GamepadInput {
       this.status = this.uiArmed ? 'Controller menu · D-pad selects · A confirms · B returns.' : 'Controller menu · Release controls to navigate.';
       const result = empty();
       if (this.uiArmed) {
-        result.ui = { x: strafe + Number(buttons[15] ?? false) - Number(buttons[14] ?? false),
+        result.ui = { stickX: strafe, stickY: moveY, x: strafe + Number(buttons[15] ?? false) - Number(buttons[14] ?? false),
           y: moveY + Number(buttons[13] ?? false) - Number(buttons[12] ?? false), scroll: lookY, pressed };
         result.used = !neutral;
       }
@@ -88,9 +88,9 @@ export class GamepadInput {
     }
     for(const index of this.shortcutHeld)pressed.delete(index);
     const speed=this.utilityChord?0:Number(Boolean(buttons[12])&&!this.shortcutHeld.has(12))-Number(Boolean(buttons[13])&&!this.shortcutHeld.has(13));
-    return { ui: null, shortcuts, shortcutModifier: this.utilityChord, evaVertical: Number(buttons[0] ?? false) - Number(buttons[1] ?? false), evaBrake: down > .1, mine: up, strafe, forward: -moveY, yaw: -lookX, pitch: -lookY, vertical: up - down,
+    return { ui: null, shortcuts, shortcutModifier: this.utilityChord, evaVertical: Number(buttons[0] ?? false) - Number(buttons[1] ?? false), evaBrake: down > .1, mine: up, fire: up, strafe, forward: -moveY, yaw: -lookX, pitch: -lookY, vertical: Number(buttons[0] ?? false) - Number(buttons[1] ?? false),
       roll: this.utilityChord?0:Number(buttons[5] ?? false) - Number(buttons[4] ?? false),
-      boost: Boolean(buttons[10]), jump: Boolean(buttons[0]), brake: Boolean(buttons[1]),
+      boost: Boolean(buttons[10]), jump: Boolean(buttons[0]), brake: down > .1,
       scroll: 0, menuPressed: new Set(), speed, pressed, used: !neutral };
   }
 }

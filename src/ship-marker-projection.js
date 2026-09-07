@@ -4,11 +4,11 @@ export function markerDistance(metres){
 
 /** Subtract world doubles before projection. Behind-camera targets retain their
  * left/right direction instead of mirroring through the perspective divide. */
-export function projectShipMarker(position,orientation,target,{width,height,fov=52}){
+export function projectShipMarker(position,orientation,target,{width,height,fov=52,bounds:customBounds}){
   const local=target.clone().sub(position).applyQuaternion(orientation.clone().invert());
   const distance=local.length(),scale=height/(2*Math.tan(fov*Math.PI/360));
   const paddingX=Math.min(110,width*.28),paddingY=Math.min(180,height*.28);
-  const bounds={left:paddingX,right:width-paddingX,top:paddingY,bottom:height-paddingY};
+  const bounds=customBounds??{left:paddingX,right:width-paddingX,top:paddingY,bottom:height-paddingY};
   const cx=width/2,cy=height/2,behind=local.z>=0;
   let dx=local.x,dy=-local.y;
   if(!behind){dx=local.x*scale/Math.max(.0001,-local.z);dy=-local.y*scale/Math.max(.0001,-local.z);}

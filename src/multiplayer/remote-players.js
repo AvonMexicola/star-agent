@@ -4,17 +4,19 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { Character } from '../character.js';
+import { PLAYER_AVATAR } from '../player-avatar.js';
 import { Equipment, HELD_ITEMS } from '../equipment.js';
 import { SHIP_LAYOUT } from '../boarding.js';
-import { FREIGHTER_LAYOUT } from '../freighter-layout.js';
+import { FREIGHTER_LAYOUT, FreighterSystems } from '../freighter-layout.js';
+import { ATLAS_MODEL_URL } from '../atlas-gameplay.js';
 import { BODIES } from '../celestial.js';
 import { SUIT_COLORS } from './protocol.js';
 
 export const PLAYER_COLORS = SUIT_COLORS;
-const CHARACTER_URL = '/models/props/player-male.glb';
-const SHIP_URLS = { nomad: '/models/nomad.glb', atlas: '/models/atlas.glb' };
+export const SHIP_URLS = Object.freeze({ nomad: '/models/nomad.glb', atlas: `/${ATLAS_MODEL_URL}` });
 const FORWARD = new THREE.Vector3(0, 0, -1);
 const UP = new THREE.Vector3(0, 1, 0);
+const NO_FIRE = Object.freeze({ firing: false });
 
 /** SkeletonUtils is essential: Object3D.clone shares the original skin bones. */
 export function cloneCharacterGLTF(gltf) {
@@ -28,7 +30,9 @@ export function cloneCharacterGLTF(gltf) {
     };
     node.material = Array.isArray(node.material) ? node.material.map(own) : own(node.material);
   });
-  return { scene, animations: gltf.animations || [] };
+  // Required clips and optional shadow indices belong to the parsed template.
+  // Keep their metadata/loader while skeletons and suit materials stay private.
+  return { scene, scenes: [scene], animations: gltf.animations || [], asset: gltf.asset, parser: gltf.parser };
 }
 
 /** The current pilot is a single textured mesh. A skin-weight mask leaves the
@@ -107,6 +111,9 @@ export function applySuitColor(character, color) {
  * Only arm rotations change; bone lengths and the calibrated hand socket stay. */
 export function poseHeldEquipment(character, equipment, direction, origin) {
   equipment.aimHeld(direction);
+  // Expedition calibration already solves both palms and the reachable grip.
+  // The old wrist-only correction would move its glove past the foregrip.
+  if (equipment.rig === PLAYER_AVATAR.rig) return;
   if (!equipment.leftHandTargetLocal || !character.skeleton) return;
   const right = character.skeleton.bones.find(b => /RightHand$/i.test(b.name));
   const left = character.skeleton.bones.find(b => /LeftHand$/i.test(b.name));
@@ -217,11 +224,14 @@ export class RemotePlayers {
       targetOrientation: new THREE.Quaternion().fromArray(peer.orientation),
       shipPosition: new THREE.Vector3(), shipTarget: new THREE.Vector3(),
       shipOrientation: new THREE.Quaternion(), shipTargetOrientation: new THREE.Quaternion(),
-      ship: new THREE.Group(), shipId: null, shipModel: null, shipToken: 0, gears: [],
+      ship: new THREE.Group(), shipId: null, shipModel: null, shipToken: 0, gears: [], atlasSystems: null, atlasNodes: [],
+      body: null, physicsUp: new THREE.Vector3(), hasPhysicsUp: false,
+      animationInput: { speed: 0, grounded: true, health: 1, dead: false, aiming: 'none', firing: false },
+      gearScale: 1,
       firePulse: false, disposed: false,
     };
     entry.character = new Character(this.scene, {
-      url: CHARACTER_URL, modelYaw: Math.PI, eyeHeight: this.eyeHeight,
+      url: PLAYER_AVATAR.url, modelYaw: PLAYER_AVATAR.modelYaw, eyeHeight: this.eyeHeight,
       loader: { load: (url, ready, progress, error) => this._asset(url).then(gltf => {
         if (this.disposed || entry.disposed) return;
         ready(cloneCharacterGLTF(gltf));
@@ -230,7 +240,7 @@ export class RemotePlayers {
     });
     entry.character.object.name = `remote-player-${peer.id}`;
     entry.character.object.userData.playerId = peer.id;
-    entry.equipment = new Equipment(entry.character, this.scene, { rig: 'player-male', sockets: this.sockets, loader: this.loader });
+    entry.equipment = new Equipment(entry.character, this.scene, { rig: PLAYER_AVATAR.rig, sockets: this.sockets, loader: this.loader });
     entry.equipment.vfx.visible = false;
     entry.ship.name = `remote-ship-${peer.id}`;
     this.scene.add(entry.ship);
@@ -256,6 +266,7 @@ export class RemotePlayers {
     releaseClone(entry.shipModel, false);
     entry.shipModel = null;
     entry.gears = [];
+    entry.atlasSystems = null;entry.atlasNodes = [];
     const token = ++entry.shipToken;
     entry.ship.userData.assetStatus = 'loading';
     this._asset(SHIP_URLS[shipId]).then(gltf => {
@@ -264,14 +275,40 @@ export class RemotePlayers {
       entry.shipModel.traverse(node => {
         if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
         if (!node.isMesh && node.name.startsWith('LandingGear_')) entry.gears.push(node);
+        // These visual-only hulls have no animation mixer. Their authored local
+        // transforms stay fixed; moving gear explicitly refreshes its matrix.
+        // World matrices still follow the interpolated, camera-relative parent.
+        if (node.matrixAutoUpdate) node.updateMatrix();
+        node.matrixAutoUpdate = false;
       });
+      if (shipId === 'atlas') {
+        const systems = entry.atlasSystems = new FreighterSystems();
+        systems.bind(entry.shipModel);
+        // Only actuators change their local matrices; the rest of the authored
+        // hull keeps the checked static transform cache used by remote ships.
+        const moving = [systems.elevator.nodeObject, ...systems.gates.map(g => g.nodeObject),
+          ...systems.ramps.flatMap(r => [r.nodeObject, r.tipNodeObject, r.sealNodeObject]),
+          ...systems.gear.legs.flatMap(l => [l.nodeObject, l.footObject, ...l.doors.map(d => d.nodeObject)])];
+        entry.atlasNodes = moving.filter(Boolean);
+        this._applyAtlas(entry);
+      }
       entry.ship.add(entry.shipModel);
       entry.ship.userData.assetStatus = 'ready';
-    }, error => {
+    }).catch(error => {
       if (entry.disposed || token !== entry.shipToken) return;
       entry.ship.userData.assetStatus = 'error';
       entry.ship.userData.assetError = String(error?.message || error);
     });
+  }
+
+  _applyAtlas(entry) {
+    if (!entry.atlasSystems) return;
+    for (const node of entry.atlasNodes) node.matrixAutoUpdate = true;
+    entry.atlasSystems.applySnapshot(entry.peer.freighter);
+    entry.atlasSystems.setGear(entry.peer.gearProgress ?? 1,
+      entry.peer.gearDeployed ?? (entry.peer.gearProgress ?? 1) >= .5);
+    entry.atlasSystems.applyTransforms();
+    for (const node of entry.atlasNodes) node.matrixAutoUpdate = false;
   }
 
   /** Replace the full public peer snapshot (including self is fine). */
@@ -287,6 +324,17 @@ export class RemotePlayers {
       const changedMode = entry.peer.mode !== peer.mode;
       const changedFrame = entry.peer.physicsFrame !== peer.physicsFrame;
       entry.peer = peer;
+      entry.body = BODIES.find(body => body.id === peer.body);
+      entry.hasPhysicsUp = Boolean(peer.physicsFrame && Array.isArray(peer.physicsUp)
+        && peer.physicsUp.length === 3 && peer.physicsUp.every(Number.isFinite));
+      if (entry.hasPhysicsUp) entry.physicsUp.fromArray(peer.physicsUp).normalize();
+      const animation = entry.animationInput;
+      animation.speed = peer.mode === 'eva' ? 0 : Math.hypot(...(peer.velocity || [0, 0, 0]));
+      animation.health = peer.health / 100;
+      animation.dead = peer.mode === 'dead';
+      const gear = THREE.MathUtils.clamp(peer.gearProgress ?? 1, 0, 1);
+      const eased = gear * gear * (3 - 2 * gear);
+      entry.gearScale = .08 + .92 * eased;
       entry.target.fromArray(peer.position);
       entry.targetOrientation.fromArray(peer.orientation);
       if (changedMode || changedFrame || entry.position.distanceToSquared(entry.target) > 1e6) {
@@ -295,6 +343,7 @@ export class RemotePlayers {
       }
       if (changedColor && entry.character.model) tintCharacterSuit(entry.character.model, this.palette[peer.colorIndex] || this.palette[0]);
       this._setShipTarget(entry);
+      this._applyAtlas(entry);
       const weapon = HELD_ITEMS.includes(peer.weapon) && (peer.mode === 'walk' || peer.mode === 'eva') ? peer.weapon : null;
       if (entry.equipment.equipped !== weapon) {
         if (weapon) entry.equipment.equip(weapon);
@@ -324,10 +373,10 @@ export class RemotePlayers {
         this._bodyRotation.fromArray(peer.bodyOrientation);
         this._up.copy(UP).applyQuaternion(this._bodyRotation);
       } else if (peer.mode === 'walk' || peer.mode === 'dead') {
-        const body = BODIES.find(body => body.id === peer.body);
-        if (peer.physicsFrame && Array.isArray(peer.physicsUp) && peer.physicsUp.length===3 && peer.physicsUp.every(Number.isFinite)) {
-          this._up.fromArray(peer.physicsUp).normalize();
-        } else if (peer.shipPosition && entry.position.distanceToSquared(entry.shipPosition) < 625) {
+        const body = entry.body;
+        if (entry.hasPhysicsUp) {
+          this._up.copy(entry.physicsUp);
+        } else if (peer.shipPosition && entry.position.distanceToSquared(entry.shipPosition) < (entry.shipId === 'atlas' ? 2500 : 625)) {
           this._up.copy(UP).applyQuaternion(entry.shipOrientation);
         } else if (body) {
           this._up.copy(entry.position).sub(this._shipOffset.fromArray(body.center)).normalize();
@@ -348,21 +397,20 @@ export class RemotePlayers {
       const onFoot = peer.mode === 'walk' || peer.mode === 'eva' || peer.mode === 'dead';
       character.setVisible(onFoot);
       equipment.setRenderOrigin(origin);
-      equipment.update(step, { firing: false });
-      const speed = Math.hypot(...(peer.velocity || [0, 0, 0]));
-      character.update(step, {
-        speed, grounded: peer.mode !== 'eva', health: peer.health / 100,
-        dead: peer.mode === 'dead', aiming: equipment.aimingInput(), firing: entry.firePulse,
-      });
+      equipment.update(step, NO_FIRE);
+      entry.animationInput.aiming = equipment.aimingInput();
+      entry.animationInput.firing = entry.firePulse;
+      character.update(step, entry.animationInput);
       entry.firePulse = false;
       // This must follow mixer.update, otherwise animation overwrites the hand.
       if (onFoot && equipment.equipped) poseHeldEquipment(character, equipment, this._direction, origin);
       entry.ship.visible = Boolean(peer.shipPosition) || peer.mode === 'flight' || peer.mode === 'landed';
       entry.ship.position.copy(entry.shipPosition).sub(origin);
       entry.ship.quaternion.copy(entry.shipOrientation);
-      const gear = THREE.MathUtils.clamp(peer.gearProgress ?? 1, 0, 1);
-      const eased = gear * gear * (3 - 2 * gear);
-      for (const node of entry.gears) node.scale.y = .08 + .92 * eased;
+      for (const node of entry.gears) if (node.scale.y !== entry.gearScale) {
+        node.scale.y = entry.gearScale;
+        node.updateMatrix();
+      }
     }
   }
 

@@ -84,12 +84,13 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     const cargoMass = id => serverInventory?.containers?.[id] ? itemMass(serverInventory.containers[id]) : inventory.mass(id);
     const cargoCapacity = id => serverInventory?.capacity?.[id] ?? inventory.capacity?.[id] ?? CAPACITY[id];
     const combat=nav.combat&&!multiplayer?.connected?nav.combat:null;
-    screens[2].title = combat&&['transit','engage','complete','failed'].includes(combat.phase) ? 'COMBAT' : multiplayer ? 'COMMS' : 'SYSTEMS';
+    const commsPage=Boolean(multiplayer&&(profile!=='atlas-flight'||multiplayer.connected));
+    screens[2].title = combat&&['transit','engage','complete','failed'].includes(combat.phase) ? 'COMBAT' : commsPage ? 'COMMS' : 'SYSTEMS';
     if(combat?.phase==='transit')course={name:'Patrol signal',point:combat.point};
     screens[2].mesh.name = `MFD 3 / ${screens[2].title}`;
     if(combat&&screens[2].title==='COMBAT'){
       screens[2].mesh.userData.actionId='patrol';screens[2].mesh.userData.action=()=>nav.openPatrolConsole?.();
-    } else if (multiplayer) {
+    } else if (commsPage) {
       screens[2].mesh.userData.actionId = 'comms';
       screens[2].mesh.userData.action = () => nav.openComms?.();
     } else {
@@ -135,7 +136,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     const flightControl = nav.cabinFlight
       ? nav.flightAssist ? 'CABIN / ASSIST' : 'CABIN / INERTIAL'
       : nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase();
-    paint(screens[0], [['VELOCITY', `${shipSpeed.toFixed(1)} m/s`], [nav.body?.star?'PHOTOSPHERE CLEARANCE':'ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', flightControl]], nav.controllerActive?'R3 ASSIST   B BRAKE   Y LAND / LAUNCH':'V ASSIST   X BRAKE   B LAND / LAUNCH', 0);
+    paint(screens[0], [['VELOCITY', `${shipSpeed.toFixed(1)} m/s`], [nav.body?.star?'PHOTOSPHERE CLEARANCE':'ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', flightControl]], nav.controllerActive?'R3 ASSIST   LT BRAKE   Y LAND / LAUNCH':'V ASSIST   X BRAKE   B LAND / LAUNCH', 0);
     let bearing = 'NO COURSE';
     if (course) {
       const position = nav.cabinFlight && nav.shipPosition ? nav.shipPosition : nav.position;
@@ -143,18 +144,18 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
       const angle = Math.atan2(offset.x, -offset.z) * 180 / Math.PI;
       bearing = `${Math.abs(angle).toFixed(0)} DEG ${angle < 0 ? 'LEFT' : 'RIGHT'}`;
     }
-    paint(screens[1], [['COURSE', course ? course.name.toUpperCase() : 'FREE EXPLORATION'], ['BEARING', bearing], ['POSITION', `${(Math.asin(n.y) * 180 / Math.PI).toFixed(2)} / ${(Math.atan2(n.x, n.z) * 180 / Math.PI).toFixed(2)}`]], 'SHIFT + DESTINATION TO SET COURSE', 1);
+    paint(screens[1], [['COURSE', course ? course.name.toUpperCase() : 'FREE EXPLORATION'], ['BEARING', bearing], ['POSITION', `${(Math.asin(n.y) * 180 / Math.PI).toFixed(2)} / ${(Math.atan2(n.x, n.z) * 180 / Math.PI).toFixed(2)}`]], 'M MAP / AIM TO CHARGE DRIVE', 1);
     if(profile==='kestrel-flight'&&!multiplayer?.connected){
       const a=nav.kestrelAccess;
       const mechanism=(value,closed,open)=>value<.001?closed:value>.999?open:'MOVING';
       paint(screens[2],[['CANOPY',mechanism(a?.canopy??0,'SEALED','OPEN')],['LADDER',mechanism(a?.ladder??0,'STOWED','DEPLOYED')],['LANDING GEAR',mechanism(nav.gearProgress,'RETRACTED','DOWN')]],nav.controllerActive?'MENU / LANDING GEAR':'G GEAR   F DISEMBARK WHEN LANDED',2);
-      if(combat&&screens[2].title==='COMBAT')paint(screens[2],[['SHIELDS',`${Math.ceil(combat.player.shield)} / ${combat.player.maxShield}`],['HULL',`${Math.ceil(combat.player.hull)} / ${combat.player.maxHull}`],['TARGET',combat.target?.label??combat.phase.toUpperCase()]],'T / A FIRE   TAB / MENU TARGET',2);
+      if(combat&&screens[2].title==='COMBAT')paint(screens[2],[['SHIELDS',`${Math.ceil(combat.player.shield)} / ${combat.player.maxShield}`],['HULL',`${Math.ceil(combat.player.hull)} / ${combat.player.maxHull}`],['TARGET',combat.target?.label??combat.phase.toUpperCase()]],'T / RT FIRE   TAB / MENU TARGET',2);
       paint(screens[3],[['BUILDER','MERIDIAN SHIPWORKS'],['WEAPON ARRAY','ENERGY / ONLINE'],['CARGO HOLD','NONE / PILOT BACKPACK']],'KESTREL  /  SINGLE-SEAT INTERCEPTOR',3);
       return;
     }
     if(combat&&screens[2].title==='COMBAT'){
-      paint(screens[2],[['SHIELDS',`${Math.ceil(combat.player.shield)} / ${combat.player.maxShield}`],['HULL',`${Math.ceil(combat.player.hull)} / ${combat.player.maxHull}`],['TARGET',combat.target?.label??combat.phase.toUpperCase()]],'T / A FIRE   TAB / MENU TARGET',2);
-    } else if (multiplayer) {
+      paint(screens[2],[['SHIELDS',`${Math.ceil(combat.player.shield)} / ${combat.player.maxShield}`],['HULL',`${Math.ceil(combat.player.hull)} / ${combat.player.maxHull}`],['TARGET',combat.target?.label??combat.phase.toUpperCase()]],'T / RT FIRE   TAB / MENU TARGET',2);
+    } else if (commsPage) {
       const players = Array.isArray(multiplayer.players) ? multiplayer.players.length : 0;
       const capacity = Number.isFinite(multiplayer.maxPlayers) ? ` / ${multiplayer.maxPlayers}` : '';
       const hangar = multiplayer.hangar;
@@ -166,6 +167,12 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     } else if(nav.body?.star){
       const thermal=nav.stellarThermal;
       paint(screens[2],[['SHIELD TEMPERATURE',`${Math.round(thermal.temperature-273.15)} C`],['HULL INTEGRITY',`${Math.ceil(thermal.hull)}%`],['RADIATION',thermal.temperature>=STELLAR_THERMAL.damage?'THERMAL DAMAGE':'SHIELDS HOLDING']],'SPACE + SHIFT: RETREAT FROM STAR',2);
+    } else if (nav.freighter?.ramps) {
+      const systems=nav.freighter,lift=systems.elevator;
+      const rampState=r=>r.moving?'MOVING':Math.abs(r.angle-r.closedAngle)<.001?'SEALED':'OPEN';
+      paint(screens[2],[...systems.ramps.map(r=>[r.id==='front'?'FORWARD RAMP':'AFT RAMP',rampState(r)]),
+        ['CREW LIFT',lift.moving?'MOVING':Math.abs(lift.y-lift.low)<.001?'CARGO DECK':'UPPER DECK']],
+        `GEAR ${nav.gearProgress>=1?'DOWN':nav.gearProgress<=0?'STOWED':'MOVING'} / ${systems.secured?'READY FOR FLIGHT':'SECURE RAMPS / LIFT'}`,2);
     } else {
       paint(screens[2], [['ENVIRONMENT', nav.body?.toxic&&env.atmosphereFraction>0?'TOXIC · SUIT SEALED':env.regime], [nav.freighter?'CARGO LIFTS':'HATCH / RAMP', nav.freighter?(nav.freighter.secured?'SECURED':'DEPLOYED'):nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${!nav.cabinFlight && nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
     }

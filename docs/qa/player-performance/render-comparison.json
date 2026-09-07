@@ -1,0 +1,59 @@
+{
+  "at": "2026-09-07T20:18:40.876Z",
+  "samples": {
+    "baseline": {
+      "pilots": {
+        "pixels": "1c3f489ec4dacfe0d0dd15c76016355757591b281d38aa59ad11c1563928ad6a",
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "resolution": [
+          1440,
+          900
+        ],
+        "draws": 64,
+        "triangles": 616121,
+        "matrixSHA256": "23379347e2d40c953c3602a06f7de322b81b048f1fddda8fea1d991855d18767",
+        "remotePlayers": 9
+      },
+      "ships": {
+        "pixels": "761b3747cf825fd0f2013dc887673b3f86f11a624f2f1e13e9ef78ba8996163b",
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "resolution": [
+          1440,
+          900
+        ],
+        "draws": 276,
+        "triangles": 523278,
+        "matrixSHA256": "8ca6ac94ba4b8e0e2a16144d87d5c688707f61cb42e95cc755ded3891d349d59",
+        "remotePlayers": 9
+      }
+    },
+    "candidate": {
+      "pilots": {
+        "pixels": "1c3f489ec4dacfe0d0dd15c76016355757591b281d38aa59ad11c1563928ad6a",
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "resolution": [
+          1440,
+          900
+        ],
+        "draws": 64,
+        "triangles": 616121,
+        "matrixSHA256": "23379347e2d40c953c3602a06f7de322b81b048f1fddda8fea1d991855d18767",
+        "remotePlayers": 9
+      },
+      "ships": {
+        "pixels": "761b3747cf825fd0f2013dc887673b3f86f11a624f2f1e13e9ef78ba8996163b",
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "resolution": [
+          1440,
+          900
+        ],
+        "draws": 276,
+        "triangles": 523278,
+        "matrixSHA256": "8ca6ac94ba4b8e0e2a16144d87d5c688707f61cb42e95cc755ded3891d349d59",
+        "remotePlayers": 9
+      }
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

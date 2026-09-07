@@ -74,15 +74,15 @@ tool bonuses and technology unlocks remain future work.
 
 | Action | Keyboard | Standard Xbox mapping |
 | --- | --- | --- |
-| Open pieces | B, outside on foot | Menu → Build |
+| Open pieces | B, outside on foot | B within 64 m of owned mainframe; Menu → Build for a new site |
 | Move / aim | WASD / mouse | Left / right stick |
-| Place one piece | Enter | RT press |
-| Next snap candidate | T | LT press |
-| Rotate / flip wall facing | Q / E | LB / RB |
+| Place one piece | Enter | A press |
+| Next snap candidate | T | LB press |
+| Rotate / flip wall facing | Q / E | LT / RT |
 | Change foundation height or floor level | Up / Down | D-pad up / down |
-| Choose another piece | P | X |
-| Leave placement | Esc | B |
-| Jump | Space | A |
+| Choose another piece | P | B |
+| Leave placement | Esc | X |
+| Jump | Space | RB while building; A otherwise |
 | Inspect backpack | Inventory shortcut | View |
 | Interact with door, crate or mainframe | F | X, outside placement |
 
@@ -90,13 +90,13 @@ The placement HUD also provides touch buttons. Movement and aiming continue to
 use the game's existing movement controls. Controller dialogs use D-pad/stick
 focus, A to activate and B to close. New contextual actions pass through the
 shared controller router and wait for neutral input after dialog or tool changes.
-Keyboard B opens construction; Xbox B exits it. Placement suppresses weapon fire.
+Xbox B opens or reopens the wheel; X exits placement. Placement suppresses weapon fire.
 
 Foundations and floor panels use a 4 m grid; each storey is 3 m. Walls, window walls
 and doorways snap to panel edges. A wall rotates by 180° to flip its facing on its
-edge; other pieces rotate by 90°. Upper floors require two supporting walls.
+edge; other pieces rotate by 90°. A roof needs one supported wall, or may extend up to two adjacent panels from a wall-supported roof.
 Stairs occupy one panel bay: leave the space above the stairs open and put the
-upper landing over an adjacent bay supported by two walls. Concrete panels, walls,
+upper landing over an adjacent bay connected to a supported roof or wall. Concrete panels, walls,
 window glass, stair treads and rails all have collision. Doorway leaves retract
 into their own jambs, with their movement space reserved during placement. This
 slice eases the leaves over half a second. Their collision follows the visible
@@ -131,3 +131,139 @@ attached to its rotating surface across different page epochs. GPU groups subtra
 placement sampling use the same canonical body terrain as movement and rendering.
 Malformed or unsupported base saves pause construction and retain their original
 content instead of resetting the player's progress.
+
+
+## Supplied build sandbox
+
+Open `/?sandbox=build&intro=0&seed=7291`, or use **Command menu → Open build sandbox**.
+You start on foot on Selene beside a mainframe and a 12 × 12 m foundation pad.
+**4,608 kg** of concrete, metal stock, glass and conductor is available directly
+while placing pieces. Open **Build → Sandbox supplies → Refill bank** whenever
+needed. Reload keeps your buildings and remaining stock in a separate sandbox
+save. **Command menu → Return to regular game** restores your ordinary save.
+
+Keyboard **B** or controller **B** near the mainframe opens the palette. Select with
+left stick / A, place with A, rotate with LT/RT, and exit with X. Existing support,
+collision and 1,024-piece-per-site limits still apply. Nine foundations plus the
+mainframe use ten of the starting site's slots.
+
+
+## Building wheel
+
+Controller **B** within 64 m of your mainframe or keyboard **B** opens the radial
+piece picker. **Menu → Build** also starts a new site.
+Point the **left stick** at a piece and press **A** to choose. Its name and costs
+appear in the centre. **B** reopens the wheel during placement; **B** closes it
+without selecting. Release controls, then press **A** to place. D-pad browsing,
+mouse/touch selection and Tab/Enter also work. Recipes and sandbox supplies remain
+in the tabs above the wheel.
+
+
+## Expanded kit and landing pads
+
+In the wheel, **LB/RB switches tabs**: Blocks, Shapes, Facilities, Resources,
+and Sandbox supplies where available. Left stick/A still selects pieces;
+D-pad, keyboard Tab/Enter and touch tab buttons remain available.
+
+Shapes adds equilateral triangle foundations and roofs (three 4 m edges accepting
+full walls), quarter-circle foundations/roofs (radius 4 m) and matching solid/glazed
+curved walls. Matching edges determine orientation. Foundations snap to existing
+edges before offering a free-grid position; LB cycles candidates. Curved walls
+follow their matching curved slab. Footprints govern collision as well as art.
+
+Roof support starts at one grounded wall and spans at most two further connected
+roof panels per storey. A saved floating roof island is rejected. Storage uses
+the aimed floor height, so a roof overhead does not pull a crate off the floor
+behind stairs; the staircase’s actual solid body still blocks intersecting crates.
+
+Facilities includes an 8-box storage rack (384 kg mineral capacity), inventory
+terminal, 16 m-wide Nomad hangar doorway, sloped 4 m approach ramp and three pad
+foundations. X/F at a terminal opens the site’s containers; access expires when
+you leave the terminal. Racks and crates use the same actual box inventory.
+Walls can stack directly on matching walls for double-height hangar interiors;
+D-pad height selects the upper storey. The hangar’s curtain retracts into its header, with live collision and closing
+protection for characters and parked ships. Its open clearance is 14.58×5.17 m.
+Ramps snap to 4 m bays along panel edges and rise 0.6 m over 4 m; the lower end can
+embed in ground when joining a 0.3 m-high foundation.
+
+| Pad | Foundation | Intended ship footprint |
+| --- | --- | --- |
+| S |16×16m | Nomad12.1×11.1m |
+| M |32×40m | Nomad12.1×11.1m, with more working space |
+| L |48×72m | Atlas36×64m |
+
+The current playable Atlas requires the large pad; it does not fit the medium
+foundation. A centred Atlas has 6 m of lateral and 4 m of longitudinal clearance
+on each side of the large pad. Landing checks use the full current ship footprint
+with at least 1 m of clearance around it. Rotated ships must still fit.
+
+Aim at the near edge when placing pad prefabs; their centres extend
+beyond normal tool reach. Place the foundation, leave build mode, approach or stand on it and press **X/F →
+Mark as landing pad**. Size-specific perimeter/approach markings persist. Landing
+assist uses a clear, sufficiently large designated slab for touchdown; objects
+on the pad or an undersized footprint prevent pad capture. Approach manually
+above the pad and use the usual Y/L landing assist. No automatic flight-to-pad
+route or pressure sealing is added.
+
+Pad piers extend 8 m below the deck for uneven terrain. Choose a site where the
+whole deck clears terrain and the supports reach it; use foundation height
+adjustment if needed. Large-pad placement expands a 64 m claim to 96 m atomically,
+unless it overlaps another claim. Other claims remain 64 m. The 1,024-piece/site limit
+still applies; a complete prefab pad counts as one piece. In the Selene sandbox,
+the small pad fits west of the starter pad; the large pad fits farther east,
+for example near claim-local X 36/Z 0. Refill the bank between expensive pads.
+
+
+## Base electricity and server saves
+
+Use B → LB/RB → Power to build solar arrays, wind turbines, batteries and fuel
+generators. Batteries start empty and charge from surplus generation. Wind does
+not work on Selene. Solar needs sunlight and clearance above the array. Mine
+Selene surface rocks for helium-3-rich regolith, or survey Pyre outcrops for rare
+uranium-bearing ore; put fuel in mainframe supplies and load0.1 kg batches there.
+
+X/F at a mainframe or power machine shows generation, load, battery energy, fuel
+and health. Once generation and batteries cannot meet demand, the base loses
+health over72 real hours. Restoring power stops decay;5 kg metal stock repairs25
+health. At zero, the base and its stored contents are removed. Manual storage and
+mainframe access remain available without electricity. Sandbox health is protected.
+
+Bases are browser-local until **Connect / restore server base save** is used at
+a mainframe while signed in. An existing account save is restored, with a local
+backup retained first. Connected solo saves upload every ten seconds and restore
+across browsers; server upkeep continues offline. Check the displayed saved/pending
+status before leaving. Multiplayer construction remains disabled in this slice.
+See [power and server-save memory](base-power-pipeline.md) for integration details.
+
+In the build sandbox, open the mainframe and choose **Refill sandbox reactor fuel**
+to supply 1 kg each of uranium and helium-3 feedstock. Build the matching generator,
+then load fuel from that same panel. Regular bases must obtain their fuel by mining.
+
+## Remove tool and larger sites
+
+Sites now allow **1,024 pieces**. The existing 64 m claim radius (96 m for the large
+pad) is unchanged. The save endpoint accepts up to 2 MiB for multiple populated
+solo sites. This allowance is not a measured frame-rate guarantee.
+
+Press **B**, select **Remove tool** below the build wheel, aim at a piece within
+12 m and press **A** to remove that piece. **Enter** and the touch **Remove**
+button do the same. An orange outline marks a removable target; a red outline
+and the HUD explain blocked targets. **X / Esc** exits; **B** returns to the wheel.
+Removal is permanent and currently gives no material refund. It never cascades
+through a structure: remove dependent walls, roofs or equipment first, empty
+storage before removing it, and remove the mainframe last. Held A cannot remove
+the floor behind the piece you just removed. Server-connected sites use a separate
+revision-checked command; stale saves cannot restore a removed piece.
+
+
+## Ceiling lights and rounded roof tiles
+
+Build a supported ceiling first using the Floor, triangle floor or quarter-circle
+floor pieces. In **Roofs**, choose a flat, rounded-edge, rounded-corner, triangle
+or quarter-circle outer tile. It fits over the ceiling; LT/RT or Q/E orient the
+rounded square edges and corners. Each costs 4 kg concrete and 1 kg metal stock.
+
+**Ceiling light** is in Power and Roofs. Aim beneath a ceiling to place it; leave
+build mode, look at the fixture and use **X / F** to switch it. Each enabled lamp
+uses 50 W and follows the base power supply. The switch setting is saved. Remove
+attached lights and roof tiles before removing their supporting ceiling.

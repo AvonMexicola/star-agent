@@ -72,3 +72,12 @@ test('short sweeps retain distant high structures inside the cylindrical claim',
  const start=f.build.toWorld(v([60,29,.4]),f.c),direction=v([0,0,-1]).applyQuaternion(new THREE.Quaternion().fromArray(f.c.quaternion));
  assert.ok(f.build.raycast(start,direction,1)?.building,'cull sphere includes claim height as well as horizontal radius');
 });
+
+test('landing assist touches down on a clear designated pad and rejects an undersized or occupied pad',t=>{
+ const f=setup(t),pad={id:'build-piece-9',type:'foundation-pad-small',position:[0,.3,0],rotation:0,doorOpen:false,landingPad:true};
+ f.c.pieces=[f.c.pieces[0],pad];f.nav.mode='flight';f.nav.insideShip=false;f.nav.position.copy(f.build.toWorld(v([0,18,0]),f.c));f.nav.baseLandingSurface=()=>f.build.landingSurface();f.nav.enabled=true;f.nav.focused=true;
+ assert.ok(f.build.landingSurface());f.nav.landOrLaunch();
+ for(let i=0;i<1800&&f.nav.mode!=='landed';i++)f.tick();assert.equal(f.nav.mode,'landed');assert.ok(Math.abs(f.build.toLocal(f.nav.shipPosition,f.c).y-.3)<1e-5,'ship rests on the slab, not terrain');
+ f.nav.mode='flight';f.nav.position.copy(f.build.toWorld(v([7,18,0]),f.c));assert.equal(f.build.landingSurface(),null,'full wings plus clearance must fit');
+ f.nav.position.copy(f.build.toWorld(v([0,18,0]),f.c));f.c.pieces.push({id:'build-piece-10',type:'crate',position:[0,.3,0],rotation:0,doorOpen:false});assert.equal(f.build.landingSurface(),null,'cargo on the pad blocks landing assist');
+});

@@ -228,8 +228,8 @@ function attachController(navigation) {
 test('controller preserves analog assisted thrust, steering, roll and keyboard fallback', t=>{
   const {navigation:nav,advance,keyDown,keyUp}=setup(t);
   const {pad}=attachController(nav);
-  pad.axes[1]=-.58;nav.update(1/60);const half=nav.speed;
-  nav.orbit();pad.axes[1]=-1;nav.update(1/60);
+  pad.axes[1]=-.58;advance(12);const half=nav.speed;
+  nav.orbit();pad.axes[1]=-1;advance(12);
   assert.ok(nav.speed>half*1.9 && nav.speed<half*2.1,'half stick gives half assisted speed');
   nav.orbit();pad.axes.fill(0);pad.axes[2]=.6;const orientation=nav.orientation.clone();advance(.5);
   assert.ok(nav.orientation.angleTo(orientation)>.1,'right stick steers without pointer lock');
@@ -244,10 +244,10 @@ test('controller toggles once per press, applies inertial torque and holds brake
   advance(.5);assert.equal(nav.flightAssist,false,'holding R3 does not repeatedly toggle assist');
   button(11,false);pad.axes[1]=-1;pad.axes[2]=.5;button(4,true);advance(.5);
   assert.ok(nav.speed>1);assert.ok(nav.angularVelocity.length()>.1);
-  button(1,true);const position=nav.position.clone();advance(.5);
-  assert.ok(nav.position.equals(position),'brake overrides thrust and gravity while held');
-  near(nav.speed,0);near(nav.angularVelocity.length(),0);
-  button(1,false);button(4,false);pad.axes.fill(0);button(11,true);advance(.1);
+  button(6,true);const position=nav.position.clone();advance(.5);
+  assert.ok(nav.position.distanceTo(position)>0,'braking travels through a finite stopping distance');
+  advance(6);assert.ok(nav.speed<.001);near(nav.angularVelocity.length(),0);
+  button(6,false);button(4,false);pad.axes.fill(0);button(11,true);advance(.1);
   assert.equal(nav.flightAssist,true);
 });
 
@@ -270,8 +270,8 @@ test('controller focus and disabled navigation discard held movement and interac
   nav.enabled=false;pad.axes[1]=-1;button(11,true);advance(.2);
   nav.enabled=true;advance(.2);near(nav.speed,0);assert.equal(nav.flightAssist,true);
   pad.axes.fill(0);button(11,false);advance(.1);pad.axes[1]=-1;advance(.2);assert.ok(nav.speed>0);
-  window.dispatch('blur');advance(.2);near(nav.speed,0);
-  window.dispatch('focus');advance(.2);near(nav.speed,0);
+  const beforeBlur=nav.speed;window.dispatch('blur');assert.equal(nav.speed,beforeBlur);advance(3);assert.ok(nav.speed<.001);
+  window.dispatch('focus');advance(.2);assert.ok(nav.speed<.001);
   pad.axes.fill(0);advance(.1);pad.axes[1]=-1;advance(.2);assert.ok(nav.speed>0);
 });
 
@@ -399,4 +399,18 @@ test('standard Xbox suit controls keep RT mining separate from A/B vertical thru
   button(6,true);advance(2);button(6,false);near(nav.speed,0);
   const location=nav.position.clone();button(7,true);advance(.5);assert.equal(nav.toolTrigger,1);near(nav.speed,0);assert.ok(nav.position.distanceTo(location)<.0001,'RT fires tool without suit movement');
   button(7,false);button(4,true);const attitude=nav.orientation.clone();advance(.5);button(4,false);assert.ok(attitude.angleTo(nav.orientation)>.4);
+});
+
+test('every hull needs altitude to arrest a dive; late braking crashes and landing assist cannot save it',t=>{
+ const {navigation:nav}=setup(t),stops=[];
+ for(const shipId of ['kestrel','nomad','atlas']){
+  const dive=height=>{nav.transit(destinations.forest,height);nav.shipId=shipId;nav.orientToward(new THREE.Vector3(),nav.normal);nav.velocity.copy(nav.normal).multiplyScalar(-100);};
+  dive(600);const start=nav.position.clone();nav.landOrLaunch();assert.equal(nav.autoland,false);near(nav.speed,100);
+  nav.keys.add('KeyX');nav.update(1/60);assert.ok(nav.speed>98);
+  for(let i=0;i<2400&&nav.speed>.01;i++)nav.update(1/60);
+  assert.equal(nav.mode,'flight');assert.ok(nav.speed<.01);stops.push(nav.position.distanceTo(start));
+  dive(25);nav.keys.add('KeyX');for(let i=0;i<120&&nav.mode==='flight';i++)nav.update(1/60);
+  assert.equal(nav.mode,'crashed',`${shipId}: braking too late still hits canonical ground`);
+ }
+ assert.ok(stops[1]>stops[0]*1.5);assert.ok(stops[2]>stops[1]*2);
 });

@@ -8,8 +8,14 @@ export function createWeaponTarget({nav,mining}){
     let hit=mining.raycast(start,direction,range);
     const building=nav.buildingRaycast?.(start,direction,range);
     if(building&&(!hit||building.distance<hit.distance))hit=building;
-    if(nav.station&&nav.stationDistance<range+200){
+    for(const candidate of [nav.parkedShipRaycast?.(start,direction,range),nav.faunaRaycast?.(start,direction,range)]){
+      if(candidate&&(!hit||candidate.distance<hit.distance))hit=candidate;
+    }
+    if(nav.station){
       raycaster.set(start.clone().sub(origin),direction);raycaster.far=range;
+      // The supplied muzzle can belong to an NPC or sit beside a distant
+      // exterior ring. Player-to-berth distance cannot gate this query; each
+      // visible mesh's own bounding sphere rejects distant rays in Three.js.
       // StationComplex owns several scene roots rather than the original
       // Station.group. Traverse only currently visible meshes, including LODs.
       const station=nav.station,roots=station.group?[station.group]:[station.exterior?.group,station.hub?.group,station.lodGroup,...(station.pods??[]).map(p=>p.group)];

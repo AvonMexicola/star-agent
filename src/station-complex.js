@@ -8,11 +8,16 @@ import { createStationFinishGraphics } from './station-finish-graphics.js';
 import { createStationFinishLighting, prepareStationFinishShadows } from './station-finish-lighting.js';
 import { attachConcourse } from './station-concourse.js';
 import { loadStationShopGraphics } from './station-shop-graphics.js';
+import { createStationShopProps, loadStationShopProps } from './station-shop-props.js';
+import { createStationShopkeeper, STATION_SHOPKEEPERS } from './station-shopkeeper.js';
 import { attachPressureElevator } from './station-elevator.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
 import { createAuthoredExterior, attachExteriorLod, STATION_EXTERIOR_URL, STATION_EXTERIOR_LOD_URL } from './station-exterior.js';
+import { fleetHangarAsset } from './station-fleet-hangar.js';
+import {STATION_HUB_FRAME} from './station-hub-policy.js';
+import {stationPhysicsAt} from './station-physics.js';
 
 /** Bake only cloned LOD geometry into the station frame, then merge compatible
  * material/attribute sets. Each moving door stays separate from static parts
@@ -52,6 +57,7 @@ function stationLodParts(root){
 export class StationComplex {
   constructor(scene,options={}){
     this.scene=scene;this.pods=[];this.activeIndex=0;this.parkedPod=0;this.location='hangar';this.ready=false;this.error=null;
+    this.largeHangars=options.largeHangars===true;
     this.direction=(options.direction?.clone()??defaultStationDirection()).normalize();
     this.altitude=options.altitude??STATION_ALTITUDE;
     this.baseQuaternion=options.orientation?.clone().normalize()??stationQuaternion(this.direction,new THREE.Quaternion());
@@ -62,6 +68,7 @@ export class StationComplex {
     this.lodGroup=new THREE.Group();this.lodGroup.name='Instanced distant berths';scene.add(this.lodGroup);this.lodBatches=[];
     this.hub=createHub();scene.add(this.hub.group);
     this.hub.quaternion=this.baseQuaternion.clone();this.hub.inverseQuaternion=this.baseQuaternion.clone().invert();this.hub.worldPosition=this.centre.clone();this.hub.ready=true;
+    Object.defineProperty(this.hub,'up',{get:()=>this.up});
     for(const name of ['toWorld','toLocal','deckPoint','deckHeightAt','isInsideHangar'])this.hub[name]=Station.prototype[name];
     this.hub.colliders=buildStationColliders(this.hub.group);
     this.hub.lift=createElevator(this.hub.group,14.3);
@@ -85,12 +92,12 @@ export class StationComplex {
   }
   async loadFinish(loader){
     try{
-      const [materials,props,concourse,elevator,shopGraphics]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics()]);
+      const [materials,props,concourse,elevator,shopGraphics,shopProps]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics(),loadStationShopProps()]);
       const graphics=createStationFinishGraphics();
       await graphics.readyPromise;
       const rig=createStationFinishLighting();
       this.finishMaterials=materials;this.finishRig=rig;this.finishStatus='ready';
-      return {materials,props,graphics,concourse,elevator,shopGraphics};
+      return {materials,props,graphics,concourse,elevator,shopGraphics,shopProps};
     }catch(error){this.finishStatus='unavailable';this.finishError=error.message;return null;}
   }
   async load(options){
@@ -98,7 +105,9 @@ export class StationComplex {
       const loader=new GLTFLoader();
       const exterior=options.exteriorGltf??(options.exteriorRefresh?loader.loadAsync(STATION_EXTERIOR_URL).catch(error=>{this.exteriorError=error.message;return null;}):null);
       const exteriorLod=options.exteriorLodGltf??(options.exteriorRefresh?loader.loadAsync(STATION_EXTERIOR_LOD_URL).catch(error=>{this.exteriorLodError=error.message;return null;}):null);
-      const [gltf,lod,finish,authoredExterior,authoredLod]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null,exterior,exteriorLod]);
+      const [source,sourceLod,finish,authoredExterior,authoredLod]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null,exterior,exteriorLod]);
+      const gltf=this.largeHangars?fleetHangarAsset(source):source;
+      const lod=this.largeHangars&&sourceLod?fleetHangarAsset(sourceLod):sourceLod;
       if(authoredExterior){
         // Construct and validate the replacement before removing the fallback.
         // Readiness remains false until its actual collision is built as well.
@@ -116,11 +125,18 @@ export class StationComplex {
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       if(finish){
         attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials,shopGraphics:finish.shopGraphics});
+        this.hub.shopProps=createStationShopProps(finish.shopProps);
+        this.hub.group.add(this.hub.shopProps);
         // Collision for the batched furniture comes from authored assembly boxes.
         // Keep the room BVH built before these optional props and moving leaves.
         finish.materials.apply(this.hub.group);
         this.hub.group.traverse(mesh=>{if(mesh.isMesh&&(/Detail|Sign_/.test(mesh.name)||mesh.material.transparent))mesh.castShadow=false;});
         attachPressureElevator(this.hub.lift,finish.elevator,{sign,materials:finish.materials});
+        // Attach after station materials/shadow batching: both characters keep
+        // authored skin/clothing materials and load only on hub entry.
+        this.shopkeepers=Object.fromEntries(Object.entries(STATION_SHOPKEEPERS).map(([id,definition])=>{
+          const merchant=createStationShopkeeper({definition});this.hub.group.add(merchant.group);return [id,merchant];
+        }));
       }
       let colliders;
       for(const spec of POD_LAYOUT){
@@ -133,7 +149,7 @@ export class StationComplex {
         if(finish)attachPressureElevator(pod.lift,finish.elevator,{sign,materials:finish.materials});
         pod.services=new THREE.Group();pod.group.add(pod.services);
         sign(pod.services,`BERTH ${String(pod.id).padStart(2,'0')} / AEON`,[0,9,-26],18,2);
-        sign(pod.services,'CARGO TRANSFER\nF  /  OPEN TERMINAL',[-12,pod.interiorBox.min.y+1.72,22.69],1.72,1.12);
+        sign(pod.services,'CARGO & TRADE\nF / X  ·  TERMINAL',[-12,pod.interiorBox.min.y+1.72,22.69],1.72,1.12);
         sign(pod.services,`BERTH ${String(pod.id).padStart(2,'0')}`,[0,pod.interiorBox.min.y+5.2,22.15],5,.75);
         this.pods.push(pod);
       }
@@ -191,8 +207,11 @@ export class StationComplex {
   }
   setMultiplayerState(state){
     this.multiplayerState=state;
-    if(!state){for(const pod of this.pods)if(pod.openingControlled)pod.endOpening();return;}
-    this._openingIndex=null;this.location='hangar';
+    if(!state){this._defenseState=null;this.defense?.resetSession();for(const pod of this.pods)if(pod.openingControlled)pod.endOpening();return;}
+    this._openingIndex=null;
+    if(state.defense!==this._defenseState){this._defenseState=state.defense;this.defense?.setState(state.defense);}
+    const occupiedFrame=state.hub?.frame??state.physicsFrame;
+    this.location=occupiedFrame===STATION_HUB_FRAME?'hub':'hangar';
     const frame=state.frame;
     if(frame?.direction?.length===3&&frame?.orientation?.length===4&&Number.isFinite(frame.altitude)){
       const key=JSON.stringify(frame);
@@ -204,12 +223,18 @@ export class StationComplex {
       }
     }
     if(state.hangar){this.activeIndex=state.hangar.id-1;this.parkedPod=this.activeIndex;}
-    const occupied=/^hangar:(\d+)$/.exec(state.physicsFrame??'');
+    const occupied=/^hangar:(\d+)$/.exec(occupiedFrame??'');
     if(occupied&&this.pods[Number(occupied[1])-1])this.activeIndex=Number(occupied[1])-1;
     for(let i=0;i<this.pods.length;i++){
       const pod=this.pods[i];
       if(!pod.openingControlled)pod.beginOpening();
       pod.setOpeningProgress(state.doors?.[i+1]??0);
+    }
+    for(const pose of state.hub?.elevators??[]){
+      const match=/^hangar:(\d+)$/.exec(pose.frame??'');
+      const frame=pose.frame===STATION_HUB_FRAME?this.hub:match?this.pods[Number(match[1])-1]:null;
+      if(!frame||typeof pose.open!=='boolean'||!Number.isFinite(pose.progress))continue;
+      frame.lift.open=pose.open;frame.lift.progress=THREE.MathUtils.clamp(pose.progress,0,1);updateElevator(frame.lift,0);
     }
   }
   update(position,origin,sun,dt){
@@ -222,7 +247,7 @@ export class StationComplex {
     for(const pod of this.pods){
       // Navigation chooses the occupied berth; the final cinematic/first-person
       // camera origin controls visibility and floating-origin render transforms.
-      pod.update(origin,origin,sun,dt);updateElevator(pod.lift,dt);
+      pod.update(origin,origin,sun,dt);updateElevator(pod.lift,this.multiplayerState?.hub?0:dt);
       pod.lift.group.visible=pod.services.visible=pod.cameraDistance<230;
       if(pod.lodModel)pod.lodModel.visible=false;
     }
@@ -260,9 +285,10 @@ export class StationComplex {
     // group visible at planetary orbit costs 93 draws for a subpixel station.
     this.lodGroup.visible=this.exterior.group.visible=cameraDistance<600000;
     this.finishRig?.update(this,position);
-    updateElevator(this.hub.lift,dt);
+    updateElevator(this.hub.lift,this.multiplayerState?.hub?0:dt);
     this.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
     this.hub.group.visible=cameraDistance<140;
+    for(const merchant of Object.values(this.shopkeepers??{}))merchant.update(dt,{visible:this.hub.group.visible&&this.location==='hub',paused:this.nav?.enabled===false||this.nav?.focused===false||(typeof document!=='undefined'&&document.hidden)});
     this.exterior.hubShell.visible=!this.hub.group.visible;
     this.exterior.updateDetail?.(cameraDistance);
     for(const light of this.hub.lights)light.visible=this.location==='hub'&&position.distanceTo(this.centre)<100;
@@ -276,12 +302,13 @@ export class StationComplex {
     if(!this.ready)return {point:proposed.clone(),hit:false};
     let closest={point:proposed.clone(),hit:false};
     const keep=result=>{if(result.hit&&(!closest.hit||result.point.distanceToSquared(previous)<closest.point.distanceToSquared(previous)))closest=result;};
+    if(this.defense)keep(this.defense.constrainStep(previous,proposed,orientation,walking,layout));
     if(walking){
       // A suit can enter any berth, including one different from its ship's
       // assigned hangar. Test those physical frames before selecting a deck.
       for(const frame of [...this.pods,this.hub]){
         const start=frame.toLocal(previous,new THREE.Vector3()),end=frame.toLocal(proposed,new THREE.Vector3());
-        const doors=[...elevatorBoxes(frame.lift),...frame.lift.staticBoxes,...(frame.staticBoxes??[]),...(frame.doorBoxes??[])];
+        const doors=[...elevatorBoxes(frame.lift),...frame.lift.staticBoxes,...(frame.staticBoxes??[]),...(frame.doorBoxes??[]),...(frame===this.hub?Object.values(this.shopkeepers??{}).flatMap(merchant=>merchant.collisionBoxes):[])];
         const result=constrainStationSweep(frame.colliders,doors,start,end,new THREE.Vector3(-.25,-layout.eyeHeight,-.25),new THREE.Vector3(.25,.15,.25));
         frame.toWorld(result.point,result.point);keep(result);
       }
@@ -304,7 +331,7 @@ export class StationComplex {
     return closest;
   }
   interaction(nav){
-    if(!this.ready||!nav.dockedAtStation||nav.mode!=='walk'||nav.insideShip)return null;
+    if(!this.ready||nav.mode!=='walk'||nav.insideShip||!stationPhysicsAt(this,nav.position))return null;
     const p=this.toLocal(nav.position,new THREE.Vector3()),floor=this.interiorBox.min.y;
     if(Math.abs(p.y-floor-nav.layout.eyeHeight)>1)return null;
     if(this.location==='hangar'&&p.distanceTo(new THREE.Vector3(-12,floor+nav.layout.eyeHeight,20.7))<2.3){
@@ -318,5 +345,5 @@ export class StationComplex {
     if(Math.abs(p.x)<3.4&&p.z>lift.z-3&&p.z<lift.z+.6)return {kind:'door',label:lift.open?'WALK INTO ELEVATOR · F TO CLOSE':'F · CALL ELEVATOR'};
     return null;
   }
-  get snapshot(){return {exterior:this.exteriorStatus,exteriorDetail:this.exterior.detailLevel??'hero',exteriorError:this.exteriorError,exteriorLodError:this.exteriorLodError,finish:this.finishStatus,finishError:this.finishError,finishMaterials:this.finishMaterials?.stats,pods:this.pods.length,lodBatches:this.lodBatches.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
+  get snapshot(){return {shopkeeper:this.shopkeepers?.weapons.state??null,shopkeepers:Object.fromEntries(Object.entries(this.shopkeepers??{}).map(([id,merchant])=>[id,merchant.state])),exterior:this.exteriorStatus,exteriorDetail:this.exterior.detailLevel??'hero',exteriorError:this.exteriorError,exteriorLodError:this.exteriorLodError,finish:this.finishStatus,finishError:this.finishError,finishMaterials:this.finishMaterials?.stats,pods:this.pods.length,lodBatches:this.lodBatches.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
 }

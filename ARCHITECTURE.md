@@ -65,8 +65,10 @@ streaming continuity or physical clearance. Those require runtime evidence.
 
 Core exploration remains usable offline without accounts, keys or hosted services.
 Online play currently uses a 30 Hz authoritative room capped at ten players and
-the Nomad flight model. PostgreSQL is supported; local development uses a separate
-memory store. Local building and the full offline fleet are not automatically replicated.
+the Nomad flight model. PostgreSQL with Prisma stores accounts and inventory;
+the shared preview starts a dedicated persistent local PostgreSQL instance.
+Memory storage is an explicit test option. Local building and the full offline
+fleet are not automatically replicated.
 
 Online inventory, economy, placement, mining and combat must validate identity,
 reach, ownership, quantities and world version server-side. Define idempotency,

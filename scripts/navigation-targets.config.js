@@ -1,0 +1,3 @@
+import {defineConfig} from '@playwright/test';
+process.env.TMPDIR=process.env.NAV_TMPDIR||'/home/cees/.cache/star-agent-navigation/tmp';
+export default defineConfig({testDir:'../tests/browser',testMatch:['system-map.spec.js','travel.spec.js'],timeout:180000,workers:1,reporter:'list',outputDir:process.env.NAV_RESULTS||'/tmp/star-agent-navigation-results',use:{baseURL:'http://127.0.0.1:5493',viewport:{width:1440,height:900},actionTimeout:12000,launchOptions:{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']}},webServer:{command:'npm run preview -- --port 5493 --strictPort',url:'http://127.0.0.1:5493',reuseExistingServer:true}});

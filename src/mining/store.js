@@ -48,7 +48,7 @@ export class MiningStore {
           if (typeof rawRockField === 'string') this.encodedFields.set(rock.field, rawRockField);
           if (!safeId(id) || !Number.isSafeInteger(rock.revision) || rock.revision < 0 || !validField(rock.field)) throw Error('Invalid rock save');
         }
-        if (!Number.isSafeInteger(this.state.economy?.credits) || this.state.economy.credits<0 || this.state.economy.credits>STARTER_CREDITS || !Object.entries(STATION_SHOPS).every(([id,shop])=>shop.offers.every(offer=>Number.isSafeInteger(this.state.economy.shopStock?.[id]?.[offer.itemId])&&this.state.economy.shopStock[id][offer.itemId]>=0&&this.state.economy.shopStock[id][offer.itemId]<=offer.stock)))throw Error('Invalid shop ledger');
+        if (!Number.isSafeInteger(this.state.economy?.credits) || this.state.economy.credits<0 || this.state.economy.credits>1_000_000_000 || !Object.entries(STATION_SHOPS).every(([id,shop])=>shop.offers.every(offer=>Number.isSafeInteger(this.state.economy.shopStock?.[id]?.[offer.itemId])&&this.state.economy.shopStock[id][offer.itemId]>=0&&this.state.economy.shopStock[id][offer.itemId]<=offer.stock)))throw Error('Invalid shop ledger');
         if (!validStarterConstruction(this.state.starterConstruction)) throw Error('Invalid starter construction receipt');
         if (!validMiningProgression(this.state.progression)) throw Error('Invalid mining progression');
         if (!validLoadout(this.state.loadout) || !this.validContainers(this.state)) throw Error('Invalid containers');
@@ -60,7 +60,15 @@ export class MiningStore {
   }
   get mass() { const items=this.container('pack').items; return MATERIAL_IDS.reduce((sum,id)=>sum+items[id],0); }
   get capacity() { return this.state.loadout.slots.backpack ? this.state.boxes.pack * POUCH_CAPACITY : 0; }
-  get free() { return Math.max(0, this.capacity - this.mass); }
+  get free() { return this.freeFor(); }
+  /** Mineral mass budget only; commit also checks the resulting stack slots. */
+  freeFor(destination = 'pack') {
+    const target = this.container(destination);
+    if (!target) return 0;
+    const capacity = this.limits(destination).resources;
+    const mass = MATERIAL_IDS.reduce((sum, id) => sum + target.items[id], 0);
+    return Number.isFinite(capacity) ? Math.max(0, capacity - mass) : 0;
+  }
   container(id, state = this.state) {
     if (!safeId(id)) return null;
     if (id === 'pack' || id === 'ship') return { id, name: id === 'pack' ? 'Backpack' : 'Nomad cargo', kind: id === 'pack' ? 'backpack' : 'ship', boxes: state.boxes[id], items: { ...emptyItems(), ...state.supplies[id], ...state.materials?.[id], ...resourceItems(state[id]) } };
@@ -99,7 +107,7 @@ export class MiningStore {
     } catch {
       this.saved = false; this.blocked = true; this.warning = 'Save unavailable. Previous cuts and cargo retained. Reload to retry.'; return false;
     }
-    this.state = next; this.syncManifest(); return true;
+    this.state = next; this.syncManifest(); this.onWrite?.(next); return true;
   }
   bindManifest(manifest) { this.manifest = manifest; this.syncManifest(); }
   syncManifest() {
@@ -122,15 +130,20 @@ export class MiningStore {
   }
   releaseRock(id) { this.initialRocks.delete(id); }
   canEditRock(id) { return safeId(id) && !this.blocked && (id === ROCK_ID || Object.hasOwn(this.state.rocks, id) || Object.keys(this.state.rocks).length < MAX_SAVED_ROCKS); }
-  commitRock(id, result, revision) {
+  commitRock(id, result, revision, destination = 'pack', fuelProfile = null) {
     if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : `Rock save slots are full (${MAX_SAVED_ROCKS} surveyed deposits). Existing deposits remain mineable.`; return false; }
+    const target = this.container(destination);
+    if (!target) { this.warning = 'Mining destination is unavailable. Previous cuts and cargo retained.'; return false; }
     const rock = id === ROCK_ID ? this.state : this.state.rocks[id] ?? this.initialRocks.get(id);
     if (!rock || revision !== rock.revision || !Array.isArray(result.yieldVolume) || result.yieldVolume.length !== 3 || !result.yieldVolume.every(n => Number.isFinite(n) && n >= 0) || !validField(result.field)) return false;
     const added = result.yieldVolume.map(v => v * RECOVERED_KG_PER_CUBIC_METRE);
-    if (added.reduce((a, b) => a + b, 0) > this.free + 1e-7) { this.warning = 'Backpack mineral boxes are full. Use Deposit all resources at ship cargo.'; return false; }
+    if (added.reduce((a, b) => a + b, 0) > this.freeFor(destination) + 1e-7) { this.warning = destination === 'pack' ? 'Backpack mineral boxes are full. Use Deposit all resources at ship cargo.' : `${target.name} mineral boxes are full. Unload resources before mining.`; return false; }
     if (result.encodedField) this.encodedFields.set(result.field, result.encodedField);
-    const next = { ...this.state, pack: this.state.pack.map((v, i) => v + added[i]) };
-    if (!fitsBox(this.container('pack', next).items, next.boxes.pack, this.limits('pack', next))) { this.warning = 'Backpack stack slots are full. Use Deposit all resources at ship cargo or attach another box.'; return false; }
+    const items = { ...target.items };
+    for (const [key, amount] of Object.entries(resourceItems(added))) items[key] += amount;
+    if(fuelProfile&&['uranium-ore','helium-3-regolith'].includes(fuelProfile.item)&&Number.isFinite(fuelProfile.fraction)&&fuelProfile.fraction>0&&fuelProfile.fraction<=.1){const fuel=added[0]*fuelProfile.fraction;items.basalt-=fuel;items[fuelProfile.item]=(items[fuelProfile.item]??0)+fuel;}
+    const next = this.withItems(this.state, destination, items);
+    if (!fitsBox(this.container(destination, next).items, next.boxes[destination], this.limits(destination, next))) { this.warning = destination === 'pack' ? 'Backpack stack slots are full. Use Deposit all resources at ship cargo or attach another box.' : `${target.name} stack slots are full. Unload cargo or attach another box.`; return false; }
     next.progression = awardMiningXP(this.state.progression, added.reduce((a,b)=>a+b,0));
     if (id === ROCK_ID) { next.field = result.field; next.revision = revision + 1; }
     else next.rocks = { ...this.state.rocks, [id]: { field: result.field, revision: revision + 1 } };

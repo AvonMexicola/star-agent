@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {stationHubAt} from './station-hub-policy.js';
 
 export const STATION_GRAVITY = 9.81;
 
@@ -12,11 +13,7 @@ export function stationPhysicsAt(station, position) {
     if (!frame.interiorBox.containsPoint(local)) continue;
     return { id: `hangar:${frame.id ?? 1}`, frame, local, up: frame.up, gravity: STATION_GRAVITY };
   }
-  if (station.location === 'hub' && station.hub?.deckPoint(position, 0)) {
-    const frame = station.hub;
-    return { id: 'station:hub', frame, local: frame.toLocal(position, new THREE.Vector3()), up: station.up, gravity: STATION_GRAVITY };
-  }
-  return null;
+  return stationHubAt(station,position);
 }
 
 /** Support extends to the authored deck edge; collision keeps walls/closed doors

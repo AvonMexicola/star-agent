@@ -70,15 +70,15 @@ export class ShipCamera {
     this.matrix=new Matrix4();
   }
   toggle(mode) {
-    if(mode==='walk'){this.playerExternal=!this.playerExternal;return true;}
+    if(mode==='walk'||mode==='eva'){this.playerExternal=!this.playerExternal;return true;}
     if(mode!=='flight'&&mode!=='landed')return false;
     this.engaged=true;
     this.external=!this.external;
     return true;
   }
-  selected(mode) { return mode==='walk'?this.playerExternal:this.external; }
+  selected(mode) { return mode==='walk'||mode==='eva'?this.playerExternal:this.external; }
   update(nav, { surfaceRadius=groundRadiusAt, clipStation, clipShip }={}) {
-    const walking=nav.mode==='walk';
+    const walking=nav.mode==='walk'||nav.mode==='eva';
 
     this.active=false;this.obstructed=false;
     this.position.copy(nav.position);this.orientation.copy(nav.orientation);
@@ -88,7 +88,7 @@ export class ShipCamera {
     if(!this.selected(nav.mode))return;
     const attitude=walking?nav.orientation:(nav.shipPosition ? nav.shipOrientation : nav.orientation);
     const layout=nav.layout??SHIP_LAYOUT, scale=Math.max(1,(layout.flightBounds.max[2]-layout.flightBounds.min[2])/(SHIP_LAYOUT.flightBounds.max[2]-SHIP_LAYOUT.flightBounds.min[2]));
-    const offset=(walking?new Vector3(.6,.35,3.7):BOOM.clone().multiplyScalar(scale)).applyQuaternion(attitude);
+    const offset=(walking?new Vector3(.8,.35,3.7):BOOM.clone().multiplyScalar(scale)).applyQuaternion(attitude);
     let desired=nav.position.clone().add(offset);
     if(clipStation)desired=clipStation(nav.position,desired,attitude);
     if(walking&&clipShip)desired=clipShip(nav.position,desired);
@@ -99,8 +99,10 @@ export class ShipCamera {
     // inside the hull. The selected chase view resumes when there is room.
     if(actualOffset.length()<(walking?.85:CLEAR_DISTANCE*scale))return;
     this.position.copy(desired);this.active=true;
-    const up=walking?playerUp(nav):UP.clone().applyQuaternion(attitude);
-    this.matrix.lookAt(actualOffset,(walking?new Vector3(0,-.8,-2):TARGET.clone()).applyQuaternion(attitude),up);
+    const up=nav.mode==='walk'?playerUp(nav):UP.clone().applyQuaternion(attitude);
+    // Keep the sight line beside the right shoulder instead of converging on
+    // the player's torso, which would cover the central aiming reticle.
+    this.matrix.lookAt(actualOffset,(walking?new Vector3(.8,-.65,-2):TARGET.clone()).applyQuaternion(attitude),up);
     this.orientation.setFromRotationMatrix(this.matrix);
   }
 }
@@ -111,7 +113,9 @@ export function playerUp(nav) {
   const grid=nav.stationPhysics;
   if(grid&&nav.mode==='walk')return grid.up.clone();
   const local=nav.toShipLocal?.();
-  return local && local.length()<25 ? UP.clone().applyQuaternion(nav.shipOrientation) : nav.normal.clone();
+  const bounds=nav.layout?.flightBounds;
+  const supportRadius=bounds?Math.max(25,Math.hypot(...bounds.min.map((value,i)=>Math.max(Math.abs(value),Math.abs(bounds.max[i]))))+2):25;
+  return local && local.length()<supportRadius ? UP.clone().applyQuaternion(nav.shipOrientation) : nav.normal.clone();
 }
 
 /** Clip against visible ship triangles in its small render frame. World-to-ship

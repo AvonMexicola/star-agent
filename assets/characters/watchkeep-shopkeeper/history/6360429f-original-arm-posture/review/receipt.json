@@ -1,0 +1,52 @@
+{
+  "kind": "Blender studio, not game evidence",
+  "asset": {
+    "path": "public/models/characters/watchkeep-shopkeeper.glb",
+    "bytes": 1752664,
+    "sha256": "6360429f81004eb9bb5a93626a71ceb55679e5a5aa29f28a188b411ccaefce09"
+  },
+  "renderer": "Blender 5.2 Cycles CPU",
+  "threads": 4,
+  "samples": 16,
+  "resolution": [
+    800,
+    900
+  ],
+  "images": [
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/review/front-oblique.webp",
+      "bytes": 30824,
+      "sha256": "3240948074e0971567a0d9aef78dedac3f743f9ef7b8040a26838389ba43d92a"
+    },
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/review/back-oblique.webp",
+      "bytes": 26540,
+      "sha256": "23c957d022eedc686a20b1dc5746da3973edd061e96fe823be42bc8d2b043f2c"
+    },
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/review/face-detail.webp",
+      "bytes": 52834,
+      "sha256": "1a7cd0eb3ab83d14ec3951dd0c517905ae2b99359e5ab4bff15d532d3df404f8"
+    },
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/review/idle-15-mid.webp",
+      "bytes": 29724,
+      "sha256": "977757ca9d52a4cc7a213b9f344e9e87fdd41a1067e52a8de967e9c32c40bced"
+    },
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/review/idle-04-mid.webp",
+      "bytes": 30244,
+      "sha256": "7f306116e535ea7fd10f018a4b1e25131668f734a334f79550b3392b07b4216d"
+    },
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/review/idle-06-mid.webp",
+      "bytes": 30296,
+      "sha256": "6961fe86c5bedc998fb0a8c2cd2b8cc468ed2fa6ee4aa8c8d29a3c2fab0eedf3"
+    },
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/review/idle-07-mid.webp",
+      "bytes": 30364,
+      "sha256": "304fc4d1780b2baaef05e1436ebb52f9981b14206ae002dfddc2474b3581ee26"
+    }
+  ]
+}
