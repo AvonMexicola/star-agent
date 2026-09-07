@@ -18,8 +18,40 @@ model Account {
   sessions     Session[]
   passwordReset PasswordReset?
   playerState  PlayerState?
+  friendshipsLow Friendship[] @relation("FriendLow")
+  friendshipsHigh Friendship[] @relation("FriendHigh")
+  friendshipRequests Friendship[] @relation("FriendRequester")
+  socialBlocks SocialBlock[] @relation("SocialBlocker")
+  socialBlockedBy SocialBlock[] @relation("SocialBlocked")
 
   @@map("accounts")
+}
+
+model Friendship {
+  accountLow String @map("account_low") @db.Uuid
+  accountHigh String @map("account_high") @db.Uuid
+  requestedBy String @map("requested_by") @db.Uuid
+  status String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  low Account @relation("FriendLow", fields: [accountLow], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  high Account @relation("FriendHigh", fields: [accountHigh], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  requester Account @relation("FriendRequester", fields: [requestedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([accountLow, accountHigh])
+  @@index([accountHigh], map: "friendships_high")
+  @@map("friendships")
+}
+
+model SocialBlock {
+  blocker String @db.Uuid
+  blocked String @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  source Account @relation("SocialBlocker", fields: [blocker], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  target Account @relation("SocialBlocked", fields: [blocked], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([blocker, blocked])
+  @@index([blocked], map: "social_blocks_target")
+  @@map("social_blocks")
 }
 
 model Session {

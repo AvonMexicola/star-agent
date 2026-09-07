@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex cargo",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/sbu-cargo-trading",
   "base": "6d3abb04ebee4af5cd8d4b96ec4d440b81774bf5",
   "updated": "2026-09-07",
@@ -13,6 +13,12 @@
     "multiplayer",
     "interface"
   ],
-  "claims": [],
+  "claims": [
+    "src/cargo/grid.js",
+    "src/trading/model.js",
+    "src/trading/system.js",
+    "server/trading.js",
+    "server/database.js"
+  ],
   "brief": "docs/briefs/sbu-cargo-trading.md"
 }

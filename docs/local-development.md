@@ -5,6 +5,27 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+Latest local promotion: **`f861f8f`**, with checked social tools, SBU cargo and
+flight-controls help. Frontend and API were refreshed together, and existing
+accounts/saves retained in the same persistent database. Refresh the browser to
+use protocol 3; [delivery evidence](qa/social-cargo-integration.md) records checks.
+
+## Multiplayer chat and friends
+
+Join multiplayer through Account / Flight link, then open **Menu → Comms →
+Server chat** or **Friends**. Messages reach pilots connected to the same server.
+Friends require acceptance and persist across reconnects and restarts. Online
+pilots supplies request targets; Block removes friendship and stops chat between
+both pilots. Controller players can compose text with the on-screen keyboard;
+keyboard and touch use the same panels. Desktop and phone lists are paged.
+
+Ordinary swearing is allowed. The small English-first moderation rules withhold
+matched severe hateful abuse or extremist promotion before broadcasting and kick
+the sender from the session. Neutral identity or history discussion is allowed.
+There are no permanent bans, direct messages or archived chat in this slice.
+See the [player guide](multiplayer-social.md), [social QA](qa/multiplayer-social.md)
+and [combined integration evidence](qa/social-cargo-integration.md).
+
 ## Physical cargo and trading
 
 The SBU cargo slice (runtime `3c7af88`, draft PR70) adds **6 SBU in Nomad 02**
@@ -65,9 +86,12 @@ cruise changes the speed regime. Retract gear and slow into combat limits to fir
 landing assist requires less than 10 m/s. Atlas needs the most stopping room.
 
 The Atlas Mark II link opens the separate 64 m studio with its latest committed
-geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold; its four mounts now carry S2 guns. Multiplayer currently uses the server's Nomad flight model;
-joining it reserves a server-assigned hangar and places the pilot on its deck beside
-the parked Nomad. It replaces the dev teleport, ship selection and test inventory.
+geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no
+cargo hold; its four mounts now carry S2 guns. Multiplayer starts new pilots in
+the server's Nomad. Cargo & Trade can call a Nomad or Atlas to an assigned berth
+while the pilot is on foot with empty hands; the chosen hull persists. Joining
+reserves a server-assigned hangar and places the pilot on its deck beside the
+parked ship. It replaces the dev teleport, ship selection and test inventory.
 Hangar gravity follows the occupied bay, including EVA entry into another pilot's
 hangar; crossing an open deck edge returns to EVA. Local construction is not replicated.
 
@@ -114,6 +138,8 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Gear-limited flight, handling, drive, utilities, graphics, multiplayer | `feat/multiplayer-ten` at `f7a30ef` |
 | Server-assigned hangar spawns and local station gravity | `fix/multiplayer-hangar-gravity` at `b7eefc5` (PR #51) |
 | Persistent local accounts, sessions and inventory through PostgreSQL/Prisma | `fix/persistent-local-accounts` at `b100d8f` (PR #59) |
+| Server chat, mutual friends, blocking and private session kicks | `feat/multiplayer-chat-friends` runtime through `006c35c`, final browser fixture `99fa858` |
+| Physical cargo, Nomad 6 SBU / Atlas 512 SBU grids and durable player shops | `feat/sbu-cargo-trading` runtime `3c7af88`, reviewed evidence `7b3bed8` (PR #70) |
 | Fitted S1 Nomad / S2 Kestrel / S3 Atlas guns, barrel-origin fire | `feat/ship-weapon-fittings` runtime `2faa71c`, review `7cc583c`, combined in `5842404` |
 | Flyable Kestrel and shared Meridian identity | `feat/kestrel-flight` at `e4ec7df` |
 | Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `385c138` (asset/gameplay `9a363cb`) |
@@ -123,11 +149,12 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
 | Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Layered landmark grain, relief and seeded weathering/mineral variation | `art/landmark-weathering` runtime `4f9d472`, reviewed images `f88c497` |
+| Sparser giant landmarks with quieter, cheaper stone shading (supersedes the first weathering pass) | `art/landmark-restraint` runtime `bb75c4c`, checked source `92dadad`, locally combined at `6e548ad`; [images and measured limits](qa/landmark-restraint/README.md) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Footsteps, weapons, mining, thrust-responsive engines and spatial flybys | `feat/gameplay-audio` at `5a128f3`, construction/fauna audio through `6d3abb0` |
 | Expedition character, corrected hips, hands, animations and studio | Preserved owner checkpoint `0bb6a6a`; combined local/remote binding in `3bd7d61` |
 | Burrow twin-cutter rover aboard Atlas, offline development start | `feat/meridian-mining-rover` through `643a7d3` |
-| Finite ship momentum, combat/cruise mode and moving muzzle effects | `fix/combat-momentum` through `6f8b195` |
+| Finite ship momentum, combat/cruise mode and moving muzzle effects | `fix/combat-momentum` through `6f8b195`; controls explanation `f5c6933` |
 | Hostile Pyrebear and Sulphurhound habitats, shots, bites and medical recovery | `feat/pyrebear` through `5a3cf0b` |
 | Atlas Mark II geometry/gear checkpoint and review, studio only | `feat/atlas-fleet-refresh` at `0b2d852` |
 | Aeon exterior geometry preview and review, opt-in | `feat/station-exterior` at `9d0728f` (draft PR #55) |
@@ -180,8 +207,9 @@ station collisions, plus a production build and the production two-pilot browser
 journey. That journey exercises assigned deck spawns, COMMS/transfers, controller
 jump, physical EVA exit/return and held-input suppression across menu, focus and
 controller reconnection. No browser errors were recorded. Feature-wide checks and
-captures are in `docs/qa/multiplayer-hangar-physics.md`. Protocol version 2 requires
-the frontend and API to be updated together; restart `dev:all` after integration.
+captures are in `docs/qa/multiplayer-hangar-physics.md`. That checkpoint used
+protocol 2; the current cargo/social update uses protocol 3. The frontend and API
+must be updated together; restart `dev:all` after integration.
 
 ## Space patrol combat
 
@@ -246,8 +274,9 @@ screen. Tabs: Comms, Map, Contracts, Inventory, Loadout, Ship, Settings, and Dev
 on the development build. LB/RB or bracket keys changes tabs; B/Escape resumes.
 Long lists have page controls instead of scrolling. Ship contains fleet, weapons,
 utilities, construction and recipes; Settings contains graphics, sound and controls.
-Dev has Test starts, the console list and Content review. Comms uses the existing live station
-roster, hangar request and account systems; no new text-chat transport is included.
+Dev has Test starts, the console list and Content review. Comms contains Flight
+link for the station roster, hangar and account controls, plus Server chat and
+Friends. Nested controller text entry keeps its own focus and tab controls.
 [Gameplay menu QA](qa/gameplay-menu.md) records the checks and limitations.
 
 
