@@ -24,8 +24,9 @@ for role in ['albedo','bump']:
   for x in range(N):
    noise=random.random();board=(y//32)%3;grain=math.sin(x*.075+math.sin(y*.9)*3)*.018
    if role=='albedo':
-    shade=.68+board*.022+grain+(noise-.5)*.075-(.075 if y%32<1 else 0)
-    pixels.extend([shade,shade*.982,shade*.934,1])
+    cloud=math.sin(x*.027+math.sin(y*.031))*math.sin(y*.022)*.048
+    shade=.61+board*.026+grain+cloud+(noise-.5)*.095-(.09 if y%32<1 else 0)
+    pixels.extend([shade*.975,shade,shade*.995,1])
    else:
     h=.5+(noise-.5)*.25-(.12 if noise<.012 else 0)-(.08 if y%32==0 else 0);pixels.extend([h,h,h,1])
  im.pixels.foreach_set(pixels);im.filepath_raw=os.path.join(OUT,'concrete-'+role+'.png');im.file_format='PNG';im.save();subprocess.run(['magick',im.filepath_raw,'-quality','88',im.filepath_raw.replace('.png','.webp')],check=True);os.remove(im.filepath_raw)
@@ -46,9 +47,23 @@ def box(name,lo,hi,material='MineralConcrete',bevel=.012,moving=False):
   n=poly.normal;axis=max(range(3),key=lambda i:abs(n[i]));axes=[i for i in range(3) if i!=axis]
   for li in poly.loop_indices:
    v=o.matrix_world@o.data.vertices[o.data.loops[li].vertex_index].co;uv.data[li].uv=(v[axes[0]]/2,v[axes[1]]/2)
+ # Per-corner broad casting variation and dirt at the foot; bevels catch a
+ # lighter worn aggregate colour. COLOR_0 survives batching and runtime maps.
+ colors=o.data.color_attributes.new(name='Color',type='FLOAT_COLOR',domain='CORNER')
+ for poly in o.data.polygons:
+  for li in poly.loop_indices:
+   v=o.matrix_world@o.data.vertices[o.data.loops[li].vertex_index].co
+   if material=='MineralConcrete':
+    seed=sum(ord(c) for c in id)*.071
+    broad=math.sin(v.x*1.7+seed)*math.sin(v.y*.8+v.z*1.3)*.10
+    dirt=.18*math.exp(-max(0,v.z)*4) if id not in ['floor','foundation'] else .04
+    edge=.10 if poly.area<.025 else 0
+    shade=max(.57,min(1.05,.91+broad-dirt+edge))
+    colors.data[li].color=(shade,shade,shade,1)
+   else:colors.data[li].color=(1,1,1,1)
  objects.append(o);return o
 def b(name,p,size,material='MineralConcrete',bevel=.012,moving=False):return box(name,[p[i]-size[i]/2 for i in range(3)],[p[i]+size[i]/2 for i in range(3)],material,bevel,moving)
-def rail(name,a,c,width=.04):
+def rail(name,a,c,width=.052):
  # Bevelled rectangular rail along a line, authored in Blender local coordinates.
  aa=Vector((a[0],-a[2],a[1]));cc=Vector((c[0],-c[2],c[1]));o=b(name,[0,0,0],[width,(cc-aa).length,width],'EdgeSteel',.006);o.location=(aa+cc)/2;o.rotation_mode='QUATERNION';o.rotation_quaternion=(cc-aa).to_track_quat('Z','Y');return o
 manifest={'builder':'blender/build_base.py','coordinates':'metres, Y up; origin support surface, wall x width; stair rises toward -Z','source':'original deterministic scripted construction; no external imagery','pieces':{}}
@@ -65,6 +80,8 @@ for id,d in defs.items():
    b('InsetDisplay',(0,1.25,-dep/2-.01),(w-.33,.54,.025),'DarkPolymer',.007)
    for i,ww in enumerate([.4,.55,.31]):b('PrintedCircuit',(ww/2-.29,1.4-i*.12,-dep/2-.027),(ww,.012,.008),'MintStatus',.002)
    for yy in [.38,.48,.58,.68]:b('VentLouvre',(0,yy,-dep/2-.006),(.62,.025,.026),'EdgeSteel',.003)
+   for xx in [-.41,.41]:b('ConsoleLightDiffuser',(xx,1.28,-.375),(.018,.56,.012),'MintStatus',.003)
+   b('ConsoleLightHeader',(0,1.56,-.375),(.78,.018,.012),'MintStatus',.003)
    b('ServiceCover',(0,.89,-dep/2+.002),(.71,.17,.025),'WhiteArmour')
    b('ManualSupplyLatch',(.25,.88,-dep/2-.027),(.085,.06,.04),'EdgeSteel')
   else:
@@ -76,19 +93,32 @@ for id,d in defs.items():
    b('CarryHandle',(0,.39,-dep/2-.02),(.32,.055,.065),'EdgeSteel')
  else:
   for i,coll in enumerate(d['colliders']):
-   box('Structure'+str(i),coll['min'],coll['max'],'WindowGlass' if coll.get('kind')=='glass' else 'MineralConcrete',.009 if id=='stairs' else .018)
+   # Recess only the rear visible face behind the applied service kit.
+   # Canonical support/collision remains in definitions.js.
+   lo=list(coll['min'])
+   if id=='stairs' and i==len(d['colliders'])-1:lo[2]=max(lo[2],-1.984)
+   box('Structure'+str(i),lo,coll['max'],'WindowGlass' if coll.get('kind')=='glass' else 'MineralConcrete',.009 if id=='stairs' else .018)
   if id in ['wall','window','doorway']:
    # Form ties and recessed-looking seam strips define assembly and construction scale.
    for face in [-1,1]:
     for xx in [-1.65,1.65]:
      for yy in [.4,1.5,2.6]:b('FormTieCap',(xx,yy,face*.153),(.052,.052,.01),'EdgeSteel',.007)
     b('BottomSill',(0,.08,face*.156),(3.96,.055,.014),'EdgeSteel',.003)
+   # White mounting shoes and a compact status dash tie cast modules to
+   # the station/ship family without turning every face into white armour.
+   for face in [-1,1]:
+    for xx in [-1.82,1.82]:
+     b('FactionMount',(xx,.34,face*.156),(.20,.42,.012),'WhiteArmour',.003)
+     b('ModuleStatus',(xx,.52,face*.161),(.12,.018,.004),'MintStatus',.001)
    if id=='window':
     for xx in [-1.19,1.19]:b('GlazingMullion',(xx,1.7,0),(.055,1.42,.19),'EdgeSteel')
     for yy in [1.02,2.38]:b('GlazingSill',(0,yy,0),(2.4,.055,.19),'EdgeSteel')
    if id=='doorway':
     for xx in [-.76,.76]:b('DoorJamb',(xx,1.12,-.10),(.06,2.24,.08),'EdgeSteel')
     b('ManualTrack',(0,2.29,-.18),(3.12,.10,.09),'EdgeSteel')
+    b('ThresholdLightHousing',(0,2.40,-.173),(1.30,.105,.10),'WhiteArmour',.01)
+    b('ThresholdLightDiffuser',(0,2.40,-.222),(1.16,.026,.006),'MintStatus',.002)
+    for xx in [-.82,.82]:b('ThresholdMarker',(xx,.16,-.153),(.026,.16,.012),'MintStatus',.002)
     for side,door in zip(['Left','Right'],d['door']):
      xx=-.37 if side=='Left' else .37
      box('DoorArmour',door['min'],door['max'],'WhiteArmour',.015,side)
@@ -97,6 +127,10 @@ for id,d in defs.items():
      b('ManualPull',(xx*.4,1.05,-.15),(.045,.27,.09),'EdgeSteel',.008,side)
   elif id in ['floor','foundation']:
    for xx in [-1.93,1.93]:b('EdgeChannel',(xx,-.065,0),(.08,.10,3.98),'EdgeSteel',.006)
+   for xx in [-1.72,1.72]:
+    for zz in [-1.72,1.72]:
+     b('CornerArmour',(xx,-.0024,zz),(.32,.008,.32),'WhiteArmour',.001)
+     b('SurveyStatus',(xx,.0018,zz),(.12,.0004,.018),'MintStatus',0)
    # Expansion joints are shallow top markings inside the structural slab.
    for xx in [-1,0,1]:b('CastJoint',(xx,.0008,0),(.009,.0016,3.92),'DarkPolymer',0)
   elif id=='stairs':
@@ -106,8 +140,20 @@ for id,d in defs.items():
    for side in [-1,1]:
     for i in [0,4,8,11]:
      yy=(i+1)*.25;zz=2-(i+.5)/3
-     b('RailingPost',(side*.96,yy+.48,zz),(.042,.96,.042),'EdgeSteel',.006)
+     b('RailingPost',(side*.96,yy+.48,zz),(.052,.96,.052),'WhiteArmour',.006)
     rail('HandRail',(side*.96,1.22,1.84),(side*.96,3.98,-1.86))
+    for i in [0,4,8,11]:
+     yy=(i+1)*.25;zz=2-(i+.5)/3
+     b('RailStatus',(side*.96,yy+.88,zz),(.054,.055,.054),'MintStatus',.003)
+   # Back of a stair remains structurally solid, but service plates and
+   # casting ribs explain the otherwise blank three-metre retaining face.
+   for xx in [-.72,.72]:
+    b('RearArmour',(xx,1.5,-1.992),(.13,2.7,.008),'WhiteArmour',.001)
+   for yy in [.45,1.5,2.55]:
+    b('RearServiceBand',(0,yy,-1.992),(1.28,.065,.008),'EdgeSteel',.001)
+   b('RearInspectionPlate',(0,1.08,-1.992),(.50,.46,.008),'DarkPolymer',.001)
+   for yy in [.99,1.08,1.17]:b('RearVent',(0,yy,-1.998),(.35,.015,.004),'EdgeSteel',.001)
+   b('RearServiceStatus',(0,1.35,-1.998),(.23,.025,.004),'MintStatus',.001)
  # Batch by material and moving state, preserving the manual leaf parent.
  doorroot=None
  if id=='doorway':
@@ -122,10 +168,12 @@ for id,d in defs.items():
    bpy.ops.object.select_all(action='DESELECT')
    for o in group:o.select_set(True)
    objects=[o for o in objects if o not in group]
-   bpy.context.view_layer.objects.active=group[0];bpy.ops.object.join();o=bpy.context.object;o.name=('Leaf' if moving else id)+'_'+material.name
+   bpy.context.view_layer.objects.active=group[0]
+   if len(group)>1:bpy.ops.object.join()
+   o=bpy.context.object;o.name=('Leaf' if moving else id)+'_'+material.name
    bpy.context.scene.cursor.location=(0,0,0);bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
    if moving:o.parent=leafroots[moving]
- path=os.path.join(OUT,id+'.glb');bpy.ops.export_scene.gltf(filepath=path,export_format='GLB',export_yup=True,export_animations=False,export_extras=False)
+ path=os.path.join(OUT,id+'.glb');bpy.ops.export_scene.gltf(filepath=path,export_format='GLB',export_yup=True,export_animations=False,export_extras=False,export_vertex_color='ACTIVE',export_all_vertex_colors=False)
  meshes=[o for o in bpy.context.scene.objects if o.type=='MESH'];verts=[o.matrix_world@Vector(c) for o in meshes for c in o.bound_box]
  points=[(v.x,v.z,-v.y) for v in verts]
  triangles=sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in meshes)

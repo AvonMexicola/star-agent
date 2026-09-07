@@ -12,6 +12,12 @@ test('construction dialogs share controller focus, recipe transactions and held-
   await mkdir('/tmp/star-agent-build-ui',{recursive:true});await page.screenshot({path:'/tmp/star-agent-build-ui/recipes-desktop.png'});
   await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/star-agent-build-ui/recipes-phone.png'});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  const beforeScroll=await page.locator('.build-content').evaluate(el=>el.scrollTop);
+  await page.evaluate(()=>window.pad.axes=[0,0,0,1]);
+  await page.waitForFunction(before=>document.querySelector('.build-content').scrollTop>before+80,beforeScroll);
+  await page.evaluate(()=>window.pad.axes=[0,0,0,0]);
+  await expect(page.locator('[data-controller-key="recipe-aggregate"]')).toBeFocused();
+  await expect(page.locator('[data-controller-key="build-close"]')).toBeInViewport();
   await focus(page,'build-tab-pieces');await tap(page,0);await focus(page,'build-piece-mainframe');await tap(page,0);await expect(page.locator('#build-dialog')).not.toBeVisible();
   await page.screenshot({path:'/tmp/star-agent-build-ui/placement-phone.png'});
   expect(await page.locator('#build-hud').evaluate(el=>el.getBoundingClientRect().top>innerHeight/2)).toBe(true);

@@ -99,11 +99,15 @@ Stairs occupy one panel bay: leave the space above the stairs open and put the
 upper landing over an adjacent bay supported by two walls. Concrete panels, walls,
 window glass, stair treads and rails all have collision. Doorway leaves retract
 into their own jambs, with their movement space reserved during placement. This
-first slice switches directly between open and closed; eased motion is pending.
+slice eases the leaves over half a second. Their collision follows the visible
+opening; closing pauses if someone enters the leaf path. Reload restores the saved
+open or closed position.
 
 The preview explains insufficient material, occupied space, lack of support,
 steep terrain, player obstruction and claim limits before spending. A forward work
-light aids placement, including at night. Placed mainframes show live owner, site size, module count
+light aids placement in darkness. Authored previews show the actual module
+shape and materials. Mainframe and doorway service lights illuminate their
+fixtures and nearby surfaces, including daytime shadows. Placed mainframes show live owner, site size, module count
 and buffer status on their front display. Doors, physical storage, placements and
 material consumption persist in the same save transaction. Failed storage writes
 retain the preceding material and base state.

@@ -10,6 +10,17 @@ The mainframe uses white armour, dark polymer and mint status graphics. Those
 static lines identify the panel; live storage and claim state belong to the
 interaction UI. The crate has a gasket, latches, carry handle and protected corners.
 
+The initial export, counts and captures below are historical. The current
+September 7 polish adds vertex-colour concrete variation, structural armour and
+mint fixtures, fuller rails and layered stair service details. See
+[polish production](polish-production.md) for current in-game evidence and review.
+Current kit totals **21,228 triangles / 1,869,528 encoded GLB bytes**; each piece
+remains below 10,000 triangles and 1 MB, with the same two shared 256² WebP maps.
+Twelve geometry checks include authored colour preservation and noncoplanar trim
+layers. Current manifests, not the original studio totals, identify the export.
+Use `env ALSOFT_DRIVERS=null` before the Blender command if headless audio shutdown
+hangs; the final export completed with that authoring-only setting.
+
 ## Source and contract
 
 Rebuild with:

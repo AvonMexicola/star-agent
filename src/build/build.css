@@ -23,3 +23,13 @@
 @media(max-width:600px){#build-hud{bottom:16px;padding:10px}#build-hud>.build-eyebrow{display:none}.build-selected{font-size:17px;margin:4px 0}.build-placement,.build-cost{margin:6px 0}.build-hints{font-size:8px;line-height:1.4;margin:8px 0;padding-top:6px}}
 
 .build-ship-link{font:10px/1.5 var(--mono);color:var(--muted)}
+
+/* Keep controls and feedback visible while the piece/recipe list scrolls. */
+#build-dialog[open]{display:flex;flex-direction:column;max-height:88dvh;overflow:hidden}
+#build-dialog>:not(.build-content){flex-shrink:0}
+#build-dialog .build-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:2px 5px 4px 2px;scroll-padding:8px}
+.build-scroll-hint{font:10px/1.5 var(--mono);color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin:8px 0 0}
+.build-feedback:empty{min-height:0;margin:0}
+#build-dialog .build-description{font-size:12px;line-height:1.6}
+#flight-state.base-target{top:calc(50% + 140px);max-width:calc(100vw - 32px)}
+@media(max-width:600px){#build-dialog h2{margin:10px 0}.build-description{margin:10px 0}.build-scroll-hint{font-size:9px}#flight-state.base-target{top:calc(50% + 110px)}}

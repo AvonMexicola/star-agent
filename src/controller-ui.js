@@ -79,7 +79,10 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
       repeat = next !== direction ? .36 : .13;
     }
     direction = next;
-    if (pad.ui.scroll) dialog.scrollTop += pad.ui.scroll * dt * 480;
+    if (pad.ui.scroll) {
+      const scrollTarget=dialog.querySelector('[data-controller-scroll]')??dialog;
+      scrollTarget.scrollTop += pad.ui.scroll * dt * 480;
+    }
     if (pad.ui.pressed.has(0)) {
       const target = document.activeElement;
       if (items.includes(target) && target.getAttribute('aria-disabled') !== 'true') target.click();

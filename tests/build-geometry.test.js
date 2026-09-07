@@ -97,3 +97,33 @@ test('curved-ground submillimetre offsets permit a nominal step but not a taller
  const tooHigh=constrainBuildStep([4,1.75,2.29],[4,1.75,2.24],[{type:'foundation',position:[4,.305,0],rotation:0}],options);
  assert.equal(tooHigh.grounded,false);assert.equal(tooHigh.hit,true);assert.deepEqual(tooHigh.point,[4,1.75,2.29]);
 });
+
+test('polished exports retain concrete vertex wear, shared status emitters and bounded material batches',async()=>{
+ const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');
+ for(const id of Object.keys(PIECES)){
+  const {bytes,json}=glb(id),scene=(await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
+  const materials=new Set();let min=1,max=0,concrete=false;
+  scene.traverse(o=>{if(!o.isMesh)return;materials.add(o.material.name);if(o.material.name==='MineralConcrete'){
+   concrete=true;assert.equal(o.material.vertexColors,true,id);const colors=o.geometry.getAttribute('color');assert.ok(colors,id);
+   for(let i=0;i<colors.count;i++){min=Math.min(min,colors.getX(i));max=Math.max(max,colors.getX(i));}
+  }});
+  if(concrete){assert.ok(max-min>.05,`${id} spatial wear variation`);assert.ok(materials.has('WhiteArmour'));assert.ok(materials.has('MintStatus'));}
+  if(['mainframe','doorway'].includes(id)){const status=json.materials.find(m=>m.name==='MintStatus');assert.ok(status.emissiveFactor.some(v=>v>0),`${id} authored light diffuser`);}
+  assert.ok(json.materials.length<=6,id);assert.ok(json.meshes.length<=(id==='doorway'?10:5),id);
+ }
+});
+
+test('rear service overlays and floor status layers have distinct visible depths',async()=>{
+ const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');const {Raycaster,Vector3}=await import('three');
+ const load=async id=>{const {bytes}=glb(id);const scene=(await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;scene.updateMatrixWorld(true);return scene;};
+ const stairs=await load('stairs'),hits=new Raycaster(new Vector3(0,1.08,-3),new Vector3(0,0,1)).intersectObject(stairs,true);
+ const zFor=name=>hits.find(h=>h.object.material.name===name)?.point.z;
+ assert.ok(zFor('EdgeSteel')<zFor('DarkPolymer')-.003,'vent clearly precedes plate');
+ assert.ok(zFor('DarkPolymer')<zFor('MineralConcrete')-.01,'plate clearly precedes recessed concrete');
+ for(const id of ['foundation','floor']){
+  const scene=await load(id),hits=new Raycaster(new Vector3(1.72,1,1.72),new Vector3(0,-1,0)).intersectObject(scene,true);
+  const yFor=name=>hits.find(h=>h.object.material.name===name)?.point.y;
+  assert.ok(yFor('MintStatus')>yFor('WhiteArmour')+.0003,`${id} status above armour`);
+  assert.ok(yFor('WhiteArmour')>yFor('MineralConcrete')+.001,`${id} armour above concrete`);
+ }
+});

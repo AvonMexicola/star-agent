@@ -10,7 +10,7 @@ export function updateMainframeDisplay(model,claim){
     const mesh=new Mesh(new PlaneGeometry(.7,.44),new MeshBasicMaterial({map:texture,toneMapped:false}));
     mesh.name='Mainframe live authority display';mesh.rotation.y=Math.PI;mesh.position.set(0,1.25,-.392);model.add(mesh);
     const style=getComputedStyle(document.documentElement);
-    display=model.userData.statusDisplay={canvas,texture,key:'',background:style.getPropertyValue('--dialog-solid').trim(),mint:style.getPropertyValue('--mint').trim(),text:style.color,font:style.getPropertyValue('--mono').trim()};
+    display=model.userData.statusDisplay={canvas,texture,mesh,sourceMaterial:mesh.material,key:'',background:style.getPropertyValue('--dialog-solid').trim(),mint:style.getPropertyValue('--mint').trim(),text:style.color,font:style.getPropertyValue('--mono').trim()};
   }
   const key=`${claim.name}:${claim.pieces.length}:${claim.useBuffer}`;if(display.key===key)return;
   display.key=key;const ctx=display.canvas.getContext('2d');ctx.fillStyle=display.background;ctx.fillRect(0,0,512,320);

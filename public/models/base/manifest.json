@@ -4,10 +4,10 @@
   "source": "original deterministic scripted construction; no external imagery",
   "pieces": {
     "foundation": {
-      "triangles": 360,
-      "drawPrimitives": 3,
-      "bytes": 28400,
-      "sha256": "6fa12e66efb801b7c3993e71a02194363011c79c1bb721c0e757953516e1af58",
+      "triangles": 840,
+      "drawPrimitives": 5,
+      "bytes": 78396,
+      "sha256": "0ec0361d44720e02254352562c65901cdbb833ff5905070ddd340c92f607e360",
       "bounds": {
         "min": [
           -2.0,
@@ -16,21 +16,23 @@
         ],
         "max": [
           2.0,
-          0.0015999999595806003,
+          0.001999999862164259,
           2.0
         ]
       },
       "materials": [
         "DarkPolymer",
         "EdgeSteel",
-        "MineralConcrete"
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
       ]
     },
     "floor": {
-      "triangles": 360,
-      "drawPrimitives": 3,
-      "bytes": 28384,
-      "sha256": "5a409457b25ba46005e4cb7c86702278b23425876f1196549c17190f15799158",
+      "triangles": 840,
+      "drawPrimitives": 5,
+      "bytes": 78372,
+      "sha256": "b04101dae494cad843064cbf3b41d90dcda3a1edc4fb64cea1a3b63ea59229fa",
       "bounds": {
         "min": [
           -2.0,
@@ -39,21 +41,23 @@
         ],
         "max": [
           2.0,
-          0.0015999999595806003,
+          0.001999999862164259,
           2.0
         ]
       },
       "materials": [
         "DarkPolymer",
         "EdgeSteel",
-        "MineralConcrete"
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
       ]
     },
     "wall": {
-      "triangles": 1620,
-      "drawPrimitives": 2,
-      "bytes": 115632,
-      "sha256": "b2e68e63b90b308bc924654ed05e7b3949ff2e2a6e34406c980f5845136c4c38",
+      "triangles": 2484,
+      "drawPrimitives": 4,
+      "bytes": 218656,
+      "sha256": "05aa3346fe96959c909f88c63171444131cab3fe7eadcd1f69f73dc28bc36ef1",
       "bounds": {
         "min": [
           -2.0,
@@ -68,14 +72,16 @@
       },
       "materials": [
         "EdgeSteel",
-        "MineralConcrete"
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
       ]
     },
     "doorway": {
-      "triangles": 3024,
-      "drawPrimitives": 8,
-      "bytes": 215516,
-      "sha256": "b005ab254d5d4cef78abbba81a269631f5c8d429855fc5956d56068dd8b70457",
+      "triangles": 4320,
+      "drawPrimitives": 10,
+      "bytes": 378928,
+      "sha256": "cdd2558300dcd2612b4007f5e53090a35837715b8b93c39181d150db8716d475",
       "bounds": {
         "min": [
           -2.0,
@@ -92,14 +98,15 @@
         "DarkPolymer",
         "EdgeSteel",
         "MineralConcrete",
+        "MintStatus",
         "WhiteArmour"
       ]
     },
     "window": {
-      "triangles": 2484,
-      "drawPrimitives": 3,
-      "bytes": 177180,
-      "sha256": "9696a12dcf12990bfdd2aad9bfd714045ed7e5a7faf05b07871ec5da01a9566f",
+      "triangles": 3348,
+      "drawPrimitives": 5,
+      "bytes": 294200,
+      "sha256": "4b6fe1f5ecc7e0a33cbba0a9c79422138e74e20fe1b560fa7fb4fc6cbf756383",
       "bounds": {
         "min": [
           -2.0,
@@ -115,14 +122,16 @@
       "materials": [
         "EdgeSteel",
         "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour",
         "WindowGlass"
       ]
     },
     "stairs": {
-      "triangles": 3672,
-      "drawPrimitives": 2,
-      "bytes": 259248,
-      "sha256": "e1d52ab2560fee87b09ceff9d2a29728b3d887e1d8e51def84f607d10da900cf",
+      "triangles": 5616,
+      "drawPrimitives": 5,
+      "bytes": 489128,
+      "sha256": "b050b7da6da306bdb7ca60227c6c28d8b334da4e2e4d967e7ae224a73d11bfd0",
       "bounds": {
         "min": [
           -1.0,
@@ -131,20 +140,23 @@
         ],
         "max": [
           1.0,
-          3.9935715198516846,
+          3.998380661010742,
           2.0
         ]
       },
       "materials": [
+        "DarkPolymer",
         "EdgeSteel",
-        "MineralConcrete"
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
       ]
     },
     "mainframe": {
-      "triangles": 1944,
+      "triangles": 2268,
       "drawPrimitives": 4,
-      "bytes": 140508,
-      "sha256": "0d866023512c0a3b615ce3b9edede8b934992b160980237dee1aa62bfac896a7",
+      "bytes": 200120,
+      "sha256": "5529c9e4efb3f999cd497ed00b9bf729f4163b2c263e8276999ef9c66c7eefa5",
       "bounds": {
         "min": [
           -0.550000011920929,
@@ -167,8 +179,8 @@
     "crate": {
       "triangles": 1512,
       "drawPrimitives": 3,
-      "bytes": 107048,
-      "sha256": "ec136f90d8fd1013d458d58c677c11d57783b0d2ab8cb76402226da883cd77d5",
+      "bytes": 131728,
+      "sha256": "4c605f019e783a0706be17b355d1949d6ab59f31f5aa97e3c2838725d2a9a26e",
       "bounds": {
         "min": [
           -0.6000000238418579,
@@ -188,6 +200,6 @@
       ]
     }
   },
-  "aggregateBytes": 1071916,
-  "aggregateTriangles": 14976
+  "aggregateBytes": 1869528,
+  "aggregateTriangles": 21228
 }

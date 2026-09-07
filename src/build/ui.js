@@ -15,7 +15,7 @@ const button = (label, key, action) => {
 
 export function createBuildUI({nav, build, store, onMessage = message => nav.notify(message), onOpenStorage = () => nav.openBackpack?.()}) {
   const dialog = document.createElement('dialog'); dialog.id = 'build-dialog'; dialog.setAttribute('aria-labelledby', 'build-title');
-  dialog.innerHTML = '<div class="dialog-top"><span class="build-eyebrow">FIELD CONSTRUCTION</span></div><h2 id="build-title">Build</h2><nav class="build-tabs" aria-label="Construction views"></nav><p class="build-description"></p><div class="build-content"></div><p class="build-feedback" role="status" aria-live="polite"></p>';
+  dialog.innerHTML = '<div class="dialog-top"><span class="build-eyebrow">FIELD CONSTRUCTION</span></div><h2 id="build-title">Build</h2><nav class="build-tabs" aria-label="Construction views"></nav><p class="build-description"></p><div class="build-content" data-controller-scroll></div><p class="build-scroll-hint" hidden>More below · Scroll or use the D-pad to browse</p><p class="build-feedback" role="status" aria-live="polite"></p>';
   const close = button('Close · B / Esc', 'build-close', () => dialog.close()); dialog.querySelector('.dialog-top').append(close);
   const content = dialog.querySelector('.build-content'), description = dialog.querySelector('.build-description'), feedback = dialog.querySelector('.build-feedback');
   const hud = document.createElement('section'); hud.id = 'build-hud'; hud.hidden = true; hud.setAttribute('aria-label', 'Construction placement');
@@ -104,6 +104,7 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
     document.body.classList.toggle('building',build.active);
     shortcut.hidden = nav.openingActive || build.active || nav.mode !== 'walk' || nav.insideShip || !nav.enabled || Boolean(document.querySelector('dialog[open]'));
     hud.hidden = !build.active || dialog.open;
+    if(dialog.open)dialog.querySelector('.build-scroll-hint').hidden=content.scrollHeight<=content.clientHeight+2||content.scrollTop+content.clientHeight>=content.scrollHeight-2;
     hud.querySelector('.build-ship-link').textContent = shipCargoLabel(shipCargoAccess(nav));
     const preview = build.preview || {}, piece = PIECES[preview.pieceId || build.pieceId];
     const snapshot = JSON.stringify([piece?.id,preview.valid,preview.reason,preview.cost,preview.sources]);

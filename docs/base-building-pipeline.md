@@ -98,7 +98,29 @@ kit and manifest, and generates its shared WebP material maps. Rebuild after a
 geometry change; update visual and collision tests together. `AUTHORED_BOUNDS`
 includes rails/trim for complete placement checks; those envelopes are not filled
 walking colliders. Door travel reservations must fit an enclosed room. Current
-two-leaf pocket doors leave module corners clear.
+two-leaf pocket doors leave module corners clear. `DoorMotion` owns the transient
+0.5 s smoothstep fraction; the saved boolean remains the target. Walker and ray
+queries must use that same live fraction. Closing sweeps the leaf between frames
+and pauses before the standing capsule; a failed save cannot change its target.
+
+GLB `COLOR_0` carries concrete casting variation and localized wear. Preserve
+vertex colours when attaching shared albedo/bump maps. Visual rear-stair recesses
+and layered trim stay within measured bounds; ray tests prevent coplanar plates
+and markers. Do not apply uniform dirt to every material family.
+
+`visuals.js` makes private per-instance material clones with a shared coverage
+uniform, retaining immutable cached geometry/textures and native log depth. Fade
+claims over 500–600 m, then hide them; do not mutate a template's opacity. Authored
+previews use the same GLBs with tinted mapped materials and owned edge geometry.
+A generation token rejects stale async preview results. Dispose only private
+materials/edges/display resources, never cached mesh geometry or finish textures.
+
+Four pooled nearby service lights illuminate authored door/mainframe fixtures;
+keep daytime spill for lunar shadows and fade selection by distance. Work-light
+intensity is darkness-dependent. This is local module lighting, not the planned
+base power/life-support system. The recipe list owns scrolling while controls
+stay visible; `data-controller-scroll` tells the shared router where right-stick
+scroll goes, with the native dialog as fallback for other inventories.
 
 Foundation/floor support, stair risers and handrail collision are distinct. The
 walker uses radial terrain plus authored support, retaining elevated floor height
