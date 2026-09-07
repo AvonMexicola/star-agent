@@ -410,3 +410,45 @@ assets/station-shop/soft-props/image-to-3d-v2/. Root generated and inspected bot
 with the built-in GPT image tool; Meshy reconstruction remains separately tracked
 in that directory's receipt. The previous export denial is not approval for a
 new download. No rejected original model has entered the game.
+
+
+## Upload permission diagnosis — 2026-09-07
+
+Read-only diagnosis found no saved file-access grant for the installed ChatGPT
+Chromium extension. Chromium's DOMHandler::SetFileInputFiles returns the exact
+“Not allowed” error when allow_file_access is false, and its extension debugger's
+MayReadLocalFiles delegates to util::AllowFileAccess. The supported setting to
+check is ChatGPT extension Details > Allow access to file URLs. This is the
+likely cause; no setting has been changed and no successful retry is claimed.
+User should enable that specific permission in chrome://extensions, then use a
+fresh bridge attachment for verification. Do not disable browser security or
+change global Codex approval policy. Sources:
+https://raw.githubusercontent.com/chromium/chromium/main/content/browser/devtools/protocol/dom_handler.cc
+https://raw.githubusercontent.com/chromium/chromium/main/chrome/browser/extensions/api/debugger/debugger_api.cc
+https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions
+
+
+## File-access permission verified — 2026-09-07
+
+Cees confirmed enabling ChatGPT extension > Allow access to file URLs. A fresh
+GPT browser attachment then uploaded the exact jacket PNG successfully through
+the documented file chooser. The operator visually verified the thumbnail and
+submitted one High Detail / Meshy 7 Flagship Image-to-3D job, with Texture on
+and Image Enhancement off to retain the supplied reference. This confirms that
+the file-access change resolved the observed upload failure in this workflow.
+
+Keep the pre-permission zero-job receipt intact. The continued operations and
+actual charges belong to image-to-3d-v2/meshy-after-file-permission-receipt.json.
+Model generation, final appearance, topology, maps, exports and game acceptance
+remain separate checks; successful input upload establishes none of those.
+
+
+Smart Topology follow-up: the same images yielded 4,330-face jacket and
+4,145-face roll originals. Their 1,925/3,926-face remesh variants met the caps
+but visibly damaged folds and were rejected. Preserve the better originals for
+local review; never equate a provider triangle count with art acceptance. Even
+a modest Meshy remesh can change topology/silhouette substantially. For a small
+export overshoot, the prepared Blender intake trims to the maximum cap, not the
+lower aspirational target. A much larger budget difference (this jacket) needs
+an explicit author/reviewer decision before cleanup. Actual local GLB fitting,
+PBR-file validation and game review remain pending in the production record.

@@ -1,5 +1,5 @@
 {
-  "status": "references-saved-meshy-upload-blocked",
+  "status": "provider-candidates-generated-unaccepted",
   "method": "Built-in GPT image generation -> visual inspection -> Meshy Image to 3D -> topology/PBR finishing -> local intake and actual game review",
   "userDirection": "Isometric item on a white background with no shadows, then import that image into Meshy.",
   "prompts": {
@@ -31,5 +31,7 @@
       "review": "Root inspected the displayed generated image. One complete object in an elevated three-quarter view on white; clear cloth construction, coherent silhouette, no scene props or broad cast shadow. Surface self-shading remains. Jacket has slight grey directly at the lower edge; not certified as a mathematically shadow-free albedo image. Reference selection is for trying reconstruction, not runtime asset acceptance."
     }
   ],
-  "meshyReceipt": "meshy-receipt.json"
+  "meshyReceipt": "meshy-recovery-receipt.json",
+  "priorBlockedMeshyReceipt": "meshy-receipt.json",
+  "firstPostPermissionReceipt": "meshy-after-file-permission-receipt.json"
 }

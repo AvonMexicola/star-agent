@@ -766,3 +766,34 @@ that extra Meshy credits solve it. Next: restore a permitted reference upload,
 verify the actual thumbnail, reconstruct and inspect the two images, then finish
 geometry/PBR and proceed with measured local intake and independent game review.
 This HANDOFF entry notifies the integration manager; no read receipt claimed.
+
+
+## MESHY UPLOAD FIX VERIFIED; IMAGE CANDIDATES READY FOR LOCAL REVIEW — 2026-09-07
+
+Cees enabled ChatGPT extension > Allow access to file URLs. Fresh GPT browser
+attachments then uploaded both exact reference PNGs successfully. This fixes the
+earlier -32000 Not allowed / fileChooser.setFiles failure; no global sandbox or
+browser security disabling was needed. Pipeline memory now records the fix.
+
+Image-to-3D Meshy 7 jacket failed/refunded; its roll completed but reductions
+were poor. A bounded T2 Smart Topology comparison produced both originals.
+Retained provider names and Triangle/Faces counts:
+WATCHKEEP GPT-image v2 T2 - 4330 PBR - UNACCEPTED (5,212 vertices);
+KESTREL GPT-image v2 T2 - 4145 PBR - UNACCEPTED (3,859 vertices).
+All four map previews inspected. Their 1,925/3,926-face remesh variants damaged
+folds/ends and were rejected despite meeting caps. Material and silhouette issues
+remain; originals are candidates, not accepted assets. Caps stay 2,000/4,000.
+
+Recorded resume cost: 45 + 30 = 75 Meshy credits, no top-ups. Source images,
+receipts, failed reductions, credit-attribution limits and exact recovery steps
+live in /tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/
+and docs/qa/station-soft-props-record.md on feat/retail-soft-props.
+The Blender intake now trims only small overshoot to the cap and refuses >10%
+overshoot; syntax checked only. The jacket requires a budget/quality decision
+before cleanup. No GLBs, runtime changes, game renders or independent prop review.
+
+Separate earlier GLB-download approval denial remains unresolved and was not
+retried. Next: approve exporting these new originals for local review, then fit,
+validate and reconcile with current integration work. Accepted shop preview at
+port 5260 and other active lanes remain unaffected. HANDOFF is the manager
+notification, not a read receipt or READY FOR REVIEW claim.

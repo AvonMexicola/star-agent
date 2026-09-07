@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "originals-rejected-replacement-references-saved-upload-blocked",
+  "status": "image-to-3d-candidates-unaccepted-export-approval-pending",
   "basisCommit": "46b978ff112feb358c5daf1310809b4257bcdfaa",
   "authorization": "Cees: feel free to use meshy to make more props",
   "provider": "Meshy",
@@ -13,7 +13,7 @@
     "axes": "glTF Y-up, metres; final bounds aligned to hub local X/Y/Z",
     "runtimeDependency": "none; generated assets must be exported and served locally",
     "reviewer": "Astra",
-    "reviewStatus": "originals-rejected-by-user"
+    "reviewStatus": "originals-rejected-replacements-pending-local-review"
   },
   "props": [
     {
@@ -71,5 +71,6 @@
   ],
   "generationReceipt": "generation-receipt.json",
   "postprocessReceipt": "postprocess-receipt.json",
-  "imageTo3dReplacement": "image-to-3d-v2/prompts.json"
+  "imageTo3dReplacement": "image-to-3d-v2/prompts.json",
+  "imageTo3dReplacementReceipt": "image-to-3d-v2/meshy-recovery-receipt.json"
 }

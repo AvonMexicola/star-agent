@@ -73,9 +73,14 @@ mesh.scale *= factor
 bpy.context.view_layer.update()
 clean.apply_transforms(meshes)
 # Prefer the Meshy remeshed version. Preserve its topology when it already
-# meets the cap; Blender reduction is a fallback for an oversized export.
+# meets the cap. Trim provider overshoot to the cap rather than applying the
+# original aspirational target again and discarding already reviewed folds.
 source_triangles = clean.count_tris(meshes)
-budget = spec['targetTriangles'] if source_triangles > spec['maxTriangles'] else source_triangles
+if source_triangles > spec['maxTriangles'] * 1.1:
+    raise RuntimeError(
+        f'{source_triangles} triangles exceed the {spec["maxTriangles"]} cap by more than 10%. '
+        'Review the source and budget before cleanup; automatic reduction only trims small overshoot.')
+budget = min(source_triangles, spec['maxTriangles'])
 before, after = clean.do_decimate(meshes, budget)
 clean.set_origin(meshes, 'base')
 clean.clamp_textures(brief['intake']['maxTextureEdge'])
@@ -107,6 +112,8 @@ def identity(path):
 
 report = {'id':a.id, 'status':'measured-unreviewed', 'source':identity(source),
           'runtimeCandidate':identity(glb), 'trianglesBefore':before, 'triangles':after,
+          'cleanupTriangleTarget':budget, 'providerTriangleTarget':spec['targetTriangles'],
+          'triangleCap':spec['maxTriangles'],
           'materials':len(materials), 'uniformScale':factor,
           'sourceBlenderSize':list(source_size), 'orientationMatrix':list(map(list, rotation)),
           'sizeMetres':[size.x,size.z,size.y],

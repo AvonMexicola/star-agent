@@ -1,8 +1,8 @@
 # Meshy shop soft-prop intake
 
-**Cees rejected the text-to-3D assets on 2026-09-07. Replacement production now
-uses GPT isometric reference images followed by Meshy Image to 3D. No model
-has been downloaded or integrated, and no new asset review is claimed.** Cees authorized Meshy for additional props after the Astra-reviewed
+**Uploads now work after enabling ChatGPT extension file access. Both GPT-image
+replacements have generated and textured candidates in Meshy, still unaccepted
+for the game. No model has been downloaded or integrated.** Cees authorized Meshy for additional props after the Astra-reviewed
 shop pass. This bounded pair adds soft, used objects to the existing rigid
 fixtures: a Kestrel maintenance roll and folded Watchkeep protective gear.
 Exact original generation prompts, target dimensions and proposed placements
@@ -147,3 +147,28 @@ This is an upload-tool rejection, not a failed Meshy reconstruction or a credit
 issue. No upload bypass or browser settings change was attempted. This attempt
 spent zero Meshy credits; no export or game change occurred. Both original PNGs
 and hashes remain intact for resuming through a functioning permitted upload.
+
+## Current retained candidates after permission recovery
+
+The exact new versions are:
+
+- WATCHKEEP GPT-image v2 T2 - 4330 PBR - UNACCEPTED: Triangle/Faces 4,330,
+  Vertices 5,212. Higher original retained after 1,925-face remesh damaged folds.
+- KESTREL GPT-image v2 T2 - 4145 PBR - UNACCEPTED: Triangle/Faces 4,145,
+  Vertices 3,859. Higher original retained after 3,926-face remesh damaged ends.
+
+Both have visually checked Base Color, Roughness, Metallic and Normal previews.
+Exact recovery steps and remaining appearance issues are in
+[meshy-recovery-receipt.json](image-to-3d-v2/meshy-recovery-receipt.json). Names
+can match a model family; always verify counts and maps on the actual version.
+The High Detail pass and rejected derivatives remain in the preceding receipt.
+
+The successful upload fixes supersede the historical upload-blocked entries.
+The separate earlier GLB download approval rejection has not been retried or
+bypassed. After that approval is resolved, export these originals for local
+inspection, address their budget/material issues, then perform actual game
+review. The initial 2,000/4,000 caps remain unchanged; no waiver is inferred.
+
+Meshy costs recorded for this permission-resume work: 45 credits for the first
+image reconstruction/finishing pass plus 30 for the Smart Topology comparison.
+No top-up, extra recovery texture charge or game change is claimed.
