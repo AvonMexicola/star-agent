@@ -148,3 +148,43 @@ show [resource provinces](docs/resource-geology.md), with matching mineable outc
 Run `npm run test:browser -- -c scripts/expedition.config.js` for the integrated journeys.
 
 Original mining slice: [mining guide](docs/selene-mining.md).
+
+
+## Local soundtrack
+
+The opening's first movement gesture enables sound, or press **H** and use **SOUND ON** in the
+flight menu after the opening. Blue Horizon accompanies orbit, landing and quiet
+exploration. Between Worlds plays during distant travel; Atmospheric Descent
+plays during an actual atmospheric descent. Each has two local instrumental
+variants, with six-second fades. Music pauses when muted or the tab is hidden
+and resumes at its previous position. Crash/destruction silences the score.
+
+No audio is requested before a gesture. The six MP3s total 21.7 MB; only the
+current track and incoming fade partner load. Engine, wind and hangar sounds
+remain procedural. Credits and source provenance: [soundtrack notes](public/audio/music/README.md).
+
+## Footsteps and equipment audio
+
+Sound also enables material footsteps: rock, grass, snow, wet shoreline, sand
+and metal decks. Steps follow distance actually walked, alternate feet and vary
+slightly, stopping in menus, airborne movement and EVA. Ship-local positions
+keep cabin footsteps independent of the ship's flight speed.
+
+The carbine, sidearm, Cobalt pulse, Solar lance and Singularity have different
+reports; impacts attenuate with distance and pan toward their source. The mining
+cutter has a continuous motor, contact rasp, heat pitch and overheat cue;
+confirmed ore collection has a short chime. Sounds are synthesized locally
+after the existing audio gesture, with cached variants and bounded voices.
+
+Development listening studio: `/tests/gameplay-audio.html`. The optional
+`?audioDebug` dev view shows emitted sounds and provides short movement/fire
+inputs for integration checks. These controls are absent from production builds.
+Water footsteps represent the existing wet shoreline, not new wading/swimming.
+
+The engine score includes a turbine and exhaust layer that spools with actual
+thrust and boost, idles while powered and seated, and fades out on shutdown.
+Metal deck footsteps are muffled, with a soft sole impact and short low ring.
+
+Nearby multiplayer ships have stereo flyby whooshes with Doppler pitch and
+400 m distance fade. Formation flight stays quiet; up to four passes sound at
+once. Audition close, reverse and distant passes in the sound studio.

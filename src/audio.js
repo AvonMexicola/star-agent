@@ -1,3 +1,8 @@
+import { FlybyAudio } from './audio/flyby.js';
+import { EngineAudio } from './audio/engine.js';
+import { GameplayAudio } from './audio/gameplay.js';
+import { FlightMusic } from './music.js';
+
 /** Quiet, asset-free flight and surface ambience. Created only on user gesture. */
 export class FlightAudio {
   constructor() {
@@ -5,6 +10,7 @@ export class FlightAudio {
     this.enabled = false;
     this.disposed = false;
     this.sources = [];
+    this.suspended = false;
   }
 
   create() {
@@ -53,6 +59,10 @@ export class FlightAudio {
     this.wind.connect(this.master);
     this.noise.start();
     this.sources.push(this.noise);
+    try { this.music = new FlightMusic(context, this.master); } catch { this.music = null; }
+    this.gameplay = new GameplayAudio(context, this.master);
+    this.engineAudio = new EngineAudio(context, this.master, this.noise);
+    this.flyby = new FlybyAudio(context, this.master, this.noise);
     return true;
   }
 
@@ -62,13 +72,19 @@ export class FlightAudio {
       if (!this.context && !this.create()) return false;
       if (this.enabled) {
         this.enabled = false;
+        this.music?.setEnabled(false);
+        this.gameplay?.setEnabled(false);
+        this.flyby?.setEnabled(false);
         this.master.gain.setTargetAtTime(0, this.context.currentTime, 0.08);
         return false;
       }
       await this.context.resume();
       if (this.disposed || this.context.state !== 'running') return false;
       this.enabled = true;
-      this.master.gain.setTargetAtTime(0.7, this.context.currentTime, 0.2);
+      this.master.gain.setTargetAtTime(this.suspended ? 0 : 0.7, this.context.currentTime, 0.2);
+      this.music?.setEnabled(!this.suspended);
+      this.gameplay?.setEnabled(!this.suspended);
+      this.flyby?.setEnabled(!this.suspended);
       return true;
     } catch {
       this.enabled = false;
@@ -76,9 +92,20 @@ export class FlightAudio {
     }
   }
 
-  update({ speed = 0, altitude = 0, mode = 'flight', boost = false, airless = false,
-    inHangar = false, doorMotion = 0, powered = true } = {}, dt = 0) {
-    if (!this.context || this.disposed || !this.enabled) return;
+  setSuspended(suspended) {
+    this.suspended = suspended;
+    if (!this.context || this.disposed) return;
+    this.master.gain.setTargetAtTime(this.enabled && !suspended ? 0.7 : 0, this.context.currentTime, 0.08);
+    this.music?.setEnabled(this.enabled && !suspended);
+    this.gameplay?.setEnabled(this.enabled && !suspended);
+    this.flyby?.setEnabled(this.enabled && !suspended);
+  }
+
+  update({ speed = 0, altitude = 0, musicAltitude = altitude, verticalSpeed = 0, mode = 'flight', boost = false, airless = false,
+    inHangar = false, doorMotion = 0, powered = true, throttle = 0 } = {}, dt = 0) {
+    if (!this.context || this.disposed || !this.enabled || this.suspended) return;
+    this.engineAudio?.update({mode,powered,throttle,boost});
+    this.music?.update({ altitude: musicAltitude, verticalSpeed, mode, airless });
     const time = this.context.currentTime;
     const velocity = Number.isFinite(speed) ? Math.abs(speed) : 0;
     const height = Number.isFinite(altitude) ? Math.max(0, altitude) : 0;
@@ -103,6 +130,10 @@ export class FlightAudio {
   }
 
   dispose() {
+    this.flyby?.dispose();
+    this.engineAudio?.dispose();
+    this.music?.dispose();
+    this.gameplay?.dispose();
     this.disposed = true;
     this.enabled = false;
     for (const source of this.sources) {
