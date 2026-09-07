@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
-const out='/tmp/star-agent-momentum-evidence';
+const out=process.env.MOMENTUM_EVIDENCE||'/tmp/star-agent-momentum-evidence';
 async function setup(page,ship='nomad'){
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>{window.testPad={id:'Momentum standard Gamepad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>[window.testPad]});});

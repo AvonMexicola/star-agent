@@ -7,3 +7,5 @@ Ownership: fix/combat-momentum, isolated checkout, browser preview port 5398. Cl
 Fly-by-wire retains hover/aero compensation as a separate reserve, bounds commanded velocity correction in ship axes by thrust/RCS, and stabilizes rotation. Unlocked mode keeps force integration and rotation. Speed changes brake rather than clamp momentum; contact/crash and explicit transit retain their contracts. Landing automation requires speed below 10 m/s. Combat speed selection is independent of assist selection.
 
 Validation and integration are recorded in the final QA and handoff.
+
+Final runtime is 6f8b195. The combined integration steward SA-INT-002 has incorporated this runtime in its candidate. Shared main wiring is released; the owner retains the final patrol fixture/evidence handoff. No further gameplay source changes are planned.
