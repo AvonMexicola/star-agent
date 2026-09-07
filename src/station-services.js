@@ -10,6 +10,7 @@ export function createStationServices(nav,station,inventory,{loadout=null,online
   const dialog=document.createElement('dialog');dialog.id='station-elevator-dialog';dialog.setAttribute('aria-labelledby','elevator-title');
   dialog.innerHTML='<button class="station-close" aria-label="Close elevator destinations">✕</button><p class="eyebrow">AEON ORBITAL / PASSENGER TRANSIT</p><h2 id="elevator-title">Elevator destinations</h2><p class="elevator-location"></p><p class="elevator-status" role="status"></p><button data-destination="hub" data-controller-key="elevator-hub">Central hub · Hands free</button><div class="station-destinations"></div>';
   document.body.append(dialog);
+  dialog.querySelector('[data-destination="hub"]').setAttribute('data-controller-focus','');
   const fade=document.createElement('div');fade.className='station-transfer';fade.setAttribute('aria-live','polite');document.body.append(fade);
   let travelling=false,pending=false;
   const stop=()=>{nav.keys.clear();nav.velocity.set(0,0,0);nav.angularVelocity?.set(0,0,0);nav.resetSteering?.();nav.gamepad.suspend();};

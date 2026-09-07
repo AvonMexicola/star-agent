@@ -34,6 +34,7 @@ export function normalizeMultiplayerState(value = {}) {
     players: Array.isArray(state?.players) ? state.players : [],
     maxPlayers: Number.isFinite(state?.maxPlayers) ? state.maxPlayers : null,
     hangar: state?.hangar ?? null,
+    handsFree: Boolean(state?.hub?.handsFree || state?.hub?.transit),
     inventory: state?.inventory ?? null,
     health: Number.isFinite(state?.health) ? state.health : Number.isFinite(state?.inventory?.health) ? state.inventory.health : null,
     drops: Array.isArray(state?.drops) ? state.drops : [],
@@ -310,6 +311,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     const revision = Number.isSafeInteger(inventory.revision) ? inventory.revision : null;
     const health = state.health == null ? '—' : state.health;
     summary.textContent = `Revision ${revision ?? '—'} · Health ${health} · Pack ${itemMass(inventory.containers.pack ?? {}).toFixed(1)} / ${inventory.capacity?.pack ?? '—'} kg · Ship ${itemMass(inventory.containers.ship ?? {}).toFixed(1)} / ${inventory.capacity?.ship ?? '—'} kg`;
+    if(state.handsFree)summary.textContent+=' · Community hub: weapons and tools remain stowed.';
     if (state.needsRespawn) {
       const respawn = document.createElement('button'); respawn.type = 'button'; respawn.textContent = 'Respawn';
       respawn.dataset.inventoryRequest = 'respawn'; respawn.dataset.controllerKey = 'respawn'; respawn.disabled = busy;
@@ -333,7 +335,8 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
       if (['rifle-laser', 'sidearm-pistol', 'mining-laser-tool'].includes(item.id)) {
         const equip = document.createElement('button'); equip.type = 'button'; equip.textContent = 'Equip';
         equip.dataset.inventoryRequest = 'equip'; equip.dataset.weapon = item.id; equip.dataset.controllerKey = `equip-${item.id}`;
-        equip.disabled = busy || amounts.pack <= 0; actions.append(equip);
+        equip.disabled = busy || amounts.pack <= 0 || state.handsFree || state.needsRespawn;
+        if(state.handsFree)equip.title='Community hub: weapons and tools remain stowed.';actions.append(equip);
       }
       article.append(info, actions); list.append(article);
     }

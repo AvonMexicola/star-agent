@@ -1,0 +1,42 @@
+{
+  "source": "Original deterministic procedural PBR swatches and authored Blender geometry; no external imagery, generated model or hosted service",
+  "authoringSession": "Codex / root/kestrel_reviewer, Bastion author role (not its independent reviewer)",
+  "paletteReference": "Original Meridian fleet language documented in QUALITY.md and assets/ship-weapons; no copied map payload",
+  "builder": "blender/build_station_defense.py",
+  "seed": 7291,
+  "textureSize": [
+    512,
+    512
+  ],
+  "baseColorSpace": "sRGB",
+  "normalSpace": "OpenGL tangent +Y; non-colour data",
+  "ormSpace": "linear; R=1, G=roughness, B=metalness; contact AO is separate vertex colour",
+  "normalStrength": 0.35,
+  "font": "Adwaita Sans, system font; optional decorative engraving only",
+  "files": {
+    "bastion-basecolor.png": {
+      "sha256": "82df1bbca24cd79429ea01d2768318c3f1e0e1524b4bf488961ca3daa2a5f3c1",
+      "bytes": 75286
+    },
+    "bastion-basecolor.webp": {
+      "sha256": "b63a1decbf2a10782e86a574ec7645668736b566706178e1a26db6c8cda11706",
+      "bytes": 62162
+    },
+    "bastion-normal.png": {
+      "sha256": "6da6e9830c55159ce4a2f062f13c1f266046c2678e44db9fb6f1239ac64b9409",
+      "bytes": 71526
+    },
+    "bastion-normal.webp": {
+      "sha256": "b14e0141c41a728f88dd48655406fdccdbdf5c6de2231c1b4fed8c7fde1f2122",
+      "bytes": 52732
+    },
+    "bastion-orm.png": {
+      "sha256": "c9053c9bdd5ebda81317f2435318edf00659ddd9f13a3d8b192f7947537d8141",
+      "bytes": 82372
+    },
+    "bastion-orm.webp": {
+      "sha256": "c096f362ae6d97cc94981c33287d65ead5777f7d459ff0ef2f15e24da36a29f8",
+      "bytes": 63780
+    }
+  }
+}

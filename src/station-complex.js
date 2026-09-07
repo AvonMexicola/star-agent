@@ -197,8 +197,9 @@ export class StationComplex {
   }
   setMultiplayerState(state){
     this.multiplayerState=state;
-    if(!state){for(const pod of this.pods)if(pod.openingControlled)pod.endOpening();return;}
+    if(!state){this._defenseState=null;this.defense?.resetSession();for(const pod of this.pods)if(pod.openingControlled)pod.endOpening();return;}
     this._openingIndex=null;
+    if(state.defense!==this._defenseState){this._defenseState=state.defense;this.defense?.setState(state.defense);}
     const occupiedFrame=state.hub?.frame??state.physicsFrame;
     this.location=occupiedFrame===STATION_HUB_FRAME?'hub':'hangar';
     const frame=state.frame;
@@ -290,6 +291,7 @@ export class StationComplex {
     if(!this.ready)return {point:proposed.clone(),hit:false};
     let closest={point:proposed.clone(),hit:false};
     const keep=result=>{if(result.hit&&(!closest.hit||result.point.distanceToSquared(previous)<closest.point.distanceToSquared(previous)))closest=result;};
+    if(this.defense)keep(this.defense.constrainStep(previous,proposed,orientation,walking,layout));
     if(walking){
       // A suit can enter any berth, including one different from its ship's
       // assigned hangar. Test those physical frames before selecting a deck.

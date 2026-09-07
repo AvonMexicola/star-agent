@@ -43,7 +43,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   const security=createStationSecurity({world,areFriends:(a,b)=>typeof store.areFriends==='function'?store.areFriends(a,b):Promise.resolve(false),onError,
     onStrike:async(attacker,victim,event)=>{
       attacker.input=cleanInput();attacker.lookYaw=attacker.lookPitch=0;
-      if(event)broadcast(event);
+      if(event){world.defense?.strike(event);broadcast(event);}
       send(attacker,{type:'event',event:'notice',message:'Aeon station defense: lethal response to aggression against a protected pilot.'});
       // A currently saving transfer/equip must publish its inventory first.
       // Taking a checkpoint before that publication can roll back its revision
@@ -51,7 +51,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       await Promise.all([attacker.publication,victim.publication]);
       await Promise.all([persist(attacker).catch(onError),persist(victim).catch(onError)]);
     }});
-  const state=p=>({type:'state',stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:[...players.values()].map(playerSnapshot),doors:{...doors},hangar:hangar(p),hub:hub.snapshot(p),inventory:p.inventory,commerce:trading.snapshot(p),health:p.health,drops:[...drops.values()].filter(d=>p.nav.position.distanceTo(new THREE.Vector3(...d.position))<500).map(d=>({...d}))});
+  const state=p=>({type:'state',stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:[...players.values()].map(playerSnapshot),doors:{...doors},hangar:hangar(p),hub:hub.snapshot(p),defense:world.defense?.snapshot??[],inventory:p.inventory,commerce:trading.snapshot(p),health:p.health,drops:[...drops.values()].filter(d=>p.nav.position.distanceTo(new THREE.Vector3(...d.position))<500).map(d=>({...d}))});
   function hangar(p){const l=leases.get(p.hangarId);if(!l)return null;const pod=world.pods[l.id-1];return {id:l.id,status:l.status,pad:pod.padWorldPosition.toArray(),approach:pod.approachWorldPosition.toArray(),expiresAt:l.expiresAt};}
   function persistent(p,inventory=p.inventory){return {version:1,inventory,health:p.health,shipHealth:p.shipHealth,weapon:p.weapon,hull:p.nav.shipId};}
   function persist(p,inventory=p.inventory,overrides={}){
@@ -93,9 +93,12 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       if(m.action==='stationHub')hub.request(p,m);
       else if(m.action==='cargo'){const message=await trading.request(p,m);send(p,{type:'event',event:'notice',message});}
       else if(m.action==='cargoHull'){
+        if(p.health<=0||p.shipHealth<=0||security.pending(p))throw new Error('Cargo ship changes are unavailable during a defense response.');
         if(!['nomad','atlas'].includes(m.hull)||!p.nav.dockedAtStation||p.nav.mode!=='walk'||p.nav.insideShip||!p.hangarId||trading.state.accounts[p.id]?.carried)throw new Error('Return to your berth on foot with empty hands to change cargo ships.');
         const pod=world.pods[p.hangarId-1];if(p.nav.position.distanceTo(pod.padWorldPosition)>80)throw new Error('Return to your berth.');
-        await persist(p,p.inventory,{hull:m.hull});setHull(p,m.hull);
+        await persist(p,p.inventory,{hull:m.hull});
+        if(p.health<=0||p.shipHealth<=0||security.pending(p)){await persist(p);throw new Error('Cargo ship changes are unavailable during a defense response.');}
+        setHull(p,m.hull);
       }
       else if(m.action==='hangar')requestHangar(p);
       else if(m.action==='cancelHangar'){

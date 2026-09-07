@@ -48,7 +48,14 @@
     "docs/qa/community-hub/",
     "docs/decisions/aeon-community-authority.md",
     "tests/server-community-room.test.js",
-    "package.json"
+    "package.json",
+    "src/multiplayer/ui.js",
+    "tests/station-defense.test.js",
+    "src/nomad-cabin-controls.js",
+    "src/gameplay-menu.js",
+    "src/gameplay-menu.css",
+    "scripts/community-hub-server.mjs",
+    "scripts/community-hub-route.mjs"
   ],
   "brief": "docs/briefs/aeon-community-hub.md"
 }

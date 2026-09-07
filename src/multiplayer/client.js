@@ -110,7 +110,7 @@ function publicState(account = null) {
   return {
     connected: false, account, ownId: null, players: [], maxPlayers: MAX_PLAYERS,
     hangar: null, inventory: null, commerce: null, health: null, doors: null, drops: [], error: null,
-    stationFrame: null, hub: null,
+    stationFrame: null, hub: null, defense: [],
   };
 }
 
@@ -207,7 +207,7 @@ export class MultiplayerClient {
         connected: true, ownId: message.id, maxPlayers: message.maxPlayers ?? MAX_PLAYERS,
         players: Array.isArray(message.players) ? message.players : [], inventory: message.inventory ?? null, commerce: message.commerce ?? null,
         health: message.health ?? message.inventory?.health ?? null, doors: message.doors ?? null,
-        hangar: message.hangar ?? null, stationFrame: message.stationFrame ?? null, hub: message.hub ?? null,
+        hangar: message.hangar ?? null, stationFrame: message.stationFrame ?? null, hub: message.hub ?? null, defense: message.defense ?? [],
         drops: Array.isArray(message.drops) ? message.drops : [], error: null,
       };
       this._publish(patch); this._applyWorld(message, true); return message;
@@ -217,7 +217,7 @@ export class MultiplayerClient {
         players: Array.isArray(message.players) ? message.players : this.state.players,
         inventory: message.inventory ?? this.state.inventory, commerce: message.commerce ?? this.state.commerce, health: message.health ?? message.inventory?.health ?? this.state.health,
         doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar,
-        stationFrame: message.stationFrame ?? this.state.stationFrame, hub: message.hub ?? this.state.hub,
+        stationFrame: message.stationFrame ?? this.state.stationFrame, hub: message.hub ?? this.state.hub, defense: message.defense ?? this.state.defense,
         drops: Array.isArray(message.drops) ? message.drops : this.state.drops,
       };
       this._publish(patch); this._applyWorld(message, false); return message;
@@ -241,7 +241,7 @@ export class MultiplayerClient {
     const own = players.find(player => player.id === this.state.ownId);
     if (own && this.nav) applyAuthoritativePeer(this.nav, own, { snap });
     this.remotePlayers?.sync?.(players, this.state.ownId);
-    this.station?.setMultiplayerState?.({ doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar, frame: message.stationFrame ?? this.state.stationFrame, physicsFrame: own?.physicsFrame ?? null, hub: message.hub ?? this.state.hub });
+    this.station?.setMultiplayerState?.({ doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar, frame: message.stationFrame ?? this.state.stationFrame, physicsFrame: own?.physicsFrame ?? null, hub: message.hub ?? this.state.hub, defense: message.defense ?? this.state.defense });
     this.nav?.onStationHubState?.(message.hub ?? this.state.hub);
   }
 

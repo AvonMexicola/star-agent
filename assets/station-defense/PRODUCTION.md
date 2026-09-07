@@ -1,0 +1,25 @@
+# Bastion production checkpoint
+
+The final authored checkpoint is candidate05, GLB SHA256 `ccc8f276dc07891aff056fded88367607a28d5f5aa2897e39b9ae973fca3472f`. It contains 9,177 triangles and 877,048 bytes, with nine mesh primitives, two native materials and three 512² lossless WebP maps. The matching source export and finite CPU motion audit pass. Native images, station integration and independent art acceptance are separate checks.
+
+This asset is authored by `/root/kestrel_reviewer` in its Bastion author role. That role does not independently approve the same asset. The earlier rover reviews remain unrelated independent work.
+
+## Recorded iterations
+
+| Candidate | Measured result | Closure / evidence limit |
+| --- | --- | --- |
+| 01 | Export exceeded the triangle cap: 10,841 > 10,000. No accepted manifest. | Repeated small bearing/ring sectors, radiator fins and thin beveled strips were reduced. Primary armor chamfers, barrel profiles and open bores were retained. The failed export and log were preserved by the integrator. |
+| 02 | 9,177 triangles, 1,061,996 bytes: triangle cap passed, byte cap failed. SHA `4d451e283d356e4b0dc9bddc8828c993016167b137d251b350b63a3a407c6811`. | Float RGB contact AO consumed 209,184 bytes. Normalized RGBA8 packing reduced that payload to 69,728 bytes with measured maximum channel error 0.001960773. The isolated packing diagnostic preserved all 34 non-color accessors byte-for-byte. No geometry or lossless map reduction was needed for this byte fix. |
+| Motion02 | A true return-plunger/receiver-guide collision appeared at 0.3 m recoil, but the claimed pitch assignments had not rotated the imported nodes. | Blender imported quaternion-mode DOFs; assigning Euler values alone left their orientation at rest. Translation did apply, so the recoil collision was valid. This report is **not an elevation/yaw clearance certificate**. The next probe explicitly selects XYZ rotation mode and verifies actual world mesh vertices and muzzle positions/directions against independent game-space matrices at every pose. |
+| 03 | Export passed: 9,177 triangles, 922,188 bytes. SHA `9859466c48af47461aaf5a1b22c92d777953fcb6270d914914a0c365a7f24d55`. All 188 requested poses were actually evaluated, but the initial intersection classifier reported 18 unexpected contacts. | Machined top/bottom reliefs at radius 1.84 m cleared the plungers while preserving the full side radius and inner bearing bore. Small plates/indicators were also seated on their supports. The remaining 18 reports were on the already documented journal/end-stop surfaces. Their intersection lists included points outside one of the two triangles. These were preserved classification failures, not a new demonstrated penetration. |
+| Probe04 | Double-precision intersection predicates, coplanar convex clipping and explicit membership in both triangles correct those 18 records. | Every corrected point falls inside the **unchanged** narrow contact exemptions. A separate regression covers crossing coplanar triangles with no mutually contained vertices and a disjoint coplanar pair. No broader overlap exemption was added. |
+| 04 | No export or runtime candidate was created. | The two outer axle shafts were extended inward from abs X8.66 to X8.36 m so they enter the forged cheeks. Before rebuilding, an engraving UV issue was also found and batched into 05. |
+| 05 | Final export and matching corrected probe pass. | Converted Blender text already owned a UVMap; the earlier added swatch map had become TEXCOORD_1 while the material read TEXCOORD_0. Writing the existing active map corrects all 584 engraving vertices and removes the unused second UV payload. Apart from the two axle-shaft extensions, geometry/rig intent remains that of 03. |
+
+## Final measured scope
+
+The fixed base spans X/Z[−10,+10] and Y[0,4] exactly. Rest whole-asset bounds are X[−10,+10], Y[0,11.517185], Z[−29,+10]. The direct-child muzzle names, positions, axes and companion recoil nodes match the shared contract. The closed exterior dimensions are not the elevation sweep bounds; runtime uses the named rig.
+
+`bastion-motion-05.json` records **PASS, 188/188 actual poses**, 77,720 candidate pairs tested, 1,316 world-pose assertions and maximum pose error 0.0000137871 m. Its only accepted boundary regions are sleeve/journal engagement at absX[6.20,6.34] and the barrel rear end-stop plane at maximum 0.60 m recoil. Both forward bore-centre rays are clear at every tested pose. The audit does not establish a continuous swept-solid theorem, arbitrary containment, station-mount clearance, actual animation quality or performance.
+
+The integrator retains the original build logs, motion02/03 failures, AO packing diagnostic and contact-classifier regression alongside the final report. The native capture fixture in `scripts/station-defense-review/` uses the exact final GLB, original material parameters, explicit inspection crops and named poses. Its five stills are for a separate reviewer; no art score is claimed here.

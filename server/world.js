@@ -10,6 +10,7 @@ import {setPlanetSeed} from '../src/generation.js';
 import {WORLD_SEED} from '../src/multiplayer/protocol.js';
 import {stationPhysicsAt} from '../src/station-physics.js';
 import {LandmarkRocks,createLandmarkObstacles} from '../src/landmark-rocks.js';
+import {StationDefense} from '../src/station-security.js';
 
 const openStep=(_previous,point)=>({point,hit:false,grounded:false});
 const noSurfaceObjects={grounded:false,constrainWalker:openStep,constrainEVA:openStep,constrainFlight:openStep};
@@ -22,8 +23,14 @@ export function installHeadlessEvents(){
 }
 export async function createWorld(){
   setPlanetSeed(WORLD_SEED);
-  const load=async name=>{const bytes=await readFile(new URL(`../public/models/${name}.glb`,import.meta.url));return new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');};
-  const [gltf,concourse,elevator,exteriorGltf]=await Promise.all(['station','station-concourse','station-elevator','station-exterior'].map(load));
+  const load=async name=>{
+    const bytes=await readFile(new URL(`../public/models/${name}.glb`,import.meta.url)),loader=new GLTFLoader();
+    // Collision keeps the exact geometry/rig; image decoding belongs to the
+    // browser. A texture placeholder prevents Node from requiring canvas APIs.
+    loader.register(parser=>{parser.loadTextureImage=async index=>{const texture=new THREE.Texture();parser.associations.set(texture,{textures:index});return texture;};return {name:'AuthoritativeGeometry'};});
+    return loader.parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
+  };
+  const [gltf,concourse,elevator,exteriorGltf,defenseGltf]=await Promise.all(['station','station-concourse','station-elevator','station-exterior','station-defense'].map(load));
   // Sign canvases and optional finish textures are render-only. The same hull,
   // spine, rotating rings, hangar deck and lift collision geometry run here.
   const savedDocument=globalThis.document;delete globalThis.document;
@@ -36,9 +43,10 @@ export async function createWorld(){
   station.hub.staticBoxes=assetCollisionBoxes(concourse.scene);
   for(const frame of [...station.pods,station.hub])frame.lift.staticBoxes=assetCollisionBoxes(elevator.scene,new THREE.Vector3(0,frame.lift.floor,frame.lift.z));
   if(!station.hub.staticBoxes.length||!station.hub.lift.staticBoxes.length)throw new Error('Station passenger collision assets are empty.');
+  const defense=new StationDefense(scene,station,{gltf:defenseGltf,render:false});await defense.readyPromise;
   const landmarks=new LandmarkRocks(scene,{render:false});
   const pods=station.pods;for(const pod of pods)pod.beginOpening();
-  return {pods,center:station.centre,scene,station,
+  return {pods,center:station.centre,scene,station,defense,
     createNavigation(slot,notify){
       const n=new Navigation({addEventListener(){}},notify),pod=pods[slot];
       n.surfaceObstacles=createLandmarkObstacles(noSurfaceObjects,landmarks,n);
@@ -61,6 +69,7 @@ export async function createWorld(){
       }});
     },
     doors(progress,dt=0){
+      defense.update(dt);
       for(const pod of pods)pod.setOpeningProgress(progress[pod.id]??0);
       station.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
     },
@@ -79,6 +88,7 @@ export async function createWorld(){
         const q=ring.quaternion.clone().invert(),a=start.clone().sub(ring.position).applyQuaternion(q),b=end.clone().sub(ring.position).applyQuaternion(q);
         const r=constrainStationSweep(station.ringColliders[i],[],a,b,min,max);if(r.hit)distance=Math.min(distance,a.distanceTo(r.point));
       });const rock=landmarks.raycast(origin,direction,range);if(rock)distance=Math.min(distance,rock.distance);
+      const turret=defense.raycast(origin,direction,range);if(turret!==null)distance=Math.min(distance,turret);
       return Number.isFinite(distance)?distance:null;
     },
   };

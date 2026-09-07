@@ -1,0 +1,2522 @@
+{
+  "name": "Meridian Bastion / station defense battery",
+  "stage": "authored export; independent visual and game review pending",
+  "builder": "blender/build_station_defense.py",
+  "source": "assets/station-defense/station-defense.blend",
+  "asset": "public/models/station-defense.glb",
+  "units": "metres",
+  "up": "+Y",
+  "forward": "-Z",
+  "layoutSha256": "e9f34742ee9b4002513abb8f5fbfcaf9a838553977be97e6523f358c94037072",
+  "blenderVersion": "5.2.0 LTS",
+  "triangles": 9177,
+  "bytes": 877048,
+  "sha256": "ccc8f276dc07891aff056fded88367607a28d5f5aa2897e39b9ae973fca3472f",
+  "meshPrimitives": 9,
+  "meshes": 9,
+  "nodes": 17,
+  "materials": 2,
+  "bounds": {
+    "min": [
+      -10.0,
+      0.0,
+      -29.0
+    ],
+    "max": [
+      10.0,
+      11.51718521118164,
+      10.0
+    ]
+  },
+  "baseBounds": {
+    "min": [
+      -10.0,
+      0.0,
+      -10.0
+    ],
+    "max": [
+      10.0,
+      4.0,
+      10.0
+    ]
+  },
+  "textures": [
+    {
+      "name": "bastion-normal",
+      "bytes": 52732,
+      "sha256": "b14e0141c41a728f88dd48655406fdccdbdf5c6de2231c1b4fed8c7fde1f2122",
+      "width": 512,
+      "height": 512,
+      "format": "lossless WebP"
+    },
+    {
+      "name": "bastion-basecolor",
+      "bytes": 62162,
+      "sha256": "b63a1decbf2a10782e86a574ec7645668736b566706178e1a26db6c8cda11706",
+      "width": 512,
+      "height": 512,
+      "format": "lossless WebP"
+    },
+    {
+      "name": "bastion-orm",
+      "bytes": 63780,
+      "sha256": "c096f362ae6d97cc94981c33287d65ead5777f7d459ff0ef2f15e24da36a29f8",
+      "width": 512,
+      "height": 512,
+      "format": "lossless WebP"
+    }
+  ],
+  "textureDecodedBytesEstimateRGBA8WithMips": 4194303,
+  "vertexColorPacking": {
+    "format": "normalized RGBA8",
+    "vertices": 17422,
+    "sourceBytes": 209064,
+    "packedBytes": 69688,
+    "maxChannelError": 0.0019607723927965726
+  },
+  "pitchLimits": [
+    -0.2,
+    1.5707963267948966
+  ],
+  "yawUnlimited": true,
+  "recoilTravel": [
+    0,
+    0.6
+  ],
+  "recoilContract": "Translate Recoil_{side} local +Z and its direct Pitch-child Muzzle_{side} local Z by the same offset. Both rest at zero offset. No baked clip or gameplay strike authority.",
+  "namedNodes": {
+    "Bastion_Base": {
+      "children": [
+        0,
+        1
+      ]
+    },
+    "Bastion_Muzzle_Port": {
+      "translation": [
+        -4.199999809265137,
+        0,
+        -29
+      ]
+    },
+    "Bastion_Muzzle_Starboard": {
+      "translation": [
+        4.199999809265137,
+        0,
+        -29
+      ]
+    },
+    "Bastion_Recoil_Port": {
+      "children": [
+        7,
+        8
+      ]
+    },
+    "Bastion_Recoil_Starboard": {
+      "children": [
+        10,
+        11
+      ]
+    },
+    "Bastion_Pitch": {
+      "translation": [
+        0,
+        9,
+        0
+      ],
+      "children": [
+        3,
+        4,
+        5,
+        6,
+        9,
+        12
+      ]
+    },
+    "Bastion_Yaw": {
+      "children": [
+        13,
+        14
+      ]
+    },
+    "Bastion": {
+      "children": [
+        2,
+        15
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Octagonal foundation armour",
+      "parent": "Bastion_Base",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -10.0,
+        0.0,
+        -10.0
+      ],
+      "max": [
+        10.0,
+        1.1799999475479126,
+        10.0
+      ]
+    },
+    {
+      "name": "Foundation upper plate",
+      "parent": "Bastion_Base",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.899999618530273,
+        1.149999976158142,
+        -8.899999618530273
+      ],
+      "max": [
+        8.899999618530273,
+        1.3799999952316284,
+        8.899999618530273
+      ]
+    },
+    {
+      "name": "Bearing outer housing",
+      "parent": "Bastion_Base",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.199999809265137,
+        1.409999966621399,
+        -8.199999809265137
+      ],
+      "max": [
+        8.199999809265137,
+        3.7300000190734863,
+        8.199999809265137
+      ]
+    },
+    {
+      "name": "Bearing lower exposed race",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.359999656677246,
+        1.3849999904632568,
+        -8.359999656677246
+      ],
+      "max": [
+        8.359999656677246,
+        1.6549999713897705,
+        8.359999656677246
+      ]
+    },
+    {
+      "name": "Bearing crown armour",
+      "parent": "Bastion_Base",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.300000190734863,
+        3.440000057220459,
+        -8.300000190734863
+      ],
+      "max": [
+        8.300000190734863,
+        4.0,
+        8.300000190734863
+      ]
+    },
+    {
+      "name": "Bearing crown split line",
+      "parent": "Bastion_Base",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.239999771118164,
+        3.2899999618530273,
+        -8.239999771118164
+      ],
+      "max": [
+        8.239999771118164,
+        3.3899998664855957,
+        8.239999771118164
+      ]
+    },
+    {
+      "name": "Foundation stud 00",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.86545467376709,
+        0.9700000286102295,
+        -0.1899999976158142
+      ],
+      "max": [
+        9.194544792175293,
+        1.159999966621399,
+        0.1899999976158142
+      ]
+    },
+    {
+      "name": "Foundation stud 01",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        7.655664443969727,
+        0.9700000286102295,
+        4.324999809265137
+      ],
+      "max": [
+        7.98475456237793,
+        1.159999966621399,
+        4.704999923706055
+      ]
+    },
+    {
+      "name": "Foundation stud 02",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        4.350455284118652,
+        0.9700000286102295,
+        7.630209445953369
+      ],
+      "max": [
+        4.679544448852539,
+        1.159999966621399,
+        8.010209083557129
+      ]
+    },
+    {
+      "name": "Foundation stud 03",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -0.16454482078552246,
+        0.9700000286102295,
+        8.84000015258789
+      ],
+      "max": [
+        0.16454482078552246,
+        1.159999966621399,
+        9.219999313354492
+      ]
+    },
+    {
+      "name": "Foundation stud 04",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.679544448852539,
+        0.9700000286102295,
+        7.630209445953369
+      ],
+      "max": [
+        -4.350455284118652,
+        1.159999966621399,
+        8.010209083557129
+      ]
+    },
+    {
+      "name": "Foundation stud 05",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -7.98475456237793,
+        0.9700000286102295,
+        4.324999809265137
+      ],
+      "max": [
+        -7.655664443969727,
+        1.159999966621399,
+        4.704999923706055
+      ]
+    },
+    {
+      "name": "Foundation stud 06",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -9.194544792175293,
+        0.9700000286102295,
+        -0.1899999976158142
+      ],
+      "max": [
+        -8.86545467376709,
+        1.159999966621399,
+        0.1899999976158142
+      ]
+    },
+    {
+      "name": "Foundation stud 07",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -7.98475456237793,
+        0.9700000286102295,
+        -4.704999923706055
+      ],
+      "max": [
+        -7.655664443969727,
+        1.159999966621399,
+        -4.324999809265137
+      ]
+    },
+    {
+      "name": "Foundation stud 08",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.679544448852539,
+        0.9700000286102295,
+        -8.010209083557129
+      ],
+      "max": [
+        -4.350455284118652,
+        1.159999966621399,
+        -7.630209445953369
+      ]
+    },
+    {
+      "name": "Foundation stud 09",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -0.16454482078552246,
+        0.9700000286102295,
+        -9.219999313354492
+      ],
+      "max": [
+        0.16454482078552246,
+        1.159999966621399,
+        -8.84000015258789
+      ]
+    },
+    {
+      "name": "Foundation stud 10",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        4.350455284118652,
+        0.9700000286102295,
+        -8.010209083557129
+      ],
+      "max": [
+        4.679544448852539,
+        1.159999966621399,
+        -7.630209445953369
+      ]
+    },
+    {
+      "name": "Foundation stud 11",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        7.655664443969727,
+        0.9700000286102295,
+        -4.704999923706055
+      ],
+      "max": [
+        7.98475456237793,
+        1.159999966621399,
+        -4.324999809265137
+      ]
+    },
+    {
+      "name": "Fixed junction shroud -1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -7.5,
+        1.059999942779541,
+        -6.300000190734863
+      ],
+      "max": [
+        -5.199999809265137,
+        1.8799999952316284,
+        -4.199999809265137
+      ]
+    },
+    {
+      "name": "Junction warning inset -1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.974999904632568,
+        1.8660000562667847,
+        -5.389999866485596
+      ],
+      "max": [
+        -5.724999904632568,
+        1.9259999990463257,
+        -5.110000133514404
+      ]
+    },
+    {
+      "name": "Power feed A -1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.481826305389404,
+        1.5405089855194092,
+        -5.354321479797363
+      ],
+      "max": [
+        -5.568173408508301,
+        2.319490909576416,
+        -4.20067834854126
+      ]
+    },
+    {
+      "name": "Power feed B -1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.88691520690918,
+        1.517746090888977,
+        -5.332548141479492
+      ],
+      "max": [
+        -6.003084659576416,
+        2.3022539615631104,
+        -4.222451686859131
+      ]
+    },
+    {
+      "name": "Fixed junction shroud -1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -7.5,
+        1.059999942779541,
+        4.199999809265137
+      ],
+      "max": [
+        -5.199999809265137,
+        1.8799999952316284,
+        6.300000190734863
+      ]
+    },
+    {
+      "name": "Junction warning inset -1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.974999904632568,
+        1.8660000562667847,
+        5.110000133514404
+      ],
+      "max": [
+        -5.724999904632568,
+        1.9259999990463257,
+        5.389999866485596
+      ]
+    },
+    {
+      "name": "Power feed A -1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.481826305389404,
+        1.5405089855194092,
+        4.20067834854126
+      ],
+      "max": [
+        -5.568173408508301,
+        2.319490909576416,
+        5.354321479797363
+      ]
+    },
+    {
+      "name": "Power feed B -1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.88691520690918,
+        1.517746090888977,
+        4.222451686859131
+      ],
+      "max": [
+        -6.003084659576416,
+        2.3022539615631104,
+        5.332548141479492
+      ]
+    },
+    {
+      "name": "Base service indicator -1",
+      "parent": "Bastion_Base",
+      "tile": 7,
+      "material": 1,
+      "joint": null,
+      "min": [
+        -8.210000038146973,
+        2.630000114440918,
+        -0.7250000238418579
+      ],
+      "max": [
+        -8.09000015258789,
+        2.75,
+        0.7250000238418579
+      ]
+    },
+    {
+      "name": "Fixed junction shroud 1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.199999809265137,
+        1.059999942779541,
+        -6.300000190734863
+      ],
+      "max": [
+        7.5,
+        1.8799999952316284,
+        -4.199999809265137
+      ]
+    },
+    {
+      "name": "Junction warning inset 1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.724999904632568,
+        1.8660000562667847,
+        -5.389999866485596
+      ],
+      "max": [
+        6.974999904632568,
+        1.9259999990463257,
+        -5.110000133514404
+      ]
+    },
+    {
+      "name": "Power feed A 1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.568173408508301,
+        1.5405089855194092,
+        -5.354321479797363
+      ],
+      "max": [
+        6.481826305389404,
+        2.319490909576416,
+        -4.20067834854126
+      ]
+    },
+    {
+      "name": "Power feed B 1 -5.25",
+      "parent": "Bastion_Base",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.003084659576416,
+        1.517746090888977,
+        -5.332548141479492
+      ],
+      "max": [
+        6.88691520690918,
+        2.3022539615631104,
+        -4.222451686859131
+      ]
+    },
+    {
+      "name": "Fixed junction shroud 1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.199999809265137,
+        1.059999942779541,
+        4.199999809265137
+      ],
+      "max": [
+        7.5,
+        1.8799999952316284,
+        6.300000190734863
+      ]
+    },
+    {
+      "name": "Junction warning inset 1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.724999904632568,
+        1.8660000562667847,
+        5.110000133514404
+      ],
+      "max": [
+        6.974999904632568,
+        1.9259999990463257,
+        5.389999866485596
+      ]
+    },
+    {
+      "name": "Power feed A 1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.568173408508301,
+        1.5405089855194092,
+        4.20067834854126
+      ],
+      "max": [
+        6.481826305389404,
+        2.319490909576416,
+        5.354321479797363
+      ]
+    },
+    {
+      "name": "Power feed B 1 5.25",
+      "parent": "Bastion_Base",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.003084659576416,
+        1.517746090888977,
+        4.222451686859131
+      ],
+      "max": [
+        6.88691520690918,
+        2.3022539615631104,
+        5.332548141479492
+      ]
+    },
+    {
+      "name": "Base service indicator 1",
+      "parent": "Bastion_Base",
+      "tile": 7,
+      "material": 1,
+      "joint": null,
+      "min": [
+        8.09000015258789,
+        2.630000114440918,
+        -0.7250000238418579
+      ],
+      "max": [
+        8.210000038146973,
+        2.75,
+        0.7250000238418579
+      ]
+    },
+    {
+      "name": "Rotary spindle",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.599999904632568,
+        1.399999976158142,
+        -6.599999904632568
+      ],
+      "max": [
+        6.599999904632568,
+        4.099999904632568,
+        6.599999904632568
+      ]
+    },
+    {
+      "name": "Fork load plate",
+      "parent": "Bastion_Yaw",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.720000267028809,
+        4.03000020980835,
+        -8.720000267028809
+      ],
+      "max": [
+        8.720000267028809,
+        5.0,
+        8.720000267028809
+      ]
+    },
+    {
+      "name": "Forged fork cheek -1",
+      "parent": "Bastion_Yaw",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.550000190734863,
+        4.5,
+        -4.0
+      ],
+      "max": [
+        -6.599999904632568,
+        11.550000190734863,
+        5.0
+      ]
+    },
+    {
+      "name": "Fork outer service panel -1",
+      "parent": "Bastion_Yaw",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.699999809265137,
+        5.425000190734863,
+        -0.9750000238418579
+      ],
+      "max": [
+        -8.520000457763672,
+        8.675000190734863,
+        1.774999976158142
+      ]
+    },
+    {
+      "name": "Fork panel seam -1 -0.43",
+      "parent": "Bastion_Yaw",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.739999771118164,
+        5.920000076293945,
+        -0.45750001072883606
+      ],
+      "max": [
+        -8.699999809265137,
+        8.319999694824219,
+        -0.4025000035762787
+      ]
+    },
+    {
+      "name": "Fork panel seam -1 1.23",
+      "parent": "Bastion_Yaw",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.739999771118164,
+        5.920000076293945,
+        1.2024999856948853
+      ],
+      "max": [
+        -8.699999809265137,
+        8.319999694824219,
+        1.2575000524520874
+      ]
+    },
+    {
+      "name": "Fixed trunnion journal -1",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": "pitch-trunnion",
+      "min": [
+        -8.5,
+        7.360000133514404,
+        -1.6399999856948853
+      ],
+      "max": [
+        -6.199999809265137,
+        10.640000343322754,
+        1.6399999856948853
+      ]
+    },
+    {
+      "name": "Trunnion outer lock -1",
+      "parent": "Bastion_Yaw",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.744999885559082,
+        7.809999942779541,
+        -1.190000057220459
+      ],
+      "max": [
+        -8.47499942779541,
+        10.190000534057617,
+        1.190000057220459
+      ]
+    },
+    {
+      "name": "Trunnion center pin -1",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.819999694824219,
+        8.695661544799805,
+        -0.3199999928474426
+      ],
+      "max": [
+        -8.359999656677246,
+        9.304338455200195,
+        0.3199999928474426
+      ]
+    },
+    {
+      "name": "Pitch travel caution -1",
+      "parent": "Bastion_Yaw",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.744999885559082,
+        9.204999923706055,
+        -0.6100000143051147
+      ],
+      "max": [
+        -8.694999694824219,
+        9.395000457763672,
+        0.6100000143051147
+      ]
+    },
+    {
+      "name": "Forged fork cheek 1",
+      "parent": "Bastion_Yaw",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.599999904632568,
+        4.5,
+        -4.0
+      ],
+      "max": [
+        8.550000190734863,
+        11.550000190734863,
+        5.0
+      ]
+    },
+    {
+      "name": "Fork outer service panel 1",
+      "parent": "Bastion_Yaw",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.520000457763672,
+        5.425000190734863,
+        -0.9750000238418579
+      ],
+      "max": [
+        8.699999809265137,
+        8.675000190734863,
+        1.774999976158142
+      ]
+    },
+    {
+      "name": "Fork panel seam 1 -0.43",
+      "parent": "Bastion_Yaw",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.699999809265137,
+        5.920000076293945,
+        -0.45750001072883606
+      ],
+      "max": [
+        8.739999771118164,
+        8.319999694824219,
+        -0.4025000035762787
+      ]
+    },
+    {
+      "name": "Fork panel seam 1 1.23",
+      "parent": "Bastion_Yaw",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.699999809265137,
+        5.920000076293945,
+        1.2024999856948853
+      ],
+      "max": [
+        8.739999771118164,
+        8.319999694824219,
+        1.2575000524520874
+      ]
+    },
+    {
+      "name": "Fixed trunnion journal 1",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": "pitch-trunnion",
+      "min": [
+        6.199999809265137,
+        7.360000133514404,
+        -1.6399999856948853
+      ],
+      "max": [
+        8.5,
+        10.640000343322754,
+        1.6399999856948853
+      ]
+    },
+    {
+      "name": "Trunnion outer lock 1",
+      "parent": "Bastion_Yaw",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.47499942779541,
+        7.809999942779541,
+        -1.190000057220459
+      ],
+      "max": [
+        8.744999885559082,
+        10.190000534057617,
+        1.190000057220459
+      ]
+    },
+    {
+      "name": "Trunnion center pin 1",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.359999656677246,
+        8.695661544799805,
+        -0.3199999928474426
+      ],
+      "max": [
+        8.819999694824219,
+        9.304338455200195,
+        0.3199999928474426
+      ]
+    },
+    {
+      "name": "Pitch travel caution 1",
+      "parent": "Bastion_Yaw",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.694999694824219,
+        9.204999923706055,
+        -0.6100000143051147
+      ],
+      "max": [
+        8.744999885559082,
+        9.395000457763672,
+        0.6100000143051147
+      ]
+    },
+    {
+      "name": "Rear fork cross tie",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -7.099999904632568,
+        4.46999979019165,
+        5.360000133514404
+      ],
+      "max": [
+        7.099999904632568,
+        5.130000114440918,
+        6.639999866485596
+      ]
+    },
+    {
+      "name": "Rear load diagonal -1",
+      "parent": "Bastion_Yaw",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -7.029898166656494,
+        4.362583160400391,
+        4.873682022094727
+      ],
+      "max": [
+        -4.320101737976074,
+        5.237416744232178,
+        6.226317882537842
+      ]
+    },
+    {
+      "name": "Rear load diagonal 1",
+      "parent": "Bastion_Yaw",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        4.320101737976074,
+        4.362583160400391,
+        4.873682022094727
+      ],
+      "max": [
+        7.029898166656494,
+        5.237416744232178,
+        6.226317882537842
+      ]
+    },
+    {
+      "name": "Breech cross bridge",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.900000095367432,
+        -1.5299999713897705,
+        -4.074999809265137
+      ],
+      "max": [
+        5.900000095367432,
+        -0.17000000178813934,
+        2.7750000953674316
+      ]
+    },
+    {
+      "name": "Central power spine",
+      "parent": "Bastion_Pitch",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -1.25,
+        -0.3700000047683716,
+        -3.200000047683716
+      ],
+      "max": [
+        1.25,
+        2.009999990463257,
+        2.799999952316284
+      ]
+    },
+    {
+      "name": "Spine ivory shoulder",
+      "parent": "Bastion_Pitch",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -1.125,
+        1.8799999952316284,
+        -2.825000047683716
+      ],
+      "max": [
+        1.125,
+        2.319999933242798,
+        2.625
+      ]
+    },
+    {
+      "name": "Aft thermal manifold",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.449999809265137,
+        -1.274999976158142,
+        2.740000009536743
+      ],
+      "max": [
+        4.449999809265137,
+        1.475000023841858,
+        3.359999895095825
+      ]
+    },
+    {
+      "name": "Aft heat exchanger inset",
+      "parent": "Bastion_Pitch",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -3.7750000953674316,
+        -0.6600000262260437,
+        3.3475000858306885
+      ],
+      "max": [
+        3.7750000953674316,
+        0.9599999785423279,
+        3.422499895095825
+      ]
+    },
+    {
+      "name": "Aft radiator fin 00",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -3.369999885559082,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        -3.2300000190734863,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Aft radiator fin 01",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -2.427000045776367,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        -2.2869999408721924,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Aft radiator fin 02",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -1.4839999675750732,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        -1.343999981880188,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Aft radiator fin 03",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -0.5410000085830688,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        -0.4009999930858612,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Aft radiator fin 04",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        0.4020000100135803,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        0.5419999957084656,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Aft radiator fin 05",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        1.3450000286102295,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        1.4850000143051147,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Aft radiator fin 06",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.2880001068115234,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        2.427999973297119,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Aft radiator fin 07",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.2309999465942383,
+        -0.5649999976158142,
+        3.375
+      ],
+      "max": [
+        3.371000051498413,
+        0.8650000095367432,
+        3.6649999618530273
+      ]
+    },
+    {
+      "name": "Armoured breech -1",
+      "parent": "Bastion_Pitch",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.175000190734863,
+        -2.049999952316284,
+        -5.400000095367432
+      ],
+      "max": [
+        -2.2249999046325684,
+        2.049999952316284,
+        3.319999933242798
+      ]
+    },
+    {
+      "name": "Breech cap return -1",
+      "parent": "Bastion_Pitch",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.889999866485596,
+        -1.5950000286102295,
+        3.1050000190734863
+      ],
+      "max": [
+        -2.509999990463257,
+        1.7949999570846558,
+        3.375
+      ]
+    },
+    {
+      "name": "Breech top access -1",
+      "parent": "Bastion_Pitch",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.510000228881836,
+        2.0,
+        -3.200000047683716
+      ],
+      "max": [
+        -2.890000104904175,
+        2.1600000858306885,
+        1.600000023841858
+      ]
+    },
+    {
+      "name": "Breech access seam -1 -2.8",
+      "parent": "Bastion_Pitch",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.474999904632568,
+        2.1594998836517334,
+        -2.8350000381469727
+      ],
+      "max": [
+        -2.924999952316284,
+        2.184499979019165,
+        -2.765000104904175
+      ]
+    },
+    {
+      "name": "Breech access seam -1 1.15",
+      "parent": "Bastion_Pitch",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.474999904632568,
+        2.1594998836517334,
+        1.1150000095367432
+      ],
+      "max": [
+        -2.924999952316284,
+        2.184499979019165,
+        1.184999942779541
+      ]
+    },
+    {
+      "name": "Rotating trunnion sleeve -1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "pitch-trunnion",
+      "min": [
+        -6.339999675750732,
+        -1.5499999523162842,
+        -1.5499999523162842
+      ],
+      "max": [
+        -5.900000095367432,
+        1.5499999523162842,
+        1.5499999523162842
+      ]
+    },
+    {
+      "name": "Receiver nose socket -1",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": "barrel-slide",
+      "min": [
+        -6.239999771118164,
+        -1.8847142457962036,
+        -7.400000095367432
+      ],
+      "max": [
+        -2.1599998474121094,
+        1.8847142457962036,
+        -5.400000095367432
+      ]
+    },
+    {
+      "name": "Receiver front guide -1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "barrel-slide",
+      "min": [
+        -6.319999694824219,
+        -1.9586246013641357,
+        -7.579999923706055
+      ],
+      "max": [
+        -2.0799999237060547,
+        1.9586246013641357,
+        -7.359999656677246
+      ]
+    },
+    {
+      "name": "Recoil cylinder -1 -1",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.449999809265137,
+        -2.2699999809265137,
+        -8.0
+      ],
+      "max": [
+        -3.9499998092651367,
+        -1.7699999809265137,
+        -3.5
+      ]
+    },
+    {
+      "name": "Recoil gland -1 -1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        -4.5,
+        -2.319999933242798,
+        -8.119999885559082
+      ],
+      "max": [
+        -3.8999998569488525,
+        -1.7200000286102295,
+        -7.880000114440918
+      ]
+    },
+    {
+      "name": "Recoil cylinder -1 1",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.449999809265137,
+        1.7699999809265137,
+        -8.0
+      ],
+      "max": [
+        -3.9499998092651367,
+        2.2699999809265137,
+        -3.5
+      ]
+    },
+    {
+      "name": "Recoil gland -1 1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        -4.5,
+        1.7200000286102295,
+        -8.119999885559082
+      ],
+      "max": [
+        -3.8999998569488525,
+        2.319999933242798,
+        -7.880000114440918
+      ]
+    },
+    {
+      "name": "Breech caution band -1",
+      "parent": "Bastion_Pitch",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.150000095367432,
+        2.0415000915527344,
+        1.6950000524520874
+      ],
+      "max": [
+        -3.25,
+        2.0964999198913574,
+        1.9049999713897705
+      ]
+    },
+    {
+      "name": "Breech ready lamp -1",
+      "parent": "Bastion_Pitch",
+      "tile": 7,
+      "material": 1,
+      "joint": null,
+      "min": [
+        -4.75,
+        2.1514999866485596,
+        0.8999999761581421
+      ],
+      "max": [
+        -3.6500000953674316,
+        2.196500062942505,
+        1.0
+      ]
+    },
+    {
+      "name": "Armoured breech 1",
+      "parent": "Bastion_Pitch",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.2249999046325684,
+        -2.049999952316284,
+        -5.400000095367432
+      ],
+      "max": [
+        6.175000190734863,
+        2.049999952316284,
+        3.319999933242798
+      ]
+    },
+    {
+      "name": "Breech cap return 1",
+      "parent": "Bastion_Pitch",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.509999990463257,
+        -1.5950000286102295,
+        3.1050000190734863
+      ],
+      "max": [
+        5.889999866485596,
+        1.7949999570846558,
+        3.375
+      ]
+    },
+    {
+      "name": "Breech top access 1",
+      "parent": "Bastion_Pitch",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.890000104904175,
+        2.0,
+        -3.200000047683716
+      ],
+      "max": [
+        5.510000228881836,
+        2.1600000858306885,
+        1.600000023841858
+      ]
+    },
+    {
+      "name": "Breech access seam 1 -2.8",
+      "parent": "Bastion_Pitch",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.924999952316284,
+        2.1594998836517334,
+        -2.8350000381469727
+      ],
+      "max": [
+        5.474999904632568,
+        2.184499979019165,
+        -2.765000104904175
+      ]
+    },
+    {
+      "name": "Breech access seam 1 1.15",
+      "parent": "Bastion_Pitch",
+      "tile": 3,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.924999952316284,
+        2.1594998836517334,
+        1.1150000095367432
+      ],
+      "max": [
+        5.474999904632568,
+        2.184499979019165,
+        1.184999942779541
+      ]
+    },
+    {
+      "name": "Rotating trunnion sleeve 1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "pitch-trunnion",
+      "min": [
+        5.900000095367432,
+        -1.5499999523162842,
+        -1.5499999523162842
+      ],
+      "max": [
+        6.339999675750732,
+        1.5499999523162842,
+        1.5499999523162842
+      ]
+    },
+    {
+      "name": "Receiver nose socket 1",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": "barrel-slide",
+      "min": [
+        2.1599998474121094,
+        -1.8847142457962036,
+        -7.400000095367432
+      ],
+      "max": [
+        6.239999771118164,
+        1.8847142457962036,
+        -5.400000095367432
+      ]
+    },
+    {
+      "name": "Receiver front guide 1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "barrel-slide",
+      "min": [
+        2.0799999237060547,
+        -1.9586246013641357,
+        -7.579999923706055
+      ],
+      "max": [
+        6.319999694824219,
+        1.9586246013641357,
+        -7.359999656677246
+      ]
+    },
+    {
+      "name": "Recoil cylinder 1 -1",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.9499998092651367,
+        -2.2699999809265137,
+        -8.0
+      ],
+      "max": [
+        4.449999809265137,
+        -1.7699999809265137,
+        -3.5
+      ]
+    },
+    {
+      "name": "Recoil gland 1 -1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        3.8999998569488525,
+        -2.319999933242798,
+        -8.119999885559082
+      ],
+      "max": [
+        4.5,
+        -1.7200000286102295,
+        -7.880000114440918
+      ]
+    },
+    {
+      "name": "Recoil cylinder 1 1",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.9499998092651367,
+        1.7699999809265137,
+        -8.0
+      ],
+      "max": [
+        4.449999809265137,
+        2.2699999809265137,
+        -3.5
+      ]
+    },
+    {
+      "name": "Recoil gland 1 1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        3.8999998569488525,
+        1.7200000286102295,
+        -8.119999885559082
+      ],
+      "max": [
+        4.5,
+        2.319999933242798,
+        -7.880000114440918
+      ]
+    },
+    {
+      "name": "Breech caution band 1",
+      "parent": "Bastion_Pitch",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.25,
+        2.0415000915527344,
+        1.6950000524520874
+      ],
+      "max": [
+        5.150000095367432,
+        2.0964999198913574,
+        1.9049999713897705
+      ]
+    },
+    {
+      "name": "Breech ready lamp 1",
+      "parent": "Bastion_Pitch",
+      "tile": 7,
+      "material": 1,
+      "joint": null,
+      "min": [
+        3.6500000953674316,
+        2.1514999866485596,
+        0.8999999761581421
+      ],
+      "max": [
+        4.75,
+        2.196500062942505,
+        1.0
+      ]
+    },
+    {
+      "name": "Hollow tapered barrel Port",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.050000190734863,
+        -1.850000023841858,
+        -29.0
+      ],
+      "max": [
+        -2.3499999046325684,
+        1.850000023841858,
+        -6.0
+      ]
+    },
+    {
+      "name": "Long barrel dark jacket Port",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.689999580383301,
+        -1.4900000095367432,
+        -16.55000114440918
+      ],
+      "max": [
+        -2.7099997997283936,
+        1.4900000095367432,
+        -9.65000057220459
+      ]
+    },
+    {
+      "name": "Forward service collar Port",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.769999980926514,
+        -1.5700000524520874,
+        -25.200000762939453
+      ],
+      "max": [
+        -2.6299996376037598,
+        1.5700000524520874,
+        -24.540000915527344
+      ]
+    },
+    {
+      "name": "Inner emitter annulus Port",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 7,
+      "material": 1,
+      "joint": null,
+      "min": [
+        -5.289999961853027,
+        -1.090000033378601,
+        -28.42249870300293
+      ],
+      "max": [
+        -3.109999656677246,
+        1.090000033378601,
+        -28.337499618530273
+      ]
+    },
+    {
+      "name": "Cooling saddle Port -10.0",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.829999923706055,
+        -1.6299999952316284,
+        -10.260000228881836
+      ],
+      "max": [
+        -2.5699996948242188,
+        1.6299999952316284,
+        -9.739999771118164
+      ]
+    },
+    {
+      "name": "Cooling saddle Port -18.65",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.614999771118164,
+        -1.4149999618530273,
+        -18.90999984741211
+      ],
+      "max": [
+        -2.7849998474121094,
+        1.4149999618530273,
+        -18.389999389648438
+      ]
+    },
+    {
+      "name": "Return polished plunger Port -1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        -4.339999675750732,
+        -2.1600000858306885,
+        -10.0
+      ],
+      "max": [
+        -4.059999942779541,
+        -1.8799999952316284,
+        -7.699999809265137
+      ]
+    },
+    {
+      "name": "Plunger saddle lug Port -1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.465000152587891,
+        -2.115000009536743,
+        -10.329999923706055
+      ],
+      "max": [
+        -3.934999942779541,
+        -1.3849999904632568,
+        -9.670000076293945
+      ]
+    },
+    {
+      "name": "Return polished plunger Port 1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        -4.339999675750732,
+        1.8799999952316284,
+        -10.0
+      ],
+      "max": [
+        -4.059999942779541,
+        2.1600000858306885,
+        -7.699999809265137
+      ]
+    },
+    {
+      "name": "Plunger saddle lug Port 1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.465000152587891,
+        1.3849999904632568,
+        -10.329999923706055
+      ],
+      "max": [
+        -3.934999942779541,
+        2.115000009536743,
+        -9.670000076293945
+      ]
+    },
+    {
+      "name": "Coolant rail Port -1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.554967403411865,
+        0.7816087603569031,
+        -18.652963638305664
+      ],
+      "max": [
+        -5.095032691955566,
+        1.0783913135528564,
+        -9.997035026550293
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Port -1 -10.0",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.585000038146973,
+        0.7850000262260437,
+        -10.194999694824219
+      ],
+      "max": [
+        -5.255000114440918,
+        1.1150000095367432,
+        -9.805000305175781
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Port -1 -18.65",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -5.394999980926514,
+        0.7450000047683716,
+        -18.844999313354492
+      ],
+      "max": [
+        -5.065000057220459,
+        1.0750000476837158,
+        -18.454999923706055
+      ]
+    },
+    {
+      "name": "Coolant rail Port 1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -3.3049674034118652,
+        0.7816087603569031,
+        -18.652963638305664
+      ],
+      "max": [
+        -2.8450326919555664,
+        1.0783913135528564,
+        -9.997035026550293
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Port 1 -10.0",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -3.1449999809265137,
+        0.7850000262260437,
+        -10.194999694824219
+      ],
+      "max": [
+        -2.815000057220459,
+        1.1150000095367432,
+        -9.805000305175781
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Port 1 -18.65",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -3.3350000381469727,
+        0.7450000047683716,
+        -18.844999313354492
+      ],
+      "max": [
+        -3.005000114440918,
+        1.0750000476837158,
+        -18.454999923706055
+      ]
+    },
+    {
+      "name": "Muzzle service flat Port -1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.699999809265137,
+        -1.9199999570846558,
+        -28.280000686645508
+      ],
+      "max": [
+        -3.700000047683716,
+        -1.7599999904632568,
+        -27.219999313354492
+      ]
+    },
+    {
+      "name": "Muzzle caution index Port -1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.434999942779541,
+        -1.9420000314712524,
+        -27.78499984741211
+      ],
+      "max": [
+        -3.9649999141693115,
+        -1.9149999618530273,
+        -27.614999771118164
+      ]
+    },
+    {
+      "name": "Muzzle service flat Port 1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.699999809265137,
+        1.7599999904632568,
+        -28.280000686645508
+      ],
+      "max": [
+        -3.700000047683716,
+        1.9199999570846558,
+        -27.219999313354492
+      ]
+    },
+    {
+      "name": "Muzzle caution index Port 1",
+      "parent": "Bastion_Recoil_Port",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -4.434999942779541,
+        1.9149999618530273,
+        -27.78499984741211
+      ],
+      "max": [
+        -3.9649999141693115,
+        1.9420000314712524,
+        -27.614999771118164
+      ]
+    },
+    {
+      "name": "Hollow tapered barrel Starboard",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.3499999046325684,
+        -1.850000023841858,
+        -29.0
+      ],
+      "max": [
+        6.050000190734863,
+        1.850000023841858,
+        -6.0
+      ]
+    },
+    {
+      "name": "Long barrel dark jacket Starboard",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.7099997997283936,
+        -1.4900000095367432,
+        -16.55000114440918
+      ],
+      "max": [
+        5.689999580383301,
+        1.4900000095367432,
+        -9.65000057220459
+      ]
+    },
+    {
+      "name": "Forward service collar Starboard",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.6299996376037598,
+        -1.5700000524520874,
+        -25.200000762939453
+      ],
+      "max": [
+        5.769999980926514,
+        1.5700000524520874,
+        -24.540000915527344
+      ]
+    },
+    {
+      "name": "Inner emitter annulus Starboard",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 7,
+      "material": 1,
+      "joint": null,
+      "min": [
+        3.109999656677246,
+        -1.090000033378601,
+        -28.42249870300293
+      ],
+      "max": [
+        5.289999961853027,
+        1.090000033378601,
+        -28.337499618530273
+      ]
+    },
+    {
+      "name": "Cooling saddle Starboard -10.0",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.5699996948242188,
+        -1.6299999952316284,
+        -10.260000228881836
+      ],
+      "max": [
+        5.829999923706055,
+        1.6299999952316284,
+        -9.739999771118164
+      ]
+    },
+    {
+      "name": "Cooling saddle Starboard -18.65",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.7849998474121094,
+        -1.4149999618530273,
+        -18.90999984741211
+      ],
+      "max": [
+        5.614999771118164,
+        1.4149999618530273,
+        -18.389999389648438
+      ]
+    },
+    {
+      "name": "Return polished plunger Starboard -1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        4.059999942779541,
+        -2.1600000858306885,
+        -10.0
+      ],
+      "max": [
+        4.339999675750732,
+        -1.8799999952316284,
+        -7.699999809265137
+      ]
+    },
+    {
+      "name": "Plunger saddle lug Starboard -1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.934999942779541,
+        -2.115000009536743,
+        -10.329999923706055
+      ],
+      "max": [
+        4.465000152587891,
+        -1.3849999904632568,
+        -9.670000076293945
+      ]
+    },
+    {
+      "name": "Return polished plunger Starboard 1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 2,
+      "material": 0,
+      "joint": "recoil-plunger",
+      "min": [
+        4.059999942779541,
+        1.8799999952316284,
+        -10.0
+      ],
+      "max": [
+        4.339999675750732,
+        2.1600000858306885,
+        -7.699999809265137
+      ]
+    },
+    {
+      "name": "Plunger saddle lug Starboard 1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.934999942779541,
+        1.3849999904632568,
+        -10.329999923706055
+      ],
+      "max": [
+        4.465000152587891,
+        2.115000009536743,
+        -9.670000076293945
+      ]
+    },
+    {
+      "name": "Coolant rail Starboard -1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.8450326919555664,
+        0.7816087603569031,
+        -18.652963638305664
+      ],
+      "max": [
+        3.3049674034118652,
+        1.0783913135528564,
+        -9.997035026550293
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Starboard -1 -10.0",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        2.815000057220459,
+        0.7850000262260437,
+        -10.194999694824219
+      ],
+      "max": [
+        3.1449999809265137,
+        1.1150000095367432,
+        -9.805000305175781
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Starboard -1 -18.65",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.005000114440918,
+        0.7450000047683716,
+        -18.844999313354492
+      ],
+      "max": [
+        3.3350000381469727,
+        1.0750000476837158,
+        -18.454999923706055
+      ]
+    },
+    {
+      "name": "Coolant rail Starboard 1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.095032691955566,
+        0.7816087603569031,
+        -18.652963638305664
+      ],
+      "max": [
+        5.554967403411865,
+        1.0783913135528564,
+        -9.997035026550293
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Starboard 1 -10.0",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.255000114440918,
+        0.7850000262260437,
+        -10.194999694824219
+      ],
+      "max": [
+        5.585000038146973,
+        1.1150000095367432,
+        -9.805000305175781
+      ]
+    },
+    {
+      "name": "Rail saddle clamp Starboard 1 -18.65",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        5.065000057220459,
+        0.7450000047683716,
+        -18.844999313354492
+      ],
+      "max": [
+        5.394999980926514,
+        1.0750000476837158,
+        -18.454999923706055
+      ]
+    },
+    {
+      "name": "Muzzle service flat Starboard -1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.700000047683716,
+        -1.9199999570846558,
+        -28.280000686645508
+      ],
+      "max": [
+        4.699999809265137,
+        -1.7599999904632568,
+        -27.219999313354492
+      ]
+    },
+    {
+      "name": "Muzzle caution index Starboard -1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.9649999141693115,
+        -1.9420000314712524,
+        -27.78499984741211
+      ],
+      "max": [
+        4.434999942779541,
+        -1.9149999618530273,
+        -27.614999771118164
+      ]
+    },
+    {
+      "name": "Muzzle service flat Starboard 1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.700000047683716,
+        1.7599999904632568,
+        -28.280000686645508
+      ],
+      "max": [
+        4.699999809265137,
+        1.9199999570846558,
+        -27.219999313354492
+      ]
+    },
+    {
+      "name": "Muzzle caution index Starboard 1",
+      "parent": "Bastion_Recoil_Starboard",
+      "tile": 5,
+      "material": 0,
+      "joint": null,
+      "min": [
+        3.9649999141693115,
+        1.9149999618530273,
+        -27.78499984741211
+      ],
+      "max": [
+        4.434999942779541,
+        1.9420000314712524,
+        -27.614999771118164
+      ]
+    },
+    {
+      "name": "Bastion model engraving",
+      "parent": "Bastion_Pitch",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": null,
+      "max": null
+    },
+    {
+      "name": "Meridian maker engraving",
+      "parent": "Bastion_Pitch",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": null,
+      "max": null
+    }
+  ],
+  "validation": {
+    "sourceExport": "PASS",
+    "motionClearance": "PENDING actual triangle sweep",
+    "nativePBR": "PENDING",
+    "actualGame": "PENDING",
+    "independentArt": "PENDING",
+    "performance": "PENDING"
+  }
+}

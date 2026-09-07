@@ -132,3 +132,18 @@ test('a strike checkpoint waits for an already saving victim transfer to publish
   assert.equal(saved.inventory.containers.pack['carbine-charge'],59);assert.equal(saved.inventory.containers.ship['carbine-charge'],1);
   assert.deepEqual(errors,[]);
 });
+
+test('a hull save completing after a defense kill cannot replace the destroyed hull or its durable state',async t=>{
+  const {store,room,a,b,request,errors}=await setup(t),entered=deferred(),gate=deferred();
+  const original=a.nav.shipPosition.clone(),save=store.savePlayerState.bind(store);let held=false;
+  store.savePlayerState=async(id,data)=>{
+    if(id===a.id&&data.hull==='atlas'&&!held){held=true;entered.resolve();await gate.promise;}
+    return save(id,data);
+  };
+  const replace=request(a,{action:'cargoHull',hull:'atlas'});await entered.promise;
+  room.security.submit({id:'ram:hull-save',attacker:a,victim:b,kind:'player',cause:'ram',damage:5,point:b.nav.position.clone()});
+  await flush();assert.equal(a.health,0);gate.resolve();
+  const ack=await replace;await room.security.settle(a);
+  assert.equal(ack.ok,false);assert.match(ack.error,/defense response/);assert.equal(a.nav.shipId,'nomad');assert.equal(a.nav.mode,'crashed');assert.deepEqual(a.nav.shipPosition,original);
+  const saved=await store.loadPlayerState(a.id);assert.equal(saved.hull,'nomad');assert.equal(saved.health,0);assert.equal(saved.shipHealth,0);assert.deepEqual(errors,[]);
+});

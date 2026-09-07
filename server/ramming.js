@@ -45,20 +45,86 @@ export function sweptBoxes(a0,a1,b0,b1,padding = 0) {
   return {time:Math.max(0,enter),normal:normal ?? new THREE.Vector3(1,0,0),initialOverlap:overlapping};
 }
 
+const BOX_EDGES=Array.from({length:8},(_,i)=>[0,1,2].filter(axis=>!(i&(1<<axis))).map(axis=>[i,i|(1<<axis)])).flat();
+function corners(shape){return Array.from({length:8},(_,i)=>shape.axes.reduce((p,axis,k)=>p.addScaledVector(axis,shape.half.getComponent(k)*(i&(1<<k)?1:-1)),shape.center.clone()));}
+function closestOnBox(shape,point){
+  const local=point.clone().sub(shape.center),result=shape.center.clone();
+  shape.axes.forEach((axis,i)=>result.addScaledVector(axis,THREE.MathUtils.clamp(local.dot(axis),-shape.half.getComponent(i),shape.half.getComponent(i))));
+  return result;
+}
+function closestSegments(a,b,c,d){
+  const u=b.clone().sub(a),v=d.clone().sub(c),w=a.clone().sub(c);
+  const aa=u.lengthSq(),bb=u.dot(v),cc=v.lengthSq(),dd=u.dot(w),ee=v.dot(w);
+  let s=0,t=0;
+  if(aa<EPS*EPS)t=cc<EPS*EPS?0:THREE.MathUtils.clamp(ee/cc,0,1);
+  else if(cc<EPS*EPS)s=THREE.MathUtils.clamp(-dd/aa,0,1);
+  else{
+    const denominator=aa*cc-bb*bb;
+    s=denominator>EPS*EPS?THREE.MathUtils.clamp((bb*ee-cc*dd)/denominator,0,1):0;
+    t=(bb*s+ee)/cc;
+    if(t<0){t=0;s=THREE.MathUtils.clamp(-dd/aa,0,1);}
+    else if(t>1){t=1;s=THREE.MathUtils.clamp((bb-dd)/aa,0,1);}
+  }
+  return [a.clone().addScaledVector(u,s),c.clone().addScaledVector(v,t)];
+}
+function segmentInBox(start,end,shape){
+  const offset=start.clone().sub(shape.center),delta=end.clone().sub(start);let lo=0,hi=1;
+  for(let i=0;i<3;i++){
+    const position=offset.dot(shape.axes[i]),speed=delta.dot(shape.axes[i]),half=shape.half.getComponent(i);
+    if(Math.abs(speed)<EPS){if(Math.abs(position)>half)return [];continue;}
+    let enter=(-half-position)/speed,exit=(half-position)/speed;if(enter>exit)[enter,exit]=[exit,enter];
+    lo=Math.max(lo,enter);hi=Math.min(hi,exit);if(lo>hi)return [];
+  }
+  return [start.clone().addScaledVector(delta,lo),start.clone().addScaledVector(delta,hi)];
+}
+
+/** Exact convex-box separation: closest features are vertex/face or edge/edge.
+ * Subtract a world origin before producing corners; contact offsets remain
+ * small world-oriented doubles even at stellar coordinates. */
+export function boxSeparation(aPose,bPose,padding=0){
+  const offset=bPose.position.clone().sub(aPose.position);
+  const localA={...aPose,position:new THREE.Vector3()},localB={...bPose,position:offset};
+  const a=box(localA,padding),b=box(localB,padding);
+  const av=corners(a),bv=corners(b);let best=Infinity,pointA,pointB;
+  const overlap=sweptBoxes(localA,localA,localB,localB,padding);
+  if(overlap?.initialOverlap){
+    // Intersecting slabs can have only edge/face crossings: neither contained
+    // vertices nor touching edge pairs. SAT owns overlap; clipped edges supply
+    // a point in the shared convex volume for both contact velocity offsets.
+    const intersection=[];
+    for(const [lo,hi] of BOX_EDGES){intersection.push(...segmentInBox(av[lo],av[hi],b),...segmentInBox(bv[lo],bv[hi],a));}
+    const contact=intersection.reduce((sum,point)=>sum.add(point),new THREE.Vector3()).divideScalar(intersection.length||1);
+    return {distance:0,normal:overlap.normal,offsetA:contact,offsetB:contact.clone().sub(offset)};
+  }
+  const keep=(p,q)=>{const distance=p.distanceToSquared(q);if(distance<best){best=distance;pointA=p;pointB=q;}};
+  for(const p of av)keep(p,closestOnBox(b,p));
+  for(const q of bv)keep(closestOnBox(a,q),q);
+  for(const [a0,a1] of BOX_EDGES)for(const [b0,b1] of BOX_EDGES)keep(...closestSegments(av[a0],av[a1],bv[b0],bv[b1]));
+  const normal=pointB.clone().sub(pointA);
+  if(normal.lengthSq()>EPS*EPS)normal.normalize();
+  else normal.copy(sweptBoxes(aPose,aPose,bPose,bPose,padding)?.normal??b.center.clone().sub(a.center).normalize());
+  return {distance:Math.sqrt(best),normal,offsetA:pointA,offsetB:pointB.clone().sub(offset)};
+}
+
 function angularSweep(a0,a1,b0,b1,padding = 0) {
   if(!closeSweep(a0.position,a1.position,b0.position,b1.position,radiusOf(a0.bounds)+radiusOf(b0.bounds)+padding*2))return null;
   const angleA=a0.rotation.angleTo(a1.rotation),angleB=b0.rotation.angleTo(b1.rotation);
-  const steps=Math.max(1,Math.min(32,Math.ceil(Math.max(angleA,angleB)/(Math.PI/90))));
-  // Midpoint attitudes with conservative angular envelopes cover the small arc
-  // between samples. Translation remains swept even at travel-drive speeds.
-  const angular=(radiusOf(a0.bounds)*angleA+radiusOf(b0.bounds)*angleB)/(2*steps);
-  for(let i=0;i<steps;i++) {
-    const lo=i/steps,hi=(i+1)/steps,mid=(lo+hi)/2;
-    const a=lerpPose(a0,a1,lo),aa=lerpPose(a0,a1,hi),b=lerpPose(b0,b1,lo),bb=lerpPose(b0,b1,hi);
-    a.rotation.copy(a0.rotation).slerp(a1.rotation,mid); aa.rotation.copy(a.rotation);
-    b.rotation.copy(b0.rotation).slerp(b1.rotation,mid); bb.rotation.copy(b.rotation);
-    const hit=sweptBoxes(a,aa,b,bb,padding+angular);
-    if(hit)return {...hit,time:lo+(hi-lo)*hit.time,initialOverlap:i===0&&hit.initialOverlap};
+  const initialOverlap=Boolean(sweptBoxes(a0,a0,b0,b0,padding)?.initialOverlap);
+  if(angleA<EPS&&angleB<EPS){
+    const hit=sweptBoxes(a0,a1,b0,b1,padding);if(!hit)return null;
+    return {...boxSeparation(lerpPose(a0,a1,hit.time),lerpPose(b0,b1,hit.time),padding),...hit,initialOverlap};
+  }
+  // Distance is Lipschitz-bounded by relative translation plus the travel of
+  // each hull's furthest corner. Advance against actual geometry, never an
+  // inflated midpoint that can turn a new contact into a spawn overlap.
+  const speed=a1.position.clone().sub(a0.position).sub(b1.position.clone().sub(b0.position)).length()+radiusOf(a0.bounds)*angleA+radiusOf(b0.bounds)*angleB;
+  let time=0;
+  for(let i=0;i<128;i++){
+    const hit=boxSeparation(lerpPose(a0,a1,time),lerpPose(b0,b1,time),padding);
+    if(hit.distance<1e-5)return {...hit,time,initialOverlap};
+    if(speed<EPS)return null;
+    time+=hit.distance/speed;
+    if(time>1+EPS)return null;time=Math.min(1,time);
   }
   return null;
 }
@@ -112,10 +178,13 @@ export function sweptSuit(h0,h1,s0,s1) {
       let normal=result.point.clone().sub(result.boxPoint).applyQuaternion(hull.rotation);
       if(normal.lengthSq()<EPS)normal.copy(suit.position).sub(hull.position);
       if(normal.lengthSq()<EPS)normal.set(1,0,0);
-      return {time,normal:normal.normalize(),initialOverlap};
+      normal.normalize();
+      const offsetA=result.boxPoint.clone().applyQuaternion(hull.rotation);
+      const offsetB=result.point.clone().applyQuaternion(hull.rotation).add(hull.position.clone().sub(suit.position)).addScaledVector(normal,-SHIP_LAYOUT.capsuleRadius);
+      return {time,normal,initialOverlap,offsetA,offsetB};
     }
     if(speed<EPS)return null;
-    time+=Math.max(1e-7,gap/speed);
+    time+=gap/speed;
     if(time>1+EPS)return null;time=Math.min(1,time);
   }
   return null;
@@ -132,7 +201,10 @@ function occupant(hull,suit) {
 export function capturePeerMotion(players) {
   const result=new Map();
   for(const p of players.values()) if(healthy(p)) {
-    const hull=shipPose(p),suit=['walk','eva'].includes(p.nav.mode)?{position:p.nav.position.clone(),up:playerUp(p.nav)}:null;
+    const hull=shipPose(p),suit=['walk','eva'].includes(p.nav.mode)&&!p.nav.stationHubTransit?{position:p.nav.position.clone(),up:playerUp(p.nav)}:null;
+    // shipPose is also used by immediate raycasts and exposes the live attitude.
+    // Motion history must own its quaternion across the next Navigation step.
+    if(hull)hull.rotation=hull.rotation.clone();
     result.set(p.id,{player:p,life:p.nav,hull,suit});
   }
   return result;
@@ -140,11 +212,12 @@ export function capturePeerMotion(players) {
 
 function stopHull(entry,after,time) {
   const n=entry.player.nav,a=entry.hull,b=after.hull;
-  const travel=a.position.distanceTo(b.position),safe=Math.max(0,time-SKIN/Math.max(SKIN,travel));
-  const pose=lerpPose(a,b,safe),correction=pose.position.clone().sub(b.position);
+  const travel=a.position.distanceTo(b.position)+radiusOf(a.bounds)*a.rotation.angleTo(b.rotation),safe=Math.max(0,time-SKIN/Math.max(SKIN,travel));
+  const pose=lerpPose(a,b,safe);
   if(n.shipPosition) {
+    const inverse=b.rotation.clone().invert(),local=n.position.clone().sub(b.position).applyQuaternion(inverse),orientation=inverse.clone().multiply(n.orientation);
     n.shipPosition.copy(pose.position);n.shipOrientation.copy(pose.rotation);n.shipVelocity.set(0,0,0);
-    if(n.cabinFlight)n.position.add(correction);
+    if(n.cabinFlight){n.position.copy(local).applyQuaternion(pose.rotation).add(pose.position);n.orientation.copy(pose.rotation).multiply(orientation).normalize();n.velocity.set(0,0,0);}
   } else {
     n.orientation.copy(pose.rotation);
     n.position.copy(pose.position).add(new THREE.Vector3().fromArray(n.layout.seatEye).applyQuaternion(pose.rotation));
@@ -153,12 +226,24 @@ function stopHull(entry,after,time) {
   n.angularVelocity?.set(0,0,0);n.shipAngularVelocity?.set(0,0,0);n.travel=null;
 }
 
+function angularVelocity(before,after,dt){
+  const delta=after.clone().multiply(before.clone().invert()).normalize();
+  if(delta.w<0)delta.set(-delta.x,-delta.y,-delta.z,-delta.w);
+  const axis=new THREE.Vector3(delta.x,delta.y,delta.z),length=axis.length();
+  return length<EPS?axis.set(0,0,0):axis.multiplyScalar(2*Math.atan2(length,delta.w)/(length*dt));
+}
+function contactVelocity(before,after,offset,dt,suit=false){
+  const rotation=suit?angularVelocity(new THREE.Quaternion(),new THREE.Quaternion().setFromUnitVectors(before.up,after.up),dt):angularVelocity(before.rotation,after.rotation,dt);
+  return after.position.clone().sub(before.position).divideScalar(dt).add(rotation.cross(offset));
+}
+const moved=(a,b)=>a.position.distanceToSquared(b.position)>EPS*EPS||a.rotation.angleTo(b.rotation)>EPS;
+
 export function createRammingResolver() {
   let contacts=new Set(),sequence=0;
   return {
     step(players,before,dt,onImpact) {
       if(!Number.isFinite(dt)||dt<=0)return;
-      const after=capturePeerMotion(players),pairs=[],near=new Set();
+      const after=capturePeerMotion(players),pairs=[],near=new Set(),impacts=[];
       const entries=[...before.values()].filter(a=>a.life===after.get(a.player.id)?.life);
       for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length;j++) {
         const a=entries[i],b=entries[j],aa=after.get(a.player.id),bb=after.get(b.player.id);
@@ -177,23 +262,27 @@ export function createRammingResolver() {
       const stopped=new Set();
       for(const {a,b,aa,bb,hit,key,kind} of pairs) {
         if(stopped.has(a.player.id)||kind==='ship'&&stopped.has(b.player.id))continue;
-        const va=aa.hull.position.clone().sub(a.hull.position).divideScalar(dt);
-        const vb=(kind==='ship'?bb.hull.position.clone().sub(b.hull.position):bb.suit.position.clone().sub(b.suit.position)).divideScalar(dt);
+        const va=contactVelocity(a.hull,aa.hull,hit.offsetA,dt);
+        const vb=kind==='ship'?contactVelocity(b.hull,bb.hull,hit.offsetB,dt):contactVelocity(b.suit,bb.suit,hit.offsetB,dt,true);
         const closing=va.clone().sub(vb).dot(hit.normal);
         const forwardA=va.dot(hit.normal),forwardB=-vb.dot(hit.normal);
         // Existing occupants/initial overlaps can walk or fly out. A new swept
         // entry owns contact; spawn overlap must not manufacture aggression.
         if(hit.initialOverlap||closing<=EPS)continue;
-        if(va.lengthSq()>EPS){stopHull(a,aa,hit.time);stopped.add(a.player.id);}
-        if(kind==='ship'&&vb.lengthSq()>EPS){stopHull(b,bb,hit.time);stopped.add(b.player.id);}
+        if(moved(a.hull,aa.hull)){stopHull(a,aa,hit.time);stopped.add(a.player.id);}
+        if(kind==='ship'&&moved(b.hull,bb.hull)){stopHull(b,bb,hit.time);stopped.add(b.player.id);}
         if(contacts.has(key)||closing<=RAM_SAFE_SPEED)continue;
         const damage=Math.min(100,(closing-RAM_SAFE_SPEED)**2*.2);
-        if(forwardA>RAM_SAFE_SPEED)onImpact({id:`ram:${++sequence}`,attacker:a.player,victim:b.player,kind,cause:'ram',damage,
+        if(forwardA>RAM_SAFE_SPEED)impacts.push({id:`ram:${++sequence}`,attacker:a.player,victim:b.player,kind,cause:'ram',damage,
           point:(kind==='ship'?b.hull.position.clone().lerp(bb.hull.position,hit.time):b.suit.position.clone().lerp(bb.suit.position,hit.time)),closingSpeed:closing});
-        if(kind==='ship'&&forwardB>RAM_SAFE_SPEED)onImpact({id:`ram:${++sequence}`,attacker:b.player,victim:a.player,kind:'ship',cause:'ram',damage,
+        if(kind==='ship'&&forwardB>RAM_SAFE_SPEED)impacts.push({id:`ram:${++sequence}`,attacker:b.player,victim:a.player,kind:'ship',cause:'ram',damage,
           point:a.hull.position.clone().lerp(aa.hull.position,hit.time),closingSpeed:closing});
       }
       contacts=near;
+      // Admit every contact from the same captured motion interval before a
+      // callback can publish death or change a participant's live pose. Security
+      // validates each submission synchronously, then yields before damage.
+      for(const impact of impacts)onImpact(impact);
     },
   };
 }
