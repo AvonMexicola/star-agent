@@ -1,12 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Quaternion,Vector3,Group,Mesh,BoxGeometry,MeshBasicMaterial,DoubleSide} from 'three';
-import {ShipCamera,clipTerrainCamera,isShipCameraKey,clipShipCamera,groundRadiusAt} from '../src/ship-camera.js';
+import {ShipCamera,clipTerrainCamera,isShipCameraKey,clipShipCamera,groundRadiusAt,playerUp} from '../src/ship-camera.js';
 import {SELENE,bodySurfacePoint} from '../src/celestial.js';
 import {SHIP_LAYOUT} from '../src/boarding.js';
 const near=(a,b,eps=1e-8)=>assert.ok(Math.abs(a-b)<eps,`${a} != ${b}`);
 const nav=()=>({position:new Vector3(0,1692750,0),orientation:new Quaternion(),mode:'flight',normal:new Vector3(0,1,0),velocity:new Vector3(120,30,-50),shipPosition:null});
 const noGround={surfaceRadius:()=>0};
+
+test('on-foot camera follows hangar gravity and EVA follows suit attitude',()=>{
+  const n=nav(),up=new Vector3(1,1,0).normalize();
+  n.mode='walk';n.stationPhysics={up};
+  assert.deepEqual(playerUp(n),up);
+  n.mode='eva';n.orientation.setFromAxisAngle(new Vector3(0,0,1),Math.PI/2);
+  assert.ok(playerUp(n).distanceTo(new Vector3(-1,0,0))<1e-8);
+});
 
 test('4 toggles an above-and-behind view and never changes the navigation pose or momentum',()=>{
   const body=nav(),saved=structuredClone(body),view=new ShipCamera();

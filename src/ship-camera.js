@@ -104,6 +104,9 @@ export class ShipCamera {
 
 /** Match the navigation support frame on the ramp and in the cabin. */
 export function playerUp(nav) {
+  if(nav.mode==='eva')return UP.clone().applyQuaternion(nav.orientation);
+  const grid=nav.stationPhysics;
+  if(grid&&nav.mode==='walk')return grid.up.clone();
   const local=nav.toShipLocal?.();
   return local && local.length()<25 ? UP.clone().applyQuaternion(nav.shipOrientation) : nav.normal.clone();
 }

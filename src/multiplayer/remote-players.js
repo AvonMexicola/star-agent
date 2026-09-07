@@ -285,10 +285,11 @@ export class RemotePlayers {
       if (!entry) { entry = this._create(peer); this.peers.set(peer.id, entry); }
       const changedColor = entry.peer.colorIndex !== peer.colorIndex;
       const changedMode = entry.peer.mode !== peer.mode;
+      const changedFrame = entry.peer.physicsFrame !== peer.physicsFrame;
       entry.peer = peer;
       entry.target.fromArray(peer.position);
       entry.targetOrientation.fromArray(peer.orientation);
-      if (changedMode || entry.position.distanceToSquared(entry.target) > 1e6) {
+      if (changedMode || changedFrame || entry.position.distanceToSquared(entry.target) > 1e6) {
         entry.position.copy(entry.target);
         entry.orientation.copy(entry.targetOrientation);
       }
@@ -324,7 +325,9 @@ export class RemotePlayers {
         this._up.copy(UP).applyQuaternion(this._bodyRotation);
       } else if (peer.mode === 'walk' || peer.mode === 'dead') {
         const body = BODIES.find(body => body.id === peer.body);
-        if (peer.shipPosition && entry.position.distanceToSquared(entry.shipPosition) < 625) {
+        if (peer.physicsFrame && Array.isArray(peer.physicsUp) && peer.physicsUp.length===3 && peer.physicsUp.every(Number.isFinite)) {
+          this._up.fromArray(peer.physicsUp).normalize();
+        } else if (peer.shipPosition && entry.position.distanceToSquared(entry.shipPosition) < 625) {
           this._up.copy(UP).applyQuaternion(entry.shipOrientation);
         } else if (body) {
           this._up.copy(entry.position).sub(this._shipOffset.fromArray(body.center)).normalize();
