@@ -124,3 +124,11 @@ record. It requires the same protected PR checks before publication. Station and
 Aeon feature validation is recorded in their own QA files; these additions do not
 make their pending art/performance gates complete. The broad M0 milestone remains
 open for real newcomer onboarding and a release/restore rehearsal.
+
+
+The reconciliation source at **`91f0021`** passes **668 unit tests**, the **12 helper
+regressions**, repository checks and production build locally. Its runtime/assets
+are byte-identical to local `7ba1fbd`; only contributor infrastructure and records
+are added. [PR56](https://github.com/AvonMexicola/star-agent/pull/56) retains the
+protected combined CI result and merge identity. This paragraph changes evidence,
+not the tested runtime or the scope of the earlier feature/visual reviews.
