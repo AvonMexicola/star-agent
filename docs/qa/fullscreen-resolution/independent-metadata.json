@@ -1,0 +1,212 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "dpr": 2,
+  "records": [
+    {
+      "name": "windowed-auto",
+      "policy": {
+        "automatic": true,
+        "fullscreen": false,
+        "scale": 1,
+        "pixelRatio": 1.25,
+        "width": 1800,
+        "height": 1125
+      },
+      "buffer": [
+        1800,
+        1125
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "outer": [
+        1440,
+        900
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "apiFullscreen": false,
+      "graphics": {
+        "grassDistance": 80,
+        "grassDensity": 0.75,
+        "resolution": "auto"
+      },
+      "renderedFrames": 1258
+    },
+    {
+      "name": "fullscreen-auto",
+      "policy": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 2,
+        "width": 2880,
+        "height": 1800
+      },
+      "buffer": [
+        2880,
+        1800
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "outer": [
+        1440,
+        900
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "apiFullscreen": true,
+      "graphics": {
+        "grassDistance": 80,
+        "grassDensity": 0.75,
+        "resolution": "auto"
+      },
+      "renderedFrames": 1275
+    },
+    {
+      "name": "windowed-auto-restored",
+      "policy": {
+        "automatic": true,
+        "fullscreen": false,
+        "scale": 1,
+        "pixelRatio": 1.25,
+        "width": 1800,
+        "height": 1125
+      },
+      "buffer": [
+        1800,
+        1125
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "outer": [
+        1440,
+        900
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "apiFullscreen": false,
+      "graphics": {
+        "grassDistance": 80,
+        "grassDensity": 0.75,
+        "resolution": "auto"
+      },
+      "renderedFrames": 1287
+    },
+    {
+      "name": "windowed-manual-60",
+      "policy": {
+        "automatic": false,
+        "fullscreen": false,
+        "scale": 0.6,
+        "pixelRatio": 1.25,
+        "width": 1080,
+        "height": 675
+      },
+      "buffer": [
+        1080,
+        675
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "outer": [
+        1440,
+        900
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "apiFullscreen": false,
+      "graphics": {
+        "grassDistance": 80,
+        "grassDensity": 0.75,
+        "resolution": 0.6
+      },
+      "renderedFrames": 1297
+    },
+    {
+      "name": "fullscreen-manual-60",
+      "policy": {
+        "automatic": false,
+        "fullscreen": true,
+        "scale": 0.6,
+        "pixelRatio": 2,
+        "width": 1728,
+        "height": 1080
+      },
+      "buffer": [
+        1728,
+        1080
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "outer": [
+        1440,
+        900
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "apiFullscreen": true,
+      "graphics": {
+        "grassDistance": 80,
+        "grassDensity": 0.75,
+        "resolution": 0.6
+      },
+      "renderedFrames": 1307
+    },
+    {
+      "name": "windowed-manual-60-restored",
+      "policy": {
+        "automatic": false,
+        "fullscreen": false,
+        "scale": 0.6,
+        "pixelRatio": 1.25,
+        "width": 1080,
+        "height": 675
+      },
+      "buffer": [
+        1080,
+        675
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "outer": [
+        1440,
+        900
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "apiFullscreen": false,
+      "graphics": {
+        "grassDistance": 80,
+        "grassDensity": 0.75,
+        "resolution": 0.6
+      },
+      "renderedFrames": 1316
+    }
+  ],
+  "errors": []
+}

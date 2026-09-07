@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked-no-files-exported",
+  "completedAt": "2026-09-07T09:51:46.757563+00:00",
+  "provider": "Meshy",
+  "authorization": {
+    "explicitCurrentApproval": "Cees replied \"yes you can\" to downloading these two new retained image-to-3D GLBs for Blender inspection.",
+    "historicalDownloadRefusal": "Superseded for these two originals; not used as a blocker.",
+    "scope": "Only two retained original GLBs; no generation, remesh, UV/texturing, billable work, purchases or settings changes."
+  },
+  "sourceReceipt": {
+    "path": "assets/station-shop/soft-props/image-to-3d-v2/meshy-recovery-receipt.json",
+    "sha256": "1d77349acc68fb980bf0ac672164f6798f98b184c4a916fb08301044ab65ca3a",
+    "preserved": true
+  },
+  "browser": {
+    "integration": "Configured OpenAI Chrome extension via mcp__cua_repl",
+    "selectedBrowserBinding": "1",
+    "workspaceUrl": "https://www.meshy.ai/workspace",
+    "taskTabId": "2020745825",
+    "recovery": "Historical handoff tab not present in current browser inventory; opened authorized fresh task tab using selected Chrome binding.",
+    "documentationRead": [
+      "CUA initialization and confirmation policy",
+      "Selected Chrome API reference, including waitForEvent(download) and empty PlaywrightDownload interface",
+      "browser-troubleshooting"
+    ],
+    "additionalDocumentationAttempts": {
+      "downloads": "Documentation is not available: downloads",
+      "file-downloads": "Documentation is not available: file-downloads"
+    },
+    "capabilitiesObserved": {
+      "browser": [
+        "viewport"
+      ],
+      "tab": [
+        "pageAssets"
+      ]
+    },
+    "downloadApiLimitation": "Documented download event API was attempted for each asset. Core PlaywrightDownload interface exposes no save/copy methods. No event or staging file returned; no hidden method was guessed.",
+    "permissionsOrConfigurationChanged": false
+  },
+  "props": [
+    {
+      "id": "watchkeep-folded-protective-jacket",
+      "status": "blocked",
+      "exported": false,
+      "sourceSelection": {
+        "providerName": "WATCHKEEP GPT-image v2 T2 - 4330 PBR - UNACCEPTED",
+        "method": "Exact saved-name search narrowed to one page of family cards; selected middle intact textured card, then confirmed exact counts and all four map controls in visible renderer.",
+        "topology": "Triangle",
+        "faces": 4330,
+        "vertices": 5212,
+        "countsBasis": "Current visible provider renderer, not local mesh inspection.",
+        "mapControls": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "allFourMapPreviewsVisible": true,
+        "mapsReopenedThisExportTask": false,
+        "candidate": "Retained automatically textured T2 original; not reduced derivative or historical text-to-3D result.",
+        "acceptance": "unaccepted"
+      },
+      "visibleExportSettings": {
+        "Format": "glb",
+        "Resize": false,
+        "Height": {
+          "displayed": "12.00",
+          "units": "cm",
+          "enabled": false
+        },
+        "Origin": {
+          "displayed": "Bottom",
+          "enabled": false
+        },
+        "topologyOrTextureConversionControlsExposed": false,
+        "textureResolutionControlExposed": false,
+        "textureResolutionChanged": false,
+        "nativeEmbeddedTextureResolution": "Requested preserved; no resolution mutation, but unavailable file prevents verification."
+      },
+      "download": {
+        "attempts": 1,
+        "method": "Registered tab.playwright.waitForEvent(\"download\", {timeoutMs:20000}) before clicking the normal visible Download button.",
+        "clickOutcome": "Download and Format became disabled while processing.",
+        "eventOutcome": "Error: Timed out after 20000ms waiting for download.",
+        "subsequentVisibleOutcome": {
+          "destinationHost": "assets.meshy.ai",
+          "heading": "assets.meshy.ai is blocked",
+          "message": "This page has been blocked by Chromium",
+          "code": "ERR_BLOCKED_BY_CLIENT"
+        },
+        "suggestedNativeFilename": "Meshy_AI_WATCHKEEP_GPT_image_v_0907094853_texture.glb",
+        "filenameBasis": "Filename component of UI-observed navigation destination; no file obtained. Signed URL omitted.",
+        "stagingPath": null,
+        "saveOrCopyOutcome": "Not possible: no download object, staging path or file was returned.",
+        "archiveObtained": false,
+        "newToolApprovalDenial": false,
+        "blockCause": "Not established beyond visible Chromium ERR_BLOCKED_BY_CLIENT; not attributed to historical user refusal.",
+        "bypassAttempted": false
+      },
+      "localFile": {
+        "targetPath": "assets/station-shop/soft-props/image-to-3d-v2/raw/watchkeep-folded-protective-jacket/source.glb",
+        "absoluteTargetPath": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/raw/watchkeep-folded-protective-jacket/source.glb",
+        "exists": false,
+        "bytes": null,
+        "sha256": null,
+        "glbMagic": null,
+        "glbVersion": null,
+        "glbDeclaredLength": null,
+        "validation": "Not run: target file absent."
+      },
+      "remainingRootWork": [
+        "Obtain native GLB after browser export blocker is resolved.",
+        "Blender mesh, texture, UV, scale and support inspection.",
+        "Runtime derivatives, game integration and independent review."
+      ]
+    },
+    {
+      "id": "kestrel-maintenance-roll",
+      "status": "blocked",
+      "exported": false,
+      "sourceSelection": {
+        "providerName": "KESTREL GPT-image v2 T2 - 4145 PBR - UNACCEPTED",
+        "method": "Exact saved-name search narrowed to one page of family cards; selected middle intact textured card, then confirmed exact counts and all four map controls in visible renderer.",
+        "topology": "Triangle",
+        "faces": 4145,
+        "vertices": 3859,
+        "countsBasis": "Current visible provider renderer, not local mesh inspection.",
+        "mapControls": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "allFourMapPreviewsVisible": true,
+        "mapsReopenedThisExportTask": false,
+        "candidate": "Retained automatically textured T2 original; not reduced derivative or historical text-to-3D result.",
+        "acceptance": "unaccepted"
+      },
+      "visibleExportSettings": {
+        "Format": "glb",
+        "Resize": false,
+        "Height": {
+          "displayed": "12.00",
+          "units": "cm",
+          "enabled": false
+        },
+        "Origin": {
+          "displayed": "Bottom",
+          "enabled": false
+        },
+        "topologyOrTextureConversionControlsExposed": false,
+        "textureResolutionControlExposed": false,
+        "textureResolutionChanged": false,
+        "nativeEmbeddedTextureResolution": "Requested preserved; no resolution mutation, but unavailable file prevents verification."
+      },
+      "download": {
+        "attempts": 1,
+        "method": "Registered tab.playwright.waitForEvent(\"download\", {timeoutMs:20000}) before clicking the normal visible Download button.",
+        "clickOutcome": "Download and Format became disabled while processing.",
+        "eventOutcome": "Error: Timed out after 20000ms waiting for download.",
+        "subsequentVisibleOutcome": {
+          "destinationHost": "assets.meshy.ai",
+          "heading": "assets.meshy.ai is blocked",
+          "message": "This page has been blocked by Chromium",
+          "code": "ERR_BLOCKED_BY_CLIENT"
+        },
+        "suggestedNativeFilename": "Meshy_AI_KESTREL_GPT_image_v2__0907095023_texture.glb",
+        "filenameBasis": "Filename component of UI-observed navigation destination; no file obtained. Signed URL omitted.",
+        "stagingPath": null,
+        "saveOrCopyOutcome": "Not possible: no download object, staging path or file was returned.",
+        "archiveObtained": false,
+        "newToolApprovalDenial": false,
+        "blockCause": "Not established beyond visible Chromium ERR_BLOCKED_BY_CLIENT; not attributed to historical user refusal.",
+        "bypassAttempted": false
+      },
+      "localFile": {
+        "targetPath": "assets/station-shop/soft-props/image-to-3d-v2/raw/kestrel-maintenance-roll/source.glb",
+        "absoluteTargetPath": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/raw/kestrel-maintenance-roll/source.glb",
+        "exists": false,
+        "bytes": null,
+        "sha256": null,
+        "glbMagic": null,
+        "glbVersion": null,
+        "glbDeclaredLength": null,
+        "validation": "Not run: target file absent."
+      },
+      "remainingRootWork": [
+        "Obtain native GLB after browser export blocker is resolved.",
+        "Blender mesh, texture, UV, scale and support inspection.",
+        "Runtime derivatives, game integration and independent review."
+      ]
+    }
+  ],
+  "filesExported": 0,
+  "nativeFilesRetained": [],
+  "receiptOnlyMutation": true,
+  "independentReview": "not performed",
+  "runtimeAcceptance": "not claimed",
+  "limitations": [
+    "No SHA256, byte count or GLB-header evidence can be supplied for absent files.",
+    "Provider counts and PBR previews do not validate native file contents.",
+    "No unrelated Downloads scan, direct signed-URL fetch, alternate browser channel or block bypass was attempted."
+  ],
+  "verification": {
+    "exactTwoTargetPathsChecked": true,
+    "bothTargetsAbsent": true,
+    "receiptJson": "Parsed and required fields checked after write.",
+    "tests": "No build or runtime tests: browser export attempt and receipt only."
+  }
+}

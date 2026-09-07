@@ -33,10 +33,15 @@ export function buildStationColliders(model) {
     if (!mesh.isMesh || excluded.test(mesh.name)) return;
     const geometry = mesh.geometry, positions = geometry.attributes.position, indices = geometry.index;
     const count = indices ? indices.count : positions.count;
-    for (let i=0;i<count;i+=3) {
-      const box = new THREE.Box3();
-      for (let j=0;j<3;j++) box.expandByPoint(point.fromBufferAttribute(positions,indices ? indices.getX(i+j) : i+j).applyMatrix4(mesh.matrixWorld));
-      boxes.push(box);
+    const transform=new THREE.Matrix4(),instance=new THREE.Matrix4();
+    for(let n=0;n<(mesh.isInstancedMesh?mesh.count:1);n++){
+      transform.copy(mesh.matrixWorld);
+      if(mesh.isInstancedMesh){mesh.getMatrixAt(n,instance);transform.multiply(instance);}
+      for (let i=0;i<count;i+=3) {
+        const box = new THREE.Box3();
+        for (let j=0;j<3;j++) box.expandByPoint(point.fromBufferAttribute(positions,indices ? indices.getX(i+j) : i+j).applyMatrix4(transform));
+        boxes.push(box);
+      }
     }
   });
   return buildTree(boxes);

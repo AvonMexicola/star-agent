@@ -1,0 +1,2277 @@
+{
+  "browser": "151.0.7922.173",
+  "console": [],
+  "captures": [
+    {
+      "name": "desktop-exterior",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "exterior",
+        "camera": {
+          "position": [
+            -53.99999999999999,
+            22.999999999999996,
+            -62.00000000000001
+          ],
+          "quaternion": [
+            0.03323681930763696,
+            0.9322882150187489,
+            0.08876644681583189,
+            -0.34907666192279097
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-low-quarter",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "exterior",
+        "camera": {
+          "position": [
+            -60,
+            11.99999999999999,
+            -68
+          ],
+          "quaternion": [
+            0.009349961248449454,
+            0.9350440784049748,
+            0.024728508291795685,
+            -0.35354441098977396
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-bow",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "exterior",
+        "camera": {
+          "position": [
+            1.2858791391047208e-14,
+            12.000000000000007,
+            -105
+          ],
+          "quaternion": [
+            -1.3985009933757054e-18,
+            0.9997391502065827,
+            0.022839254458500137,
+            6.121636751413931e-17
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-stern",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "exterior",
+        "camera": {
+          "position": [
+            0,
+            12.000000000000007,
+            105
+          ],
+          "quaternion": [
+            -0.022839254458500137,
+            0,
+            0,
+            0.9997391502065827
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-side",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "exterior",
+        "camera": {
+          "position": [
+            -109.99999999999997,
+            14.000000000000007,
+            6.735557395310441e-15
+          ],
+          "quaternion": [
+            -0.02182478390935296,
+            -0.7067698909880852,
+            -0.021824783909352958,
+            0.7067698909880854
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-plan",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "exterior",
+        "camera": {
+          "position": [
+            0,
+            125,
+            0.0010000004333546926
+          ],
+          "quaternion": [
+            -0.7071037798767502,
+            0,
+            0,
+            0.7071097824836059
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-aft",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "aft",
+        "camera": {
+          "position": [
+            39.99999999999999,
+            20,
+            58
+          ],
+          "quaternion": [
+            -0.10341949041595097,
+            0.33835983873599784,
+            0.037443019801581316,
+            0.9345667706487285
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-cargo",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "cargo",
+        "camera": {
+          "position": [
+            0,
+            5.844001925308299,
+            20.99506386774144
+          ],
+          "quaternion": [
+            -0.007853900888711324,
+            0,
+            0,
+            0.9999691576447898
+          ],
+          "fov": 52
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-bridge",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "bridge",
+        "camera": {
+          "position": [
+            0,
+            11.719937500547037,
+            -12.99949545566827
+          ],
+          "quaternion": [
+            -0.007853900888711348,
+            0,
+            0,
+            0.9999691576447898
+          ],
+          "fov": 56
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-crew",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "crew",
+        "camera": {
+          "position": [
+            -2.400026111485083,
+            11.257780373774388,
+            2.200116314797194
+          ],
+          "quaternion": [
+            -0.0008654226879386473,
+            0.9938798676117976,
+            0.007806074733238297,
+            0.1101867732388326
+          ],
+          "fov": 56
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-galley",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "galley",
+        "camera": {
+          "position": [
+            2.399999999999999,
+            11.250000000000002,
+            3.8000000000000007
+          ],
+          "quaternion": [
+            0.010584822580248652,
+            0.9656774432137614,
+            0.03985783148092892,
+            -0.2564495866027378
+          ],
+          "fov": 56
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-elevator",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "elevator",
+        "camera": {
+          "position": [
+            0.9999999999999973,
+            5.5,
+            -0.49999999999999867
+          ],
+          "quaternion": [
+            -0.039280655664886796,
+            -0.43893121358496867,
+            -0.019211532561627127,
+            0.8974560361644446
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-mounts",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "mounts",
+        "camera": {
+          "position": [
+            -21,
+            15.999999999999998,
+            -17
+          ],
+          "quaternion": [
+            0.10719050754974262,
+            0.874739679749884,
+            0.22587327780682856,
+            -0.41511679095779574
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-boarding",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "aft",
+        "camera": {
+          "position": [
+            39.99999999999999,
+            20,
+            58
+          ],
+          "quaternion": [
+            -0.10341949041595097,
+            0.33835983873599784,
+            0.037443019801581316,
+            0.9345667706487285
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": 0.3310117280892945,
+              "target": 0.3310117280892945,
+              "progress": 1,
+              "moving": false,
+              "tipAngle": 0
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: OPEN",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "desktop-seated",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "walk",
+        "view": "aft",
+        "camera": {
+          "position": [
+            -2.1,
+            11.05,
+            -21.25
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "fov": 56
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": 0.3310117280892945,
+              "target": 0.3310117280892945,
+              "progress": 1,
+              "moving": false,
+              "tipAngle": 0
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": true,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: OPEN",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "phone-exterior",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "exterior",
+        "camera": {
+          "position": [
+            -53.99999999999999,
+            22.999999999999996,
+            -62.00000000000001
+          ],
+          "quaternion": [
+            0.03323681930763696,
+            0.9322882150187489,
+            0.08876644681583189,
+            -0.34907666192279097
+          ],
+          "fov": 43
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "phone-crew",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "inspect",
+        "view": "crew",
+        "camera": {
+          "position": [
+            -2.400026111485083,
+            11.257780373774388,
+            2.200116314797194
+          ],
+          "quaternion": [
+            -0.0008654226879386473,
+            0.9938798676117976,
+            0.007806074733238297,
+            0.1101867732388326
+          ],
+          "fov": 56
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.5707963267948966,
+              "target": -1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": false,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: CLOSED",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "phone-seated",
+      "state": {
+        "stats": {
+          "meshes": 168,
+          "triangles": 412988,
+          "materials": 13,
+          "textures": 10
+        },
+        "mode": "walk",
+        "view": "crew",
+        "camera": {
+          "position": [
+            -2.1,
+            11.05,
+            -21.25
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "fov": 56
+        },
+        "systems": {
+          "ramps": [
+            {
+              "id": "front",
+              "node": "RampFront",
+              "pivot": [
+                0,
+                2.6,
+                -24
+              ],
+              "angle": 1.5707963267948966,
+              "target": 1.5707963267948966,
+              "progress": 0,
+              "moving": false,
+              "tipAngle": 3.141592653589793
+            },
+            {
+              "id": "aft",
+              "node": "RampAft",
+              "pivot": [
+                0,
+                2.6,
+                24
+              ],
+              "angle": -1.353026326788638,
+              "target": 0.3310117280892945,
+              "progress": 0.11450682388634613,
+              "moving": true,
+              "tipAngle": 2.7818588568825477
+            }
+          ],
+          "elevator": {
+            "id": "crew",
+            "node": "CrewElevator",
+            "centre": [
+              5.5,
+              -4
+            ],
+            "y": 2.6,
+            "target": 2.6,
+            "moving": false,
+            "gates": [
+              {
+                "node": "LiftGateLower",
+                "deck": 2.6,
+                "z": -2.25,
+                "target": -2.25,
+                "moving": false
+              },
+              {
+                "node": "LiftGateUpper",
+                "deck": 9.5,
+                "z": -4,
+                "target": -4,
+                "moving": false
+              }
+            ]
+          }
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "seated": true,
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: DOCKED",
+              "FLIGHT CONTROL: NOT CONNECTED",
+              "PROPULSION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "LOCATION: SHIPYARD 04",
+              "COURSE: NOT CONNECTED",
+              "NAVIGATION: NOT CONNECTED"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "FORWARD RAMP: CLOSED",
+              "AFT RAMP: OPENING",
+              "CREW LIFT: CARGO DECK"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "CARGO BAY: 48 x 14.4 m",
+              "DRIVE LANE: 8.0 m CLEAR",
+              "MANIFEST: NOT CONNECTED"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "scope": "Inspector/camera fixtures; no full physical journey or frame-time gate",
+  "servedSha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+  "servedBytes": 38037892
+}

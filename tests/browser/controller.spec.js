@@ -20,7 +20,7 @@ test('controller flies without pointer lock, pauses for help, reconnects and boa
   expect(await page.evaluate(()=>document.pointerLockElement)).toBeNull();
   await expect(page.locator('#controller-hints')).toBeVisible();
   await page.evaluate(()=>window.testPad.axes.fill(0));
-  await button(1,true);await page.waitForFunction(()=>window.starAgent.state.speed===0);await button(1,false);
+  await button(6,true);await page.waitForFunction(()=>window.starAgent.state.speed===0);await button(6,false);
   await press(9);await expect(page.locator('#help-dialog')).toBeVisible();
   const paused=await page.evaluate(()=>window.starAgent.state.position);
   await page.evaluate(()=>{window.testPad.axes[1]=-1;window.testPad.axes[3]=1;});

@@ -7,6 +7,27 @@ This is reusable project memory for humans, Fable 5.1 and future coding agents.
 It records the implemented pipeline and lessons from its delivery. Check current
 source and PR status before reusing historical dimensions or integration details.
 
+Cees's asset workflow reference now lives in
+[the asset production standard](docs/asset-production-standard.md), with a
+[complete hangar production record](docs/qa/hangar-production-record.md).
+Use those alongside this ship-specific memory and the current `QUALITY.md`.
+
+## Permanent cockpit visibility rule
+
+Cees explicitly requested on 2026-09-08: never add another central strut across
+the pilot or driver's view. Ships and ground vehicles must keep the main forward
+windscreen, aiming sightline and usable display faces free of centre pillars,
+mullions and opaque braces. Put structural framing around the edges; retain the
+closed cabin glazing and working mechanisms.
+
+Design around the actual seated eye before detailing the hull. Inspect the
+exported geometry from that eye and capture the settled cockpit in the game
+renderer at desktop and phone sizes. An exterior view, a shifted camera, or
+hiding the obstructing mesh at runtime does not establish a clear driving view.
+Apply this rule to the Stratum and Gannet already in production and future ships
+and rovers. It records the requested design constraint; it does not certify every
+existing cockpit as already checked.
+
 ## Start here
 
 The proven route is:
@@ -499,3 +520,178 @@ Merged/deployed status, only when verified:
 
 When extending the pipeline, update this file and its pointers in the same
 contribution. Do not leave a new agent reconstructing the workflow from tool logs.
+
+## Atlas and Nomad cockpit extension — 2026-09-06
+
+Cees requested a much larger ship with a huge cargo elevator and cargo lifts,
+explicitly as an unlockable ship, then requested a better Nomad pilot chair and
+removal of the centre windscreen strut. Implementation lives in isolated
+`/tmp/star-agent-freighter-work`, `feat/unlockable-freighter`, based on integrated
+`feat/visual-fidelity` ad20802. Preserve the separate opening, travel, equipment,
+external-camera and terrain lanes when merging. Shared checkout branch switching
+remains prohibited. Manager Fable/Claude owns merge and deployment.
+
+### Multiple ship layouts and progression
+
+`boarding.js` still exports the original immutable Nomad dimensions as the default.
+`Navigation.layout` selects the current layout. Do not replace the global Nomad
+dimensions to accommodate a larger ship. Seat transforms, parked origin, walking
+eye height, approach clearance, flight station collision and main rendering must
+all use the active layout. `nav.canDock` passes the full active hull and orientation
+to the station; checking the pilot point alone admits ships whose stern hits a wall.
+
+`fleet.js` defines Nomad (120 kg) and Atlas (2,400 kg). There was no existing economy
+or progression system at this base. The first milestone is a real surface landing
+followed by a station docking. Navigation emits those events at successful
+touchdown/dock; merely opening Fleet or transiting to an approach does not count.
+`star-agent.fleet.v1` stores validated boolean progress and selected ship. Nomad is
+the new-player default. Atlas can only be selected after the milestone. Selection
+requires a seated player at the station, awaits the model, validates the state
+again, aligns the replacement with the bay and uses its own seat offset. Switching
+to a smaller hold fails if the current inventory cannot fit. The existing inventory
+manifest and backpack transfer without duplication. The UI receives a getter for
+the active ship, so storage animations do not continue targeting the retired model.
+Modal navigation and shortcut gates must include Fleet as well as inventory/help.
+
+### Atlas model and lift contract
+
+The original builder `assets/ship/build_freighter.py` outputs `atlas.blend` and
+`public/models/atlas.glb`. Same Y-up/-Z convention and Blender conversion as Nomad.
+The closed collision envelope is x ±9.5, y 0..9.8, z -16..14 metres. Cargo deck
+y=4, pilot eye `(0,5.55,-10.5)`, standing point `(0,5.75,-8.8)`.
+
+Required empty nodes retain their names and parent transforms:
+
+| Node | Deck travel | Footprint |
+| --- | --- | --- |
+| MainLift | 0..4 m | x -4..4, z 0..10 (8 × 10 m) |
+| PortLift | 4..7 m | x -5.9..-3.7, z -6..-3 |
+| StarboardLift | 4..7 m | x 3.7..5.9, z -6..-3 |
+| CargoLid | hinged around its outboard edge | forward starboard inventory chest |
+
+`FreighterSystems` is the only lift simulation. Navigation advances it and carries
+a rider by the exact platform displacement in ship-local Y before walking. Render
+code reads the same y values and never runs an independent lift clock. Platform
+origins are their upper walking surfaces; authored deck meshes extend below them.
+Calls and platform controls are proximity/height checked. Swept expanded rail
+bounds prevent walking into an absent platform or off a moving platform. A player
+straddling an edge cannot start it. Main ground boarding opens at the rear only
+when fully lowered. Internal upper landings open at the forward edge; guards remain
+on the other sides. Maintain headroom above the upper landing when sculpting the
+forward roof: the shelf is at y=7 and the walker's eye at 8.75. The roof transition
+belongs ahead of z=-8, outside that standing volume.
+
+The main elevator drives the segmented rear hatch. Launch requires main y=4 and
+both internal lifts y=4, with no pending travel. The cargo cases on the small lifts
+are secured props that move with them, with a clear rider lane and collision; they
+are not loose movable inventory crates. Both a visual fallback and physical lift
+state remain available if the GLB fails. The MFD Systems page shows cargo-lift
+security; Cargo uses the active inventory capacity.
+
+Station collision needs separate local hull, drive and landing-gear boxes for
+Atlas. A single solid envelope incorrectly filled the open underbody and snagged
+the station pad before docking. The outer envelope is still used for whole-ship
+hangar-fit tests; movement sweeps all component boxes and uses the earliest hit.
+Do not bypass the real station collision tree to solve a large-ship docking issue.
+
+### Nomad cockpit refinement
+
+The centre canopy division is removed in the Blender source, not hidden by a
+runtime mask. A ray from the actual seated eye tests for opaque forward obstructions.
+The new `PilotChair` group contains material-batched shell/upholstery, shoulder
+and thigh supports, harness webbing, headrest and armrests. Its seat and standing
+coordinates are unchanged. The old primitive chair is a separate fallback group;
+hide it only when `PilotChair` exists in the loaded GLB. Never leave both visible.
+Batch static chair meshes per material under that parent to avoid dozens of draws.
+
+### Validation, evidence and delivery
+
+`tests/freighter.test.js` covers unlock/save rules, lift carriage, launch readiness,
+shaft collision, inventory conservation and GLB bounds/pivots. The station suite
+includes actual Atlas docking, platform traversal and launch interlocks. Nomad
+asset tests include chair presence, rear-aisle clearance and the unobstructed
+forward ray. The complete suite reached 76 passing tests during this extension.
+
+`scripts/freighter.config.js` runs production Atlas and Nomad tests on 5214 with
+output `/tmp/star-agent-freighter-build`. It includes the full Atlas unlock and
+physical cargo journey plus missing-asset fallback. Fixture positioning is only
+used for starting landing/docking approaches; do not describe that test as a full
+manual interplanetary flight. Explicitly wait for modal close/enabled navigation
+before pressing movement keys, since native dialog close events are asynchronous.
+
+Studio configs: `freighter-studio.config.js` on 5193 and
+`nomad-refinement.config.js` on 5215. Port 5194 belonged to another feature session;
+do not stop or reuse it. The old 5190 Nomad viewer can still be running from the
+previous ship checkout. Current dev routes are `/dev/freighter.html` and
+`/dev/ship.html`, including the Nomad Pilot Seat camera. These source-module routes
+are development-only. Screenshots are collected under `/tmp/atlas-*` and
+`/tmp/nomad-refined-*`; curated evidence belongs in `docs/images`.
+
+Use Chromium/ANGLE SwiftShader, 1440×900 game and 1600×1000 studio, scale .4 for
+movement and 1.0 for final game screenshots. Inspect actual images: the first Atlas
+render exposed an MFD-occluding console, which was lowered before delivery. No GPU
+performance claims follow from these software-rendered runs. Blender 5.2.0 LTS
+successfully exported both ships despite unrelated optional `cattrs` extension
+startup and missing MeshOptimizer messages. `ALSOFT_DRIVERS=null` remains useful.
+
+Keep the manager handoff append-only. Commit/push at each green checkpoint or at
+least every 30 minutes per the current team policy. The initial implementation
+checkpoint was 3e5ef97. See `docs/atlas-freighter.md`, the final PR and the appended
+HANDOFF entry for final validation, screenshot links and deployment status.
+
+
+### Modular station integration (2026-09-06)
+
+See [STATION-PIPELINE-MEMORY.md](STATION-PIPELINE-MEMORY.md) for the twenty-berth
+orbital port, shared/instanced station assets, clear floor contract, passenger
+elevators, rotating ring collision and schema-2 warehouse transfers. Ship storage
+uses the same manifest and capacity rules. The Atlas docking/launch envelope must
+stay clear when adding hangar furniture or hanging signs. This station work is
+stacked on PR #14; the manager owns integration and deployment.
+
+### Asset budget and editable-source checkpoint — 2026-09-06
+
+The PR20 integration's `0d75c3f` reduces Nomad's small bevels (width at most .04 m)
+from three to two segments while retaining its explicit six-segment pilot chair;
+Atlas uses two segments for its manufactured bevels. Both runtime GLBs and tracked
+editable `.blend` files were rebuilt from the checked-in scripts. Nomad is
+57,784 triangles / 3,783,616 bytes; Atlas is 58,460 / 3,770,128. No functional
+geometry or UV stream was removed. Names, transforms, materials and lift origins
+remain unchanged; millimetre-scale bevel sampling differences are documented in
+[the production record](docs/qa/hangar-production-record.md).
+
+Repeat exports preserved positions, normals, indices and JSON, with generated UV
+rounding differences up to 1.19e-7; do not claim byte-identical output. Always check
+both geometry and encoded byte budgets before accepting a hero asset. The final
+0d75c3f production journey suite passed all 18 cases; visual acceptance and any
+later art correction remain tracked in the same record. The original Opus review
+failed at 3.67; its later attempt stopped at the service's session limit. Neither
+an attempted review nor this memory file constitutes merge approval.
+
+## Station-shop inventory continuation — 2026-09-06
+
+The concourse continuation at runtime `9e5a713` keeps the existing inventory key
+but migrates valid v1/v2 cargo into a v3 manifest with credits and finite station
+shop stock. Purchased weapons/components are stored cargo, not equipped weapons
+or installed ship upgrades. The current ship's capacity and Atlas unlock remain
+unchanged. A purchase persists money, stock and delivery together before changing
+memory; malformed saves remain intact. Read the full migration, physical transfer,
+controller and performance evidence in
+[the concourse record](docs/qa/station-concourse-production-record.md) before
+extending the item catalogue or asset pipeline.
+
+## Atlas Mark II physical controls and four-screen authoring continuation
+
+PR #30 remains a standalone authoring candidate, not installed in the live fleet.
+`assets/atlas-mark-ii/layout.json` owns PilotMFD_01..04 transforms/dimensions and
+the chair-aligned pilot eye. `createShipMFDs({mounts, includeFrames, screenOffset})`
+can consume authored mounts while its default fleet layout and `update()` API stay
+unchanged. `updatePages()` permits truthful inspection data without a fabricated
+Navigation/inventory object. Four canvases remain 512×320 at 5 Hz.
+
+Use [the physical control standard](docs/physical-control-standard.md) for physical
+buttons and projected action labels. `projected-action-label.js/.css` are reusable;
+the Atlas adapter demonstrates real ramp/lift/seat state, moving anchors and guarded
+F/A/TAP activation. The shared hangar verb contract awaits station adoption.
+[Nose/MFD/control evidence and limitations](docs/qa/atlas-mark-ii/cockpit-controls-record.md)
+records the actual candidate, input checks, geometry fixes and independent-review boundary.

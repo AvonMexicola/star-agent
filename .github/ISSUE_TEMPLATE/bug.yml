@@ -1,0 +1,30 @@
+name: Bug report
+description: A reproducible player, contributor or server problem
+title: '[Bug] '
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happens, and what should happen?
+      description: State the player impact and whether it is repeatable.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Exact build/commit, seed, ship/location, inputs and steps. Avoid private account data.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and evidence
+      description: Browser/version, GPU/backend, resolution/settings, input method, sanitized console errors and captures. Say which checks did not run.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Coordination
+      options:
+        - label: I checked existing issues/PRs and the current handoff for related work.
+        - label: This report contains no credentials, private reset links or personal recordings.

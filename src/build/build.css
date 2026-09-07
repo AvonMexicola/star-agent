@@ -1,0 +1,63 @@
+#build-dialog{width:min(740px,94vw);max-width:740px;background:var(--dialog-bg);border-color:var(--line)}
+.build-eyebrow{font:10px var(--mono);letter-spacing:2px;color:var(--mint)}
+.build-tabs,.build-batches,.build-touch{display:flex;gap:8px;flex-wrap:wrap}
+#build-dialog button,#build-hud button{min-height:44px;padding:10px 13px;border-radius:4px}
+.build-tabs button[aria-pressed=true],.build-batches button[aria-pressed=true]{border-color:var(--mint);color:var(--mint)}
+.build-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.build-piece{text-align:left;display:grid;gap:9px;align-content:start}
+.build-piece strong{font-size:17px;font-weight:500}.build-piece span{font:10px/1.7 var(--mono);color:var(--muted)}
+.build-batches,.build-overview{grid-column:1/-1}
+.build-recipe{border:1px solid var(--line);border-radius:5px;padding:16px;display:flex;flex-direction:column}
+.build-recipe h3{font-size:17px;margin:0 0 6px}.build-recipe p{margin:5px 0;line-height:1.6}.build-recipe button{margin-top:auto}
+.build-recipe-reason{color:var(--mint)!important}#build-dialog button:disabled{opacity:.45;cursor:default}
+.build-recipe-reason[data-ready=false]{color:var(--warning)!important}
+#build-shortcut{position:fixed;z-index:5;left:24px;top:116px;min-height:44px;padding:10px 16px;background:var(--dialog-bg);border-radius:4px}
+.building #loadout-bar,.building #controller-hints,.building #keyboard-hints,.building #fleet-button{display:none!important}
+.build-feedback{color:var(--warning)!important;min-height:1.8em}
+.build-feedback[data-ok=true]{color:var(--mint)!important}
+.build-overview{display:grid;grid-template-columns:100px 1fr;gap:12px;font-size:13px}.build-overview dt{color:var(--muted)}.build-overview dd{margin:0}
+#build-hud{position:fixed;z-index:6;left:24px;bottom:78px;width:min(460px,calc(100vw - 48px));padding:18px;background:var(--dialog-bg);border:1px solid var(--line);border-radius:6px}
+#build-hud[hidden]{display:none}.build-selected{display:block;font-size:23px;font-weight:500;margin:8px 0}.build-placement{color:var(--warning);font-size:13px}#build-hud[data-valid=true] .build-placement{color:var(--mint)}
+.build-cost,.build-hints{font:10px/1.8 var(--mono);color:var(--muted)}.build-hints{border-top:1px solid var(--line);padding-top:10px}
+@media(max-width:600px){#build-dialog{padding:20px}.build-content{grid-template-columns:1fr}.build-recipe{padding:12px}#build-hud{left:12px;bottom:64px;width:calc(100vw - 24px);padding:12px}.build-hints{font-size:9px}.build-touch{gap:5px}#build-hud button{padding:7px 9px}}
+@media(max-width:600px){#build-hud{bottom:16px;padding:10px}#build-hud>.build-eyebrow{display:none}.build-selected{font-size:17px;margin:4px 0}.build-placement,.build-cost{margin:6px 0}.build-hints{font-size:8px;line-height:1.4;margin:8px 0;padding-top:6px}}
+
+.build-ship-link{font:10px/1.5 var(--mono);color:var(--muted)}
+
+/* Keep controls and feedback visible while the piece/recipe list scrolls. */
+#build-dialog[open]{display:flex;flex-direction:column;max-height:88dvh;overflow:hidden}
+#build-dialog>:not(.build-content){flex-shrink:0}
+#build-dialog .build-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:2px 5px 4px 2px;scroll-padding:8px}
+.build-scroll-hint{font:10px/1.5 var(--mono);color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin:8px 0 0}
+.build-feedback:empty{min-height:0;margin:0}
+#build-dialog .build-description{font-size:12px;line-height:1.6}
+#flight-state.base-target{top:calc(50% + 140px);max-width:calc(100vw - 32px)}
+.exploring #flight-state.base-target{white-space:normal;align-items:center;line-height:1.6}
+#flight-state.base-target #state-text{min-width:0;overflow-wrap:break-word}
+@media(max-width:600px){#build-dialog h2{margin:10px 0}.build-description{margin:10px 0}.build-scroll-hint{font-size:9px}#flight-state.base-target{top:calc(50% + 110px)}}
+
+
+/* Spatial piece picker: native buttons over eight decorative SVG sectors. */
+#build-dialog.is-radial{width:min(650px,96vw)}
+#build-dialog.is-radial h2{margin:8px 0;font-size:26px}
+#build-dialog.is-radial .build-description{margin:10px 0;color:var(--muted)}
+#build-dialog.is-radial .build-content{display:flex;flex-direction:column;align-items:center;padding:0;gap:8px}
+.build-wheel{position:relative;width:min(520px,100%,max(290px,calc(88dvh - 260px)));aspect-ratio:1;flex-shrink:0;isolation:isolate}
+.build-wheel-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.build-wheel-art path{fill:var(--dialog-bg);stroke:var(--line);stroke-width:2;transition:fill 100ms,stroke 100ms}
+.build-wheel-art path.selected{fill:var(--mint);fill-opacity:.17;stroke:var(--mint);stroke-width:3}
+#build-dialog .build-wheel-piece{position:absolute;transform:translate(-50%,-50%);width:24%;height:21%;min-height:44px;padding:4px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);box-shadow:none;outline-offset:-4px}
+#build-dialog .build-wheel-piece[aria-pressed=true]{color:var(--mint)}
+.build-wheel-piece svg{width:30px;height:32px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.build-wheel-piece span{font-size:12px;line-height:1.2}
+.build-wheel-centre{position:absolute;left:30%;top:30%;width:40%;height:40%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;gap:7px}
+.build-wheel-centre strong{font-size:21px;line-height:1.15;color:var(--mint)}
+.build-wheel-centre p{font:10px/1.5 var(--mono);color:var(--muted);margin:0}
+.build-wheel-centre small{font:10px var(--mono);color:var(--mint)}
+.build-wheel-note{font-size:11px;line-height:1.5;color:var(--muted);text-align:center;margin:0}
+@media(max-width:600px){#build-dialog.is-radial{padding:14px}.build-wheel-centre{gap:5px}.build-wheel-centre .build-eyebrow{display:none}.build-wheel-centre strong{font-size:15px}.build-wheel-centre p,.build-wheel-centre small{font-size:8px}.build-wheel-piece svg{width:24px;height:26px}.build-wheel-piece span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.build-wheel-art path{transition:none}}
+
+/* The focused slice is the focus ring; avoid a square halo over the wedge. */
+#build-dialog .build-wheel-piece[data-controller-selected]{outline:none!important;box-shadow:none!important}
+.build-wheel:focus-within .build-wheel-art path.selected{stroke-width:5}

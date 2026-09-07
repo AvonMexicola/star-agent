@@ -1,0 +1,38 @@
+{
+  "stage": "playable windscreen correction 11; native comparison pending",
+  "name": "Burrow M-04",
+  "manufacturer": "Meridian Shipworks",
+  "units": "metres",
+  "builder": "blender/build_mining_rover.py",
+  "textureBuilder": "blender/rover_textures.py",
+  "source": "assets/mining-rover/mining-rover.blend",
+  "provenance": "Original procedural geometry and PBR maps. Meridian family design; no external models or imagery.",
+  "layout": "assets/mining-rover/layout.json",
+  "movingParts": [
+    "Wheel_FrontPort",
+    "Wheel_FrontStarboard",
+    "Wheel_RearPort",
+    "Wheel_RearStarboard",
+    "CabinDoor",
+    "Cutter_Port",
+    "Cutter_Starboard",
+    "SteeringYoke"
+  ],
+  "limitations": [
+    "Closed geometric cabin; no pressure simulation",
+    "Candidate 10 reviews retained; revised windshield native comparison pending"
+  ],
+  "asset": "public/models/mining-rover.glb",
+  "sha256": "831b9569633efda11652e3827057d2f4bc3f47d20f23a47df152fa437cb29468",
+  "bytes": 2175556,
+  "triangles": 21526,
+  "packing": {
+    "inputBytes": 3541932,
+    "outputBytes": 3124712,
+    "maximumPositionErrorMetres": 5.0416725909225904e-05,
+    "maximumNormalErrorDegrees": 0.3490884409607401,
+    "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
+  },
+  "textureFormat": "WebP: three original 1024x1024 PBR swatches and approved 512x512 Meridian emblem (RGBA)",
+  "textures": 4
+}

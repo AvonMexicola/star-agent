@@ -51,7 +51,7 @@ test('fly through station doors, dock, walk down the ramp onto deck, return and 
   await page.waitForFunction(()=>window.starAgent.state.station.local[2]>0,null,{timeout:150000});
   await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
   expect(await page.evaluate(()=>window.starAgent.state.station.canDock)).toBe(true);
-  await page.keyboard.press('KeyL');
+  await page.keyboard.press('KeyB');
   await page.waitForFunction(()=>window.starAgent.state.station.docked);
   await capture('docked');
   await page.keyboard.press('KeyF');
@@ -76,7 +76,7 @@ test('fly through station doors, dock, walk down the ramp onto deck, return and 
   await page.keyboard.up('KeyS');await page.keyboard.press('KeyX');await page.keyboard.press('KeyF');
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
   const launchStart=await page.evaluate(()=>window.starAgent.state.position);
-  await page.keyboard.press('KeyL');
+  await page.keyboard.press('KeyB');
   const launch=await page.evaluate(()=>window.starAgent.state);
   expect(launch.mode).toBe('flight');
   expect(Math.hypot(...launch.position.map((v,i)=>v-launchStart[i]))).toBeLessThan(2);

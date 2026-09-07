@@ -1,0 +1,7 @@
+#graphics-settings { width:min(32rem,calc(100vw - 2rem)); max-height:85vh; overflow:auto; color:inherit; background:var(--dialog-solid); border:1px solid var(--line); border-radius:12px; padding:24px; }
+.graphics-top { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.graphics-top h2 { margin:0; }
+.graphics-options { display:grid; gap:12px; margin:24px 0; }
+.graphics-options button { text-align:left; padding:16px; }
+.graphics-note,.graphics-save { font-size:.85rem; line-height:1.6; }
+#ship-utility-status { font:9px var(--mono); color:var(--muted); line-height:1.7; margin-top:14px; }

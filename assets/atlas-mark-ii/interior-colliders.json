@@ -1,0 +1,343 @@
+{
+  "version": 1,
+  "coordinateSystem": "game metres; Y up; nose -Z",
+  "description": "Raw AABBs for fixed Atlas Mark II interior obstacles. Runtime expands X/Z for the walker capsule and tests its standing vertical span. Floors, overhead fittings, ramps, elevator parts and low deck trim are intentionally omitted.",
+  "colliders": [
+    {
+      "id": "cargo-rack-port-01",
+      "label": "Port cargo rack 01",
+      "min": [-6.69, 2.6, -16.41],
+      "max": [-4.34, 6.86, -13.59]
+    },
+    {
+      "id": "cargo-rack-port-02",
+      "label": "Port cargo rack 02",
+      "min": [-6.69, 2.6, -8.41],
+      "max": [-4.34, 6.86, -5.59]
+    },
+    {
+      "id": "cargo-rack-port-03",
+      "label": "Port cargo rack 03",
+      "min": [-6.69, 2.6, 3.59],
+      "max": [-4.34, 6.86, 6.41]
+    },
+    {
+      "id": "cargo-rack-port-04",
+      "label": "Port cargo rack 04",
+      "min": [-6.69, 2.6, 11.59],
+      "max": [-4.34, 6.86, 14.41]
+    },
+    {
+      "id": "cargo-rack-starboard-01",
+      "label": "Starboard cargo rack 01",
+      "min": [4.34, 2.6, -16.41],
+      "max": [6.69, 6.86, -13.59]
+    },
+    {
+      "id": "cargo-rack-starboard-02",
+      "label": "Starboard cargo rack 02",
+      "min": [4.34, 2.6, 3.59],
+      "max": [6.69, 6.86, 6.41]
+    },
+    {
+      "id": "cargo-rack-starboard-03",
+      "label": "Starboard cargo rack 03",
+      "min": [4.34, 2.6, 11.59],
+      "max": [6.69, 6.86, 14.41]
+    },
+    {
+      "id": "front-ramp-control",
+      "label": "Front ramp control pedestal",
+      "min": [-5.54, 2.6, -21.74],
+      "max": [-5.06, 3.76, -21.2]
+    },
+    {
+      "id": "aft-ramp-control",
+      "label": "Aft ramp control pedestal",
+      "min": [5.06, 2.6, 21.2],
+      "max": [5.54, 3.76, 21.74]
+    },
+    {
+      "id": "upper-port-wall-panel-01",
+      "label": "Port vestibule wall panel 01",
+      "min": [-6.52, 9.74, -10.91],
+      "max": [-6.29, 12.36, -7.09]
+    },
+    {
+      "id": "upper-port-wall-panel-02",
+      "label": "Port vestibule wall panel 02",
+      "min": [-6.52, 9.74, -6.91],
+      "max": [-6.29, 12.36, -3.09]
+    },
+    {
+      "id": "upper-port-wall-panel-03",
+      "label": "Port vestibule wall panel 03",
+      "min": [-6.52, 9.74, -2.41],
+      "max": [-6.29, 12.36, 1.08]
+    },
+    {
+      "id": "upper-starboard-wall-panel-01",
+      "label": "Starboard vestibule wall panel and forward post",
+      "min": [6.29, 9.54, -10.91],
+      "max": [6.57, 12.72, -7.09]
+    },
+    {
+      "id": "lift-vestibule-forward-port-post",
+      "label": "Lift vestibule forward port post",
+      "min": [1.46, 9.54, -10.09],
+      "max": [1.64, 12.72, -9.91]
+    },
+    {
+      "id": "lift-vestibule-aft-port-post",
+      "label": "Lift vestibule aft port post",
+      "min": [1.46, 9.54, 0.11],
+      "max": [1.64, 12.72, 0.29]
+    },
+    {
+      "id": "lift-vestibule-aft-starboard-post",
+      "label": "Lift vestibule aft starboard post",
+      "min": [6.39, 9.54, 0.11],
+      "max": [6.57, 12.72, 0.29]
+    },
+    {
+      "id": "bridge-aft-bulkhead-port",
+      "label": "Bridge aft bulkhead port",
+      "min": [-6.6, 9.5, -12.18],
+      "max": [-1.28, 13.1, -11.84]
+    },
+    {
+      "id": "bridge-aft-bulkhead-starboard",
+      "label": "Bridge aft bulkhead starboard",
+      "min": [1.28, 9.5, -12.18],
+      "max": [6.6, 13.1, -11.84]
+    },
+    {
+      "id": "bridge-forward-console",
+      "label": "Bridge forward console",
+      "min": [-3.9, 9.5, -24.31],
+      "max": [3.9, 10.95, -22.98]
+    },
+    {
+      "id": "bridge-pilot-seat",
+      "label": "Pilot seat",
+      "min": [-2.69, 9.5, -21.72],
+      "max": [-1.51, 11.2, -20.81]
+    },
+    {
+      "id": "bridge-copilot-seat",
+      "label": "Copilot seat",
+      "min": [1.51, 9.5, -21.72],
+      "max": [2.69, 11.2, -20.81]
+    },
+    {
+      "id": "bridge-side-console-port",
+      "label": "Port bridge side console",
+      "min": [-6.23, 9.5, -18.05],
+      "max": [-4.92, 10.66, -13.55]
+    },
+    {
+      "id": "bridge-side-console-starboard",
+      "label": "Starboard bridge side console",
+      "min": [4.92, 9.5, -18.05],
+      "max": [6.23, 10.66, -13.55]
+    },
+    {
+      "id": "crew-corridor-partition-forward",
+      "label": "Crew corridor partition forward",
+      "min": [-1.68, 9.5, 1.0],
+      "max": [-1.34, 12.75, 2.22]
+    },
+    {
+      "id": "crew-corridor-partition-aft",
+      "label": "Crew corridor partition aft",
+      "min": [-1.68, 9.5, 3.78],
+      "max": [-1.34, 12.75, 17.0]
+    },
+    {
+      "id": "crew-lockers",
+      "label": "Crew lockers",
+      "min": [-6.37, 9.5, 1.08],
+      "max": [-5.08, 12.08, 3.34]
+    },
+    {
+      "id": "crew-bunks-01",
+      "label": "Crew bunks 01",
+      "min": [-6.51, 9.5, 4.34],
+      "max": [-3.75, 12.57, 7.66]
+    },
+    {
+      "id": "crew-bunks-02",
+      "label": "Crew bunks 02",
+      "min": [-6.51, 9.5, 8.54],
+      "max": [-3.75, 12.57, 11.86]
+    },
+    {
+      "id": "crew-bunks-03",
+      "label": "Crew bunks 03",
+      "min": [-6.51, 9.5, 12.74],
+      "max": [-3.75, 12.57, 16.06]
+    },
+    {
+      "id": "crew-fold-desk",
+      "label": "Crew fold desk and terminal",
+      "min": [-2.45, 10.33, 6.09],
+      "max": [-1.65, 11.26, 7.91]
+    },
+    {
+      "id": "starboard-corridor-partition-forward",
+      "label": "Galley corridor partition forward",
+      "min": [1.34, 9.5, 1.0],
+      "max": [1.5, 12.75, 2.02]
+    },
+    {
+      "id": "starboard-corridor-partition-middle",
+      "label": "Galley corridor partition middle",
+      "min": [1.34, 9.5, 3.58],
+      "max": [1.54, 12.75, 11.42]
+    },
+    {
+      "id": "starboard-corridor-partition-aft",
+      "label": "Hygiene corridor partition aft",
+      "min": [1.34, 9.5, 12.98],
+      "max": [1.5, 12.75, 17.0]
+    },
+    {
+      "id": "galley-cabinet-wall-forward",
+      "label": "Forward galley cabinet wall",
+      "min": [4.26, 9.5, 1.0],
+      "max": [6.46, 12.54, 4.25]
+    },
+    {
+      "id": "galley-cabinet-wall-mess",
+      "label": "Galley cabinet wall and wall-mounted mess counter",
+      "min": [3.74, 9.5, 4.25],
+      "max": [6.46, 12.54, 7.15]
+    },
+    {
+      "id": "galley-cabinet-wall-aft",
+      "label": "Aft galley cabinet wall",
+      "min": [4.26, 9.5, 7.15],
+      "max": [6.46, 12.54, 9.45]
+    },
+    {
+      "id": "hygiene-dividing-wall",
+      "label": "Hygiene dividing wall",
+      "min": [4.04, 9.5, 11.0],
+      "max": [4.16, 12.75, 17.0]
+    },
+    {
+      "id": "hygiene-shower",
+      "label": "Hygiene shower enclosure",
+      "min": [4.28, 9.5, 14.24],
+      "max": [6.4, 12.55, 16.66]
+    },
+    {
+      "id": "hygiene-basin",
+      "label": "Hygiene basin and mirror",
+      "min": [1.76, 9.5, 14.63],
+      "max": [3.67, 12.23, 15.87]
+    },
+    {
+      "id": "crew-pressure-fore",
+      "label": "Crew forward end wall",
+      "min": [-7.2, 9.5, 0.92],
+      "max": [-1.34, 12.77, 1.08]
+    },
+    {
+      "id": "crew-pressure-aft",
+      "label": "Crew aft end wall",
+      "min": [-7.2, 9.5, 17],
+      "max": [-1.34, 12.77, 17.16]
+    },
+    {
+      "id": "crew-pressure-port",
+      "label": "Crew outboard liner",
+      "min": [-6.7, 9.5, 1.08],
+      "max": [-6.52, 12.77, 17]
+    },
+    {
+      "id": "galley-pressure-fore",
+      "label": "Galley forward end wall",
+      "min": [1.34, 9.5, 0.92],
+      "max": [7.2, 12.77, 1.08]
+    },
+    {
+      "id": "crew-aft-environmental-unit",
+      "label": "Crew aft wall environmental assembly",
+      "min": [-5.45, 9.75, 16.68],
+      "max": [-2.05, 12.4, 17]
+    },
+    {
+      "id": "crew-port-frame-0",
+      "label": "Crew outboard frame foot 0",
+      "min": [-6.56, 9.5, 1.175],
+      "max": [-6.38, 11.9, 1.425]
+    },
+    {
+      "id": "crew-port-frame-1",
+      "label": "Crew outboard frame foot 1",
+      "min": [-6.56, 9.5, 3.875],
+      "max": [-6.38, 11.9, 4.125]
+    },
+    {
+      "id": "crew-port-frame-2",
+      "label": "Crew outboard frame foot 2",
+      "min": [-6.56, 9.5, 7.975],
+      "max": [-6.38, 11.9, 8.225]
+    },
+    {
+      "id": "crew-port-frame-3",
+      "label": "Crew outboard frame foot 3",
+      "min": [-6.56, 9.5, 12.175],
+      "max": [-6.38, 11.9, 12.425]
+    },
+    {
+      "id": "crew-port-frame-4",
+      "label": "Crew outboard frame foot 4",
+      "min": [-6.56, 9.5, 16.525],
+      "max": [-6.38, 11.9, 16.775]
+    },
+    {
+      "id": "crew-door-jamb--1",
+      "label": "Crew doorway jamb -1",
+      "min": [-1.56, 9.5, 2.02],
+      "max": [-1.28, 12.4, 2.22]
+    },
+    {
+      "id": "crew-door-jamb-1",
+      "label": "Crew doorway jamb 1",
+      "min": [-1.56, 9.5, 3.78],
+      "max": [-1.28, 12.4, 3.98]
+    },
+    {
+      "id": "galley-door-jamb--1",
+      "label": "Galley doorway jamb -1",
+      "min": [1.28, 9.5, 1.82],
+      "max": [1.56, 12.4, 2.02]
+    },
+    {
+      "id": "galley-door-jamb-1",
+      "label": "Galley doorway jamb 1",
+      "min": [1.28, 9.5, 3.58],
+      "max": [1.56, 12.4, 3.78]
+    },
+    {
+      "id": "hygiene-door-jamb--1",
+      "label": "Hygiene doorway jamb -1",
+      "min": [1.28, 9.5, 11.22],
+      "max": [1.56, 12.4, 11.42]
+    },
+    {
+      "id": "hygiene-door-jamb-1",
+      "label": "Hygiene doorway jamb 1",
+      "min": [1.28, 9.5, 12.98],
+      "max": [1.56, 12.4, 13.18]
+    },
+    {
+      "id": "pilot-instrument-extension",
+      "label": "Pilot console extension and four display frames",
+      "min": [-3.35, 10.3, -23.68],
+      "max": [-0.85, 11.1, -22.69]
+    }
+  ]
+}

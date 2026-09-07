@@ -1,0 +1,34 @@
+{
+  "input": "Injected Gamepad only; shipped sandbox, actual placement and walking",
+  "pieces": [
+    "mainframe",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "wall",
+    "floor",
+    "floor",
+    "ceiling-light",
+    "roof-corner",
+    "roof-edge"
+  ],
+  "lamp": {
+    "type": "ceiling-light",
+    "id": "build-piece-15",
+    "position": [
+      0,
+      3.1199999999999997,
+      1
+    ],
+    "rotation": -3.141592653589793,
+    "doorOpen": false,
+    "lightOn": false
+  },
+  "errors": []
+}

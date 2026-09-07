@@ -1,0 +1,2578 @@
+{
+  "sha256": "f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e",
+  "gear": [
+    {
+      "id": "port-forward",
+      "progress": 0,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.5599998869001865,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.5599998869001865,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.5599998869001865,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.5599998869001865,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.5599998869001865,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.5599998869001865,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.025,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.3466159725086815,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.025,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.3466159725086815,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.025,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.3466159725086815,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.025,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.3466210899431617,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.025,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.3466210899431617,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.025,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 3.3466210899431617,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.05,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.8272162290970577,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.05,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.8272162290970577,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.05,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.8272162290970577,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.05,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.827233927864221,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.05,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.827233927864221,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.05,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.827233927864221,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.075,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.2780358534652017,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.075,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.2780358534652017,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.075,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.2780358534652017,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.075,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.2780669646636102,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.075,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.2780669646636102,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.075,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.2780669646636102,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0301513010116845,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0301513010116845,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0301513010116845,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0301886056815786,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0301886056815786,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0301886056815786,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.125,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.1158959979742575,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.125,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.1158959979742575,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.125,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.1158959979742575,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.125,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.1158609246336315,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.125,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.1158609246336315,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.125,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.1158609246336315,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.15,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0371353055361627,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.15,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0371353055361627,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.15,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0371353055361627,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.15,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0370982163389977,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.15,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0370982163389977,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.15,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0370982163389977,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.175,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029899006486919,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.175,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029899006486919,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.175,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029899006486919,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.175,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0298616650364094,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.175,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0298616650364094,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.175,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0298616650364094,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.2,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.2,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.2,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.2,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.2,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.2,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.225,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.225,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.225,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.225,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.225,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.225,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.25,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.25,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.25,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.25,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.25,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.25,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.275,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.275,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.275,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.275,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.275,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.275,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.3,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.3,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.3,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.3,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.3,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.3,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.325,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.325,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.325,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.325,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.325,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.325,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.35,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.35,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.35,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.35,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.35,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.35,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.375,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.375,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.375,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.375,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.375,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.375,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.4,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.4,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.4,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.4,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.4,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.4,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.425,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.425,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.425,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.425,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.425,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.425,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.45,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.45,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.45,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.45,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.45,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.45,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.475,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.475,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.475,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.0300000309944153,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.475,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.475,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.475,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 2.029962689306113,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.5,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.846256255086498,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.5,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.846256255086498,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.5,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.846256255086498,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.5,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.846256255086498,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.5,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.846256255086498,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.5,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.846256255086498,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.525,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.6276463688181573,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.525,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.6276463688181573,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.525,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.6276463688181573,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.525,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.6276463688181573,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.525,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.6276463688181573,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.525,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.6276463688181573,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.55,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.4150903089641034,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.55,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.4150903089641034,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.55,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.4150903089641034,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.55,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.4150903089641034,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.55,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.4150903089641034,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.55,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.4150903089641034,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.575,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.2117727185519858,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.575,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.2117727185519858,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.575,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.2117727185519858,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.575,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.2117727185519858,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.575,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.2117727185519858,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.575,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.2117727185519858,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.6,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.020547821144743,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.6,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.020547821144743,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.6,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.020547821144743,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.6,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.020547821144743,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.6,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.020547821144743,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.6,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 1.020547821144743,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.625,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.8438458987572917,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.625,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.8438458987572917,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.625,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.8438458987572917,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.625,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.8438458987572917,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.625,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.8438458987572917,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.625,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.8438458987572917,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.65,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.6835946118467322,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.65,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.6835946118467322,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.65,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.6835946118467322,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.65,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.6835946118467322,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.65,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.6835946118467322,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.65,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.6835946118467322,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.675,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.5411603128180128,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.675,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.5411603128180128,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.675,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.5411603128180128,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.675,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.5411603128180128,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.675,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.5411603128180128,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.675,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.5411603128180128,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.7,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.41731317131985435,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.7,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.41731317131985435,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.7,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.41731317131985435,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.7,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.41731317131985435,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.7,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.41731317131985435,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.7,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.41731317131985435,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.725,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.3122183676785921,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.725,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.3122183676785921,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.725,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.3122183676785921,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.725,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.3122183676785921,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.725,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.3122183676785921,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.725,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.3122183676785921,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.75,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.22545397657952482,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.75,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.22545397657952482,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.75,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.22545397657952482,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.75,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.22545397657952482,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.75,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.22545397657952482,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.75,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.22545397657952482,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.775,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.15605461889571837,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.775,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.15605461889571837,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.775,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.15605461889571837,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.775,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.15605461889571837,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.775,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.15605461889571837,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.775,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.15605461889571837,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.8,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.10257865553030587,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.8,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.10257865553030587,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.8,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.10257865553030587,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.8,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.10257865553030587,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.8,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.10257865553030587,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.8,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.10257865553030587,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.825,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.06319575490520668,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.825,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.06319575490520668,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.825,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.06319575490520668,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.825,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.06319575490520668,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.825,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.06319575490520668,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.825,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.06319575490520668,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.85,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.03579116573116237,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.85,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.03579116573116237,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.85,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.03579116573116237,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.85,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.03579116573116237,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.85,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.03579116573116237,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.85,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.03579116573116237,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.875,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.01808300026846199,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.875,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.01808300026846199,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.875,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.01808300026846199,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.875,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.01808300026846199,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.875,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.01808300026846199,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.875,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.01808300026846199,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.9,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0077492596443566875,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.9,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0077492596443566875,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.9,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0077492596443566875,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.9,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0077492596443566875,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.9,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0077492596443566875,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.9,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0077492596443566875,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.925,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.002562139990030854,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.925,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.002562139990030854,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.925,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.002562139990030854,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.925,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.002562139990030854,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.925,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.002562139990030854,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.925,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.002562139990030854,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.95,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0005282263996694327,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.95,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0005282263996694327,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.95,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0005282263996694327,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.95,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0005282263996694327,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.95,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0005282263996694327,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.95,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.0005282263996694327,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 0.975,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.00003434679291736131,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 0.975,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.00003434679291736131,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 0.975,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.00003434679291736131,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 0.975,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.00003434679291736131,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 0.975,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.00003434679291736131,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 0.975,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": 0.00003434679291736131,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-forward",
+      "progress": 1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": -8.754432201385498e-8,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-middle",
+      "progress": 1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": -8.754432201385498e-8,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "port-aft",
+      "progress": 1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": -8.754432201385498e-8,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-forward",
+      "progress": 1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": -8.754432201385498e-8,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-middle",
+      "progress": 1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": -8.754432201385498e-8,
+      "hits": [],
+      "hitCount": 0
+    },
+    {
+      "id": "starboard-aft",
+      "progress": 1,
+      "padPivotError": 2.479553224965514e-7,
+      "minY": -8.754432201385498e-8,
+      "hits": [],
+      "hitCount": 0
+    }
+  ],
+  "ramps": [
+    {
+      "id": "front",
+      "progress": 0,
+      "minY": 2.439922467378218,
+      "mesh": "RampFront_steel_Geometry"
+    },
+    {
+      "id": "front",
+      "progress": 0.25,
+      "minY": 2.4339094951512568,
+      "mesh": "RampFront_steel_Geometry"
+    },
+    {
+      "id": "front",
+      "progress": 0.5,
+      "minY": 2.36682727784789,
+      "mesh": "RampFront_dark_Geometry"
+    },
+    {
+      "id": "front",
+      "progress": 0.75,
+      "minY": 2.2743357840359093,
+      "mesh": "RampFront_dark_Geometry"
+    },
+    {
+      "id": "front",
+      "progress": 1,
+      "minY": 0.000025684082622989823,
+      "mesh": "RampFrontTip_dark_Geometry"
+    },
+    {
+      "id": "aft",
+      "progress": 0,
+      "minY": 2.439998149871826,
+      "mesh": "RampAft_steel_Geometry"
+    },
+    {
+      "id": "aft",
+      "progress": 0.25,
+      "minY": 2.4339767833897703,
+      "mesh": "RampAft_steel_Geometry"
+    },
+    {
+      "id": "aft",
+      "progress": 0.5,
+      "minY": 2.3668349102688833,
+      "mesh": "RampAft_dark_Geometry"
+    },
+    {
+      "id": "aft",
+      "progress": 0.75,
+      "minY": 2.2743376750841233,
+      "mesh": "RampAft_dark_Geometry"
+    },
+    {
+      "id": "aft",
+      "progress": 1,
+      "minY": 0.00005045301971556837,
+      "mesh": "RampAftTip_dark_Geometry"
+    }
+  ],
+  "cargo": [
+    {
+      "x": -3.9,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": -22,
+      "y": 9.210000038146973,
+      "mesh": "PressureBridge_dark_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": -20,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": -3,
+      "y": 9.279999732971191,
+      "mesh": "InteriorUpper_deck_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": 0,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": 4,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": 21,
+      "y": 9.109999656677246,
+      "mesh": "AftEngineering_dark_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.9,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": -22,
+      "y": 9.051245871017315,
+      "mesh": "InteriorCargo_petrol_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": -20,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": -3,
+      "y": 9.051245871017315,
+      "mesh": "InteriorCargo_petrol_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": 0,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": 4,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": 21,
+      "y": 9.051245871017315,
+      "mesh": "InteriorCargo_petrol_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.52,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": -22,
+      "y": 9.210000038146973,
+      "mesh": "PressureBridge_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": -20,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": -3,
+      "y": 9.279999732971191,
+      "mesh": "InteriorUpper_deck_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": 0,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": 4,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": 21,
+      "y": 9.109999656677246,
+      "mesh": "AftEngineering_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.38,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": -22,
+      "y": 8.887791054132574,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": -20,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": -3,
+      "y": 8.887791054132574,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": 0,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": 4,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": 21,
+      "y": 8.887791054132574,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": -3.25,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 0,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 0,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 0,
+      "z": -22,
+      "y": 9.210000038146973,
+      "mesh": "PressureBridge_dark_Geometry"
+    },
+    {
+      "x": 0,
+      "z": -20,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 0,
+      "z": -3,
+      "y": 8.817261756766149,
+      "mesh": "InteriorCargo_mint_Geometry"
+    },
+    {
+      "x": 0,
+      "z": 0,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 0,
+      "z": 4,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 0,
+      "z": 21,
+      "y": 8.81726175676615,
+      "mesh": "InteriorCargo_mint_Geometry"
+    },
+    {
+      "x": 0,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 0,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": -22,
+      "y": 8.887791054132574,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": -20,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": -3,
+      "y": 8.887791054132574,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": 0,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": 4,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": 21,
+      "y": 8.887791054132574,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.25,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": -22,
+      "y": 9.210000038146973,
+      "mesh": "PressureBridge_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": -20,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": -3,
+      "y": 9.279999732971191,
+      "mesh": "InteriorUpper_deck_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": 0,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": 4,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": 21,
+      "y": 9.109999656677246,
+      "mesh": "AftEngineering_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.38,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": -22,
+      "y": 9.051245871017315,
+      "mesh": "InteriorCargo_petrol_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": -20,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": -3,
+      "y": 9.051245871017315,
+      "mesh": "InteriorCargo_petrol_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": 0,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": 4,
+      "y": 8.83027823861389,
+      "mesh": "InteriorCargo_dark_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": 21,
+      "y": 9.051245871017315,
+      "mesh": "InteriorCargo_petrol_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.52,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": -24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": -23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": -22,
+      "y": 9.210000038146973,
+      "mesh": "PressureBridge_dark_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": -20,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": -3,
+      "y": 9.279999732971191,
+      "mesh": "InteriorUpper_deck_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": 0,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": 4,
+      "y": 8.999902137902742,
+      "mesh": "InteriorCargo_steel_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": 21,
+      "y": 9.109999656677246,
+      "mesh": "AftEngineering_dark_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": 23.8,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    },
+    {
+      "x": 3.9,
+      "z": 24,
+      "y": 8.849743283452527,
+      "mesh": "ExteriorStructure_dark_Geometry"
+    }
+  ],
+  "scope": "41 sampled positions per gear leg and door pair against actual exported static triangles. Trunnion and door hinge contact volumes explicitly excluded; not a continuous collision proof, actuator dynamics model, art gate or performance result."
+}

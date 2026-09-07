@@ -1,0 +1,25 @@
+#station-shop-dialog{--shop-accent:var(--mint);--shop-header:var(--station-petrol);--shop-rule:var(--line);width:min(760px,94vw);max-width:760px}
+#station-shop-dialog[data-shop=equipment]{--shop-accent:var(--station-paper);--shop-header:var(--station-dark);--shop-rule:var(--station-ochre)}
+#station-shop-dialog h2{font-family:var(--station-display)}
+.shop-account{display:grid;grid-template-columns:1fr 1fr;gap:20px;border-block:1px solid var(--line);padding:20px 0;margin:22px 0 14px}
+.shop-account span{display:block;font:10px var(--mono);color:var(--muted);letter-spacing:1px}
+.shop-account strong{display:block;font:32px var(--station-display);margin-top:7px;color:var(--shop-accent)}
+#station-shop-dialog .shop-delivery{color:var(--muted)}
+.shop-item{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid var(--line)}
+.shop-item h3{font-size:16px;font-weight:600;margin:0 0 6px}
+#station-shop-dialog .shop-item p{font-size:11px;margin:4px 0;line-height:1.6;color:var(--muted)}
+#station-shop-dialog .shop-quantity{color:var(--station-ivory)}
+.shop-item button{flex:0 0 auto;min-height:44px;padding:10px 14px;border-radius:4px;font:11px var(--mono);color:var(--shop-accent)}
+.shop-item button[aria-disabled=true]{color:var(--muted)}
+#station-shop-dialog .shop-unavailable{color:var(--station-warm)}
+#station-shop-dialog .shop-feedback{min-height:24px;color:var(--shop-accent)}
+@media(max-width:520px){#station-shop-dialog{padding:20px}.shop-account{grid-template-columns:1fr;gap:16px}.shop-item{align-items:stretch;flex-direction:column;gap:12px}.shop-item button{align-self:flex-start}.shop-account strong{font-size:28px}}
+
+/* Keep the exit available while scrolling a long touch catalogue. */
+#station-shop-dialog .dialog-top{position:sticky;top:-30px;z-index:1;background:var(--shop-header);padding:12px;margin:-12px -12px 0;border-bottom:2px solid var(--shop-rule)}
+#station-shop-dialog .dialog-top button{min-width:44px;min-height:44px}
+@media(max-width:700px){#station-shop-dialog .dialog-top{top:-22px}}
+@media(max-width:520px){#station-shop-dialog .dialog-top{top:-20px}}
+
+#station-shop-dialog .dialog-top .eyebrow{color:var(--shop-accent);min-width:0;line-height:1.6}
+#station-shop-dialog[data-shop=equipment] .shop-item button{border-color:var(--station-ochre)}

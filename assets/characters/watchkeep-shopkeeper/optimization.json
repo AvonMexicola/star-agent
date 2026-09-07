@@ -1,0 +1,38 @@
+{
+  "sourceTriangles": 31170,
+  "runtimeTriangles": 19700,
+  "runtimeVertices": 15357,
+  "protectedSourceVertices": 5294,
+  "sourceBlenderCorrespondenceMax": 4.8105351368121774e-05,
+  "restSurfaceErrorLocalMax": 0.7230052947998047,
+  "restSurfaceErrorLocalP95": 0.11793065816164017,
+  "protectedRestSurfaceErrorLocalMax": 0.0,
+  "maxDiscardedSkinWeight": 0.037463366985321045,
+  "uvVFlipForGltf": true,
+  "sourceToBlenderMesh": [
+    [
+      99.99999046903423,
+      4.686477391469914e-07,
+      1.868381698817462e-05,
+      -3.701987415682297e-06
+    ],
+    [
+      -2.2536248041457042e-05,
+      -2.1979541156014193e-05,
+      -99.99996816826383,
+      1.822880257851267e-05
+    ],
+    [
+      -1.4518003110293577e-05,
+      99.99998911653638,
+      -3.149159151938363e-05,
+      1.6299190193080904e-05
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ]
+}

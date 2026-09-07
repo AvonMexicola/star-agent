@@ -1,0 +1,12 @@
+{
+  "source": "nomad.blend",
+  "sourceSha256": "a7c374cbae510d32e475162617b570616105163aa2536e4686d9743ec9ae84aa",
+  "upload": "nomad-meshy-input.glb",
+  "uploadSha256": "ed5ae93d9f609d78815ef875176416fe7217a560cc1cc100c2c45648de716a7b",
+  "bytes": 3278804,
+  "uvSha256": "d30e0ab0cd135a93fbc51b92787c6c13cd922fd842f9ff236ccef9c15097689a",
+  "vertices": 67855,
+  "triangles": 37560,
+  "scope": "Opaque hull/gear painting copy; original UVs, no cabin, no rig",
+  "blenderHullLayoutSha256": "a36431b0fcc9e1bf8bfb0c045a25447691a39c63920fbe1d58254bf7708e8e89"
+}

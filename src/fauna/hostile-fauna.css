@@ -1,0 +1,6 @@
+#fauna-status{position:fixed;left:50%;bottom:192px;transform:translateX(-50%);z-index:11;min-width:200px;max-width:calc(100vw - 32px);padding:10px 14px;border:1px solid var(--line);border-radius:5px;background:var(--panel,#071019ed);color:var(--mint);font:11px var(--mono);text-align:center;pointer-events:none}
+#fauna-status strong{display:block;margin-bottom:6px}#fauna-status meter{display:block;width:100%;height:7px;margin-bottom:6px;accent-color:var(--mint)}
+#fauna-status[data-attack=true]{border-color:var(--orange,#ffae65);color:var(--orange,#ffae65)}
+#fauna-status[hidden],.photo-mode #fauna-status{display:none}
+#pyrebear-medical-dialog{max-width:min(460px,calc(100vw - 32px))}#pyrebear-medical-dialog p{line-height:1.6}#pyrebear-medical-dialog [data-controller-focus]{min-height:48px;width:100%}
+@media(max-width:700px){#fauna-status{bottom:100px;padding:8px 12px}}

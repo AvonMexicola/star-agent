@@ -1,0 +1,23 @@
+{
+  "id": "SA-WORLD-002",
+  "title": "Varied geological surface detail on accepted Aeon landmarks",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex landmark materials",
+  "status": "integrated",
+  "branch": "art/landmark-weathering",
+  "base": "6d3abb04ebee4af5cd8d4b96ec4d440b81774bf5",
+  "updated": "2026-09-07",
+  "areas": [
+    "world",
+    "rendering"
+  ],
+  "claims": [
+    "src/landmark-material.js",
+    "scripts/landmark-weathering.spec.js",
+    "scripts/landmark-weathering.config.js",
+    "docs/briefs/landmark-weathering.md",
+    "docs/qa/landmark-weathering/"
+  ],
+  "brief": "docs/briefs/landmark-weathering.md"
+}

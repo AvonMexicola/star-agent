@@ -1,0 +1,85 @@
+{
+  "start": "Explicit developer hangar start; every subsequent ladder/seat/launch/flight step uses keyboard input",
+  "errors": [],
+  "warnings": [],
+  "state": {
+    "shipId": "kestrel",
+    "mode": "flight",
+    "crash": null,
+    "station": {
+      "exterior": "geometry-review",
+      "exteriorDetail": "hero",
+      "exteriorError": null,
+      "exteriorLodError": null,
+      "finish": "ready",
+      "finishMaterials": {
+        "replacedMeshes": 394,
+        "generatedUVs": 70,
+        "materialCount": 16,
+        "textureCount": 3,
+        "estimatedTextureBytes": 7077888
+      },
+      "pods": 20,
+      "lodBatches": 26,
+      "activePod": 1,
+      "parkedPod": 1,
+      "location": "hangar",
+      "rings": [
+        0.029376315000000174,
+        -0.029376315000000174
+      ],
+      "elevator": 0,
+      "ready": true,
+      "error": null,
+      "doorsOpen": 1,
+      "distance": 130.1669602400977,
+      "local": [
+        -5.930900215389556e-11,
+        -4.509999998934262,
+        -130.08880596791096
+      ],
+      "deckClearance": 3.490000001065738,
+      "docked": false,
+      "lifting": false,
+      "canDock": false
+    },
+    "position": [
+      670753.7026103095,
+      438940.63790487533,
+      1490908.7947912915
+    ],
+    "shipVelocity": [
+      0,
+      0,
+      0
+    ],
+    "speed": 0,
+    "kestrelAccess": {
+      "canopy": 0,
+      "ladder": 0,
+      "open": false,
+      "phase": "idle",
+      "direction": "in",
+      "routeIndex": 10,
+      "secured": true
+    },
+    "landingGear": {
+      "progress": 0,
+      "target": false,
+      "visual": 0
+    },
+    "camera": {
+      "mode": "external",
+      "shipVisible": true,
+      "selected": true,
+      "obstructed": false,
+      "position": [
+        670726.1113119029,
+        438942.03888303967,
+        1490926.9270856536
+      ],
+      "fov": 52
+    },
+    "renderScale": 1
+  }
+}

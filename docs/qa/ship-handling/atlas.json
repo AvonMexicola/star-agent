@@ -1,0 +1,33 @@
+{
+  "shipId": "atlas",
+  "browser": "151.0.7922.173",
+  "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "turnAngle": 0.14631568004783194,
+  "thrust": {
+    "seconds": 2.699799999999998,
+    "orientation": [
+      -0.15761938113011986,
+      0.18341314846891216,
+      0.06801101479646647,
+      0.9679309115464977
+    ],
+    "speed": 1038.6018704571675
+  },
+  "settled": {
+    "seconds": 3.7331999999999943,
+    "orientation": [
+      -0.1576191741753108,
+      0.1834102031032366,
+      0.0680114944239593,
+      0.9679314696589538
+    ],
+    "speed": 448.415694194412
+  },
+  "speedRatio": 0.4317493612803049,
+  "errors": [],
+  "input": "Injected standard Gamepad; saved Fleet selection; no debug positioning"
+}

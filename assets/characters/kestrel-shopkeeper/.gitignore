@@ -1,0 +1,9 @@
+# Exact originals are retained once in the source archive; exporter verifies and unpacks.
+source/Meshy_AI_*.glb
+source/combined-idles.glb
+source/albedo.png
+derived-unfitted.glb
+*.log
+__pycache__/
+*.blend1
+reference-corrected.glb

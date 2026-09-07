@@ -1,0 +1,45 @@
+{
+  "errors": [],
+  "stats": {
+    "meshes": 168,
+    "triangles": 412988,
+    "materials": 13,
+    "textures": 10
+  },
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "viewport": [
+    1440,
+    900
+  ],
+  "dpr": 1,
+  "browser": "Chromium 151.0.7922.173",
+  "assetSha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+  "functionalSuiteAssetSha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+  "functionalViewport": [
+    480,
+    300
+  ],
+  "controllerViewport": [
+    720,
+    450
+  ],
+  "phoneViewport": [
+    390,
+    844
+  ],
+  "runtimeMFDs": {
+    "meshes": 4,
+    "textures": 4,
+    "materials": 4,
+    "resolution": [
+      512,
+      320
+    ],
+    "updateHz": 5
+  },
+  "pilotViewport": [
+    1440,
+    900
+  ],
+  "pilotVerticalFov": 56
+}

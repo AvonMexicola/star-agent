@@ -1,0 +1,55 @@
+{
+  "root": "/home/cees/projects/star-agent-dev",
+  "node": "v26.7.0",
+  "remotePlayers": 9,
+  "method": "CPU only: 60 Hz animation, 10 Hz snapshots, complete real rigs/tools/hulls; no textures, GPU or browser",
+  "remoteFrame": {
+    "median": 0.50455677,
+    "p95": 0.5882734333333337,
+    "units": "milliseconds per operation; samples are batch means",
+    "samples": [
+      0.50455677,
+      0.48552090833333333,
+      0.4794227349999998,
+      0.45724586500000025,
+      0.4828600350000003,
+      0.5067226449999999,
+      0.5882734333333337,
+      0.5092565449999998,
+      0.5383781983333339
+    ]
+  },
+  "frameMatrixCompositions": 4951,
+  "hullTransforms": {
+    "median": 0.039259843999999704,
+    "p95": 0.05732790100000011,
+    "units": "milliseconds per operation; samples are batch means",
+    "samples": [
+      0.04031034049999994,
+      0.03900552100000004,
+      0.043077081000000135,
+      0.039086172499999974,
+      0.03795500949999996,
+      0.039259843999999704,
+      0.05732790100000011,
+      0.04205910099999983,
+      0.03800663700000041
+    ]
+  },
+  "reconciliation": {
+    "median": 0.00038580782,
+    "p95": 0.0003993467899999996,
+    "units": "milliseconds per operation; samples are batch means",
+    "samples": [
+      0.00039417776000000233,
+      0.0003993467899999996,
+      0.00037355886999999714,
+      0.000372696049999995,
+      0.0003868924599999991,
+      0.0003648377700000037,
+      0.00038580782,
+      0.00039223651999999675,
+      0.0003832646300000033
+    ]
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "browser": "151.0.7922.173",
+  "console": [],
+  "invalidPredecessors": [
+    "desktop-bow.png",
+    "desktop-bow-replacement.png"
+  ],
+  "reason": "Actual backdrop spans z=-68.225..-67.775; reviewer camera now z=-62.",
+  "scope": "One actual renderer bow fixture; no runtime/source changes.",
+  "servedSha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+  "servedBytes": 38037892,
+  "state": {
+    "stats": {
+      "meshes": 168,
+      "triangles": 412988,
+      "materials": 13,
+      "textures": 10
+    },
+    "camera": {
+      "position": [
+        7.59281015471359e-15,
+        11.999999999999993,
+        -62
+      ],
+      "quaternion": [
+        -2.3649770678422037e-18,
+        0.9992538533147048,
+        0.03862300655974919,
+        6.11866516498756e-17
+      ],
+      "fov": 43
+    },
+    "modelNdcBounds": {
+      "min": [
+        -0.5284776620629833,
+        -0.5104040384881142,
+        0.9980009247241012
+      ],
+      "max": [
+        0.5284776620629833,
+        0.31233703644138994,
+        0.9994668777584623
+      ],
+      "vertices": 635984
+    },
+    "backdrops": [
+      {
+        "position": [
+          0,
+          11.5,
+          -68
+        ],
+        "halfDepth": 0.225
+      }
+    ],
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "systems": {
+      "ramps": [
+        {
+          "id": "front",
+          "node": "RampFront",
+          "pivot": [
+            0,
+            2.6,
+            -24
+          ],
+          "angle": 1.5707963267948966,
+          "target": 1.5707963267948966,
+          "progress": 0,
+          "moving": false,
+          "tipAngle": 3.141592653589793
+        },
+        {
+          "id": "aft",
+          "node": "RampAft",
+          "pivot": [
+            0,
+            2.6,
+            24
+          ],
+          "angle": -1.5707963267948966,
+          "target": -1.5707963267948966,
+          "progress": 0,
+          "moving": false,
+          "tipAngle": 3.141592653589793
+        }
+      ],
+      "elevator": {
+        "id": "crew",
+        "node": "CrewElevator",
+        "centre": [
+          5.5,
+          -4
+        ],
+        "y": 2.6,
+        "target": 2.6,
+        "moving": false,
+        "gates": [
+          {
+            "node": "LiftGateLower",
+            "deck": 2.6,
+            "z": -2.25,
+            "target": -2.25,
+            "moving": false
+          },
+          {
+            "node": "LiftGateUpper",
+            "deck": 9.5,
+            "z": -4,
+            "target": -4,
+            "moving": false
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+Historical candidate with supplied rear/outward resting-arm posture. Superseded following user visual correction. Source archive remains unchanged. These seven studio images and the runtime6360429f hash belong to this historical candidate, not the corrected release. The exporter snapshot is historical evidence; its original working-directory paths are not relocated automatically.

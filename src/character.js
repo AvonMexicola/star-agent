@@ -26,15 +26,24 @@ export { THREE };
 // ---------------------------------------------------------------- the contract
 
 /** Animation clips the rigged character GLB must contain (HANDOFF request 17). */
-export const CLIPS = Object.freeze([
+export const REQUIRED_CLIPS = Object.freeze([
   'idle', 'walk', 'run', 'jump', 'crouch-walk', 'sit-down', 'sit-idle', 'stand-up',
   'carry-walk', 'wounded-walk', 'aim-rifle', 'fire-rifle', 'fire-pistol', 'death',
+]);
+export const CLIPS = Object.freeze([
+  ...REQUIRED_CLIPS,
+  'rest-pose', 'climb-ladder', 'climb-idle', 'wave', 'take-damage', 'aim-pistol',
+  'use-tool', 'reload-rifle', 'reload-pistol', 'interact',
+  'climb-mount', 'climb-finish',
 ]);
 
 /** Logical states `setState()` accepts and `resolveState()` returns. */
 export const STATES = Object.freeze([
   'idle', 'walk', 'run', 'jump', 'crouch', 'sit', 'carry', 'wounded',
   'aim-rifle', 'fire-rifle', 'fire-pistol', 'dead',
+  'rest', 'climb', 'wave', 'hit', 'aim-pistol', 'use-tool',
+  'reload-rifle', 'reload-pistol', 'interact',
+  'climb-mount', 'climb-finish',
 ]);
 
 /** Planar speed thresholds in m/s. idle → walk → run. */
@@ -68,7 +77,25 @@ export const CLIP_FALLBACKS = Object.freeze({
   'fire-rifle': ['aim-rifle', 'idle'],
   'fire-pistol': ['fire-rifle', 'aim-rifle', 'idle'],
   'death': ['idle'],
+  'rest-pose': ['idle'],
+  'climb-ladder': ['climb-idle', 'idle'],
+  'climb-idle': ['climb-ladder', 'idle'],
+  'wave': ['idle'],
+  'take-damage': ['idle'],
+  'aim-pistol': ['aim-rifle', 'idle'],
+  'use-tool': ['aim-rifle', 'idle'],
+  'reload-rifle': ['aim-rifle', 'idle'],
+  'reload-pistol': ['aim-pistol', 'idle'],
+  'interact': ['idle'],
+  'climb-mount': ['climb-ladder', 'idle'],
+  'climb-finish': ['climb-ladder', 'idle'],
 });
+
+const GESTURES = Object.freeze({ wave: 'wave', hit: 'take-damage',
+  'reload-rifle': 'reload-rifle', 'reload-pistol': 'reload-pistol', interact: 'interact',
+  'climb-mount': 'climb-mount', 'climb-finish': 'climb-finish' });
+const AIM_KEYS = Object.freeze({ rifle: 'aim', pistol: 'aim-pistol', tool: 'tool' });
+const FULL_BODY_STATES = new Set(['jump', 'sit', 'dead', 'rest', 'climb', ...Object.keys(GESTURES)]);
 
 /** Playback-rate bias applied when a clip is served by a fallback:
  *  a missing `wounded-walk` is `walk` slowed down, a missing `run` is `walk` sped up. */
@@ -93,6 +120,12 @@ export function isUpperBodyTrack(trackName) {
 
 const FIRE_STATES = Object.freeze(['fire-rifle', 'fire-pistol']);
 const NO_FIRE = Object.freeze({ allowFire: false });
+const OPEN_GRIP_STATES = new Set(['wave', 'rest', 'climb', 'dead', 'sit']);
+const LOWER_BODY_KEYS = Object.freeze({
+  idle: 'idle-lower', walk: 'walk-lower', run: 'run-lower',
+  'crouch-walk': 'crouch-walk-lower', 'carry-walk': 'carry-walk-lower', 'wounded-walk': 'wounded-walk-lower',
+});
+const BASE_LOCOMOTION_CLIPS = Object.freeze(Object.keys(LOWER_BODY_KEYS));
 
 const clamp = (value, min, max) => (value < min ? min : value > max ? max : value);
 const finite = (value, fallback) => (Number.isFinite(value) ? value : fallback);
@@ -103,14 +136,15 @@ const finite = (value, fallback) => (Number.isFinite(value) ? value : fallback);
  * The animation state for one frame of input. Pure, allocation free.
  *
  * @param {{speed?:number, grounded?:boolean, jumping?:boolean, crouching?:boolean,
- *          carrying?:boolean, health?:number, aiming?:'none'|'rifle'|'pistol',
- *          firing?:boolean, seated?:boolean, dead?:boolean}} input
+ *          carrying?:boolean, health?:number, aiming?:'none'|'rifle'|'pistol'|'tool',
+ *          firing?:boolean, seated?:boolean, dead?:boolean, resting?:boolean,
+ *          climbing?:boolean, climbSpeed?:number}} input
  * @param {string} prevState  state from the previous frame (keeps fire/death sticky)
  * @param {{allowFire?:boolean}|null} options  pass `{allowFire:false}` to resolve the
  *        state a one-shot fire animation should fall back to.
  * @returns {string} one of STATES
  *
- * Priority: dead > held fire > new fire > seated > airborne > crouch > wounded >
+ * Priority: dead > climbing > seated > rest > held fire > new fire > airborne > crouch > wounded >
  * carry > standing aim > run > walk > idle.
  */
 export function resolveState(input, prevState = 'idle', options = null) {
@@ -121,15 +155,18 @@ export function resolveState(input, prevState = 'idle', options = null) {
   const allowFire = !(options && options.allowFire === false);
 
   if (source.dead === true || health <= 0) return 'dead';
+  if (source.climbing === true) return source.climbPhase === 'mount' ? 'climb-mount'
+    : source.climbPhase === 'finish' ? 'climb-finish' : 'climb';
+  if (source.seated === true) return 'sit';
+  if (source.resting === true) return 'rest';
   if (allowFire && source.firing === true && (prevState === 'fire-rifle' || prevState === 'fire-pistol')) return prevState;
   if (allowFire && source.firing === true && aiming !== 'none') return aiming === 'pistol' ? 'fire-pistol' : 'fire-rifle';
-  if (source.seated === true) return 'sit';
   if (source.jumping === true || source.grounded === false) return 'jump';
   if (source.crouching === true) return 'crouch';
   if (health < WOUNDED_HEALTH) return 'wounded';
   if (source.carrying === true) return 'carry';
   // A standing aim is its own pose; while moving the aim rides on top of locomotion.
-  if (aiming !== 'none' && speed <= SPEED.idle) return 'aim-rifle';
+  if (aiming !== 'none' && speed <= SPEED.idle) return aiming === 'pistol' ? 'aim-pistol' : aiming === 'tool' ? 'use-tool' : 'aim-rifle';
   if (speed >= SPEED.run) return 'run';
   if (speed > SPEED.idle) return 'walk';
   return 'idle';
@@ -181,7 +218,7 @@ export function walkClipForState(state) {
 
 /** States driven by the speed blend rather than by a single full-body clip. */
 export function isLocomotionState(state) {
-  return state !== 'jump' && state !== 'sit' && state !== 'dead';
+  return !FULL_BODY_STATES.has(state);
 }
 
 /**
@@ -291,6 +328,7 @@ export class Character {
     this.skeleton = null;
     this._headBone = null;
     this._headParts = [];
+    this._gripMorphs = [];
     this._headScale = 1;
     this._headHidden = false;
 
@@ -301,12 +339,18 @@ export class Character {
     this.missingClips = [];
 
     this._keys = [];                          // stable iteration order, no per-frame allocation
+    this._strideTypes = [];                   // 0 = fixed, 1 = walk, 2 = run
     this._weight = Object.create(null);
     this._target = Object.create(null);
     this._oneShots = Object.create(null);
     this._blend = { idle: 0, walk: 0, run: 0 };
     this._fireLatch = false;
     this._fireActive = false;
+    this._gestureActive = null;
+    this._lastHealth = null;
+    this._hitCooldown = 0;
+    this._correctedPose = new Map();
+    this._activeCorrections = [];
     this._lastSpeed = 0;
     this._walkSlot = 'walk';
     this._onFinished = (event) => this._handleFinished(event);
@@ -340,15 +384,38 @@ export class Character {
       this.url,
       (gltf) => {
         if (this.disposed) return;
+        const failed = error => {
+          this.error = `Character rig could not be prepared: ${error.message}`;
+          console.error('[character]', error); this._resolveReady(this);
+        };
         try {
           this._adopt(gltf);
-          this.ready = true;
-          this._resolveReady(this);
-          if (onReady) onReady(this);
+          const shadows = [];
+          this.model.traverse(mesh => {
+            const accessor = mesh.userData.shadowIndices;
+            if (!mesh.isSkinnedMesh || !Number.isInteger(accessor)) return;
+            shadows.push(Promise.resolve().then(() => gltf.parser.getDependency('accessor', accessor)).then(index => {
+              if (this.disposed) return;
+              if (!index?.isBufferAttribute || index.itemSize !== 1 || index.count % 3
+                || !(index.array instanceof Uint32Array || index.array instanceof Uint16Array || index.array instanceof Uint8Array)
+                || index.array.some(value => value >= mesh.geometry.attributes.position.count)) throw Error('Invalid shadow index accessor');
+              const fullIndex = mesh.geometry.index;
+              // Three invokes these around the depth pass, before drawing the
+              // geometry. The same skin/morph buffers animate both index LODs.
+              mesh.onBeforeShadow = () => mesh.geometry.setIndex(index);
+              mesh.onAfterShadow = () => mesh.geometry.setIndex(fullIndex);
+              mesh.userData.shadowTriangles = index.count / 3;
+            }).catch(error => {
+              if (!this.disposed) console.warn('[character] Optional shadow LOD unavailable; using full detail.', error.message);
+            }));
+          });
+          const ready = () => {
+            if (this.disposed) return;
+            this.ready = true; this._resolveReady(this); if (onReady) onReady(this);
+          };
+          if (shadows.length) Promise.all(shadows).then(ready, failed); else ready();
         } catch (error) {
-          this.error = `Character rig could not be prepared: ${error.message}`;
-          console.error('[character]', error);
-          this._resolveReady(this);
+          failed(error);
         }
       },
       (event) => {
@@ -365,12 +432,28 @@ export class Character {
 
   _adopt(gltf) {
     this.model = gltf.scene || gltf.scenes[0];
+    const required = gltf.asset?.extras?.requiredClips;
+    this._requiredClips = new Set(Array.isArray(required) && required.length
+      && required.every(name => typeof name === 'string' && name.length) ? required : REQUIRED_CLIPS);
     this.model.traverse((node) => {
+      // The authored rig's morph channels are fixed. Equipment socket children
+      // do not need a full scene traversal to find these two glove shapes.
+      const morphs = node.morphTargetDictionary;
+      if (morphs && (morphs.GripRight !== undefined || morphs.GripLeft !== undefined)) {
+        this._gripMorphs.push({ mesh: node, right: morphs.GripRight, left: morphs.GripLeft });
+      }
       if (node.isMesh || node.isSkinnedMesh) {
         node.castShadow = true;
         node.receiveShadow = true;
-        // A skinned mesh's authored bounds do not follow the pose; culling it by them pops.
-        if (node.isSkinnedMesh) node.frustumCulled = false;
+        // Rest-pose bounds can clip moving limbs. Use a verified animation envelope
+        // when the asset supplies one, retaining the safe fallback for older rigs.
+        if (node.isSkinnedMesh) {
+          const bounds = node.userData.animationBounds;
+          const hasEnvelope = Array.isArray(bounds) && bounds.length === 4
+            && bounds.every(Number.isFinite) && bounds[3] > 0;
+          node.frustumCulled = hasEnvelope;
+          if (hasEnvelope) node.boundingSphere = new THREE.Sphere(new THREE.Vector3(...bounds.slice(0, 3)), bounds[3]);
+        }
         if (/helmet|visor|head/i.test(node.name)) this._headParts.push(node);
       }
       // `mixamorigHead`, `Head`, `DEF-head` — but not `mixamorigHeadTop_End`.
@@ -416,6 +499,8 @@ export class Character {
       this._target[key] = 0;
       this._oneShots[key] = Boolean(oneShot);
       this._keys.push(key);
+      const baseKey = key.replace(/-lower$/, '');
+      this._strideTypes.push(baseKey === 'run' ? 2 : WALK_CLIPS.includes(baseKey) ? 1 : 0);
       action.userData = action.userData || {};
       action.userData.characterKey = key;
       action.userData.timeScale = timeScale;
@@ -423,41 +508,52 @@ export class Character {
     };
 
     // Full-body clips, one action per contract clip.
-    const oneShotClips = new Set(['jump', 'sit-down', 'stand-up', 'death']);
+    const oneShotClips = new Set(['jump', 'sit-down', 'stand-up', 'death', ...Object.values(GESTURES)]);
     for (const name of CLIPS) {
-      if (name === 'fire-rifle' || name === 'fire-pistol' || name === 'aim-rifle') continue;
+      if (['fire-rifle', 'fire-pistol', 'aim-rifle', 'aim-pistol', 'use-tool'].includes(name)) continue;
       const info = resolveClip(name, available);
       this.clipInfo[name] = info;
       if (info.fallback) this.missingClips.push(name);
       const clip = info.source ? byName.get(info.source) : null;
       if (!clip) continue;
       const oneShot = oneShotClips.has(name);
-      addAction(name, clip, {
+      addAction(name, clip.clone(), {
         loop: oneShot ? THREE.LoopOnce : THREE.LoopRepeat,
         oneShot,
         timeScale: info.timeScale,
       });
     }
 
-    // Upper-body additive layer: aim held, fire as a one-shot over the locomotion.
-    const idleClip = byName.get(this.clipInfo.idle?.source || 'idle') || null;
-    for (const [key, name] of [['aim', 'aim-rifle'], ['fire-rifle', 'fire-rifle'], ['fire-pistol', 'fire-pistol']]) {
+    // Separate lower-body actions let an absolute aim pose replace arm swing.
+    // Additive aiming over the walk's arm tracks doubles the shoulder rotation.
+    for (const key of BASE_LOCOMOTION_CLIPS) {
+      const original = this.actions[key];
+      if (!original) continue;
+      const lower = original.getClip().clone();
+      lower.name = `${key}-lower`;
+      lower.tracks = lower.tracks.filter(track => !isUpperBodyTrack(track.name));
+      addAction(`${key}-lower`, lower, { loop: THREE.LoopRepeat, oneShot: false, timeScale: original.userData.timeScale });
+    }
+
+    // Absolute upper-body aim/fire poses, independent of the legs.
+    for (const [key, name] of [['aim', 'aim-rifle'], ['aim-pistol', 'aim-pistol'], ['tool', 'use-tool'], ['fire-rifle', 'fire-rifle'], ['fire-pistol', 'fire-pistol']]) {
       const info = resolveClip(name, available);
       this.clipInfo[name] = info;
       if (info.fallback) this.missingClips.push(name);
       const source = info.source ? byName.get(info.source) : null;
       if (!source) continue;
-      const additive = makeUpperBodyAdditive(source, idleClip, `${name}-additive`);
-      if (!additive) continue;
-      const oneShot = key !== 'aim';
-      addAction(key, additive, {
+      const upper = new THREE.AnimationClip(`${name}-upper`, source.duration,
+        source.tracks.filter(track => isUpperBodyTrack(track.name)).map(track => track.clone()));
+      if (!upper.tracks.length) continue;
+      const oneShot = FIRE_STATES.includes(key);
+      addAction(key, upper, {
         loop: oneShot ? THREE.LoopOnce : THREE.LoopRepeat,
         oneShot,
         timeScale: info.timeScale,
       });
     }
 
-    if (this.missingClips.length) {
+    if (this.missingClips.some(name => this._requiredClips.has(name))) {
       console.warn(`[character] ${this.url}: missing clips ${this.missingClips.join(', ')} — mapped to `
         + this.missingClips.map((name) => `${name}→${this.clipInfo[name].source ?? 'none'}`).join(', '));
     }
@@ -476,6 +572,7 @@ export class Character {
     if (name === this.state && !(params && params.immediate)) return this.state;
     const previous = this.state;
     this.state = name;
+    if (name !== this._gestureActive) this._gestureActive = null;
     // Only hold the state open when there is a real one-shot to wait for.
     this._fireActive = (name === 'fire-rifle' || name === 'fire-pistol') && Boolean(this.actions[name]);
 
@@ -485,10 +582,35 @@ export class Character {
 
     if (name === 'dead') { this.transition = null; this._restart('death'); }
     if (name === 'jump' && previous !== 'jump') this._restart('jump');
+    if (GESTURES[name]) this._restart(GESTURES[name]);
     if (name === 'fire-rifle' || name === 'fire-pistol') this._restart(name === 'fire-rifle' ? 'fire-rifle' : 'fire-pistol');
 
     if (isLocomotionState(name)) this._syncWalkSlot(walkClipForState(name));
     return this.state;
+  }
+
+  /** Play one gesture, without manufacturing a gameplay event or movement. */
+  playGesture(name) {
+    const clip = GESTURES[name];
+    if (!clip || !this.actions[clip] || this.clipInfo[clip]?.fallback
+      || ['dead', 'sit', 'climb'].includes(this.state) || (name === 'hit' && this._hitCooldown > 0)) return false;
+    if (name === 'hit') this._hitCooldown = this.actions[clip].getClip().duration + .25;
+    this.setState(name, { immediate: true });
+    this._gestureActive = name;
+    return true;
+  }
+
+  get gestureActive() { return this._gestureActive; }
+
+  /** Equipment corrections are temporary; restore the authored pose before mixing. */
+  rememberAnimatedPose(bone) {
+    let pose = this._correctedPose.get(bone);
+    if (!pose) { pose = { bone, rotation: new THREE.Quaternion(), active: false }; this._correctedPose.set(bone, pose); }
+    if (!pose.active) {
+      pose.rotation.copy(bone.quaternion);
+      this._activeCorrections.push(pose);
+    }
+    pose.active = true;
   }
 
   /** (Re)start whichever one-shot the current state owns. */
@@ -533,6 +655,7 @@ export class Character {
     if (!key) return;
     if (key === 'sit-down' || key === 'stand-up') { if (this.transition === key) this.transition = null; return; }
     if (key === 'fire-rifle' || key === 'fire-pistol') { this._fireLatch = true; this._fireActive = false; return; }
+    if (key === GESTURES[this._gestureActive]) this._gestureActive = null;
     // `jump` and `death` clamp on their last frame; the next update resolves out of them.
   }
 
@@ -544,7 +667,21 @@ export class Character {
    *          firing?:boolean, seated?:boolean, dead?:boolean}} input
    */
   update(dt, input) {
+    for (let i = 0; i < this._activeCorrections.length; i++) {
+      const pose = this._activeCorrections[i];
+      pose.bone.quaternion.copy(pose.rotation);
+      pose.active = false;
+    }
+    this._activeCorrections.length = 0;
     const source = input || EMPTY_INPUT;
+    const health = finite(source.health, 1);
+    this._hitCooldown = Math.max(0, this._hitCooldown - Math.max(0, finite(dt, 0)));
+    // An opening animation has no health input. Seed from the first actual
+    // gameplay value so a persisted injury does not manufacture a fresh hit.
+    if (Number.isFinite(source.health)) {
+      if (this._lastHealth !== null && health > 0 && health < this._lastHealth) this.playGesture('hit');
+      this._lastHealth = health;
+    }
     if (source.firing !== true) this._fireLatch = false;
 
     // Semi-automatic: one shot per trigger press. The recoil one-shot always plays out
@@ -552,6 +689,8 @@ export class Character {
     // goes false, stops a held trigger from re-entering it.
     let next;
     if (source.dead === true || finite(source.health, 1) <= 0) next = 'dead';
+    else if (source.climbing || source.seated || source.resting) next = resolveState(source, this.state, NO_FIRE);
+    else if (this._gestureActive && finite(source.speed, 0) <= SPEED.idle) next = this._gestureActive;
     else if (this._fireActive) next = this.state;
     else if (this._fireLatch) next = returnStateAfterOneShot(this.state, source);
     else next = resolveState(source, this.state);
@@ -562,6 +701,8 @@ export class Character {
 
     this._applyStateActions(this.state, source);
     const rate = dt > 0 ? Math.min(1, dt / FADE) : 1;
+    const walkScale = locomotionTimeScale(this._lastSpeed, 'walk');
+    const runScale = locomotionTimeScale(this._lastSpeed, 'run');
     for (let i = 0; i < this._keys.length; i++) {
       const key = this._keys[i];
       const action = this.actions[key];
@@ -573,10 +714,23 @@ export class Character {
       this._weight[key] = weight;
       action.setEffectiveWeight(weight);
       const bias = action.userData.timeScale || 1;
-      action.setEffectiveTimeScale(locomotionTimeScale(this._lastSpeed, key) * bias);
+      const strideType = this._strideTypes[i];
+      let timeScale = (strideType === 2 ? runScale : strideType === 1 ? walkScale : 1) * bias;
+      if (key === 'climb-ladder') timeScale = finite(source.climbSpeed, 0) / .344;
+      action.setEffectiveTimeScale(timeScale);
       if (!this._oneShots[key]) action.paused = weight === 0 && target === 0;
     }
     this.mixer.update(dt);
+    const grip = Boolean(AIM_KEYS[source.aiming]) && !OPEN_GRIP_STATES.has(this.state);
+    const rightTarget = grip ? 1 : 0;
+    const leftTarget = grip && source.aiming !== 'pistol' ? 1 : 0;
+    const gripRate = dt > 0 ? 1 - Math.exp(-dt * 18) : 1;
+    for (let i = 0; i < this._gripMorphs.length; i++) {
+      const { mesh, right, left } = this._gripMorphs[i];
+      const influences = mesh.morphTargetInfluences;
+      if (right !== undefined) influences[right] = THREE.MathUtils.lerp(influences[right], rightTarget, gripRate);
+      if (left !== undefined) influences[left] = THREE.MathUtils.lerp(influences[left], leftTarget, gripRate);
+    }
     return this.state;
   }
 
@@ -584,6 +738,16 @@ export class Character {
     const keys = this._keys;
     for (let i = 0; i < keys.length; i++) this._target[keys[i]] = 0;
 
+    const aiming = input?.aiming || 'none';
+    const overlay = isLocomotionState(state) && Boolean(AIM_KEYS[aiming]);
+    if (overlay !== this._overlayActive) {
+      for (const key of BASE_LOCOMOTION_CLIPS) {
+        const from = this.actions[overlay ? key : LOWER_BODY_KEYS[key]];
+        const to = this.actions[overlay ? LOWER_BODY_KEYS[key] : key];
+        if (from && to) to.time = from.time;
+      }
+      this._overlayActive = overlay;
+    }
     if (this.transition) {
       this._target[this.transition] = 1;
     } else if (state === 'sit') {
@@ -592,29 +756,33 @@ export class Character {
       this._set('death', 1);
     } else if (state === 'jump') {
       this._set('jump', 1);
+    } else if (state === 'rest') {
+      this._set('rest-pose', 1);
+    } else if (state === 'climb') {
+      this._set(Math.abs(finite(input?.climbSpeed, 0)) > .01 ? 'climb-ladder' : 'climb-idle', 1);
+    } else if (GESTURES[state]) {
+      this._set(GESTURES[state], 1);
     } else {
       const blend = blendWeights(this._lastSpeed, this._blend);
       const slot = walkClipForState(state);
       this._syncWalkSlot(slot);
-      this._set('idle', blend.idle);
+      this._set(overlay ? LOWER_BODY_KEYS.idle : 'idle', blend.idle);
       if (slot === 'walk') {
-        this._set('walk', blend.walk);
-        this._set('run', blend.run);
+        this._set(overlay ? LOWER_BODY_KEYS.walk : 'walk', blend.walk);
+        this._set(overlay ? LOWER_BODY_KEYS.run : 'run', blend.run);
       } else {
         // Crouching, carrying and limping never break into a run.
-        this._set(slot, blend.walk + blend.run);
+        this._set(overlay ? LOWER_BODY_KEYS[slot] : slot, blend.walk + blend.run);
       }
     }
 
-    const aiming = input ? (input.aiming || 'none') : 'none';
     const firing = state === 'fire-rifle' || state === 'fire-pistol';
     if (firing) this._set(state, 1);
-    else if (aiming !== 'none' && state !== 'dead' && state !== 'sit') this._set('aim', 1);
+    else if (overlay) this._set(AIM_KEYS[aiming], 1);
   }
 
   _set(key, weight) {
     if (this._target[key] !== undefined) this._target[key] = weight;
-    else if (this.actions[key]) this._target[key] = weight;
   }
 
   /** The clip currently carrying the most weight — for HUD / debug readouts. */
@@ -712,6 +880,10 @@ export class Character {
     disposeTree(this.object);
     this.actions = Object.create(null);
     this._keys.length = 0;
+    this._strideTypes.length = 0;
+    this._correctedPose.clear();
+    this._activeCorrections.length = 0;
+    this._gripMorphs.length = 0;
     this.model = null;
     this.mixer = null;
     this._headBone = null;
@@ -943,18 +1115,6 @@ function normaliseClipName(name) {
   const raw = String(name || '');
   const tail = raw.includes('|') ? raw.slice(raw.lastIndexOf('|') + 1) : raw;
   return tail.trim().toLowerCase().replace(/[\s_]+/g, '-');
-}
-
-/**
- * An additive clip that only drives the upper body, so an aim or a shot rides on
- * top of whatever the legs are doing.
- */
-function makeUpperBodyAdditive(clip, referenceClip, name) {
-  const tracks = clip.tracks.filter((track) => isUpperBodyTrack(track.name));
-  if (!tracks.length) return null;
-  const filtered = new THREE.AnimationClip(name, clip.duration, tracks.map((track) => track.clone()));
-  THREE.AnimationUtils.makeClipAdditive(filtered, 0, referenceClip || filtered, 30);
-  return filtered;
 }
 
 function disposeTree(root) {

@@ -1,6 +1,8 @@
 import * as THREE from 'three';
-import { RADIUS, ATMOSPHERE_HEIGHT, SUN_RADIUS, SUN_ANGULAR_RADIUS } from './world.js';
+import { RADIUS, ATMOSPHERE_HEIGHT, SUN_ANGULAR_RADIUS, SUN_RADIUS } from './world.js';
 import { createCloudNoise, cloudShader } from './cloud-volume.js';
+import { EnergyBloom } from './effects/bloom.js';
+import { surfaceWeatherShader } from './surface-weather.js';
 
 // Single-scattering integration in body-radius units. Rayleigh + Henyey-Greenstein
 // Mie scattering, exponential density, sunlight extinction and planet shadow.
@@ -24,6 +26,10 @@ uniform float logFar;
 uniform float radius;
 uniform float atmosphereRadius;
 uniform float exposure;
+uniform sampler2D bloomNear;
+uniform sampler2D bloomMid;
+uniform sampler2D bloomWide;
+uniform float bloomStrength;
 uniform float sunAngularRadius;
 uniform float sunDisk;
 uniform int atmoOrder[${ATMOSPHERE_SLOTS}];
@@ -54,6 +60,7 @@ vec3 stars(vec3 rd){
 }
 vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.0,1.0);}
 ${cloudShader}
+${surfaceWeatherShader}
 // One body's single-scattering contribution along the view ray (body-radius units).
 vec3 scatter(vec3 color,vec3 ro,vec3 rd,float distanceToScene,float bodyRadius,float outer,vec3 betaR,vec3 betaM,vec2 scale,vec2 phase){
   vec2 hit=sphere(ro,rd,outer);
@@ -97,26 +104,26 @@ void main(){
   bool ground=depth<.999999;
   float sceneMetres=(exp2(depth*logFar)-1.0)/max(.0001,-viewRay.z);
   float distanceToScene=ground?sceneMetres/radius:1e9;
-  vec3 original=texture2D(sceneColor,vUv).rgb;
+  vec4 original=texture2D(sceneColor,vUv);
+  float skyCoverage=1.0-clamp(original.a,0.0,1.0);
   float daylight=0.0;
   for(int i=0;i<${ATMOSPHERE_SLOTS};i++){
     if(atmoEnabled[i]<.5)continue;
     daylight=max(daylight,smoothstep(-.12,.2,dot(normalize(atmoCamera[i]),sunDirection))
       *exp(-max(0.0,length(atmoCamera[i])-1.0)*atmoRadius[i]/35000.0));
   }
-  // Preserve additive corona light in space pixels even without opaque depth.
-  vec3 color=ground?original:stars(rd)*(1.0-daylight)+original;
+  vec3 color=original.rgb+stars(rd)*(1.0-daylight)*skyCoverage;
   float sunDot=dot(rd,sunDirection);
-  // Physical photosphere radius: twice the previous angular size from Aeon.
-  float disk=smoothstep(cos(sunAngularRadius*1.0417),cos(sunAngularRadius*.9583),sunDot)*sunDisk;
-  if(!ground)color+=vec3(18.0,15.5,12.5)*disk;
+  // A 240,000-km stellar radius: 0.0096 rad from Aeon, larger from the inner planet.
+  float disk=smoothstep(cos(sunAngularRadius*1.0417),cos(sunAngularRadius*.9583),sunDot);
+  if(!ground)color+=vec3(18.0,15.5,12.5)*disk*sunDisk*skyCoverage;
   // Distant worlds as bright points with a soft halo; extinguished by the air like the star.
   if(!ground)for(int i=0;i<${POINT_BODIES};i++){
     if(pointSize[i]<=0.0)continue;
     float angle=acos(clamp(dot(rd,pointDirection[i]),-1.0,1.0));
     float core=1.0-smoothstep(pointSize[i]*.7,pointSize[i]*1.3,angle);
     float halo=exp(-(angle*angle)/(pointSize[i]*pointSize[i]*9.0))*.22;
-    color+=pointColor[i]*(core+halo);
+    color+=pointColor[i]*(core+halo)*skyCoverage;
   }
   for(int i=0;i<${ATMOSPHERE_SLOTS};i++){
     int j=atmoOrder[i];
@@ -128,6 +135,8 @@ void main(){
     vec4 clouds=cloudRadiance(cameraPlanet,rd,distanceToScene,sunDot);
     color=color*(1.0-clouds.a)+clouds.rgb;
   }
+  color=surfaceWeather(color,rd,ground?sceneMetres:1e9);
+  color+=bloomStrength*(texture2D(bloomNear,vUv).rgb*.35+texture2D(bloomMid,vUv).rgb*.4+texture2D(bloomWide,vUv).rgb*.5);
   color=aces(color*exposure);
   color=pow(color,vec3(1.0/2.2));
   float dither=(hash(vec3(gl_FragCoord.xy,0.0))-.5)/255.0;
@@ -137,6 +146,7 @@ void main(){
 export class Atmosphere {
   constructor(renderer){
     this.renderer=renderer;
+    this.bloom=new EnergyBloom(renderer);
     this.cloudNoise=createCloudNoise();
     this.target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true});
     this.target.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
@@ -147,6 +157,8 @@ export class Atmosphere {
       pointDirection:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3(0,0,1))},pointColor:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3())},pointSize:{value:slots(POINT_BODIES).map(()=>0)}},
       vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
     this.material.uniforms.cloudNoise={value:this.cloudNoise};this.material.uniforms.cloudTime={value:0};
+    ['bloomNear','bloomMid','bloomWide'].forEach((key,i)=>this.material.uniforms[key]={value:this.bloom.textures[i]});
+    this.material.uniforms.bloomStrength={value:.65};
     this.scene=new THREE.Scene();const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),this.material);quad.frustumCulled=false;this.scene.add(quad);this.camera=new THREE.Camera();
     this.setBody(0,[0,0,0],RADIUS,AEON_ATMOSPHERE);
   }
@@ -163,7 +175,7 @@ export class Atmosphere {
     const u=this.material.uniforms;u.pointDirection.value[index].copy(direction);u.pointColor.value[index].fromArray(color);u.pointSize.value[index]=size;
   }
   setSun(sun){this.material.uniforms.sunDisk.value=sun.diskWeight;}
-  resize(w,h){this.target.setSize(w,h);this.material.uniforms.resolution.value.set(w,h);}
+  resize(w,h){this.target.setSize(w,h);this.bloom.resize(w,h);this.material.uniforms.resolution.value.set(w,h);}
   render(scene,camera,worldPosition,sunDirection,elapsed=0,sunDistance=null){
     camera.updateMatrixWorld();const u=this.material.uniforms;
     u.cloudTime.value=elapsed;
@@ -178,8 +190,9 @@ export class Atmosphere {
     // Distinct non-overlapping atmospheres composite from far to near, including
     // Miasma seen through Pyre's foreground air and Pyre seen from Miasma.
     u.atmoOrder.value.sort((a,b)=>u.atmoCamera.value[b].length()*u.atmoRadius.value[b]-u.atmoCamera.value[a].length()*u.atmoRadius.value[a]);
-    this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,1);this.renderer.clear();this.renderer.render(scene,camera);
+    this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,0);this.renderer.clear();this.renderer.render(scene,camera);
+    this.bloom.render(this.target.texture);u.bloomStrength.value=this.bloom.enabled?.65:0;
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);
   }
-  dispose(){this.target.dispose();this.cloudNoise.dispose();this.material.dispose();this.scene.children[0].geometry.dispose();}
+  dispose(){this.bloom.dispose();this.target.dispose();this.cloudNoise.dispose();this.material.dispose();this.scene.children[0].geometry.dispose();}
 }

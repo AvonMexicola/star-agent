@@ -1,0 +1,1013 @@
+{
+  "browser": "151.0.7922.173",
+  "backend": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "viewport": [
+    1440,
+    900
+  ],
+  "modelOverride": null,
+  "errors": [],
+  "warnings": [],
+  "captures": [
+    {
+      "name": "orbit",
+      "state": {
+        "opening": {
+          "phase": "skipped"
+        },
+        "camera": {
+          "position": [
+            1771086.2889946883,
+            1525307.233189485,
+            3798106.8035687017
+          ],
+          "fov": 52
+        },
+        "audio": {
+          "created": false,
+          "enabled": false
+        },
+        "travel": null,
+        "travelTarget": null,
+        "mapOpen": false,
+        "tunnel": {
+          "visible": false,
+          "intensity": 0
+        },
+        "speedProfile": {
+          "cruise": 3000,
+          "boosted": 9000,
+          "limit": 3000,
+          "speed": 3000,
+          "regime": "SPACE"
+        },
+        "moon": {
+          "position": [
+            -2388089.256503974,
+            0,
+            -23880892.565039743
+          ],
+          "radius": 434350,
+          "altitude": 27596619.914745737,
+          "patches": 86,
+          "lod": 2,
+          "distance": 28031273.774506234
+        },
+        "controller": {
+          "connected": false,
+          "active": false,
+          "armed": false,
+          "status": "Connect a controller and press a button."
+        },
+        "body": "aeon",
+        "seed": 7291,
+        "generatorVersion": 2,
+        "position": [
+          1771086.2889946883,
+          1525307.233189485,
+          3798106.8035687017
+        ],
+        "altitude": 2866950,
+        "speed": 0,
+        "mode": "flight",
+        "autoland": false,
+        "flightAssist": true,
+        "flightRegime": "SPACE",
+        "atmosphereFraction": 0,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "groundHeight": 0,
+        "biome": "OPEN OCEAN",
+        "sunDistance": 24997345195.450153,
+        "patches": 202,
+        "lod": 3,
+        "pending": 0,
+        "vegetation": {
+          "trees": 0,
+          "grassTufts": 0,
+          "rocks": 0,
+          "rebuilds": 0
+        },
+        "drawCalls": 477,
+        "triangles": 304642,
+        "ready": true,
+        "transiting": false,
+        "fps": 1,
+        "shipAsset": "ready",
+        "storageOpen": false,
+        "storageProgress": 0,
+        "inventory": {
+          "ship": {
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1
+          },
+          "pack": {
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0
+          },
+          "shipMass": 33,
+          "packMass": 1,
+          "saved": true
+        },
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": []
+          },
+          {
+            "title": "NAVIGATION",
+            "values": []
+          },
+          {
+            "title": "SYSTEMS",
+            "values": []
+          },
+          {
+            "title": "CARGO",
+            "values": []
+          }
+        ],
+        "doorOpen": false,
+        "doorProgress": 0,
+        "insideShip": false,
+        "station": {
+          "ready": true,
+          "error": null,
+          "doorsOpen": 0,
+          "distance": 2777553.2021582746,
+          "local": [
+            -388794.1927955614,
+            2749584.9170522266,
+            -58511.967895752285
+          ],
+          "deckClearance": 2749592.9170522266,
+          "docked": false,
+          "lifting": false,
+          "canDock": false
+        },
+        "interaction": "",
+        "renderScale": 1
+      },
+      "softwareRafMs": 869.4166666666666
+    },
+    {
+      "name": "coast",
+      "state": {
+        "opening": {
+          "phase": "skipped"
+        },
+        "camera": {
+          "position": [
+            630716.5715908742,
+            412272.5049795953,
+            1403408.0182319866
+          ],
+          "fov": 52
+        },
+        "audio": {
+          "created": false,
+          "enabled": false
+        },
+        "travel": null,
+        "travelTarget": null,
+        "mapOpen": false,
+        "tunnel": {
+          "visible": false,
+          "intensity": 0
+        },
+        "speedProfile": {
+          "cruise": 250,
+          "boosted": 400,
+          "limit": 72.50000000012238,
+          "speed": 72.50000000012238,
+          "regime": "ATMOSPHERE"
+        },
+        "moon": {
+          "position": [
+            -2388089.256503974,
+            0,
+            -23880892.565039743
+          ],
+          "radius": 434350,
+          "altitude": 25032604.960512288,
+          "patches": 88,
+          "lod": 2,
+          "distance": 25467214.477271296
+        },
+        "controller": {
+          "connected": false,
+          "active": false,
+          "armed": false,
+          "status": "Connect a controller and press a button."
+        },
+        "body": "aeon",
+        "seed": 7291,
+        "generatorVersion": 2,
+        "position": [
+          630716.5715908742,
+          412272.5049795953,
+          1403408.0182319866
+        ],
+        "altitude": 95.00000000024477,
+        "speed": 0,
+        "mode": "flight",
+        "autoland": false,
+        "flightAssist": true,
+        "flightRegime": "ATMOSPHERE",
+        "atmosphereFraction": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "groundHeight": 53.64011472136452,
+        "biome": "COASTLAND",
+        "sunDistance": 24999095337.812016,
+        "patches": 659,
+        "lod": 16,
+        "pending": 0,
+        "vegetation": {
+          "trees": 140,
+          "treeLods": [
+            0,
+            0,
+            132
+          ],
+          "treeRange": 1400,
+          "grassTufts": 3855,
+          "rocks": 213,
+          "rebuilds": 1
+        },
+        "drawCalls": 449,
+        "triangles": 396065,
+        "ready": true,
+        "transiting": false,
+        "fps": 0,
+        "shipAsset": "ready",
+        "storageOpen": false,
+        "storageProgress": 0,
+        "inventory": {
+          "ship": {
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1
+          },
+          "pack": {
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0
+          },
+          "shipMass": 33,
+          "packMass": 1,
+          "saved": true
+        },
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": []
+          },
+          {
+            "title": "NAVIGATION",
+            "values": []
+          },
+          {
+            "title": "SYSTEMS",
+            "values": []
+          },
+          {
+            "title": "CARGO",
+            "values": []
+          }
+        ],
+        "doorOpen": false,
+        "doorProgress": 0,
+        "insideShip": false,
+        "station": {
+          "ready": true,
+          "error": null,
+          "doorsOpen": 0,
+          "distance": 99851.35988527857,
+          "local": [
+            3.637978807091713e-11,
+            -99851.35988527858,
+            -3.2741809263825417e-11
+          ],
+          "deckClearance": -99843.35988527858,
+          "docked": false,
+          "lifting": false,
+          "canDock": false
+        },
+        "interaction": "",
+        "renderScale": 1
+      },
+      "softwareRafMs": 2708.233333333332
+    },
+    {
+      "name": "forest",
+      "state": {
+        "opening": {
+          "phase": "skipped"
+        },
+        "camera": {
+          "position": [
+            1128122.2769889287,
+            872404.2711810892,
+            710416.5124203677
+          ],
+          "fov": 52
+        },
+        "audio": {
+          "created": false,
+          "enabled": false
+        },
+        "travel": null,
+        "travelTarget": null,
+        "mapOpen": false,
+        "tunnel": {
+          "visible": false,
+          "intensity": 0
+        },
+        "speedProfile": {
+          "cruise": 250,
+          "boosted": 400,
+          "limit": 72.50000000002805,
+          "speed": 72.50000000002805,
+          "regime": "ATMOSPHERE"
+        },
+        "moon": {
+          "position": [
+            -2388089.256503974,
+            0,
+            -23880892.565039743
+          ],
+          "radius": 434350,
+          "altitude": 24422075.8643163,
+          "patches": 86,
+          "lod": 2,
+          "distance": 24856735.805487726
+        },
+        "controller": {
+          "connected": false,
+          "active": false,
+          "armed": false,
+          "status": "Connect a controller and press a button."
+        },
+        "body": "aeon",
+        "seed": 7291,
+        "generatorVersion": 2,
+        "position": [
+          1128122.2769889287,
+          872404.2711810892,
+          710416.5124203677
+        ],
+        "altitude": 95.0000000000561,
+        "speed": 0,
+        "mode": "flight",
+        "autoland": false,
+        "flightAssist": true,
+        "flightRegime": "ATMOSPHERE",
+        "atmosphereFraction": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "groundHeight": 403.4757040286807,
+        "biome": "TEMPERATE FOREST",
+        "sunDistance": 24998555225.2859,
+        "patches": 1148,
+        "lod": 16,
+        "pending": 0,
+        "vegetation": {
+          "trees": 40998,
+          "treeLods": [
+            600,
+            4914,
+            38590
+          ],
+          "treeRange": 1400,
+          "grassTufts": 8993,
+          "rocks": 195,
+          "rebuilds": 2
+        },
+        "drawCalls": 505,
+        "triangles": 1346435,
+        "ready": true,
+        "transiting": false,
+        "fps": 0,
+        "shipAsset": "ready",
+        "storageOpen": false,
+        "storageProgress": 0,
+        "inventory": {
+          "ship": {
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1
+          },
+          "pack": {
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0
+          },
+          "shipMass": 33,
+          "packMass": 1,
+          "saved": true
+        },
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": []
+          },
+          {
+            "title": "NAVIGATION",
+            "values": []
+          },
+          {
+            "title": "SYSTEMS",
+            "values": []
+          },
+          {
+            "title": "CARGO",
+            "values": []
+          }
+        ],
+        "doorOpen": false,
+        "doorProgress": 0,
+        "insideShip": false,
+        "station": {
+          "ready": true,
+          "error": null,
+          "doorsOpen": 0,
+          "distance": 1004069.7652946585,
+          "local": [
+            -555277.7729484633,
+            -394363.59496253415,
+            -737766.9302811639
+          ],
+          "deckClearance": -394355.59496253415,
+          "docked": false,
+          "lifting": false,
+          "canDock": false
+        },
+        "interaction": "",
+        "renderScale": 1
+      },
+      "softwareRafMs": 3491.516666666668
+    },
+    {
+      "name": "highlands",
+      "state": {
+        "opening": {
+          "phase": "skipped"
+        },
+        "camera": {
+          "position": [
+            1262770.1218588366,
+            669734.2311668764,
+            711534.3958752203
+          ],
+          "fov": 52
+        },
+        "audio": {
+          "created": false,
+          "enabled": false
+        },
+        "travel": null,
+        "travelTarget": null,
+        "mapOpen": false,
+        "tunnel": {
+          "visible": false,
+          "intensity": 0
+        },
+        "speedProfile": {
+          "cruise": 250,
+          "boosted": 400,
+          "limit": 250,
+          "speed": 250,
+          "regime": "ATMOSPHERE"
+        },
+        "moon": {
+          "position": [
+            -2388089.256503974,
+            0,
+            -23880892.565039743
+          ],
+          "radius": 434350,
+          "altitude": 24436261.563517522,
+          "patches": 87,
+          "lod": 2,
+          "distance": 24870962.62650309
+        },
+        "controller": {
+          "connected": false,
+          "active": false,
+          "armed": false,
+          "status": "Connect a controller and press a button."
+        },
+        "body": "aeon",
+        "seed": 7291,
+        "generatorVersion": 2,
+        "position": [
+          1262770.1218588366,
+          669734.2311668764,
+          711534.3958752203
+        ],
+        "altitude": 699.9999999999104,
+        "speed": 0,
+        "mode": "flight",
+        "autoland": false,
+        "flightAssist": true,
+        "flightRegime": "ATMOSPHERE",
+        "atmosphereFraction": 1,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "groundHeight": 3238.2969351230154,
+        "biome": "ALPINE HIGHLANDS",
+        "sunDistance": 24998503446.361843,
+        "patches": 666,
+        "lod": 14,
+        "pending": 0,
+        "vegetation": {
+          "trees": 0,
+          "treeLods": [
+            0,
+            0,
+            0
+          ],
+          "treeRange": 1400,
+          "grassTufts": 0,
+          "rocks": 202,
+          "rebuilds": 3
+        },
+        "drawCalls": 247,
+        "triangles": 228882,
+        "ready": true,
+        "transiting": false,
+        "fps": 1,
+        "shipAsset": "ready",
+        "storageOpen": false,
+        "storageProgress": 0,
+        "inventory": {
+          "ship": {
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1
+          },
+          "pack": {
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0
+          },
+          "shipMass": 33,
+          "packMass": 1,
+          "saved": true
+        },
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": []
+          },
+          {
+            "title": "NAVIGATION",
+            "values": []
+          },
+          {
+            "title": "SYSTEMS",
+            "values": []
+          },
+          {
+            "title": "CARGO",
+            "values": []
+          }
+        ],
+        "doorOpen": false,
+        "doorProgress": 0,
+        "insideShip": false,
+        "station": {
+          "ready": true,
+          "error": null,
+          "doorsOpen": 0,
+          "distance": 1006421.4653959378,
+          "local": [
+            -344964.06110712345,
+            -392519.0403013215,
+            -860123.6920089556
+          ],
+          "deckClearance": -392511.0403013215,
+          "docked": false,
+          "lifting": false,
+          "canDock": false
+        },
+        "interaction": "",
+        "renderScale": 1
+      },
+      "softwareRafMs": 1277.7166666666697
+    },
+    {
+      "name": "hangar-opening",
+      "state": {
+        "opening": {
+          "phase": "cinematic",
+          "elapsed": 17.732599999999998,
+          "blend": 0,
+          "characterReady": true,
+          "characterError": null,
+          "clip": "idle",
+          "cameraPosition": [
+            -128548.886439284,
+            164793.48554718573,
+            1679793.258957856
+          ],
+          "doors": 1
+        },
+        "camera": {
+          "position": [
+            -128548.886439284,
+            164793.48554718573,
+            1679793.258957856
+          ],
+          "fov": 45
+        },
+        "audio": {
+          "created": false,
+          "enabled": false
+        },
+        "travel": null,
+        "travelTarget": null,
+        "mapOpen": false,
+        "tunnel": {
+          "visible": false,
+          "intensity": 0
+        },
+        "speedProfile": {
+          "cruise": 3000,
+          "boosted": 9000,
+          "limit": 6,
+          "speed": 6,
+          "regime": "SPACE"
+        },
+        "moon": {
+          "position": [
+            -2388089.256503974,
+            0,
+            -23880892.565039743
+          ],
+          "radius": 434350,
+          "altitude": 25226314.525066555,
+          "patches": 88,
+          "lod": 2,
+          "distance": 25660888.862289663
+        },
+        "controller": {
+          "connected": false,
+          "active": false,
+          "armed": false,
+          "status": "Connect a controller and press a button."
+        },
+        "body": "aeon",
+        "seed": 7291,
+        "generatorVersion": 2,
+        "position": [
+          -128546.41022583384,
+          164798.3702976149,
+          1679790.6188221923
+        ],
+        "altitude": 98839.54008353745,
+        "speed": 0,
+        "mode": "walk",
+        "autoland": false,
+        "flightAssist": true,
+        "flightRegime": "SPACE",
+        "atmosphereFraction": 0,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "groundHeight": 1153.5607790070546,
+        "biome": "TEMPERATE FOREST",
+        "sunDistance": 24999852523.911507,
+        "patches": 180,
+        "lod": 6,
+        "pending": 0,
+        "vegetation": {
+          "trees": 0,
+          "grassTufts": 0,
+          "rocks": 0,
+          "rebuilds": 0
+        },
+        "drawCalls": 356,
+        "triangles": 317000,
+        "ready": true,
+        "transiting": false,
+        "fps": 1,
+        "shipAsset": "ready",
+        "storageOpen": false,
+        "storageProgress": 0,
+        "inventory": {
+          "ship": {
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1
+          },
+          "pack": {
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0
+          },
+          "shipMass": 33,
+          "packMass": 1,
+          "saved": true
+        },
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "VELOCITY: 0.0 m/s",
+              "ALTITUDE AGL: 98.8 km",
+              "FLIGHT CONTROL: WALK"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "COURSE: FREE EXPLORATION",
+              "BEARING: NO COURSE",
+              "POSITION: 5.59 / -4.38"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "ENVIRONMENT: SPACE",
+              "HATCH / RAMP: SEALED / STOWED",
+              "LOCAL VERTICAL: 0.0 m/s"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "SHIP STORAGE: 33.0 / 120 kg",
+              "BACKPACK: 1.0 / 20 kg",
+              "ACCESS: STARBOARD CABIN"
+            ]
+          }
+        ],
+        "doorOpen": false,
+        "doorProgress": 0,
+        "insideShip": false,
+        "station": {
+          "ready": true,
+          "error": null,
+          "doorsOpen": 1,
+          "distance": 7.369701384013386,
+          "local": [
+            2.4999992450248723,
+            -6.249999999971916,
+            -3.00000037745913
+          ],
+          "deckClearance": 1.7500000000280842,
+          "docked": true,
+          "lifting": false,
+          "canDock": true
+        },
+        "shipLocal": [
+          2.49999999998974,
+          1.7500000000180922,
+          -4.999999999978779
+        ],
+        "interaction": "APPROACH THE REAR HATCH TO BOARD",
+        "renderScale": 1
+      },
+      "softwareRafMs": 908.2999999999998
+    },
+    {
+      "name": "cockpit",
+      "state": {
+        "opening": {
+          "phase": "skipped",
+          "elapsed": 23.998999999999995,
+          "blend": 0,
+          "characterReady": true,
+          "characterError": null,
+          "clip": "idle",
+          "cameraPosition": [
+            -128548.88973521034,
+            164793.48273401908,
+            1679793.24641964
+          ],
+          "doors": 1
+        },
+        "camera": {
+          "position": [
+            -128549.06729150529,
+            164800.21119524117,
+            1679791.7506781667
+          ],
+          "fov": 52
+        },
+        "audio": {
+          "created": false,
+          "enabled": false
+        },
+        "travel": null,
+        "travelTarget": null,
+        "mapOpen": false,
+        "tunnel": {
+          "visible": false,
+          "intensity": 0
+        },
+        "speedProfile": {
+          "cruise": 3000,
+          "boosted": 9000,
+          "limit": 6,
+          "speed": 6,
+          "regime": "SPACE"
+        },
+        "moon": {
+          "position": [
+            -2388089.256503974,
+            0,
+            -23880892.565039743
+          ],
+          "radius": 434350,
+          "altitude": 25226315.429837923,
+          "patches": 88,
+          "lod": 2,
+          "distance": 25660889.76758335
+        },
+        "controller": {
+          "connected": false,
+          "active": false,
+          "armed": false,
+          "status": "Connect a controller and press a button."
+        },
+        "body": "aeon",
+        "seed": 7291,
+        "generatorVersion": 2,
+        "position": [
+          -128549.06729150529,
+          164800.21119524117,
+          1679791.7506781667
+        ],
+        "altitude": 98838.84140249758,
+        "speed": 0,
+        "mode": "landed",
+        "autoland": false,
+        "flightAssist": true,
+        "flightRegime": "SPACE",
+        "atmosphereFraction": 0,
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "angularVelocity": [
+          0,
+          0,
+          0
+        ],
+        "groundHeight": 1155.7636569699162,
+        "biome": "TEMPERATE FOREST",
+        "sunDistance": 24999852525.5674,
+        "patches": 180,
+        "lod": 6,
+        "pending": 0,
+        "vegetation": {
+          "trees": 0,
+          "grassTufts": 0,
+          "rocks": 0,
+          "rebuilds": 0
+        },
+        "drawCalls": 361,
+        "triangles": 297178,
+        "ready": true,
+        "transiting": false,
+        "fps": 1,
+        "shipAsset": "ready",
+        "storageOpen": false,
+        "storageProgress": 0,
+        "inventory": {
+          "ship": {
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1
+          },
+          "pack": {
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0
+          },
+          "shipMass": 33,
+          "packMass": 1,
+          "saved": true
+        },
+        "mfds": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "VELOCITY: 0.0 m/s",
+              "ALTITUDE AGL: 98.8 km",
+              "FLIGHT CONTROL: LANDED"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "COURSE: FREE EXPLORATION",
+              "BEARING: NO COURSE",
+              "POSITION: 5.59 / -4.38"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "ENVIRONMENT: SPACE",
+              "HATCH / RAMP: SEALED / STOWED",
+              "LOCAL VERTICAL: 0.0 m/s"
+            ]
+          },
+          {
+            "title": "CARGO",
+            "values": [
+              "SHIP STORAGE: 33.0 / 120 kg",
+              "BACKPACK: 1.0 / 20 kg",
+              "ACCESS: STARBOARD CABIN"
+            ]
+          }
+        ],
+        "doorOpen": false,
+        "doorProgress": 0,
+        "insideShip": true,
+        "station": {
+          "ready": true,
+          "error": null,
+          "doorsOpen": 1,
+          "distance": 5.508402672335765,
+          "local": [
+            -4.227872967277335e-7,
+            -5.450000000051891,
+            -0.8000000000187655
+          ],
+          "deckClearance": 2.549999999948109,
+          "docked": true,
+          "lifting": false,
+          "canDock": true
+        },
+        "shipLocal": [
+          -1.322342235710039e-11,
+          2.549999999938117,
+          -2.800000000027895
+        ],
+        "interaction": "F · LEAVE PILOT SEAT",
+        "renderScale": 1
+      },
+      "softwareRafMs": 788.8499999999998
+    }
+  ]
+}

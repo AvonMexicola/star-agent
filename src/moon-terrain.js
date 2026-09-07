@@ -1,46 +1,31 @@
 import * as THREE from 'three';
 import { cubeDirection, MOON_RADIUS, MOON_POSITION, moonSurface } from './world.js';
+import { terrainGridForLevel } from './terrain-resolution.js';
+import { MOON_MAX_HEIGHT } from './moon-world.js';
+import { generateMoonPatch } from './moon-patch.js';
+export { generateMoonPatch, MOON_GRID } from './moon-patch.js';
+import { patchSurfaceMaterial, patchSurfaceUV } from './patch-surface.js';
 
-export const MOON_GRID=16,MOON_MAX_LEVEL=17;
-const normalized=(x,y,z)=>{const l=Math.hypot(x,y,z);return [x/l,y/l,z/l];};
-
-/** Body-local patch offsets are computed in doubles before conversion to float. */
-export function generateMoonPatch({face,level,ix,iy}) {
-  const size=2/2**level,u0=-1+ix*size,v0=-1+iy*size;
-  const d=cubeDirection(face,u0+size/2,v0+size/2),centerRadius=MOON_RADIUS+moonSurface(...d).height,center=d.map(v=>v*centerRadius);
-  const count=(MOON_GRID+1)**2+4*(MOON_GRID+1),positions=new Float32Array(count*3),normals=new Float32Array(count*3),directions=new Float32Array(count*3),points=new Float32Array(count*3);
-  const rockReliefs=new Float32Array(count);
-  const step=Math.max(.3,Math.min(120,size*MOON_RADIUS/MOON_GRID*.35)),epsilon=step/MOON_RADIUS;
-  const write=(index,u,v,skirt=0)=>{
-    const d=cubeDirection(face,u,v),sample=moonSurface(...d),height=sample.height;
-    rockReliefs[index]=sample.rockRelief;
-    let tangent=normalized(d[2],0,-d[0]);if(!Number.isFinite(tangent[0]))tangent=[1,0,0];
-    const b=[d[1]*tangent[2]-d[2]*tangent[1],d[2]*tangent[0]-d[0]*tangent[2],d[0]*tangent[1]-d[1]*tangent[0]];
-    const slope=axis=>{
-      const plus=normalized(...d.map((v,i)=>v+axis[i]*epsilon)),minus=normalized(...d.map((v,i)=>v-axis[i]*epsilon));
-      return (moonSurface(...plus).height-moonSurface(...minus).height)/(2*step);
-    };
-    const a=slope(tangent),c=slope(b),normal=normalized(...d.map((v,i)=>v-tangent[i]*a-b[i]*c));
-    for(let axis=0;axis<3;axis++){
-      const value=d[axis]*(MOON_RADIUS+height-skirt)-center[axis],k=index*3+axis;
-      positions[k]=value;directions[k]=d[axis];normals[k]=normal[axis];
-      points[k]=value+((center[axis]%256)+256)%256;
-    }
-  };
-  for(let y=0;y<=MOON_GRID;y++)for(let x=0;x<=MOON_GRID;x++)write(y*(MOON_GRID+1)+x,u0+size*x/MOON_GRID,v0+size*y/MOON_GRID);
-  const indices=[];
-  for(let y=0;y<MOON_GRID;y++)for(let x=0;x<MOON_GRID;x++){const a=y*(MOON_GRID+1)+x,b=a+1,c=a+MOON_GRID+1;indices.push(a,b,c,b,c+1,c);}
-  const edges=[Array.from({length:MOON_GRID+1},(_,i)=>i),Array.from({length:MOON_GRID+1},(_,i)=>i*(MOON_GRID+1)+MOON_GRID),Array.from({length:MOON_GRID+1},(_,i)=>MOON_GRID*(MOON_GRID+1)+MOON_GRID-i),Array.from({length:MOON_GRID+1},(_,i)=>(MOON_GRID-i)*(MOON_GRID+1))];
-  let next=(MOON_GRID+1)**2;
-  for(const edge of edges){const start=next;for(const index of edge)write(next++,u0+size*(index%(MOON_GRID+1))/MOON_GRID,v0+size*Math.floor(index/(MOON_GRID+1))/MOON_GRID,Math.max(.15,size*MOON_RADIUS*.04));for(let i=0;i<MOON_GRID;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
-  return {center,positions,normals,directions,points,rockReliefs,indices:new Uint16Array(indices)};
-}
+export const MOON_MAX_LEVEL=17;
 
 export class MoonTerrain {
   constructor(scene,material){
     this.scene=scene;this.material=material;this.nodes=new Map();this.origin=new THREE.Vector3();this.local=new THREE.Vector3();this.visibleCount=0;this.maxLevel=0;
+    this.queue=[];this.jobs=new Map();this.workers=[];this.completedBuilds=0;
     this.roots=Array.from({length:6},(_,face)=>this.node(face,0,0,0));
     for(const node of this.roots)this.build(node);
+    // Keep initial globe coverage synchronous. Detailed flight patches are CPU
+    // work and must not block camera/input updates while the player descends.
+    if(typeof Worker!=='undefined')for(let i=0;i<2;i++){
+      const worker=new Worker(new URL('./moon-terrain.worker.js',import.meta.url),{type:'module'}),slot={worker,busy:false};
+      worker.onmessage=({data})=>{
+        slot.busy=false;const node=this.jobs.get(data.id);this.jobs.delete(data.id);
+        if(node){node.queued=false;if(data.error){this.error=data.error;console.error(data.error);}else{this.install(node,data);this.completedBuilds++;}}
+        this.dispatch();
+      };
+      worker.onerror=error=>{this.error='Lunar terrain worker failed';console.error(this.error,error.message);};
+      this.workers.push(slot);
+    }
   }
   node(face,level,ix,iy){
     const key=`${face}/${level}/${ix}/${iy}`;if(this.nodes.has(key))return this.nodes.get(key);
@@ -50,42 +35,66 @@ export class MoonTerrain {
   }
   build(node){
     if(node.mesh)return;
-    const data=generateMoonPatch(node),geometry=new THREE.BufferGeometry();
-    for(const [name,values] of [['position',data.positions],['normal',data.normals],['moonDirection',data.directions],['moonPoint',data.points]])geometry.setAttribute(name,new THREE.BufferAttribute(values,3));
+    const grid=terrainGridForLevel(node.level);
+    this.install(node,generateMoonPatch({...node,grid,surfaceDetail:grid===32}));
+  }
+  request(node){if(!node.mesh&&!node.queued){node.queued=true;this.queue.push(node);}}
+  dispatch(){
+    this.queue.sort((a,b)=>a.surface.distanceTo(this.local)/a.size-b.surface.distanceTo(this.local)/b.size);
+    for(const slot of this.workers)if(!slot.busy&&this.queue.length){
+      const node=this.queue.shift(),grid=terrainGridForLevel(node.level);slot.busy=true;this.jobs.set(node.key,node);
+      slot.worker.postMessage({id:node.key,face:node.face,level:node.level,ix:node.ix,iy:node.iy,grid,surfaceDetail:grid===32});
+    }
+  }
+  install(node,data){
+    const grid=terrainGridForLevel(node.level),geometry=new THREE.BufferGeometry();
+    for(const [name,values] of [['position',data.positions],['normal',data.normals],['moonDirection',data.directions],['moonPoint',data.points],['color',data.colors]])geometry.setAttribute(name,new THREE.BufferAttribute(values,3));
     geometry.setAttribute('rockRelief',new THREE.BufferAttribute(data.rockReliefs,1));
-    geometry.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(data.positions.length/3*2),2));
+    geometry.setAttribute('moonSurfaceData',new THREE.BufferAttribute(data.surface,2));
+    geometry.setAttribute('uv',new THREE.BufferAttribute(data.field?patchSurfaceUV(grid,data.field.width):new Float32Array(data.positions.length/3*2),2));
     geometry.setIndex(new THREE.BufferAttribute(data.indices,1));geometry.computeBoundingSphere();
-    node.center=new THREE.Vector3(...data.center);node.mesh=new THREE.Mesh(geometry,this.material);node.mesh.name=`Selene terrain ${node.key}`;
+    node.center=new THREE.Vector3(...data.center);node.mesh=new THREE.Mesh(geometry,data.field?patchSurfaceMaterial(this.material,data.field):this.material);node.mesh.name=`Selene terrain ${node.key}`;
     node.mesh.receiveShadow=true;node.mesh.castShadow=node.level>=12;node.mesh.visible=false;this.scene.add(node.mesh);
   }
   update(worldPosition,origin){
     this.origin.copy(origin);this.local.copy(worldPosition).sub(new THREE.Vector3(...MOON_POSITION));
     const radius=this.local.length(),radial=this.local.clone().normalize(),now=performance.now();
+    for(const node of this.queue)node.queued=false;this.queue=[];
     for(const node of this.nodes.values())if(node.mesh)node.mesh.visible=false;
-    let budget=8;this.visibleCount=0;this.maxLevel=0;
+    let budget=8,builds=0;this.visibleCount=0;this.maxLevel=0;this.waitingCount=0;
     const distance=node=>node.surface.distanceTo(this.local);
     const visit=node=>{
-      if(node.level>1&&node.normal.dot(radial)<MOON_RADIUS/Math.max(MOON_RADIUS,radius)-node.size*1.5-.035)return;
+      if(node.level>1&&node.normal.dot(radial)<MOON_RADIUS/Math.max(MOON_RADIUS,radius)-node.size*1.5-MOON_MAX_HEIGHT/MOON_RADIUS)return;
       node.lastUsed=now;
-      const split=node.level<2||(node.level<MOON_MAX_LEVEL&&distance(node)<node.size*MOON_RADIUS*1.8);
+      const split=node.level<(radius<MOON_RADIUS*12?3:2)||(node.level<MOON_MAX_LEVEL&&distance(node)<node.size*MOON_RADIUS*1.8);
       if(split){
         if(!node.children)node.children=[this.node(node.face,node.level+1,node.ix*2,node.iy*2),this.node(node.face,node.level+1,node.ix*2+1,node.iy*2),this.node(node.face,node.level+1,node.ix*2,node.iy*2+1),this.node(node.face,node.level+1,node.ix*2+1,node.iy*2+1)];
-        for(const child of [...node.children].sort((a,b)=>distance(a)-distance(b)))if(!child.mesh&&budget>0){this.build(child);budget--;}
+        // All four siblings are required for parent replacement, even when one
+        // is horizon-culled. Retain these dependencies to avoid eviction/rebuild
+        // loops that repeatedly expose coarse fallback mountains.
+        for(const child of node.children)child.lastUsed=now;
+        for(const child of [...node.children].sort((a,b)=>distance(a)-distance(b)))if(!child.mesh){
+          if(this.workers.length)this.request(child);
+          else{const cost=(terrainGridForLevel(child.level)/16)**2;if(budget>=cost){this.build(child);budget-=cost;builds++;}}
+        }
         // A parent remains visible until every child has geometry, including
         // during a rapid descent or a cache miss after returning from Aeon.
         if(node.children.every(child=>child.mesh)){for(const child of [...node.children].sort((a,b)=>distance(a)-distance(b)))visit(child);return;}
+        this.waitingCount++;
       }
       if(node.mesh){node.mesh.visible=true;this.visibleCount++;this.maxLevel=Math.max(this.maxLevel,node.level);}
     };
     for(const root of [...this.roots].sort((a,b)=>distance(a)-distance(b)))visit(root);
     for(const node of this.nodes.values())if(node.mesh)node.mesh.position.copy(node.center).add(new THREE.Vector3(...MOON_POSITION)).sub(origin);
+    this.buildsLastFrame=builds+this.completedBuilds;this.completedBuilds=0;this.dispatch();
     if(this.nodes.size>900)for(const node of this.nodes.values()){
       if(node.level<=2||node.mesh?.visible||now-node.lastUsed<8000)continue;
-      if(node.mesh){this.scene.remove(node.mesh);node.mesh.geometry.dispose();node.mesh=null;}
+      if(node.mesh){this.disposeMesh(node.mesh);node.mesh=null;}
       // Keep cheap nodes so retained child references cannot point at orphaned
       // duplicate meshes after revisiting an evicted region.
     }
   }
   get ready(){return this.maxLevel>=2;}
-  dispose(){for(const node of this.nodes.values())if(node.mesh){this.scene.remove(node.mesh);node.mesh.geometry.dispose();}this.nodes.clear();}
+  disposeMesh(mesh){this.scene.remove(mesh);mesh.geometry.dispose();if(mesh.material!==this.material)mesh.material.dispose();}
+  dispose(){for(const slot of this.workers)slot.worker.terminate();this.queue=[];this.jobs.clear();for(const node of this.nodes.values())if(node.mesh)this.disposeMesh(node.mesh);this.nodes.clear();}
 }
