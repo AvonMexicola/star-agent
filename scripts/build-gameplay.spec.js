@@ -28,8 +28,8 @@ async function walkOnClaim(page,x,z){
   await axes(page,[0,0,0,0]);throw Error(`Controller failed to reach claim-local ${x},${z}`);
 }
 const claimPoint=(page,point)=>page.evaluate(point=>{const c=window.starAgent.state.build.claims[0],n=window.starAgent.navigation;return n.position.clone().fromArray(point).applyQuaternion(n.orientation.clone().fromArray(c.quaternion)).add(n.position.clone().fromArray(c.origin)).toArray();},fullKit?[point[0],point[1],-point[2]]:point);
-async function selectPiece(page,id){if(!(await page.locator('#build-dialog').isVisible()))await tap(page,2);await choose(page,`build-piece-${id}`);await page.waitForFunction(()=>window.starAgent.state.controller.armed);}
-async function place(page,id){console.log(`place ${id}`,await page.evaluate(()=>window.starAgent.state.build.preview));await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid,null,{timeout:10000});const before=await page.evaluate(()=>window.starAgent.state.build.pieceCount);await tap(page,7);await page.waitForFunction(before=>window.starAgent.state.build.pieceCount===before+1,before);}
+async function selectPiece(page,id){if(!(await page.locator('#build-dialog').isVisible()))await tap(page,1);await choose(page,`build-piece-${id}`);await page.waitForFunction(()=>window.starAgent.state.controller.armed);}
+async function place(page,id){console.log(`place ${id}`,await page.evaluate(()=>window.starAgent.state.build.preview));await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid,null,{timeout:10000});const before=await page.evaluate(()=>window.starAgent.state.build.pieceCount);await tap(page,0);await page.waitForFunction(before=>window.starAgent.state.build.pieceCount===before+1,before);}
 
 async function placeAt(page,id,point){
   await aim(page,await claimPoint(page,[point[0],id==='crate'?point[1]+.01:0,point[2]]));
@@ -38,10 +38,10 @@ async function placeAt(page,id,point){
   for(let i=0;i<24;i++){
     const candidate=await page.evaluate(()=>{const b=window.starAgent.state.build,c=b.claims[0],n=window.starAgent.navigation;return n.position.clone().fromArray(b.preview.position).sub(n.position.clone().fromArray(c.origin)).applyQuaternion(n.orientation.clone().fromArray(c.quaternion).invert()).toArray();});
     if(Math.hypot(...candidate.map((value,i)=>value-(fullKit&&i===2?-point[i]:point[i])))<.03){found=true;break;}
-    await tap(page,6);
+    await tap(page,4);
   }
   expect(found,`Controller snap for ${id} at ${point}`).toBe(true);
-  await page.screenshot({path:`${evidence}/${id}-preview.png`});await place(page,id);await tap(page,1);
+  await page.screenshot({path:`${evidence}/${id}-preview.png`});await place(page,id);await tap(page,2);
 }
 
 async function takeFromShip(page,id,total){
@@ -137,7 +137,7 @@ test(fullKit?'controller constructs and uses all eight base pieces with physical
     await tap(page,9);await choose(page,'build');await choose(page,'build-piece-mainframe');await page.waitForFunction(()=>window.starAgent.state.controller.armed);await place(page,'mainframe');
     await strafe(page,4);await selectPiece(page,'foundation');
     for(let i=0;i<4&&!await page.evaluate(()=>window.starAgent.state.build.preview?.valid);i++){console.log('foundation rejection',await page.evaluate(()=>window.starAgent.state.build.preview?.reason));await strafe(page,1);}
-    await place(page,'foundation');await tap(page,1);
+    await place(page,'foundation');await tap(page,2);
   });
   const foundation=await page.evaluate(()=>{const c=window.starAgent.state.build.claims[0],p=c.pieces.find(p=>p.type==='foundation'),n=window.starAgent.navigation;return n.position.clone().fromArray(p.position).applyQuaternion(n.orientation.clone().fromArray(c.quaternion)).add(n.position.clone().fromArray(c.origin)).toArray();});
   await test.step('Walk back aboard for the staircase materials',async()=>{
@@ -148,7 +148,7 @@ test(fullKit?'controller constructs and uses all eight base pieces with physical
     await tap(page,1);await walk(page,rampPoint,1.2);await walk(page,approach,1.5);
   });
   await test.step('Place and physically climb the staircase',async()=>{
-    console.log('stairs');await aim(page,foundation);await tap(page,9);await choose(page,'build');await choose(page,'build-piece-stairs');await page.waitForFunction(()=>window.starAgent.state.controller.armed);if(fullKit){await tap(page,5);await tap(page,5);}await place(page,'stairs');await tap(page,1);
+    console.log('stairs');await aim(page,foundation);await tap(page,9);await choose(page,'build');await choose(page,'build-piece-stairs');await page.waitForFunction(()=>window.starAgent.state.controller.armed);if(fullKit){await tap(page,7);await tap(page,7);}await place(page,'stairs');await tap(page,2);
     await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);await page.screenshot({path:`${evidence}/stairs-placement.png`});
     const stairs=await page.evaluate(()=>window.starAgent.state.build.claims[0].pieces.find(p=>p.type==='stairs'));
     if(fullKit){await walkOnClaim(page,7.5,-3);await walkOnClaim(page,7.5,3);}

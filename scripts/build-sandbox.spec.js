@@ -17,11 +17,13 @@ test('controller enters supplied sandbox, builds, checks/refills stock, reloads 
  expect(await page.evaluate(()=>window.starAgent.state.sandbox)).toBe(true);expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('walk');expect((await saved(page)).build.claims[0].pieces.length).toBe(10);
  await page.waitForFunction(()=>window.starAgent.state.build.assetsReady&&window.starAgent.state.moon.lod>=14);
  await page.screenshot({path:`${out}/arrival.png`});
- await tap(page,9);await choose(page,'build');await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);
+ expect(await page.evaluate(()=>window.starAgent.state.build.controllerAvailable)).toBe(true);await tap(page,1);await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);
  await page.evaluate(()=>window.testPad.axes=[.8,-.8,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','wall');
  await page.screenshot({path:`${out}/radial-desktop.png`});await page.setViewportSize({width:390,height:844});await page.screenshot({path:`${out}/radial-phone.png`});await page.setViewportSize({width:1440,height:900});
  await tap(page,0);await page.evaluate(()=>window.testPad.axes.fill(0));await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);
- const before=await saved(page);await page.screenshot({path:`${out}/wall-preview.png`});await tap(page,7);await page.waitForFunction(()=>window.starAgent.state.build.pieceCount===11);await tap(page,1);
+ const initialRotation=await page.evaluate(()=>window.starAgent.state.build.preview.rotation);await tap(page,6);expect(Math.abs((await page.evaluate(()=>window.starAgent.state.build.preview.rotation))-initialRotation)).toBeCloseTo(Math.PI);await tap(page,7);expect(await page.evaluate(()=>window.starAgent.state.build.preview.rotation)).toBe(initialRotation);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);
+ expect(await page.evaluate(()=>window.starAgent.state.build.pieceCount)).toBe(10);expect(await page.evaluate(()=>window.starAgent.navigation.toolTrigger)).toBe(0);
+ const before=await saved(page);await page.screenshot({path:`${out}/wall-preview.png`});await tap(page,0);await page.waitForFunction(()=>window.starAgent.state.build.pieceCount===11);expect(await page.evaluate(()=>window.starAgent.navigation.jumpHeight)).toBe(0);await tap(page,2);
  const after=await saved(page);expect(after.remote['sandbox-supply-0'].items.concrete).toBe(before.remote['sandbox-supply-0'].items.concrete-8);
  await tap(page,9);await choose(page,'build-sandbox');await expect(page.locator('#build-dialog')).toContainText('3,064 kg');await page.screenshot({path:`${out}/supplies-desktop.png`});
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:`${out}/supplies-phone.png`});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.setViewportSize({width:1440,height:900});

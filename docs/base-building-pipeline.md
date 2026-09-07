@@ -137,8 +137,10 @@ are conservative boxes and do not cover rotation during a movement step.
 
 ## Input and acceptance
 
-Construction has one shared context: RT places once, LT chooses a snap, LB/RB
-rotate, D-pad up/down changes height, X opens the palette, B exits, A jumps.
+Construction has one shared context: A places once, LB chooses a snap, LT/RT
+rotate, D-pad up/down changes height, B opens the palette, X exits, RB jumps.
+Outside placement, B opens the wheel only on foot outside a ship within the owned
+mainframe’s 64 m claim radius. Menu → Build remains the first-site entry.
 Suppress mining/weapon triggers and quick-item bindings until this context ends.
 Use the existing neutral-arming rules through dialogs, focus loss and reconnect;
 never poll the controller a second time. On-foot keyboard B is construction;
@@ -202,3 +204,15 @@ ControllerUI accepts an optional native dialog spatial focus target, retaining
 shared confirm/back/scroll and neutral-arming behavior. Never poll again or place
 on release. D-pad can reach recipes/supplies/close. Source and browser evidence:
 `docs/qa/base-building/radial.md`; physical-device acceptance remains separate.
+
+
+## Direct build hotkeys — 2026-09-07
+
+B enters within an owned mainframe radius, A places, LT/RT rotate, LB snap,
+RB jump, B wheel, X exit. `BuildSystem.controllerAvailable` owns proximity;
+`createControllerUI` consumes the existing poll before navigation/tools. Foot,
+cabin, seated and EVA hints come from `src/controller-hints.js`. Do not assign
+A to both jump and place or RT to both mine and rotate in construction.
+Current evidence: `docs/qa/base-building/controller-hotkeys.md` (unit546, UI8,
+production sandbox1 pass). The ordinary-flight B brake and EVA B descent remain;
+reconcile the separate flight-options lane during integration.

@@ -7,7 +7,7 @@ const controls = dialog => [...dialog.querySelectorAll(selector)].filter(visible
 /** Every native dialog gets the same controller focus/activate/back behavior.
  * Features keep their real click handlers; this never synthesizes keyboard mining.
  */
-export function createControllerUI({ nav, destinations = [], actions = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {}, openEquipment = null, cycleEquipment = () => {}, cycleQuick = () => {}, useQuick = () => {}, openBuild = null, openRecipes = null, buildActive = () => false, handleBuild = () => {} }) {
+export function createControllerUI({ nav, destinations = [], actions = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {}, openEquipment = null, cycleEquipment = () => {}, cycleQuick = () => {}, useQuick = () => {}, openBuild = null, canOpenBuild = () => false, openRecipes = null, buildActive = () => false, handleBuild = () => {} }) {
   const menu = document.createElement('dialog');
   menu.id = 'controller-menu'; menu.setAttribute('aria-labelledby', 'controller-menu-title');
   menu.innerHTML = '<div class="controller-menu-top"><h2 id="controller-menu-title">Command menu</h2><button type="button" data-controller-close aria-label="Close command menu">×</button></div><p>D-pad / left stick · Select &nbsp; A · Confirm &nbsp; B · Back</p><div class="controller-command-list"></div>';
@@ -54,6 +54,11 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
       if (pad.pressed.has(9)) open();
       else if (pad.pressed.has(8)) openBackpack();
       else if (buildActive()) handleBuild(pad);
+      else if (openBuild && nav.mode==='walk' && !nav.insideShip && pad.pressed.has(1)) {
+        pad.pressed.clear();pad.brake=false;pad.mine=0;pad.jump=false;
+        if(canOpenBuild())openBuild();
+        else nav.notify('Approach your mainframe (within 64 m) to build. Menu → Build can establish a new site.');
+      }
       else if (nav.mode === 'walk' || nav.mode === 'eva') {
         if(pad.pressed.has(15))toggleTool();
         else if(pad.pressed.has(14))cycleEquipment();

@@ -74,15 +74,15 @@ tool bonuses and technology unlocks remain future work.
 
 | Action | Keyboard | Standard Xbox mapping |
 | --- | --- | --- |
-| Open pieces | B, outside on foot | Menu → Build |
+| Open pieces | B, outside on foot | B within 64 m of owned mainframe; Menu → Build for a new site |
 | Move / aim | WASD / mouse | Left / right stick |
-| Place one piece | Enter | RT press |
-| Next snap candidate | T | LT press |
-| Rotate / flip wall facing | Q / E | LB / RB |
+| Place one piece | Enter | A press |
+| Next snap candidate | T | LB press |
+| Rotate / flip wall facing | Q / E | LT / RT |
 | Change foundation height or floor level | Up / Down | D-pad up / down |
-| Choose another piece | P | X |
-| Leave placement | Esc | B |
-| Jump | Space | A |
+| Choose another piece | P | B |
+| Leave placement | Esc | X |
+| Jump | Space | RB while building; A otherwise |
 | Inspect backpack | Inventory shortcut | View |
 | Interact with door, crate or mainframe | F | X, outside placement |
 
@@ -90,7 +90,7 @@ The placement HUD also provides touch buttons. Movement and aiming continue to
 use the game's existing movement controls. Controller dialogs use D-pad/stick
 focus, A to activate and B to close. New contextual actions pass through the
 shared controller router and wait for neutral input after dialog or tool changes.
-Keyboard B opens construction; Xbox B exits it. Placement suppresses weapon fire.
+Xbox B opens or reopens the wheel; X exits placement. Placement suppresses weapon fire.
 
 Foundations and floor panels use a 4 m grid; each storey is 3 m. Walls, window walls
 and doorways snap to panel edges. A wall rotates by 180° to flip its facing on its
@@ -142,17 +142,18 @@ while placing pieces. Open **Build → Sandbox supplies → Refill bank** whenev
 needed. Reload keeps your buildings and remaining stock in a separate sandbox
 save. **Command menu → Return to regular game** restores your ordinary save.
 
-Keyboard **B** or controller **Menu → Build** opens the palette. Select with
-D-pad / A, place with RT, rotate with LB/RB, and exit with B. Existing support,
+Keyboard **B** or controller **B** near the mainframe opens the palette. Select with
+left stick / A, place with A, rotate with LT/RT, and exit with X. Existing support,
 collision and 64-piece-per-site limits still apply. Nine foundations plus the
 mainframe use ten of the starting site's slots.
 
 
 ## Building wheel
 
-**Menu → Build** (controller) or **B** (keyboard) opens the radial piece picker.
+Controller **B** within 64 m of your mainframe or keyboard **B** opens the radial
+piece picker. **Menu → Build** also starts a new site.
 Point the **left stick** at a piece and press **A** to choose. Its name and costs
-appear in the centre. **X** reopens the wheel during placement; **B** closes it
-without selecting. Release controls, then press **RT** to place. D-pad browsing,
+appear in the centre. **B** reopens the wheel during placement; **B** closes it
+without selecting. Release controls, then press **A** to place. D-pad browsing,
 mouse/touch selection and Tab/Enter also work. Recipes and sandbox supplies remain
 in the tabs above the wheel.
