@@ -54,6 +54,7 @@ Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned serv
 | Construction, mainframes, recipes and polished building pieces | `feat/base-building` at `891c916` |
 | Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
 | Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
+| Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `6fba63f` (PR #54) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
 | Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
@@ -88,6 +89,14 @@ starts teleport.
 See `docs/qa/local-development.md` for exact checks and limitations. Do not infer
 whole-scene visual approval, physical controller testing or public deployment from
 the presence of a feature branch in this test build.
+
+Aeon's former decorative white pebbles are now textured basalt stones. Start at
+Forest or Coast, land, leave the ship and equip the cutter (3 / D-pad right).
+Aim within 8 m and hold T / RT. Menu → Field recipes turns recovered basalt into
+aggregate or dry binder; 8 kg aggregate + 2 kg binder produces 10 kg concrete.
+The stones share the existing finite inventory/save system and avoid seeded tree
+trunks. The launcher still starts a fresh temporary test session on reload; normal
+offline saves retain cuts. See [stone evidence](qa/aeon-stones.md).
 
 The hangar-gravity integration also passed seven focused test files covering server
 rooms, opening navigation, Kestrel flight, Nomad utilities, camera orientation and

@@ -53,14 +53,36 @@ inventory capacity apply. Saved edits are never evicted to refill a stone.
   verified by the finite-material unit test; the browser journey processed its
   mined basalt into aggregate and binder.
 - Visual inspection of that run found one stone enclosing a tree trunk. Placement
-  now excludes the actual seeded trunk records. The four affected unit tests and
-  production rebuild pass; final browser evidence is pending at this checkpoint.
+  now excludes the actual seeded trunk records. The corrected runtime was merged
+  with dev base `7bd4bd5` as `dfc0a3b`; all 661 unit tests and the production build
+  pass. Served bundle: `main-DDZBAB0u.js`.
+
+Final corrected checks passed separately: settled 6/55/100 m renders in 1.3 minutes,
+and the complete controller journey in 1.7 minutes. The controller physically
+recovered **2.098 kg basalt**, processed 1 kg each into aggregate and binder,
+verified the exact 0.098 kg remainder, opened the backpack, and returned to play.
+The recipe screen also fits 390×844. Both runs recorded zero page/console errors.
+The revised controller fixture sweeps in the viewing plane: its earlier local-X
+sweep repeatedly aimed through the same exhausted borehole on the differently
+rotated stone. That failed check recovered 0.57 kg and is retained; no extraction
+rate, quota, saved state or assertion threshold was changed to pass it.
+
+| View | Evidence |
+| --- | --- |
+| Previous decorative pebbles, same camera | [Before](aeon-stones/before.png) |
+| Corrected seeded basalt stone | [After](aeon-stones/after.png) |
+| Approach | [55 m view](aeon-stones/approach.png) |
+| Physically excavated stone | [Controller mining](aeon-stones/controller-mined.png) |
+| Processing actual recovered ingredients | [Recipes](aeon-stones/controller-recipes.png) |
+| Recipe screen on a narrow viewport | [390×844](aeon-stones/controller-recipes-phone.png) |
 
 Capture environment: Chromium 151.0.7922.173, AMD Radeon 860M / ANGLE OpenGL ES
 3.2, render scale 1. Scene views: 1600×900; controller: 1440×900, DPR 1.
-The approach sample before the trunk correction reported 526 draws and 1,774,580
-triangles, including renderer passes. No isolated hardware frame-time budget,
-physical gamepad or whole-world art acceptance is claimed.
+The final approach sample reported 524 draws / 1,748,324 triangles; the controller
+sample reported 587 / 1,756,950, including renderer passes. No isolated hardware frame-time budget,
+physical gamepad or whole-world art acceptance is claimed. Other agents began
+GPU work during parts of the run despite the shared coordination notes; these
+counts and correctness checks are not isolated timing measurements.
 
 Failed evidence remains outside the repo in the unique baseline/candidate run
 directories. The first baseline retained an open but hidden dev launcher and
