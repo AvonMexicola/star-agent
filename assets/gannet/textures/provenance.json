@@ -1,7 +1,7 @@
 {
   "source": "Original deterministic procedural PBR swatches; reused approved Meridian emblem only",
   "builder": "blender/gannet_textures.py",
-  "layout": "4 columns \u00d7 2 rows; deterministic face projection with four-pixel margins",
+  "layout": "4 columns \u00d7 2 rows from PNG top; deterministic face projection, Blender V inverted once, four-pixel margins",
   "size": [
     1024,
     1024
@@ -15,28 +15,28 @@
       "sha256": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
     },
     "surface-basecolor.png": {
-      "bytes": 466877,
-      "sha256": "d72737a371f40df3fc00fc6b902b6e702701dc9b51ca2f58624d9862ffa57b6f"
+      "bytes": 177497,
+      "sha256": "90ea71cce83b5f8e35900a5e5e2ee5f69cf90523e1e5701138ceca2c33a4924a"
     },
     "surface-basecolor.webp": {
-      "bytes": 127056,
-      "sha256": "0963bdd47282ad016e90da3fb1b8341eaa28da193647185133b04d9b1b704757"
+      "bytes": 51492,
+      "sha256": "e3b2632ebe48b6acb4d020d091a25d518c60a5a8a2da86e77971ef9d5c7da2c1"
     },
     "surface-normal.png": {
-      "bytes": 317259,
-      "sha256": "1e34e858dc103042c3fba40233b6d6dd9b9b5fea7cf6cbfe12fe95874a5eba35"
+      "bytes": 5334,
+      "sha256": "86993e9276b669289b91c2563b704bd0116c0c59af1949f08c79bfc2e2e8ff9b"
     },
     "surface-normal.webp": {
-      "bytes": 80818,
-      "sha256": "3ac7474bd8e5c9f99b1ca5f52af23356515771b025aeaac1d33d7c4b5113cfcb"
+      "bytes": 88,
+      "sha256": "741d1b1f09d26aae362cee7d3d59eb3e56908e0c6880a5d5a5172d3f8f1a5a50"
     },
     "surface-orm.png": {
-      "bytes": 503915,
-      "sha256": "59919154268abdf5b9c9fbc52e1f406dca134ca8f596a6c04a12312d8e687255"
+      "bytes": 388441,
+      "sha256": "1ab7ca828297597ca82c2183339fd3a880bf6335c9e26487ccee86b73a7e6a29"
     },
     "surface-orm.webp": {
-      "bytes": 366442,
-      "sha256": "5e9ac5f2db2a2e51f8aeb05ae649e5b296bf51e9295f34ab0e0f39ea49bfbf9d"
+      "bytes": 301590,
+      "sha256": "cd0c7e42267ceff0a85fa8e6d698658ba5f0e6e1a5e115b3ac92b68474088015"
     }
   }
 }
