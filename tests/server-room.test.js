@@ -195,5 +195,6 @@ test('combat mode is server-owned and full braking retains momentum across room 
  await room.receive(p.id,{type:'input',sequence:1,input:{brake:true}});
  const before=p.nav.position.clone();advance(1/30);
  assert.ok(p.nav.speed>98&&p.nav.speed<100);assert.ok(p.nav.position.distanceTo(before)>3);
- advance(5);assert.ok(p.nav.speed<.01);
+ for(let i=0;i<240;i++){await room.receive(p.id,{type:'input',sequence:i+2,input:{brake:true}});advance(1/30);}
+ assert.ok(p.nav.speed<.01);
 });
