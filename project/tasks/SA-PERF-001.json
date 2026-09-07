@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex performance session",
-  "status": "review",
+  "status": "integrated",
   "branch": "fix/player-multiplayer-performance",
   "base": "4706d62e92c002ce5a326c53cd8ee9ac07543645",
   "updated": "2026-09-07",
