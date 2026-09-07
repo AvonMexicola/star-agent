@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RADIUS, ATMOSPHERE_HEIGHT, SUN_RADIUS, SUN_ANGULAR_RADIUS } from './world.js';
 import { createCloudNoise, cloudShader } from './cloud-volume.js';
+import { surfaceWeatherShader } from './surface-weather.js';
 
 // Single-scattering integration in body-radius units. Rayleigh + Henyey-Greenstein
 // Mie scattering, exponential density, sunlight extinction and planet shadow.
@@ -54,6 +55,7 @@ vec3 stars(vec3 rd){
 }
 vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.0,1.0);}
 ${cloudShader}
+${surfaceWeatherShader}
 // One body's single-scattering contribution along the view ray (body-radius units).
 vec3 scatter(vec3 color,vec3 ro,vec3 rd,float distanceToScene,float bodyRadius,float outer,vec3 betaR,vec3 betaM,vec2 scale,vec2 phase){
   vec2 hit=sphere(ro,rd,outer);
@@ -128,6 +130,7 @@ void main(){
     vec4 clouds=cloudRadiance(cameraPlanet,rd,distanceToScene,sunDot);
     color=color*(1.0-clouds.a)+clouds.rgb;
   }
+  color=surfaceWeather(color,rd,ground?sceneMetres:1e9);
   color=aces(color*exposure);
   color=pow(color,vec3(1.0/2.2));
   float dither=(hash(vec3(gl_FragCoord.xy,0.0))-.5)/255.0;
