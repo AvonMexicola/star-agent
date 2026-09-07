@@ -5,6 +5,11 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+Latest local promotion: **`f861f8f`**, with checked social tools, SBU cargo and
+flight-controls help. Frontend and API were refreshed together, and existing
+accounts/saves retained in the same persistent database. Refresh the browser to
+use protocol 3; [delivery evidence](qa/social-cargo-integration.md) records checks.
+
 ## Multiplayer chat and friends
 
 Join multiplayer through Account / Flight link, then open **Menu → Comms →

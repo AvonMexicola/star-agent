@@ -1,6 +1,6 @@
 # Verified development status
 
-**Snapshot: 2026-09-07, reviewed social/cargo/controls candidate.** This page states
+**Snapshot: 2026-09-07, social/cargo/controls integrated locally at `f861f8f`.** This page states
 capabilities and gaps; [ROADMAP](../../ROADMAP.md) states ambitions. New governance
 and tooling changes do not certify the entire game as finished.
 
@@ -31,7 +31,7 @@ journey remains owner work. SBU cargo subsequently passes849units,97multiplayer 
 full runtime hull clearance, actual controller/phone journeys and separate SQL/socket
 persistence checks; see [cargo QA](../qa/sbu-cargo.md).
 
-The combined social/cargo/controls candidate passes **849 unit tests and 117
+The combined social/cargo/controls update passes **849 unit tests and 117
 multiplayer tests with a disposable PostgreSQL instance, zero skips**, plus the
 production development build. All three source-owner social browser journeys now
 pass: full controller entry/composition/friends/neutral input; keyboard/touch,
