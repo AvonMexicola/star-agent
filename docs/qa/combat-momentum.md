@@ -103,3 +103,26 @@ Physical controller hardware, independent visual acceptance and FPS targets have
 not been verified. Online ship combat and persistent patrols remain out of scope.
 
 ![Completed controller patrol report](combat-momentum/patrol-report.png)
+
+## Controls-menu follow-up — 2026-09-07
+
+User requests clearer controls and manager coordination. `index.html` now separates
+fly-by-wire, unlocked coasting, independent combat/cruise selection and weapon
+interlocks into readable help paragraphs; adds held T fire, the controller Ship
+menu route and current dialog navigation. `src/controller-layout.js` explains
+finite braking, heavy-ship momentum, combat speed/gear/boost locks and the landing
+assist threshold. Bindings and input/router behavior are unchanged.
+
+Validation: production build (`VITE_DEV_TOOLS=1 npm run build`), JavaScript syntax,
+repository and whitespace checks pass. Existing large-chunk build warning remains.
+DOM-only Chromium151.0.7922.173 inspection uses actual help HTML, controller module
+and their styles at1440×900 and390×844, with GPU disabled and no game scene. Both
+menus have no horizontal overflow; context switching passes and no page/console
+errors were captured. Screenshots under `combat-momentum/controls/` were visually
+inspected. This is copy/layout inspection, not a new controller gameplay journey
+or the newer integrated terminal/rover validation. Existing gameplay results above
+remain separate. Preview5398 serves the rebuilt help.
+
+Manager request posted in root/shared HANDOFF before editing; the ready checkpoint
+will be supplied for narrow integration preserving newer Burrow/UI changes. Shared
+5178 promotion and manager acknowledgement are not assumed.
