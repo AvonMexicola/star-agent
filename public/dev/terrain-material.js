@@ -1,12 +1,8 @@
-// Standalone test scene for src/terrain-material.js.
-// Served by the Vite dev server at /dev/terrain-material.html. It imports three through the
-// same URL Vite rewrites src modules to, so there is exactly one copy of three in the page.
-const src = await (await fetch('/src/terrain-material.js')).text();
-const threeUrl = src.match(/from\s+["']([^"']*three[^"']*)["']/)[1];
-const THREE = await import(threeUrl);
-const world = await import('/src/world.js');
-const { createLandMaterial, updateLandMaterial } = await import('/src/terrain-material.js');
-const { createLighting } = await import('/src/lighting.js');
+// Standalone material inspection; ordinary imports also work in static releases.
+import * as THREE from 'three';
+import * as world from '/src/world.js';
+import { createLandMaterial, updateLandMaterial } from '/src/terrain-material.js';
+import { createLighting } from '/src/lighting.js';
 const { RADIUS, MAX_LEVEL, SUN_DIRECTION, cubeDirection, terrainHeight, findDestinations, generatePatch } = world;
 
 const info = document.getElementById('info');

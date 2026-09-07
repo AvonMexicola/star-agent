@@ -257,7 +257,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     async join(account,sendFn){
       if(closed)throw failure('Server restarting.','ROOM_CLOSED');
       if(players.has(account.id)||joining.has(account.id))throw failure('This account is already connected.','ACCOUNT_CONNECTED');
-      if(players.size+joining.size>=MAX_PLAYERS)throw failure('All ten player slots are occupied.','ROOM_FULL');
+      if(players.size+joining.size>=MAX_PLAYERS)throw failure(`All ${MAX_PLAYERS} player slots are occupied. Try again when a pilot leaves.`,'ROOM_FULL');
       joining.add(account.id);
       let pendingPlayer;
       try{

@@ -111,7 +111,8 @@ const atlasMeadowStart=devOptions?.location==='atlas-meadow';
 if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   location.replace(devLaunchURL(location.href,devOptions));
 }else try {
-  const multiplayerEntry=import.meta.env.VITE_MULTIPLAYER_ENTRY==='1';
+  const soloBuild=import.meta.env.VITE_SOLO_BUILD==='1';
+  const multiplayerEntry=!soloBuild&&import.meta.env.VITE_MULTIPLAYER_ENTRY==='1';
   const surfaceRoverStart=devOptions?.location==='rover-surface';
   const testFlight=Boolean(devOptions)||new URLSearchParams(location.search).get('ship')==='kestrel';
   const sandboxEnabled=!atlasMeadowStart&&new URLSearchParams(location.search).get('sandbox')==='build';
@@ -293,7 +294,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   });
   let onlineHullPending=null;
   multiplayer.subscribe(state=>{if(!state.connected)return;const hull=state.players.find(p=>p.id===state.ownId)?.shipId;if(!['nomad','atlas'].includes(hull)||shipModels.get(hull)===ship||onlineHullPending===hull)return;onlineHullPending=hull;const next=modelFor(hull);next.readyPromise.then(()=>{if(multiplayer.connected&&onlineHullPending===hull){ship.visible=false;ship=next;configureShip(hull);}onlineHullPending=null;});});
-  const multiplayerUI=createMultiplayerUI({nav,client:multiplayer,onJoin:async account=>{
+  const multiplayerUI=soloBuild?{openAccount:()=>notify('Join shared flight at multiplayer.staragent.site.'),openComms:()=>notify('Join shared flight at multiplayer.staragent.site.'),openInventory:()=>inventoryUI.openPack(),dispose(){}}:createMultiplayerUI({nav,client:multiplayer,onJoin:async account=>{
     if(SEED!==WORLD_SEED){const url=new URL(location.href);url.searchParams.set('seed',String(WORLD_SEED));location.replace(url);throw new Error('Reloading the shared world seed. Join again after reload.');}
     await Promise.all([station.readyPromise,character.readyPromise,opening?.character?.readyPromise]);opening?.leave();build.cancel();
     const nomad=modelFor('nomad');await nomad.readyPromise;
@@ -495,12 +496,12 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     resizePending=true;
   }});
   const graphicsButton=document.createElement('button');graphicsButton.type='button';graphicsButton.id='graphics-button';graphicsButton.textContent='GRAPHICS';graphicsButton.addEventListener('click',()=>graphicsSettings.open());document.querySelector('.top-actions').prepend(graphicsButton);
-  for(const [label,open,secondary] of [['ACCOUNT',multiplayerUI.openAccount,true],['COMMS',multiplayerUI.openComms,false],['INVENTORY',multiplayerUI.openInventory,true]]){
+  if(!soloBuild)for(const [label,open,secondary] of [['ACCOUNT',multiplayerUI.openAccount,true],['COMMS',multiplayerUI.openComms,false],['INVENTORY',multiplayerUI.openInventory,true]]){
     const button=document.createElement('button');button.type='button';button.className=`mp-top-button${secondary?' mp-top-secondary':''}`;button.textContent=label;button.addEventListener('click',()=>open());document.querySelector('.top-actions').prepend(button);
   }
   const gearNotice=document.createElement('div');gearNotice.id='gear-flight-prompt';gearNotice.setAttribute('role','status');gearNotice.hidden=true;document.body.append(gearNotice);
   const utilityStatus=document.createElement('div');utilityStatus.id='ship-utility-status';document.querySelector('.telemetry').append(utilityStatus);
-  const devLauncher=devOptions?createDevLauncher({nav,options:devOptions,seed:SEED,available:()=>!transiting&&!multiplayer.connected}):null;
+  const devLauncher=devOptions?createDevLauncher({nav,options:devOptions,seed:SEED,publicBuild:soloBuild,available:()=>!transiting&&!multiplayer.connected}):null;
   const controllerLayout=createControllerLayout({nav});
   const controllerUI=createControllerUI({nav,canOpenBuild:()=>build.controllerAvailable,openBuild:()=>multiplayer.connected?notify('Construction is available in offline testing.'):buildUI.open(),openRecipes:()=>multiplayer.connected?notify('Field recipes use the offline inventory.'):buildUI.openRecipes(),buildActive:()=>build.active,handleBuild:pad=>buildUI.handleController(pad),actions:[{id:'combat-mode',label:'Combat / cruise mode · Z',activate:()=>nav.toggleCombatMode(),enabled:()=>nav.mode==='flight'&&!nav.travel},{id:'build-sandbox',label:sandboxEnabled?'Sandbox supplies / refill':'Open build sandbox',activate:()=>sandboxEnabled?buildUI.openSandbox():location.assign(sandboxURL(location.href)),enabled:()=>!multiplayer.connected},...(sandboxEnabled?[{id:'sandbox-exit',label:'Return to regular game',activate:()=>location.assign(sandboxURL(location.href,false))}]:[]),{id:'controller-layout',label:'Controller layout',activate:()=>controllerLayout.open()},{id:'patrol-console',label:'Patrol console · Missions / report',activate:()=>combat.open(),enabled:()=>combat.permitted()},{id:'combat-target',label:'Next hostile target · Tab',activate:()=>combat.cycle(),enabled:()=>nav.mode==='flight'&&combat.state.enemies.some(e=>e.hull>0)},
     ...(devLauncher?[{id:'dev-launcher',label:'DEV · Ship & location',activate:()=>devLauncher.open(),enabled:()=>!transiting&&!multiplayer.connected}]:[]),
@@ -509,10 +510,10 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     {id:'lights',label:'Lights / flashlight · L / LB+RB + ←',activate:()=>nav.toggleLights(),enabled:()=>nav.mode!=='crashed'},
     {id:'camera-view',label:'Camera view · 4 / LB+RB + →',activate:()=>document.getElementById('camera-button').click(),enabled:()=>['flight','walk','eva','landed'].includes(nav.mode)},
     {id:'wave',label:'Wave',activate:()=>character.playGesture('wave'),enabled:()=>nav.mode==='walk'&&character.ready&&loadout.state.health>0},
-    {id:'account',label:'Pilot account',activate:()=>multiplayerUI.openAccount()},{id:'comms',label:'Multiplayer comms',activate:()=>multiplayerUI.openComms()},{id:'server-inventory',label:'Server inventory',activate:()=>multiplayerUI.openInventory(),enabled:()=>multiplayer.connected},
+    ...(!soloBuild?[{id:'account',label:'Pilot account',activate:()=>multiplayerUI.openAccount()},{id:'comms',label:'Multiplayer comms',activate:()=>multiplayerUI.openComms()},{id:'server-inventory',label:'Server inventory',activate:()=>multiplayerUI.openInventory(),enabled:()=>multiplayer.connected}]:[]),
     {id:'graphics',label:'Graphics · LB+RB + Menu',activate:()=>graphicsSettings.open()},{id:'crash-recover',label:'Return to orbit after crash',activate:()=>transit('orbit'),enabled:()=>nav.mode==='crashed'},{id:'fleet',label:'Fleet registry',activate:()=>fleetUI.openMenu(),enabled:()=>!multiplayer.connected},{id:'power',label:'Toggle ship main power',activate:()=>nav.togglePower(),enabled:()=>nav.canTogglePower},...Object.entries(WEAPONS).map(([id,p])=>({id:`weapon-${id}`,label:`Ship weapon · ${p.label}`,activate:()=>flightEffects.select(id),enabled:()=>nav.mode==='flight'&&!multiplayer.connected}))],openBackpack:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenPack(),toggleTool:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.toggle(),openEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenEquipment(),cycleEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.cycle(),cycleQuick:()=>{if(multiplayer.connected){multiplayerUI.openInventory();return;}const r=loadout.selectQuick((loadout.state.quickIndex+1)%4);if(!r.ok)nav.notify(r.message);},useQuick:()=>multiplayer.connected?multiplayerUI.openInventory():useQuick(loadout.state.quickIndex),destinations:[...document.querySelectorAll('#quick-transit-menu [data-destination]')].map(button=>({id:button.dataset.destination,label:button.dataset.destination==='moon'?'Selene':button.dataset.destination==='ring'?'Selene rings':button.textContent.trim(),activate:()=>transit(button.dataset.destination),enabled:()=>!button.disabled&&!multiplayer.connected})).concat(resourceRoutes.map(route=>({id:route.id,label:route.label,activate:()=>transit(route.id),enabled:()=>!multiplayer.connected})))});
   const gameplayMenu=createGameplayMenu({nav,dev:Boolean(devLauncher),screens:[
-    {id:'comms',label:'Comms',dialogs:['multiplayer-comms-dialog','multiplayer-account-dialog'],open:()=>multiplayerUI.openComms()},
+    ...(!soloBuild?[{id:'comms',label:'Comms',dialogs:['multiplayer-comms-dialog','multiplayer-account-dialog'],open:()=>multiplayerUI.openComms()}]:[]),
     {id:'map',label:'Map',dialogs:['system-map'],open:()=>systemMap.openMap()},
     {id:'contracts',label:'Contracts',dialogs:['patrol-console'],open:()=>combat.open()},
     {id:'inventory',label:'Inventory',dialogs:['cargo-dialog','multiplayer-inventory-dialog'],open:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenPack()},
@@ -553,7 +554,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     const dialog=document.getElementById('dev-launcher'),content=dialog.querySelector('.gameplay-content');
     const tabs=document.createElement('nav');tabs.className='dev-screen-tabs';tabs.innerHTML='<button type="button" data-dev-page="launch" data-controller-key="dev-page-launch" aria-pressed="true">Test starts</button><button type="button" data-dev-page="consoles" data-controller-key="dev-page-consoles" aria-pressed="false">Console list</button><button type="button" data-dev-page="review" data-controller-key="dev-page-review" aria-pressed="false">Content review</button>';
     const consoles=document.createElement('section');consoles.className='dev-console-list';consoles.hidden=true;
-    for(const [label,id] of [['Station comms','comms'],['System map','map'],['Patrol contract console','contracts'],['Cargo & storage','inventory'],['Equipment & loadout','loadout'],['Ship systems','ship'],['Graphics & controls','settings']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.controllerKey='dev-console-'+id;b.onclick=()=>gameplayMenu.open(id);consoles.append(b);}
+    for(const [label,id] of [['Station comms','comms'],['System map','map'],['Patrol contract console','contracts'],['Cargo & storage','inventory'],['Equipment & loadout','loadout'],['Ship systems','ship'],['Graphics & controls','settings']].filter(([,id])=>!soloBuild||id!=='comms')){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.controllerKey='dev-console-'+id;b.onclick=()=>gameplayMenu.open(id);consoles.append(b);}
     for(const b of tabs.querySelectorAll('button'))b.onclick=()=>{const page=b.dataset.devPage,launch=page==='launch';for(const item of tabs.children)item.setAttribute('aria-pressed',String(item===b));consoles.hidden=page!=='consoles';content.querySelector('.dev-review-list').hidden=page!=='review';for(const el of content.querySelectorAll('.dev-choices,footer,.dev-footer,.dev-intro'))el.hidden=!launch;};
     content.prepend(tabs);content.append(consoles);
   }
@@ -566,7 +567,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     if(systemMap.open&&!gameplayMenu.active){systemMap.controllerInput(pad.ui);return;}
     // Account dialogs pause the intro but still need the shared modal router.
     if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
-    if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
+    if(nav.openingActive){if(pad.pressed.has(9)){if(soloBuild)devLauncher?.open();else multiplayerUI.openAccount();}return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
     if(rover?.occupied&&!pad.shortcuts?.size){
       if(pad.pressed.has(9))gameplayMenu.open();
