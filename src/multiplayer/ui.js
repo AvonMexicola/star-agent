@@ -1,5 +1,5 @@
 import { CATALOG, itemMass, quantityLabel } from '../inventory/containers.js';
-import { SUIT_COLORS } from './protocol.js';
+import { SUIT_COLORS, MAX_PLAYERS } from './protocol.js';
 
 if (typeof document !== 'undefined') void import('./ui.css');
 
@@ -147,7 +147,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
   accountDialog.setAttribute('aria-labelledby', 'multiplayer-account-title');
   accountDialog.innerHTML = `<div class="dialog-top mp-dialog-top"><span class="eyebrow">Pilot account</span><button type="button" data-mp-close aria-label="Close account">✕</button></div>
     <h2 id="multiplayer-account-title">Fly together when you choose</h2>
-    <p class="mp-intro">Sign in or create an account to join up to ten pilots. Choose a callsign, not a real name. You can also continue offline.</p>
+    <p class="mp-intro">Sign in or create an account to join up to ${MAX_PLAYERS} pilots. Choose a callsign, not a real name. You can also continue offline.</p>
     <nav class="mp-auth-tabs" aria-label="Account access">
       <button type="button" data-auth-view="login" data-controller-key="auth-login">Sign in</button>
       <button type="button" data-auth-view="register" data-controller-key="auth-register">Create account</button>
