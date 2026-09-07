@@ -1,5 +1,5 @@
 {
-  "assetSha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
+  "assetSha256": "b2660a8e400c7ae64ed75cf3e4166d66f1953f0fb6dcbcce5357b1edaa37eb3e",
   "units": "metres",
   "convention": "Closed access only; conservative all-gear/all-boom envelope. Individual ground-reaching gear volumes, not a full-width floor box.",
   "paddingMetres": 0.02,
@@ -13,7 +13,7 @@
       ],
       "max": [
         2.793650884628296,
-        4.738013763427734,
+        5.143544692993164,
         7.262499828338623
       ],
       "source": "evaluated static source meshes"
@@ -21,13 +21,13 @@
     {
       "id": "drive-port",
       "min": [
-        -5.979973812103271,
-        1.670000057220459,
-        -5.219999809265136
+        -5.892249603271484,
+        1.629999976158142,
+        -4.639999885559082
       ],
       "max": [
-        -2.4780766773223877,
-        4.440000076293945,
+        -2.7294137287139892,
+        4.449999828338623,
         7.73999979019165
       ],
       "source": "evaluated static source meshes"
@@ -35,13 +35,13 @@
     {
       "id": "drive-starboard",
       "min": [
-        2.4780766773223877,
-        1.670000057220459,
-        -5.219999809265136
+        2.7294137287139892,
+        1.629999976158142,
+        -4.639999885559082
       ],
       "max": [
-        5.979973812103271,
-        4.440000076293945,
+        5.892249603271484,
+        4.449999828338623,
         7.73999979019165
       ],
       "source": "evaluated static source meshes"
@@ -166,13 +166,13 @@
       "id": "MiningBoom_Port",
       "node": "MiningBoom_Port",
       "min": [
-        -5.875050717913018,
-        1.4179237383838001,
+        -5.868973601082053,
+        1.417181257709115,
         -9.433319038550623
       ],
       "max": [
-        -2.8249493250181987,
-        3.781098319595751,
+        -2.8310266755152447,
+        3.7800259409171684,
         -3.5900001335144043
       ],
       "source": "169 sampled actual yaw/pitch combinations including limits"
@@ -181,13 +181,13 @@
       "id": "MiningBoom_Starboard",
       "node": "MiningBoom_Starboard",
       "min": [
-        2.8249493250181987,
-        1.4179237383838001,
+        2.8310266755152447,
+        1.417181257709115,
         -9.433319038550623
       ],
       "max": [
-        5.875050717913018,
-        3.781098319595751,
+        5.868973601082053,
+        3.7800259409171684,
         -3.5900001335144043
       ],
       "source": "169 sampled actual yaw/pitch combinations including limits"

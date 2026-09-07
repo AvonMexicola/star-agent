@@ -1,23 +1,41 @@
 {
   "authoring": "Original scripted hard-surface Stratum geometry; reusable primitive convention from repository fighter_geometry.py",
-  "textureSource": "Deterministic authored manufactured finish; numpy seed505; no generated/downloaded/photographic inputs",
+  "textureSource": "Deterministic authored manufactured finish; numpy seed505; quantized band-limited roughness; no generated/downloaded/photographic inputs",
   "textureCoordinates": "Planar per-face local metre coordinates, one4m repeat. Display surfaces have unique0..1 UVs.",
   "channels": {
     "basecolor": "Subtle reflectance grain; no shadows/highlights",
     "normal": "Independent bounded tangent micro-slope, not luminance-derived",
     "orm": "R=1 (no baked AO); G=roughness variation; B=1, scaled by material metalness"
   },
+  "contactVisibility": {
+    "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner; 22cm distance falloff; base-color contact visibility",
+    "distanceMetres": 0.22,
+    "maximumAttenuation": 0.24,
+    "sourceCorners": 18244,
+    "darkenedCorners": 7913,
+    "rays": 148944,
+    "minimumLinearFactor": 0.760000001677396,
+    "dynamicMechanisms": "white; no pose-dependent bake",
+    "lightingBaked": false
+  },
+  "packingSource": "Stratum-scoped adapter of existing blender/pack_rigid_geometry.py; same position/normal codec, protected moving/glass/MFD meshes and unused-UV pruning",
+  "previousNativeReview": {
+    "assetSha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
+    "staticMean": 3.26,
+    "silhouette": 3.4,
+    "status": "failed; retained, not superseded by CPU checks"
+  },
   "materialRecipes": {
     "Stratum | ivory enamel": {
       "baseColorFactor": [
-        0.76,
-        0.79,
-        0.73,
+        0.67,
+        0.705,
+        0.65,
         1
       ],
-      "roughnessFactor": 0.55,
+      "roughnessFactor": 0.68,
       "metallicFactor": 0,
-      "normalScale": 0.23,
+      "normalScale": 0.35,
       "textured": true
     },
     "Stratum | graphite frame": {
@@ -34,26 +52,50 @@
     },
     "Stratum | petrol service": {
       "baseColorFactor": [
-        0.035,
-        0.16,
-        0.16,
+        0.026,
+        0.115,
+        0.116,
         1
       ],
-      "roughnessFactor": 0.62,
-      "metallicFactor": 0.05,
-      "normalScale": 0.25,
+      "roughnessFactor": 0.72,
+      "metallicFactor": 0.08,
+      "normalScale": 0.32,
       "textured": true
     },
     "Stratum | brushed mechanisms": {
       "baseColorFactor": [
-        0.34,
-        0.39,
-        0.4,
+        0.27,
+        0.32,
+        0.325,
         1
       ],
-      "roughnessFactor": 0.4,
-      "metallicFactor": 0.9,
-      "normalScale": 0.52,
+      "roughnessFactor": 0.64,
+      "metallicFactor": 0.78,
+      "normalScale": 0.6,
+      "textured": true
+    },
+    "Stratum | anodized trim": {
+      "baseColorFactor": [
+        0.13,
+        0.17,
+        0.18,
+        1
+      ],
+      "roughnessFactor": 0.72,
+      "metallicFactor": 0.55,
+      "normalScale": 0.42,
+      "textured": true
+    },
+    "Stratum | cabin composite": {
+      "baseColorFactor": [
+        0.12,
+        0.16,
+        0.155,
+        1
+      ],
+      "roughnessFactor": 0.84,
+      "metallicFactor": 0.02,
+      "normalScale": 0.35,
       "textured": true
     },
     "Stratum | soft interior": {
@@ -70,14 +112,14 @@
     },
     "Stratum | bore interior": {
       "baseColorFactor": [
-        0.007,
-        0.013,
-        0.015,
+        0.005,
+        0.009,
+        0.011,
         1
       ],
-      "roughnessFactor": 0.78,
-      "metallicFactor": 0.15,
-      "normalScale": 0.3,
+      "roughnessFactor": 0.92,
+      "metallicFactor": 0.08,
+      "normalScale": 0.35,
       "textured": true
     },
     "Stratum | amber hazard": {
@@ -147,12 +189,12 @@
       "bytes": 13154
     },
     "stratum-orm.png": {
-      "sha256": "f88fbc22084f52034065ccd0e0e7f66ae4c9d7c9219dbbb4518afb9509fbc5d5",
-      "bytes": 1036599
+      "sha256": "2825b6dd659442b7fb10745a84e10a05e14ee7e546d622f15a9c258833b14681",
+      "bytes": 383339
     },
     "stratum-orm.webp": {
-      "sha256": "5474f55c84aa492fde1328ae05f66255008c1aa2dc9683c64592fa767f7fa7c1",
-      "bytes": 785664
+      "sha256": "5bfaf22d59425b0efa59917a34dcacd12426a3e518efde51cb4b705d5aaa5029",
+      "bytes": 311562
     }
   },
   "blenderVersion": "5.2.0 LTS"

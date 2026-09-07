@@ -1,13 +1,13 @@
 {
   "id": "stratum",
   "version": 1,
-  "stage": "silhouette candidate 01; native visual gate pending",
-  "sha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
-  "bytes": 3573040,
-  "triangles": 28652,
-  "meshCount": 62,
-  "primitiveCount": 62,
-  "nodeCount": 92,
+  "stage": "art revision 02; prior native candidate failed; revised native gate pending",
+  "sha256": "b2660a8e400c7ae64ed75cf3e4166d66f1953f0fb6dcbcce5357b1edaa37eb3e",
+  "bytes": 3407756,
+  "triangles": 41048,
+  "meshCount": 66,
+  "primitiveCount": 66,
+  "nodeCount": 110,
   "source": "assets/stratum/stratum.blend",
   "builder": "blender/build_stratum.py",
   "layout": "assets/stratum/layout.json",
@@ -15,18 +15,39 @@
     1024,
     1024
   ],
-  "sourceSha256": "0c65507945dadde909f2d7b3461b8230607f54b2bc8212be16c287625a71091c",
-  "builderSha256": "af02dc23b75dace32972e595d58ef2049eed48ea889c444d07080b02f83cb211",
+  "sourceSha256": "530bb30c552f909e0968037cee426256cafd4b1c4c27af638df2957b77a58245",
+  "builderSha256": "977bb96165de03ad3378a6794f1acf5844e545d8584d6ffd65d65a1dde32d336",
   "geometryHelperSha256": "9ee3f65cbb5fff71d7a8e91304f12e18c4845ab68bb1fe26dcf8cbbd6d7f07e7",
   "layoutSha256": "a17f9159a02de736fc1463da132a4a709d95135ca5fcb93647e762d6abe5ff44",
+  "contactOcclusion": {
+    "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner; 22cm distance falloff; base-color contact visibility",
+    "distanceMetres": 0.22,
+    "maximumAttenuation": 0.24,
+    "sourceCorners": 18244,
+    "darkenedCorners": 7913,
+    "rays": 148944,
+    "minimumLinearFactor": 0.760000001677396,
+    "dynamicMechanisms": "white; no pose-dependent bake",
+    "lightingBaked": false
+  },
+  "packing": {
+    "inputBytes": 5224680,
+    "outputBytes": 3827036,
+    "maximumPositionErrorMetres": 0.00020794695488759218,
+    "maximumNormalErrorDegrees": 0.36680524259983976,
+    "protectedMeshCount": 52,
+    "method": "Static opaque batches only; KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding",
+    "unpackedSha256": "4ddfe68a9d1d7eaf4dfa456bffb492b018af17907abe154a194aa1c99af54cae"
+  },
+  "packingHelperSha256": "d8d229552f7d123f6673c77097b9af4755e54377442b668051e1c9d1486f83b7",
   "budgets": {
     "bytes": 4000000,
     "triangles": 60000,
     "maxTextureSize": 1024
   },
   "review": {
-    "nativeRenderer": "not run",
-    "physicalGame": "not integrated",
-    "independentArt": "pending"
+    "nativeRenderer": "revision 02 not run; prior candidate failed and retained",
+    "physicalGame": "root-owned integration; this asset revision not yet rendered in game",
+    "independentArt": "revision 02 pending; prior static mean 3.26, silhouette 3.4"
   }
 }
