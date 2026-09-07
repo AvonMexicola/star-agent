@@ -91,7 +91,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       const local=rock.position.clone().sub(nav.position).applyQuaternion(nav.orientation.clone().invert()),angle=Math.atan2(local.x,-local.z)*180/Math.PI;
       $('.mining-eyebrow').textContent=nav.mode==='eva'?`SUIT TOOL / EVA · ${nav.speed.toFixed(1)} m/s`:`${nav.body.id.toUpperCase()} / FIELD TOOL`;
       $('.mining-target').textContent=(inspected?.name??(distance<40000?rock.targetName:'Mining laser')??'Mining laser').toUpperCase();
-      const targetMessages={preparing:'Preparing this rock for mining…', 'too-large':'Large asteroid · Hand mining unavailable', 'save-full':'Survey save full · Previously edited rocks remain mineable', 'out-of-range':'Move within 8 m of the rock surface'};
+      const targetMessages={preparing:'Preparing this rock for mining…', 'too-large':'Too large for the handheld cutter', 'save-full':'Survey save full · Previously edited rocks remain mineable', 'out-of-range':'Move within 8 m of the rock surface'};
       const targetMessage=targetMessages[inspected?.status];
       $('.mining-guide').textContent=targetMessage?`${inspected.distance.toFixed(1)} m · ${targetMessage}`:hit?`${hit.distance.toFixed(1)} m · Cut the rock to collect its minerals`:distance<40000?`${distance.toFixed(0)} m · ${Math.abs(angle).toFixed(0)}° ${angle<0?'LEFT':'RIGHT'} · Tool range 8 m`:'Aim at a mineral outcrop or small asteroid · Tool range 8 m';
       $('meter').value=equipment.heat;
