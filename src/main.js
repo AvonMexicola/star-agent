@@ -173,6 +173,7 @@ try {
   build.onMainframe=claim=>buildUI.openMainframe(claim);
   build.onOpenStorage=id=>inventoryUI.openStorage(id);
   const landmarks=new LandmarkRocks(scene,{clearings:build.claims.filter(c=>c.body==='aeon').map(c=>({position:c.origin,radius:c.radius}))});mining.landmarks=landmarks;
+  landmarks.useClearings=()=>!nav.multiplayer?.connected;
   nav.surfaceObstacles=createLandmarkObstacles(createBuildObstacles(mining,build),landmarks,nav);
   nav.baseAction=()=>build.interact();nav.baseInteraction=()=>build.interaction;
   nav.buildingRaycast=(start,direction,range)=>build.raycast(start,direction,range);

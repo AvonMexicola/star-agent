@@ -1,6 +1,6 @@
 import {defineConfig} from '@playwright/test';
 export default defineConfig({testDir:'.',testMatch:'landmark-rocks.spec.js',timeout:600000,workers:1,retries:0,reporter:'list',
-  outputDir:process.env.LANDMARK_QA_OUTPUT??'/home/cees/.cache/star-agent-landmark-results',
+  outputDir:process.env.LANDMARK_QA_OUTPUT??'test-results/landmark-rocks',
   use:{baseURL:'http://127.0.0.1:5381',viewport:{width:1440,height:900},deviceScaleFactor:1,
     launchOptions:{executablePath:process.env.CHROMIUM_PATH??'/usr/bin/chromium',ignoreDefaultArgs:['--disable-dev-shm-usage'],
       args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl']},screenshot:'only-on-failure',trace:'retain-on-failure'},

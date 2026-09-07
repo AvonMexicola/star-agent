@@ -57,7 +57,11 @@ test('seeded landmarks render in the game from ground, shelter and descent views
 
 const axes=(page,value)=>page.evaluate(value=>window.landmarkPad.axes=value,value);
 const button=(page,index,down)=>page.evaluate(({index,down})=>window.landmarkPad.buttons[index]={pressed:down,value:Number(down)},{index,down});
-async function tap(page,index){await button(page,index,true);await frames(page);await button(page,index,false);await frames(page);}
+async function tap(page,index){
+  await button(page,index,true);
+  try{await frames(page);await button(page,index,false);await frames(page);}
+  catch(error){if(!String(error).includes('Execution context was destroyed'))throw error;await page.waitForLoadState('domcontentloaded');}
+}
 async function choose(page,key){for(let i=0;i<100;i++){
   if(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)===key){await tap(page,0);return;}
   await tap(page,13);
@@ -90,8 +94,12 @@ test('controller selects Aeon flight, lands, exits and walks beneath a seeded le
   const errors=errorsFor(page);
   await page.addInitScript(()=>{window.landmarkPad={id:'Landmark traversal standard Gamepad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.landmarkPad];});
   await page.goto('/?dev=1&ship=nomad&start=orbit&intro=0&debug=1&seed=7291');await ready(page);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
-  await tap(page,9);await tab(page,'dev');await choose(page,'dev-page-launch');await choose(page,'dev-location-forest');
-  await choose(page,'dev-launch');await page.waitForURL('**start=forest**');await ready(page);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  await tap(page,9);
+  if(await page.locator('dialog[open]').getAttribute('data-gameplay-tab')){
+    await tab(page,'dev');await choose(page,'dev-page-launch');await choose(page,'dev-location-forest');
+    await choose(page,'dev-launch');await page.waitForURL('**start=forest**');
+  }else await choose(page,'destination-forest'); // Bounded PR also runs before the newer menu stack.
+  await ready(page);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
   console.log('Controller selected actual forest flight');
   await tap(page,3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:90000});
   await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
@@ -112,7 +120,7 @@ test('controller selects Aeon flight, lands, exits and walks beneath a seeded le
   }
   await button(page,10,false);
   // Input interruption must not replay a held movement after opening Inventory.
-  await axes(page,[0,-1,0,0]);await tap(page,9);await tab(page,'inventory');
+  await axes(page,[0,-1,0,0]);await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();
   await tap(page,1);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
   const paused=await page.evaluate(()=>window.starAgent.state.position);await frames(page);
   expect(new Vector3(...await page.evaluate(()=>window.starAgent.state.position)).distanceTo(new Vector3(...paused))).toBeLessThan(.001);

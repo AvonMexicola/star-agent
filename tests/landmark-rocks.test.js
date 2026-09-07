@@ -98,5 +98,24 @@ test('restored outpost clearings suppress both landmark rendering and physical c
     for(let i=0;i<20;i++)rocks.update(d.position);
     assert.equal(rocks.descriptors.has(d.id),false);
     assert.equal(rocks.candidates(d.position,d.position.clone().add(d.direction.clone().multiplyScalar(100))).some(candidate=>candidate.id===d.id),false);
+    rocks.useClearings=()=>false;
+    for(let i=0;i<20;i++)rocks.update(d.position);
+    assert.equal(rocks.descriptors.has(d.id),true,'online uses the shared field rather than private outpost clearings');
+    rocks.useClearings=()=>true;rocks.update(d.position);assert.equal(rocks.descriptors.has(d.id),false);
   }finally{rocks.dispose();}
+});
+
+test('headless authority and renderer use identical seeded geometry, with per-pilot grounding',()=>{
+  const scene=new Scene(),headless=new LandmarkRocks(scene,{render:false}),d=nearbyLandmarks(site(),4200).find(d=>d.variant===2||d.variant===8);
+  try{
+    const eye=new Vector3(0,25,0).multiplyScalar(d.scale).applyQuaternion(d.quaternion).add(d.position);
+    const hit=headless.raycast(eye,d.direction,100);assert.equal(hit.descriptor.id,d.id);
+    assert.equal(headless.materials.length,0);assert.equal(headless.group.children.length,0);
+    assert.deepEqual(headless.geometry(d.variant).attributes.position.array,createLandmarkGeometry(d.variant).attributes.position.array);
+    const pass=(_a,b)=>({point:b,hit:false}),base={grounded:false,constrainWalker:pass,constrainEVA:pass,constrainFlight:pass},nav={layout:{eyeHeight:1.65}};
+    let ground=true;const shared={constrain(_a,b){return {point:b,hit:true,grounded:ground};}};
+    const first=createLandmarkObstacles(base,shared,nav),second=createLandmarkObstacles(base,shared,nav);
+    first.constrainWalker(eye,eye);ground=false;second.constrainWalker(eye,eye);
+    assert.equal(first.grounded,true);assert.equal(second.grounded,false);
+  }finally{headless.dispose();}
 });

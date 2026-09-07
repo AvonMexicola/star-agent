@@ -1,11 +1,11 @@
 import {Vector3,Quaternion} from 'three';
-import {RADIUS,SEED,hash,terrainSample,biomeAt} from './world.js';
-import {LANDMARK_FAMILIES,LANDMARK_VARIANTS} from './landmark-geometry.js';
+import {RADIUS,SEED,hash,terrainSample,biomeAt,findDestinations} from './world.js';
+import {LANDMARK_FAMILIES,LANDMARK_VARIANTS,landmarkOccupies} from './landmark-geometry.js';
 
 export const LANDMARK_GENERATOR_VERSION=1;
 export const LANDMARK_SPACING=320,LANDMARK_RANGE=10000,LANDMARK_BOUND=150;
 export const LANDMARK_ROWS=Math.round(Math.PI*RADIUS/LANDMARK_SPACING);
-const TAU=Math.PI*2,step=Math.PI/LANDMARK_ROWS,up=new Vector3(0,1,0),cache=new Map();let cachedSeed;
+const TAU=Math.PI*2,step=Math.PI/LANDMARK_ROWS,up=new Vector3(0,1,0),cache=new Map();let cachedSeed,arrivals=[];
 const latitude=row=>-Math.PI/2+(row+.5)*step;
 export const landmarkColumns=row=>Math.max(3,Math.round(TAU*RADIUS*Math.cos(latitude(row))/LANDMARK_SPACING));
 const wrap=(n,period)=>(n%period+period)%period;
@@ -14,13 +14,15 @@ const wrap=(n,period)=>(n%period+period)%period;
  * IDs and frame are invariant under camera movement, query order and LOD. */
 export function landmarkDescriptor(row,column){
   if(!Number.isInteger(row)||row<0||row>=LANDMARK_ROWS||!Number.isInteger(column))return null;
-  if(cachedSeed!==SEED){cache.clear();cachedSeed=SEED;}
+  if(cachedSeed!==SEED){cache.clear();cachedSeed=SEED;arrivals=Object.values(findDestinations()).map(d=>new Vector3(...d));}
   const columns=landmarkColumns(row);column=wrap(column,columns);const key=`${row}/${column}`;
   if(cache.has(key))return cache.get(key);
   let descriptor=null;
   if(hash(column,row,70311)<.13){
     const lat=-Math.PI/2+(row+.3+hash(column,row,70312)*.4)*step,lon=(column+.3+hash(column,row,70313)*.4)/columns*TAU;
     const direction=new Vector3(Math.cos(lat)*Math.cos(lon),Math.sin(lat),Math.cos(lat)*Math.sin(lon));
+    // Standard biome arrivals must remain clear for every supported world seed.
+    if(arrivals.some(d=>direction.distanceTo(d)*RADIUS<180)){cache.set(key,null);return null;}
     const sample=terrainSample(...direction.toArray()),variant=Math.floor(hash(column,row,70314)*LANDMARK_VARIANTS),scale=.72+hash(column,row,70315)*.55;
     if(sample.height>18&&biomeAt(...direction.toArray(),sample.height)!=='POLAR ICE'){
       const quaternion=new Quaternion().setFromUnitVectors(up,direction).multiply(new Quaternion().setFromAxisAngle(up,TAU*hash(column,row,70316)));
@@ -76,5 +78,11 @@ export function landmarkExcludes(x,y,z,margin=0){
     const center=new Vector3(Math.cos(lat)*Math.cos(phi),Math.sin(lat),Math.cos(lat)*Math.sin(phi));
     exclusions=landmarkCells(center,LANDMARK_SPACING+LANDMARK_BOUND+32).map(c=>landmarkDescriptor(c.row,c.column)).filter(Boolean);
   }
-  return exclusions.some(d=>Math.hypot(x-d.direction.x,y-d.direction.y,z-d.direction.z)*RADIUS<d.footprint+margin);
+  let ground;
+  return exclusions.some(d=>{
+    if(Math.hypot(x-d.direction.x,y-d.direction.y,z-d.direction.z)*RADIUS>=d.footprint+margin)return false;
+    ground??=new Vector3(x,y,z).multiplyScalar(RADIUS+terrainSample(x,y,z).height);
+    const local=ground.clone().sub(d.position).applyQuaternion(d.quaternion.clone().invert()).divideScalar(d.scale);
+    return landmarkOccupies(d.variant,local.x,local.y,local.z,margin/d.scale,Math.max(1,margin*2)/d.scale);
+  });
 }
