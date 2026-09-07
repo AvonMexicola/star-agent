@@ -18,12 +18,15 @@ const base = (over = {}) => ({
 
 // ------------------------------------------------------------------- contract
 
-test('the clip contract is exactly the 14 names the rig must ship', () => {
+test('the clip contract retains locomotion and adds traversal, gestures and distinct equipment poses', () => {
   assert.deepEqual([...CLIPS], [
     'idle', 'walk', 'run', 'jump', 'crouch-walk', 'sit-down', 'sit-idle', 'stand-up',
     'carry-walk', 'wounded-walk', 'aim-rifle', 'fire-rifle', 'fire-pistol', 'death',
+    'rest-pose', 'climb-ladder', 'climb-idle', 'wave', 'take-damage', 'aim-pistol',
+    'use-tool', 'reload-rifle', 'reload-pistol', 'interact',
+    'climb-mount', 'climb-finish',
   ]);
-  assert.equal(new Set(CLIPS).size, 14);
+  assert.equal(new Set(CLIPS).size, CLIPS.length);
 });
 
 test('every contract clip has a fallback chain and every chain member is a contract clip', () => {
@@ -73,7 +76,11 @@ test('state resolution table', () => {
     ['seated while carrying', base({ seated: true, carrying: true }), 'walk', 'sit'],
 
     ['standing aim reads as its own pose', base({ aiming: 'rifle' }), 'idle', 'aim-rifle'],
-    ['a pistol aim uses the same aim pose', base({ aiming: 'pistol' }), 'idle', 'aim-rifle'],
+    ['a pistol has a distinct aim pose', base({ aiming: 'pistol' }), 'idle', 'aim-pistol'],
+    ['a tool has a distinct working pose', base({ aiming: 'tool' }), 'idle', 'use-tool'],
+    ['ladder traversal releases weapon aiming', base({ climbing: true, aiming: 'rifle', firing: true }), 'fire-rifle', 'climb'],
+    ['sitting releases a held trigger', base({ seated: true, aiming: 'rifle', firing: true }), 'fire-rifle', 'sit'],
+    ['rest pose is available for inspection', base({ resting: true }), 'idle', 'rest'],
     ['aiming while walking keeps the locomotion base', base({ speed: 1.2, aiming: 'rifle' }), 'walk', 'walk'],
     ['aiming while running keeps the run base', base({ speed: 5, aiming: 'rifle' }), 'run', 'run'],
 
@@ -185,6 +192,10 @@ test('fallback mapping when clips are missing', () => {
     'fire-rifle': ['idle', 1],
     'fire-pistol': ['idle', 1],
     'death': ['idle', 1],
+    'rest-pose': ['idle', 1], 'climb-ladder': ['idle', 1], 'climb-idle': ['idle', 1],
+    'wave': ['idle', 1], 'take-damage': ['idle', 1], 'aim-pistol': ['idle', 1],
+    'use-tool': ['idle', 1], 'reload-rifle': ['idle', 1], 'reload-pistol': ['idle', 1],
+    'interact': ['idle', 1], 'climb-mount': ['idle', 1], 'climb-finish': ['idle', 1],
   };
   for (const name of CLIPS) {
     const info = resolveClip(name, minimal);
@@ -325,9 +336,10 @@ test('each locomotion state uses its own walk variant', () => {
   assert.ok(CLIPS.includes(walkClipForState('crouch')));
 });
 
-test('jump, sit and death are full-body states; the rest ride the speed blend', () => {
-  for (const state of ['jump', 'sit', 'dead']) assert.equal(isLocomotionState(state), false, state);
-  for (const state of STATES.filter((s) => !['jump', 'sit', 'dead'].includes(s))) {
+test('traversal and gestures own the body; equipment aiming retains locomotion', () => {
+  const fullBody = ['jump', 'sit', 'dead', 'rest', 'climb', 'wave', 'hit', 'reload-rifle', 'reload-pistol', 'interact', 'climb-mount', 'climb-finish'];
+  for (const state of fullBody) assert.equal(isLocomotionState(state), false, state);
+  for (const state of STATES.filter((s) => !fullBody.includes(s))) {
     assert.equal(isLocomotionState(state), true, state);
   }
 });

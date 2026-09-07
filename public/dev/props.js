@@ -211,7 +211,7 @@ function layout() {
     d.style.left = `${cx + 8}px`;
     d.style.top = `${cy + 8}px`;
     const e = it.entry;
-    const budget = e.category === 'character' ? 20000 : 10000;
+    const budget = e.budget?.triangles ?? (e.category === 'character' ? 20000 : 10000);
     const overTris = it.info.tris > budget;
     const wantH = e.height_m;
     const offH = wantH && Math.abs(it.height - wantH) / wantH > 0.06;

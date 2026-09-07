@@ -18,6 +18,142 @@
     "notes": "Procedural placeholder astronaut (blender/build_mannequin.py). Rigged to Mixamo bone names without prefix, A-pose rest, faces -Z. 14 clips: idle, walk, run, jump, crouch-walk, sit-down, sit-idle, stand-up, carry-walk, wounded-walk, aim-rifle, fire-rifle, fire-pistol, death. Locomotion in place. Retarget with blender/retarget_clips.py."
   },
   {
+    "name": "player-expedition",
+    "file": "player-expedition.glb",
+    "category": "character",
+    "tris": 62177,
+    "textures": 2,
+    "texture_size": 2048,
+    "texture_format": "webp",
+    "height_m": 1.85,
+    "footprint_m": [
+      1.023,
+      0.399
+    ],
+    "credits": 35,
+    "concept": "assets/character/expedition-v2/concept.png",
+    "file_mb": 8.496328,
+    "sha256": "04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa",
+    "animations": [
+      {
+        "name": "idle",
+        "seconds": 2.366666555404663
+      },
+      {
+        "name": "walk",
+        "seconds": 1.0666667222976685
+      },
+      {
+        "name": "run",
+        "seconds": 0.6666666865348816
+      },
+      {
+        "name": "jump",
+        "seconds": 1.9333332777023315
+      },
+      {
+        "name": "crouch-walk",
+        "seconds": 1.1666666269302368
+      },
+      {
+        "name": "sit-down",
+        "seconds": 4.800000190734863
+      },
+      {
+        "name": "sit-idle",
+        "seconds": 10.699999809265137
+      },
+      {
+        "name": "stand-up",
+        "seconds": 6.233333110809326
+      },
+      {
+        "name": "carry-walk",
+        "seconds": 6.5333333015441895
+      },
+      {
+        "name": "wounded-walk",
+        "seconds": 8.699999809265137
+      },
+      {
+        "name": "death",
+        "seconds": 3.5333333015441895
+      },
+      {
+        "name": "wave",
+        "seconds": 5.366666793823242
+      },
+      {
+        "name": "take-damage",
+        "seconds": 1.6666666269302368
+      },
+      {
+        "name": "climb-ladder",
+        "seconds": 1.6333333253860474
+      },
+      {
+        "name": "climb-mount",
+        "seconds": 2.066666603088379
+      },
+      {
+        "name": "climb-finish",
+        "seconds": 4.0333333015441895
+      },
+      {
+        "name": "reload-rifle",
+        "seconds": 3.700000047683716
+      },
+      {
+        "name": "interact",
+        "seconds": 6.0333333015441895
+      },
+      {
+        "name": "aim-rifle",
+        "seconds": 1
+      },
+      {
+        "name": "aim-pistol",
+        "seconds": 1
+      },
+      {
+        "name": "use-tool",
+        "seconds": 1
+      },
+      {
+        "name": "rest-pose",
+        "seconds": 1
+      },
+      {
+        "name": "climb-idle",
+        "seconds": 1
+      },
+      {
+        "name": "fire-rifle",
+        "seconds": 0.3
+      },
+      {
+        "name": "fire-pistol",
+        "seconds": 0.3
+      },
+      {
+        "name": "reload-pistol",
+        "seconds": 3.7
+      }
+    ],
+    "notes": "Expedition suit v2. Meshy 7 + humanoid rig; UV-matched 2K color and PBR maps; 26 normalized/derived clips. Build and provenance: assets/character/expedition-v2. User-requested fidelity increase supersedes the previous 20k/1K character target; final visual acceptance recorded separately.",
+    "morph_targets": [
+      "GripRight",
+      "GripLeft"
+    ],
+    "budget": {
+      "triangles": 65000,
+      "file_mb": 9,
+      "texture_size": 2048,
+      "approval": "Cees request, 2026-09-07; QUALITY.md §5"
+    },
+    "shadow_triangles": 17442
+  },
+  {
     "name": "player-female",
     "file": "player-female.glb",
     "category": "character",
@@ -177,7 +313,7 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 12.0,
+    "height_m": 12,
     "footprint_m": [
       10.523,
       9.609
@@ -195,7 +331,7 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 18.0,
+    "height_m": 18,
     "footprint_m": [
       11.461,
       7.649
@@ -231,7 +367,7 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 4.0,
+    "height_m": 4,
     "footprint_m": [
       3.39,
       2.695
@@ -347,15 +483,16 @@
     "texture_format": "none",
     "height_m": 0.303,
     "footprint_m": [
-      1.104,
+      0.773,
       0.105
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.244,
-    "notes": "Procedural bullpup laser carbine (blender/build_gear.py): white armour receiver with inset panels, top rail + reflex optic, vented shroud over a mint emitter core, charge display, side lever, foregrip, butt pad. 1.10 m long, 6 materials, no textures.",
-    "source": "blender/build_gear.py",
-    "origin": "pistol-grip palm point; barrel -X, bore at y=0.115; muzzle (-0.55, 0.115, 0); leftGrip (-0.29, 0.012, 0)"
+    "file_mb": 0.243692,
+    "notes": "Procedural bullpup laser carbine with a retracted .22 m rear stock, fitted to the expedition suit. Overall .77 m; six PBR materials, unchanged barrel, trigger and support grips. Original retained in assets/character/expedition-v2/rifle-before.glb; rebuild with node blender/prepare-avatar.mjs.",
+    "source": "blender/build_gear.py + blender/fit-rifle-stock.mjs",
+    "origin": "pistol-grip palm point; barrel -X, bore at y=0.115; muzzle (-0.55, 0.115, 0); leftGrip (-0.29, 0.012, 0)",
+    "sha256": "f77661d8ee504e95bd22fc08abf335fddf86649e1758cead8942954519b44edb"
   },
   {
     "name": "sidearm-pistol",
@@ -385,7 +522,7 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 3.0,
+    "height_m": 3,
     "footprint_m": [
       2.565,
       2.081
@@ -421,7 +558,7 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 2.0,
+    "height_m": 2,
     "footprint_m": [
       2.534,
       2.146
@@ -475,7 +612,7 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 5.0,
+    "height_m": 5,
     "footprint_m": [
       7.1,
       2.268

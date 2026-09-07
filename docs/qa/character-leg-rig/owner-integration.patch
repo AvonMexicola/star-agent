@@ -1,0 +1,38 @@
+--- a/blender/prepare-avatar.mjs
++++ b/blender/prepare-avatar.mjs
+@@ -12,6 +12,7 @@
+ import { addGripShapes } from './avatar-grips.mjs';
+ import { fitRifleStock } from './fit-rifle-stock.mjs';
+ import { addShadowIndices } from './avatar-shadow.mjs';
++import { correctLegRig } from './avatar-legs.mjs';
+
+ const SOURCE = resolve('assets/character/expedition-v2');
+ const OUTPUT = resolve('public/models/props/player-expedition.glb');
+@@ -24,6 +25,7 @@
+
+ // Canonical Mixamo spine order, from hips to shoulders. Meshy's names run backwards.
+ for (const node of rig.json.nodes) node.name = ({ Spine02: 'Spine', Spine01: 'Spine1', Spine: 'Spine2', neck: 'Neck' })[node.name] || node.name;
++const legRig = await correctLegRig(rig);
+ const hipsIndex = rig.json.nodes.findIndex(node => node.name === 'Hips');
+ const restHips = rig.json.nodes[hipsIndex].translation;
+ const sourceClips = new Map(rig.json.animations.map(animation => [animation.name, animation]));
+@@ -243,7 +245,7 @@
+ fitRifleStock(join(SOURCE, 'rifle-before.glb'), resolve('public/models/props/rifle-laser.glb'));
+ const report = { file: 'player-expedition.glb', sha256: sha(readFileSync(OUTPUT)), bytes: readFileSync(OUTPUT).length,
+   triangles: rig.json.meshes.reduce((n, m) => n + m.primitives.reduce((sum, p) => sum + rig.json.accessors[p.indices].count / 3, 0), 0),
+-  joints: rig.json.skins[0].joints.length, textureSize: 2048, textureCount: 2, sourceOrmSize: 4096, height: 1.85, shadow,
++  joints: rig.json.skins[0].joints.length, textureSize: 2048, textureCount: 2, sourceOrmSize: 4096, height: 1.85, shadow, legRig,
+   animations: records, sources: ['meshy-20-motions.glb', 'meshy-idle.glb', 'meshy-remesh-pbr.glb'].map(file => ({ file, sha256: sha(readFileSync(join(SOURCE, file))) })) };
+ writeFileSync(join(SOURCE, 'build.json'), JSON.stringify(report, null, 2) + '\n');
+ const manifestPath = resolve('public/models/props/manifest.json');
+--- a/package.json
++++ b/package.json
+@@ -7,7 +7,7 @@
+     "dev": "vite --host 127.0.0.1",
+     "build": "vite build",
+     "preview": "vite preview --host 127.0.0.1",
+-    "test": "node --test tests/gear-flight.test.js tests/ship-handling.test.js tests/render-resolution.test.js tests/ship-utilities.test.js tests/startup-preload.test.js tests/station-concourse.test.js tests/station-shop.test.js tests/opening-support.test.js tests/opening-navigation.test.js tests/station-floor.test.js tests/player-idle.test.js tests/player-expedition.test.js tests/character.test.js tests/travel-model.test.js tests/travel-navigation.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js tests/station-finish-materials.test.js tests/station-finish-props.test.js tests/station-complex.test.js tests/freighter.test.js tests/station-opening-complex.test.js tests/ship-power.test.js tests/ship-power-support.test.js tests/atlas-mark-ii.test.js tests/loadout.test.js tests/energy-effects.test.js tests/regional-deposits.test.js tests/ship-marker.test.js tests/ring-ice.test.js tests/asteroid-appearance.test.js tests/ring-spacing.test.js tests/legacy-ring.test.js tests/asteroid-targeting.test.js tests/space-steering.test.js tests/debris-flight.test.js tests/resource-geology.test.js tests/resource-deposits.test.js tests/resource-mining.test.js tests/tool-visual/materials.test.js tests/eva.test.js tests/ring-world.test.js tests/space-mining.test.js tests/container-inventory.test.js tests/mining.test.js tests/equipment.test.js tests/station-ledger.test.js tests/orbital-surface.test.js tests/moon-stones.test.js tests/meadow.test.js tests/pyre.test.js tests/map-projection.test.js scripts/crash.test.js scripts/reentry.test.js scripts/ship-camera.test.js scripts/landing-gear.test.js scripts/forest-distribution.test.js scripts/forest-stream.test.js scripts/terrain-lod.test.js scripts/terrain-material.test.js",
++    "test": "node --test tests/gear-flight.test.js tests/ship-handling.test.js tests/render-resolution.test.js tests/ship-utilities.test.js tests/startup-preload.test.js tests/station-concourse.test.js tests/station-shop.test.js tests/opening-support.test.js tests/opening-navigation.test.js tests/station-floor.test.js tests/player-idle.test.js tests/player-expedition.test.js tests/character-legs.test.js tests/character.test.js tests/travel-model.test.js tests/travel-navigation.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js tests/station-finish-materials.test.js tests/station-finish-props.test.js tests/station-complex.test.js tests/freighter.test.js tests/station-opening-complex.test.js tests/ship-power.test.js tests/ship-power-support.test.js tests/atlas-mark-ii.test.js tests/loadout.test.js tests/energy-effects.test.js tests/regional-deposits.test.js tests/ship-marker.test.js tests/ring-ice.test.js tests/asteroid-appearance.test.js tests/ring-spacing.test.js tests/legacy-ring.test.js tests/asteroid-targeting.test.js tests/space-steering.test.js tests/debris-flight.test.js tests/resource-geology.test.js tests/resource-deposits.test.js tests/resource-mining.test.js tests/tool-visual/materials.test.js tests/eva.test.js tests/ring-world.test.js tests/space-mining.test.js tests/container-inventory.test.js tests/mining.test.js tests/equipment.test.js tests/station-ledger.test.js tests/orbital-surface.test.js tests/moon-stones.test.js tests/meadow.test.js tests/pyre.test.js tests/map-projection.test.js scripts/crash.test.js scripts/reentry.test.js scripts/ship-camera.test.js scripts/landing-gear.test.js scripts/forest-distribution.test.js scripts/forest-stream.test.js scripts/terrain-lod.test.js scripts/terrain-material.test.js",
+     "test:browser": "playwright test"
+   },
+   "dependencies": {

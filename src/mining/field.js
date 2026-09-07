@@ -133,7 +133,7 @@ export class MiningField {
     return nearest;
   }
   /** Camera-only inspection selects streamed deposits. Muzzle queries never change priority. */
-  inspectTarget(origin,direction,range=8){
+  inspectTarget(origin,direction,range=8,reachOrigin=origin){
     const probe=Math.max(range,80),ready=this.readyRaycast(origin,direction,probe);
     const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
     const ring=this.rings.raycast?.(origin,direction,probe,{exclude,includeHidden:true});
@@ -142,6 +142,7 @@ export class MiningField {
     const raw=[stone,ring,landmark].filter(Boolean).sort((a,b)=>a.distance-b.distance)[0];
     const hit=ready&&(!raw||ready.distance<=raw.distance)?ready:raw;
     if(!hit||this.fieldCache.raycast(origin,direction,hit.distance)){this.aimedDescriptor=null;this.regionalAimed=null;this.inspectState=null;return null;}
+    const distance=hit.point.distanceTo(reachOrigin);
     const descriptor=hit.descriptor??hit.rock?.descriptor;
     if(descriptor?.looseStone&&!hit.rock){
       this.aimedDescriptor=null;this.regionalAimed=descriptor.id;
@@ -150,17 +151,17 @@ export class MiningField {
     }
     if(!descriptor||hit.rock&&!hit.rock.space){
       this.aimedDescriptor=null;this.regionalAimed=descriptor?.regional?descriptor.id:null;this.active=hit.rock;
-      return this.inspectState={status:hit.distance>range?'out-of-range':!this.store.canEditRock(hit.rock.rockId)?'save-full':'ready',name:descriptor?.name??'Crescent deposit',distance:hit.distance,mineable:true,rockId:hit.rock.rockId,point:hit.point};
+      return this.inspectState={status:distance>range?'out-of-range':!this.store.canEditRock(hit.rock.rockId)?'save-full':'ready',name:descriptor?.name??'Crescent deposit',distance,mineable:true,rockId:hit.rock.rockId,point:hit.point};
     }
     this.aimedDescriptor=descriptor.mineable?descriptor:null;
-    let status=!descriptor.mineable?'too-large':hit.distance>range?'out-of-range':'preparing';
+    let status=!descriptor.mineable?'too-large':distance>range?'out-of-range':'preparing';
     let rock=hit.rock??this.cache.get(descriptor.id);
-    if(descriptor.mineable&&hit.distance<=range){
+    if(descriptor.mineable&&distance<=range){
       if(!this.store.canEditRock(descriptor.key))status='save-full';
-      else{rock??=this.promoteSpaceRock(descriptor,origin);status=rock?.ready?'ready':'preparing';}
+      else{rock??=this.promoteSpaceRock(descriptor,reachOrigin);status=rock?.ready?'ready':'preparing';}
     }
     if(descriptor.mineable){this.surveyDescriptor=descriptor;this.surveyPosition=new THREE.Vector3(...descriptor.position).add(new THREE.Vector3(...MOON_POSITION));if(rock)this.active=rock;}
-    return this.inspectState={status,name:descriptor.name,distance:hit.distance,mineable:descriptor.mineable,rockId:descriptor.key,point:hit.point};
+    return this.inspectState={status,name:descriptor.name,distance,mineable:descriptor.mineable,rockId:descriptor.key,point:hit.point};
   }
   raycast(origin,direction,range=8){
     let nearest=this.readyRaycast(origin,direction,range);

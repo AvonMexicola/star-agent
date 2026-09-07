@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Character, CharacterCamera } from './character.js';
+import { PLAYER_AVATAR } from './player-avatar.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { SUN_DIRECTION } from './world.js';
 import { defaultStationDirection } from './station.js';
@@ -26,10 +27,10 @@ export function openingStationOptions(){
 }
 
 export class OpeningSequence {
-  constructor({scene,nav,station,onGesture=()=>{}}){
+  constructor({scene,nav,station,character:playerCharacter=null,onGesture=()=>{}}){
     this.nav=nav;this.station=station;this.onGesture=onGesture;
     this.phase='loading';this.elapsed=0;this.blendElapsed=0;this.bufferedKey=null;this.bufferRemaining=0;
-    this.character=new Character(scene,{url:'/models/props/player-male.glb',eyeHeight:SHIP_LAYOUT.eyeHeight,modelYaw:Math.PI});
+    this.character=playerCharacter||new Character(scene,{...PLAYER_AVATAR,eyeHeight:SHIP_LAYOUT.eyeHeight});
     this.character.setVisible(false);
     // The physical navigation eye is authoritative. Using the animated head
     // directly here would cause a jump when the normal first-person loop resumes.
