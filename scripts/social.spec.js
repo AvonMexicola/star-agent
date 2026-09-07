@@ -148,7 +148,7 @@ test('keyboard and touch send safe plain text, retain friends after reload and s
     await page.screenshot({ path: `${output}/touch-friends-phone.png` });
     await page.reload(); await expect.poll(() => page.evaluate(() => window.starAgent?.state.ready), { timeout: 90000 }).toBe(true);
     await page.locator('[data-join]').tap(); await expect.poll(() => page.evaluate(() => window.starAgent.state.multiplayer.connected)).toBe(true);
-    await page.locator('#multiplayer-account-dialog [data-mp-close]').tap(); await page.locator('#multiplayer-access').tap();
+    await page.locator('#multiplayer-account-dialog .gameplay-resume').tap(); await page.locator('#multiplayer-access').tap();
     await page.locator('[data-controller-key="comms-friends"]').tap(); await expect(page.locator('[data-friends-count]')).toHaveText('1 friends');
     await page.locator('[data-controller-key="comms-chat"]').tap(); await page.locator('#mp-chat-text').fill('Hello again'); await page.locator('[data-chat-send]').tap();
     await expect(page.locator('.mp-chat-log')).toContainText('Hello again'); await page.screenshot({ path: `${output}/touch-chat-phone.png` });
