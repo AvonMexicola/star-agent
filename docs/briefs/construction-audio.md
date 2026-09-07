@@ -8,6 +8,7 @@ assets, dependencies or authority changes. Preserve fitted-weapon pitch/gain.
 Placement emits once after successful storage commit, never for invalid ghosts,
 failed saves or loading a base. Fauna emits at attack windup entry, not every
 frame or only after damage. The fauna owner retains the unfinished creature
-runtime; the small callback patch is a handoff, not integrated wildlife.
+runtime; the callback and committed audio modules are applied in its worktree. Wildlife
+is not yet integrated into the shared game.
 
 Validation and remaining integration: [audio record](../qa/construction-audio/README.md).

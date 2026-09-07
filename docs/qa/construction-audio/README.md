@@ -25,13 +25,20 @@ placement .019; all emit real PCM. Mute yields zero voices/RMS, with no captured
 console warnings/errors. These are playback measurements, not independent
 listening approval. No new controller bindings or physical-device journey claim.
 
-## Fauna handoff (pending owner integration)
+## Fauna source integration
 
 `fauna-attack-hook.patch` is a small source patch against the active SA-FAU-001
 worktree. It adds onAttack at windup entry, forwards a cloned world position
-through onSound, and binds the callback to the shared mixer in main. Apply once
-after this audio change is available. The fauna runtime/GLBs were not copied,
-committed or modified by this audio task. Check the patch against newer owner
-edits before applying. No claim of live in-game creature attack audio until then.
+through onSound, and binds the callback to the shared mixer in main. The fauna owner has now applied the callback, and Nova applied only the two
+committed audio-module diffs to that worktree. Do not apply the patch twice. The fauna runtime/GLBs were not copied or committed by this audio task.
+The full creature feature remains in its owner worktree and is not yet live in
+the shared preview. No whole-creature gameplay/browser acceptance is claimed.
 
 The studio buttons audition the sounds independently of unfinished creature AI.
+
+Source integration verification: `node scripts/verify-fauna-audio.mjs /path/to/fauna-worktree`
+passes against the current owner source for both species. The real simulation
+emits exactly one growl at windup entry, none on later windup frames, a fresh
+sound for the next attack, and no attacks after death; suspension stops voices.
+It uses the actual owner GameplayAudio and generated PCM with a mock WebAudio
+graph. Chrome separately verified real WebAudio playback, including on shared5178.
