@@ -149,3 +149,12 @@ Builder inspection: [desktop](homepage-desktop.webp), [phone](homepage-phone.web
 [equipment viewer](equipment-viewer.webp). Images were checked for layout, readable
 content, missing assets and game-only capture content. There is no independent art
 review, physical controller-device test or client FPS claim in this release.
+
+## Solo tile Nomad approach loop
+
+The solo tile now uses `nomad-approach.mp4` and its matching poster, replacing
+the original Kestrel flight loop. This is the first six seconds of the accepted
+continuous Nomad take above, at normal speed, with a brief fade at each loop
+boundary. The poster is its real frame at 3.2 seconds. H.264,1280×800/30fps,
+CRF24, silent fast-start MP4. Existing pause/reduced-motion behavior is retained.
+The multiplayer tile and both long films retain their existing media.
