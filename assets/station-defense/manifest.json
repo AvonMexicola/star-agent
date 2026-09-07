@@ -10,8 +10,8 @@
   "layoutSha256": "e9f34742ee9b4002513abb8f5fbfcaf9a838553977be97e6523f358c94037072",
   "blenderVersion": "5.2.0 LTS",
   "triangles": 9177,
-  "bytes": 877048,
-  "sha256": "ccc8f276dc07891aff056fded88367607a28d5f5aa2897e39b9ae973fca3472f",
+  "bytes": 908388,
+  "sha256": "adf6c5b03da18710a3d97341dd503ec95433e564d81610ed67037b226af8e4ca",
   "meshPrimitives": 9,
   "meshes": 9,
   "nodes": 17,
@@ -43,24 +43,24 @@
   "textures": [
     {
       "name": "bastion-normal",
-      "bytes": 52732,
-      "sha256": "b14e0141c41a728f88dd48655406fdccdbdf5c6de2231c1b4fed8c7fde1f2122",
+      "bytes": 76496,
+      "sha256": "77b1ebf793c1b69f8b62346eb6d8fa03757be74dbbaece4a1366d6687a90822a",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
     },
     {
       "name": "bastion-basecolor",
-      "bytes": 62162,
-      "sha256": "b63a1decbf2a10782e86a574ec7645668736b566706178e1a26db6c8cda11706",
+      "bytes": 61352,
+      "sha256": "c3f9b6ccfd4db2d7df7706abf549bf2bf9c3c7926f06fd964cad0377cc0b9180",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
     },
     {
       "name": "bastion-orm",
-      "bytes": 63780,
-      "sha256": "c096f362ae6d97cc94981c33287d65ead5777f7d459ff0ef2f15e24da36a29f8",
+      "bytes": 68646,
+      "sha256": "defcd1449b10228d1fefd94e26af648f2f234e7681b4939eeb074eb7132d5d88",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
@@ -69,9 +69,9 @@
   "textureDecodedBytesEstimateRGBA8WithMips": 4194303,
   "vertexColorPacking": {
     "format": "normalized RGBA8",
-    "vertices": 17422,
-    "sourceBytes": 209064,
-    "packedBytes": 69688,
+    "vertices": 17269,
+    "sourceBytes": 207228,
+    "packedBytes": 69076,
     "maxChannelError": 0.0019607723927965726
   },
   "pitchLimits": [

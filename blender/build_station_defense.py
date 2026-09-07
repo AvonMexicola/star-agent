@@ -51,8 +51,8 @@ for p in (TEXTURES, OUT.parent):
 EDGE = 512
 PALETTE = [(215, 222, 212), (31, 42, 45), (130, 146, 149), (11, 18, 20),
            (42, 82, 83), (174, 127, 44), (70, 84, 89), (182, 239, 209)]
-ROUGHNESS = [.58, .78, .40, .91, .57, .62, .48, .55]
-METALNESS = [.10, .10, .90, .02, .20, .08, .82, .05]
+ROUGHNESS = [.47, .74, .43, .94, .50, .61, .51, .55]
+METALNESS = [.04, .06, .92, .02, .10, .08, .86, .05]
 
 def png(path, rows):
     def chunk(kind, payload):
@@ -63,23 +63,43 @@ def png(path, rows):
     path.write_bytes(data + chunk(b'IEND', b''))
 
 rng = random.Random(7291)
+relief_rng = random.Random(7317)
+
+def signed_noise(x, y, salt):
+    value=(x*374761393+y*668265263+salt*1442695041)&0xffffffff
+    value=((value^(value>>13))*1274126177)&0xffffffff
+    return ((value^(value>>16))&0xffff)/32767.5-1
+
+def finish_field(x, y, scale, salt):
+    # Smooth deterministic value noise changes surface response, not illumination
+    # or panel colour. No diagonal scuffs or directional light are painted in.
+    px,py=x/scale,y/scale;ix,iy=math.floor(px),math.floor(py)
+    u,v=px-ix,py-iy;u=u*u*(3-2*u);v=v*v*(3-2*v)
+    a=signed_noise(ix,iy,salt)*(1-u)+signed_noise(ix+1,iy,salt)*u
+    b=signed_noise(ix,iy+1,salt)*(1-u)+signed_noise(ix+1,iy+1,salt)*u
+    return a*(1-v)+b*v
+
 base_rows, orm_rows, normal_rows = [], [], []
 for y in range(EDGE):
     br, ore, nr = bytearray(), bytearray(), bytearray()
     for x in range(EDGE):
         tile = (y // 128) * 2 + x // 256
         grain = rng.choice((-1, 0, 0, 0, 1))
-        # Broad brushed steel response is roughness only, at two low amplitudes.
-        brush = math.sin(y * 1.83) if tile in (2, 6) else 0
+        # Nonperiodic machining grain is in roughness. Enamel and coated panels
+        # have a restrained broader finish variation with their own base values.
+        brush = signed_noise(0,y,41) if tile in (2,6) else 0
+        broad = finish_field(x,y,43,79+tile)
         br.extend(max(0, min(255, c + grain)) for c in PALETTE[tile])
-        rough = ROUGHNESS[tile] + grain * .004 + brush * .012
-        ore.extend((255, round(rough * 255), round(METALNESS[tile] * 255)))
+        rough = ROUGHNESS[tile] + grain*.004 + brush*.035 + broad*(.025 if tile in (0,2,4,6) else .014)
+        metal = METALNESS[tile] + (broad*.025 if tile in (2,6) else 0)
+        ore.extend((255, round(rough * 255), round(metal * 255)))
         # Very restrained independent tangent relief. Geometry supplies bevels.
-        nr.extend((128 + grain, 128 + (round(brush) if tile in (2, 6) else 0), 255))
+        pore = relief_rng.choice((-2,-1,0,0,0,1,2))
+        nr.extend((128+pore,128+(round(brush) if tile in (2,6) else 0),255))
     base_rows.append(br); orm_rows.append(ore); normal_rows.append(nr)
 for name, rows in [('bastion-basecolor', base_rows), ('bastion-orm', orm_rows), ('bastion-normal', normal_rows)]:
     png(TEXTURES / (name + '.png'), rows)
-    subprocess.run(['magick', str(TEXTURES / (name + '.png')), '-define', 'webp:lossless=true',
+    subprocess.run(['magick', str(TEXTURES / (name + '.png')), '-define', 'webp:lossless=true', '-define', 'webp:method=6',
                     str(TEXTURES / (name + '.webp'))], check=True)
 
 bpy.ops.object.select_all(action='SELECT')
@@ -158,7 +178,8 @@ for suffix, x in [('Port', -4.2), ('Starboard', 4.2)]:
     muzzle['restPosition'] = [x, 0, -29]
 
 
-def stock(name, verts, faces, parent, tile=0, bevel=0, material=0, smooth_radial=None, joint=None):
+def stock(name, verts, faces, parent, tile=0, bevel=0, material=0, smooth_radial=None, joint=None,
+          smooth_revolved=None, inner_tile=None):
     mesh = bpy.data.meshes.new(name + ' geometry')
     mesh.from_pydata([xyz(v) for v in verts], [], faces); mesh.update()
     bm = bmesh.new(); bm.from_mesh(mesh)
@@ -176,6 +197,13 @@ def stock(name, verts, faces, parent, tile=0, bevel=0, material=0, smooth_radial
     # ridges and edge relief are geometry, not a stretched photographic atlas.
     uv = mesh.uv_layers.new(name='UVMap')
     for poly in mesh.polygons:
+        face_tile=tile
+        if inner_tile is not None:
+            assert smooth_revolved is not None and not bevel
+            origin,axis=smooth_revolved;origin,axis=xyz(origin),xyz(axis).normalized()
+            center=poly.center-origin;radial=center-axis*center.dot(axis)
+            if radial.length>1e-6 and poly.normal.dot(radial)<-1e-5:
+                face_tile=inner_tile
         axes = sorted(range(3), key=lambda i: abs(poly.normal[i]))[:2]
         positions = [mesh.vertices[mesh.loops[li].vertex_index].co for li in poly.loop_indices]
         lo = [min(p[a] for p in positions) for a in axes]
@@ -183,8 +211,8 @@ def stock(name, verts, faces, parent, tile=0, bevel=0, material=0, smooth_radial
         for li in poly.loop_indices:
             p = mesh.vertices[mesh.loops[li].vertex_index].co
             u, v = [(p[a]-lo[j])/max(1e-7, hi[j]-lo[j]) for j, a in enumerate(axes)]
-            uv.data[li].uv = ((tile % 2 + .035 + u * .93)/2,
-                              (3-tile // 2 + .035 + v * .93)/4)
+            uv.data[li].uv = ((face_tile % 2 + .035 + u * .93)/2,
+                              (3-face_tile // 2 + .035 + v * .93)/4)
     if smooth_radial:
         # Explicit radial side / flat cap normals avoid the old rounded-end rod
         # artefact. Shape changes and bevel breaks retain authored face normals.
@@ -198,6 +226,33 @@ def stock(name, verts, faces, parent, tile=0, bevel=0, material=0, smooth_radial
                 radial = p-axis*p.dot(axis)
                 normals.append((radial.normalized() if axial < .02 and radial.length > 1e-8 else poly.normal).copy())
             poly.use_smooth = True
+        mesh.normals_split_custom_set(normals)
+    if smooth_revolved:
+        # Smooth circumferential response while retaining each longitudinal
+        # profile break and flat annular end. Position/index geometry is intact.
+        assert not bevel
+        origin,axis=smooth_revolved;origin,axis=xyz(origin),xyz(axis).normalized()
+        normals=[]
+        for poly in mesh.polygons:
+            axial=poly.normal.dot(axis)
+            radial_normal=poly.normal-axis*axial
+            layers={}
+            for li in poly.loop_indices:
+                p=mesh.vertices[mesh.loops[li].vertex_index].co-origin
+                distance=p.dot(axis);radius=(p-axis*distance).length
+                layers.setdefault(round(distance,5),[]).append(radius)
+            # A meridian cut-out is a machined flat, not an ideal cylinder.
+            preserve_flat=any(max(values)-min(values)>1e-4 for values in layers.values())
+            for li in poly.loop_indices:
+                p=mesh.vertices[mesh.loops[li].vertex_index].co-origin
+                radial=p-axis*p.dot(axis)
+                if radial_normal.length>1e-6 and radial.length>1e-6 and not preserve_flat:
+                    direction=radial.normalized()
+                    sign=1 if poly.normal.dot(direction)>=0 else -1
+                    normal=(direction*radial_normal.length*sign+axis*axial).normalized()
+                else:normal=poly.normal
+                normals.append(normal.copy())
+            poly.use_smooth=True
         mesh.normals_split_custom_set(normals)
     points = [Vector(v) for v in verts]
     PARTS.append({'object': obj, 'name': name, 'parent': parent.name, 'tile': tile, 'material': material,
@@ -242,7 +297,9 @@ def tube(name, center, inner, outer, length, parent, tile=2, sides=16, axis='Z',
     for i in range(sides):
         a=i*4;b=((i+1)%sides)*4
         faces += [(a,a+1,b+1,b),(a+2,b+2,b+3,a+3),(a,b,b+2,a+2),(a+1,a+3,b+3,b+1)]
-    return stock(name,verts,faces,parent,tile,material=material,joint=joint)
+    direction={'X':(1,0,0),'Y':(0,1,0),'Z':(0,0,1)}[axis]
+    return stock(name,verts,faces,parent,tile,material=material,joint=joint,
+                 smooth_revolved=(center,direction))
 
 
 def rod(name, a, b, radius, parent, tile=2, sides=10, material=0, joint=None):
@@ -363,7 +420,8 @@ for suffix,side in [('Port',-1),('Starboard',1)]:
         faces += [(inner0+i,inner0+j,inner1+j,inner1+i),
                   (i,inner0+i,inner0+j,j),
                   ((len(levels)-1)*n+i,(len(levels)-1)*n+j,inner1+j,inner1+i)]
-    stock('Hollow tapered barrel '+suffix,verts,faces,parent,2)
+    stock('Hollow tapered barrel '+suffix,verts,faces,parent,2,
+          smooth_revolved=((x,0,0),(0,0,1)),inner_tile=3)
     # Dark mid-section and subtle forward muzzle armour form distinct load zones.
     tube('Long barrel dark jacket '+suffix,(x,0,-13.1),1.455,1.49,6.9,parent,1,16)
     tube('Forward service collar '+suffix,(x,0,-24.87),1.51,1.57,.66,parent,4,16)
@@ -518,7 +576,7 @@ for image in j.get('images',[]):
     payload=bytes(binary[start:start+bv['byteLength']])
     with tempfile.TemporaryDirectory(prefix='bastion-pack-') as tmp:
         source=Path(tmp)/'source.png';target=Path(tmp)/'packed.webp';source.write_bytes(payload)
-        subprocess.run(['magick',str(source),'-define','webp:lossless=true',str(target)],check=True)
+        subprocess.run(['magick',str(source),'-define','webp:lossless=true','-define','webp:method=6',str(target)],check=True)
         packed=target.read_bytes()
     while len(binary)%4:binary.append(0)
     image['bufferView']=len(j['bufferViews']);image['mimeType']='image/webp'

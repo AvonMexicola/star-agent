@@ -19,24 +19,24 @@
       "bytes": 75286
     },
     "bastion-basecolor.webp": {
-      "sha256": "b63a1decbf2a10782e86a574ec7645668736b566706178e1a26db6c8cda11706",
-      "bytes": 62162
+      "sha256": "c3f9b6ccfd4db2d7df7706abf549bf2bf9c3c7926f06fd964cad0377cc0b9180",
+      "bytes": 61352
     },
     "bastion-normal.png": {
-      "sha256": "6da6e9830c55159ce4a2f062f13c1f266046c2678e44db9fb6f1239ac64b9409",
-      "bytes": 71526
+      "sha256": "1f810992ad792e2ff3aeb7d735b75044b5dfecaf311013584e50024de9b599b5",
+      "bytes": 106241
     },
     "bastion-normal.webp": {
-      "sha256": "b14e0141c41a728f88dd48655406fdccdbdf5c6de2231c1b4fed8c7fde1f2122",
-      "bytes": 52732
+      "sha256": "77b1ebf793c1b69f8b62346eb6d8fa03757be74dbbaece4a1366d6687a90822a",
+      "bytes": 76496
     },
     "bastion-orm.png": {
-      "sha256": "c9053c9bdd5ebda81317f2435318edf00659ddd9f13a3d8b192f7947537d8141",
-      "bytes": 82372
+      "sha256": "71bba8c86da8d40b5184c73d4e8b369d6e847facec4b012f644e7fc416ef4597",
+      "bytes": 122602
     },
     "bastion-orm.webp": {
-      "sha256": "c096f362ae6d97cc94981c33287d65ead5777f7d459ff0ef2f15e24da36a29f8",
-      "bytes": 63780
+      "sha256": "defcd1449b10228d1fefd94e26af648f2f234e7681b4939eeb074eb7132d5d88",
+      "bytes": 68646
     }
   }
 }
