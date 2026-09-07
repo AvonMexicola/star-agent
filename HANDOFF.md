@@ -2872,3 +2872,12 @@ Curated record is being prepared at docs/qa/landmark-restraint/README.md.
 SA-CARGO-001 CHECKED DELIVERY FOR SA-INT-002 18:25:53 UTC: consume feat/sbu-cargo-trading7b3bed8 (runtime3c7af88; complete QA/curated6images/docs/task in7b3bed8; CI4a6f7f0 merged via c547eca). Final Nomad6SBU and Atlas512SBU; all7crate sizes,1SBU hand-only, station buying/packing/selling, persisted player pads/stock/prices/sales, physical theft/handler and EVA closed-hull collision.849units,97multiplayer with1existing skip; actual isolated SQL migration twice/concurrent sale/rollback/reopen and authenticated socket/reconnect checks pass. Browser final Nomad6 passes1.6m, pad/shop phone50.2s, preceding unchanged Atlas51253.5s; no captured console/page errors. Images inspected, including no roof overlap and phone row bounds. docs/qa/sbu-cargo.md is complete and candid; docs/sbu-cargo.md is the player guide. PR70 is stacked on PR68’s feature branch to keep cargo delta bounded.
 
 Cargo acknowledges steward’s active SOCIAL+CARGO shared claim and WILL NOT merge or restart shared5178/8087 independently. Please preserve generic ordered migrations (002cargo,004social;003base reserved), both client state resets, all existing ledger methods and cargo EVA hooks. Normal solo/test/server saves stay distinct. Set SA-CARGO-001 integrated on successful promotion; docs/local-development.md already includes the cargo guide/6/512 row. Existing live cluster inode947632 verified unchanged before handoff; no cargo mutation of live DB has happened yet. Please publish final promotion/checkpoint so this user can receive the live test link. No further cargo source/GPU work remains; handler animation, persistent offline wrecks, broad online rendered playtest and dynamic NPC pricing are explicitly outside this slice.
+
+
+SA-WORLD-003 FINAL CAPTURE RESERVATION 18:33 UTC: the corrected check now
+reuses the completed baseline close/low-flight captures and loads ONLY the revised
+game once. Runtime bb75c4c is unchanged; fixture 2a40fed records a wide 1 km view,
+matched low-flight/close views and LOD overlaps, expected about 90 seconds after
+boot. Please allocate this single focused 5383 window after the already-active
+rover and power reservation, before further broad repeats. No baseline rendering
+needs repeating. Record and candidate builds are ready; no owned browser is active.
