@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Stratum M-05 · Meridian Shipworks</title></head>
+<body>
+  <header class="heading"><div class="identity"><div><span class="maker">MERIDIAN SHIPWORKS</span><h1>Stratum <span>M-05</span></h1></div></div><p>Dedicated extraction craft<br><span>Authored asset inspection · gameplay integration pending</span></p></header>
+  <main id="viewport" aria-label="Stratum inspection viewport"><div id="status" role="status">Loading the authored ship…</div><div class="view-label" id="view-label">Exterior / 1.8m reference</div></main>
+  <footer class="controls">
+    <nav aria-label="Inspection views"><button data-view="exterior" aria-pressed="true">Exterior</button><button data-view="rear">Boarding</button><button data-view="side">Side</button><button data-view="top">Top</button><button data-view="belly">Gear</button><button data-view="cockpit">Pilot</button><button data-view="cabin">Cabin</button><button data-view="bores">Mining heads</button></nav>
+    <div class="mechanisms"><button id="gear-toggle" disabled>Retract gear</button><button id="ramp-toggle" disabled>Deploy ramp</button><button id="turntable" aria-pressed="false">Turntable</button><button id="human-toggle" aria-pressed="true">1.8m reference</button><label>Head yaw <input id="yaw" type="range" min="-0.2" max="0.2" step="0.01" value="0" disabled></label><label>Head elevation <input id="pitch" type="range" min="-0.12" max="0.14" step="0.01" value="0" disabled></label></div>
+    <div class="readout"><output id="mechanism-status" aria-live="polite">Asset inspection only. No mining or cargo payout.</output><span id="budget"></span></div>
+    <p class="help">Drag to orbit · pinch/scroll to zoom · 1–8 views · G gear · R ramp <span>Controller: LB/RB views · D-pad focus · A select · right stick orbit</span></p>
+  </footer>
+  <script type="module" src="/src/stratum-studio.js"></script>
+</body>
+</html>

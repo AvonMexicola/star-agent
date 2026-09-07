@@ -1,0 +1,159 @@
+{
+  "authoring": "Original scripted hard-surface Stratum geometry; reusable primitive convention from repository fighter_geometry.py",
+  "textureSource": "Deterministic authored manufactured finish; numpy seed505; no generated/downloaded/photographic inputs",
+  "textureCoordinates": "Planar per-face local metre coordinates, one4m repeat. Display surfaces have unique0..1 UVs.",
+  "channels": {
+    "basecolor": "Subtle reflectance grain; no shadows/highlights",
+    "normal": "Independent bounded tangent micro-slope, not luminance-derived",
+    "orm": "R=1 (no baked AO); G=roughness variation; B=1, scaled by material metalness"
+  },
+  "materialRecipes": {
+    "Stratum | ivory enamel": {
+      "baseColorFactor": [
+        0.76,
+        0.79,
+        0.73,
+        1
+      ],
+      "roughnessFactor": 0.55,
+      "metallicFactor": 0,
+      "normalScale": 0.23,
+      "textured": true
+    },
+    "Stratum | graphite frame": {
+      "baseColorFactor": [
+        0.025,
+        0.037,
+        0.039,
+        1
+      ],
+      "roughnessFactor": 0.73,
+      "metallicFactor": 0.05,
+      "normalScale": 0.22,
+      "textured": true
+    },
+    "Stratum | petrol service": {
+      "baseColorFactor": [
+        0.035,
+        0.16,
+        0.16,
+        1
+      ],
+      "roughnessFactor": 0.62,
+      "metallicFactor": 0.05,
+      "normalScale": 0.25,
+      "textured": true
+    },
+    "Stratum | brushed mechanisms": {
+      "baseColorFactor": [
+        0.34,
+        0.39,
+        0.4,
+        1
+      ],
+      "roughnessFactor": 0.4,
+      "metallicFactor": 0.9,
+      "normalScale": 0.52,
+      "textured": true
+    },
+    "Stratum | soft interior": {
+      "baseColorFactor": [
+        0.034,
+        0.045,
+        0.049,
+        1
+      ],
+      "roughnessFactor": 0.96,
+      "metallicFactor": 0,
+      "normalScale": 0.18,
+      "textured": true
+    },
+    "Stratum | bore interior": {
+      "baseColorFactor": [
+        0.007,
+        0.013,
+        0.015,
+        1
+      ],
+      "roughnessFactor": 0.78,
+      "metallicFactor": 0.15,
+      "normalScale": 0.3,
+      "textured": true
+    },
+    "Stratum | amber hazard": {
+      "baseColorFactor": [
+        0.94,
+        0.4,
+        0.055,
+        1
+      ],
+      "roughnessFactor": 0.6,
+      "metallicFactor": 0,
+      "normalScale": 0.2,
+      "textured": true
+    },
+    "Stratum | powered indicator": {
+      "baseColorFactor": [
+        0.36,
+        0.89,
+        0.66,
+        1
+      ],
+      "roughnessFactor": 0.4,
+      "metallicFactor": 0,
+      "normalScale": 0,
+      "textured": false
+    },
+    "Stratum | display substrate": {
+      "baseColorFactor": [
+        0.004,
+        0.018,
+        0.022,
+        1
+      ],
+      "roughnessFactor": 0.4,
+      "metallicFactor": 0.08,
+      "normalScale": 0.3,
+      "textured": true
+    },
+    "Stratum | protective glazing": {
+      "baseColorFactor": [
+        0.095,
+        0.2,
+        0.22,
+        0.26
+      ],
+      "roughnessFactor": 0.14,
+      "metallicFactor": 0.02,
+      "normalScale": 0,
+      "textured": false
+    }
+  },
+  "files": {
+    "stratum-basecolor.png": {
+      "sha256": "1da9927fff705520ab16ab2ac41275722472dded0302e87ba7ff3934da97ff6c",
+      "bytes": 430484
+    },
+    "stratum-basecolor.webp": {
+      "sha256": "f63d21c803c73ac8343ea7374d570b8640253cc6744c3c0e82ba05d5baebf849",
+      "bytes": 288972
+    },
+    "stratum-normal.png": {
+      "sha256": "bdbbfcc30e63d4c5e304268630ec5456a5bbad6651064417cc599382472e8d2b",
+      "bytes": 26265
+    },
+    "stratum-normal.webp": {
+      "sha256": "ef9231efef93487ebc407f5c0529a243f5b201b9fbce94400684dd675eb6af24",
+      "bytes": 13154
+    },
+    "stratum-orm.png": {
+      "sha256": "f88fbc22084f52034065ccd0e0e7f66ae4c9d7c9219dbbb4518afb9509fbc5d5",
+      "bytes": 1036599
+    },
+    "stratum-orm.webp": {
+      "sha256": "5474f55c84aa492fde1328ae05f66255008c1aa2dc9683c64592fa767f7fa7c1",
+      "bytes": 785664
+    }
+  },
+  "blenderVersion": "5.2.0 LTS"
+}
