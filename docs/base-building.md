@@ -189,12 +189,13 @@ embed in ground when joining a 0.3 m-high foundation.
 | Pad | Foundation | Intended ship footprint |
 | --- | --- | --- |
 | S |16×16m | Nomad12.1×11.1m |
-| M |32×40m | Atlas19×30m |
-| L |48×72m | Future heavy38×60m: four times Atlas footprint area |
+| M |32×40m | Nomad12.1×11.1m, with more working space |
+| L |48×72m | Atlas36×64m |
 
-The large ship is a sizing reference, not a newly playable ship. Pad profiles
-currently use the flying Nomad/Atlas collision layouts on this branch. Landing
-clearance includes 1 m around the full ship footprint. Rotated ships must still fit.
+The current playable Atlas requires the large pad; it does not fit the medium
+foundation. A centred Atlas has 6 m of lateral and 4 m of longitudinal clearance
+on each side of the large pad. Landing checks use the full current ship footprint
+with at least 1 m of clearance around it. Rotated ships must still fit.
 
 Aim at the near edge when placing pad prefabs; their centres extend
 beyond normal tool reach. Place the foundation, leave build mode, approach or stand on it and press **X/F →
