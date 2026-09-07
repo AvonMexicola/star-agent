@@ -1,10 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {mkdtemp} from 'node:fs/promises';
+import {tmpdir} from 'node:os';import {join} from 'node:path';
 import {createServer as netServer} from 'node:net';import {Vector3} from 'three';
 import {startLocalDatabase} from '../server/local-database.js';import {createPostgresStore} from '../server/database.js';import {createServer} from '../server/index.js';import {createBaseSites} from '../server/base-sites.js';
 import {withClaimAnchor} from '../src/build/anchors.js';import {SELENE,bodySurfacePoint} from '../src/celestial.js';import {MOON_LANDING_DIRECTION} from '../src/moon-world.js';import {DECAY_MS} from '../src/build/power.js';
 async function port(){const s=netServer();await new Promise(r=>s.listen(0,'127.0.0.1',r));const p=s.address().port;await new Promise(r=>s.close(r));return p;}
 test('real PostgreSQL keeps account-scoped bases through restart, rolls back conflicts and expires offline sites',{timeout:90000},async t=>{
- const root=await mkdtemp('/home/cees/.cache/star-agent-base-db-'),database=await startLocalDatabase({XDG_DATA_HOME:root,DEV_DATABASE_NAME:'base-power-test',DEV_DATABASE_PORT:String(await port())});let store,app;
+ const root=await mkdtemp(join(tmpdir(),'star-agent-base-db-')),database=await startLocalDatabase({XDG_DATA_HOME:root,DEV_DATABASE_NAME:'base-power-test',DEV_DATABASE_PORT:String(await port())});let store,app;
  t.after(async()=>{await app?.close();if(!app)await store?.close();await database.close();});
  store=await createPostgresStore({connectionString:database.connectionString});await Promise.all([store.migrate(),store.migrate()]);
  const apiPort=await port(),origin=`http://127.0.0.1:${apiPort}`;app=await createServer({store,room:{async close(){},async revoke(){}},publicOrigin:origin,logger:{error:code=>assert.fail(code)}});await app.listen(apiPort);

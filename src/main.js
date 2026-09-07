@@ -105,6 +105,7 @@ function fatal(message){document.body.classList.add('fatal');$('loading').classL
 try {
   const multiplayerEntry=import.meta.env.VITE_MULTIPLAYER_ENTRY==='1';
   const devOptions=devLaunchOptions(location.search,import.meta.env.VITE_DEV_TOOLS==='1');
+  const surfaceRoverStart=devOptions?.location==='rover-surface';
   const testFlight=Boolean(devOptions)||new URLSearchParams(location.search).get('ship')==='kestrel';
   const sandboxEnabled=new URLSearchParams(location.search).get('sandbox')==='build';
   const introEnabled=!testFlight&&!sandboxEnabled&&new URLSearchParams(location.search).get('intro')!=='0';
@@ -210,7 +211,7 @@ try {
   nav.baseAction=()=>build.interact();nav.baseInteraction=()=>build.interaction;
   nav.baseLandingSurface=()=>build.landingSurface();
   nav.buildingRaycast=(start,direction,range,envelope)=>build.raycast(start,direction,range,envelope);
-  const rover=devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1'?createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&nav.shipId==='atlas'}):null;
+  const rover=surfaceRoverStart||(devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1')?createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&(surfaceRoverStart||nav.shipId==='atlas')}):null;
   nav.vehicle=rover;
   const useQuick=index=>{const result=loadout.useQuick(index);nav.notify(result.message);};
   const loadoutBar=createLoadoutBar({loadout,nav,onSelect:id=>{if(build.active)build.cancel();miningTool.select(id);},onUse:useQuick,open:()=>inventoryUI.openEquipment()});
@@ -371,6 +372,7 @@ try {
   const preload=new StartupPreload([
     {label:'Loading the station',promise:station.readyPromise},
     {label:'Preparing your ship',promise:ship.readyPromise},
+    ...(rover?[{label:'Preparing the Burrow rover',promise:rover.readyPromise}]:[]),
     {label:'Preparing the test flight',promise:testFlightReady},
     {label:'Preparing your character',promise:Promise.all([character.readyPromise,opening?.character.readyPromise])},
     {label:'Loading surface materials',promise:planet.terrainMaps.loaded},
@@ -772,12 +774,14 @@ try {
           devLauncher.ready();
           if(devOptions.autoStart){
             enterPlayerInterface();canvas.focus({preventScroll:true});
-            const launch=devOptions.location!=='hangar'?transit(devOptions.location):Promise.resolve();
+            const launch=surfaceRoverStart?rover.spawnSurface({target:mining.ground.position}).then(ok=>{
+              if(!ok)throw new Error('Burrow surface placement failed.');
+            }):devOptions.location!=='hangar'?transit(devOptions.location):Promise.resolve();
             launch.then(async()=>{
-              if(rover){
+              if(rover&&!surfaceRoverStart){
                 if(devOptions.location==='moon')nav.touchDown();
                 await rover.spawn();
-                notify('Atlas + Burrow mining test. F leaves the Atlas chair; walk aft to the rover’s port door.');
+                notify('Atlas + Burrow mining test. F leaves the chair; ride the crew lift to the cargo deck, then walk aft to the rover’s port door.');
               }
               if(new URLSearchParams(location.search).get('exteriorView')==='overview'&&station.exterior.authored){
                 placeStationExteriorPreview(nav,innerWidth/innerHeight);
