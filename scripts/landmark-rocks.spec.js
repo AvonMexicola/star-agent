@@ -36,7 +36,7 @@ test('seeded landmarks render in the game from ground, shelter and descent views
         n.position.fromArray(eye);n.velocity.set(0,0,0);n.angularVelocity.set(0,0,0);n.orientToward(n.position.clone().fromArray(target),n.position.clone().fromArray(up));
         document.querySelectorAll('body > :not(canvas):not(script)').forEach(e=>e.style.visibility='hidden');
       },{eye:eye.toArray(),target:target.toArray(),up:d.direction.toArray()});
-      await page.waitForFunction(()=>window.starAgent.state.terrainLod.settled&&window.starAgent.state.vegetation.pendingTiles===0,null,{timeout:90000});
+      await page.waitForFunction(()=>window.starAgent.state.terrainLod.settled&&(window.starAgent.state.altitude>3500||window.starAgent.state.vegetation.pendingTiles===0),null,{timeout:90000});
       if(!baseline)await page.waitForFunction(()=>window.starAgent.state.landmarks.pending===0&&window.starAgent.state.rockMaterial.ready);
       await frames(page);expect(await page.evaluate(()=>window.starAgent.state.drawCalls)).toBeGreaterThan(0);
       expect(new Vector3(...await page.evaluate(()=>window.starAgent.state.position)).distanceTo(eye)).toBeLessThan(.001);

@@ -56,6 +56,7 @@ export function addLandmarkFade(material,level){
         float nearWeight=1.0-smoothstep(420.0,580.0,vLandmarkDistance);
         float midWeight=1.0-smoothstep(1500.0,1950.0,vLandmarkDistance);
         ${level===0?'if(dither>nearWeight)discard;':level===1?'if(dither<=nearWeight||dither>midWeight)discard;':level===2?'if(dither<=midWeight)discard;':''}
+        ${material.isMeshDepthMaterial?'if(dither>1.0-smoothstep(220.0,300.0,vLandmarkDistance))discard;':''}
         if(dither>1.0-smoothstep(9000.0,10000.0,vLandmarkDistance))discard;`);
   };
   material.customProgramCacheKey=()=>`${key}-landmark-lod-${level}`;

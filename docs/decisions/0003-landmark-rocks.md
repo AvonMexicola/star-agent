@@ -9,7 +9,8 @@ heightfield cannot represent their undersides. Inflating a mineable four-metre
 density domain would also break cutter metre/volume and saved-rock contracts.
 
 Use a separate deterministic bedrock object layer on Aeon, anchored to samples
-from `world.js`. CPU geometry and collision share the exact close mesh. A mesh
+from `world.js`. CPU geometry and collision share the exact close mesh, including headless server
+Navigation and authoritative shot occlusion. A mesh
 obstacle adapter composes with existing building/mining contact. This follows the
 existing solid-object boundary; no second terrain height sampler is introduced.
 Uniform scale and rotation apply to both mesh and contact. Flight uses a sphere
@@ -17,7 +18,8 @@ enclosing the current ship envelope, so contact is deliberately conservative.
 
 Landmark generator/geometry versions start at 1. Terrain and mining save versions
 remain unchanged. Existing saved mined IDs and densities are retained. New loose
-stones and plants reject landmark footprints; the forest layout version advances
+stones and plants reject landmark footprints; plant exclusion evaluates the solid profile up through canopy height, allowing
+grass in open shelters. The forest layout version advances
 from 2 to 3 for that exclusion. Trees outside those footprints retain their old
 coordinates, shapes and hashes. No saved ore is refilled or silently deleted.
 An older build can render the original scenery and reload the same mining saves.
@@ -26,9 +28,9 @@ The new formations are static bedrock, too large for the handheld cutter. They
 do not introduce inventory rewards, online extraction authority or a save schema.
 Restored Aeon outpost claims suppress overlapping landmark meshes and colliders;
 authored construction wins over newly introduced scenery. These clearings are
-captured at startup, so placing a piece does not erase a rock during play. The
-procedural plant exclusion stays empty there, leaving the established outpost
-cleared. New construction's general rock-intersection validation remains outside
+captured at startup, so placing a piece does not erase a rock during play. Online
+play uses the common field; private offline clearings do not hide server obstacles. The
+procedural plant exclusion remains independent of private claims. New construction's general rock-intersection validation remains outside
 this scenery change. The checkpoint is reversible without touching the database.
 
 One worker builds twelve reusable templates and three LODs; a coarse instance is
