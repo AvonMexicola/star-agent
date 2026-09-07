@@ -70,10 +70,10 @@ export class ParticlePool {
     this.mesh=new THREE.Mesh(this.geometry,this.material);this.mesh.frustumCulled=false;this.mesh.name='Pooled energy / sparks / mineral fragments';scene.add(this.mesh);
     this._tail=new THREE.Vector3();this._to=new THREE.Vector3();this._curl=new THREE.Vector3();
   }
-  emit(position,velocity,{color=0x86ddff,life=.6,size=.1,kind=0,stretch=.025,drag=0,attract=false,gain=1}={}){
+  emit(position,velocity,{color=0x86ddff,life=.6,size=.1,kind=0,stretch=.025,drag=0,attract=false,gain=1,anchor=null}={}){
     const p=this.slots[this.cursor];this.cursor=(this.cursor+1)%this.capacity;
     p.alive=true;p.p.copy(position);p.v.copy(velocity);p.spin.copy(velocity).normalize();p.color.set(color).multiplyScalar(gain);
-    Object.assign(p,{age:0,life,size,kind,stretch,drag,attract,cameraLocal:false,fresh:true});this.emitted++;
+    Object.assign(p,{age:0,life,size,kind,stretch,drag,attract,cameraLocal:false,fresh:true,anchor});this.emitted++;
     return p;
   }
   clear(){for(const p of this.slots)p.alive=false;this.count=0;this.geometry.instanceCount=0;}
@@ -93,7 +93,8 @@ export class ParticlePool {
         p.v.lerp(this._to,1-Math.exp(-step*9));
         if(p.v.length()*step>distance)p.v.setLength(distance/Math.max(step,.00001));
       }
-      p.v.multiplyScalar(Math.exp(-p.drag*step));p.p.addScaledVector(p.v,step);
+      if(p.anchor){const position=p.anchor();if(!position){p.alive=false;continue;}p.p.copy(position);}
+      else{p.v.multiplyScalar(Math.exp(-p.drag*step));p.p.addScaledVector(p.v,step);}
       this._tail.copy(p.p).addScaledVector(p.v,-p.stretch);
       a.start.setXYZ(count,this._tail.x-origin.x,this._tail.y-origin.y,this._tail.z-origin.z);
       a.end.setXYZ(count,p.p.x-origin.x,p.p.y-origin.y,p.p.z-origin.z);

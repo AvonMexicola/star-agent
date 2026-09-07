@@ -23,11 +23,11 @@
     "src/effects/flight-effects.js",
     "src/mining/tool.js",
     "src/navigation.js",
-    "src/main.js",
     "src/gameplay-menu.js",
     "src/controller-layout.js",
     "server/room.js",
-    "src/multiplayer/client.js"
+    "src/multiplayer/client.js",
+    "src/navigation-targeting.js"
   ],
   "brief": "docs/briefs/combat-momentum.md"
 }

@@ -15,7 +15,10 @@ async function tap(page,i){await button(page,i,true);await button(page,i,false);
 async function choose(page,key){
  for(let i=0;i<100;i++){
   const focused=await page.evaluate(()=>document.activeElement?.dataset.controllerKey);
-  if(focused===key){await tap(page,0);return;}
+  if(focused===key){
+   if(key==='dev-launch'){await Promise.all([page.waitForURL(url=>url.searchParams.get('start')==='moon'),page.evaluate(()=>window.testPad.buttons[0]={pressed:true,value:1})]);return;}
+   await tap(page,0);return;
+  }
   if(focused?.startsWith('page-')&&focused.endsWith('-next')&&!await page.locator(`[data-controller-key="${key}"]`).isVisible())await tap(page,0);
   else await tap(page,13);
  }
@@ -56,7 +59,9 @@ test('controller mode selection, finite braking, and moving ship/on-foot muzzle 
  for(let i=0;i<4&&await page.evaluate(()=>window.starAgent.state.mining.tool.item!=='rifle-laser');i++)await tap(page,14);await page.waitForFunction(()=>window.starAgent.state.mining.tool.item==='rifle-laser'&&!window.starAgent.state.mining.tool.toolError);
  await axes(page,[.65,-.65,0,0]);const rounds=await page.evaluate(()=>window.starAgent.state.mining.tool.ammo);await button(page,7,true);
  await page.waitForFunction(()=>window.starAgent.state.effects.lances>0&&window.starAgent.state.speed>2);
- await page.screenshot({path:`${out}/ground-moving-laser.png`});await page.waitForTimeout(600);await button(page,7,false);await axes(page,[0,0,0,0]);expect(await page.evaluate(()=>window.starAgent.state.mining.tool.ammo)).toBeLessThan(rounds);
+ await page.screenshot({path:`${out}/ground-moving-laser.png`});
+ const groundFrame=await page.evaluate(async()=>{for(let i=0;i<120;i++){await new Promise(requestAnimationFrame);if(window.starAgent.state.effects.lances>0)return document.querySelector('#viewport').toDataURL('image/png');}throw Error('No visible rifle laser frame');});
+ await writeFile(`${out}/ground-moving-laser-frame.png`,Buffer.from(groundFrame.split(',')[1],'base64'));await page.waitForTimeout(600);await button(page,7,false);await axes(page,[0,0,0,0]);expect(await page.evaluate(()=>window.starAgent.state.mining.tool.ammo)).toBeLessThan(rounds);
  // Held trigger cannot replay through focus loss and restoration.
  await button(page,7,true);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await frames(page);const shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await frames(page);expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);await button(page,7,false);
  await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await tap(page,1);await page.waitForFunction(()=>window.starAgent.state.enabled&&window.starAgent.state.controller.armed);
