@@ -1,6 +1,6 @@
 import { mineCargoRock,cargoDeposit } from './cargo-mining.js';
 import { createTradingPads } from '../src/trading/pads.js';
-import { walkForeignShips } from '../src/cargo/physics.js';
+import { walkForeignShips,constrainCargoEVA } from '../src/cargo/physics.js';
 import * as THREE from 'three';
 import { emptyCommerce,ensureAccount,validCommerce,commerceCommand,shipKey } from '../src/trading/model.js';
 import { tradeSite,onTradePad,POST_COST } from '../src/trading/sites.js';
@@ -39,6 +39,7 @@ export function createTrading({store,players,world,persistent,flushWrites,now=Da
       return {version:state.version,revision:state.revision,account:state.accounts[p.id],ships:Object.values(state.ships).filter(s=>s.owner===p.id||players.has(s.owner)),terminals:Object.values(state.terminals),rocks:Object.entries(state.rocks??{}).filter(([,r])=>p.nav.position.distanceTo(new THREE.Vector3(...r.position))<40).map(([id,r])=>({id,revision:r.revision}))};
     },
     attach(p){
+      p.nav.cargoEVA=(a,b)=>constrainCargoEVA(a,b,Object.values(state.ships).filter(s=>pose(s)).map(s=>({...s,pose:pose(s),open:players.get(s.owner).nav.doorProgress>.98,systems:players.get(s.owner).nav.freighter})));
       p.nav.cargoLandingSurface=position=>pads.floorAt(position);
       p.nav.cargoWalk=(a,b)=>{const ships=Object.values(state.ships).filter(s=>s.owner!==p.id&&pose(s)).map(s=>({...s,pose:pose(s),open:players.get(s.owner).nav.doorProgress>.98,systems:players.get(s.owner).nav.freighter}));const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point);return {...pad,grounded:pad.grounded||foreign.grounded,hit:pad.hit||pad.grounded||foreign.hit};};
       p.nav.cargoConstrain=(previous,proposed)=>constrainShipAttachments(previous,proposed,(state.ships[shipKey(p.id,p.nav.shipId)]?.crates??[]).map(c=>crateBounds(p.nav.shipId,c)));},

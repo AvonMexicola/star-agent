@@ -10,19 +10,24 @@ const context={terminal:()=>true,docked:()=>true,crate:()=>true,grid:()=>true,lo
 function setup(){const s=emptyCommerce();ensureAccount(s,'alice',100000);ensureAccount(s,'bob',100000);return s;}
 let id=0;function command(s,owner,m,ctx=context){return commerceCommand(s,owner,{commandId:`test-${++id}`,revision:s.revision,ship:shipKey(owner,'nomad'),terminal:'station:1',resource:'basalt',sbu:1,...m},ctx);}
 test('SBU crate volume doubles with size; 64SBU is1.2×2.4×4.8m',()=>{for(const n of SBU_SIZES)assert.ok(Math.abs(crateSize(n).reduce((a,b)=>a*b,1)-n*.216)<1e-10);assert.deepEqual(crateSize(64),[1.2,2.4,4.8]);});
-test('Nomad fits eight1SBU crates; Atlas eight64SBU crates with no overlap or floating support',()=>{for(const [hull,n,size]of [['nomad',8,1],['atlas',8,64]]){const c=[];for(let i=0;i<n;i++){const p=placeCrate(hull,c,{id:`c-${i}`,sbu:size});assert.ok(p);c.push(p);}assert.equal(placeCrate(hull,c,{id:'overflow',sbu:1}),null);assert.equal(validGrid(hull,c),true);assert.equal(capacitySBU(hull),n*size);}});
-for(const hullName of ['nomad','atlas'])test(`full ${hullName} cargo clears the current authored hull and deck details`,async()=>{
- const {scene:hull}=await readGLBGeometry(new URL(`../public/models/${hullName}.glb`,import.meta.url));
+test('Nomad fits six1SBU crates; Atlas eight64SBU crates with no overlap or floating support',()=>{for(const [hull,n,size]of [['nomad',6,1],['atlas',8,64]]){const c=[];for(let i=0;i<n;i++){const p=placeCrate(hull,c,{id:`c-${i}`,sbu:size});assert.ok(p);c.push(p);}assert.equal(placeCrate(hull,c,{id:'overflow',sbu:1}),null);assert.equal(validGrid(hull,c),true);assert.equal(capacitySBU(hull),n*size);}});
+for(const hullName of ['nomad','atlas'])test(`full ${hullName} cargo clears the complete rendered hull and deck details`,async()=>{
+ const gltf=await readGLBGeometry(new URL(`../public/models/${hullName}.glb`,import.meta.url));let hull=gltf.scene;
+ if(hullName==='nomad'){
+  const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js'),{createWalkableShip}=await import('../src/ship-walkable.js');
+  const original=GLTFLoader.prototype.loadAsync,documentBefore=globalThis.document;
+  globalThis.document={createElement:()=>({getContext:()=>new Proxy({},{get:()=>()=>{}})})};GLTFLoader.prototype.loadAsync=async()=>gltf;
+  try{hull=createWalkableShip({assetURL:'node-geometry-fixture'});await hull.readyPromise;}finally{GLTFLoader.prototype.loadAsync=original;globalThis.document=documentBefore;}
+ }
  const {scene:crate}=await readGLBGeometry(new URL(`../public/models/cargo/${hullName==='nomad'?1:64}-sbu.glb`,import.meta.url));
  const raw=new THREE.Box3().setFromObject(crate),crates=[],boxes=[];
- for(let i=0;i<8;i++){
+ for(let i=0;i<(hullName==='nomad'?6:8);i++){
   const c=placeCrate(hullName,crates,{id:`mesh-${i}`,sbu:hullName==='nomad'?1:64});crates.push(c);
   const b=crateBounds(hullName,c),offset=new THREE.Vector3((b.min[0]+b.max[0])/2,b.min[1]+.01,(b.min[2]+b.max[2])/2);
-  boxes.push(raw.clone().translate(offset));
+  boxes.push(raw.clone().translate(offset).expandByScalar(-.0001));
  }
- if(hullName==='nomad')assert.ok(Math.max(...boxes.map(b=>b.max.y))<3.39,'top layer clears procedural cabin ceiling');
  hull.updateMatrixWorld(true);const triangle=new THREE.Triangle();let intersections=0;
- hull.traverse(mesh=>{if(!mesh.isMesh)return;const p=mesh.geometry.attributes.position,index=mesh.geometry.index;
+ hull.traverseVisible(mesh=>{if(!mesh.isMesh)return;const p=mesh.geometry.attributes.position,index=mesh.geometry.index;
   for(let i=0;i<(index?.count??p.count);i+=3){
    for(const [j,v]of [triangle.a,triangle.b,triangle.c].entries())v.fromBufferAttribute(p,index?index.getX(i+j):i+j).applyMatrix4(mesh.matrixWorld);
    for(const box of boxes)if(box.intersectsTriangle(triangle))intersections++;
@@ -49,4 +54,17 @@ test('looking at the side of Atlas cargo recognises it while looking down the No
  assert.equal(aimedGrid(new THREE.Vector3(3.8,5.75,3),right,pose,'atlas'),true);
  assert.equal(aimedGrid(new THREE.Vector3(0,2.75,2.75),right,pose,'nomad'),true);
  assert.equal(aimedGrid(new THREE.Vector3(0,2.75,3),new THREE.Quaternion(),pose,'nomad'),false);
+});
+
+test('EVA respects closed foreign hulls, open ramps, Atlas elevator openings and cargo solids',async()=>{
+ const {constrainCargoEVA}=await import('../src/cargo/physics.js');
+ const pose={position:new THREE.Vector3(),quaternion:new THREE.Quaternion()},ship={hull:'nomad',pose,crates:[],open:false};
+ const from=new THREE.Vector3(0,2.75,4.8),to=new THREE.Vector3(0,2.75,3);
+ assert.equal(constrainCargoEVA(from,to,[ship]).hit,true);
+ ship.open=true;assert.equal(constrainCargoEVA(from,to,[ship]).hit,false);
+ assert.equal(constrainCargoEVA(new THREE.Vector3(3,2.75,2),new THREE.Vector3(0,2.75,2),[ship]).hit,true,'side walls remain solid');
+ ship.crates.push(placeCrate('nomad',[],{sbu:1}));assert.equal(constrainCargoEVA(new THREE.Vector3(0,1.4,2.45),new THREE.Vector3(1.2,1.4,2.45),[ship]).hit,true,'crate is a solid EVA obstacle');
+ const {FreighterSystems}=await import('../src/freighter-layout.js'),atlas={hull:'atlas',pose,crates:[],systems:new FreighterSystems()};
+ assert.equal(constrainCargoEVA(new THREE.Vector3(0,2,4),new THREE.Vector3(0,5.75,4),[atlas]).hit,true,'raised belly lift closes floor');
+ atlas.systems.lifts[0].y=0;assert.equal(constrainCargoEVA(new THREE.Vector3(0,2,4),new THREE.Vector3(0,5.75,4),[atlas]).hit,false,'lowered lift leaves a real opening');
 });

@@ -51,7 +51,7 @@ export function createTradingUI(api,nav){
       if(!own){const p=document.createElement('p');p.textContent='Visit your own trading pad. List cargo from the Cargo view, then set its selling price here.';content.append(p);}
       else{totalPages=Math.ceil(TRADE_RESOURCES.length/3);page=Math.min(page,totalPages-1);for(const res of TRADE_RESOURCES.slice(page*3,page*3+3)){
         const row=document.createElement('article'),text=document.createElement('div');text.textContent=`${res.name} · ${t.stock[res.id]??0} SBU · ${t.prices[res.id]??res.buy} CR / SBU`;
-        const actions=document.createElement('div');actions.className='trade-row-actions';for(const delta of [-5,5])actions.append(button(`${delta>0?'+':''}${delta} CR`,`price-${res.id}-${delta}`,()=>run({op:'price',resource:res.id,price:Math.max(1,(t.prices[res.id]??res.buy)+delta)}),busy||!near));
+        const actions=document.createElement('div');actions.className='trade-row-actions trade-stock-actions';for(const delta of [-5,5])actions.append(button(`${delta>0?'+':''}${delta} CR`,`price-${res.id}-${delta}`,()=>run({op:'price',resource:res.id,price:Math.max(1,(t.prices[res.id]??res.buy)+delta)}),busy||!near));
         actions.append(button(`Withdraw ${size}`,`withdraw-${res.id}`,()=>run({op:'withdraw',resource:res.id,sbu:size}),busy||!near||!dock||(t.stock[res.id]??0)<size));row.append(text,actions);content.append(row);
       }}
     }else{

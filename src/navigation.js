@@ -755,6 +755,8 @@ export class Navigation {
         hit.hit||=!fitted.equals(hit.point);hit.point=fitted;
         if(hit.hit){proposed=this.fromShipLocal(hit.point);this.velocity.set(0,0,0);}
       }
+      const cargo=this.cargoEVA?.(previous,proposed);
+      if(cargo?.hit){proposed.copy(cargo.point);this.velocity.set(0,0,0);}
       const obstacle=this.surfaceObstacles?.constrainEVA?.(previous,proposed);
       if(obstacle?.hit){proposed.copy(obstacle.point);this.velocity.set(0,0,0);}
       const station=this.station?.constrainStep(previous,proposed,this.orientation,true);

@@ -5,7 +5,17 @@ import { CARGO_GRIDS,SBU_METRES,crateBounds } from './grid.js';
 const loader=new GLTFLoader(),templates=new Map(),batches=new Map(),labels=new Map();
 const load=path=>{if(!templates.has(path))templates.set(path,loader.loadAsync(path).then(g=>g.scene));return templates.get(path);};
 export async function cargoAsset(sbu){return (await load(`/models/cargo/${sbu}-sbu.glb`)).clone(true);}
-export async function terminalAsset(){return (await load('/models/cargo/trade-terminal.glb')).clone(true);}
+export async function terminalAsset(){
+  const root=(await load('/models/cargo/trade-terminal.glb')).clone(true);
+  if(!labels.has('terminal')){
+    const canvas=document.createElement('canvas');canvas.width=512;canvas.height=192;const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#102720';ctx.fillRect(0,0,512,192);ctx.fillStyle='#b6efd1';ctx.font='bold 40px monospace';ctx.fillText('SBU EXCHANGE',26,57);
+    ctx.font='25px monospace';ctx.fillText('BUY / STOCK / TRADE',26,105);ctx.fillStyle='#f3be78';ctx.font='24px monospace';ctx.fillText('F / X  TO CONNECT',26,158);
+    const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+    labels.set('terminal',new THREE.MeshBasicMaterial({map:texture,toneMapped:false}));
+  }
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(.79,.30),labels.get('terminal'));screen.name='Live SBU terminal display';screen.position.set(0,1.32,-.246);screen.rotation.y=Math.PI;root.add(screen);return root;
+}
 async function crateBatches(size){
   if(!batches.has(size))batches.set(size,load(`/models/cargo/${String(size).replace('-lod','')}-sbu${String(size).endsWith('-lod')?'-lod':''}.glb`).then(root=>{
     root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh)return;const key=o.material.name;if(!groups.has(key))groups.set(key,{material:o.material,geometries:[]});groups.get(key).geometries.push(o.geometry.clone().applyMatrix4(o.matrixWorld));});

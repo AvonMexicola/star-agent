@@ -70,3 +70,24 @@ test('another pilot physically walks the open Nomad ramp with no teleport or clo
  for(let i=0;i<65;i++){f.time();f.room.receive(b.id,{type:'input',sequence:i+100,input:{forward:1}});f.room.tick();assert.ok(b.nav.position.distanceTo(previous)<.5,'continuous physical movement');previous.copy(b.nav.position);const local=b.nav.position.clone().sub(root).applyQuaternion(q.clone().invert());if(local.z<4)minHeight=Math.min(minHeight,local.y);}
  const local=b.nav.position.clone().sub(root).applyQuaternion(q.clone().invert());assert.ok(local.z<3.8,`walked aboard at ${local.toArray()}`);assert.ok(minHeight>=2.74,`supported by real cabin floor (${minHeight})`);assert.equal(b.nav.mode,'walk');
 });
+
+test('authenticated sockets receive committed cargo and reconnect without another wallet grant',async t=>{
+ const {createServer}=await import('../server/index.js'),{WebSocket}=await import('ws');
+ const store=createMemoryStore(),world=await worldPromise,errors=[],room=createRoom({store,world,onError:e=>errors.push(e.message)}),origin='http://cargo.example.test';
+ const app=await createServer({store,room,publicOrigin:origin,secureCookies:false}),address=await app.listen(0),url=`http://127.0.0.1:${address.port}`,sockets=[];
+ t.after(async()=>{for(const ws of sockets)ws.terminate();await app.close();});
+ const until=async fn=>{for(let i=0;i<120;i++){if(fn())return;await new Promise(r=>setTimeout(r,25));}assert.fail('Socket cargo result timed out');};
+ const connect=async cookie=>{const messages=[],ws=new WebSocket(url.replace('http:','ws:')+'/ws',{headers:{Origin:origin,Cookie:cookie}});sockets.push(ws);ws.on('message',data=>messages.push(JSON.parse(data)));ws.on('error',e=>errors.push(e.message));await until(()=>messages.some(m=>m.type==='welcome'));return {ws,messages,id:messages.find(m=>m.type==='welcome').id};};
+ const peers=[],cookies=[];for(let i=0;i<2;i++){
+  const response=await fetch(url+'/api/auth/register',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({email:`socket-cargo-${i}@example.test`,callsign:`Freight_${i}`,password:'Disposable cargo test password 123!'})});assert.equal(response.status,201);const cookie=response.headers.get('set-cookie').split(';')[0];cookies.push(cookie);peers.push(await connect(cookie));
+ }
+ const [a,b]=peers;a.ws.send(JSON.stringify({type:'request',action:'hangar',requestId:'hangar'}));await until(()=>room.players.get(a.id).hangarId);
+ // Explicit initial terminal pose; transaction and delivery use real authenticated sockets.
+ const player=room.players.get(a.id),pod=world.pods[player.hangarId-1];player.nav.position.copy(pod.toWorld(new THREE.Vector3(-12,pod.interiorBox.min.y+1.75,20.7),new THREE.Vector3()));player.nav.mode='walk';player.nav.insideShip=false;player.nav.dockedAtStation=true;player.nav.velocity.set(0,0,0);
+ a.ws.send(JSON.stringify({type:'request',requestId:'buy',action:'cargo',op:'buy',commandId:'socket-buy',revision:room.trading.state.revision,ship:`${a.id}:nomad`,terminal:`station:${player.hangarId}`,resource:'basalt',sbu:1}));
+ await until(()=>a.messages.some(m=>m.type==='ack'&&m.requestId==='buy'));assert.equal(a.messages.find(m=>m.type==='ack'&&m.requestId==='buy').ok,true);
+ await until(()=>b.messages.some(m=>m.type==='state'&&m.commerce.ships.some(s=>s.id===`${a.id}:nomad`&&s.crates.length===1)));
+ const observer=b.messages.findLast(m=>m.type==='state');assert.equal(observer.commerce.account.credits,1500,'observer receives only its own wallet');
+ a.ws.close();await until(()=>!room.players.has(a.id));const rejoined=await connect(cookies[0]);await until(()=>rejoined.messages.some(m=>m.type==='state'));
+ const saved=rejoined.messages.findLast(m=>m.type==='state').commerce;assert.equal(saved.account.credits,1480);assert.equal(saved.ships.find(s=>s.id===`${a.id}:nomad`).crates.length,1);assert.deepEqual(errors,[]);
+});

@@ -1,7 +1,7 @@
 import { createRemoteCargoAccess } from '../cargo/remote-access.js';
 import { FreighterSystems } from '../freighter-layout.js';
 import { bindCargoMining } from './mining-client.js';
-import { walkForeignShips } from '../cargo/physics.js';
+import { walkForeignShips,constrainCargoEVA } from '../cargo/physics.js';
 import * as THREE from 'three';
 import { LocalTrading,LOCAL_TRADER } from './local.js';
 import { createTradingUI } from './ui.js';
@@ -37,6 +37,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
     async deploy(){if(multiplayer.connected){await multiplayer.request('cargo',{op:'deploy',revision:snapshot().revision,commandId:`cargo-${Date.now()}-${++serial}`});return {message:'Shared trading pad built.'};}return local.deploy(nav);},
   };
   const ui=createTradingUI(api,nav),pads=createTradingPads(scene,()=>snapshot().terminals);
+  nav.cargoEVA=(a,b)=>constrainCargoEVA(a,b,snapshot().ships.filter(s=>pose(s)).map(s=>({...s,pose:pose(s),open:s.owner===snapshot().owner?nav.doorProgress>.98:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:s.owner===snapshot().owner?nav.freighter:peerLifts.get(s.owner)})));
   const oldCargo=nav.cargoConstrain;nav.cargoConstrain=(a,b)=>{const s=snapshot().ships.find(s=>s.owner===snapshot().owner&&s.hull===nav.shipId);return constrainShipAttachments(a,oldCargo?.(a,b)??b,(s?.crates??[]).map(c=>crateBounds(nav.shipId,c)));};
   const oldWalker=nav.cargoWalk;nav.cargoWalk=(a,b)=>{const previous=oldWalker?.(a,b)??{point:b,hit:false};const peers=snapshot().ships.filter(s=>s.owner!==snapshot().owner&&pose(s)).map(s=>({...s,pose:pose(s),open:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:peerLifts.get(s.owner)}));const foreign=walkForeignShips(a,previous.point,peers);const result=pads.constrain(a,foreign.point,nav.layout.eyeHeight);return {...result,grounded:result.grounded||foreign.grounded,hit:result.hit||previous.hit||result.grounded||foreign.hit};};
   nav.tradeBeacons=()=>snapshot().terminals.map(t=>({id:`trade-${t.id}`,name:t.name,kind:'Player trading pad',category:'bases',parent:t.body,body:t.body,surface:true,center:t.origin,radius:0}));

@@ -7,7 +7,7 @@ this packaging balance does not redefine SBU as a mass unit.
 
 | Playable ship | Grid | Capacity | Examples |
 | --- | --- | --- | --- |
-| Nomad 02 | Aft starboard, 1 × 4 × 2 cells | 8 SBU | Eight 1 SBU, four 2 SBU or two 4 SBU crates |
+| Nomad 02 | Aft starboard, 1 × 3 × 2 cells | 6 SBU | Six 1 SBU, three 2 SBU or one 4 SBU plus one 2 SBU crate |
 | Atlas, 30 m hull | Two side decks, each 2 × 8 × 16 cells | 512 SBU | Eight 64 SBU containers |
 | Kestrel | No walkable cargo grid | 0 SBU | Personal inventory only |
 
