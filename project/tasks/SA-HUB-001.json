@@ -61,7 +61,8 @@
     "tests/server-community-persistence.test.js",
     "scripts/station-defense-review/",
     "scripts/community-defense.spec.js",
-    "scripts/community-defense.config.js"
+    "scripts/community-defense.config.js",
+    "tests/server-cargo.test.js"
   ],
   "brief": "docs/briefs/aeon-community-hub.md"
 }

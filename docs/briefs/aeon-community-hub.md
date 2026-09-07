@@ -2,8 +2,8 @@
 
 Status: active. Sponsor: Cees / @AvonMexicola. Branch: `feat/aeon-community-hub`,
 based on local `dev/all-features` at `2f3249f`. Root owns integration and defense;
-Nietzsche owns the physical hub route and equipment policy. A separate bounded
-market agent extends cargo's committed `17769ed` ledger. Shared local promotion
+Nietzsche owns the physical hub route and equipment policy. The bounded market
+work extends cargo's committed `7b3bed8` ledger (Nomad 6 SBU / Atlas 512 SBU). Shared local promotion
 remains serialized by the integration steward; Cees gates public PRs/releases.
 
 ## Player result
@@ -58,4 +58,8 @@ separate. Defense models follow the existing Blender asset production standard,
 with source, named mechanism/muzzle contracts, measured budgets, real rendering
 and independent review before final visual acceptance.
 
-Results, exact commits and captures: pending implementation and verification.
+The implemented branch includes the coherent social/cargo/control integration at
+`aaf08cc`; its draft PR stacks on `feat/dev-social-review` (PR73). Server, SQL and
+asset audit results are recorded in [the production record](../qa/community-hub/production-record.md).
+Final browser routes and independent candidate06 art acceptance are in progress;
+shared integration and public deployment are separate gates.
