@@ -1,186 +1,159 @@
 # Aeon community station production record
 
-This is the development implementation of SA-HUB-001 on
-`feat/aeon-community-hub`, stacked on the coherent social/cargo/control snapshot
-`aaf08cc` (PR73). It covers Aeon's main orbital station only. Final browser and
-candidate08 visual acceptance are in progress; shared integration and public
-release are not claimed here.
+**The feature is ready for local integration from runtime `004979d`.** All three
+physical input journeys, the actual defense witness and current-head hosted CI
+pass. Bastion08 passes independent native visual review at4.00/5. The separate
+[actual-game review](reviews/actual-game-visual.md) passes the shown mounted strike,
+return endpoint and phone UI, while retaining the recording gap and broader motion limits. This is the
+security, passenger-concourse and finite-market contribution for Aeon's main
+orbital station; it does not certify final exterior materials, whole-station
+performance or public release.
 
-## Implemented player behavior
+Draft [PR76](https://github.com/AvonMexicola/star-agent/pull/76) stacks on PR73's
+coherent social/cargo/control foundation (`aaf08cc`, including the later portable
+SQL-test fix `5f0d94f`). The shared dev branch has since gained tractor, handheld
+art, wildlife and performance work. Read the [integration map](reviews/integration-map.md)
+before combining them: their identically numbered protocol4 and ledger version1
+have different extensions. The build steward owns that semantic integration and
+the forthcoming Atlas/station refit; Cees gates public merge/release.
 
-The station owns a fixed, inclusive 30,000 m protection sphere in world double
-coordinates. A server-resolved damaging shot or harmful ship contact against a
-player or their hull inside it applies ordinary impact damage, then immediately
-kills the nonfriend aggressor. Accepted, mutual, unblocked friends retain ordinary
-friendly damage but receive no station retaliation. Pending requests do not qualify.
-The trusted social store decides friendship; clients cannot supply damage, target,
-friendship or station membership as authority. The existing death/recovery and
-inventory persistence paths handle the result.
+## Player behavior
 
-Four original Meridian Bastion mounts provide the visible response, including
-yaw, elevation, independent barrel recoil and a short beam from the selected bore.
-The actual exported geometry provides collision/occlusion. The server computes
-the same muzzle transform, and the client rejects mismatched strike origins.
-The beam depicts an instantaneous strike; its 200 ms afterimage stays at the
-historical shot origin while the barrel returns. It is not a moving projectile.
+The station owns a fixed, inclusive **30,000 m sphere centered on the station**,
+in world double coordinates. A server-resolved damaging shot or harmful ship
+contact against a player or their hull inside it applies ordinary impact damage,
+then immediately kills a nonfriend aggressor. Accepted, mutual, unblocked friends
+retain ordinary friendly damage without retaliation. Pending requests do not
+qualify. The authoritative social store decides friendship; clients cannot supply
+trusted damage, targets, relationships or station membership. Existing death,
+recovery and inventory persistence handle the result.
 
-The twenty berth elevator cabins and a separate community cabin share the normal
-physical door and occupancy checks. A player must walk into a cabin and select a
-destination. Closed doors precede a **1.3 s interdeck fade/transfer**, followed by
-arrival and opening; this is not a continuous kilometre-long elevator shaft.
-The player's leased ship remains in its berth. Weapons and mining tools are stowed
-and cannot be selected or used in the community volume, including through an
-inventory request, delayed equipment save, arrival or reconnect. The HUD and
-loadout dialog show the restriction.
+Four original Meridian Bastion batteries provide yaw, elevation, independent
+barrel recoil and a visible strike from the selected bore. Client and server use
+the same actual muzzle transform; mismatched origins are rejected. The instant
+strike leaves a200ms afterimage at its historical origin while the barrel returns.
+Admitted retaliation deliberately uses unconditional hitscan, as requested; other
+station structures do not provide immunity through line-of-sight obstruction.
 
-Twenty berth kiosks plus the two concourse exchanges share one finite
-`aeon-orbital` market and the existing wallet/crate authority. Each resource starts
-at 1,024 SBU, has a 4,096 SBU capacity, and has no automatic refill. Both bid and
-ask use the scarcity factor `2 * 1024 / (1024 + stock)`, integer quotes and a spread.
-Bulk quotes sum the same per-unit stock interval; splitting a transaction creates
-no pricing advantage. A purchase needs the player's own physically parked, leased
-ship, moving below 1 m/s. It can stay in its berth while its owner visits the hub.
-Nomad capacity is 6 SBU; Atlas capacity is 512 SBU. Player-owned shop prices remain
-owner-set. See [market rules](../../aeon-station-market.md).
+Players physically enter one of20 berth elevator cabins, select a destination,
+and visit the separate community cabin. Normal doors, occupancy, thresholds and
+collision checks apply. Closed doors precede a **1.3s interdeck fade/transfer**;
+this is not a continuous kilometre-long shaft. The leased ship remains in its
+berth. Weapons and tools are stowed and cannot be selected or used in the community
+volume, including through inventory requests, delayed equipment saves, arrival
+or reconnect. The HUD and loadout dialog explain the restriction.
 
-## Authority and regression evidence
+Twenty berth kiosks and two hub exchanges share one finite `aeon-orbital` market
+and the existing wallet/crate authority. Each resource starts at1,024SBU, caps
+at4,096SBU and does not refill automatically. Both bid and ask use scarcity
+`2 * 1024 / (1024 + stock)`, integer prices and a spread. Bulk quotes sum the same
+per-unit interval, so splitting a transaction gives no pricing advantage. A
+purchase needs the player's own physically parked, leased ship moving below1m/s;
+it can remain in its berth while the player visits the hub. Nomad holds6SBU;
+current Atlas holds512SBU. Player-owned shop prices remain owner-set.
+See [market rules](../../aeon-station-market.md).
 
-| Check | Observed result | Scope |
-| --- | --- | --- |
-| Complete unit suite on `ff16d64` | 869/869 pass, 44.201 s | Before the later HUD wording and geometry-preserving candidate06 finish; later focused checks cover those changes. |
-| Room, ram, defense and hub integration | 45/45 pass, 1.158 s | Actual room ownership, equipment/death races, friendship, zone and contact behavior. |
-| Renderer and input hints on candidate06 | 7/7 pass | Actual GLB, muzzle transforms, collision/rebase invariance, disposal and neutral HUD guidance. |
-| Full PostgreSQL multiplayer suite | 176/176 pass, zero skips, 9.022 s | Frozen `ff16d64`; owned PostgreSQL16 database, migrations 1/2/4. |
-| New community SQL case | 1/1 pass, 0.978 s | Independent store instances, concurrent stale purchase, actual foreign-key rollback after ledger write, durable stock/wallet/crate replay and accepted-friend security. |
-| Protocol-only physical route rehearsal | Pass | Normal berth spawn; movement/elevator input only, no pose assignment; not browser or visual evidence. |
-| Production builds | Pass | Separate QA output directory; inherited bundle-size warning retained. |
+## Validation and inspected evidence
 
-The SQL persistence case reopens independent stores against the same database;
-it does not simulate a PostgreSQL process crash. Its first full-suite invocation
-failed because the test shut down PostgreSQL before client sockets finished
-closing. The corrected fixture waits for the real client end events; it does not
-suppress errors. Both the first failure and the zero-skip rerun are retained in
-the local acceptance archive. The earlier 41-pass/one-environment-skip focused
-run is historical and is superseded by the complete SQL run above.
+| Check | Observed result and boundary |
+| --- | --- |
+| Full controller journey07 | PASS2.3min on `cc529d4`/asset07: normal berth spawn, walk into lift, hub equipment restriction, buy/sell2SBU and return to the original parked ship/lease. Native tab focus and held-input gates across menu, disconnect, replacement and unsupported mappings pass. |
+| Keyboard and native-touch journeys09 | PASS1.6min each on `004979d`/asset08. Both complete the same physical route and real trade. No pose or action assignment; read-only state guides actual input. Touch uses Chromium's native touch input at390×844, not a physical phone. |
+| Actual defense witness01 | PASS54.2s on `004979d`/asset08. Four authenticated accounts use real WebSockets and accepted friendship. Friendly shot: target100→75, shooter remains alive, no strike. Nonfriend shot: target75→50, attacker health/ship health0, weapon cleared, one rendered station strike. Recoil peak0.6m returns to0. |
+| Current hosted checks | [Run34162315302](https://github.com/AvonMexicola/star-agent/actions/runs/34162315302) passes all5 required jobs on exact `004979d`: source/unit/build, plan, multiplayer/database, browser and verify. No docs-only successor is implied by that identity. |
+| Local authority/regressions | Earlier full869units pass44.201s;45room/ram/security/hub tests pass1.158s. Later asset08 renderer/security tests17/17 pass235ms. |
+| PostgreSQL acceptance |176/176 multiplayer tests pass, zero skips,9.022s on `ff16d64`. The focused community case passes0.978s: independent stores, concurrent stale purchase, real foreign-key rollback after ledger write, stock/wallet/crate replay and accepted-friend security. This reopens stores, not a PostgreSQL crash simulation. |
+| Asset08 integrity and motion |16 additive checks pass;188/188 actual-GLB poses,77,720 candidate triangle pairs and1,316 independent pose assertions pass15.405s. These finite poses do not prove continuous self-collision freedom. |
+| Complete articulation envelope | Analytic endpoint/stationary evaluation of all19,001 actual vertices proves radius≤29.574313216m and Y0..38.044104395m over allowed pitch/recoil/all yaw, inside the conservative radius29.6/Y0..38.1 bound. |
+| Actual station placement | All4 foundations have full measured triangle support; zero non-contact station triangles intrude into the conservative articulation cylinder. Closest upper structure lies6.411933m beyond it. The audit pins the current assembled station and must be repeated after bay resizing. |
+| Native render/visual review08 |5/5 same-camera views pass with no diagnostics. Independent [native review](reviews/bastion-native-08.md):4.00/5 across5 applicable still-image criteria; motion excluded. |
 
-The cargo SQL test also adopts the upstream `5f0d94f` temporary-directory
-portability fix. It uses the operating system's temporary directory rather than
-an author's private cache path. No cargo assertion, transaction or runtime rule
-changes with that fix.
+All final browser cases use Chromium151.0.7922.173, native ANGLE AMD Radeon860M /
+radeonsi krackan1 ACO / OpenGL ES3.2. Gameplay views are1440×900 or390×844;
+asset-native views are1600×900. No page/console errors or warnings were captured.
+Production builds retain the inherited large-chunk warning. These runs establish
+no hardware-controller, physical-phone or whole-game FPS claim.
 
-The first hosted PR76 database job (run `34158303451`) failed during module
-loading: the synthetic merge with the newly updated PR73 base duplicated the
-`tmpdir` import because the same fix was inserted at two different locations.
-The branch now merges the exact upstream `5f0d94f` commit and uses its identical
-cargo-test file. This was a merge-source syntax failure, not a database result.
-Hosted run `34158626790` on `78fa508` subsequently passed all five required jobs (source, plan, multiplayer, browser and verify). Later candidate08 changes require their own result.
+The market journeys verify stock1024→1022→1024 and wallet1500→1459→1483: a2SBU
+basalt purchase costs41CR; resale returns24CR. The same ship and berth lease remain
+throughout. The defense fixture explicitly assigns **server initial EVA poses**;
+the witness enters through real controller menus, but this is not a physical
+approach or controller-operated firing journey. Native frames show the beam at
+the actual barrel. The59-frame record has a128→439ms gap around recoil return;
+retain that limit when reviewing temporal quality.
 
-The [initial authority review](reviews/initial-authority-review.md) identified
-real lifecycle, equipment and ramming defects. The subsequent bounded fixes and
-regressions retain those findings. The independent
-[renderer closure](reviews/bastion-renderer-closure.md) verifies actual mesh
-intersections and rebasing, asynchronous load disposal and reconnect dedup reset.
-Its 108 mesh-face hits / 648 vertex checks do not substitute for gameplay images.
+Curated actual images:
+[concourse](controller-concourse.png), [controller restriction](controller-hands-free.png),
+[controller trade](controller-market-buy.png), [return](controller-return.png),
+[phone elevator](touch-elevator.png), [phone restriction](touch-hands-free.png),
+[phone market](touch-market.png), [mounted turret](defense-before.png),
+[actual strike](defense-strike.jpg), [return pose](defense-return.png),
+[native whole asset](bastion-08-wide.png), [open bores](bastion-08-bores.png),
+[service panels](bastion-08-service-panels.png).
 
-## Bastion source and motion
+Original receipts, videos and failed attempts remain outside Git under the local
+`.community-hub-qa` archive. Independent reports retain their original evidence
+paths; the curated links above are the portable repository selection. Generated
+test reports and recordings are not committed.
 
-Candidate06 is `adf6c5b03da18710a3d97341dd503ec95433e564d81610ed67037b226af8e4ca`:
-9,177 triangles, 908,388 bytes, nine primitives, two materials and three 512²
-lossless WebP maps. Original deterministic geometry, source Blend/exporter,
-material sources and provenance are retained in `assets/station-defense`.
-See [the asset production history](../../../assets/station-defense/PRODUCTION.md).
+## Source and retained findings
 
-The exact candidate05-to-06 comparison passes all twelve checks: expanded
-oriented local/world triangles, rig and all corner data except normals and bore
-UVs are unchanged. A deliberate 1 mm vertex mutation fails the probe, and an
-unchanged-file control passes. All 188 sampled yaw/pitch/recoil poses pass the
-corrected motion audit: 77,720 candidate triangle pairs, 1,316 actual world-pose
-checks, maximum pose error 0.0000137871 m. The only allowed contacts are explicit
-journal engagement and the full-recoil rear end stop. This finite audit is not a
-continuous swept-solid or station placement certificate.
+Bastion08 SHA256 is
+`8d0dcbb6395479ad083cd609217833b97c74008acdd15b72ed9182ced46b64ae`:
+9,877triangles,948,632bytes,9primitives,2materials and3×512² lossless WebP maps.
+The deterministic Blender builder, editable source, original PBR maps and
+provenance remain in `assets/station-defense`. All9,177 original07 triangles,
+UVs, normals and rig records remain;700 triangles add supported service covers,
+journal backing rings, captive heads and identifiers. The [source handoff](reviews/bastion-source-08.md)
+records their exact mounting coordinates and declared contacts.
 
-The same-camera native05 review scored **3.60**, below the 4.0 bar. Its
-[unmodified report](reviews/bastion-native-05.md) remains part of the record.
-Candidate06 improves circular surface normals, dark rough open bores and subtle
-PBR finish without changing geometry. Its [native review](reviews/bastion-native-06.md) scores **3.90**: curved metal
-and dark bores improve, but the broad white enamel faces still need finish.
-Candidate07 is being authored; no final art acceptance is claimed.
+Earlier native reviews [05](reviews/bastion-native-05.md),
+[06](reviews/bastion-native-06.md) and [07](reviews/bastion-native-07.md) scored
+3.60/3.90/3.90 and remain failures.06 improved curved metal and dark open bores;
+07's broad enamel texture treatment remained too faint.08 closes that visible
+manufactured-detail finding with actual fitted geometry. Its acceptance is not
+retroactively applied to the earlier versions.
 
-## Browser acceptance in progress
+The [initial authority review](reviews/initial-authority-review.md) identified real
+lifecycle, equipment and ramming defects, followed by focused fixes/regressions.
+The independent [renderer closure](reviews/bastion-renderer-closure.md) verified
+108 actual mesh-face hits/648 vertex checks, rebase stability, disposal and
+reconnect deduplication. Those CPU findings do not substitute for game images.
 
-The physical fixture walks a normally spawned player from their berth into the
-lift, visits the concourse, verifies disabled equipment selection, buys and sells
-an actual 2 SBU crate through the shared market, and returns to the original
-berth with the same parked ship and lease. Separate controller, keyboard and
-native Chromium touch routes are provided. The controller case includes held
-trigger suppression across menu closure, actual tab focus, disconnect, replacement
-and unsupported mapping. Read-only world state supplies steering feedback;
-no player pose or game action is assigned.
+Retained browser failures:01 wrong webserver cwd;02 over-anchored filter selected
+zero cases;03 wrong account-entry expectation;04 wrong snapshot weapon field;
+05 explicitly interrupted for a GPU launch race;06 attempted walking after the
+controller shortcut reopened the inventory.07 controller passed, then keyboard's
+unconditional F closed the already-open shared elevator; it also reported an
+unscoped teardown error/exit143 without another printed stack.08 was explicitly
+interrupted after another nearly simultaneous GPU launch. Corrected09 only calls
+a closed door, waits for full opening and uses the actual modal/input router;
+keyboard and touch pass. None of the failed, zero-case or interrupted runs is
+counted as a pass.
 
-A separate four-account defense fixture uses explicitly documented **server
-initial EVA poses**. The browser witness enters through the controller menus;
-real authenticated WebSocket peers accept friendship, fire one friendly shot,
-then one nonfriend shot. Assertions cover ordinary damage, exemption, exactly one
-lethal strike, its rendered identity, recoil and return. Native screencast frames
-are retained around the short beam for visual inspection. This is not evidence
-of a controller-operated firing or physical approach journey.
-
-Preserved earlier physical-browser failures: attempt01 had a webserver working-
-directory error; attempt02 selected zero cases with an over-anchored filter;
-attempt03 loaded the game but expected the account dialog before entering through
-the current developer launcher; attempt04 physically reached the hub before an
-assertion read the weapon from the inventory instead of the own-player snapshot.
-Attempt05 was explicitly interrupted when another reserved GPU job started;
-it is not a pass. Corrected fixture assertions use the actual shared UI and state.
-Attempt06 reached the hub and verified the lock, then the controller tool shortcut
-opened the authoritative inventory as intended. The fixture had tried to walk
-without closing that dialog. It now verifies the repeated disabled selection,
-closes the real screen and asserts gameplay is enabled before walking. No
-application behavior was bypassed by those harness changes.
+The first complete SQL fixture stopped PostgreSQL before its clients had ended;
+the correction awaits their real end events. The first PR76 hosted attempt also
+failed before module loading because the synthetic base merge duplicated the
+portable `tmpdir` import. The exact upstream5f0d94f fix was merged; later hosted
+runs on78fa508 and004979d pass. Neither earlier failure is hidden or recast as
+application success.
 
 ## Remaining boundaries
 
-The current authoritative online combat path covers handheld hits on players or
-hulls and actual peer ship rams. Mounted ship guns still have no authoritative
-online damage path; they must enter this same resolved-impact service when added.
-Missed shots do not count as damage. The station provides reactive punishment,
-not immunity: the original hit can kill its victim, including friendly fire.
-A failed friendship lookup refuses the protected impact and retaliation instead
-of guessing a relationship; consumed ammunition is not refunded.
+Current authoritative online combat covers handheld hits on players/hulls and
+peer ship rams. Mounted ship guns still need an authoritative online damage path
+that calls this same resolved-impact service. Misses do not count as damage.
+Retaliation is reactive: the original hit can kill its victim. Failed friendship
+lookup refuses protected impact/retaliation instead of guessing; consumed ammo
+is not refunded.
 
-Online equipment retail is not added by this work. Additional stations are not
-spawned; their later implementation can register separate station zones/markets.
-Hardware controllers, physical phones, whole-station performance and public
-release remain separate from injected Gamepad/native touch browser evidence.
+Some valid firing directions intersect station structures; enforcement intentionally
+ignores that occlusion. The legacy fallback exterior has different support planes
+and is excluded from placement acceptance. A new64mAtlas/refitted bay assembly
+must preserve human-scale elevator/terminal frames and repeat surrounding-geometry
+checks. The integration map also identifies tractor lease/tool restrictions and
+PERF inventory-cache updates needed when composing the newer shared branch.
 
-The [author-side placement audit](reviews/bastion-placement.md) measures actual
-station triangles and full foundation support. The shared server/client table now
-aligns to the decoded support planes, eliminating 2.817/7.004 mm nominal fixed-base
-embedding. The conservative complete articulation cylinder clears non-contact
-station geometry; moving rings, hub and berth bounds are hundreds of metres away.
-Some valid bore directions are obstructed by other station structures. Admitted
-impact retaliation deliberately uses unconditional hitscan, so those obstructions
-do not create an immunity exploit. The legacy fallback exterior does not share
-these support planes and is excluded from placement acceptance.
-
-The complete controller07 journey passed in2.3min on `cc529d4` with candidate07
-`6a0bfd85…`: stock1024→1022→1024, wallet1500→1459→1483, original berth/ship
-retained, four native-focus/device interruption cases and zero page/console
-diagnostics. The subsequent keyboard case reused berth1 after that passenger
-left its elevator open. Its unconditional F press closed the shared door, so the
-open-door assertion failed. The fixture now reads the actual initial door state,
-calls only a closed door, and always waits for full opening before walking in.
-Touch was not launched because maxFailures1 stopped the invocation. Its reporter
-also emitted one unscoped error without another printed stack; the outer process
-exit143 is retained. Neither remaining input route is counted as passed.
-
-Candidate07 exported898780B/9177tri, passed all13strict06-to-07checks including
-unchanged normals and188/188actualmotionposes. Its five native images rendered
-without diagnostics, but [independent review](reviews/bastion-native-07.md)
-remains3.90: broad white surfaces still need a readable manufactured treatment.
-Candidate08 authoring is isolated; this is not final art acceptance.
-
-
-Candidate08 is exported at `8d0dcbb6…`,948632B/9877tri, with700 supported service-detail triangles added to the exact07 geometry/rig/UV/normals. All16 additive checks, the analytic full-articulation vertex cylinder,188/188actual motion poses and17renderer/security tests pass. A fresh placement audit against the actual station GLBs finds four supported foundations and no non-contact articulation-cylinder intrusion. Native08 and the actual defense witness remain pending.
-
-Attempt08 was immediately interrupted by root after postlaunch inventory discovered a nearly simultaneous NPC browser job. Its keyboard case was interrupted and touch did not run. No application or assertion was changed to conceal that coordination failure. Remaining keyboard/touch acceptance will use a fresh evidence directory.
+Online equipment retail, additional stations, final exterior material work,
+whole-station performance and public release remain separate work. This delivery
+adds no database reset, migration or alternative economy store.

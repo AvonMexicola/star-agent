@@ -61,5 +61,5 @@ and independent review before final visual acceptance.
 The implemented branch includes the coherent social/cargo/control integration at
 `aaf08cc`; its draft PR stacks on `feat/dev-social-review` (PR73). Server, SQL and
 asset audit results are recorded in [the production record](../qa/community-hub/production-record.md).
-Final browser routes and independent candidate06 art acceptance are in progress;
+All three physical input routes and the actual defense witness pass on the recorded candidates. Bastion08 passes independent native4.00/5 and bounded actual-game/UI review;
 shared integration and public deployment are separate gates.

@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex community station integration",
-  "status": "active",
+  "status": "review",
   "branch": "feat/aeon-community-hub",
   "base": "2f3249fbb61a9cb0cdd5867da6794b28fa8b56b2",
   "updated": "2026-09-07",
