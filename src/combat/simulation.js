@@ -1,4 +1,5 @@
 import {Vector3,Quaternion} from 'three';
+import {step as stepFlight} from '../flight-model.js';
 
 export const SHIP_STATS=Object.freeze({
   nomad:{hull:240,shield:180,radius:9,speed:65,turn:.65,recharge:16},
@@ -55,12 +56,12 @@ export class CombatSimulation{
   get living(){return this.enemies.filter(e=>e.integrity.hull>0);}
   get target(){return this.living.find(e=>e.id===this.targetId)??null;}
   cycle(){const living=this.living;if(living.length)this.targetId=living[(living.findIndex(e=>e.id===this.targetId)+1)%living.length].id;}
-  fire(start,direction,weapon='pulse',wall=null){
+  fire(start,direction,weapon='pulse',wall=null,velocity=new Vector3(),muzzle=null){
     if(this.player.hull<=0)return;
-    this.shots++;this.launch(start,direction,GUNS[weapon]??GUNS.pulse,'player',weapon,wall);
+    this.shots++;this.launch(start,direction,GUNS[weapon]??GUNS.pulse,'player',weapon,wall,velocity,muzzle);
   }
-  launch(start,direction,gun,owner,weapon,wall=null){
-    const range=Math.min(gun.range,wall?.distance??Infinity),shot={id:++this.serial,position:start.clone(),direction:direction.clone().normalize(),speed:gun.speed,damage:gun.damage,remaining:range,owner,weapon,wall};
+  launch(start,direction,gun,owner,weapon,wall=null,velocity=new Vector3(),muzzle=null){
+    const range=Math.min(gun.range,wall?.distance??Infinity),shot={id:++this.serial,position:start.clone(),direction:direction.clone().normalize(),speed:gun.speed,damage:gun.damage,remaining:range,owner,weapon,wall,muzzle,velocity:direction.clone().normalize().multiplyScalar(Number.isFinite(gun.speed)?gun.speed:0).add(velocity)};
     if(!Number.isFinite(gun.speed)){this.trace(shot,start.clone().addScaledVector(shot.direction,range),false);}
     else if(this.projectiles.length<128)this.projectiles.push(shot);
     this.onShot(shot);
@@ -100,21 +101,21 @@ export class CombatSimulation{
         if(distance<180&&e.breakTime<=0)e.breakTime=3.5;
         e.strategy=e.breakTime>0?'break':distance<1000?'attack':'intercept';e.breakTime=Math.max(0,e.breakTime-dt);
       }
-      const aim=interceptPoint(e.position,position,velocity,450);
+      const aim=interceptPoint(e.position,position,velocity.clone().sub(e.velocity),450);
       let desired=aim.clone().sub(e.position);
       if(e.strategy==='return')desired=this.point.clone().sub(e.position);
       if(e.strategy==='break')desired=e.position.clone().sub(position).add(new Vector3((e.slot?1:-1)*220,100,0).applyQuaternion(orientation));
       const wanted=new Quaternion().setFromUnitVectors(FORWARD,desired.normalize());e.orientation.rotateTowards(wanted,stats.turn*dt);
       const forward=FORWARD.clone().applyQuaternion(e.orientation);
       const speed=stats.speed*(e.strategy==='break'?1.35:e.strategy==='attack'?.7:1);
-      e.velocity.lerp(forward.clone().multiplyScalar(speed),1-Math.exp(-dt*1.8));e.position.addScaledVector(e.velocity,dt);
+      e.velocity.copy(stepFlight(e,{shipId:e.ship,assist:true,targetVelocity:forward.clone().multiplyScalar(speed)},{density:0,gravity:new Vector3()},dt).velocity);e.position.addScaledVector(e.velocity,dt);
       e.cooldown-=dt;
       if(e.strategy==='attack'&&distance<1250&&forward.dot(aim.sub(e.position).normalize())>.994&&e.cooldown<=0){
-        this.launch(e.position.clone().addScaledVector(forward,stats.radius+2),forward,{damage:12,speed:450,range:1400},e.id,'pulse');e.cooldown=e.ship==='kestrel'?.75:1.1;
+        this.launch(e.position.clone().addScaledVector(forward,stats.radius+2),forward,{damage:12,speed:450,range:1400},e.id,'pulse',null,e.velocity);e.cooldown=e.ship==='kestrel'?.75:1.1;
       }
     }
     this.projectiles=this.projectiles.filter(shot=>{
-      const step=Math.min(shot.remaining,shot.speed*dt),end=shot.position.clone().addScaledVector(shot.direction,step);
+      const speed=shot.velocity.length(),step=Math.min(shot.remaining,speed*dt),end=shot.position.clone().addScaledVector(shot.velocity,speed>0?step/speed:0);
       if(this.trace(shot,end))return false;shot.position.copy(end);shot.remaining-=step;
       return shot.remaining>0;
     });

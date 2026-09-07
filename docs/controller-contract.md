@@ -257,3 +257,12 @@ injected standard Gamepads, read-only steering feedback and the real combat mode
 It includes input interruption gates, both kills, the report and return to flight.
 The separate close-up/keyboard fixture uses controlled poses for visual inspection;
 that is not controller-only journey evidence. Physical-device validation is separate.
+
+## Combat momentum
+
+Flight defaults to fly-by-wire and combat speed. R3 / V toggles unlocked flight,
+which retains momentum while turning. Menu → Combat / cruise mode (keyboard Z;
+on-screen Combat button) selects the speed envelope independently. Cruise, boost,
+overspeed and automatic manoeuvres lock ship weapons. Hold B / X for finite
+braking thrust; the HUD estimates fixed-attitude stopping distance. Autoland
+requires less than 10 m/s. All hulls need room to recover, including Kestrel.

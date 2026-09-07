@@ -102,3 +102,17 @@ test('weapon obstruction follows visible station-complex roots at a large render
  group.visible=false;assert.equal(target(origin,v(0,0,-1),origin,20),null);
  wall.geometry.dispose();wall.material.dispose();
 });
+
+ test('moving muzzle remains attached to a visible laser while its hit endpoint stays fixed',()=>{
+ const fx=new EnergyEffects(new THREE.Scene()),muzzle=v(25e9,0,0),end=muzzle.clone().add(v(0,0,-100));let impacts=0;fx.impact=()=>impacts++;
+ fx.fire(muzzle,v(0,0,-1),{weapon:'laser',muzzle:()=>muzzle.clone(),hit:{point:end}});
+ muzzle.add(v(2,1,-3));fx.update(.016,{origin:muzzle});
+ const lance=fx.lances.find(l=>l.active);assert.deepEqual(lance.start,muzzle);assert.deepEqual(lance.end,end);assert.equal(impacts,1);
+ fx.update(.1,{origin:muzzle});assert.equal(fx.state.lances,0);fx.dispose();
+});
+test('ballistic effects carry shooter velocity and hit along the actual trajectory',()=>{
+ const fx=new EnergyEffects(new THREE.Scene()),start=v(25e9,0,0),velocity=v(100,0,-200),direction=v(0,0,-1),end=start.clone().add(v(10,0,-65));let impacts=0;fx.impact=()=>impacts++;
+ fx.fire(start,direction,{velocity,hit:{point:end}});fx.update(.05,{origin:start});
+ assert.ok(fx.bolts[0].p.distanceTo(start.clone().add(v(5,0,-32.5)))<1e-5);assert.equal(impacts,0);
+ fx.update(.05,{origin:start});assert.equal(impacts,1);assert.equal(fx.state.bolts,0);fx.dispose();
+});

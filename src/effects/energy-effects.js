@@ -90,7 +90,7 @@ export class EnergyEffects {
       this.spray(point,normal,25,{speed:2,color,life:.8,size:.4,kind:0,gain:1.4});
     }
   }
-  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color,sound=weapon}={}){
+  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color,sound=weapon,muzzle=null}={}){
     const profile=weaponProfile(weapon),kind=profile.kind;
     if(hit&&start.distanceTo(hit.point)>range)hit=null;
     speed??=profile.speed;power??=profile.power;
@@ -100,7 +100,7 @@ export class EnergyEffects {
     const end=hit?.point.clone()??start.clone().addScaledVector(direction,range);
     if(kind==='laser'){
       const lance=this.lances.find(l=>!l.active)??this.lances[0];
-      Object.assign(lance,{active:true,start:start.clone(),end,age:0,life:.22,power,tint});
+      Object.assign(lance,{active:true,start:start.clone(),end,age:0,life:muzzle ? .06 : .22,power,tint,muzzle,fresh:Boolean(muzzle)});
       lance.shell.material.uniforms.color.value.copy(tint);lance.core.material.uniforms.color.value.setRGB(3,2.8,2.2);
       if(hit)this.impact(end,hit.normal??direction.clone().negate(),power,{color:tint,kind});
       // Ionised motes peel from the length of the fired lance.
@@ -160,19 +160,20 @@ export class EnergyEffects {
       }
     }
     for(const l of this.lances){
-      if(!l.active)continue;l.age+=dt;
+      if(!l.active)continue;if(l.fresh)l.fresh=false;else l.age+=dt;
       if(l.age>=l.life){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;continue;}
+      if(l.muzzle){const start=l.muzzle();if(!start){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;continue;}l.start.copy(start);}
       const fade=Math.pow(1-l.age/l.life,.5);
       l.shell.set(l.start,l.end,.11*l.power,origin,this.time,fade*1.4);
       l.core.set(l.start,l.end,.025*l.power,origin,this.time,fade*2);
     }
     for(let i=this.bolts.length-1;i>=0;i--){
-      const b=this.bolts[i],step=b.speed*dt;b.age+=dt;b.travelled+=step;
+      const b=this.bolts[i],worldVelocity=b.direction.clone().multiplyScalar(b.speed).add(b.velocity),step=worldVelocity.length()*dt;b.age+=dt;b.travelled+=step;
       const hitDistance=b.hit?b.start.distanceTo(b.hit.point):Infinity;
       if(b.travelled>=hitDistance){this.impact(b.hit.point,b.hit.normal,b.power,{color:b.tint,kind:b.kind});this.bolts.splice(i,1);continue;}
       if(b.travelled>b.range||b.age>b.range/b.speed+.5){this.bolts.splice(i,1);continue;}
-      b.p.copy(b.start).addScaledVector(b.direction,b.travelled).addScaledVector(b.velocity,b.age);
-      this._v.copy(b.direction).multiplyScalar(b.speed);
+      b.p.copy(b.start).addScaledVector(worldVelocity,b.age);
+      this._v.copy(worldVelocity);
       if(b.kind==='void'){
         this.particles.emit(b.p,ZERO,{color:b.tint,life:.08,size:.85*b.power,stretch:0,gain:2});
         const rotation=new THREE.Quaternion().setFromUnitVectors(Z,b.direction);

@@ -28,13 +28,13 @@ test('debris speed limit covers only the padded finite ring, not Selene or its i
 test('default assisted thrust continuously moves inside the ring at 30, 40, 60 and 144 Hz without brake oscillation',t=>{
   const {nav,notices}=navigation(t),distances=[];
   for(const hz of [30,40,60,144]){
-    nav.orbit();nav.position.copy(beltPoint());const up=new Vector3(...RING_NORMAL),tangent=up.clone().cross(nav.position.clone().sub(center)).normalize();
+    nav.orbit();nav.combatMode=false;nav.position.copy(beltPoint());const up=new Vector3(...RING_NORMAL),tangent=up.clone().cross(nav.position.clone().sub(center)).normalize();
     nav.orientToward(nav.position.clone().add(tangent),up);nav.keys.add('KeyW');nav.keys.add('ShiftLeft');nav.speedScale=8;
     const start=nav.position.clone();
-    for(let i=0;i<hz*2;i++){const before=nav.position.clone();nav.update(1/hz);assert.ok(nav.position.distanceTo(before)>0,'held thrust never freezes at debris brake');assert.ok(nav.speed<=DEBRIS_SPEED_LIMIT+1e-9);}
+    for(let i=0;i<hz*6;i++){const before=nav.position.clone();nav.update(1/hz);assert.ok(nav.position.distanceTo(before)>0,'held thrust never freezes at debris brake');assert.ok(nav.speed<=DEBRIS_SPEED_LIMIT+1e-9);}
     assert.ok(nav.speed>395);distances.push(nav.position.distanceTo(start));nav.keys.clear();
   }
-  assert.ok(Math.max(...distances)-Math.min(...distances)<7,'coarse and fine frame rates cover similar distance');
+  assert.ok(Math.max(...distances)-Math.min(...distances)<14,'coarse and fine frame rates cover similar distance');
   assert.equal(notices.filter(message=>message.includes('Debris proximity')).length,0);
 });
 

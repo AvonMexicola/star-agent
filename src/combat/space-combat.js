@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import kestrelURL from '../../assets/kestrel/kestrel.glb?url';
+import {shipWeaponStatus} from './flight-policy.js';
 import {SHIP_LAYOUT} from '../boarding.js';
 import {CombatSimulation,GUNS,interceptPoint} from './simulation.js';
 import {markerDistance,projectShipMarker} from '../ship-marker-projection.js';
@@ -14,7 +15,7 @@ export function createSpaceCombat({scene,nav,camera,effects}){
   const boltMaterials=[new THREE.MeshBasicMaterial({color:0x8bdeff,toneMapped:false}),new THREE.MeshBasicMaterial({color:0xff745e,toneMapped:false})];
   const bolts=Array.from({length:128},()=>{const mesh=new THREE.Mesh(boltGeometry,boltMaterials[0]);mesh.visible=false;group.add(mesh);return mesh;});
   const sim=new CombatSimulation({onShot:shot=>{
-    if(shot.weapon==='laser')effects.fire(shot.position,shot.direction,{weapon:'laser',range:shot.remaining});
+    if(shot.weapon==='laser')effects.fire(shot.position,shot.direction,{weapon:'laser',range:shot.remaining,muzzle:shot.muzzle});
     else effects.onSound?.({type:'shot',weapon:shot.weapon,sound:shot.weapon,point:shot.position});
   },onHit:({point,shield,destroyed,entity})=>{
     effects.impact(point,new THREE.Vector3(0,1,0),destroyed?9:shield?2:1.5,{color:shield?0x80d9ff:0xff9a60});
@@ -113,7 +114,7 @@ export function createSpaceCombat({scene,nav,camera,effects}){
       const model=models.get(e.id);if(model){model.position.copy(e.position).sub(origin);model.quaternion.copy(e.orientation);}
     }
     group.visible=!nav.multiplayer?.connected;
-    bolts.forEach((mesh,i)=>{const shot=sim.projectiles[i];mesh.visible=Boolean(shot);if(shot){mesh.position.copy(shot.position).sub(origin);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),shot.direction);mesh.material=boltMaterials[shot.owner==='player'?0:1];}});
+    bolts.forEach((mesh,i)=>{const shot=sim.projectiles[i];mesh.visible=Boolean(shot);if(shot){mesh.position.copy(shot.position).sub(origin);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),shot.velocity.clone().normalize());mesh.material=boltMaterials[shot.owner==='player'?0:1];}});
     const modal=Boolean(document.querySelector('dialog[open]'));
     button.hidden=!permitted()||modal||!nav.enabled;
     hud.hidden=!nav.enabled||!document.body.classList.contains('player-active')||nav.multiplayer?.connected||!['flight','landed','destroyed'].includes(nav.mode)||modal;
@@ -129,7 +130,7 @@ export function createSpaceCombat({scene,nav,camera,effects}){
     markerNodes.forEach(el=>el.hidden=true);let i=0;
     if(sim.phase==='transit')marker(markerNodes[i++],sim.point,'PATROL SIGNAL',{waypoint:true},origin);
     for(const e of visibleEnemies)marker(markerNodes[i++],e.position,e.ship.toUpperCase(),{selected:e.id===sim.targetId},origin);
-    if(t&&i<4&&Number.isFinite(GUNS[weapon].speed)){const point=interceptPoint(nav.position,t.position,t.velocity,GUNS[weapon].speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
+    if(t&&i<4&&Number.isFinite(GUNS[weapon].speed)){const point=interceptPoint(nav.position,t.position,t.velocity.clone().sub(nav.velocity),GUNS[weapon].speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
   }
-  return {open,permitted,recover,cycle:()=>sim.cycle(),update,fire:(...args)=>sim.fire(...args),get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
+  return {open,permitted,recover,cycle:()=>sim.cycle(),update,fire:(...args)=>{if(shipWeaponStatus(nav)==='WEAPONS READY')sim.fire(...args);},get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
 }

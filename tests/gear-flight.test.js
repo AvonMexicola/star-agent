@@ -33,7 +33,7 @@ for(const id of ['nomad','atlas','kestrel'])for(const assist of [true,false])tes
   advance(n,1);assert.equal(n.gearLimited,false);assert.equal(gearPrompt(n),'');advance(n,3);assert.ok(n.speed>100);
   // Redeploying at speed decelerates continuously instead of a one-frame stop.
   const before=n.speed;n.toggleGear();n.update(1/60);assert.ok(n.speed<before);assert.ok(n.speed>before*.9);
-  advance(n,8);assert.ok(n.speed<35.01);
+  advance(n,20);assert.ok(n.speed<35.01);
 });
 
 test('gear prompts do not tell walkers, landed pilots or an automatic launch to retract',()=>{
