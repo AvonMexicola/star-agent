@@ -1,110 +1,144 @@
 # Atlas heavy logistics
 
-Atlas is a separate unlockable ship. New players begin in the Nomad. Land on
-Aeon or Selene and then dock at Aeon Orbital to unlock Atlas. Quick transit to an
-approach is allowed, but you still have to land and dock. Press **G** or select
-**Fleet**, then choose Atlas while seated at the station. Unlock progress and
-the selected ship persist in this browser. No account or external service is used.
+Atlas is the current **64 m playable freighter** in this source. The same ship
+appears in the fleet, multiplayer and Atlas studio; the retired 30 m model is no
+longer a second playable choice. The implementation is integrated in the fleet
+candidate through `cee70b7`. Combined rendered acceptance and promotion to shared
+development are still pending; see the [integration record](qa/fleet-engine-integration.md)
+for the dated results and eventual delivery receipt.
 
-Atlas has a 30 m collision envelope, 19 m beam, a cargo deck 4 m above the landing
-plane, 2,400 kg of inventory capacity, and four live rectangular MFDs. The familiar
-flight, landing, station docking, walking, inventory, controller and assist controls
-remain available. Supplies transfer with you when changing ships. Switching to the
-120 kg Nomad is refused if the current cargo exceeds its capacity.
+Atlas has a **64 × 36 × 16 m** nominal hull envelope, a cargo deck at 2.6 m and
+an upper deck at 9.5 m above its landing plane. It carries **512 SBU of physical
+crates** and retains its separate **2,400 kg supplies inventory**, four live pilot
+MFDs, three S3 weapon mounts and six folding landing assemblies. The default
+station uses the enlarged fleet bays, without shrinking the ship.
 
-## Cargo elevator and lifts
+In normal solo play, land on a surface and then dock at Aeon Orbital to unlock
+Atlas. Open **Fleet with U** or **Menu → Ship → Fleet**, then select Atlas while
+seated at the station. The exploration milestone and selected ship persist in
+the browser without an account. Supplies transfer with ship selection; switching
+to the 120 kg Nomad is refused while those supplies exceed its capacity. The
+development launcher bypasses unlocks and uses temporary test inventory.
 
-Stand with **F** and walk aft to the control pedestal near the front of the large
-platform. **F** lowers the entire **8 × 10 m belly elevator** to ground level.
-Stay on the platform while it moves, then walk off its rear edge. Return aboard
-and use the same control to raise it. Fixed call stations are provided at the
-upper front landing and behind the lowered platform. The rear segmented hatch
-opens with the elevator. Raised guards block walking into an empty shaft.
+## Boarding, decks and controls
 
-Two **2.2 × 3 m cargo lifts** flank the forward cargo bay. Each carries a secured
-freight case and a rider between the main deck and a 7 m upper landing. Use the
-platform control with **F** to raise or lower it. The upper landing is reached
-through the lift's forward edge; use the inner side of the platform to pass the
-secured case. Call controls are available at both landings. A lift cannot start
-while you straddle its edge or reverse midway through travel. Stow the main
-elevator and lower both small lifts before launch.
+**F / controller X** operates reachable controls and enters or leaves the pilot
+chair. From the bridge, walk aft to the starboard **crew lift**. Its call pedestal
+summons an absent platform; enter through the open safety gate and interact again
+to change decks. This is the ship's only lift, connecting cargo and upper decks.
+It carries the rider physically and refuses lift motion while someone straddles
+its edge. Wait for the platform and destination gates to stop before walking out.
 
-The orange-lidded starboard chest ahead of the lifts opens the shared inventory
-with **F**. Take/stow transfers preserve every item. The physical cases on the
-small lifts are secured props; there is no loose-crate pickup, forklift, commodity
-market, mission economy, item consumption or cargo-mass flight model in this change.
-The initial unlock is an exploration milestone, not a paid purchase.
+The cargo deck has wide **forward and aft loading ramps**, each with an interior
+control and a visible exterior ground call panel beside the doorway. Open a ramp,
+wait until its main leaf and folding tip finish moving, then walk along it to the
+ground. To reach the exterior call from the centreline, walk around the ramp toe
+before turning along its side. For exact ship-local route coordinates, see the
+[station boarding receipt](qa/atlas-playable/station-cargo-tests.md).
+
+Main power is required to operate ramps and the crew lift. Loading ramps stay
+locked in flight; the enclosed crew lift remains usable in a powered moving cabin.
+Power loss freezes its motion. Close both ramps and stop the crew lift before
+launching with **B / controller Y**. **G** controls the six folding landing
+assemblies; their progress also governs flight limits and weapon readiness.
+
+The cargo deck is fixed. There is no belly elevator or pair of internal cargo
+lifts. The two saved cargo grid IDs and cell coordinates remain compatible,
+retaining 512 SBU and a 5 m clear centre lane. Only 1 SBU crates can be carried by
+hand; larger crates use the physical tractor. See [cargo and trading](sbu-cargo.md)
+and [tractor controls](cargo-tractor.md).
+
+## Development starts and studio
+
+Run `npm run dev:all`, then use **F2 / Menu → Dev → Test starts**. Choose Atlas
+and Station hangar for a parked pilot start. Normal solo and multiplayer entry
+retain the shoulder-camera opening; explicit development starts skip it.
+
+For immediate ground mining, choose **Burrow mining — Selene surface**. It starts
+seated in Burrow beside the real Crescent outcrop, with all four wheels on
+canonical terrain. The selected ship stays parked at the station. Drive with
+WASD / left stick, mine with T / RT, inspect ore with I / View, and exit or reboard
+through the rover's real door and steps with F / X. This start is offline and
+needs no carrier unloading. The separate **Atlas + Burrow mining rover · Selene**
+entry parks Burrow in Atlas and uses its actual aft ramp. Ground and carrier
+checks are recorded in the [ground-start receipt](qa/mining-rover/surface-start.md)
+and [carrier receipt](qa/mining-rover/atlas-carrier.md); combined browser routes remain pending.
+
+`/dev/atlas-mark-ii.html` inspects the same current Atlas geometry and mechanisms.
+The old `/dev/freighter.html` bookmark redirects there. A studio view is an asset
+inspection surface, not evidence that the full gameplay journey passed.
 
 ## Authoring and integration
 
-- Builder: `assets/ship/build_freighter.py`.
-- Editable source: `assets/ship/atlas.blend`; runtime asset: `public/models/atlas.glb`.
-- Coordinates: ship-local metres, +Y up, -Z forward. No world coordinates enter the GLB.
-- Required moving nodes: `MainLift`, `PortLift`, `StarboardLift`, `CargoLid`.
-- `src/freighter-layout.js` owns lift travel, walk support, rider displacement,
-  inventory collision and ship dimensions. Navigation uses `nav.layout`; the
-  Nomad's original `SHIP_LAYOUT` remains the default.
-- `src/freighter.js` renders the shared lift state. It never advances a separate
-  lift clock. It retains matching fallback floors/platforms if the GLB fails.
-- Station sweeps use separate Atlas hull, nacelle and gear bounds so the open
-  underbody does not catch the raised landing-pad detail. Dock eligibility checks
-  the whole ship's bounds. Centre the hull on the pad; its pilot sits far forward.
-- `src/fleet.js` stores the exploration milestone and selected ship under
-  `star-agent.fleet.v1`. The existing Nomad manifest key is retained for continuity.
-  Invalid unlock saves cannot unlock Atlas; unavailable storage remains usable for
-  the current session and is disclosed in Fleet/inventory.
+- Builder and source: `assets/atlas-mark-ii/build_atlas.py`,
+  `assets/atlas-mark-ii/atlas-mark-ii.blend` and the adjacent `layout.json`.
+- Runtime asset: `public/models/atlas-mark-ii/atlas-mark-ii.glb`, selected by
+  `ATLAS_MODEL_URL`. The hero contains 59,443 triangles / 3,859,404 bytes; source
+  identity and geometry limits are in the [asset checkpoint](qa/atlas-fleet-refresh/iteration-01/review.md).
+- Coordinates remain ship-local metres, +Y up and -Z forward. Named ramps,
+  folding tips, seals, crew platform/gates and landing nodes follow the authored
+  systems; no world coordinates enter the GLB.
+- `src/atlas-gameplay.js` supplies the gameplay adapter and full-size collision
+  parts. `src/freighter-layout.js` retains existing import names for that adapter.
+  Navigation advances mechanism/rider state; the renderer consumes the same state.
+- `src/freighter.js` loads the current hull, pilot displays and physical controls,
+  with a matching procedural fallback. Multiplayer uses the same asset and
+  canonical ramp, crew-lift and gear snapshots. Protocol 5 requires paired
+  frontend/API integration; existing account and cargo saves are retained.
+- Authored twin engine mouths use actual forward acceleration and boost. Coasting
+  keeps idle cores; power-off retires exhaust. Fleet engine voices and local music
+  respect user activation, explicit mute and menu/focus/transit suspension.
 
-Rebuild with:
+The [playable adapter receipt](qa/atlas-playable/README.md) records CPU geometry,
+gear, walking, MFD, weapon and engine checks. The reusable authoring workflow is
+in [Ship pipeline memory](../SHIP-PIPELINE-MEMORY.md).
 
-```sh
-env ALSOFT_DRIVERS=null blender --background --factory-startup -noaudio --python-exit-code 1 --python assets/ship/build_freighter.py
-```
-
-Run `npm run dev` and open `/dev/freighter.html` for an orbitable model viewer with
-exterior, bridge, cargo bay and lift controls. `/dev/ship.html` includes the refined
-Nomad seat and its unobstructed windscreen. Both are development routes.
-
-## Verification
+## Verification commands and limits
 
 ```sh
-npm test
-npm run build
-npm run test:browser -- -c scripts/freighter.config.js
-npm run test:browser -- -c scripts/freighter-studio.config.js
-npm run test:browser -- -c scripts/nomad-refinement.config.js
+node --test tests/atlas-playable.test.js tests/freighter.test.js tests/opening-navigation.test.js tests/station.test.js tests/sbu-cargo.test.js
+VITE_DEV_TOOLS=1 npm run build
+npm run test:browser -- -c scripts/fleet-development.config.js --grep 'atlas:'
 ```
 
-Unit tests exercise unlock ordering, persistence, inventory conservation, all
-three lift riders, shaft guards, ship assets and station docking/launch interlocks.
-Production browser tests set reproducible landing/docking approach fixtures, then
-use normal controls to unlock/select Atlas, ride all lifts, walk onto the hangar
-deck and back aboard, transfer inventory, return to the chair and launch. They
-also exercise missing assets and the original Nomad journey. These do not claim
-an uninterrupted orbit-to-station voyage without fixtures.
+The compatibility invocation
+`npm run test:browser -- -c scripts/freighter.config.js` selects that same single
+Atlas case. Both browser commands use the already built developer-enabled `dist`
+through the shared fleet configuration; they do not build it automatically.
+Use `--list` to verify selection without launching Chromium. Coordinate the one
+browser job with other agents before running the journey.
 
-The visual checks use Chromium with ANGLE/SwiftShader, 1600 × 1000 studio and
-1440 × 900 game viewports. Game walking runs at 0.4 render scale and curated
-screenshots at 1.0. These are render correctness checks, not hardware FPS claims.
-Browser page errors and shader errors are collected. Generated reports remain in
-`/tmp`. Verified 2026-09-06: 76 unit tests, build, four production browser checks and two studio checks passed. [PR #14](https://github.com/AvonMexicola/star-agent/pull/14) is submitted for manager review; it is not deployed.
+The current fixture starts parked through the supported development URL, then
+uses an injected standard Gamepad to leave the chair, call/ride the crew lift,
+walk the forward ramp, operate its ground panel, return to the chair and launch.
+It reads state to steer; it does not write player/ship poses. It captures the
+actual MFDs, cargo deck, ramp and departure and collects page/console errors.
+This replaces the old belly-lift tests; it does not establish the retired unlock,
+missing-asset or inventory browser assertions on the new hull. CPU fallback and
+save checks, physical hardware, native touch, final art and whole-scene performance
+remain distinct from this injected-controller route. No new browser pass is
+claimed by this documentation/configuration update.
 
-![Atlas exterior](images/atlas-exterior.png)
-![Large elevator lowered](images/atlas-elevator-lowered.png)
-![Twin internal cargo lifts](images/atlas-cargo-lifts.png)
+## Historical 30 m Atlas record — 2026-09-06
 
-The complete reusable workflow is in [Ship pipeline memory](../SHIP-PIPELINE-MEMORY.md).
+The former hull used `assets/ship/build_freighter.py`, `assets/ship/atlas.blend`
+and `public/models/atlas.glb`. Its 30 m envelope, 4 m cargo deck, 8 × 10 m belly
+elevator and two internal cargo lifts describe the retired asset only.
 
-## Mesh budget refinement — 2026-09-06
+That checkpoint recorded 76 unit checks, a production build, four production
+browser checks and two studio checks, with [PR #14](https://github.com/AvonMexicola/star-agent/pull/14)
+submitted for review at the time. Browser fixtures seeded landing/docking
+approaches before exercising the old lift, inventory and launch routes. Chromium
+with ANGLE/SwiftShader used 1600 × 1000 studio and 1440 × 900 game views; those
+were correctness checks, not hardware FPS results. They do not validate the
+current 64 m ship or its combined development build.
 
-The rebuilt Atlas contains **58,460 triangles / 3,770,128 bytes**, down from
-84,580 triangles / 5,652,816 bytes. Default manufactured bevels use two segments
-instead of three; no panels, lift parts or other functional geometry were removed.
-UVs, materials, node names, parents and transforms are retained. The nose bound
-moves inward by 1.652 mm from bevel sampling; other overall bounds are unchanged.
+The old mesh-budget follow-up reduced that asset from 84,580 triangles /
+5,652,816 bytes to 58,460 triangles / 3,770,128 bytes by using two bevel segments.
+Its recorded focused tests covered the old three-lift layout; visual review of
+that reduction was pending. These captures predate that reduction and show the
+retired geometry:
 
-The builder regenerates both the tracked `.blend` and GLB. Append
-`-- --runtime-only` when intentionally exporting only the runtime GLB.
-`node --test tests/ship-inventory.test.js tests/freighter.test.js tests/navigation.test.js`
-passed, including all three lift layouts, moving-node origins and the flight
-envelope. The images above are historical captures from before this mesh
-reduction; visual review of the new export is pending.
+![Historical 30 m Atlas exterior](images/atlas-exterior.png)
+![Historical belly elevator](images/atlas-elevator-lowered.png)
+![Historical internal cargo lifts](images/atlas-cargo-lifts.png)
