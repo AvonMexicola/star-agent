@@ -12,7 +12,7 @@ import { stationPhysicsAt, stationDeckPoint } from './station-physics.js';
 import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
 import { PYRE_ARRIVAL_ALTITUDE, pyreArrivalDirection, pyreLandingDirection, constrainPyreStep, pyreFrame } from './pyre-world.js';
-import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
+import { SEED, RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
 import { SELENE, PYRE, MIASMA, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
 import { environmentAt, step as stepFlight } from './flight-model.js';
 import { assessImpact, terrainSurfaceNormal } from './impact.js';
@@ -299,7 +299,17 @@ export class Navigation {
   get body(){return bodyAt(this.position);}
   get normal(){return bodyOffset(this.position,this.body).normalize();}
   get groundHeight(){return bodyHeight(this.normal,this.body);}
-  get altitude(){return Math.max(0,bodyAltitude(this.position,this.body));}
+  get altitude(){
+    // HUD, camera, flight limits and effects read the same position repeatedly.
+    // Reuse only an exact-position scalar; movement (including substeps and
+    // authoritative corrections) invalidates it without quantizing the terrain.
+    const {x,y,z}=this.position,body=this.body,cached=this._altitudeSample;
+    if(cached&&cached.x===x&&cached.y===y&&cached.z===z&&cached.body===body&&cached.seed===SEED)return cached.value;
+    const value=Math.max(0,bodyAltitude(this.position,body));
+    if(cached){cached.x=x;cached.y=y;cached.z=z;cached.body=body;cached.seed=SEED;cached.value=value;}
+    else this._altitudeSample={x,y,z,body,seed:SEED,value};
+    return value;
+  }
   get speed(){return this.velocity.length();}
   get debrisSpeedLimit(){return debrisSpeedLimit(this.position);}
   get sunDirection(){return new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).sub(this.position).normalize();}

@@ -168,6 +168,35 @@ test('authoritative frame changes snap across the boundary even when walking mod
   assert.ok(nav.position.x>3&&nav.position.x<4,'same-frame prediction still blends');
 });
 
+test('reconciliation retains exact vector blending, quaternion normalization and invalid-field handling', () => {
+  for (const blend of [0, .38, 1]) for (const offset of [.125, 100, 100.125]) {
+    const nav = {
+      mode: 'walk', position: new THREE.Vector3(25_000_000_000, 4, -8),
+      orientation: new THREE.Quaternion().setFromEuler(new THREE.Euler(.2, -.3, .1)),
+      velocity: new THREE.Vector3(1, 2, 3),
+    };
+    const snapshot = {
+      mode: 'walk', position: [25_000_000_000 + offset, 4, -8], orientation: [.1, -.4, .25, 2],
+      velocity: [NaN, 1, 2], angularVelocity: [0, 0, 0], health: 100, shipHealth: 100,
+    };
+    const retained = { position: nav.position, orientation: nav.orientation, velocity: nav.velocity };
+    const expectedPosition = nav.position.clone(), source = new THREE.Vector3().fromArray(snapshot.position);
+    if (expectedPosition.distanceToSquared(source) > 10000) expectedPosition.copy(source);
+    else expectedPosition.lerp(source, blend);
+    const expectedOrientation = nav.orientation.clone().slerp(new THREE.Quaternion().fromArray(snapshot.orientation).normalize(), blend).normalize();
+    const before = structuredClone(snapshot);
+    applyAuthoritativePeer(nav, snapshot, { blend });
+    assert.equal(nav.position, retained.position);
+    assert.equal(nav.orientation, retained.orientation);
+    assert.equal(nav.velocity, retained.velocity);
+    assert.deepEqual(nav.position.toArray(), expectedPosition.toArray());
+    assert.deepEqual(nav.orientation.toArray(), expectedOrientation.toArray());
+    assert.deepEqual(nav.velocity.toArray(), [1, 2, 3]);
+    assert.deepEqual(nav.angularVelocity.toArray(), [0, 0, 0]);
+    assert.deepEqual(snapshot, before, 'the authoritative snapshot remains unmodified');
+  }
+});
+
 test('requests wait for an authoritative acknowledgement and carry exact equip fields', async t => {
   class Socket {
     constructor() { this.readyState = 1; this.sent = []; this.listeners = {}; Socket.instance = this; }

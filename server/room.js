@@ -13,11 +13,12 @@ const STEP=1/30, LEASE_MS=180000, DROP_MS=300000;
 const VECTOR_KEYS=['position','velocity','shipVelocity','angularVelocity','shipAngularVelocity'];
 const BOOL_KEYS=['gearDeployed','powered','cabinFlight','insideShip','dockedAtStation','stationLift','doorOpen','shipLightsOn','flashlightOn','flightAssist','combatMode','spaceParked','autoland'];
 const FLOAT_KEYS=['gearProgress','doorProgress','speedScale','jumpHeight','jumpVelocity'];
+const SCALAR_KEYS=[...BOOL_KEYS,...FLOAT_KEYS];
 const failure=(message,code)=>Object.assign(new Error(message),{code});
 export function playerSnapshot(p) {
   const n=p.nav, s={id:p.id,callsign:p.account.callsign,colorIndex:p.colorIndex,mode:n.mode,body:n.body.id,shipId:n.shipId,health:p.health,shipHealth:p.shipHealth,weapon:p.weapon,aiming:Boolean(p.weapon&&(n.mode==='walk'||n.mode==='eva')),sequence:p.sequence};
   for(const k of VECTOR_KEYS)s[k]=n[k].toArray();
-  for(const k of BOOL_KEYS.concat(FLOAT_KEYS))s[k]=n[k];
+  for(const k of SCALAR_KEYS)s[k]=n[k];
   s.orientation=n.orientation.toArray();s.shipOrientation=(n.mode==='flight'?n.orientation:n.shipOrientation).toArray();
   s.shipPosition=(n.shipPosition??(n.mode==='flight'?n.position.clone().sub(new THREE.Vector3(...n.layout.seatEye).applyQuaternion(n.orientation)):null))?.toArray()??null;
   s.parkedShipPosition=n.shipPosition?.toArray()??null;
@@ -33,9 +34,18 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   let closed=false,queue=Promise.resolve(),lastSave=now(),lastTime=now(),accumulator=0,tickCount=0;
   const trading=createTrading({store,players,world,persistent,now,flushWrites:p=>writes.get(p.id)??Promise.resolve()});
   const doors=Object.fromEntries(world.pods.map(p=>[p.id,0]));
+  const doorBounds=new THREE.Box3(),doorOpening=new THREE.Box3();
+  const doorCorner=new THREE.Vector3(),doorRoot=new THREE.Vector3(),doorLocal=new THREE.Vector3(),dropPosition=new THREE.Vector3();
   const send=(p,data)=>{try{p.send(data);}catch{}};
   const broadcast=data=>{for(const p of players.values())send(p,data);};
-  const state=p=>({type:'state',stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:[...players.values()].map(playerSnapshot),doors:{...doors},hangar:hangar(p),inventory:p.inventory,commerce:trading.snapshot(p),health:p.health,drops:[...drops.values()].filter(d=>p.nav.position.distanceTo(new THREE.Vector3(...d.position))<500).map(d=>({...d}))});
+  // Only public fields are shared, and only within this synchronous broadcast.
+  // Rebuild for every frame/request so a retained snapshot never becomes stale.
+  const publicState=()=>({stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:Array.from(players.values(),playerSnapshot),doors:{...doors}});
+  function state(p,shared=publicState()){
+    const nearby=[];
+    for(const d of drops.values())if(p.nav.position.distanceTo(dropPosition.fromArray(d.position))<500)nearby.push({...d});
+    return {type:'state',...shared,hangar:hangar(p),inventory:p.inventory,commerce:trading.snapshot(p),health:p.health,drops:nearby};
+  }
   function hangar(p){const l=leases.get(p.hangarId);if(!l)return null;const pod=world.pods[l.id-1];return {id:l.id,status:l.status,pad:pod.padWorldPosition.toArray(),approach:pod.approachWorldPosition.toArray(),expiresAt:l.expiresAt};}
   function persistent(p,inventory=p.inventory){return {version:1,inventory,health:p.health,shipHealth:p.shipHealth,weapon:p.weapon,hull:p.nav.shipId};}
   function persist(p,inventory=p.inventory,overrides={}){
@@ -133,6 +143,30 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     else if(m.action==='travel')n.travel?n.cancelTravel():n.beginFreeTravel();
     else if(m.action==='target'&&TRAVEL_TARGETS.some(t=>t.id===m.target)){n.travelTarget=m.target;n.beginTravel();}
   }
+  function doorwayOccupied(pod){
+    for(const p of players.values()){
+      const n=p.nav;
+      if(n.position.distanceToSquared(pod.padWorldPosition)>250000&&(!n.shipPosition||n.shipPosition.distanceToSquared(pod.padWorldPosition)>250000))continue;
+      if(pod.isInsideHangar(n.position)||n.shipPosition&&pod.isInsideHangar(n.shipPosition))return true;
+      if(n.shipPosition||['flight','landed','crashed'].includes(n.mode)){
+        const q=n.shipPosition?n.shipOrientation:n.orientation;
+        const root=n.shipPosition??doorRoot.copy(n.position).sub(doorLocal.fromArray(n.layout.seatEye).applyQuaternion(q));
+        const shape=n.layout.flightBounds;
+        doorBounds.makeEmpty();
+        for(let i=0;i<8;i++){
+          doorCorner.fromArray(shape.min);
+          for(let a=0;a<3;a++)if(i&(1<<a))doorCorner.setComponent(a,shape.max[a]);
+          doorBounds.expandByPoint(pod.toLocal(doorCorner.applyQuaternion(q).add(root),doorCorner));
+        }
+        doorOpening.min.set(pod.interiorBox.min.x-1,pod.interiorBox.min.y-1,pod.openingZ-1);
+        doorOpening.max.set(pod.interiorBox.max.x+1,pod.interiorBox.max.y+1,pod.openingZ+1);
+        if(doorBounds.intersectsBox(doorOpening))return true;
+      }
+      const local=pod.toLocal(n.position,doorLocal);
+      if(Math.abs(local.x)<pod.interiorBox.max.x+12&&Math.abs(local.z-pod.openingZ)<18&&local.y>pod.interiorBox.min.y-5&&local.y<pod.interiorBox.max.y+5)return true;
+    }
+    return false;
+  }
   function tick(dt=STEP){
     if(closed)return;
     const t=now();
@@ -146,25 +180,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       }
     }
     for(const pod of world.pods){
-      const occupied=[...players.values()].some(p=>{
-        if(p.nav.position.distanceToSquared(pod.padWorldPosition)>250000&&(!p.nav.shipPosition||p.nav.shipPosition.distanceToSquared(pod.padWorldPosition)>250000))return false;
-        if(pod.isInsideHangar(p.nav.position)||p.nav.shipPosition&&pod.isInsideHangar(p.nav.shipPosition))return true;
-        if(p.nav.shipPosition||['flight','landed','crashed'].includes(p.nav.mode)){
-          const q=p.nav.shipPosition?p.nav.shipOrientation:p.nav.orientation;
-          const root=p.nav.shipPosition??p.nav.position.clone().sub(new THREE.Vector3(...p.nav.layout.seatEye).applyQuaternion(q));
-          const bounds=new THREE.Box3(),shape=p.nav.layout.flightBounds;
-          for(let i=0;i<8;i++){
-            const corner=new THREE.Vector3(...shape.min);
-            for(let a=0;a<3;a++)if(i&(1<<a))corner.setComponent(a,shape.max[a]);
-            bounds.expandByPoint(pod.toLocal(corner.applyQuaternion(q).add(root),corner));
-          }
-          const opening=new THREE.Box3(new THREE.Vector3(pod.interiorBox.min.x-1,pod.interiorBox.min.y-1,pod.openingZ-1),new THREE.Vector3(pod.interiorBox.max.x+1,pod.interiorBox.max.y+1,pod.openingZ+1));
-          if(bounds.intersectsBox(opening))return true;
-        }
-        const local=pod.toLocal(p.nav.position,new THREE.Vector3());
-        return Math.abs(local.x)<pod.interiorBox.max.x+12&&Math.abs(local.z-pod.openingZ)<18&&local.y>pod.interiorBox.min.y-5&&local.y<pod.interiorBox.max.y+5;
-      });
-      doors[pod.id]=Math.max(0,Math.min(1,doors[pod.id]+(leases.has(pod.id)||occupied?1:-1)*dt/3));
+      doors[pod.id]=Math.max(0,Math.min(1,doors[pod.id]+(leases.has(pod.id)||doorwayOccupied(pod)?1:-1)*dt/3));
     }
     world.doors(doors,dt);
     for(const p of players.values()){
@@ -174,63 +190,4 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         p.nav.look(p.lookYaw,p.lookPitch);p.lookYaw=p.lookPitch=0;p.nav.beginFrame(dt);p.nav.update(dt);
         if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
         if(p.input.fire&&!p.busy&&!p.nav.carryingCargo){
-          const event=shoot({shooter:p,players:[...players.values()],world,now:t});
-          if(event)broadcast({type:'event',event:'fire',peerId:p.id,...event});
-        }
-      }catch(error){p.input=cleanInput();onError(error);}
-    }
-    tickCount++;
-    if(tickCount%2===0)for(const p of players.values())send(p,state(p));
-    if(t-lastSave>10000){lastSave=t;for(const p of players.values())if(!p.busy)persist(p).catch(onError);}
-  }
-  const timer=autoStart?setInterval(()=>{const t=now();accumulator+=Math.min(.25,(t-lastTime)/1000);lastTime=t;while(accumulator>=STEP){tick();accumulator-=STEP;}},10):null;
-  timer?.unref();
-  return {players,leases,drops,doors,tick,state,trading,
-    async join(account,sendFn){
-      if(closed)throw failure('Server restarting.','ROOM_CLOSED');
-      if(players.has(account.id)||joining.has(account.id))throw failure('This account is already connected.','ACCOUNT_CONNECTED');
-      if(players.size+joining.size>=MAX_PLAYERS)throw failure('All ten player slots are occupied.','ROOM_FULL');
-      joining.add(account.id);
-      let pendingPlayer;
-      try{
-        await departing.get(account.id);
-        if(failedDepartures.has(account.id)){await persist(failedDepartures.get(account.id));failedDepartures.delete(account.id);}
-        await writes.get(account.id);
-        const saved=await store.loadPlayerState(account.id);
-        if(closed)throw failure('Server restarting.','ROOM_CLOSED');
-        const used=new Set([...players.values()].map(p=>p.colorIndex).concat([...reservedColors.values()]));let slot=0;while(used.has(slot))slot++;reservedColors.set(account.id,slot);
-        const p={id:account.id,account:{id:account.id,callsign:account.callsign},send:sendFn,colorIndex:slot,spawnPod:slot+1,hangarId:null,inventory:saved?restoreInventory(saved.inventory):initialInventory(),health:100,shipHealth:100,weapon:saved?.weapon??'rifle-laser',sequence:0,input:cleanInput(),lastInput:now(),lookYaw:0,lookPitch:0,lastShotAt:-Infinity,busy:false,messages:0,rateStart:now()};
-        pendingPlayer=p;
-        if(saved){p.health=Math.max(0,Math.min(100,Number.isFinite(saved.health)?saved.health:100));p.shipHealth=Math.max(0,Math.min(100,Number.isFinite(saved.shipHealth)?saved.shipHealth:100));}
-        if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&p.weapon!=='mining-laser-tool')p.weapon=null;
-        const spawnSlot=reserveSpawn(p);p.spawnPod=p.hangarId;
-        p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));if(saved?.hull==='atlas')setHull(p,'atlas');attach(p);await persist(p);await trading.join(p);
-        if(closed)throw failure('Server restarting.','ROOM_CLOSED');
-        players.set(p.id,p);
-        send(p,{...state(p),type:'welcome',id:p.id,seed:WORLD_SEED,version:MULTIPLAYER_VERSION,maxPlayers:MAX_PLAYERS,colorIndex:slot});return p.id;
-      }catch(error){if(pendingPlayer)release(pendingPlayer);throw error;}
-      finally{joining.delete(account.id);reservedColors.delete(account.id);}
-    },
-    receive(id,m){
-      const p=players.get(id);if(!p||!m||typeof m!=='object'||Array.isArray(m))return;
-      if(now()-p.rateStart>=1000){p.rateStart=now();p.messages=0;}
-      if(++p.messages>90)return;
-      if(m.type==='input'){
-        if(!Number.isSafeInteger(m.sequence)||m.sequence<=p.sequence)return;
-        p.sequence=m.sequence;p.input=cleanInput(m.input);p.lastInput=now();
-        p.lookYaw=Math.max(-.25,Math.min(.25,p.lookYaw+p.input.mouseYaw));p.lookPitch=Math.max(-.25,Math.min(.25,p.lookPitch+p.input.mousePitch));
-      }else if(m.type==='action')action(p,m);
-      else if(m.type==='request'&&typeof m.requestId==='string'&&m.requestId.length<=64){queue=queue.then(()=>request(p,m)).catch(onError);return queue;}
-    },
-    leave(id){
-      const p=players.get(id);if(!p)return departing.get(id)??Promise.resolve();
-      players.delete(id);release(p);
-      const task=(async()=>{await queue;try{await persist(p);}catch(error){failedDepartures.set(p.account.id,p);throw error;}})();
-      departing.set(p.account.id,task);
-      task.finally(()=>{if(departing.get(p.account.id)===task)departing.delete(p.account.id);}).catch(onError);
-      return task;
-    },
-    async revoke(accountId){const p=players.get(accountId);if(p){send(p,{type:'revoked'});await this.leave(p.id);}},
-    async close(){if(closed)return;closed=true;clearInterval(timer);await queue;await Promise.allSettled([...departing.values()]);for(const p of players.values())await persist(p).catch(onError);await Promise.allSettled([...writes.values()]);players.clear();leases.clear();drops.clear();},
-  };
-}
+          const event=shoot({shooter:p,players,world,now:t});
