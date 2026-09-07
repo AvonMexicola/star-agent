@@ -15,6 +15,8 @@ const finiteQuaternion = q => q?.isQuaternion && [q.x, q.y, q.z, q.w].every(Numb
 
 function playerUp(nav) {
   if (nav.mode === 'eva') return UP.clone().applyQuaternion(nav.orientation).normalize();
+  const grid=nav.stationPhysics;
+  if(grid)return grid.up.clone();
   if (nav.shipPosition && nav.position.distanceToSquared(nav.shipPosition) < 625) return UP.clone().applyQuaternion(nav.shipOrientation).normalize();
   if (finiteVector(nav.normal) && nav.normal.lengthSq() > .5) return nav.normal.clone().normalize();
   return nav.position.clone().sub(new THREE.Vector3(...bodyAt(nav.position).center)).normalize();

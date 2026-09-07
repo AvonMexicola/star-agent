@@ -76,7 +76,9 @@ export function reviveTravel(value) {
 export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } = {}) {
   if (!nav || !peer) return false;
   const modeChanged = typeof peer.mode === 'string' && peer.mode !== nav.mode;
-  const hard = snap || modeChanged;
+  const frameChanged = (peer.physicsFrame ?? null) !== (nav.authoritativePhysicsFrame ?? null);
+  const hard = snap || modeChanged || frameChanged;
+  nav.authoritativePhysicsFrame = peer.physicsFrame ?? null;
   nav.position = setVector(nav.position, peer.position, blend, hard);
   nav.orientation = setQuaternion(nav.orientation, peer.orientation, blend, hard);
   nav.velocity = setVector(nav.velocity, peer.velocity, 1, true);
@@ -237,7 +239,7 @@ export class MultiplayerClient {
     const own = players.find(player => player.id === this.state.ownId);
     if (own && this.nav) applyAuthoritativePeer(this.nav, own, { snap });
     this.remotePlayers?.sync?.(players, this.state.ownId);
-    this.station?.setMultiplayerState?.({ doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar, frame: message.stationFrame ?? this.state.stationFrame });
+    this.station?.setMultiplayerState?.({ doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar, frame: message.stationFrame ?? this.state.stationFrame, physicsFrame: own?.physicsFrame ?? null });
   }
 
   _rejectPending(reason) {
