@@ -4,7 +4,7 @@ import {Vector3,Quaternion} from 'three';
 import {step} from '../src/flight-model.js';
 import {shipHandling} from '../src/ship-handling.js';
 import {combatSpeed,shipWeaponStatus} from '../src/combat/flight-policy.js';
-import {CombatSimulation} from '../src/combat/simulation.js';
+import {CombatSimulation,projectileSpan} from '../src/combat/simulation.js';
 const vacuum={density:0,gravity:new Vector3()},state=()=>({velocity:new Vector3(0,0,-100),orientation:new Quaternion(),angularVelocity:new Vector3()});
 test('every hull carries momentum through a turn and brakes over seconds, Atlas longest',()=>{
  const distances=[];
@@ -45,4 +45,16 @@ test('combat projectiles inherit forward, lateral and retreating shooter velocit
   const sim=new CombatSimulation();sim.fire(new Vector3(25e9,0,0),new Vector3(0,0,-1),'pulse',null,null,velocity);
   assert.deepEqual(sim.projectiles[0].velocity,new Vector3(0,0,-450).add(velocity));
  }
+});
+
+test('inherited velocity drives the swept hit and visible tail, including lateral drift',()=>{
+ const sim=new CombatSimulation();sim.accept(new Vector3(),new Quaternion());sim.spawn();
+ const enemy=sim.enemies[0];enemy.position.set(36,0,-90);enemy.previous.copy(enemy.position);sim.enemies[1].position.set(1000,0,0);
+ const shot=sim.fire(new Vector3(),new Vector3(0,0,-1),'pulse',null,null,new Vector3(180,0,0));
+ sim.update(.1,{position:new Vector3(),velocity:new Vector3(),orientation:new Quaternion()});
+ assert.ok(shot.position.distanceTo(new Vector3(18,0,-45))<1e-10);
+ const span=projectileSpan(shot),tip=span.position.clone().addScaledVector(shot.velocity.clone().normalize(),span.length/2);
+ assert.ok(tip.distanceTo(shot.position)<1e-10);
+ sim.update(.1,{position:new Vector3(),velocity:new Vector3(),orientation:new Quaternion()});
+ assert.equal(sim.hits,1,'shot reaches a target off the original bore ray along its inherited world trajectory');
 });

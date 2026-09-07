@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {createWorld} from '../server/world.js';
-import {createRoom} from '../server/room.js';
+import {createRoom,playerSnapshot} from '../server/room.js';
 import {createMemoryStore} from '../server/database.js';
 import {transferInventory,initialInventory} from '../server/inventory.js';
 
@@ -182,4 +182,18 @@ test('suit collision respects closed and open doors in an unassigned gravity fra
   world.doors({...room.doors,[pod.id]:1});
   const open=p.nav.station.constrainStep(start,end,pod.quaternion,true);
   assert.equal(open.hit,false);assert.ok(open.point.distanceTo(end)<1e-8);
+});
+
+test('combat mode is server-owned and full braking retains momentum across room ticks',async t=>{
+ const {room,accounts,advance}=await setup(t),p=room.players.get(accounts[0].id);
+ p.nav.orbit();p.nav.velocity.set(0,0,-100);
+ assert.equal(playerSnapshot(p).combatMode,true);
+ await room.receive(p.id,{type:'action',action:'combat'});
+ assert.equal(playerSnapshot(p).combatMode,false);
+ await room.receive(p.id,{type:'action',action:'combat'});
+ assert.equal(playerSnapshot(p).combatMode,true);
+ await room.receive(p.id,{type:'input',sequence:1,input:{brake:true}});
+ const before=p.nav.position.clone();advance(1/30);
+ assert.ok(p.nav.speed>98&&p.nav.speed<100);assert.ok(p.nav.position.distanceTo(before)>3);
+ advance(5);assert.ok(p.nav.speed<.01);
 });
