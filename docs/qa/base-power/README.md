@@ -85,8 +85,9 @@ Cees requested an allowance above64 and a remove tool. Sites now accept1,024
 pieces, while the existing claim radius remains64m (96m for a large pad). Added
 explicit one-piece removal with no refund, storage/support/mainframe protection,
 server-side deletion and stale-piece identity rejection. Aimed selection uses
-actual building collision rays and an orange/red outline. Final controller
-removal journey is pending its shared GPU window.
+actual building collision rays and an orange/red outline. Controller removal journey passed1/1 in1.6min on the production build. Actual
+placement, aimed selection, held-A suppression, container cleanup and reload
+passed with zero page errors.
 
 - Full unit suite115/115 passed44.13s after the first removal implementation.
 - Subsequent focused build/power/cloud suite13/13 configured files passes after
