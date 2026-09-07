@@ -37,3 +37,21 @@ test('swept contact catches a seeded outcrop even with both endpoints above the 
  const saved=end.clone(),hit=constrainTerrainStep(start,end,body,1);
  assert.ok(hit.hit);assert.ok(hit.t>0&&hit.t<1);assert.ok(Math.abs(hit.point.length()-radius-height(hit.point.clone().normalize())-1)<1e-6);assert.ok(saved.equals(end));
 });
+
+test('rendered outcrop masks cover flat caps and come from the canonical surface',async()=>{
+ const {miasmaSurface,MIASMA_TERRAIN}=await import('../src/miasma-world.js');
+ const {generatePyrePatch,cubeCoordinates}=await import('../src/pyre-terrain.js');
+ const {cubeDirection}=await import('../src/world.js');
+ let best={h:0};
+ for(let u=-250;u<=250;u+=5)for(let v=-250;v<=250;v+=5){const d=direction(u,v),h=height(d);if(h>best.h)best={h,d};}
+ const {face,u,v}=cubeCoordinates(best.d.toArray()),level=15,size=2/2**level,ix=Math.floor((u+1)/size),iy=Math.floor((v+1)/size);
+ const patch=generatePyrePatch({face,level,ix,iy},MIASMA_TERRAIN);let flatCaps=0;
+ assert.equal(patch.rockReliefs.length,patch.positions.length/3);
+ for(let y=0;y<=patch.grid;y++)for(let x=0;x<=patch.grid;x++){
+  const d=cubeDirection(face,-1+size*(ix+x/patch.grid),-1+size*(iy+y/patch.grid)),i=y*(patch.grid+1)+x;
+  assert.equal(patch.rockReliefs[i],Math.fround(miasmaSurface(...d).rockRelief));
+  const normal=new Vector3(...patch.normals.slice(i*3,i*3+3));
+  if(patch.rockReliefs[i]>.65&&normal.dot(new Vector3(...d))>.92)flatCaps++;
+ }
+ assert.ok(flatCaps>4,'exposed caps receive stone even when almost horizontal');
+});

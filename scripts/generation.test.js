@@ -42,6 +42,7 @@ test('terrain worker uses the same seed and geometry as main-thread collision qu
     assert.deepEqual(actual.positions, expected.positions);
     assert.deepEqual(actual.colors, expected.colors);
     assert.deepEqual(actual.heights, expected.heights);
+    assert.deepEqual(actual.rockReliefs, expected.rockReliefs);
   }
 });
 

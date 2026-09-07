@@ -123,10 +123,11 @@ function terrace(h, size, amount) {
 }
 
 /**
- * Height above sea level, metres, for a unit direction. Deterministic and pure.
+ * Height above sea level and exposed rock relief, in metres, for a unit direction.
+ * Deterministic and pure.
  * Ocean floor continues below 0; highest peaks land near 5 km.
  */
-export function terrainHeight(x, y, z) {
+export function terrainSample(x, y, z) {
   // ---- continents: domain-warped fbm so coastlines are not blobby ----------
   const wx = snoise(x * 2.1 + 11.3, y * 2.1 - 4.7, z * 2.1 + 8.9);
   const wy = snoise(x * 2.1 - 21.7, y * 2.1 + 13.1, z * 2.1 - 3.3);
@@ -212,9 +213,11 @@ export function terrainHeight(x, y, z) {
   }
 
   // Keep shorelines and ice sheets intact; outcrops break up inland terrain.
-  h += rockFormationHeight(x,y,z,1592750,SEED) * smoothstep(10,70,h) * (1-polar);
-  return h;
+  const rockRelief=rockFormationHeight(x,y,z,1592750,SEED) * smoothstep(10,70,h) * (1-polar);
+  return {height:h+rockRelief,rockRelief};
 }
+
+export function terrainHeight(x,y,z){return terrainSample(x,y,z).height;}
 
 /** 0..1 humidity. Cheap: 5 noise lookups plus latitude bands. */
 export function moisture(x, y, z) {

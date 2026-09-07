@@ -1,3 +1,4 @@
+import { attachRockMaterial } from './rock-material.js';
 import { MiasmaFlora } from './miasma-flora.js';
 import { MineralFragments } from './mineral-fragments.js';
 import * as THREE from 'three';
@@ -59,6 +60,7 @@ export class Miasma {
           normal=normalize(mix(normal,mat3(viewMatrix)*mOrbitalNormal,mFar));`);
     };
     this.material.customProgramCacheKey=()=> 'miasma-surface-v1';
+    this.releaseRockMaterial=attachRockMaterial(this.material,{pointAttribute:'pyrePoint',tint:[.91,1.01,.95]});
     this.terrain=new PyreTerrain(this.group,this.material,{body:MIASMA_TERRAIN,workers:2,workerFactory:()=>new Worker(new URL('./miasma.worker.js',import.meta.url),{type:'module'}),onMaps:data=>{
       this.color.value.dispose();this.normal.value.dispose();
       this.color.value=mapTexture(data.color,data.width,data.height,THREE.SRGBColorSpace);this.normal.value=mapTexture(data.normal,data.width,data.height);this.mapsReady.value=1;
@@ -86,5 +88,5 @@ export class Miasma {
   }
   get ready(){return this.terrain.ready&&this.mapsReady.value===1;}
   get state(){return {position:this.worldPosition.toArray(),radius:MIASMA_RADIUS,distance:this.distance,visible:this.group.visible,ready:this.ready,mapsReady:this.mapsReady.value===1,patches:this.terrain.visibleCount,lod:this.terrain.maxLevel,pending:this.terrain.pending,morphing:this.terrain.morphing,error:this.terrain.error,fragments:this.fragments.count,flora:this.flora.state,surfaceAltitude:this.terrain.altitude,weatherTime:this.time.value};}
-  dispose(){this.flora.dispose();this.fragments.dispose();this.terrain.dispose();this.color.value.dispose();this.normal.value.dispose();this.clouds.geometry.dispose();this.cloudMaterial.dispose();this.material.dispose();this.scene.remove(this.group);}
+  dispose(){this.releaseRockMaterial();this.flora.dispose();this.fragments.dispose();this.terrain.dispose();this.color.value.dispose();this.normal.value.dispose();this.clouds.geometry.dispose();this.cloudMaterial.dispose();this.material.dispose();this.scene.remove(this.group);}
 }

@@ -29,9 +29,14 @@ function view(body,center,seed){
 }
 const cases=[view(MIASMA,MIASMA_SITES[2].direction,0x4d494153),view(SELENE,MOON_LANDING_DIRECTION,0x53454c45),view(PYRE,fromPyreBody(.9,.15,.4),0x50595245),view(AEON,findDestinations().forest,7291)];
 test('seeded formations render during descent and on all four surfaces',async({page,browser})=>{
- const dir='/tmp/star-agent-rocks',errors=[],states=[];await mkdir(dir,{recursive:true});
+ const dir='/tmp/star-agent-rocks',errors=[],states=[],assets=[];await mkdir(dir,{recursive:true});
+ page.on('response',response=>{if(response.url().includes('/materials/outcrops/'))assets.push({url:response.url(),status:response.status()});});
  page.on('pageerror',e=>{errors.push(e.message);console.log(e.message);});page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());console.log(m.text());}});
- await page.goto('/?intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Tab');
+ await page.goto('/?intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
+ await page.waitForFunction(()=>window.starAgent.state.rockMaterial.ready);
+ expect(await page.evaluate(()=>window.starAgent.state.rockMaterial.error)).toBeNull();
+ expect(assets.length).toBe(3);expect(assets.every(a=>a.status===200)).toBe(true);
+ await page.keyboard.press('Tab');
  for(const c of cases){
   for(const altitude of (c.body==='miasma'?[350,4]:[4])){
    await page.evaluate(({c,altitude})=>{
@@ -51,5 +56,17 @@ test('seeded formations render during descent and on all four surfaces',async({p
   }
  }
  const backend=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return gl.getParameter(e.UNMASKED_RENDERER_WEBGL);});
- await writeFile(`${dir}/environment.json`,JSON.stringify({browser:browser.version(),backend,viewport:[1280,800],errors,states},null,2));
+ await writeFile(`${dir}/environment.json`,JSON.stringify({browser:browser.version(),backend,viewport:[1280,800],assets,errors,states},null,2));
+});
+
+// A corrupted local map must keep the old terrain usable, without shader errors.
+test('invalid rock maps fall back without breaking the renderer',async({page})=>{
+ const errors=[],warnings=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
+ await page.route('**/materials/outcrops/roughness.jpg',route=>route.fulfill({path:'docs/images/rock-formations/miasma-4m.png',contentType:'image/png'}));
+ await page.goto('/?intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
+ await page.waitForFunction(()=>window.starAgent.state.rockMaterial.error);
+ const state=await page.evaluate(()=>window.starAgent.state.rockMaterial);expect(state.ready).toBe(false);expect(state.error).toContain('dimensions');
+ expect(warnings.some(w=>w.includes('Rock maps unavailable'))).toBe(true);expect(errors).toEqual([]);
+ await page.screenshot({path:'/tmp/star-agent-rocks/material-fallback.png'});
 });

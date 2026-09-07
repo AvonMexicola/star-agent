@@ -48,7 +48,7 @@ export function moonSurface(x,y,z) {
   }
   const rocks=rockFormationHeight(x,y,z,MOON_RADIUS,0x53454c45);
   height+=rocks;
-  return {height,albedo:Math.max(.065,Math.min(.27,.19-maria*.085+(detail-.5)*.04+fresh-smooth(.3,3,rocks)*.035))};
+  return {height,rockRelief:rocks,albedo:Math.max(.065,Math.min(.27,.19-maria*.085+(detail-.5)*.04+fresh-smooth(.3,3,rocks)*.035))};
 }
 
 export function moonOffset(position) { return position.clone().sub(new Vector3(...MOON_POSITION)); }

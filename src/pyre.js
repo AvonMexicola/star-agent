@@ -1,3 +1,4 @@
+import { attachRockMaterial } from './rock-material.js';
 import * as THREE from 'three';
 import { PYRE_RADIUS, PYRE_POSITION, PYRE_GENERATOR_VERSION, pyreFrame } from './pyre-world.js';
 import { PyreTerrain } from './pyre-terrain.js';
@@ -110,6 +111,7 @@ export class Pyre {
           normal=normalize(mix(normal,mat3(viewMatrix)*pyOrbitalN,pyOrbitalFade));`);
     };
     this.material.customProgramCacheKey = () => `pyre-terrain-v${PYRE_GENERATOR_VERSION}`;
+    this.releaseRockMaterial=attachRockMaterial(this.material,{pointAttribute:'pyrePoint',tint:[.72,.65,.57]});
     this.terrain = new PyreTerrain(this.group, this.material, { sync, onMaps: data => {
       const texture = new THREE.DataTexture(data.data, data.width, data.height); texture.wrapS = THREE.RepeatWrapping;
       texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter; texture.generateMipmaps = true; texture.needsUpdate = true;
@@ -129,5 +131,5 @@ export class Pyre {
   get state() {
     return { position: this.worldPosition.toArray(), radius: PYRE_RADIUS, distance: this.distance ?? null, visible: this.group.visible, patches: this.terrain.visibleCount, lod: this.terrain.maxLevel, pending: this.terrain.pending, builds: this.terrain.buildsLastFrame, morphing:this.terrain.morphing,error:this.terrain.error,mapsReady: this.mapsReady.value === 1, generatorVersion: PYRE_GENERATOR_VERSION };
   }
-  dispose() { this.terrain.dispose(); this.cracks.dispose(); this.maps.dispose();this.orbitalColor.dispose();this.orbitalNormal.dispose(); this.material.dispose(); this.scene.remove(this.group); }
+  dispose() { this.releaseRockMaterial(); this.terrain.dispose(); this.cracks.dispose(); this.maps.dispose();this.orbitalColor.dispose();this.orbitalNormal.dispose(); this.material.dispose(); this.scene.remove(this.group); }
 }

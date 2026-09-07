@@ -66,7 +66,7 @@ export function miasmaSurface(x,y,z) {
   const sulphur=clamp(.24+continent*.75+rim*.3-basin*.75),copper=basin*.92;
   const resources=resourceProfile(MIASMA_RESOURCE_IDS,[sulphur,Math.max(.06,1-sulphur-copper),copper],region);
   const color=resourceColor(resources,PALETTE).map(v=>v*(.8+continent*.3)*(1-fracture*.24)*(1-smooth(.3,3,rocks)*.34));
-  return {height,color,resources,region,activity:0,fresh:basin,sulphur,oxide:0};
+  return {height,rockRelief:rocks,color,resources,region,activity:0,fresh:basin,sulphur,oxide:0};
 }
 export const MIASMA_TERRAIN = Object.freeze({name:'Miasma',radius:MIASMA_RADIUS,position:MIASMA_POSITION,maxHeight:MIASMA_MAX_HEIGHT,orbitLevel:4,sample:miasmaSurface});
 export function miasmaArrivalDirection() {return new Vector3(...PYRE_POSITION).sub(new Vector3(...MIASMA_POSITION)).normalize().toArray();}

@@ -250,7 +250,7 @@ export function pyreSurfaceBody(x, y, z) {
   // As on Selene, visual provinces and surveys share one normalized mineral field.
   const resources=resourceProfile(PYRE_RESOURCE_IDS,[(1-oxide)*(1-sulphur),oxide*(1-sulphur),sulphur],region);
   const color=resourceColor(resources,PYRE_RESOURCE_PALETTE).map(v=>v*tone*(1+highland*.3)*(1-fresh*.48)*(1-smooth(.3,3,rocks)*.28));
-  return { height, color, activity, fresh, sulphur, oxide, region, resources, resource:resources.dominant };
+  return { height, rockRelief:rocks, color, activity, fresh, sulphur, oxide, region, resources, resource:resources.dominant };
 
 }
 /** World-frame sampler: rendering, contact and walking all use this one. */

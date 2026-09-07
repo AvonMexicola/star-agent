@@ -1,3 +1,4 @@
+import { attachRockMaterial } from './rock-material.js';
 import * as THREE from 'three';
 import { RADIUS, MAX_LEVEL, cubeDirection, terrainHeight } from './world.js';
 import { createWaterMaterial, updateWaterMaterial } from './water.js';
@@ -19,6 +20,7 @@ export class Planet {
     this.surfaceTexture=createSurfaceTexture();
     this.groundTextures=createGroundTextures();
     configureTerrainMaterial(this.landMaterial,this.surfaceTexture,this.albedoUniform,this.albedoReady,this.groundTextures);
+    this.releaseRockMaterial=attachRockMaterial(this.landMaterial,{pointAttribute:'surfacePoint',tint:[1.12,1.1,1.06]});
     this.waterMaterial=createWaterMaterial();
     for(let i=0;i<Math.min(3,Math.max(1,(navigator.hardwareConcurrency||4)-2));i++){
       const worker=new Worker(new URL('./terrain.worker.js',import.meta.url),{type:'module'});
@@ -51,6 +53,7 @@ export class Planet {
     geometry.setAttribute('color',new THREE.BufferAttribute(data.colors,3));
     geometry.setAttribute('direction',new THREE.BufferAttribute(data.directions,3));
     geometry.setAttribute('terrainHeight',new THREE.BufferAttribute(data.heights,1));
+    geometry.setAttribute('rockRelief',new THREE.BufferAttribute(data.rockReliefs,1));
     // Keep detail fixed across patch seams and origin rebases. 256 m is a whole
     // number of texture periods; discard only whole periods in CPU doubles.
     const surfacePoints=new Float32Array(data.positions.length);
@@ -104,5 +107,5 @@ export class Planet {
   }
   get ready(){return this.roots.every(n=>n.mesh);}
   get pending(){return this.queue.length+this.jobs.size;}
-  dispose(){this.albedoWorker.terminate();this.albedoUniform.value.dispose();this.surfaceTexture.dispose();this.groundTextures.dispose();for(const slot of this.workers)slot.worker.terminate();for(const n of this.nodes.values())if(n.mesh){n.mesh.traverse(o=>o.geometry?.dispose());this.scene.remove(n.mesh);}this.landMaterial.dispose();this.waterMaterial.dispose();}
+  dispose(){this.releaseRockMaterial();this.albedoWorker.terminate();this.albedoUniform.value.dispose();this.surfaceTexture.dispose();this.groundTextures.dispose();for(const slot of this.workers)slot.worker.terminate();for(const n of this.nodes.values())if(n.mesh){n.mesh.traverse(o=>o.geometry?.dispose());this.scene.remove(n.mesh);}this.landMaterial.dispose();this.waterMaterial.dispose();}
 }
