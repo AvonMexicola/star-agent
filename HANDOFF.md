@@ -2605,3 +2605,6 @@ prop/audio, remote shader/colors. No owned browser remains. Fauna/cargo/rover
 and social may resume their coordinated queue. Promoting the frozen combined
 candidate to persistent5178 now; one owned service restart updates8087 with
 the included momentum authority changes. Existing PostgreSQL data is preserved.
+
+
+SA-SOCIAL-001 API CONTRACT: store.areFriends(accountIdA, accountIdB) -> Promise<boolean> is the authoritative predicate for protection/friend exemptions. Only an accepted mutual friendship with no block in either direction is true; self, pending, declined, removed or blocked pairs are false. server/social.js exposes the same asynchronous predicate. Block atomically deletes friendship and removes social presence/status access; the ordinary physical room roster remains public to admitted players. No turret/hub policing is part of this branch. New social methods live in server/social-store.js to minimize database.js overlap.
