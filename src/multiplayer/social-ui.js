@@ -71,6 +71,7 @@ export function createSocialUI({ nav, client, dialog, flight }) {
   panel.querySelector('[data-chat-keyboard]').addEventListener('click', () => {
     if (!socialView(state).ready || busy) return;
     nav.keys?.clear?.(); client.suspendInput?.(); nav.gamepad?.suspend?.(); updateDraft(); keyboard.showModal();
+    const draft = keyboard.querySelector('output'); draft.scrollTop = draft.scrollHeight;
   });
   keyboard.addEventListener('click', event => {
     const page = event.target.closest('[data-key-page]')?.dataset.keyPage;
