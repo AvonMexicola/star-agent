@@ -24,7 +24,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
   hud.innerHTML = '<span class="build-eyebrow">CONSTRUCTION MODE</span><strong class="build-selected"></strong><p class="build-placement" role="status"></p><p class="build-cost"></p><p class="build-ship-link"></p><p class="build-hints">A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap &nbsp; ↑ ↓ · Height<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump</p><div class="build-touch"></div>';
   const shortcut = button(sandbox?'Sandbox · Build / B':'Build · B', 'build-open', () => open()); shortcut.id = 'build-shortcut'; shortcut.hidden = true;
   document.body.append(dialog, hud, shortcut);
-  const wheels={pieces:undefined,shapes:['foundation-triangle','wall-quarter','window-quarter','foundation-quarter','floor-quarter','floor-triangle','wall','floor'],power:['solar-array','wind-turbine','battery','uranium-generator','helium-generator','mainframe','terminal','rack'],facilities:['rack','terminal','hangar-door','foundation-ramp','foundation-pad-small','foundation-pad-medium','foundation-pad-large','mainframe']};
+  const wheels={pieces:undefined,shapes:['foundation-triangle','wall-quarter','window-quarter','foundation-quarter','floor-quarter','floor-triangle','wall','floor'],power:['solar-array','wind-turbine','battery','uranium-generator','helium-generator','ceiling-light','mainframe','terminal'],roofs:['roof-flat','roof-edge','roof-corner','roof-triangle','roof-quarter','ceiling-light','floor','floor-triangle'],facilities:['rack','terminal','hangar-door','foundation-ramp','foundation-pad-small','foundation-pad-medium','foundation-pad-large','mainframe']};
   let radial=null;
   dialog.controllerNavigation=ui=>radial?.navigate(ui);
   dialog.controllerAction=ui=>{const direction=Number(ui.pressed.has(5))-Number(ui.pressed.has(4));if(!direction)return null;const available=[...tabs.children].filter(b=>!b.hidden),i=available.findIndex(b=>b.dataset.controllerKey===`build-tab-${tab}`),target=available[(i+direction+available.length)%available.length];target.click();nav.gamepad.suspend();return target;};
@@ -123,7 +123,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
   }
   const tabs = dialog.querySelector('.build-tabs');
   tabs.title='LB / RB · Switch tabs';
-  for (const [id,label] of [['pieces','Blocks'],['shapes','Shapes'],['facilities','Facilities'],['power','Power'],['recipes','Resources']]) tabs.append(button(label,`build-tab-${id}`,()=>{tab=id;render();}));
+  for (const [id,label] of [['pieces','Blocks'],['shapes','Shapes'],['facilities','Facilities'],['power','Power'],['roofs','Roofs'],['recipes','Resources']]) tabs.append(button(label,`build-tab-${id}`,()=>{tab=id;render();}));
   if(sandbox)tabs.append(button('Sandbox supplies','build-tab-sandbox',()=>{tab='sandbox';render();}));
   const mainframeTab = button('Mainframe','build-tab-mainframe',()=>{tab='mainframe';render();}); mainframeTab.hidden = true; tabs.append(mainframeTab);
   dialog.addEventListener('close', () => { suspend(); nav.enabled = !document.querySelector('dialog[open]'); update(); });
@@ -150,6 +150,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
       hud.querySelector('.build-cost').textContent = build.removing?'Single piece only · Empty storage and remove supported equipment first':`${amounts(preview.cost || piece?.cost)} · ${sandbox ? 'Sandbox supply bank' : Array.isArray(preview.sources) ? preview.sources.map(id=>store.container(id)?.name ?? id).join(', ') : preview.sources || 'Backpack'}`;
     hud.querySelector('.build-hints').innerHTML=build.removing?'A / Enter · Remove one piece permanently<br>B / P · Build wheel · X / Esc · Exit · RB / Space · Jump':'A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap &nbsp; ↑ ↓ · Height<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump';
     touch.querySelector('[data-controller-key="build-hud-place"]').textContent=build.removing?'Remove':'Place';
+    for(const key of ['rotate-left','rotate-right','snap','height-up','height-down'])touch.querySelector(`[data-controller-key="build-hud-${key}"]`).hidden=Boolean(build.removing);
     }
     const materials = JSON.stringify(store.container('pack')?.items);
     if (dialog.open && tab === 'recipes' && materials !== lastMaterials) { lastMaterials = materials; render(); }

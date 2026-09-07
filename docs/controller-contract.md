@@ -315,7 +315,7 @@ from physical controller testing.
 
 ## Expanded construction menus
 
-LB/RB changes the active native build tab (Blocks/Shapes/Facilities/Resources/
+LB/RB changes the active native build tab (Blocks/Shapes/Facilities/Power/Roofs/Resources/
 Sandbox supplies/Mainframe when available). Tab changes consume the shared UI
 edge before analog focus or A confirmation and suspend until neutral. The hooks
 are `dialog.controllerAction(ui)` for tab changes and `controllerNavigation(ui)`
@@ -343,3 +343,12 @@ B returns to selection, RB jumps. Enter/touch Remove share the same action. Held
 must not delete the piece behind a removed target. The mode shows target outline,
 blocked reason and no-refund disclosure. Empty storage and structural dependencies
 are validated before mutation and repeated on the solo server command.
+
+
+Ceiling lights and outer roof tiles use the same placement journey. Select Roofs
+with LB/RB, choose a tile with stick/A, then aim at a supported structural ceiling
+and press A to place. LT/RT rotate square edge/corner tiles; matching triangle
+and quarter-circle tiles inherit the supporting ceiling rotation. Lights appear
+in Power and Roofs, mount underneath ceilings, and use aimed X/F to switch after
+leaving build mode. Held X must toggle only once; a saved off switch remains off
+after reload. See [ceiling and roof record](base-ceilings-roofs.md).

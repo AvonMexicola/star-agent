@@ -468,11 +468,144 @@
         "WhiteArmour"
       ]
     },
+    "ceiling-light": {
+      "triangles": 756,
+      "drawPrimitives": 3,
+      "bytes": 68220,
+      "sha256": "3b8f115c9b2a95736ebd114d22a24c57f359d6d5fd69725b5eca6203e997bbd8",
+      "bounds": {
+        "min": [
+          -0.4000000059604645,
+          -0.11999999731779099,
+          -0.4000000059604645
+        ],
+        "max": [
+          0.4000000059604645,
+          0.0,
+          0.4000000059604645
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "WarmTaskLight",
+        "WhiteArmour"
+      ]
+    },
+    "roof-flat": {
+      "triangles": 156,
+      "drawPrimitives": 2,
+      "bytes": 15932,
+      "sha256": "1588bcab9491efda52174b12412b6e4e8b11c0cacbdade77f97c9c5d1ecd7028",
+      "bounds": {
+        "min": [
+          -2.012500047683716,
+          0.0,
+          -2.012500047683716
+        ],
+        "max": [
+          2.012500047683716,
+          0.6029999852180481,
+          2.012500047683716
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-edge": {
+      "triangles": 216,
+      "drawPrimitives": 2,
+      "bytes": 15484,
+      "sha256": "d22afa319aaff399b543624073a3d04175f8964cb3b04dbb9316a909c41be41e",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.6039999723434448,
+          2.0
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-corner": {
+      "triangles": 1560,
+      "drawPrimitives": 2,
+      "bytes": 124892,
+      "sha256": "eade0bc4528e823a56958a0abfe4bca431d99eb88c7871a7a07b93a659208ed9",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.6039999723434448,
+          2.0
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-triangle": {
+      "triangles": 116,
+      "drawPrimitives": 2,
+      "bytes": 12648,
+      "sha256": "2a6f3043257f54ec184ba63ab39c99ddc5118ff97e81f6291d2270674f4d047f",
+      "bounds": {
+        "min": [
+          -2.0108253955841064,
+          0.0,
+          -1.1672005653381348
+        ],
+        "max": [
+          2.0108253955841064,
+          0.6029999852180481,
+          2.3156511783599854
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-quarter": {
+      "triangles": 668,
+      "drawPrimitives": 2,
+      "bytes": 58264,
+      "sha256": "62df52792f89bab898316402f9549c36b3f4c78aed57be303e19683bbdae36bc",
+      "bounds": {
+        "min": [
+          -2.012500047683716,
+          0.0,
+          -2.012500047683716
+        ],
+        "max": [
+          2.012493371963501,
+          0.6029999852180481,
+          2.012493371963501
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
     "solar-array": {
       "triangles": 5292,
       "drawPrimitives": 4,
       "bytes": 460208,
-      "sha256": "de5852e8351768b776c135277d682d614834cf49c19e00fd9d2db1d3f82aed88",
+      "sha256": "2f5125fe9ec289cc3af419fbb5d1f2a6a8e817f09ca4b02ec4f75f2e1423caa5",
       "bounds": {
         "min": [
           -1.7999999523162842,
@@ -496,7 +629,7 @@
       "triangles": 1728,
       "drawPrimitives": 5,
       "bytes": 153172,
-      "sha256": "57f46771c0be8266fb2de60b8903f9941f1df1bc75550fd2f6a7722ea5099ca4",
+      "sha256": "0f6c51f33961e45ca35b0b6650c95760c8b3e78592879c6f3008da040952aa7a",
       "bounds": {
         "min": [
           -1.3200000524520874,
@@ -520,7 +653,7 @@
       "triangles": 1512,
       "drawPrimitives": 4,
       "bytes": 135080,
-      "sha256": "c9dc89894f9af24468e3e29c6d2fb5129865b548270b236021223ed4f9b167ba",
+      "sha256": "81765bb10c1c7a714cf0469d40270d1cc0244238d985e80a65a27bc2c79bcb1a",
       "bounds": {
         "min": [
           -0.800000011920929,
@@ -544,7 +677,7 @@
       "triangles": 1512,
       "drawPrimitives": 4,
       "bytes": 135064,
-      "sha256": "71044cc7b7419dd5bd9f7f63e3a442e3bf4f0e44845989555a2ea4254cd39175",
+      "sha256": "7f4fa2059da2b69deffa7db8117738d5595210295da144a5970d0b3b2347ebd3",
       "bounds": {
         "min": [
           -1.0,
@@ -568,7 +701,7 @@
       "triangles": 1512,
       "drawPrimitives": 4,
       "bytes": 135052,
-      "sha256": "fd0bd8ca18294a8b43ecb67991a56a424486dbba6d1ad9449ae01ebadcbf808a",
+      "sha256": "ad993cfc7c4ccd97d68f5d958fb17e1a61f8715bb0fe29d2be77b684f37eee06",
       "bounds": {
         "min": [
           -1.5,
@@ -592,7 +725,7 @@
       "triangles": 2268,
       "drawPrimitives": 4,
       "bytes": 200120,
-      "sha256": "54c3df664b83b447783a73b8c8f79db000803b35f1c1ca7f76b117365c54c327",
+      "sha256": "a359be30918d181cd4022395e56fbb58dccc65cc5177df6a7cd380fa2dd31881",
       "bounds": {
         "min": [
           -0.550000011920929,
@@ -616,7 +749,7 @@
       "triangles": 1512,
       "drawPrimitives": 3,
       "bytes": 131728,
-      "sha256": "83f8f1fde7e528996a01f5ddac74ee41b276f1028db77ceafcfe6e9df9774808",
+      "sha256": "21a8da0d5b67fcb4c34329757ca299ec7b163a65a0116b1c233fe74f24d104e5",
       "bounds": {
         "min": [
           -0.6000000238418579,
@@ -636,6 +769,6 @@
       ]
     }
   },
-  "aggregateBytes": 5115660,
-  "aggregateTriangles": 57460
+  "aggregateBytes": 5411100,
+  "aggregateTriangles": 60932
 }

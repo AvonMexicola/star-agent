@@ -9,7 +9,7 @@ export const POWER_PARTS=Object.freeze({
 export const initialPower=now=>({version:POWER_VERSION,updatedAt:now,health:100,charge:2,fuel:{'uranium-ore':0,'helium-3-regolith':0},unpoweredMs:0});
 export function validPower(p){return Boolean(p&&p.version===POWER_VERSION&&Number.isFinite(p.updatedAt)&&p.updatedAt>=0&&Number.isFinite(p.health)&&p.health>=0&&p.health<=100&&Number.isFinite(p.charge)&&p.charge>=0&&p.charge<=12290&&Number.isFinite(p.unpoweredMs)&&p.unpoweredMs>=0&&p.fuel&&['uranium-ore','helium-3-regolith'].every(k=>Number.isFinite(p.fuel[k])&&p.fuel[k]>=0&&p.fuel[k]<=100));}
 export function powerCapacity(claim){return 2+claim.pieces.filter(p=>p.type==='battery').length*12;}
-export function powerDemand(claim){return .25+claim.pieces.reduce((n,p)=>n+.01+(p.type==='terminal'?.15:p.type==='hangar-door'?.1:p.landingPad?.04:0),0);}
+export function powerDemand(claim){return .25+claim.pieces.reduce((n,p)=>n+.01+(p.type==='ceiling-light'&&p.lightOn!==false?.05:0)+(p.type==='terminal'?.15:p.type==='hangar-door'?.1:p.landingPad?.04:0),0);}
 export function powerRates(claim,environment){
  let renewable=0;const generators=[];
  for(const p of claim.pieces){const def=POWER_PARTS[p.type];if(!def)continue;

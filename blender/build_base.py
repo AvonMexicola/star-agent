@@ -15,6 +15,7 @@ def mat(name,col,metal=0,rough=.7,emission=0,alpha=1):
  if emission:p.inputs['Emission Color'].default_value=(*col,1);p.inputs['Emission Strength'].default_value=emission
  if alpha<1:m.surface_render_method='DITHERED'
  M[name]=m
+mat('WarmTaskLight',(1,.82,.60),0,.35,3)
 mat('MineralConcrete',(.48,.47,.43));mat('EdgeSteel',(.24,.28,.29),.65,.35);mat('DarkPolymer',(.16,.16,.16),0,.72);mat('WhiteArmour',(.8,.8,.8),.2,.45);mat('MintStatus',(.47,.86,.65),.1,.35,.7);mat('WindowGlass',(.24,.38,.35),.05,.18,alpha=.24)
 # Deterministic metre-scaled form-board colour and independent fine relief textures.
 N=256;random.seed(7281)
@@ -82,7 +83,35 @@ def trim_edge(a,c,y,width=.045,material='EdgeSteel'):
 manifest={'builder':'blender/build_base.py','coordinates':'metres, Y up; origin support surface, wall x width; stair rises toward -Z','source':'original deterministic scripted construction; no external imagery','pieces':{}}
 for id,d in defs.items():
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False);objects=[]
- if id=='solar-array':
+ if id=='ceiling-light':
+  b('CeilingMount',(0,-.026,0),(.8,.052,.8),'EdgeSteel',.01)
+  b('DiffuserRim',(0,-.072,0),(.76,.092,.76),'WhiteArmour',.016)
+  b('WarmDiffuser',(0,-.114,0),(.66,.012,.66),'WarmTaskLight',.005)
+  for xx in [-.34,.34]:
+   for zz in [-.34,.34]:b('ServiceFastener',(xx,-.115,zz),(.022,.008,.022),'EdgeSteel',.002)
+ elif id.startswith('roof-'):
+  shape=d['roofShape'];height=d['height']
+  if shape in ['edge','corner']:
+   cuts=[-2,2-height]+[2-height+height*math.sin(i*math.pi/48) for i in range(1,25)]
+   xs=cuts if shape=='corner' else [-2,2];zs=cuts
+   def top(x,z):
+    def rounded(v):return math.sqrt(max(0,1-(max(0,v-(2-height))/height)**2))
+    return max(.012,height*rounded(z)*(rounded(x) if shape=='corner' else 1))
+   verts=[(x,-z,top(x,z)) for z in zs for x in xs];n=len(xs);rows=len(zs);faces=[]
+   for z in range(rows-1):
+    for x in range(n-1):a=z*n+x;faces.append((a,a+n,a+n+1,a+1))
+   perimeter=list(range(n))+[z*n+n-1 for z in range(1,rows)]+list(range(rows*n-2,(rows-1)*n-1,-1))+[z*n for z in range(rows-2,0,-1)]
+   bottom=[]
+   for i in perimeter:bottom.append(len(verts));x,y,_=verts[i];verts.append((x,y,0))
+   for j,i in enumerate(perimeter):k=(j+1)%len(perimeter);faces.append((i,perimeter[k],bottom[k],bottom[j]))
+   faces.append(tuple(reversed(bottom)))
+   mesh=bpy.data.meshes.new('RoundedRoofSkin');mesh.from_pydata(verts,[],faces);mesh.update();o=bpy.data.objects.new('RoundedRoofSkin',mesh);bpy.context.collection.objects.link(o);finish_mesh(o,'MineralConcrete',0)
+   # Flat inboard coping seam matches the flat tile, never covers the rounded lip.
+   b('RoofSeam',(-.3 if shape=='corner' else 0,height+.002,-1.96),(3.3 if shape=='corner' else 3.9,.004,.035),'EdgeSteel',0)
+  else:
+   prism('RoofSkin',d['polygon'],0,height,'MineralConcrete',.008)
+   for a,c in zip(d['polygon'],d['polygon'][1:]+d['polygon'][:1]):trim_edge(a,c,height+.003,.025)
+ elif id=='solar-array':
   for xx in [-1.5,1.5]:
    for zz in [-.85,.85]:b('AnchoredLeg',(xx,.48,zz),(.12,.96,.12),'EdgeSteel',.012)
   b('SolarFrame',(0,1.07,0),(3.6,.20,2.4),'WhiteArmour',.025)

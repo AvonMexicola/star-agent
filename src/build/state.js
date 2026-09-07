@@ -1,3 +1,4 @@
+import {mountReason} from './mounts.js';
 import {validPower} from './power.js';
 import {supportedPieces} from './structure.js';
 import { BODIES } from '../celestial.js';
@@ -16,6 +17,7 @@ export function validBuild(state){
   for(const c of state.claims){
     if(!c||typeof c!=='object'||Array.isArray(c)||!Array.isArray(c.pieces)||c.pieces.some(p=>!p||typeof p!=='object'||Array.isArray(p)))return false;
     if(!id(c.id)||ids.has(c.id)||!BODIES.some(b=>b.id===c.body)||c.owner!==LOCAL_OWNER||typeof c.useBuffer!=='boolean'||!vector(c.origin,3)||c.origin.some(n=>Math.abs(n)>1e12)||!vector(c.quaternion,4)||Math.abs(Math.hypot(...c.quaternion)-1)>1e-5||![CLAIM_RADIUS,96].includes(c.radius)||typeof c.name!=='string'||c.name.length>80||!Array.isArray(c.pieces)||c.pieces.length>MAX_PIECES||c.pieces.filter(p=>p.type==='mainframe').length!==1)return false;
+    if(c.pieces.some(p=>p.lightOn!==undefined&&(typeof p.lightOn!=='boolean'||!PIECES[p.type]?.light)))return false;
     if(c.power!==undefined&&!validPower(c.power))return false;
     ids.add(c.id);
     for(const p of c.pieces){
@@ -26,6 +28,7 @@ export function validBuild(state){
     }
     // Resolve from grounded foundations outward. Unsupported islands and cycles
     // in a malformed save must not become walkable merely by being reloaded.
+    if(c.pieces.some(p=>mountReason(p,c.pieces)))return false;
     const supported=supportedPieces(c.pieces);
     if(c.pieces.some(p=>['wall','floor','stairs'].includes(PIECES[p.type].category)&&!supported.has(p.id)))return false;
 

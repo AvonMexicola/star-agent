@@ -253,3 +253,16 @@ through a structure: remove dependent walls, roofs or equipment first, empty
 storage before removing it, and remove the mainframe last. Held A cannot remove
 the floor behind the piece you just removed. Server-connected sites use a separate
 revision-checked command; stale saves cannot restore a removed piece.
+
+
+## Ceiling lights and rounded roof tiles
+
+Build a supported ceiling first using the Floor, triangle floor or quarter-circle
+floor pieces. In **Roofs**, choose a flat, rounded-edge, rounded-corner, triangle
+or quarter-circle outer tile. It fits over the ceiling; LT/RT or Q/E orient the
+rounded square edges and corners. Each costs 4 kg concrete and 1 kg metal stock.
+
+**Ceiling light** is in Power and Roofs. Aim beneath a ceiling to place it; leave
+build mode, look at the fixture and use **X / F** to switch it. Each enabled lamp
+uses 50 W and follows the base power supply. The switch setting is saved. Remove
+attached lights and roof tiles before removing their supporting ceiling.

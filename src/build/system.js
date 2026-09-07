@@ -1,3 +1,4 @@
+import {mountHeight,mountReason} from './mounts.js';
 import {planRemoval} from './removal.js';
 import {pruneBaseStorage} from './power-system.js';
 import {initialPower,POWER_PARTS} from './power.js';
@@ -43,7 +44,7 @@ export class BuildSystem {
   get data(){return this.store.state.build??emptyBuild();}
   get claims(){return this.blocked?[]:this.data.claims;}
   get state(){return {controllerAvailable:this.controllerAvailable,active:this.active,removing:this.removing,pieceId:this.pieceId,preview:this.preview?{pieceId:this.pieceId,valid:this.preview.valid,reason:this.preview.reason,cost:this.preview.cost,sources:this.preview.sources,rotation:this.preview.piece?.rotation,position:this.preview.position,claimId:this.preview.claim?.id??null}:null,claims:structuredClone(this.claims),pieceCount:this.claims.reduce((s,c)=>s+c.pieces.length,0),error:this.error,grounded:this.grounded,visuals:this.visualDiagnostics,assetsReady:this.models.size>0&&[...this.models.values()].every(m=>m.ready),materials:this.store.container('pack')?.items};}
-  get visualDiagnostics(){return {doors:[...this.doorMotion.doors].map(([id,d])=>({id,target:Boolean(d.target),fraction:d.fraction,colliderFraction:d.fraction,blocked:d.blocked})),ghost:{pieceId:this.ghost.userData.piece??null,ready:Boolean(this.ghostModel),meshes:this.ghostModel?(()=>{let count=0;this.ghostModel.traverse(o=>{if(o.isMesh)count++;});return count;})():0},claims:this.claimVisibility,lights:{active:this.serviceLights.filter(l=>l.visible).length,max:MAX_SERVICE_LIGHTS,work:this.workLight.visible}};}
+  get visualDiagnostics(){return {doors:[...this.doorMotion.doors].map(([id,d])=>({id,target:Boolean(d.target),fraction:d.fraction,colliderFraction:d.fraction,blocked:d.blocked})),ghost:{pieceId:this.ghost.userData.piece??null,ready:Boolean(this.ghostModel),meshes:this.ghostModel?(()=>{let count=0;this.ghostModel.traverse(o=>{if(o.isMesh)count++;});return count;})():0},claims:this.claimVisibility,lights:{active:this.serviceLights.filter(l=>l.visible).length,fixtures:this.serviceLights.filter(l=>l.visible).map(l=>({id:l.userData.fixtureId,intensity:l.intensity})),max:MAX_SERVICE_LIGHTS,work:this.workLight.visible}};}
   canBuild(){return !this.nav.multiplayer?.connected&&!this.nav.openingActive&&this.nav.mode==='walk'&&!this.nav.insideShip&&!this.nav.dockedAtStation&&!this.nav.travel&&this.nav.altitude<80;}
   get controllerAvailable(){
     if(this.blocked||this.store.blocked||!this.canBuild())return false;
@@ -55,7 +56,7 @@ export class BuildSystem {
   cancel(){this.active=false;this.removing=false;this.nav.buildActive=false;this.preview=null;this.ghost.visible=false;this.removeRoot.visible=false;this.boundary.visible=false;this.workLight.visible=false;this.nav.keys.clear();this.nav.toolTrigger=0;this.nav.gamepad.suspend();}
   rotate(delta){if(this.removing)return;this.turn=((this.turn+delta*(PIECES[this.pieceId].category==='wall'?2:1))%4+4)%4;this.refreshPreview();}
   cycleSnap(){if(this.removing)return;this.snap++;this.refreshPreview();}
-  adjustHeight(delta){if(this.removing)return;const foundation=PIECES[this.pieceId].category==='foundation';this.height=THREE.MathUtils.clamp(this.height+(foundation?delta:Math.sign(delta)*STOREY),foundation?-.2:0,24);this.refreshPreview();}
+  adjustHeight(delta){if(this.removing||PIECES[this.pieceId].mount)return;const foundation=PIECES[this.pieceId].category==='foundation';this.height=THREE.MathUtils.clamp(this.height+(foundation?delta:Math.sign(delta)*STOREY),foundation?-.2:0,24);this.refreshPreview();}
   toLocal(point,c){return point.clone().sub(v(c.origin)).applyQuaternion(q(c.quaternion).invert());}
   toWorld(point,c){return point.clone().applyQuaternion(q(c.quaternion)).add(v(c.origin));}
   nearestClaim(point=this.nav.position){return this.claims.filter(c=>c.body===bodyAt(point).id).map(c=>({c,d:this.toLocal(point,c).length()})).filter(x=>x.d<x.c.radius+15).sort((a,b)=>a.d-b.d)[0]?.c??null;}
@@ -75,6 +76,7 @@ export class BuildSystem {
   }
   candidates(claim,target){
     const def=PIECES[this.pieceId],local=this.toLocal(target,claim),rotation=this.turn*Math.PI/2;
+    if(def.mount){return claim.pieces.filter(p=>PIECES[p.type].category==='floor').map(p=>({position:def.mount==='ceiling'?[Math.round(local.x*2)/2,mountHeight(p,def.mount),Math.round(local.z*2)/2]:[p.position[0],mountHeight(p,def.mount),p.position[2]],rotation:['triangle','quarter'].includes(def.shape)?p.rotation:rotation})).sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));}
     const panels=claim.pieces.filter(isPanel),sort=items=>{const unique=new Map(items.map(p=>[[...p.position,p.rotation].map(v=>Math.round(v*10000)).join(','),p]));return [...unique.values()].sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));};
     if(def.category==='wall'){
       local.y+=this.height;
@@ -119,7 +121,7 @@ export class BuildSystem {
     const p={type:this.pieceId,id:`build-piece-${this.data.nextId+(this.pieceId==='mainframe'?1:0)}`,position:candidate?.position??[0,0,0],rotation:candidate?.rotation??0,doorOpen:false};
     const actor=claim?this.toLocal(this.nav.position,claim):null;
     const sources=claim?.useBuffer&&this.pieceId!=='mainframe'&&Math.hypot(actor.x,actor.z)<=claim.radius?['pack',bufferId(claim,claim.pieces.find(p=>p.type==='mainframe'))]:['pack'];
-    let reason=!claim?'Place a mainframe to establish building rights.':!candidate?'Place a supporting foundation first.':this.validate(claim,p);
+    let reason=!claim?'Place a mainframe to establish building rights.':!candidate?(PIECES[this.pieceId].mount?'Build a supported ceiling first.':'Place a supporting foundation first.'):this.validate(claim,p);
     if(shipCargoAccess(this.nav).available)sources.push('ship');
     sources.push(...this.supplySources());
     const cost=PIECES[p.type].cost,resources=planCost(this.store,this.store.state,cost,sources);
@@ -160,6 +162,7 @@ export class BuildSystem {
       return getPlacementBoxes(old).some(a=>boxes.some(b=>overlap(a,b)&&!((corner||seated)&&a.kind!=='doorSweep'&&b.kind!=='doorSweep')));
     }))return 'That space or socket is occupied.';
     const def=PIECES[p.type];
+    if(def.mount)return mountReason(p,c.pieces);
     if(def.category==='foundation'||def.category==='utility'){
       const samples=[...footprint(p),[p.position[0],p.position[2]]];
       for(const [x,z] of samples){
@@ -222,7 +225,7 @@ export class BuildSystem {
           const entry={ready:false,group:null,pieceId:p.id};this.models.set(p.id,entry);
           createBuildVisual(p).then(model=>{if(this.disposed||!this.claims.some(c=>c.pieces.some(p=>p.id===entry.pieceId))){disposeBuildVisual(model);return;}entry.group=model;entry.rotor=model.getObjectByName('TurbineRotor');entry.ready=true;this._syncedData=null;model.position.fromArray(p.position);model.rotation.y=p.rotation;group.add(model);setDoorOpen(model,this.doorFraction(p));}).catch(e=>{this.error=`Building asset unavailable: ${e.message}`;});
         }
-        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,!this.power||this.power.status(c).powered);const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
+        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,(!this.power||this.power.status(c).powered)&&(!PIECES[p.type].light||p.lightOn!==false));const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
         if(['mainframe','crate','rack'].includes(p.type)&&this.onRegisterContainer&&!this.registered.has(p.id)){
           const id=bufferId(c,p),registered=this.onRegisterContainer({id,name:this.store.container(id)?.name??c.name,kind:'base',boxes:PIECES[p.type].storageBoxes??2,available:()=>this.claims.some(c=>c.pieces.some(piece=>piece.id===p.id))&&this.nav.mode==='walk'&&!this.nav.insideShip&&(this.nav.position.distanceTo(this.toWorld(v(p.position),c))<4||this.terminalAccess(c))});
           if(registered!==false)this.registered.add(p.id);
@@ -275,8 +278,8 @@ export class BuildSystem {
       for(const p of c.pieces){
         if(Boolean(PIECES[p.type].door)){const wasBlocked=this.doorMotion.doors.get(p.id)?.blocked;this.doorMotion.update(p.id,p.doorOpen,dt,(previous,next)=>this.canCloseDoor(c,p,previous,next));if(!wasBlocked&&this.doorMotion.doors.get(p.id).blocked)this.nav.notify?.('Closing paused · step clear of the doorway.');}
         const model=this.models.get(p.id)?.group;if(model){const rotor=this.models.get(p.id)?.rotor;if(rotor&&!BODIES.find(b=>b.id===c.body)?.airless)rotor.rotation.y+=dt;if(PIECES[p.type].door)setDoorOpen(model,this.doorFraction(p));if(model.userData.buildOpacity!==opacity){setBuildOpacity(model,opacity);model.userData.buildOpacity=opacity;}}
-        if(opacity>0&&(!this.power||this.power.status(c).powered)&&['doorway','mainframe'].includes(p.type)){
-          const offset=Boolean(PIECES[p.type].door)?v([0,2.36,-.30]):v([0,1.50,-.56]),position=this.toWorld(offset.applyAxisAngle(UP,p.rotation).add(v(p.position)),c);
+        if(opacity>0&&(!this.power||this.power.status(c).powered)&&(['doorway','mainframe'].includes(p.type)||PIECES[p.type].light&&p.lightOn!==false)){
+          const offset=PIECES[p.type].light?v([0,-.20,0]):Boolean(PIECES[p.type].door)?v([0,2.36,-.30]):v([0,1.50,-.56]),position=this.toWorld(offset.applyAxisAngle(UP,p.rotation).add(v(p.position)),c);
           fixtures.push({id:p.id,type:p.type,position,distance:position.distanceTo(this.nav.position),opacity});
         }
       }
@@ -286,7 +289,7 @@ export class BuildSystem {
     this.workLight.visible=this.active&&this.nav.enabled&&this.nav.focused&&dark>.01;this.workLight.intensity=4*dark;
     if(this.workLight.visible){this.workLight.position.copy(this.nav.position).sub(origin);this.workLight.target.position.copy(this.workLight.position).add(FORWARD.clone().applyQuaternion(this.nav.orientation).multiplyScalar(8));}
     const selected=nearestServiceLights(fixtures);
-    this.serviceLights.forEach((light,i)=>{const fixture=selected[i];light.visible=Boolean(fixture);if(fixture){light.position.copy(fixture.position).sub(origin);light.distance=fixture.type==='doorway'?6:4;light.intensity=(fixture.type==='doorway'?8:1.25)*(.35+.65*dark)*serviceLightFade(fixture.distance)*fixture.opacity;}});
+    this.serviceLights.forEach((light,i)=>{const fixture=selected[i];light.visible=Boolean(fixture);if(fixture){light.userData.fixtureId=fixture.id;light.position.copy(fixture.position).sub(origin);light.color.set(PIECES[fixture.type]?.light?0xffe5bd:0xb6efd1);light.distance=PIECES[fixture.type]?.light?12:fixture.type==='doorway'?6:4;light.intensity=(PIECES[fixture.type]?.light?18:fixture.type==='doorway'?8:1.25)*(PIECES[fixture.type]?.light?1:.35+.65*dark)*serviceLightFade(fixture.distance)*fixture.opacity;}});
     if(this.active){this._lastPreview+=dt;if(this._lastPreview>.08){this._lastPreview=0;this.refreshPreview();}else this.updateGhost();}
   }
   dispose(){
@@ -317,12 +320,13 @@ export class BuildSystem {
   nearbyInteraction(){
     if(this.active||this.nav.mode!=='walk'||this.nav.insideShip)return null;
     const dir=FORWARD.clone().applyQuaternion(this.nav.orientation);
-    return this.claims.flatMap(c=>c.pieces.filter(p=>(['mainframe','crate','rack','terminal'].includes(p.type)||POWER_PARTS[p.type]||PIECES[p.type].door)).map(p=>{const point=this.toWorld(v(p.position).addScaledVector(UP,.8),c),delta=point.sub(this.nav.position);return {c,p,d:delta.length(),f:delta.normalize().dot(dir)};})).filter(x=>x.d<3.5&&x.f>.15).sort((a,b)=>b.f-a.f||a.d-b.d)[0]??this.claims.flatMap(c=>c.pieces.filter(p=>PIECES[p.type].padSize).map(p=>{const local=this.toLocal(this.nav.position,c);return {c,p,d:Math.hypot(distanceToPolygon(footprint(p),local.x,local.z),local.y-p.position[1])};})).find(hit=>hit.d<3.5)??null;
+    return this.claims.flatMap(c=>c.pieces.filter(p=>(['mainframe','crate','rack','terminal'].includes(p.type)||POWER_PARTS[p.type]||PIECES[p.type].light||PIECES[p.type].door)).map(p=>{const point=this.toWorld(v(p.position).addScaledVector(UP,PIECES[p.type].light?-.06:.8),c),delta=point.sub(this.nav.position);return {c,p,d:delta.length(),f:delta.normalize().dot(dir)};})).filter(x=>x.d<3.5&&x.f>.15).sort((a,b)=>b.f-a.f||a.d-b.d)[0]??this.claims.flatMap(c=>c.pieces.filter(p=>PIECES[p.type].padSize).map(p=>{const local=this.toLocal(this.nav.position,c);return {c,p,d:Math.hypot(distanceToPolygon(footprint(p),local.x,local.z),local.y-p.position[1])};})).find(hit=>hit.d<3.5)??null;
   }
-  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':hit.p.doorOpen?'Close':'Open')+' base door':(hit.p.type==='mainframe'||POWER_PARTS[hit.p.type])?'Base mainframe / power':hit.p.type==='terminal'?'Inventory terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
+  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${PIECES[hit.p.type].light?`Switch ceiling light ${hit.p.lightOn===false?'on':'off'}`:Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':hit.p.doorOpen?'Close':'Open')+' base door':(hit.p.type==='mainframe'||POWER_PARTS[hit.p.type])?'Base mainframe / power':hit.p.type==='terminal'?'Inventory terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
   interact(){
     const hit=this.nearbyInteraction();if(!hit)return false;
     const {c,p}=hit;
+    if(PIECES[p.type].light){const data=structuredClone(this.data),lamp=data.claims.find(a=>a.id===c.id).pieces.find(a=>a.id===p.id);lamp.lightOn=p.lightOn===false;if(this.store.write({...this.store.state,build:data})){this.sync();this.nav.gamepad.suspend();this.nav.notify(lamp.lightOn?'Ceiling light on.':'Ceiling light off.');}else this.nav.notify(this.store.warning);return true;}
     if(POWER_PARTS[p.type]){const core=c.pieces.find(p=>p.type==='mainframe');this.onMainframe?.({...structuredClone(c),bufferId:bufferId(c,core)});return true;}
     if(p.type==='mainframe'){this.onMainframe?.({...structuredClone(c),bufferId:bufferId(c,p)});return true;}
     if(p.type==='terminal'&&this.power&&!this.power.status(c).powered){this.nav.notify('Terminal has no power. Open storage directly or restore generation.');return true;}

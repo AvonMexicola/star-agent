@@ -1,3 +1,4 @@
+import {mountReason} from './mounts.js';
 import {validBuild,LOCAL_OWNER} from './state.js';
 import {PIECES} from './definitions.js';
 import {isPanel,footprint} from './structure.js';
@@ -12,6 +13,7 @@ export function planRemoval(build,storage,claimId,pieceId){
  const container=['mainframe','crate','rack'].includes(piece.type)?pieceContainer(claim,piece):null;
  if(container&&Object.values(storage[container]?.items??{}).some(n=>n>0))return {ok:false,message:'Empty this storage before removing it.'};
  const pieces=claim.pieces.filter(p=>p.id!==piece.id);
+ if(pieces.some(p=>mountReason(p,pieces)))return {ok:false,message:'Remove the attached ceiling lights or roof tiles first.'};
  if(isPanel(piece)&&pieces.some(p=>PIECES[p.type].category==='utility'&&Math.abs(p.position[1]-piece.position[1])<.03&&footprint(p).some(([x,z])=>contains(footprint(piece),x,z,.005)&&!pieces.some(a=>isPanel(a)&&Math.abs(a.position[1]-p.position[1])<.03&&contains(footprint(a),x,z,.005)))))return {ok:false,message:'Remove the equipment resting on this floor first.'};
  const nextClaim={...claim,pieces};if(claim.power)nextClaim.power={...claim.power,charge:Math.min(claim.power.charge,powerCapacity(nextClaim))};
  const next={...build,claims:piece.type==='mainframe'?build.claims.filter(c=>c.id!==claim.id):build.claims.map(c=>c.id===claim.id?nextClaim:c)};
