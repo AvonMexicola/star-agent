@@ -18,11 +18,11 @@ export function createSystemMap(nav, onTarget = () => {}) {
   dialog.innerHTML = `
     <div class="dialog-top system-map-header"><div><span class="eyebrow">NAVIGATION / LOCAL SYSTEM</span><h2 id="system-map-title">Local system <span>/ Five destinations</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
     <div class="system-map-layout">
-      <section class="map-chart-panel" aria-label="Aeon, Selene and Pyre navigation chart">
+      <section class="map-chart-panel" aria-label="Aeon, Selene, Pyre, Miasma and star navigation chart">
         <div class="map-chart-top"><span class="eyebrow">LOCAL WORLDS</span><span id="map-star-distance"></span></div>
         <div class="system-chart">
           <svg id="map-chart" role="img" aria-label="Projected body positions, ship and plotted route"><defs id="map-defs"></defs><g id="map-zones"></g><g id="map-marker-leaders"></g><path id="map-full-route"/><path id="map-route"/><path id="map-arrival-leader"/><path id="map-arrival" d="M-3,-4 L3,0 L-3,4 Z"/><g id="map-ship"><path d="M0,-8 L6,6 L0,3 L-6,6 Z"/><path class="map-crosshair" d="M-14,0 H-9 M9,0 H14 M0,-16 V-11 M0,10 V15"/></g></svg>
-          ${TRAVEL_TARGETS.map(t => `<button class="map-body" data-travel-target="${t.id}" aria-label="Select ${t.name}"><i></i><span>${t.name.toUpperCase()}<small>${t.airless ? 'MOON' : 'PLANET'}</small></span></button>`).join('')}
+          ${TRAVEL_TARGETS.map(t => `<button class="map-body" data-travel-target="${t.id}" aria-label="Select ${t.name}"><i></i><span>${t.name.toUpperCase()}<small>${t.star?'STAR':['selene','miasma'].includes(t.id)?'MOON':'PLANET'}</small></span></button>`).join('')}
           <span id="map-ship-label">YOU <small>SHIP POSITION</small></span>
           <span id="map-arrival-label">APPROACH</span>
         </div>
@@ -130,7 +130,8 @@ export function createSystemMap(nav, onTarget = () => {}) {
       if (!direction.lengthSq()) direction.set(1, 0, 0);
       endpoint = direction.normalize().multiplyScalar(target.arrivalRadius).add(centre);
     }
-    el('map-star-distance').textContent = `STAR / ${formatRange(nav.position.distanceTo(sun))} · OUTSIDE VIEW`;
+    const starPoint=project(sun),starVisible=starPoint.x>=0&&starPoint.x<=width&&starPoint.y>=0&&starPoint.y<=height;
+    el('map-star-distance').textContent = `STAR / ${formatRange(nav.position.distanceTo(sun))} · ${starVisible?'IN VIEW':'OUTSIDE VIEW'}`;
     el('map-hold-status').textContent = state ? 'DRIVE HELD · CLOSE TO RESUME' : 'FLIGHT HELD · CLOSE TO RESUME';
     if (!target) { drawChart(target, route.plan, endpoint); return; }
     el('map-target-name').textContent = target.name;

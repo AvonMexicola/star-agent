@@ -163,8 +163,7 @@ try {
   $('mining-reduced-motion').addEventListener('change',()=>{effects.reducedMotion=$('mining-reduced-motion').checked;resetMiningEffects();});
   $('mining-bloom').addEventListener('change',()=>atmosphere.bloom.enabled=$('mining-bloom').checked);
   const build=new BuildSystem({scene,nav,store:mining.store});
-  if (!build.blocked && !mining.store.blocked) mining.store.claimStarterConstruction();
-  const inventoryUI=createInventoryUI(nav,()=>ship,inventory,mining.store,{loadout,canClaimStarter:()=>!build.blocked});
+  const inventoryUI=createInventoryUI(nav,()=>ship,inventory,mining.store,{loadout,canClaimStarter:()=>!build.blocked&&nav.shipId!=='kestrel'});
   const buildUI=createBuildUI({nav,build,store:mining.store,onOpenStorage:id=>inventoryUI.openStorage(id)});
   build.onRegisterContainer=definition=>inventoryUI.registerContainer(definition);
   build.onMainframe=claim=>buildUI.openMainframe(claim);
@@ -179,11 +178,13 @@ try {
   inventoryUI.registerContainer?.({id:'crescent-cache',name:'Crescent field cache',kind:'base',boxes:2,available:()=>nav.mode==='walk'&&!nav.insideShip&&nav.position.distanceTo(mining.fieldCache.position)<4});
   bindStationLedger(inventory,mining.store);
   if(testFlight&&fleet.active==='kestrel')inventory.transferAll('ship','station');
-  if(fleet.active==='kestrel'&&(inventory.mass('ship')>0||mining.store.state.ship.some(m=>m>0))){
+  const shipCargoLoaded=()=>Object.values(mining.store.container('ship')?.items??{}).some(quantity=>quantity>0);
+  if(fleet.active==='kestrel'&&shipCargoLoaded()){
     // Inconsistent/older saves retain every item and load a hull with storage.
     ship.visible=false;fleet.active='nomad';ship=modelFor('nomad');configureShip('nomad');
   }
   inventory.capacity.ship=SHIPS[fleet.active].capacity;
+  if(fleet.active!=='kestrel'&&!build.blocked&&!mining.store.blocked)mining.store.claimStarterConstruction();
   function parkShip(id){
     const layout=layoutFor(id),b=station.interiorBox,centre=b.getCenter(new THREE.Vector3());centre.y=b.min.y;
     centre.x-=(layout.flightBounds.min[0]+layout.flightBounds.max[0])/2;centre.z-=(layout.flightBounds.min[2]+layout.flightBounds.max[2])/2;
@@ -208,12 +209,12 @@ try {
     if(!fleet.allows(id)||!SHIPS[id])return 'This ship is locked.';
     if(nav.mode!=='landed'||!nav.dockedAtStation)return 'Dock at Aeon Orbital before switching ships.';
     if(inventory.mass('ship')>SHIPS[id].capacity)return 'Too much cargo for this ship. Transfer supplies before switching.';
-    if(id==='kestrel'&&mining.store.state.ship.some(m=>m>0))return 'Kestrel has no cargo hold. Unload ship minerals at the station first.';
+    if(id==='kestrel'&&shipCargoLoaded())return 'Kestrel has no cargo hold. Unload all ship cargo before switching.';
     selectingShip=true;
     try{
       const next=modelFor(id);await next.readyPromise;
       if(nav.mode!=='landed'||!nav.dockedAtStation)return 'Ship selection cancelled: you left the station pad.';
-      if(inventory.mass('ship')>SHIPS[id].capacity||id==='kestrel'&&mining.store.state.ship.some(m=>m>0))return 'Cargo changed during preparation. Unload before switching to Kestrel.';
+      if(inventory.mass('ship')>SHIPS[id].capacity||id==='kestrel'&&shipCargoLoaded())return 'Cargo changed during preparation. Unload before switching to Kestrel.';
       // Hangar services replace the parked ship at the pad centre, aligned with the bay.
       const layout=layoutFor(id),b=station.interiorBox;
       const centre=b.getCenter(new THREE.Vector3());centre.y=b.min.y;

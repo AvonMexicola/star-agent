@@ -119,7 +119,7 @@ Clouds use approximate scattering and self-shadowing; water uses an analytic sky
 reflection. Distant trees use silhouettes and streaming can still lag after fast
 travel. Re-entry glow, retractable gear, ship-dependent handling, EVA and local
 construction are integrated. Swimming, live suspension dynamics, moving-station
-passenger physics and production-quality weather remain incomplete. Station
+passenger physics remain incomplete. Local surface mist, volcanic ash, toxic wisps and shallow lunar dust are integrated; storm systems remain future work. Station
 collision uses model geometry and conservative envelopes; passenger elevators
 use explicit transit. These are prototype systems, not a Star Citizen fidelity claim.
 

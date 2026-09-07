@@ -47,12 +47,14 @@ Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned serv
 | Consolidated flight, grass/terrain loading, mining/EVA/inventory, station opening | `integrate/main-2026-09-06` through multiplayer ancestry |
 | Gear-limited flight, handling, drive, utilities, graphics, multiplayer | `feat/multiplayer-ten` at `f7a30ef` |
 | Flyable Kestrel and shared Meridian identity | `feat/kestrel-flight` at `e4ec7df` |
-| Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `9a363cb` |
+| Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `be68a64` (asset/gameplay `9a363cb`) |
 | Construction, mainframes, recipes and polished building pieces | `feat/base-building` at `891c916` |
 | Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
+| Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
+| Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 
-Atlas exterior refresh, active weather work, music and character production remain
-in owner worktrees without coherent new feature commits at this snapshot. Pending
+Atlas exterior refresh and further character production remain in owner worktrees
+without coherent new feature commits at this snapshot. Pending
 Meshy retail soft-prop candidates are production records, not installed props.
 Check shared HANDOFF.md and feature heads before updating this table.
 
@@ -63,7 +65,8 @@ Commit coherent feature work in its own branch. Merge that branch into
 explicitly; never replace main/navigation/world wholesale with a single older
 branch. Run appropriate unit and browser checks, including the controller journey,
 then refresh the running local preview and record the new source head here and
-in HANDOFF.md. Do this without waiting for a production merge. Public publishing
+in HANDOFF.md. Do this without waiting for a production merge. Refresh feature refs
+from origin before integration; review local owner commits as well as pushed heads. Public publishing
 and main merges are separate actions; this dev branch is not a release sign-off.
 
 The initial integration preserves both canonical seeded rock relief and parent
