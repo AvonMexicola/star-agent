@@ -18,6 +18,7 @@ import { environmentAt, step as stepFlight } from './flight-model.js';
 import { assessImpact, terrainSurfaceNormal } from './impact.js';
 import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './boarding.js';
 import { constrainKestrelStep, constrainKestrelEVA } from './kestrel-access.js';
+import { updateAtlasRampGround } from './atlas-ramp-ground.js';
 
 import { TRAVEL_TARGETS, flightSpeedProfile, stationSpeedLimit, planTravel, planFreeTravel, sampleTravel, abortTravel } from './travel-model.js';
 
@@ -31,7 +32,7 @@ export class Navigation {
   constructor(canvas,notify){
     this.canvas=canvas;this.notify=notify;this.position=new THREE.Vector3();this.orientation=new THREE.Quaternion();this.velocity=new THREE.Vector3();
     this.gamepad=new GamepadInput();this.controllerActive=false;this.focused=true;
-    this.physicalKeys=new Set();this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.boost=false;this.enabled=true;
+    this.physicalKeys=new Set();this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.rampJumpSupport=null;this.boost=false;this.enabled=true;
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
     this.shipId='nomad';this.pendingLook=new THREE.Vector2();this.frameLook=new THREE.Vector2();this.assistedTurn=new THREE.Vector3();this.layout=SHIP_LAYOUT;this.freighter=null;
     this.station=null;this.dockedAtStation=false;this.stationLift=false;this.kestrelAccess=null;
@@ -722,6 +723,7 @@ export class Navigation {
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
     if(!this.enabled||document.querySelector('dialog[open]')){this.resetSteering();this.vehicle?.step(0,pad);return;}
     this.freighter?.setPowered?.(this.powered);
+    updateAtlasRampGround(this);
     if(this.vehicle?.step(dt,pad))return;
     this.updateLandingGear(dt);
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
@@ -796,17 +798,54 @@ export class Navigation {
     }
     if(this.mode==='walk'){
       const localBefore=this.toShipLocal();
+      const atlasRampWalk=this.freighter?.rampSurfaceAt&&!this.cabinFlight&&!this.spaceParked&&!stationGrid;
       const shipUp=stationGrid?.up??(localBefore&&localBefore.length()<50?UP.clone().applyQuaternion(this.shipOrientation):oldNormal);
       const magnitude=Math.min(1,input.length());input.projectOnPlane(shipUp);if(input.lengthSq()>0)input.setLength(magnitude);input.multiplyScalar(this.insideShip?2.3:this.boost?9:4.5);
       this.velocity.lerp(input,1-Math.exp(-12*dt));
       let proposed=this.position.clone().addScaledVector(this.velocity,dt);
       const previous=this.position.clone();
-      let local=null,floor=null;
+      let local=null,floor=null,landedOnRamp=false;
       if(localBefore&&localBefore.length()<55){
         local=this.kestrelAccess?constrainKestrelStep(localBefore,this.toShipLocal(proposed)):this.freighter?this.freighter.constrain(localBefore,this.toShipLocal(proposed)):constrainShipStep(localBefore,this.toShipLocal(proposed),this.doorProgress>.98);
         local=this.cargoConstrain?.(localBefore,local)??local;
         local=constrainShipAttachments(localBefore,local,this.layout?.weaponParts,{eyeHeight:this.layout?.eyeHeight??1.75});
         proposed=this.fromShipLocal(local);floor=this.kestrelAccess?null:this.freighter?this.freighter.floorAt(local):shipFloorAt(local.x,local.z,this.doorProgress>.98);
+        if(atlasRampWalk){
+          // A jump's height is relative to its supporting floor. Query that
+          // baseline, not airborne feet that soon leave floorAt's step tolerance.
+          const probe=localBefore.clone();probe.y-=this.jumpHeight;
+          const beforeFloor=this.jumpHeight===0||this.rampJumpSupport===this.freighter?this.freighter.floorAt(probe):null;
+          probe.x=local.x;probe.z=local.z;
+          if(beforeFloor!==null){
+            floor=this.freighter.floorAt(probe);
+            if(floor===null){
+              // Leaving the panel changes the reference to canonical terrain.
+              // proposed includes last frame's vertical velocity; retain only
+              // its horizontal step before integrating this frame's gravity.
+              local.y=localBefore.y;proposed=this.fromShipLocal(local);
+              this.jumpHeight=Math.max(0,bodyAltitude(proposed,this.body)-this.layout.eyeHeight);
+            }
+          }else if(this.jumpHeight>0){
+            // Nearby airborne feet are not a step onto the ramp. Only a
+            // downward crossing of its top surface can acquire new support.
+            floor=null;
+          }
+          if(floor===null&&this.jumpVelocity<=0){
+            const surface=this.freighter.rampSurfaceAt(local);
+            if(surface){
+              const nextHeight=Math.max(0,this.jumpHeight+(this.jumpVelocity-this.body.gravity*dt)*dt);
+              const nextPoint=bodySurfacePoint(bodyOffset(proposed,this.body).normalize(),this.body,this.layout.eyeHeight+nextHeight);
+              const nextLocal=this.toShipLocal(nextPoint),nextSurface=this.freighter.rampSurfaceAt(nextLocal);
+              // Extrapolate the same plane to the previous foot, including a
+              // step entering the tip's footprint. Never pull feet up through it.
+              const previousY=surface.y+((local.x-localBefore.x)*surface.normal.x+(local.z-localBefore.z)*surface.normal.z)/surface.normal.y;
+              if(nextSurface&&localBefore.y-this.layout.eyeHeight>=previousY-1e-6&&nextLocal.y-this.layout.eyeHeight<=nextSurface.y){
+                local.copy(nextLocal);floor=nextSurface.y;proposed=this.fromShipLocal(local);
+                this.jumpHeight=0;this.jumpVelocity=0;landedOnRamp=true;
+              }
+            }
+          }
+        }
       }
       if(this.cabinFlight&&!this.spaceParked&&floor===null&&!stationGrid){
         // Moving-ship EVA is a separate transition. Never let a missing cabin
@@ -821,7 +860,7 @@ export class Navigation {
       if(floor!==null||stationGrid||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
       this.insideShip=floor!==null&&(this.freighter?this.freighter.contains(local):local.z<=4);
-      if((stationGrid||!this.spaceParked)&&(this.keys.has('Space')||pad.jump)&&(this.jumpHeight===0||this.surfaceObstacles?.grounded)&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=Math.max(.001,this.jumpHeight);}
+      if(!landedOnRamp&&(stationGrid||!this.spaceParked)&&(this.keys.has('Space')||pad.jump)&&(this.jumpHeight===0||this.surfaceObstacles?.grounded)&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=Math.max(.001,this.jumpHeight);}
       this.jumpVelocity-=(stationGrid?.gravity??this.body.gravity)*dt;this.jumpHeight=Math.max(0,this.jumpHeight+this.jumpVelocity*dt);if(this.jumpHeight===0)this.jumpVelocity=0;
       if(floor!==null){local.y=floor+this.layout.eyeHeight+this.jumpHeight;this.position.copy(this.fromShipLocal(local));}
       else if(stationGrid){
@@ -844,6 +883,7 @@ export class Navigation {
       }
       const cargoStep=this.cargoWalk?.(previous,this.position);if(cargoStep){this.position.copy(cargoStep.point);if(cargoStep.grounded){this.jumpHeight=Math.max(0,(stationGrid?this.deckClearance:bodyAltitude(this.position,this.body))-this.layout.eyeHeight);if(this.jumpVelocity<0)this.jumpVelocity=0;}}
       if(this.vehicle)this.position.copy(this.vehicle.constrainWalker(previous,this.position));
+      this.rampJumpSupport=atlasRampWalk&&floor!==null&&this.jumpHeight>0?this.freighter:null;
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
       this.advanceFlight(dt,{moveForward,strafe,vertical:axis('Space','KeyC',pad.vertical),turn,tilt,roll:axis('KeyE','KeyQ',pad.roll)});

@@ -3,6 +3,8 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { stationFinishPalette } from './station-finish-palette.js';
 import { createStationShopGraphics } from './station-shop-graphics.js';
+import { STATION_HUB_BOUNDS } from './station-hub-policy.js';
+import { HUB_COMMODITY_TERMINALS } from './trading/station-terminals.js';
 
 /** Room architecture is baked into local-metre material batches. The authored
  * shop kit supplies the furniture, stock and human-scale storefronts. */
@@ -86,7 +88,7 @@ export function createConcourse({sign}) {
     light.shadow.camera.far=22;light.shadow.bias=-.001;light.shadow.normalBias=.04;
     group.add(light,light.target);lights.push(light);
   }
-  return {group,lights,staticBoxes:[],interiorBox:new THREE.Box3(new THREE.Vector3(-22,-8,-19),new THREE.Vector3(22,1.5,19))};
+  return {group,lights,staticBoxes:[],interiorBox:new THREE.Box3(new THREE.Vector3(...STATION_HUB_BOUNDS.min),new THREE.Vector3(...STATION_HUB_BOUNDS.max))};
 }
 
 export function assetCollisionBoxes(root,offset=new THREE.Vector3()){
@@ -106,7 +108,12 @@ export function attachConcourse(hub,asset,{sign,materials,shopGraphics}){
     ['DirectorySouth','SOUTH BERTHS','11   12   13   14   15\n16   17   18   19   20'],
   ]){
     const anchor=props.getObjectByName(name);
-    if(anchor)sign(anchor,`AEON / DECK 04\n${heading}\n${rows}\nELEVATOR BEHIND YOU`,[0,0,0],.56,1.58,0);
+    const terminal=HUB_COMMODITY_TERMINALS.find(entry=>entry.node===name);
+    if(anchor){
+      const title=terminal?terminal.label.toUpperCase().replace(' COMMODITY ','\nCOMMODITY '):heading;
+      const label=sign(anchor,`AEON / DECK 04\n${title}\n${terminal?'F / TRADE\n':''}${rows}\nELEVATOR BEHIND YOU`,[0,0,0],.56,1.58,0);
+      if(label&&terminal)label.name='Sign_Exchange_'+terminal.key;
+    }
   }
   for(const [side,id,title] of [[-1,'Armory','WATCHKEEP / ARMORY'],[1,'Components','KESTREL / SHIP COMPONENTS']]){
     const anchor=props.getObjectByName(id+'Sign');

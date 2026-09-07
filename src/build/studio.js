@@ -16,7 +16,7 @@ for(const [id,x,y,z,rotation=0] of kit){const obj=await createBuildVisual({type:
 if(only){ground.position.y=only==='foundation'?-.6:0;camera.position.set(6,4,7);camera.lookAt(0,1,0);if(only==='mainframe'){camera.position.set(3,2.6,4);camera.lookAt(-.4,.9,0);}}
 if(only&&PIECES[only]?.padSize){
  const size=PIECES[only].footprint;camera.far=400;camera.position.set(size[0]*.7,Math.max(...size)*.9,size[1]*.65);camera.lookAt(0,0,0);camera.updateProjectionMatrix();ground.scale.set(3,3,3);ground.position.y=-.6;
- if(params.has('ship')){const atlas=only!=='foundation-pad-small',ship=(await new GLTFLoader().loadAsync(atlas?'/models/atlas.glb':'/models/nomad.glb')).scene;if(only==='foundation-pad-large')ship.scale.setScalar(2);scene.add(ship);}
+ if(params.has('ship')){const atlas=only==='foundation-pad-large',ship=(await new GLTFLoader().loadAsync(atlas?'/models/atlas-mark-ii/atlas-mark-ii.glb':'/models/nomad.glb')).scene;scene.add(ship);}
 }
 if(only==='ceiling-light'){camera.position.set(2,1.2,3);camera.lookAt(0,2.65,0);const ceiling=await createBuildVisual('floor');ceiling.position.y=2.98;scene.add(ceiling);const lamp=new THREE.PointLight(0xffe5bd,18,12,2);lamp.position.set(0,2.6,0);scene.add(lamp);}
 if(params.has('roofkit')){camera.position.set(9,5,11);camera.lookAt(0,1.8,0);}

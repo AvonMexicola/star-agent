@@ -158,6 +158,24 @@ for (const ship of ['nomad', 'atlas', 'kestrel']) {
       stages.cabin = await state(page);
       expect(stages.cabin.audio.engine.active).toBe(true);
       expect(stages.cabin.effects.engine.nozzleCount).toBe(2);
+      // Standing leaves the chair interaction radius in Nomad. Walk back with
+      // the stick in the real cabin frame before using the seat again.
+      for(let i=0;i<120;i++){
+        const reached=await page.evaluate(()=>{
+          const n=window.starAgent.navigation,p=n.toShipLocal(),seat=n.layout.seatEye;
+          const d=p.clone().set(seat[0]-p.x,0,seat[2]-p.z),distance=d.length();
+          const reached=n.shipInteraction(p)==='seat';
+          d.applyQuaternion(n.shipOrientation).applyQuaternion(n.orientation.clone().invert());
+          window.fleetPad.axes[0]=reached?0:d.x/distance*.35;
+          window.fleetPad.axes[1]=reached?0:d.z/distance*.35;
+          return reached;
+        });
+        if(reached)break;
+        await frames(page,4);
+      }
+      await page.evaluate(()=>window.fleetPad.axes.fill(0));
+      expect(await page.evaluate(()=>{const n=window.starAgent.navigation;return n.shipInteraction(n.toShipLocal());})).toBe('seat');
+      await button(page,6,true);await button(page,6,false);
       await tap(page, 2); await page.waitForFunction(() => window.starAgent.state.mode === 'flight' && !window.starAgent.state.cabinFlight);
     }
     await power(page); await page.waitForFunction(() => !window.starAgent.state.powered && !window.starAgent.state.audio.engine.active);

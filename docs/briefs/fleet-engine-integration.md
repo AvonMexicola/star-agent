@@ -1,37 +1,51 @@
-# Fleet propulsion presentation
+# Fleet and station development integration
 
-Cees requests engine particles, sound and the existing music connected to the
-playable Atlas, Kestrel and Nomad, then integrated in the local development build.
+Cees requests the latest coherent content in the local development build, with
+working engine particles, sound and music on Nomad, Kestrel and Atlas. The scope
+also includes the new station and playable 64 m Atlas, a ready-on-ground Burrow
+mining start, roof/ceiling-light building technology, animated shopkeepers, and
+the checked weapon/tool art. Preserve the initial shoulder camera and opening
+hangar doors in normal solo and multiplayer entry; explicit dev test starts may
+skip that presentation. The Kestrel climb clips are not yet connected to boarding.
 
-The existing effects adapter assumes two old Nomad exhausts, omits Kestrel and
-derives demand partly from speed/keyboard input. Development starts skip the only
-automatic audio gesture hook. Legacy engine hum also follows speed, and map/focus
-pauses suspend only part of the mixer.
+Use actual simulation acceleration, hull pose, power and travel state for engine
+emission and sound. Bind the current assets' real nozzles and preserve Kestrel's
+authored afterburner cones, moving-muzzle fixes and projectile velocity. Audio
+starts from accepted user input, retries temporary autoplay denial and respects
+explicit mute. All mixer paths suspend across menus, focus loss and graphics
+failure. Engines remain audible from a powered moving walkable cabin.
 
-Use one sample of actual simulation acceleration, hull pose, power and travel
-state for authored engine emission, particles and sound. Resolve exhaust at the
-current playable assets' real sockets; retain Kestrel's own core/cone geometry.
-Keep the moving-barrel flash/laser and inherited projectile velocity fixes intact.
-The 64 m Atlas Mark II remains a separate studio asset.
+Replace the retired 30 m Atlas loader, fallback, remote model and invisible
+belly elevators with the existing 64 m authored asset and real forward/aft
+ramps, crew lift, six folding landing assemblies, four pilot MFDs and three S3
+mounts. Keep saved ship ID `atlas` and the two 256-SBU grids' cell coordinates;
+move their physical origins to the real 2.6 m cargo deck with a 5 m vehicle aisle.
+Use the same mechanism state and geometry for rendering, walking, cargo, tractor
+collision, vehicle support and server authority.
 
-Audio must begin through a browser-accepted user gesture, retry temporary autoplay
-denial and preserve the player's explicit mute choice. Nomad is the middle voice,
-Kestrel a faster turbine, Atlas a deeper/slower engine. Retain the locally hosted
-score and all existing gameplay effects. Power-off suppresses propulsion;
-coasting suppresses thrust without silencing the score. Walking in a powered
-moving cabin remains a valid engine state. Pause, focus loss and graphics failure
-must silence the full mixer and return without replaying held controls.
+The authored station exterior becomes the normal station. Enlarge the bay shell
+and deck in both hero/LOD and server geometry, preserving the floor at -8 m and
+service wall at +26 m. Human props, terminals and lifts keep their dimensions.
+Keep twenty berth IDs; this integration does not increase the ten-player room cap.
+The ready community-hub/security/finite-market branch must be combined semantically
+with current tractor ledgers and private multiplayer snapshots, not substituted
+for them. Protocol 5 carries the complete contract on client and server.
 
-The effects and audio agents own their isolated modules/tests. The integration
-steward owns the narrow main hooks, combined browser fixture, package test list,
-documentation and serialized local delivery. No new ship assets, dependencies,
-movement model, network protocol, SQL or public deployment is part of this work.
+The separate surface start settles Burrow's four wheels on canonical Selene
+terrain next to the existing Crescent outcrop. Actual driving/mining, ore bins
+and physical door/step exit and re-entry remain available. The carrier test
+parks it in Atlas and uses its real aft ramp with vehicle/cargo occupancy guards.
+Roof/light/base-power saves use additive migration 003 alongside current 001,
+002 and 004. Preserve all existing accounts, inventories and the SQL cluster.
 
-Validation covers pure propulsion/sound invariants, existing weapons/mining
-regressions, the production build and actual rendered controller flights on all
-three hulls. Use native keyboard/touch activation for browser audio policy;
-record injected controllers separately from physical devices. Capture before and
-after exhaust views and measure the real post-master audio signal plus decoded
-music playback. Inspect shader/console errors, mute/menu/power/cabin transitions
-and a phone sound control. A labeled local checkpoint does not establish final
-listening, continuous-motion art or hardware performance acceptance.
+Feature owners work in isolated files/worktrees; the parent owns composition,
+combined verification, current documentation and serialized local promotion.
+Run focused CPU/invariant and real SQL tests, the production build, actual
+rendered controller routes, native audio activation and phone UI checks. Retain
+failures and record browser/backend/resolution. Asset studio, physical gameplay,
+independent art review and release acceptance remain distinct. Known unfinished
+station/ship material work stays labelled as a development checkpoint.
+
+Deliver to local `dev/all-features` at port 5178 with one coherent frontend/API
+refresh. No public deployment, database reset, new paid services or replacement
+of another owner's uncommitted work is authorized by this integration.

@@ -13,7 +13,7 @@ const EPSILON = 1e-8;
 const finiteVector = v => v?.isVector3 && Number.isFinite(v.x) && Number.isFinite(v.y) && Number.isFinite(v.z);
 const finiteQuaternion = q => q?.isQuaternion && [q.x, q.y, q.z, q.w].every(Number.isFinite) && q.lengthSq() > .99 && q.lengthSq() < 1.01;
 
-function playerUp(nav) {
+export function playerUp(nav) {
   if (nav.mode === 'eva') return UP.clone().applyQuaternion(nav.orientation).normalize();
   const grid=nav.stationPhysics;
   if(grid)return grid.up.clone();
@@ -51,7 +51,7 @@ export function capsuleDistance(origin, direction, eye, up, radius = RADIUS, eye
   return distance;
 }
 
-function shipPose(player) {
+export function shipPose(player) {
   const nav = player.nav;
   if (!nav?.shipPosition && !['flight', 'landed', 'crashed'].includes(nav?.mode)) return null;
   const layout = nav.layout || (nav.shipId === 'atlas' ? FREIGHTER_LAYOUT : SHIP_LAYOUT);
@@ -135,7 +135,7 @@ function worldDistance(world, origin, direction, range) {
  * An accepted miss still spends one charge and advances the cooldown. Empty
  * hands/mining tools, missing pack weapons, dead players and pilots cannot fire.
  */
-export function shoot({ shooter, players, world, now }) {
+export function shoot({ shooter, players, world, now, deferDamage = false }) {
   const nav = shooter?.nav;
   const rules = typeof shooter?.weapon === 'string' && Object.hasOwn(WEAPON_RULES, shooter.weapon) ? WEAPON_RULES[shooter.weapon] : null;
   const pack = shooter?.inventory?.containers?.pack;
@@ -170,7 +170,7 @@ export function shoot({ shooter, players, world, now }) {
   if (target) {
     const key = kind === 'ship' ? 'shipHealth' : 'health';
     damage = Math.min(target[key], rules.damage);
-    target[key] = Math.max(0, target[key] - damage);
+    if (!deferDamage) target[key] = Math.max(0, target[key] - damage);
   }
   return { origin: origin.toArray(), direction: direction.toArray(), weapon: shooter.weapon,
     ...(target ? { targetId: target.id } : {}), damage, distance, kind };
