@@ -51,18 +51,18 @@ font_path=subprocess.check_output(['fc-match','-f','%{file}','JetBrains Mono']).
 font=lambda n:ImageFont.truetype(font_path,n)
 names=[('LR / 05','LASER CARBINE','COLLIMATED ENERGY'),('P / 03','ENERGY SIDEARM','SEALED POWER CELL'),
        ('MC / 08','MINERAL CUTTER','CAUTION / HOT OPTICS'),('TB / 64','CARGO TRACTOR','STANDARD BOX UNIT')]
+plate_sizes=[(.112,.029),(.112,.019),(.14,.048),(.16,.06)]
 for i,(code,title,detail) in enumerate(names):
     x,y=i*T,3*T
+    width,height=plate_sizes[i];h=244*height/width;top=128-h/2
     d=ImageDraw.Draw(base)
     d.rectangle((x,y,x+255,y+255),fill=(28,42,44))
-    d.rectangle((x+7,y+7,x+248,y+248),outline=(113,146,138),width=2)
-    d.text((x+19,y+67),code,font=font(35),fill=(206,227,213))
-    d.line((x+19,y+111,x+235,y+111),fill=(183,216,197),width=3)
-    d.text((x+19,y+124),title,font=font(18),fill=(202,217,207))
-    d.text((x+19,y+154),detail,font=font(11),fill=(170,185,178))
-    for j in range(46):
-        if (j*7)%11<6:d.rectangle((x+19+j*3,y+180,x+20+j*3,y+203),fill=(151,176,164))
-    d.text((x+169,y+180),'SA',font=font(24),fill=(203,219,210))
+    d.rectangle((x+6,y+top,x+250,y+top+h),outline=(128,155,147),width=1)
+    d.text((x+15,y+top+h*.04),code,font=font(round(h*.40)),fill=(222,237,225))
+    d.text((x+15,y+top+h*.59),title,font=font(max(7,round(h*.17))),fill=(202,220,207))
+    d.text((x+182,y+top+h*.13),'SA',font=font(round(h*.27)),fill=(139,182,163))
+    for j in range(32):
+        if (j*7)%11<6:d.rectangle((x+15+j*3,y+top+h*.86,x+16+j*3,y+top+h*.93),fill=(151,176,164))
     ImageDraw.Draw(orm).rectangle((x,y,x+255,y+255),fill=(255,160,20))
     ImageDraw.Draw(normal).rectangle((x,y,x+255,y+255),fill=(128,128,255))
 records={}

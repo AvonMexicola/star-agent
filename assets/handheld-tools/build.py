@@ -102,7 +102,8 @@ def uv_and_material(obj,atlas):
                 v=mesh.vertices[mesh.loops[l].vertex_index].co
                 u=(v.x-min(xs))/(max(xs)-min(xs));w=(v.z-min(zs))/(max(zs)-min(zs))
                 if p.normal.y>0:u=1-u
-                uv.data[l].uv=((label%4+(6+244*u)/256)/4,(6+244*w)/1024)
+                h=244*(max(zs)-min(zs))/(max(xs)-min(xs))
+                uv.data[l].uv=((label%4*256+6+244*u)/1024,1-(768+128-h/2+h*(1-w))/1024)
         else:
             tile=KINDS.get(name,2)
             axis=max(range(3),key=lambda i:abs(p.normal[i]))
@@ -149,9 +150,9 @@ def bake_contact(objs):
 
 def main():
     report={}
-    bpy.context.preferences.filepaths.save_version=0
     for item,builder in [('rifle-laser',g.build_rifle),('sidearm-pistol',g.build_pistol),('mining-laser-tool',g.build_mining),('tractor-beam-tool',tractor)]:
         g.reset_scene();g.faction_materials()
+        bpy.context.preferences.filepaths.save_version=0
         for key,color in [('Teal',(.1,.25,.23)),('Ochre',(.56,.32,.07)),('Titanium',(.2,.25,.28)),('Label',(.1,.15,.14))]:g.material(key,color)
         points=builder()
         for name in ['Grip','Foregrip']:

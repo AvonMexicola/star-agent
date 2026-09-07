@@ -26,8 +26,13 @@
     ],
     "source": "assets/handheld-tools/rifle-laser.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 924552,
-    "sha256": "d006305011c4a984eb3c696ba1dfe565825bfab0e3f656be7f32635eba7a22fc",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 43,
+      "outwardWindingRepaired": 1,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 917060,
+    "sha256": "c0460bb3e4cd27519332016d6040e4beb869c9235fb448b395c0ad12b89535a0",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -38,12 +43,7 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
-    "cleanup": {
-      "zeroAreaTrianglesRemoved": 43,
-      "outwardWindingRepaired": 1,
-      "areaThreshold": 1e-10
-    }
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
   },
   "sidearm-pistol": {
     "triangles": 2404,
@@ -68,8 +68,13 @@
     "leftGrip": null,
     "source": "assets/handheld-tools/sidearm-pistol.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 322964,
-    "sha256": "070c448bcc0e733dfbb67db9e2188056d815d35631872a19434719dd0353271b",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 0,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 315472,
+    "sha256": "f8844e93e316f0131db4d0dec57fb3688d1e7cbc3bca81564eb7c12bc7c207a7",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -80,12 +85,7 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
-    "cleanup": {
-      "zeroAreaTrianglesRemoved": 0,
-      "outwardWindingRepaired": 0,
-      "areaThreshold": 1e-10
-    }
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
   },
   "mining-laser-tool": {
     "triangles": 7868,
@@ -114,8 +114,13 @@
     ],
     "source": "assets/handheld-tools/mining-laser-tool.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 779472,
-    "sha256": "1a219f3f6d7dd2240e8a70e38e35c6a53f9689f362fe71d0273468c1c10278ab",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 48,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 771980,
+    "sha256": "acaa2f44f0f8a946c19e4625351f71c758341d03d4bba387090d0604c33fdb43",
     "materials": [
       "Amber",
       "Glass",
@@ -127,12 +132,7 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
-    "cleanup": {
-      "zeroAreaTrianglesRemoved": 48,
-      "outwardWindingRepaired": 0,
-      "areaThreshold": 1e-10
-    }
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
   },
   "tractor-beam-tool": {
     "triangles": 5164,
@@ -161,8 +161,13 @@
     ],
     "source": "assets/handheld-tools/tractor-beam-tool.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 553260,
-    "sha256": "40339e5f8e15dfe5a1e5568d54b2979bfcbf72675059bf5f1acf2fb02000c73d",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 0,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 545768,
+    "sha256": "ce83cf842ab9e014ce8c52551c16679a3b976fb5c2302fd0bfb13e06971c66eb",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -173,11 +178,6 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
-    "cleanup": {
-      "zeroAreaTrianglesRemoved": 0,
-      "outwardWindingRepaired": 0,
-      "areaThreshold": 1e-10
-    }
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
   }
 }

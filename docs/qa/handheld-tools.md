@@ -1,17 +1,17 @@
 # Handheld Blender and material pass
 
-Candidate in `art/handheld-tool-pass`, based on checked tractor `b1ed035` and live
-wildlife `20e9f1b`, reconciled at `93c6291`. This is a builder's quality check and
+Candidate in `art/handheld-tool-pass`, based on checked tractor `b1ed035`, wildlife `20e9f1b` and player-performance
+`8552d44`. Final pre-visual runtime/export is `2060cec`. This is a builder's quality check and
 development candidate, not independent visual acceptance or public deployment.
 
 ## Measured exports
 
 | Asset | Triangles | GLB bytes | Draw primitives |
 | --- | ---: | ---: | ---: |
-| Laser rifle | 9,654 | 887,560 | 3 |
-| Sidearm | 2,404 | 285,716 | 3 |
-| Mining cutter | 7,916 | 742,504 | 4 |
-| Cargo tractor | 5,164 | 516,012 | 3 |
+| Laser rifle | 9,611 | 924,552 | 3 |
+| Sidearm | 2,404 | 322,964 | 3 |
+| Mining cutter | 7,868 | 779,472 | 4 |
+| Cargo tractor | 5,164 | 553,260 | 3 |
 
 Three authored1024² WebP maps, shared between equipment assets; estimated16MiB
 RGBA+mip residency. Exact hashes, bounds, axes, hand/muzzle coordinates and source
@@ -43,5 +43,26 @@ stock-fitting output.
   backups. Task is SA-ART-001; owned backups removed and builder disables future
   backups. The previous cargo task retains the same owner's mining hook claim.
 
-Browser checks and image inspection follow on a single coordinated GPU window.
-Record their actual result before claiming visual or gameplay validation.
+- First browser fixture's launch command used the config directory; explicit root
+  CWD corrected this before Chromium started. The first renderer check then found
+  only two maps: substring detection matched `orm` inside `normal`. Packing now
+  derives channel identity from actual glTF material slots; exact source WebP bytes
+  are asserted for each slot. Original failed result is retained in browser-02.log.
+- Geometry audit removed43 microscopic/zero-area rifle triangles and48 cutter
+  triangles at <=1e-10 square metres, and repaired one rifle triangle winding.
+  This cleans boolean tessellation; it is not silhouette decimation. Others had
+  none. Current counts above include cleanup, recorded in the measured manifest.
+- Reconciliation with the live player-performance source initially truncated two
+  merge tails and failed module parsing. Restored complete files from the three-way
+  source; kept cached aim vectors with the tractor's tool offset, and retained the
+  cargo-held fire guard with optimized player iteration. Final combined887units
+  pass in40.0s. No shared application served either failed candidate.
+- Multiplayer combined run:121passed, two existing opt-in SQL cases skipped; its
+  automatic cargo SQL setup failed in `/tmp` with PostgreSQL disk/quota53100.
+  Writable task TMPDIR exposed missing generated Prisma files in this new checkout.
+  Generated the declared local client, then all8cargo server/actual SQL tests passed
+  in2.8s, including detached-crate reopen. Stopped only owned failed fixtures;
+  shared5178/API8087 and the existing account database were untouched. Missing
+  generated client failures and an initially wrong script name remain in logs.
+
+Remaining browser checks and image inspection use a single coordinated GPU window.

@@ -468,11 +468,11 @@
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.779472,
+    "file_mb": 0.77198,
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
     "source": "blender/build_gear.py",
     "origin": "rear pistol-grip palm point; emitter axis -X at y=0.14; muzzle (-0.60, 0.14, 0); leftGrip (-0.30, 0.01, 0)",
-    "sha256": "1a219f3f6d7dd2240e8a70e38e35c6a53f9689f362fe71d0273468c1c10278ab"
+    "sha256": "acaa2f44f0f8a946c19e4625351f71c758341d03d4bba387090d0604c33fdb43"
   },
   {
     "name": "rifle-laser",
@@ -489,11 +489,11 @@
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.924552,
+    "file_mb": 0.91706,
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
     "source": "blender/build_gear.py + blender/fit-rifle-stock.mjs",
     "origin": "pistol-grip palm point; barrel -X, bore at y=0.115; muzzle (-0.55, 0.115, 0); leftGrip (-0.29, 0.012, 0)",
-    "sha256": "d006305011c4a984eb3c696ba1dfe565825bfab0e3f656be7f32635eba7a22fc"
+    "sha256": "c0460bb3e4cd27519332016d6040e4beb869c9235fb448b395c0ad12b89535a0"
   },
   {
     "name": "sidearm-pistol",
@@ -510,11 +510,11 @@
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.322964,
+    "file_mb": 0.315472,
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
     "source": "blender/build_gear.py",
     "origin": "grip palm point; barrel -X, bore at y=0.055; muzzle (-0.15, 0.055, 0)",
-    "sha256": "070c448bcc0e733dfbb67db9e2188056d815d35631872a19434719dd0353271b"
+    "sha256": "f8844e93e316f0131db4d0dec57fb3688d1e7cbc3bca81564eb7c12bc7c207a7"
   },
   {
     "name": "boulder-cracked",
@@ -653,8 +653,8 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "file_mb": 0.55326,
-    "sha256": "40339e5f8e15dfe5a1e5568d54b2979bfcbf72675059bf5f1acf2fb02000c73d",
+    "file_mb": 0.545768,
+    "sha256": "ce83cf842ab9e014ce8c52551c16679a3b976fb5c2302fd0bfb13e06971c66eb",
     "height_m": 0.3507,
     "footprint_m": [
       0.802,

@@ -10,6 +10,7 @@ export function shareHandheldTextures(root) {
       for (const slot of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) {
         const texture = material[slot];
         if (!texture?.name?.startsWith('HandheldAtlas-v1-')) continue;
+        texture.anisotropy = 4; // Keep physical service plates legible at oblique aim angles.
         const key = `${texture.name}:${texture.colorSpace}`;
         if (!atlases.has(key)) atlases.set(key, texture);
         material[slot] = atlases.get(key);
