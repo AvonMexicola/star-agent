@@ -1669,3 +1669,26 @@ retried. Next: approve exporting these new originals for local review, then fit,
 validate and reconcile with current integration work. Accepted shop preview at
 port 5260 and other active lanes remain unaffected. HANDOFF is the manager
 notification, not a read receipt or READY FOR REVIEW claim.
+
+## READY FOR REVIEW — surface haze and particles — 2026-09-07
+
+The approved rock/Pyre/star/Miasma chain is now merged into main via PR45,
+`48a8468`. Netcup deployment succeeded, and the live game HTML and rock material
+manifest match the tested build at `https://play.staragent.site`.
+
+Cees's next request for more atmospheric worlds is implemented separately in
+`/tmp/star-agent-atmospherics`, branch `feat/world-atmospherics`, based on that
+main release. READY FOR REVIEW: `src/surface-weather.js`, atmosphere/main wiring,
+focused tests, `docs/surface-weather.md` and six curated comparison images.
+Preview: `http://localhost:53767/?intro=0`. Aeon mist/pollen, Pyre haze/ash,
+Miasma toxic wisps and shallow Selene dust use the shared HDR/depth pipeline.
+The effect follows canonical ground samples; heights, collision, resources,
+flight density and input controls are unchanged.
+
+All 21 unit-test files and production build pass. Four-world before/after
+Chromium tour passes (8.8 minutes), plus final physical flight/boarding regression
+(2.2 minutes), with no recorded browser errors. Chromium151/ANGLE Vulkan
+SwiftShader, 1280×800; no hardware FPS claim. One particle draw, no extra terrain
+triangles. Existing Miasma scene cost remains above the project target. This
+follow-up is not merged or deployed, and no independent rubric score is claimed.
+The shared dirty checkout and unrelated agents' work remain untouched.
