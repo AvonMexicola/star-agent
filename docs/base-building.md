@@ -131,3 +131,18 @@ attached to its rotating surface across different page epochs. GPU groups subtra
 placement sampling use the same canonical body terrain as movement and rendering.
 Malformed or unsupported base saves pause construction and retain their original
 content instead of resetting the player's progress.
+
+
+## Supplied build sandbox
+
+Open `/?sandbox=build&intro=0&seed=7291`, or use **Command menu → Open build sandbox**.
+You start on foot on Selene beside a mainframe and a 12 × 12 m foundation pad.
+**4,608 kg** of concrete, metal stock, glass and conductor is available directly
+while placing pieces. Open **Build → Sandbox supplies → Refill bank** whenever
+needed. Reload keeps your buildings and remaining stock in a separate sandbox
+save. **Command menu → Return to regular game** restores your ordinary save.
+
+Keyboard **B** or controller **Menu → Build** opens the palette. Select with
+D-pad / A, place with RT, rotate with LB/RB, and exit with B. Existing support,
+collision and 64-piece-per-site limits still apply. Nine foundations plus the
+mainframe use ten of the starting site's slots.

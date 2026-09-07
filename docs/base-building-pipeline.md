@@ -172,3 +172,21 @@ Read `docs/qa/base-building/polish-production.md` for original report dispositio
 536-unit / five-UI-test passes, production door/ghost/fade evidence and studio
 captures. Whole-scene performance and a fresh complete controller construction
 journey remain integration gates; physical Xbox is untested. PR41 stays draft.
+
+
+## Supplied sandbox entry
+
+`?sandbox=build` selects a fully separate prefixed storage adapter before Fleet,
+ShipInventory or MiningStore construction. `src/build/sandbox.js` creates one
+canonical Selene mainframe / 3×3 foundation pad and 4,608 kg of stock atomically.
+Twelve valid eight-box bank containers supply construction through BuildSystem's
+optional `supplySources` callback; ordinary mode receives none. Never widen normal
+cargo access or bypass placement costs/collision to implement this mode. Reload
+keeps stock spent; explicit refill resets only dedicated bank containers. Arrival
+searches clear terrain outside saved pieces. Command-menu entry/exit, palette
+supplies and refill share the existing controller/native-button router.
+
+Controller production entry → wall placement/debit → refill/inventory → reload →
+regular-save return passes. See `docs/qa/base-building/sandbox.md`, including host
+Chromium temporary-storage failure history and the separate-save checks. Keep
+sandbox stock client-local when integrating server-authoritative multiplayer.

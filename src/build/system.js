@@ -16,8 +16,8 @@ const close=(a,b,t=.03)=>Math.abs(a-b)<t;
 const overlap=(a,b)=>a.min.every((n,i)=>n<b.max[i]-.025&&a.max[i]>b.min[i]+.025);
 const bufferId=(claim,piece)=>piece.type==='mainframe'?`build-core-${claim.id.split('-').at(-1)}`:`build-crate-${piece.id.split('-').at(-1)}`;
 export class BuildSystem {
-  constructor({scene,nav,store,render=true}){
-    this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.pieceId='mainframe';this.turn=0;this.height=0;this.snap=0;
+  constructor({scene,nav,store,render=true,supplySources=()=>[]}){
+    this.supplySources=supplySources;this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.pieceId='mainframe';this.turn=0;this.height=0;this.snap=0;
     this.doorMotion=new DoorMotion();this.ghostRequest=0;this.ghostModel=null;this.ghostFactory=createBuildGhost;this.ghostDisposer=disposeBuildGhost;this.disposed=false;this.claimVisibility=[];
     this.groups=new Map();this.models=new Map();this.registered=new Set();this.grounded=false;this.error='';this.preview=null;this.revision=0;
     const restored=store.state.build!==undefined&&!validBuild(store.state.build)?{ok:false,message:'Base save is invalid. Original data retained; construction paused.'}:restoreBuildAnchors(store.state.build);
@@ -90,6 +90,7 @@ export class BuildSystem {
     const sources=claim?.useBuffer&&this.pieceId!=='mainframe'&&Math.hypot(actor.x,actor.z)<=claim.radius?['pack',bufferId(claim,claim.pieces.find(p=>p.type==='mainframe'))]:['pack'];
     let reason=!claim?'Place a mainframe to establish building rights.':!candidate?'Place a supporting foundation first.':this.validate(claim,p);
     if(shipCargoAccess(this.nav).available)sources.push('ship');
+    sources.push(...this.supplySources());
     const cost=PIECES[p.type].cost,resources=planCost(this.store,this.store.state,cost,sources);
     if(!reason&&!resources.ok)reason=resources.message;
     this.preview={pieceId:p.type,piece:p,claim,position:claim?this.toWorld(v(p.position),claim).toArray():target.toArray(),valid:!reason,reason:reason||'Ready to place',cost,sources,snapCount:candidates.length};
