@@ -190,3 +190,15 @@ Controller production entry → wall placement/debit → refill/inventory → re
 regular-save return passes. See `docs/qa/base-building/sandbox.md`, including host
 Chromium temporary-storage failure history and the separate-save checks. Keep
 sandbox stock client-local when integrating server-authoritative multiplayer.
+
+
+## Radial build selection
+
+`src/build/radial-selection.js` owns stable clockwise ordering, deadzone and angular
+hysteresis. `radial.js` renders native buttons with original SVG icons and slices.
+BuildUI supplies current piece, exact recipe cost formatting and the existing
+choose callback. GamepadInput's `ui.stickX/stickY` deliberately exclude D-pad;
+ControllerUI accepts an optional native dialog spatial focus target, retaining
+shared confirm/back/scroll and neutral-arming behavior. Never poll again or place
+on release. D-pad can reach recipes/supplies/close. Source and browser evidence:
+`docs/qa/base-building/radial.md`; physical-device acceptance remains separate.

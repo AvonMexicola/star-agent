@@ -71,17 +71,24 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
     if (!items.includes(document.activeElement)) focus(items.find(el => focusKey && (el.dataset.controllerKey || el.id) === focusKey) || items[Math.min(focusIndex, items.length - 1)], items);
     if (!pad.ui) return;
     if (pad.ui.pressed.has(1) || pad.ui.pressed.has(9)) { dialog.close(); nav.gamepad.suspend(); return; }
-    const next = Math.abs(pad.ui.y) > .5 ? Math.sign(pad.ui.y) : Math.abs(pad.ui.x) > .5 ? Math.sign(pad.ui.x) : 0;
-    repeat -= dt;
-    if (next && (next !== direction || repeat <= 0)) {
-      const index = Math.max(0, items.indexOf(document.activeElement));
-      focus(items[(index + next + items.length) % items.length], items);
-      repeat = next !== direction ? .36 : .13;
-    }
-    direction = next;
-    if (pad.ui.scroll) {
-      const scrollTarget=dialog.querySelector('[data-controller-scroll]')??dialog;
-      scrollTarget.scrollTop += pad.ui.scroll * dt * 480;
+    // Optional spatial selection still uses this shared focus/confirm/back router.
+    const spatial=dialog.controllerNavigation?.(pad.ui);
+    if(spatial&&items.includes(spatial)){
+      if(document.activeElement!==spatial)focus(spatial,items);
+      direction=0;repeat=0;
+    }else{
+      const next = Math.abs(pad.ui.y) > .5 ? Math.sign(pad.ui.y) : Math.abs(pad.ui.x) > .5 ? Math.sign(pad.ui.x) : 0;
+      repeat -= dt;
+      if (next && (next !== direction || repeat <= 0)) {
+        const index = Math.max(0, items.indexOf(document.activeElement));
+        focus(items[(index + next + items.length) % items.length], items);
+        repeat = next !== direction ? .36 : .13;
+      }
+      direction = next;
+      if (pad.ui.scroll) {
+        const scrollTarget=dialog.querySelector('[data-controller-scroll]')??dialog;
+        scrollTarget.scrollTop += pad.ui.scroll * dt * 480;
+      }
     }
     if (pad.ui.pressed.has(0)) {
       const target = document.activeElement;

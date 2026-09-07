@@ -44,9 +44,12 @@ test('keyboard entry and touch placement use the same build actions',async({page
   await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);
   await page.evaluate(()=>window.fixture.nav.openingActive=true);await page.keyboard.press('b');await expect(page.locator('#build-dialog')).not.toBeVisible();await expect(page.locator('#build-shortcut')).not.toBeVisible();
   await page.evaluate(()=>window.fixture.nav.openingActive=false);await page.keyboard.press('b');await expect(page.locator('#build-dialog')).toBeVisible();
-  await page.locator('[data-controller-key="build-piece-crate"]').click();await expect(page.locator('#build-hud')).toBeVisible();await page.waitForFunction(()=>window.fixture.nav.enabled);
-  await page.keyboard.press('Enter');expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(1);
   const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true});
+  const piece=await page.locator('[data-controller-key="build-piece-crate"]').boundingBox();
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:piece.x+piece.width/2,y:piece.y+piece.height/2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await expect(page.locator('#build-hud')).toBeVisible();await page.waitForFunction(()=>window.fixture.nav.enabled);
+  await page.keyboard.press('Enter');expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(1);
+
   const target=await page.locator('[data-controller-key="build-hud-place"]').boundingBox();
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:target.x+target.width/2,y:target.y+target.height/2}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
   expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(2);
@@ -73,4 +76,34 @@ test('recipe output-slot failures are visible and cannot spend ingredients',asyn
   expect(await page.evaluate(()=>window.fixture.store.container('pack').items)).toEqual(before);
   await focus(page,'recipe-batch-max');await tap(page,0);await expect(action).toHaveText('Process 4 × Crush aggregate');await expect(action).toBeEnabled();
   await focus(page,'recipe-aggregate');await tap(page,0);expect(await page.evaluate(()=>window.fixture.store.container('pack').items.aggregate)).toBe(4);
+});
+
+test('radial stick selection covers eight pieces and preserves highlight at rest',async({page})=>{
+  await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);
+  await tap(page,9);await focus(page,'build');await tap(page,0);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+  const ids=['foundation','wall','doorway','window','floor','stairs','crate','mainframe'];
+  for(let i=0;i<ids.length;i++){
+    const a=i*Math.PI/4;await page.evaluate(a=>window.pad.axes=[Math.sin(a),-Math.cos(a),0,0],a);
+    await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected',ids[i]);await expect(page.locator(`[data-controller-key="build-piece-${ids[i]}"]`)).toBeFocused();
+  }
+  await page.evaluate(()=>window.pad.axes=[0,0,0,0]);await page.waitForTimeout(100);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','mainframe');
+  await mkdir('/tmp/star-agent-build-radial',{recursive:true});await page.screenshot({path:'/tmp/star-agent-build-radial/wheel-desktop.png'});
+  await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/star-agent-build-radial/wheel-phone.png'});
+  for(const id of ids){const b=page.locator(`[data-controller-key="build-piece-${id}"]`);await expect(b).toBeInViewport();const bounds=await b.boundingBox();expect(bounds.width).toBeGreaterThanOrEqual(44);expect(bounds.height).toBeGreaterThanOrEqual(44);}
+  await tap(page,0);await expect(page.locator('#build-dialog')).not.toBeVisible();expect(await page.evaluate(()=>window.fixture.build.state.pieceId)).toBe('mainframe');
+  expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(0);
+  await page.waitForFunction(()=>window.fixture.nav.gamepad.armed);await tap(page,2);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+  await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','mainframe');await tap(page,1);await expect(page.locator('#build-dialog')).not.toBeVisible();expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(0);
+});
+
+test('radial ignores held selection through focus loss, disconnect and replacement',async({page})=>{
+  await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);await page.keyboard.press('b');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+  await page.evaluate(()=>{window.fixture.nav.focused=false;window.pad.axes=[1,0,0,0];window.pad.buttons[0]={pressed:true,value:1};});await page.waitForTimeout(80);
+  await page.evaluate(()=>window.fixture.nav.focused=true);await page.waitForTimeout(80);await expect(page.locator('#build-dialog')).toBeVisible();await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','mainframe');
+  await page.evaluate(()=>{window.pad.axes.fill(0);window.pad.buttons[0]={pressed:false,value:0};});await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+  await page.evaluate(()=>window.pad.connected=false);await page.waitForFunction(()=>!window.fixture.nav.gamepad.connected);
+  await page.evaluate(()=>{window.pad.connected=true;window.pad.axes=[1,0,0,0];window.pad.buttons[0]={pressed:true,value:1};});await page.waitForTimeout(80);await expect(page.locator('#build-dialog')).toBeVisible();
+  await page.evaluate(()=>window.pad.id='Replacement radial controller');await page.waitForTimeout(80);await expect(page.locator('#build-dialog')).toBeVisible();
+  await page.evaluate(()=>{window.pad.axes.fill(0);window.pad.buttons[0]={pressed:false,value:0};});await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+  await page.evaluate(()=>window.pad.axes=[1,0,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','doorway');await tap(page,0);await expect(page.locator('#build-dialog')).not.toBeVisible();expect(await page.evaluate(()=>window.fixture.build.state.pieceId)).toBe('doorway');expect(await page.evaluate(()=>window.fixture.build.state.pieceCount)).toBe(0);
 });

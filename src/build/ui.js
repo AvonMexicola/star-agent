@@ -1,5 +1,6 @@
 import { shipCargoAccess, shipCargoLabel } from '../inventory/ship-access.js';
 import './build.css';
+import { createBuildRadial } from './radial.js';
 import { PIECES } from './definitions.js';
 import { routeBuildInput } from './input.js';
 import { RECIPES } from '../crafting/recipes.js';
@@ -19,9 +20,11 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
   const close = button('Close · B / Esc', 'build-close', () => dialog.close()); dialog.querySelector('.dialog-top').append(close);
   const content = dialog.querySelector('.build-content'), description = dialog.querySelector('.build-description'), feedback = dialog.querySelector('.build-feedback');
   const hud = document.createElement('section'); hud.id = 'build-hud'; hud.hidden = true; hud.setAttribute('aria-label', 'Construction placement');
-  hud.innerHTML = '<span class="build-eyebrow">CONSTRUCTION MODE</span><strong class="build-selected"></strong><p class="build-placement" role="status"></p><p class="build-cost"></p><p class="build-ship-link"></p><p class="build-hints">RT / Enter · Place once &nbsp; LT / T · Next snap<br>LB RB / Q E · Rotate &nbsp; ↑ ↓ · Height<br>X / P · Pieces &nbsp; B / Esc · Exit &nbsp; A / Space · Jump</p><div class="build-touch"></div>';
+  hud.innerHTML = '<span class="build-eyebrow">CONSTRUCTION MODE</span><strong class="build-selected"></strong><p class="build-placement" role="status"></p><p class="build-cost"></p><p class="build-ship-link"></p><p class="build-hints">RT / Enter · Place once &nbsp; LT / T · Next snap<br>LB RB / Q E · Rotate &nbsp; ↑ ↓ · Height<br>X / P · Build wheel &nbsp; B / Esc · Exit &nbsp; A / Space · Jump</p><div class="build-touch"></div>';
   const shortcut = button(sandbox?'Sandbox · Build / B':'Build · B', 'build-open', () => open()); shortcut.id = 'build-shortcut'; shortcut.hidden = true;
   document.body.append(dialog, hud, shortcut);
+  let radial=null;
+  dialog.controllerNavigation=ui=>tab==='pieces'?radial?.navigate(ui):null;
   let tab = 'pieces', batch = 1, claim = null, lastPreview = '', lastMaterials = '';
   function report(result) { const message = result?.message || result?.reason; if (message) { feedback.dataset.ok=String(result?.ok===true); feedback.textContent = message; onMessage(message); } return result; }
   function suspend() { nav.keys.clear(); nav.toolTrigger = 0; nav.gamepad.suspend(); }
@@ -33,7 +36,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
     dialog.close(); suspend(); update();
   }
   function render() {
-    content.replaceChildren(); feedback.textContent = '';
+    content.replaceChildren(); feedback.textContent = '';radial=null;dialog.classList.toggle('is-radial',tab==='pieces');
     for (const el of dialog.querySelector('.build-tabs').children) el.setAttribute('aria-pressed', String(el.dataset.controllerKey === `build-tab-${tab}`));
     if (tab === 'sandbox' && sandbox) {
       description.textContent='BUILD SANDBOX · Separate saved world. Materials are drawn directly from this bank anywhere you build. Refill whenever you need more; your bases stay saved. 64 pieces per site.';
@@ -41,16 +44,11 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
       for(const [id,quantity]of Object.entries(sandbox.totals())){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=name(id);dd.textContent=`${quantity.toLocaleString()} kg`;totals.append(dt,dd);}
       content.append(totals,button('Refill bank · 4,608 kg','sandbox-refill',()=>{const result=sandbox.refill();render();report(result);}));
     } else if (tab === 'pieces') {
-      description.textContent = 'Place a mainframe on clear ground to claim a site. Materials come from your backpack, an enabled local mainframe buffer, or ship cargo within 50 m. Walls provide physical cover; environmental life support is not installed.';
-      if(sandbox)description.textContent='BUILD SANDBOX · Mainframe and 12 × 12 m foundation pad ready. Build directly from 4,608 kg of supplies. Supplies tab refills the bank. Separate save · 64 pieces per site.';
-      else if(onSandbox)content.append(button('Open build sandbox · supplied test site','sandbox-enter',onSandbox));
-      for (const piece of Object.values(PIECES)) {
-        const el = button('', `build-piece-${piece.id}`, () => choose(piece.id)); el.className = 'build-piece';
-        const title = document.createElement('strong'); title.textContent = piece.label;
-        const cost = document.createElement('span'); cost.textContent = amounts(piece.cost);
-        el.append(title, cost); if (piece.id === (build.state?.pieceId || 'mainframe')) el.dataset.controllerFocus = '';
-        content.append(el);
-      }
+      description.textContent = 'Left stick · Point   A · Choose   B · Close. D-pad browses pieces and tabs.';
+      radial=createBuildRadial({selected:build.pieceId??build.state?.pieceId??'mainframe',onChoose:choose,formatCost:amounts});
+      content.append(radial.element);
+      const note=document.createElement('p');note.className='build-wheel-note';note.textContent=sandbox?'Sandbox supply bank · Refill from Sandbox supplies.':'Start with a mainframe. Supplies: backpack, mainframe buffer, or ship within 50 m.';content.append(note);
+      if(!sandbox&&onSandbox)content.append(button('Open supplied build sandbox','sandbox-enter',onSandbox));
     } else if (tab === 'recipes') {
       lastMaterials = JSON.stringify(store.container('pack')?.items);
       description.textContent = 'Immediate manual field batches. Ingredients and output: backpack. Each separation consumes its entire input batch. No electricity or imported materials required.';

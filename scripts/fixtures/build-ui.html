@@ -15,5 +15,5 @@ const state={active:false,pieceId:'mainframe',pieceCount:0},build={get active(){
 const ui=createBuildUI({nav,build,store});
 const controller=createControllerUI({nav,openBuild:()=>ui.open(),openRecipes:()=>ui.openRecipes(),buildActive:()=>build.active,handleBuild:pad=>ui.handleController(pad)});
 window.fixture={nav,build,store,ui};
-let last=performance.now();function frame(now){const pad=gamepad.poll({enabled:nav.enabled,ui:Boolean(document.querySelector('dialog[open]'))});controller.update(pad,(now-last)/1000);ui.update();last=now;requestAnimationFrame(frame);}requestAnimationFrame(frame);
+let last=performance.now();function frame(now){const pad=gamepad.poll({enabled:nav.enabled,focused:nav.focused,ui:Boolean(document.querySelector('dialog[open]'))});controller.update(pad,(now-last)/1000);ui.update();last=now;requestAnimationFrame(frame);}requestAnimationFrame(frame);
 </script></body></html>

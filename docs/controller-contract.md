@@ -144,7 +144,10 @@ steering and assertions; no physical controller testing is claimed.
 ## Construction
 
 Menu → Build enters the shared piece palette while walking outside a ship on a
-planet. Choose a piece with D-pad and A; X reopens the palette while building.
+planet. Point the left stick at a radial slice and press A; X reopens the wheel
+while building. D-pad also browses pieces and the recipes/supplies tabs. Releasing
+the stick retains its highlight; B closes without choosing. A choice never places
+a piece until a fresh RT press after controls return to neutral.
 The contextual controls consume the existing shared Gamepad poll:
 
 | Construction action | Controller | Keyboard / touch |
@@ -154,7 +157,7 @@ The contextual controls consume the existing shared Gamepad poll:
 | Next snap target | LT edge | T or Snap button |
 | Rotate / flip wall facing | LB / RB | Q / E or rotate buttons |
 | Foundation height / upper level | D-pad up / down | Up / Down or height buttons |
-| Piece palette | X | P or Pieces button |
+| Piece wheel | X; left stick points, A chooses | P or Pieces button; pointer / Tab + Enter |
 | Exit construction | B | Escape or Exit button |
 | Move / look / jump | Sticks / A | WASD / look / Space |
 | Backpack / command menu | View / Menu | Existing inventory and menu routes |
@@ -177,3 +180,10 @@ The storage handoff keeps gameplay paused until storage closes.
 
 See [construction controller evidence](qa/base-building/controller.md) for the
 distinction between the dialog fixture and actual physical gameplay validation.
+
+
+The radial uses optional `dialog.controllerNavigation(ui)` in the shared router.
+It returns a native focus target; confirm/back and device/focus neutral arming
+remain owned by the existing router and GamepadInput. `ui.stickX/stickY` carry
+analog direction without D-pad contributions. Keep eight slice locations stable.
+See `docs/qa/base-building/radial.md` for verification and remaining review limits.

@@ -146,3 +146,13 @@ Keyboard **B** or controller **Menu → Build** opens the palette. Select with
 D-pad / A, place with RT, rotate with LB/RB, and exit with B. Existing support,
 collision and 64-piece-per-site limits still apply. Nine foundations plus the
 mainframe use ten of the starting site's slots.
+
+
+## Building wheel
+
+**Menu → Build** (controller) or **B** (keyboard) opens the radial piece picker.
+Point the **left stick** at a piece and press **A** to choose. Its name and costs
+appear in the centre. **X** reopens the wheel during placement; **B** closes it
+without selecting. Release controls, then press **RT** to place. D-pad browsing,
+mouse/touch selection and Tab/Enter also work. Recipes and sandbox supplies remain
+in the tabs above the wheel.
