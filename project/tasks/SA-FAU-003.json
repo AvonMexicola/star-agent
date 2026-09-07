@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex Astra fauna team",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/pyrebear",
   "base": "b3eedc05795c9ecfe4c40d6f04b0f89ff43de791",
   "updated": "2026-09-07",

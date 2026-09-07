@@ -2,8 +2,8 @@
 
 7 September 2026. Integration steward, `feat/dev-wildlife-review`.
 The checked wildlife source `e904192` (PR69) is combined with the current local
-development checkpoint `4706d62`. Both combined physical browser encounters pass. Shared promotion is the
-remaining delivery step.
+development checkpoint `4706d62`. Both combined physical browser encounters pass. This source is served by
+the shared local development build at runtime `c4f6b5b`.
 
 ## Included work and overlap
 
@@ -66,7 +66,8 @@ trigger hold and asserts real ammunition use rather than a fixed shot count.
 
 Linux Chromium **151.0.7922.173**, native **ANGLE / AMD Radeon 860M / OpenGL ES
 3.2**, viewport **1280 × 800**, auto render resolution, grass distance 80 m and
-75% density. Inputs are an injected standard Gamepad with physical landing and
+75% density. Final scene targets are 1024 × 640 at 0.8 scale for Tideback and
+1088 × 680 at 0.85 scale for Mallow. Inputs are an injected standard Gamepad with physical landing and
 walking, not physical hardware. Both runs use the exact built wildlife source
 and assets above.
 
@@ -107,3 +108,30 @@ videos, complete JSON states and generated reports are not committed.
 No physical controller, complete native-touch encounter, continuous-motion art
 acceptance or hardware FPS result is claimed. The tested export and bounded
 development integration remain distinct from those outstanding acceptance gates.
+
+
+## Local delivery
+
+The steward preserved shared owner notes in `1c9278c`, merged the checked candidate
+`c160ece` as **`c4f6b5b`**, and retained both sides of all three journal conflicts.
+Runtime, assets, fixtures and package files match the tested candidate exactly.
+Only client wildlife/assets, development entries, evidence and the portable cargo
+SQL fixture follow-up join the existing cargo/social/rock development build.
+
+HTTP health passes on 5178 and the direct API on 8087. Both habitat modules, the
+dev launcher options, simulation, targeting, rendered-fauna module and main entry
+match committed source after Vite import/environment normalization. All three
+live GLBs match the byte counts and SHA-256 values above; the deer viewer returns
+HTTP 200. The persistent preview remains on the same process and start time;
+its PostgreSQL cluster retains inode 947632. No service restart, schema operation,
+account mutation or shared database fixture was needed for this client-only delta.
+
+Refresh http://localhost:5178/, press **F2**, choose Nomad and **Aeon · Tideback
+beach** or **Aeon · Mallow grassland**, then land and walk out. The deer viewer is
+`/scripts/fixtures/creature-rig.html?model=deer`. The two fauna tasks are locally
+integrated. Main and public hosting were not updated by this integration.
+
+A separately found PR73 cargo-test cache-path failure was corrected in `5f0d94f`
+and consumed here as `054dcf1`; all seven affected cargo server tests pass,
+including isolated PostgreSQL. It changes no game/runtime behavior; see
+[the CI follow-up](social-cargo-integration.md#hosted-check-portability-follow-up).
