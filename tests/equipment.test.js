@@ -17,12 +17,12 @@ const near = (actual, expected, tolerance, message) =>
 
 // ------------------------------------------------------------------- contract
 
-test('the item table covers exactly the five props the manifest ships as gear', () => {
+test('the item table covers the six props the manifest ships as gear', () => {
   assert.deepEqual(Object.keys(ITEMS), [
-    'rifle-laser', 'sidearm-pistol', 'mining-laser-tool',
+    'rifle-laser', 'sidearm-pistol', 'mining-laser-tool', 'tractor-beam-tool',
     'backpack-life-support', 'helmet-standalone',
   ]);
-  assert.deepEqual([...HELD_ITEMS], ['rifle-laser', 'sidearm-pistol', 'mining-laser-tool']);
+  assert.deepEqual([...HELD_ITEMS], ['rifle-laser', 'sidearm-pistol', 'mining-laser-tool', 'tractor-beam-tool']);
   assert.deepEqual([...WORN_ITEMS], ['backpack-life-support', 'helmet-standalone']);
 });
 
@@ -42,6 +42,7 @@ test('every item names a known socket and a file under public/models/props', () 
 test('anything that shoots has a unit barrel axis, a muzzle point and a range', () => {
   for (const name of HELD_ITEMS) {
     const spec = ITEMS[name];
+    if (name === 'tractor-beam-tool') { assert.equal(spec.shot, null); continue; }
     assert.ok(spec.shot === 'tracer' || spec.shot === 'beam', `${name} shot kind`);
     const axis = spec.barrelAxis;
     near(Math.hypot(axis[0], axis[1], axis[2]), 1, 1e-6, `${name} barrel axis is not unit:`);

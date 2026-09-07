@@ -1,0 +1,29 @@
+{
+  "source": "Original procedural authored PBR and deterministic labels",
+  "builder": "assets/handheld-tools/textures.py",
+  "seed": 7291,
+  "size": [
+    1024,
+    1024
+  ],
+  "font": "JetBrains Mono (system font, rendered labels only)",
+  "colorSpace": {
+    "basecolor": "sRGB",
+    "orm": "linear occlusion/roughness/metalness",
+    "normal": "linear OpenGL tangent +Y"
+  },
+  "files": {
+    "basecolor.webp": {
+      "bytes": 27712,
+      "sha256": "942c41a6db000b41cbe46d98181fa8ad53396de3895c3fb4df58dc5b0f022bab"
+    },
+    "orm.webp": {
+      "bytes": 26948,
+      "sha256": "0ec0bff38b0ce9fe8927b3fc4b6d358774a2f3b52bb1fef4640516c7f7585050"
+    },
+    "normal.webp": {
+      "bytes": 64170,
+      "sha256": "0e5f12de0b8f696ef52e092fc70c9c375a432164872c52e6c55573bdce03e607"
+    }
+  }
+}

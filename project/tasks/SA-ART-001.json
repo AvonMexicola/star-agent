@@ -1,0 +1,32 @@
+{
+  "id": "SA-ART-001",
+  "title": "Handheld tools Blender and PBR pass",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex tool art",
+  "status": "active",
+  "branch": "art/handheld-tool-pass",
+  "base": "93c629137ae342a089ea4951f5964fd93371d314",
+  "updated": "2026-09-07",
+  "areas": [
+    "assets",
+    "rendering",
+    "industry"
+  ],
+  "claims": [
+    "assets/handheld-tools",
+    "blender/build_gear.py",
+    "public/models/props/rifle-laser.glb",
+    "public/models/props/sidearm-pistol.glb",
+    "public/models/props/mining-laser-tool.glb",
+    "public/models/props/tractor-beam-tool.glb",
+    "src/equipment.js",
+    "src/equipment-materials.js",
+    "blender/prepare-avatar.mjs",
+    "public/dev/avatar-studio.html"
+  ],
+  "brief": "docs/briefs/handheld-tools.md",
+  "dependencies": [
+    "SA-CARGO-002 (same owner retains mining/tool.js integration claim)"
+  ]
+}

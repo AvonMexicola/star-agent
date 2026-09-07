@@ -27,6 +27,7 @@
 
 import * as THREE from 'three';
 import { textureMiningTool } from './mining/tool-materials.js';
+import { shareHandheldTextures, hasAuthoredHandheldFinish, clearHandheldTextureCache } from './equipment-materials.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { solveArm, rotateBoneWorld } from './character-ik.js';
 
@@ -126,6 +127,14 @@ export const ITEMS = Object.freeze({
     beam: { radius: 0.035, color: 0xb6efd1, impact: 0.34, opacity: 0.85 },
     heat: { rise: 0.35, cool: 0.5, lockout: 2 },
     miningRate: 0.35,                  // handed to onMine() as `rate`, m³/s at full beam
+  },
+  'tractor-beam-tool': {
+    name: 'tractor-beam-tool', label: 'Cargo tractor', file: `${PROPS}tractor-beam-tool.glb`,
+    socket: 'RightHand', handed: 2, length: .80,
+    barrelAxis: [-1, 0, 0], muzzle: [-.60, .14, 0], leftGrip: [-.30, .01, 0],
+    aimClip: 'use-tool', fireClip: null, aiming: 'tool',
+    // Cargo owns the beam and authorization. This held model never fires/mines.
+    fireRate: 0, shot: null, range: 12, holsterable: true,
   },
   'backpack-life-support': {
     name: 'backpack-life-support',
@@ -373,7 +382,8 @@ export function loadItemGLTF(url, loader = null) {
   let pending = _gltfCache.get(url);
   if (!pending) {
     const use = loader || sharedLoader();
-    pending = new Promise((resolve, reject) => use.load(url, resolve, undefined, reject));
+    pending = new Promise((resolve, reject) => use.load(url, resolve, undefined, reject))
+      .then(gltf => { shareHandheldTextures(gltf.scene || gltf.scenes[0]); return gltf; });
     _gltfCache.set(url, pending);
   }
   return pending;
@@ -398,6 +408,7 @@ export function loadSocketCalibration(url = SOCKETS_URL, fetchImpl = null) {
 /** Test / hot-reload hook: forget the cached GLBs and calibration. */
 export function clearEquipmentCache() {
   _gltfCache.clear();
+  clearHandheldTextureCache();
   _socketsPending = null;
 }
 
@@ -770,7 +781,7 @@ export class Equipment {
       root.traverse((node) => {
         if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false; }
       });
-      if (name === 'mining-laser-tool') textureMiningTool(root);
+      if (name === 'mining-laser-tool' && !hasAuthoredHandheldFinish(root)) textureMiningTool(root);
       const group = new THREE.Group();
       group.name = `equipment-${name}`;
       group.add(root);
@@ -845,7 +856,7 @@ export class Equipment {
     const pitch = forward ? new THREE.Quaternion().setFromUnitVectors(forward.normalize(), direction.clone().normalize()) : new THREE.Quaternion();
     if (this.rig === 'player-expedition' && arm?.isBone) {
       const offset = this._equipped === 'sidearm-pistol' ? [.005, -.075, -.45]
-        : this._equipped === 'mining-laser-tool' ? [-.04, -.23, -.05] : [-.025, -.075, -.135];
+        : ITEMS[this._equipped].aiming === 'tool' ? [-.04, -.23, -.05] : [-.025, -.075, -.135];
       const target = new THREE.Vector3(...offset).applyQuaternion(this.character.object.quaternion)
         .applyQuaternion(pitch).add(arm.getWorldPosition(new THREE.Vector3()));
       const pole = new THREE.Vector3(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch);
