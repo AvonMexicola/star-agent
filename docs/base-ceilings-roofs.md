@@ -53,8 +53,8 @@ future instanced static geometry, streaming, room occlusion and shadow budgets.
 
 ## Verification status
 
-- Full unit suite116 configured files passes33.27s; focused mount/profile/actual
-  placement/switch/persistence tests4/4 pass. All14 GLB geometry/budget tests pass.
+- Final unit suite116 configured files passes32.82s on7e34acd; focused mount/profile/actual
+  placement/switch/persistence/landing/rotation/live-power tests7/7 pass. All14 GLB geometry/budget tests pass.
 - The exporter completed32 assets,60,932 triangles and5,411,100 bytes. Its process
   then hung during audio shutdown; only owned PID3321812 was terminated after the
   complete manifest and GLBs were written and validated. This is not an export
@@ -62,6 +62,48 @@ future instanced static geometry, streaming, room occlusion and shadow budgets.
 - A legacy asset test required every concrete asset to have a powered mint marker.
   Passive roof skins now specifically require concrete wear and metal coping;
   original structural pieces retain their prior marker requirements and budgets.
-- Controller production, roof-kit renderer captures and Roofs-tab UI checks are
-  pending the coordinated shared GPU window. Physical Xbox and independent visual
-  acceptance remain separate gates. Update this section with actual results.
+- Production controller1/1 passes2.6min on4325c0b + test-onlyfc6b281, with no
+  captured page/console errors; Roofs UI1/1 passes11.4s, including390×844; seven
+  prop/assembled-kit views1/1 pass6.1s. The final controller recheck on7e34acd passes1/1 in2.5min with no captured
+  errors after review corrections. Physical Xbox and continuous motion/FPS
+  acceptance remain separate gates. See [curated evidence](qa/base-ceilings-roofs/README.md).
+
+
+First controller attempt (source4325c0b) stopped on an existing floor/ceiling
+socket: an empty-sky aim from the sandbox spawn projected six metres ahead and
+selected the nearer unsupported candidate. The controller fixture now uses the
+existing LB snap-cycle action to select its intended supported socket. No runtime
+placement/support rule was relaxed. Its optional account probe also reached the
+old absent8084 proxy; the fixture now points to the isolated8557 API. Original
+failure state, screenshot and log are retained under the task evidence attempt-01.
+The first independent CLI code-review request timed out without any model output;
+the authorized host retry completed with three functional findings. Its report is
+retained in the QA folder; all three were corrected in9aefa1e. Independent
+follow-up closed those findings and scored the supplied still images3.6/5, below
+final visual acceptance. Roof material detail and lighting refinement remain open.
+
+
+Review corrections in9aefa1e: roof skins now supply walkable support to the same
+collision solver as floors, preventing a falling player from becoming trapped
+against a solid top. Square trims rotate relative to the supporting ceiling,
+including60° foundations attached to triangular layouts. Visible lamp emissive
+state and actual point-light eligibility now use the same live site-power result
+on each update, even between ten-second save writes. Duplicate mount candidates
+are collapsed, and mounted pieces no longer advertise ineffective height controls.
+The seven regression tests exercise the actual collision, material and placement
+code; no save or input shortcuts were added. Original GLBs remain byte-identical.
+
+
+The follow-up review found that expanding each tiny curved-top collision cell
+by the full player radius created a high invisible eave. In7e34acd, roof skins
+use feet-centre support/contact for their stepped upper surface. Their required
+structural ceiling underneath, and every wall/door, retain full-radius capsule
+collision. Landing, uphill/downhill travel, rendered-height deviation under16cm
+and leaving the eave are now tested directly. This is a deliberate narrow roof
+contact rule, not a replacement character-physics solver. Height hints are also
+composed conditionally rather than edited through an HTML string round-trip.
+
+Independent final art acceptance remains **open (3.6/5)**: reduce the shared
+concrete's directional striping, refine cap seams/quarter arc, soften lamp bloom
+and improve small wheel labels. This is a usable development checkpoint; the
+review does not establish continuous motion or large-base performance.

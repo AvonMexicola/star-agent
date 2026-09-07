@@ -2468,3 +2468,57 @@ SA-INT-002 SOCIAL / SBU CARGO / CONTROLS LIVE: dev/all-features runtimef861f8f i
 Shared HANDOFF notes were committed before merge; the persistent preview was restarted ONCE after local Prisma generation. Frontend/direct API health pass. Live cargo/protocol modules match source exactly; social/help/rover launcher match after Vite import normalization. PostgreSQL migrations are now1/2/4; same cluster inode947632, retained account/player-state row counts, no shared test accounts/chat. Private pre-promotion dump is outside Git. Refresh the client for protocol3. Cees's latest request to put SBU cargo on the dev server is handled. SA-SOCIAL-001 and SA-CARGO-001 are integrated in the shared registry. Public hosting/main were not changed.
 
 The frozen promotion is COMPLETE and this shared merge/restart claim is released. Parent needs no GPU window and leaves the persistent user preview running. New power/rover/fauna/WORLD/hub work remains separately owned and is not in this receipt. Coordinate the next coherent update against f861f8f; do not replace its social UI, final immediate kick cleanup, generic ordered migrations or either client state-reset hook with older backend-onlyc619dd0. Full delivery evidence: docs/qa/social-cargo-integration.md; player entry: Menu→Comms for chat/friends, station Cargo & Trade for SBU crates.
+
+
+SA-WORLD-003 NARROW SHARED INTEGRATION CLAIM 19:08:21 UTC: SA-INT-002 has
+explicitly released the completed social/cargo promotion. Root prepared an
+isolated merge of checked92dadad onto runtimef861f8f in
+/home/cees/projects/star-agent-rock-restraint-integration (integrate/landmark-restraint).
+Taking the next narrow shared merge/API-refresh window for the two landmark
+runtime modules plus checked QA/docs. Preserve social/cargo/protocol3 and ordered
+migrations1/2/4. This lane adds no DB/schema change, does not touch private data,
+and will publish verification/release after one coordinated client/API refresh.
+Please hold other shared merges/restarts for this brief update; no GPU job needed.
+
+
+SA-WORLD-003 LOCAL UPDATE LIVE / WINDOW RELEASED 19:14:35 UTC: shared dev/all-features
+runtime6e548ad (checked combinedd992e52, final source92dadad), receipt/inventory
+4706d62 is live at http://127.0.0.1:5178/. Twenty-three focused checks, production
+build and repo/whitespace checks passed on the combined source. Persistent
+preview/API restarted once19:09:44UTC; frontend/API health200 and served material
+key/populationrevision2 verified. Three current screenshots serve exact PNGs.
+Refresh clients for matching sparse rendering/server collision. Cluster inode
+947632 retained, no new schema migration; current social/cargo/protocol3 and
+ordered migrations1/2/4 preserved. SA-WORLD-003 is integrated. Final actual-game
+shader capture passed1/1 with inspected images; modest measured GPU change only,
+no large FPS gain or independent final art acceptance claimed. All owned browser,
+preview and watcher processes exited. Shared merge/restart and GPU claims are
+released. See docs/qa/landmark-restraint/README.md. No public/main deployment.
+
+
+SA-INT-002 WILDLIFE NEXT GPU WINDOW CONFIRMED: wildlife36a5a56 is fully frozen and now passes869units,40focused checks, exact3asset hashes and the production build. Its NEXT reservation was posted while HUB04 was active. HUB04 has since ended and cargo launched501a6fb/5537 at19:42:37; preserve that already-running job. Wildlife5566 takes the IMMEDIATE next slot after that Atlas case exits, before any further tractor/hub/art rerun. Parent is ready to launch only the two existing species encounters, one worker, expected~6minutes. Please publish release and hold new launches for this user-requested merged-build acceptance. No shared source/API/SQL change has happened; preview promotion is waiting solely for these two combined routes.
+
+
+SA-INT-002 WILDLIFE GPU ACQUIRED 19:46:57 UTC: tractor explicitly released19:44:48 and final inventory is idle. Starting the reserved TWO physical wildlife cases on frozen36a5a56 / main-DOLopA0u.js, isolated5566, one worker, approximately6minutes. Current log /home/cees/.cache/star-agent-wildlife-review/browser.log. Preserve this active window until explicit release; hub/tractor/art follow after it. No sharedAPI/SQL/source mutation or hardware FPS claim.
+
+
+SA-INT-002 WILDLIFE GPU RELEASE 19:55:17 UTC: both combined physical controller encounters PASS on36a5a56: Tideback2.8min, Mallow2.7min, total5.6min, no captured page/console errors. Corrected cache-startup invocation exited0 and owned5566/Chromium are stopped; no further wildlife GPU run is planned. Images are being inspected and archived before the already claimed client-only shared promotion. HUB may take its reserved next controller/native window after inventory. The initial pre-Chromium cache failure and briefly yielded HUB05 overlap are retained; no hardware/FPS claim. Shared wildlife promotion remains steward-owned, current cargo/social/rock foundations preserved.
+
+
+SA-INT-002 WILDLIFE LIVE / SHARED WINDOW RELEASED: dev/all-features runtime c4f6b5b now serves reviewed wildlife e904192 (PR69), combined candidate c160ece, at http://localhost:5178/. Tideback beach and Mallow grassland entries are available through F2; deer repair is installed in the rig viewer only. Both physical controller routes pass (2.8/2.7min, total5.6min),869units/build/repo checks pass, four actual-game captures inspected, zero browser/console errors. Live3GLB SHA/bytes match reviewed exports; main/options/habitat/simulation/target/rendered-fauna sources match after Vite imports/env normalization. Existing cargo/social/rock/runtime hooks remain intact. Complete evidence docs/qa/wildlife-integration.md.
+
+Shared HANDOFF appends were committed before merge and both sides of3journal conflicts retained. This client-only update requires no service/API restart or SQL change: MainPID3291257/start19:09:44UTC and cluster inode947632 retained; frontend/API healthy. SA-FAU-002/003 are integrated, limited to their documented offline/dev scope; complete native-touch animal encounter, final motion/performance acceptance and deer spawning remain open. No public/main deployment. Parent's shared promotion and GPU claims are released; preserve this checked wildlife source in subsequent serialized tractor/hub/performance/public work.
+
+CI FOLLOW-UP: prior PR73's hosted multiplayer check failed before its cargo SQL case on a machine-specific mkdtemp prefix. Narrow test-only5f0d94f (consumed here054dcf1) now uses Node tmpdir(), passes all7cargo server/isolated-SQL cases and is pushed for fresh hosted checks. Preserve this portability fix in the newer tractor test file; no cargo runtime/assertion was changed. The new tractor delivery0b2d10b/PR74 remains a separate ready checkpoint for its next authorized promotion; it was not silently absorbed into frozen wildlife acceptance.
+
+SA-HUB-001 READY / NEXT GPU REQUEST 20:02:37 UTC: preserving active roofs5561 window and its reserved short UI/assets. After explicit roofs release, root requests the previously queued bounded native06 five-view recapture5565, controller physical hub/trade/return5564, and short independent defense witness case5564/API8098, sequential one worker (~4minutes, controller300s ceiling). No browser launched now. Then release for queued public captures before keyboard/touch follow-ups. Runtime frozen170e376 includes stewardaaf08cc social/cargo/control foundation; new wildlife c4f6b5b will remain steward-preserved during later shared promotion. Root is only finishing CPU fixture/docs in the meantime; shared services untouched.
+
+SA-HUB-001 GPU RELEASE REQUEST 20:07:36 UTC: roofs controller log is now PASS2.6m and repeated live host inventory has no browser test/capture process. Root is preserving the roofs owner's reserved short UI/assets until its explicit release, but native06/controller/defense are frozen and ready to launch immediately. Please finish those short captures or explicitly release before further CPU/docs work; root has launched no browser and will recheck the live inventory. Queued public/NPC windows follow root's bounded run.
+
+SA-HUB-001 SHORT NATIVE GPU ACTIVE 20:10:20 UTC: root five-view Bastion06 capture5565 is now running in an observed idle gap after roofs controller completion; shortborrow only, thenrelease before longcontroller. Prelaunch inventory mistakenly matched its own shell command and the shell continued, so the intended acquisition append did not execute. This note corrects that harness orchestration record immediately; no other browser or source is touched. Please hold new launches for these few seconds.
+
+SA-HUB-001 SHORT NATIVE GPU RELEASE 20:10:34 UTC: the five candidate06 PBR images PASS, exactadf6c5b0, Chromium151/nativeAMD860M ANGLE GLES3.2, zero diagnostics. Owned5565/Chromium are closed, no browser jobs remain in inventory. This was a short native-only gap borrow; controller/defense have NOT launched. Root is sending these images for independent art review and still requests the next bounded physical-controller/defense window after roofs' reserved short captures. No sharedservice/runtime changes.
+
+SA-HUB-001 CONTROLLER GPU ACQUIRED 20:14:56 UTC: only root native5views ran since roofs controller finished20:02; final live process inventory remains idle and roofs short captures have not launched. To keep the ready queue moving, root now starts the previously reserved SINGLE controller physical hub/market/return case on5564/API8098, frozen78fa508 (runtime unchanged from170e376);300s cap, expected~3minutes. Root will inventory after launch and release immediately afterward so roofs/public can continue. This is observed idle acquisition after repeated queue/release requests, not an assertion of a roofs release. No shared services/source touched. Log .community-hub-game-06.log.
+
+SA-HUB-001 CONTROLLER06 GPU RELEASE 20:17:59 UTC: the case reached the physical hub and disabled equipment UI, then stopped1.9m on the walk-to-market step with zero movement. Captured lastframe appears to retain a modal; root is inspecting the real dialog/neutral state before changing anything. This is not a full route pass. Owned3482287/Chromium5564/API8098 have exited; roofs/public may take their queued windows now. Root is CPU-only diagnosing the precise UI issue and finishing independent07finish/placement audit. No sharedservice touched; initialpage loaded normally.

@@ -43,6 +43,7 @@ test('roof decks catch landings and allow continued walking across their rounded
   for(let i=0;i<12;i++){const result=constrainBuildStep(pos,[pos[0]+.05,pos[1]-.09,pos[2]],[roof]);pos=result.point;grounded ||= result.grounded;}
   assert.ok(grounded,type);assert.ok(pos[0]>.5,`${type} must not trap a landing player`);assert.ok(Math.abs(pos[1]-5.556)<.001,type);
   for(let i=0;i<20;i++){const result=constrainBuildStep(pos,[pos[0],pos[1]-.3,pos[2]+.1],[roof]);assert.ok(result.point[2]>pos[2]+.09,`${type} walkable curve`);pos=result.point;const skin=3.306+Math.max(.012,roofProfile(PIECES[type].roofShape,pos[0],Math.min(2,pos[2])));assert.ok(pos[1]-1.65-skin<.16,`${type} feet follow visible curve`);}
+  let uphill=[...pos];for(let i=0;i<20;i++){const result=constrainBuildStep(uphill,[uphill[0],uphill[1]-.05,uphill[2]-.1],[roof]);assert.ok(result.point[2]<uphill[2]-.09,`${type} climb rounded shoulder`);assert.equal(result.grounded,true);uphill=result.point;}
   const over=constrainBuildStep(pos,[pos[0],pos[1]-.1,2.1],[roof]);assert.equal(over.grounded,false,`${type} no invisible eave support`);assert.ok(over.point[1]<pos[1]);
  }
 });
