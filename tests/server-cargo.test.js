@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import * as THREE from 'three';
 import { createWorld } from '../server/world.js';import { createRoom } from '../server/room.js';import { createMemoryStore,createPostgresStore } from '../server/database.js';
 import { startLocalDatabase } from '../server/local-database.js';import { mkdtemp,rm } from 'node:fs/promises';import { join } from 'node:path';import { createServer } from 'node:net';
+import { tmpdir } from 'node:os';
 import { emptyCommerce,ensureAccount,commerceCommand } from '../src/trading/model.js';
 const worldPromise=createWorld();
 async function setup(t,store=createMemoryStore()){
@@ -36,7 +37,7 @@ test('server supports Atlas cargo hull and blocks2SBU hand pickup',async t=>{
 
 });
 test('isolated PostgreSQL migration, concurrent seller settlement and restart preserve cargo',async t=>{
- const root=await mkdtemp('/home/cees/.cache/star-agent-sbu/database-'),server=createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));
+ const root=await mkdtemp(join(tmpdir(),'star-agent-cargo-database-')),server=createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));
  const db=await startLocalDatabase({XDG_DATA_HOME:root,DEV_DATABASE_NAME:'cargo-tests',DEV_DATABASE_PORT:String(port)});let store=await createPostgresStore({connectionString:db.connectionString});t.after(async()=>{await store.close();await db.close();await rm(root,{recursive:true,force:true});});await store.migrate();await store.migrate();
  const [a,b]=await Promise.all(['seller','buyer'].map(id=>store.createAccount({email:`${id}@example.test`,callsign:id,passwordHash:'test-only'})));
  await store.transactCommerce(()=>{const state=emptyCommerce();ensureAccount(state,a.id);ensureAccount(state,b.id);state.terminals['trade-1']={id:'trade-1',owner:a.id,position:[0,0,0],stock:{basalt:1},prices:{basalt:37}};return {state};});

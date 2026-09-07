@@ -1,6 +1,6 @@
 # Verified development status
 
-**Snapshot: 2026-09-07, social/cargo/controls integrated locally at `f861f8f`.** This page states
+**Snapshot: 2026-09-07, reviewed wildlife integrated locally at `c4f6b5b`.** This page states
 capabilities and gaps; [ROADMAP](../../ROADMAP.md) states ambitions. New governance
 and tooling changes do not certify the entire game as finished.
 
@@ -17,6 +17,7 @@ and tooling changes do not certify the entire game as finished.
 | Multiplayer | Ten-player prototype, persistent PostgreSQL/Prisma accounts and inventory, comms-assigned hangars, authoritative hits, assigned remote suit colors | Local database survives restarts; no SMTP; online Nomad/Atlas cargo hulls, with remaining fleet parity open; live ten-person soak not established here |
 | Social | Server chat, persistent mutual friends, presence, blocking and private session kicks; complete controller/keyboard/touch and ten-pilot fixture checks | Small English-first moderation rules; no direct messages, offline delivery, chat archive, reports inbox or permanent bans |
 | Combat | Offline Nomad/Kestrel patrol encounters, shield/hull damage and recovery; integrated controller/browser evidence | No reward ledger, durable mission or multiplayer NPC authority; fitted S1/S2/S3 weapons are integrated |
+| Wildlife | Offline Pyrebear/Suloher encounters and medical recovery; seeded Aeon Tidebacks defend after injury and peaceful Mallow grazers retreat; deer rig viewer installed | No online animal replication or persistence; deer world spawning, complete native-touch encounter and final motion/performance acceptance remain open |
 | Audio | Six local score variants, material footsteps/weapon/cutter synthesis, thrust-responsive engines, Doppler flybys and building/creature effects | Final mix/listening review, broad surface and remote audio coverage |
 | Developer entry | Three ships, paged world/habitat starts, temporary saves, shared seeds and one content-review menu | A dev start is explicit teleport; it does not prove continuous travel by itself |
 | Contribution process | Governance/roadmap/helpers/CI integrated in PR52; default dev and protected shared branches verified | Newcomer onboarding/restore rehearsal and additional human maintainers remain open |
@@ -26,8 +27,8 @@ SQL fixture skipped), production build, repository checks and six combined brows
 cases across focused runs. The later landmark material passes8focused invariants
 and its actual-game shader tour. See [combined review evidence](../qa/dev-content-review.md)
 for source boundaries, captures, input coverage and remaining gates. Hostile wildlife
-is offline; Pyrebear controller gameplay is checked while the corrected Suloher
-journey remains owner work. SBU cargo subsequently passes849units,97multiplayer checks (one existing skip),
+is offline; the Pyrebear and corrected Suloher controller journeys now pass,
+including Suloher medical recovery. SBU cargo subsequently passes849units,97multiplayer checks (one existing skip),
 full runtime hull clearance, actual controller/phone journeys and separate SQL/socket
 persistence checks; see [cargo QA](../qa/sbu-cargo.md).
 
@@ -39,8 +40,18 @@ reload and private kick; ten admitted fixture pilots, 30 saved friends and bound
 phone pages/drafts. Independent UI capture review scores cohesion and
 information/function 4/5. This does not establish ten human players or hardware
 performance acceptance. [Combined integration evidence](../qa/social-cargo-integration.md)
-records the exact source and local promotion status. Base power, newer rover
-polish and new fauna/landmark refinements remain separate from this frozen update.
+records that exact source and local promotion status. Sparse landmark refinement
+subsequently integrated at `6e548ad`/`4706d62`; its actual shader images and limited
+measured gains are recorded in [landmark QA](../qa/landmark-restraint/README.md).
+
+The latest wildlife combination passes **869 unit tests**, the production build
+and both physical Tideback/Mallow controller encounters in 5.6 minutes with no
+page/console errors. Four actual-game images were inspected. Exact live GLB hashes
+and served modules were verified after local promotion `c4f6b5b`. This client-only
+update preserves the existing API and database without a service restart. See
+[wildlife integration evidence](../qa/wildlife-integration.md). Base power, newer
+rover polish, handheld tractor, community hub and performance work remain separate
+from this named checkpoint.
 
 Historical validation follows. The combined launcher checkpoint passed 650 unit checks, 79 multiplayer checks
 with one PostgreSQL-only skip, a build and focused browser journeys on Chromium

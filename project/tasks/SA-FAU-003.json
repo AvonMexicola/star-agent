@@ -1,0 +1,34 @@
+{
+  "id": "SA-FAU-003",
+  "title": "Seed beach Tidebacks and friendly grassland grazers on Aeon",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex Astra fauna team",
+  "status": "integrated",
+  "branch": "feat/pyrebear",
+  "base": "b3eedc05795c9ecfe4c40d6f04b0f89ff43de791",
+  "updated": "2026-09-07",
+  "areas": [
+    "world",
+    "combat",
+    "assets"
+  ],
+  "claims": [
+    "src/fauna/aeon-amphibian-habitat.js",
+    "src/fauna/hostile-fauna.js",
+    "src/fauna/hostile-simulation.js",
+    "src/main.js",
+    "src/dev-launch-options.js",
+    "assets/creatures/aeon-amphibian/",
+    "public/models/creatures/aeon-amphibian.glb",
+    "public/models/creatures/aeon-amphibian-manifest.json",
+    "blender/finish_aeon_amphibian.py",
+    "src/fauna/aeon-grazer-habitat.js",
+    "assets/creatures/aeon-grazer/",
+    "public/models/creatures/aeon-grazer.glb",
+    "public/models/creatures/aeon-grazer-manifest.json",
+    "blender/finish_aeon_grazer.py",
+    "src/fauna/fauna-target.js"
+  ],
+  "brief": "docs/briefs/aeon-wildlife.md"
+}
