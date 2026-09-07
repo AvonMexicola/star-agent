@@ -32,11 +32,15 @@ test('hangar curtain clears the Nomad and retracts inside its own header envelop
  assert.ok(open.every(b=>b.min[0]>=-8&&b.max[0]<=8&&b.max[1]<=6));
 });
 
-test('pad profiles fit the current ship envelopes with clearance and preserve a four-times-area heavy reference',async()=>{
+test('small and medium pads fit Nomad; only the large pad fits the current full-size Atlas with clearance',async()=>{
  const {SHIP_LAYOUT}=await import('../src/boarding.js'),{FREIGHTER_LAYOUT}=await import('../src/freighter-layout.js');
- for(const [id,layout,scale]of [['foundation-pad-small',SHIP_LAYOUT,1],['foundation-pad-medium',FREIGHTER_LAYOUT,1],['foundation-pad-large',FREIGHTER_LAYOUT,2]]){
-  const [width,length]=PIECES[id].footprint;assert.ok(width>(layout.flightBounds.max[0]-layout.flightBounds.min[0])*scale+2);assert.ok(length>(layout.flightBounds.max[2]-layout.flightBounds.min[2])*scale+2);
+ const fits=(id,layout)=>{const [width,length]=PIECES[id].footprint;return width>layout.flightBounds.max[0]-layout.flightBounds.min[0]+2&&length>layout.flightBounds.max[2]-layout.flightBounds.min[2]+2;};
+ for(const [id,layout]of [['foundation-pad-small',SHIP_LAYOUT],['foundation-pad-medium',SHIP_LAYOUT],['foundation-pad-large',FREIGHTER_LAYOUT]]){
+  assert.equal(fits(id,layout),true,`${id} leaves more than1m around the complete ${layout===SHIP_LAYOUT?'Nomad':'Atlas'} envelope`);
  }
+ assert.equal(fits('foundation-pad-small',FREIGHTER_LAYOUT),false);
+ assert.equal(fits('foundation-pad-medium',FREIGHTER_LAYOUT),false,'the retired medium-Atlas assignment cannot return silently');
+ assert.deepEqual(PIECES['foundation-pad-large'].footprint,[48,72],'full Atlas support needs no pad geometry resize');
 });
 
 test('stacked walls enclose a double-height hangar without an intermediate floor',()=>{
