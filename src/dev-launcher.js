@@ -31,15 +31,15 @@ export function createDevLauncher({nav,options,seed,available=()=>true}){
   dialog.append(reviews);
   const shipButtons=[],locationButtons=[];
   const add=(item,parent,kind,handler)=>{const button=document.createElement('button');button.type='button';button.dataset.controllerKey='dev-'+kind+'-'+item.id;button.dataset[kind]=item.id;const title=document.createElement('strong'),detail=document.createElement('span');title.textContent=item.name;detail.textContent=item.detail;button.append(title,detail);button.addEventListener('click',()=>{handler(item.id);render();});parent.append(button);return button;};
-  for(const item of DEV_SHIPS)shipButtons.push(add(item,dialog.querySelector('.dev-ships'),'ship',id=>ship=id));
-  for(const item of DEV_LOCATIONS)locationButtons.push(add(item,dialog.querySelector('.dev-locations'),'location',id=>location=id));
+  for(const item of DEV_SHIPS)shipButtons.push(add(item,dialog.querySelector('.dev-ships'),'ship',id=>{ship=id;if(DEV_LOCATIONS.find(s=>s.id===location)?.ship&&DEV_LOCATIONS.find(s=>s.id===location).ship!==id)location='hangar';}));
+  for(const item of DEV_LOCATIONS)locationButtons.push(add(item,dialog.querySelector('.dev-locations'),'location',id=>{location=id;ship=DEV_LOCATIONS.find(s=>s.id===id).ship??ship;}));
   function render(){
     for(const b of shipButtons)b.setAttribute('aria-pressed',String(b.dataset.ship===ship));
     for(const b of locationButtons)b.setAttribute('aria-pressed',String(b.dataset.location===location));
-    const surface=location==='rover-surface';
+    const surface=location==='rover-surface',meadow=location==='atlas-meadow';
     dialog.querySelector('.dev-selection').textContent=surface?'Burrow M-04 → Selene surface':DEV_SHIPS.find(s=>s.id===ship).name+' → '+DEV_LOCATIONS.find(s=>s.id===location).name;
-    dialog.querySelector('.dev-seed').textContent=surface?'Temporary rover inventory · your selected ship stays at the station':'Shared procedural seed '+seed+' · ship unlocks bypassed in this test session';
-    dialog.querySelector('.dev-launch').textContent=surface?'Start ground mining ↗':'Launch test flight ↗';
+    dialog.querySelector('.dev-seed').textContent=meadow?'Atlas + Burrow · original meadow seed 7291 · fresh test session':surface?'Temporary rover inventory · your selected ship stays at the station':'Shared procedural seed '+seed+' · ship unlocks bypassed in this test session';
+    dialog.querySelector('.dev-launch').textContent=meadow?'Start meadow adventure ↗':surface?'Start ground mining ↗':'Launch test flight ↗';
     roverSurfaceLink.href=devLaunchURL(window.location.href,{ship,location:'rover-surface'});
   }
   function suspend(){nav.keys.clear();nav.toolTrigger=0;nav.gamepad.suspend();nav.resetSteering();}

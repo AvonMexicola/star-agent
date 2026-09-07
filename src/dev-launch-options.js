@@ -1,4 +1,5 @@
 /** Explicit local test starts. Normal/public entry ignores these parameters. */
+export const ATLAS_MEADOW_SEED = 7291;
 export const DEV_SHIPS = Object.freeze([
   {id:'nomad',name:'Nomad 02',detail:'Utility · walkable cabin, berth & cargo'},
   {id:'kestrel',name:'Kestrel',detail:'Interceptor · port ladder · energy weapons'},
@@ -7,6 +8,7 @@ export const DEV_SHIPS = Object.freeze([
 export const DEV_LOCATIONS = Object.freeze([
   {id:'hangar',name:'Station hangar',detail:'Parked · boarding, cabins and departure'},
   {id:'rover-surface',name:'Burrow mining — Selene surface',detail:'Seated in the ground rover · nearby outcrop · ready to drive and mine'},
+  {id:'atlas-meadow',name:'Aeon · Atlas + Burrow meadow',detail:'Landed Atlas · rover parked beside it · load up and fly',ship:'atlas',seed:ATLAS_MEADOW_SEED},
   {id:'station',name:'Station approach',detail:'Flight · docking and hull inspection'},
   {id:'coast',name:'Aeon · coast',detail:'95 m · ocean, grass and ground materials'},
   {id:'amphibian-habitat',name:'Aeon · Tideback beach',detail:'35 m · land and meet peaceful shore wildlife'},
@@ -30,13 +32,17 @@ export function devLaunchOptions(search,enabled){
   const query=new URLSearchParams(search);
   const ship=DEV_SHIPS.find(s=>s.id===query.get('ship'))?.id??'nomad';
   const location=DEV_LOCATIONS.find(s=>s.id===query.get('start'))?.id??'hangar';
-  return {ship,location,autoStart:query.get('dev')==='1'&&DEV_LOCATIONS.some(s=>s.id===query.get('start'))};
+  return {ship:DEV_LOCATIONS.find(s=>s.id===location)?.ship??ship,location,autoStart:query.get('dev')==='1'&&DEV_LOCATIONS.some(s=>s.id===query.get('start'))};
 }
 export function devLaunchURL(href,{ship,location}){
   if(!DEV_SHIPS.some(s=>s.id===ship)||!DEV_LOCATIONS.some(s=>s.id===location))throw new Error('Choose a test ship and location.');
-  const url=new URL(href);url.searchParams.set('dev','1');url.searchParams.set('intro','0');url.searchParams.set('ship',ship);url.searchParams.set('start',location);
+  const preset=DEV_LOCATIONS.find(s=>s.id===location);
+  ship=preset.ship??ship;
+  const url=new URL(href);if(preset.seed!==undefined)url.searchParams.set('seed',String(preset.seed));url.searchParams.set('dev','1');url.searchParams.set('intro','0');url.searchParams.set('ship',ship);url.searchParams.set('start',location);
   url.searchParams.delete('exteriorView'); // The overview is a one-shot inspection start.
   url.searchParams.delete('sandbox');
   url.searchParams.delete('rover');
+  url.searchParams.delete('meadow');
+  if(preset.id==='atlas-meadow')url.searchParams.delete('cargo-test');
   return url.href;
 }

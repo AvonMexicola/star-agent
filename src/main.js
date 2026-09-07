@@ -85,7 +85,7 @@ import { KESTREL_LAYOUT, KestrelAccess } from './kestrel-access.js';
 import { createKestrel } from './kestrel.js';
 import kestrelURL from '../assets/kestrel/kestrel.glb?url';
 import { testFlightStorage } from './test-flight.js';
-import { devLaunchOptions } from './dev-launch-options.js';
+import { devLaunchOptions, devLaunchURL, ATLAS_MEADOW_SEED } from './dev-launch-options.js';
 import { createDevLauncher } from './dev-launcher.js';
 import { MERIDIAN } from './ship-manufacturers.js';
 import { createNavigationTargeting } from './navigation-targeting.js';
@@ -105,12 +105,16 @@ let toastTimeout;
 function notify(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>$('toast').classList.remove('visible'),4500);}
 function fatal(message){document.body.classList.add('fatal');$('loading').classList.remove('hidden');$('loading').querySelector('p').textContent='FLIGHT SYSTEM OFFLINE';$('loading').querySelector('span').textContent=message;}
 
-try {
+const devOptions=devLaunchOptions(location.search,import.meta.env.VITE_DEV_TOOLS==='1');
+const atlasMeadowStart=devOptions?.location==='atlas-meadow';
+// Normalize a shared preset link before creating a renderer or generation workers.
+if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
+  location.replace(devLaunchURL(location.href,devOptions));
+}else try {
   const multiplayerEntry=import.meta.env.VITE_MULTIPLAYER_ENTRY==='1';
-  const devOptions=devLaunchOptions(location.search,import.meta.env.VITE_DEV_TOOLS==='1');
   const surfaceRoverStart=devOptions?.location==='rover-surface';
   const testFlight=Boolean(devOptions)||new URLSearchParams(location.search).get('ship')==='kestrel';
-  const sandboxEnabled=new URLSearchParams(location.search).get('sandbox')==='build';
+  const sandboxEnabled=!atlasMeadowStart&&new URLSearchParams(location.search).get('sandbox')==='build';
   const introEnabled=!testFlight&&!sandboxEnabled&&new URLSearchParams(location.search).get('intro')!=='0';
   const canvas=$('viewport');
   const renderer=new THREE.WebGLRenderer({canvas,antialias:false,logarithmicDepthBuffer:true,powerPreference:'high-performance'});
@@ -148,7 +152,7 @@ try {
   character.setVisible(false);
   const remotePlayers=new RemotePlayers(scene),multiplayer=new MultiplayerClient();
   multiplayer.attach({nav,station,remotePlayers});
-  let localInventoryStorage;try{localInventoryStorage=testFlight&&!sandboxEnabled?testFlightStorage(devOptions&&new URLSearchParams(location.search).get('cargo-test')==='1'?(window.__starAgentCargoTestSeed??[]):[]):window.localStorage;}catch{}
+  let localInventoryStorage;try{localInventoryStorage=testFlight&&!sandboxEnabled?testFlightStorage(devOptions&&!atlasMeadowStart&&new URLSearchParams(location.search).get('cargo-test')==='1'?(window.__starAgentCargoTestSeed??[]):[]):window.localStorage;}catch{}
   if(sandboxEnabled)localInventoryStorage=sandboxStorage(localInventoryStorage);
   const fleet=new Fleet(localInventoryStorage),freighterSystems=new FreighterSystems();
   if(devOptions){fleet.active=devOptions.ship;fleet.unlocked=true;fleet.surfaceVisited=true;}
@@ -218,7 +222,7 @@ try {
   nav.baseLandingSurface=pose=>build.landingSurface(pose);
   nav.baseLandingRevision=()=>build.store.state.build;
   nav.buildingRaycast=(start,direction,range,envelope)=>build.raycast(start,direction,range,envelope);
-  const rover=surfaceRoverStart||(devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1')?createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&(surfaceRoverStart||nav.shipId==='atlas')}):null;
+  const rover=surfaceRoverStart||atlasMeadowStart||(devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1')?createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&(surfaceRoverStart||nav.shipId==='atlas')}):null;
   nav.vehicle=rover;
   const useQuick=index=>{const result=loadout.useQuick(index);nav.notify(result.message);};
   const loadoutBar=createLoadoutBar({loadout,nav,onSelect:id=>{if(build.active)build.cancel();miningTool.select(id);},onUse:useQuick,open:()=>inventoryUI.openEquipment()});
@@ -796,14 +800,17 @@ try {
             enterPlayerInterface();canvas.focus({preventScroll:true});
             const launch=surfaceRoverStart?rover.spawnSurface({target:mining.ground.position}).then(ok=>{
               if(!ok)throw new Error('Burrow surface placement failed.');
-            }):devOptions.location!=='hangar'?transit(devOptions.location):Promise.resolve();
+            }):devOptions.location!=='hangar'?transit(atlasMeadowStart?'grazer-habitat':devOptions.location):Promise.resolve();
             launch.then(async()=>{
-              if(rover&&!surfaceRoverStart){
+              if(atlasMeadowStart){
+                const {placeAtlasMeadow}=await import('./dev-atlas-meadow.js');
+                await placeAtlasMeadow(nav);
+              }else if(rover&&!surfaceRoverStart){
                 if(devOptions.location==='moon')nav.touchDown();
                 if(!await rover.spawn())throw new Error('Burrow cargo placement failed.');
                 notify('Atlas + Burrow mining test. F leaves the chair; ride the crew lift to the cargo deck, then walk aft to the rover’s port door.');
               }
-              if(new URLSearchParams(location.search).get('exteriorView')==='overview'&&station.exterior.authored){
+              if(!atlasMeadowStart&&new URLSearchParams(location.search).get('exteriorView')==='overview'&&station.exterior.authored){
                 placeStationExteriorPreview(nav,innerWidth/innerHeight);
                 notify('Station exterior · geometry preview. Fly freely; F2 opens test locations.');
               }

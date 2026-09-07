@@ -11,7 +11,7 @@ test('every local ship and destination survives a shareable URL without dropping
   for(const ship of DEV_SHIPS)for(const location of DEV_LOCATIONS){
     const url=new URL(devLaunchURL('http://127.0.0.1:5178/?seed=7291',{ship:ship.id,location:location.id}));
     assert.equal(url.searchParams.get('seed'),'7291');
-    assert.deepEqual(devLaunchOptions(url.search,true),{ship:ship.id,location:location.id,autoStart:true});
+    assert.deepEqual(devLaunchOptions(url.search,true),{ship:location.ship??ship.id,location:location.id,autoStart:true});
   }
   assert.throws(()=>devLaunchURL('https://example.test/',{ship:'bad',location:'hangar'}));
 });
@@ -34,4 +34,20 @@ test('leaving the exterior overview launches the requested location and retains 
   assert.equal(url.searchParams.has('exteriorView'),false);
   assert.equal(url.searchParams.get('stationExterior'),'1');
   assert.equal(devLaunchOptions(url.search,true).location,'hangar');
+});
+
+
+test('the meadow is a complete Atlas and Burrow preset with its reviewed terrain seed',()=>{
+  for(const ship of DEV_SHIPS){
+    const url=new URL(devLaunchURL('http://127.0.0.1:5178/?seed=42&rover=1&meadow=1&exteriorView=overview&sandbox=build&cargo-test=1',{ship:ship.id,location:'atlas-meadow'}));
+    assert.equal(url.searchParams.get('ship'),'atlas');
+    assert.equal(url.searchParams.get('seed'),'7291');
+    for(const key of ['rover','meadow','exteriorView','sandbox','cargo-test'])assert.equal(url.searchParams.has(key),false);
+    assert.deepEqual(devLaunchOptions(url.search,true),{ship:'atlas',location:'atlas-meadow',autoStart:true});
+    assert.equal(devLaunchOptions(url.search,false),null);
+  }
+  assert.equal(devLaunchOptions('?dev=1&start=atlas-meadow&ship=nomad',true).ship,'atlas','direct links select the required hull');
+  const next=new URL(devLaunchURL('http://127.0.0.1:5178/?start=atlas-meadow&seed=7291&meadow=1',{ship:'kestrel',location:'forest'}));
+  assert.deepEqual(devLaunchOptions(next.search,true),{ship:'kestrel',location:'forest',autoStart:true});
+  assert.equal(next.searchParams.has('meadow'),false,'leaving the scene does not retain its old trigger');
 });
