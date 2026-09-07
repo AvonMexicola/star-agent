@@ -55,7 +55,11 @@
     "src/gameplay-menu.js",
     "src/gameplay-menu.css",
     "scripts/community-hub-server.mjs",
-    "scripts/community-hub-route.mjs"
+    "scripts/community-hub-route.mjs",
+    "src/controller-hints.js",
+    "tests/controller-hints.test.js",
+    "tests/server-community-persistence.test.js",
+    "scripts/station-defense-review/"
   ],
   "brief": "docs/briefs/aeon-community-hub.md"
 }

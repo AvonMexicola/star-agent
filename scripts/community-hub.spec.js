@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {verifyStationMarketTrade} from '../tests/browser/station-market-route.js';
 const output=process.env.COMMUNITY_OUTPUT??'/home/cees/projects/.community-hub-qa/game-01',origin='http://127.0.0.1:5564';
 const state=page=>page.evaluate(()=>starAgent.state);
+const heldWeapon=s=>s.multiplayer.players.find(p=>p.id===s.multiplayer.ownId)?.weapon;
 async function pulse(page,index){await page.evaluate(i=>hubPad.buttons[i]={pressed:true,value:1},index);await page.waitForTimeout(90);await page.evaluate(i=>hubPad.buttons[i]={pressed:false,value:0},index);await page.waitForTimeout(110);}
 async function activate(page,mode,key){
  const target=page.locator('dialog[open]').last().locator(`[data-controller-key="${key}"]`);await expect(target).toBeVisible();await expect(target).toBeEnabled();
@@ -63,7 +64,7 @@ for(const mode of ['controller','keyboard','touch'])test(`${mode}: physical bert
   await expect.poll(async()=>(await state(page)).multiplayer.hub?.frame,{timeout:15000}).toBe('station:hub');
   await expect.poll(async()=>(await state(page)).multiplayer.hub?.transit).toBeNull();await expect.poll(()=>page.evaluate(()=>starAgent.navigation.enabled)).toBe(true);
   await walk.walk(0,9.5);await page.screenshot({path:folder+'/02-community-concourse.png'});
-  let s=await state(page);expect(s.multiplayer.hub.handsFree).toBe(true);expect(s.shipPosition).toEqual(ship);expect(s.multiplayer.inventory.weapon).toBeNull();
+  let s=await state(page);expect(s.multiplayer.hub.handsFree).toBe(true);expect(s.shipPosition).toEqual(ship);expect(heldWeapon(s)).toBeNull();
   // Actual selection UI shows the restriction; shared routes cannot draw a tool.
   await menu(page,mode);await activate(page,mode,'tab-inventory');
   await expect(page.locator('#multiplayer-inventory-dialog')).toContainText('Community hub');
@@ -71,14 +72,14 @@ for(const mode of ['controller','keyboard','touch'])test(`${mode}: physical bert
   expect(await equipment.count()).toBeGreaterThan(0);for(const button of await equipment.all())await expect(button).toBeDisabled();
   await page.screenshot({path:folder+'/03-hands-free-inventory.png'});await close(page,mode);
   if(mode==='controller')await pulse(page,15);else if(mode==='keyboard')await page.keyboard.press('Digit3');
-  expect((await state(page)).multiplayer.inventory.weapon).toBeNull();
+  expect(heldWeapon(await state(page))).toBeNull();
   await walk.walk(0,-8.5);await walk.walk(-5.5,-10.2);await interact(page,mode);
   await expect(page.locator('#trading-dialog')).toBeVisible();
   record.trade=await verifyStationMarketTrade({page,activate:key=>activate(page,mode,key),screenshotPath:folder+'/04-market.png'});
   // Closing a real modal with the trigger held must not resume a shot or tool.
   if(mode==='controller')await page.evaluate(()=>hubPad.buttons[7]={pressed:true,value:1});
   else if(mode==='keyboard')await page.keyboard.down('KeyT');
-  await close(page,mode);await page.waitForTimeout(300);expect((await state(page)).multiplayer.inventory.weapon).toBeNull();
+  await close(page,mode);await page.waitForTimeout(300);expect(heldWeapon(await state(page))).toBeNull();
   if(mode==='controller'){expect((await state(page)).controller.armed).toBe(false);await page.evaluate(()=>hubPad.buttons[7]={pressed:false,value:0});await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);}
   else if(mode==='keyboard')await page.keyboard.up('KeyT');
   await walk.walk(0,-8.5);await walk.walk(0,12.5);await walk.walk(0,15.95);await interact(page,mode);
