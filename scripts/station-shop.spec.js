@@ -152,6 +152,11 @@ test('walk through passenger transit to the armory, buy with a controller, trans
 
 test('390×844 touch shop keeps delivery, price and feedback readable in a controlled hub fixture', async ({ browser }, testInfo) => {
   const context = await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
+  // This is a touch fixture. A controller connected to the host must not open
+  // help or pause docking while this separate context tests tap interactions.
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, 'getGamepads', { value: () => [] });
+  });
   const page = await context.newPage(); const errors = errorsFor(page);
   try {
     await hubFixture(page); await walkTo(page, 10.7, 0);

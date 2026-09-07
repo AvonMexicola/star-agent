@@ -337,7 +337,7 @@ follow-up were still pending when this correction entry was written.
 Shadow follow-up runtime025e587 changes only the two concourse spotlights’ shadow
 settings:1024² maps, depth bias−0.001 and normal bias0.04. Astra caught poster/tile
 banding on29885c9; root’s bias-only trial cleared paper but left coarse rack
-shadows before the resolution refinement. Final GPU medians at1440×900/AMD860M
+shadows before the resolution refinement. Final GPU medians at 1440×900/AMD 860M
 were5.314ms hub and7.992ms hangar; CPU p95 remains10.1/12ms respectively. Keep
 these separate from the earlier slower runs and the recorded29885c9 interaction
 journey. Exact provenance and the final independent disposition belong to the
@@ -494,3 +494,19 @@ shutdown. This is a process-local audio selection; it does not change desktop
 settings. Both cleanup and cleaned studio render exited 0 with that setting.
 Installed-addon cattrs/registration warnings are separate and were not repaired
 as part of the prop work.
+
+
+First actual-game review found a detached dark shadow despite mesh minY and
+authored insert top both equalling -6.908m. Do not move an accurately supported
+asset downward merely to conceal light bias. This small static sample now keeps
+shadow receiving, disables its dynamic caster, and uses one shared 64² feathered
+contact-AO plane at base+.00075m, inside its .26×.27m footprint. It is explicitly
+approximate static contact shading, not a dynamic light shadow. Global lights
+and other merchandise remain unchanged. Count that extra 2-triangle draw and
+material separately from the 4000-triangle, one-material exported GLB.
+
+The dev-only props page also needed a Vite-resolved dependency bridge for the
+GLTFLoader's bare Three.js import. Raw public JavaScript cannot assume addon
+imports are transformed. Its adaptive grid had misleading 1m wording; the grid
+is now actually fixed to 1m cells alongside the 1.8m human silhouette. Validate
+reference graphics themselves before using their labels as scale evidence.

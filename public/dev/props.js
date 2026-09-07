@@ -1,14 +1,12 @@
 // Contact sheet for the Meshy props in public/models/props/manifest.json.
-// Served raw out of public/, so imports must be absolute URLs. THREE comes from
-// /src/trees.js so that GLTFLoader (which imports the bare specifier 'three')
-// resolves to the same Vite-optimised module instance.
+// Served raw out of public/. A source-module bridge lets Vite resolve both
+// Three.js and the loader's bare imports. This viewer requires the dev server.
 //
 //   ?t=<seconds>  freeze the turntable at a fixed time (deterministic screenshots)
 //   ?cols=<n>     force the column count
 //   ?only=<name>  show a single asset, full window
 //   ?clean        hide the HUD
-import { THREE } from '/src/trees.js';
-import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+import { THREE, GLTFLoader } from '/src/dev/props-dependencies.js';
 
 const params = new URLSearchParams(location.search);
 const fixedTime = params.has('t') ? Number(params.get('t')) : null;
@@ -185,9 +183,8 @@ function frameCell(item, aspect) {
   camera.far = dist * 12;
   camera.updateProjectionMatrix();
 
-  // Keep the grid from swallowing tiny props.
-  const gridScale = Math.max(0.06, Math.min(1, top / 12));
-  grid.scale.setScalar(gridScale);
+  // Keep the documented metre reference honest even for small counter props.
+  grid.scale.setScalar(1);
 }
 
 // ---------------------------------------------------------------------- main

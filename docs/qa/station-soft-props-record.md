@@ -1,6 +1,6 @@
 # Meshy shop soft props — production record
 
-**User-selected KESTREL downloaded, inspected and optimized; isolated runtime candidate under review. Jacket not downloaded. No new merge or deployment claimed.** The existing reviewed shops are unchanged.
+**KESTREL is optimized, integrated in the isolated review build and visually accepted by Astra at 4.00/5. Unit/build and four focused browser cases pass (touch after fixture correction). Jacket not downloaded; merge and deployment are separate.** The existing reviewed shops are unchanged.
 Work is isolated in `/tmp/star-agent-retail-props`, `feat/retail-soft-props`, based
 on the reviewed shop proceedings46b978f. The saved [brief](../../assets/station-shop/soft-props/brief.json)
 contains exact original prompts, counter support heights and dimensions.
@@ -344,3 +344,64 @@ Focused tests cover successful and failed optional attachment plus collision-tre
 identity. Full npm test: 186 passed. Production build passed with its chunk-size
 warning. Candidate servers: 5262 dev / 5263 production; accepted 5260 unchanged.
 Independent actual-game review and physical shop browser checks follow below.
+
+## Actual-game findings and bounded corrections
+
+The first independent Astra pass loaded the real optimized GLB on Chromium 151 /
+AMD 860M / ANGLE GL at 1440×900, render scale 1. Actual vertex audit measured
+minY=-6.908, matching the insert top; one placement, no berth copies. The reviewer
+scored 3.83 (4/4/3/4/4/4): the displaced dark cast shadow weakened contact. The
+dev-only human-scale viewer also failed a bare Three.js import and lacked a
+favicon. This pass is retained as an intermediate failure, not final acceptance.
+
+Correction: KESTREL receives scene shadows but no longer casts the displaced
+shadow. One lazily shared 64² alpha contact-AO plane within its footprint adds
+approximate soft static contact shading at base+.00075m. No global light/shadow
+bias or physical collision changed. Future jacket shadow policy is untouched.
+The GLB still has one material/4000triangles; runtime contact geometry adds one
+material and 2 triangles. Existing tests verify shared resources, transparent
+texture edges, absence on load failure and collision invariants.
+
+The props page now imports through a source-module dependency bridge, explicitly
+uses the existing favicon and retains true 1m grid squares. Its prior adaptive
+scale made that label incorrect for small props. After these code changes,
+npm test 186/186 and production build pass again; candidate bundle is
+index-CoFnp-fX.js. Independent final captures and browser results follow.
+
+## Final KESTREL delivery and validation
+
+Astra independently captured and inspected 12 final images, including the human
+and true metre grid. Final rubric 4/4/4/4/4/4 =4.00, no item below 3. The final
+game and props viewer record zero console errors/warnings. Final bundle
+index-CoFnp-fX.js SHA256363bf688666e94b55d7bf460e887732e57e4e45917c168c48b893312fb8b8081;
+GLB SHA remains 76d741972c05ddffe76d1c51f6607109cfd3dc265510b9f62876105e4d2357d7.
+Source and runtimestudio plus before/after game images are retained in
+docs/qa/station-soft-props/. Review reasoning, actual metadata and numerical
+timing limits are in docs/qa/station-shop-props-review.md.
+
+Final controlled visibility delta: +2draw calls /+4002submitted triangles.
+Visible291draws/498220triangles versus hidden289/494218. One4000tri mesh plus
+a2tri contact plane; the previous two4000tri shadow submissions are gone.
+Chromium 151.0.7922.173 / AMD Radeon860M / ANGLE GL,1440×900,DPR1,render scale 1.
+Outside browser jobs were active: timings are potentially contended, not a
+causal latency estimate or whole-scene performance approval.
+
+Root ran186 unit tests and production build successfully after runtime fixes.
+Four focused browser cases were exercised on the same final production runtime
+using one worker and hardware GL at full render scale. Concourse resource/UV
+checks and missing-artwork fallback passed. Physical hangar aisle→passenger
+elevator→armory→controller purchase→return→cargo transfer→reload passed 44.2s.
+The touch case initially timed out during docking: its captured UI showed a
+connected controller and open help modal, which pauses play. Isolating host
+gamepads only in that touch context fixed the fixture; the 390×844tap purchase,
+delivery/balance feedback, scrolling and close/resume case passed 11.1s on its
+focused rerun. This is 3 initial passes plus 1 successful corrected-case rerun,
+not a claim that the initial four-test command was green. Hardware Xbox input
+itself was not tested: controller actions use the existing synthetic fixture.
+
+Candidate remains isolated on feat/retail-soft-props, production 5263 and dev 5262.
+Accepted 5260 and shared runtime work were preserved. User-supplied current
+KESTREL was the only confirmed new download; no speculative jacket was enabled.
+All raw provider originals, reference prompts and images, rejected iterations,
+Blender source, cleanup script, measured receipts and review corrections remain
+available as the reusable production record. No additional Meshy credits spent.

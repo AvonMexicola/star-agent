@@ -102,13 +102,44 @@ test('attachments keep metre-local placements and independent nodes with shared 
     assert.equal(mesh.material.roughness, .87);
     assert.equal(mesh.material.userData.stationFinished, true);
     assert.equal(mesh.material.userData.unweathered, true);
-    assert.equal(mesh.castShadow, true);
+    assert.equal(mesh.castShadow, id !== ROLL, 'only the Kestrel roll disables biased shadow casting');
     assert.equal(mesh.receiveShadow, true);
     assert.doesNotMatch(mesh.name, /Detail|Sign_/);
     assert.equal(assets[i].mesh.name, 'Generated_Detail_Sign_jacket');
     mesh.position.x += 1;
     assert.equal(otherMesh.position.x, .01);
     assert.equal(assets[i].mesh.position.x, .01);
+    const contact = placement.getObjectByName('ContactAO_Kestrel');
+    if (id === ROLL) {
+      const otherContact = otherPlacement.getObjectByName('ContactAO_Kestrel');
+      assert.equal(placement.children.length, 2, 'one model root and exactly one contact plane');
+      assert.notEqual(contact, otherContact);
+      assert.equal(contact.geometry, otherContact.geometry);
+      assert.equal(contact.material, otherContact.material);
+      assert.equal(contact.material.map, otherContact.material.map);
+      assert.equal(contact.material.isMeshBasicMaterial, true);
+      assert.equal(contact.material.transparent, true);
+      assert.equal(contact.material.depthWrite, false);
+      assert.equal(contact.material.userData.stationFinished, true);
+      assert.equal(contact.material.userData.unweathered, true);
+      assert.equal(contact.castShadow, false);
+      assert.equal(contact.receiveShadow, false);
+      assert.equal(contact.userData.approximateContactAO, true);
+      assert.equal(contact.position.y, .00075);
+      contact.geometry.computeBoundingBox();
+      const size = contact.geometry.boundingBox.getSize(new THREE.Vector3());
+      assert.ok(Math.abs(size.x - .26) < 1e-7 && Math.abs(size.z - .27) < 1e-7 && size.y < 1e-7);
+      const texture = contact.material.map, data = texture.image.data, edge = texture.image.width;
+      assert.equal(texture.isDataTexture, true);
+      assert.equal(edge, 64);
+      assert.ok(data[(32 * edge + 32) * 4 + 3] > 0, 'AO has a shaded centre');
+      for (let j = 0; j < edge; j++) for (const pixel of [j, (edge - 1) * edge + j, j * edge, j * edge + edge - 1]) {
+        assert.equal(data[pixel * 4 + 3], 0, 'every outer texel is transparent to avoid a rectangular edge');
+      }
+    } else {
+      assert.equal(contact, undefined, 'the future jacket keeps its authored shadow policy');
+      assert.equal(placement.children.length, 1);
+    }
   }
   assert.equal(first.userData.collisionBoxes, undefined);
   assert.equal(hub.userData.collisionBoxes, undefined);
@@ -169,7 +200,15 @@ test('station hookup keeps optional props under the hub and a failed prop leaves
     if (available) {
       const model = station.hub.shopProps.getObjectByName(ROLL).children[0].children[0];
       assert.equal(model.material, asset.material);
-      assert.equal(model.castShadow, true, 'hub finish shadow policy keeps prop contact shadows');
+      assert.equal(model.castShadow, false, 'hub policy preserves the roll-specific shadow override');
+      assert.equal(model.receiveShadow, true);
+      const contact = station.hub.shopProps.getObjectByName('ContactAO_Kestrel');
+      assert.ok(contact);
+      assert.equal(contact.castShadow, false);
+      assert.equal(contact.receiveShadow, false);
+    } else {
+      assert.equal(station.hub.group.getObjectByName('ContactAO_Kestrel'), undefined,
+        'an unavailable model never leaves a phantom contact patch');
     }
   }
 });

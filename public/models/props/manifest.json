@@ -502,6 +502,6 @@
     "concept": "assets/station-shop/soft-props/image-to-3d-v2/roll-reference-v1.png",
     "file_mb": 0.268872,
     "origin": "base-centre",
-    "notes": "GPT image -> Meshy T2 original selected by Cees -> Blender minimal overshoot reduction and 1024px WebP PBR. Counter dressing only; source and full iteration costs in docs/qa/station-soft-props-record.md. Local candidate pending actual-game review."
+    "notes": "GPT image -> Meshy T2 original selected by Cees -> Blender minimal overshoot reduction and 1024px WebP PBR. Counter dressing only; source and full iteration costs in docs/qa/station-soft-props-record.md. Astra actual-game visual review 4.00/5; static counter contact AO is a separate shared runtime plane."
   }
 ]

@@ -1,5 +1,5 @@
 {
-  "status": "kestrel-local-game-review-in-progress-jacket-not-downloaded",
+  "status": "kestrel-reviewed-ready-for-integration-jacket-not-downloaded",
   "method": "Built-in GPT image generation -> visual inspection -> Meshy Image to 3D -> topology/PBR finishing -> local intake and actual game review",
   "userDirection": "Isometric item on a white background with no shadows, then import that image into Meshy.",
   "prompts": {

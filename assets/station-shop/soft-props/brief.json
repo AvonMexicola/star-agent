@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "kestrel-local-game-review-in-progress-jacket-not-downloaded",
+  "status": "kestrel-reviewed-ready-for-integration-jacket-not-downloaded",
   "basisCommit": "46b978ff112feb358c5daf1310809b4257bcdfaa",
   "authorization": "Cees: feel free to use meshy to make more props",
   "provider": "Meshy",
@@ -13,7 +13,7 @@
     "axes": "glTF Y-up, metres; final bounds aligned to hub local X/Y/Z",
     "runtimeDependency": "none; generated assets must be exported and served locally",
     "reviewer": "Astra",
-    "reviewStatus": "originals-rejected-replacements-pending-local-review"
+    "reviewStatus": "kestrel-visual-accepted-functional-checks-passed-jacket-deferred"
   },
   "props": [
     {
