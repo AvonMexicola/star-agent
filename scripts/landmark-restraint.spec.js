@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {writeFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {Vector3} from 'three';
 import {findDestinations} from '../src/world.js';
 import {AEON,bodySurfacePoint} from '../src/celestial.js';
@@ -101,13 +101,22 @@ async function measure(page){
 
 test('rarer landmarks and restrained stone render across the same approach and close views',async({browser},info)=>{
   const errors=[],captures=[],motion=[],boot=[];let context,page;
+  const baselineRecord=process.env.RESTRAINT_BASELINE_RECORD
+    ?JSON.parse(await readFile(process.env.RESTRAINT_BASELINE_RECORD,'utf8')):null;
+  if(baselineRecord){
+    expect(baselineRecord.baseline).toBe('219a584');
+    expect(baselineRecord.errors).toEqual([]);
+    // The completed close/low-flight captures remain valid even when a later
+    // candidate boot timed out. Do not reuse the superseded steep 1 km view.
+    captures.push(...baselineRecord.captures.filter(c=>['before-low-flight','before-close-face'].includes(c.name)));
+  }
   const views=[
     {name:'approach-1000m',eye:[700,1000,600],target:[-1800,100,-2800]},
     {name:'low-flight',eye:[165,65,95],target:[-2,38,0]},
     {name:'close-face',eye:[85,12,35],target:[-2,31,0]},
   ];
   try{
-    for(const phase of ['before','after']){
+    for(const phase of baselineRecord?['after']:['before','after']){
       // Close the previous complete renderer/workers before creating the next
       // one. The comparison never keeps two game pages resident together.
       await context?.close();
@@ -135,7 +144,8 @@ test('rarer landmarks and restrained stone render across the same approach and c
         console.log(JSON.stringify({name,visible:s.landmarks.visible,landmarkDraws:s.landmarks.draws,landmarkTriangles:s.landmarks.triangles,gpuMs:timing.gpuMs,cpuMs:timing.cpuMs}));
       }
     }
-    const before=captures.find(c=>c.name==='before-approach-1000m'),after=captures.find(c=>c.name==='after-approach-1000m');
+    const before=captures.find(c=>c.name==='before-low-flight'),after=captures.find(c=>c.name==='after-low-flight');
+    expect(after.eye).toEqual(before.eye);expect(after.target).toEqual(before.target);
     expect(after.landmarks.visible).toBeLessThan(before.landmarks.visible*.6);
     expect(after.landmarks.triangles).toBeLessThan(before.landmarks.triangles);
     for(const distance of [130,300,500,650,1750,2100]){
@@ -147,7 +157,8 @@ test('rarer landmarks and restrained stone render across the same approach and c
   }finally{
     const finalState=await page?.evaluate(()=>({preload:window.starAgent?.state.preload,terrain:window.starAgent?.state.terrainLod,hidden:document.hidden})).catch(()=>null);
     await writeFile(info.outputPath('restraint.json'),JSON.stringify({timestamp:new Date().toISOString(),browser:browser.version(),viewport:{width:1440,height:900},
-      baseline:'219a584',methodology:'Same production source except population/material and fixtures. One page at a time, 35 warm frames and 90+ asynchronous elapsed GPU queries per view. Other desktop activity remains possible; a bounded observation, not exclusive-GPU FPS acceptance.',captures,motion,boot,finalState,errors},null,2));
+      baseline:'219a584',baselineReused:baselineRecord?.timestamp??null,
+      methodology:'Same production source except population/material and fixtures. One page at a time, 35 warm frames and 90+ asynchronous elapsed GPU queries per view. Other desktop activity remains possible; a bounded observation, not exclusive-GPU FPS acceptance.',captures,motion,boot,finalState,errors},null,2));
     await context?.close();
   }
 });
