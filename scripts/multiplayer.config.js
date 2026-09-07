@@ -9,6 +9,6 @@ export default defineConfig({
   },
   webServer: [
     { command: 'PUBLIC_ORIGIN=http://127.0.0.1:5301 STAR_AGENT_MEMORY=1 PORT=8086 npm run server', url: 'http://127.0.0.1:8086/api/health', reuseExistingServer: false, timeout: 30000 },
-    { command: 'MULTIPLAYER_SERVER=http://127.0.0.1:8086 npm run dev -- --host 127.0.0.1 --port 5301', url: 'http://127.0.0.1:5301', reuseExistingServer: false, timeout: 30000 },
+    { command: 'VITE_MULTIPLAYER_ENTRY=1 MULTIPLAYER_SERVER=http://127.0.0.1:8086 npm run dev -- --host 127.0.0.1 --port 5301', url: 'http://127.0.0.1:5301', reuseExistingServer: false, timeout: 30000 },
   ],
 });

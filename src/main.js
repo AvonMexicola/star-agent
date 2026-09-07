@@ -62,6 +62,7 @@ function notify(message){$('toast').textContent=message;$('toast').classList.add
 function fatal(message){document.body.classList.add('fatal');$('loading').classList.remove('hidden');$('loading').querySelector('p').textContent='FLIGHT SYSTEM OFFLINE';$('loading').querySelector('span').textContent=message;}
 
 try {
+  const multiplayerEntry=import.meta.env.VITE_MULTIPLAYER_ENTRY==='1';
   const introEnabled=new URLSearchParams(location.search).get('intro')!=='0';
   const canvas=$('viewport');
   const renderer=new THREE.WebGLRenderer({canvas,antialias:false,logarithmicDepthBuffer:true,powerPreference:'high-performance'});
@@ -339,7 +340,7 @@ try {
   }});
   const graphicsButton=document.createElement('button');graphicsButton.type='button';graphicsButton.id='graphics-button';graphicsButton.textContent='GRAPHICS';graphicsButton.addEventListener('click',()=>graphicsSettings.open());document.querySelector('.top-actions').prepend(graphicsButton);
   for(const [label,open,secondary] of [['ACCOUNT',multiplayerUI.openAccount,true],['COMMS',multiplayerUI.openComms,false],['INVENTORY',multiplayerUI.openInventory,true]]){
-    const button=document.createElement('button');button.type='button';button.className=`mp-top-button${secondary?' mp-top-secondary':''}`;button.textContent=label;button.addEventListener('click',open);document.querySelector('.top-actions').prepend(button);
+    const button=document.createElement('button');button.type='button';button.className=`mp-top-button${secondary?' mp-top-secondary':''}`;button.textContent=label;button.addEventListener('click',()=>open());document.querySelector('.top-actions').prepend(button);
   }
   const gearNotice=document.createElement('div');gearNotice.id='gear-flight-prompt';gearNotice.setAttribute('role','status');gearNotice.hidden=true;document.body.append(gearNotice);
   const utilityStatus=document.createElement('div');utilityStatus.id='ship-utility-status';document.querySelector('.telemetry').append(utilityStatus);
@@ -350,7 +351,15 @@ try {
     {id:'camera-view',label:'Camera view · 4 / LB+RB + →',activate:()=>document.getElementById('camera-button').click(),enabled:()=>['flight','walk','landed'].includes(nav.mode)},
     {id:'account',label:'Pilot account',activate:()=>multiplayerUI.openAccount()},{id:'comms',label:'Multiplayer comms',activate:()=>multiplayerUI.openComms()},{id:'server-inventory',label:'Server inventory',activate:()=>multiplayerUI.openInventory(),enabled:()=>multiplayer.connected},
     {id:'graphics',label:'Graphics · LB+RB + Menu',activate:()=>graphicsSettings.open()},{id:'crash-recover',label:'Return to orbit after crash',activate:()=>transit('orbit'),enabled:()=>nav.mode==='crashed'},{id:'fleet',label:'Fleet registry',activate:()=>fleetUI.openMenu(),enabled:()=>!multiplayer.connected},{id:'power',label:'Toggle ship main power',activate:()=>nav.togglePower(),enabled:()=>nav.canTogglePower},...Object.entries(WEAPONS).map(([id,p])=>({id:`weapon-${id}`,label:`Ship weapon · ${p.label}`,activate:()=>flightEffects.select(id),enabled:()=>nav.mode==='flight'&&!multiplayer.connected}))],openBackpack:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenPack(),toggleTool:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.toggle(),openEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenEquipment(),cycleEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.cycle(),cycleQuick:()=>{if(multiplayer.connected){multiplayerUI.openInventory();return;}const r=loadout.selectQuick((loadout.state.quickIndex+1)%4);if(!r.ok)nav.notify(r.message);},useQuick:()=>multiplayer.connected?multiplayerUI.openInventory():useQuick(loadout.state.quickIndex),destinations:[...document.querySelectorAll('#quick-transit-menu [data-destination]')].map(button=>({id:button.dataset.destination,label:button.dataset.destination==='moon'?'Selene':button.dataset.destination==='ring'?'Selene rings':button.textContent.trim(),activate:()=>transit(button.dataset.destination),enabled:()=>!button.disabled&&!multiplayer.connected})).concat(resourceRoutes.map(route=>({id:route.id,label:route.label,activate:()=>transit(route.id),enabled:()=>!multiplayer.connected})))});
-  nav.onControllerInput=(pad,dt)=>{if(!firstReady||nav.openingActive)return;if(systemMap.open){systemMap.controllerInput(pad.ui);return;}if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}controllerUI.update(pad,dt);flightEffects.controller(pad);};
+  nav.onControllerInput=(pad,dt)=>{
+    if(!firstReady)return;
+    if(systemMap.open){systemMap.controllerInput(pad.ui);return;}
+    // Account dialogs pause the intro but still need the shared modal router.
+    if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
+    if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
+    if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
+    controllerUI.update(pad,dt);flightEffects.controller(pad);
+  };
   const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();controllerUI.open();});document.querySelector('.menu-actions').append(systemsHelp);
   const menuButton=document.createElement('button');menuButton.id='commands-button';menuButton.type='button';menuButton.textContent='MENU';menuButton.title='Command menu · controller Menu';menuButton.addEventListener('click',()=>controllerUI.open());document.querySelector('.top-actions').prepend(menuButton);
   for(const button of document.querySelectorAll('#quick-transit-menu [data-destination]'))button.addEventListener('click',event=>{
@@ -503,6 +512,7 @@ try {
         releaseLoadingKeys();
         $('loading-status').textContent='Ready to explore';$('loading-progress').value=preload.state.total;
         $('loading').classList.add('hidden');
+        if(multiplayerEntry)multiplayerUI.openAccount();
       }
     }
     if(planet.error)stopGraphics(planet.error);

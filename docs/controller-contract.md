@@ -189,3 +189,19 @@ shortcuts rearm. The Graphics chord is suppressed while unarmed rather than
 opening the ordinary command menu. Standard Menu remains available in paused help.
 The controller-only orbital and physical opening/boarding journeys in
 `flight-options.spec.js` and `opening.spec.js` now use these direct shortcuts.
+
+## Multiplayer account entry
+
+On the dedicated multiplayer build, the account dialog opens after loading.
+While the station intro is paused, D-pad/left stick and A/B use the normal dialog
+router. Menu reopens the account screen during the cinematic; after taking
+control, Menu → Pilot account retains the gameplay route. Continue offline closes
+the screen without joining or requiring an account. Held movement through dialog
+closure must be released before it can take control of the cinematic.
+
+`scripts/multiplayer.spec.js` starts at the bare URL with the intro enabled. It
+checks controller switching to Create account, B close with a held movement stick,
+Menu reopen, Continue offline, and physical movement into play. The two-pilot
+journey also starts there before registration, Join, COMMS and physical docking.
+Registration text is still entered with desktop controls; a full controller
+keyboard registration and physical-device testing remain separate checks.

@@ -50,13 +50,12 @@ async function setup(page, errors) {
     window.multiplayerPad = { id: 'Automated standard Xbox multiplayer', index: 0, connected: true, mapping: 'standard', axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
     Object.defineProperty(navigator, 'getGamepads', { value: () => [window.multiplayerPad] });
   });
-  await page.goto('/?intro=0');
-  await expect(page.locator('.mp-top-button', { hasText: 'ACCOUNT' })).toBeVisible({ timeout: 30000 });
+  await page.goto('/');
   await expect.poll(() => page.evaluate(() => window.starAgent?.state.ready), { timeout: 90000 }).toBe(true);
+  await expect(page.locator('#multiplayer-account-dialog')).toBeVisible();
 }
 
 async function register(page, email, callsign, controllerJoin = false) {
-  await page.locator('.mp-top-button', { hasText: 'ACCOUNT' }).click();
   await page.locator('[data-auth-view=register]').click();
   await page.locator('#mp-register-email').fill(email);
   await page.locator('#mp-register-callsign').fill(callsign);
@@ -69,6 +68,56 @@ async function register(page, email, callsign, controllerJoin = false) {
   await expect.poll(() => page.evaluate(() => window.starAgent?.state.multiplayer.connected), { timeout: 30000 }).toBe(true);
   await page.locator('#multiplayer-account-dialog [data-mp-close]').click();
 }
+
+test('bare entry shows account access and keeps it reachable through the intro and play', async ({ browser }) => {
+  await mkdir(output, { recursive: true });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, hasTouch: true });
+  const page = await context.newPage(), errors = [];
+  try {
+    await setup(page, errors);
+    await expect(page.locator('[data-auth-form=login]')).toBeVisible();
+    await expect(page.locator('[data-auth-view=register]')).toBeVisible();
+    await page.screenshot({ path: `${output}/bare-entry-desktop.png` });
+    const openingTime = await page.evaluate(() => window.starAgent.state.opening.elapsed);
+    await page.keyboard.down('KeyW'); await page.waitForTimeout(250); await page.keyboard.up('KeyW');
+    expect(await page.evaluate(() => window.starAgent.state.opening.elapsed)).toBe(openingTime);
+
+    await controllerFocus(page, 'auth-register'); await pulse(page, 0);
+    await expect(page.locator('[data-auth-form=register]')).toBeVisible();
+    // A held movement stick may navigate the dialog, but must not take control
+    // of the cinematic when B closes it. Release and press again to move.
+    await page.evaluate(() => { window.multiplayerPad.axes[1] = -1; });
+    await pulse(page, 1);
+    await expect(page.locator('#multiplayer-account-dialog')).not.toBeVisible();
+    await page.waitForTimeout(350);
+    expect(await page.evaluate(() => window.starAgent.state.opening.phase)).toBe('cinematic');
+    await page.evaluate(() => { window.multiplayerPad.axes[1] = 0; });
+    await page.waitForTimeout(250);
+    await pulse(page, 9);
+    await expect(page.locator('#multiplayer-account-dialog')).toBeVisible();
+    await controllerFocus(page, 'account-continue'); await pulse(page, 0);
+    await expect(page.locator('#multiplayer-account-dialog')).not.toBeVisible();
+
+    await page.locator('#multiplayer-access').click();
+    await page.locator('[data-mp-continue]').click();
+    // Pointer close followed immediately by movement must accept the first key.
+    await page.keyboard.down('KeyW'); await page.waitForTimeout(150); await page.keyboard.up('KeyW');
+    await expect.poll(() => page.evaluate(() => window.starAgent.state.opening.phase)).toBe('playing');
+    await expect(page.locator('.topbar')).not.toBeVisible();
+    await expect(page.locator('#multiplayer-access')).toBeVisible();
+    await page.locator('#multiplayer-access').press('Enter');
+    await expect(page.locator('#multiplayer-account-dialog')).toBeVisible();
+    await page.locator('[data-mp-continue]').click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#multiplayer-access').tap();
+    await expect(page.locator('[data-auth-form=register]')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `${output}/bare-entry-phone.png` });
+    await page.locator('[data-mp-continue]').tap();
+    await expect(page.locator('#multiplayer-account-dialog')).not.toBeVisible();
+    expect(errors).toEqual([]);
+  } finally { await context.close(); }
+});
 
 test('two pilots join, request and dock at a hangar, transfer cargo and exchange movement', async ({ browser }) => {
   await mkdir(output, { recursive: true });

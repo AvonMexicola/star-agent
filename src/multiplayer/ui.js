@@ -138,6 +138,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
   let sessionAccount = state.account;
   let authView = resetToken ? 'reset' : 'login';
   let activeKeyboard = null;
+  let currentDialog = null;
   let busy = false;
   let disposed = false;
 
@@ -146,7 +147,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
   accountDialog.setAttribute('aria-labelledby', 'multiplayer-account-title');
   accountDialog.innerHTML = `<div class="dialog-top mp-dialog-top"><span class="eyebrow">Pilot account</span><button type="button" data-mp-close aria-label="Close account">✕</button></div>
     <h2 id="multiplayer-account-title">Fly together when you choose</h2>
-    <p class="mp-intro">Offline flight remains available. Sign in, then explicitly join a shared session.</p>
+    <p class="mp-intro">Sign in or create an account to join up to ten pilots. Choose a callsign, not a real name. You can also continue offline.</p>
     <nav class="mp-auth-tabs" aria-label="Account access">
       <button type="button" data-auth-view="login" data-controller-key="auth-login">Sign in</button>
       <button type="button" data-auth-view="register" data-controller-key="auth-register">Create account</button>
@@ -185,6 +186,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     </form>
     <section class="mp-keyboard" hidden aria-label="Controller text entry"><div class="mp-keyboard-readout"><span data-keyboard-label>Text entry</span><output data-keyboard-output></output></div><div class="mp-keyboard-keys"></div><div class="mp-action-row"><button type="button" data-key-action="backspace" data-controller-key="keyboard-backspace">Backspace</button><button type="button" data-key-action="clear" data-controller-key="keyboard-clear">Clear</button><button type="button" data-key-action="done" data-controller-key="keyboard-done">Done</button></div></section>
     <p class="mp-feedback" role="status" aria-live="polite"></p>
+    <div class="mp-action-row"><button type="button" data-mp-continue data-controller-key="account-continue">Continue offline</button></div>
     <p class="mp-controller-note">Controller: D-pad or left stick to choose · A to activate · B to close</p>`;
 
   const commsDialog = document.createElement('dialog');
@@ -206,6 +208,11 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     <p class="mp-controller-note">Transfers and drops are checked by the server against access, proximity, capacity, and manifest revision.</p>`;
 
   document.body.append(accountDialog, commsDialog, inventoryDialog);
+  // Outside the launcher: both the cinematic and player-active mode hide it.
+  const accessButton = document.createElement('button');
+  accessButton.id = 'multiplayer-access'; accessButton.type = 'button';
+  accessButton.setAttribute('aria-haspopup', 'dialog');
+  document.body.append(accessButton);
   const dialogs = [accountDialog, commsDialog, inventoryDialog];
   const feedback = dialog => dialog.querySelector('.mp-feedback');
   const currentAccount = () => state.account ?? sessionAccount;
@@ -259,6 +266,10 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     join.hidden = state.connected; join.disabled = busy || !account;
     leave.hidden = !state.connected; leave.disabled = busy;
     accountDialog.querySelector('[data-logout]').disabled = busy;
+    accountDialog.querySelector('[data-mp-continue]').textContent = state.connected ? 'Return to flight' : 'Continue offline';
+    accessButton.textContent = state.connected ? 'COMMS' : account ? 'ACCOUNT' : 'SIGN IN / REGISTER';
+    accessButton.title = state.connected ? 'Multiplayer communications · controller Menu' : 'Pilot account · controller Menu';
+    accessButton.setAttribute('aria-controls', state.connected ? commsDialog.id : accountDialog.id);
   }
 
   function renderComms() {
@@ -368,15 +379,24 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
 
   function openDialog(dialog) {
     if (disposed || document.querySelector('dialog[open]')) return false;
-    stopNavigation(nav); render(); setFeedback(dialog, ''); dialog.showModal(); nav.gamepad?.suspend?.(); return true;
+    stopNavigation(nav); render(); setFeedback(dialog, ''); currentDialog = dialog; dialog.showModal(); nav.gamepad?.suspend?.(); return true;
   }
+  function finishDialog(dialog) {
+    // Native close events are queued. A pointer close must restore controls
+    // before the next key, without a late event clearing newly pressed input.
+    if (dialog.open || currentDialog !== dialog) return;
+    currentDialog = null; closeKeyboard(); restoreNavigation(nav);
+  }
+  function closeDialog(dialog) { dialog.close(); finishDialog(dialog); }
   const openAccount = (view = null) => { if (view) showAuthView(view); return openDialog(accountDialog); };
   const openComms = () => openDialog(commsDialog);
   const openInventory = () => openDialog(inventoryDialog);
+  accessButton.addEventListener('click', () => state.connected ? openComms() : openAccount());
+  accountDialog.querySelector('[data-mp-continue]').addEventListener('click', () => closeDialog(accountDialog));
 
   dialogs.forEach(dialog => {
-    dialog.querySelector('[data-mp-close]').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('close', () => { closeKeyboard(); restoreNavigation(nav); });
+    dialog.querySelector('[data-mp-close]').addEventListener('click', () => closeDialog(dialog));
+    dialog.addEventListener('close', () => finishDialog(dialog));
   });
   accountDialog.addEventListener('click', event => {
     const viewButton = event.target.closest('[data-auth-view]'); if (viewButton) { showAuthView(viewButton.dataset.authView); return; }
@@ -420,7 +440,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     if (event.target.closest('[data-cancel-hangar]')) void perform(commsDialog, 'Cancelling the hangar request…', () => client.cancelHangar());
     if (event.target.closest('[data-comms-join]')) void join(commsDialog);
     if (event.target.closest('[data-comms-leave]')) void leave(commsDialog);
-    if (event.target.closest('[data-open-account]')) { commsDialog.close(); queueMicrotask(() => openAccount()); }
+    if (event.target.closest('[data-open-account]')) { closeDialog(commsDialog); queueMicrotask(() => openAccount()); }
   });
 
   inventoryDialog.addEventListener('click', event => {
@@ -460,6 +480,6 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     auth, dialogs: { account: accountDialog, comms: commsDialog, inventory: inventoryDialog },
     openAccount, openComms, openInventory, refreshSession,
     render: applyState,
-    dispose() { disposed = true; unsubscribe(); dialogs.forEach(dialog => dialog.remove()); },
+    dispose() { disposed = true; unsubscribe(); accessButton.remove(); dialogs.forEach(dialog => dialog.remove()); },
   };
 }

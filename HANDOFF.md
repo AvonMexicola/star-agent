@@ -1330,3 +1330,25 @@ rigidbody ship collisions and lag compensation remain follow-ups. Loose stacks
 are an inventory-list interaction and expire5min/restart; combat checkpoints10sec.
 Physical-controller/full controller text-entry, direct MFD pointer journey, Opus
 visual review and full quality/performance tour remain pending. Do not mark merged.
+
+## MULTIPLAYER ACCOUNT ENTRY — READY FOR REVIEW — 2026-09-07
+
+Root fixes the bare-URL login gap in this branch / PR44. Dedicated frontend builds
+must use VITE_MULTIPLAYER_ENTRY=1 npm run build: Sign in / Create account opens
+once preload is ready, with an explicit Continue offline route. A body-level
+SIGN IN / REGISTER, ACCOUNT or COMMS button remains reachable while the intro
+or player-active mode hides the launcher. Controller Menu opens the account
+screen during the intro; the shared dialog router stays active while it is paused.
+Topbar callbacks no longer pass PointerEvent as an account-view argument. Pointer
+close restores navigation synchronously and ignores late duplicate close events,
+so the first movement key is accepted without clearing fresh input.
+
+Validation: configured unit suite496/496; final focused UI/Gamepad/startup/opening
+40/40; final bare-URL and two-pilot browser journeys2/2 in2.2m. Both start with the
+intro enabled; includes held-stick suppression, immediate pointer-close → W,
+keyboard and phone touch reopen after movement, plus authenticated physical
+hangar approach/dock and inventory transfers. Build passes, existing chunk warning.
+No browser errors, Chromium151 / AMD860M ANGLE,1440x900 and390x844; no FPS claim.
+Public preview keeps its isolated service/DB and requires no API restart. PR44
+stays draft; existing SMTP, full controller text-entry/physical-device and quality
+review limits still apply. Other worktrees and play/next remain untouched.

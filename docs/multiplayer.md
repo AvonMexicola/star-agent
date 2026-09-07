@@ -6,8 +6,13 @@ remain separate prerequisites/work in progress.
 
 ## Player flow
 
-Open **ACCOUNT**, register with a callsign, email and password, and choose **Join
-multiplayer**. No real-name field or suit editor exists. The room assigns one of
+On https://multiplayer.staragent.site/, the account screen opens automatically
+after loading. Choose **Create account**, register with a callsign, email and
+password, and choose **Join multiplayer**. **Continue offline** resumes the
+station intro without an account. A small **SIGN IN / REGISTER** or **ACCOUNT**
+button stays available during the intro and after movement dismisses the launcher;
+it becomes **COMMS** when connected. Controller **Menu** opens accounts during the
+intro and the command menu during play. No real-name field or suit editor exists. The room assigns one of
 ten suit colours. One account may occupy one slot; the eleventh simultaneous
 player is refused without disturbing the existing room.
 
@@ -52,6 +57,12 @@ npm test
 npm run test:multiplayer
 npm run build
 ```
+
+The dedicated multiplayer frontend enables automatic account entry with
+`VITE_MULTIPLAYER_ENTRY=1 npm run build`. Use the same environment variable with
+`npm run dev` to check that entry locally. Ordinary builds retain the offline
+opening and optional account access. The browser multiplayer configuration sets
+this flag and tests the bare URL, including its default intro.
 
 ## Authority and current limits
 

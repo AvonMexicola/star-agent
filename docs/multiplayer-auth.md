@@ -214,3 +214,9 @@ original database remain separate. Final integrated tests on Node22/PostgreSQL
 pass80/80; public HTTPS registration, session cookie, WSS join and hangar request
 also passed with the synthetic fixture subsequently removed. SMTP remains
 unconfigured. See `docs/qa/multiplayer-browser.md` for browser evidence and limits.
+
+Build the dedicated multiplayer frontend with
+`VITE_MULTIPLAYER_ENTRY=1 npm run build`. This opens sign-in after loading on the
+bare URL, while preserving an explicit Continue offline choice. Without this
+build flag, the regular offline intro remains the default. Deploy `dist/` to the
+candidate's static directory; a frontend-only change does not need an API restart.

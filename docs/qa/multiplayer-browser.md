@@ -46,3 +46,54 @@ The public service uses its own database and hostname. The production play/next
 sites remain separate. SMTP delivery, physical controller hardware, a full
 controller-entered registration and the Opus visual/whole-scene quality review
 remain unverified; this is a review preview, not a main-branch acceptance claim.
+
+## Bare-URL account entry correction — 2026-09-07
+
+The earlier public check used `?intro=0` and missed a real entry problem: the
+normal cinematic made the topbar ACCOUNT button inert, and taking control hid
+that topbar. The topbar click also passed its PointerEvent as an account-view
+argument, hiding the login form until a tab was chosen. Both entry paths are now
+corrected. Dedicated builds use `VITE_MULTIPLAYER_ENTRY=1` to open the account
+screen after preload; ordinary builds keep optional account access. Continue
+offline preserves the station opening. A small account/comms button remains
+outside the dismissed launcher and works on narrow screens.
+
+Current local verification: `npm test` **496/496**, focused UI/Gamepad/startup/
+opening tests **40/40**, multiplayer browser tests **2/2 in 2.2 minutes**, and
+`VITE_MULTIPLAYER_ENTRY=1 npm run build` passes with the existing chunk warning.
+Both browser journeys now start at `/` with the default intro. The added journey
+checks visible sign-in/register, paused intro while typing, controller tab
+selection, held-stick suppression across B close, Menu reopen, Continue offline,
+keyboard movement into play, keyboard account activation after the launcher
+hides, and touch reopening at 390 × 844 without horizontal overflow. The two-pilot
+controller join/hangar/physical docking/inventory journey also passes from this
+entry. No page or console errors were collected. Chromium 151 / AMD 860M ANGLE;
+1440 × 900 and 390 × 844. No physical controller or performance claim.
+
+The first public recheck confirmed the entry form, then exposed a timing defect:
+a movement key sent immediately after clicking Continue offline arrived before
+the native dialog's queued close event restored navigation. Pointer closes now
+restore input synchronously, and a late close event cannot clear new input or
+interfere with a newly opened dialog. The entry browser regression includes that
+exact click → first-key transition, as well as controller-held input suppression.
+
+[Original bare entry with hidden account controls](multiplayer/bare-entry-before.png)
+records the pre-fix public scene at first-ready while the loading fade is still visible. The historical query-string verification above
+is retained to make its original coverage limit explicit.
+
+Final public verification on https://multiplayer.staragent.site/ confirms the
+account screen opens automatically, Create account exposes callsign/email/password,
+Continue offline accepts the first movement key, and the account button remains
+reachable after taking control. Touch reopening at 390 × 844 passes with no
+horizontal overflow. No page/console errors were collected. Reviewed evidence:
+
+- [Public default sign-in](multiplayer/public-account.png) — 1440 × 900.
+- [Account access after movement](multiplayer/public-account-access.png) — 1440 × 900.
+- [Public phone registration](multiplayer/public-register-phone.png) — 390 × 844.
+
+The public HTML matches the final dedicated build (SHA-256
+`e88365cb581c53e4f387f42d6f4a14d9b2b0c736ddfaa26fb35f1af5f308faf7`).
+Static files were updated without restarting the account/WebSocket service.
+
+The separate `?intro=0` entry was also checked: closing the automatic screen and
+clicking the topbar ACCOUNT button shows the login form immediately.
