@@ -108,15 +108,16 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Footsteps, weapons, mining, thrust-responsive engines and spatial flybys | `feat/gameplay-audio` at `5a128f3`, construction/fauna audio through `6d3abb0` |
 | Expedition character, corrected hips, hands, animations and studio | Preserved owner checkpoint `0bb6a6a`; combined local/remote binding in `3bd7d61` |
-| Burrow twin-cutter rover aboard Atlas, offline development start | `feat/meridian-mining-rover` at `44eb3a2` |
-| Finite ship momentum, combat/cruise mode and moving muzzle effects | `fix/combat-momentum` at `f1efc01` |
-| Hostile Pyrebear and Sulphurhound habitats, shots, bites and medical recovery | `feat/pyrebear` at `91a2ac0` |
+| Burrow twin-cutter rover aboard Atlas, offline development start | `feat/meridian-mining-rover` through `643a7d3` |
+| Finite ship momentum, combat/cruise mode and moving muzzle effects | `fix/combat-momentum` through `6f8b195` |
+| Hostile Pyrebear and Sulphurhound habitats, shots, bites and medical recovery | `feat/pyrebear` through `5a3cf0b` |
 | Atlas Mark II geometry/gear checkpoint and review, studio only | `feat/atlas-fleet-refresh` at `0b2d852` |
 | Aeon exterior geometry preview and review, opt-in | `feat/station-exterior` at `9d0728f` (draft PR #55) |
 
 These are review checkpoints. The 64 m Atlas remains studio-only; station exterior
-materials, character performance, rover's complete mining/return journey and fauna
-motion/touch acceptance remain open. Rover, construction and wildlife use offline
+materials, character performance, rover art/keyboard/touch and fauna
+full motion/touch acceptance remain open. The rover's complete injected-controller
+mining/return/flight-carriage journey passed on its source checkpoint. Rover, construction and wildlife use offline
 state; they are not new multiplayer replication features. The unprovided shop
 jacket and the separately started deer repair are not installed content. See the
 [combined review record](qa/dev-content-review.md) for exact validation and limits.
@@ -227,7 +228,7 @@ screen. Tabs: Comms, Map, Contracts, Inventory, Loadout, Ship, Settings, and Dev
 on the development build. LB/RB or bracket keys changes tabs; B/Escape resumes.
 Long lists have page controls instead of scrolling. Ship contains fleet, weapons,
 utilities, construction and recipes; Settings contains graphics, sound and controls.
-Dev has Test starts and the console list. Comms uses the existing live station
+Dev has Test starts, the console list and Content review. Comms uses the existing live station
 roster, hangar request and account systems; no new text-chat transport is included.
 [Gameplay menu QA](qa/gameplay-menu.md) records the checks and limitations.
 
@@ -261,8 +262,8 @@ the persistent preview5178/API8087/database51224; it never restarts that service
 
 Successful building placement now plays a settling/locking sound. The
 [sound studio](http://127.0.0.1:5178/tests/gameplay-audio.html) includes a deep
-Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring is connected in the in-progress fauna worktree;
-that feature is not yet integrated here. The audio callback record is in
+Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring is integrated into the offline fauna simulation; attacks
+play once when the creature commits to a bite, and interruption clears the voice. The audio callback record is in
 [the handoff](qa/construction-audio/README.md). No new control bindings.
 
 Navigation SA-NAV-001 is locally integrated at 894b660 (PR62 draft). Refresh

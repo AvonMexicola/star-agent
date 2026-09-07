@@ -2367,3 +2367,5 @@ that need URL diagnostics. No owned browser remains. Rover5417, material5383
 and cargo5535 keep their existing queue; integration needs a short two-case
 5523 rerun afterward. CPU-only now: consume checked rover643a7d3 and fauna
 5a3cf0b, finalize integration records. No shared5178/API/SQL change yet.
+
+SA-WORLD-002 GPU ACQUIRED 17:17 UTC: active jobs have exited. Starting the reserved5383 single-worker material comparison now; expect3min. Cargo5535 follows the explicit release. Preserve this one job; no shared preview/database change.

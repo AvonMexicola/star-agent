@@ -51,8 +51,8 @@ test('new character physically leaves the Nomad, jumps, holds its weapons and re
 test('content review links, construction categories and isolated sandbox saves survive the combined menu',async({page})=>{
  const log=diagnostics(page),pad=await controller(page);
  await page.goto('/?seed=7291');await ready(page);await expect(page.locator('#dev-launcher')).toBeVisible();await frames(page,10);
- await pad.choose('dev-page-review');await expect(page.locator('.dev-review-list')).toBeVisible();
- await page.screenshot({path:join(output,'content-review-desktop.png')});
+ await pad.choose('dev-page-review');await expect(page.locator('.dev-review-list')).toBeVisible();await expect(page.locator('[data-dev-page=review]')).toHaveAttribute('aria-pressed','true');
+ await frames(page,15);await page.screenshot({path:join(output,'content-review-desktop.png')});
  const routes=await page.locator('.dev-review-list>a').evaluateAll(links=>links.map(a=>({key:a.dataset.controllerKey,href:a.href})));
  expect(routes).toHaveLength(7);
  for(const route of routes){const response=await page.request.get(route.href);expect(response.status(),route.href).toBe(200);}
@@ -72,9 +72,9 @@ test('content review links, construction categories and isolated sandbox saves s
 test.describe('phone review',()=>{test.use({hasTouch:true,viewport:{width:390,height:844}});
  test('content review has reachable touch pages at 390 px',async({page})=>{
   const log=diagnostics(page);await page.addInitScript(()=>Object.defineProperty(navigator,'getGamepads',{value:()=>[]}));
-  await page.goto('/?seed=7291');await ready(page);await page.locator('[data-dev-page="review"]').tap();
+  await page.goto('/?seed=7291');await ready(page);await page.locator('[data-dev-page="review"]').tap();await expect(page.locator('[data-dev-page=review]')).toHaveAttribute('aria-pressed','true');
   expect(await page.locator('#dev-launcher').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
-  const visible=page.locator('.dev-review-list>a:visible');expect(await visible.count()).toBe(3);await page.screenshot({path:join(output,'content-review-phone.png')});
+  const visible=page.locator('.dev-review-list>a:visible');expect(await visible.count()).toBe(3);await frames(page,15);await page.screenshot({path:join(output,'content-review-phone.png')});
   await page.getByRole('button',{name:'Next content reviews page',exact:true}).tap();expect(await visible.count()).toBe(3);
   await page.getByRole('button',{name:'Next content reviews page',exact:true}).tap();expect(await visible.count()).toBe(1);
   expect(log.errors).toEqual([]);

@@ -37,12 +37,22 @@ invalidating another worktree's optimized dependencies when sharing node_modules
   checks passed with the actual expedition rig and authored weapon geometry.
 - Initial full candidate exposed an obsolete mining fixture and a loose-rock
   third-person range mismatch; both corrected, three focused mining tests pass.
-- Combined source through `fabc9d4`: **831 unit tests pass**, zero failures/skips.
+- Combined source through `5a3cf0b` and `643a7d3`: **834 unit tests pass**, zero failures/skips.
 - Multiplayer after momentum/remote merge: **90 pass**, one explicit SQL fixture
   skipped without its disposable-database setting. No schema migration was added.
 - Production build with `VITE_DEV_TOOLS=1` passes; existing large-chunk advisory
   remains. The API and PostgreSQL data were not used as disposable test fixtures.
-- Combined browser review is pending. Reproduction:
+- Initial combined Chromium review: four cases pass (character studio, physical
+  Nomad controller route, phone review pages and remote rig/colors). Two cases
+  require a narrow rerun: the controller test awaited animation frames after
+  triggering its intended page navigation, and the studios reported two HTTP404s.
+  The navigation wait now follows the destination; HTTP errors retain their URL
+  and the sound studio declares its existing favicon explicitly.
+- Source task ledgers are marked integrated in this combined branch, releasing
+  overlapping claims here. Feature owners retain separate ongoing work; this
+  status does not declare final asset/gameplay acceptance.
+
+Reproduction:
 
 ```sh
 VITE_DEV_TOOLS=1 npm run build
@@ -63,14 +73,30 @@ injected standard Gamepads, not physical hardware.
   by its owner; the higher asset budget does not waive the scene timing target.
 - The 64 m Atlas is a studio asset. Current flyable Atlas remains 30 m. Station
   exterior is an opt-in geometry checkpoint with material work still open.
-- Burrow `44eb3a2` has verified boarding/lift/unload and CPU safeguards. The owner
-  is refining steering and the complete mining/return route; keyboard/touch and
-  final art acceptance are pending.
-- Fauna `91a2ac0` includes the successful Pyrebear controller route. Suloher chase
-  around obstructing terrain, final corpse motion and touch checks remain owner
-  work. Wildlife and rover are offline; their network replication is not claimed.
+- Burrow `643a7d3` includes the checked steering/cabin corrections and a complete
+  owner production controller journey: physical Atlas exit, unload, actual twin
+  cutter mining, saved ore/transfer, reload and flight carriage. Keyboard/touch
+  and final art acceptance remain pending.
+- Fauna `5a3cf0b` includes the successful Pyrebear controller route and a tested
+  body-sized footing correction for the Suloher approach stall. Its revised corpse
+  still reached the owner's independent 4/5 review; the corrected full controller
+  route, motion and touch checks remain owner work. Wildlife and rover are offline; their network replication is not claimed.
 - Construction expansion has owner controller workshop/rack/pad/ramp routes.
   Expanded-kit independent art review, hardware timing and pebble exclusion above
   low decks remain open. The earlier Opus score covers the original kit only.
 - New deer repair and further landmark material refinement started separately;
   no unfinished source or absent jacket asset was copied into this checkpoint.
+
+## Combined visual evidence
+
+Native Chromium151.0.7922.173, ANGLE GL on AMD Radeon860M; desktop1440×900 and
+phone390×844 CSS pixels. These are render/input checks, not FPS acceptance.
+
+- [New character in the hangar with rifle](dev-content-review/character-rifle.png).
+- [Jump pose during the physical controller journey](dev-content-review/character-jump.png).
+- [Remote suits with three assigned colors and weapon grips](dev-content-review/remote-suits.png).
+- [Touch content-review menu](dev-content-review/review-phone.png).
+
+Raw diagnostics remain in the local cache, outside Git. The three weapons were
+visually checked in hand; the gameplay journey fired the rifle and tested that
+holding fire through a menu did not spend ammunition after it closed.

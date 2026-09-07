@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex momentum repair",
-  "status": "active",
+  "status": "integrated",
   "branch": "fix/combat-momentum",
   "base": "931ea102ca7ef95082bc8f741a0ebaf88ab9f87c",
   "updated": "2026-09-07",

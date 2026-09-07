@@ -21,7 +21,11 @@
     "docs/local-development.md",
     "docs/qa/dev-content-review/",
     "src/gameplay-menu.js",
-    "src/gameplay-menu.css"
+    "src/gameplay-menu.css",
+    "docs/qa/dev-content-review.md",
+    "scripts/content-review.config.js",
+    "scripts/content-review.spec.js",
+    "scripts/fixtures/remote-expedition.html"
   ],
   "brief": "docs/briefs/dev-content-review.md"
 }
