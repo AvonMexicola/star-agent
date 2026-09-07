@@ -128,3 +128,13 @@ isolated production preview; the promotion merge changed only handoff notes.
 
 [Draft PR68](https://github.com/AvonMexicola/star-agent/pull/68) retains the review
 branch. Main and public hosting were not deployed by this integration.
+
+## Hosted CI follow-up
+
+PR68 run `34148686704` passed source and multiplayer checks. Its browser reached
+the rendered game but failed an obsolete assertion: Menu was expected to open the
+old Ship command grid instead of the current default Contracts screen. The smoke
+test now checks the open gameplay screen, its selected tab and visible controller
+focus. Held-stick suppression, neutral rearming and all five map selections remain
+required. Syntax, test discovery and repository checks pass; the hosted rerun is
+pending. This test-only correction does not require a local service restart.

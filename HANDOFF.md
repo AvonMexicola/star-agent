@@ -2831,3 +2831,5 @@ startup wait; runtimebb75c4c is unchanged. Also widening the1km view for a usefu
 density comparison. Rover's already queued5419 is next, then power/social as
 requested. This material lane needs one final focused window after those releases.
 No shared runtime/API/database update;23focused checks and both builds pass.
+
+SA-INT-002 CI FOLLOW-UP CLAIM: integration steward owns scripts/ci-smoke.spec.js and its QA/HANDOFF records in isolated feat/dev-content-review. PR68 hosted browser reached the running game but expected the former #controller-menu default after Menu; the current registered default is Contracts. Updating the assertion to the actual gameplay dialog while retaining focused-control, held-stick suppression, rearming and all map-target coverage. No shared runtime changes or local GPU job. Hosted CI will verify the narrow test repair. Social UI/router remain SA-SOCIAL-001-owned.
