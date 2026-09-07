@@ -135,3 +135,20 @@ A separately found PR73 cargo-test cache-path failure was corrected in `5f0d94f`
 and consumed here as `054dcf1`; all seven affected cargo server tests pass,
 including isolated PostgreSQL. It changes no game/runtime behavior; see
 [the CI follow-up](social-cargo-integration.md#hosted-check-portability-follow-up).
+
+
+## Published review and inherited CI follow-up
+
+The integration is published as draft [PR75](https://github.com/AvonMexicola/star-agent/pull/75),
+stacked on PR73. Published runtime at `c0c3e4e` still matches the combined local
+browser checkpoint; the latest social test-path fix is retained in its ancestry.
+The new PR's hosted source/browser jobs are pending, not claimed passed.
+
+After the portable path fix, PR73 run `34157520134` reached cargo PostgreSQL but
+reported an uncaught `terminating connection due to administrator command`
+during that case. Four separate local executions of the isolated SQL case all
+passed without further changes. The subsequent hosted multiplayer job in run
+`34157841657` also passes on the same source, including the database suite. This
+is evidence of an intermittent shutdown failure, not a demonstrated fix for it;
+the failure remains a follow-up for the cargo/database owner. No assertion was
+removed, exception swallowed or gameplay runtime changed to obtain a pass.
