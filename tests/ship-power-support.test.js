@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { FlightAudio } from '../src/audio.js';
+import { engineMix } from '../src/audio/engine.js';
 import { createShipMFDs } from '../src/ship-mfd.js';
 import { createShipPowerUI } from '../src/ship-power-ui.js';
 
@@ -116,8 +117,9 @@ test('power loss mutes propulsion without creating audio or silencing environmen
   audio.update({ powered: false, mode: 'flight', speed: 200 });
   assert.equal(audio.context, null, 'state updates never create an audio context');
 
-  audio.context = { currentTime: 4 };
+  audio.context = { currentTime: 4, state: 'running' };
   audio.enabled = true;
+  audio.engineAudio = { update(state) { this.state = engineMix(state); } };
   audio.hum = { gain: audioParameter() };
   audio.overtoneGain = { gain: audioParameter() };
   audio.wind = { gain: audioParameter() };
@@ -125,9 +127,12 @@ test('power loss mutes propulsion without creating audio or silencing environmen
   audio.overtone = { frequency: audioParameter() };
   audio.windFilter = { frequency: audioParameter() };
 
-  audio.update({ powered: true, mode: 'flight', speed: 200, altitude: 100 });
-  assert.ok(audio.hum.gain.value > 0 && audio.overtoneGain.gain.value > 0);
+  audio.update({ powered: true, mode: 'flight', speed: 200, throttle: .8, altitude: 100 });
+  assert.ok(audio.engineAudio.state.active && audio.engineAudio.state.tone > 0);
+  assert.equal(audio.engineAudio.state.load, .8);
   audio.update({ powered: false, mode: 'flight', speed: 200, altitude: 100 });
+  assert.equal(audio.engineAudio.state.active, false);
+  assert.equal(audio.engineAudio.state.tone, 0);
   assert.equal(audio.hum.gain.value, 0);
   assert.equal(audio.overtoneGain.gain.value, 0);
   assert.ok(audio.wind.gain.value > 0, 'airflow remains audible while an unpowered ship coasts');

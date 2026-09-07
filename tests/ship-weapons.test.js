@@ -22,7 +22,7 @@ async function asset(path){
   return {bytes,json,gltf:await new GLTFLoader().parseAsync(JSON.stringify(geometry),'')};
 }
 const gun=await asset('public/models/ship-weapons.glb'),kit=prepareShipWeaponKit(gun.gltf);
-const hulls=Object.fromEntries(await Promise.all(Object.entries({nomad:'public/models/nomad.glb',kestrel:'assets/kestrel/kestrel.glb',atlas:'public/models/atlas.glb','atlas-mark-ii':'public/models/atlas-mark-ii/atlas-mark-ii.glb'}).map(async([id,path])=>[id,await asset(path)])));
+const hulls=Object.fromEntries(await Promise.all(Object.entries({nomad:'public/models/nomad.glb',kestrel:'assets/kestrel/kestrel.glb',atlas:'public/models/atlas-mark-ii/atlas-mark-ii.glb','atlas-mark-ii':'public/models/atlas-mark-ii/atlas-mark-ii.glb'}).map(async([id,path])=>[id,await asset(path)])));
 const close=(a,b,t=.0001)=>assert.ok(a.distanceTo(b)<t,a.toArray()+' differs from '+b.toArray());
 
 test('nine shipped variants have open forward bores, keyed dimensions, real PBR maps and bounded cost',()=>{
@@ -74,7 +74,7 @@ for(const [id,size,count] of [['nomad',1,2],['kestrel',2,4],['atlas',3,3],['atla
       close(flash.getWorldPosition(new THREE.Vector3()),muzzle.getWorldPosition(new THREE.Vector3()));
       assert.equal(arm.state.lastShot.mount,pose.mount);
       arm.update(.2);assert.equal(flash.visible,false);
-      if(id==='atlas-mark-ii'&&pose.mount==='Mount_S3_Aft')close(local.direction,new THREE.Vector3(0,0,1));
+      if((id==='atlas'||id==='atlas-mark-ii')&&pose.mount==='Mount_S3_Aft')close(local.direction,new THREE.Vector3(0,0,1));
       else close(local.direction,new THREE.Vector3(0,0,-1));
     }
   }
@@ -131,4 +131,21 @@ test('malformed gun bodies are rejected and a missing foundation leaves no parti
  try{equipShipWeapons(ship,'kestrel',{kitPromise:Promise.resolve(broken)});await ship.readyPromise;}finally{console.warn=previous;}
  assert.equal(ship.armament.status,'unavailable');
  let fitted=0;ship.traverse(node=>{if(node.name.startsWith('Fitted guns /'))fitted++;});assert.equal(fitted,0);
+});
+
+test('playable 64 m Atlas fits each authored S3 once and all muzzle paths clear the hull',()=>{
+  const ship=hulls.atlas.gltf.scene.clone(true),hullMeshes=[];
+  ship.traverse(node=>{if(node.isMesh)hullMeshes.push(node);});
+  const arm=attachShipWeapons(ship,'atlas',kit);
+  assert.equal(attachShipWeapons(ship,'atlas',kit),arm);
+  assert.equal(ship.getObjectByName('HP_Atlas_Port'),undefined);
+  assert.deepEqual(new Set(arm.state.mounts.map(m=>m.node)),new Set(['Mount_S3_DorsalPort','Mount_S3_DorsalStarboard','Mount_S3_Aft']));
+  for(const type of ['pulse','laser','void']){
+    arm.select(type);
+    for(let index=0;index<3;index++){
+      const muzzle=arm.muzzle(index,{local:true});
+      assert.equal(new THREE.Raycaster(muzzle.position,muzzle.direction,.01,100).intersectObjects(hullMeshes,false).length,0,`${type} ${muzzle.mount} is occluded by its own Atlas hull`);
+    }
+  }
+  arm.dispose();
 });

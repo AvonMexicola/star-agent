@@ -16,6 +16,10 @@ const curved=(window)=>Array.from({length:ARC_SEGMENTS},(_,i)=>{
  return window&&i>1&&i<ARC_SEGMENTS-2?[prism(poly(3.85,4.15),0,1),prism(poly(3.85,4.15),2.4,3),prism(poly(3.97,4.03),1,2.4,'glass')]:[prism(poly(3.85,4.15),0,3)];
 }).flat();
 const padSlab=(id,label,width,length,cost,size)=>{const d=slab(id,label,'pad',rectangle(width,length),.6,cost);d.padSize=size;for(const x of [-width/2+.7,width/2-.7])for(const z of [-length/2+.7,length/2-.7])d.colliders.push(box([x-.3,-8,z-.3],[x+.3,-.6,z+.3]));return d;};
+export const ROOF_HEIGHT=.6;
+export const roofProfile=(shape,x,z)=>{const rounded=v=>Math.sqrt(Math.max(0,1-(Math.max(0,v-(2-ROOF_HEIGHT))/ROOF_HEIGHT)**2));return ROOF_HEIGHT*(shape==='edge'||shape==='corner'?rounded(z):1)*(shape==='corner'?rounded(x):1);};
+const roofCuts=[-2,2-ROOF_HEIGHT,...Array.from({length:6},(_,i)=>2-ROOF_HEIGHT+ROOF_HEIGHT*Math.sin((i+1)*Math.PI/12))];
+const roofTile=(id,label,shape='flat',polygon=rectangle(4,4))=>({id,label,category:'utility',mount:'roof',support:true,roofShape:shape,shape,polygon,footprint:[Math.max(...polygon.map(p=>p[0]))-Math.min(...polygon.map(p=>p[0])),Math.max(...polygon.map(p=>p[1]))-Math.min(...polygon.map(p=>p[1]))],height:ROOF_HEIGHT,cost:{concrete:4,'metal-stock':1},colliders:shape==='edge'||shape==='corner'?roofCuts.slice(0,-1).flatMap((z0,z)=>{const xs=shape==='corner'?roofCuts:[-2,2];return xs.slice(0,-1).map((x0,x)=>box([x0,0,z0],[xs[x+1],Math.max(.012,roofProfile(shape,x0,z0)),roofCuts[z+1]]));}):[prism(polygon,0,ROOF_HEIGHT)]});
 export const PIECES = Object.freeze({
   foundation: { id:'foundation', label:'Concrete foundation', category:'foundation', cost:{concrete:12}, footprint:[4,4], height:.6, colliders:[panel([-2,-.6,-2],[2,0,2])], support:true },
   floor: { id:'floor', label:'Floor / flat roof', category:'floor', cost:{concrete:8,'metal-stock':1}, footprint:[4,4], height:.18, colliders:[panel([-2,-.18,-2],[2,0,2])], support:true },
@@ -36,6 +40,17 @@ export const PIECES = Object.freeze({
   rack:{id:'rack',label:'Storage rack',category:'utility',cost:{'metal-stock':10},footprint:[2.4,1],height:2.4,storageBoxes:8,colliders:[box([-1.2,0,-.5],[1.2,2.4,.5])]},
   terminal:{id:'terminal',label:'Inventory terminal',category:'utility',cost:{'metal-stock':5,conductor:3,glass:2},footprint:[1.4,.8],height:1.5,colliders:[box([-.7,0,-.4],[.7,1.5,.4])]},
   'hangar-door':{id:'hangar-door',label:'Nomad hangar door',category:'wall',cost:{concrete:48,'metal-stock':32,conductor:4},footprint:[16,.6],height:6,colliders:[box([-8,0,-.3],[-7.3,6,.3]),box([7.3,0,-.3],[8,6,.3]),box([-7.3,5.4,-.3],[7.3,6,.3])],door:[{...box([-7.29,0,-.12],[7.29,5.39,.12],'door'),collapse:.96}]},
+  'ceiling-light':{id:'ceiling-light',label:'Ceiling light · 50 W',category:'utility',mount:'ceiling',light:true,cost:{'metal-stock':1,conductor:.5,glass:.5},footprint:[.8,.8],height:.12,colliders:[box([-.4,-.12,-.4],[.4,0,.4])]},
+  'roof-flat':roofTile('roof-flat','Flat roof tile'),
+  'roof-edge':roofTile('roof-edge','Rounded roof edge','edge'),
+  'roof-corner':roofTile('roof-corner','Rounded roof corner','corner'),
+  'roof-triangle':roofTile('roof-triangle','Triangle roof tile','triangle',TRIANGLE),
+  'roof-quarter':roofTile('roof-quarter','Quarter-circle roof tile','quarter',QUARTER),
+  'solar-array':{id:'solar-array',label:'Solar array · 2.5 kW',category:'utility',cost:{'metal-stock':8,conductor:6,glass:8},footprint:[3.6,2.4],height:1.2,colliders:[box([-1.8,0,-1.2],[1.8,1.2,1.2])]},
+  'wind-turbine':{id:'wind-turbine',label:'Wind turbine · 3 kW',category:'utility',cost:{concrete:8,'metal-stock':16,conductor:4},footprint:[3,3],height:6,colliders:[box([-1.5,0,-1.5],[1.5,6,1.5])]},
+  battery:{id:'battery',label:'Battery bank · 12 kWh',category:'utility',cost:{'metal-stock':10,conductor:8,glass:2},footprint:[1.6,1],height:1.8,colliders:[box([-.8,0,-.5],[.8,1.8,.5])]},
+  'uranium-generator':{id:'uranium-generator',label:'Uranium generator · 4 kW',category:'utility',cost:{concrete:20,'metal-stock':20,conductor:8},footprint:[2,2],height:2.4,colliders:[box([-1,0,-1],[1,2.4,1])]},
+  'helium-generator':{id:'helium-generator',label:'Helium-3 generator · 12 kW',category:'utility',cost:{concrete:24,'metal-stock':32,conductor:16,glass:8},footprint:[3,2],height:2.4,colliders:[box([-1.5,0,-1],[1.5,2.4,1])]},
   mainframe: { id:'mainframe', label:'Base mainframe', category:'utility', cost:{'metal-stock':5,conductor:3,glass:2}, footprint:[1.1,.7], height:1.8, colliders:[panel([-.55,0,-.35],[.55,1.8,.35])] },
   crate: { id:'crate', label:'Storage crate', category:'utility', cost:{'metal-stock':3}, footprint:[1.2,.8], height:.75, colliders:[panel([-.6,0,-.4],[.6,.75,.4])] },
 });

@@ -1,0 +1,49 @@
+{
+  "browser": "151.0.7922.173",
+  "viewport": "1440x900",
+  "stats": [
+    {
+      "name": "ceiling-light",
+      "draws": 11,
+      "triangles": 1910,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "roof-flat",
+      "draws": 5,
+      "triangles": 470,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "roof-edge",
+      "draws": 5,
+      "triangles": 530,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "roof-corner",
+      "draws": 5,
+      "triangles": 1874,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "roof-triangle",
+      "draws": 5,
+      "triangles": 430,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "roof-quarter",
+      "draws": 5,
+      "triangles": 982,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "roofkit",
+      "draws": 38,
+      "triangles": 11174,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    }
+  ],
+  "errors": []
+}

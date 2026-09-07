@@ -1,0 +1,10 @@
+# Exact source is retained once in source-animation-pack.zip; unpacked files regenerate.
+source/Meshy_AI_*.glb
+source/combined-idles.glb
+source/albedo.png
+derived-unfitted.glb
+authoring-optimized.blend
+*.log
+__pycache__/
+*.blend1
+derived-reduced-source-idles.glb

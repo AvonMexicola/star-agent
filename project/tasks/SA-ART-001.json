@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex tool art",
-  "status": "review",
+  "status": "integrated",
   "branch": "art/handheld-tool-pass",
   "base": "93c629137ae342a089ea4951f5964fd93371d314",
   "updated": "2026-09-07",

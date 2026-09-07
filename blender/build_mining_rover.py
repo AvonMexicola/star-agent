@@ -41,7 +41,19 @@ root=g.empty('MiningRover');root['manufacturer']='Meridian Shipworks';root['mode
 parts=[]
 def remember(o,tile=0):o['tile']=tile;parts.append(o);return o
 def box(name,p,size,tile=0,bevel=.016,parent=root,mat=None):return remember(g.box(name,p,size,mat or surface,bevel,parent),tile)
-def rod(name,a,b,r,tile=2,parent=root,mat=None,n=12):return remember(g.rod(name,a,b,r,mat or surface,n,parent),tile)
+def rod(name,a,b,r,tile=2,parent=root,mat=None,n=12):
+    o=g.rod(name,a,b,r,mat or surface,n,parent)
+    # A machined rod has flat end caps and radial side normals. Averaging its
+    # caps into the side makes short metal supports look like chrome domes.
+    start=Vector(g.xyz(a));axis=(Vector(g.xyz(b))-start).normalized();normals=[]
+    for face in o.data.polygons:
+        cap=abs(face.normal.dot(axis))>.99
+        for li in face.loop_indices:
+            p=o.data.vertices[o.data.loops[li].vertex_index].co-start
+            normal=face.normal.copy() if cap else (p-axis*p.dot(axis)).normalized()
+            normals.append(normal)
+    o.data.normals_split_custom_set(normals)
+    return remember(o,tile)
 def panel(name,points,tile=0,thick=.035,parent=root,mat=None):return remember(g.panel(name,points,mat or surface,thick,.009,parent),tile)
 def ring(name,center,profile,tile=3,axis='X',parent=root,mat=None,segments=32):
     pts=[]

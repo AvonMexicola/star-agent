@@ -184,12 +184,15 @@ export class AtlasMarkIISystems {
       ramp.nodeObject = root.getObjectByName(ramp.node);
       if (!ramp.nodeObject) missing.push(ramp.node);
       ramp.tipNodeObject = ramp.tipNode ? root.getObjectByName(ramp.tipNode) : null;
+      if (ramp.tipNode && !ramp.tipNodeObject) missing.push(ramp.tipNode);
       ramp.sealNodeObject = root.getObjectByName(ramp.headerSeal.node);
       if (!ramp.sealNodeObject) missing.push(ramp.headerSeal.node);
     }
     this.elevator.nodeObject = root.getObjectByName(this.elevator.node);
     if (!this.elevator.nodeObject) missing.push(this.elevator.node);
-    for (const gate of this.gates) gate.nodeObject = root.getObjectByName(gate.node);
+    for (const gate of this.gates) {
+      gate.nodeObject = root.getObjectByName(gate.node);if (!gate.nodeObject) missing.push(gate.node);
+    }
     this.elevator.gateObjects = this.gates.map(gate => gate.nodeObject).filter(Boolean);
     for (const leg of this.gear.legs) {
       leg.nodeObject = root.getObjectByName(leg.node);

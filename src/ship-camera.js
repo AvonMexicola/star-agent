@@ -113,7 +113,9 @@ export function playerUp(nav) {
   const grid=nav.stationPhysics;
   if(grid&&nav.mode==='walk')return grid.up.clone();
   const local=nav.toShipLocal?.();
-  return local && local.length()<25 ? UP.clone().applyQuaternion(nav.shipOrientation) : nav.normal.clone();
+  const bounds=nav.layout?.flightBounds;
+  const supportRadius=bounds?Math.max(25,Math.hypot(...bounds.min.map((value,i)=>Math.max(Math.abs(value),Math.abs(bounds.max[i]))))+2):25;
+  return local && local.length()<supportRadius ? UP.clone().applyQuaternion(nav.shipOrientation) : nav.normal.clone();
 }
 
 /** Clip against visible ship triangles in its small render frame. World-to-ship

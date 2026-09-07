@@ -129,7 +129,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     }catch(error){send(p,{type:'ack',requestId:m.requestId,ok:false,error:error.code==='ECONNREFUSED'?'Storage unavailable. Try again.':error.message});}
     finally{p.busy=false;}
   }
-  function setHull(p,hull){const n=p.nav,pod=world.pods[p.hangarId-1];n.shipId=hull;n.layout=hull==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;n.freighter=hull==='atlas'?new FreighterSystems():null;n.shipPosition=pod.padWorldPosition.clone();n.shipOrientation.copy(pod.padQuaternion);n.insideShip=false;n.doorOpen=false;n.doorProgress=0;}
+  function setHull(p,hull){const n=p.nav,pod=world.pods[p.hangarId-1];n.shipId=hull;n.layout=hull==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;n.freighter=hull==='atlas'?new FreighterSystems():null;n.gearDeployed=true;n.gearProgress=1;n.shipPosition=pod.padWorldPosition.clone();n.shipOrientation.copy(pod.padQuaternion);n.insideShip=false;n.doorOpen=false;n.doorProgress=0;}
   function attach(p){
     trading.attach(p);
     p.nav.station=world.adapter(p);p.nav.gamepad.poll=()=>({...p.input,mouseYaw:0,mousePitch:0,evaVertical:p.input.vertical,evaBrake:p.input.brake,mine:0,speed:0,scroll:0,shortcutModifier:false,used:true,ui:false,pressed:new Set()});
@@ -220,7 +220,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(saved){p.health=Math.max(0,Math.min(100,Number.isFinite(saved.health)?saved.health:100));p.shipHealth=Math.max(0,Math.min(100,Number.isFinite(saved.shipHealth)?saved.shipHealth:100));}
         if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&p.weapon!=='mining-laser-tool')p.weapon=null;
         const spawnSlot=reserveSpawn(p);p.spawnPod=p.hangarId;
-        p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));if(saved?.hull==='atlas')setHull(p,'atlas');attach(p);await persist(p);await trading.join(p);
+        p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));if(saved?.hull==='atlas'){setHull(p,'atlas');p.nav.startStation();}attach(p);await persist(p);await trading.join(p);
         if(closed)throw failure('Server restarting.','ROOM_CLOSED');
         players.set(p.id,p);
         send(p,{...state(p),type:'welcome',id:p.id,seed:WORLD_SEED,version:MULTIPLAYER_VERSION,maxPlayers:MAX_PLAYERS,colorIndex:slot});return p.id;

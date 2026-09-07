@@ -8,6 +8,7 @@ import { MoonRings, ringDensity, ringRock, RING_NORMAL } from '../src/moon-rings
 import {RING_RADIUS,RING_WIDTH,RING_THICKNESS} from '../src/ring-world.js';
 import { MoonIce, iceCell } from '../src/moon-ice.js';
 import { FlightAudio } from '../src/audio.js';
+import { engineMix } from '../src/audio/engine.js';
 import { RADIUS, SUN_DISTANCE, cubeDirection } from '../src/world.js';
 
 const center=new Vector3(...MOON_POSITION),perimeter=MOON_RADIUS+MOON_MAX_HEIGHT;
@@ -104,12 +105,14 @@ test('lunar streaming retains complete coverage during descent and releases its 
 test('airless exploration silences wind while retaining cockpit engine sound',()=>{
   const audio=new FlightAudio(),parameter=()=>({value:NaN,setTargetAtTime(value){this.value=value;}});
   assert.equal(audio.context,null,'sound remains opt-in');
-  audio.context={currentTime:0};audio.enabled=true;
+  audio.context={currentTime:0,state:'running'};audio.enabled=true;
+  audio.engineAudio={update(state){this.state=engineMix(state);}};
   for(const key of ['hum','overtoneGain','wind'])audio[key]={gain:parameter()};
   for(const key of ['engine','overtone','windFilter'])audio[key]={frequency:parameter()};
   audio.update({mode:'flight',speed:100,altitude:10,airless:true});
-  assert.equal(audio.wind.gain.value,0);assert.ok(audio.hum.gain.value>0);
-  audio.update({mode:'walk',airless:true});assert.equal(audio.wind.gain.value,0);assert.equal(audio.hum.gain.value,0);
+  assert.equal(audio.wind.gain.value,0);assert.ok(audio.engineAudio.state.tone>0);
+  assert.equal(audio.hum.gain.value,0,'station hum does not duplicate ship engines');
+  audio.update({mode:'walk',airless:true});assert.equal(audio.wind.gain.value,0);assert.equal(audio.engineAudio.state.active,false);
   audio.update({mode:'walk',airless:false});assert.ok(audio.wind.gain.value>0,'Aeon ambience returns');
 });
 

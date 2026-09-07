@@ -1,0 +1,48 @@
+{
+  "runtimeCommit": "35a7a93a8b036b40f5d5cf30dbb8851ecec2e9d5",
+  "bundle": "main-Dzobk9le.js",
+  "sourceReceipt": "test-results/shopkeeper-evidence/1788815649310-0/report.json",
+  "conversion": "ffmpeg libwebp quality92; full-frame, no retouching",
+  "captures": [
+    {
+      "file": "equipment-cycle-1-idle-11-desktop.webp",
+      "bytes": 174498,
+      "sha256": "3e407ed34f449555342072704ce88b50e6d19b5e779f3f75e8632dad97de3f34"
+    },
+    {
+      "file": "equipment-idle-desktop.webp",
+      "bytes": 177814,
+      "sha256": "850b49ffa6a433fa64c352f22839ce1449f9687d7a75619085703a97fefb6cb7"
+    },
+    {
+      "file": "equipment-purchase-desktop.webp",
+      "bytes": 46350,
+      "sha256": "9e80331e4b8ff73cd40fffdcd1703aa906f039f67f4ef1350a85b19b93528486"
+    },
+    {
+      "file": "equipment-purchase-mobile.webp",
+      "bytes": 25196,
+      "sha256": "7cce0e84e6ac5ffb1376368e7b0935206f91b1b62e2e43f3e8086c7d5af99b4d"
+    },
+    {
+      "file": "purchase-desktop.webp",
+      "bytes": 44750,
+      "sha256": "d0ddd91450643a3823567c419655c9fc023ba9cf6821c48bd58057b2556f0e36"
+    },
+    {
+      "file": "purchase-mobile.webp",
+      "bytes": 26086,
+      "sha256": "73eef20474de77186c4de1f4f7424e3b4151d3555d58582cd011c42d271dec8d"
+    },
+    {
+      "file": "returned-hangar.webp",
+      "bytes": 159156,
+      "sha256": "67cb2b5a572f271bd2f1a8314de704fe032684c998972663e3f2a3fb57d7eee9"
+    },
+    {
+      "file": "weapons-idle-desktop.webp",
+      "bytes": 159920,
+      "sha256": "8ac6562a3fbd89657551fc95a460d3ea36dd5659e683d46ff9518adb06e6b634"
+    }
+  ]
+}

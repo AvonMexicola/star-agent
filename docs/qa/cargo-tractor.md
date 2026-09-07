@@ -97,3 +97,14 @@ tractor turret, gravity-driven crate fall, independent visual score or FPS claim
 Cross-account authority, visible snapshot delivery and reconnect are server-tested;
 a rendered two-human online piracy session and physical-controller playtest remain
 unperformed. Standing local integration permits a labeled development checkpoint.
+
+## Local delivery follow-up
+
+Integrated in local dev `638a5e4` with the [handheld Blender pass](handheld-tools.md)
+on 2026-09-07. That follow-up provides the distinct tractor model and preserves the
+physical cargo behavior. The combined Nomad controller route passes on final
+runtime `a50c060`; all8 cargo/server/actual-SQL cases pass after preparing the
+isolated checkout's database fixture. Client and API were refreshed together for
+protocol4 at21:09:42UTC, with the existing persistent database retained and no
+schema migration or reset. The native-touch evidence above remains specific to
+its original checked source; no new hardware claim is made.

@@ -19,6 +19,16 @@ test('test progress is isolated for each launch',()=>{
   const first=testFlightStorage(),second=testFlightStorage();first.setItem('fleet','atlas');
   assert.equal(first.getItem('fleet'),'atlas');assert.equal(second.getItem('fleet'),null);
 });
+test('ground mining is an explicit local start for every selected hull without a cargo-lift flag',()=>{
+  assert.ok(DEV_LOCATIONS.some(location=>location.id==='rover-surface'&&location.name==='Burrow mining — Selene surface'));
+  for(const ship of DEV_SHIPS){
+    const url=new URL(devLaunchURL('http://127.0.0.1:5178/?rover=1&seed=7291',{ship:ship.id,location:'rover-surface'}));
+    assert.equal(url.searchParams.has('rover'),false);
+    assert.equal(url.searchParams.get('intro'),'0');
+    assert.deepEqual(devLaunchOptions(url.search,true),{ship:ship.id,location:'rover-surface',autoStart:true});
+    assert.equal(devLaunchOptions(url.search,false),null,'public entry cannot enable a development teleport');
+  }
+});
 test('leaving the exterior overview launches the requested location and retains the reviewed shell',()=>{
   const url=new URL(devLaunchURL('http://127.0.0.1:5178/?dev=1&seed=7291&stationExterior=1&exteriorView=overview',{ship:'nomad',location:'hangar'}));
   assert.equal(url.searchParams.has('exteriorView'),false);

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Vector3,Quaternion} from 'three';
 import {MiningStore,MINING_KEY} from '../src/mining/store.js';
-import {sandboxStorage,prepareSandbox,refillSandbox,sandboxTotals,sandboxClaim,SANDBOX_PREFIX,SANDBOX_BINS} from '../src/build/sandbox.js';
+import {spawnInSandbox,sandboxStorage,prepareSandbox,refillSandbox,sandboxTotals,sandboxClaim,SANDBOX_PREFIX,SANDBOX_BINS} from '../src/build/sandbox.js';
 import {validBuild,planCost} from '../src/build/state.js';
 import {bodyAltitude,SELENE} from '../src/celestial.js';
 const disk=()=>{const values=new Map();return {values,getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};};
@@ -33,4 +33,9 @@ test('supplied foundations and mainframe rest on canonical lunar terrain',()=>{
   const point=new Vector3(p.position[0]+x,p.position[1],p.position[2]+z).applyQuaternion(new Quaternion(...c.quaternion)).add(new Vector3(...c.origin));
   const altitude=bodyAltitude(point,SELENE);assert.ok(altitude>=-.001&&altitude<.6,`${p.id}: ${altitude}`);
  }
+});
+
+test('a fully dismantled sandbox can reload without respawning its deleted base',()=>{
+ const nav={position:new Vector3(),velocity:new Vector3(),angularVelocity:new Vector3(),layout:{eyeHeight:1.65},keys:new Set(),gamepad:{suspend(){}},transitMoon(){},orientToward(){}};
+ const build={claims:[],toLocal:point=>point};spawnInSandbox(nav,build);assert.equal(nav.mode,'walk');assert.ok(Number.isFinite(nav.position.x));assert.equal(build.claims.length,0);
 });

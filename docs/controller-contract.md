@@ -322,7 +322,7 @@ from physical controller testing.
 
 ## Expanded construction menus
 
-LB/RB changes the active native build tab (Blocks/Shapes/Facilities/Resources/
+LB/RB changes the active native build tab (Blocks/Shapes/Facilities/Power/Roofs/Resources/
 Sandbox supplies/Mainframe when available). Tab changes consume the shared UI
 edge before analog focus or A confirmation and suspend until neutral. The hooks
 are `dialog.controllerAction(ui)` for tab changes and `controllerNavigation(ui)`
@@ -330,3 +330,32 @@ for the wheel; neither polls Gamepad independently. B enter uses the actual save
 claim radius,64m normally or96m after placing a large pad. X outside build mode
 operates rack/terminal/hangar/pad-designation interactions through the same shared
 native inventory/dialog flow. See `qa/base-building/expansion.md` for evidence.
+
+
+## Base power and solo server saves
+
+Power is a native bumper-accessible build tab. Solar/wind/battery/fuel generators
+use the existing placement controls. Mainframe and machine X/F opens actual
+charge/load/health/fuel status; fuel loading, repair and server connection are
+native focusable buttons. Async actions suppress duplicate submission and require
+neutral input after completion. Mining fuel byproducts appear in the same backpack
+and mainframe inventory as other materials. Server connection binds the authenticated
+account; switching accounts must stop background uploads. Never put solo base
+snapshots into authoritative multiplayer inventory. See `qa/base-power/README.md`
+for the actual controller journey and separate database/hardware testing limits.
+
+Removal mode: B opens the build wheel; select Remove tool, aim within12 m, and
+A removes one permitted piece. RT/LT cannot fire or rotate while removing; X exits,
+B returns to selection, RB jumps. Enter/touch Remove share the same action. Held A
+must not delete the piece behind a removed target. The mode shows target outline,
+blocked reason and no-refund disclosure. Empty storage and structural dependencies
+are validated before mutation and repeated on the solo server command.
+
+
+Ceiling lights and outer roof tiles use the same placement journey. Select Roofs
+with LB/RB, choose a tile with stick/A, then aim at a supported structural ceiling
+and press A to place. LT/RT rotate square edge/corner tiles; matching triangle
+and quarter-circle tiles inherit the supporting ceiling rotation. Lights appear
+in Power and Roofs, mount underneath ceilings, and use aimed X/F to switch after
+leaving build mode. Held X must toggle only once; a saved off switch remains off
+after reload. See [ceiling and roof record](base-ceilings-roofs.md).

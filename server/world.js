@@ -2,6 +2,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {StationComplex} from '../src/station-complex.js';
+import {PLAYABLE_STATION_OPTIONS} from '../src/station-fleet-hangar.js';
 import {RING_SPEED} from '../src/station-architecture.js';
 import {constrainStationSweep} from '../src/station-collision.js';
 import {Navigation} from '../src/navigation.js';
@@ -21,13 +22,14 @@ export function installHeadlessEvents(){
 }
 export async function createWorld(){
   setPlanetSeed(WORLD_SEED);
-  const bytes=await readFile(new URL('../public/models/station.glb',import.meta.url));
-  const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
+  const loader=new GLTFLoader();
+  const load=async name=>{const bytes=await readFile(new URL(`../public/models/${name}.glb`,import.meta.url));return loader.parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');};
+  const [gltf,exteriorGltf]=await Promise.all([load('station'),load('station-exterior')]);
   // Sign canvases and optional finish textures are render-only. The same hull,
   // spine, rotating rings, hangar deck and lift collision geometry run here.
   const savedDocument=globalThis.document;delete globalThis.document;
   const scene=new THREE.Scene();let station;
-  try{station=new StationComplex(scene,{gltf,lod:{scene:new THREE.Group()},finish:false});await station.readyPromise;}
+  try{station=new StationComplex(scene,{...PLAYABLE_STATION_OPTIONS,exteriorRefresh:false,gltf,exteriorGltf,lod:{scene:new THREE.Group()},finish:false});await station.readyPromise;}
   finally{if(savedDocument)globalThis.document=savedDocument;installHeadlessEvents();}
   const landmarks=new LandmarkRocks(scene,{render:false});
   const pods=station.pods;for(const pod of pods)pod.beginOpening();

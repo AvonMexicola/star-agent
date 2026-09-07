@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {ParticlePool} from '../src/effects/particles.js';
 import {EnergyEffects} from '../src/effects/energy-effects.js';
+import {ENGINE_EXHAUST,enginePresentation} from '../src/effects/engine-state.js';
+import {SHIP_LAYOUT} from '../src/boarding.js';
+import {shipHandling} from '../src/ship-handling.js';
 const v=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z);
 
 test('particle pool stays bounded and preserves centimetres at stellar coordinates',()=>{
@@ -16,6 +19,11 @@ test('reused travel slots cannot drag world sparks with the camera',()=>{
  const pool=new ParticlePool(new THREE.Scene(),1);
  pool.emit(v(),v()).cameraLocal=true;
  assert.equal(pool.emit(v(),v()).cameraLocal,false);pool.dispose();
+});
+test('reused engine slots cannot retire a later weapon or mining particle',()=>{
+ const pool=new ParticlePool(new THREE.Scene(),1);
+ assert.equal(pool.emit(v(),v(),{engine:true}).engine,true);
+ assert.equal(pool.emit(v(),v()).engine,false);pool.dispose();
 });
 test('ore converges on a moving collector and retires without adding inventory',()=>{
  const pool=new ParticlePool(new THREE.Scene(),16),collector=v(3,0,0);
@@ -126,4 +134,85 @@ test('a moving weapon flash follows its barrel and sparks inherit launch velocit
  assert.deepEqual(flash.p,muzzle);
  // Pool reuse must not retain a prior weapon's anchor.
  fx.particles.cursor=fx.particles.slots.indexOf(flash);fx.particles.emit(v(),v(1,0,0));assert.equal(flash.anchor,null);fx.dispose();
+});
+
+const engineNav=(shipId='nomad')=>({shipId,mode:'flight',powered:true,layout:SHIP_LAYOUT,
+ position:v(25e9,2e9,-7e9),orientation:new THREE.Quaternion(),shipOrientation:new THREE.Quaternion(),
+ velocity:v(),shipVelocity:v(),engineAcceleration:v(0,0,-shipHandling(shipId).thrust),boost:false});
+
+test('all fleet nozzles emit at their own rotated hull pose while Kestrel adds no duplicate jets',()=>{
+ for(const shipId of Object.keys(ENGINE_EXHAUST)){
+  const fx=new EnergyEffects(new THREE.Scene()),nav=engineNav(shipId),origin=nav.position.clone();
+  nav.orientation.setFromAxisAngle(v(0,1,0),.76);nav.engineAcceleration.applyQuaternion(nav.orientation);
+  for(let i=0;i<12;i++)fx.update(.05,{origin,engine:enginePresentation(nav)});
+  assert.equal(fx.state.engine.nozzleCount,2,shipId);assert.equal(fx.state.engine.activeEmitters,2,shipId);
+  assert.equal(fx.state.engine.activeJets,shipId==='kestrel'?0:2,shipId);
+  assert.ok(fx.state.engine.particles>0,shipId);
+  const hull=enginePresentation(nav).shipPosition;
+  fx.jets.forEach((jet,i)=>{
+   const socket=v(...ENGINE_EXHAUST[shipId].sockets[i].position).applyQuaternion(nav.orientation).add(hull).sub(origin);
+   assert.ok(jet.mesh.position.distanceTo(socket)<.00001,shipId);
+   assert.ok(jet.mesh.position.length()<80,'GPU jet coordinates stay within one full-scale hull, not the billion-metre world origin');
+   assert.ok(v(0,0,1).applyQuaternion(jet.mesh.quaternion).distanceTo(v(0,0,1).applyQuaternion(nav.orientation))<.00001);
+  });
+  nav.boost=true;
+  for(let i=0;i<12;i++)fx.update(.05,{origin,engine:enginePresentation(nav)});
+  assert.ok(Number.isFinite(fx.state.boost)&&fx.state.boost>.8,shipId);
+  assert.ok(fx.jets.every(jet=>Number.isFinite(jet.mesh.scale.z)&&jet.mesh.scale.z>ENGINE_EXHAUST[shipId].length));
+  assert.ok(fx.particles.slots.filter(p=>p.alive&&p.engine).every(p=>p.p.toArray().every(Number.isFinite)));
+  fx.dispose();
+ }
+});
+
+test('engine stop, reverse, travel and hull changes retire exhaust without deleting combat or mining',()=>{
+ const fx=new EnergyEffects(new THREE.Scene()),nav=engineNav(),origin=nav.position.clone();
+ const refill=()=>{nav.shipId='nomad';nav.powered=true;nav.travel=null;nav.engineAcceleration.set(0,0,-35);
+  for(let i=0;i<8;i++)fx.update(.05,{origin,engine:enginePresentation(nav)});
+  assert.ok(fx.state.engine.particles>0);
+  fx.fire(origin,v(0,0,-1),{weapon:'laser'});fx.collect(origin,[.01,0,0]);
+  return fx.particles.slots.filter(p=>p.alive&&!p.engine);
+ };
+ for(const change of [()=>{nav.engineAcceleration.set(0,0,0);nav.velocity.set(0,0,-1e6);},
+  ()=>nav.engineAcceleration.set(0,0,35),()=>{nav.powered=false;},()=>{nav.travel={};},
+  ()=>{nav.shipId='atlas';nav.engineAcceleration.set(0,0,0);}
+ ]){
+  const other=refill();change();fx.update(.016,{origin,engine:enginePresentation(nav),relativistic:Boolean(nav.travel)});
+  assert.equal(fx.state.engine.particles,0);assert.equal(fx.state.engine.activeJets,0);
+  assert.equal(fx.state.engine.activeEmitters,0);assert.ok(other.some(p=>p.alive&&!p.engine));
+  assert.ok(fx.state.lances>0,'engine lifecycle cannot extinguish a weapon lance');
+ }
+ fx.dispose();
+});
+
+test('suspension and transit jumps clear every effect and restarting stays local',()=>{
+ const fx=new EnergyEffects(new THREE.Scene()),nav=engineNav();
+ for(let i=0;i<10;i++)fx.update(.05,{origin:nav.position,engine:enginePresentation(nav)});
+ assert.ok(fx.state.engine.particles>0);
+ fx.update(.05,{origin:nav.position,engine:enginePresentation(nav,{suspended:true}),suspended:true});
+ assert.equal(fx.state.engine.particles,0);assert.equal(fx.state.engine.activeJets,0);
+ assert.equal(fx.state.engine.state,'suspended');
+ nav.position.add(v(0,1e9,3e9));
+ fx.update(.05,{origin:nav.position,engine:enginePresentation(nav)});
+ assert.ok(fx.jets.every(jet=>jet.mesh.position.length()<15));
+ fx.reset();assert.equal(fx.state.particles,0);assert.equal(fx.state.engine.activeEmitters,0);fx.dispose();
+});
+
+test('unseated engine particles inherit hull momentum and keep their GPU streaks bounded',()=>{
+ const fx=new EnergyEffects(new THREE.Scene()),nav=engineNav('atlas');
+ Object.assign(nav,{mode:'walk',cabinFlight:true,insideShip:true,shipPosition:nav.position.clone()});
+ nav.shipOrientation.setFromAxisAngle(v(0,1,0),Math.PI/2);nav.engineAcceleration.copy(v(-14,0,0));
+ nav.shipVelocity.set(-2e6,0,0);nav.velocity.set(1,0,0);
+ for(let i=0;i<12;i++){
+  nav.shipPosition.addScaledVector(nav.shipVelocity,.05);nav.position.copy(nav.shipPosition).add(v(0,6,-8));
+  fx.update(.05,{origin:nav.position,engine:enginePresentation(nav)});
+ }
+ const particles=fx.particles.slots.filter(p=>p.alive&&p.engine);
+ assert.ok(particles.length>0);assert.ok(particles.every(p=>p.v.x<-1e6));
+ assert.ok(particles.every(p=>p.stretch*p.v.length()<=2.00001));
+ const attributes=fx.particles.geometry.attributes;
+ for(let i=0;i<fx.particles.geometry.instanceCount;i++){
+  const start=v().fromBufferAttribute(attributes.start,i),end=v().fromBufferAttribute(attributes.end,i);
+  assert.ok(start.distanceTo(end)<=2.001,'large-world velocity cannot draw a solar-system line');
+ }
+ fx.dispose();
 });

@@ -1,3 +1,4 @@
+import {createBaseSites} from './base-sites.js';
 import { createServer as createHTTPServer, STATUS_CODES } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { WebSocket, WebSocketServer } from 'ws';
@@ -16,10 +17,10 @@ const errorMessage = error => ({
   ACCOUNT_CONNECTED: 'This account is already connected to the universe.',
 })[error?.code] ?? 'The multiplayer request could not be completed.';
 
-function readJSON(req) {
+function readJSON(req, maximum = MAX_BODY) {
   if (!/^application\/json(?:\s*;|$)/i.test(req.headers['content-type'] ?? '')) throw httpError(415, 'Use application/json.');
   if (req.headers['content-encoding'] && req.headers['content-encoding'] !== 'identity') throw httpError(415, 'Compressed request bodies are not supported.');
-  if (Number(req.headers['content-length']) > MAX_BODY) throw httpError(413, 'Request body exceeds 16 KiB.');
+  if (Number(req.headers['content-length']) > maximum) throw httpError(413, 'Request body exceeds the size limit.');
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0, settled = false;
@@ -27,7 +28,7 @@ function readJSON(req) {
     req.on('data', chunk => {
       if (settled) return;
       size += chunk.length;
-      if (size > MAX_BODY) { fail(httpError(413, 'Request body exceeds 16 KiB.')); return; }
+      if (size > maximum) { fail(httpError(413, 'Request body exceeds the size limit.')); return; }
       chunks.push(chunk);
     });
     req.on('end', () => {
@@ -65,6 +66,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
   trustProxy = false, heartbeatIntervalMs = 30000, logger = console, chatPolicy = CHAT_POLICY } = {}) {
   if (!room || !store) throw new Error('An explicit room and account store are required.');
   if (!Number.isFinite(heartbeatIntervalMs) || heartbeatIntervalMs < 10) throw new Error('Heartbeat interval must be at least 10 ms.');
+  const bases=store.mutateBaseSites?createBaseSites({store}):null;
   const origin = new URL(publicOrigin).origin;
   const limit = createRequestLimiter();
   const peers = new Map(), tasks = new Set(), upgradeSockets = new Set();
@@ -111,6 +113,13 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
       if ((req.headers.origin && req.headers.origin !== origin) || (req.method === 'POST' && req.headers.origin !== origin)) throw httpError(403, 'A same-origin request is required.');
       const path = new URL(req.url, origin).pathname;
       if (path === '/api/health' && req.method === 'GET') { respond(res, 200, { ok: true }); return; }
+      if(path==='/api/bases'&&bases){
+        const account=await auth.authenticate(ctx);if(!account)throw httpError(401,'Sign in to save bases on the server.');
+        if(!['GET','POST'].includes(req.method))throw httpError(405,'Use GET or POST.');
+        const command=req.method==='GET'?{action:'read'}:await readJSON(req,2*1024*1024);
+        if(req.method==='POST'&&command.accountId!==account.id)throw httpError(409,'Account changed. Reconnect base saves with the owning account.');
+        const state=await bases.command(account.id,command);respond(res,200,{...state,accountId:account.id});return;
+      }
       const match = /^\/api\/auth\/([a-z]+)$/.exec(path);
       if (!match || (!POST_ACTIONS.has(match[1]) && match[1] !== 'session')) throw httpError(404, 'Not found.');
       const action = match[1];
@@ -235,7 +244,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
     }
   }, heartbeatIntervalMs);
   heartbeat.unref();
-  const pruning = setInterval(() => { track(Promise.resolve().then(() => store.pruneExpired?.(Date.now()))); }, 60000);
+  const pruning = setInterval(() => { track(Promise.resolve().then(() => store.pruneExpired?.(Date.now())).then(()=>bases?.sweep())); }, 60000);
   pruning.unref();
   return {
     server, wss,

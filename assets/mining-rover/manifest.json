@@ -1,5 +1,5 @@
 {
-  "stage": "playable development candidate; controller journey passed, final input and art review pending",
+  "stage": "playable development candidate 10; final input and visual review pending",
   "name": "Burrow M-04",
   "manufacturer": "Meridian Shipworks",
   "units": "metres",
@@ -23,12 +23,12 @@
     "No independent art acceptance yet"
   ],
   "asset": "public/models/mining-rover.glb",
-  "sha256": "0ce536332a9e1b29d89d29981e510739c975cd739514cfe1e9e0b810120617fb",
-  "bytes": 2178492,
+  "sha256": "88448d9dd48e0a0acdb2397465302e8ab41335b8ffaab6234050d136bf6cc78f",
+  "bytes": 2177260,
   "triangles": 21570,
   "packing": {
-    "inputBytes": 3545588,
-    "outputBytes": 3127500,
+    "inputBytes": 3544500,
+    "outputBytes": 3126416,
     "maximumPositionErrorMetres": 5.0416725909225904e-05,
     "maximumNormalErrorDegrees": 0.3490884409607401,
     "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"

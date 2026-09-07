@@ -3,6 +3,7 @@ import { SHIP_LAYOUT } from '../boarding.js';
 import { createWeaponTarget } from './weapon-target.js';
 import { WEAPONS } from './weapons.js';
 import {shipWeaponStatus,stoppingDistance} from '../combat/flight-policy.js';
+import { enginePresentation, engineExhaust } from './engine-state.js';
 
 /** Input/pose adapter. RT fires in flight and on foot; movement stays independent. */
 export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
@@ -34,8 +35,8 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
   return {
     select,
     controller(pad){controllerFire=Boolean(pad.fire>0&&!pad.ui);},
-    get state(){return {weapon,controllerFire,armament:getShip?.()?.armament?.state??null,weaponStatus:shipWeaponStatus(nav),combatMode:nav.combatMode};},
-    update(dt,origin,{suspended=false}={}){
+    get state(){return {weapon,controllerFire,armament:getShip?.()?.armament?.state??null,weaponStatus:shipWeaponStatus(nav),combatMode:nav.combatMode,engineVisuals:getShip?.()?.userData?.enginePresentation??null};},
+    update(dt,origin,{suspended=false,engine=null}={}){
       const ship=getShip?.(),armament=ship?.armament;
       if(ship!==lastShip){clear();lastShip=ship;cooldown=.12;}
       if(armament?.status==='ready')armament.select(weapon);
@@ -70,9 +71,9 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
         armament.fired(pose);cooldown=profile.interval;
       }
       collector.set(.2,-.35,-.15).applyQuaternion(nav.orientation).add(nav.position);
-      const throttle=active?Math.max(nav.keys.has('KeyW')?1:0,Math.min(1,Math.abs(nav.velocity.dot(forward))/200)):0;
-      // Kestrel renders its authored engine cores/cones at the real nozzles.
-      effects.update(dt,{origin,camera,shipPosition:nav.shipId==='kestrel'?null:position,shipQuaternion:nav.orientation,velocity:nav.velocity,flying:active,inSpace:nav.flightEnvironment.regime==='SPACE'&&nav.stationDistance>500,relativistic:Boolean(nav.travel),boost:nav.boost,throttle,mining:effects.miningInput,collector,suspended:suspended||!nav.focused||document.hidden});
+      const paused=suspended||!nav.enabled||!nav.focused||document.hidden||Boolean(document.querySelector('dialog[open]'));
+      engine??=enginePresentation(nav,{suspended:paused});
+      effects.update(dt,{origin,camera,engine,exhaust:engineExhaust(ship,engine.shipId),velocity:engine.velocity,flying:engine.flying&&engine.active,inSpace:nav.flightEnvironment.regime==='SPACE'&&nav.stationDistance>500,relativistic:Boolean(nav.travel),mining:effects.miningInput,collector,suspended:paused});
     },
   };
 }
