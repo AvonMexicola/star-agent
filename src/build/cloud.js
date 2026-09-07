@@ -1,9 +1,10 @@
+import {canonicalJSON} from './snapshot.js';
 import {restoreBuildAnchors} from './anchors.js';
 import {validBuild} from './state.js';
 import {pruneBaseStorage,coreId} from './power-system.js';
 const KEY='star-agent.base-cloud.v1';
 const storageKey=storage=>JSON.stringify(Object.entries(storage??{}).sort(([a],[b])=>a.localeCompare(b)).map(([id,v])=>[id,v.name,v.boxes,Object.entries(v.items).sort(([a],[b])=>a.localeCompare(b))]));
-const layoutKey=build=>JSON.stringify(build?.claims.map(({power,origin,quaternion,...c})=>c)??[]);
+const layoutKey=build=>canonicalJSON(build?.claims.map(({power,origin,quaternion,...c})=>c)??[]);
 export class BaseCloud {
  constructor({store,build,power,sandbox=false,fetchImpl=globalThis.fetch}){
   Object.assign(this,{store,build,power,sandbox,fetchImpl});this.enabled=false;this.busy=false;this.status=sandbox?'Sandbox · local only':'Browser save · not on server';this.profile=null;this.elapsed=0;
@@ -25,7 +26,7 @@ export class BaseCloud {
  }
  async restore(){if(!this.sandbox&&this.store.storage?.getItem(KEY)){this.enabled=true;return this.connect({restore:true});}}
  snapshot(){const build=this.store.state.build??{version:1,nextId:1,claims:[]},storage={};for(const c of build.claims)for(const p of c.pieces.filter(p=>['mainframe','crate','rack'].includes(p.type))){const id=p.type==='mainframe'?coreId(c):`build-crate-${p.id.split('-').at(-1)}`,box=this.store.container(id);storage[id]={name:box.name,kind:'base',items:box.items,boxes:box.boxes};}return {action:'save',revision:this.profile.revision,build,storage};}
- apply(profile,{sent=null}={}){
+ apply(profile,{sent=null,removed=null}={}){
   const restored=restoreBuildAnchors(profile.build);if(!restored.ok||!validBuild(restored.build))throw Error('Invalid server base save; local data retained.');
   let next=this.store.state,build=restored.build;
   // A save response may arrive after another local placement. Keep those new
@@ -33,6 +34,7 @@ export class BaseCloud {
   if(sent&&layoutKey(next.build)!==layoutKey(sent.build)){
    const server=new Map(build.claims.map(c=>[c.id,c]));build={...next.build,claims:next.build.claims.filter(c=>server.has(c.id)||!sent.build.claims.some(p=>p.id===c.id)).map(c=>server.has(c.id)?{...c,power:server.get(c.id).power}:c)};
   }
+  if(removed)build={...build,claims:build.claims.filter(c=>c.id!==removed.claimId||profile.build.claims.some(a=>a.id===c.id)).map(c=>c.id===removed.claimId?{...c,pieces:c.pieces.filter(p=>p.id!==removed.pieceId)}:c)};
   next={...pruneBaseStorage(next,build.claims),build,boxes:{...next.boxes},remote:{...next.remote}};
   next=pruneBaseStorage(next,build.claims);
   for(const [id,value] of Object.entries(profile.storage??{})){
@@ -53,7 +55,7 @@ export class BaseCloud {
  update(dt){this.elapsed+=dt;if(this.elapsed>=10){this.elapsed=0;void this.sync();}}
  async action(claimId,action,item){
   await this.sync();if(this.busy||this.status.startsWith('Server save pending'))return {ok:false,message:this.status};this.busy=true;
-  try{this.profile=await this.request({action,claimId,item,amount:.1,revision:this.profile.revision});this.apply(this.profile);return {ok:true,message:action==='fuel'?'Fuel loaded on server.':'Base repaired on server.'};}
+  try{const sent=this.snapshot();this.profile=await this.request({action,claimId,item,amount:.1,revision:this.profile.revision});this.apply(this.profile,{sent,removed:action==='remove'?{claimId,pieceId:item}:null});return {ok:true,message:action==='fuel'?'Fuel loaded on server.':action==='remove'?'Piece removed on server. No material refund.':'Base repaired on server.'};}
   catch(error){return {ok:false,message:error.message};}finally{this.busy=false;}
  }
 }

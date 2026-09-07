@@ -16,9 +16,14 @@ test('real PostgreSQL keeps account-scoped bases through restart, rolls back con
  assert.equal((await request('/api/bases',command,b.cookie)).status,409);
  const races=await Promise.all([request('/api/bases',command,a.cookie),request('/api/bases',command,a.cookie)]);assert.deepEqual(races.map(r=>r.status).sort(),[200,409]);
  const saved=races.find(r=>r.status===200).body;assert.equal(saved.storage['build-core-1'].items.concrete,30);assert.equal((await request('/api/bases',null,b.cookie)).body.build.claims.length,0);
+ const added=structuredClone(saved.build);added.claims[0].pieces.push({id:'build-piece-3',type:'battery',position:[4,0,0],rotation:0,doorOpen:false});added.nextId=4;
+ const expanded=await request('/api/bases',{...command,build:added,revision:saved.revision},a.cookie);assert.equal(expanded.status,200,JSON.stringify(expanded.body));
+ const removed=await request('/api/bases',{action:'remove',accountId:a.body.account.id,claimId:c.id,item:'build-piece-3',revision:expanded.body.revision},a.cookie);assert.equal(removed.status,200);assert.equal(removed.body.build.claims[0].pieces.length,1);
+ assert.equal((await request('/api/bases',{...command,build:added,revision:removed.body.revision},a.cookie)).status,409);
  await app.close();app=null;store=await createPostgresStore({connectionString:database.connectionString});await store.migrate();
  const service=createBaseSites({store,now:()=>Date.now()});const restored=await service.command(a.body.account.id,{action:'read'});assert.equal(restored.build.claims.length,1);assert.equal(restored.storage['build-core-1'].items.concrete,30);
  const later=createBaseSites({store,now:()=>Date.now()+DECAY_MS+12*3600000});await later.sweep();const expired=await later.command(a.body.account.id,{action:'read'});assert.equal(expired.build.claims.length,0);assert.deepEqual(expired.storage,{});
- const stale=await later.command(a.body.account.id,{...command,revision:expired.revision});assert.equal(stale.build.claims.length,0);
+ await assert.rejects(later.command(a.body.account.id,{...command,revision:expired.revision}),/older than/);
+ const stale=await later.command(a.body.account.id,{...command,build:{...command.build,nextId:expired.build.nextId},revision:expired.revision});assert.equal(stale.build.claims.length,0);
  console.log('BASE_DB_PASS: real SQL restart, concurrent CAS, authenticated HTTP, account isolation and offline expiry verified.');
 });

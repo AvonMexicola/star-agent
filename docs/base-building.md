@@ -144,7 +144,7 @@ save. **Command menu → Return to regular game** restores your ordinary save.
 
 Keyboard **B** or controller **B** near the mainframe opens the palette. Select with
 left stick / A, place with A, rotate with LT/RT, and exit with X. Existing support,
-collision and 64-piece-per-site limits still apply. Nine foundations plus the
+collision and 1,024-piece-per-site limits still apply. Nine foundations plus the
 mainframe use ten of the starting site's slots.
 
 
@@ -207,7 +207,7 @@ route or pressure sealing is added.
 Pad piers extend 8 m below the deck for uneven terrain. Choose a site where the
 whole deck clears terrain and the supports reach it; use foundation height
 adjustment if needed. Large-pad placement expands a 64 m claim to 96 m atomically,
-unless it overlaps another claim. Other claims remain 64 m. The 64-piece/site limit
+unless it overlaps another claim. Other claims remain 64 m. The 1,024-piece/site limit
 still applies; a complete prefab pad counts as one piece. In the Selene sandbox,
 the small pad fits west of the starter pad; the large pad fits farther east,
 for example near claim-local X 36/Z 0. Refill the bank between expensive pads.
@@ -237,3 +237,19 @@ See [power and server-save memory](base-power-pipeline.md) for integration detai
 In the build sandbox, open the mainframe and choose **Refill sandbox reactor fuel**
 to supply 1 kg each of uranium and helium-3 feedstock. Build the matching generator,
 then load fuel from that same panel. Regular bases must obtain their fuel by mining.
+
+## Remove tool and larger sites
+
+Sites now allow **1,024 pieces**. The existing 64 m claim radius (96 m for the large
+pad) is unchanged. The save endpoint accepts up to 2 MiB for multiple populated
+solo sites. This allowance is not a measured frame-rate guarantee.
+
+Press **B**, select **Remove tool** below the build wheel, aim at a piece within
+12 m and press **A** to remove that piece. **Enter** and the touch **Remove**
+button do the same. An orange outline marks a removable target; a red outline
+and the HUD explain blocked targets. **X / Esc** exits; **B** returns to the wheel.
+Removal is permanent and currently gives no material refund. It never cascades
+through a structure: remove dependent walls, roofs or equipment first, empty
+storage before removing it, and remove the mainframe last. Held A cannot remove
+the floor behind the piece you just removed. Server-connected sites use a separate
+revision-checked command; stale saves cannot restore a removed piece.

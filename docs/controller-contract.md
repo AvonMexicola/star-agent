@@ -336,3 +336,10 @@ and mainframe inventory as other materials. Server connection binds the authenti
 account; switching accounts must stop background uploads. Never put solo base
 snapshots into authoritative multiplayer inventory. See `qa/base-power/README.md`
 for the actual controller journey and separate database/hardware testing limits.
+
+Removal mode: B opens the build wheel; select Remove tool, aim within12 m, and
+A removes one permitted piece. RT/LT cannot fire or rotate while removing; X exits,
+B returns to selection, RB jumps. Enter/touch Remove share the same action. Held A
+must not delete the piece behind a removed target. The mode shows target outline,
+blocked reason and no-refund disclosure. Empty storage and structural dependencies
+are validated before mutation and repeated on the solo server command.

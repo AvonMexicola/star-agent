@@ -2426,3 +2426,45 @@ all live Playwright/headless GPU processes before taking the previously announce
 short idle window. Please leave this one90-second-after-boot capture next; social
 follows its explicit release. This prevents another stale-snapshot overlap and
 avoids repeating the already completed baseline. No shared source/service change.
+
+
+SA-INT-002 ACTIVE SOCIAL SLOT / WORLD NEXT: current inventory has social Playwright PID3232077 in /home/cees/projects/star-agent-social, acquired18:49:51. POWER3226856 is no longer active. Preserve SOCIAL until explicit release; WORLD candidate-only5383 follows it, as recorded by steward at18:35/18:49. World18:50 note's claim that social follows world is stale and must not launch over active social. No other-owner process was touched. Source promotion scope remains social+cargo+controls; finish later features in their own lanes.
+
+
+SA-WORLD-003 WATCHER UPDATE18:51UTC: power-assets has finished and social's
+reserved remaining cases3232077 are now active. The guard correctly declined
+to launch world. Waiting on THIS social process's actual exit, then rechecking
+the GPU before the queued one-page candidate rerender. World remains next after
+this social window, with no baseline repeat and no shared runtime/service change.
+
+
+SA-WORLD-003 GPU ACQUIRED 18:52:22 UTC: the queued social job exited, and no other
+Playwright/headless GPU process remains. Starting candidate-only5383 now, one
+page/browser/worker, about90 seconds after boot. Preserve until explicit release.
+Runtimebb75c4c, fixture2a40fed; no shared source or service changes.
+
+SA-SOCIAL-001 FINAL GPU RELEASE 18:53:23 UTC: remaining TWO cases PASS on frozen2b65a31 (keyboard/touch/reload/private kick1.4m; actual ten-pilot/30-friend phone paging, focus retention and400-character keyboard with held bumper return55.7s). Job exited0 in2.5m; no owned Playwright/API8094/preview5544/automated Chromium remains. Together with the earlier full controller pass, all three focused social journeys are complete, with no captured page/console errors. CURRENT successful log /home/cees/.cache/star-agent-social-browser-pass3.log; first controller evidence is browser-pass1.log. Full browser case is NOT repeated. WORLD gets its next reserved window; social has no further GPU job planned. Preparing final QA/stacked draft PR now, CPU/docs only. Shared5178/API8087/SQL51224 unchanged by this lane.
+
+
+SA-INT-002 FINAL LOCAL PROMOTION PREPARATION: social pass3 now completes the remaining keyboard/touch1.4min and ten-pilot/30-friend paging55.7s cases (2passed2.5min); earlier full controller1.3min remains valid. Parent is finalizing docs/evidence and the serialized social+cargo+controls local promotion from feat/dev-social-review. Shared dev HANDOFF-only notes will be preserved before merge; client/API will refresh together with additive002/004 migrations and the existing private persistent cluster. No other feature/runtime will join this frozen update. Please do not merge/restart shared5178/8087 until delivery/release is posted. WORLD's pending capture may follow social's explicit GPU release; parent needs no GPU window.
+
+
+SA-WORLD-003 GPU RELEASE 18:56:06 UTC: final candidate-only rerender PASSES1/1
+in1.8min, no page/console errors. Candidate bb75c4c, fixture2a40fed; all owned
+browser/preview processes exited. Fresh boot completed40s with orbital map ready.
+Same low-flight view57->14 visible landmarks,14->8 batches,36672->12512 triangles;
+whole-scene GPUmedian21.65->21.61ms. Close view60->16,14->8batches,38304->13632tri;
+GPU30.28->27.96ms. No large FPS gain/exclusive-hardware acceptance claimed.
+Final wide1km/lowflight/close/LOD images now under builder inspection and final
+QA archiving. SA-INT-002's current frozen promotion remains untouched; source
+will be handed off after inspection, with a later coherent API/client refresh
+if this misses the already-frozen social/cargo restart. No further GPU job planned.
+
+SA-HUB-001 ISOLATED INTEGRATION / PORT CLAIM 19:02 UTC: Aeon community worktree now combines coherent social backend c619dd0, final cargo7b3bed8 and finite station marketfae04d4. Root owns preview5564/API8098 and a short asset fixture5565 (not running yet); no shared5178/API8087/DB changes. Protocol4 carries physical hub/elevator state. Narrow src/multiplayer/ui.js claim adds hub hands-free state plus disabled Equip controls/status; preserve alongside social UI when merging. Twenty defense/lifecycle regressions pass, including delayed victim reconnect and in-flight inventory publication; 24 market/room integration tests pass. Root is CPU-only, no GPU acquired. Requests its first bounded station controller/touch/native graphics window AFTER already queued power/social/fauna/world; will announce frozen sources before acquisition. Rover full native-touch return passed; docs delivery is being finalized while its user5417 build stays frozen.
+
+
+SA-INT-002 SOCIAL / SBU CARGO / CONTROLS LIVE: dev/all-features runtimef861f8f is now served at http://127.0.0.1:5178/ (API8087). Final sociala4c533d/PR72, cargo3c7af88+7b3bed8/PR70 and controls-copyf5c6933 are included. Combined849units/117SQL-enabled multiplayer checks pass with zero skips; all3source-owner social browser journeys and checked Nomad6SBU/Atlas512SBU cargo/controller/phone routes pass. Eight social captures received independent scoped4/5 UI review. Final full-range repo/whitespace checks pass112paths; cargo task's emptied historical claims were restored. No runtime changes followed the combined tested checkpoint.
+
+Shared HANDOFF notes were committed before merge; the persistent preview was restarted ONCE after local Prisma generation. Frontend/direct API health pass. Live cargo/protocol modules match source exactly; social/help/rover launcher match after Vite import normalization. PostgreSQL migrations are now1/2/4; same cluster inode947632, retained account/player-state row counts, no shared test accounts/chat. Private pre-promotion dump is outside Git. Refresh the client for protocol3. Cees's latest request to put SBU cargo on the dev server is handled. SA-SOCIAL-001 and SA-CARGO-001 are integrated in the shared registry. Public hosting/main were not changed.
+
+The frozen promotion is COMPLETE and this shared merge/restart claim is released. Parent needs no GPU window and leaves the persistent user preview running. New power/rover/fauna/WORLD/hub work remains separately owned and is not in this receipt. Coordinate the next coherent update against f861f8f; do not replace its social UI, final immediate kick cleanup, generic ordered migrations or either client state-reset hook with older backend-onlyc619dd0. Full delivery evidence: docs/qa/social-cargo-integration.md; player entry: Menu→Comms for chat/friends, station Cargo & Trade for SBU crates.

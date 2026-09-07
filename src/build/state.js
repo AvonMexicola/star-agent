@@ -5,7 +5,7 @@ import { PIECES } from './definitions.js';
 import { emptyItems } from '../inventory/containers.js';
 import { getPlacementBounds } from './collision.js';
 
-export const CLAIM_RADIUS=64, CLAIM_HEIGHT=32, MAX_CLAIMS=8, MAX_PIECES=64;
+export const CLAIM_RADIUS=64, CLAIM_HEIGHT=32, MAX_CLAIMS=8, MAX_PIECES=1024;
 export const LOCAL_OWNER='local-player';
 export const emptyBuild=()=>({version:1,nextId:1,claims:[]});
 const vector=(v,n)=>Array.isArray(v)&&v.length===n&&v.every(Number.isFinite);

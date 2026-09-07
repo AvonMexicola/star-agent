@@ -1,3 +1,4 @@
+import {MAX_PIECES} from './state.js';
 import { shipCargoAccess, shipCargoLabel } from '../inventory/ship-access.js';
 import './build.css';
 import { createBuildRadial } from './radial.js';
@@ -33,7 +34,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
   function report(result) { const message = result?.message || result?.reason; if (message) { feedback.dataset.ok=String(result?.ok===true); feedback.textContent = message; onMessage(message); } return result; }
   function suspend() { nav.keys.clear(); nav.toolTrigger = 0; nav.gamepad.suspend(); }
   function cancel() { build.cancel(); suspend(); update(); }
-  function place() { report(build.place()); update(); }
+  let placing=false;async function place() {if(placing)return;placing=true;try{report(await build.place());update();}finally{placing=false;}}
   function choose(id) {
     const result = build.active ? build.select(id) : build.begin(id);
     if (result?.ok === false) { report(result); return; }
@@ -43,7 +44,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
     content.replaceChildren(); feedback.textContent = '';radial=null;dialog.classList.toggle('is-radial',Object.hasOwn(wheels,tab));
     for (const el of dialog.querySelector('.build-tabs').children) el.setAttribute('aria-pressed', String(el.dataset.controllerKey === `build-tab-${tab}`));
     if (tab === 'sandbox' && sandbox) {
-      description.textContent='BUILD SANDBOX · Separate saved world. Materials are drawn directly from this bank anywhere you build. Refill whenever you need more; your bases stay saved. 64 pieces per site.';
+      description.textContent=`BUILD SANDBOX · Separate saved world. Materials are drawn directly from this bank anywhere you build. Refill whenever you need more; your bases stay saved. ${MAX_PIECES.toLocaleString()} pieces per site.`;
       const totals=document.createElement('dl');totals.className='build-overview';
       for(const [id,quantity]of Object.entries(sandbox.totals())){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=name(id);dd.textContent=`${quantity.toLocaleString()} kg`;totals.append(dt,dd);}
       content.append(totals,button('Refill bank · 4,608 kg','sandbox-refill',()=>{const result=sandbox.refill();render();report(result);}));
@@ -51,6 +52,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
       description.textContent = 'LB / RB · Switch tabs   Left stick · Point   A · Choose   B · Close.';
       radial=createBuildRadial({order:wheels[tab],selected:build.pieceId??build.state?.pieceId??'mainframe',onChoose:choose,formatCost:amounts});
       content.append(radial.element);
+      if(build.beginRemoval)content.append(button('Remove tool · no material refund','build-remove-tool',()=>{const result=build.beginRemoval();if(!result.ok){report(result);return;}dialog.close();suspend();update();}));
       const note=document.createElement('p');note.className='build-wheel-note';note.textContent=sandbox?'Sandbox supply bank · Refill from Sandbox supplies.':'Start with a mainframe. Supplies: backpack, mainframe buffer, or ship within 50 m.';content.append(note);
       if(!sandbox&&onSandbox)content.append(button('Open supplied build sandbox','sandbox-enter',onSandbox));
     } else if (tab === 'recipes') {
@@ -140,12 +142,14 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
     if(dialog.open)dialog.querySelector('.build-scroll-hint').hidden=content.scrollHeight<=content.clientHeight+2||content.scrollTop+content.clientHeight>=content.scrollHeight-2;
     hud.querySelector('.build-ship-link').textContent = sandbox?'SANDBOX · Supplies / refill in the piece palette':shipCargoLabel(shipCargoAccess(nav));
     const preview = build.preview || {}, piece = PIECES[preview.pieceId || build.pieceId];
-    const snapshot = JSON.stringify([piece?.id,preview.valid,preview.reason,preview.cost,preview.sources]);
+    const snapshot = JSON.stringify([build.removing,piece?.id,preview.valid,preview.reason,preview.cost,preview.sources]);
     if (snapshot !== lastPreview) {
-      lastPreview = snapshot; hud.querySelector('.build-selected').textContent = piece?.label || 'Choose a piece';
+      lastPreview = snapshot; hud.querySelector('.build-selected').textContent = build.removing?'REMOVE TOOL':piece?.label || 'Choose a piece';
       hud.querySelector('.build-placement').textContent = preview.reason || (preview.valid ? 'Ready to place' : 'Aim at a valid site');
       hud.dataset.valid = String(Boolean(preview.valid));
-      hud.querySelector('.build-cost').textContent = `${amounts(preview.cost || piece?.cost)} · ${sandbox ? 'Sandbox supply bank' : Array.isArray(preview.sources) ? preview.sources.map(id=>store.container(id)?.name ?? id).join(', ') : preview.sources || 'Backpack'}`;
+      hud.querySelector('.build-cost').textContent = build.removing?'Single piece only · Empty storage and remove supported equipment first':`${amounts(preview.cost || piece?.cost)} · ${sandbox ? 'Sandbox supply bank' : Array.isArray(preview.sources) ? preview.sources.map(id=>store.container(id)?.name ?? id).join(', ') : preview.sources || 'Backpack'}`;
+    hud.querySelector('.build-hints').innerHTML=build.removing?'A / Enter · Remove one piece permanently<br>B / P · Build wheel · X / Esc · Exit · RB / Space · Jump':'A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap &nbsp; ↑ ↓ · Height<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump';
+    touch.querySelector('[data-controller-key="build-hud-place"]').textContent=build.removing?'Remove':'Place';
     }
     const materials = JSON.stringify(store.container('pack')?.items);
     if (dialog.open && tab === 'recipes' && materials !== lastMaterials) { lastMaterials = materials; render(); }

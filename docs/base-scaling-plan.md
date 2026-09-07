@@ -58,3 +58,13 @@ and visual journeys.
 Reference: Three.js `InstancedMesh` reduces draw calls for repeated geometry and
 materials: https://threejs.org/docs/pages/InstancedMesh.html . Apply it to the
 installed library version and validate actual batching in the renderer.
+
+## First bounded optimization, removal follow-up
+
+The removal-tool implementation raises the piece allowance to1,024 and skips full
+`sync()` work while the saved build reference is unchanged. Async model loads
+explicitly invalidate that cache. Distant invisible sites skip their per-piece
+frame updates, static pieces skip door-node searches, and material opacity is
+rewritten only when the fade changes. Model streaming, instanced batches and
+multiplayer interest subscriptions above remain future work. No frame-rate gain
+is claimed without a populated-scene measurement.

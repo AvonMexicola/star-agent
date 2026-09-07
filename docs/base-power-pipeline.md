@@ -59,7 +59,7 @@ settle elapsed upkeep; server downtime is caught up at restart/next access.
 ## Persistence and consistency
 
 Authenticated same-origin GET/POST `/api/bases` uses the existing session cookie,
-request limiter and origin checks. POST has a bounded256 KiB JSON body. Every
+request limiter and origin checks. POST has a bounded 2 MiB JSON body. Every
 mutation locks the account and base row in one PostgreSQL transaction; the account
 lock also serializes competing first inserts. Revisions reject stale commands. POST commands bind the account ID checked against
 the session; GET responses identify the account so cookie switches stop uploads.
@@ -117,3 +117,10 @@ other observers if this hook is combined with cargo work. A lost fuel ACK or cha
 server container forces restoration rather than re-uploading stale stock. A blocked
 local cache cannot continue uploading. Wind rotor geometry is a distinct node; its
 material batching stays within the existing five-mesh static-piece budget.
+
+Removal follow-up: sites accept 1,024 pieces. Explicit `remove` commands protect
+filled containers and structural dependencies, clamp charge when capacity is
+removed and retain the ID watermark. Incoming additions below the watermark
+cannot resurrect removed pieces. Canonical JSON comparisons ignore PostgreSQL
+JSONB object-key ordering for anchors and client layout identity. Account-scoped
+solo saves still do not establish shared ownership/door-lock authority.

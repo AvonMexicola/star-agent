@@ -78,3 +78,26 @@ Commands: `npm test`; `node --test tests/base-power-database.test.js`;
 correction); `npm run test:browser -- -c scripts/base-power-assets.config.js`.
 Browser runs use the authorized host path and home-disk TMPDIR/output; only one
 browser job ran at a time in this lane. GPU window released after captures.
+
+## Removal and capacity follow-up
+
+Cees requested an allowance above64 and a remove tool. Sites now accept1,024
+pieces, while the existing claim radius remains64m (96m for a large pad). Added
+explicit one-piece removal with no refund, storage/support/mainframe protection,
+server-side deletion and stale-piece identity rejection. Aimed selection uses
+actual building collision rays and an orange/red outline. Final controller
+removal journey is pending its shared GPU window.
+
+- Full unit suite115/115 passed44.13s after the first removal implementation.
+- Subsequent focused build/power/cloud suite13/13 configured files passes after
+  canonical snapshot comparison; local removal6/6 covers empty-space diagnostics.
+- Cloud10/10 passes including a concurrent placement during a removal response and
+  simulated JSONB key ordering. Real SQL/HTTP1/1 passes1.934s after corrections.
+- The extended SQL second-save test exposed unchanged anchors being rejected
+  because JSONB reordered object keys. Server anchor and client layout comparison
+  now canonicalize keys. The older f20cebc checkpoint must not integrate without
+  this correction. The next stale-expiry test correctly rejected its older
+  watermark; the fixture now asserts that rejection and separately verifies a
+  current-watermark stale site cannot revive.
+- sync caching and distant per-piece update suppression are implemented; streaming
+  and instancing remain planned. No populated-scene FPS result is claimed.

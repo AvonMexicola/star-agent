@@ -50,3 +50,16 @@ test('sandbox fuel refill is explicit and unavailable in regular play; local exp
  assert.equal(power.action('build-claim-1','fuel','uranium-ore').ok,true);assert.equal(f.store.container('build-core-1').items['uranium-ore'],.9);
  power.sandbox=false;f.store.write({...f.store.state,build:{...f.store.state.build,claims:f.store.state.build.claims.map(c=>({...c,power:{...c.power,fuel:{'uranium-ore':0,'helium-3-regolith':0}}}))}});time=DECAY_MS+12*3600000;assert.equal(power.action('build-claim-1','repair').ok,false);power.update();assert.equal(build.claims.length,0);assert.equal(f.store.container('build-core-1'),null);
 });
+
+test('cloud removal survives reconnect and preserves a placement made during its response',async()=>{
+ const f=await fixture();await f.cloud.connect();const normal=f.cloud.fetchImpl;
+ f.cloud.fetchImpl=async(url,options)=>{const result=await normal(url,options);if(options.body&&JSON.parse(options.body).action==='remove')f.store.write({...f.store.state,build:{...f.store.state.build,nextId:5,claims:f.store.state.build.claims.map(c=>({...c,pieces:[...c.pieces,{id:'build-piece-4',type:'battery',position:[8,0,0],rotation:0,doorOpen:false}]}))}});return result;};
+ assert.equal((await f.cloud.action('build-claim-1','remove','build-piece-3')).ok,true);assert.deepEqual(f.store.state.build.claims[0].pieces.map(p=>p.type),['mainframe','battery']);
+ f.cloud.fetchImpl=normal;await f.cloud.sync();await f.cloud.connect();assert.deepEqual(f.store.state.build.claims[0].pieces.map(p=>p.type),['mainframe','battery']);
+});
+
+test('JSONB key ordering does not turn an unchanged layout into a remote edit',async()=>{
+ const f=await fixture();await f.cloud.connect();const original=f.cloud.fetchImpl;
+ const reorder=v=>Array.isArray(v)?v.map(reorder):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).reverse().map(k=>[k,reorder(v[k])])):v;
+ f.cloud.fetchImpl=async(url,options)=>{const response=await original(url,options);return {...response,json:async()=>reorder(await response.json())};};await f.cloud.sync();assert.match(f.cloud.status,/Saved on server/);
+});
