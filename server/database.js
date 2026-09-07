@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
+import { createMemorySocialStore, createPostgresSocialStore } from './social-store.js';
 
 const clone = (value) => value == null ? value : structuredClone(value);
 const conflict = () => Object.assign(new Error('Account details unavailable.'), { code: 'ACCOUNT_CONFLICT' });
@@ -17,6 +18,7 @@ export function createMemoryStore() {
   const accounts = new Map(), sessions = new Map(), resets = new Map(), states = new Map();
   return {
     persistent: false,
+    ...createMemorySocialStore(accounts),
     async migrate() {}, async close() {},
     async createAccount({ email, callsign, passwordHash }) {
       for (const a of accounts.values()) if (a.email.toLowerCase() === email.toLowerCase() || a.callsign.toLowerCase() === callsign.toLowerCase()) throw conflict();
@@ -85,13 +87,21 @@ export async function createPostgresStore({ connectionString, pool: suppliedPool
   }
   return {
     persistent: true,
+    ...createPostgresSocialStore(prisma),
     async migrate() {
-      const sql = await readFile(new URL('./migrations/001-accounts.sql', import.meta.url), 'utf8');
+      const files = (await readdir(new URL('./migrations/', import.meta.url))).filter(file => /^\d{3}-[a-z0-9-]+\.sql$/.test(file)).sort();
+      if (new Set(files.map(file => Number(file.slice(0, 3)))).size !== files.length) throw new Error('Migration versions must be unique.');
       await transaction(async client => {
         await client.query('SELECT pg_advisory_xact_lock(7291, 1)');
         await client.query('CREATE TABLE IF NOT EXISTS schema_migrations (version integer PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())');
-        const result = await client.query('SELECT version FROM schema_migrations WHERE version = $1', [1]);
-        if (!result.rowCount) { await client.query(sql); await client.query('INSERT INTO schema_migrations (version) VALUES ($1)', [1]); }
+        for (const file of files) {
+          const version = Number(file.slice(0, 3));
+          const result = await client.query('SELECT version FROM schema_migrations WHERE version = $1', [version]);
+          if (!result.rowCount) {
+            await client.query(await readFile(new URL(`./migrations/${file}`, import.meta.url), 'utf8'));
+            await client.query('INSERT INTO schema_migrations (version) VALUES ($1)', [version]);
+          }
+        }
       });
     },
     async close() { try { await prisma.$disconnect(); } finally { if (!suppliedPool) await pool.end(); } },
