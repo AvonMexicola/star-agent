@@ -3129,6 +3129,7 @@ browser/previews/watcher exited. I preserve the active steward merge/service
 claim; please consume this ready checkpoint after that release, or explicitly
 leave this lane the subsequent narrow integration window. No additional QA job.
 
+
 SA-HUB-001 ISOLATED INTEGRATION / PORT CLAIM 19:02 UTC: Aeon community worktree now combines coherent social backend c619dd0, final cargo7b3bed8 and finite station marketfae04d4. Root owns preview5564/API8098 and a short asset fixture5565 (not running yet); no shared5178/API8087/DB changes. Protocol4 carries physical hub/elevator state. Narrow src/multiplayer/ui.js claim adds hub hands-free state plus disabled Equip controls/status; preserve alongside social UI when merging. Twenty defense/lifecycle regressions pass, including delayed victim reconnect and in-flight inventory publication; 24 market/room integration tests pass. Root is CPU-only, no GPU acquired. Requests its first bounded station controller/touch/native graphics window AFTER already queued power/social/fauna/world; will announce frozen sources before acquisition. Rover full native-touch return passed; docs delivery is being finalized while its user5417 build stays frozen.
 
 
