@@ -28,7 +28,14 @@ The source/export receipt and exact geometry proof are retained locally under
 failed because that interpreter lacked Pillow; packing succeeded with the
 existing authoring environment. No dependency was added.
 
-A paired native cockpit inspection is queued behind the already active shared
-browser jobs. This source checkpoint does not claim that pending visual check
-or a shared preview deployment. The permanent forward-visibility requirement
-is recorded in [ship pipeline memory](../../../SHIP-PIPELINE-MEMORY.md).
+The [paired native cockpit inspection](windscreen-open/README.md) passed on
+Chromium 151 / ANGLE AMD Radeon 860M at 1440×900, using the same canonical pilot
+eye, target, lighting and retained glazing for both assets. The root inspected
+both captures and confirmed removal of the centre strut. Existing focused rover
+runtime, storage and physics tests pass 28/28. This narrow asset check does not
+claim a new complete driving journey or performance acceptance.
+
+The active Atlas meadow preview owner applied the source correction as `f8415cc`;
+HTTP retrieval on local port 5596 matched the runtime SHA above. The root did not
+reload the user tab. The permanent forward-visibility requirement is recorded in
+[ship pipeline memory](../../../SHIP-PIPELINE-MEMORY.md).
