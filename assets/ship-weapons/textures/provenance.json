@@ -1,0 +1,37 @@
+{
+  "source": "Original deterministic procedural material swatches; no external imagery",
+  "builder": "blender/ship_weapon_textures.py",
+  "seed": 7291,
+  "size": [
+    1024,
+    1024
+  ],
+  "baseColorSpace": "sRGB",
+  "dataMaps": "linear ORM and tangent-space normal",
+  "files": {
+    "surface-basecolor.png": {
+      "bytes": 852478,
+      "sha256": "6d21ad362fe4bbd797d213fde3b039c81c445debe40bd761507c17c3b48a206e"
+    },
+    "surface-basecolor.webp": {
+      "bytes": 509974,
+      "sha256": "8abc4d30be905882bcea387e79d2be81ec3376dec4c78ba19cb6085cae597683"
+    },
+    "surface-normal.png": {
+      "bytes": 587276,
+      "sha256": "174584f72e1ec926bb5ca2afa8796dd896e1755c2689f7d0f8cfc578c2a22e09"
+    },
+    "surface-normal.webp": {
+      "bytes": 359480,
+      "sha256": "a21e9c18334cd2e7d090b58afc6cbaa1eefd882877d2bf4dd3de5668bef9ebe9"
+    },
+    "surface-orm.png": {
+      "bytes": 826808,
+      "sha256": "a9ed0d941266a7f30dfde78c8b837f679857229a0e46a5dd10361c1afad4f72c"
+    },
+    "surface-orm.webp": {
+      "bytes": 549084,
+      "sha256": "4c4ece5e23a116061e2a162819a2228fa8b91f4943fc428241d9d76efa1db560"
+    }
+  }
+}
