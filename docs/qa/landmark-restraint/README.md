@@ -185,3 +185,22 @@ Additional current 1 km view (not a before/after pair):
 This is a checked development checkpoint. Independent visual scoring,
 physical-device testing and a broader frame-time/cold/traversal benchmark remain
 pending. All owned capture browsers, previews and the queue watcher have exited.
+
+## Local integration receipt
+
+The checked source `92dadad` was merged with the current social/cargo runtime
+`f861f8f` in isolated candidate `d992e52`. All 23 focused checks, the production
+build and repository/whitespace checks passed on that combined candidate.
+Bookkeeping merge `6e548ad` changed documentation only, and the shared
+`dev/all-features` preview was fast-forwarded to it on 7 September 2026.
+
+The persistent preview/API service restarted once at **19:09:44 UTC** so server
+collision uses population revision 2. Refresh the client at
+http://127.0.0.1:5178/ for the matching rendering and collision field. The served
+material key and population constants match the checked source; frontend and
+API health return 200. All three current screenshot URLs serve exact PNG bytes.
+The existing database cluster is retained; this change adds no schema migration.
+Current cargo, social, protocol and ordered migration handling are preserved.
+
+The shared merge/restart window is released. No public deployment or additional
+GPU job accompanies this receipt; the visual and performance limits above remain.
