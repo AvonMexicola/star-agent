@@ -33,7 +33,43 @@ test('controller physically reaches2SBU, equips tractor, moves, safely interrupt
  await tap(9);await choose('tab-trade');await choose('view-cargo');await page.setViewportSize({width:390,height:844});await fit(page);await page.screenshot({path:`${evidence}/tractor-cargo-phone.png`});await tap(1);expect(errors).toEqual([]);await writeFile(`${evidence}/controller.json`,JSON.stringify({browser:browser.version(),errors,fixture:'2SBU shipment preloaded; all subsequent equipment, movement and UI use standard Gamepad',physicalController:false,state:await page.evaluate(()=>window.starAgent.state)},null,2));
 });
 test('Atlas64SBU tractor is visible, moves physically, and touch can release/relock/secure it',async({page,browser})=>{
- await shipment(page,'atlas',64);const {tap,errors}=await setup(page,'atlas',true);await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.mode==='walk');await walk(page,[0,5.75,-7]);await walk(page,[0,5.75,2.5]);await aim(page,[-5.1,5.225,2.5]);await page.keyboard.press('Escape');await page.locator('dialog[open] [data-controller-key="tab-trade"]').click();await page.locator('#trading-dialog [data-controller-key="view-cargo"]').click();await page.locator('[data-controller-key="equip-tractor"]').click();await page.waitForFunction(()=>window.starAgent.state.trading.tractor.active);await page.keyboard.down('t');await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held);const before=await page.evaluate(()=>window.starAgent.state.trading.loose[0].position);await page.keyboard.press('[');await page.waitForFunction(p=>Math.hypot(...window.starAgent.state.trading.loose[0].position.map((x,i)=>x-p[i]))>.3,before);await page.screenshot({path:`${evidence}/atlas-tractor.png`});await page.keyboard.up('t');await page.waitForFunction(()=>!window.starAgent.state.trading.loose[0].holder);
+ await shipment(page,'atlas',64);const {tap,errors}=await setup(page,'atlas',true);
+ // Same physical upper-deck/crew-lift route as fleet-development.spec.js.
+ // Read navigation for feedback; only the standard Gamepad receives writes.
+ const walkAtlas=async(x,z)=>{
+  const started=Date.now();
+  try{
+   while(Date.now()-started<35000){
+    const distance=await page.evaluate(({x,z})=>{
+     const n=window.starAgent.navigation,p=n.toShipLocal(),d=n.position.clone().set(x-p.x,0,z-p.z),distance=d.length();
+     d.applyQuaternion(n.shipOrientation).applyQuaternion(n.orientation.clone().invert());
+     const speed=distance>.7?.7:.3;
+     window.cargoPad.axes[0]=distance>.14?d.x/distance*speed:0;
+     window.cargoPad.axes[1]=distance>.14?d.z/distance*speed:0;
+     return distance;
+    },{x,z});
+    if(distance<.14){await tap(6);return;}
+    await frames(page);
+   }
+   throw Error(`Physical Atlas walk to ${x},${z} stopped at ${await page.evaluate(()=>window.starAgent.state.shipLocal)}`);
+  }finally{await page.evaluate(()=>window.cargoPad.axes.fill(0));}
+ };
+ const liftReady=async y=>page.waitForFunction(y=>{const lift=window.starAgent.state.lifts?.elevator;return lift&&Math.abs(lift.y-y)<.01&&!lift.moving&&lift.gates.every(g=>!g.moving);},y,{timeout:15000});
+ await page.waitForFunction(()=>window.starAgent.state.shipAsset==='ready');
+ await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
+ await walkAtlas(0,-20.5);await walkAtlas(0,-6.3);await walkAtlas(3.4,-6.3);
+ await tap(2);await liftReady(9.5);
+ await walkAtlas(3.4,-4);await walkAtlas(5.5,-4);await tap(2);await liftReady(2.6);
+ await walkAtlas(0,-4);
+ expect(await page.evaluate(()=>window.starAgent.state.shipLocal[1])).toBeCloseTo(4.35,1);
+ expect(await page.evaluate(()=>window.starAgent.state.insideShip)).toBe(true);
+ // Aim at the actual saved grid placement, without moving the player or crate.
+ const {crateBounds}=await import('../../src/cargo/grid.js');
+ const crate=await page.evaluate(()=>window.starAgent.state.trading.ships.find(s=>s.hull==='atlas').crates.find(c=>c.id==='tractor-fixture'));
+ expect(crate.sbu).toBe(64);
+ const placed=crateBounds('atlas',crate),centre=placed.min.map((v,i)=>(v+placed.max[i])/2);
+ await walkAtlas(0,centre[2]);await aim(page,centre);
+ await page.keyboard.press('Escape');await page.locator('dialog[open] [data-controller-key="tab-trade"]').click();await page.locator('#trading-dialog [data-controller-key="view-cargo"]').click();await page.locator('[data-controller-key="equip-tractor"]').click();await page.waitForFunction(()=>window.starAgent.state.trading.tractor.active);await page.keyboard.down('t');await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held);const before=await page.evaluate(()=>window.starAgent.state.trading.loose[0].position);await page.keyboard.press('[');await page.waitForFunction(p=>Math.hypot(...window.starAgent.state.trading.loose[0].position.map((x,i)=>x-p[i]))>.3,before);await page.screenshot({path:`${evidence}/atlas-tractor.png`});await page.keyboard.up('t');await page.waitForFunction(()=>!window.starAgent.state.trading.loose[0].holder);
  await page.setViewportSize({width:390,height:844});const local=await page.evaluate(()=>window.starAgent.navigation.toShipLocal(window.starAgent.navigation.position.clone().fromArray(window.starAgent.state.trading.loose[0].position)).toArray());await aim(page,local);
  const cdp=await page.context().newCDPSession(page),box=await page.locator('[data-tractor="power"]').boundingBox(),p={x:box.x+box.width/2,y:box.y+box.height/2};await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p,id:7}]});await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held&&window.starAgent.state.trading.tractor.beam);await page.screenshot({path:`${evidence}/tractor-phone.png`});
  const bounds=await page.locator('#tractor-panel').evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth,bottom:e.getBoundingClientRect().bottom}));expect(bounds.scroll).toBeLessThanOrEqual(bounds.width);expect(bounds.bottom).toBeLessThan(844);
