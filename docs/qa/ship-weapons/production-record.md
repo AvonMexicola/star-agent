@@ -1,7 +1,9 @@
 # Ship weapons production record
 
 Current status: implemented and functionally checked development candidate. The
-final independent visual review is in progress. Local integration is complete.
+independent static visual review recommends the development checkpoint (4.04/5).
+Local integration is complete; full-game motion/presentation and FPS acceptance
+remain separate.
 No release acceptance or deployment claim. Runtime follow-up: `2faa71c`.
 Draft [PR61](https://github.com/AvonMexicola/star-agent/pull/61); local integration
 `5842404`, recorded`931ea10`, now served at<http://127.0.0.1:5178/>.
@@ -138,7 +140,9 @@ flag; those fixture failures are retained and corrected without runtime changes.
 Independent [runtime closure](integration-review.md) passes all four source findings,
 41focused tests, and exact hidden muzzle transforms at25billion metres. The
 [mount review](mount-review.md) retains its original finding and appended closure.
-Final independent visual review is pending at this update. Performance figures above
+Independent [static visual review](visual-review.md) recommends the checkpoint:
+4.04/5 average, lowest3.6. Motion/full-game presentation remains unscored. Its human
+fixture was flawed and is explicitly excluded from scale evidence. Performance figures above
 are component counts; no median/p95 or final FPS acceptance is claimed.
 
 
@@ -152,9 +156,15 @@ errors or warnings. This is an isolated controlled export fixture, with exact ru
 fitting code. It is separate from actual-game input/boarding captures and does not
 certify whole-game lighting, motion or FPS.
 
-[Three families](01-families.png), [sizes with1.8m reference](02-human-scale.png),
+[Three families](01-families.png), [rejected human-reference fixture](02-human-scale.png),
 [Kestrel underside](03-kestrel-underside.png), [nose foundation](04-kestrel-nose.png),
 [Nomad port fit](05-nomad-fit.png), [Atlas roof](06-atlas-roof.png).
 Reproduce with `SHIP_WEAPON_REVIEW_OUTPUT` and `TMPDIR` set to writable directories,
 then `node scripts/ship-weapon-review.mjs` (temporary port5414). The archived script
 changes only machine-specific root/output paths from the reviewer-supplied fixture.
+
+The human frame is retained as a failed fixture: skeleton cloning/placement partly
+intersects the middle gun, so its caption is not a certified1.8m comparison. The
+review uses decoded metre dimensions and valid installed-ship views for scale.
+Future human reference fixtures must clone the skeleton correctly and verify the
+posed visible bounds before acceptance. The five other static views remain valid.
