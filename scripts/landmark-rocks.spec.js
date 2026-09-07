@@ -93,13 +93,13 @@ async function walkTo(page,point,tolerance=4){
 test('controller selects Aeon flight, lands, exits and walks beneath a seeded ledge',async({page,browser},info)=>{
   const errors=errorsFor(page);
   await page.addInitScript(()=>{window.landmarkPad={id:'Landmark traversal standard Gamepad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.landmarkPad];});
-  await page.goto('/?dev=1&ship=nomad&start=orbit&intro=0&debug=1&seed=7291');await ready(page);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  await page.goto('/?dev=1&ship=nomad&start=orbit&intro=0&debug=1&seed=7291');await ready(page);await page.waitForFunction(()=>window.starAgent.state.controller.armed,null,{timeout:15000});
   await tap(page,9);
   if(await page.locator('dialog[open]').getAttribute('data-gameplay-tab')){
     await tab(page,'dev');await choose(page,'dev-page-launch');await choose(page,'dev-location-forest');
     await choose(page,'dev-launch');await page.waitForURL('**start=forest**');
   }else await choose(page,'destination-forest'); // Bounded PR also runs before the newer menu stack.
-  await ready(page);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  await ready(page);await page.waitForFunction(()=>window.starAgent.state.controller.armed,null,{timeout:15000});
   console.log('Controller selected actual forest flight');
   await tap(page,3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:90000});
   await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
@@ -121,7 +121,8 @@ test('controller selects Aeon flight, lands, exits and walks beneath a seeded le
   await button(page,10,false);
   // Input interruption must not replay a held movement after opening Inventory.
   await axes(page,[0,-1,0,0]);await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();
-  await tap(page,1);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+  await axes(page,[0,0,0,0]);await frames(page); // Arm the dialog before testing its exit gate.
+  await axes(page,[0,-1,0,0]);await tap(page,1);await expect(page.locator('#cargo-dialog')).not.toBeVisible();await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
   const paused=await page.evaluate(()=>window.starAgent.state.position);await frames(page);
   expect(new Vector3(...await page.evaluate(()=>window.starAgent.state.position)).distanceTo(new Vector3(...paused))).toBeLessThan(.001);
   for(const transition of ['focus','disconnect']){
@@ -129,7 +130,7 @@ test('controller selects Aeon flight, lands, exits and walks beneath a seeded le
     await page.evaluate(()=>{window.landmarkPad.connected=true;window.dispatchEvent(new Event('focus'));});await frames(page);
     expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
   }
-  await axes(page,[0,0,0,0]);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  await axes(page,[0,0,0,0]);await page.waitForFunction(()=>window.starAgent.state.controller.armed,null,{timeout:15000});
   await page.screenshot({path:info.outputPath('controller-return-to-play.png')});
   await writeFile(info.outputPath('controller.json'),JSON.stringify({fixture:d.id,input:'Injected standard Gamepad from menu entry through flight, physical landing/cabin exit, shelter traversal and return; no direct pose writes; physical device untested',environment:await environment(page,browser),errors},null,2));expect(errors).toEqual([]);
 });
