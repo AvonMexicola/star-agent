@@ -73,11 +73,13 @@ export function createLandmarkMaterial(){
                     +landmarkNoise(geology*vec3(.065,.79,.065))*.32;
         landmarkWeather=landmarkNoise(p*.025+43.0);
         float mottling=landmarkNoise(geology*.24);
-        float joint=abs(landmarkNoise(geology*vec3(.14,.065,.14))-.5);
-        float antialias=max(fwidth(joint)*1.1,.002);
-        landmarkCrack=(1.0-smoothstep(.012-antialias,.04+antialias,joint))
-                     *smoothstep(.24,.52,landmarkWeather);
-        float edge=(1.0-smoothstep(.035,.095+antialias,joint))*(1.0-landmarkCrack);
+        float joint=abs(landmarkNoise(geology*vec3(.31,.18,.31))-.5);
+        float antialias=max(fwidth(joint)*1.1,.001);
+        // Short, interrupted joints; broad contour lines read as painted loops
+        // on a giant face. Most fracture detail comes from the scanned stone.
+        landmarkCrack=(1.0-smoothstep(.006-antialias,.018+antialias,joint))
+                     *smoothstep(.42,.64,landmarkWeather)*smoothstep(.38,.65,mottling);
+        float edge=(1.0-smoothstep(.015,.042+antialias,joint))*(1.0-landmarkCrack)*landmarkWeather;
         float distanceToFace=length(vViewPosition);
         landmarkFine=1.0-smoothstep(35.0,160.0,distanceToFace);
         landmarkP=p/8.5;landmarkFineP=(p+vec3(31.7,11.3,53.1))/1.1;
@@ -95,11 +97,11 @@ export function createLandmarkMaterial(){
         float upper=smoothstep(.12,.76,geometricNormal.y);
         mineral=mix(mineral,vec3(.60,.58,.44),upper*smoothstep(.34,.68,mottling)*.32);
         float shelter=1.0-smoothstep(-.45,.05,geometricNormal.y);
-        float weathering=(.64+.77*strata)*(.83+.29*mottling)*(1.0-landmarkCrack*.57);
-        weathering*=1.0+edge*.18;
+        float weathering=(.64+.77*strata)*(.83+.29*mottling)*(1.0-landmarkCrack*.28);
+        weathering*=1.0+edge*.08;
         weathering*=1.0-shelter*.16;
         diffuseColor.rgb*=mix(vec3(.49),stone,landmarkMapsReady)*mineral*weathering;
-        landmarkHeight=(strata-.5)*.50+(mottling-.5)*.22-landmarkCrack*.24;
+        landmarkHeight=(strata-.5)*.50+(mottling-.5)*.22-landmarkCrack*.08;
         landmarkHeight*=1.0-smoothstep(450.0,1500.0,distanceToFace);`)
       .replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
         float scannedRoughness=landmarkTri(landmarkRoughness,landmarkP).r;
