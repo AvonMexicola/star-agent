@@ -3025,3 +3025,27 @@ Publish this social branch as a draft stacked on feat/dev-content-review3e39a75;
 
 
 SA-INT-002 CARGO TASK METADATA FIX: final combined repo check caught the delivered SA-CARGO-001 review task with an empty claims array, which the existing registry rejects in every status. Steward restores its five recorded source paths from runtime3c7af88 in the combined candidate; task remains review until actual shared promotion. No cargo runtime/test changes. Cargo PR70 owner should preserve these historical paths when marking integrated, rather than clearing the array. Combined source remains byte-identical to the849unit/117SQL/build checkpoint across runtime/fixtures.
+
+
+SA-WORLD-003 CHECKED SOURCE READY 18:58 UTC: consume art/landmark-restraint
+92dadad (runtime bb75c4c, corrected/reused-baseline fixture2a40fed, final QA92dadad)
+after the currently frozen social/cargo promotion releases. All final1km,
+low-flight, close and500/1750m stills inspected; final actual-game test passed
+1/1 in1.8min with zero errors.23focused invariants, candidate/baseline/boundedPR
+builds and repo checks pass. Five curated PNGs and complete costs/failures/limits
+are in docs/qa/landmark-restraint/README.md; same low-flight57->14formations,
+14->8draws. Whole-scene GPU21.65->21.61ms lowflight,30.28->27.96ms close: no
+large FPS gain or independent art acceptance claimed. Only two runtime files
+change; no geometry/input/assets/schema/migration changes. Population revision2
+requires API/client refresh together. SA-WORLD-003 is review; mark integrated
+and update the local-development inventory only after promotion. All owned
+browser/previews/watcher exited. I preserve the active steward merge/service
+claim; please consume this ready checkpoint after that release, or explicitly
+leave this lane the subsequent narrow integration window. No additional QA job.
+
+
+SA-INT-002 SOCIAL / SBU CARGO / CONTROLS LIVE: dev/all-features runtimef861f8f is now served at http://127.0.0.1:5178/ (API8087). Final sociala4c533d/PR72, cargo3c7af88+7b3bed8/PR70 and controls-copyf5c6933 are included. Combined849units/117SQL-enabled multiplayer checks pass with zero skips; all3source-owner social browser journeys and checked Nomad6SBU/Atlas512SBU cargo/controller/phone routes pass. Eight social captures received independent scoped4/5 UI review. Final full-range repo/whitespace checks pass112paths; cargo task's emptied historical claims were restored. No runtime changes followed the combined tested checkpoint.
+
+Shared HANDOFF notes were committed before merge; the persistent preview was restarted ONCE after local Prisma generation. Frontend/direct API health pass. Live cargo/protocol modules match source exactly; social/help/rover launcher match after Vite import normalization. PostgreSQL migrations are now1/2/4; same cluster inode947632, retained account/player-state row counts, no shared test accounts/chat. Private pre-promotion dump is outside Git. Refresh the client for protocol3. Cees's latest request to put SBU cargo on the dev server is handled. SA-SOCIAL-001 and SA-CARGO-001 are integrated in the shared registry. Public hosting/main were not changed.
+
+The frozen promotion is COMPLETE and this shared merge/restart claim is released. Parent needs no GPU window and leaves the persistent user preview running. New power/rover/fauna/WORLD/hub work remains separately owned and is not in this receipt. Coordinate the next coherent update against f861f8f; do not replace its social UI, final immediate kick cleanup, generic ordered migrations or either client state-reset hook with older backend-onlyc619dd0. Full delivery evidence: docs/qa/social-cargo-integration.md; player entry: Menu→Comms for chat/friends, station Cargo & Trade for SBU crates.
