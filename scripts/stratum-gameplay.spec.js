@@ -9,7 +9,7 @@ import {MATERIAL_IDS} from '../src/inventory/containers.js';
 
 const output = process.env.STRATUM_OUTPUT ?? '/home/cees/projects/.medium-ships-qa/stratum-controller';
 const sourceRoot = process.env.STRATUM_SOURCE ?? new URL('..', import.meta.url).pathname;
-const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ships.js', 'src/medium-ship-gameplay.js',
+const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ships.js', 'src/medium-ship-lights.js', 'src/medium-ship-gameplay.js',
   'src/stratum.js', 'src/stratum-systems.js', 'src/stratum-layout.js', 'src/stratum-flight-parts.js',
   'src/ship-mining.js', 'src/ship-mining-input.js', 'src/rover-power.js', 'src/flight-model.js',
   'src/ship-handling.js', 'src/gamepad.js', 'src/controller-ui.js', 'src/ship-inventory-ui.js',

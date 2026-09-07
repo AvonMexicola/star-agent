@@ -10,7 +10,7 @@ import {state, wait, frames, distanceXZ, linePath, turnPath, pathTarget, driving
 
 const output = process.env.GANNET_PRIMARY_OUTPUT ?? '/tmp/star-agent-gannet-primary-results/unconfigured';
 const sourceRoot = process.env.GANNET_SOURCE ?? fileURLToPath(new URL('..', import.meta.url));
-const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ship-gameplay.js', 'src/medium-ships.js',
+const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ship-gameplay.js', 'src/medium-ships.js', 'src/medium-ship-lights.js',
   'src/gannet.js', 'src/gannet-systems.js', 'src/gannet-layout.js', 'src/mining-rover.js', 'src/rover-carrier.js',
   'src/rover-support.js', 'src/rover-physics.js', 'src/nomad-cabin-controls.js', 'src/nomad-cabin-controls.css',
   'src/rover-ui.js', 'src/secondary-touch-buttons.js', 'src/gameplay-menu.js', 'src/controller-ui.js',

@@ -2,21 +2,34 @@ import {MeshBasicMaterial} from 'three';
 import {createStratum} from './stratum.js';
 import {createGannet} from './gannet.js';
 import {createShipMFDs} from './ship-mfd.js';
+import {createMediumShipLights} from './medium-ship-lights.js';
 
 /** Adapt authored hulls to the same runtime presentation contract as the fleet. */
 export function createMediumShip(id, systems) {
   const ship = id === 'stratum' ? createStratum() : createGannet(systems);
   const mfd = id === 'stratum' ? createShipMFDs({includeFrames:false, profile:'stratum'}) : null;
+  let lights = null, disposed = false;
   const sourceReady = ship.readyPromise;
   ship.readyPromise = sourceReady.then(result => {
+    if (disposed) return null;
     if (!result) throw new Error(`${id} model could not be loaded.`);
     if (mfd) ship.getDisplays().forEach((mesh, i) => {
       const map = mfd.screenTextures()[i]; map.flipY = false;
       mesh.material = new MeshBasicMaterial({map, toneMapped:false});
       mesh.material.userData.unweathered = true; mesh.castShadow = mesh.receiveShadow = false;
     });
+    lights = createMediumShipLights(ship, id);
     ship.userData.assetStatus = 'ready'; return ship;
+  }).catch(error => {
+    ship.userData.assetStatus = 'error'; ship.userData.assetError = error.message;
+    throw error;
   });
+  const syncFlight = ship.syncFlight, dispose = ship.dispose;
+  ship.syncFlight = nav => { syncFlight?.call(ship, nav); lights?.update(nav); };
+  ship.dispose = () => {
+    if (disposed) return;
+    disposed = true; lights?.dispose(); dispose?.call(ship);
+  };
   ship.setDoor = () => {};
   ship.setStorage = open => { ship.userData.storageOpen = Boolean(open); };
   const updateGear = ship.updateGear;
