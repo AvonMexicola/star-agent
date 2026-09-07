@@ -1,0 +1,143 @@
+{
+  "assetSha256": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+  "method": "Analytic coordinate lower bounds for rigid root/oleo meshes and synchronized counter-rotated shoes, with source track assertions. Stronger shoe certificate includes actual encoded non-unit quaternion errors and all positive-slerp interpolation weights. Original encoded quaternion transform additionally evaluated at 3601 unique subposes per gear. Actual station sweep called with a flat authored floor; no runtime edits.",
+  "gear": [
+    {
+      "name": "Gear_L",
+      "rigidRootLowerBound": 0.24726224832909205,
+      "oleoIndependentTranslationLowerBound": 0.21467381699908317,
+      "shoe": {
+        "A": 1.6500000059604645,
+        "B": 0.25,
+        "lowestShoeLocalY": -0.09000000357627869,
+        "fullyDeployedContactY": 0,
+        "minimumExtensionAngleRatio": 0.3819700583104618,
+        "conservativeRatioUsed": 0.38,
+        "firstHalfSlopeMargin": 0.01870057685088805,
+        "secondHalfFloorMargin": 0.2332732110411967,
+        "maximumEncodedQuaternionNormError": 1.1406341204889259e-7,
+        "maximumSampledConjugateProductError": 1.1877304362251095e-7,
+        "actualQuaternionShoeMinAcross3601Subposes": 0,
+        "actualRuntimeContinuousCertificate": {
+          "minimumExtensionXRatio": 0.7639518620148336,
+          "maximumSlerpWeightFactor": 1.0001781330540418,
+          "runtimeExtensionXRatio": 0.7638158011734452,
+          "conservativeRatioUsed": 0.76,
+          "normErrorBound": 1.1410505259616801e-7,
+          "xSquaredUpper": 0.5000002256399424,
+          "smallXLinear": 0.016799971473737574,
+          "smallXQuadratic": 3.2999999708431083,
+          "largeXLower": 0.27799968207422443,
+          "conclusion": "All terms in the small-x bound are nonnegative; large-x lower bound is positive. Encoded quaternion scale error is included. Exact full-deployment contact is 0."
+        }
+      }
+    },
+    {
+      "name": "Gear_Nose",
+      "rigidRootLowerBound": 0.24726224832909205,
+      "oleoIndependentTranslationLowerBound": 0.21467378730990805,
+      "shoe": {
+        "A": 1.6500000059604645,
+        "B": 0.25,
+        "lowestShoeLocalY": -0.09000000357627869,
+        "fullyDeployedContactY": 0,
+        "minimumExtensionAngleRatio": 0.3819700583104618,
+        "conservativeRatioUsed": 0.38,
+        "firstHalfSlopeMargin": 0.01870057685088805,
+        "secondHalfFloorMargin": 0.2332732110411967,
+        "maximumEncodedQuaternionNormError": 1.1406341204889259e-7,
+        "maximumSampledConjugateProductError": 1.1877304362251095e-7,
+        "actualQuaternionShoeMinAcross3601Subposes": 0,
+        "actualRuntimeContinuousCertificate": {
+          "minimumExtensionXRatio": 0.7639518620148336,
+          "maximumSlerpWeightFactor": 1.0001781330540418,
+          "runtimeExtensionXRatio": 0.7638158011734452,
+          "conservativeRatioUsed": 0.76,
+          "normErrorBound": 1.1410505259616801e-7,
+          "xSquaredUpper": 0.5000002256399424,
+          "smallXLinear": 0.016799971473737574,
+          "smallXQuadratic": 3.2999999708431083,
+          "largeXLower": 0.27799968207422443,
+          "conclusion": "All terms in the small-x bound are nonnegative; large-x lower bound is positive. Encoded quaternion scale error is included. Exact full-deployment contact is 0."
+        }
+      }
+    },
+    {
+      "name": "Gear_R",
+      "rigidRootLowerBound": 0.24726224832909205,
+      "oleoIndependentTranslationLowerBound": 0.21467381699908317,
+      "shoe": {
+        "A": 1.6500000059604645,
+        "B": 0.25,
+        "lowestShoeLocalY": -0.09000000357627869,
+        "fullyDeployedContactY": 0,
+        "minimumExtensionAngleRatio": 0.3819700583104618,
+        "conservativeRatioUsed": 0.38,
+        "firstHalfSlopeMargin": 0.01870057685088805,
+        "secondHalfFloorMargin": 0.2332732110411967,
+        "maximumEncodedQuaternionNormError": 1.1406341204889259e-7,
+        "maximumSampledConjugateProductError": 1.1877304362251095e-7,
+        "actualQuaternionShoeMinAcross3601Subposes": 0,
+        "actualRuntimeContinuousCertificate": {
+          "minimumExtensionXRatio": 0.7639518620148336,
+          "maximumSlerpWeightFactor": 1.0001781330540418,
+          "runtimeExtensionXRatio": 0.7638158011734452,
+          "conservativeRatioUsed": 0.76,
+          "normErrorBound": 1.1410505259616801e-7,
+          "xSquaredUpper": 0.5000002256399424,
+          "smallXLinear": 0.016799971473737574,
+          "smallXQuadratic": 3.2999999708431083,
+          "largeXLower": 0.27799968207422443,
+          "conclusion": "All terms in the small-x bound are nonnegative; large-x lower bound is positive. Encoded quaternion scale error is included. Exact full-deployment contact is 0."
+        }
+      }
+    }
+  ],
+  "sweeps": [
+    {
+      "bottom": -0.019,
+      "motion": "up",
+      "hit": true,
+      "point": [
+        0,
+        2.49,
+        0
+      ]
+    },
+    {
+      "bottom": -0.019,
+      "motion": "side",
+      "hit": true,
+      "point": [
+        0,
+        2.49,
+        0
+      ]
+    },
+    {
+      "bottom": 0,
+      "motion": "up",
+      "hit": false,
+      "point": [
+        0,
+        2.54,
+        0
+      ]
+    },
+    {
+      "bottom": 0,
+      "motion": "side",
+      "hit": false,
+      "point": [
+        0.05,
+        2.49,
+        0
+      ]
+    }
+  ],
+  "recommendation": "For this rig, replace only the continuous Gear_Nose/L/R envelope minY padding with contact plane 0. Retain conservative x/z and top margins. Update aggregate flightBounds minY to 0. Preserve the original padded audit as historical broad bounds, and document why a tighter one-sided floor bound is justified. No station-wide overlap escape exception is necessary.",
+  "limits": [
+    "Future compression/deformation/gear motion changes require a new floor bound.",
+    "This is a source-geometry and floor-sweep diagnosis, not a whole station launch or browser test."
+  ]
+}

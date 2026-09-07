@@ -1,0 +1,42 @@
+@import './style.css';
+body.kestrel-studio{background:var(--studio-background);overflow:hidden}
+body.kestrel-studio:after{display:none}
+.kestrel-studio #studio-viewport{position:fixed;inset:0}
+.kestrel-studio canvas{display:block;touch-action:none}
+.kestrel-studio .studio-heading{position:absolute;left:36px;top:28px;z-index:2;pointer-events:none}
+.kestrel-studio .studio-heading a{font-size:12px;color:var(--muted);text-decoration:none;pointer-events:auto}
+.kestrel-studio h1{font:600 62px/.95 var(--font-display);letter-spacing:-1px;margin:22px 0 10px}
+.kestrel-studio .studio-heading p{font-size:13px;color:var(--muted);margin:0}
+.kestrel-studio .studio-spec{position:absolute;top:34px;right:36px;z-index:2;text-align:right;pointer-events:none;font:11px/1.9 var(--mono);color:var(--muted)}
+.kestrel-studio .studio-spec span{display:block;margin-top:18px;color:var(--mint);font:12px var(--font-body)}
+.kestrel-studio #studio-status{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:18px 22px;background:var(--studio-panel);border:1px solid var(--line);z-index:3;max-width:80vw;text-align:center}
+.kestrel-studio #studio-status[hidden]{display:none}
+.kestrel-studio .studio-controls{position:absolute;bottom:22px;left:36px;right:36px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px}
+.kestrel-studio nav,.kestrel-studio .studio-mechanisms{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px}
+.kestrel-studio nav{padding:7px;background:var(--studio-panel);border:1px solid var(--line);border-radius:6px}
+.kestrel-studio button{min-height:42px;padding:10px 17px;font-size:12px;background:transparent;border-radius:3px}
+.kestrel-studio button[aria-pressed=true]{color:var(--mint);border-color:var(--mint);background:var(--studio-active)}
+.kestrel-studio .studio-mechanisms{font-size:11px}
+.kestrel-studio .studio-mechanisms label{display:flex;gap:9px;align-items:center;margin:0 12px;color:var(--muted)}
+.kestrel-studio input[type=range]{width:90px;accent-color:var(--mint);cursor:pointer}
+.kestrel-studio .studio-help{font-size:10px;color:var(--muted);margin:0;text-align:center}
+.kestrel-studio #mechanism-status{font-size:11px;color:var(--mint);min-height:14px;margin:0;text-align:center}
+.kestrel-studio button:disabled{opacity:.35;cursor:default}
+@media(max-width:700px){
+ body.kestrel-studio{overflow:auto}
+ .kestrel-studio #studio-viewport{position:relative;height:62svh;min-height:390px}
+ .kestrel-studio .studio-heading{left:20px;top:20px}
+ .kestrel-studio h1{font-size:44px;margin-top:18px}
+ .kestrel-studio .studio-heading p{font-size:11px}
+ .kestrel-studio .studio-spec{top:20px;right:20px;font-size:9px}
+ .kestrel-studio .studio-spec span{font-size:10px}
+ .kestrel-studio .studio-controls{position:relative;left:auto;right:auto;bottom:auto;margin:0 14px 24px;gap:14px}
+ .kestrel-studio nav{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
+ .kestrel-studio button{padding:10px 12px;min-height:44px}
+ .kestrel-studio .studio-mechanisms{width:100%;gap:6px}
+ .kestrel-studio .studio-mechanisms label{order:1;flex:1;justify-content:center;padding-top:6px}
+ .kestrel-studio .studio-help{line-height:1.8;max-width:300px}
+}
+@media(prefers-reduced-motion:reduce){.kestrel-studio *{transition:none!important}}
+
+.studio-maker{width:48px;height:48px;float:left;margin:4px 16px 0 0}.studio-heading .studio-fly{display:inline-block;margin-top:10px;padding:10px 14px;border:1px solid #b6efd166;color:#b6efd1;background:#102027e6;text-decoration:none;pointer-events:auto}

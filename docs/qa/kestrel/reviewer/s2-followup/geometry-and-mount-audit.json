@@ -1,0 +1,521 @@
+{
+  "referenceCommit": "bd19367",
+  "referenceSha256": "ef42a970295f0db8535fdd08aa6f8b2385243545891f512816392befdbaed374",
+  "candidateSha256": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+  "candidateBytes": 2331576,
+  "geometryBinIdentical": true,
+  "geometryBinSha256": "4f8dc2156cf1ffa2ac3abce3aa41fed578d43e893d93b83f88a3eb6c7a248d68",
+  "identicalRecords": {
+    "meshes": true,
+    "accessors": true,
+    "bufferViews": true,
+    "materials": true,
+    "textures": true,
+    "images": true,
+    "animations": true,
+    "scenes": true,
+    "skins": true
+  },
+  "changedNodeNames": [
+    "HP_Belly / PBR",
+    "HP_Belly",
+    "HP_Nose / PBR",
+    "HP_Nose",
+    "HP_WingL / PBR",
+    "HP_WingL",
+    "HP_WingR / PBR",
+    "HP_WingR"
+  ],
+  "triangles": 36226,
+  "worldGeometry": {
+    "scope": "All mesh vertices and normals, including initially hidden AB; resting scene plus five evaluated times per animation. No skin or morph deformation is present.",
+    "poseResults": [
+      {
+        "clip": null,
+        "time": 0,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "CanopyOpen",
+        "time": 0,
+        "fraction": 0,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "CanopyOpen",
+        "time": 0.75,
+        "fraction": 0.25,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "CanopyOpen",
+        "time": 1.5,
+        "fraction": 0.5,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "CanopyOpen",
+        "time": 2.25,
+        "fraction": 0.75,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "CanopyOpen",
+        "time": 3,
+        "fraction": 1,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "GearDown",
+        "time": 0,
+        "fraction": 0,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "GearDown",
+        "time": 0.30000001192092896,
+        "fraction": 0.25,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "GearDown",
+        "time": 0.6000000238418579,
+        "fraction": 0.5,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "GearDown",
+        "time": 0.9000000357627869,
+        "fraction": 0.75,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "GearDown",
+        "time": 1.2000000476837158,
+        "fraction": 1,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "LadderDown",
+        "time": 0,
+        "fraction": 0,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "LadderDown",
+        "time": 0.44999998807907104,
+        "fraction": 0.25,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "LadderDown",
+        "time": 0.8999999761581421,
+        "fraction": 0.5,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "LadderDown",
+        "time": 1.3499999642372131,
+        "fraction": 0.75,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      },
+      {
+        "clip": "LadderDown",
+        "time": 1.7999999523162842,
+        "fraction": 1,
+        "meshes": 45,
+        "vertices": 53513,
+        "maxVertexDeltaMetres": 0,
+        "maxWorldNormalDelta": 0,
+        "maxMatrixDelta": 0,
+        "worstMesh": null
+      }
+    ],
+    "maximumPositionDeltaMetres": 0,
+    "maximumNormalDelta": 0,
+    "totalVertexComparisons": 856208
+  },
+  "sockets": [
+    {
+      "name": "HP_Nose",
+      "metadata": {
+        "name": "HP_Nose",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "socketOnly": true,
+        "kind": "weapon",
+        "size": 2,
+        "mount": "fixed",
+        "installedWeapon": null
+      },
+      "origin": [
+        0,
+        1.193000078201294,
+        -4.980000019073486
+      ],
+      "originDelta": [
+        0,
+        -0.01699995994567871,
+        0
+      ],
+      "outwardNormal": [
+        0,
+        -1,
+        0
+      ],
+      "forward": [
+        0,
+        0,
+        -1
+      ],
+      "right": [
+        -1,
+        0,
+        0
+      ],
+      "worldScale": [
+        1,
+        1,
+        1
+      ],
+      "frameDeterminant": 1,
+      "coverBounds": {
+        "min": [
+          -0.0949999988079071,
+          1.193000078201294,
+          -5.130000114440918
+        ],
+        "max": [
+          0.0949999988079071,
+          1.2269999980926514,
+          -4.829999923706055
+        ]
+      },
+      "matingPlaneMinusCoverUndersideMetres": 0,
+      "exactSizeAccepts": {
+        "S1": false,
+        "S2": true,
+        "S3": false
+      },
+      "resolvedTransformEqualsNode": true
+    },
+    {
+      "name": "HP_WingL",
+      "metadata": {
+        "name": "HP_WingL",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "socketOnly": true,
+        "kind": "weapon",
+        "size": 2,
+        "mount": "fixed",
+        "installedWeapon": null
+      },
+      "origin": [
+        -2.9000000953674316,
+        1.5730000734329224,
+        2.430000066757202
+      ],
+      "originDelta": [
+        0,
+        -0.01699995994567871,
+        0
+      ],
+      "outwardNormal": [
+        0,
+        -1,
+        0
+      ],
+      "forward": [
+        0,
+        0,
+        -1
+      ],
+      "right": [
+        -1,
+        0,
+        0
+      ],
+      "worldScale": [
+        1,
+        1,
+        1
+      ],
+      "frameDeterminant": 1,
+      "coverBounds": {
+        "min": [
+          -2.995000123977661,
+          1.5730000734329224,
+          2.2799999713897705
+        ],
+        "max": [
+          -2.805000066757202,
+          1.6069999933242798,
+          2.580000162124634
+        ]
+      },
+      "matingPlaneMinusCoverUndersideMetres": 0,
+      "exactSizeAccepts": {
+        "S1": false,
+        "S2": true,
+        "S3": false
+      },
+      "resolvedTransformEqualsNode": true
+    },
+    {
+      "name": "HP_WingR",
+      "metadata": {
+        "name": "HP_WingR",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "socketOnly": true,
+        "kind": "weapon",
+        "size": 2,
+        "mount": "fixed",
+        "installedWeapon": null
+      },
+      "origin": [
+        2.9000000953674316,
+        1.5730000734329224,
+        2.430000066757202
+      ],
+      "originDelta": [
+        0,
+        -0.01699995994567871,
+        0
+      ],
+      "outwardNormal": [
+        0,
+        -1,
+        0
+      ],
+      "forward": [
+        0,
+        0,
+        -1
+      ],
+      "right": [
+        -1,
+        0,
+        0
+      ],
+      "worldScale": [
+        1,
+        1,
+        1
+      ],
+      "frameDeterminant": 1,
+      "coverBounds": {
+        "min": [
+          2.805000066757202,
+          1.5730000734329224,
+          2.2799999713897705
+        ],
+        "max": [
+          2.995000123977661,
+          1.6069999933242798,
+          2.580000162124634
+        ]
+      },
+      "matingPlaneMinusCoverUndersideMetres": 0,
+      "exactSizeAccepts": {
+        "S1": false,
+        "S2": true,
+        "S3": false
+      },
+      "resolvedTransformEqualsNode": true
+    },
+    {
+      "name": "HP_Belly",
+      "metadata": {
+        "name": "HP_Belly",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "socketOnly": true,
+        "kind": "weapon",
+        "size": 2,
+        "mount": "fixed",
+        "installedWeapon": null
+      },
+      "origin": [
+        0,
+        0.8930000066757202,
+        0.550000011920929
+      ],
+      "originDelta": [
+        0,
+        -0.017000019550323486,
+        0
+      ],
+      "outwardNormal": [
+        0,
+        -1,
+        0
+      ],
+      "forward": [
+        0,
+        0,
+        -1
+      ],
+      "right": [
+        -1,
+        0,
+        0
+      ],
+      "worldScale": [
+        1,
+        1,
+        1
+      ],
+      "frameDeterminant": 1,
+      "coverBounds": {
+        "min": [
+          -0.0949999988079071,
+          0.8930000066757202,
+          0.4000000059604645
+        ],
+        "max": [
+          0.0949999988079071,
+          0.9270000457763672,
+          0.699999988079071
+        ]
+      },
+      "matingPlaneMinusCoverUndersideMetres": 0,
+      "exactSizeAccepts": {
+        "S1": false,
+        "S2": true,
+        "S3": false
+      },
+      "resolvedTransformEqualsNode": true
+    }
+  ],
+  "mountStandard": {
+    "S2": {
+      "id": "S2",
+      "size": 2,
+      "dockingDiameter": 0.8,
+      "clearanceEnvelope": {
+        "shape": "cylinder",
+        "diameter": 1.2,
+        "abovePlane": 0.9,
+        "belowPlane": 0.2,
+        "axis": "+Y"
+      },
+      "provisionalPackageEnvelope": {
+        "shape": "box",
+        "min": [
+          -0.65,
+          0,
+          -5
+        ],
+        "max": [
+          0.65,
+          1.5,
+          0.45
+        ],
+        "status": "provisional"
+      },
+      "boltPattern": {
+        "count": 6,
+        "pitchCircleDiameter": 0.64,
+        "holeDiameter": 0.032,
+        "firstBoltDirection": "+X"
+      }
+    },
+    "otherSizesMatchAtlas": {
+      "S1": true,
+      "S3": true
+    },
+    "helperMatchesAtlasByteForByte": true,
+    "atlasReferenceCommit": "7b97f5a718bedbc3dcbe739a540227fc879cc509"
+  },
+  "result": "pass",
+  "limitations": "Empty socket metadata and mating frames only. Existing small protective covers are unchanged; no gun geometry or future interface/package collision clearance is certified."
+}

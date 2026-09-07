@@ -7,7 +7,7 @@ import { createShipPowerUI } from '../src/ship-power-ui.js';
 
 function canvasDocument() {
   const context = {
-    fillRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {},
+    setTransform() {}, fillRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {},
   };
   return {
     createElement(name) {

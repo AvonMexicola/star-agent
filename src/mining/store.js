@@ -61,6 +61,7 @@ export class MiningStore {
   }
   limits(id, state = this.state) {
     if(id==='pack'&&!state.loadout.slots.backpack)return {resources:0,supplies:0};
+    if(id==='ship'&&this.manifest?.capacity.ship===0)return {resources:0,supplies:0};
     return { resources: state.boxes[id] * 12, supplies: id === 'pack' ? 20 : id === 'ship' ? (this.manifest?.capacity.ship??2400) : state.boxes[id] * 30 };
   }
   validContainers(state) {

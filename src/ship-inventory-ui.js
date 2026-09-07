@@ -31,7 +31,7 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
 
   function accessible(id) {
     if (id === 'pack') return true;
-    if (id === 'ship') return nav.insideShip || nav.mode === 'landed' || nav.mode === 'flight';
+    if (id === 'ship') return nav.shipId !== 'kestrel' && (nav.insideShip || nav.mode === 'landed' || nav.mode === 'flight');
     if (id === 'station') return Boolean(nav.dockedAtStation);
     return Boolean(availability.get(id)?.());
   }

@@ -18,7 +18,7 @@ export function createFlightEffects({effects,nav,mining,camera}){
     const button=document.createElement('button');button.type='button';button.textContent=`${Number(i)+1} · ${profile.label}`;button.dataset.shipWeapon=id;button.onclick=()=>select(id);panel.querySelector('.ship-weapon-options').append(button);
   }
   document.addEventListener('keydown',e=>{
-    if(!ready()||e.repeat||e.target.closest('input,dialog'))return;
+    if(!ready()||nav.shipId==='kestrel'||e.repeat||e.target.closest('input,dialog'))return;
     const id={Digit1:'pulse',Digit2:'laser',Digit3:'void'}[e.code];if(id)select(id);
     if(e.code==='KeyT')keyHeld=true;
   });
@@ -34,7 +34,7 @@ export function createFlightEffects({effects,nav,mining,camera}){
     get state(){return {weapon,controllerFire};},
     update(dt,origin,{suspended=false}={}){
       const active=ready()&&!suspended;
-      panel.hidden=Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
+      panel.hidden=nav.shipId==='kestrel'||Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
       if(!active)clear();
       else if(!controllerFire)controllerArmed=true;
       for(const b of panel.querySelectorAll('[data-ship-weapon]'))b.setAttribute('aria-pressed',String(b.dataset.shipWeapon===weapon));
@@ -42,14 +42,15 @@ export function createFlightEffects({effects,nav,mining,camera}){
       position.set(...(nav.layout??SHIP_LAYOUT).seatEye).applyQuaternion(nav.orientation).negate().add(nav.position);
       forward.set(0,0,-1).applyQuaternion(nav.orientation);
       cooldown=Math.max(0,cooldown-dt);
-      if(active&&!nav.multiplayer?.connected&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
+      if(active&&nav.shipId!=='kestrel'&&!nav.multiplayer?.connected&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
         const start=new THREE.Vector3(side*2.35,1.55,-3.3).applyQuaternion(nav.orientation).add(position);
         const direction=nav.position.clone().addScaledVector(forward,400).sub(start).normalize();
         effects.fire(start,direction,{hit:target(start,direction,origin),weapon});side*=-1;cooldown=weaponProfile(weapon).interval;
       }
       collector.set(.2,-.35,-.15).applyQuaternion(nav.orientation).add(nav.position);
       const throttle=active?Math.max(nav.keys.has('KeyW')?1:0,Math.min(1,Math.abs(nav.velocity.dot(forward))/200)):0;
-      effects.update(dt,{origin,camera,shipPosition:position,shipQuaternion:nav.orientation,velocity:nav.velocity,flying:active,inSpace:nav.flightEnvironment.regime==='SPACE'&&nav.stationDistance>500,relativistic:Boolean(nav.travel),boost:nav.boost,throttle,mining:effects.miningInput,collector,suspended:suspended||!nav.focused||document.hidden});
+      // Kestrel renders its authored engine cores/cones at the real nozzles.
+      effects.update(dt,{origin,camera,shipPosition:nav.shipId==='kestrel'?null:position,shipQuaternion:nav.orientation,velocity:nav.velocity,flying:active,inSpace:nav.flightEnvironment.regime==='SPACE'&&nav.stationDistance>500,relativistic:Boolean(nav.travel),boost:nav.boost,throttle,mining:effects.miningInput,collector,suspended:suspended||!nav.focused||document.hidden});
     },
   };
 }
