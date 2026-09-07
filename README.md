@@ -170,3 +170,16 @@ show [resource provinces](docs/resource-geology.md), with matching mineable outc
 Run `npm run test:browser -- -c scripts/expedition.config.js` for the integrated journeys.
 
 Original mining slice: [mining guide](docs/selene-mining.md).
+
+
+
+The opening's first movement gesture enables sound, or press **H** and use **SOUND ON** in the
+flight menu after the opening. Blue Horizon accompanies orbit, landing and quiet
+exploration. Between Worlds plays during distant travel; Atmospheric Descent
+plays during an actual atmospheric descent. Each has two local instrumental
+variants, with six-second fades. Music pauses when muted or the tab is hidden
+and resumes at its previous position. Crash/destruction silences the score.
+
+No audio is requested before a gesture. The six MP3s total 21.7 MB; only the
+current track and incoming fade partner load. Engine, wind and hangar sounds
+remain procedural. Credits and source provenance: [soundtrack notes](public/audio/music/README.md).
