@@ -103,7 +103,7 @@ export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } 
     if (Number.isFinite(peer[key])) nav[key] = peer[key];
   }
   if (typeof peer.shipId === 'string') nav.shipId = peer.shipId;
-  if (Array.isArray(peer.freighter)&&nav.freighter)for(const state of peer.freighter){const lift=nav.freighter.lifts.find(l=>l.id===state.id);if(lift&&Number.isFinite(state.y)&&Number.isFinite(state.target)){lift.y=state.y;lift.target=state.target;}}
+  nav.freighter?.applySnapshot(peer.freighter);
   if (typeof peer.mode === 'string') nav.mode = peer.mode;
   nav.multiplayerDead = peer.mode === 'dead' || peer.health <= 0 || peer.shipHealth <= 0;
   nav.travel = reviveTravel(peer.travel);

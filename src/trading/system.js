@@ -60,8 +60,25 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
     get state(){return {...snapshot(),tractor:tractor.state,error:local.error,carrying:nav.carryingCargo,visuals:[...visuals].map(([id,v])=>({id,objects:v.root.children.length,error:v.root.userData.error??null})),terminal:nearestTerminal()};},
     update(origin,dt=.016){
       const s=snapshot(),ids=new Set();
-      for(const peer of multiplayer.state.players??[]){if(peer.id===s.owner)continue;if(peer.shipId==='atlas'){let system=peerLifts.get(peer.id);if(!system){system=new FreighterSystems();peerLifts.set(peer.id,system);}for(const v of peer.freighter??[]){const lift=system.lifts.find(l=>l.id===v.id);if(lift){lift.y=v.y;lift.target=v.target;const node=remotePlayers?.peers.get(peer.id)?.shipModel?.getObjectByName(lift.node);if(node)node.position.y=lift.y;}}}if(peer.shipPosition){let access=accessModels.get(peer.id);if(access&&access.hull!==peer.shipId){access.dispose();access=null;}if(!access){access=createRemoteCargoAccess(peer.shipId);scene.add(access.root);accessModels.set(peer.id,access);}access.root.position.set(...peer.shipPosition).sub(origin);access.root.quaternion.set(...peer.shipOrientation);access.update(peer);}}
-      for(const [id,a] of accessModels)if(!multiplayer.state.players.some(p=>p.id===id)){a.dispose();accessModels.delete(id);peerLifts.delete(id);}
+      const peers=multiplayer.state.players??[];
+      for(const peer of peers){
+        if(peer.id===s.owner)continue;
+        if(peer.shipId==='atlas'){
+          let system=peerLifts.get(peer.id);
+          if(!system){system=new FreighterSystems();peerLifts.set(peer.id,system);}
+          if(system.lastPeer!==peer){system.applySnapshot(peer.freighter);system.lastPeer=peer;}
+        }else peerLifts.delete(peer.id);
+        // Atlas access is the authored, animated hull in RemotePlayers. Only
+        // Nomad needs the separate procedural two-leaf ramp/hatch accessory.
+        let access=accessModels.get(peer.id);
+        if(access&&(!peer.shipPosition||peer.shipId!=='nomad')){access.dispose();accessModels.delete(peer.id);access=null;}
+        if(peer.shipPosition&&peer.shipId==='nomad'){
+          if(!access){access=createRemoteCargoAccess('nomad');scene.add(access.root);accessModels.set(peer.id,access);}
+          access.root.position.set(...peer.shipPosition).sub(origin);access.root.quaternion.set(...peer.shipOrientation);access.update(peer);
+        }
+      }
+      for(const [id,a] of accessModels)if(!peers.some(p=>p.id===id)){a.dispose();accessModels.delete(id);}
+      for(const id of peerLifts.keys())if(!peers.some(p=>p.id===id&&p.shipId==='atlas'))peerLifts.delete(id);
       for(const ship of s.ships){const p=pose(ship);if(!p)continue;ids.add(ship.id);let visual=visuals.get(ship.id);if(!visual){visual=createCargoVisual();scene.add(visual.root);visuals.set(ship.id,visual);}visual.update(ship.hull,ship.crates,nav.position.clone().sub(p.position).applyQuaternion(p.quaternion.clone().invert()));visual.root.position.copy(p.position).sub(origin);visual.root.quaternion.copy(p.quaternion);visual.root.visible=ship.owner===s.owner?getShip().visible:visual.root.position.length()<2000;}
       for(const [id,v]of visuals)if(!ids.has(id)){v.dispose();visuals.delete(id);}
       tractor.update(dt,origin);nav.carryingCargo=Boolean(s.account?.carried||tractor.held);carry.visible=Boolean(s.account?.carried)&&['walk','eva'].includes(nav.mode);carry.position.set(0,-.66,-.9).applyQuaternion(nav.orientation).add(nav.position).sub(origin);carry.quaternion.copy(nav.orientation);
