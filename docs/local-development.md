@@ -154,3 +154,11 @@ checked, up-to-date PRs and resolved discussions, with force-push/deletion disab
 The original Chromium guidance is retained. See [framework QA](qa/contributor-framework.md)
 for actual CI/hosted settings and their limits. This changes contribution routing,
 not the local account/save model or public release authority.
+
+### Construction and creature audio
+
+Successful building placement now plays a settling/locking sound. The
+[sound studio](http://127.0.0.1:5178/tests/gameplay-audio.html) includes a deep
+Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring remains
+with the in-progress fauna feature; the audio callback patch is in
+[the handoff](qa/construction-audio/README.md). No new control bindings.
