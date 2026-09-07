@@ -6,7 +6,7 @@ async function fixture(){
  const claim=withClaimAnchor({id:'build-claim-1',owner:'local-player',body:'selene',name:'Cloud base',radius:64,useBuffer:false,origin:bodySurfacePoint(new Vector3(...MOON_LANDING_DIRECTION),SELENE).toArray(),quaternion:[0,0,0,1],pieces:[{id:'build-piece-2',type:'mainframe',position:[0,0,0],rotation:0,doorOpen:false},{id:'build-piece-3',type:'uranium-generator',position:[4,0,0],rotation:0,doorOpen:false}]});
  store.registerContainer({id:'build-core-1',name:'Cloud supplies',kind:'base',boxes:2});store.write({...store.withItems(store.state,'build-core-1',{'uranium-ore':1,'metal-stock':10}),build:{version:1,nextId:4,claims:[claim]}});
  const build={sync(){},get claims(){return store.state.build.claims;}},power={};
- const fetchImpl=async(url,options)=>{if(url.endsWith('/session'))return {ok:true,json:async()=>({account})};try{const data=await service.command(account.id,options.body?JSON.parse(options.body):{action:'read'});return {ok:true,json:async()=>data};}catch(e){return {ok:false,json:async()=>({error:e.message})};}};
+ const fetchImpl=async(url,options)=>{if(url.endsWith('/session'))return {ok:true,json:async()=>({account})};try{const data=await service.command(account.id,options.body?JSON.parse(options.body):{action:'read'});return {ok:true,json:async()=>({...data,accountId:account.id})};}catch(e){return {ok:false,json:async()=>({error:e.message})};}};
  const cloud=new BaseCloud({store,build,power,fetchImpl});return {cloud,store,db,account,disk,storage,setTime:t=>time=t,fetchImpl};
 }
 test('cloud save restores bases and cargo into a fresh browser, keeping unrelated backpack',async()=>{
@@ -35,4 +35,9 @@ test('lost fuel acknowledgement cannot restore spent fuel from the old local buf
  f.cloud.fetchImpl=async(url,options)=>{const result=await normal(url,options);if(options.body&&JSON.parse(options.body).action==='fuel')throw Error('connection lost after commit');return result;};
  assert.equal((await f.cloud.action('build-claim-1','fuel','uranium-ore')).ok,false);assert.equal(f.store.container('build-core-1').items['uranium-ore'],1);
  f.cloud.fetchImpl=normal;await f.cloud.sync();assert.match(f.cloud.status,/inventory changed/);await f.cloud.connect();assert.equal(f.store.container('build-core-1').items['uranium-ore'],.9);assert.equal(f.store.state.build.claims[0].power.fuel['uranium-ore'],.1);
+});
+
+test('switching the authenticated account stops background saves before any upload',async()=>{
+ const f=await fixture();await f.cloud.connect();let posts=0;const previous=f.cloud.fetchImpl;f.cloud.fetchImpl=async(url,options)=>{if(options.body)posts++;const response=await previous(url,options);return {...response,json:async()=>({...await response.json(),accountId:'different-account'})};};
+ await f.cloud.sync();assert.equal(posts,0);assert.match(f.cloud.status,/Account changed/);
 });

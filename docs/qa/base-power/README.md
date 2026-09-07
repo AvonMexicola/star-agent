@@ -34,3 +34,9 @@ than retroactively decayed. Sandbox health does not decay.
 Controller/browser and final prop captures are queued behind the shared host GPU
 window. Independent visual score, full multiplayer building and physical Xbox
 are not claimed. See [pipeline memory](../../base-power-pipeline.md).
+
+Additional regressions pass for a lost fuel acknowledgement, immediate pending
+status, a remote layout change and an account-cookie switch. The actual HTTP/SQL
+test rejects a POST bound to another account. Wind rotor separation initially
+created six mesh batches; sharing rotor-arm material reduces it to the existing
+five-batch limit. All exported bounds and budgets pass after that correction.

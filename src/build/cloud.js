@@ -9,14 +9,14 @@ export class BaseCloud {
   Object.assign(this,{store,build,power,sandbox,fetchImpl});this.enabled=false;this.busy=false;this.status=sandbox?'Sandbox · local only':'Browser save · not on server';this.profile=null;this.elapsed=0;
   power.cloud=this;const previousWrite=store.onWrite;store.onWrite=next=>{previousWrite?.(next);if(this.enabled&&!this.applying)this.status='Server save pending · local changes queued';};
  }
- async request(command){const response=await this.fetchImpl('/api/bases',{credentials:'same-origin',...(command?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(command)}:{})});const data=await response.json();if(!response.ok)throw Error(data.error??'Base server unavailable.');return data;}
+ async request(command){const response=await this.fetchImpl('/api/bases',{credentials:'same-origin',...(command?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...command,accountId:this.accountId})}:{})});const data=await response.json();if(!response.ok)throw Error(data.error??'Base server unavailable.');if(data.accountId&&this.accountId&&data.accountId!==this.accountId)throw Error('Account changed. Sign in to the account that owns these bases.');return data;}
  async account(){const response=await this.fetchImpl('/api/auth/session',{credentials:'same-origin'});const data=await response.json();if(!data.account?.id)throw Error('Sign in through Online, then return to solo play to connect base saves.');return data.account.id;}
  async connect({restore=false}={}){
   if(this.sandbox)return {ok:false,message:'Sandbox bases stay local and do not decay.'};if(this.busy)return {ok:false,message:'Server save in progress.'};this.busy=true;
   try{
    const account=await this.account(),previous=JSON.parse(this.store.storage.getItem(KEY)??'null');
    if(restore&&previous?.account!==account)throw Error('Sign in to the account that owns this base save.');
-   this.profile=await this.request();
+   this.accountId=account;this.profile=await this.request();
    // Preserve the complete local transaction before an explicit server restore.
    if(this.profile.build.claims.length||this.profile.build.nextId>1){this.store.storage.setItem(KEY+'.local-backup',this.store.persistedRaw??'');this.apply(this.profile);}
    else this.profile=await this.request(this.snapshot());

@@ -323,3 +323,16 @@ for the wheel; neither polls Gamepad independently. B enter uses the actual save
 claim radius,64m normally or96m after placing a large pad. X outside build mode
 operates rack/terminal/hangar/pad-designation interactions through the same shared
 native inventory/dialog flow. See `qa/base-building/expansion.md` for evidence.
+
+
+## Base power and solo server saves
+
+Power is a native bumper-accessible build tab. Solar/wind/battery/fuel generators
+use the existing placement controls. Mainframe and machine X/F opens actual
+charge/load/health/fuel status; fuel loading, repair and server connection are
+native focusable buttons. Async actions suppress duplicate submission and require
+neutral input after completion. Mining fuel byproducts appear in the same backpack
+and mainframe inventory as other materials. Server connection binds the authenticated
+account; switching accounts must stop background uploads. Never put solo base
+snapshots into authoritative multiplayer inventory. See `qa/base-power/README.md`
+for the actual controller journey and separate database/hardware testing limits.

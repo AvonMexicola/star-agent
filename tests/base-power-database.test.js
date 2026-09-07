@@ -12,7 +12,8 @@ test('real PostgreSQL keeps account-scoped bases through restart, rolls back con
  assert.equal((await request('/api/bases')).status,401);
  const a=await request('/api/auth/register',{email:'base-a@example.test',callsign:'Base_A',password:'base test password one'}),b=await request('/api/auth/register',{email:'base-b@example.test',callsign:'Base_B',password:'base test password two'});assert.equal(a.status,201);assert.equal(b.status,201);
  const c=withClaimAnchor({id:'build-claim-1',owner:'local-player',name:'Durable site',body:'selene',radius:64,useBuffer:false,origin:bodySurfacePoint(new Vector3(...MOON_LANDING_DIRECTION),SELENE).toArray(),quaternion:[0,0,0,1],pieces:[{id:'build-piece-2',type:'mainframe',position:[0,0,0],rotation:0,doorOpen:false}]});
- const read=await request('/api/bases',null,a.cookie),command={action:'save',revision:read.body.revision,build:{version:1,nextId:3,claims:[c]},storage:{'build-core-1':{name:'Saved supplies',boxes:2,items:{concrete:30}}}};
+ const read=await request('/api/bases',null,a.cookie),command={action:'save',accountId:a.body.account.id,revision:read.body.revision,build:{version:1,nextId:3,claims:[c]},storage:{'build-core-1':{name:'Saved supplies',boxes:2,items:{concrete:30}}}};
+ assert.equal((await request('/api/bases',command,b.cookie)).status,409);
  const races=await Promise.all([request('/api/bases',command,a.cookie),request('/api/bases',command,a.cookie)]);assert.deepEqual(races.map(r=>r.status).sort(),[200,409]);
  const saved=races.find(r=>r.status===200).body;assert.equal(saved.storage['build-core-1'].items.concrete,30);assert.equal((await request('/api/bases',null,b.cookie)).body.build.claims.length,0);
  await app.close();app=null;store=await createPostgresStore({connectionString:database.connectionString});await store.migrate();

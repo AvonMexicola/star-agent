@@ -113,7 +113,8 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
         const account=await auth.authenticate(ctx);if(!account)throw httpError(401,'Sign in to save bases on the server.');
         if(!['GET','POST'].includes(req.method))throw httpError(405,'Use GET or POST.');
         const command=req.method==='GET'?{action:'read'}:await readJSON(req,256*1024);
-        const state=await bases.command(account.id,command);respond(res,200,state);return;
+        if(req.method==='POST'&&command.accountId!==account.id)throw httpError(409,'Account changed. Reconnect base saves with the owning account.');
+        const state=await bases.command(account.id,command);respond(res,200,{...state,accountId:account.id});return;
       }
       const match = /^\/api\/auth\/([a-z]+)$/.exec(path);
       if (!match || (!POST_ACTIONS.has(match[1]) && match[1] !== 'session')) throw httpError(404, 'Not found.');

@@ -61,7 +61,8 @@ settle elapsed upkeep; server downtime is caught up at restart/next access.
 Authenticated same-origin GET/POST `/api/bases` uses the existing session cookie,
 request limiter and origin checks. POST has a bounded256 KiB JSON body. Every
 mutation locks the account and base row in one PostgreSQL transaction; the account
-lock also serializes competing first inserts. Revisions reject stale commands.
+lock also serializes competing first inserts. Revisions reject stale commands. POST commands bind the account ID checked against
+the session; GET responses identify the account so cookie switches stop uploads.
 
 The saved record contains validated anchored layout, base containers/box counts,
 server-owned power, fuel, charge and health. Client-supplied power is ignored.
@@ -109,3 +110,9 @@ existing Blender command;26 total kit GLBs include five power props. Shared
 material palette and exported render/collision bounds remain required. Independent
 visual acceptance and physical Xbox testing are separate gates. Evidence and
 failed checks belong in `docs/qa/base-power/README.md`.
+
+`MiningStore.onWrite` notifies the cloud adapter of queued local changes. Preserve
+other observers if this hook is combined with cargo work. A lost fuel ACK or changed
+server container forces restoration rather than re-uploading stale stock. A blocked
+local cache cannot continue uploading. Wind rotor geometry is a distinct node; its
+material batching stays within the existing five-mesh static-piece budget.
