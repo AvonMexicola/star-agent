@@ -42,7 +42,7 @@ export function refillSandbox(store){
 }
 export function sandboxTotals(store){return Object.fromEntries(['concrete','metal-stock','glass','conductor'].map(item=>[item,SANDBOX_BINS.reduce((sum,bin)=>sum+(store.container(bin.id)?.items[item]??0),0)]));}
 export function spawnInSandbox(nav,build){
-  const c=build.claims.find(c=>c.id==='build-claim-1');if(!c)throw Error('Sandbox mainframe is unavailable.');
+  const c=build.claims.find(c=>c.id==='build-claim-1')??build.claims.find(c=>c.body==='selene')??{...sandboxClaim(),pieces:[]};
   const origin=new Vector3(...c.origin),rotation=new Quaternion(...c.quaternion),up=bodyOffset(origin,SELENE).normalize();
   // Reload beside the pad, never inside a wall that was built over the old spawn.
   let point;

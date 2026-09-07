@@ -1,0 +1,44 @@
+{
+  "archive": {
+    "bytes": 49087379,
+    "sha256": "549dc3627433c39238861af916d2cda52f44e92a0367f7ab5c69a7e5d33adc78"
+  },
+  "entries": [
+    {
+      "archivePath": "Meshy_AI_Cybertech_Mechanic_biped/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_02_withSkin.glb",
+      "bytes": 8472900,
+      "sha256": "21f03f6fb2650039ccec8ee53cc6a18ce299938190cdb6161c1d99fa382c0e31",
+      "includedRuntime": true
+    },
+    {
+      "archivePath": "Meshy_AI_Cybertech_Mechanic_biped/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_03_withSkin.glb",
+      "bytes": 8511144,
+      "sha256": "138ad73260901eea15ab3afec06eff55d363ed5ba758436369c8c8960e21bd18",
+      "includedRuntime": true
+    },
+    {
+      "archivePath": "Meshy_AI_Cybertech_Mechanic_biped/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_11_withSkin.glb",
+      "bytes": 8468108,
+      "sha256": "2b42751b974a72bababf052b3ccf76955ee2584974d0fb8ea60b4d666f55e827",
+      "includedRuntime": true
+    },
+    {
+      "archivePath": "Meshy_AI_Cybertech_Mechanic_biped/Meshy_AI_Cybertech_Mechanic_biped_Animation_Idle_12_withSkin.glb",
+      "bytes": 8513416,
+      "sha256": "23d514d35b96335f490693c0438cb454549dbcd56ad19390e2ea23489396042c",
+      "includedRuntime": true
+    },
+    {
+      "archivePath": "Meshy_AI_Cybertech_Mechanic_biped/Meshy_AI_Cybertech_Mechanic_biped_Animation_Running_withSkin.glb",
+      "bytes": 8454360,
+      "sha256": "71997c74d4591a3e1b1ace9005d1ce53dd88f6207066b07fb1ca53631808dd7b",
+      "includedRuntime": false
+    },
+    {
+      "archivePath": "Meshy_AI_Cybertech_Mechanic_biped/Meshy_AI_Cybertech_Mechanic_biped_Animation_Walking_withSkin.glb",
+      "bytes": 8458972,
+      "sha256": "ffb0f22310f7cf136921abb835dbf781ff7d0b38e3a157ea354554df9bb4e718",
+      "includedRuntime": false
+    }
+  ]
+}

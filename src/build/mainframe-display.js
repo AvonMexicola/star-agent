@@ -12,10 +12,10 @@ export function updateMainframeDisplay(model,claim){
     const style=getComputedStyle(document.documentElement);
     display=model.userData.statusDisplay={canvas,texture,mesh,sourceMaterial:mesh.material,key:'',background:style.getPropertyValue('--dialog-solid').trim(),mint:style.getPropertyValue('--mint').trim(),text:style.color,font:style.getPropertyValue('--mono').trim()};
   }
-  const key=`${claim.name}:${claim.pieces.length}:${claim.useBuffer}`;if(display.key===key)return;
+  const key=`${claim.name}:${claim.pieces.length}:${claim.useBuffer}:${Math.floor(claim.power?.charge??0)}:${Math.floor(claim.power?.health??100)}`;if(display.key===key)return;
   display.key=key;const ctx=display.canvas.getContext('2d');ctx.fillStyle=display.background;ctx.fillRect(0,0,512,320);
   ctx.fillStyle=display.mint;ctx.font=`bold 42px ${display.font}`;ctx.fillText('MAINFRAME',28,58);
   ctx.font=`23px ${display.font}`;ctx.fillText(claim.name.toUpperCase().slice(0,29),28,100);
-  ctx.fillStyle=display.text;ctx.font=`28px ${display.font}`;ctx.fillText('LOCAL OWNER',28,162);ctx.fillText(`${claim.radius} M / ${claim.pieces.length} MODULES`,28,205);
+  ctx.fillStyle=display.text;ctx.font=`28px ${display.font}`;ctx.fillText(`HP ${Math.floor(claim.power?.health??100)}% / ${(claim.power?.charge??0).toFixed(1)} KWH`,28,162);ctx.fillText(`${claim.radius} M / ${claim.pieces.length} MODULES`,28,205);
   ctx.fillStyle=display.mint;ctx.fillText(claim.useBuffer?'SUPPLY LINK ON':'SUPPLY LINK OFF',28,270);display.texture.needsUpdate=true;
 }

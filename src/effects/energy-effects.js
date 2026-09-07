@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { ParticlePool, additive } from './particles.js';
 import { Slipstream } from './slipstream.js';
 import { weaponProfile } from './weapons.js';
-import { SHIP_LAYOUT } from '../boarding.js';
+import { ENGINE_EXHAUST } from './engine-state.js';
 
 const ZERO=new THREE.Vector3(),Z=new THREE.Vector3(0,0,1);
 const CYAN=new THREE.Color(.12,1.3,2.8),MINT=new THREE.Color(.18,2.3,1.2);
@@ -52,16 +52,31 @@ export class Plasma {
 /** Presentation effects and optional sound events. Gameplay owns damage and inventory. */
 export class EnergyEffects {
   constructor(scene,{capacity=2048,reducedMotion=false,seed=7291,onSound=null}={}){
-    this.onSound=onSound;
+    this.onSound=onSound;this.scene=scene;
     this.particles=new ParticlePool(scene,capacity);this.time=0;this.seed=seed;this.reducedMotion=reducedMotion;
     this.slipstream=new Slipstream(scene);
     this.lances=Array.from({length:6},()=>({shell:new Plasma(scene),core:new Plasma(scene),active:false}));
-    this.beam=new Plasma(scene);this.jets=[new Plasma(scene,true),new Plasma(scene,true)];
+    this.beam=new Plasma(scene);this.jets=[];
     this.light=new THREE.PointLight(0x88ffd4,0,7,2);scene.add(this.light);
-    this.nozzles=SHIP_LAYOUT.nozzles.map(point=>new THREE.Vector3(...point));
+    this.nozzles=[];this.engineProfile=null;this.engineId=null;
+    this.engine={shipId:null,state:'off',throttle:0,forwardThrottle:0,signedForwardDemand:0,boost:false,activeEmitters:0};
     this.bolts=[];this.boost=0;this.throttle=0;this.travel=0;this.carries={};
     this._p=new THREE.Vector3();this._v=new THREE.Vector3();this._collector=new THREE.Vector3();
     this._previousOrigin=null;this.miningContacts=0;this.collectedBursts=0;this.weaponShots=0;this.weaponImpacts=0;this.lastWeapon='pulse';
+  }
+  clearEngines(){
+    this.boost=0;this.throttle=0;this.engine.activeEmitters=0;
+    for(const particle of this.particles.slots)if(particle.engine)particle.alive=false;
+    for(const jet of this.jets)jet.mesh.visible=false;
+    for(const key of Object.keys(this.carries))if(key.startsWith('engine'))delete this.carries[key];
+  }
+  setExhaust(profile,shipId){
+    if(profile===this.engineProfile&&shipId===this.engineId)return;
+    this.clearEngines();this.engineProfile=profile;this.engineId=shipId;
+    this.nozzles=profile.sockets.map(socket=>new THREE.Vector3(...socket.position));
+    const count=profile.authoredCones?0:this.nozzles.length;
+    while(this.jets.length>count)this.jets.pop().dispose();
+    while(this.jets.length<count)this.jets.push(new Plasma(this.scene,true));
   }
   random(){this.seed=(Math.imul(this.seed,1664525)+1013904223)>>>0;return this.seed/4294967296;}
   budget(key,rate,dt){const amount=(this.carries[key]??0)+rate*dt,n=Math.floor(amount);this.carries[key]=amount-n;return Math.min(n,120);}
@@ -117,10 +132,16 @@ export class EnergyEffects {
     this.particles.clear();this.bolts.length=0;this.carries={};this.boost=0;this.throttle=0;this.travel=0;
     this._particleOrigin=null;this.slipstream.reset();
     for(const l of this.lances){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;}
-    this.beam.mesh.visible=false;for(const jet of this.jets)jet.mesh.visible=false;this.light.intensity=0;
+    this.beam.mesh.visible=false;this.clearEngines();this.light.intensity=0;
   }
-  update(dt,{origin,camera,shipPosition,shipQuaternion,velocity=ZERO,flying=false,inSpace=false,relativistic=false,boost=false,throttle=0,mining=null,collector=origin,suspended=false}={}){
+  update(dt,{origin,camera,shipPosition,shipQuaternion,velocity=ZERO,flying=false,inSpace=false,relativistic=false,boost=false,throttle=0,engine=null,exhaust=null,mining=null,collector=origin,suspended=false}={}){
     dt=clamp(Number.isFinite(dt)?dt:0,0,.1);this.time+=dt;
+    const shipId=engine?.shipId??'nomad';
+    this.setExhaust(exhaust??ENGINE_EXHAUST[shipId]??{sockets:[]},shipId);
+    if(engine){shipPosition=engine.shipPosition;shipQuaternion=engine.shipQuaternion;velocity=engine.velocity;boost=engine.boost;throttle=engine.forwardThrottle;}
+    const engineOn=!suspended&&!relativistic&&(engine?engine.active&&engine.flying:flying);
+    Object.assign(this.engine,{shipId,state:engine?.state??(engineOn?(throttle>0?'forward':'idle'):'off'),throttle:engine?.throttle??throttle,
+      forwardThrottle:throttle,signedForwardDemand:engine?.signedForwardDemand??throttle,boost:Boolean(boost&&engineOn)});
     // Quick transit/long camera jumps must not leave a line across the solar system.
     if(suspended||(this._previousOrigin&&origin.distanceTo(this._previousOrigin)>Math.max(2000,velocity.length()*dt*4)))this.reset();
     this._previousOrigin??=origin.clone();this._previousOrigin.copy(origin);
@@ -131,20 +152,25 @@ export class EnergyEffects {
     }
     this._particleOrigin??=origin.clone();this._particleOrigin.copy(origin);
     this._collector.copy(collector);
-    this.boost+=(Number(boost&&flying)-this.boost)*(1-Math.exp(-dt*5));
-    this.throttle+=(clamp(flying?throttle:0,0,1)-this.throttle)*(1-Math.exp(-dt*9));
-    const jetPower=flying?(.16+this.throttle*.7+this.boost*.9):0;
-    this.jets.forEach((jet,i)=>{
-      if(!flying||!shipPosition||!shipQuaternion){jet.mesh.visible=false;return;}
-      const start=this.nozzles[i].clone().applyQuaternion(shipQuaternion).add(shipPosition);
-      const aft=Z.clone().applyQuaternion(shipQuaternion),length=1.3+this.throttle*3+this.boost*8;
+    const emitting=Boolean(engineOn&&throttle>.001&&shipPosition&&shipQuaternion&&this.nozzles.length);
+    if(!emitting)this.clearEngines();
+    this.boost+=(Number(boost&&emitting)-this.boost)*(1-Math.exp(-dt*5));
+    this.throttle+=(clamp(emitting?throttle:0,0,1)-this.throttle)*(1-Math.exp(-dt*9));
+    const jetPower=emitting?this.throttle*(.86+this.boost*.9):0;
+    this.engine.activeEmitters=emitting?this.nozzles.length:0;
+    this.nozzles.forEach((nozzle,i)=>{
+      if(!emitting)return;
+      const start=nozzle.clone().applyQuaternion(shipQuaternion).add(shipPosition);
+      const aft=Z.clone().applyQuaternion(shipQuaternion),length=this.engineProfile.length*(.2+this.throttle*.8)+this.boost*this.engineProfile.boostLength;
       const end=start.clone().addScaledVector(aft,length);
-      jet.set(start,end,.37+this.boost*.12,origin,this.time,jetPower);
+      this.jets[i]?.set(start,end,this.engineProfile.radius*(1+this.boost*.15),origin,this.time,jetPower);
       const count=this.budget(`engine${i}`,(this.reducedMotion?12:45)*jetPower,dt);
       for(let n=0;n<count;n++){
         const pos=start.clone().addScaledVector(aft,this.random()*length*.7);
+        const radial=new THREE.Vector3(this.random()-.5,this.random()-.5,0).multiplyScalar(this.engineProfile.radius*.65).applyQuaternion(shipQuaternion);
+        pos.add(radial);
         this._v.copy(aft).multiplyScalar(10+this.boost*25).add(velocity);
-        const particle=this.particles.emit(pos,this._v,{color:CYAN,life:.12+this.random()*.15,size:.04+this.random()*.06,kind:1,stretch:.012});
+        const particle=this.particles.emit(pos,this._v,{color:shipId==='kestrel'?MINT:CYAN,life:.12+this.random()*.15,size:(.04+this.random()*.06)*this.engineProfile.radius/.48,kind:1,stretch:.012,engine:true});
         // Exhaust inherits ship velocity, but trail length must stay local even at millions of m/s.
         particle.stretch=Math.min(particle.stretch,2/Math.max(1,this._v.length()));
       }
@@ -206,6 +232,6 @@ export class EnergyEffects {
     }
     this.particles.update(dt,origin,this._collector);
   }
-  get state(){return {spaceDust:this.particles.slots.filter(p=>p.alive&&p.cameraLocal).length,particles:this.particles.count,capacity:this.particles.capacity,boost:this.boost,travel:this.travel,bolts:this.bolts.length,miningContacts:this.miningContacts,collectedBursts:this.collectedBursts,weaponShots:this.weaponShots,weaponImpacts:this.weaponImpacts,lastWeapon:this.lastWeapon,lances:this.lances.filter(l=>l.active).length,slipstream:this.slipstream.material.uniforms.drive.value,reducedMotion:this.reducedMotion};}
+  get state(){return {engine:{...this.engine,nozzleCount:this.nozzles.length,activeJets:this.jets.filter(jet=>jet.mesh.visible).length,particles:this.particles.slots.filter(p=>p.alive&&p.engine).length,authoredCones:Boolean(this.engineProfile?.authoredCones)},spaceDust:this.particles.slots.filter(p=>p.alive&&p.cameraLocal).length,particles:this.particles.count,capacity:this.particles.capacity,boost:this.boost,travel:this.travel,bolts:this.bolts.length,miningContacts:this.miningContacts,collectedBursts:this.collectedBursts,weaponShots:this.weaponShots,weaponImpacts:this.weaponImpacts,lastWeapon:this.lastWeapon,lances:this.lances.filter(l=>l.active).length,slipstream:this.slipstream.material.uniforms.drive.value,reducedMotion:this.reducedMotion};}
   dispose(){this.slipstream.dispose();this.lances.forEach(l=>{l.shell.dispose();l.core.dispose();});this.particles.dispose();this.beam.dispose();this.jets.forEach(j=>j.dispose());this.light.removeFromParent();}
 }

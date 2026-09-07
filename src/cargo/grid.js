@@ -4,7 +4,9 @@ export const SBU_SIZES = Object.freeze([1,2,4,8,16,32,64]);
 export const CRATE_CELLS = Object.freeze({1:[1,1,1],2:[1,1,2],4:[1,2,2],8:[2,2,2],16:[2,2,4],32:[2,4,4],64:[2,4,8]});
 export const CARGO_GRIDS = Object.freeze({
   nomad: [{id:'aft-starboard',min:[.94,1,2.16],cells:[1,3,2]}],
-  atlas: [{id:'port-deck',min:[-5.7,4.025,.1],cells:[2,8,16]},{id:'starboard-deck',min:[4.5,4.025,.1],cells:[2,8,16]}],
+  // Preserve saved grid IDs/cell coordinates and 512 SBU. The new deck leaves
+  // five metres clear through its centre for the Burrow and both loading ramps.
+  atlas: [{id:'port-deck',min:[-3.7,2.625,.1],cells:[2,8,16]},{id:'starboard-deck',min:[2.5,2.625,.1],cells:[2,8,16]}],
   kestrel: [],
 });
 export const capacitySBU = hull => (CARGO_GRIDS[hull]??[]).reduce((n,g)=>n+g.cells.reduce((a,b)=>a*b,1),0);

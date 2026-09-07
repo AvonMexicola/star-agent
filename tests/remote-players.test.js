@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { cloneCharacterGLTF, tintCharacterSuit, RemotePlayers, PLAYER_COLORS, applySuitColor } from '../src/multiplayer/remote-players.js';
+import { cloneCharacterGLTF, tintCharacterSuit, RemotePlayers, PLAYER_COLORS, applySuitColor, SHIP_URLS } from '../src/multiplayer/remote-players.js';
 import { clearEquipmentCache } from '../src/equipment.js';
 import { PLAYER_AVATAR } from '../src/player-avatar.js';
+import { FreighterSystems } from '../src/freighter-layout.js';
+import { atlasGearPose } from '../src/atlas-mark-ii-systems.js';
 
 // Read real rig/bones/animations and real weapon geometry without a GPU or image
 // decoder. Only PBR textures are omitted; browser coverage renders the textures.
@@ -194,11 +196,16 @@ test('real ship models retain double poses and animate the actual landing assemb
   assert.equal(entry.character.object.visible, false);
   let meshes = 0; entry.shipModel.traverse(node => { if (node.isMesh) meshes++; });
   assert.ok(meshes > 20, 'actual authored Atlas hierarchy is loaded');
-  assert.equal(entry.gears.length, 4);
-  for (const gear of entry.gears) near(gear.scale.y, .08);
+  assert.equal(entry.gears.length, 0, 'retired stretching legs are absent');
+  assert.equal(entry.atlasSystems.gear.legs.length, 6);
+  for (const leg of entry.atlasSystems.gear.legs) {
+    near(leg.nodeObject.rotation.x, atlasGearPose(0,leg.foldSign).angle);
+    near(leg.footObject.rotation.x, atlasGearPose(0,leg.foldSign).padAngle);
+    near(leg.nodeObject.scale.y, 1);
+  }
   manager.sync([peer('1', { shipId: 'atlas', gearProgress: 1, weapon: null })], 'self');
   manager.update(.05, new THREE.Vector3(25_000_000_000, 0, 0));
-  for (const gear of entry.gears) near(gear.scale.y, 1);
+  for (const leg of entry.atlasSystems.gear.legs) near(leg.nodeObject.rotation.x,atlasGearPose(1,leg.foldSign).angle);
   assert.ok(entry.ship.position.x < 101, 'ship was made camera relative before any GPU upload');
   manager.dispose();
 });
@@ -209,9 +216,10 @@ test('cached ship transforms match authored hulls exactly across origin, attitud
     manager.sync([peer('1', { shipId, mode: 'flight', weapon: null })], 'self');
     await ready(manager);
     const entry = manager.peers.get('1');
-    const source = await manager.assets.get(`/models/${shipId}.glb`);
+    const source = await manager.assets.get(SHIP_URLS[shipId]);
     const reference = new THREE.Group();
     reference.add(source.scene.clone(true));
+    const authority=shipId==='atlas'?new FreighterSystems().bind(reference.children[0]):null;
     const expectedNodes = [], actualNodes = [], gears = [];
     reference.children[0].traverse(node => {
       expectedNodes.push(node);
@@ -228,13 +236,18 @@ test('cached ship transforms match authored hulls exactly across origin, attitud
     for (const gear of [0, .37, 1, .62, 0]) {
       const attitude = new THREE.Quaternion().setFromEuler(new THREE.Euler(gear * .6, -.7, .2));
       const origin = new THREE.Vector3(25_000_000_000 + gear * 4000, gear * 1200, -gear * 700);
-      manager.sync([peer('1', { shipId, mode: 'flight', weapon: null, gearProgress: gear,
+      if(authority){
+        authority.setGear(gear,gear>=.5);
+        for(const ramp of authority.ramps){ramp.target=ramp.openAngle;ramp.moving=true;}
+        authority.update(.37);
+      }
+      manager.sync([peer('1', { shipId, mode: 'flight', weapon: null, gearProgress: gear, freighter:authority?.snapshot,
         shipPosition: [25_000_000_050 + gear * 8, gear * 5, gear * 7], shipOrientation: attitude.toArray() })], 'self');
       compositions = 0;
       manager.update(1 / 60, origin);
       scene.updateMatrixWorld(true);
       assert.equal(compositions, actualNodes.filter(node => entry.gears.includes(node)).length,
-        'a changed deployment recomposes only the moving gear groups');
+        'Nomad changes only moving gear; Atlas mechanisms are composed at snapshot receipt');
       reference.position.copy(entry.ship.position);
       reference.quaternion.copy(entry.ship.quaternion);
       const eased = gear * gear * (3 - 2 * gear);

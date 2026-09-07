@@ -16,6 +16,7 @@ const accountFields = { id: true, email: true, callsign: true, passwordHash: tru
 /** Explicit test/development adapter. Never selected automatically in production. */
 export function createMemoryStore() {
   let commerce=null, commerceQueue=Promise.resolve();
+  const bases = new Map();
   const accounts = new Map(), sessions = new Map(), resets = new Map(), states = new Map();
   return {
     persistent: false,
@@ -69,6 +70,11 @@ export function createMemoryStore() {
       if (!accounts.has(accountId)) throw new Error('Unknown account.');
       states.set(accountId, JSON.parse(stateJSON(state)));
     },
+    async mutateBaseSites(accountId, mutate) {
+      if (!accounts.has(accountId)) throw new Error('Unknown account.');
+      const next=mutate(clone(bases.get(accountId)??null));bases.set(accountId,clone(next));return clone(next);
+    },
+    async sweepBaseSites(mutate) { for(const [id,value] of bases)bases.set(id,clone(mutate(clone(value)))); },
     async pruneExpired(now) {
       for (const [key, value] of sessions) if (value.expiresAt <= now) sessions.delete(key);
       for (const [key, value] of resets) if (value.expiresAt <= now) resets.delete(key);
@@ -178,6 +184,22 @@ export async function createPostgresStore({ connectionString, pool: suppliedPool
       const value = JSON.parse(stateJSON(state));
       await prisma.playerState.upsert({ where: { accountId }, create: { accountId, state: value },
         update: { state: value, updatedAt: new Date() } });
+    },
+    async mutateBaseSites(accountId, mutate) {
+      return transaction(async client=>{
+        // Lock the owning account too: first saves have no base row to lock yet.
+        const account=await client.query('SELECT id FROM accounts WHERE id=$1 FOR UPDATE',[accountId]);
+        if(!account.rowCount)throw new Error('Unknown account.');
+        const row=await client.query('SELECT state FROM base_sites WHERE account_id=$1 FOR UPDATE',[accountId]);
+        const next=mutate(row.rows[0]?.state??null);
+        await client.query('INSERT INTO base_sites(account_id,revision,state) VALUES($1,$2,$3::jsonb) ON CONFLICT(account_id) DO UPDATE SET revision=EXCLUDED.revision,state=EXCLUDED.state,updated_at=now()',[accountId,next.revision,JSON.stringify(next)]);
+        return next;
+      });
+    },
+    async sweepBaseSites(mutate) {
+      // Batches avoid holding a table-wide lock. All mutations share the account lock.
+      const ids=await pool.query('SELECT account_id FROM base_sites');
+      for(const {account_id} of ids.rows)await this.mutateBaseSites(account_id,mutate);
     },
     async pruneExpired(now) {
       const where = { expiresAt: { lte: new Date(now) } };

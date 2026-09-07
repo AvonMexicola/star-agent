@@ -70,10 +70,10 @@ export class ParticlePool {
     this.mesh=new THREE.Mesh(this.geometry,this.material);this.mesh.frustumCulled=false;this.mesh.name='Pooled energy / sparks / mineral fragments';scene.add(this.mesh);
     this._tail=new THREE.Vector3();this._to=new THREE.Vector3();this._curl=new THREE.Vector3();
   }
-  emit(position,velocity,{color=0x86ddff,life=.6,size=.1,kind=0,stretch=.025,drag=0,attract=false,gain=1,anchor=null}={}){
+  emit(position,velocity,{color=0x86ddff,life=.6,size=.1,kind=0,stretch=.025,drag=0,attract=false,gain=1,anchor=null,engine=false}={}){
     const p=this.slots[this.cursor];this.cursor=(this.cursor+1)%this.capacity;
     p.alive=true;p.p.copy(position);p.v.copy(velocity);p.spin.copy(velocity).normalize();p.color.set(color).multiplyScalar(gain);
-    Object.assign(p,{age:0,life,size,kind,stretch,drag,attract,cameraLocal:false,fresh:true,anchor});this.emitted++;
+    Object.assign(p,{age:0,life,size,kind,stretch,drag,attract,cameraLocal:false,fresh:true,anchor,engine});this.emitted++;
     return p;
   }
   clear(){for(const p of this.slots)p.alive=false;this.count=0;this.geometry.instanceCount=0;}

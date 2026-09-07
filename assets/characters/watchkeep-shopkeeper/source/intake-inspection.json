@@ -1,0 +1,614 @@
+{
+  "file": "assets/characters/watchkeep-shopkeeper/source/source-animation-pack.zip",
+  "bytes": 57025870,
+  "sha256": "d35196badb125d4b74080cf42271cb119c5e0747a80c0c29a35036b5c9f64b1b",
+  "entries": [
+    {
+      "archivePath": "Meshy_AI_Crimson_Outrider_biped/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_15_withSkin.glb",
+      "file": "assets/characters/watchkeep-shopkeeper/source/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_15_withSkin.glb",
+      "bytes": 8540008,
+      "sha256": "437b9a1885956816297a21370b44ecc1f849e7769447a9e623c4bf88a75fbcdb",
+      "meshCount": 1,
+      "triangles": 31170,
+      "vertices": 21329,
+      "materials": [
+        {
+          "doubleSided": true,
+          "emissiveFactor": [
+            1,
+            1,
+            1
+          ],
+          "emissiveTexture": {
+            "index": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            },
+            "KHR_materials_ior": {
+              "ior": 1.4500000476837158
+            }
+          },
+          "name": "Material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "roughnessFactor": 0.4100847542285919
+          }
+        }
+      ],
+      "skinJoints": [
+        [
+          "Hips",
+          "LeftUpLeg",
+          "LeftLeg",
+          "LeftFoot",
+          "LeftToeBase",
+          "RightUpLeg",
+          "RightLeg",
+          "RightFoot",
+          "RightToeBase",
+          "Spine02",
+          "Spine01",
+          "Spine",
+          "LeftShoulder",
+          "LeftArm",
+          "LeftForeArm",
+          "LeftHand",
+          "RightShoulder",
+          "RightArm",
+          "RightForeArm",
+          "RightHand",
+          "neck",
+          "Head",
+          "head_end",
+          "headfront"
+        ]
+      ],
+      "animations": [
+        {
+          "name": "Armature|Idle_15|baselayer",
+          "channels": 72,
+          "duration": 7.033333333333333
+        }
+      ],
+      "imageHashes": [
+        "75ba29965e947336fd2a26be90e090c6c80b734199a05cd02fa24b747033235b"
+      ],
+      "attributeHashes": {
+        "POSITION": "15fbe7d5e05adfda4935dbe49fa8ff726860dd4aa9de9097bef397f7715965f5",
+        "NORMAL": "8cfc3aa3bb2d5f4f26d72a8e08128d151108929750fe7646975ae2058d49d8e7",
+        "TEXCOORD_0": "e7a367c60b4dbbac00268da7864a894fd3fc3ad9d1fddbb6660542572e6b4b6c",
+        "JOINTS_0": "b1e808654109f9eed4da2c86203c672a2b391adf71c62eac9e83ac1932da9cbf",
+        "WEIGHTS_0": "fbd18f329230d938e1fb670875fed5c451b2509c613e5cba96b38a11b4abe451"
+      },
+      "indexHash": "9da9aad040141291a592e4937cc5a3c0bae5ae064bb234ed11aeca796009bc93"
+    },
+    {
+      "archivePath": "Meshy_AI_Crimson_Outrider_biped/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_4_withSkin.glb",
+      "file": "assets/characters/watchkeep-shopkeeper/source/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_4_withSkin.glb",
+      "bytes": 8616892,
+      "sha256": "5d4d4faedbd5feef9a1dfd7cc1c4de6e8e5d810686db737908e1b5ee0c74a3af",
+      "meshCount": 1,
+      "triangles": 31170,
+      "vertices": 21329,
+      "materials": [
+        {
+          "doubleSided": true,
+          "emissiveFactor": [
+            1,
+            1,
+            1
+          ],
+          "emissiveTexture": {
+            "index": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            },
+            "KHR_materials_ior": {
+              "ior": 1.4500000476837158
+            }
+          },
+          "name": "Material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "roughnessFactor": 0.4100847542285919
+          }
+        }
+      ],
+      "skinJoints": [
+        [
+          "Hips",
+          "LeftUpLeg",
+          "LeftLeg",
+          "LeftFoot",
+          "LeftToeBase",
+          "RightUpLeg",
+          "RightLeg",
+          "RightFoot",
+          "RightToeBase",
+          "Spine02",
+          "Spine01",
+          "Spine",
+          "LeftShoulder",
+          "LeftArm",
+          "LeftForeArm",
+          "LeftHand",
+          "RightShoulder",
+          "RightArm",
+          "RightForeArm",
+          "RightHand",
+          "neck",
+          "Head",
+          "head_end",
+          "headfront"
+        ]
+      ],
+      "animations": [
+        {
+          "name": "Armature|Idle_4|baselayer",
+          "channels": 72,
+          "duration": 14
+        }
+      ],
+      "imageHashes": [
+        "75ba29965e947336fd2a26be90e090c6c80b734199a05cd02fa24b747033235b"
+      ],
+      "attributeHashes": {
+        "POSITION": "15fbe7d5e05adfda4935dbe49fa8ff726860dd4aa9de9097bef397f7715965f5",
+        "NORMAL": "8cfc3aa3bb2d5f4f26d72a8e08128d151108929750fe7646975ae2058d49d8e7",
+        "TEXCOORD_0": "e7a367c60b4dbbac00268da7864a894fd3fc3ad9d1fddbb6660542572e6b4b6c",
+        "JOINTS_0": "b1e808654109f9eed4da2c86203c672a2b391adf71c62eac9e83ac1932da9cbf",
+        "WEIGHTS_0": "fbd18f329230d938e1fb670875fed5c451b2509c613e5cba96b38a11b4abe451"
+      },
+      "indexHash": "9da9aad040141291a592e4937cc5a3c0bae5ae064bb234ed11aeca796009bc93"
+    },
+    {
+      "archivePath": "Meshy_AI_Crimson_Outrider_biped/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_6_withSkin.glb",
+      "file": "assets/characters/watchkeep-shopkeeper/source/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_6_withSkin.glb",
+      "bytes": 8544424,
+      "sha256": "c02b484f238a688f118cc59c1a42d96d8401ef12475c5f868371e10c6abc3f43",
+      "meshCount": 1,
+      "triangles": 31170,
+      "vertices": 21329,
+      "materials": [
+        {
+          "doubleSided": true,
+          "emissiveFactor": [
+            1,
+            1,
+            1
+          ],
+          "emissiveTexture": {
+            "index": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            },
+            "KHR_materials_ior": {
+              "ior": 1.4500000476837158
+            }
+          },
+          "name": "Material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "roughnessFactor": 0.4100847542285919
+          }
+        }
+      ],
+      "skinJoints": [
+        [
+          "Hips",
+          "LeftUpLeg",
+          "LeftLeg",
+          "LeftFoot",
+          "LeftToeBase",
+          "RightUpLeg",
+          "RightLeg",
+          "RightFoot",
+          "RightToeBase",
+          "Spine02",
+          "Spine01",
+          "Spine",
+          "LeftShoulder",
+          "LeftArm",
+          "LeftForeArm",
+          "LeftHand",
+          "RightShoulder",
+          "RightArm",
+          "RightForeArm",
+          "RightHand",
+          "neck",
+          "Head",
+          "head_end",
+          "headfront"
+        ]
+      ],
+      "animations": [
+        {
+          "name": "Armature|Idle_6|baselayer",
+          "channels": 72,
+          "duration": 7.433333333333334
+        }
+      ],
+      "imageHashes": [
+        "75ba29965e947336fd2a26be90e090c6c80b734199a05cd02fa24b747033235b"
+      ],
+      "attributeHashes": {
+        "POSITION": "15fbe7d5e05adfda4935dbe49fa8ff726860dd4aa9de9097bef397f7715965f5",
+        "NORMAL": "8cfc3aa3bb2d5f4f26d72a8e08128d151108929750fe7646975ae2058d49d8e7",
+        "TEXCOORD_0": "e7a367c60b4dbbac00268da7864a894fd3fc3ad9d1fddbb6660542572e6b4b6c",
+        "JOINTS_0": "b1e808654109f9eed4da2c86203c672a2b391adf71c62eac9e83ac1932da9cbf",
+        "WEIGHTS_0": "fbd18f329230d938e1fb670875fed5c451b2509c613e5cba96b38a11b4abe451"
+      },
+      "indexHash": "9da9aad040141291a592e4937cc5a3c0bae5ae064bb234ed11aeca796009bc93"
+    },
+    {
+      "archivePath": "Meshy_AI_Crimson_Outrider_biped/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_7_withSkin.glb",
+      "file": "assets/characters/watchkeep-shopkeeper/source/Meshy_AI_Crimson_Outrider_biped_Animation_Idle_7_withSkin.glb",
+      "bytes": 8559488,
+      "sha256": "0043e44ec69a6b17a09272f39e47d0f39ceab938873000807456d9155e19a74d",
+      "meshCount": 1,
+      "triangles": 31170,
+      "vertices": 21329,
+      "materials": [
+        {
+          "doubleSided": true,
+          "emissiveFactor": [
+            1,
+            1,
+            1
+          ],
+          "emissiveTexture": {
+            "index": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            },
+            "KHR_materials_ior": {
+              "ior": 1.4500000476837158
+            }
+          },
+          "name": "Material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "roughnessFactor": 0.4100847542285919
+          }
+        }
+      ],
+      "skinJoints": [
+        [
+          "Hips",
+          "LeftUpLeg",
+          "LeftLeg",
+          "LeftFoot",
+          "LeftToeBase",
+          "RightUpLeg",
+          "RightLeg",
+          "RightFoot",
+          "RightToeBase",
+          "Spine02",
+          "Spine01",
+          "Spine",
+          "LeftShoulder",
+          "LeftArm",
+          "LeftForeArm",
+          "LeftHand",
+          "RightShoulder",
+          "RightArm",
+          "RightForeArm",
+          "RightHand",
+          "neck",
+          "Head",
+          "head_end",
+          "headfront"
+        ]
+      ],
+      "animations": [
+        {
+          "name": "Armature|Idle_7|baselayer",
+          "channels": 72,
+          "duration": 8.8
+        }
+      ],
+      "imageHashes": [
+        "75ba29965e947336fd2a26be90e090c6c80b734199a05cd02fa24b747033235b"
+      ],
+      "attributeHashes": {
+        "POSITION": "15fbe7d5e05adfda4935dbe49fa8ff726860dd4aa9de9097bef397f7715965f5",
+        "NORMAL": "8cfc3aa3bb2d5f4f26d72a8e08128d151108929750fe7646975ae2058d49d8e7",
+        "TEXCOORD_0": "e7a367c60b4dbbac00268da7864a894fd3fc3ad9d1fddbb6660542572e6b4b6c",
+        "JOINTS_0": "b1e808654109f9eed4da2c86203c672a2b391adf71c62eac9e83ac1932da9cbf",
+        "WEIGHTS_0": "fbd18f329230d938e1fb670875fed5c451b2509c613e5cba96b38a11b4abe451"
+      },
+      "indexHash": "9da9aad040141291a592e4937cc5a3c0bae5ae064bb234ed11aeca796009bc93"
+    },
+    {
+      "archivePath": "Meshy_AI_Crimson_Outrider_biped/Meshy_AI_Crimson_Outrider_biped_Animation_Running_withSkin.glb",
+      "file": "assets/characters/watchkeep-shopkeeper/source/Meshy_AI_Crimson_Outrider_biped_Animation_Running_withSkin.glb",
+      "bytes": 8469932,
+      "sha256": "0f2a94dadde71ed4623ac65b5bb7968a1820b1fe5b778c7abdc8a2e5125f111c",
+      "meshCount": 1,
+      "triangles": 31170,
+      "vertices": 21329,
+      "materials": [
+        {
+          "doubleSided": true,
+          "emissiveFactor": [
+            1,
+            1,
+            1
+          ],
+          "emissiveTexture": {
+            "index": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            },
+            "KHR_materials_ior": {
+              "ior": 1.4500000476837158
+            }
+          },
+          "name": "Material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            }
+          }
+        }
+      ],
+      "skinJoints": [
+        [
+          "Hips",
+          "LeftUpLeg",
+          "LeftLeg",
+          "LeftFoot",
+          "LeftToeBase",
+          "RightUpLeg",
+          "RightLeg",
+          "RightFoot",
+          "RightToeBase",
+          "Spine02",
+          "Spine01",
+          "Spine",
+          "LeftShoulder",
+          "LeftArm",
+          "LeftForeArm",
+          "LeftHand",
+          "RightShoulder",
+          "RightArm",
+          "RightForeArm",
+          "RightHand",
+          "neck",
+          "Head",
+          "head_end",
+          "headfront"
+        ]
+      ],
+      "animations": [
+        {
+          "name": "Armature|running|baselayer",
+          "channels": 72,
+          "duration": 0.6666666666666666
+        }
+      ],
+      "imageHashes": [
+        "75ba29965e947336fd2a26be90e090c6c80b734199a05cd02fa24b747033235b"
+      ],
+      "attributeHashes": {
+        "POSITION": "15fbe7d5e05adfda4935dbe49fa8ff726860dd4aa9de9097bef397f7715965f5",
+        "NORMAL": "8cfc3aa3bb2d5f4f26d72a8e08128d151108929750fe7646975ae2058d49d8e7",
+        "TEXCOORD_0": "e7a367c60b4dbbac00268da7864a894fd3fc3ad9d1fddbb6660542572e6b4b6c",
+        "JOINTS_0": "b1e808654109f9eed4da2c86203c672a2b391adf71c62eac9e83ac1932da9cbf",
+        "WEIGHTS_0": "fbd18f329230d938e1fb670875fed5c451b2509c613e5cba96b38a11b4abe451"
+      },
+      "indexHash": "9da9aad040141291a592e4937cc5a3c0bae5ae064bb234ed11aeca796009bc93"
+    },
+    {
+      "archivePath": "Meshy_AI_Crimson_Outrider_biped/Meshy_AI_Crimson_Outrider_biped_Animation_Walking_withSkin.glb",
+      "file": "assets/characters/watchkeep-shopkeeper/source/Meshy_AI_Crimson_Outrider_biped_Animation_Walking_withSkin.glb",
+      "bytes": 8474528,
+      "sha256": "2932c7091f686339c56f024d1730cfa235ce157842476b9865982ac305e8c512",
+      "meshCount": 1,
+      "triangles": 31170,
+      "vertices": 21329,
+      "materials": [
+        {
+          "doubleSided": true,
+          "emissiveFactor": [
+            1,
+            1,
+            1
+          ],
+          "emissiveTexture": {
+            "index": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            },
+            "KHR_materials_ior": {
+              "ior": 1.4500000476837158
+            }
+          },
+          "name": "Material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            }
+          }
+        }
+      ],
+      "skinJoints": [
+        [
+          "Hips",
+          "LeftUpLeg",
+          "LeftLeg",
+          "LeftFoot",
+          "LeftToeBase",
+          "RightUpLeg",
+          "RightLeg",
+          "RightFoot",
+          "RightToeBase",
+          "Spine02",
+          "Spine01",
+          "Spine",
+          "LeftShoulder",
+          "LeftArm",
+          "LeftForeArm",
+          "LeftHand",
+          "RightShoulder",
+          "RightArm",
+          "RightForeArm",
+          "RightHand",
+          "neck",
+          "Head",
+          "head_end",
+          "headfront"
+        ]
+      ],
+      "animations": [
+        {
+          "name": "Armature|walking_man|baselayer",
+          "channels": 72,
+          "duration": 1.0666666666666667
+        }
+      ],
+      "imageHashes": [
+        "75ba29965e947336fd2a26be90e090c6c80b734199a05cd02fa24b747033235b"
+      ],
+      "attributeHashes": {
+        "POSITION": "15fbe7d5e05adfda4935dbe49fa8ff726860dd4aa9de9097bef397f7715965f5",
+        "NORMAL": "8cfc3aa3bb2d5f4f26d72a8e08128d151108929750fe7646975ae2058d49d8e7",
+        "TEXCOORD_0": "e7a367c60b4dbbac00268da7864a894fd3fc3ad9d1fddbb6660542572e6b4b6c",
+        "JOINTS_0": "b1e808654109f9eed4da2c86203c672a2b391adf71c62eac9e83ac1932da9cbf",
+        "WEIGHTS_0": "fbd18f329230d938e1fb670875fed5c451b2509c613e5cba96b38a11b4abe451"
+      },
+      "indexHash": "9da9aad040141291a592e4937cc5a3c0bae5ae064bb234ed11aeca796009bc93"
+    },
+    {
+      "archivePath": "Meshy_AI_Crimson_Outrider_biped/Meshy_AI_Crimson_Outrider_biped_Animation_falling_down_withSkin.glb",
+      "file": "assets/characters/watchkeep-shopkeeper/source/Meshy_AI_Crimson_Outrider_biped_Animation_falling_down_withSkin.glb",
+      "bytes": 8489856,
+      "sha256": "284d38081616d26e6e1ec42259410999e5557991ee66ae928a391e768709f23f",
+      "meshCount": 1,
+      "triangles": 31170,
+      "vertices": 21329,
+      "materials": [
+        {
+          "doubleSided": true,
+          "emissiveFactor": [
+            1,
+            1,
+            1
+          ],
+          "emissiveTexture": {
+            "index": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularColorFactor": [
+                2.0,
+                2.0,
+                2.0
+              ]
+            },
+            "KHR_materials_ior": {
+              "ior": 1.4500000476837158
+            }
+          },
+          "name": "Material_1",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 1
+            },
+            "roughnessFactor": 0.4100847542285919
+          }
+        }
+      ],
+      "skinJoints": [
+        [
+          "Hips",
+          "LeftUpLeg",
+          "LeftLeg",
+          "LeftFoot",
+          "LeftToeBase",
+          "RightUpLeg",
+          "RightLeg",
+          "RightFoot",
+          "RightToeBase",
+          "Spine02",
+          "Spine01",
+          "Spine",
+          "LeftShoulder",
+          "LeftArm",
+          "LeftForeArm",
+          "LeftHand",
+          "RightShoulder",
+          "RightArm",
+          "RightForeArm",
+          "RightHand",
+          "neck",
+          "Head",
+          "head_end",
+          "headfront"
+        ]
+      ],
+      "animations": [
+        {
+          "name": "Armature|falling_down|baselayer",
+          "channels": 72,
+          "duration": 2.3
+        }
+      ],
+      "imageHashes": [
+        "75ba29965e947336fd2a26be90e090c6c80b734199a05cd02fa24b747033235b"
+      ],
+      "attributeHashes": {
+        "POSITION": "15fbe7d5e05adfda4935dbe49fa8ff726860dd4aa9de9097bef397f7715965f5",
+        "NORMAL": "8cfc3aa3bb2d5f4f26d72a8e08128d151108929750fe7646975ae2058d49d8e7",
+        "TEXCOORD_0": "e7a367c60b4dbbac00268da7864a894fd3fc3ad9d1fddbb6660542572e6b4b6c",
+        "JOINTS_0": "b1e808654109f9eed4da2c86203c672a2b391adf71c62eac9e83ac1932da9cbf",
+        "WEIGHTS_0": "fbd18f329230d938e1fb670875fed5c451b2509c613e5cba96b38a11b4abe451"
+      },
+      "indexHash": "9da9aad040141291a592e4937cc5a3c0bae5ae064bb234ed11aeca796009bc93"
+    }
+  ]
+}

@@ -339,7 +339,7 @@ test('ramp states bind to asset nodes, animate to exact layout angles and expose
   for (const name of [...layout.elevator.gateNodes, ...layout.ramps.map(ramp => ramp.tipNode)]) {
     root.getObjectByName(name).removeFromParent();
   }
-  assert.doesNotThrow(() => new AtlasMarkIISystems().bind(root));
+  assert.throws(() => new AtlasMarkIISystems().bind(root), /RampFrontTip.*RampAftTip.*LiftGateLower.*LiftGateUpper/);
   assert.throws(() => new AtlasMarkIISystems().bind(new THREE.Group()), /RampFront/);
 });
 

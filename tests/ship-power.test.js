@@ -218,11 +218,11 @@ test('Atlas cabin flight keeps double-precision local support, permits interior 
   nearVector(nav.shipVelocity, new THREE.Vector3(1_250, -35, 480), 1e-10, 'Atlas velocity handoff');
   nearVector(nav.shipAngularVelocity, new THREE.Vector3(.02, -.015, .01), 1e-10, 'Atlas rotation handoff');
 
-  nav.position.copy(nav.fromShipLocal(new THREE.Vector3(-4.8, 5.75, -3.8)));
+  nav.position.copy(nav.fromShipLocal(new THREE.Vector3(5.5, 4.35, -4)));
   press('KeyF');
-  const port = nav.freighter.lifts.find(lift => lift.id === 'port');
-  assert.equal(port.target, port.high, 'interior port cargo lift operates in flight');
-  for (let frame = 0; frame < 320; frame++) {
+  const port = nav.freighter.elevator;
+  assert.equal(port.target, port.high, 'enclosed crew lift operates in flight');
+  for (let frame = 0; frame < 440; frame++) {
     nav.update(1 / 60);
     const local = nav.toShipLocal();
     near(local.y, port.y + FREIGHTER_LAYOUT.eyeHeight, 4e-5, 'moving lift carries rider in moving hull');
@@ -230,12 +230,12 @@ test('Atlas cabin flight keeps double-precision local support, permits interior 
   }
   assert.equal(port.y, port.high);
 
-  const main = nav.freighter.lifts.find(lift => lift.id === 'main');
-  nav.position.copy(nav.fromShipLocal(new THREE.Vector3(0, 5.75, -1)));
+  const ramp = nav.freighter.ramps.find(ramp => ramp.id === 'aft');
+  nav.position.copy(nav.fromShipLocal(new THREE.Vector3(4.5, 4.35, 21.5)));
   press('KeyF');
-  assert.equal(main.target, main.high, 'exterior belly elevator remains secured during flight');
+  assert.equal(ramp.target, ramp.closedAngle, 'exterior loading ramp remains secured during flight');
 
-  nav.position.copy(nav.fromShipLocal(new THREE.Vector3(5.5, 5.75, -8.8)));
+  nav.position.copy(nav.fromShipLocal(new THREE.Vector3(3.3, 4.35, -11)));
   nav.orientation.copy(nav.shipOrientation);
   keyDown('KeyD');
   advance(2);
@@ -328,3 +328,17 @@ for (const shipId of ['nomad', 'atlas']) {
     });
   }
 }
+
+test('Atlas power loss freezes the crew lift in a moving cabin and resumes the same supported rider', t => {
+  const { navigation: nav, press, advance }=setup(t);
+  nav.shipId='atlas';nav.layout=FREIGHTER_LAYOUT;nav.freighter=new FreighterSystems();
+  nav.position.set(40_000_000_000,1_000_000_000,-30_000_000_000);nav.orientation.identity();
+  nav.velocity.set(0,0,-50);nav.flightAssist=false;press('KeyF');
+  nav.position.copy(nav.fromShipLocal(new THREE.Vector3(5.5,4.35,-4)));press('KeyF');advance(2);
+  const height=nav.freighter.elevator.y;
+  assert.ok(height>2.6&&height<9.5);
+  nav.powered=false;advance(2);
+  assert.equal(nav.freighter.elevator.y,height);near(nav.toShipLocal().y,height+1.75,4e-5);
+  nav.powered=true;advance(7);
+  assert.equal(nav.freighter.elevator.y,9.5);near(nav.toShipLocal().y,11.25,4e-5);
+});

@@ -41,7 +41,19 @@ root=g.empty('MiningRover');root['manufacturer']='Meridian Shipworks';root['mode
 parts=[]
 def remember(o,tile=0):o['tile']=tile;parts.append(o);return o
 def box(name,p,size,tile=0,bevel=.016,parent=root,mat=None):return remember(g.box(name,p,size,mat or surface,bevel,parent),tile)
-def rod(name,a,b,r,tile=2,parent=root,mat=None,n=12):return remember(g.rod(name,a,b,r,mat or surface,n,parent),tile)
+def rod(name,a,b,r,tile=2,parent=root,mat=None,n=12):
+    o=g.rod(name,a,b,r,mat or surface,n,parent)
+    # A machined rod has flat end caps and radial side normals. Averaging its
+    # caps into the side makes short metal supports look like chrome domes.
+    start=Vector(g.xyz(a));axis=(Vector(g.xyz(b))-start).normalized();normals=[]
+    for face in o.data.polygons:
+        cap=abs(face.normal.dot(axis))>.99
+        for li in face.loop_indices:
+            p=o.data.vertices[o.data.loops[li].vertex_index].co-start
+            normal=face.normal.copy() if cap else (p-axis*p.dot(axis)).normalized()
+            normals.append(normal)
+    o.data.normals_split_custom_set(normals)
+    return remember(o,tile)
 def panel(name,points,tile=0,thick=.035,parent=root,mat=None):return remember(g.panel(name,points,mat or surface,thick,.009,parent),tile)
 def ring(name,center,profile,tile=3,axis='X',parent=root,mat=None,segments=32):
     pts=[]
@@ -143,7 +155,7 @@ for x in (-.66,.66):
 panel('Sloping forehead',[(-.87,2.365,-1.155),(.87,2.365,-1.155),(.87,2.455,-1.04),(-.87,2.455,-1.04)],0,.06)
 panel('Main windscreen',[(-.80,1.36,-1.66),(.80,1.36,-1.66),(.755,2.325,-1.17),(-.755,2.325,-1.17)],mat=glass,thick=.012)
 rod('Front glass lower gasket',(-.84,1.33,-1.66),(.84,1.33,-1.66),.032,3)
-rod('Windscreen center mullion',(0,1.34,-1.664),(0,2.355,-1.155),.026,1)
+# Continuous main windscreen: outer pillars and gasket leave the pilot's centre view open.
 # Starboard fixed side, port hinged opening between the axles.
 panel('Starboard lower pressure skin',[(.86,.47,-.65),(.86,1.31,-.65),(.86,1.31,.67),(.86,.47,.67)],0)
 panel('Starboard side glazing',[(.86,1.36,-.64),(.82,2.345,-.64),(.82,2.345,.63),(.86,1.36,.63)],mat=glass,thick=.01)
@@ -299,5 +311,5 @@ bpy.context.view_layer.update()
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/'mining-rover.blend'),compress=True)
 bpy.ops.export_scene.gltf(filepath=str(OUT),export_format='GLB',export_extras=True,export_yup=True,export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_materials='EXPORT')
-(SOURCE/'manifest.json').write_text(json.dumps({'stage':'authored candidate; renderer and mechanism review pending','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original procedural geometry and PBR maps. Meridian family design; no external models or imagery.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard','SteeringYoke'],'limitations':['Closed geometric cabin; no pressure simulation','No independent art acceptance yet']},indent=2)+'\n')
+(SOURCE/'manifest.json').write_text(json.dumps({'stage':'playable windscreen correction 11; native comparison pending','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original procedural geometry and PBR maps. Meridian family design; no external models or imagery.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard','SteeringYoke'],'limitations':['Closed geometric cabin; no pressure simulation','Candidate 10 reviews retained; revised windshield native comparison pending']},indent=2)+'\n')
 print('Rover source and export written. Run pack_mining_rover.py.')

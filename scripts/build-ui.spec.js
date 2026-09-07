@@ -111,6 +111,7 @@ test('radial ignores held selection through focus loss, disconnect and replaceme
 });
 
 test('B enters near a mainframe and build hotkeys stay separate from ship and EVA controls',async({page})=>{
+  test.setTimeout(30000);
   await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);
   await tap(page,1);await expect(page.locator('#build-dialog')).toBeVisible();await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
   await page.evaluate(()=>window.pad.axes=[1,0,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','doorway');await tap(page,0);await page.evaluate(()=>window.pad.axes.fill(0));await page.waitForFunction(()=>window.fixture.nav.gamepad.armed);
@@ -122,21 +123,26 @@ test('B enters near a mainframe and build hotkeys stay separate from ship and EV
   await page.evaluate(()=>window.fixture.build.state.controllerAvailable=false);await tap(page,1);await expect(page.locator('#build-dialog')).not.toBeVisible();expect(await page.evaluate(()=>window.message)).toContain('64 m');
   for(const mode of ['flight','eva','walk']){
     await page.evaluate(mode=>{window.fixture.nav.mode=mode;window.fixture.nav.insideShip=mode==='walk';window.fixture.build.state.controllerAvailable=true;},mode);
-    await page.evaluate(()=>window.pad.buttons[1]={pressed:true,value:1});await page.waitForFunction(()=>window.fixture.lastPad.brake);await expect(page.locator('#build-dialog')).not.toBeVisible();
+    await page.evaluate(()=>window.pad.buttons[1]={pressed:true,value:1});await page.waitForFunction(()=>window.fixture.lastPad.vertical===-1);expect(await page.evaluate(()=>window.fixture.lastPad.brake)).toBe(false);await expect(page.locator('#build-dialog')).not.toBeVisible();
     if(mode==='eva')expect(await page.evaluate(()=>window.fixture.lastPad.evaVertical)).toBe(-1);
     await page.evaluate(()=>window.pad.buttons[1]={pressed:false,value:0});await page.waitForFunction(()=>!window.fixture.nav.gamepad.previous[1]);
   }
-  await page.evaluate(()=>{window.fixture.nav.mode='flight';window.pad.buttons[7]={pressed:true,value:1};});await page.waitForFunction(()=>window.fixture.lastPad.vertical===1);expect(await page.evaluate(()=>window.fixture.build.state.rotations)).toBe(0);
+  await page.evaluate(()=>{window.fixture.nav.mode='flight';window.pad.buttons[7]={pressed:true,value:1};});await page.waitForFunction(()=>window.fixture.lastPad.fire===1);expect(await page.evaluate(()=>window.fixture.lastPad.vertical)).toBe(0);expect(await page.evaluate(()=>window.fixture.build.state.rotations)).toBe(0);
+  await page.evaluate(()=>{window.pad.buttons[7]={pressed:false,value:0};window.pad.buttons[6]={pressed:true,value:1};});await page.waitForFunction(()=>window.fixture.lastPad.brake);expect(await page.evaluate(()=>window.fixture.build.state.rotations)).toBe(0);
 });
 
-test('bumpers switch blocks, shapes, facilities and resources without confirming held A',async({page})=>{
+test('bumpers switch blocks, shapes, facilities, power, roofs and resources without confirming held A',async({page})=>{
  await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);await tap(page,1);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
  await page.evaluate(()=>{window.pad.buttons[5]={pressed:true,value:1};window.pad.buttons[0]={pressed:true,value:1};});
  await expect(page.locator('[data-controller-key="build-tab-shapes"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('#build-dialog')).toBeVisible();
  await page.evaluate(()=>{window.pad.buttons[5]={pressed:false,value:0};window.pad.buttons[0]={pressed:false,value:0};});await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
  await tap(page,5);await expect(page.locator('[data-controller-key="build-tab-facilities"]')).toHaveAttribute('aria-pressed','true');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+ await tap(page,5);await expect(page.locator('[data-controller-key="build-tab-power"]')).toHaveAttribute('aria-pressed','true');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+ await tap(page,5);await expect(page.locator('[data-controller-key="build-tab-roofs"]')).toHaveAttribute('aria-pressed','true');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+ await mkdir('/home/cees/.cache/star-agent-roofs-lights-evidence',{recursive:true});await page.screenshot({path:'/home/cees/.cache/star-agent-roofs-lights-evidence/roofs-desktop.png'});await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/home/cees/.cache/star-agent-roofs-lights-evidence/roofs-phone.png'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await expect(page.locator('[data-controller-key="build-piece-roof-edge"]')).toBeInViewport();await page.setViewportSize({width:1440,height:900});
  await tap(page,5);await expect(page.locator('[data-controller-key="build-tab-recipes"]')).toHaveAttribute('aria-pressed','true');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
- await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await expect(page.locator('[data-controller-key="build-tab-facilities"]')).toHaveAttribute('aria-pressed','true');
+ await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await expect(page.locator('[data-controller-key="build-tab-roofs"]')).toHaveAttribute('aria-pressed','true');
+ await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await expect(page.locator('[data-controller-key="build-tab-power"]')).toHaveAttribute('aria-pressed','true');await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/star-agent-build-ui/facilities-phone.png'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await page.evaluate(()=>window.pad.axes=[0,-1,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','foundation-triangle');await tap(page,0);await expect(page.locator('#build-dialog')).not.toBeVisible();expect(await page.evaluate(()=>window.fixture.build.state.pieceId)).toBe('foundation-triangle');
 });

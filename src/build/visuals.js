@@ -116,3 +116,11 @@ export function setDoorOpen(root,fraction) {
   if(left)left.position.x=-distance;
   if(right)right.position.x=distance;
 }
+
+export function setBuildPowered(root,powered){
+ if(root.userData.powered===powered)return;root.userData.powered=powered;
+ for(const material of root.userData.buildFinish?.materials.values()??[])if(material.name==='MintStatus'||material.name==='WarmTaskLight'){
+  material.userData.powerIntensity??=material.emissiveIntensity;material.emissiveIntensity=powered?material.userData.powerIntensity:material.name==='WarmTaskLight'?0:.015;
+ }
+ const markings=root.getObjectByName('LandingPadMarkings');if(markings)markings.material.emissiveIntensity=powered?.4:0;
+}

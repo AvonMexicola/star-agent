@@ -12,7 +12,7 @@ export function walkingAudioState(nav,active=true){
   const up=aboard?[0,1,0]:nav.dockedAtStation?nav.station.up.toArray():nav.normal.toArray();
   return {position:position.toArray(),up,frame:aboard?`ship:${nav.shipId??'nomad'}`:`world:${nav.body.id}`,
     grounded:nav.jumpHeight<.02||(Boolean(nav.surfaceObstacles?.grounded)&&nav.jumpVelocity<=0),
-    active:active&&nav.mode==='walk'&&!nav.openingActive&&nav.enabled&&nav.focused,
+    active:active&&nav.mode==='walk'&&!nav.roverOccupied&&!nav.openingActive&&nav.enabled&&nav.focused,
     running:nav.boost&&!aboard,metal};
 }
 export function walkingSurface(nav,metal){
