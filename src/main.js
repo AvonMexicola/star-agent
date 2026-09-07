@@ -281,9 +281,13 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     if(nav.mode!=='landed'||!nav.dockedAtStation)return 'Dock at Aeon Orbital before switching ships.';
     if(inventory.mass('ship')>SHIPS[id].capacity)return 'Too much cargo for this ship. Transfer supplies before switching.';
     if(id==='kestrel'&&shipCargoLoaded())return 'Kestrel has no cargo hold. Unload all ship cargo before switching.';
-    selectingShip=true;
+    selectingShip=true;let selected=false;
     try{
       const next=modelFor(id);await next.readyPromise;
+      if(id==='gannet'){
+        const vehicle=ensureRover();await vehicle.readyPromise;
+        if(!vehicle.state.ready)throw new Error('Burrow model unavailable. Reload to retry loading it');
+      }
       if(nav.mode!=='landed'||!nav.dockedAtStation)return 'Ship selection cancelled: you left the station pad.';
       if(inventory.mass('ship')>SHIPS[id].capacity||id==='kestrel'&&shipCargoLoaded())return 'Cargo changed during preparation. Unload before switching to Kestrel.';
       // Hangar services replace the parked ship at the pad centre, aligned with the bay.
@@ -301,9 +305,11 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
       if(layout.gear){nav.gearProgress=1;nav.gearDeployed=true;}
       inventory.capacity.ship=SHIPS[id].capacity;fleet.active=id;fleet.record('selection');
       nav.gearDeployed=true;nav.gearProgress=1;
-      if(id==='gannet'&&!ensureRover().state.spawned)await rover.spawn();
+      selected=true;
+      if(id==='gannet'&&!rover.state.spawned&&!await rover.spawn())return 'Gannet selected, but the Burrow could not be placed. Clear the vehicle bay, switch to another ship, then select Gannet to retry.';
       return `${SHIPS[id].name} ready. Close Fleet, then ${id==='kestrel'?'B to launch or F to descend the port ladder':'F to stand and explore'}.`;
     }catch(error){
+      if(selected)return `${SHIPS[id].name} selected, but the Burrow could not be placed: ${error.message}. Switch to another ship, then select Gannet to retry.`;
       const failed=shipModels.get(id);if(failed!==ship&&failed?.userData.assetStatus==='error'){failed.removeFromParent();failed.dispose();shipModels.delete(id);}
       return `Ship unavailable: ${error.message}. Your current ship remains selected.`;
     }finally{selectingShip=false;}
