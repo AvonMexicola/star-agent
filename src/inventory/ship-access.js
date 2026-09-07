@@ -6,7 +6,7 @@ const finitePoint = point => point && ['x', 'y', 'z'].every(axis => Number.isFin
  * Dialogs pause navigation, so access deliberately does not depend on enabled. */
 export function shipCargoAccess(nav) {
   const result = {available: false, aboard: false, distance: null, range: SHIP_CARGO_RANGE};
-  if (!nav || nav.mode === 'crashed') return result;
+  if (!nav || nav.shipId === 'kestrel' || ['crashed','destroyed'].includes(nav.mode)) return result;
   if (nav.insideShip || nav.mode === 'landed' || nav.mode === 'flight') {
     return {...result, available: true, aboard: true, distance: 0};
   }
@@ -16,9 +16,9 @@ export function shipCargoAccess(nav) {
 }
 
 export function shipCargoLabel(access) {
-  if (access.aboard) return `Nomad cargo connected · ${access.range} m access outside`;
+  if (access.aboard) return `Ship cargo connected · ${access.range} m access outside`;
   const distance = access.distance === null ? '' : ` · ${Math.ceil(access.distance)} m away`;
   return access.available
-    ? `Nomad cargo connected${distance} · ${access.range} m range`
-    : `Nomad cargo out of reach${distance} · approach within ${access.range} m`;
+    ? `Ship cargo connected${distance} · ${access.range} m range`
+    : `Ship cargo out of reach${distance} · approach within ${access.range} m`;
 }

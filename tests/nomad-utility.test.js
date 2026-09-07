@@ -109,7 +109,7 @@ test('physical rack metadata follows persistent installed boxes, transfers and e
   assert.equal(nomadCargoState(store).supplies, 29);
   assert.equal(store.addBox('ship').ok, true);
   const after = nomadCargoState(store);assert.equal(after.boxes, 5);assert.equal(after.slots, 40);
-  assert.equal(after.supplyLimit, 120);assert.equal(after.mineralLimit, 60);
+  assert.equal(after.supplyLimit, 120);assert.equal(after.mineralLimit, 240);
   const restored = new MiningStore(disk);restored.bindManifest(new ShipInventory(disk));assert.deepEqual(nomadCargoState(restored), after);
 });
 

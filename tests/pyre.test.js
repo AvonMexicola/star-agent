@@ -97,8 +97,8 @@ test('Pyre orbits the star at 10 M km, well clear of Aeon and Selene, with a Kep
     assert.ok(p.length() > SUN_DISTANCE - PYRE_ORBIT_RADIUS - 1 && p.length() < SUN_DISTANCE + PYRE_ORBIT_RADIUS + 1);
     assert.ok(p.distanceTo(new Vector3(...SELENE.center)) > SELENE.radius * 100);
   }
-  const period = pyreOrbitPosition(PYRE_PERIOD_SECONDS * 1000);
-  assert.ok(period.distanceTo(pyreOrbitPosition(0)) < 1e-2, 'one period returns to the same point');
+  const period = pyreOrbitPosition(PYRE_EPOCH + PYRE_PERIOD_SECONDS * 1000);
+  assert.ok(period.distanceTo(pyreOrbitPosition(PYRE_EPOCH)) < 1e-2, 'one period returns to the same point');
   assert.ok(Math.abs(PYRE_PERIOD_SECONDS / 86400 - 30.36) < .05);
 });
 

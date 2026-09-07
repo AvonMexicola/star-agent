@@ -76,3 +76,13 @@ tests or a simulated trigger after debug teleport do not establish full support.
 Add or extend an actual controller-only browser journey, test held-input suppression
 across focus/dialog/disconnect transitions, and report physical-device testing
 separately from injected Gamepad tests. Features missing this route remain incomplete.
+
+## Shared local test integration
+
+Cees requests new coherent feature commits merged into `dev/all-features` for
+local testing as they become ready. Keep the ship/location launcher and the
+`npm run dev:all` preview working, resolve overlap with other integrated features,
+and update HANDOFF.md plus docs/local-development.md after checks. This standing
+local integration request does not require a production PR to be merged first.
+Do not copy unfinished edits from another owner's worktree or deploy this branch
+as a side effect. Pending source/asset work must remain accurately labelled.

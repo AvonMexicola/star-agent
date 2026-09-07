@@ -88,6 +88,7 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
   function open(view = 'pieces') {
     if (nav.openingActive) return;
     if (document.querySelector('dialog[open]') && !dialog.open) return;
+    if (nav.multiplayer?.connected) { onMessage('Construction and field recipes are available in offline testing.'); return; }
     if (view === 'pieces' && (nav.mode !== 'walk' || nav.insideShip)) { onMessage('Land and leave the ship to build.'); return; }
     tab = view; suspend(); nav.enabled = false; if (document.pointerLockElement) document.exitPointerLock();
     render(); if (!dialog.open) dialog.showModal(); update();
@@ -102,7 +103,7 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
   touch.querySelector('[data-controller-key="build-hud-rotate-right"]').setAttribute('aria-label','Rotate right');
   function update() {
     document.body.classList.toggle('building',build.active);
-    shortcut.hidden = nav.openingActive || build.active || nav.mode !== 'walk' || nav.insideShip || !nav.enabled || Boolean(document.querySelector('dialog[open]'));
+    shortcut.hidden = nav.multiplayer?.connected || nav.openingActive || build.active || nav.mode !== 'walk' || nav.insideShip || !nav.enabled || Boolean(document.querySelector('dialog[open]'));
     hud.hidden = !build.active || dialog.open;
     if(dialog.open)dialog.querySelector('.build-scroll-hint').hidden=content.scrollHeight<=content.clientHeight+2||content.scrollTop+content.clientHeight>=content.scrollHeight-2;
     hud.querySelector('.build-ship-link').textContent = shipCargoLabel(shipCargoAccess(nav));

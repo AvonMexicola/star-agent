@@ -85,7 +85,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(m.weapon!==null&&(typeof m.weapon!=='string'||!Object.hasOwn(WEAPON_RULES,m.weapon)&&m.weapon!=='mining-laser-tool'||!p.inventory.containers.pack[m.weapon]))throw new Error('That item is not in your pack.');
         await persist(p,p.inventory,{weapon:m.weapon});p.weapon=m.weapon;
       }else if(m.action==='respawn'){
-        if(p.health>0&&p.shipHealth>0&&p.nav.mode!=='crashed')throw new Error('Your character is still alive.');
+        if(p.health>0&&p.shipHealth>0&&!['crashed','destroyed'].includes(p.nav.mode))throw new Error('Your character is still alive.');
         const nav=world.createNavigation(p.colorIndex,msg=>send(p,{type:'event',event:'notice',message:msg}));await persist(p,p.inventory,{health:100,shipHealth:100});release(p);p.health=100;p.shipHealth=100;p.nav=nav;attach(p);
       }else throw new Error('Unknown request.');
       send(p,state(p));send(p,{type:'ack',requestId:m.requestId,ok:true});
@@ -142,7 +142,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       if(p.health<=0||p.shipHealth<=0){p.nav.velocity.set(0,0,0);p.nav.mode='crashed';p.input=cleanInput();continue;}
       try{
         p.nav.look(p.lookYaw,p.lookPitch);p.lookYaw=p.lookPitch=0;p.nav.beginFrame(dt);p.nav.update(dt);
-        if(p.nav.mode==='crashed'){p.health=0;p.shipHealth=0;}
+        if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
         if(p.input.fire&&!p.busy){
           const event=shoot({shooter:p,players:[...players.values()],world,now:t});
           if(event)broadcast({type:'event',event:'fire',peerId:p.id,...event});

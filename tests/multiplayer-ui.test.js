@@ -97,7 +97,7 @@ test('inventory commands carry the server revision and never mutate the source s
 });
 
 function canvasDocument() {
-  const context = { fillRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {} };
+  const context = { setTransform() {}, fillRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {} };
   return { createElement(name) { assert.equal(name, 'canvas'); return { width: 0, height: 0, getContext: type => type === '2d' ? context : null }; } };
 }
 

@@ -16,7 +16,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
   dialog.id = 'system-map';
   dialog.setAttribute('aria-labelledby', 'system-map-title');
   dialog.innerHTML = `
-    <div class="dialog-top system-map-header"><div><span class="eyebrow">NAVIGATION / LOCAL SYSTEM</span><h2 id="system-map-title">Aeon <span>/ Selene / Pyre</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
+    <div class="dialog-top system-map-header"><div><span class="eyebrow">NAVIGATION / LOCAL SYSTEM</span><h2 id="system-map-title">Local system <span>/ Five destinations</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
     <div class="system-map-layout">
       <section class="map-chart-panel" aria-label="Aeon, Selene and Pyre navigation chart">
         <div class="map-chart-top"><span class="eyebrow">LOCAL WORLDS</span><span id="map-star-distance"></span></div>
