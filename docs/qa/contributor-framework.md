@@ -48,6 +48,14 @@ No app shader/physics bypass or synthetic server response is added. Follow-up
 results will be recorded after execution. Software browser evidence does not
 establish laptop FPS, full controller support or visual acceptance.
 
+Second run [34112042481](https://github.com/AvonMexicola/star-agent/actions/runs/34112042481)
+at `9eabc57` caught a harness working-directory error before browser launch:
+Playwright resolved `node server/index.js` relative to `scripts/`. Both owned
+servers now specify the repository root explicitly. No browser crash or shader
+result is inferred from that startup failure. The branch then incorporated the
+checked patrol-combat integration through dev `7bd4bd5`, preserving its runtime
+and added test entry before the next combined CI run.
+
 Before activation: private repository, default `feat/visual-fidelity`, main and
 `dev/all-features` unprotected. CODEOWNERS is routing metadata; required reviews
 and checks are GitHub settings. Hosted check results, any default/protection changes,

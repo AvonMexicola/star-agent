@@ -1,6 +1,6 @@
 # Verified development status
 
-**Snapshot: 2026-09-07, combined runtime through `8576e99`.** This page states
+**Snapshot: 2026-09-07, combined runtime through `7bd4bd5`.** This page states
 capabilities and gaps; [ROADMAP](../../ROADMAP.md) states ambitions. New governance
 and tooling changes do not certify the entire game as finished.
 
@@ -12,6 +12,7 @@ and tooling changes do not certify the entire game as finished.
 | Station | Hangar/concourse, physical boarding, services and local opening integrated | Assigned online hangar decks/gravity integrated; exterior art ongoing; wider multi-user acceptance open |
 | Mining/building | Local mining, inventory/equipment, processing and construction | Full authoritative mining/building persistence and economy not integrated |
 | Multiplayer | Ten-player prototype, accounts, comms-assigned hangars, authoritative inventory/hits, remote players | Local build uses memory, no SMTP; online Nomad only; live ten-person soak not established here |
+| Combat | Offline Nomad/Kestrel patrol encounters, shield/hull damage and recovery; integrated controller/browser evidence | No reward ledger, durable mission, physical weapon fittings or multiplayer NPC authority |
 | Audio | Six local score variants plus material footsteps/weapon/cutter synthesis | Final mix/listening review, broad surface and remote audio coverage |
 | Developer entry | Three ships, 14 starts, temporary saves and shared seed URLs | A dev start is explicit teleport; it does not prove continuous travel by itself |
 | Contribution process | Governance/roadmap/helpers/CI under validation in the framework branch | Hosted checks and settings must be reported separately from local validation |
@@ -22,7 +23,9 @@ with one PostgreSQL-only skip, a build and focused browser journeys on Chromium
 passed focused tests, build and a two-pilot browser journey; its multiplayer suite
 has 87 passes plus one PostgreSQL skip. These are historical results for named
 checkpoints, not certification of later commits. See [the launcher QA record](../qa/local-development.md)
-and [the hangar/gravity record](../qa/multiplayer-hangar-physics.md).
+and [the hangar/gravity record](../qa/multiplayer-hangar-physics.md). The subsequent
+patrol-combat checkpoint records its combined tests/build and three browser cases
+in [combat QA](../qa/space-combat.md).
 
 Use [the source-head inventory](../local-development.md) and current Git refs for
 newer changes. Release main was `48a8468` when this snapshot was written; repository

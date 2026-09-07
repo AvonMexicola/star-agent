@@ -156,12 +156,14 @@
       "paths": [
         "src/weapon-mounts.js",
         "src/effects/weapon*.js",
-        "server/combat.js"
+        "server/combat.js",
+        "src/combat/**"
       ],
       "contracts": [
         "ARCHITECTURE.md",
         "docs/multiplayer.md",
-        "docs/controller-contract.md"
+        "docs/controller-contract.md",
+        "docs/space-combat.md"
       ],
       "checks": [
         "unit",
