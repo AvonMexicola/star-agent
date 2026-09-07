@@ -65,6 +65,11 @@ review item, not an automatic fail. Baselines are updated only in the merge comm
 
 Assets: props ≤ 10 k tris / ≤ 1 MB, characters ≤ 20 k / ≤ 2 MB, ships ≤ 60 k / ≤ 4 MB, textures ≤ 1024² WebP.
 
+Character exception, 2026-09-07: Cees explicitly requested a higher polygon and
+higher texture Meshy player. `player-expedition` may use ≤ 65 k triangles,
+≤ 9 MB and two 2048² WebP textures. The per-entry manifest budget drives the props
+reviewer. This exception does not waive scene performance or independent review.
+
 ## 6. Process
 
 1. **Two-stage review on every PR**: Claude (functional: tests, build, tour, perf) → Opus (visual rubric) for anything

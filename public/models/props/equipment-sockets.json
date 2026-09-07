@@ -1,6 +1,6 @@
 {
   "$schema": "src/equipment.js — resolveSocket() reads this file",
-  "note": "Where each item sits on each rig. Calibrated on /dev/equipment.html in the aim-rifle pose; nudge with the arrow keys / Q E R F Z X there and paste the printed block back in here.",
+  "note": "Where each item sits on each rig. Calibrated on /dev/equipment.html in the aim-rifle pose; nudge with the arrow keys / Q E R F Z X there and paste the printed block back in here. Expedition v2 uses closed glove targets and analytic arm IK in avatar-studio.html.",
   "units": {
     "position": "metres, in the socket bone's own frame (the item hangs off a group scaled by 1/boneWorldScale, so 0.01 always means 1 cm on every rig)",
     "rotation": "degrees, XYZ Euler, applied after the position"
@@ -142,6 +142,52 @@
         "sidearm-pistol": {
           "position": [-0.1702, -0.1834, -0.0077],
           "rotation": [73.5, -64.47, 149.79]
+        }
+      }
+    },
+    "player-expedition": {
+      "bones": {
+        "RightHand": "RightHand",
+        "LeftHand": "LeftHand",
+        "Spine2": "Spine2",
+        "Head": "Head"
+      },
+      "items": {
+        "rifle-laser": {
+          "position": [0.007, 0.107, 0],
+          "rotation": [-90, 90, 0],
+          "supportPosition": [-0.29, 0.03, 0]
+        },
+        "sidearm-pistol": {
+          "position": [0.007, 0.107, 0],
+          "rotation": [-90, 90, 0]
+        },
+        "mining-laser-tool": {
+          "position": [0.007, 0.107, 0],
+          "rotation": [-90, 90, 0],
+          "supportPosition": [-0.30, 0.024, 0]
+        },
+        "backpack-life-support": {
+          "position": [-0.0289, 0.0354, -0.1338],
+          "rotation": [-173.46, -12, -179.46]
+        },
+        "helmet-standalone": {
+          "position": [0.0051, -0.0555, 0.0642],
+          "rotation": [129.93, -14.41, 176.48]
+        }
+      },
+      "holster": {
+        "rifle-laser": {
+          "position": [0.0424, -0.1266, -0.2495],
+          "rotation": [78.77, -55.13, 158.67]
+        },
+        "mining-laser-tool": {
+          "position": [0.1069, -0.2193, -0.1916],
+          "rotation": [78.77, -55.13, 158.67]
+        },
+        "sidearm-pistol": {
+          "position": [-0.1674, -0.1861, 0.0047],
+          "rotation": [70.89, -63.84, 151.85]
         }
       }
     }
