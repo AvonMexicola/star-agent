@@ -30,7 +30,8 @@
     "package.json",
     "project/areas.json",
     "server/world.js",
-    "tests/server-landmarks.test.js"
+    "tests/server-landmarks.test.js",
+    "src/lighting.js"
   ],
   "brief": "docs/briefs/landmark-rocks.md"
 }

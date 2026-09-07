@@ -603,7 +603,7 @@ try {
     const sunDirection=nav.sunDirection,normal=nav.normal,altitude=nav.altitude;
     document.body.classList.toggle('exploring',nav.body.star||nav.body.id==='pyre'||nav.body.id==='miasma'||altitude<12000||nav.mode!=='flight'||nav.stationDistance<2000);
     const onPyre=nav.body.id==='pyre';
-    lighting.update(normal,sunDirection,altitude,nav.body.airless,onPyre?PYRE_LIGHTING:nav.body.id==='miasma'?MIASMA_LIGHTING:null);
+    lighting.update(normal,sunDirection,altitude,nav.body.airless,onPyre?PYRE_LIGHTING:nav.body.id==='miasma'?MIASMA_LIGHTING:null,landmarks.stats.nearest?.distance<500?460:110);
     aeonGroup.visible=nav.position.length()<PYRE_MESH_RANGE;
     shipMarker.update(innerWidth,innerHeight);
     moon.update(nav.position,origin,elapsed,!nav.insideShip,nav.shipPosition);
