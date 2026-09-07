@@ -1,0 +1,41 @@
+{
+  "source": "Original deterministic procedural material swatches; no external imagery",
+  "builder": "blender/rover_textures.py",
+  "seed": 7291,
+  "size": [
+    1024,
+    1024
+  ],
+  "baseColorSpace": "sRGB",
+  "dataMaps": "linear ORM and tangent-space normal",
+  "files": {
+    "manufacturer.png": {
+      "bytes": 85286,
+      "sha256": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
+    },
+    "surface-basecolor.png": {
+      "bytes": 844149,
+      "sha256": "2b23fe411bbe13595110f0bebe5fb1d49ee92753c807f7c982a7e68b78e678af"
+    },
+    "surface-basecolor.webp": {
+      "bytes": 443882,
+      "sha256": "21132b152d8e5e88e3fd014cde18a0d1a906bc43bc70d2b609a342f6bed4c5cd"
+    },
+    "surface-normal.png": {
+      "bytes": 587276,
+      "sha256": "174584f72e1ec926bb5ca2afa8796dd896e1755c2689f7d0f8cfc578c2a22e09"
+    },
+    "surface-normal.webp": {
+      "bytes": 359480,
+      "sha256": "a21e9c18334cd2e7d090b58afc6cbaa1eefd882877d2bf4dd3de5668bef9ebe9"
+    },
+    "surface-orm.png": {
+      "bytes": 818086,
+      "sha256": "4e81bb9e485494be2e2db13a2ee8219aea6b690447f020c3901d5ef02126590d"
+    },
+    "surface-orm.webp": {
+      "bytes": 544316,
+      "sha256": "fc8f1855762b85eee75e2a6658532a3578ca3ea98c2211ea02355e3d866cd0f3"
+    }
+  }
+}

@@ -9,7 +9,7 @@ const CYAN=new THREE.Color(.12,1.3,2.8),MINT=new THREE.Color(.18,2.3,1.2);
 const ORE=[new THREE.Color(.75,.85,1),new THREE.Color(2.4,.68,.12),new THREE.Color(.5,1.6,2.5)];
 const clamp=THREE.MathUtils.clamp;
 
-class Plasma {
+export class Plasma {
   constructor(scene,jet=false){
     const geometry=new THREE.CylinderGeometry(1,1,1,24,32,true);
     geometry.rotateX(Math.PI/2);geometry.translate(0,0,.5);

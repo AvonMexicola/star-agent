@@ -7,7 +7,7 @@ import { ROCK_ID, normalizeResourceWeights, MINERAL_GLSL, RESOURCE_VEIN_VERSION 
 
 export class MineableRock {
   constructor(scene,storage,{worker=new Worker(new URL('./worker.js',import.meta.url),{type:'module'}),store=null,rockId=ROCK_ID,position=null,quaternion=null,initialField=null,space=false,resourceWeights=null,material=null}={}){
-    this.store=store??new MiningStore(storage);this.rockId=rockId;this.initialField=initialField;this.space=space;this.worker=worker;this.scene=scene;this.pending=false;this.ready=false;this.budget=0;this.sequence=0;this.grounded=false;this.meshMs=0;this.publishMs=0;
+    this.store=store??new MiningStore(storage);this.rockId=rockId;this.initialField=initialField;this.space=space;this.worker=worker;this.scene=scene;this.pending=false;this.ready=false;this.budget=0;this.budgetDestination='pack';this.sequence=0;this.grounded=false;this.meshMs=0;this.publishMs=0;
     const up=new THREE.Vector3(...MOON_LANDING_DIRECTION),east=new THREE.Vector3(...LANDING_FRAME.east),north=new THREE.Vector3(...LANDING_FRAME.north);
     // Behind and to the left of the ramp, entirely within the level landing shelf.
     const direction=up.clone().addScaledVector(east,-19/MOON_RADIUS).addScaledVector(north,8/MOON_RADIUS).normalize();
@@ -42,7 +42,9 @@ export class MineableRock {
   toWorld(point){return point.clone().applyQuaternion(this.quaternion).add(this.position);}
   request(point,budget,contact={}){
     if(this.pending||this.error)return false;
-    this.pending=true;this.job={id:++this.sequence,revision:this.snapshot.revision,carving:Boolean(point),point:point?this.toWorld(new THREE.Vector3(...point)):null,...contact};
+    // Destination belongs to this job, never to a later tool/cabin selection.
+    const destination=contact.destination===undefined?'pack':contact.destination;
+    this.pending=true;this.job={id:++this.sequence,revision:this.snapshot.revision,carving:Boolean(point),point:point?this.toWorld(new THREE.Vector3(...point)):null,...contact,destination};
     const field=this.snapshot.field.slice();this.worker.postMessage({...this.job,field,point,budget,resourceWeights:this.resourceWeights},[field.buffer]);return true;
   }
   receive(data){
@@ -54,11 +56,11 @@ export class MineableRock {
     const geometry=new THREE.BufferGeometry();
     for(const key of ['positions','normals','colors'])geometry.setAttribute({positions:'position',normals:'normal',colors:'color'}[key],new THREE.BufferAttribute(data[key],3));
     geometry.computeBoundingSphere();const collision=new RockCollision(data.positions,data.collision);
-    if(this.job.revision!==this.snapshot.revision||(this.job.carving&&!(this.rockId===ROCK_ID?this.store.commit(data,this.job.revision):this.store.commitRock(this.rockId,data,this.job.revision)))){geometry.dispose();return;}
+    if(this.job.revision!==this.snapshot.revision||(this.job.carving&&!this.store.commitRock(this.rockId,data,this.job.revision,this.job.destination))){geometry.dispose();return;}
     if(this.mesh){const old=this.mesh.geometry;this.mesh.geometry=geometry;old.dispose();}
     else{this.mesh=new THREE.Mesh(geometry,this.material);this.mesh.castShadow=true;this.mesh.receiveShadow=true;this.group.add(this.mesh);}
     this.collision=collision;this.ready=true;this.meshMs=data.meshMs;this.publishMs=performance.now()-start;
-    if(this.job.carving&&data.removed>0)this.onExtract?.({point:this.job.point.clone(),normal:this.job.normal?.clone(),yields:[...data.yieldVolume]});
+    if(this.job.carving&&data.removed>0)this.onExtract?.({point:this.job.point.clone(),normal:this.job.normal?.clone(),yields:[...data.yieldVolume],destination:this.job.destination});
   }
   raycast(origin,direction,range=8){
     if(!this.ready||origin.distanceTo(this.position)>range+4)return null;
@@ -72,15 +74,17 @@ export class MineableRock {
     return {...hit,point,localPoint:hit.point,normal:hit.normal.applyQuaternion(this.quaternion)};
   }
   /** Equipment adapter: point must be the validated nearest rock hit, in world metres. */
-  onMine({point,normal,dt,rate=.35},direction){
-    if(!this.ready||this.store.blocked||this.store.free<.0001||this.error)return;
+  onMine({point,normal,dt,rate=.35,destination='pack',direction:aim},direction=aim){
+    if(destination!==this.budgetDestination){this.budget=0;this.budgetDestination=destination;}
+    const free=this.store.freeFor(destination);
+    if(!this.ready||this.store.blocked||free<.0001||this.error)return;
     if(this.rockId!==ROCK_ID&&this.store.canEditRock&&!this.store.canEditRock(this.rockId)){this.store.warning="Survey save full. Existing deposits remain mineable.";return;}
     this.budget=Math.min(.045,this.budget+Math.min(.1,Math.max(0,dt))*Math.max(0,Math.min(.35,rate)));
     if(this.pending||this.budget<.018)return;
     const local=this.toLocal(point.clone().addScaledVector(direction,.08));
-    const budget=Math.min(this.budget,this.store.free/RECOVERED_KG_PER_CUBIC_METRE);this.budget=0;
+    const budget=Math.min(this.budget,free/RECOVERED_KG_PER_CUBIC_METRE);this.budget=0;
     const contactNormal=normal?.clone()??direction.clone().negate();
-    this.request(local.toArray(),budget,{normal:contactNormal,point:point.clone().addScaledVector(contactNormal,.035)});
+    this.request(local.toArray(),budget,{normal:contactNormal,point:point.clone().addScaledVector(contactNormal,.035),destination});
   }
   constrainWalker(previous,proposed){
     this.grounded=false;if(!this.ready||previous.distanceTo(this.position)>6&&proposed.distanceTo(this.position)>6)return {point:proposed,hit:false};
