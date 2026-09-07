@@ -1,5 +1,11 @@
 # Seeded rock formations
 
+Aeon also has a separate rare landmark layer with roughly 50–120 m cliffs, leaning
+fins, stone bridges and physical overhangs. These use shared textured meshes and
+matching client/server collision above the canonical terrain. The older
+heightfield layer described below remains in place, as do the smaller mineable
+basalt stones. See [landmark implementation and game evidence](qa/landmark-rocks.md).
+
 The missing middle scale between surface grains and mountains now comes from
 `src/rock-formations.js`: metre-scale boulders and larger, fractured bedrock
 outcrops. A 23 m cell field supplies small rocks; a 115 m field supplies outcrops
