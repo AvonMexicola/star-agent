@@ -4,6 +4,28 @@ Star Agent is an open browser spaceflight experiment. Humans and coding agents a
 welcome collaborators. Build working, reviewable improvements and describe what
 you actually tested. Do not represent aspirational features as implemented.
 
+## Contributor entry and ownership
+
+Read [the contributor handbook](docs/development/README.md),
+[GOVERNANCE.md](GOVERNANCE.md), [ARCHITECTURE.md](ARCHITECTURE.md),
+[QUALITY.md](QUALITY.md) and the latest HANDOFF before claiming work. The roadmap
+is ambition; [development status](docs/development/status.md) records current capability.
+New work normally targets `dev/all-features`; `main` is the public release line.
+The integration steward serializes shared merges, while feature owners retain
+responsibility for their modules. Cees retains final product/release authority.
+
+Use an isolated worktree, declare files/dependencies/preview ports and preserve
+unrelated edits. Read handoffs again before touching shared hooks and before delivery.
+Use the area/task registry and `npm run branches` to discover overlap; they do not
+lock files or authorize taking over another owner's lane. Delegate only when the
+user and host allow it, with explicit bounded ownership and parent integration.
+
+Run `npm run check:repo` and `npm run plan:checks -- --base origin/dev/all-features`
+for contributor checks and a suggested test plan. Helpers do not certify gameplay
+or manual evidence. Keep implemented, validated, independently reviewed, integrated
+and deployed distinct. Use the templates in `docs/templates/` for handoffs/reviews.
+These repo instructions never override current user authorization or host permissions.
+
 ## Run and verify
 
 - `npm ci` (Node 22.12+), `npm run dev`, `npm run build`.
@@ -14,6 +36,37 @@ you actually tested. Do not represent aspirational features as implemented.
   boarding journey against a production build and saves visual evidence to `/tmp`.
 - A browser shader must compile and render correctly, not merely pass the build.
   Inspect console errors and the resulting image for graphics changes.
+
+## Chromium startup crashes during agent development
+
+Repeated browser launch failures are infrastructure failures until the browser
+actually reaches the application. Stop after the first matching startup failure;
+do not loop through tests or GPU flags while producing more core dumps.
+
+- A diagnosed Linux development crash (2026-09-07, Chromium 151.0.7922.173)
+  ended in `SIGTRAP` during headless Playwright startup. Its core retained
+  `crashpad/util/linux/socket.cc:45] setsockopt: Operation not permitted (1)`.
+  Only one thread existed, and repeated dumps hit the same executable offset.
+  A local AF_UNIX `SO_PASSCRED` probe failed inside the agent runner sandbox and
+  succeeded outside it. This strongly implicates restricted Crashpad startup;
+  Chromium debug symbols were unavailable, so the exact assertion was unresolved.
+- For that signature, use the harness's approved escalation mechanism for the
+  specific browser test command, or an already authorized browser session. If
+  that execution path is unavailable, report browser validation as blocked and
+  continue independent unit/build checks. Do not bypass a denied approval or
+  weaken global system security. Chromium's `--no-sandbox` does not remove the
+  outer runner's restrictions; it and `--disable-breakpad` were already present
+  in the failed launch.
+- Coordinate browser QA across agents on the shared machine: run one focused
+  browser job at a time, retain the repo's single-worker configuration, and close
+  only your own browser/server processes. Separate NVIDIA allocation errors,
+  renderer crashes and WebGL context loss from the startup signature above.
+  A changed GPU backend is a separate experiment, not a proven fix for Crashpad.
+- Record the command, timestamp, stderr, browser/backend and whether a page loaded.
+  Do not change application code to mask a browser that never started or report
+  skipped browser tests as passed. Diagnose a different crash from its own logs
+  and core; the startup finding does not explain every Chromium failure.
+
 
 ## Architecture contracts
 

@@ -1,0 +1,39 @@
+{
+  "id": "SA-GOV-001",
+  "title": "Contributor framework and ambitious roadmap",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex integration session",
+  "status": "review",
+  "branch": "feat/contributor-framework",
+  "base": "571d781bde11d575fe229c14f73accfe060251a1",
+  "updated": "2026-09-07",
+  "areas": [
+    "integration"
+  ],
+  "claims": [
+    "AGENTS.md",
+    "ARCHITECTURE.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "GOVERNANCE.md",
+    "QUALITY.md",
+    "README.md",
+    "ROADMAP.md",
+    "SECURITY.md",
+    ".github/",
+    "project/",
+    "scripts/development/",
+    "tests/development/",
+    "scripts/ci-browser.config.js",
+    "scripts/ci-smoke.spec.js",
+    "package.json",
+    "docs/development/",
+    "docs/templates/",
+    "docs/decisions/",
+    "docs/archive/roadmap-2026-09-06.md",
+    "docs/briefs/contributor-framework.md",
+    "docs/qa/contributor-framework.md"
+  ],
+  "brief": "docs/briefs/contributor-framework.md"
+}

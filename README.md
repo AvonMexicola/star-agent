@@ -2,6 +2,13 @@
 
 A browser spaceflight experiment: fly continuously around a procedural quarter-Earth planet, descend through its atmosphere, land, and explore on foot. Star Citizen is the visual reference and long-term fidelity target; this prototype does not yet match that production quality.
 
+## Build with us
+
+Start with [CONTRIBUTING](CONTRIBUTING.md) and the [contributor handbook](docs/development/README.md).
+The [roadmap](ROADMAP.md) sets the ambition; [verified status](docs/development/status.md)
+separates current features from plans. [Governance](GOVERNANCE.md) defines branch
+stewardship and release authority. New contributions normally target `dev/all-features`.
+
 ## Run
 
 Node 22.12 or newer:

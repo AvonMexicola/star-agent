@@ -11,7 +11,12 @@
     "test:browser": "playwright test",
     "test:multiplayer": "node --test tests/server-*.test.js tests/remote-players.test.js tests/multiplayer-ui.test.js",
     "server": "node server/index.js",
-    "dev:all": "node scripts/dev-all.mjs"
+    "dev:all": "node scripts/dev-all.mjs",
+    "check:repo": "node scripts/development/check.mjs",
+    "plan:checks": "node scripts/development/plan.mjs",
+    "branches": "node scripts/development/branches.mjs",
+    "test:development": "node --test tests/development/contracts.test.mjs tests/development/git-tools.test.mjs",
+    "test:ci-browser": "playwright test -c scripts/ci-browser.config.js"
   },
   "dependencies": {
     "three": "^0.180.0",

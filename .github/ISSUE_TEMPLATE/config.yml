@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Contributor handbook
+    url: https://github.com/AvonMexicola/star-agent/tree/dev/all-features/docs/development
+    about: Setup, ownership, review and quality guidance
+  - name: Sensitive vulnerability reporting
+    url: https://github.com/AvonMexicola/star-agent/blob/dev/all-features/SECURITY.md
+    about: Use a private reporting route; do not post credentials or exploits in an issue

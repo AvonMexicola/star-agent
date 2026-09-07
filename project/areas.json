@@ -1,0 +1,296 @@
+{
+  "version": 1,
+  "fallbackOwner": "@AvonMexicola",
+  "areas": [
+    {
+      "id": "integration",
+      "name": "Integration and contributor tooling",
+      "maintainer": null,
+      "paths": [
+        "src/main.js",
+        "package*.json",
+        "vite.config.js",
+        "AGENTS.md",
+        "GOVERNANCE.md",
+        "ARCHITECTURE.md",
+        "ROADMAP.md",
+        "QUALITY.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        "CODE_OF_CONDUCT.md",
+        "README.md",
+        ".github/**",
+        "project/**",
+        "scripts/development/**",
+        "tests/development/**",
+        "docs/development/**",
+        "docs/templates/**",
+        "docs/decisions/**"
+      ],
+      "contracts": [
+        "ARCHITECTURE.md",
+        "GOVERNANCE.md"
+      ],
+      "checks": [
+        "repository",
+        "unit",
+        "build"
+      ]
+    },
+    {
+      "id": "world",
+      "name": "World generation and streaming",
+      "maintainer": null,
+      "paths": [
+        "src/world.js",
+        "src/*world*.js",
+        "src/terrain*.js",
+        "src/*worker*.js",
+        "src/planet*.js",
+        "src/moon*.js",
+        "src/pyre*.js",
+        "src/miasma*.js",
+        "src/rock*.js",
+        "src/forest*.js",
+        "src/vegetation*.js",
+        "src/celestial.js",
+        "src/tree*.js",
+        "src/foliage.js"
+      ],
+      "contracts": [
+        "ARCHITECTURE.md",
+        "PLANET-PIPELINE-MEMORY.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "browser",
+        "visual",
+        "performance"
+      ]
+    },
+    {
+      "id": "rendering",
+      "name": "Rendering, materials and effects",
+      "maintainer": null,
+      "paths": [
+        "src/*material*.js",
+        "src/atmosphere.js",
+        "src/ocean*.js",
+        "src/water*.js",
+        "src/cloud*.js",
+        "src/lighting*.js",
+        "src/surface-weather.js",
+        "src/effects/**",
+        "src/bloom*.js"
+      ],
+      "contracts": [
+        "QUALITY.md",
+        "docs/asset-production-standard.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "browser",
+        "visual",
+        "performance"
+      ]
+    },
+    {
+      "id": "flight",
+      "name": "Flight, ships and physical traversal",
+      "maintainer": null,
+      "paths": [
+        "src/navigation.js",
+        "src/boarding.js",
+        "src/flight*.js",
+        "src/landing-gear.js",
+        "src/ship*.js",
+        "src/freighter*.js",
+        "src/kestrel*.js",
+        "src/atlas*.js",
+        "src/travel*.js",
+        "src/eva*.js"
+      ],
+      "contracts": [
+        "ARCHITECTURE.md",
+        "SHIP-PIPELINE-MEMORY.md",
+        "docs/controller-contract.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "browser",
+        "controller",
+        "visual",
+        "performance"
+      ]
+    },
+    {
+      "id": "station",
+      "name": "Stations, hangars and local gravity",
+      "maintainer": null,
+      "paths": [
+        "src/station*.js",
+        "src/inventory/station-ledger.js"
+      ],
+      "contracts": [
+        "STATION-PIPELINE-MEMORY.md",
+        "ARCHITECTURE.md",
+        "docs/controller-contract.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "browser",
+        "controller",
+        "visual",
+        "performance",
+        "multiplayer"
+      ]
+    },
+    {
+      "id": "combat",
+      "name": "Equipment mounts and combat authority",
+      "maintainer": null,
+      "paths": [
+        "src/weapon-mounts.js",
+        "src/effects/weapon*.js",
+        "server/combat.js",
+        "src/combat/**"
+      ],
+      "contracts": [
+        "ARCHITECTURE.md",
+        "docs/multiplayer.md",
+        "docs/controller-contract.md",
+        "docs/space-combat.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "multiplayer",
+        "browser",
+        "controller",
+        "visual"
+      ]
+    },
+    {
+      "id": "interface",
+      "name": "Input, accessibility and interface",
+      "maintainer": null,
+      "paths": [
+        "src/gamepad.js",
+        "src/controller*.js",
+        "src/*ui*.js",
+        "src/*.css",
+        "src/system-map.js",
+        "src/mfd/**",
+        "src/dev-launcher*",
+        "index.html"
+      ],
+      "contracts": [
+        "docs/controller-contract.md",
+        "QUALITY.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "browser",
+        "controller",
+        "touch",
+        "visual"
+      ]
+    },
+    {
+      "id": "industry",
+      "name": "Inventories, mining and settlements",
+      "maintainer": null,
+      "paths": [
+        "src/inventory/**",
+        "src/mining/**",
+        "src/build/**",
+        "src/equipment.js"
+      ],
+      "contracts": [
+        "ARCHITECTURE.md",
+        "docs/controller-contract.md",
+        "docs/base-building.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "browser",
+        "controller",
+        "multiplayer"
+      ]
+    },
+    {
+      "id": "multiplayer",
+      "name": "Server authority and persistence",
+      "maintainer": null,
+      "paths": [
+        "server/**",
+        "src/multiplayer/**",
+        "tests/server-*.test.js"
+      ],
+      "contracts": [
+        "docs/multiplayer.md",
+        "docs/multiplayer-auth.md",
+        "SECURITY.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "multiplayer",
+        "database",
+        "browser"
+      ]
+    },
+    {
+      "id": "assets",
+      "name": "Ships, characters and asset production",
+      "maintainer": null,
+      "paths": [
+        "assets/**",
+        "blender/**",
+        "public/models/**",
+        "public/textures/**",
+        "src/character*.js",
+        "src/nomad*.js"
+      ],
+      "contracts": [
+        "docs/asset-production-standard.md",
+        "QUALITY.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "assets",
+        "browser",
+        "visual",
+        "performance"
+      ]
+    },
+    {
+      "id": "audio",
+      "name": "Sound and music",
+      "maintainer": null,
+      "paths": [
+        "src/audio.js",
+        "src/audio/**",
+        "src/music.js",
+        "public/audio/**"
+      ],
+      "contracts": [
+        "QUALITY.md",
+        "public/audio/music/README.md"
+      ],
+      "checks": [
+        "unit",
+        "build",
+        "browser",
+        "audio"
+      ]
+    }
+  ]
+}
