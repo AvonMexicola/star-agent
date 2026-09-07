@@ -77,10 +77,12 @@ folder's game captures record that final focused controller check separately.
 Follow-up physical evidence does not silently replace an earlier review score.
 
 
-Final production build passes5.91s (Vite existing chunk-size warning retained).
+Final production build passes4.99s (Vite existing chunk-size warning retained).
 The first and follow-up reviews are evidence for their named source/images;
 7e34acd's final eave correction is author-tested, not independently re-reviewed.
 The final near-fixture on view still clips the diffuser and held-tool highlights:
 lighting polish remains open, consistent with the3.6 review. The current lamp
 provides useful warm illumination, switch/power behavior is verified, and these
 limits are not hidden as final art acceptance.
+
+Final controller production bundle: main-CDBmCjGG.js (runtime7e34acd).
