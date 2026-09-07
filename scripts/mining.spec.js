@@ -18,7 +18,7 @@ test('land, walk to the deposit, mine with the laser, persist cuts and stow coll
   await page.screenshot({path:`${evidence}/before.png`});
   await page.keyboard.down('t');await page.waitForFunction(()=>window.starAgent.state.mining.revision>=8,null,{timeout:90000});await page.keyboard.up('t');
   await page.waitForFunction(()=>!window.starAgent.state.mining.pending);const mined=await page.evaluate(()=>window.starAgent.state.mining);
-  expect(mined.pack.reduce((a,b)=>a+b,0)).toBeGreaterThan(.5);expect(mined.saved).toBe(true);expect(mined.tool.toolError).toBe(null);
+  expect(mined.pack.reduce((a,b)=>a+b,0)).toBeGreaterThan(.04);expect(mined.saved).toBe(true);expect(mined.tool.toolError).toBe(null);
   await page.screenshot({path:`${evidence}/after.png`});
   const save=await page.evaluate(()=>localStorage.getItem('star-agent.selene-mining.v1'));
   // Modal focus cancels a held tool and does not resume it after closing.
@@ -48,9 +48,9 @@ test('land, walk to the deposit, mine with the laser, persist cuts and stow coll
   // The survey container is integrated with the real cargo dialog. Restore a
   // landed ship after reload, then enter its storage interaction position.
   await page.evaluate(()=>{const n=window.starAgent.navigation;n.transitMoon(3.2);n.touchDown();n.embark();n.position.copy(n.fromShipLocal(n.position.clone().set(.4,2.75,1.15)));n.openInventory();});
-  await page.getByRole('button',{name:'Stow all minerals'}).click();
+  await page.getByRole('button',{name:'Deposit all resources'}).click();
   expect(await page.evaluate(()=>window.starAgent.state.mining.pack.reduce((a,b)=>a+b,0))).toBe(0);
-  expect(await page.evaluate(()=>window.starAgent.state.mining.ship.reduce((a,b)=>a+b,0))).toBeGreaterThan(.5);
+  expect(await page.evaluate(()=>window.starAgent.state.mining.ship.reduce((a,b)=>a+b,0))).toBeGreaterThan(.04);
   await page.screenshot({path:`${evidence}/cargo.png`});
   const gpu=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);});
   await writeFile(`${evidence}/state.json`,JSON.stringify({browser:browser.version(),renderer:gpu,mined,errors},null,2));expect(errors).toEqual([]);

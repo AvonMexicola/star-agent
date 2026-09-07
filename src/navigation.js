@@ -45,6 +45,7 @@ export class Navigation {
     if(this.mode==='crashed')return;
       if(['KeyW','KeyA','KeyS','KeyD','Space','KeyC'].includes(e.code))this.onTakeControl?.();
       this.controllerActive=false;this.keys.add(e.code);if(e.repeat)return;
+      if(this.buildActive)return;
       if(e.code==='KeyG'&&(this.mode==='eva'||this.mode==='walk'&&!this.insideShip))this.toggleEVA();
       if(e.code==='KeyP'){this.togglePower();return;}
       if(e.code==='KeyJ'){this.travel?this.cancelTravel():this.beginTravel();return;}
@@ -207,6 +208,8 @@ export class Navigation {
   shipInteraction(local){return this.freighter?this.freighter.interaction(local):interactionAt(local,this.doorOpen);}
   get landingClearance(){return Math.max(3.2,this.layout.seatEye[1]+.35);}
   get interaction(){
+    if(this.buildActive)return 'BUILD MODE · SELECT A PIECE OR EXIT TO INTERACT';
+    const baseInteraction=this.baseInteraction?.();if(baseInteraction)return baseInteraction;
     if(this.mode==='flight')return this.autoland||this.stationLift||this.travel?'FINISH MANEUVER TO LEAVE SEAT':'F · LEAVE PILOT SEAT';
     if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.position.distanceTo(this.shipPosition))+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
     if(this.mode==='landed')return 'F · LEAVE PILOT SEAT';
@@ -313,8 +316,9 @@ export class Navigation {
     if(this.mode==='crashed')return;
     if(!this.dryGround())return;
     const body=this.body,radial=this.normal;
-    const n=body.water?radial:bodySurfaceNormal(this.position,body);
-    const surface=bodySurfacePoint(radial,body);
+    const pad=this.baseLandingSurface?.();
+    const n=pad?.normal??(body.water?radial:bodySurfaceNormal(this.position,body));
+    const surface=pad?.point??bodySurfacePoint(radial,body);
     this.position.copy(surface).addScaledVector(n,3.2);
     this.mode='landed';this.autoland=false;this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
     this.shipPosition=surface;
@@ -335,6 +339,8 @@ export class Navigation {
   embark(){
     if(this.mode==='crashed')return;
     if(this.travel)return;
+    if(this.buildActive)return;
+    if(this.mode==='walk'&&!this.insideShip&&this.baseAction?.())return;
     if(this.mode==='walk'&&!this.cabinFlight&&this.stationAction?.())return;
     if(this.mode==='flight'){
       if(this.autoland||this.stationLift){this.notify('Finish landing or undocking before leaving the pilot seat.');return;}
@@ -403,7 +409,7 @@ export class Navigation {
     const oldNormal=this.normal;
     const forward=FORWARD.clone().applyQuaternion(this.orientation),right=RIGHT.clone().applyQuaternion(this.orientation);
     const input=forward.clone().multiplyScalar(moveForward).addScaledVector(right,strafe);
-      const altitude=this.altitude;
+      const altitude=this.baseLandingSurface?.()?.clearance??this.altitude;
       if(this.autoland||this.stationLift)this.engineAcceleration.copy(this.flightEnvironment.gravity).negate();
       if(this.brakeFlight&&this.powered){
         this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
@@ -570,7 +576,7 @@ export class Navigation {
         this.position.copy(proposed);this.mode='eva';this.insideShip=false;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.projectOnPlane(UP.clone().applyQuaternion(this.shipOrientation));
         this.notify('EVA. Release thrust to coast; X / LT brakes. Return slowly to the open ramp.');return;
       }
-      const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.airless?0:terrainHeight(dir.x,dir.y,dir.z);
+      const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.water?terrainHeight(dir.x,dir.y,dir.z):0;
       if(floor!==null||this.dockedAtStation||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
       this.insideShip=floor!==null&&(this.freighter?local.z<=10:local.z<=4);

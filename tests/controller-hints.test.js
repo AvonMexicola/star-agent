@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {controllerHints} from '../src/controller-hints.js';
+const hints=options=>Object.fromEntries(controllerHints(options));
+test('controller hints distinguish owned site, outside claim, cabin, flight and EVA',()=>{
+ assert.equal(hints({mode:'walk',canBuild:true}).B,'BUILD WHEEL');assert.equal(hints({mode:'walk'}).B,'BUILD · NEED MAINFRAME');
+ assert.equal(hints({mode:'walk',insideShip:true}).B,undefined);assert.equal(hints({mode:'walk',insideShip:true}).X,'INTERACT');
+ assert.equal(hints({mode:'flight'}).B,'BRAKE');assert.equal(hints({mode:'flight'}).A,'FIRE');assert.equal(hints({mode:'flight'})['RT / LT'],'RISE / DESCEND');
+ assert.equal(hints({mode:'eva'})['A / B'],'RISE / LOWER');assert.equal(hints({mode:'landed'}).Y,'LAUNCH');
+});

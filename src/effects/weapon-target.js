@@ -6,6 +6,8 @@ export function createWeaponTarget({nav,mining}){
   const raycaster=new THREE.Raycaster();
   return (start,direction,origin,range=1600)=>{
     let hit=mining.raycast(start,direction,range);
+    const building=nav.buildingRaycast?.(start,direction,range);
+    if(building&&(!hit||building.distance<hit.distance))hit=building;
     if(nav.station&&nav.stationDistance<range+200){
       raycaster.set(start.clone().sub(origin),direction);raycaster.far=range;
       const wall=raycaster.intersectObject(nav.station.group,true).find(h=>{

@@ -12,8 +12,8 @@ test('stack slots and weights are independent limits; another box makes room for
   assert.equal(fitsBox(items, 1), true);
   assert.equal(fitsBox({ ...items, copper: .1 }, 1), false);
   assert.equal(fitsBox({ ...items, copper: .1 }, 2), true);
-  assert.equal(stacksFor({ ice: 8.01 }).length, 3);
-  assert.equal(fitsBox({ ice: 12.1 }, 1), false);
+  assert.equal(stacksFor({ ice: 32.01 }).length, 3);
+  assert.equal(fitsBox({ ice: 48.1 }, 1), false);
   assert.equal(fitsBox({ repair: 1.5 }, 1), false);
   assert.equal(planTransfer({ ice: 1 }, {}, 'ice', NaN, 1).ok, false);
 });
@@ -37,7 +37,7 @@ test('legacy mining and supply saves migrate without recrediting or overwriting 
 test('all container transfers conserve resources, survive reload, and synchronize the ship manifest', () => {
   const disk = storage(), store = new MiningStore(disk), manifest = new ShipInventory(disk);
   store.bindManifest(manifest);
-  assert.equal(store.commit({ field: store.state.field, yieldVolume: [.25, .1, .1] }, 0), true);
+  assert.equal(store.commit({ field: store.state.field, yieldVolume: [3, 1.2, 1.2] }, 0), true);
   assert.equal(store.transfer('copper', 'pack', 'station', .7).ok, true);
   assert.equal(store.transfer('ration', 'ship', 'station', 3).ok, true);
   assert.equal(manifest.count('ship', 'ration'), 9);
@@ -52,7 +52,7 @@ test('all container transfers conserve resources, survive reload, and synchroniz
 });
 test('failed saves leave source, destination, current field and manifest unchanged', () => {
   const disk = storage(), store = new MiningStore(disk), manifest = new ShipInventory(disk);
-  store.bindManifest(manifest); store.commit({ field: store.state.field, yieldVolume: [.1, .1, .1] }, 0);
+  store.bindManifest(manifest); store.commit({ field: store.state.field, yieldVolume: [1.2, 1.2, 1.2] }, 0);
   const before = structuredClone(store.state), oldManifest = manifest.snapshot, saved = disk.getItem(MINING_KEY);
   disk.setItem = () => { throw Error('quota'); };
   assert.equal(store.transfer('ice', 'pack', 'station', 1).ok, false);
@@ -70,9 +70,9 @@ test('full slots reject a mined award and cut together; boxes add actual capacit
   assert.equal(store.commit({ field: before, yieldVolume: [0, .01, 0] }, 0), false);
   assert.equal(store.state.revision, 0); assert.equal(store.state.pack[1], 0);
   assert.equal(store.addBox('pack').ok, true);
-  assert.equal(store.capacity, 24);
+  assert.equal(store.capacity, 96);
   assert.equal(store.commit({ field: before, yieldVolume: [0, .01, 0] }, 0), true);
-  assert.equal(new MiningStore(disk).capacity, 24);
+  assert.equal(new MiningStore(disk).capacity, 96);
   assert.equal(store.addBox('pack').ok, false);
 });
 test('independent space fields and resource gains commit atomically with bounded saved-rock slots', () => {

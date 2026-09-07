@@ -49,7 +49,7 @@ test('backpack removal requires empty contents, disables gathering, and preserve
   assert.equal(store.transfer('ration','pack','ship',2).ok,true);store.addBox('pack');assert.equal(gear.stow('backpack','ship').ok,true);
   assert.equal(store.capacity,0);assert.equal(store.addBox('pack').ok,false);assert.equal(store.transfer('ration','ship','pack',1).ok,false);
   assert.equal(store.commit({field:store.state.field,yieldVolume:[.01,0,0]},0),false);
-  assert.equal(new MiningStore(disk).blocked,undefined);assert.equal(gear.assign('backpack','backpack-life-support','ship').ok,true);assert.equal(store.capacity,24);
+  assert.equal(new MiningStore(disk).blocked,undefined);assert.equal(gear.assign('backpack','backpack-life-support','ship').ok,true);assert.equal(store.capacity,96);
 });
 test('invalid loadouts preserve the original save and block mutation instead of granting a new starter kit',()=>{
   for(const change of [l=>l.slots.weapon1={item:'bandage',quantity:1},l=>l.slots.ammo1.quantity=-1,l=>l.health=101,l=>l.quickIndex=8]){

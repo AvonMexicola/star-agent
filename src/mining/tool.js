@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createWeaponTarget } from '../effects/weapon-target.js';
 import { Equipment } from '../equipment.js';
 import { MINERALS } from './volume.js';
+import { MINERAL_CAPACITY_PER_BOX } from '../inventory/containers.js';
 import './mining.css';
 
 /** First-person socket adapter for the existing Equipment implementation. A full
@@ -39,12 +40,13 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       if(loadout){selected=Boolean(loadout.item);if(equipment.equipped!==loadout.item){clear();if(loadout.item)equipment.equip(loadout.item);else equipment.unequip();}}
       const isMining=equipment.equipped==='mining-laser-tool';
       const distance=nav.position.distanceTo(rock.position);
-      active=(nav.mode==='walk'||nav.mode==='eva')&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
+      active=!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
       panel.hidden=!active;mount.visible=active&&selected;
       if(!active)clear();
       direction.set(0,0,-1).applyQuaternion(nav.orientation);
       const inspected=active&&isMining?rock.inspectTarget?.(nav.position,direction,8):null;
       hit=active&&isMining?rock.raycast(nav.position,direction):null;
+      if(hit){const obstruction=nav.buildingRaycast?.(nav.position,direction,hit.distance);if(obstruction)hit=null;}
       lamp.visible=active&&selected;lamp.position.set(.15,-.18,0).applyQuaternion(nav.orientation);lamp.target.position.copy(direction).multiplyScalar(6);
       recoil*=Math.exp(-dt*18);
       mount.position.set(equipment.equipped==='sidearm-pistol'?.25:.29,equipment.equipped==='sidearm-pistol'?-.25:-.35,-.47+recoil).applyQuaternion(nav.orientation);mount.position.add(nav.position.clone().sub(origin));mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
@@ -52,6 +54,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       // Check muzzle obstruction too, so a close edge cannot be mined through.
       const muzzle=equipment.muzzleWorldPosition();
       if(muzzle){lamp.position.copy(muzzle).sub(origin).addScaledVector(direction,.06);lamp.target.position.copy(lamp.position).addScaledVector(direction,6);}
+      if(hit&&muzzle){const obstruction=nav.buildingRaycast?.(muzzle,hit.point.clone().sub(muzzle).normalize(),muzzle.distanceTo(hit.point));if(obstruction)hit=null;}
       if(hit&&muzzle){const to=hit.point.clone().sub(muzzle),length=to.length(),muzzleHit=rock.raycast(muzzle,to.normalize(),length+.1);if(muzzleHit&&muzzleHit.point.distanceTo(hit.point)>.22)hit=null;}
       const firing=active&&selected&&Boolean(held||keyHeld||(nav.gamepad.armed&&nav.toolTrigger>.1))&&!rock.store.blocked&&(isMining?rock.store.free>.001&&!rock.error:loadout?.ammoFor()>0);
       equipment.update(dt,{firing,authorizeFire:item=>loadout?.spendRound(item)??false,hasHit:Boolean(hit),targetWorldPoint:hit?.point??(inspected?.distance<=8?inspected.point:null)??nav.position.clone().addScaledVector(direction,8)});
@@ -89,9 +92,9 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       const targetMessage=targetMessages[inspected?.status];
       $('.mining-guide').textContent=targetMessage?`${inspected.distance.toFixed(1)} m · ${targetMessage}`:hit?`${hit.distance.toFixed(1)} m · Cut the rock to collect its minerals`:distance<40000?`${distance.toFixed(0)} m · ${Math.abs(angle).toFixed(0)}° ${angle<0?'LEFT':'RIGHT'} · Tool range 8 m`:'Aim at a mineral outcrop or small asteroid · Tool range 8 m';
       $('meter').value=equipment.heat;
-      $('.mining-resources').textContent=`Pouch ${rock.store.mass.toFixed(2)} / ${rock.store.capacity??12} kg · ${rock.store.state.pack.map((m,i)=>`${MINERALS[i]} ${m.toFixed(2)}`).join(' / ')}`;
+      $('.mining-resources').textContent=`Pouch ${rock.store.mass.toFixed(2)} / ${rock.store.capacity??MINERAL_CAPACITY_PER_BOX} kg · ${rock.store.state.pack.map((m,i)=>`${MINERALS[i]} ${m.toFixed(2)}`).join(' / ')}`;
       button.disabled=!selected||Boolean(rock.error)||rock.store.blocked||rock.store.free<.001;
-      $('.mining-feedback').textContent=rock.error||rock.store.warning||(rock.store.free<.001?'Pouch full. Stow samples in the ship cargo locker.':equipment.overheated?'Cooling down…':!selected?(nav.controllerActive?'D-pad → · Equip mining laser':'3 · Equip mining laser'):rock.pending?'Cutting rock…':(nav.controllerActive?'RT · Mine / D-pad → · Holster / View · Backpack':'Hold T / mouse · R holsters · I opens backpack'));
+      $('.mining-feedback').textContent=rock.error||rock.store.warning||(rock.store.free<.001?'Pouch full. Use Deposit all resources at ship cargo.':equipment.overheated?'Cooling down…':!selected?(nav.controllerActive?'D-pad → · Equip mining laser':'3 · Equip mining laser'):rock.pending?'Cutting rock…':(nav.controllerActive?'RT · Mine / D-pad → · Holster / View · Backpack':'Hold T / mouse · R holsters · I opens backpack'));
     },
     get state(){return {active,item:equipment.equipped,ammo:loadout?.ammoFor()??0,hit:hit?.point.toArray()??null,heat:equipment.heat,beaming:equipment.beaming,selected,target:rock.inspectState??null,toolError:equipment.error};},
   };

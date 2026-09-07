@@ -54,7 +54,7 @@ export class GamepadInput {
       this.status = this.uiArmed ? 'Controller menu · D-pad selects · A confirms · B returns.' : 'Controller menu · Release controls to navigate.';
       const result = empty();
       if (this.uiArmed) {
-        result.ui = { x: strafe + Number(buttons[15] ?? false) - Number(buttons[14] ?? false),
+        result.ui = { stickX: strafe, stickY: moveY, x: strafe + Number(buttons[15] ?? false) - Number(buttons[14] ?? false),
           y: moveY + Number(buttons[13] ?? false) - Number(buttons[12] ?? false), scroll: lookY, pressed };
         result.used = !neutral;
       }

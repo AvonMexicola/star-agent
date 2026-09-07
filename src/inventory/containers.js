@@ -1,6 +1,10 @@
 import { ITEMS } from '../ship-inventory.js';
 
+export const MINERAL_CAPACITY_PER_BOX = 48;
+export const MINERAL_STACK_KG = 16;
 export const RESOURCE_IDS = ['basalt', 'copper', 'ice'];
+export const PROCESSED_IDS = ['aggregate', 'mineral-binder', 'concrete', 'metal-stock', 'conductor', 'glass'];
+export const MATERIAL_IDS = [...RESOURCE_IDS, ...PROCESSED_IDS];
 export const CATALOG = Object.freeze([
   { id: 'rifle-laser', name: 'Laser rifle', detail: 'Solar laser beam · uses laser rifle charges', category: 'weapon', ammo: 'carbine-charge', mass: 3.6, unit: 'item', stack: 1, color: '#eab16c' },
   { id: 'sidearm-pistol', name: 'Energy sidearm', detail: 'Compact energy weapon · sidearm charges', category: 'weapon', ammo: 'sidearm-charge', mass: 1.1, unit: 'item', stack: 1, color: '#e88c8e' },
@@ -10,10 +14,11 @@ export const CATALOG = Object.freeze([
   { id: 'sidearm-charge', name: 'Sidearm charges', detail: 'One charge per sidearm pulse', category: 'ammo', mass: .01, unit: 'item', stack: 48, color: '#e88c8e' },
   { id: 'bandage', name: 'Bandage', detail: 'Stops bleeding and restores 15 health', category: 'quick', heal: 15, stopsBleeding: true, mass: .1, unit: 'item', stack: 5, color: '#d6ddd4' },
   { id: 'healing-stim', name: 'Healing stim', detail: 'Restores 40 health', category: 'quick', heal: 40, mass: .15, unit: 'item', stack: 5, color: '#8cdeb0' },
+  ...PROCESSED_IDS.map(id => ({ id, name: ({aggregate:'Aggregate', 'mineral-binder':'Dry mineral binder', concrete:'Dry mineral concrete', 'metal-stock':'Metal stock', conductor:'Conductor stock', glass:'Basic glass'})[id], detail:'Field-processed construction material', mass:1, unit:'kg', stack:MINERAL_STACK_KG, color:'#b5c8bc' })),
   ...ITEMS.map(item => ({ ...item, unit: 'item', stack: item.id === 'ration' ? 10 : 1, color: '#b5c8bc' })),
-  { id: 'basalt', name: 'Basalt concentrate', detail: 'Collected rock concentrate', mass: 1, unit: 'kg', stack: 4, color: '#b4b7c4' },
-  { id: 'copper', name: 'Copper ore', detail: 'Metal-bearing mineral', mass: 1, unit: 'kg', stack: 4, color: '#df9c68' },
-  { id: 'ice', name: 'Water ice', detail: 'Recovered frozen volatiles', mass: 1, unit: 'kg', stack: 4, color: '#8bdfed' },
+  { id: 'basalt', name: 'Basalt concentrate', detail: 'Collected rock concentrate', mass: 1, unit: 'kg', stack: MINERAL_STACK_KG, color: '#b4b7c4' },
+  { id: 'copper', name: 'Copper ore', detail: 'Metal-bearing mineral', mass: 1, unit: 'kg', stack: MINERAL_STACK_KG, color: '#df9c68' },
+  { id: 'ice', name: 'Water ice', detail: 'Recovered frozen volatiles', mass: 1, unit: 'kg', stack: MINERAL_STACK_KG, color: '#8bdfed' },
 ]);
 export const SLOTS_PER_BOX = 8;
 export const MAX_BOXES = 8;
@@ -47,10 +52,10 @@ export function validItems(items) {
 }
 export function fitsBox(items, boxes, limits = {}) {
   if (!validItems(items) || !Number.isSafeInteger(boxes) || boxes < 1 || boxes > MAX_BOXES) return false;
-  const resources = RESOURCE_IDS.reduce((n, id) => n + (items[id] ?? 0), 0);
+  const resources = MATERIAL_IDS.reduce((n, id) => n + (items[id] ?? 0), 0);
   const supplies = itemMass(items) - resources;
   return stacksFor(items).length <= boxes * SLOTS_PER_BOX
-    && resources <= (limits.resources ?? boxes * 12) + EPSILON
+    && resources <= (limits.resources ?? boxes * MINERAL_CAPACITY_PER_BOX) + EPSILON
     && supplies <= (limits.supplies ?? boxes * 30) + EPSILON;
 }
 export function planTransfer(source, target, id, quantity, boxes, limits) {

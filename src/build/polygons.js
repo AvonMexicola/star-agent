@@ -1,0 +1,10 @@
+/** Convex X/Z polygons; canonical collision and socket geometry, in metres. */
+export const rectangle=(x,z)=>[[-x/2,-z/2],[x/2,-z/2],[x/2,z/2],[-x/2,z/2]];
+export function transformPolygon(poly,p){const c=Math.cos(p.rotation??0),s=Math.sin(p.rotation??0),v=p.position??[0,0,0];return poly.map(([x,z])=>[v[0]+c*x+s*z,v[2]-s*x+c*z]);}
+export function contains(poly,x,z,epsilon=1e-8){return poly.every((a,i)=>{const b=poly[(i+1)%poly.length];return (b[0]-a[0])*(z-a[1])-(b[1]-a[1])*(x-a[0])>=-epsilon;});}
+export function distanceToPolygon(poly,x,z){if(contains(poly,x,z))return 0;return Math.min(...poly.map((a,i)=>{const b=poly[(i+1)%poly.length],dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz);}));}
+export function polygonsOverlap(a,b,epsilon=.025){for(const poly of [a,b])for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],length=Math.hypot(q[0]-p[0],q[1]-p[1]),nx=-(q[1]-p[1])/length,nz=(q[0]-p[0])/length,aa=a.map(v=>v[0]*nx+v[1]*nz),bb=b.map(v=>v[0]*nx+v[1]*nz);if(Math.min(Math.max(...aa),Math.max(...bb))-Math.max(Math.min(...aa),Math.min(...bb))<=epsilon)return false;}return true;}
+export const boxPolygon=b=>b.polygon??[[b.min[0],b.min[2]],[b.max[0],b.min[2]],[b.max[0],b.max[2]],[b.min[0],b.max[2]]];
+export const volumesOverlap=(a,b)=>a.min[1]<b.max[1]-.025&&a.max[1]>b.min[1]+.025&&polygonsOverlap(boxPolygon(a),boxPolygon(b));
+/** Clip a ray against a convex prism; AABB is only broad phase. */
+export function rayPrism(origin,dir,b){let lo=-Infinity,hi=Infinity;const poly=boxPolygon(b),planes=[[0,1,0,b.max[1]],[0,-1,0,-b.min[1]]];for(let i=0;i<poly.length;i++){const a=poly[i],c=poly[(i+1)%poly.length],nx=c[1]-a[1],nz=a[0]-c[0];planes.push([nx,0,nz,nx*a[0]+nz*a[1]]);}for(const [x,y,z,d]of planes){const offset=d-x*origin.x-y*origin.y-z*origin.z,rate=x*dir.x+y*dir.y+z*dir.z;if(Math.abs(rate)<1e-12){if(offset<0)return null;}else if(rate>0)hi=Math.min(hi,offset/rate);else lo=Math.max(lo,offset/rate);if(lo>hi)return null;}return hi<0?null:Math.max(0,lo);}

@@ -140,3 +140,65 @@ selection/fire, physical lunar landing/exit/approach, both gun selections and
 impacts, cutter mining, cargo UI and return. It also covers held RT across focus,
 disconnect, replacement and unsupported mapping. Debug state is read only for
 steering and assertions; no physical controller testing is claimed.
+
+## Construction
+
+B enters the shared piece palette while walking outside within 64 m of an owned
+mainframe. Menu → Build also establishes a new site on a planet. Point the left
+stick at a radial slice and press A; B reopens the wheel
+while building. D-pad also browses pieces and the recipes/supplies tabs. Releasing
+the stick retains its highlight; B closes without choosing. A choice never places
+a piece until a fresh A press after controls return to neutral.
+The contextual controls consume the existing shared Gamepad poll:
+
+| Construction action | Controller | Keyboard / touch |
+| --- | --- | --- |
+| Enter | B near owned mainframe; Menu → Build anywhere buildable | B or visible Build button |
+| Place one piece | A edge | Enter or Place button |
+| Next snap target | LB edge | T or Snap button |
+| Rotate / flip wall facing | LT / RT edges | Q / E or rotate buttons |
+| Foundation height / upper level | D-pad up / down | Up / Down or height buttons |
+| Piece wheel | B; left stick points, A chooses | P or Pieces button; pointer / Tab + Enter |
+| Exit construction | X | Escape or Exit button |
+| Move / look / jump | Sticks / RB | WASD / look / Space |
+| Backpack / command menu | View / Menu | Existing inventory and menu routes |
+
+Ordinary pieces rotate in quarter turns. Walls flip facing by 180° on their
+selected supporting edge; LB changes the edge. Foundation height uses 0.25m
+steps. Non-foundation height selection uses storeys where supported by the
+piece's placement rules.
+
+Construction suppresses mining/fire, EVA/boarding shortcuts and quick-item
+shortcuts. Its own hints replace the equipment bar and ordinary tool hints.
+Dialog transitions use neutral arming, so held A cannot replay placement after
+the palette or backpack closes. Construction does not take over EVA controls.
+
+Menu → Field recipes and the palette's Recipes tab use the same native dialog
+router. Batch presets, disabled ingredient/capacity failures, actual processing
+actions and stable focus keys work without text entry. A nearby physical mainframe
+opens its owner overview, explicit supply-buffer toggle and real storage dialog.
+The storage handoff keeps gameplay paused until storage closes.
+
+See [construction controller evidence](qa/base-building/controller.md) for the
+distinction between the dialog fixture and actual physical gameplay validation.
+
+
+The radial uses optional `dialog.controllerNavigation(ui)` in the shared router.
+It returns a native focus target; confirm/back and device/focus neutral arming
+remain owned by the existing router and GamepadInput. `ui.stickX/stickY` carry
+analog direction without D-pad contributions. Keep eight slice locations stable.
+See `docs/qa/base-building/radial.md` for verification and remaining review limits.
+
+Current B/A/trigger mappings and context checks: [hotkey evidence](qa/base-building/controller-hotkeys.md).
+
+
+## Expanded construction menus
+
+LB/RB changes the active native build tab (Blocks/Shapes/Facilities/Resources/
+Sandbox supplies/Mainframe when available). Tab changes consume the shared UI
+edge before analog focus or A confirmation and suspend until neutral. The hooks
+are `dialog.controllerAction(ui)` for tab changes and `controllerNavigation(ui)`
+for the wheel; neither polls Gamepad independently. B enter uses the actual saved
+claim radius,64m normally or96m after placing a large pad. X outside build mode
+operates rack/terminal/hangar/pad-designation interactions through the same shared
+native inventory/dialog flow. See `qa/base-building/expansion.md` for evidence.
