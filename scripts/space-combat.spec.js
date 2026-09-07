@@ -11,6 +11,11 @@ for(const ship of ['nomad','kestrel'])test(`${ship}: controller patrol console, 
  const button=async(i,down)=>{await page.evaluate(({i,down})=>window.combatPad.buttons[i]={pressed:down,value:+down},{i,down});await frames();};
  const tap=async i=>{await button(i,true);await button(i,false);};
  async function choose(key){
+  const tab=key==='patrol-console'?'contracts':key==='combat-target'||key.startsWith('weapon-')?'ship':key==='controller-layout'?'settings':null;
+  if(tab&&await page.locator('dialog[open].gameplay-screen').count()){
+   for(let i=0;i<8&&await page.locator('dialog[open]').getAttribute('data-gameplay-tab')!==tab;i++)await tap(5);
+   if(key==='patrol-console')return;
+  }
   for(let i=0;i<70;i++){if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key)){await tap(0);return;}await tap(13);}
   throw Error(`Controller could not find ${key}`);
  }
@@ -131,7 +136,7 @@ test('controller layout fits desktop and phone, scrolls and returns safely to pl
  const frames=()=>page.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise(r=>requestAnimationFrame(r));});
  const button=async(i,down)=>{await page.evaluate(({i,down})=>window.layoutPad.buttons[i]={pressed:down,value:+down},{i,down});await frames();};
  const tap=async i=>{await button(i,true);await button(i,false);};
- async function choose(key){for(let i=0;i<70;i++){if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key)){await tap(0);return;}await tap(13);}throw Error(`Missing ${key}`);}
+ async function choose(key){if(key==='controller-layout'&&await page.locator('dialog[open].gameplay-screen').count()){for(let i=0;i<8&&await page.locator('dialog[open]').getAttribute('data-gameplay-tab')!=='settings';i++)await tap(5);}for(let i=0;i<70;i++){if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key)){await tap(0);return;}await tap(13);}throw Error(`Missing ${key}`);}
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto('/?dev=1&ship=nomad&start=orbit&intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed,undefined,{timeout:90000});
  await tap(9);await expect(page.locator('.combat-hint')).toContainText('RT · Fire');await choose('controller-layout');await expect(page.locator('#controller-layout')).toBeVisible();
@@ -149,7 +154,7 @@ test('controller layout fits desktop and phone, scrolls and returns safely to pl
   expect(await page.locator('#controller-layout').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
   await page.locator('#controller-layout').evaluate(el=>el.scrollTop=0);await page.screenshot({path:`${dir}/phone-${mode}.png`});
  }
- await page.locator('#controller-layout footer').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/phone-bottom.png`});
+ await page.locator('#controller-layout .gameplay-footer, #controller-layout:not(.gameplay-screen) footer').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/phone-bottom.png`});
  await page.keyboard.press('Escape');await page.waitForFunction(()=>window.starAgent.state.enabled&&window.starAgent.state.controller.armed);
  await writeFile(`${dir}/result.json`,JSON.stringify({browser:browser.version(),errors,physicalController:false},null,2));expect(errors).toEqual([]);
 });

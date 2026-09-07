@@ -7,7 +7,7 @@ and controller dialog/input router. No new external services or assets are neede
 ## Play
 
 1. Start in orbit with Nomad or Kestrel in the local ship/location launcher.
-2. Open **Patrol console** on screen or **Menu → Patrol console**. The physical
+2. Open **Patrol console** on screen or **Menu → Contracts**. The physical
    hangar cargo terminal also has a Security contracts button. Accept the patrol.
 3. Follow the amber signal marker. From open space it is 3 km ahead; at the station
    dispatch places it 6 km beyond the approach. Regular flight reaches it without
@@ -19,15 +19,15 @@ and controller dialog/input router. No new external services or assets are neede
 
 | Action | Keyboard / pointer | Standard controller |
 |---|---|---|
-| Open mission / combat report | Patrol console button; hangar cargo terminal | Menu → Patrol console |
+| Open mission / combat report | Patrol console button; hangar cargo terminal | Menu → Contracts |
 | Aim / fly | Existing flight controls | Right / left stick |
 | Fire | Hold T or the ship's Hold to fire button | Hold RT / R2 |
-| Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship weapon |
-| Next hostile | Tab or Next target button | Menu → Next hostile target |
-| Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Patrol console → Recover |
+| Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship → Ship weapon |
+| Next hostile | Tab or Next target button | Menu → Ship → Next hostile target |
+| Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Contracts → Recover |
 | Abandon | Console → Abandon patrol | Same console action |
 
-A/B rises/descends and LT brakes (matching EVA). Menu → Controller layout
+A/B rises/descends and LT brakes (matching EVA). Menu → Settings → Controller layout
 shows the complete diagram, also available through Help. The selected
 contact has brackets, shield/hull readings and a projectile lead ring. Edge arrows
 continue tracking targets behind the camera. Solar lance is hitscan and needs no

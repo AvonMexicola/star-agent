@@ -158,7 +158,19 @@ not the local account/save model or public release authority.
 ### Controller trigger and layout update
 
 Ship fire is **RT / R2**, brake/drive cancellation is **LT / L2**, and vertical
-thrust is **A/B (✕/○)**, matching EVA. Open **Menu → Controller layout** or
+thrust is **A/B (✕/○)**, matching EVA. Open **Menu → Settings → Controller layout** or
 **Help → View controller layout** for the labeled controller diagram and the
 Flight, On foot, EVA and shortcut views. Menu A-confirm/B-back remains unchanged.
 Verification and retained captures: [controller layout QA](qa/controller-layout.md).
+
+
+### Gameplay terminal
+
+Escape, controller Menu, or the on-screen Menu button opens the fixed gameplay
+screen. Tabs: Comms, Map, Contracts, Inventory, Loadout, Ship, Settings, and Dev
+on the development build. LB/RB or bracket keys changes tabs; B/Escape resumes.
+Long lists have page controls instead of scrolling. Ship contains fleet, weapons,
+utilities, construction and recipes; Settings contains graphics, sound and controls.
+Dev has Test starts and the console list. Comms uses the existing live station
+roster, hangar request and account systems; no new text-chat transport is included.
+[Gameplay menu QA](qa/gameplay-menu.md) records the checks and limitations.

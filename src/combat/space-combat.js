@@ -37,11 +37,13 @@ export function createSpaceCombat({scene,nav,camera,effects}){
     dialog.querySelector('[data-controller-key="patrol-debrief"]').disabled=sim.phase!=='complete';
     dialog.querySelector('[data-controller-key="patrol-abort"]').disabled=!['transit','engage'].includes(sim.phase);
     dialog.querySelector('[data-controller-key="patrol-recover"]').hidden=sim.phase!=='failed'||nav.mode!=='destroyed';
+    dialog.querySelector('[data-controller-key="patrol-accept"]').disabled ||= !permitted();
+    if(!permitted())dialog.querySelector('.patrol-status').textContent=nav.multiplayer?.connected?'Patrol contracts are available in offline flight.':'Board your ship or visit a station terminal to accept a patrol.';
     dialog.querySelector('.patrol-log').textContent=`Reports filed: ${sim.completed} · Hostiles destroyed this patrol: ${sim.enemies.filter(e=>e.integrity.hull===0).length} / 2`;
   }
   const permitted=()=>!nav.multiplayer?.connected&&!nav.openingActive&&(['flight','landed'].includes(nav.mode)||nav.dockedAtStation||sim.phase==='failed');
   function open(){
-    if(!permitted()||document.querySelector('dialog[open]'))return;
+    if(nav.openingActive||document.querySelector('dialog[open]'))return;
     nav.keys.clear();nav.gamepad.suspend();nav.enabled=false;if(document.pointerLockElement)document.exitPointerLock();renderDialog();dialog.showModal();
   }
   dialog.querySelector('.station-close').onclick=()=>dialog.close();
@@ -66,7 +68,7 @@ export function createSpaceCombat({scene,nav,camera,effects}){
     return nav.station.approachWorldPosition.clone().addScaledVector(nav.station.direction,6000);
   }
   dialog.querySelector('[data-controller-key="patrol-accept"]').onclick=async()=>{
-    if(loading||['transit','engage','complete'].includes(sim.phase))return;
+    if(!permitted()||loading||['transit','engage','complete'].includes(sim.phase))return;
     loading=true;assetError='';renderDialog();
     try{await prepare();if(!permitted())return;nav.onTakeControl?.();sim.accept(waypoint(),nav.orientation);nav.notify('Patrol accepted. Follow the amber beacon, brake on arrival, then engage the hostiles.');}
     catch(error){assetError=`Patrol unavailable: ${error.message}`;}

@@ -26,6 +26,7 @@ import { Moon } from './moon.js';
 import { MiningField, ringSurveyPoint, resourceSurveyPoint } from './mining/field.js';
 import { createControllerUI } from './controller-ui.js';
 import { createControllerLayout } from './controller-layout.js';
+import { createGameplayMenu } from './gameplay-menu.js';
 import { bindStationLedger } from './inventory/station-ledger.js';
 import { Loadout } from './inventory/loadout.js';
 import { createLoadoutBar } from './inventory/loadout-ui.js';
@@ -448,19 +449,42 @@ try {
     {id:'camera-view',label:'Camera view · 4 / LB+RB + →',activate:()=>document.getElementById('camera-button').click(),enabled:()=>['flight','walk','landed'].includes(nav.mode)},
     {id:'account',label:'Pilot account',activate:()=>multiplayerUI.openAccount()},{id:'comms',label:'Multiplayer comms',activate:()=>multiplayerUI.openComms()},{id:'server-inventory',label:'Server inventory',activate:()=>multiplayerUI.openInventory(),enabled:()=>multiplayer.connected},
     {id:'graphics',label:'Graphics · LB+RB + Menu',activate:()=>graphicsSettings.open()},{id:'crash-recover',label:'Return to orbit after crash',activate:()=>transit('orbit'),enabled:()=>nav.mode==='crashed'},{id:'fleet',label:'Fleet registry',activate:()=>fleetUI.openMenu(),enabled:()=>!multiplayer.connected},{id:'power',label:'Toggle ship main power',activate:()=>nav.togglePower(),enabled:()=>nav.canTogglePower},...Object.entries(WEAPONS).map(([id,p])=>({id:`weapon-${id}`,label:`Ship weapon · ${p.label}`,activate:()=>flightEffects.select(id),enabled:()=>nav.mode==='flight'&&!multiplayer.connected}))],openBackpack:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenPack(),toggleTool:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.toggle(),openEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenEquipment(),cycleEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.cycle(),cycleQuick:()=>{if(multiplayer.connected){multiplayerUI.openInventory();return;}const r=loadout.selectQuick((loadout.state.quickIndex+1)%4);if(!r.ok)nav.notify(r.message);},useQuick:()=>multiplayer.connected?multiplayerUI.openInventory():useQuick(loadout.state.quickIndex),destinations:[...document.querySelectorAll('#quick-transit-menu [data-destination]')].map(button=>({id:button.dataset.destination,label:button.dataset.destination==='moon'?'Selene':button.dataset.destination==='ring'?'Selene rings':button.textContent.trim(),activate:()=>transit(button.dataset.destination),enabled:()=>!button.disabled&&!multiplayer.connected})).concat(resourceRoutes.map(route=>({id:route.id,label:route.label,activate:()=>transit(route.id),enabled:()=>!multiplayer.connected})))});
+  const gameplayMenu=createGameplayMenu({nav,dev:Boolean(devLauncher),screens:[
+    {id:'comms',label:'Comms',dialogs:['multiplayer-comms-dialog','multiplayer-account-dialog'],open:()=>multiplayerUI.openComms()},
+    {id:'map',label:'Map',dialogs:['system-map'],open:()=>systemMap.openMap()},
+    {id:'contracts',label:'Contracts',dialogs:['patrol-console'],open:()=>combat.open()},
+    {id:'inventory',label:'Inventory',dialogs:['cargo-dialog','multiplayer-inventory-dialog'],open:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenPack()},
+    {id:'loadout',label:'Loadout',dialogs:['cargo-dialog'],open:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenEquipment()},
+    {id:'ship',label:'Ship',dialogs:['controller-menu','fleet-dialog','build-dialog'],open:()=>controllerUI.open()},
+    {id:'settings',label:'Settings',dialogs:['graphics-settings','controller-layout'],open:()=>graphicsSettings.open()},
+    {id:'dev',label:'Dev',dev:true,dialogs:['dev-launcher'],open:()=>devLauncher?.open()},
+  ]});
+  nav.openGameplayMenu=()=>gameplayMenu.open();
+  function switchScreen(open){const dialog=document.querySelector('dialog[open]');if(dialog){dialog.addEventListener('close',()=>open(),{once:true});dialog.close();}else open();}
+  const controlsSettings=document.createElement('button');controlsSettings.type='button';controlsSettings.dataset.controllerKey='controller-layout';controlsSettings.textContent='Controller layout';controlsSettings.onclick=()=>switchScreen(()=>controllerLayout.open());document.querySelector('#graphics-settings .graphics-options').after(controlsSettings);
+  const menuAudio=document.createElement('button');menuAudio.type='button';menuAudio.dataset.controllerKey='menu-audio';menuAudio.textContent='Sound · '+(audio.enabled?'On':'Off');menuAudio.onclick=async()=>{menuAudio.disabled=true;try{const enabled=await audio.toggle();menuAudio.textContent='Sound · '+(enabled?'On':'Off');$('sound-button').textContent=enabled?'SOUND ON':'SOUND OFF';$('sound-button').setAttribute('aria-pressed',String(enabled));}finally{menuAudio.disabled=false;}};controlsSettings.after(menuAudio);
+  if(devLauncher){
+    const dialog=document.getElementById('dev-launcher'),content=dialog.querySelector('.gameplay-content');
+    const tabs=document.createElement('nav');tabs.className='dev-screen-tabs';tabs.innerHTML='<button type="button" data-dev-page="launch" data-controller-key="dev-page-launch" aria-pressed="true">Test starts</button><button type="button" data-dev-page="consoles" data-controller-key="dev-page-consoles" aria-pressed="false">Console list</button>';
+    const consoles=document.createElement('section');consoles.className='dev-console-list';consoles.hidden=true;
+    for(const [label,id] of [['Station comms','comms'],['System map','map'],['Patrol contract console','contracts'],['Cargo & storage','inventory'],['Equipment & loadout','loadout'],['Ship systems','ship'],['Graphics & controls','settings']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.controllerKey='dev-console-'+id;b.onclick=()=>gameplayMenu.open(id);consoles.append(b);}
+    for(const b of tabs.querySelectorAll('button'))b.onclick=()=>{const launch=b.dataset.devPage==='launch';for(const item of tabs.children)item.setAttribute('aria-pressed',String(item===b));consoles.hidden=launch;for(const el of content.querySelectorAll('.dev-choices,footer,.dev-footer,.dev-intro'))el.hidden=!launch;};
+    content.prepend(tabs);content.append(consoles);
+  }
   nav.onControllerInput=(pad,dt)=>{
     if(!firstReady)return;
-    if(systemMap.open){systemMap.controllerInput(pad.ui);return;}
+    if(gameplayMenu.controller(pad))return;
+    if(systemMap.open&&!gameplayMenu.active){systemMap.controllerInput(pad.ui);return;}
     // Account dialogs pause the intro but still need the shared modal router.
     if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
     if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
     controllerUI.update(pad,dt);flightEffects.controller(pad);
   };
-  const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();controllerUI.open();});document.querySelector('.menu-actions').append(systemsHelp);
+  const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();gameplayMenu.open('ship');});document.querySelector('.menu-actions').append(systemsHelp);
   $('controller-layout-help').addEventListener('click',()=>{closeHelp();controllerLayout.open();});
-  nav.openCommands=()=>controllerUI.open();
-  const menuButton=document.createElement('button');menuButton.id='commands-button';menuButton.type='button';menuButton.textContent='MENU';menuButton.title='Command menu · controller Menu';menuButton.addEventListener('click',()=>controllerUI.open());document.querySelector('.top-actions').prepend(menuButton);
+  nav.openCommands=()=>gameplayMenu.open();
+  const menuButton=document.createElement('button');menuButton.id='commands-button';menuButton.type='button';menuButton.textContent='MENU';menuButton.title='Gameplay menu · controller Menu';menuButton.addEventListener('click',()=>gameplayMenu.open());document.querySelector('.top-actions').prepend(menuButton);
   for(const button of document.querySelectorAll('#quick-transit-menu [data-destination]'))button.addEventListener('click',event=>{
     closeHelp();
     if(event.shiftKey)setCourse(button.dataset.destination);else transit(button.dataset.destination);

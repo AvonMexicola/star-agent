@@ -10,7 +10,7 @@ mapping, not operating-system Bluetooth status.
 
 | Context | Binding | Action |
 | --- | --- | --- |
-| Everywhere in gameplay | Menu | Command menu: destinations, backpack, tool, help |
+| Everywhere in gameplay | Menu | Gameplay menu: Comms, Map, Contracts, Inventory, Loadout, Ship, Settings |
 | Everywhere in gameplay | View | Backpack |
 | Dialog | D-pad / left stick | Move visible focus between available controls |
 | Dialog | A / B | Activate / close and return |
@@ -264,6 +264,17 @@ that is not controller-only journey evidence. Physical-device validation is sepa
 Supersedes earlier A-fire / RT-ascent descriptions in this historical record.
 RT / R2 fires ship weapons; A/B provides vertical thrust; LT brakes and cancels
 drive. EVA and on-foot fire remain RT; A still confirms dialogs and recovers
-a destroyed ship. Menu → Controller layout or Help → View controller layout
+a destroyed ship. Menu → Settings → Controller layout or Help → View controller layout
 opens a responsive diagram with Flight, On foot, EVA and Shortcuts & menus views.
 The shared dialog router and neutral-input gate apply to the entire route.
+
+
+## Fixed gameplay terminal — 2026-09-07
+
+Menu / Options and Escape open the last gameplay tab. LB/RB or bracket keys
+changes tabs; D-pad/LS moves visible focus; A confirms; B/Escape/Resume closes.
+Inventory, loadout, recipes, fleet and development lists use explicit pages.
+Page arrows remain focusable at boundaries and do not perform out-of-range actions.
+Tab switches await native close cleanup and require neutral input again.
+Dev → Console list opens the actual console; Dev is present only with the enabled
+development launcher. Settings includes graphics, sound and the controller diagram.
