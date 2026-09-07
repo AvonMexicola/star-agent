@@ -1742,3 +1742,36 @@ local integration branch after resolving overlap and running appropriate checks;
 do not wait for its production PR to merge. Refresh the running preview, keep the
 source table current, and append the result here. Preserve other owners' dirty
 worktrees. This preview and draft review branch do not deploy or merge to main.
+
+## READY FOR REVIEW — multiplayer hangar assignment and gravity — 2026-09-07
+
+Cees reported multiplayer pilots spawning outside their hangar and remaining
+weightless after entering it. `fix/multiplayer-hangar-gravity` at `b7eefc5` fixes
+both and is submitted as https://github.com/AvonMexicola/star-agent/pull/51 against
+`feat/multiplayer-ten`. The server reserves a distinct bay before admission and
+spawns the pilot on its deck beside the Nomad. Respawn and failure/disconnect paths
+preserve or release ownership correctly. Authored hangar volumes provide local
+gravity independently of ship docking or berth ownership, with continuous EVA
+entry/exit. Snapshots, remote characters, camera up, hit capsules and dropped items
+share the local frame. Protocol 2 requires coordinated frontend/API updates.
+
+Merged into `dev/all-features` for the shared http://127.0.0.1:5178/ preview.
+Resolved navigation/respawn overlap while retaining Kestrel boarding, destroyed
+ship handling and planetary water-floor behaviour. Updated the source inventory
+in docs/local-development.md. Moving ship grids and another pilot's cabin are
+outside this bounded stationary-hangar change. No production merge or deployment.
+
+Feature validation: 66 unit-test files pass; multiplayer has 87 passes and one
+PostgreSQL-only skip; production build passes. Both production browser journeys
+pass, with the extended two-pilot controller journey passing again after adding
+held-input menu/focus/disconnect checks. Integration validation: seven focused
+test files, production build and the two-pilot browser journey pass. An initial
+combined-process test invocation collided with a fake DOM from another test;
+normal per-file isolation passes. Browser errors: none. Injected Gamepad only,
+Chromium151/AMD860M ANGLE GLES3.2, 1440x900 DPR1 and phone390x844; no FPS claim.
+
+Earlier browser startup/allocation failures were traced to /tmp user quota
+exhaustion (write errno122). Test-specific temporary files/evidence on the home
+disk allowed validation to complete without system configuration changes.
+Curated captures and details: docs/qa/multiplayer-hangar-physics.md. Preserve the
+unrelated unstaged AGENTS.md edit owned by the shared development lane.

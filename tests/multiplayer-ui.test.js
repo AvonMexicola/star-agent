@@ -159,6 +159,15 @@ test('authoritative reconciliation distinguishes always-rendered hull pose from 
   assert.equal(nav.multiplayerDead, true);
 });
 
+test('authoritative frame changes snap across the boundary even when walking mode is unchanged',()=>{
+  const nav={mode:'walk',position:new THREE.Vector3(0,2,0),orientation:new THREE.Quaternion(),authoritativePhysicsFrame:'hangar:1'};
+  applyAuthoritativePeer(nav,{mode:'walk',position:[3,2,0],physicsFrame:'hangar:2',health:100,shipHealth:100});
+  assert.deepEqual(nav.position.toArray(),[3,2,0]);
+  assert.equal(nav.authoritativePhysicsFrame,'hangar:2');
+  applyAuthoritativePeer(nav,{mode:'walk',position:[4,2,0],physicsFrame:'hangar:2',health:100,shipHealth:100});
+  assert.ok(nav.position.x>3&&nav.position.x<4,'same-frame prediction still blends');
+});
+
 test('requests wait for an authoritative acknowledgement and carry exact equip fields', async t => {
   class Socket {
     constructor() { this.readyState = 1; this.sent = []; this.listeners = {}; Socket.instance = this; }

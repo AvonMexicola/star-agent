@@ -7,6 +7,7 @@ import {constrainStationSweep} from '../src/station-collision.js';
 import {Navigation} from '../src/navigation.js';
 import {setPlanetSeed} from '../src/generation.js';
 import {WORLD_SEED} from '../src/multiplayer/protocol.js';
+import {stationPhysicsAt} from '../src/station-physics.js';
 
 // Only this dedicated Node process installs inert browser event registration.
 // Network clients never receive a writable navigation object on the server.
@@ -28,15 +29,18 @@ export async function createWorld(){
   return {pods,center:station.centre,scene,station,
     createNavigation(slot,notify){
       const n=new Navigation({addEventListener(){}},notify),pod=pods[slot];
-      n.position.copy(pod.toWorld(new THREE.Vector3(0,pod.interiorBox.min.y+6,pod.openingZ-400),new THREE.Vector3()));
-      n.orientToward(pod.padWorldPosition.clone().addScaledVector(pod.up,6),pod.up);n.gearDeployed=true;n.gearProgress=1;
+      n.station=pod;n.startStation();
       n.gamepad.connected=true;n.gamepad.armed=true;return n;
     },
     adapter(player){
-      const select=()=>{station.activeIndex=(player.hangarId??player.spawnPod)-1;station.parkedPod=station.activeIndex;station.location='hangar';};
+      const select=()=>{
+        const grid=['walk','eva'].includes(player.nav.mode)?stationPhysicsAt(station,player.nav.position):null;
+        station.activeIndex=(grid?.frame.id??player.hangarId??player.spawnPod)-1;
+        station.parkedPod=(player.hangarId??player.spawnPod)-1;station.location='hangar';
+      };
       return new Proxy({}, {get(_target,key){
         select();
-        if(key==='canDock')return (...args)=>{select();return Boolean(player.hangarId&&station.doorsOpen>.98&&station.canDock(...args));};
+        if(key==='canDock')return (...args)=>{select();return Boolean(player.hangarId&&station.activeIndex===player.hangarId-1&&station.doorsOpen>.98&&station.canDock(...args));};
         if(key==='openDoors'||key==='closeDoors')return ()=>{};
         // Concourse travel requires its own authoritative transit protocol.
         if(key==='interactionAt')return ()=>null;

@@ -19,6 +19,8 @@ export function playerSnapshot(p) {
   s.shipPosition=(n.shipPosition??(n.mode==='flight'?n.position.clone().sub(new THREE.Vector3(...n.layout.seatEye).applyQuaternion(n.orientation)):null))?.toArray()??null;
   s.parkedShipPosition=n.shipPosition?.toArray()??null;
   s.travel=n.travel?JSON.parse(JSON.stringify(n.travel)):null;s.travelTarget=n.travelTarget;s.crash=n.crash;
+  s.physicsFrame=n.physicsFrame??null;
+  s.physicsUp=s.physicsFrame?n.stationPhysics.up.toArray():null;
   return s;
 }
 /** One authoritative simulation. Clients send control intent, never positions or damage. */
@@ -37,7 +39,15 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     const task=previous.catch(()=>{}).then(()=>store.savePlayerState(p.account.id,data)).catch(error=>{onError(error);throw failure('Storage unavailable. Try again.','STORAGE_UNAVAILABLE');});
     writes.set(p.account.id,task);task.finally(()=>{if(writes.get(p.account.id)===task)writes.delete(p.account.id);}).catch(()=>{});return task;
   }
-  function release(p){if(p.hangarId){leases.delete(p.hangarId);p.hangarId=null;}}
+  function release(p){if(p.hangarId){if(leases.get(p.hangarId)?.owner===p.id)leases.delete(p.hangarId);p.hangarId=null;}}
+  function reserveSpawn(p){
+    const pod=world.pods.find(pod=>pod.id===p.hangarId&&leases.get(pod.id)?.owner===p.id)
+      ??world.pods.find(pod=>!leases.has(pod.id));
+    if(!pod)throw new Error('All hangars are occupied.');
+    p.hangarId=pod.id;
+    leases.set(pod.id,{id:pod.id,owner:p.id,status:'occupied',expiresAt:now()+LEASE_MS});
+    return pod.id-1;
+  }
   function requestHangar(p){
     if(p.health<=0||p.shipHealth<=0)throw new Error('Respawn before requesting a hangar.');
     if(p.nav.position.distanceTo(world.center)>30000)throw new Error('Approach within 30 km to contact this station.');
@@ -72,7 +82,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(drops.size>=100)throw new Error('Too many loose items in this area.');
         const next=structuredClone(p.inventory);next.containers.pack[m.item]-=m.quantity;next.revision++;
         await persist(p,next);p.inventory=next;
-        const id=randomUUID(),position=p.nav.position.clone().addScaledVector(p.nav.normal,-1.4).toArray();
+        const id=randomUUID(),position=p.nav.position.clone().addScaledVector(p.nav.stationPhysics?.up??p.nav.normal,-1.4).toArray();
         drops.set(id,{id,item:m.item,quantity:m.quantity,position,expiresAt:now()+DROP_MS});
         if(!next.containers.pack[p.weapon])p.weapon=null;
       }else if(m.action==='pickup'){
@@ -86,7 +96,13 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         await persist(p,p.inventory,{weapon:m.weapon});p.weapon=m.weapon;
       }else if(m.action==='respawn'){
         if(p.health>0&&p.shipHealth>0&&!['crashed','destroyed'].includes(p.nav.mode))throw new Error('Your character is still alive.');
-        const nav=world.createNavigation(p.colorIndex,msg=>send(p,{type:'event',event:'notice',message:msg}));await persist(p,p.inventory,{health:100,shipHealth:100});release(p);p.health=100;p.shipHealth=100;p.nav=nav;attach(p);
+        const oldId=p.hangarId,oldLease=leases.get(oldId);
+        try{
+          const slot=reserveSpawn(p),nav=world.createNavigation(slot,msg=>send(p,{type:'event',event:'notice',message:msg}));
+          await persist(p,p.inventory,{health:100,shipHealth:100});
+          if(!players.has(p.id)){release(p);return;}
+          p.health=100;p.shipHealth=100;p.nav=nav;p.spawnPod=p.hangarId;p.input=cleanInput();p.lookYaw=p.lookPitch=0;attach(p);
+        }catch(error){release(p);if(players.has(p.id)){p.hangarId=oldId;if(oldLease)leases.set(oldId,oldLease);}throw error;}
       }else throw new Error('Unknown request.');
       send(p,state(p));send(p,{type:'ack',requestId:m.requestId,ok:true});
     }catch(error){send(p,{type:'ack',requestId:m.requestId,ok:false,error:error.code==='ECONNREFUSED'?'Storage unavailable. Try again.':error.message});}
@@ -109,7 +125,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     for(const [id,d]of drops)if(d.expiresAt<=t)drops.delete(id);
     for(const p of players.values()){
       const l=leases.get(p.hangarId);
-      if(l){
+      if(l&&!p.busy){
         const pod=world.pods[l.id-1],inside=pod.isInsideHangar(p.nav.position)||p.nav.shipPosition&&pod.isInsideHangar(p.nav.shipPosition);
         if(p.nav.dockedAtStation||inside){l.status=p.nav.dockedAtStation?'occupied':'approach';l.expiresAt=t+LEASE_MS;}
         else if(l.expiresAt<=t)release(p);
@@ -161,6 +177,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       if(players.has(account.id)||joining.has(account.id))throw failure('This account is already connected.','ACCOUNT_CONNECTED');
       if(players.size+joining.size>=MAX_PLAYERS)throw failure('All ten player slots are occupied.','ROOM_FULL');
       joining.add(account.id);
+      let pendingPlayer;
       try{
         await departing.get(account.id);
         if(failedDepartures.has(account.id)){await persist(failedDepartures.get(account.id));failedDepartures.delete(account.id);}
@@ -169,11 +186,16 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(closed)throw failure('Server restarting.','ROOM_CLOSED');
         const used=new Set([...players.values()].map(p=>p.colorIndex).concat([...reservedColors.values()]));let slot=0;while(used.has(slot))slot++;reservedColors.set(account.id,slot);
         const p={id:account.id,account:{id:account.id,callsign:account.callsign},send:sendFn,colorIndex:slot,spawnPod:slot+1,hangarId:null,inventory:saved?restoreInventory(saved.inventory):initialInventory(),health:100,shipHealth:100,weapon:saved?.weapon??'rifle-laser',sequence:0,input:cleanInput(),lastInput:now(),lookYaw:0,lookPitch:0,lastShotAt:-Infinity,busy:false,messages:0,rateStart:now()};
+        pendingPlayer=p;
         if(saved){p.health=Math.max(0,Math.min(100,Number.isFinite(saved.health)?saved.health:100));p.shipHealth=Math.max(0,Math.min(100,Number.isFinite(saved.shipHealth)?saved.shipHealth:100));}
         if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&p.weapon!=='mining-laser-tool')p.weapon=null;
-        p.nav=world.createNavigation(slot,message=>send(p,{type:'event',event:'notice',message}));attach(p);await persist(p);players.set(p.id,p);
+        const spawnSlot=reserveSpawn(p);p.spawnPod=p.hangarId;
+        p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));attach(p);await persist(p);
+        if(closed)throw failure('Server restarting.','ROOM_CLOSED');
+        players.set(p.id,p);
         send(p,{...state(p),type:'welcome',id:p.id,seed:WORLD_SEED,version:MULTIPLAYER_VERSION,maxPlayers:MAX_PLAYERS,colorIndex:slot});return p.id;
-      }finally{joining.delete(account.id);reservedColors.delete(account.id);}
+      }catch(error){if(pendingPlayer)release(pendingPlayer);throw error;}
+      finally{joining.delete(account.id);reservedColors.delete(account.id);}
     },
     receive(id,m){
       const p=players.get(id);if(!p||!m||typeof m!=='object'||Array.isArray(m))return;
