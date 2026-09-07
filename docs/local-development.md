@@ -221,3 +221,11 @@ patrol journeys pass. The weapon branch also passed the physical Kestrel ladder,
 launch and Selene landing/exit route and Atlas touch controls. The final visual
 and frame-time acceptance status is recorded in [weapon QA](qa/ship-weapons/production-record.md).
 No service/database restart or public deployment accompanies this integration.
+
+### Construction and creature audio
+
+Successful building placement now plays a settling/locking sound. The
+[sound studio](http://127.0.0.1:5178/tests/gameplay-audio.html) includes a deep
+Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring remains
+with the in-progress fauna feature; the audio callback patch is in
+[the handoff](qa/construction-audio/README.md). No new control bindings.
