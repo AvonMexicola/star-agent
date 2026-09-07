@@ -1940,8 +1940,8 @@ Ship and Settings tabs, plus a development-only Dev console list. Codex owns
 `feat/gameplay-menu` in `/home/cees/projects/star-agent-gameplay-menu`: new
 `src/gameplay-menu.*`, scoped main/controller router/combat entry hooks and menu
 QA/docs. Reuses real native panels and transactions; paginates long lists instead
-of player scrolling. No dependencies or protocol changes. One focused production
-browser QA job uses5491; preserve these hooks during other feature integration.
+of player scrolling. No dependencies or protocol changes. Focused production browser QA on5491 is complete and released; preserve these
+hooks during other feature integration.
 
 ## Persistent local accounts — integrated and verified — 2026-09-07
 
@@ -1999,3 +1999,8 @@ recorded honestly in docs/qa/gameplay-menu.md alongside final captures. Chromium
 / AMD860M ANGLE GLES3.2; no physical-controller or independent visual-acceptance
 claim. Browser QA5491/5397 is released. Preserve the running persistent preview
 service and database; integrate by fast-forwarding the checked feature tree.
+
+Gameplay menu integrated locally by fast-forward to adbd806 on dev/all-features.
+The persistent shared preview on5178 serves src/gameplay-menu.js with the new
+Pilot interface and tab frame. No service/database restart or production deployment
+was performed. SA-UI-002 is integrated; independent review remains pending.

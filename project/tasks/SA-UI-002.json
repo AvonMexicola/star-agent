@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex gameplay menu",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/gameplay-menu",
   "base": "6eda47f75b71f1b71439a674dfc3f57f9eb6bd11",
   "updated": "2026-09-07",
