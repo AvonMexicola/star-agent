@@ -135,8 +135,9 @@ test('bumpers switch blocks, shapes, facilities and resources without confirming
  await expect(page.locator('[data-controller-key="build-tab-shapes"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('#build-dialog')).toBeVisible();
  await page.evaluate(()=>{window.pad.buttons[5]={pressed:false,value:0};window.pad.buttons[0]={pressed:false,value:0};});await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
  await tap(page,5);await expect(page.locator('[data-controller-key="build-tab-facilities"]')).toHaveAttribute('aria-pressed','true');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
+ await tap(page,5);await expect(page.locator('[data-controller-key="build-tab-power"]')).toHaveAttribute('aria-pressed','true');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
  await tap(page,5);await expect(page.locator('[data-controller-key="build-tab-recipes"]')).toHaveAttribute('aria-pressed','true');await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
- await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await expect(page.locator('[data-controller-key="build-tab-facilities"]')).toHaveAttribute('aria-pressed','true');
+ await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await expect(page.locator('[data-controller-key="build-tab-power"]')).toHaveAttribute('aria-pressed','true');await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/star-agent-build-ui/facilities-phone.png'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await tap(page,4);await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);await page.evaluate(()=>window.pad.axes=[0,-1,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','foundation-triangle');await tap(page,0);await expect(page.locator('#build-dialog')).not.toBeVisible();expect(await page.evaluate(()=>window.fixture.build.state.pieceId)).toBe('foundation-triangle');
 });

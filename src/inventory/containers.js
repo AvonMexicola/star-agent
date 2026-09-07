@@ -3,7 +3,7 @@ import { ITEMS } from '../ship-inventory.js';
 export const MINERAL_CAPACITY_PER_BOX = 48;
 export const MINERAL_STACK_KG = 16;
 export const RESOURCE_IDS = ['basalt', 'copper', 'ice'];
-export const PROCESSED_IDS = ['aggregate', 'mineral-binder', 'concrete', 'metal-stock', 'conductor', 'glass'];
+export const PROCESSED_IDS = ['aggregate', 'mineral-binder', 'concrete', 'metal-stock', 'conductor', 'glass', 'uranium-ore', 'helium-3-regolith'];
 export const MATERIAL_IDS = [...RESOURCE_IDS, ...PROCESSED_IDS];
 export const CATALOG = Object.freeze([
   { id: 'rifle-laser', name: 'Laser rifle', detail: 'Solar laser beam · uses laser rifle charges', category: 'weapon', ammo: 'carbine-charge', mass: 3.6, unit: 'item', stack: 1, color: '#eab16c' },
@@ -14,7 +14,7 @@ export const CATALOG = Object.freeze([
   { id: 'sidearm-charge', name: 'Sidearm charges', detail: 'One charge per sidearm pulse', category: 'ammo', mass: .01, unit: 'item', stack: 48, color: '#e88c8e' },
   { id: 'bandage', name: 'Bandage', detail: 'Stops bleeding and restores 15 health', category: 'quick', heal: 15, stopsBleeding: true, mass: .1, unit: 'item', stack: 5, color: '#d6ddd4' },
   { id: 'healing-stim', name: 'Healing stim', detail: 'Restores 40 health', category: 'quick', heal: 40, mass: .15, unit: 'item', stack: 5, color: '#8cdeb0' },
-  ...PROCESSED_IDS.map(id => ({ id, name: ({aggregate:'Aggregate', 'mineral-binder':'Dry mineral binder', concrete:'Dry mineral concrete', 'metal-stock':'Metal stock', conductor:'Conductor stock', glass:'Basic glass'})[id], detail:'Field-processed construction material', mass:1, unit:'kg', stack:MINERAL_STACK_KG, color:'#b5c8bc' })),
+  ...PROCESSED_IDS.map(id => ({ id, name: ({aggregate:'Aggregate', 'mineral-binder':'Dry mineral binder', concrete:'Dry mineral concrete', 'metal-stock':'Metal stock', conductor:'Conductor stock', glass:'Basic glass', 'uranium-ore':'Uranium-bearing ore', 'helium-3-regolith':'Helium-3-rich regolith'})[id], detail:id==='uranium-ore'?'Rare Pyre outcrop concentrate · uranium generator fuel':id==='helium-3-regolith'?'Selene surface byproduct · enriched fusion feedstock':'Field-processed construction material', mass:1, unit:'kg', stack:MINERAL_STACK_KG, color:'#b5c8bc' })),
   ...ITEMS.map(item => ({ ...item, unit: 'item', stack: item.id === 'ration' ? 10 : 1, color: '#b5c8bc' })),
   { id: 'basalt', name: 'Basalt concentrate', detail: 'Collected rock concentrate', mass: 1, unit: 'kg', stack: MINERAL_STACK_KG, color: '#b4b7c4' },
   { id: 'copper', name: 'Copper ore', detail: 'Metal-bearing mineral', mass: 1, unit: 'kg', stack: MINERAL_STACK_KG, color: '#df9c68' },

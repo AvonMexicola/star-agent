@@ -468,11 +468,131 @@
         "WhiteArmour"
       ]
     },
+    "solar-array": {
+      "triangles": 5292,
+      "drawPrimitives": 4,
+      "bytes": 460208,
+      "sha256": "de5852e8351768b776c135277d682d614834cf49c19e00fd9d2db1d3f82aed88",
+      "bounds": {
+        "min": [
+          -1.7999999523162842,
+          0.0,
+          -1.2050000429153442
+        ],
+        "max": [
+          1.7999999523162842,
+          1.193000078201294,
+          1.2049999237060547
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "wind-turbine": {
+      "triangles": 1728,
+      "drawPrimitives": 5,
+      "bytes": 153172,
+      "sha256": "57f46771c0be8266fb2de60b8903f9941f1df1bc75550fd2f6a7722ea5099ca4",
+      "bounds": {
+        "min": [
+          -1.3200000524520874,
+          0.0,
+          -1.3200000524520874
+        ],
+        "max": [
+          1.3200000524520874,
+          5.900000095367432,
+          1.3200000524520874
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "battery": {
+      "triangles": 1512,
+      "drawPrimitives": 4,
+      "bytes": 135080,
+      "sha256": "c9dc89894f9af24468e3e29c6d2fb5129865b548270b236021223ed4f9b167ba",
+      "bounds": {
+        "min": [
+          -0.800000011920929,
+          0.0,
+          -0.5400000214576721
+        ],
+        "max": [
+          0.800000011920929,
+          1.7200000286102295,
+          0.5
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "uranium-generator": {
+      "triangles": 1512,
+      "drawPrimitives": 4,
+      "bytes": 135064,
+      "sha256": "71044cc7b7419dd5bd9f7f63e3a442e3bf4f0e44845989555a2ea4254cd39175",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -1.0399999618530273
+        ],
+        "max": [
+          1.0,
+          2.320000171661377,
+          1.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "helium-generator": {
+      "triangles": 1512,
+      "drawPrimitives": 4,
+      "bytes": 135052,
+      "sha256": "fd0bd8ca18294a8b43ecb67991a56a424486dbba6d1ad9449ae01ebadcbf808a",
+      "bounds": {
+        "min": [
+          -1.5,
+          0.0,
+          -1.0399999618530273
+        ],
+        "max": [
+          1.5,
+          2.320000171661377,
+          1.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
     "mainframe": {
       "triangles": 2268,
       "drawPrimitives": 4,
       "bytes": 200120,
-      "sha256": "eb9e6e05fcb8f747d8f3fcb5b8cf2b74ab528cec23fa91081c825412b62361a4",
+      "sha256": "54c3df664b83b447783a73b8c8f79db000803b35f1c1ca7f76b117365c54c327",
       "bounds": {
         "min": [
           -0.550000011920929,
@@ -496,7 +616,7 @@
       "triangles": 1512,
       "drawPrimitives": 3,
       "bytes": 131728,
-      "sha256": "c3de30baae87b23599f3cfe183429c68c65064ac561e800d125018737c22d4c1",
+      "sha256": "83f8f1fde7e528996a01f5ddac74ee41b276f1028db77ceafcfe6e9df9774808",
       "bounds": {
         "min": [
           -0.6000000238418579,
@@ -516,6 +636,6 @@
       ]
     }
   },
-  "aggregateBytes": 4097084,
-  "aggregateTriangles": 45904
+  "aggregateBytes": 5115660,
+  "aggregateTriangles": 57460
 }

@@ -36,6 +36,11 @@ export const PIECES = Object.freeze({
   rack:{id:'rack',label:'Storage rack',category:'utility',cost:{'metal-stock':10},footprint:[2.4,1],height:2.4,storageBoxes:8,colliders:[box([-1.2,0,-.5],[1.2,2.4,.5])]},
   terminal:{id:'terminal',label:'Inventory terminal',category:'utility',cost:{'metal-stock':5,conductor:3,glass:2},footprint:[1.4,.8],height:1.5,colliders:[box([-.7,0,-.4],[.7,1.5,.4])]},
   'hangar-door':{id:'hangar-door',label:'Nomad hangar door',category:'wall',cost:{concrete:48,'metal-stock':32,conductor:4},footprint:[16,.6],height:6,colliders:[box([-8,0,-.3],[-7.3,6,.3]),box([7.3,0,-.3],[8,6,.3]),box([-7.3,5.4,-.3],[7.3,6,.3])],door:[{...box([-7.29,0,-.12],[7.29,5.39,.12],'door'),collapse:.96}]},
+  'solar-array':{id:'solar-array',label:'Solar array · 2.5 kW',category:'utility',cost:{'metal-stock':8,conductor:6,glass:8},footprint:[3.6,2.4],height:1.2,colliders:[box([-1.8,0,-1.2],[1.8,1.2,1.2])]},
+  'wind-turbine':{id:'wind-turbine',label:'Wind turbine · 3 kW',category:'utility',cost:{concrete:8,'metal-stock':16,conductor:4},footprint:[3,3],height:6,colliders:[box([-1.5,0,-1.5],[1.5,6,1.5])]},
+  battery:{id:'battery',label:'Battery bank · 12 kWh',category:'utility',cost:{'metal-stock':10,conductor:8,glass:2},footprint:[1.6,1],height:1.8,colliders:[box([-.8,0,-.5],[.8,1.8,.5])]},
+  'uranium-generator':{id:'uranium-generator',label:'Uranium generator · 4 kW',category:'utility',cost:{concrete:20,'metal-stock':20,conductor:8},footprint:[2,2],height:2.4,colliders:[box([-1,0,-1],[1,2.4,1])]},
+  'helium-generator':{id:'helium-generator',label:'Helium-3 generator · 12 kW',category:'utility',cost:{concrete:24,'metal-stock':32,conductor:16,glass:8},footprint:[3,2],height:2.4,colliders:[box([-1.5,0,-1],[1.5,2.4,1])]},
   mainframe: { id:'mainframe', label:'Base mainframe', category:'utility', cost:{'metal-stock':5,conductor:3,glass:2}, footprint:[1.1,.7], height:1.8, colliders:[panel([-.55,0,-.35],[.55,1.8,.35])] },
   crate: { id:'crate', label:'Storage crate', category:'utility', cost:{'metal-stock':3}, footprint:[1.2,.8], height:.75, colliders:[panel([-.6,0,-.4],[.6,.75,.4])] },
 });
