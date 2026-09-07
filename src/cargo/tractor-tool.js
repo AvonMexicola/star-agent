@@ -3,6 +3,7 @@ import { Plasma } from '../effects/energy-effects.js';
 import { cargoAsset } from './visuals.js';
 import { crateSize } from './grid.js';
 import { aimedCrate,tractorSlot,TRACTOR_INTERVAL } from './tractor-physics.js';
+import {isHandsFree,HANDS_FREE_REASON,createHubFireGate} from '../station-hub-policy.js';
 import './tractor.css';
 
 /** Presentation/input only. All custody, collision and movement commits go
@@ -13,10 +14,16 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
   document.body.append(panel);const $=s=>panel.querySelector(s),power=$('[data-tractor="power"]');
   const ghost=new THREE.BoxHelper(new THREE.Mesh(new THREE.BoxGeometry(1,1,1)),0xb6efd1);ghost.name='Tractor compatible grid slot';ghost.visible=false;scene.add(ghost);
   let busy=false,pendingOp=null,queued=null,key=false,pointer=false,pointerId=null,distance=2,elapsed=0,message='',target=null,slot=null,time=0,triggerBefore=false,requireRelease=false,lastOwner=null;
+  let restrictedLast=false,inputSequence=0;
+  const hubGate=createHubFireGate(),physicalPointers=new Set();
   const loose=()=>api.snapshot().loose??[],held=()=>loose().find(c=>c.holder===api.snapshot().owner&&c.until>Date.now());
-  const live=()=>nav.tractorActive&&['walk','eva'].includes(nav.mode)&&nav.enabled&&nav.focused&&!document.hidden&&!nav.buildActive&&!nav.roverOccupied&&!document.querySelector('dialog[open]');
+  const restricted=()=>isHandsFree(nav)||Boolean(nav.travel);
+  const live=()=>!restricted()&&nav.tractorActive&&['walk','eva'].includes(nav.mode)&&nav.enabled&&nav.focused&&!document.hidden&&!nav.buildActive&&!nav.roverOccupied&&!document.querySelector('dialog[open]');
   const clear=()=>{key=false;pointer=false;pointerId=null;requireRelease=true;nav.gamepad.suspend();};
   async function command(op,fields={}){
+    // A queued secure/align must recheck a passenger transition after the
+    // preceding movement commit. Releasing an existing lease stays possible.
+    if(op!=='tractor-release'&&(!live()||!hubGate.armed))return;
     if(busy){if(op!=='tractor-move')queued={op,fields};return;}busy=true;pendingOp=op;
     try{const result=await api.command({op,...fields});if(op==='tractor-grab')message='';else if(result.message)message=result.message;}
     catch(e){message=e.message;requireRelease=true;key=false;pointer=false;}
@@ -25,10 +32,12 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
   async function release(){const c=held();if(c)await command('tractor-release',{crate:c.id});}
   function holster(){nav.tractorActive=false;clear();void release();}
   async function equip(){
+    if(restricted())throw new Error(isHandsFree(nav)?HANDS_FREE_REASON:'Stop transit before equipping the tractor.');
     if(!['walk','eva'].includes(nav.mode)||api.snapshot().account?.carried)throw new Error('Stand with empty hands before equipping the tractor.');
-    await api.equipTractor?.();nav.tractorActive=true;clear();message='Aim at a crate. Release controls, then hold RT / T to lock.';
+    await api.equipTractor?.();if(restricted())throw new Error(isHandsFree(nav)?HANDS_FREE_REASON:'Stop transit before equipping the tractor.');
+    nav.tractorActive=true;clear();message='Aim at a crate. Release controls, then hold RT / T to lock.';
   }
-  function secure(){const c=held();if(!c||!slot||busy&&pendingOp!=='tractor-move')return false;requireRelease=true;key=false;pointer=false;pointerId=null;void command('tractor-stow',{crate:c.id,ship:slot.ship.id});return true;}
+  function secure(){const c=held();if(!live()||!hubGate.armed||!c||!slot||busy&&pendingOp!=='tractor-move')return false;requireRelease=true;key=false;pointer=false;pointerId=null;void command('tractor-stow',{crate:c.id,ship:slot.ship.id});return true;}
   function align(){const c=held(),ship=ships().find(s=>s.owner===api.snapshot().owner&&s.hull===nav.shipId);if(c&&ship)void command('tractor-align',{crate:c.id,ship:ship.id});}
   function adjust(delta){distance=THREE.MathUtils.clamp(distance+delta,.8,11);}
   $('[data-tractor="near"]').onclick=()=>adjust(-.5);$('[data-tractor="far"]').onclick=()=>adjust(.5);$('[data-tractor="align"]').onclick=align;$('[data-tractor="stow"]').onclick=secure;$('[data-tractor="exit"]').onclick=holster;
@@ -36,21 +45,26 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
   // Multi-touch does not reliably synthesize click events in Chromium.
   for(const [id,action]of [['near',()=>adjust(-.5)],['far',()=>adjust(.5)],['align',align],['stow',secure],['exit',holster]])$(`[data-tractor="${id}"]`).addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.pointerType==='pen'){e.preventDefault();action();}});
   power.addEventListener('pointerdown',e=>{if(!live())return;e.preventDefault();pointer=true;pointerId=e.pointerId;requireRelease=false;power.setPointerCapture(e.pointerId);});
-  const pointerUp=e=>{if(e.pointerId===pointerId){pointer=false;pointerId=null;}};power.addEventListener('pointerup',pointerUp);power.addEventListener('pointercancel',clear);power.addEventListener('lostpointercapture',pointerUp);
+  const physicalDown=e=>{if(e.button===0&&(nav.locked||e.target.closest?.('[data-tractor="power"]')))physicalPointers.add(e.pointerId);};
+  const pointerUp=e=>{physicalPointers.delete(e.pointerId);if(e.pointerId===pointerId){pointer=false;pointerId=null;}};power.addEventListener('pointerup',pointerUp);power.addEventListener('pointercancel',clear);power.addEventListener('lostpointercapture',pointerUp);
   const down=e=>{if(!live()||e.repeat||e.target.closest('dialog,input,textarea'))return;if(e.code==='KeyT'){key=true;requireRelease=false;}if(e.code==='KeyR')holster();if(e.code==='BracketLeft')adjust(-.5);if(e.code==='BracketRight')adjust(.5);};
   const up=e=>{if(e.code==='KeyT')key=false;};
   const mouse=e=>{if(live()&&e.button===0&&nav.locked){pointer=true;pointerId=e.pointerId;requireRelease=false;}};
-  document.addEventListener('keydown',down);document.addEventListener('keyup',up);nav.canvas.addEventListener('pointerdown',mouse);window.addEventListener('pointerup',pointerUp);window.addEventListener('blur',clear);document.addEventListener('visibilitychange',clear);document.addEventListener('pointerlockchange',clear);
+  const blurred=()=>{physicalPointers.clear();clear();},visibility=()=>{if(document.hidden)blurred();};
+  document.addEventListener('pointerdown',physicalDown);document.addEventListener('keydown',down);document.addEventListener('keyup',up);nav.canvas.addEventListener('pointerdown',mouse);window.addEventListener('pointerup',pointerUp);window.addEventListener('pointercancel',pointerUp);window.addEventListener('blur',blurred);document.addEventListener('visibilitychange',visibility);document.addEventListener('pointerlockchange',clear);
   nav.onTractorHolster=holster;
   return {equip,holster,secure,get held(){return held();},get active(){return Boolean(nav.tractorActive);},
     get state(){return {active:Boolean(nav.tractorActive),held:held()?.id??null,target:target?.id??null,slot:slot?{ship:slot.ship.id,position:slot.position.toArray()}:null,distance,busy,message,beam:[...beams.values()].some(b=>b.mesh.visible),loose:models.size};},
     controller(pad){if(!nav.tractorActive||!live())return;for(const [index,action]of [[12,()=>adjust(-.5)],[13,()=>adjust(.5)],[14,align],[15,holster]])if(pad.pressed.has(index)){pad.pressed.delete(index);action();}},
     update(dt,origin){
+      const blocked=restricted(),physicalHeld=Boolean(physicalPointers.size||nav.physicalKeys?.has('KeyT')||nav.toolTrigger>.1);
+      const triggerReady=hubGate.update(blocked,physicalHeld,++inputSequence);
+      if(blocked&&!restrictedLast)holster();restrictedLast=blocked;
       time+=dt;elapsed+=dt;const s=api.snapshot(),all=ships(),items=loose(),c=held(),active=live();
       if(lastOwner!==null&&lastOwner!==s.owner){nav.tractorActive=false;clear();}lastOwner=s.owner;
       panel.hidden=!active;
-      let trigger=active&&Boolean(key||pointer||(nav.gamepad.armed&&nav.toolTrigger>.1));
-      if(!trigger&&(!nav.controllerActive||nav.gamepad.armed))requireRelease=false;
+      let trigger=active&&triggerReady&&Boolean(key||pointer||(nav.gamepad.armed&&nav.toolTrigger>.1));
+      if(!trigger&&!physicalHeld&&triggerReady&&(!nav.controllerActive||nav.gamepad.armed))requireRelease=false;
       if(requireRelease)trigger=false;
       if(!active){key=false;pointer=false;requireRelease=true;}
       target=active&&!c?aimedCrate(nav.position,nav.orientation,all,items,worldClear):null;
@@ -74,6 +88,6 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
       }
       for(const[id,model]of models)if(!ids.has(id)){model.removeFromParent();models.delete(id);beams.get(id)?.dispose();beams.delete(id);}
     },
-    dispose(){holster();panel.remove();ghost.removeFromParent();ghost.geometry.dispose();ghost.material.dispose();for(const model of models.values())model.removeFromParent();for(const beam of beams.values())beam.dispose();document.removeEventListener('keydown',down);document.removeEventListener('keyup',up);nav.canvas.removeEventListener('pointerdown',mouse);window.removeEventListener('pointerup',pointerUp);window.removeEventListener('blur',clear);document.removeEventListener('visibilitychange',clear);document.removeEventListener('pointerlockchange',clear);},
+    dispose(){holster();panel.remove();ghost.removeFromParent();ghost.geometry.dispose();ghost.material.dispose();for(const model of models.values())model.removeFromParent();for(const beam of beams.values())beam.dispose();document.removeEventListener('pointerdown',physicalDown);document.removeEventListener('keydown',down);document.removeEventListener('keyup',up);nav.canvas.removeEventListener('pointerdown',mouse);window.removeEventListener('pointerup',pointerUp);window.removeEventListener('pointercancel',pointerUp);window.removeEventListener('blur',blurred);document.removeEventListener('visibilitychange',visibility);document.removeEventListener('pointerlockchange',clear);},
   };
 }

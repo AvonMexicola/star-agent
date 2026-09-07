@@ -1,0 +1,15 @@
+{
+  "name": "Meridian Bastion / station defense battery",
+  "units": "metres",
+  "up": "+Y",
+  "forward": "-Z",
+  "yawNode": "Bastion_Yaw",
+  "pitchNode": "Bastion_Pitch",
+  "pitchPivot": [0, 9, 0],
+  "muzzles": [
+    {"node": "Bastion_Muzzle_Port", "position": [-4.2, 0, -29]},
+    {"node": "Bastion_Muzzle_Starboard", "position": [4.2, 0, -29]}
+  ],
+  "baseBounds": {"min": [-10, 0, -10], "max": [10, 4, 10]},
+  "budget": {"triangles": 10000, "bytes": 1000000, "textureMax": 1024}
+}

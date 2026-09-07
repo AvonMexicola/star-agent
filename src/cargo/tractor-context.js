@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { aimedCrate,detachedPose,tractorStep,tractorSlot,tractorClear } from './tractor-physics.js';
+import {isHandsFree} from '../station-hub-policy.js';
 /** Same geometry/intent rules for solo and authoritative multiplayer. */
 export function tractorContext({nav,ships,loose,worldClear,enabled=()=>true}){
-  const active=()=>enabled()&&['walk','eva'].includes(nav.mode)&&!nav.travel&&!nav.roverOccupied&&nav.shipSpeed<1;
+  const active=()=>enabled()&&!isHandsFree(nav)&&['walk','eva'].includes(nav.mode)&&!nav.travel&&!nav.roverOccupied&&nav.shipSpeed<1;
   return {
     grab(c,source){
       if(!active())return false;

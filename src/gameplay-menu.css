@@ -159,3 +159,15 @@ dialog.gameplay-screen{animation:none!important}
  #dev-launcher.gameplay-screen .dev-review-list a{min-height:52px;padding:12px;font-size:12px}
  #dev-launcher.gameplay-screen .dev-review-list .gameplay-pagination{grid-column:1/-1}
 }
+
+/* Physical elevator destinations share the same paged controller/touch shell. */
+#station-elevator-dialog.gameplay-screen .gameplay-content{max-width:850px;width:100%;align-self:center}
+#station-elevator-dialog.gameplay-screen .station-destinations{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}
+#station-elevator-dialog.gameplay-screen .station-destinations button{min-height:48px;padding:10px}
+#station-elevator-dialog.gameplay-screen .elevator-status:empty{display:none}
+@media(max-width:749px),(max-height:719px){
+ #station-elevator-dialog.gameplay-screen .station-destinations{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+ #station-elevator-dialog.gameplay-screen .elevator-location{font-size:12px;line-height:1.5}
+ #station-elevator-dialog.gameplay-screen h2{font-size:23px;margin:8px 0}
+}
+@media(max-height:549px){#station-elevator-dialog.gameplay-screen .eyebrow{display:none}#station-elevator-dialog.gameplay-screen .elevator-location{margin:6px 0}}
