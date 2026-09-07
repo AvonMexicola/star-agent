@@ -22,12 +22,12 @@ export function createTrading({store,players,world,persistent,flushWrites,now=Da
   const terminalReach=(p,id)=>{const point=terminalPoint(id);return point&&p.health>0&&p.nav.mode==='walk'&&p.nav.position.distanceTo(point)<2.8;};
   function context(p){return {
     terminal:id=>terminalReach(p,id),
-    docked:(s,id)=>{const n=players.get(s.owner)?.nav;return n&&n.shipId===s.hull&&n.speed<1&&!n.travel&&(stationed(p,id)||onTradePad(pose(s)?.position,state.terminals[id]));},
+    docked:(s,id)=>{const n=players.get(s.owner)?.nav;return n&&n.shipId===s.hull&&n.shipSpeed<1&&!n.travel&&(stationed(p,id)||onTradePad(pose(s)?.position,state.terminals[id]));},
     resources:id=>(state.accounts[p.id]?.resources?.[id]??0)+(p.inventory.containers.pack[id]??0),
     crate:(s,c)=>{const t=pose(s);return t&&['walk','eva'].includes(p.nav.mode)&&aboard(p.nav.position,t,s.hull)&&nearCrate(p.nav.position,t,s.hull,c);},
     grid:s=>{const t=pose(s);return t&&p.nav.mode==='walk'&&aboard(p.nav.position,t,s.hull)&&nearGrid(p.nav.position,t,s.hull);},
     loot:s=>{const other=players.get(s.owner),t=pose(s);return other&&t&&(other.shipHealth<=0||aboard(p.nav.position,t,s.hull));},
-    haul:(s,to,c)=>{const t=pose(s),dest=pose(to),other=players.get(s.owner);return t&&dest&&p.nav.mode==='walk'&&other.nav.speed<1&&p.nav.speed<1&&dest.position.distanceTo(t.position)<40&&nearCrate(p.nav.position,t,s.hull,c,6)&&(other.shipHealth<=0||aboard(p.nav.position,t,s.hull));},
+    haul:(s,to,c)=>{const t=pose(s),dest=pose(to),other=players.get(s.owner);return t&&dest&&p.nav.mode==='walk'&&other.nav.shipSpeed<1&&p.nav.shipSpeed<1&&dest.position.distanceTo(t.position)<40&&nearCrate(p.nav.position,t,s.hull,c,6)&&(other.shipHealth<=0||aboard(p.nav.position,t,s.hull));},
   };}
   return {
     get state(){return state;},

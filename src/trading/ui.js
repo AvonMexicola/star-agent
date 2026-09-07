@@ -10,7 +10,7 @@ export function createTradingUI(api,nav){
   const $=s=>dialog.querySelector(s);
   const button=(label,key,fn,disabled=false)=>{const b=document.createElement('button');b.textContent=label;b.dataset.controllerKey=key;b.disabled=disabled;b.onclick=fn;return b;};
   const select=(list,current,fn,prefix)=>{const wrap=document.createElement('div');wrap.className='trade-choices';for(const o of list){const b=button(o.label,`${prefix}-${o.id}`,()=>{fn(o.id);render();},o.disabled);b.setAttribute('aria-pressed',String(o.id===current));wrap.append(b);}return wrap;};
-  async function run(fields){if(busy)return;busy=true;message='Saving transaction…';render();try{const result=await api.command({...fields,ship:shipId,terminal,source});message=result.message??'Transaction saved.';}catch(e){message=e.message;}finally{busy=false;render();}}
+  async function run(fields){if(busy)return;const focusKey=document.activeElement?.dataset?.controllerKey;busy=true;message='Saving transaction…';render();try{const result=await api.command({...fields,ship:shipId,terminal,source});message=result.message??'Transaction saved.';}catch(e){message=e.message;}finally{busy=false;render();if(focusKey)dialog.querySelector(`[data-controller-key="${CSS.escape(focusKey)}"]:not(:disabled)`)?.focus({preventScroll:true});}}
   function render(){
     const focused=document.activeElement?.dataset?.controllerKey,s=api.snapshot(),ships=s.ships;
     if(!ships.some(h=>h.id===shipId))shipId=ships.find(h=>h.hull===nav.shipId&&h.owner===s.owner)?.id??ships[0]?.id??'';

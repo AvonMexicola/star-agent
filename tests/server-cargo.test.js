@@ -30,6 +30,10 @@ test('server supports Atlas cargo hull and blocks2SBU hand pickup',async t=>{
  assert.equal((await f.request(a.id,{action:'cargoHull',hull:'atlas'})).ok,true);assert.equal(a.nav.layout.floorY,4);assert.ok(a.nav.freighter);
  assert.equal((await f.request(a.id,{op:'buy',ship:`${a.id}:atlas`,terminal:`station:${a.hangarId}`,resource:'basalt',sbu:64})).ok,true);
  assert.equal(f.room.trading.state.ships[`${a.id}:atlas`].crates[0].sbu,64);
+ assert.equal((await f.request(a.id,{op:'buy',ship:`${a.id}:atlas`,terminal:`station:${a.hangarId}`,resource:'basalt',sbu:2})).ok,true);
+ const two=f.room.trading.state.ships[`${a.id}:atlas`].crates.find(c=>c.sbu===2);a.nav.position.copy(a.nav.fromShipLocal(new THREE.Vector3(-5,5.75,5.3)));a.nav.insideShip=true;
+ const denied=await f.request(a.id,{op:'take',ship:`${a.id}:atlas`,crate:two.id});assert.equal(denied.ok,false);assert.match(denied.error,/Only a 1 SBU/);assert.equal(f.room.trading.state.accounts[a.id].carried,null);
+
 });
 test('isolated PostgreSQL migration, concurrent seller settlement and restart preserve cargo',async t=>{
  const root=await mkdtemp('/home/cees/.cache/star-agent-sbu/database-'),server=createServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;await new Promise(r=>server.close(r));
