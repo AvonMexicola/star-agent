@@ -42,7 +42,8 @@ test('roof decks catch landings and allow continued walking across their rounded
   const roof=p(1,type,[0,3.306,0]);let pos=[0,5.75,0],grounded=false;
   for(let i=0;i<12;i++){const result=constrainBuildStep(pos,[pos[0]+.05,pos[1]-.09,pos[2]],[roof]);pos=result.point;grounded ||= result.grounded;}
   assert.ok(grounded,type);assert.ok(pos[0]>.5,`${type} must not trap a landing player`);assert.ok(Math.abs(pos[1]-5.556)<.001,type);
-  for(let i=0;i<18;i++){const result=constrainBuildStep(pos,[pos[0],pos[1]-.05,pos[2]+.1],[roof]);assert.ok(result.point[2]>pos[2]+.09,`${type} walkable curve`);pos=result.point;}
+  for(let i=0;i<20;i++){const result=constrainBuildStep(pos,[pos[0],pos[1]-.3,pos[2]+.1],[roof]);assert.ok(result.point[2]>pos[2]+.09,`${type} walkable curve`);pos=result.point;const skin=3.306+Math.max(.012,roofProfile(PIECES[type].roofShape,pos[0],Math.min(2,pos[2])));assert.ok(pos[1]-1.65-skin<.16,`${type} feet follow visible curve`);}
+  const over=constrainBuildStep(pos,[pos[0],pos[1]-.1,2.1],[roof]);assert.equal(over.grounded,false,`${type} no invisible eave support`);assert.ok(over.point[1]<pos[1]);
  }
 });
 test('square caps follow angled ceilings and retain quarter-turn trim choices',()=>{
