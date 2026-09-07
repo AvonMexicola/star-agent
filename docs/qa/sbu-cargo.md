@@ -101,3 +101,29 @@ labels show size and resource. Materials/labels are instanced; dense manifests
 retain authored detail for the nearest24 crates and use authored low-detail meshes
 for the remainder. All512 individual 1 SBU crates packed in296 ms in a CPU probe;
 this does not establish rendered performance.
+
+
+## Final checked delivery
+
+Runtime **3c7af88** passes **849 unit checks**, **97 multiplayer checks with one
+existing SQL-only fixture skipped**, production build and full-range repository
+checks. The final affected browser run passes both cases in2.5minutes: **6 SBU
+Nomad** purchase/walking/carry/stow/focus/phone1.6minutes, and player-pad build/
+walking/phone shop50.2seconds. No captured page/console errors. The earlier
+**512 SBU Atlas**53.5second check remains applicable; its runtime and layout
+were unchanged by the final Nomad/phone refinements. Captures inspected by builder.
+
+The final GPU job overlapped social's corrected first pass after cargo consulted
+an outdated log and an earlier idle process snapshot. The steward stopped the
+remaining social job, preserving its passed case. Cargo finished its two cases
+and released at18:23:06UTC; no further cargo graphics jobs are planned. These are
+functional/visual checks, with no exclusive-GPU or FPS claim.
+
+| Capture | Evidence |
+| --- | --- |
+| [Nomad hold](sbu-cargo/nomad-full.png) | Six crates below the complete cabin liner; centre aisle and existing chest retained |
+| [Atlas hold](sbu-cargo/atlas-full.png) | Eight64SBU containers along both sides; belly lift clear |
+| [Station terminal](sbu-cargo/station-terminal.png) | Existing physical console exposes Cargo & Trade |
+| [Phone manifest](sbu-cargo/manifest-390.png) | Final6SBU manifest with explicit paging |
+| [Player terminal](sbu-cargo/surface-pad.png) | Built pad, approach ramps and readable display on a dark surface |
+| [Phone shop](sbu-cargo/player-shop-phone.png) | Price/withdraw controls fit inside their rows without scrolling |
