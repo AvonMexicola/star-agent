@@ -24,17 +24,17 @@ export function createNomadCabinControls(nav) {
   window.addEventListener('blur', cancel);
   document.addEventListener('visibilitychange', cancel);
   function update() {
-    const usable = Boolean(nav.layout.berth) && ['flight', 'landed', 'walk'].includes(nav.mode) && available();
+    const usable = (Boolean(nav.layout.berth)||nav.shipId==='atlas') && !nav.roverOccupied && ['flight', 'landed', 'walk'].includes(nav.mode) && available();
     const next = `${nav.mode}:${nav.berthRest}:${Boolean(nav.berthTransition)}:${usable}`;
     if (next !== context) { cancel();context = next; }
-    root.hidden = !usable;
+    root.hidden = !usable;root.setAttribute('aria-label',nav.shipId==='atlas'?'Atlas cabin controls':'Nomad cabin controls');
     const walking = nav.mode === 'walk';pad.hidden = !walking || nav.berthRest || Boolean(nav.berthTransition);
-    const hit = walking && nav.shipPosition ? nav.shipInteraction(nav.toShipLocal()) : null;
+    const hit = walking && nav.vehicle?.interaction?'rover':walking && nav.shipPosition ? nav.shipInteraction(nav.toShipLocal()) : null;
     const secured = hit === 'door' && nav.cabinFlight && !nav.spaceParked;
     action.disabled = Boolean(nav.berthTransition) || secured || (walking && !nav.berthRest && !hit);
     action.textContent = nav.berthTransition ? (nav.berthRest ? 'Settling into berth' : 'Standing up')
       : nav.berthRest ? 'Leave berth' : !walking ? 'Leave pilot seat' : hit === 'berth' ? 'Rest in berth'
-        : hit === 'storage' ? 'Open cargo' : secured ? 'Hatch secured in flight' : hit === 'door' ? (nav.doorOpen ? 'Close hatch' : 'Open hatch')
+        : hit === 'rover' ? 'Board Burrow' : hit?.startsWith('lift:') ? 'Use cargo lift' : hit === 'storage' ? 'Open cargo' : secured ? 'Hatch secured in flight' : hit === 'door' ? (nav.doorOpen ? 'Close hatch' : 'Open hatch')
           : hit === 'seat' ? 'Sit at controls' : 'Approach a control';
   }
   return { update };

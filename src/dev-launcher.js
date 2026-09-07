@@ -13,6 +13,7 @@ export function createDevLauncher({nav,options,seed,available=()=>true}){
   for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'kestrel',start:'orbit',stationExterior:'1',exteriorView:'overview',seed:String(seed)}))exteriorURL.searchParams.set(key,value);
   exteriorLink.href=exteriorURL.href;
   dialog.querySelector('.dev-footer').append(exteriorLink);
+  const roverLink=document.createElement('a');roverLink.textContent='Atlas + Burrow mining rover · Selene ↗';roverLink.dataset.controllerKey='dev-mining-rover';const roverURL=new URL(window.location.href);for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'atlas',start:'moon',rover:'1',seed:String(seed)}))roverURL.searchParams.set(key,value);roverLink.href=roverURL.href;dialog.querySelector('.dev-footer').append(roverLink);
   const shipButtons=[],locationButtons=[];
   const add=(item,parent,kind,handler)=>{const button=document.createElement('button');button.type='button';button.dataset.controllerKey='dev-'+kind+'-'+item.id;button.dataset[kind]=item.id;const title=document.createElement('strong'),detail=document.createElement('span');title.textContent=item.name;detail.textContent=item.detail;button.append(title,detail);button.addEventListener('click',()=>{handler(item.id);render();});parent.append(button);return button;};
   for(const item of DEV_SHIPS)shipButtons.push(add(item,dialog.querySelector('.dev-ships'),'ship',id=>ship=id));
