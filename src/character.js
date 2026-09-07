@@ -120,6 +120,12 @@ export function isUpperBodyTrack(trackName) {
 
 const FIRE_STATES = Object.freeze(['fire-rifle', 'fire-pistol']);
 const NO_FIRE = Object.freeze({ allowFire: false });
+const OPEN_GRIP_STATES = new Set(['wave', 'rest', 'climb', 'dead', 'sit']);
+const LOWER_BODY_KEYS = Object.freeze({
+  idle: 'idle-lower', walk: 'walk-lower', run: 'run-lower',
+  'crouch-walk': 'crouch-walk-lower', 'carry-walk': 'carry-walk-lower', 'wounded-walk': 'wounded-walk-lower',
+});
+const BASE_LOCOMOTION_CLIPS = Object.freeze(Object.keys(LOWER_BODY_KEYS));
 
 const clamp = (value, min, max) => (value < min ? min : value > max ? max : value);
 const finite = (value, fallback) => (Number.isFinite(value) ? value : fallback);
@@ -322,6 +328,7 @@ export class Character {
     this.skeleton = null;
     this._headBone = null;
     this._headParts = [];
+    this._gripMorphs = [];
     this._headScale = 1;
     this._headHidden = false;
 
@@ -332,6 +339,7 @@ export class Character {
     this.missingClips = [];
 
     this._keys = [];                          // stable iteration order, no per-frame allocation
+    this._strideTypes = [];                   // 0 = fixed, 1 = walk, 2 = run
     this._weight = Object.create(null);
     this._target = Object.create(null);
     this._oneShots = Object.create(null);
@@ -342,6 +350,7 @@ export class Character {
     this._lastHealth = null;
     this._hitCooldown = 0;
     this._correctedPose = new Map();
+    this._activeCorrections = [];
     this._lastSpeed = 0;
     this._walkSlot = 'walk';
     this._onFinished = (event) => this._handleFinished(event);
@@ -427,6 +436,12 @@ export class Character {
     this._requiredClips = new Set(Array.isArray(required) && required.length
       && required.every(name => typeof name === 'string' && name.length) ? required : REQUIRED_CLIPS);
     this.model.traverse((node) => {
+      // The authored rig's morph channels are fixed. Equipment socket children
+      // do not need a full scene traversal to find these two glove shapes.
+      const morphs = node.morphTargetDictionary;
+      if (morphs && (morphs.GripRight !== undefined || morphs.GripLeft !== undefined)) {
+        this._gripMorphs.push({ mesh: node, right: morphs.GripRight, left: morphs.GripLeft });
+      }
       if (node.isMesh || node.isSkinnedMesh) {
         node.castShadow = true;
         node.receiveShadow = true;
@@ -484,6 +499,8 @@ export class Character {
       this._target[key] = 0;
       this._oneShots[key] = Boolean(oneShot);
       this._keys.push(key);
+      const baseKey = key.replace(/-lower$/, '');
+      this._strideTypes.push(baseKey === 'run' ? 2 : WALK_CLIPS.includes(baseKey) ? 1 : 0);
       action.userData = action.userData || {};
       action.userData.characterKey = key;
       action.userData.timeScale = timeScale;
@@ -509,7 +526,7 @@ export class Character {
 
     // Separate lower-body actions let an absolute aim pose replace arm swing.
     // Additive aiming over the walk's arm tracks doubles the shoulder rotation.
-    for (const key of ['idle', 'walk', 'run', 'crouch-walk', 'carry-walk', 'wounded-walk']) {
+    for (const key of BASE_LOCOMOTION_CLIPS) {
       const original = this.actions[key];
       if (!original) continue;
       const lower = original.getClip().clone();
@@ -588,8 +605,11 @@ export class Character {
   /** Equipment corrections are temporary; restore the authored pose before mixing. */
   rememberAnimatedPose(bone) {
     let pose = this._correctedPose.get(bone);
-    if (!pose) { pose = { rotation: new THREE.Quaternion(), active: false }; this._correctedPose.set(bone, pose); }
-    if (!pose.active) pose.rotation.copy(bone.quaternion);
+    if (!pose) { pose = { bone, rotation: new THREE.Quaternion(), active: false }; this._correctedPose.set(bone, pose); }
+    if (!pose.active) {
+      pose.rotation.copy(bone.quaternion);
+      this._activeCorrections.push(pose);
+    }
     pose.active = true;
   }
 
@@ -647,10 +667,12 @@ export class Character {
    *          firing?:boolean, seated?:boolean, dead?:boolean}} input
    */
   update(dt, input) {
-    for (const [bone, pose] of this._correctedPose) {
-      if (pose.active) bone.quaternion.copy(pose.rotation);
+    for (let i = 0; i < this._activeCorrections.length; i++) {
+      const pose = this._activeCorrections[i];
+      pose.bone.quaternion.copy(pose.rotation);
       pose.active = false;
     }
+    this._activeCorrections.length = 0;
     const source = input || EMPTY_INPUT;
     const health = finite(source.health, 1);
     this._hitCooldown = Math.max(0, this._hitCooldown - Math.max(0, finite(dt, 0)));
@@ -679,6 +701,8 @@ export class Character {
 
     this._applyStateActions(this.state, source);
     const rate = dt > 0 ? Math.min(1, dt / FADE) : 1;
+    const walkScale = locomotionTimeScale(this._lastSpeed, 'walk');
+    const runScale = locomotionTimeScale(this._lastSpeed, 'run');
     for (let i = 0; i < this._keys.length; i++) {
       const key = this._keys[i];
       const action = this.actions[key];
@@ -690,23 +714,23 @@ export class Character {
       this._weight[key] = weight;
       action.setEffectiveWeight(weight);
       const bias = action.userData.timeScale || 1;
-      const baseKey = key.replace(/-lower$/, '');
-      let timeScale = locomotionTimeScale(this._lastSpeed, baseKey) * bias;
+      const strideType = this._strideTypes[i];
+      let timeScale = (strideType === 2 ? runScale : strideType === 1 ? walkScale : 1) * bias;
       if (key === 'climb-ladder') timeScale = finite(source.climbSpeed, 0) / .344;
       action.setEffectiveTimeScale(timeScale);
       if (!this._oneShots[key]) action.paused = weight === 0 && target === 0;
     }
     this.mixer.update(dt);
-    const grip = Boolean(AIM_KEYS[source.aiming]) && !['wave', 'rest', 'climb', 'dead', 'sit'].includes(this.state);
-    this.model?.traverse(mesh => {
-      if (!mesh.morphTargetDictionary) return;
-      for (const [name, closed] of [['GripRight', grip], ['GripLeft', grip && source.aiming !== 'pistol']]) {
-        const index = mesh.morphTargetDictionary[name];
-        if (index === undefined) continue;
-        const value = mesh.morphTargetInfluences[index];
-        mesh.morphTargetInfluences[index] = THREE.MathUtils.lerp(value, closed ? 1 : 0, dt > 0 ? 1 - Math.exp(-dt * 18) : 1);
-      }
-    });
+    const grip = Boolean(AIM_KEYS[source.aiming]) && !OPEN_GRIP_STATES.has(this.state);
+    const rightTarget = grip ? 1 : 0;
+    const leftTarget = grip && source.aiming !== 'pistol' ? 1 : 0;
+    const gripRate = dt > 0 ? 1 - Math.exp(-dt * 18) : 1;
+    for (let i = 0; i < this._gripMorphs.length; i++) {
+      const { mesh, right, left } = this._gripMorphs[i];
+      const influences = mesh.morphTargetInfluences;
+      if (right !== undefined) influences[right] = THREE.MathUtils.lerp(influences[right], rightTarget, gripRate);
+      if (left !== undefined) influences[left] = THREE.MathUtils.lerp(influences[left], leftTarget, gripRate);
+    }
     return this.state;
   }
 
@@ -717,14 +741,13 @@ export class Character {
     const aiming = input?.aiming || 'none';
     const overlay = isLocomotionState(state) && Boolean(AIM_KEYS[aiming]);
     if (overlay !== this._overlayActive) {
-      for (const key of ['idle', 'walk', 'run', 'crouch-walk', 'carry-walk', 'wounded-walk']) {
-        const from = this.actions[overlay ? key : `${key}-lower`];
-        const to = this.actions[overlay ? `${key}-lower` : key];
+      for (const key of BASE_LOCOMOTION_CLIPS) {
+        const from = this.actions[overlay ? key : LOWER_BODY_KEYS[key]];
+        const to = this.actions[overlay ? LOWER_BODY_KEYS[key] : key];
         if (from && to) to.time = from.time;
       }
       this._overlayActive = overlay;
     }
-    const base = (key, weight) => this._set(overlay ? `${key}-lower` : key, weight);
     if (this.transition) {
       this._target[this.transition] = 1;
     } else if (state === 'sit') {
@@ -743,13 +766,13 @@ export class Character {
       const blend = blendWeights(this._lastSpeed, this._blend);
       const slot = walkClipForState(state);
       this._syncWalkSlot(slot);
-      base('idle', blend.idle);
+      this._set(overlay ? LOWER_BODY_KEYS.idle : 'idle', blend.idle);
       if (slot === 'walk') {
-        base('walk', blend.walk);
-        base('run', blend.run);
+        this._set(overlay ? LOWER_BODY_KEYS.walk : 'walk', blend.walk);
+        this._set(overlay ? LOWER_BODY_KEYS.run : 'run', blend.run);
       } else {
         // Crouching, carrying and limping never break into a run.
-        base(slot, blend.walk + blend.run);
+        this._set(overlay ? LOWER_BODY_KEYS[slot] : slot, blend.walk + blend.run);
       }
     }
 
@@ -857,7 +880,10 @@ export class Character {
     disposeTree(this.object);
     this.actions = Object.create(null);
     this._keys.length = 0;
+    this._strideTypes.length = 0;
     this._correctedPose.clear();
+    this._activeCorrections.length = 0;
+    this._gripMorphs.length = 0;
     this.model = null;
     this.mixer = null;
     this._headBone = null;

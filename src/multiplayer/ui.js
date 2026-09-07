@@ -112,6 +112,19 @@ function expiryLabel(expiresAt) {
   return Number.isNaN(date.valueOf()) ? '' : `Expires ${date.toISOString().slice(11, 16)} UTC`;
 }
 
+/** Compare the values a panel actually displays, excluding moving world poses.
+ * Inventory contents remain included even if a server reuses its revision. */
+export function multiplayerPanelKey(panel, state, account = state.account, busy = false) {
+  if (panel === 'account') return JSON.stringify([Boolean(account), safeCallsign(account), state.connected, busy]);
+  if (panel === 'inventory') return JSON.stringify([state.connected, state.needsRespawn, state.health, state.inventory,
+    state.drops.map(({ id, item, quantity }) => [id, item, quantity]), busy]);
+  return JSON.stringify([state.connected, Boolean(account), safeCallsign(account), state.maxPlayers, state.health,
+    hangarLabel(state.hangar), state.hangar ? padLabel(state.hangar.pad) : null, expiryLabel(state.hangar?.expiresAt),
+    state.error, state.moderation, busy, state.players.map(player => [player.callsign,
+      SUIT_COLORS[player.colorIndex] ?? player.color ?? player.suitColor ?? '#879699',
+      Number.isInteger(player.colorIndex) ? player.colorIndex + 1 : '', player.id === state.ownId ? 'You' : player.mode])]);
+}
+
 function stopNavigation(nav) {
   nav.keys?.clear?.();
   nav.velocity?.set?.(0, 0, 0);
@@ -144,6 +157,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
   let currentDialog = null;
   let busy = false;
   let disposed = false;
+  const renderedPanels = new Map();
 
   const accountDialog = document.createElement('dialog');
   accountDialog.id = 'multiplayer-account-dialog';
@@ -362,7 +376,18 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     }
   }
 
-  function render() { if (!disposed) { renderAccount(); renderComms(); renderInventory(); } }
+  function render(opening = null) {
+    if (disposed) return;
+    const account = currentAccount();
+    // Account rendering also updates the always-visible access button. Hidden
+    // rosters/manifests wait until opening, using the latest authoritative state.
+    for (const [panel, dialog, draw] of [['account', accountDialog, renderAccount], ['comms', commsDialog, renderComms], ['inventory', inventoryDialog, renderInventory]]) {
+      if (panel !== 'account' && !dialog.open && opening !== dialog) continue;
+      const key = multiplayerPanelKey(panel, state, account, busy);
+      if (renderedPanels.get(panel) === key && opening !== dialog) continue;
+      renderedPanels.set(panel, key); draw();
+    }
+  }
   function applyState(next) { state = normalizeMultiplayerState(next ?? client.state); if (state.account) sessionAccount = state.account; render(); }
 
   async function perform(dialog, pendingMessage, action) {
@@ -392,7 +417,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
 
   function openDialog(dialog) {
     if (disposed || document.querySelector('dialog[open]')) return false;
-    stopNavigation(nav); client.suspendInput?.(); render();
+    stopNavigation(nav); client.suspendInput?.(); render(dialog);
     const reason = dialog === commsDialog && !state.connected ? state.moderation || state.error || '' : '';
     setFeedback(dialog, reason, Boolean(reason)); currentDialog = dialog; dialog.showModal(); nav.gamepad?.suspend?.(); return true;
   }

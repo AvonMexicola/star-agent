@@ -6,6 +6,9 @@ const SEND_INTERVAL = 1 / 20;
 const clamp = value => Math.max(-1, Math.min(1, value));
 const finiteArray = (value, length) => Array.isArray(value) && value.length === length && value.every(Number.isFinite);
 const axis = (keys, positive, negative, analog = 0) => clamp(Number(keys?.has?.(positive)) - Number(keys?.has?.(negative)) + (Number.isFinite(analog) ? analog : 0));
+const reconciliationOrientation = new THREE.Quaternion();
+const BOOLEAN_STATE = ['powered', 'cabinFlight', 'insideShip', 'dockedAtStation', 'stationLift', 'doorOpen', 'gearDeployed', 'flightAssist', 'combatMode', 'autoland', 'spaceParked', 'shipLightsOn', 'flashlightOn'];
+const NUMBER_STATE = ['doorProgress', 'gearProgress', 'jumpHeight', 'jumpVelocity', 'speedScale'];
 
 export function websocketURL(locationObject = globalThis.location) {
   if (!locationObject) return 'ws://127.0.0.1:8084/ws';
@@ -38,16 +41,20 @@ export function navigationInput(nav, pad = {}, { mouseYaw = 0, mousePitch = 0, f
 function setVector(target, value, blend, snap = false) {
   if (!finiteArray(value, 3)) return target;
   if (!target?.isVector3) target = new THREE.Vector3();
-  const source = new THREE.Vector3().fromArray(value);
-  if (snap || target.distanceToSquared(source) > 10000) target.copy(source);
-  else target.lerp(source, blend);
+  const dx = target.x - value[0], dy = target.y - value[1], dz = target.z - value[2];
+  if (snap || dx * dx + dy * dy + dz * dz > 10000) target.fromArray(value);
+  else {
+    target.x += (value[0] - target.x) * blend;
+    target.y += (value[1] - target.y) * blend;
+    target.z += (value[2] - target.z) * blend;
+  }
   return target;
 }
 
 function setQuaternion(target, value, blend, snap = false) {
   if (!finiteArray(value, 4)) return target;
   if (!target?.isQuaternion) target = new THREE.Quaternion();
-  const source = new THREE.Quaternion().fromArray(value).normalize();
+  const source = reconciliationOrientation.fromArray(value).normalize();
   if (snap) target.copy(source); else target.slerp(source, blend);
   return target.normalize();
 }
@@ -89,10 +96,10 @@ export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } 
   nav.shipOrientation = setQuaternion(nav.shipOrientation, peer.shipOrientation, blend, hard);
   nav.shipVelocity = setVector(nav.shipVelocity, peer.shipVelocity, 1, true);
   nav.shipAngularVelocity = setVector(nav.shipAngularVelocity, peer.shipAngularVelocity, 1, true);
-  for (const key of ['powered', 'cabinFlight', 'insideShip', 'dockedAtStation', 'stationLift', 'doorOpen', 'gearDeployed', 'flightAssist', 'combatMode', 'autoland', 'spaceParked', 'shipLightsOn', 'flashlightOn']) {
+  for (const key of BOOLEAN_STATE) {
     if (typeof peer[key] === 'boolean') nav[key] = peer[key];
   }
-  for (const key of ['doorProgress', 'gearProgress', 'jumpHeight', 'jumpVelocity', 'speedScale']) {
+  for (const key of NUMBER_STATE) {
     if (Number.isFinite(peer[key])) nav[key] = peer[key];
   }
   if (typeof peer.shipId === 'string') nav.shipId = peer.shipId;
