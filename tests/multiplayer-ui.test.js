@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { authRequest, consumeResetToken, inventoryCommand, inventoryRows, normalizeMultiplayerState, signOutSession, validateAuth } from '../src/multiplayer/ui.js';
+import { FreighterSystems } from '../src/freighter-layout.js';
 import { createShipMFDs } from '../src/ship-mfd.js';
 import { applyAuthoritativePeer, MultiplayerClient, reviveTravel, websocketURL } from '../src/multiplayer/client.js';
 
@@ -242,4 +243,18 @@ test('network travel commands respect the targeted-drive adapter and retain unta
  assert.equal(nav.beginTravel(),false);assert.equal(nav.beginFreeTravel(),false);assert.equal(gates,2);assert.deepEqual(sent,[]);
  nav.targeting.hasTarget=false;assert.equal(nav.beginFreeTravel(),true);nav.cancelTravel();assert.deepEqual(sent,['travel','cancelTravel']);
  client.detach();
+});
+
+
+test('authoritative Atlas reconciliation carries real ramp, crew lift and gear state',()=>{
+  const source=new FreighterSystems(),nav={freighter:new FreighterSystems(),mode:'walk',position:new THREE.Vector3(),orientation:new THREE.Quaternion(),keys:new Set()};
+  source.operate('ramp:aft',null);source.update(1.2);source.setGear(.37,false);
+  source.toggleElevator(new THREE.Vector3(5.5,4.35,-4));source.update(.5);
+  const snapshot=source.snapshot;
+  applyAuthoritativePeer(nav,{mode:'walk',shipId:'atlas',freighter:snapshot,health:100,shipHealth:100},{snap:true});
+  assert.deepEqual(nav.freighter.snapshot,snapshot);
+  assert.equal(nav.freighter.lifts.length,1);
+  assert.equal(nav.freighter.elevator.id,'crew');
+  applyAuthoritativePeer(nav,{freighter:[{id:'main',y:0,target:0}]});
+  assert.deepEqual(nav.freighter.snapshot,snapshot,'retired elevator arrays cannot reintroduce a platform');
 });

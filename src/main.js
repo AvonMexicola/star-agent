@@ -295,6 +295,11 @@ try {
     if(ship!==nomad){ship.visible=false;ship=nomad;}configureShip('nomad');
     const state=await multiplayer.connect(account),self=state.players.find(player=>player.id===state.ownId);
     if(self)await applySuitColor(character,SUIT_COLORS[self.colorIndex]??SUIT_COLORS[0]);
+    if(opening&&self){
+      const joinedShip=modelFor(self.shipId);await joinedShip.readyPromise;
+      if(ship!==joinedShip){ship.visible=false;ship=joinedShip;configureShip(self.shipId);}
+      opening.start({authoritative:true});
+    }
     enterPlayerInterface();return state;
   },onLeave:async()=>{multiplayer.disconnect();location.reload();}});
   nav.openComms=multiplayerUI.openComms;

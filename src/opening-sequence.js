@@ -57,11 +57,15 @@ export class OpeningSequence {
     openingUI(true);
   }
   get active(){return this.phase==='loading'||this.phase==='cinematic'||this.phase==='blend';}
-  get state(){return {phase:this.phase,elapsed:this.elapsed,blend:this.blendElapsed,characterReady:this.character.ready,characterError:this.character.error,
+  get state(){return {phase:this.phase,elapsed:this.elapsed,blend:this.blendElapsed,authoritative:Boolean(this.authoritative),characterReady:this.character.ready,characterError:this.character.error,
     clip:this.character.clipName,cameraPosition:this.cameraRig.worldPosition.toArray(),doors:this.station.doorsOpen};}
-  start(){
-    this.nav.startStation();
-    this.station.beginOpening();
+  start({authoritative=false}={}){
+    if(authoritative&&(!this.nav.shipPosition||!this.nav.dockedAtStation||this.nav.mode!=='walk'||this.nav.multiplayerDead))return false;
+    this.authoritative=authoritative;this.elapsed=0;this.blendElapsed=0;this.bufferRemaining=0;
+    // On a network join, the assigned berth, avatar pose and doors already belong
+    // to the server. Replay the shoulder camera without respawning or moving them.
+    if(!authoritative){this.nav.startStation();this.station.beginOpening();}
+    this.nav.openingActive=true;openingUI(true);
     this.syncCharacter(0);
     this.character.setVisible(true);
     // Offset the six-metre dolly sideways to clear the Nomad's wing. Aim
@@ -72,7 +76,7 @@ export class OpeningSequence {
     const to=from.clone().addScaledVector(FORWARD.clone().applyQuaternion(this.nav.shipOrientation),1.5);
     const look=this.nav.fromShipLocal(at.clone().add(new THREE.Vector3(-4,.25,-6)));
     this.cameraRig.cinematic(from,to,OPENING.duration,look).update(0,this.nav.orientation);
-    this.phase='cinematic';this.nav.enabled=true;
+    this.phase='cinematic';this.nav.enabled=true;return true;
   }
   fail(){
     this.phase='skipped';this.nav.openingActive=false;this.nav.enabled=true;this.nav.orbit();
@@ -96,8 +100,10 @@ export class OpeningSequence {
     if(this.phase==='loading'||this.phase==='skipped')return;
     if(!this.nav.enabled)return;
     this.elapsed+=dt;
-    if(this.elapsed<OPENING.duration)this.station.setOpeningProgress(this.elapsed/OPENING.duration);
-    else if(this.station.openingControlled){this.station.setOpeningProgress(1);this.station.endOpening();}
+    if(!this.authoritative){
+      if(this.elapsed<OPENING.duration)this.station.setOpeningProgress(this.elapsed/OPENING.duration);
+      else if(this.station.openingControlled){this.station.setOpeningProgress(1);this.station.endOpening();}
+    }
     if(this.active){
       this.syncCharacter(dt);this.cameraRig.update(dt,this.nav.orientation);
       if(this.phase==='blend'){
@@ -124,7 +130,7 @@ export class OpeningSequence {
   leave(){
     if(this.phase==='loading')return;
     this.phase='skipped';this.nav.openingActive=false;this.character.setVisible(false);
-    this.station.endOpening();this.hint.classList.remove('visible');
+    if(!this.authoritative)this.station.endOpening();this.hint.classList.remove('visible');
     openingUI(false);document.body.style.removeProperty('--opening-hud');
   }
 }
