@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { writeFile } from 'node:fs/promises';
 
 const frames = page => page.evaluate(() => new Promise(resolve => {
   let remaining = 5;
@@ -33,7 +34,7 @@ test('production renders, controller menu suppresses held input, and all map tar
   try {
     await page.goto('/?intro=0&seed=7291');
     await page.waitForFunction(() => window.starAgent?.state.ready && window.starAgent.state.renderedFrames > 5,
-      null, { timeout: 180_000 });
+      null, { timeout: 240_000 });
     await expect(page.locator('#loading')).toHaveCSS('opacity', '0');
     await expect(page.locator('#viewport')).toBeVisible();
     const initial = await page.evaluate(() => window.starAgent.state);
@@ -60,11 +61,15 @@ test('production renders, controller menu suppresses held input, and all map tar
       await page.locator(`[data-travel-target="${id}"]`).click();
       await expect(page.locator('#map-target-name')).toContainText(name);
     }
-    await info.attach('system-map', { body: await page.screenshot(), contentType: 'image/png' });
+    const mapCapture = info.outputPath('system-map.png');
+    await page.screenshot({ path: mapCapture });
+    await info.attach('system-map', { path: mapCapture, contentType: 'image/png' });
     await page.keyboard.press('M');
     await page.waitForFunction(() => !window.starAgent.state.mapOpen && window.starAgent.state.enabled);
     await frames(page);
-    await info.attach('rendered-scene', { body: await page.screenshot(), contentType: 'image/png' });
+    const sceneCapture = info.outputPath('rendered-scene.png');
+    await page.screenshot({ path: sceneCapture });
+    await info.attach('rendered-scene', { path: sceneCapture, contentType: 'image/png' });
     expect(errors).toEqual([]);
   } finally {
     if (!page.isClosed()) {
@@ -77,9 +82,10 @@ test('production renders, controller menu suppresses held input, and all map tar
           seed: state?.seed, renderedFrames: state?.renderedFrames, triangles: state?.triangles,
           drawCalls: state?.drawCalls, resolution: state?.renderResolution, preload: state?.preload };
       }).catch(() => ({ pageUnavailable: true }));
-      await info.attach('diagnostics', { body: Buffer.from(JSON.stringify({ browser: browser.version(),
-        ...renderer, errors, warnings, performanceClaim: false, input: 'injected standard Gamepad + keyboard/mouse' }, null, 2)),
-        contentType: 'application/json' });
+      const diagnostics = info.outputPath('diagnostics.json');
+      await writeFile(diagnostics, JSON.stringify({ browser: browser.version(), ...renderer, errors, warnings,
+        performanceClaim: false, input: 'injected standard Gamepad + keyboard/mouse' }, null, 2));
+      await info.attach('diagnostics', { path: diagnostics, contentType: 'application/json' });
     }
   }
 });

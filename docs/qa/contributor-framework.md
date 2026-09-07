@@ -56,9 +56,37 @@ result is inferred from that startup failure. The branch then incorporated the
 checked patrol-combat integration through dev `7bd4bd5`, preserving its runtime
 and added test entry before the next combined CI run.
 
+Third run [34112442304](https://github.com/AvonMexicola/star-agent/actions/runs/34112442304)
+at `768f3f7`: source/database pass. The browser completes real startup, controller
+assertions and all five map selections, with zero recorded page/console errors,
+but exceeds its 300-second total deadline while capturing the scene. The retained
+trace measures 168.5 s waiting for readiness and screenshots of 18.1/35.6 s; its
+diagnostics show ready preload, no fallback assets, 91 frames and scale 0.6
+(864×540 internal render, 1440×900 UI). The actual planet and map captures were
+examined; this is still a failed test, not a passed or hardware-performance result.
+
+The functional CI allowance is now 480 seconds overall and 240 seconds for startup,
+based on that measured software-renderer workload. Every readiness, input, target
+and error assertion remains. QUALITY's hardware/scene budgets are unaffected.
+
 Before activation: private repository, default `feat/visual-fidelity`, main and
 `dev/all-features` unprotected. CODEOWNERS is routing metadata; required reviews
 and checks are GitHub settings. Hosted check results, any default/protection changes,
 local integration and the still-running preview must be verified before claiming them.
 No public release, repository publication, invitations or paid service changes
 are part of this task.
+
+
+## Activated hosted rules
+
+API writes and separate reads confirm default `dev/all-features`, still private;
+main/dev PR checks require `verify` from GitHub Actions app15368 with current base
+and resolved conversations. Administrator bypass, force pushes and deletion are
+disabled. The approval count is zero until another eligible human maintainer is
+appointed. No legacy branch was deleted and no public deployment occurred.
+See the repository-settings record for the current configuration and limitations.
+
+Passing browser captures/diagnostics are written to explicit test output paths,
+so the list reporter cannot discard in-memory attachments before CI uploads them.
+Only temporary CI artifacts or deliberately curated images belong in the evidence
+record; traces/generated test reports stay outside source history.

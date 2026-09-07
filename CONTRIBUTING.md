@@ -16,9 +16,11 @@ channel. This guide does not change repository visibility.
 
 ## Run the combined build
 
-Install Node 22.12+ and Git. In your own clone:
+Install Node 22.12+ and Git. After you have repository access:
 
 ```sh
+git clone --branch dev/all-features https://github.com/AvonMexicola/star-agent.git
+cd star-agent
 git fetch origin
 git switch --create feat/my-bounded-change origin/dev/all-features
 npm ci

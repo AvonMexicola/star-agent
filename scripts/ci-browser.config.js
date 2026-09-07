@@ -14,7 +14,9 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
-  timeout: 300_000,
+  // Hosted SwiftShader takes ~169 s to boot and up to 36 s per capture in the
+  // measured trace. This functional allowance is not a hardware FPS budget.
+  timeout: 480_000,
   expect: { timeout: 60_000 },
   reporter: 'list',
   outputDir: '../test-results/ci-browser',
