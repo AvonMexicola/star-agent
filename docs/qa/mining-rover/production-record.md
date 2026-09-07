@@ -106,6 +106,17 @@ production build passed in **4.49 s**, retaining the inherited large-chunk
 warning. Earlier implementation-tree totals of 711/714 are historical checks on
 a different integration surface, not the final bounded PR count.
 
+Hosted [run 34155938323](https://github.com/AvonMexicola/star-agent/actions/runs/34155938323)
+at PR head `1c5a7fc` passed source and multiplayer checks, but its browser smoke
+failed after loading the game: it expected the legacy Ship dialog
+`#controller-menu` when Menu now opens Contracts. The fixture adopts the reviewed
+`4a6f7f0` assertion for one open Contracts screen and one visible, focused router
+selection. Dialog closure, held-stick suppression, unchanged position and neutral
+rearming remain checked. This branch still has the flat five-target map, so its
+existing target-selection loop is retained. Syntax, repository and whitespace
+checks pass for this test-only correction; no local browser rerun or new hosted
+pass is claimed. Runtime and candidate 10 assets are unchanged.
+
 ## Independent review and remaining limits
 
 The exact [native review](review-visual-10.md), [keyboard/motion review](review-game-10.md)

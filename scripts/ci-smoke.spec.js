@@ -44,12 +44,21 @@ test('production renders, controller menu suppresses held input, and all map tar
     expect(initial.graphics.resolution).toBe(0.6);
     await page.waitForFunction(() => window.starAgent.state.controller.armed);
     await press(9);
-    await expect(page.locator('#controller-menu')).toBeVisible();
-    await expect(page.locator('#controller-menu [data-controller-key="resume"]')).toBeFocused();
+    // Menu opens the selected gameplay screen (Contracts in a fresh profile).
+    // Check the shared router's actual visible focus rather than the old Ship
+    // command grid, which is now just one tab inside the gameplay interface.
+    const menu = page.locator('dialog.gameplay-screen[open]');
+    await expect(menu).toHaveCount(1);
+    await expect(menu).toBeVisible();
+    await expect(menu).toHaveAttribute('data-gameplay-tab', 'contracts');
+    const focused = menu.locator('[data-controller-selected]');
+    await expect(focused).toHaveCount(1);
+    await expect(focused).toBeVisible();
+    await expect(focused).toBeFocused();
     const before = await page.evaluate(() => window.starAgent.state.position);
     await page.evaluate(() => { window.smokePad.axes[1] = -1; });
     await press(1);
-    await expect(page.locator('#controller-menu')).not.toBeVisible();
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
     expect(await page.evaluate(() => window.starAgent.state.controller.armed)).toBe(false);
     expect(await page.evaluate(() => window.starAgent.state.position)).toEqual(before);
     await page.evaluate(() => { window.smokePad.axes[1] = 0; });
