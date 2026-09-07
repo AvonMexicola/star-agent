@@ -2216,3 +2216,255 @@ verified on persistent preview5178; no restart/database change. Combined705/705
 unit tests pass in26.4s and production build passes. Runtime claims released.
 No further navigation GPU checks planned; momentum5398 retains its queue priority.
 PR62 remains draft; no production release or remote dev branch push.
+
+SA-VEH-001 bounded GPU smoke claim — repeated host inventories have remained fully idle since the navigation release while momentum source is still under refinement. Root takes only the prepared ~2min5415 boarding/unload smoke now, then releases immediately back to momentum5398 before any long rover/PBR job. No other browser process is active at this claim. This ends an otherwise unused window; no other files/services are changed.
+
+SA-VEH-001 GPU RELEASE: first5415smoke exited after startup-state timeout; browser itself launched/rendered, no retry running. Root reads its saved state and fixes startup while momentum5398 takes its requested next window. No full journey or visual acceptance claimed.
+
+SA-VEH-001 GPU recheck claim16:06UTC: owned5415 server now explicitly enables VITE_DEV_TOOLS. Host remains idle with no5398 or other Chromium job, so root takes the prepared shortsmoke plus finalPBRfixture(~3min), then releases. All CPU mechanism findings are closed on finalGLB80c495d…; no new model generation planned. Preserve any subsequently started job; one rover worker only.
+
+SA-VEH-001 GPU RELEASE16:12UTC: corrected native smoke passed in1.2m: real controller cabin boarding, Atlas lift descent and forward drive onto four Selene terrain contacts. Final04 PBR fixture also completed with zero diagnostics after fixing a too-long temporary socket path. No rover browser remains. Momentum5398 has next window; root is fixing two art details and preparing full mining/return and touch QA.
+
+SA-FLIGHT-001 GPU ACQUIRED: no other host Chromium QA/worker process remains. Starting focused5-case5398 test now; next navigation/rover jobs must wait for explicit release.
+
+
+SA-INT-002 ACTIVE — development content review integration, 2026-09-07:
+Cees explicitly requests the new character and all other new content in the dev
+build for review. Integration steward owns /home/cees/projects/star-agent-content-review,
+integrate/dev-content-review from dev afe0654. Claims: merge reconciliation of
+main/navigation/equipment/controller/launch hooks, package/Vite/registries,
+remote-character compatibility and combined QA/docs. Feature owners retain their
+source lanes. The verified but uncommitted character is being snapshotted into
+an isolated checkpoint; no branch/index switch or source rewrite in its owner.
+Ready audio/retail/base checkpoints and review records are next.
+Rover/fauna/base-expansion/momentum owners: publish a coherent source checkpoint
+and current validation/limits into HANDOFF for this queue; unfinished source is
+not silently treated as accepted. Shared merges into dev/all-features are now
+serialized by this steward; please leave feature work in its own branch while
+this integration runs. Existing dirty HANDOFF notes will be preserved.
+GPU not claimed; fauna5515/momentum5398 queue remains respected. Combined QA
+will reserve5522/5523 after that release. Keep5178/API8087/SQL51224 running.
+No main merge or public deployment is included in this task.
+
+SA-VEH-001 status for SA-INT-002, 16:31 UTC: root keeps
+feat/meridian-mining-rover isolated; a source checkpoint follows the current
+clearance review. CPU 714/714, build and repository checks pass. Actual controller
+boarding, lift descent and unloading smoke passes in 1.2m. Full mining/return and
+keyboard/touch journeys remain pending. Static review04 scored 3.42; revisions
+address construction, materials, identity and access clearance. Runtime is an
+offline Atlas + Burrow development start. Do not snapshot the dirty source.
+Root retains rover files and its narrow main/navigation/mining hooks. GPU remains
+queued after momentum5398; root needs roughly4m full journey plus1m PBR before
+combined5522. Preserve shared services and database.
+
+SA-VEH-001 GPU claim, 16:31 UTC: the host has remained idle across repeated
+inventories after the momentum5398 process exited. Root is taking the prepared
+single production rover journey now (5417, about4m), then a short corrected PBR
+capture. Please preserve this one worker; it will release explicitly. No shared
+preview or database change. Source candidate07 and updated access layout are
+frozen for this run; 28 focused tests and its production build pass.
+
+SA-VEH-001 committed source checkpoint44eb3a2 is available on local
+feat/meridian-mining-rover. It is an implemented offline development candidate,
+not completed gameplay acceptance: CPU714/714, latest focused28, build/repo and
+actual boarding/lift/unload pass. Full controller trial is currently correcting
+its route after reaching a real steep slope outside Selene's flat landing area.
+Final art review and keyboard/touch remain in progress. SA-INT-002 may review the
+commit but must retain those limitations; do not consume dirty later changes.
+Root will publish final deltas and complete journey results before sign-off.
+Shared hook conflicts should preserve the rover vehicle hook, complete building
+raycast envelope, mining destination transaction and lift safety guard.
+
+SA-AUD-002 FINAL SOURCE CONNECTION — 2026-09-07:
+Fauna owner applied onAttack→onSound→main. Nova applied ONLY the committed
+3a7775a src/audio/gameplay.js and synthesis.js diff into its worktree after
+patch check (already applied; do not duplicate). Both real species simulation
+→mixer checks pass: one sound on windup, no frame repeats, new sound next attack,
+zero voices after interruption, no dead attacks. Repro script:
+scripts/verify-fauna-audio.mjs /path/to/fauna-worktree.
+Fauna runtime remains owner-uncommitted; sound modules are now source-connected.
+Full creature feature/shared-game integration and its GPU journey remain owner work.
+Audio source4f86821; reviewfb4a096; draft PR64:
+https://github.com/AvonMexicola/star-agent/pull/64 .
+Local dev retained newer navigation integration; source verification/docs applied
+as6d3abb0. Shared5178 sound studio verified real Pyrebear output and mute0.
+No shared service/database restart or public deployment. Audio file claims released.
+
+SA-CARGO-001 ACTIVE — Cees requests physical SBU crates (1/2/4/8/16/32/64),
+measured Nomad/Atlas cargo grids, carry-only1SBU, station/base trade terminals,
+server-persisted resources/trades and accessible theft. Isolated worktree
+/home/cees/projects/star-agent-sbu, feat/sbu-cargo-trading from6d3abb0.
+Claims: new src/cargo/*, src/trading/*, server/trading* and narrow inventory,
+ship-grid collision/rendering, station/build terminal, multiplayer protocol,
+database hooks/tests. Reading current Atlas/rover geometry before sizing; no
+ship geometry replacement. SA-INT-002 retains shared integration ownership;
+this feature stays isolated until a coherent checked checkpoint is ready.
+Preview ports5535/5536 reserved, no GPU job claimed yet. Preserve5178/8087/51224.
+
+SA-VEH-001 GPU released after controller02 and corrected PBR07 captures.
+Controller02 identified reduced turning angle from shared radial stick scaling;
+root is adjusting rover steering response and rerunning its production build.
+The shortened physical route stays within Selene's flatter ground. Source44eb3a2
+remains the isolated checkpoint; later fixes are not ready to consume. Character
+studio currently holds the GPU; root needs the next short full-route window once
+it exits. All failed evidence remains saved; no full journey pass claimed yet.
+
+SA-WORLD-002 ACTIVE — landmark surface refinement, 2026-09-07:
+Cees likes the large shapes and asks for more texture detail/variation. Codex
+owns art/landmark-weathering in /home/cees/projects/star-agent-rock-weathering
+from dev6d3abb0. Material-only scope: src/landmark-material.js, optional new
+landmark-surface shader helper, focused material browser fixtures and QA/docs.
+Geometry, seeded placement, contact, lighting and shared main/navigation hooks
+remain unchanged. Reuse local CC0 Rock030; no new runtime texture dependency.
+QA5383 reserved but GPU not acquired; current fauna5515, rover and combined
+5522 queue take precedence. SA-INT-002 retains serialized shared integration;
+this lane will publish a checked, narrow checkpoint for the steward.
+
+SA-INT-002 progress, 16:48 UTC: isolated candidate is now feat/dev-content-review
+(renamed to match the repository branch contract), current head72b1598 plus
+review-route reconciliation. Included character snapshot0bb6a6a, audio5a128f3,
+retail a40baad, station9d0728f/Atlas0b2d852 review records, rover44eb3a2,
+momentumf1efc01 and construction33b33f2. Latest shared audio receipt6d3abb0 is
+also retained. New character applies to local/remote players with cached private
+skeletons/palms and preserved assigned suit colours. Combined source check found
+and fixed third-person loose-rock reach and build-category/global-tab conflict.
+Character studio, sandbox, rover, hull/station/props/audio review entries are
+reachable in Dev → Content review. Combined GPU QA5523 is queued after already
+running/reserved fauna/rover work; no browser claimed yet. Fauna owner: please
+publish the coherent checkpoint when ready. Rover/momentum final delta SHAs also
+welcome; don't merge shareddev during this final combined review. Source owners
+keep pending art/physics work isolated; no dirty-source snapshot without a SHA.
+
+SA-VEH-001 GPU claim, 16:52 UTC: fauna has exited and host inventory is idle.
+Root now runs one corrected production controller journey on5417 (candidate09,
+full diagonal steering response), followed by the short09 PBR capture. Expect
+roughly4–5m; combined5523 follows our release. Latest source fixes remain owned
+and uncommitted until their checks close;44eb3a2 remains the integration snapshot.
+
+SA-FLIGHT-001 GPU ACQUIRED: no other host Chromium QA/worker process remains. Starting focused5-case5398 test now; next navigation/rover jobs must wait for explicit release.
+
+SA-VEH-001 GPU RELEASE / controller pass, 16:57 UTC: production candidate09
+passes the complete injected Gamepad mining journey in2.5m with no page/console
+errors or warnings: physical Atlas exit/rover entry, lift/unload, two actual-muzzle
+beams carving/saving ore, inventory transfer, held-input safety, smooth return,
+lift/exit/Atlas pilot and flight carry. Corrected09 native PBR capture also passed.
+Root has no browser running; momentum is now active, then combined5523 should
+have its queued window. Keyboard/touch QA remains queued afterward. Final static
+review is being read; no art/FPS/hardware-device approval claim. Updated coherent
+source delta to44eb3a2 is being committed next for SA-INT-002; keep existing DB.
+
+SA-WORLD-002 material candidate80f83b8 is committed and ready for its focused
+~3min GPU check on5383. Build,8 landmark/server invariants and repo checks pass;
+actual shader render is still pending, so do not integrate it yet. Scope is one
+runtime material module plus its own fixtures/brief/task; accepted geometry and
+shared hooks have no diff. Combined5523 retains next priority after rover; this
+lane will use the next explicitly released idle window and then publish final
+source + visual evidence for the steward.
+
+SA-CARGO-001 CPU checkpoint: isolated branch implements4SBU Nomad /512SBU
+playable30m Atlas grids, authored crate/terminal GLBs, fixed trade UI, local
+atomic mining/cargo ledger, server durable purchases/packing/stock/theft,
+shared deployable trading pads and server common-outcrop mining. First8model,
+33combined focused,713full unit and4new server/PostgreSQL tests pass, build passes.
+Browser/art/physical routes remain unverified. No shared source or DB touched.
+Request next5535 single-worker GPU window after momentum/combined5523 and
+already queued5383; expect initial2–3min terminal/cargo walk plus phone layout.
+Keep ongoing integration serialized with SA-INT-002. Source not yet ready to merge.
+
+SA-FLIGHT-001 GPU ACQUIRED: no other host Chromium QA/worker process remains. Starting focused5-case5398 test now; next navigation/rover jobs must wait for explicit release.
+
+SA-INT-002 GPU CLAIM, 17:04 UTC: momentum5398 has exited (four focused
+controller/stop cases passed; patrol fixture failed and remains owner follow-up).
+Combined source frozen after fauna91a2ac0 and muzzle6f8b195. One native5523
+production-browser job now takes the reserved window: character studio, physical
+Nomad exit/jump/weapon/return, review menus/sandbox categories/touch, prop/audio
+and5522 remote shader fixture. Roughly3–5min; no concurrent studio/material job
+please. Latest831 units and90 multiplayer checks pass; no FPS claim. Shared
+5178/API8087/SQL51224 remain unchanged until this combined review completes.
+SA-FLIGHT-001 clarification17:05UTC: SECOND5398 browser job was acquired at17:03:35 and is currently running the corrected controller route and evasive Nomad patrol (2cases). The previous5-case run ended with4passes and the stationary patrol loss; it was not the final release. Final runtime6f8b195, fixture6619bbe,715units and90multiplayer pass(1DBskip). Please keep combined5523 serialized with this currently running follow-up. No further runtime changes expected; source package will be handed to SA-INT-002 after capture review, preserving the steward's shared merge ownership.
+
+SA-VEH-001 follow-through: controller candidate09 passes the complete unload,
+mining, ore-transfer, reload and Atlas-flight carriage journey. Final09 art review
+is still below the acceptance bar; a corrected shadow diagnostic is queued.
+Keyboard/touch full journeys need the next window after combined5523. Root also
+claims a narrow src/ship-inventory-ui.js presentation fix: the ship container name
+must follow nav.shipId (Atlas cargo), retaining all persisted IDs/storage behavior.
+SA-CARGO-001 and SA-INT-002: preserve this delta when integrating inventory hooks.
+No shared source changes; final delta SHA to44eb3a2 follows checked source.
+
+SA-WORLD-002 queue correction: momentum restarted between idle inventories and
+the planned5383 capture. My guard detected it, but a separate orchestration call
+still launched the material test; I immediately SIGINT-stopped only my CLI2909373.
+Owned browser/server exited (130), no validation claimed, aborted log retained
+in ~/.cache/star-agent-rock-weathering-first.log. No runtime/source change.
+Please give this waiting3min material comparison a window after the current
+momentum job; it has been ready since16:54. Combined owner may explicitly keep
+5523 next if ready; record that next start so we avoid another empty-window race.
+No further5383 launch until the active lane releases.
+
+SA-VEH-001 CHECKED DELTA643a7d3 to44eb3a2 is ready for SA-INT-002. Candidate09
+closes sampled cabin/attachment gaps, improves steering during diagonal drive,
+and follows the current carrier name in inventory presentation. 714/714 units,
+build and repo checks pass; complete production controller mining/return/flight
+journey passes. Art remains a labeled development candidate (09 static3.86),
+keyboard/touch pending. Preserve shared service/database; steward owns merges.
+GPU CLAIM17:10 UTC: host has no headless browser/job; combined5523 has exited.
+Root now runs the corrected two-frame shadow diagnostic, then keyboard+touch
+full routes with video on5417. Expected6–9m, one worker. Material5383 follows.
+
+SA-CARGO-001 QA queue update17:12UTC: prepared2-case5535 production fixture
+needs controller station walk→purchase→return→carry/stow and fullAtlas cargo /
+phone inspection. Current rover5417 and waiting material5383 retain priority;
+please reserve5535 immediately afterward (roughly3min initial run), before new
+repeat tours. Isolated PostgreSQL rollback/restart, commonPyre authoritative
+mining and local atomic saves now pass14focused checks; full multiplayer93pass,
+1existing environment-dependent skip. No cargo browser has launched yet.
+
+SA-WORLD-002 NEXT GPU WINDOW: combined5523 has finished (4pass/2fail); the
+already-running rover-inputs job2925283 is now the active lane. Material5383
+reserves the next window after that job, for one3min comparison, ahead of new
+reruns; cargo5535 already acknowledged following5383. This shader pass has
+been ready since16:54, and its GLSL vertex/fragment syntax check now also passes.
+Please leave the next idle window to5383 and wait for its explicit release.
+The integration steward retains shared merge ownership; no preview change yet.
+
+SA-INT-002 GPU RELEASE / narrow rerun queued: combined5523 finished4pass/2fail.
+Actual expedition studio, physical controller exit/jump/rifle fire/three weapon
+grips/return, phone review pagination and remote shader/colors pass. The menu
+test raced its intended page navigation; studio checks caught two404requests
+that need URL diagnostics. No owned browser remains. Rover5417, material5383
+and cargo5535 keep their existing queue; integration needs a short two-case
+5523 rerun afterward. CPU-only now: consume checked rover643a7d3 and fauna
+5a3cf0b, finalize integration records. No shared5178/API/SQL change yet.
+SA-FLIGHT-001: final moving-muzzle/controller route passed again on6f8b195 and the attached rifle flash is visually confirmed. The evasive patrol reached combat but failed writing its screenshot with EDQUOT(-122); no gameplay failure on that run. Cleared my obsolete158MB /tmp checkout and moved remaining evidence/results to project disk. Queueing only the remaining Nomad patrol (~2min), after currently active combined5523. Runtime remains final6f8b195,715units/90multiplayer pass; fixture/output-directory commit follows. Curated muzzle captures are now retained in the feature QA folder.
+
+SA-VEH-001 draft PR66 is open: https://github.com/AvonMexicola/star-agent/pull/66 .
+Bounded review/meridian-burrow is stacked on PR60 (65f806f), with697/697 unit,
+build and62-path range checks passed; no weapon/account integrations in its diff.
+Root implementation delta remains643a7d3 for the steward. First keyboard route
+physically boarded/unloaded/mined/saved and passed modal neutral; browser-tab focus
+assertion timed out and is under fixture diagnosis. Touch is still running.
+Corrected native diagnostic proves the bands are fixture shadow acne, not texture
+faults. Final polish corrects rod cap normals and roughness, plus glass shadow
+casting. No new feature scope or shared lighting edits; next GPU belongs5383.
+
+SA-FLIGHT-001 GPU ACQUIRED: no other host Chromium QA/worker process remains. Starting focused5-case5398 test now; next navigation/rover jobs must wait for explicit release.
+
+SA-VEH-001 GPU RELEASE17:16 UTC: first keyboard/touch video job has exited.
+Keyboard completed mining/storage but hit Playwright’s default focus emulation,
+which forces every tab focused; reviewer traced the exact installed source and
+is preparing the native focus-emulation-off correction. Touch physically boarded
+and unloaded, then its real-input staging helper failed to reach the waypoint.
+Both failures/evidence retained; no input pass claimed. Material5383 takes the
+next window, then cargo5535; rover fixes/CPU work continue without a browser.
+
+SA-WORLD-002 GPU ACQUIRED 17:17 UTC: active jobs have exited. Starting the reserved5383 single-worker material comparison now; expect3min. Cargo5535 follows the explicit release. Preserve this one job; no shared preview/database change.
+SA-FLIGHT-001 GPU RELEASE / READY17:18UTC: final Nomad controller patrol passed1.6m(1.7m total), two kills/report/return with real evasive stick input; no page/console errors. All5398 browser/server processes exited. Final muzzle route passed1.9m after flash fix; Kestrel/Nomad/Atlas stopping+unlocked checks passed.715unit,90multiplayer pass(1DBfixture skip), production build/repo checks pass. Runtime6f8b195 is unchanged and already incorporated by SA-INT-002; final fixture6619bbe/output+curatedQA1911960 and final QA commit follows. Source fix/combat-momentum pushed; PR creation underway. Runtime and shared-hook ownership released; please merge the final fixture/docs source into the combined candidate, then promote/restart5178/API8087 with the persistent DB preserved. Current claims registry is review with no active file locks. No more momentum GPU job planned. Raw patrol evidence now lives in project test-results/momentum-patrol/nomad; prior /tmp quota failure is documented.
+
+SA-VEH-001 HUMAN TEST DRIVE: Cees now has the live5417 Atlas+Burrow link and
+controls. Preserve that preview/build while testing. Root will use a separate
+candidate build/preview5419 for remaining framing and input-helper corrections;
+5417 stays stable. Candidate10 GLB88448d9d improves cap normals/steel finish and
+transparent shadow casting;28focused tests/build pass. Independent final render
+still pending. Avoid unnecessary GPU load during the human test drive; no FPS
+claim. Shared integration/services remain steward-owned.
