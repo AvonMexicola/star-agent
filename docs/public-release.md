@@ -1,7 +1,7 @@
 # Public entry points and frozen releases
 
 `staragent.site` and `www.staragent.site` serve `site/`: the project introduction,
-real game screenshots, two short ambient captures and two user-operated films, plus
+real game screenshots, two short ambient captures and three user-operated films, plus
 links to solo, multiplayer, source and contribution guides. Motion is optional,
 pauses offscreen/in the background, and defaults off for reduced-motion/data-saving
 preferences. The landing page does not load the game engine or contact an API.
@@ -107,3 +107,7 @@ The second film, `burrow-atlas.mp4`, is the full user-supplied local development
 recording, resized to 1280×800/30fps with H.264 CRF24 and fast-start metadata. Audio
 and source metadata are omitted from the public copy. Its newer Atlas/rover scene
 is labelled local development, independently of the frozen public game version.
+
+The base-building film is the user’s Selene wall/floor construction recording,
+with the initial browser fullscreen hint trimmed. The solo tile uses a six-second
+Nomad approach loop extracted from the accepted continuous arrival take.
