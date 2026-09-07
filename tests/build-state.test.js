@@ -181,3 +181,18 @@ test('mixed pack and nearby ship payment rolls back together on failed save',()=
  assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);assert.equal(f.disk.getItem(MINING_KEY),raw);
  assert.equal(f.system.claims.length,0);
 });
+
+
+test('placement sound fires once after committed material spend, never for preview or failed save',()=>{
+ const f=setup(),sounds=[];f.system.onSound=event=>{assert.equal(f.system.claims.length,1);sounds.push(event);};
+ f.system.begin('mainframe');f.system.refreshPreview();assert.equal(sounds.length,0);
+ assert.equal(f.system.place().ok,false);assert.equal(sounds.length,0);
+ f.fund(PIECES.mainframe.cost);f.system.begin('mainframe');
+ const write=f.store.write.bind(f.store);f.store.write=()=>false;
+ assert.equal(f.system.place().ok,false);assert.equal(sounds.length,0);
+ f.store.write=write;const placed=f.system.place();assert.equal(placed.ok,true,placed.message);
+ assert.equal(sounds.length,1);assert.equal(sounds[0].type,'building-placement');
+ assert.equal(sounds[0].pieceId,placed.pieceId);assert.equal(sounds[0].claimId,placed.claimId);
+ assert.ok(sounds[0].point.distanceTo(f.system.toWorld(v(f.system.claims[0].pieces[0].position),f.system.claims[0]))<.001);
+ f.system.sync();assert.equal(sounds.length,1,'reload/sync does not replay placement');
+});

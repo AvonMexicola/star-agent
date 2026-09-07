@@ -84,6 +84,7 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
 | Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
+| Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
 | Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
@@ -229,3 +230,11 @@ The menu and ring use existing RT weapon controls. Local base/Comms/patrol signa
 come from their live systems; targeted drive is currently solo-only. Lore lives
 in docs/lore.md and the in-game help field note. QA uses port5493 independently of
 the persistent preview5178/API8087/database51224; it never restarts that service.
+
+### Construction and creature audio
+
+Successful building placement now plays a settling/locking sound. The
+[sound studio](http://127.0.0.1:5178/tests/gameplay-audio.html) includes a deep
+Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring remains
+with the in-progress fauna feature; the audio callback patch is in
+[the handoff](qa/construction-audio/README.md). No new control bindings.

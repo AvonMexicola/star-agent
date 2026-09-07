@@ -5,19 +5,21 @@ import { SOUND_KINDS, synthesize } from './synthesis.js';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 export const weaponSound=id=>({'rifle-laser':'carbine','sidearm-pistol':'sidearm'}[id]??id);
 
+export const creatureSound=species=>({pyrebear:'pyrebear-attack',sulphurhound:'sulphurhound-attack',sulfurhound:'sulphurhound-attack',suloher:'sulphurhound-attack'}[species]??null);
+
 /** Shared effects mixer; context is supplied by FlightAudio only after a gesture. */
 export class GameplayAudio {
   constructor(context,destination){
     this.context=context;this.enabled=false;this.disposed=false;this.cache=new Map();this.voices=new Set();
-    this.steps=new FootstepTracker();this.serial=0;this.counts={steps:0,shots:0,impacts:0};this.last=null;this.mining=false;this.hot=false;
+    this.steps=new FootstepTracker();this.serial=0;this.counts={steps:0,shots:0,impacts:0,placements:0,attacks:0};this.last=null;this.mining=false;this.hot=false;
     this.bus=context.createGain();this.bus.gain.value=1;this.bus.connect(destination);
   }
   setEnabled(enabled){
     if(this.disposed)return;
     this.enabled=enabled;
-    if(!enabled){this.suspend();for(const voice of [...this.voices])voice.stop();}
+    if(!enabled)this.suspend();
   }
-  suspend(){this.steps.reset();this.setMining(false);}
+  suspend(){this.steps.reset();this.setMining(false);for(const voice of [...this.voices])voice.stop();}
   buffer(kind,variant){
     const key=`${kind}:${variant}`;
     if(!this.cache.has(key)){
@@ -37,9 +39,9 @@ export class GameplayAudio {
     source.onended=voice.stop;this.voices.add(voice);source.start();this.last=kind;return true;
   }
   event(event,nav){
-    if(!this.enabled||!nav.focused||globalThis.document?.hidden||nav.mode==='crashed'||nav.mode==='destroyed')return;
-    const kind=event.type==='shot'?weaponSound(event.sound??event.weapon):event.type;
-    let gain=event.type==='shot'?.115:event.type==='impact'?.065:.045,pan=0;
+    if(!this.enabled||nav.enabled===false||!nav.focused||globalThis.document?.hidden||globalThis.document?.querySelector?.('dialog[open]')||nav.mode==='crashed'||nav.mode==='destroyed')return;
+    const kind=event.type==='shot'?weaponSound(event.sound??event.weapon):event.type==='creature-attack'?creatureSound(event.species):event.type;
+    let gain=event.type==='creature-attack'?.23:event.type==='building-placement'?.17:event.type==='shot'?.115:event.type==='impact'?.065:.045,pan=0;
     if(event.type==='shot')gain*=1+.18*(clamp(event.size??1,1,3)-1);
     if(event.point&&nav.position){
       const delta=event.point.clone().sub(nav.position),distance=delta.length();
@@ -50,6 +52,8 @@ export class GameplayAudio {
     if(this.play(kind,{gain,pan,pitch:event.pitch??1})){
       if(event.type==='shot')this.counts.shots++;
       if(event.type==='impact')this.counts.impacts++;
+      if(event.type==='building-placement')this.counts.placements++;
+      if(event.type==='creature-attack')this.counts.attacks++;
     }
   }
   createMining(){
