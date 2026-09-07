@@ -1,0 +1,398 @@
+{
+  "browser": "151.0.7922.173",
+  "url": "http://127.0.0.1:5318",
+  "captures": [
+    {
+      "name": "orbit",
+      "viewport": [
+        1600,
+        900
+      ],
+      "position": [
+        1771086.2889946885,
+        1525307.2331894848,
+        3798106.8035687017
+      ],
+      "mode": "flight",
+      "renderScale": 1,
+      "drawCalls": 491,
+      "triangles": 338454,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 202,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 0,
+        "grassTufts": 0,
+        "rocks": 0,
+        "rebuilds": 0,
+        "forestGeneratorVersion": 2
+      },
+      "rafMedianMs": 33.30000000000291,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "coast",
+      "viewport": [
+        1600,
+        900
+      ],
+      "position": [
+        630716.5715908742,
+        412272.5049795953,
+        1403408.0182319866
+      ],
+      "mode": "flight",
+      "renderScale": 1,
+      "drawCalls": 526,
+      "triangles": 1092398,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 659,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 0,
+        "grassTufts": 0,
+        "rocks": 213,
+        "rebuilds": 45,
+        "forestGeneratorVersion": 2,
+        "species": [
+          0,
+          0,
+          0
+        ],
+        "treeLods": [
+          0,
+          0,
+          0
+        ],
+        "treeRange": 1400,
+        "treeUploadMs": 0,
+        "meadow": {
+          "visible": false,
+          "tufts": 0,
+          "blades": 0,
+          "flowers": 0,
+          "contacts": 0,
+          "range": 10,
+          "rebuilds": 0,
+          "downwash": 0
+        },
+        "distantMeadow": {
+          "range": 80,
+          "density": 0.75,
+          "clusters": 0,
+          "pending": 0,
+          "rebuilds": 0,
+          "visible": false,
+          "middle": {
+            "range": 28,
+            "density": 0.75,
+            "clusters": 0,
+            "pending": 0,
+            "rebuilds": 0,
+            "visible": false
+          }
+        },
+        "pendingTiles": 0,
+        "residentTiles": 170,
+        "generatedTiles": 170,
+        "error": null
+      },
+      "rafMedianMs": 33.30000000000291,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "forest",
+      "viewport": [
+        1600,
+        900
+      ],
+      "position": [
+        1128122.2769889287,
+        872404.2711810892,
+        710416.5124203677
+      ],
+      "mode": "flight",
+      "renderScale": 1,
+      "drawCalls": 665,
+      "triangles": 1240724,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 1160,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 7436,
+        "grassTufts": 0,
+        "rocks": 195,
+        "rebuilds": 96,
+        "forestGeneratorVersion": 2,
+        "species": [
+          1996,
+          2234,
+          3206
+        ],
+        "treeLods": [
+          97,
+          938,
+          7198
+        ],
+        "treeRange": 1400,
+        "treeUploadMs": 2.5,
+        "meadow": {
+          "visible": false,
+          "tufts": 0,
+          "blades": 0,
+          "flowers": 0,
+          "contacts": 0,
+          "range": 10,
+          "rebuilds": 0,
+          "downwash": 0
+        },
+        "distantMeadow": {
+          "range": 80,
+          "density": 0.75,
+          "clusters": 0,
+          "pending": 0,
+          "rebuilds": 0,
+          "visible": false,
+          "middle": {
+            "range": 28,
+            "density": 0.75,
+            "clusters": 0,
+            "pending": 0,
+            "rebuilds": 0,
+            "visible": false
+          }
+        },
+        "pendingTiles": 0,
+        "residentTiles": 169,
+        "generatedTiles": 339,
+        "error": null
+      },
+      "rafMedianMs": 33.30000000000291,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "highlands",
+      "viewport": [
+        1600,
+        900
+      ],
+      "position": [
+        1262770.1218588366,
+        669734.2311668764,
+        711534.3958752203
+      ],
+      "mode": "flight",
+      "renderScale": 1,
+      "drawCalls": 326,
+      "triangles": 658834,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 723,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 0,
+        "grassTufts": 0,
+        "rocks": 0,
+        "rebuilds": 146,
+        "forestGeneratorVersion": 2,
+        "species": [
+          0,
+          0,
+          0
+        ],
+        "treeLods": [
+          0,
+          0,
+          0
+        ],
+        "treeRange": 1400,
+        "treeUploadMs": 0,
+        "meadow": {
+          "visible": false,
+          "tufts": 0,
+          "blades": 0,
+          "flowers": 0,
+          "contacts": 0,
+          "range": 10,
+          "rebuilds": 0,
+          "downwash": 0
+        },
+        "distantMeadow": {
+          "range": 80,
+          "density": 0.75,
+          "clusters": 0,
+          "pending": 0,
+          "rebuilds": 0,
+          "visible": false,
+          "middle": {
+            "range": 28,
+            "density": 0.75,
+            "clusters": 0,
+            "pending": 0,
+            "rebuilds": 0,
+            "visible": false
+          }
+        },
+        "pendingTiles": 0,
+        "residentTiles": 169,
+        "generatedTiles": 508,
+        "error": null
+      },
+      "rafMedianMs": 33.30000000000291,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "hangar",
+      "viewport": [
+        1600,
+        900
+      ],
+      "position": [
+        -128369.92817743133,
+        165749.77558136714,
+        1679530.762601103
+      ],
+      "mode": "walk",
+      "renderScale": 1,
+      "drawCalls": 547,
+      "triangles": 836857,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 180,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 0,
+        "grassTufts": 0,
+        "rocks": 0,
+        "rebuilds": 0,
+        "forestGeneratorVersion": 2
+      },
+      "rafMedianMs": 33.299999999995634,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "cockpit",
+      "viewport": [
+        1600,
+        900
+      ],
+      "position": [
+        -128374.68402956192,
+        165750.9251710136,
+        1679532.6012729486
+      ],
+      "mode": "landed",
+      "renderScale": 1,
+      "drawCalls": 578,
+      "triangles": 791924,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 180,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 0,
+        "grassTufts": 0,
+        "rocks": 0,
+        "rebuilds": 0,
+        "forestGeneratorVersion": 2
+      },
+      "rafMedianMs": 16.700000000004366,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "map-desktop",
+      "viewport": [
+        1440,
+        900
+      ],
+      "position": [
+        1771086.2889946885,
+        1525307.2331894848,
+        3798106.8035687017
+      ],
+      "mode": "flight",
+      "renderScale": 1,
+      "drawCalls": 488,
+      "triangles": 335374,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 202,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 0,
+        "grassTufts": 0,
+        "rocks": 0,
+        "rebuilds": 0,
+        "forestGeneratorVersion": 2
+      },
+      "rafMedianMs": 16.69999999999709,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "map-phone",
+      "viewport": [
+        390,
+        844
+      ],
+      "position": [
+        1771086.2889946885,
+        1525307.2331894848,
+        3798106.8035687017
+      ],
+      "mode": "flight",
+      "renderScale": 1,
+      "drawCalls": 488,
+      "triangles": 335374,
+      "lod": {
+        "morphing": 0,
+        "waiting": 0,
+        "merging": 0,
+        "settled": true,
+        "visible": 202,
+        "error": null
+      },
+      "vegetation": {
+        "trees": 0,
+        "grassTufts": 0,
+        "rocks": 0,
+        "rebuilds": 0,
+        "forestGeneratorVersion": 2
+      },
+      "rafMedianMs": 16.69999999999709,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    }
+  ],
+  "errors": [],
+  "notes": "RAF median includes display refresh and is not GPU render time. Tour uses debug poses for terrain viewpoints; boarding to cockpit is physical. Coast bearing is fixed, not guaranteed sea-facing for arbitrary seeds."
+}

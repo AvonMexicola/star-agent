@@ -1,0 +1,3379 @@
+{
+  "captures": [
+    {
+      "name": "game-first-person",
+      "active": false,
+      "samples": [
+        {
+          "cpuMs": 11.900000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.806792
+        },
+        {
+          "cpuMs": 11.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.29499
+        },
+        {
+          "cpuMs": 11.900000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.820859
+        },
+        {
+          "cpuMs": 13.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.938122
+        },
+        {
+          "cpuMs": 13,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.096503
+        },
+        {
+          "cpuMs": 12.699999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.506822
+        },
+        {
+          "cpuMs": 13.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.584931
+        },
+        {
+          "cpuMs": 12.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.023765
+        },
+        {
+          "cpuMs": 12.100000023841858,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.691894
+        },
+        {
+          "cpuMs": 11.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.545977
+        },
+        {
+          "cpuMs": 12.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.836369
+        },
+        {
+          "cpuMs": 11.800000011920929,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.483398
+        },
+        {
+          "cpuMs": 10.800000011920929,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.395611
+        },
+        {
+          "cpuMs": 10.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.860054
+        },
+        {
+          "cpuMs": 12.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.770884
+        },
+        {
+          "cpuMs": 11.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.046217
+        },
+        {
+          "cpuMs": 10.699999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.160985
+        },
+        {
+          "cpuMs": 12.799999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.741949
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.330928
+        },
+        {
+          "cpuMs": 13.400000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.30542
+        },
+        {
+          "cpuMs": 12.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.165233
+        },
+        {
+          "cpuMs": 11.899999976158142,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.759462
+        },
+        {
+          "cpuMs": 14.299999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.697665
+        },
+        {
+          "cpuMs": 14.100000023841858,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.369782
+        },
+        {
+          "cpuMs": 13.399999976158142,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.878048
+        },
+        {
+          "cpuMs": 13,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.069732
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.62138
+        },
+        {
+          "cpuMs": 25.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 13.130187
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.741248
+        },
+        {
+          "cpuMs": 11.799999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.68436
+        },
+        {
+          "cpuMs": 12.799999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.555755
+        },
+        {
+          "cpuMs": 15.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.076936
+        },
+        {
+          "cpuMs": 16.30000001192093,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.444423
+        },
+        {
+          "cpuMs": 14.800000011920929,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.806772
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.510849
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.82661
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.817122
+        },
+        {
+          "cpuMs": 12.600000023841858,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.999298
+        },
+        {
+          "cpuMs": 11.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.284299
+        },
+        {
+          "cpuMs": 12.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.315359
+        },
+        {
+          "cpuMs": 16.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.91142
+        },
+        {
+          "cpuMs": 12.700000017881393,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.456427
+        },
+        {
+          "cpuMs": 14.800000011920929,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.429155
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.286624
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.017712
+        },
+        {
+          "cpuMs": 13.399999976158142,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.945716
+        },
+        {
+          "cpuMs": 13.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.698847
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.277065
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.913334
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.178278
+        },
+        {
+          "cpuMs": 15.400000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.895781
+        },
+        {
+          "cpuMs": 13.300000011920929,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.58499
+        },
+        {
+          "cpuMs": 13.399999976158142,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.05274
+        },
+        {
+          "cpuMs": 11.899999976158142,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.166395
+        },
+        {
+          "cpuMs": 13.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.873499
+        },
+        {
+          "cpuMs": 13.200000017881393,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.989128
+        },
+        {
+          "cpuMs": 13.900000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.087526
+        },
+        {
+          "cpuMs": 13.100000023841858,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.461056
+        },
+        {
+          "cpuMs": 13.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.509828
+        },
+        {
+          "cpuMs": 14,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.861957
+        },
+        {
+          "cpuMs": 13.699999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.608015
+        },
+        {
+          "cpuMs": 11.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.113475
+        },
+        {
+          "cpuMs": 14.600000023841858,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.532861
+        },
+        {
+          "cpuMs": 13.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.783608
+        },
+        {
+          "cpuMs": 13,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.03162
+        },
+        {
+          "cpuMs": 12.699999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.691734
+        },
+        {
+          "cpuMs": 13.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.51584
+        },
+        {
+          "cpuMs": 13.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.481274
+        },
+        {
+          "cpuMs": 12.700000017881393,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.930427
+        },
+        {
+          "cpuMs": 12.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.911271
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.486564
+        },
+        {
+          "cpuMs": 11.400000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.76876
+        },
+        {
+          "cpuMs": 13.400000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.853401
+        },
+        {
+          "cpuMs": 12.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.851938
+        },
+        {
+          "cpuMs": 12.899999976158142,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.213665
+        },
+        {
+          "cpuMs": 12.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.999158
+        },
+        {
+          "cpuMs": 13.699999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.066666
+        },
+        {
+          "cpuMs": 14.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.238973
+        },
+        {
+          "cpuMs": 16.099999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.676024
+        },
+        {
+          "cpuMs": 15.299999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.056746
+        },
+        {
+          "cpuMs": 13.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.082676
+        },
+        {
+          "cpuMs": 12.599999994039536,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.403425
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.343772
+        },
+        {
+          "cpuMs": 13.700000017881393,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.151387
+        },
+        {
+          "cpuMs": 12.799999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.023785
+        },
+        {
+          "cpuMs": 13.199999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 9.998276
+        },
+        {
+          "cpuMs": 12.699999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 10.510369
+        },
+        {
+          "cpuMs": 12.699999988079071,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.003967
+        },
+        {
+          "cpuMs": 14.299999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.51672
+        },
+        {
+          "cpuMs": 12.400000005960464,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 11.791523
+        },
+        {
+          "cpuMs": 13.299999982118607,
+          "drawCalls": 551,
+          "triangles": 759336,
+          "gpuMs": 12.43703
+        }
+      ],
+      "discarded": 0,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawingBuffer": [
+        1440,
+        900
+      ],
+      "gpuMedianMs": 10.806772,
+      "cpuMedianMs": 13.199999988079071,
+      "drawCalls": 551,
+      "triangles": 759336,
+      "characterShadowLights": []
+    },
+    {
+      "name": "game-third-person-rifle",
+      "active": false,
+      "samples": [
+        {
+          "cpuMs": 14.699999988079071,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.298326
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.100671
+        },
+        {
+          "cpuMs": 18,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.250756
+        },
+        {
+          "cpuMs": 16.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.951347
+        },
+        {
+          "cpuMs": 22,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.515178
+        },
+        {
+          "cpuMs": 18.600000023841858,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.494679
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.123033
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.511632
+        },
+        {
+          "cpuMs": 18.19999998807907,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.239755
+        },
+        {
+          "cpuMs": 20.69999998807907,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.753211
+        },
+        {
+          "cpuMs": 17.69999998807907,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.486023
+        },
+        {
+          "cpuMs": 17.100000023841858,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 12.583668
+        },
+        {
+          "cpuMs": 18.200000017881393,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.738182
+        },
+        {
+          "cpuMs": 19.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.488387
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.645326
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.074261
+        },
+        {
+          "cpuMs": 15,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.357879
+        },
+        {
+          "cpuMs": 14.399999976158142,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.739184
+        },
+        {
+          "cpuMs": 21,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.508866
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.512133
+        },
+        {
+          "cpuMs": 15.699999988079071,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.018435
+        },
+        {
+          "cpuMs": 15,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.588518
+        },
+        {
+          "cpuMs": 16.299999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.444644
+        },
+        {
+          "cpuMs": 16.30000001192093,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.471856
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.974511
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.197815
+        },
+        {
+          "cpuMs": 17.099999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.8425
+        },
+        {
+          "cpuMs": 18,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.437711
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.581444
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.822101
+        },
+        {
+          "cpuMs": 17.200000017881393,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.335377
+        },
+        {
+          "cpuMs": 14.200000017881393,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.989399
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.35796
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.151367
+        },
+        {
+          "cpuMs": 15.799999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.685081
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.880733
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.696904
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.041198
+        },
+        {
+          "cpuMs": 19.700000017881393,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.618674
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.0108
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.698507
+        },
+        {
+          "cpuMs": 17,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.054062
+        },
+        {
+          "cpuMs": 15.799999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.270994
+        },
+        {
+          "cpuMs": 16.19999998807907,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.23166
+        },
+        {
+          "cpuMs": 16.900000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.281254
+        },
+        {
+          "cpuMs": 16.200000017881393,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.373669
+        },
+        {
+          "cpuMs": 17.400000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.407534
+        },
+        {
+          "cpuMs": 16.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.823444
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.433183
+        },
+        {
+          "cpuMs": 16.30000001192093,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.379761
+        },
+        {
+          "cpuMs": 16.200000017881393,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.669612
+        },
+        {
+          "cpuMs": 17.200000017881393,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.693196
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.63693
+        },
+        {
+          "cpuMs": 16.19999998807907,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.620779
+        },
+        {
+          "cpuMs": 17,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.292155
+        },
+        {
+          "cpuMs": 18.400000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.312353
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.926139
+        },
+        {
+          "cpuMs": 17.099999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.897204
+        },
+        {
+          "cpuMs": 14.800000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.579901
+        },
+        {
+          "cpuMs": 15,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.138102
+        },
+        {
+          "cpuMs": 16.799999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.327862
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.675102
+        },
+        {
+          "cpuMs": 17.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.882256
+        },
+        {
+          "cpuMs": 17.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.348021
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.417553
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.477787
+        },
+        {
+          "cpuMs": 14.799999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.913094
+        },
+        {
+          "cpuMs": 15.299999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.065284
+        },
+        {
+          "cpuMs": 17.80000001192093,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.485282
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.204588
+        },
+        {
+          "cpuMs": 15.199999988079071,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.519066
+        },
+        {
+          "cpuMs": 15.699999988079071,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.235988
+        },
+        {
+          "cpuMs": 15.299999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.339525
+        },
+        {
+          "cpuMs": 14.699999988079071,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.022883
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.638713
+        },
+        {
+          "cpuMs": 15,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.558841
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 9.555114
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.167398
+        },
+        {
+          "cpuMs": 15,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.150205
+        },
+        {
+          "cpuMs": 14.799999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.89522
+        },
+        {
+          "cpuMs": 15,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.493657
+        },
+        {
+          "cpuMs": 15.699999988079071,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.565634
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.369461
+        },
+        {
+          "cpuMs": 15.299999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.965314
+        },
+        {
+          "cpuMs": 17.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.899519
+        },
+        {
+          "cpuMs": 14.699999988079071,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.823765
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.844965
+        },
+        {
+          "cpuMs": 15.099999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.123975
+        },
+        {
+          "cpuMs": 16.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.026029
+        },
+        {
+          "cpuMs": 14.799999982118607,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 10.785161
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 566,
+          "triangles": 882259,
+          "gpuMs": 11.10562
+        }
+      ],
+      "discarded": 0,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawingBuffer": [
+        1440,
+        900
+      ],
+      "gpuMedianMs": 10.379761,
+      "cpuMedianMs": 16,
+      "drawCalls": 566,
+      "triangles": 882259,
+      "characterShadowLights": [
+        "DirectionalLight"
+      ]
+    },
+    {
+      "name": "game-third-person-pistol",
+      "active": false,
+      "samples": [
+        {
+          "cpuMs": 15.199999988079071,
+          "drawCalls": 558,
+          "triangles": 858817,
+          "gpuMs": 10.125157
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 558,
+          "triangles": 858817,
+          "gpuMs": 9.403306
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 558,
+          "triangles": 858817,
+          "gpuMs": 9.34768
+        },
+        {
+          "cpuMs": 19,
+          "drawCalls": 558,
+          "triangles": 858817,
+          "gpuMs": 9.797976
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 558,
+          "triangles": 858817,
+          "gpuMs": 9.500691
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.972467
+        },
+        {
+          "cpuMs": 17.599999994039536,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.554754
+        },
+        {
+          "cpuMs": 15.400000005960464,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 10.149964
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.52121
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 10.056868
+        },
+        {
+          "cpuMs": 18.099999994039536,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.772407
+        },
+        {
+          "cpuMs": 17.400000005960464,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 10.736719
+        },
+        {
+          "cpuMs": 16.69999998807907,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.836248
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.807874
+        },
+        {
+          "cpuMs": 16.69999998807907,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.862859
+        },
+        {
+          "cpuMs": 18.400000005960464,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 10.171325
+        },
+        {
+          "cpuMs": 17.899999976158142,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 10.120268
+        },
+        {
+          "cpuMs": 18.5,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 9.635988
+        },
+        {
+          "cpuMs": 19.299999982118607,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 10.856206
+        },
+        {
+          "cpuMs": 19.599999994039536,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 11.936038
+        },
+        {
+          "cpuMs": 27.19999998807907,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 13.909147
+        },
+        {
+          "cpuMs": 17.80000001192093,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 13.855645
+        },
+        {
+          "cpuMs": 25.19999998807907,
+          "drawCalls": 557,
+          "triangles": 858209,
+          "gpuMs": 14.264181
+        },
+        {
+          "cpuMs": 21.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 14.30554
+        },
+        {
+          "cpuMs": 21.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 12.397635
+        },
+        {
+          "cpuMs": 21.19999998807907,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 11.456968
+        },
+        {
+          "cpuMs": 20.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 12.512573
+        },
+        {
+          "cpuMs": 17.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 11.01092
+        },
+        {
+          "cpuMs": 17.900000005960464,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 11.130638
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.039755
+        },
+        {
+          "cpuMs": 17.599999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.444224
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.018515
+        },
+        {
+          "cpuMs": 18.69999998807907,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 11.039735
+        },
+        {
+          "cpuMs": 21.900000005960464,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.430377
+        },
+        {
+          "cpuMs": 18.30000001192093,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.835687
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.715379
+        },
+        {
+          "cpuMs": 17.80000001192093,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.311612
+        },
+        {
+          "cpuMs": 17.399999976158142,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.149303
+        },
+        {
+          "cpuMs": 17.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.31582
+        },
+        {
+          "cpuMs": 16.599999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.204969
+        },
+        {
+          "cpuMs": 16.19999998807907,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.044624
+        },
+        {
+          "cpuMs": 15.799999982118607,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.102635
+        },
+        {
+          "cpuMs": 17,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.171776
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.381184
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.096673
+        },
+        {
+          "cpuMs": 15.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.395972
+        },
+        {
+          "cpuMs": 16.600000023841858,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.981564
+        },
+        {
+          "cpuMs": 17.700000017881393,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.319226
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.822262
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.624326
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.224967
+        },
+        {
+          "cpuMs": 17.299999982118607,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.37938
+        },
+        {
+          "cpuMs": 17.19999998807907,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.461657
+        },
+        {
+          "cpuMs": 17.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.354253
+        },
+        {
+          "cpuMs": 18.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.452319
+        },
+        {
+          "cpuMs": 18.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.363089
+        },
+        {
+          "cpuMs": 18.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.625488
+        },
+        {
+          "cpuMs": 15.400000005960464,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.582005
+        },
+        {
+          "cpuMs": 17.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.419817
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.621981
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.39497
+        },
+        {
+          "cpuMs": 15.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.388197
+        },
+        {
+          "cpuMs": 18,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.503977
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.502374
+        },
+        {
+          "cpuMs": 17,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.370363
+        },
+        {
+          "cpuMs": 16.30000001192093,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.467227
+        },
+        {
+          "cpuMs": 16.099999994039536,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.250075
+        },
+        {
+          "cpuMs": 16.30000001192093,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.003446
+        },
+        {
+          "cpuMs": 15.5,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.409237
+        },
+        {
+          "cpuMs": 16.80000001192093,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.310519
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.581685
+        },
+        {
+          "cpuMs": 16.200000017881393,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.614247
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.492074
+        },
+        {
+          "cpuMs": 15.699999988079071,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 10.014748
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 556,
+          "triangles": 858161,
+          "gpuMs": 9.771646
+        },
+        {
+          "cpuMs": 16.599999994039536,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.429275
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.360625
+        },
+        {
+          "cpuMs": 16.700000017881393,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.27915
+        },
+        {
+          "cpuMs": 15.399999976158142,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.527462
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 10.182426
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.390001
+        },
+        {
+          "cpuMs": 16,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.380743
+        },
+        {
+          "cpuMs": 16.399999976158142,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.478128
+        },
+        {
+          "cpuMs": 17,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.339224
+        },
+        {
+          "cpuMs": 16.099999994039536,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 10.155445
+        },
+        {
+          "cpuMs": 15.699999988079071,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 10.159593
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.335617
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 10.190521
+        },
+        {
+          "cpuMs": 16.200000017881393,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.479931
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 10.238693
+        },
+        {
+          "cpuMs": 17.69999998807907,
+          "drawCalls": 555,
+          "triangles": 858089,
+          "gpuMs": 9.384029
+        }
+      ],
+      "discarded": 0,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawingBuffer": [
+        1440,
+        900
+      ],
+      "gpuMedianMs": 9.771646,
+      "cpuMedianMs": 16.700000017881393,
+      "drawCalls": 556,
+      "triangles": 858161,
+      "characterShadowLights": [
+        "DirectionalLight"
+      ]
+    },
+    {
+      "name": "game-third-person-cutter",
+      "active": false,
+      "samples": [
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.759002
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.538663
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.163951
+        },
+        {
+          "cpuMs": 14.699999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.819376
+        },
+        {
+          "cpuMs": 15.400000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.490652
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.324767
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.357018
+        },
+        {
+          "cpuMs": 16.5,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.506863
+        },
+        {
+          "cpuMs": 14.800000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.818475
+        },
+        {
+          "cpuMs": 13.5,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.430037
+        },
+        {
+          "cpuMs": 13.799999982118607,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.432521
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.492195
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.640156
+        },
+        {
+          "cpuMs": 15.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.981404
+        },
+        {
+          "cpuMs": 15.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.394639
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.225268
+        },
+        {
+          "cpuMs": 14.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.465304
+        },
+        {
+          "cpuMs": 14.299999982118607,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.985772
+        },
+        {
+          "cpuMs": 13.300000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.166105
+        },
+        {
+          "cpuMs": 14.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.58433
+        },
+        {
+          "cpuMs": 13.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.495601
+        },
+        {
+          "cpuMs": 16.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.078268
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.780743
+        },
+        {
+          "cpuMs": 14.700000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.44214
+        },
+        {
+          "cpuMs": 14.700000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.141929
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.252619
+        },
+        {
+          "cpuMs": 14.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.779701
+        },
+        {
+          "cpuMs": 14.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.256266
+        },
+        {
+          "cpuMs": 14.200000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.242079
+        },
+        {
+          "cpuMs": 15,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.787876
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.403145
+        },
+        {
+          "cpuMs": 13.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.454683
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.476284
+        },
+        {
+          "cpuMs": 14.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.560565
+        },
+        {
+          "cpuMs": 12.699999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.320969
+        },
+        {
+          "cpuMs": 13.5,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.188498
+        },
+        {
+          "cpuMs": 13.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.180623
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.674982
+        },
+        {
+          "cpuMs": 14.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.551908
+        },
+        {
+          "cpuMs": 13.600000023841858,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.534956
+        },
+        {
+          "cpuMs": 13.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.842781
+        },
+        {
+          "cpuMs": 14.5,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.424346
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.350566
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.360264
+        },
+        {
+          "cpuMs": 14.399999976158142,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.841458
+        },
+        {
+          "cpuMs": 14,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.374251
+        },
+        {
+          "cpuMs": 14.799999982118607,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.419657
+        },
+        {
+          "cpuMs": 16.899999976158142,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.202865
+        },
+        {
+          "cpuMs": 13.300000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.98966
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.329926
+        },
+        {
+          "cpuMs": 14.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.307404
+        },
+        {
+          "cpuMs": 13.700000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.320669
+        },
+        {
+          "cpuMs": 12.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.138863
+        },
+        {
+          "cpuMs": 12.800000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.150926
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.505861
+        },
+        {
+          "cpuMs": 12.799999982118607,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.636268
+        },
+        {
+          "cpuMs": 13.200000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.27408
+        },
+        {
+          "cpuMs": 15.200000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.785352
+        },
+        {
+          "cpuMs": 16.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.975593
+        },
+        {
+          "cpuMs": 17.200000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.077427
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.17906
+        },
+        {
+          "cpuMs": 15.700000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.650145
+        },
+        {
+          "cpuMs": 17.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.705179
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.171766
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.514297
+        },
+        {
+          "cpuMs": 17.400000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.715279
+        },
+        {
+          "cpuMs": 15.100000023841858,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.14748
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 11.158911
+        },
+        {
+          "cpuMs": 18.19999998807907,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.927622
+        },
+        {
+          "cpuMs": 14.200000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.628634
+        },
+        {
+          "cpuMs": 14.400000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.936639
+        },
+        {
+          "cpuMs": 14.100000023841858,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.896282
+        },
+        {
+          "cpuMs": 13.399999976158142,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.355956
+        },
+        {
+          "cpuMs": 14.200000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.569341
+        },
+        {
+          "cpuMs": 13.699999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.76864
+        },
+        {
+          "cpuMs": 15.300000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.627291
+        },
+        {
+          "cpuMs": 17.799999982118607,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.536839
+        },
+        {
+          "cpuMs": 14.899999976158142,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.53708
+        },
+        {
+          "cpuMs": 14.199999988079071,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.045486
+        },
+        {
+          "cpuMs": 17.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.366015
+        },
+        {
+          "cpuMs": 15.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.532912
+        },
+        {
+          "cpuMs": 15.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.144755
+        },
+        {
+          "cpuMs": 15.800000011920929,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.030257
+        },
+        {
+          "cpuMs": 16.400000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.164712
+        },
+        {
+          "cpuMs": 15.400000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.483558
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.424426
+        },
+        {
+          "cpuMs": 15.899999976158142,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.570744
+        },
+        {
+          "cpuMs": 14.599999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.344825
+        },
+        {
+          "cpuMs": 14.900000005960464,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 9.518044
+        },
+        {
+          "cpuMs": 15.200000017881393,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.155295
+        },
+        {
+          "cpuMs": 15.099999994039536,
+          "drawCalls": 561,
+          "triangles": 873737,
+          "gpuMs": 10.327732
+        }
+      ],
+      "discarded": 0,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawingBuffer": [
+        1440,
+        900
+      ],
+      "gpuMedianMs": 9.896282,
+      "cpuMedianMs": 14.799999982118607,
+      "drawCalls": 561,
+      "triangles": 873737,
+      "characterShadowLights": [
+        "DirectionalLight"
+      ]
+    },
+    {
+      "name": "studio-expedition",
+      "active": false,
+      "samples": [
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.911652
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.870574
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.877106
+        },
+        {
+          "cpuMs": 1.0999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.934856
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.909247
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.882957
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.927081
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.920348
+        },
+        {
+          "cpuMs": 0.8999999761581421,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.890532
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.920108
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.88949
+        },
+        {
+          "cpuMs": 1.0999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.967638
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.042981
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.863801
+        },
+        {
+          "cpuMs": 1.0999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.859753
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.934014
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.933052
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.878789
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.873579
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.864001
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.912694
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.014247
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.958661
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.899428
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.946638
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.920268
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.915339
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.910209
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.961266
+        },
+        {
+          "cpuMs": 1.0999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.930327
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.91093
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.957499
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.055485
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.93209
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.059332
+        },
+        {
+          "cpuMs": 1.5,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.076605
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.048391
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.035327
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.003586
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.918505
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.911371
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.945716
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.003266
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.878429
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.933533
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.901913
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.986073
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.005831
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.933493
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.890051
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.818114
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.947921
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.893937
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.878148
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.843883
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.913335
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.890972
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.927682
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.812984
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.822683
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.833343
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.833463
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.887606
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.896302
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.90568
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.862158
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.975934
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.982346
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.058691
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.930447
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.919707
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.967919
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.917142
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.945957
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.91085
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.991483
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.917463
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.953331
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.859272
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.840396
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.887005
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.856066
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.86324
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.813946
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.835667
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.869091
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.873419
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.911772
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 0.841278
+        },
+        {
+          "cpuMs": 1,
+          "drawCalls": 3,
+          "triangles": 62273,
+          "gpuMs": 1.002384
+        }
+      ],
+      "discarded": 0,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawingBuffer": [
+        1124,
+        824
+      ],
+      "gpuMedianMs": 0.913335,
+      "cpuMedianMs": 0.699999988079071,
+      "drawCalls": 3,
+      "triangles": 62273,
+      "characterShadowLights": []
+    },
+    {
+      "name": "studio-previous",
+      "active": false,
+      "samples": [
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.769661
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.79499
+        },
+        {
+          "cpuMs": 1,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.375904
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.801963
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.372016
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.528103
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.80577
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.252499
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.380983
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.142891
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.249253
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.586454
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.397926
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.291383
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.756196
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.698406
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.762447
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.729946
+        },
+        {
+          "cpuMs": 1,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.67921
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.285472
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.98964
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.599899
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.650796
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.327582
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.165213
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.187496
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.6107
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.624185
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.330938
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.608556
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.67921
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.156397
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.009698
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.633163
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.306322
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.031129
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.582146
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.595812
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.116591
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.645426
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.666145
+        },
+        {
+          "cpuMs": 1,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.270133
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.201843
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.311501
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.636529
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.633563
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.161486
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.611642
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.63705
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.638813
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.053972
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.604428
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.599218
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.168239
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.632121
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.301542
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.202134
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.623705
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.330648
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.598256
+        },
+        {
+          "cpuMs": 0.4000000059604645,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.609317
+        },
+        {
+          "cpuMs": 0.4000000059604645,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.691674
+        },
+        {
+          "cpuMs": 0.7999999821186066,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.640416
+        },
+        {
+          "cpuMs": 1.0999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.664983
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.300551
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.649674
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.638974
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.612283
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.451678
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.668229
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.235307
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.504578
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.122492
+        },
+        {
+          "cpuMs": 0.6000000238418579,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.350886
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.722773
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.616371
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.736479
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.126189
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.703015
+        },
+        {
+          "cpuMs": 1.600000023841858,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.63713
+        },
+        {
+          "cpuMs": 0.800000011920929,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.630437
+        },
+        {
+          "cpuMs": 0.7000000178813934,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.595812
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.597415
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.367578
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.641338
+        },
+        {
+          "cpuMs": 0.9000000059604645,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.729345
+        },
+        {
+          "cpuMs": 0.699999988079071,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.591163
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.639454
+        },
+        {
+          "cpuMs": 0.5,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 1.32664
+        },
+        {
+          "cpuMs": 0.5999999940395355,
+          "drawCalls": 3,
+          "triangles": 10475,
+          "gpuMs": 0.5793
+        }
+      ],
+      "discarded": 0,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawingBuffer": [
+        1124,
+        824
+      ],
+      "gpuMedianMs": 0.762447,
+      "cpuMedianMs": 0.699999988079071,
+      "drawCalls": 3,
+      "triangles": 10475,
+      "characterShadowLights": []
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "methodology": "90+ valid EXT_disjoint_timer_query_webgl2 queries around rendered RAF callbacks, after 35 warm frames; available results only, disjoint queries discarded. CPU callback time excludes query readback. Display cadence is not GPU render time. Other desktop GPU tasks were active; this is not an isolated laptop benchmark."
+}
