@@ -1,9 +1,13 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 
-const out='test-results/fleet-opening-captures';
+const out=process.env.FLEET_OPENING_OUT||'test-results/fleet-opening-captures';
 const state=page=>page.evaluate(()=>window.starAgent.state);
 const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
+test.afterEach(async({page},info)=>{
+  if(info.status===info.expectedStatus)return;
+  await writeFile(out+'/failure.json',JSON.stringify(await state(page).catch(error=>({error:error.message})),null,2));
+});
 
 test('solo and authenticated multiplayer retain the shoulder opening and physical handover',async({page,browser})=>{
   await mkdir(out,{recursive:true});const errors=[],stages={};
@@ -35,7 +39,8 @@ test('solo and authenticated multiplayer retain the shoulder opening and physica
   await expect(page.locator('[data-account-callsign]')).toHaveText(callsign);
   await page.locator('[data-join]').click();
   await page.waitForFunction(()=>window.starAgent.state.multiplayer.connected&&window.starAgent.state.opening.authoritative);
-  await page.locator('#multiplayer-account-dialog [data-mp-close]').click();
+  await page.locator('#multiplayer-account-dialog .gameplay-resume').click();
+  await expect(page.locator('#multiplayer-account-dialog')).not.toBeVisible();
   stages.onlineStart=await state(page);
   expect(stages.onlineStart.opening.phase).toBe('cinematic');
   expect(stages.onlineStart.mode).toBe('walk');
