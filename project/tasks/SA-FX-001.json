@@ -1,6 +1,6 @@
 {
   "id": "SA-FX-001",
-  "title": "Connect fleet engine particles, sound and music to live ship state",
+  "title": "Integrate fleet propulsion and the refreshed station, Atlas, rover and gameplay content",
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex integration steward with fleet effects and audio agents",
@@ -8,7 +8,12 @@
   "branch": "feat/fleet-engine-integration",
   "base": "20e9f1b50b3409cccda58a7db04d3d1d56797ec8",
   "updated": "2026-09-07",
-  "areas": ["rendering", "audio", "flight"],
+  "areas": [
+    "integration",
+    "rendering",
+    "audio",
+    "flight"
+  ],
   "claims": [
     "src/effects/engine-state.js",
     "src/effects/energy-effects.js",
@@ -21,7 +26,12 @@
     "tests/engine-state.test.js",
     "tests/flight-effects.test.js",
     "scripts/fleet-engine.spec.js",
-    "scripts/fleet-engine.config.js"
+    "scripts/fleet-engine.config.js",
+    "src/station-fleet-hangar.js",
+    "src/atlas-gameplay.js",
+    "src/cargo/physics.js",
+    "scripts/fleet-development.spec.js",
+    "scripts/fleet-development.config.js"
   ],
   "brief": "docs/briefs/fleet-engine-integration.md"
 }
