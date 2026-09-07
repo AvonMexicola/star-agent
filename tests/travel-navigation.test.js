@@ -204,3 +204,10 @@ test('G and L are contextual utilities; landing assist deploys gear; B retains l
   n.mode='walk';press('KeyL');assert.equal(n.flashlightOn,true);assert.equal(n.shipLightsOn,true);
   press('KeyL');assert.equal(n.flashlightOn,false);
 });
+
+test('targeted travel resets held controller input on arrival, leaving active flight braking available',t=>{
+ const {navigation}=setup(t);navigation.travelTarget='selene';assert.equal(navigation.beginTravel(),true);
+ let suspends=0,resets=0;navigation.gamepad.suspend=()=>suspends++;navigation.targeting={reset:()=>resets++};navigation.travel.targeted=true;
+ navigation.updateTravel(.1);assert.equal(suspends,0);assert.equal(resets,0);
+ navigation.updateTravel(navigation.travel.plan.duration);assert.equal(navigation.travel,null);assert.equal(suspends,1);assert.equal(resets,1);assert.equal(navigation.speed,0);
+});

@@ -193,6 +193,7 @@ export class Navigation {
     }
     this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
     if(sample.done){
+      if(travel.targeted){this.gamepad.suspend();this.targeting?.reset();}
       this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
       if(travel.plan.kind==='travel'&&(travel.targetId==='pyre'||travel.targetId==='miasma'))this.orientToward(new THREE.Vector3(...(travel.targetId==='pyre'?PYRE:MIASMA).center),new THREE.Vector3(...pyreFrame().y));
       this.notify(travel.plan.kind==='abort'?'Drive disengaged. Normal flight restored.':travel.targetId==='star'?'Stellar observation distance reached. Watch shield temperature; Space + Shift retreats.':'Approach reached. Normal flight restored; descend to land.');

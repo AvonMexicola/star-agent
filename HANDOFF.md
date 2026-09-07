@@ -2011,3 +2011,24 @@ aim-to-charge relativistic destinations in feat/navigation-targets at
 navigation-target* modules, travel/navigation hooks, scoped main wiring, tests,
 controller/help copy and lore. Preserve concurrent weapons/landmark work.
 QA port5493 reserved; no GPU job started, queued behind existing reservations.
+
+SA-NAV-001 / feat/navigation-targets / PR62 verification complete. Includes
+landmark f0077f6 via bc91a94 and fitted weapons, with all shared main hooks
+preserved. Hierarchical fixed map, surface pages and filters, actual world/base/
+Comms/patrol signals, nose-lock ring and continuous20km approaches are implemented.
+Stars retain safe thermal stand-off; targeted drive is solo-only, with network
+wrappers gated so they cannot bypass availability. Promise-ring lore is in the
+help field note and docs/lore.md.
+
+702 full unit tests +13 multiplayer UI/client checks, repository check and build
+pass. Four browser cases pass across final focused runs; the last two controller
+rechecks pass in2.2m. No page/console/request errors. Native Chromium151 / AMD860M
+ANGLE GLES3.2, desktop1440×900 and phone390×844. No physical-controller or
+independent acceptance claim. Failure corrections, coarse20km lunar view and
+curated captures are in docs/qa/navigation-targets.md. GPU5493 is released.
+
+Preserve navigation.targeting delegation in beginTravel/beginFreeTravel/travelRoute,
+its narrow multiplayer attach() gate, and targeted-arrival Gamepad neutralization.
+LT must remain immediately usable during active travel. Preserve both the
+landmark and navigation diagnostics in main. Runtime ownership is released after
+local integration; no service/database restart is needed for this UI/flight change.

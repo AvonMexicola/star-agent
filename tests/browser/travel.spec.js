@@ -13,7 +13,11 @@ test('controller map bearing, charge, abort, direct-sight moon arrival and retur
   expect(await page.evaluate(()=>window.starAgent.state.navigationTargets.ready)).toBe(false);
   await page.evaluate(()=>{window.navPad.connected=true;window.dispatchEvent(new Event('focus'));});await page.waitForFunction(()=>window.starAgent.state.controller.armed);await steer(page,'selene');
  }
- await drive();await page.waitForFunction(()=>Boolean(window.starAgent.state.travel));await button(6,true);await button(6,false);await page.waitForFunction(()=>!window.starAgent.state.travel);
+ // React with LT while the drive is still accelerating, independent of tool
+ // round-trip latency. Only controller buttons are written; pose is read-only.
+ await page.evaluate(()=>{window.sawNavAbort=false;window.abortPilot=setInterval(()=>{const t=window.starAgent.state.travel;if(t?.aborting){window.sawNavAbort=true;window.navPad.buttons[6]={pressed:false,value:0};clearInterval(window.abortPilot);}else if(t&&window.starAgent.state.speed>10000000)window.navPad.buttons[6]={pressed:true,value:1};},10);});
+ await drive();await page.waitForFunction(()=>window.sawNavAbort,undefined,{timeout:10000});await page.waitForFunction(()=>!window.starAgent.state.travel&&window.starAgent.state.controller.armed);
+
  // Clear map selection, then acquire the visible moon entirely by steering.
  await tap(14);await choose('map-clear');await tap(1);await page.waitForFunction(()=>window.starAgent.state.controller.armed);expect(await page.evaluate(()=>window.starAgent.state.navigationTargets.selectedId)).toBe(null);
  await steer(page,'selene');expect(await page.evaluate(()=>window.starAgent.state.navigationTargets.selectedId)).toBe(null);await page.screenshot({path:`${evidence}/direct-sight-ready.png`});

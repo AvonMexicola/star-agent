@@ -10,3 +10,6 @@
 @media(max-width:749px){.navigation-marker strong{font-size:8px;max-width:130px}#navigation-lock{width:88px;height:88px}#navigation-lock>div{width:280px}#navigation-engage{bottom:76px}}
 
 body.navigation-acquired #flight-state{visibility:hidden}
+
+/* The unified navigation beacon owns the patrol signal; combat retains enemies and lead cues. */
+body.navigation-beacons .combat-marker.waypoint{display:none!important}

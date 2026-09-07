@@ -33,6 +33,6 @@ test('controller reaches real surface and mission signals, toggles filters and r
  await page.waitForFunction(()=>window.starAgent.state.controller.armed);
  await expect(page.locator('#navigation-lock')).toContainText('Patrol signal');
  await page.evaluate(()=>{window.navPad.axes[2]=.7;});for(let i=0;i<12;i++)await frames(page);await page.evaluate(()=>{window.navPad.axes[2]=0;});
- await expect(page.locator('.navigation-marker[data-id="mission-patrol"]')).toBeVisible();await page.screenshot({path:`${evidence}/mission-arrow.png`});
+ await expect(page.locator('.navigation-marker[data-id="mission-patrol"]')).toBeVisible();await expect(page.locator('.combat-marker.waypoint')).toBeHidden();await page.screenshot({path:`${evidence}/mission-arrow.png`});
  await record(page,browser,'controller-signals',{errors,requests});expect(errors).toEqual([]);
 });

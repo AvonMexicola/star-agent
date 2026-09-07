@@ -10,6 +10,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   let lastConnected=nav.gamepad.connected;
   let filters=Object.fromEntries(Object.keys(NAV_FILTERS).map(id=>[id,['bodies','stations','missions'].includes(id)]));
   try{const saved=JSON.parse(localStorage.getItem('star-agent-nav-filters'));for(const key of Object.keys(filters))if(typeof saved?.[key]==='boolean')filters[key]=saved[key];}catch{}
+  document.body.classList.add('navigation-beacons');
   const markers=document.createElement('div');markers.id='navigation-markers';markers.setAttribute('aria-label','Navigation beacons');parent.append(markers);
   const ring=document.createElement('div');ring.id='navigation-lock';ring.hidden=true;
   ring.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true"><circle class="nav-ring-track" cx="50" cy="50" r="46"/><circle class="nav-ring-fill" cx="50" cy="50" r="46" pathLength="1"/></svg><div><strong></strong><span></span><small></small></div>';
@@ -50,7 +51,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     const planned=route(current);if(!planned.ok){reset();nav.notify(planned.reason);return false;}
     activeTarget=current;selectedId=current.id;nav.travelTarget=current.id;
     nav.travel={plan:planned.plan,elapsed:planned.plan.spoolSeconds,targetId:current.id,targetName:current.name,targeted:true};
-    nav.keys.clear();nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.boost=false;nav.flightAssist=true;nav.gamepad.suspend();reset();
+    nav.keys.clear();nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.boost=false;nav.flightAssist=true;reset();
     nav.notify(`Relativistic drive engaged · ${current.name}. Automatic arrival braking; LT / X aborts.`);return true;
   }
   engageButton.addEventListener('click',engage);
@@ -72,7 +73,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
       ring.querySelector('small').textContent=reason?(reason.startsWith('Within')||reason.startsWith('At stellar')?'Arrival zone · manual flight':'Keep flying to a clear approach'):lock.ready?(nav.controllerActive?'LB + RB + ↑ · Engage':'N / J · Engage'):`Hold nose on target · ${Math.floor(lock.charge*100)}%`;}
     engageButton.hidden=!lock.ready||!enabled;
     markers.hidden=modal||Boolean(nav.travel)||!['flight','walk','eva'].includes(nav.mode);
-    const shown=lastTargets.filter(t=>filters[t.category]||t.id===selectedId).sort((a,b)=>(b.id===selectedId)-(a.id===selectedId)||nav.position.distanceTo(new Vector3(...a.center))-nav.position.distanceTo(new Vector3(...b.center))).slice(0,16);
+    const shown=lastTargets.filter(t=>t.id!=='your-ship'&&!t.id.startsWith('hostile-')&&(filters[t.category]||t.id===selectedId)).sort((a,b)=>(b.id===selectedId)-(a.id===selectedId)||nav.position.distanceTo(new Vector3(...a.center))-nav.position.distanceTo(new Vector3(...b.center))).slice(0,16);
     const ids=new Set(shown.map(t=>t.id));for(const [id,node] of nodes)if(!ids.has(id)){node.remove();nodes.delete(id);}
     const placed=[];
     for(const target of shown){
