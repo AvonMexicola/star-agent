@@ -6,6 +6,12 @@ intakes, landing struts, registration lettering and a hinged cargo container.
 The four rectangular cockpit screens are physical meshes with live canvas
 textures, updated five times per second.
 
+The cockpit refinement replaces the block chair with a Blender-authored bucket
+seat, contoured back and shoulder supports, upholstered bolsters, harness straps,
+rounded headrest and articulated padded armrests. The central windscreen strut is
+removed, leaving the forward view and all four displays unobstructed. The seat
+eye position and boarding dimensions are unchanged.
+
 ## Try it
 
 Run `npm run dev`. Land with **L**, stand with **F**, then walk aft along the
@@ -39,7 +45,9 @@ builder `assets/ship/build_ship.py` recreates it and the runtime
 blender --background --python assets/ship/build_ship.py
 ```
 
-The GLB contains static batches by material plus a separate `CargoLid` pivot.
+The GLB contains static batches by material, a separate `CargoLid` pivot, and a
+`PilotChair` group with its own material batches. The runtime chair fallback hides
+only after that group loads successfully.
 Coordinates are metres, Y up and nose -Z. The builder translates to Blender's
 Z-up coordinates and the glTF exporter translates back. Geometry remains local
 to the ship. `src/boarding.js` owns the flight envelope and the cargo collision
@@ -81,7 +89,24 @@ and exterior captures used scale 1.0.
 
 ![Hinged cargo container](images/nomad-cargo-open.png)
 
+![Refined Nomad pilot chair](images/nomad-pilot-chair.png)
+
 ## Reusable creation pipeline
 
 For the complete workflow, architecture contracts, troubleshooting, verification
 and manager delivery process, read [Ship creation pipeline memory](../SHIP-PIPELINE-MEMORY.md).
+
+## Mesh budget refinement — 2026-09-06
+
+The rebuilt Nomad contains **57,784 triangles / 3,783,616 bytes**, down from
+70,624 triangles / 4,710,588 bytes. Manufactured bevels up to 0.04 m wide use two
+segments; wider edges retain three. The pilot chair retains its explicit
+six-segment bevels. UVs, materials, node names, parents and transforms are retained;
+the overall ship bounds are unchanged. Individual mesh bounds differ by at most
+1.990 mm from bevel sampling. No functional parts were removed.
+
+The builder regenerates both the tracked `.blend` and GLB. Append
+`-- --runtime-only` when intentionally exporting only the runtime GLB.
+`node --test tests/ship-inventory.test.js tests/freighter.test.js tests/navigation.test.js`
+passed after this refinement. The images above are historical captures from
+before this mesh reduction; visual review of the new export is pending.

@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Vector3,Scene,MeshStandardMaterial} from 'three';
-import {PYRE_RADIUS,PYRE_POSITION,PYRE_ORBIT_RADIUS,PYRE_EPOCH,pyreFrameAt,pyreOrbitPosition,pyreSurface,pyreSurfaceBody,pyreResources,fromPyreBody,toPyreBody,pyreLandingDirection,constrainPyreStep,bakePyreMaps,VOLCANOES} from '../src/pyre-world.js';
-import {generatePyrePatch,PyreTerrain} from '../src/pyre-terrain.js';
-import {PYRE,bodyAt,bodyAltitude,bodySurfacePoint} from '../src/celestial.js';
+import {PYRE_RADIUS,PYRE_PERIOD_SECONDS,PYRE_POSITION,PYRE_ORBIT_RADIUS,PYRE_EPOCH,pyreFrameAt,pyreOrbitPosition,pyreSurface,pyreSurfaceBody,pyreResources,fromPyreBody,toPyreBody,pyreLandingDirection,constrainPyreStep,bakePyreMaps,VOLCANOES} from '../src/pyre-world.js';
+import {generatePyrePatch,PyreTerrain,PYRE_GRID,cubeCoordinates} from '../src/pyre-terrain.js';
+import {PYRE,SELENE,bodyAt,bodyAltitude,bodySurfacePoint} from '../src/celestial.js';
 import {SUN_DIRECTION,SUN_DISTANCE,cubeDirection} from '../src/world.js';
 import {advanceTerrainMorph,terrainMorphValue} from '../src/terrain-lod.js';
 const center=new Vector3(...PYRE_POSITION),star=new Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
@@ -85,3 +85,40 @@ test('parent morph supports both flight mesh density changes',()=>{
  }
  terrain.dispose();
 });
+
+// Recovered from Claude's original Pyre branch (44e426a); keep these additional
+// orbit-period and astronomical edge invariants alongside the v2 resource tests.
+const fibonacci = (count, fn) => { for (let i=0;i<count;i++){const y=1-2*(i+.5)/count,a=i*Math.PI*(3-Math.sqrt(5)),r=Math.sqrt(1-y*y);fn([r*Math.cos(a),y,r*Math.sin(a)]);} };
+test('Pyre orbits the star at 10 M km, well clear of Aeon and Selene, with a Keplerian period', () => {
+  assert.ok(Math.abs(center.distanceTo(star) - PYRE_ORBIT_RADIUS) < 1);
+  for (const ms of [0, PYRE_EPOCH, PYRE_EPOCH + 86400e3 * 11]) {
+    const p = pyreOrbitPosition(ms);
+    assert.ok(Math.abs(p.distanceTo(star) - PYRE_ORBIT_RADIUS) < 1e-3);
+    assert.ok(p.length() > SUN_DISTANCE - PYRE_ORBIT_RADIUS - 1 && p.length() < SUN_DISTANCE + PYRE_ORBIT_RADIUS + 1);
+    assert.ok(p.distanceTo(new Vector3(...SELENE.center)) > SELENE.radius * 100);
+  }
+  const period = pyreOrbitPosition(PYRE_PERIOD_SECONDS * 1000);
+  assert.ok(period.distanceTo(pyreOrbitPosition(0)) < 1e-2, 'one period returns to the same point');
+  assert.ok(Math.abs(PYRE_PERIOD_SECONDS / 86400 - 30.36) < .05);
+});
+
+
+test('fine patches agree with the walking floor after astronomical rebasing and share edges', () => {
+  for (const face of [0, 2, 5]) {
+    const level = 17, ix = 65431, iy = 65679, patch = generatePyrePatch({ face, level, ix, iy });
+    const origin = bodySurfacePoint(new Vector3(...cubeDirection(face, -1 + (ix + .5) * 2 / 2 ** level, -1 + (iy + .5) * 2 / 2 ** level)), PYRE, 1.75);
+    for (let y = 0; y <= PYRE_GRID; y += 4) for (let x = 0; x <= PYRE_GRID; x += 4) {
+      const i = (y * (PYRE_GRID + 1) + x) * 3, local = new Vector3(...patch.positions.slice(i, i + 3));
+      const reconstructed = new Vector3(...patch.center).add(center).sub(origin).add(local).add(origin);
+      assert.ok(Math.abs(bodyAltitude(reconstructed, PYRE)) < .00001, 'rendered terrain matches the walking floor');
+      assert.ok(patch.data[(y * (PYRE_GRID + 1) + x) * 4] >= 0);
+    }
+  }
+  const a = generatePyrePatch({ face: 4, level: 15, ix: 13000, iy: 18000 }), b = generatePyrePatch({ face: 4, level: 15, ix: 13001, iy: 18000 });
+  for (let y = 0; y <= PYRE_GRID; y++) {
+    const point = (patch, x) => new Vector3(...patch.positions.slice((y * (PYRE_GRID + 1) + x) * 3, (y * (PYRE_GRID + 1) + x) * 3 + 3)).add(new Vector3(...patch.center));
+    assert.ok(point(a, PYRE_GRID).distanceTo(point(b, 0)) < .00001);
+  }
+  fibonacci(200, d => { const { face, u, v } = cubeCoordinates(d), back = cubeDirection(face, u, v); back.forEach((c, i) => assert.ok(Math.abs(c - d[i]) < 1e-12)); });
+});
+

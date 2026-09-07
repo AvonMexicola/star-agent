@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { parsePlanetSeed, setPlanetSeed, DEFAULT_SEED } from '../src/generation.js';
 import { terrainHeight, findDestinations, generatePatch, RADIUS } from '../src/world.js';
 import { Navigation } from '../src/navigation.js';
+import { generateMoonPatch } from '../src/moon-patch.js';
 
 test('numeric seed links accept the full uint32 range and reject ambiguous values', () => {
   assert.equal(parsePlanetSeed(null), DEFAULT_SEED);
@@ -33,7 +34,7 @@ test('terrain worker uses the same seed and geometry as main-thread collision qu
   t.after(() => worker.terminate());
   for (const seed of [42, 777]) {
     setPlanetSeed(seed);
-    const parameters = { id: seed, seed, face: 4, level: 12, ix: 2048, iy: 2048 };
+    const parameters = { id: seed, seed, face: 4, level: 12, ix: 2048, iy: 2048, grid:32, surfaceDetail:true };
     const actual = await new Promise((resolve, reject) => {
       worker.once('message', resolve); worker.once('error', reject); worker.postMessage(parameters);
     });
@@ -43,7 +44,24 @@ test('terrain worker uses the same seed and geometry as main-thread collision qu
     assert.deepEqual(actual.colors, expected.colors);
     assert.deepEqual(actual.heights, expected.heights);
     assert.deepEqual(actual.rockReliefs, expected.rockReliefs);
+    assert.deepEqual(actual.field, expected.field);
+    for (const field of ['parentPositions','parentWaterPositions','parentNormals','parentColors','parentHeights']) {
+      assert.deepEqual(actual[field], expected[field], `worker transfers deterministic ${field}`);
+    }
   }
+});
+
+test('lunar worker transports the same geometry and detailed geological maps as the canonical generator',async t=>{
+  const moduleURL=new URL('../src/moon-terrain.worker.js',import.meta.url).href;
+  const worker=new Worker(`const {parentPort}=require('node:worker_threads');
+    globalThis.self={postMessage:(data,transfer)=>parentPort.postMessage(data,transfer)};
+    import(${JSON.stringify(moduleURL)}).then(()=>parentPort.on('message',data=>self.onmessage({data})));`,{eval:true});
+  t.after(()=>worker.terminate());
+  const request={id:'lunar-flight',face:4,level:9,ix:375,iy:318,grid:32,surfaceDetail:true};
+  const actual=await new Promise((resolve,reject)=>{worker.once('message',resolve);worker.once('error',reject);worker.postMessage(request);});
+  assert.equal(actual.error,undefined);
+  const expected=generateMoonPatch(request);
+  for(const field of ['positions','normals','surface','colors','field'])assert.deepEqual(actual[field],expected[field]);
 });
 
 test('regular flight crosses the atmosphere, lands and climbs back to space without transit', t => {
@@ -64,10 +82,11 @@ test('regular flight crosses the atmosphere, lands and climbs back to space with
     const distance = nav.position.distanceTo(previous);
     assert.ok(distance < 3000, `continuous step: ${distance}m`);
     previous.copy(nav.position);
+    if(nav.mode==='flight'&&nav.altitude<100&&!nav.autoland){nav.keys.clear();nav.landOrLaunch();}
     for (const threshold of [70000,10000,1500,100]) if (nav.altitude < threshold) layers.add(threshold);
   }
   assert.equal(nav.mode, 'landed'); assert.equal(layers.size, 4);
-  nav.keys.clear(); nav.landOrLaunch(); nav.keys.add('Space'); nav.keys.add('ShiftLeft');
+  nav.keys.clear(); nav.landOrLaunch(); nav.toggleGear(); nav.keys.add('Space'); nav.keys.add('ShiftLeft');
   for (let frame = 0; frame < 60 * 600 && nav.altitude < 100000; frame++) nav.update(1/60);
   assert.equal(nav.mode, 'flight'); assert.ok(nav.altitude > 70000);
 });

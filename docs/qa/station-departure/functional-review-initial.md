@@ -1,0 +1,27 @@
+## Review — station departure patch (`integrate/main-2026-09-06`, uncommitted)
+
+Scope: `src/navigation.js`, `src/travel-model.js`, `scripts/opening.spec.js`, `tests/*`. I read the diff and the surrounding modules (`station.js`, `station-complex.js`, `boarding.js`, `freighter-layout.js`, `gamepad.js`, `flight-model.js`, `opening-sequence.js`) and the existing logs. No files edited, no browsers run.
+
+**Verification state:** `/tmp/star-departure-all-tests.log` finished — 451 pass / 0 fail. `/tmp/star-departure-browser.log` finished — 2 passed (keyboard + controller). The lift, clamp, door request and stuck-lift release each have a test that genuinely fails without the change (the door assertion works because the unit tests never run `station.update()`).
+
+**The core mechanism is correct.** `dock()` puts the eye at deck + `seatEye[1]`, so `seatEye[1]+1` is exactly a one-metre gear lift; `min(3, remaining/dt)` lands on the target in one long frame without overshoot (`steps` is 1 at station altitude, so the swept step is still a single 1 m sweep); the collision release correctly clears `stationLift` before `break`. The `stationSpeedLimit` extraction is behaviour-preserving apart from the intended 6 → 20 floor (`undefined`/`NaN`/`±Infinity` all resolve as before).
+
+### Findings
+
+**1. Medium — the new hover leaves only 0.35 m above the automatic re-dock threshold (Nomad).** `src/navigation.js:414` (hover = `seatEye[1]+1` = 3.55 m) vs `src/navigation.js:208` (`landingClearance` = `max(3.2, 2.90)` = 3.2 m) and the capture at `src/navigation.js:465`. That capture fires on *any* downward velocity component while `canDock` is true, with no post-launch cooldown. Failure scenario: press L, ship settles at 3.55 m, pilot noses down ~2° while accelerating to 20 m/s (or taps `C`/LT for ~0.1 s) — still inside the pad's `canDock` window (24 m of z, ≈0.5 s at 20 m/s) — `dock()` fires and the ship is teleported back onto the deck in `landed` mode mid-departure. Before the patch the same trigger needed a deliberate 2.8 m descent. Nothing in the new tests covers the interaction between the new hover height and `landingClearance`. Suggested fix: don't re-arm the capture until the ship has left the pad envelope (or exceeded, say, hover + 1 m) after an undock.
+
+**2. Low–Medium — the 20 m/s floor is not bay-only; it also governs the approach and the non-swept dock capture.** `src/travel-model.js:41-45` is consumed by both `flightSpeedProfile` and `src/navigation.js:428`, so the clamp now permits 20 m/s everywhere inside 176 m (previously 6 m/s inside 98 m). The capture at `:465` is a discrete threshold on a 3.2 m window, not swept, and `steps` is 1 near the station, so per-frame vertical travel now scales 3.3×. With `dt` clamped at 0.2 s (`src/main.js:305`) and the assist servo's `lerp` ramp, a descent starting from hover still lands inside the window, so I could not construct a clean punch-through — but the margin between "one frame" and "the whole capture window" is now the same order (up to 4 m vs 3.2 m) where it used to be 5× smaller. Worth either substepping the capture or keeping a lower floor for the descent axis.
+
+**3. Low — `station.openDoors()` at `src/navigation.js:296` cannot change production behaviour.** `Station.update()` already commands the doors open every frame while the camera is within `DOOR_OPEN_RADIUS` = 600 m of `DoorTrigger` (`src/station.js:304-307`), and the only state that suppresses it (`openingControlled`) is released at `src/opening-sequence.js:99`, before the player can reach the pilot seat. The call is observable only in the unit tests, which never call `update()`. Harmless, but the QA note's "launch requests the hangar doors open" isn't a behavioural guarantee — nothing gates a 20 m/s departure on `doorsOpen`.
+
+**4. Low — the parametrised spec writes shared screenshot paths.** `scripts/opening.spec.js:37`, `:61`, `:77` (`opening-0.png`, `-walk.png`, `-cockpit.png`) are fixed names, so the controller run overwrites the keyboard run's evidence; only the launch shot at `:87` is parameterised. It also doubles the full-render-scale captures at `:31-36`.
+
+**5. Low — the Atlas departure test bypasses the freighter path.** `tests/station.test.js:315` sets `nav.layout = FREIGHTER_LAYOUT` without `nav.freighter`, so the launch interlock at `src/navigation.js:293` is skipped; both new departure tests also only use the exactly centred pad pose, while `canDock` admits ±9 m / ±12 m of off-centre docks.
+
+### Timing note
+
+The tree is being edited live. `scripts/opening.spec.js` changed at 20:17:35 (after `docs/qa/station-departure/README.md` at 20:11:30): the controller map went from `{x:6,...}` to `{x:1,...}`. Button 1 is the brake (`src/gamepad.js:79`) and is now correct; button 6 was the left trigger, i.e. `vertical` descend (`src/gamepad.js:46,77`), not a brake. So the recorded 2-passed browser run in the QA note almost certainly exercised descend thrust rather than the brake at every `press('x')` — re-run the spec so the attached evidence matches the current mapping. Unrelated visual files (`index.html`, `src/main.js`, `src/orbital-surface.js`, `src/style.css`) also entered the working tree during this review; excluded per your instruction.
+
+### Verdict
+
+No blocking defect in the departure change itself — the lift, clamp and stuck-lift release are correct and adequately tested. Finding 1 is the one I'd fix before merge; 2–5 are follow-ups.

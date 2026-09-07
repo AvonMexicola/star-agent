@@ -7,11 +7,16 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --test tests/rock-formations.test.js tests/miasma.test.js tests/stellar.test.js tests/pyre.test.js tests/opening-support.test.js tests/opening-navigation.test.js tests/station-floor.test.js tests/player-idle.test.js tests/character.test.js tests/travel-model.test.js tests/travel-navigation.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js",
-    "test:browser": "playwright test"
+    "test": "node --test tests/gear-flight.test.js tests/ship-handling.test.js tests/render-resolution.test.js tests/ship-utilities.test.js tests/startup-preload.test.js tests/station-concourse.test.js tests/station-shop.test.js tests/opening-support.test.js tests/opening-navigation.test.js tests/station-floor.test.js tests/player-idle.test.js tests/character.test.js tests/travel-model.test.js tests/travel-navigation.test.js tests/ship-inventory.test.js tests/moon.test.js tests/gamepad.test.js tests/world.test.js tests/navigation.test.js tests/tree-lod.test.js tests/station.test.js scripts/generation.test.js scripts/flight-model.test.js tests/station-finish-materials.test.js tests/station-finish-props.test.js tests/station-complex.test.js tests/freighter.test.js tests/station-opening-complex.test.js tests/ship-power.test.js tests/ship-power-support.test.js tests/atlas-mark-ii.test.js tests/loadout.test.js tests/energy-effects.test.js tests/regional-deposits.test.js tests/ship-marker.test.js tests/ring-ice.test.js tests/asteroid-appearance.test.js tests/ring-spacing.test.js tests/legacy-ring.test.js tests/asteroid-targeting.test.js tests/space-steering.test.js tests/debris-flight.test.js tests/resource-geology.test.js tests/resource-deposits.test.js tests/resource-mining.test.js tests/tool-visual/materials.test.js tests/eva.test.js tests/ring-world.test.js tests/space-mining.test.js tests/container-inventory.test.js tests/mining.test.js tests/equipment.test.js tests/station-ledger.test.js tests/orbital-surface.test.js tests/moon-stones.test.js tests/meadow.test.js tests/pyre.test.js tests/map-projection.test.js scripts/crash.test.js scripts/reentry.test.js scripts/ship-camera.test.js scripts/landing-gear.test.js scripts/forest-distribution.test.js scripts/forest-stream.test.js scripts/terrain-lod.test.js scripts/terrain-material.test.js tests/rock-formations.test.js tests/miasma.test.js tests/stellar.test.js",
+    "test:browser": "playwright test",
+    "test:multiplayer": "node --test tests/server-*.test.js tests/remote-players.test.js tests/multiplayer-ui.test.js",
+    "server": "node server/index.js"
   },
   "dependencies": {
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "nodemailer": "^10.0.0",
+    "pg": "^8.23.0",
+    "ws": "^8.21.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

@@ -1,0 +1,89 @@
+{
+  "revision": 1,
+  "source": "Existing original procedural Blender geometry; gear assemblies separated before batching. No new external assets.",
+  "note": "Rebuild from Python; older .blend snapshots were not rewritten.",
+  "ships": [
+    {
+      "ship": "nomad",
+      "asset": "public/models/nomad.glb",
+      "bytes": 3781236,
+      "sha256": "7b6912981d4a9590e0c86a04a08048ea2ef79430ba818af4df7b0fcb292ea6b9",
+      "builder": "assets/ship/build_ship.py",
+      "command": "blender --background --python assets/ship/build_ship.py -- --runtime-only",
+      "coordinates": "metres, Y up, nose -Z; local landing plane y=0",
+      "gearRoots": [
+        "LandingGear_1_2.8",
+        "LandingGear_1_-2.72",
+        "LandingGear_-1_2.8",
+        "LandingGear_-1_-2.72"
+      ],
+      "gearPivotPositions": [
+        [
+          1.9600000381469727,
+          1.2999999523162842,
+          2.799999952316284
+        ],
+        [
+          1.9600000381469727,
+          1.2999999523162842,
+          -2.7200000286102295
+        ],
+        [
+          -1.9600000381469727,
+          1.2999999523162842,
+          2.799999952316284
+        ],
+        [
+          -1.9600000381469727,
+          1.2999999523162842,
+          -2.7200000286102295
+        ]
+      ],
+      "meshPrimitives": 42,
+      "triangles": 57784,
+      "runtime": "src/ship-utilities.js installLandingGear; src/main.js active ship",
+      "collision": "Conservative deployed envelope retained in boarding/freighter layout; no reduced-gap flight claim"
+    },
+    {
+      "ship": "atlas",
+      "asset": "public/models/atlas.glb",
+      "bytes": 3771268,
+      "sha256": "5548d428e4d5cb4fa0f8e3d506803b3e2f63f53fcf9e3e3ad9051b66655b1cea",
+      "builder": "assets/ship/build_freighter.py",
+      "command": "blender --background --python assets/ship/build_freighter.py -- --runtime-only",
+      "coordinates": "metres, Y up, nose -Z; local landing plane y=0",
+      "gearRoots": [
+        "LandingGear_1_8",
+        "LandingGear_1_-8",
+        "LandingGear_-1_8",
+        "LandingGear_-1_-8"
+      ],
+      "gearPivotPositions": [
+        [
+          6.800000190734863,
+          4.300000190734863,
+          8
+        ],
+        [
+          6.800000190734863,
+          4.300000190734863,
+          -8
+        ],
+        [
+          -6.800000190734863,
+          4.300000190734863,
+          8
+        ],
+        [
+          -6.800000190734863,
+          4.300000190734863,
+          -8
+        ]
+      ],
+      "meshPrimitives": 39,
+      "triangles": 58460,
+      "runtime": "src/ship-utilities.js installLandingGear; src/main.js active ship",
+      "collision": "Conservative deployed envelope retained in boarding/freighter layout; no reduced-gap flight claim"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { Vector3, Quaternion } from 'three';
+import { shipHandling } from './ship-handling.js';
 
 // Gameplay tuning, SI units. One surface g is deliberate; planet size is not mass.
 export const FLIGHT = Object.freeze({
@@ -59,20 +60,24 @@ export function step(state, controls, env, dt) {
   if (!Number.isFinite(dt) || dt < 0) throw new RangeError('Flight dt must be finite and non-negative');
   const velocity = state.velocity.clone(), orientation = state.orientation.clone();
   const angularVelocity = (state.angularVelocity || new Vector3()).clone();
+  const engineAcceleration = new Vector3();
+  const handling = shipHandling(controls.shipId);
   if (controls.assist) {
-    velocity.lerp(controls.targetVelocity || new Vector3(), 1 - Math.exp(-3.5 * dt));
+    velocity.lerp(controls.targetVelocity || new Vector3(), 1 - Math.exp(-handling.assistResponse * dt));
     angularVelocity.multiplyScalar(Math.exp(-8 * dt));
+    if (dt > 0) engineAcceleration.copy(velocity).sub(state.velocity).divideScalar(dt).sub(env.gravity || new Vector3());
   } else if (dt > 0) {
     const count = Math.ceil(dt / (1 / 120)), h = dt / count;
     const translation = (controls.translation || new Vector3()).clone().clampLength(0, 1);
     const torque = (controls.rotation || new Vector3()).clone().clampLength(0, 1);
     const gravity = env.gravity || new Vector3();
     for (let i = 0; i < count; i++) {
-      angularVelocity.addScaledVector(torque, FLIGHT.angularAcceleration * h);
+      angularVelocity.addScaledVector(torque, handling.torque * h);
       const spin = angularVelocity.length();
       if (spin > 0) orientation.multiply(new Quaternion().setFromAxisAngle(angularVelocity.clone().divideScalar(spin), spin * h)).normalize();
-      const thrust = new Vector3(translation.x * FLIGHT.rcsAcceleration, translation.y * FLIGHT.rcsAcceleration,
-        translation.z * FLIGHT.thrustAcceleration).applyQuaternion(orientation).multiplyScalar(controls.boost ? 3 : 1);
+      const thrust = new Vector3(translation.x * handling.rcs, translation.y * handling.rcs,
+        translation.z * handling.thrust).applyQuaternion(orientation).multiplyScalar(controls.boost ? 3 : 1);
+      engineAcceleration.addScaledVector(thrust, h / dt);
       const aero = aerodynamics(velocity, orientation, env.density);
       velocity.addScaledVector(gravity, h).addScaledVector(thrust, h);
       // Rotate velocity for lift so this force does no work, even at large q.
@@ -87,5 +92,5 @@ export function step(state, controls, env, dt) {
     }
   }
   if (dt > 0 && Number.isFinite(controls.maxSpeed)) velocity.clampLength(0, Math.max(0, controls.maxSpeed));
-  return { velocity, orientation, angularVelocity, ...aerodynamics(velocity, orientation, env.density) };
+  return { velocity, orientation, angularVelocity, engineAcceleration, ...aerodynamics(velocity, orientation, env.density) };
 }

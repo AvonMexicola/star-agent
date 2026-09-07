@@ -1,0 +1,418 @@
+{
+  "browser": "151.0.7922.173",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "environment": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "renderScale": 0.8
+  },
+  "fixture": "Debug camera views of deterministic generated bodies; no synthetic asteroid placement",
+  "hero": {
+    "id": 13911,
+    "key": "selene-ring-v2-13911",
+    "position": [
+      858367.7596150574,
+      -255808.23353775122,
+      -93464.75724383545
+    ],
+    "size": 139.87494804904895,
+    "family": 1,
+    "variant": 0,
+    "name": "Copper breccia",
+    "rotation": [
+      1.9075094765462615,
+      4.097059309571168,
+      2.8954455729644453
+    ],
+    "scale": [
+      1,
+      1,
+      1
+    ],
+    "ice": false,
+    "mineable": false
+  },
+  "frames": [
+    {
+      "distance": 600,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 431,
+        "renderedNear": 9,
+        "renderedMid": 80,
+        "renderedFar": 342,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 703,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26825:-7995:-2903",
+          "sunlight": 1
+        }
+      }
+    },
+    {
+      "distance": 3000,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 432,
+        "renderedNear": 7,
+        "renderedMid": 82,
+        "renderedFar": 343,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 708,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26833:-7998:-2828",
+          "sunlight": 1
+        }
+      }
+    },
+    {
+      "distance": 3990,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 429,
+        "renderedNear": 10,
+        "renderedMid": 80,
+        "renderedFar": 339,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 698,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26836:-7999:-2797",
+          "sunlight": 1
+        }
+      }
+    },
+    {
+      "distance": 4010,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 429,
+        "renderedNear": 10,
+        "renderedMid": 80,
+        "renderedFar": 339,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 694,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26836:-7999:-2797",
+          "sunlight": 1
+        }
+      }
+    },
+    {
+      "distance": 15990,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 432,
+        "renderedNear": 9,
+        "renderedMid": 81,
+        "renderedFar": 342,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 711,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26873:-8012:-2424",
+          "sunlight": 1
+        }
+      }
+    },
+    {
+      "distance": 16010,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 432,
+        "renderedNear": 9,
+        "renderedMid": 81,
+        "renderedFar": 342,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 697,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26873:-8012:-2424",
+          "sunlight": 1
+        }
+      }
+    },
+    {
+      "distance": 60000,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 431,
+        "renderedNear": 8,
+        "renderedMid": 83,
+        "renderedFar": 340,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 712,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "27008:-8058:-1056",
+          "sunlight": 1
+        }
+      }
+    }
+  ],
+  "wide": {
+    "population": 14336,
+    "width": 20000,
+    "thickness": 2000,
+    "outerDiameter": 1826896,
+    "families": 6,
+    "variants": 24,
+    "nearby": 25,
+    "rendered": 431,
+    "renderedNear": 7,
+    "renderedMid": 81,
+    "renderedFar": 343,
+    "promoted": 0,
+    "viewDistance": 80000,
+    "nearDistance": 4000,
+    "midDistance": 16000,
+    "ice": {
+      "count": 729,
+      "capacity": 1200,
+      "radius": 104,
+      "presence": 1,
+      "cell": "26838:-7980:-2828",
+      "sunlight": 1
+    }
+  },
+  "boundary": [
+    -1530278.3225949,
+    -255615.0018010471,
+    -23980000
+  ],
+  "snapshots": [
+    {
+      "side": -1,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 430,
+        "renderedNear": 7,
+        "renderedMid": 80,
+        "renderedFar": 343,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 706,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26806:-7988:-3098",
+          "sunlight": 1
+        }
+      },
+      "retainedCount": 293
+    },
+    {
+      "side": 1,
+      "state": {
+        "population": 14336,
+        "width": 20000,
+        "thickness": 2000,
+        "outerDiameter": 1826896,
+        "families": 6,
+        "variants": 24,
+        "nearby": 25,
+        "rendered": 430,
+        "renderedNear": 7,
+        "renderedMid": 80,
+        "renderedFar": 343,
+        "promoted": 0,
+        "viewDistance": 80000,
+        "nearDistance": 4000,
+        "midDistance": 16000,
+        "ice": {
+          "count": 712,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26806:-7988:-3098",
+          "sunlight": 1
+        }
+      },
+      "retainedCount": 293
+    }
+  ],
+  "ice": {
+    "inside": {
+      "count": 707,
+      "capacity": 1200,
+      "radius": 104,
+      "presence": 1,
+      "cell": "26914:-8006:-2931",
+      "sunlight": 1
+    },
+    "pixels": {
+      "brighterPixels": 166,
+      "maximumIncrease": 186,
+      "comparison": "Actual particle layer visible versus hidden; unchanged camera and scene"
+    },
+    "boundaryFrames": [
+      {
+        "state": {
+          "count": 707,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26914:-8006:-2931",
+          "sunlight": 1
+        },
+        "time": 9.433100000000001,
+        "recordedParticleCount": 707
+      },
+      {
+        "state": {
+          "count": 708,
+          "capacity": 1200,
+          "radius": 104,
+          "presence": 1,
+          "cell": "26915:-8006:-2931",
+          "sunlight": 1
+        },
+        "time": 9.716499999999998,
+        "recordedParticleCount": 708
+      }
+    ],
+    "outside": {
+      "count": 0,
+      "capacity": 1200,
+      "radius": 104,
+      "presence": 0,
+      "cell": "26915:-8006:-2931",
+      "sunlight": 1,
+      "visible": false,
+      "drawCount": 0
+    },
+    "commonParticles": 704,
+    "maximumDrift": 0.009462575519706773,
+    "driftLimit": 0.06416999999999984
+  },
+  "overview": {
+    "position": [
+      -320666.2159210725,
+      2410603.278292301,
+      -24002357.810906053
+    ],
+    "moonDiameter": 868700,
+    "rings": {
+      "population": 14336,
+      "width": 20000,
+      "thickness": 2000,
+      "outerDiameter": 1826896,
+      "families": 6,
+      "variants": 24,
+      "nearby": 0,
+      "rendered": 0,
+      "renderedNear": 0,
+      "renderedMid": 0,
+      "renderedFar": 0,
+      "promoted": 0,
+      "visibleIds": [],
+      "viewDistance": 80000,
+      "nearDistance": 4000,
+      "midDistance": 16000,
+      "ice": {
+        "count": 0,
+        "capacity": 1200,
+        "radius": 104,
+        "presence": 0,
+        "cell": "26915:-8006:-2931",
+        "sunlight": 1
+      }
+    },
+    "representation": "Aggregate ring band viewed beyond the80km individual-rock envelope"
+  },
+  "errors": [],
+  "implementationCommit": "0f7f1f1",
+  "asset": "index-N8I1Odnu.js",
+  "date": "2026-09-06"
+}

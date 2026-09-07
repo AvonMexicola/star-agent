@@ -1,0 +1,224 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": {
+    "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "vendor": "Google Inc. (AMD)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+  },
+  "dpr": 1,
+  "method": "Supported orbital entry, keyboard and injected standard Gamepad controls; debug navigation read only for outward heading feedback.",
+  "records": [
+    {
+      "name": "desktop-ordinary-space-dust",
+      "viewport": [
+        1600,
+        900
+      ],
+      "gear": {
+        "gearDeployed": false,
+        "gearProgress": 0,
+        "gearAssemblies": 4,
+        "ship": false,
+        "suit": false
+      },
+      "speed": 2999.3251618754502,
+      "limit": 3000,
+      "regime": "SPACE",
+      "effects": {
+        "spaceDust": 152,
+        "particles": 169,
+        "capacity": 1024,
+        "boost": 0,
+        "travel": 0.6920750570208625,
+        "bolts": 0,
+        "miningContacts": 0,
+        "collectedBursts": 0,
+        "weaponShots": 0,
+        "weaponImpacts": 0,
+        "lastWeapon": "pulse",
+        "lances": 0,
+        "slipstream": 0,
+        "reducedMotion": false,
+        "weapon": "pulse",
+        "controllerFire": false,
+        "beamVisible": false,
+        "bloom": true
+      },
+      "tunnel": {
+        "visible": false,
+        "intensity": 0
+      },
+      "travel": null,
+      "renderResolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1600,
+        "height": 900
+      },
+      "drawCalls": 491,
+      "triangles": 338784,
+      "prompt": {
+        "text": "",
+        "hidden": true,
+        "font": "12px",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "scrollWidth": 0,
+        "clientWidth": 0
+      }
+    },
+    {
+      "name": "desktop-relativistic-drive-tunnel",
+      "viewport": [
+        1600,
+        900
+      ],
+      "gear": {
+        "gearDeployed": false,
+        "gearProgress": 0,
+        "gearAssemblies": 4,
+        "ship": false,
+        "suit": false
+      },
+      "speed": 54990000.00000023,
+      "limit": 3000,
+      "regime": "SPACE",
+      "effects": {
+        "spaceDust": 0,
+        "particles": 0,
+        "capacity": 1024,
+        "boost": 0,
+        "travel": 3.339780117050673e-9,
+        "bolts": 0,
+        "miningContacts": 0,
+        "collectedBursts": 0,
+        "weaponShots": 0,
+        "weaponImpacts": 0,
+        "lastWeapon": "pulse",
+        "lances": 0,
+        "slipstream": 0,
+        "reducedMotion": false,
+        "weapon": "pulse",
+        "controllerFire": false,
+        "beamVisible": false,
+        "bloom": true
+      },
+      "tunnel": {
+        "visible": true,
+        "intensity": 0.9984438982692475
+      },
+      "travel": {
+        "position": [
+          30886071.9054982,
+          5221807.88740674,
+          -3475905.0055576786
+        ],
+        "speed": 54990000.00000023,
+        "phase": "accelerating",
+        "remaining": null,
+        "progress": 0,
+        "done": false,
+        "targetId": null,
+        "manual": true,
+        "targetName": "FREE HEADING",
+        "aborting": false,
+        "eta": null
+      },
+      "renderResolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1600,
+        "height": 900
+      },
+      "drawCalls": 13,
+      "triangles": 36878,
+      "prompt": {
+        "text": "",
+        "hidden": true,
+        "font": "12px",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "scrollWidth": 0,
+        "clientWidth": 0
+      }
+    },
+    {
+      "name": "desktop-drive-exit-no-tunnel",
+      "viewport": [
+        1600,
+        900
+      ],
+      "gear": {
+        "gearDeployed": false,
+        "gearProgress": 0,
+        "gearAssemblies": 4,
+        "ship": false,
+        "suit": false
+      },
+      "speed": 0,
+      "limit": 3000,
+      "regime": "SPACE",
+      "effects": {
+        "spaceDust": 0,
+        "particles": 2,
+        "capacity": 1024,
+        "boost": 0,
+        "travel": 0,
+        "bolts": 0,
+        "miningContacts": 0,
+        "collectedBursts": 0,
+        "weaponShots": 0,
+        "weaponImpacts": 0,
+        "lastWeapon": "pulse",
+        "lances": 0,
+        "slipstream": 0,
+        "reducedMotion": false,
+        "weapon": "pulse",
+        "controllerFire": false,
+        "beamVisible": false,
+        "bloom": true
+      },
+      "tunnel": {
+        "visible": false,
+        "intensity": 0
+      },
+      "travel": null,
+      "renderResolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1600,
+        "height": 900
+      },
+      "drawCalls": 15,
+      "triangles": 33810,
+      "prompt": {
+        "text": "",
+        "hidden": true,
+        "font": "12px",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "scrollWidth": 0,
+        "clientWidth": 0
+      }
+    }
+  ],
+  "errors": []
+}

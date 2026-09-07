@@ -32,7 +32,7 @@ export function addTerrainMorph(material, morph, shading = true) {
       .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed = mix(parentPosition, position, terrainMorph);');
     if (shading) shader.vertexShader = shader.vertexShader
       .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\nobjectNormal = mix(parentNormal, normal, terrainMorph);')
-      .replace('#include <color_vertex>', '#include <color_vertex>\nvColor = mix(parentColor, color, terrainMorph);');
+      .replace('#include <color_vertex>', '#include <color_vertex>\n#ifdef USE_COLOR\nvColor = mix(parentColor, color, terrainMorph);\n#endif');
   };
   material.customProgramCacheKey = () => `${key}-terrain-morph-v1-${shading}`;
 }

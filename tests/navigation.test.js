@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { Navigation } from '../src/navigation.js';
+import { MineableRock } from '../src/mining/rock.js';
+import { createDensity, meshVolume } from '../src/mining/volume.js';
+import { RockCollision } from '../src/mining/collision.js';
 import { RADIUS, terrainHeight, findDestinations, latLonDirection } from '../src/world.js';
 import { SELENE, bodySurfacePoint, bodyAltitude } from '../src/celestial.js';
 import { MOON_RADIUS, MOON_POSITION, MOON_LANDING_DIRECTION } from '../src/moon-world.js';
@@ -69,7 +72,7 @@ const near = (actual, expected, tolerance = 1e-6) => {
 test('coast landing, physical cabin and hatch traversal, return to chair and launch work together', t => {
   const { navigation, press, advance, walkUntil } = setup(t);
   navigation.transit(destinations.coast, 100);
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.autoland, true);
   advance(20);
   assert.equal(navigation.mode, 'landed');
@@ -98,7 +101,7 @@ test('coast landing, physical cabin and hatch traversal, return to chair and lau
   press('KeyF');
   assert.equal(navigation.mode, 'walk', 'F outside does not teleport into the ship');
   assert.ok(navigation.position.equals(outsidePosition));
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.mode, 'walk', 'launch is unavailable on foot');
 
   walkUntil('KeyS', () => navigation.toShipLocal().z <= 2);
@@ -110,7 +113,7 @@ test('coast landing, physical cabin and hatch traversal, return to chair and lau
   press('KeyF');
   assert.equal(navigation.mode, 'landed');
   navigation.toShipLocal().toArray().forEach((value, axis) => near(value, SHIP_LAYOUT.seatEye[axis]));
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.mode, 'flight');
   assert.equal(navigation.shipPosition, null);
   assert.ok(navigation.velocity.dot(navigation.normal) > 0, 'launch velocity points away from ground');
@@ -128,7 +131,7 @@ test('polar landing and walking use sea-level ice above submerged terrain', t =>
   }
   assert.ok(submerged, 'fixture exercises submerged polar terrain');
   navigation.transit(submerged, 100);
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.autoland, true);
   advance(20);
   assert.equal(navigation.mode, 'landed');
@@ -150,7 +153,7 @@ test('polar landing and walking use sea-level ice above submerged terrain', t =>
 test('walking cannot pass through a closed hatch or either cabin side wall', t => {
   const { navigation, press, keyDown, keyUp, advance } = setup(t);
   navigation.transit(destinations.coast, 100);
-  press('KeyL');
+  press('KeyB');
   advance(20);
   press('KeyF');
   keyDown('KeyW');
@@ -170,7 +173,7 @@ test('walking cannot pass through a closed hatch or either cabin side wall', t =
   }
 });
 
-test('open ocean rejects landing assistance and disembarking', t => {
+test('open ocean rejects landing but permits walking inside the secured flying cabin', t => {
   const { navigation, press, advance } = setup(t);
   let ocean;
   for (let latitude = -40; latitude <= 40 && !ocean; latitude += 10) {
@@ -181,13 +184,16 @@ test('open ocean rejects landing assistance and disembarking', t => {
   }
   assert.ok(ocean, 'planet has open ocean away from polar caps');
   navigation.transit(ocean, 100);
-  press('KeyL');
+  press('KeyB');
   assert.equal(navigation.autoland, false);
   advance(20);
   assert.equal(navigation.mode, 'flight');
   near(navigation.altitude, 100);
   press('KeyF');
-  assert.equal(navigation.mode, 'flight');
+  assert.equal(navigation.mode, 'walk');
+  assert.equal(navigation.cabinFlight, true);
+  assert.equal(navigation.insideShip, true);
+  assert.equal(navigation.doorOpen, false);
 });
 
 test('high-speed downward travel collides with the near surface without tunnelling through the planet', t => {
@@ -198,8 +204,9 @@ test('high-speed downward travel collides with the near surface without tunnelli
   // Normal flight can no longer accelerate to this speed.
   navigation.velocity.copy(normal).multiplyScalar(-4_000_000 * 8 * 7);
   navigation.update(1 / 60);
-  assert.equal(navigation.mode, 'landed');
-  navigation.toShipLocal().toArray().forEach((value, axis) => near(value, SHIP_LAYOUT.seatEye[axis]));
+  assert.equal(navigation.mode, 'crashed');
+  assert.ok(navigation.crash.impactSpeed > 1000);
+  assert.equal(navigation.shipPosition, null);
   assert.ok(navigation.normal.dot(normal) > 0.999999, 'collision remains on the approach hemisphere');
   assert.ok(navigation.position.length() >= RADIUS);
   near(navigation.speed, 0);
@@ -271,7 +278,7 @@ test('Selene supports landing, physical ramp traversal, low-gravity jumping, reb
   nav.transitMoon(100);assert.equal(nav.body.id,'selene');near(nav.altitude,100,1e-7);
   assert.equal(nav.flightEnvironment.density,0);assert.equal(nav.flightEnvironment.atmosphereFraction,0);
   assert.ok(Math.abs(nav.flightEnvironment.gravity.length()-1.62)<.02);
-  press('KeyL');advance(20);assert.equal(nav.mode,'landed');
+  press('KeyB');advance(20);assert.equal(nav.mode,'landed');
   const parked=nav.shipPosition.clone();near(bodyAltitude(parked,SELENE),0,1e-7);
   press('KeyF');assert.equal(nav.mode,'walk');
   walkUntil('KeyW',()=>nav.toShipLocal().z>=2.3);press('KeyF');advance(1.2);
@@ -282,14 +289,14 @@ test('Selene supports landing, physical ramp traversal, low-gravity jumping, reb
   advance(6);near(nav.jumpHeight,0);near(nav.altitude,1.75,1e-7);
   keyDown('KeyW');advance(2,()=>near(nav.altitude,1.75,1e-7));keyUp('KeyW');
   walkUntil('KeyS',()=>nav.toShipLocal().z<-1.4);press('KeyF');assert.equal(nav.mode,'landed');
-  press('KeyL');assert.equal(nav.mode,'flight');assert.ok(nav.altitude>10);assert.equal(nav.shipPosition,null);
+  press('KeyB');assert.equal(nav.mode,'flight');assert.ok(nav.altitude>10);assert.equal(nav.shipPosition,null);
   nav.orbit();assert.equal(nav.body.id,'aeon');assert.equal(nav.flightEnvironment.regime,'SPACE');
 });
 
 test('lunar walking works at the pole and on the far side without applying Aeon sea level',t=>{
   const {navigation:nav,press,advance,walkUntil}=setup(t);
   for(const direction of [[0,1,0],[0,0,-1]]){
-    nav.transitMoon(30,direction);press('KeyL');advance(15);assert.equal(nav.mode,'landed');
+    nav.transitMoon(30,direction);press('KeyB');advance(15);assert.equal(nav.mode,'landed');
     near(bodyAltitude(nav.shipPosition,SELENE),0,1e-7);press('KeyF');
     walkUntil('KeyW',()=>nav.toShipLocal().z>2.3);press('KeyF');advance(1.2);
     walkUntil('KeyW',()=>nav.toShipLocal().z>10);
@@ -305,10 +312,10 @@ test('crossing into lunar navigation keeps position continuous and does not flip
   assert.ok(nav.position.distanceTo(before)<51);assert.ok(nav.orientation.angleTo(orientation)<1e-6);
 });
 
-test('swept lunar contact lands on real terrain instead of the former 4 km boundary',t=>{
+test('swept fatal lunar contact hits real terrain instead of the former 4 km boundary',t=>{
   const {navigation:nav}=setup(t);nav.transitMoon(4000);nav.velocity.copy(nav.normal).multiplyScalar(-1000000);
-  nav.update(.2);assert.equal(nav.mode,'landed');
-  near(bodyAltitude(nav.shipPosition,SELENE),0,1e-7);assert.ok(nav.altitude<4);
+  nav.update(.2);assert.equal(nav.mode,'crashed');
+  assert.ok(nav.crash.impactSpeed>12);assert.ok(nav.altitude<4);assert.equal(nav.shipPosition,null);
 });
 
 
@@ -323,4 +330,70 @@ test('controller can land on Selene, traverse the ramp, jump and reboard',t=>{
   advance(6);near(nav.jumpHeight,0);
   pad.axes[1]=1;for(let i=0;i<600&&nav.toShipLocal().z>-1.4;i++)nav.update(1/60);
   pad.axes.fill(0);press(2);assert.equal(nav.mode,'landed');press(3);assert.equal(nav.mode,'flight');
+});
+
+test('walking beyond the landing shelf follows the steep crater terrain',t=>{
+  const {navigation:nav,press,advance,walkUntil,keyDown,keyUp}=setup(t);
+  nav.transitMoon(30);press('KeyB');advance(15);press('KeyF');
+  walkUntil('KeyW',()=>nav.toShipLocal().z>2.3);press('KeyF');advance(1.2);
+  walkUntil('KeyW',()=>nav.toShipLocal().z>12);const start=nav.groundHeight;
+  keyDown('KeyW');advance(90,()=>near(nav.altitude,1.75,1e-5));keyUp('KeyW');
+  assert.ok(Math.abs(nav.groundHeight-start)>30,'walking descends into the basin');
+  assert.equal(nav.mode,'walk');assert.equal(nav.body.id,'selene');
+});
+
+
+test('lunar walking lands on a mineable rock and falls when that support is removed',t=>{
+  const {navigation:nav,advance}=setup(t),scene=new THREE.Scene(),worker={postMessage(d){this.job=d;},terminate(){}};
+  const rock=new MineableRock(scene,{getItem:()=>null,setItem(){}},{worker});
+  const field=createDensity(),mesh=meshVolume(field);rock.receive({id:worker.job.id,field,...mesh,collision:new RockCollision(mesh.positions).pack()});
+  nav.surfaceObstacles=rock;nav.transitMoon();nav.mode='walk';nav.shipPosition=null;
+  nav.position.copy(rock.toWorld(new THREE.Vector3(.35,5,.15)));nav.jumpHeight=nav.altitude-1.75;nav.jumpVelocity=0;
+  advance(4);const supported=nav.altitude;assert.ok(supported>3.8&&supported<5,'the walker stands on the rock');
+  assert.ok(rock.grounded);rock.collision=new RockCollision(new Float32Array());
+  advance(4);near(nav.altitude,1.75,1e-5);assert.ok(nav.altitude<supported-1.5);rock.dispose();
+});
+
+test('EVA leaves a stationary space ship through its hatch, coasts, brakes and physically reboards',t=>{
+  const {navigation:nav,press,advance,walkUntil,keyDown,keyUp}=setup(t);
+  nav.orbit();nav.velocity.set(0,0,10);press('KeyF');assert.equal(nav.mode,'walk','pilot may walk while the powered ship keeps flying');assert.equal(nav.cabinFlight,true);assert.equal(nav.doorOpen,false);nav.orbit();
+  press('KeyX');const initial=nav.position.clone();press('KeyF');assert.equal(nav.mode,'walk');assert.equal(nav.spaceParked,true);
+  const parked=nav.shipPosition.clone();assert.ok(nav.position.distanceTo(initial)<3,'standing stays in cabin');
+  walkUntil('KeyW',()=>nav.toShipLocal().z>=2.3);press('KeyF');advance(1.2);
+  walkUntil('KeyW',()=>nav.mode==='eva');assert.ok(nav.altitude>100000,'exiting does not snap to planet floor');
+  assert.equal(nav.insideShip,false);assert.ok(nav.shipPosition.equals(parked));
+  keyDown('KeyW');advance(1);keyUp('KeyW');const speed=nav.speed,start=nav.position.clone();advance(1);
+  near(nav.speed,speed,1e-7);assert.ok(nav.position.distanceTo(start)>1,'no-input EVA coasts');
+  keyDown('KeyX');advance(2);keyUp('KeyX');near(nav.speed,0);
+  const outside=nav.position.clone();press('KeyF');assert.ok(nav.position.equals(outside),'interact in space does not teleport aboard');
+  // Retrace the actual aft path using thrust and coast rather than resetting position.
+  keyDown('KeyS');advance(.4);keyUp('KeyS');for(let i=0;i<1200&&nav.mode==='eva';i++)nav.update(1/60);
+  assert.equal(nav.mode,'walk',`slow contact with the open ramp attaches boots: ${nav.toShipLocal().toArray()}`);
+  walkUntil('KeyS',()=>nav.toShipLocal().z<=-1.4);press('KeyF');assert.equal(nav.mode,'flight');assert.equal(nav.spaceParked,false);assert.equal(nav.shipPosition,null);
+});
+
+test('suit thrusters lift from Selene, rotate around suit axes and touch down without altering parked ship',t=>{
+  const {navigation:nav,press,keyDown,keyUp,advance}=setup(t);
+  nav.transitMoon(2);nav.mode='walk';nav.insideShip=false;nav.position.copy(bodySurfacePoint(nav.normal,SELENE,1.75));
+  nav.orientToward(nav.position.clone().add(new THREE.Vector3(1,0,0).projectOnPlane(nav.normal)),nav.normal);
+  press('KeyG');assert.equal(nav.mode,'eva');keyDown('Space');advance(1);keyUp('Space');assert.ok(nav.altitude>3);
+  keyDown('KeyX');advance(2);keyUp('KeyX');const before=nav.orientation.clone();keyDown('KeyQ');advance(1);keyUp('KeyQ');assert.ok(before.angleTo(nav.orientation)>.8);
+  nav.velocity.copy(nav.normal).multiplyScalar(-3);nav.update(.2);for(let i=0;i<300&&nav.mode==='eva';i++)nav.update(1/60);
+  assert.equal(nav.mode,'walk');near(nav.altitude,1.75,1e-6);
+});
+
+test('standard Xbox suit controls keep RT mining separate from A/B vertical thrust and LT brakes',t=>{
+  const {navigation:nav,advance}=setup(t);const {pad,button,press}=attachController(nav);
+  nav.orbit();press(2);assert.equal(nav.mode,'walk');assert.ok(nav.spaceParked);
+  pad.axes[1]=-1;for(let i=0;i<600&&nav.toShipLocal().z<2.3;i++)nav.update(1/60);
+  pad.axes.fill(0);press(2);advance(1.2);
+  pad.axes[1]=-1;for(let i=0;i<600&&nav.mode!=='eva';i++)nav.update(1/60);pad.axes.fill(0);assert.equal(nav.mode,'eva');
+  button(6,true);advance(2);button(6,false);near(nav.speed,0);
+  const suitUp=new THREE.Vector3(0,1,0).applyQuaternion(nav.orientation);
+  button(0,true);advance(.5);button(0,false);assert.ok(nav.velocity.dot(suitUp)>1.7);
+  button(6,true);advance(2);button(6,false);near(nav.speed,0);
+  button(1,true);advance(.5);button(1,false);assert.ok(nav.velocity.dot(suitUp)<-1.7,'B descends rather than engaging flight brake');
+  button(6,true);advance(2);button(6,false);near(nav.speed,0);
+  const location=nav.position.clone();button(7,true);advance(.5);assert.equal(nav.toolTrigger,1);near(nav.speed,0);assert.ok(nav.position.distanceTo(location)<.0001,'RT fires tool without suit movement');
+  button(7,false);button(4,true);const attitude=nav.orientation.clone();advance(.5);button(4,false);assert.ok(attitude.angleTo(nav.orientation)>.4);
 });

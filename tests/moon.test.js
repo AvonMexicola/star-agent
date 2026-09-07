@@ -1,9 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Vector3, Scene, MeshBasicMaterial } from 'three';
-import { MOON_RADIUS, MOON_POSITION, MOON_DISTANCE, MOON_MAX_HEIGHT, CRATERS, moonSurface, moonAltitude, moonApproach, constrainMoonStep } from '../src/moon-world.js';
+import { Vector3, Scene, MeshBasicMaterial, Matrix4 } from 'three';
+import { MOON_RADIUS, MOON_POSITION, MOON_DISTANCE, MOON_MAX_HEIGHT, MOON_LANDING_DIRECTION, LANDING_FRAME, LOCAL_CRATERS, CRATERS, moonSurface, moonRegion, moonAltitude, moonApproach, constrainMoonStep } from '../src/moon-world.js';
 import { bodyAltitude, bodySurfacePoint, bodySurfaceNormal, SELENE } from '../src/celestial.js';
 import { generateMoonPatch, MoonTerrain, MOON_GRID } from '../src/moon-terrain.js';
+import { MoonRings, ringDensity, ringRock, RING_NORMAL } from '../src/moon-rings.js';
+import {RING_RADIUS,RING_WIDTH,RING_THICKNESS} from '../src/ring-world.js';
+import { MoonIce, iceCell } from '../src/moon-ice.js';
 import { FlightAudio } from '../src/audio.js';
 import { RADIUS, SUN_DISTANCE, cubeDirection } from '../src/world.js';
 
@@ -17,7 +20,7 @@ test('lunar scale, approach and relief stay clear of Aeon and the terrain bounds
     const sample=moonSurface(...d);
     assert.deepEqual(sample,moonSurface(...d));
     assert.ok(sample.height<MOON_MAX_HEIGHT&&sample.height>-MOON_RADIUS*.1);
-    assert.ok(sample.albedo>=.065&&sample.albedo<=.27);
+    assert.ok(sample.albedo>=.065&&sample.albedo<=.38);
   }
   assert.equal(CRATERS.length,96);
 });
@@ -108,4 +111,77 @@ test('airless exploration silences wind while retaining cockpit engine sound',()
   assert.equal(audio.wind.gain.value,0);assert.ok(audio.hum.gain.value>0);
   audio.update({mode:'walk',airless:true});assert.equal(audio.wind.gain.value,0);assert.equal(audio.hum.gain.value,0);
   audio.update({mode:'walk',airless:false});assert.ok(audio.wind.gain.value>0,'Aeon ambience returns');
+});
+
+test('the exploration basin has substantial relief, steep crater walls and a level landing shelf',()=>{
+  const landing=new Vector3(...MOON_LANDING_DIRECTION),east=new Vector3(...LANDING_FRAME.east),north=new Vector3(...LANDING_FRAME.north);
+  const sample=(x,z)=>{const d=landing.clone().addScaledVector(east,x/MOON_RADIUS).addScaledVector(north,z/MOON_RADIUS).normalize();return moonSurface(...d.toArray()).height;};
+  let minimum=Infinity,maximum=-Infinity,steep=0;
+  for(let x=-14000;x<=14000;x+=200)for(let z=-14000;z<=14000;z+=200){
+    const h=sample(x,z);minimum=Math.min(minimum,h);maximum=Math.max(maximum,h);
+    const slope=Math.hypot((sample(x+5,z)-sample(x-5,z))/10,(sample(x,z+5)-sample(x,z-5))/10);
+    if(slope>Math.tan(Math.PI/9))steep++;
+    assert.ok(h<MOON_MAX_HEIGHT);
+  }
+  assert.ok(maximum-minimum>7500,'exploration terrain spans over 7.5 km vertically');
+  assert.ok(steep>50,'many slopes exceed twenty degrees');
+  for(const [x,z] of [[0,0],[20,0],[-20,0],[0,20],[0,-20]])assert.ok(Math.abs(sample(x,z)-sample(0,0))<.0001);
+  const c=LOCAL_CRATERS[0],d=new Vector3(...c.direction),tangent=new Vector3().crossVectors(d,new Vector3(0,1,0)).normalize();
+  const rim=d.clone().multiplyScalar(Math.cos(c.radius)).addScaledVector(tangent,Math.sin(c.radius));
+  assert.ok(moonSurface(...rim.toArray()).height-moonSurface(...d.toArray()).height>c.depth*.7);
+});
+
+test('ring bands have real gaps and every asteroid stays outside lunar terrain',()=>{
+  assert.ok(ringDensity(RING_RADIUS/MOON_RADIUS)>.5);
+  assert.equal(ringDensity((RING_RADIUS+RING_WIDTH)/MOON_RADIUS),0);
+  const normal=new Vector3(...RING_NORMAL);
+  for(let i=0;i<1800;i++){
+    const rock=ringRock(i),position=new Vector3(...rock.position);assert.deepEqual(rock,ringRock(i));
+    assert.ok(position.length()-rock.size*2>MOON_RADIUS+MOON_MAX_HEIGHT);
+    assert.ok(Math.abs(position.dot(normal))<RING_THICKNESS/2+.001);
+  }
+});
+
+test('ring instances preserve close-range precision when the camera is in the belt',()=>{
+  const scene=new Scene(),rings=new MoonRings(scene,12),rock=ringRock(3),origin=new Vector3(...MOON_POSITION).add(new Vector3(...rock.position)).add(new Vector3(5,12,-20));
+  rings.update(origin,0);const matrix=new Matrix4(),mesh=rings.near[rings.geometryIndex(rock)],index=mesh.userData.ids.indexOf(rock.id);assert.ok(index>=0);mesh.getMatrixAt(index,matrix);
+  const translated=new Vector3().setFromMatrixPosition(matrix);assert.ok(translated.distanceTo(new Vector3(-5,-12,20))<.00001);
+  rings.dispose();assert.equal(scene.children.length,0);
+});
+
+test('ice cells are stable across rebases, stay above terrain and disappear inside the ship',()=>{
+  assert.deepEqual(iceCell(31,-2,19),iceCell(31,-2,19));
+  const scene=new Scene(),ice=new MoonIce(scene),point=bodySurfacePoint(new Vector3(...MOON_LANDING_DIRECTION),SELENE,1.75);
+  ice.update(point,point,1,true);assert.ok(ice.descriptors.length>0);const before=ice.geometry.attributes.position.array.slice();
+  ice.update(point,point.clone().add(new Vector3(3,5,7)),2,true);assert.deepEqual(ice.geometry.attributes.position.array,before);
+  for(const particle of ice.descriptors){const world=new Vector3(...particle.position).add(center);assert.ok(bodyAltitude(world,SELENE)>.59);}
+  ice.update(point,point,3,false);assert.equal(ice.points.visible,false);ice.dispose();assert.equal(scene.children.length,0);
+});
+
+
+test('geological districts have distinct materials and labels at walking and flight scale',()=>{
+  const landing=new Vector3(...MOON_LANDING_DIRECTION),east=new Vector3(...LANDING_FRAME.east),north=new Vector3(...LANDING_FRAME.north);
+  const sample=(u,v)=>{const d=landing.clone().addScaledVector(east,u/MOON_RADIUS).addScaledVector(north,v/MOON_RADIUS).normalize();return {...moonSurface(...d.toArray()),region:moonRegion(...d.toArray())};};
+  const ice=sample(-220,0),rock=sample(-7600,-5300),copper=sample(2600,-3400),frostwall=sample(5400,11500);
+  assert.equal(sample(0,0).region,'CRESCENT RIM');assert.equal(ice.region,'GLASS RIFT');
+  assert.equal(rock.region,'OBSIDIAN CROWN');assert.equal(copper.region,'COPPER EJECTA');assert.equal(frostwall.region,'FROSTWALL');
+  assert.ok(ice.color[2]>rock.color[2]*4,'ice and obsidian read as distinct regions');
+  assert.ok(copper.color[0]>copper.color[2]*3,'copper ejecta has a distinct warm mineral tint');
+  assert.ok(frostwall.frost>.65,'Frostwall visibly carries ice');
+  // Region materials, like heights, stay continuous across a patch boundary.
+  const a=generateMoonPatch({face:4,level:15,ix:13000,iy:18000}),b=generateMoonPatch({face:4,level:15,ix:13001,iy:18000});
+  for(let y=0;y<=MOON_GRID;y++)assert.deepEqual(a.colors.slice((y*(MOON_GRID+1)+MOON_GRID)*3,(y*(MOON_GRID+1)+MOON_GRID)*3+3),b.colors.slice(y*(MOON_GRID+1)*3,y*(MOON_GRID+1)*3+3));
+});
+
+test('stationary lunar views finish streaming and retain culled siblings needed by visible parents',t=>{
+  let now=0;t.mock.method(performance,'now',()=>now);
+  const scene=new Scene(),material=new MeshBasicMaterial(),terrain=new MoonTerrain(scene,material);
+  const point=bodySurfacePoint(new Vector3(...MOON_LANDING_DIRECTION),SELENE,1.75);
+  try{
+    let frames=0;
+    do{now+=16;terrain.update(point,point);frames++;}while(terrain.buildsLastFrame&&frames<600);
+    assert.ok(frames<600,'a fixed view must settle');assert.ok(terrain.maxLevel>=16);
+    now+=10000;terrain.update(point,point);terrain.update(point,point);
+    assert.equal(terrain.buildsLastFrame,0,'cache eviction must not discard required siblings');
+  }finally{terrain.dispose();material.dispose();}
 });

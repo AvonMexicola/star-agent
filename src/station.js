@@ -16,6 +16,21 @@ export const HOVER_HEIGHT = 3.2;
 export const DOOR_OPEN_RADIUS = 600;
 export const DOOR_CLOSE_RADIUS = 1_500;
 const LOD_DISTANCE = 25_000;
+const preparedMaterials = new WeakSet();
+const doorGeometryBounds = new WeakMap();
+function cachedDoorGeometryBounds(geometry) {
+  const position=geometry.attributes.position,morph=geometry.morphAttributes.position??[];
+  let cached=doorGeometryBounds.get(geometry);
+  if(!cached||cached.position!==position||cached.version!==position?.version||
+    cached.relative!==geometry.morphTargetsRelative||cached.morph.length!==morph.length||
+    morph.some((attribute,i)=>cached.morph[i].attribute!==attribute||cached.morph[i].version!==attribute.version)){
+    geometry.computeBoundingBox();
+    cached={position,version:position?.version,relative:geometry.morphTargetsRelative,
+      morph:morph.map(attribute=>({attribute,version:attribute.version})),box:geometry.boundingBox.clone()};
+    doorGeometryBounds.set(geometry,cached);
+  }
+  return cached;
+}
 const VISIBLE_DISTANCE = 600_000;
 const NAV_LIGHT_MATERIALS = ['NavLight_Red', 'NavLight_Green', 'Beacon_White'];
 const REQUIRED_NODES = ['HangarDoor_L', 'HangarDoor_R', 'LandingDeck', 'LandingPad', 'ApproachPoint', 'DoorTrigger'];
@@ -75,6 +90,11 @@ export class Station {
     this.error = null;
     this.ready = false;
     this.elapsed = 0;
+    this.offset = new THREE.Vector3(...(options.offset ?? [0,0,0]));
+    this.yaw = new THREE.Quaternion().setFromAxisAngle(UP, options.yaw ?? 0);
+    this.lodDistance = options.lodDistance ?? LOD_DISTANCE;
+    this.sharedColliders = options.colliders;
+    this.localLights = [];
 
     this.group = new THREE.Group();
     this.group.name = 'Orbital station';
@@ -162,7 +182,7 @@ export class Station {
     nodes.ApproachPoint.getWorldPosition(this.approachLocal);
     nodes.DoorTrigger.getWorldPosition(this.triggerLocal);
 
-    this.colliders = buildStationColliders(model);
+    this.colliders = this.sharedColliders ?? buildStationColliders(model);
     this.doorBoxes = [];
     this.prepareMaterials(model, true);
     this.deck = nodes.LandingDeck;
@@ -193,7 +213,7 @@ export class Station {
     this.fill = new THREE.AmbientLight(0xddeaff,0); this.group.add(this.fill);
     for (const x of [-12,12]) {
       const light = new THREE.PointLight(0xffdfb4,300,65,2);
-      light.position.set(x,deckTop+11,this.padLocal.z); this.group.add(light);
+      light.position.set(x,deckTop+11,this.padLocal.z); this.group.add(light); this.localLights.push(light);
     }
     return this;
   }
@@ -219,7 +239,8 @@ export class Station {
       if (!material || seen.has(material)) return;
       seen.add(material);
       if (material.emissive && material.emissiveIntensity > 0 && material.emissive.getHex() !== 0) {
-        material.emissiveIntensity *= 2;
+        if (!preparedMaterials.has(material)) material.emissiveIntensity *= 2;
+        preparedMaterials.add(material);
       }
       if (collectNavLights && NAV_LIGHT_MATERIALS.includes(material.name)) {
         this.navMaterials.push({ material, base: material.emissiveIntensity, kind: material.name });
@@ -232,6 +253,10 @@ export class Station {
     this.worldPosition.copy(this.direction).multiplyScalar(RADIUS + this.altitude);
     if (this.orientationOverride) this.quaternion.copy(this.orientationOverride);
     else stationQuaternion(this.direction, this.quaternion);
+    // Pod spacing belongs to the common station frame. A berth's own yaw turns
+    // its doorway without rotating its position around the central spine.
+    this.worldPosition.add(this.offset.clone().applyQuaternion(this.quaternion));
+    this.quaternion.multiply(this.yaw);
     this.inverseQuaternion.copy(this.quaternion).invert();
     this._up.set(0, 1, 0).applyQuaternion(this.quaternion).normalize();
     this.toWorld(this.padLocal, this._padWorld);
@@ -268,8 +293,9 @@ export class Station {
     this.cameraDistance = distance;
     if(this.fill)this.fill.intensity=.22*(1-THREE.MathUtils.smoothstep(distance,50,180));
     this.group.visible = distance < VISIBLE_DISTANCE;
+    for (const light of this.localLights) light.visible = distance < 180;
     if (this.model && this.lodModel) {
-      const far = distance > LOD_DISTANCE;
+      const far = distance > this.lodDistance;
       this.model.visible = !far;
       this.lodModel.visible = far;
     }
@@ -281,6 +307,7 @@ export class Station {
       else if (triggerDistanceSq > DOOR_CLOSE_RADIUS * DOOR_CLOSE_RADIUS) this.closeDoors();
     }
     if (this.doorMixer && !this.doorAction.paused) this.doorMixer.update(dt);
+    if(this.lodModel)for(const door of this.doors){const farDoor=this.lodModel.getObjectByName(door.name);if(farDoor)farDoor.position.copy(door.position);}
     this.updateDoorColliders();
 
     // Aviation-style lights: a white double-strobe once per second, red and green in anti-phase.
@@ -298,30 +325,65 @@ export class Station {
 
   updateDoorColliders() {
     if (!this.doors) return;
-    this.group.updateMatrixWorld(true);
-    const inverse = this.group.matrixWorld.clone().invert();
-    this.doorBoxes = this.doors.map(door => {
-      const box = new THREE.Box3();
-      door.traverse(mesh => {
-        if (!mesh.isMesh) return;
-        mesh.geometry.computeBoundingBox();
-        box.union(mesh.geometry.boundingBox.clone().applyMatrix4(inverse.clone().multiply(mesh.matrixWorld)));
-      });
-      return box;
+    this._doorBoundsCache??=new WeakMap();
+    this.doorBoxes.length=this.doors.length;
+    this.doors.forEach((door,index)=>{
+      let cached=this._doorBoundsCache.get(door);
+      if(!cached){cached={nodes:new WeakMap(),meshes:[],box:new THREE.Box3(),parent:new THREE.Matrix4()};this._doorBoundsCache.set(door,cached);}
+      // Work entirely in station-local doubles. Rebasing or rotating the
+      // station cannot change a local collision box, and should never force
+      // a world-matrix traversal through every hidden hero model.
+      const ancestors=[];for(let p=door.parent;p&&p!==this.group;p=p.parent)ancestors.push(p);
+      cached.parent.identity();
+      for(let i=ancestors.length-1;i>=0;i--){const node=ancestors[i];if(node.matrixAutoUpdate)node.updateMatrix();cached.parent.multiply(node.matrix);}
+      let changed=false;const meshes=[];
+      const visit=(node,parent)=>{
+        let state=cached.nodes.get(node);
+        if(!state){state={matrix:new THREE.Matrix4(),previous:new THREE.Matrix4(),box:new THREE.Box3(),source:null};cached.nodes.set(node,state);}
+        if(node.matrixAutoUpdate)node.updateMatrix();
+        state.matrix.multiplyMatrices(parent,node.matrix);
+        if(node.isMesh){
+          const source=cachedDoorGeometryBounds(node.geometry);meshes.push(state);
+          if(state.source!==source||!state.previous.equals(state.matrix)){
+            state.source=source;state.previous.copy(state.matrix);state.box.copy(source.box).applyMatrix4(state.matrix);changed=true;
+          }
+        }
+        for(const child of node.children)visit(child,state.matrix);
+      };
+      visit(door,cached.parent);
+      if(changed||meshes.length!==cached.meshes.length||meshes.some((mesh,i)=>mesh!==cached.meshes[i])){
+        cached.box.makeEmpty();for(const mesh of meshes)cached.box.union(mesh.box);cached.meshes=meshes;
+      }
+      this.doorBoxes[index]=cached.box;
     });
   }
 
   /** Swept conservative ship/body bounds, including the animated doors. */
-  constrainStep(previous, proposed, orientation, walking = false) {
+  constrainStep(previous, proposed, orientation, walking = false, layout = SHIP_LAYOUT) {
     if (!this.ready) return { point: proposed.clone(), hit: false };
     const start = this.toLocal(previous,new THREE.Vector3()), end = this.toLocal(proposed,new THREE.Vector3());
     const min = new THREE.Vector3(), max = new THREE.Vector3();
+    if (!walking && layout.flightParts) {
+      const q=this.inverseQuaternion.clone().multiply(orientation),seat=new THREE.Vector3(...layout.seatEye);
+      let closest={point:end.clone(),hit:false};
+      for(const envelope of layout.flightParts){
+        const bounds=new THREE.Box3();
+        for(let i=0;i<8;i++){
+          const corner=new THREE.Vector3(...envelope.min);
+          for(let axis=0;axis<3;axis++)if(i&(1<<axis))corner.setComponent(axis,envelope.max[axis]);
+          bounds.expandByPoint(corner.sub(seat).applyQuaternion(q));
+        }
+        const hit=constrainStationSweep(this.colliders,this.doorBoxes,start,end,bounds.min,bounds.max);
+        if(hit.hit&&(!closest.hit||hit.point.distanceToSquared(start)<closest.point.distanceToSquared(start)))closest=hit;
+      }
+      this.toWorld(closest.point,closest.point);return closest;
+    }
     if (walking) {
-      min.set(-.25,-SHIP_LAYOUT.eyeHeight,-.25); max.set(.25,.15,.25);
+      min.set(-.25,-layout.eyeHeight,-.25); max.set(.25,.15,.25);
     } else {
       const q = this.inverseQuaternion.clone().multiply(orientation);
-      const bounds = new THREE.Box3(), seat = new THREE.Vector3(...SHIP_LAYOUT.seatEye);
-      const envelope = SHIP_LAYOUT.flightBounds;
+      const bounds = new THREE.Box3(), seat = new THREE.Vector3(...layout.seatEye);
+      const envelope = layout.flightBounds;
       for (let i=0;i<8;i++) {
         const corner = new THREE.Vector3(...envelope.min);
         for (let axis=0;axis<3;axis++) if(i & (1<<axis)) corner.setComponent(axis,envelope.max[axis]);
@@ -341,9 +403,19 @@ export class Station {
     local.y=box.min.y+eyeHeight; return this.toWorld(local,local);
   }
 
-  canDock(worldPosition) {
+  canDock(worldPosition, layout = SHIP_LAYOUT, orientation = this.quaternion) {
     if (!this.ready) return false;
     const p=this.toLocal(worldPosition,new THREE.Vector3()), b=this.interiorBox;
+    if (layout !== SHIP_LAYOUT) {
+      const q=this.inverseQuaternion.clone().multiply(orientation),seat=new THREE.Vector3(...layout.seatEye);
+      const bounds=new THREE.Box3();
+      for(let i=0;i<8;i++){
+        const corner=new THREE.Vector3(...layout.flightBounds.min);
+        for(let axis=0;axis<3;axis++)if(i&(1<<axis))corner.setComponent(axis,layout.flightBounds.max[axis]);
+        bounds.expandByPoint(corner.sub(seat).applyQuaternion(q).add(p));
+      }
+      return bounds.min.x>b.min.x+.5 && bounds.max.x<b.max.x-.5 && bounds.min.z>b.min.z+.5 && bounds.max.z<b.max.z-.5 && p.y>b.min.y && bounds.max.y<b.max.y-.3;
+    }
     return p.x>b.min.x+9 && p.x<b.max.x-9 && p.z>b.min.z+12 && p.z<b.max.z-12 && p.y>b.min.y && p.y<b.max.y-3;
   }
 
@@ -402,7 +474,7 @@ export class Station {
     return THREE.MathUtils.clamp(this.doorAction.time / this.doorClip.duration, 0, 1);
   }
 
-  /** Unit vector away from the planet at the station (local +Y). */
+  /** Authored deck normal (local +Y), including the opening's tilted station pose. */
   get up() { return this._up; }
   /** Deck-centre world position, on the deck surface. */
   get padWorldPosition() { return this._padWorld; }

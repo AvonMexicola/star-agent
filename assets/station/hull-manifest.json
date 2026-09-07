@@ -1,0 +1,34 @@
+{
+  "id": "aeon-orbital-hull",
+  "source": "blender/build_station.py",
+  "provenance": "Procedural Blender geometry authored for Star Agent; Fable/Claude detail pass recovered and validated by Astra, with Sol contract audit.",
+  "units": "metres",
+  "coordinateSystem": "glTF Y-up; hangar opens toward local -Z",
+  "boundsSize": [
+    149.9,
+    47,
+    89.6
+  ],
+  "landingPad": [
+    0,
+    -8,
+    2
+  ],
+  "hero": {
+    "file": "public/models/station.glb",
+    "bytes": 2990144,
+    "triangles": 70540,
+    "primitives": 105,
+    "sha256": "6ba812133b9dd08c7f93674fd5d1f53227761dd38081dd3b6a544b2e416b2492"
+  },
+  "lod1": {
+    "file": "public/models/station_lod1.glb",
+    "bytes": 272648,
+    "triangles": 7784,
+    "primitives": 53,
+    "sha256": "b1a679803e3f426e7bf544d81b60b8142a7e46517b2c9d34ffbb5c037233ce04"
+  },
+  "animation": "DoorsOpen",
+  "review": "docs/qa/station-hull/README.md",
+  "status": "Historical PR22 source asset; superseded by the furnished station assembled in PR20. Hashes describe PR22, not current runtime files."
+}

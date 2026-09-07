@@ -7,6 +7,7 @@ Z-up coordinates back to the game's convention. Cabin, hatch and MFDs remain
 runtime geometry so their physical and interactive contracts stay explicit.
 """
 import math
+import sys
 from pathlib import Path
 import bpy
 from mathutils import Vector
@@ -47,7 +48,9 @@ def finish(obj, name, mat, bevel=0):
     if bevel:
         mod = obj.modifiers.new('Manufactured edge radii', 'BEVEL')
         mod.width = bevel
-        mod.segments = 3
+        # Small manufactured edges need two segments; retain broader silhouettes.
+        # The pilot chair explicitly overrides its bevels to six below.
+        mod.segments = 2 if bevel <= .04 else 3
         mod = obj.modifiers.new('Weighted panel normals', 'WEIGHTED_NORMAL')
         mod.keep_sharp = True
     return obj
@@ -168,12 +171,18 @@ for s in [-1,1]:
         rod('Nozzle / ceramic petal',(x,y,3.45),(x,y,3.98),.055,dark)
     # Four oleo legs; feet are exactly on the existing y=0 landing plane.
     for z in [-2.72,2.80]:
+        gear_before = set(bpy.context.scene.objects)
         rod('Gear / upper shock',(s*1.96,1.25,z),(s*2.34,.59,z+.16),.13,dark)
         rod('Gear / polished piston',(s*2.27,.75,z+.12),(s*2.51,.23,z+.23),.082,metal)
         rod('Gear / trailing brace',(s*1.95,1.12,z+.58),(s*2.51,.23,z+.23),.057,metal)
         box('Gear / sole',(s*2.51,.08,z+.23),(.78,.16,1.02),rubber,.055)
         box('Gear / landing shoe',(s*2.51,.18,z+.23),(.62,.12,.83),metal,.065)
         box('Gear / warning flash',(s*2.51,.247,z+.23),(.38,.014,.41),orange,.005)
+        gear_parts = set(bpy.context.scene.objects) - gear_before
+        bpy.ops.object.empty_add(type='PLAIN_AXES', location=xyz((s*1.96,1.3,z)))
+        gear_root=bpy.context.object; gear_root.name=f'LandingGear_{s}_{z}'
+        for obj in gear_parts:
+            obj.parent=gear_root; obj.matrix_parent_inverse=gear_root.matrix_world.inverted()
     # Rear jamb plating leaves the 1.8 metre physical doorway completely clear.
     box('Aft portal armor',(s*1.45,2.46,4.14),(1.02,2.87,.19),ivory,.10)
     box('Aft portal rescue stripe',(s*1.45,3.40,4.242),(.73,.23,.014),orange,.005)
@@ -183,7 +192,7 @@ for s in [-1,1]:
 box('Roof / aft ceramic shell',(0,4.10,1.15),(3.98,.20,5.8),ivory,.10)
 surface('Canopy / swept roof',[(-1.87,3.98,-1.78),(-1.77,3.45,-4.20),(1.77,3.45,-4.20),(1.87,3.98,-1.78)],ivory,.12)
 rod('Canopy / front brow',(-1.77,3.45,-4.20),(1.77,3.45,-4.20),.075,dark)
-rod('Canopy / windscreen division',(0,1.48,-6.36),(0,3.43,-4.18),.028,metal)
+# Uninterrupted panoramic windscreen: its perimeter frame carries the canopy.
 box('Roof / survey spine',(0,4.24,1.37),(1.19,.04,3.08),teal,.015)
 for i in range(9):
     box('Roof / radiator fin',(0,4.264,.21+i*.27),(.82,.012,.10),dark,.004)
@@ -214,27 +223,72 @@ for obj in [box('Cargo / hinged lid',(1.315,2.01,1.15),(.67,.06,1.60),orange,.02
     obj.parent = lid
     obj.matrix_parent_inverse = lid.matrix_world.inverted()
 
+# Sculpted bucket seat: shaped shell, separate upholstery, harness and articulated arms.
+# Keep the seat behind the existing eye at (0,2.55,-2.8), with clear rear aisle.
+harness=material('Seat / restraint webbing',(.42,.12,.035),.02,.9)
+fabric=material('Seat / woven charcoal',(.025,.046,.048),.03,.94)
+seat_start=set(bpy.context.scene.objects)
+rod('Seat / pedestal',(0,1.03,-2.8),(0,1.36,-2.8),.18,metal,32)
+ring('Seat / pedestal collar',(0,1.19,-2.8),.22,.045,dark)
+box('Seat / base shell',(0,1.38,-2.78),(.88,.20,.84),dark,.09)
+box('Seat / seat cushion',(0,1.49,-2.84),(.63,.18,.68),fabric,.08)
+
+def seat_back(name,outline,front,depth,mat):
+    # Extrude a tailored silhouette in the x/y plane with a slight recline.
+    n=len(outline)
+    vertices=[xyz((x,y,front+(y-1.5)*.13+d)) for d in [0,depth] for x,y in outline]
+    faces=[tuple(range(n-1,-1,-1)),tuple(range(n,n*2))]+[(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
+    mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update()
+    obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
+    return finish(obj,name,mat,.045)
+
+seat_back('Seat / contoured outer shell',[(-.35,1.44),(.35,1.44),(.43,1.9),(.49,2.16),(.35,2.36),(.25,2.41),(-.25,2.41),(-.35,2.36),(-.49,2.16),(-.43,1.9)],-2.49,.14,dark)
+seat_back('Seat / lumbar upholstery',[(-.26,1.55),(.26,1.55),(.30,1.84),(.22,1.94),(-.22,1.94),(-.30,1.84)],-2.56,.07,fabric)
+seat_back('Seat / shoulder upholstery',[(-.22,1.97),(.22,1.97),(.35,2.17),(.24,2.30),(-.24,2.30),(-.35,2.17)],-2.56,.07,fabric)
+box('Seat / headrest support',(0,2.40,-2.28),(.16,.26,.10),metal,.03)
+box('Seat / rounded headrest',(0,2.48,-2.35),(.48,.28,.20),fabric,.09)
+box('Seat / headrest accent',(0,2.49,-2.456),(.30,.035,.014),teal,.006)
+for s in [-1,1]:
+    box('Seat / thigh bolster',(s*.35,1.57,-2.82),(.14,.23,.67),fabric,.065)
+    seat_back('Seat / shoulder wing',[(s*x,y) for x,y in [(.28,1.60),(.39,1.68),(.47,2.16),(.35,2.27),(.28,2.14)]],-2.60,.13,teal)
+    rod('Seat / articulated arm',(s*.42,1.40,-2.44),(s*.51,1.72,-2.62),.042,metal)
+    box('Seat / arm shell',(s*.51,1.75,-2.82),(.18,.12,.66),dark,.055)
+    box('Seat / arm pad',(s*.51,1.82,-2.79),(.15,.06,.48),fabric,.025)
+    surface('Seat / harness webbing',[(s*.19-.035,2.25,-2.49),(s*.19+.035,2.25,-2.49),(s*.15+.035,1.65,-2.54),(s*.15-.035,1.65,-2.54)],harness,.012)
+    box('Seat / harness buckle',(s*.12,1.61,-2.58),(.10,.10,.055),metal,.014)
+    box('Seat / base rail',(s*.28,1.08,-2.8),(.06,.12,.9),dark,.025)
+box('Seat / rear service panel',(0,1.88,-2.27),(.39,.43,.04),metal,.04)
+label('Seat / rear insignia','N / 01',(0,1.93,-2.24),.085,ivory,(math.pi/2,0,0))
+seat_parts=set(bpy.context.scene.objects)-seat_start
+bpy.ops.object.empty_add(type='PLAIN_AXES',location=(0,0,0));chair=bpy.context.object;chair.name='PilotChair'
+for obj in seat_parts:
+    obj.parent=chair
+    for mod in obj.modifiers:
+        if mod.type=='BEVEL':mod.segments=6
+
 # Apply edge modifiers and consolidate static parts by finish for runtime cost.
 for obj in [o for o in bpy.context.scene.objects if o.type == 'MESH']:
     bpy.context.view_layer.objects.active = obj
     for mod in list(obj.modifiers):
         bpy.ops.object.modifier_apply(modifier=mod.name)
-for mat in bpy.data.materials:
-    objects = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.parent is None and o.data.materials and o.data.materials[0] == mat]
-    if not objects:
-        continue
-    bpy.ops.object.select_all(action='DESELECT')
-    for obj in objects:
-        obj.select_set(True)
-    bpy.context.view_layer.objects.active = objects[0]
-    bpy.ops.object.join()
-    objects[0].name = mat.name.split(' / ')[0] + ' / static batch'
-    # Bake positions to the ship origin; no large world coordinates in the asset.
-    bpy.context.scene.cursor.location = (0,0,0)
-    bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+for parent in [None,chair]:
+    for mat in bpy.data.materials:
+        objects = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.parent == parent and o.data.materials and o.data.materials[0] == mat]
+        if not objects:
+            continue
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in objects:
+            obj.select_set(True)
+        bpy.context.view_layer.objects.active = objects[0]
+        bpy.ops.object.join()
+        objects[0].name = mat.name.split(' / ')[0] + ' / static batch'
+        # Bake positions to the ship origin; no large world coordinates in the asset.
+        bpy.context.scene.cursor.location = (0,0,0)
+        bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 
 bpy.context.preferences.filepaths.save_version = 0
-bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/ship/nomad.blend'))
+if '--runtime-only' not in sys.argv:
+    bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/ship/nomad.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'public/models/nomad.glb'),
     export_format='GLB',export_yup=True,export_apply=True,export_extras=True)
-print('NOMAD: saved editable Blender source and runtime GLB')
+print('NOMAD: saved runtime GLB' if '--runtime-only' in sys.argv else 'NOMAD: saved editable Blender source and runtime GLB')

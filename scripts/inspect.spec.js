@@ -7,7 +7,7 @@ test('inspect physical boarding and planet rendering',async({page})=>{
   await page.evaluate(()=>window.starAgent.setRenderScale(.6));
   await page.evaluate(()=>window.starAgent.transit('forest'));
   await page.waitForTimeout(700);
-  await page.keyboard.press('KeyL');
+  await page.keyboard.press('KeyB');
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:45000});
   await page.screenshot({path:'/tmp/star-agent-cockpit.png'});
   await page.keyboard.press('KeyF');
@@ -35,7 +35,7 @@ test('inspect physical boarding and planet rendering',async({page})=>{
   await page.keyboard.down('KeyW');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.4);await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
   await page.keyboard.press('KeyF');
   expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('landed');
-  await page.keyboard.press('KeyL');
+  await page.keyboard.press('KeyB');
   expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('flight');
   console.log('LAUNCHED',await page.evaluate(()=>window.starAgent.state));
   await page.evaluate(()=>window.starAgent.transit('coast'));await page.waitForTimeout(500);await page.screenshot({path:'/tmp/star-agent-coast.png'});

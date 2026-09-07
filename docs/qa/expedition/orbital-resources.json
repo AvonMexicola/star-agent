@@ -1,0 +1,389 @@
+{
+  "browser": "151.0.7922.173",
+  "orbitalViewport": [
+    1440,
+    900
+  ],
+  "cameraFixture": "Debug placement at2.6 moon radii; landing hemisphere biased15% toward sun",
+  "meta": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "resourceProvinces": [
+      {
+        "id": "frostwall-ice-province",
+        "name": "FROSTWALL ICE PROVINCE",
+        "resource": "ice",
+        "direction": [
+          0.5198237065902184,
+          0.49384372586223446,
+          0.6970664878570142
+        ],
+        "radius": 145000
+      },
+      {
+        "id": "copper-ejecta-province",
+        "name": "COPPER EJECTA PROVINCE",
+        "resource": "copper",
+        "direction": [
+          0.6388541507273584,
+          -0.06817686213409602,
+          0.766301043694953
+        ],
+        "radius": 150000
+      },
+      {
+        "id": "north-glass-fields",
+        "name": "NORTH GLASS FIELDS",
+        "resource": "ice",
+        "direction": [
+          -0.3014352341778188,
+          0.833970814558632,
+          -0.4622006924059889
+        ],
+        "radius": 120000
+      },
+      {
+        "id": "far-copper-basins",
+        "name": "FAR COPPER BASINS",
+        "resource": "copper",
+        "direction": [
+          -0.9007773489355771,
+          -0.30708318713712857,
+          0.30708318713712857
+        ],
+        "radius": 135000
+      },
+      {
+        "id": "south-ice-fields",
+        "name": "SOUTH ICE FIELDS",
+        "resource": "ice",
+        "direction": [
+          0.10178149998272808,
+          -0.9872805498324623,
+          0.12213779997927368
+        ],
+        "radius": 95000
+      }
+    ],
+    "renderScale": 1,
+    "moon": {
+      "resources": {
+        "weights": [
+          0.5831726327063221,
+          0.015,
+          0.40182736729367785
+        ],
+        "dominant": "basalt",
+        "province": "FROSTWALL ICE PROVINCE"
+      },
+      "resourceProvinces": [
+        {
+          "id": "frostwall-ice-province",
+          "name": "FROSTWALL ICE PROVINCE",
+          "resource": "ice",
+          "direction": [
+            0.5198237065902184,
+            0.49384372586223446,
+            0.6970664878570142
+          ],
+          "radius": 145000
+        },
+        {
+          "id": "copper-ejecta-province",
+          "name": "COPPER EJECTA PROVINCE",
+          "resource": "copper",
+          "direction": [
+            0.6388541507273584,
+            -0.06817686213409602,
+            0.766301043694953
+          ],
+          "radius": 150000
+        },
+        {
+          "id": "north-glass-fields",
+          "name": "NORTH GLASS FIELDS",
+          "resource": "ice",
+          "direction": [
+            -0.3014352341778188,
+            0.833970814558632,
+            -0.4622006924059889
+          ],
+          "radius": 120000
+        },
+        {
+          "id": "far-copper-basins",
+          "name": "FAR COPPER BASINS",
+          "resource": "copper",
+          "direction": [
+            -0.9007773489355771,
+            -0.30708318713712857,
+            0.30708318713712857
+          ],
+          "radius": 135000
+        },
+        {
+          "id": "south-ice-fields",
+          "name": "SOUTH ICE FIELDS",
+          "resource": "ice",
+          "direction": [
+            0.10178149998272808,
+            -0.9872805498324623,
+            0.12213779997927368
+          ],
+          "radius": 95000
+        }
+      ],
+      "effects": {
+        "ringAsteroids": 20971520,
+        "ringRendered": 3072,
+        "terrainBuilds": 0,
+        "iceParticles": 0,
+        "generatorVersion": 4
+      },
+      "position": [
+        -2388089.256503974,
+        0,
+        -23880892.565039743
+      ],
+      "radius": 434350,
+      "altitude": 697293.4714862898,
+      "patches": 198,
+      "lod": 3,
+      "distance": 1129309.9999999988
+    }
+  },
+  "pixels": {
+    "sampled": 352517,
+    "copper": 82620,
+    "ice": 68307,
+    "classification": "Rendered orange/rust and blue/white pixel masks; these are visual color classes, not mineral quantities."
+  },
+  "layouts": [
+    {
+      "width": 1440,
+      "height": 900,
+      "backpack": {
+        "name": "Open backpack",
+        "left": 1242.921875,
+        "top": 27,
+        "right": 1392,
+        "bottom": 72
+      },
+      "legend": {
+        "name": "Selene resource survey",
+        "left": 571.4140625,
+        "top": 102,
+        "right": 868.5859375,
+        "bottom": 214
+      },
+      "telemetry": {
+        "name": "Live flight telemetry",
+        "left": 1182,
+        "top": 168,
+        "right": 1392,
+        "bottom": 482
+      },
+      "actions": [
+        {
+          "name": "commands-button",
+          "left": 767.171875,
+          "top": 32,
+          "right": 821.21875,
+          "bottom": 67
+        },
+        {
+          "name": "help-button",
+          "left": 970.84375,
+          "top": 32,
+          "right": 1085.9375,
+          "bottom": 67
+        },
+        {
+          "name": "sound-button",
+          "left": 1097.9375,
+          "top": 32,
+          "right": 1184.515625,
+          "bottom": 67
+        },
+        {
+          "name": "photo-button",
+          "left": 1196.515625,
+          "top": 29.5,
+          "right": 1230.921875,
+          "bottom": 69.5
+        },
+        {
+          "name": "Open backpack",
+          "left": 1242.921875,
+          "top": 27,
+          "right": 1392,
+          "bottom": 72
+        }
+      ],
+      "destinations": [
+        {
+          "name": "◎High orbitTHE BIG PICTURE01",
+          "left": 48,
+          "top": 744,
+          "right": 209,
+          "bottom": 813
+        },
+        {
+          "name": "≋Verdant coastLAND & EXPLORE02",
+          "left": 217,
+          "top": 744,
+          "right": 378,
+          "bottom": 813
+        },
+        {
+          "name": "△The highlandsABOVE THE CLOUDS03",
+          "left": 386,
+          "top": 744,
+          "right": 547,
+          "bottom": 813
+        },
+        {
+          "name": "♧Emerald wildsINTO THE FOREST04",
+          "left": 555,
+          "top": 744,
+          "right": 716,
+          "bottom": 813
+        },
+        {
+          "name": "❄Polar silenceTHE FROZEN NORTH05",
+          "left": 724,
+          "top": 744,
+          "right": 885,
+          "bottom": 813
+        },
+        {
+          "name": "station-destination",
+          "left": 893,
+          "top": 744,
+          "right": 1054,
+          "bottom": 813
+        },
+        {
+          "name": "☾SeleneLAND & EXPLORE07",
+          "left": 1062,
+          "top": 744,
+          "right": 1223,
+          "bottom": 813
+        },
+        {
+          "name": "⌁Selene ringsASTEROID SURVEY · EVA",
+          "left": 1231,
+          "top": 744,
+          "right": 1392,
+          "bottom": 813
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "backpack": {
+        "name": "Open backpack",
+        "left": 334,
+        "top": 12.5,
+        "right": 378,
+        "bottom": 56.5
+      },
+      "legend": {
+        "name": "Selene resource survey",
+        "left": 25,
+        "top": 76,
+        "right": 365,
+        "bottom": 167.5
+      },
+      "telemetry": {
+        "name": "Live flight telemetry",
+        "left": 260,
+        "top": 185,
+        "right": 370,
+        "bottom": 375
+      },
+      "actions": [
+        {
+          "name": "commands-button",
+          "left": 215.234375,
+          "top": 19.5,
+          "right": 256.828125,
+          "bottom": 49.5
+        },
+        {
+          "name": "help-button",
+          "left": 262.828125,
+          "top": 19.5,
+          "right": 328,
+          "bottom": 49.5
+        },
+        {
+          "name": "Open backpack",
+          "left": 334,
+          "top": 12.5,
+          "right": 378,
+          "bottom": 56.5
+        }
+      ],
+      "destinations": [
+        {
+          "name": "◎High orbitTHE BIG PICTURE01",
+          "left": 20,
+          "top": 558,
+          "right": 132.65625,
+          "bottom": 630
+        },
+        {
+          "name": "≋Verdant coastLAND & EXPLORE02",
+          "left": 138.65625,
+          "top": 558,
+          "right": 251.328125,
+          "bottom": 630
+        },
+        {
+          "name": "△The highlandsABOVE THE CLOUDS03",
+          "left": 257.328125,
+          "top": 558,
+          "right": 369.984375,
+          "bottom": 630
+        },
+        {
+          "name": "♧Emerald wildsINTO THE FOREST04",
+          "left": 20,
+          "top": 636,
+          "right": 132.65625,
+          "bottom": 708
+        },
+        {
+          "name": "❄Polar silenceTHE FROZEN NORTH05",
+          "left": 138.65625,
+          "top": 636,
+          "right": 251.328125,
+          "bottom": 708
+        },
+        {
+          "name": "station-destination",
+          "left": 257.328125,
+          "top": 636,
+          "right": 369.984375,
+          "bottom": 708
+        },
+        {
+          "name": "☾SeleneLAND & EXPLORE07",
+          "left": 20,
+          "top": 714,
+          "right": 132.65625,
+          "bottom": 786
+        },
+        {
+          "name": "⌁Selene ringsASTEROID SURVEY · EVA",
+          "left": 138.65625,
+          "top": 714,
+          "right": 251.328125,
+          "bottom": 786
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

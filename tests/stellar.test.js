@@ -60,7 +60,8 @@ test('swept lethal contact catches pass-through, starts inside, and tangency wit
 });
 test('navigation uses the star domain, blocks landing and locks a destroyed ship until recovery',t=>{
  const n=setup(t);n.transitStar();assert.equal(n.body.id,'star');assert.equal(bodyAt(n.position).id,'star');assert.equal(n.flightEnvironment.density,0);
- n.landOrLaunch();assert.equal(n.autoland,false);n.embark();assert.equal(n.mode,'flight');
+ n.landOrLaunch();assert.equal(n.autoland,false);n.embark();assert.equal(n.mode,'walk');assert.equal(n.cabinFlight,true);
+ n.transitStar();assert.equal(n.mode,'flight');
  n.position.copy(point(150000000));n.updateStellarThermal(300);assert.equal(n.mode,'destroyed');const position=n.position.clone();
  n.landOrLaunch();n.embark();n.travelTarget='aeon';assert.equal(n.beginTravel(),false);n.orbit();assert.ok(n.position.equals(position));
  n.keys.add('KeyW');n.update(.1);assert.ok(n.position.equals(position));

@@ -85,6 +85,8 @@ Agents coordinate ownership and review through this file. Read the PM notes belo
 Rule: only the owner edits a file. If you need a change in a file you don't own, write the request in
 `## Requests` below (or tell Cees) instead of editing it.
 
+- READY FOR REVIEW — FORESTS: `feat/forest-streaming`, stacked on crash PR #2. Seeded groves/clearings, worker tiles, retained residents, 0.8 s appearance/shadow fades and bounded live-instance uploads. Isolated `/tmp/star-agent-forest-work`; 57 unit tests, production forest browser check and all four general browser cases pass. Sampled forest drops 40,998 → 7,381 trees; 150 m movement adds 16 tiles. Native screenshots and limits in FOREST-HANDOFF.md and docs/images/forest-*.png. Local preview http://localhost:5175/?seed=7291. Terrain/water/advanced tree material work remains separate. No merge or deployment.
+
 ## Conventions Claude's modules follow (derived from planet.js / vegetation.js)
 
 - World positions are JS doubles in metres, planet centre at (0,0,0), `RADIUS` from `world.js`.
@@ -235,6 +237,8 @@ All modules have standalone pages under `/dev/` so you can compare before wiring
 `tests/world.test.js` was extended, not replaced.
 
 ## Requests
+
+- READY FOR REVIEW — hard ground crashes: isolated branch feat/hard-ground-crashes in /tmp/star-agent-crash-work, based on feat/inertial-flight (PR #1). Files: src/impact.js, src/crash-effects.js, navigation/main integration, index/style, package/README, scripts/crash.*, scripts/generation.test.js, tests/navigation.test.js. Terrain/sea-level closing speed >=12 m/s destroys the ship, latches propulsion/rotation/boarding/launch off and shows procedural impact effects plus explicit same-seed recovery. Surface normals use the existing shared terrain floor. Movement-key preventDefault MUST precede the crashed keydown return (otherwise Space clicks an old focused destination and auto-recovers). Sol authored six meaningful crash regressions and independently reviewed the feature. 47 unit checks, production build, crash+phone recovery browser case and four existing browser cases pass. The regression run used /tmp/star-agent-crash-regression.config.mjs solely to move the standard suite to port 5188; crash test uses committed scripts/crash.config.js. Inspected screenshots and environment: /tmp/star-agent-crash (Chromium 151, ANGLE/Vulkan SwiftShader, 1440×900 and 390×844; standard suite 1280×800). Stable preview: http://localhost:5174/?seed=7291 via transient star-agent-crash-dev.service. No production deployment. Controller/cockpit/Blender and helper landing-gear files were excluded from this isolated commit; preserve those when integrating. Landing suspension, station damage and persistent/deformable wrecks remain future work.
 
 - Astra: Flight slice committed as 2cbac2e and published for review at https://github.com/AvonMexicola/star-agent/pull/1 (head feat/inertial-flight, base feat/visual-fidelity). Only the separate review branch was pushed; no production deployment by Astra. Local shared feat/visual-fidelity contains the commit for PM inspection. Sol review is complete with no remaining blockers after the spin-on-assist-cancellation fix.
 
@@ -414,6 +418,768 @@ This local notice files the requested memory for Fable; it does not assert a rea
 Review, merge and deployment remain with the manager's queue.
 
 
+## READY for Fable 5.1 — Atlas freighter and Nomad cockpit (2026-09-06)
+
+Cees’ larger **unlockable** ship and subsequent Nomad chair/windscreen correction
+are implemented in [PR #14](https://github.com/AvonMexicola/star-agent/pull/14),
+`feat/unlockable-freighter`, isolated `/tmp/star-agent-freighter-work`.
+Implementation checkpoints 3e5ef97 and 8b5b84d are committed/pushed.
+Base ad20802; latest integration equipment/character commits c4f3d2d/3f7d470 are
+in different files and were not replaced. Shared runtime files remain untouched.
+
+Atlas: 30 m envelope, 8 × 10 m belly elevator, twin 2.2 × 3 m cargo lifts to upper
+landings, 2,400 kg inventory, four live MFDs. Land on Aeon/Selene then dock at the
+station to unlock; G opens Fleet and seated station selection. Saved progress,
+selected ship and conserved inventory. One lift simulation drives geometry, walk
+support and rider carry. Shaft guards/edge checks and stow-before-launch interlocks
+work. Separate hull/gear sweeps avoid falsely filling the open underbody. Both
+ships retain usable fallbacks if GLBs fail. Secured lift cases are props; no trading
+economy, loose-crate pickup, item use or cargo-mass flight physics is claimed.
+
+Nomad: new Blender bucket chair with shaped shell, bolsters, webbing harness,
+headrest and articulated arms; centre windscreen strut removed. Original seat/aisle
+dimensions preserved, runtime chair fallback hides only after PilotChair loads.
+
+Validation: 76 unit tests, build, **4 production browser checks**, **2 studio checks**
+passed. Atlas unlock/selection, three lift rides, station deck walk/reboarding,
+inventory, pilot return, launch, reload, both GLB fallbacks and original Nomad
+journey covered. Chromium/ANGLE SwiftShader, 1440×900 game and 1600×1000 studio;
+scale .4 for walking and 1 for game evidence, no hardware FPS claim. A concurrent
+studio run timed out under software-renderer load; its separate rerun passed.
+Curated screenshots and actual limitations are in `docs/atlas-freighter.md` and
+`docs/nomad-ship.md`.
+
+**The comprehensive ship pipeline memory now also covers unlockable ships and
+physical cargo lifts:** `SHIP-PIPELINE-MEMORY.md` has a new Atlas/Nomad addendum
+with node contracts, dynamic layouts, persistence, collider traps, fallback,
+validation and delivery instructions. Please point future ship agents there.
+
+Local dev preview is running from this isolated checkout on **5216**:
+http://127.0.0.1:5216/dev/ship.html (Pilot Seat / Cockpit),
+http://127.0.0.1:5216/dev/freighter.html (Atlas / elevator / lifts),
+http://127.0.0.1:5216/ (game). Old 5190 remains the previous Nomad viewer.
+
+Merge notes: preserve `nav.layout`, `nav.canDock`, dynamic active ship references
+(inventory UI takes a getter), fleet initialization and modal gates when combining
+opening/travel/camera lanes. External camera bounds should use the active layout.
+Current shared equipment files were not edited. **Merge/deploy remains yours**;
+PR #14 is not a deployment, and manager acknowledgement has not been assumed.
+
+## Hangar integration candidate — 2026-09-06
+
+Cees requested the merge. PR #20 now reconciles the Atlas/modular-port/finish
+stack with `feat/visual-fidelity` at `029cae8`, in isolated worktree
+`/tmp/star-agent-hangar-merge` (`integrate/hangar-finish`). No shared-tree branch
+switching or adoption of the separate hull refinement (#22).
+
+READY FOR REVIEW: `src/main.js`, `src/navigation.js`, `src/station.js`,
+`src/station-complex.js`, `src/opening-sequence.js`, fleet guards, modular GLBs,
+`scripts/hangar-merge.config.js`, `scripts/hangar-merge.spec.js`,
+`tests/station-opening-complex.test.js`, `docs/qa/hangar-integration.md`.
+
+Three agents handled StationComplex/opening transforms, navigation and regression
+coverage, and builder conflict/capture harness independently. Root integrated the
+runtime frame and modal ownership. Preserve fixed complex travel bounds, selected
+ship opening setup, tilted deck up, camera-before-rebase ordering and the input
+pause guard during elevator fade.
+
+151 unit tests and the production build pass. Initial four opening/integration
+browser checks pass; remaining browser/tour checks are in progress. Full results
+and limitations belong in `docs/qa/hangar-integration.md`. The Opus invocation
+returned HTTP 429, reset 13:50 Amsterdam; no visual review score is claimed.
+`QUALITY.md` still requires the independent rubric or Cees's explicit waiver
+before final merge. This entry is a review handoff, not a merge/deployment claim.
+
+### Final local verification and production standard
+
+Runtime candidate `7a73ecf` is pushed to PR #20, now based on
+`feat/visual-fidelity` (`029cae8`). The exterior shares the existing 600 km camera
+cutoff; the orbit tour confirms removal of 93 unnecessary draws and exactly
+restores the base 477 draws / 304,642 triangles. Full units: **152 pass**. Build
+passes. **17 distinct browser cases pass** across the recorded runs/reruns;
+the final render-only cutoff additionally has collision/visibility tests and a
+complete eight-view production tour. Tour completed 13:05:50 Amsterdam with no
+errors, warnings, failed requests or unexpected closures. Curated scene and
+desktop/phone captures are in `docs/qa/hangar-integration/`.
+
+Cees requested a complete record as the standard for other assets. READY FOR
+REVIEW: `docs/asset-production-standard.md`, `docs/qa/hangar-production-record.md`,
+`docs/qa/hangar-integration.md`, linked from `AGENTS.md` and both pipeline memories.
+The proceedings retain the controller timing failure, interrupted first tour,
+exterior performance regression and their verified corrections. Raw reports stay
+in `/tmp`; no independent visual score, hardware performance approval or final
+merge is claimed. Opus review/explicit Cees exception remains the final decision.
+
+
+## READY FOR REVIEW: final station candidate and asset production record — 2026-09-06
+
+TO Fable 5.1 manager: Cees requested the merge and a complete asset pipeline
+record for reuse. PR20 integrates default 85aa836, the modular twenty-bay station,
+finished hangar, Nomad and Atlas. Runtime is 1eeb302 (parent 0d75c3f; integration
+merge 7ddef61). Isolated checkout: /tmp/star-agent-hangar-current. Preserve the
+shared checkout's unrelated gear/controller work; no shared branch was switched.
+
+The reusable entry point is docs/asset-production-standard.md, already linked
+from AGENTS.md. Complete proceedings: docs/qa/hangar-production-record.md.
+Functional results, AMD timing tables, pixelmatch comparison, the original
+3.67 Opus review, incomplete later review, source-art provenance and twelve
+curated new/before images are under docs/qa/. SHIP-PIPELINE-MEMORY.md and
+STATION-PIPELINE-MEMORY.md include the final lessons. This is a file handoff,
+not a claimed manager read receipt.
+
+Verified: all 21 unit-test files and build pass; 18 production browser cases at
+0d75c3f (4.9 minutes), then two focused production checks after the ceiling fix
+at 1eeb302 (28.7 seconds). Eight final AMD views completed with zero errors,
+warnings, request failures or unexpected lifecycle failures. Image comparison
+found covered ceiling diffusers; the visibility test failed before correction
+and passed afterward, alongside both floor tests. Named hierarchy, door ownership
+and vertex AO are preserved; distant geometry batches retain every triangle.
+Nomad: 57,784 triangles / 3,783,616 bytes. Atlas: 58,460 / 3,770,128, with rebuilt
+editable .blend files and the Nomad chair retained. Every prop assembly meets
+10k triangles / 1 MB.
+
+Latest AMD 860M measurement at 1440x900, scale 1: affected GPU p95 <=9.339 ms,
+CPU callback p95 <=6.8 ms; the menu issues zero WebGL draws across 60 callbacks.
+Earlier much slower measurements remain recorded; their cause is unconfirmed.
+Orbit still inherits 477 draws against the 300 budget. No GPU timing claim uses
+RAF/vsync intervals.
+
+Merge is NOT complete: the original Opus review failed at 3.67; the final Opus 5
+attempt (session 20c55ac0-2541-4775-93cd-a8dce1d1af55) ended without a rubric at
+its session limit, reporting a 19:00 Amsterdam reset. No waiver or final visual
+approval is inferred. Repeat independent review with its own captures from the
+stable host preview; root captures cannot replace it. PR20 remains open/unmerged.
+
+Latest playable preview: http://127.0.0.1:5249/ (W takes control; F interacts).
+The transient user unit star-agent-hangar-current-preview.service serves
+/tmp/star-agent-hangar-current-build. Host HTTP 200 was verified. A restricted
+namespace connection failure does not establish that a host service stopped.
+To stop this specific preview when finished:
+systemctl --user stop star-agent-hangar-current-preview.service
+Port 5239 was a historical candidate. No production deployment is claimed.
+
+
+## READY FOR REVIEW: concourse shops, elevator interiors and CPU optimization — 2026-09-06
+
+TO Fable 5.1 manager: Cees requested the elevator/lobby/furniture refinement and
+a performance diagnosis, continuing the complete-record requirement. Runtime
+commit 9e5a713 is on the isolated `/tmp/star-agent-concourse-work` checkout,
+branch `feat/station-concourse`, continuing PR #20 from 056d20b. Root is updating
+that existing PR; no branch switch or unrelated asset import occurred in the
+shared checkout.
+
+READY FOR REVIEW: original `blender/build_station_concourse.py`, both new GLBs,
+concourse/elevator runtime wrappers, working station shops and v3 purchase save,
+door/LOD caches, `scripts/concourse.config.js`, actual-game captures and the
+complete `docs/qa/station-concourse-production-record.md`. The asset contract,
+performance report and independent-review attempt are linked there. The reusable
+`docs/asset-production-standard.md` and `STATION-PIPELINE-MEMORY.md` now include
+these lessons. This is a file handoff, not a claimed manager read receipt.
+
+Verified: all 23 unit files and build; twelve distinct affected production browser
+cases across the recorded full run and reruns; final physical/controller shop
+journey 43.5 s and phone 7.1 s after the input initialization fix. The record preserves
+the coasting-related test failure, close-event wait, first-D-pad race, oversized
+textures and inherited rear-wall occlusion with their actual corrections. Five
+GLB/layout tests include the original-station/new-cabin overlay ray check.
+
+Final AMD 860M / Chromium 151 / ANGLE GL, 1440×900 scale 1: hub 259 draws vs 625,
+CPU median 5.300 ms vs 12.600 ms, GPU 4.205 ms (p95 4.940). Hangar 505 draws, GPU
+8.198 ms (p95 8.596), CPU 6.800 ms (p95 7.600). Both views show 16.7 ms median/p95
+RAF cadence in this short run. CPU/GPU/RAF are separate, never added. Final
+station update 0.366 ms, zero unchanged LOD matrix writes. Eight release camera
+views completed with zero browser errors/warnings; thirteen curated images
+include desktop/phone purchases and matched hub before/after.
+
+New ships/shops limitations remain explicit: purchased weapons/components are
+stored cargo; combat, equipping and installation are not implemented. Credits
+and finite stock share one local manifest; no shared multiplayer economy.
+
+Merge remains pending: Opus 5 session 14807f9f-66d0-4c07-8f6f-ddfcc2a1afef returned
+its session limit before review tools or scoring, reporting 19:00 Amsterdam. No
+new score or Cees waiver is inferred. Preserve the old 3.67 failure and repeat the
+independent review with its own captures when available.
+
+Playable release: http://127.0.0.1:5260/ . W takes control; F calls the elevator;
+walk inside, select Central hub, then approach either shop counter and press F.
+Purchases arrive in station storage. The service `star-agent-concourse-preview`
+serves `/tmp/star-agent-concourse-build`; `/review/` exposes the curated images.
+Port 5249 remains the earlier candidate. This is a local preview, not a deployment.
+
+
+Publication receipt: runtime 9e5a713 and full proceedings 27077ec were pushed
+by fast-forward to `origin/feat/hangar-finish`. GitHub confirmed PR #20 OPEN at
+27077ece690f64fa9c613d6c7c2cef7ec0a78938, with no merged timestamp or auto-merge
+request. Its title and body now describe the furnished shops, elevator fit,
+measured performance, source assets, complete record and outstanding Opus gate.
+The isolated worktree was clean after those commits. The following receipt-only
+commit changes no runtime or served asset.
+## READY FOR REVIEW — ship main power and moving cabins (2026-09-06)
+
+Cees requested power on/off and leaving a powered ship's pilot seat. Implemented
+in isolated /tmp/star-agent-ship-power, feat/ship-power-cabin, PR #25 stacked on
+PR #20's candidate 4da1a5d. Runtime e82c3e5 plus cabin guidance b891272; controls and
+browser tests follow on the same branch. No shared-root runtime files changed.
+
+READY FOR REVIEW: src/navigation.js, src/main.js, src/gamepad.js,
+src/ship-power-ui.js, src/ship-mfd.js, src/audio.js, index.html,
+src/player-interface.css, tests/ship-power*.test.js, tests/gamepad.test.js,
+tests/navigation.test.js, scripts/ship-power*.js, docs/ship-power.md,
+docs/qa/ship-power.md and docs/qa/ship-power/.
+
+P switches main power from the pilot seat; F stands during ordinary flight.
+The powered assisted hull holds world course/speed independently of passenger
+walking/look controls. Inertial or unpowered hulls retain gravity, drag and spin.
+Returning physically to the chair transfers the current hull motion back to
+piloting. Nomad hatch/Atlas belly elevator are secured in flight; powered internal
+Atlas lifts carry the walker while the hull moves. Existing shared terrain,
+moon and station sweeps also handle unseated touchdown. MFD, audio, HUD and the
+keyboard/controller/touch menu report the same power state. Menus still pause.
+
+Final unit run: 162/162 pass; production build passes (existing chunk-size advisory).
+New production browser run: 3/3 pass, Chromium 151/ANGLE Vulkan SwiftShader,
+1440x900 plus 390x844, no console errors/warnings. Captures are committed in
+docs/qa/ship-power/. B-close with A/stick held does not leak flight controls or
+change power; controller rearming requires neutral input. Regression outcomes
+and retained fixture/timing failures are documented in the QA reports.
+
+Local production demo http://localhost:5244/__atlas_demo selects Atlas on its
+separate origin. W then F was directly verified to retain 758.686m/s while the
+pilot walks; old 5240 remains available. This is a local review build, not main
+or Vercel. Main power does not simulate batteries or distribution, and moving
+EVA is outside this slice. Do not merge PR #24's stopped-ship EVA path over this
+independent hull frame or lose active-ship layout support when reconciling lanes.
+Opus rubric, complete quality-budget acceptance and merge/deploy remain pending.
+
+
+### READY FOR REVIEW — corrected roll input directions (2026-09-06)
+
+Cees specifies E/RB roll right and Q/LB roll left; yaw is correct and pitch stays
+unchanged. Corrected src/navigation.js keyboard axis and src/gamepad.js bumper
+axis in the isolated PR #25 power branch. Positive roll means right bank in both
+assisted and inertial physics. Tests verify actual wing direction and unchanged
+nose direction for Nomad/Atlas and all four bindings; failed before fix, pass after.
+166 unit tests/build pass. Eight real-production Nomad keyboard/injected-gamepad
+roll checks pass, Chromium 151/ANGLE Vulkan SwiftShader, no errors/warnings.
+Evidence and limitation notes: docs/qa/ship-power.md, paired roll screenshots.
+Previews 5245 (Nomad) and 5244 (Atlas) serve rebuilt output; reload to apply.
+Shared root runtime and yaw/pitch inputs were preserved; no main/Vercel deploy.
+
+### Atlas Mark II — original Blender asset and physical studio (2026-09-06)
+
+Isolated branch feat/atlas-mark-ii, stacked on PR #25 / 8c48317. All source/asset
+work is under assets/atlas-mark-ii, public/models/atlas-mark-ii,
+public/textures/atlas-mark-ii, standalone atlas-mark-ii studio/systems/tests,
+and design/QA documents. Main fleet, navigation, station and other worktrees
+remain independent. Manager integration and art approval are still required.
+
+Editable Blender 5.2 source plus parametric mesh, PBR, UV and contact-bake pipeline;
+through cargo hold, two folding ramps, interlocked crew lift, upper bridge/crew/
+galley/hygiene. S1/S3 standard and three S3 attachment interfaces, no weapons.
+User rejection of the first blockout led to a wedge canopy, sealed reported
+pressure joints, tapered bridge sole/collision, sloped bow/stern, octagonal
+mechanical exhausts and a wall mess leaf with clear circulation. A final 25 mm
+inward steel-leaf change removes coplanar trim flicker without changing bounds.
+
+180 unit tests and production build pass. Four hardware production cases pass:
+physical aft ramp→cargo→lift→bridge→crew→galley/hygiene, seven inspection presets,
+phone and injected controller. Chromium 151 / AMD Radeon 860M / ANGLE GL; no page
+or console errors. Full functional suite used 81ccc96f; final trim model is
+b021dd55, with repeated export tests and focused visual/phone checks. Actual
+renders, measured bytes/triangles and limitations: docs/qa/atlas-mark-ii/.
+No hardware-controller or FPS claim. Static shadows update for animated parts
+and reuse their maps during camera-only movement.
+
+Full asset: 398,608 triangles, 154 batches, 13 materials, 10 textures, 36,736,924 bytes;
+LOD1: 128,387 triangles / 13,325,672 bytes; LOD2: 40,625 triangles / 3,974,280 bytes. Above existing hero
+budget; no budget waiver. Initial independent Opus review was 2.4/5; a later
+attempt hit the session limit, so no current independent visual approval exists.
+Keep draft. Interiors and the long upper-hull rhythm still need art refinement;
+automatic LODs, hardware budgeting and live fleet/boarding integration remain.
+
+Preview: http://localhost:5250/dev/atlas-mark-ii.html . Stable transient user
+service star-agent-atlas-mark-ii-preview.service serves this worktree's dist.
+Stop only this preview with systemctl --user stop star-agent-atlas-mark-ii-preview.service.
+No merge or public deployment is included.
+
+Final shallow-angle render review also isolated broad hull striping to key-shadow
+acne (shadow-off removed it, normal-map-off did not). Bias is now -0.0005 with
+0.06 m normal bias for the 92 m key frustum. Seven final production views passed
+again with actual shadows and zero errors; before/final evidence is retained.
+
+Published as draft PR #30: https://github.com/AvonMexicola/star-agent/pull/30 . Preserve its draft status until independent art review and fleet integration are complete.
+
+
+## Atlas upper-deck refinement in progress — 2026-09-06
+
+Root owns only /tmp/star-agent-atlas-mark-ii, feat/atlas-mark-ii (draft PR30):
+crew room end-wall closure, shaped pressure frames, bunk surrounds and upper
+ceiling/service liners. Matching collision and exported-geometry checks belong
+to this lane. Preserve approved exterior/nacelles and all shared runtime work.
+First review view is the crew aisle at standing eye height; validate the actual
+Blender export, full physical boarding route and upper-deck clearance before
+updating the stable 5250 preview. No main fleet integration or merge this pass.
+
+
+## READY FOR REVIEW: Atlas upper-deck construction — 2026-09-06
+
+Draft PR30 / feat/atlas-mark-ii now has explicit crew fore/aft walls and an
+outboard liner, enclosed berth backs and shaped end shells, chamfered pressure
+frames in crew/corridor/mess/bridge, removable service cassettes and a visible
+aft environmental panel. New Blender source: upper_deck.py. Approved exterior
+and nacelle geometry preserved. The additional corridor render exposed old
+coplanar jamb/partition faces; jambs now project 20 mm and have physical
+colliders. Galley aisle retains 1.60 m for capsule-centre travel; side doorways
+retain 0.96 m. There are 55 authored fixed collider envelopes.
+
+Final hero SHA 659b54660075ff1adb759d1c1141dfbc06c8aba6302190766756cec016fc4a1f:
+426,504 triangles, 157 batches, 13 materials, 10 textures, 38,890,964 bytes.
+181 unit tests and production build pass. All four hardware browser cases pass
+again (1.6 min), zero captured page/console errors. Extended physical route
+reaches the last bunk, stops at its aft wall and returns through the doorway
+before visiting galley/hygiene. Actual export tests also check room closure,
+standing aisle clearance and depth separation at both door-frame junctions.
+Chromium151 / AMD Radeon860M / ANGLE GL, inspection1440x900 DPR1. No FPS or
+physical-controller claim. Final images, correction history and exact hashes:
+docs/qa/atlas-mark-ii/upper-deck-record.md and README.md.
+
+Stable http://localhost:5250/dev/atlas-mark-ii.html serves the verified final
+hero (user unit star-agent-atlas-mark-ii-preview.service). Select CREW or use
+physical walkthrough. Remains an over-budget standalone authoring candidate;
+no independent art approval, live fleet installation, merge or deployment.
+Fable/Claude retain review and integration ownership.
+
+
+## Atlas nose, four pilot MFDs and projected action labels in progress — 2026-09-06
+
+Root owns /tmp/star-agent-atlas-mark-ii / feat/atlas-mark-ii (PR30): trim legacy
+front armour against new bow, mount sensors on their actual facets, four pilot
+MFD anchors/screens and a reusable state-driven physical-control label standard.
+Consumer integration is the Atlas studio (ramps, crew lift, pilot seat); station
+hangar adoption remains a documented integration point for the station owner.
+Shared main/station/equipment files remain untouched. Root owns new label/MFD
+modules, limited shared MFD factory extension in this worktree and focused QA.
+
+
+## READY FOR REVIEW: Atlas nose, four pilot MFDs and projected controls — 2026-09-06
+
+PR30 / feat/atlas-mark-ii, isolated /tmp/star-agent-atlas-mark-ii. Removed old
+forward flank overlap and detached docking boxes; trimmed arch plates that pierced
+the lower bow. Retained sensor array now follows actual facet tangent/normal.
+Drive-pod mesh preserved. New original Blender frames/anchors: PilotMFD_01..04.
+Pilot eye aligned to chair; F/A sits and stands. Four shared 512x320 / 5Hz MFDs
+show actual ramp/lift state, with flight/navigation/manifest explicitly disconnected
+in this standalone studio. Shared createShipMFDs default behavior is preserved.
+
+NEW REUSABLE STANDARD: docs/physical-control-standard.md,
+src/projected-action-label.js and .css. Descriptor id/target/anchor/action/enabled/
+reason; render-local anchors, F/A/TAP, guarded click/tap operation, opaque geometry
+occlusion, disabled interlock states. Atlas consumer is src/atlas-mark-ii-controls.js
+and studio. Labels say Go up/Go down/Call lift, Open/Close ramp and Sit/Stand.
+Station owner: adopt the provided hangar state/verb contract with your actual door
+mechanism and render-local button anchor; no station module changed here.
+
+Final hero a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa:
+412,988 triangles, 168 static batches, 13 materials, 10 textures, 38,037,892 bytes;
+MFDs add four runtime meshes/materials/textures. 56 fixed collider envelopes.
+184 unit tests and production build pass. Five hardware browser cases pass1.7min:
+full physical boarding/upper-deck journey including sit/stand + four-screen framing,
+seven presets, phone, mouse/touch lift-label operations and injected controller.
+Final opaque-hover fix passes focused mouse/touch case1/1. No page/console errors.
+Chromium151/AMD860M/ANGLE GL; pilot1440x900 FOV56; phone390x844. No FPS or physical
+Xbox claim. Failure history and renders: docs/qa/atlas-mark-ii/cockpit-controls-record.md.
+
+Preview remains http://localhost:5250/dev/atlas-mark-ii.html (persistent user
+service). Physical walkthrough→lift→pilot seat, F to sit. Main fleet, flight/cargo
+adapters, station label adoption, budgets/LOD acceptance and independent art review
+remain pending. Keep draft; Fable owns review/integration/merge. No deployment.
+
+## Lunar landscape upgrade — Astra (2026-09-06)
+
+Cees requests a Cellin-inspired moon with much stronger slopes/craters, sparkling
+lofted ice and majestic asteroid rings. Working isolated in
+`/tmp/star-agent-lunar-landscape`, branch `feat/lunar-landscape`, based on merged
+`feat/visual-fidelity` f028a43. Own lunar generator/terrain/material/effect modules,
+moon browser/unit tests and docs; main integration is limited to the Moon update
+call and lunar effect diagnostics. Preserve navigation/boarding surface agreement.
+No shared runtime source replacements or overlap with travel/camera/equipment lanes.
+
+Lunar effects integration also owns the small `src/atmosphere.js` HDR alpha fix:
+retain transparent scene color over the star field. This is required for translucent
+rings and additive ice without opaque speckles; scene log-depth decoding stays unchanged.
+
+
+## READY: #15 — Selene landscape, ice and rings (Astra, 2026-09-06)
+
+Cees' Cellin-inspired lunar upgrade is implemented in
+[PR #15](https://github.com/AvonMexicola/star-agent/pull/15), `feat/lunar-landscape`,
+based on merged integration f028a43. Local production preview:
+http://127.0.0.1:5178/ — select Selene. User service: `star-agent-lunar-landscape`.
+Isolated checkout: `/tmp/star-agent-lunar-landscape`; shared runtime source untouched.
+
+Delivered: a crater-rim landing shelf, steeper/deeper terrain, 36 local craters,
+fractured ridges and walkable basalt outcrops; cool regolith/frost, sunlit lofted ice,
+and four tilted ice/dust ring bands with 1,800 individual asteroids. Nearby belt dust
+fades into rocks; the moon shadows both bands and asteroids. The generator is v3,
+with a 16 km upper bound. Existing 20 km drive exclusion still covers it.
+
+75 unit cases/build pass. Both production lunar browser cases pass: full physical
+landing/walking/jumping/reboarding/launch and orbit/surface/asteroid/Aeon rendering.
+Final visual refinements were rechecked; no page/console errors. Curated screenshots,
+renderer metadata and limitations are committed in the PR.
+
+Fable's [updated planet pipeline memory](https://github.com/AvonMexicola/star-agent/blob/feat/lunar-landscape/PLANET-PIPELINE-MEMORY.md)
+is filed on that branch. Read `LUNAR-LANDSCAPE-HANDOFF.md` there for merge boundaries:
+main only supplies Moon elapsed/outside state and diagnostics; atmosphere retains
+transparent HDR effects over sky without changing log-depth reconstruction. Preserve
+those hooks alongside travel/camera work. The ring is decorative, without collision,
+mining, orbit simulation or shadows cast onto the ground. Review/merge/deployment
+remain with Fable/Claude; this local handoff does not assert a read acknowledgment.
+
+
+## Selene surface identity follow-up — Astra (2026-09-06)
+
+Cees reports uniform beige terrain and insufficient extreme elevations. Continuing
+PR #15 in /tmp/star-agent-lunar-landscape. Own moon-world/moon-terrain/moon material,
+lunar tests and evidence/docs; main.js changes only lunar biome label/diagnostics.
+5178 is occupied by opening-work: the earlier lunar preview claim was incorrect
+(the lunar service failed on its occupied port). Will use dedicated port 5180,
+leaving opening preview intact. Implement canonical contrasting geological regions,
+glacial channels and larger mountain relief; verify rendered surface and landing.
+
+
+## UPDATED: #15 — distinct Selene geology and extreme relief (Astra, 2026-09-06)
+
+User follow-up is implemented on feat/lunar-landscape in /tmp/star-agent-lunar-landscape.
+Generator v4 supplies named districts, fractured ground, blue-white Glass Rift,
+dark Obsidian Crown, Copper Ejecta and icy Frostwall. Local sampled elevation range
+is 8,980 m (−2,927 to +6,053 m relative to lunar radius), with the safe landing shelf
+and shared collision/walking heightfield retained. Required LOD siblings now stay
+cached: a fixed view settles instead of rebuilding horizon-culled dependencies.
+
+Corrected preview: http://127.0.0.1:5180/ — star-agent-selene-geology.service.
+Verified final served asset index-DB4-R7TB.js matches the browser-tested dist.
+Earlier 5178 claim was incorrect: opening-work owns that port, and the lunar service
+failed there. No shared runtime sources or other preview services were replaced.
+
+77 unit cases across nine files pass; build and physical lunar journey pass.
+Final material/cache changes were rechecked in the full visual tour with zero
+page/console errors and zero terrain builds at the recorded surface view.
+Evidence: docs/selene-geology.png, docs/selene-crater-country.png and evidence JSON.
+PLANET-PIPELINE-MEMORY.md v4 update is filed on PR #15 for Fable. main.js integration
+now also imports moonRegion for the existing lunar biome label/state. Preserve other
+lanes' main/UI changes during merge. Manager review/merge/deployment remain pending;
+this local handoff does not assert a read receipt.
+
+
+## Mining/voxel research — Astra (2026-09-06)
+
+Cees requested research into mineable rock assets and Selene ridges/mountains,
+with No Man's Sky as reference and technology choice open. Docs-only research
+lane: /tmp/star-agent-mining-research, docs/selene-mining-research based on PR #15.
+Own docs/selene-mining-research.md and small pipeline-memory/handoff additions.
+Inspecting existing Phase 6 SDF roadmap and equipment onMine callback; no competing
+equipment/voxel implementation or shared runtime changes.
+
+
+## RESEARCH READY — mineable rocks and Selene mountains (Astra, 2026-09-06)
+
+Cees' requested research is filed in docs/selene-mining-research.md on
+docs/selene-mining-research, isolated at /tmp/star-agent-mining-research and based
+on lunar PR #15 ea7c35b. Recommendation: global heightfield + connected ridge
+morphology, local smooth scalar-field rocks/outcrops meshed in workers, static
+cliff dressing where excavation is unnecessary. Marching Cubes first; compare
+Dual Contouring for sharp faces. NMS's documented Dual Marching Cubes is distinct.
+
+Research includes primary sources, existing Phase 6/equipment hook integration,
+asset shortlist, four local GLB metadata audits, chunk memory arithmetic, save/LOD/
+collision contracts and staged acceptance gates. Source report and audit script
+are committed; pipeline memory links the research. No mining engine, runtime
+benchmark, asset conversion, downloaded assets or shared runtime edits in this lane.
+Fable: review alongside the Phase 6 plan; <4 ms remeshing and indefinitely tiny
+brush logs are not established results. Preserve the existing equipment owner.
+
+
+## First Selene mining implementation — Astra (2026-09-06)
+
+Cees authorized the first implementation. Isolated /tmp/star-agent-mining-work,
+feat/selene-mining based on research #18 / lunar #15. Own NEW src/mining/ modules,
+mining tests/studio, and narrow main/navigation/gamepad integration plus ore storage.
+Reuse equipment.js + mining laser asset verbatim from manager commit 9930e82;
+no shared equipment edits, no duplicate weapon system. First slice: one rock by
+Crescent Rim, worker meshing, saved cut/material state, resource inventory and
+collision, keyboard/controller/touch mining. Full mountain excavation stays later.
+
+
+## IMPLEMENTATION READY — first Selene mining rock (Astra, 2026-09-06)
+
+User-authorized first slice is on feat/selene-mining, isolated at
+/tmp/star-agent-mining-work, stacked on research #18 and lunar #15. Preview:
+http://127.0.0.1:5203/ (star-agent-mining.service), verified asset index-DpEVt4cu.js.
+Crescent Rim now has one mineable basalt/copper/ice rock. Existing Equipment laser
+handles keyboard/mouse/Xbox RT/touch; cuts, collision and survey samples publish
+together after one save. The cargo dialog stows the pouch into a sample locker.
+
+116 numerical cases and all 3 browser journeys pass: mining/save/reload/controller/
+touch/cargo, physical lunar reboarding/launch, and lunar visual regression.
+Guide: docs/selene-mining.md; screenshots/metadata: docs/qa/selene-mining/.
+PLANET-PIPELINE-MEMORY.md records the actual implementation and limitations.
+
+Consistent marching tetrahedra in one 32³-cell volume; whole-rock worker remesh,
+packed collision and encoded snapshot transfer. Observed worker total 352 ms;
+main-thread publication 2.6 ms on Chromium/SwiftShader, not p95/FPS approval.
+No fragment physics, cave/mountain excavation, crafting or multiplayer.
+Equipment module/model/socket data adopted from manager commit 9930e82; preserve
+newer gear and concurrent main/navigation/UI integration hooks during merge.
+Fable/Claude own integration, independent Opus visual review, merge and deployment.
+This handoff does not assert a manager read receipt or visual approval.
+
+
+## IMPLEMENTATION READY — Selene expedition and resource geography (Astra, 2026-09-06)
+
+Cees explicitly authorized controller, inventory and EVA agents, procedural ring
+mining, and orbital colors that reveal resource locations. Integrated branch:
+feat/selene-expedition, isolated at /tmp/star-agent-expedition-work, stacked on
+feat/selene-mining / PR #21 (itself research #18 and lunar #15). Dedicated preview:
+http://127.0.0.1:5213/ via star-agent-expedition.service, verified final asset
+index-EcwN-ktI.js. Earlier previews are intact.
+
+Implemented standard-controller command/dialog routing and complete Crescent plus
+Copper Ejecta controller journeys; visible textured laser and log-depth beam;
+shared finite box/stack storage for backpack, ship, station and physical base cache;
+atomic cuts/cargo/transfers; physical hatch/ramp EVA with inertia, thrust and braking;
+20,971,520 deterministic ring descriptors with bounded LOD, six asteroid families
+and editable small rocks; and five mineral provinces whose orbital/ground colors,
+outcrop seams and collected resources share one authoritative geological field.
+Ring width is 20 km radial by 2 km vertical; local ship speed is limited to 400 m/s.
+
+Final validation: 156 numerical cases; all nine distinct production browser checks
+pass across the integrated run and targeted reruns. The initial orbital fixture
+incorrectly expected LOD 4 at a LOD 3 viewpoint; corrected, then final resource
+appearance/layout, EVA and space mining passed. Separate controller-modal and HDR
+texture/beam fixtures pass. Real screenshots, GPU/backend/input provenance and
+specific limitations are in docs/qa/expedition/. Browser is Chromium 151 on
+SwiftShader; this is not hardware FPS approval. Physical Xbox button sequencing
+has not been performed; injected full controller routes are explicitly distinguished.
+
+Updated complete memory: PLANET-PIPELINE-MEMORY.md. Guides:
+docs/selene-expedition.md, docs/resource-geology.md, docs/controller-contract.md,
+docs/container-inventory.md and docs/character-eva.md. AGENTS.md now requires
+controller support for every new playable feature through its whole journey.
+
+Preserve newer manager gear/station/navigation work when integrating common
+main/navigation/gamepad/equipment/UI hooks. Equipment derives from manager 9930e82;
+this branch repairs its beam/material feedback, without replacing the gear lane.
+The shared checkout's unrelated station and gear changes were not overwritten.
+Large asteroids and terrain are not excavatable; at most two ring and one provincial
+workers join Crescent, and eight additional deposits can retain edits. Boxes are
+free prototype mounts; fuel/oxygen, crafting, multiplayer and N-body physics are
+not implemented. Fable/Claude retain independent visual review, integration,
+merge and deployment. This handoff does not claim a manager read receipt.
+
+Draft review PR: https://github.com/AvonMexicola/star-agent/pull/24 .
+The shared manager HANDOFF.md now points to this complete memory and evidence.
+
+
+## Expedition player fixes — surface tool, asteroid aim and ring steering (2026-09-06)
+
+PR #24 follow-up in /tmp/star-agent-expedition-work / feat/selene-expedition.
+Removed the tool's 90 m deposit proximity gate. Space yaw/pitch and vertical thrust
+now use ship axes; held controller B stops drift/thrust without locking aim.
+Aimed small asteroids take priority over two-nearest preparation; exact visible
+triangles replace false sphere occlusion/collision. Large static asteroids now
+explicitly report unavailable hand mining; pending/range/save-cap feedback is clear.
+
+All 22 npm test files pass. Five distinct follow-up production browser checks pass,
+including remote Selene equip/RT, pole-facing yaw +/- with and without B+RT held,
+third-rock worker promotion/RT/backpack, large-asteroid no-award feedback, and the
+existing controller Crescent plus physical EVA mining routes. Synthetic asteroid
+positions and debug orientation/position fixtures are documented honestly; actual
+meshes, colliders, workers and input routes are used. No physical Xbox claim.
+
+Evidence: docs/qa/expedition/regressions/ in the expedition worktree / PR.
+Memory and docs/space-steering.md record the corrected contracts. Preview remains
+http://127.0.0.1:5213/ with final index-DGnB0h5g.js. No shared navigation/gear/station
+or ship-power lane was overwritten. Fable/Claude retain review and integration.
+
+
+## Sparse Selene ring and sunlit grains — 2026-09-06
+
+Cees requested roughly 2 km asteroid spacing, better draw distance/Yela-inspired
+rock surfaces, a huge physical ring and fine sunlit ice inside it. Implemented in
+/tmp/star-agent-expedition-work / feat/selene-expedition / draft PR #24. Code head
+0f7f1f1; dedicated preview http://127.0.0.1:5213/ serves index-N8I1Odnu.js.
+
+V2 has 14,336 deterministic bodies and minimum 2,132.11 m bounding clearance,
+while retaining the 1,826.896 km outer diameter and 20 km wide / 2 km thick band.
+Three fading geometry levels retain large rocks through 80 km; 24 geological
+variants have fractured gray surfaces. Fine world-anchored ice glints render only
+inside the ring, with 12 m cabin clearance and bounded 104 m particle neighborhood.
+Small rocks remain mineable; saved v1 cuts retain their coordinates and cargo,
+with preserved edits explicitly excepted from the new spacing rule.
+
+All 26 numerical test files pass. Five distinct production browser checks pass
+across the integrated run and targeted reruns: ring geometry/ice, remote tool
+equip, held-B yaw, aimed-worker promotion/large-body feedback and physical EVA
+plus RT mining/backpack. The space fixture was corrected to wait for its own
+injected controller identity and neutral poll. Final GPU captures have no errors;
+no physical Xbox sequence or hardware FPS approval is claimed. Curated evidence:
+docs/qa/expedition/sparse-ring/; full contracts in PLANET-PIPELINE-MEMORY.md.
+
+Preserve shared station/gear changes and the separate ship-power-cabin lane.
+Fable/Claude retain independent visual review, integration, merge and deployment.
+This file handoff is not a claim of manager acknowledgment or public deployment.
+
+
+## Design ready for review — crafting, skills and expedition progression (2026-09-06)
+
+Cees asked to start thinking about material tiers, upgraded suits for valuable
+hot-planet mining, and dangerous cave fauna with special loot. Recorded a concrete
+draft at docs/design/progression-crafting-skills.md in the expedition worktree
+(/tmp/star-agent-expedition-work, feat/selene-expedition / PR #24), linked from
+PLANET-PIPELINE-MEMORY.md. No runtime change or implementation claim.
+
+Proposal: four material tiers; Pyre industrial and Aeon cave/biological branches;
+practical training in Extraction, Fabrication, Survey and Field operations; shared
+box inventory for recipes/modules/loot. The initial Pyre suit must use materials
+obtainable outside Pyre. Cave creatures have readable threats and biological loot
+with noncombat alternatives. Start with station refining and one useful crafted
+mining heat-sink, then suit hazards, one Pyre expedition and one complete cave.
+
+The draft calls out the current three-mineral/fixed-supply save migration, atomic
+crafting/training/loot, cave-owned collision and complete controller journeys.
+Balance, creature/material names and economic prices remain proposals. Preserve
+the independent ship-power, Atlas and station lanes. Design docs were reviewed
+against current modules and local links checked; no gameplay tests were needed
+for this documentation-only addition. Manager acceptance is not assumed.
+
+
+## Ship recovery marker, biome deposits and base priorities — 2026-09-06
+
+Cees prioritized a marker to find a ship after space EVA, then carrying limits and
+a central mainframe for base building rights. They also requested actual mineral
+deposits across resource biomes after learning that the five survey sites were
+the only provincial outcrops. Implemented in /tmp/star-agent-expedition-work /
+feat/selene-expedition / draft PR #24; preview http://127.0.0.1:5213/ serves
+index-ChFNEySb.js. Runtime commits: 53a3c77 (marker) and baccba2 (regional deposits).
+
+Automatic Nomad beacon: distance to rear ramp, in-view diamond, off-screen/behind
+arrow, hides after boarding. Current hull pose is read every frame. Integration
+with the independent moving-ship/Atlas lane must supply active hull name, pose
+and entry point; do not copy a static departure coordinate or Nomad dimensions.
+No binding is needed; full controller physical EVA exit/return/reseat passed.
+
+Selene: deterministic regional outcrops in approximately 180 m spherical cells,
+copper/ice-rich occupancy and sparser basalt, three local workers within 400 m.
+Authoritative mineral weights drive visible seams and real yields; nearest/aimed
+outcrops drive existing tool bearing/range. Named approaches retain an 80 m buffer.
+Cuts preserve stable IDs through streaming/reload and share the existing eight
+additional edited-deposit cap. Aeon biome deposits and whole-terrain excavation
+are not implemented by this change.
+
+All 28 numerical files pass. Five distinct browser journeys pass across the
+integrated run and targeted marker run: marker, regional copper, named copper,
+Crescent and physical space mining. Regional trip recovered 3.108 kg copper from
+a generated outcrop 101.52 m beyond the nearest named site; exact cut/cargo saved
+after reload. Curated evidence: docs/qa/expedition/ship-marker/ and
+docs/qa/expedition/regional-deposits/. Controller input is injected; no physical
+Xbox sequence or hardware performance approval is claimed.
+
+Design only: docs/design/cargo-and-base-mainframe.md proposes mass/volume/slots,
+hull-specific ship payload, physical base containers and central claim authority
+with separate build/door/storage permissions. User priority moves a small playable
+core/shelter/crate base slice ahead of the previous crafting-first plan. Construction
+and new capacity/permission rules are not implemented yet. Full memory and prior
+progression draft link the change. Preserve shared station/gear, ship-power and
+Atlas lanes; Fable/Claude retain review/integration/merge/deploy. This file notice
+is not manager acknowledgment or a public deployment claim.
+
+
+## READY FOR REVIEW: new particles connected to expedition mining — 2026-09-06
+
+Cees requested the new mining particle system in the playable tool. PR24 now
+reuses PR27/a81b75e's plasma beam, sparks/dust, mineral collection and HDR bloom.
+Committed extraction forwarding includes the newer regional deposits, alongside
+Crescent, province and ring rocks. Actual saved cuts drive collection bursts;
+visuals never award minerals. RT/T/mouse/touch bindings remain the same. The
+controller can toggle glow and reduced particle motion in Controls and help.
+
+All 29 numerical files and five distinct production browser checks pass, including
+three full controller surface routes, physical space mining and the focused
+mouse/touch/interruption/settings regression. Its initial mobile visibility race
+was corrected in the test and rerun; QA records that failure. No page/console
+errors in final cases. Browser151/SwiftShader, desktop1440x900/mobile390x844;
+no hardware FPS or physical Xbox claim. Curated evidence and full contract:
+docs/qa/expedition/mining-particles/ and docs/mining-particles.md.
+
+Preview http://127.0.0.1:5213/ serves index-DY2p5nPi.js. During PR27 integration,
+keep one shared EnergyEffects director/bloom pass and retain regional forwarding.
+The actively edited effects worktree, shared gear and ship lanes were untouched.
+Fable/Claude retain independent review, integration, merge and deployment.
+
+
+## READY FOR REVIEW: equipment slot system
+
+
+## Equipment loadout implementation — 2026-09-06
+
+New branch feat/equipment-loadout is stacked on expedition c3ef10c (PR24), isolated
+in /tmp/star-agent-loadout-work. The shared inventory dialog gains Equipment:
+two weapon slots, tool, backpack, two ammo stacks and four quick-item stacks.
+State lives in the SAME MiningStore save as cuts/cargo. Legacy saves receive one
+finite starter kit; swaps/stows/assignments, ammo and medical use save atomically.
+A backpack must be empty before external stow; without it carrying/gathering
+capacity is zero. Existing box mounts return when it is equipped again.
+
+K/Menu→Equipment opens it; View/I opens Storage. D-pad left cycles held slots,
+right retains mining shortcut, up selects a quick slot, down uses it on foot/EVA.
+Flight bindings remain unchanged. Weapon1/2/tool map to keys1/2/3; quick use4–7.
+Ammo authorization runs in Equipment's fire gate before shot effects, one matching
+charge per pulse; failed saves cancel the shot. No magazine/reload timing yet.
+Bandages heal15/stop bleeding, stims heal40, capped100; full-health items aren't
+wasted, and neither revives. There is no ambient/combat injury source yet; injure()
+is an explicit hook. These effects were verified against an injured-save fixture.
+Late asynchronous models cannot reattach after switching, and tool heat is kept
+across slot changes. Shared authored models/rig offsets are not changed.
+
+All30 numerical files pass. Four final production browser cases pass (4.1min):
+complete controller gear+Selene mining+both weapons+backpack, saved medical/mobile
+UI, container transfers and physical space mining. Prior focused mining-input
+regression also passes. Initial duplicate-Backpack-label failure and interrupted
+mixed run are documented; the final dedicated-port suite completes normally.
+Evidence: docs/qa/equipment-loadout/. Contract: docs/equipment-loadout.md.
+Preview http://127.0.0.1:5271/ serves index-BPCnBCsf.js; port5213 remains the prior
+expedition build and has a separate browser save. No physical Xbox/FPS claim.
+
+Fable integration: retain the one particle director and regional callbacks from
+PR24, newer authored gear/rig/ship work, and PR27's independent colored weapons
+and flight integration. Keep the public Equipment authorizeFire hook, inventory
+loadout transactions and contextual D-pad routes; don't restore the old unlimited
+free weapon selector over them. No merge or public deployment is claimed.
+
+
+## Starter laser rifle and current particle effects — 2026-09-06
+
+Cees requested a starter rifle, mining tool and ammo, then the particle agent’s
+latest laser effects. The finite default already grants rifle-laser, mining tool
+and 60 compatible charges (plus sidearm/pack/medical kit). The equipment branch
+now names them Laser rifle / Laser rifle charges and actually selects the solar
+laser profile: immediate orange beam/core, muzzle motes and contact bursts.
+Sidearm uses crimson pulses. Reuses PR27 d9f4d7c EnergyEffects, weapon profiles and
+slipstream dependency; preserves the single director, mining collection callbacks,
+saved IDs and atomic ammo authorization. Small held recoil respects Reduced motion.
+Flight adapter remains PR27’s integration responsibility; no new flight input.
+
+All 30 numerical files pass. Two final production browser checks pass (5.2 min):
+full controller equipment/landing/mining/weapons/backpack and mouse/touch mining
+with menu/focus/disconnect suppression. Six observed rifle shots consume exactly
+six charges and create six impacts; rock revision is unchanged by weapons.
+Fresh default, active laser profile/beam, menu retirement and held RT suppression
+are asserted. No page/console errors. Inspected rifle/sidearm/mining captures and
+updated JSON are under docs/qa/equipment-loadout/. Chromium151, Vulkan SwiftShader;
+no physical Xbox or hardware FPS claim. Preview5271: index-B3rNxrVo.js.
+Preserve shared newer authored gear assets when integrating PR32 with PR27.
+
 ## Pyre continuation — 2026-09-06
 
 Cees authorised continuing Fable's planet work. The isolated `feat/pyre-planet-tech`
@@ -472,3 +1238,160 @@ injected-controller flight/boarding, continuous travel, narrow-screen map and
 seed/reload checks. The existing four-world rock screenshots and shader/fallback
 verification apply unchanged. Browser: Chromium 151, ANGLE Vulkan SwiftShader;
 this is rendering/function verification, not a hardware FPS claim.
+## READY FOR REVIEW: recovered station hull detail — Astra, 2026-09-06
+
+feat/station-hull-detail, isolated /tmp/star-agent-station-hull, based on
+integration029cae8. Production preview http://localhost:5185. Recovered Fable's
+builder and both station models; corrected split-material hierarchy so Hull
+contains every structural part. LandingDeck remains one Mesh; floor regression
+now tests the recessed seam and adjacent full-height plate with exact original
+bounds and hull clearance. No runtime navigation/lighting/props modules changed.
+
+124 unit tests, build, four production Chromium browser cases passed. Includes
+opening/controller handoff, physical boarding/launch, moving floor at scale1/.55,
+and full fly-in/dock/deck/reboard/depart journey plus phone controls. Before/after
+images and six world viewpoints: docs/qa/station-hull/ (zero browser errors and
+warnings). Station samples284–361 draws /190310–317000 tris depending viewpoint;
+SwiftShader1440x900 scale1, no hardware FPS claim. Existing orbit budget and world
+art defects remain documented. Hero2.99MB/70540tris/105primitives, LOD273KB/7784tris.
+
+Files: blender/build_station.py, public/models/station*.glb, tests/station-floor.test.js,
+scripts/hull-review.mjs and hull.config.js, assets/station/hull-manifest.json,
+docs/station-hull-detail.md and curated QA evidence. Sol audited contracts/cost
+and committed only the floor test; Astra reviewed/rebuilt the asset and ran
+renderer/journey validation. Named batches may now be groups; preserve vertex colours
+and traverse descendants in the other hangar lane. Collider data increases62%;
+review shared BVH use before twenty-pod adoption. PR20 props/materials/light
+refinement remains separately owned and untouched. Shared root originals preserved.
+
+Draft pending independent Opus rubric: attempt returned429/session limit until
+13:50 Europe/Amsterdam. No visual approval, merge or deployment claimed.
+
+
+## Station hull integration reconciliation — 2026-09-06
+
+PR22 history and review evidence are included. The active builder, hero/LOD and
+floor tests remain the later furnished PR20 versions, which already include
+the recovered hull hierarchy and plate treatment. Older PR22 assets must not
+replace the furnished station. assets/station/hull-manifest.json explicitly
+records historical hashes; current station production record is authoritative.
+
+
+## Shared snapshot reconciliation — 2026-09-06
+
+The feat/controller-support snapshot predates the current feature branches.
+Its controller, moon, ship, crash and inventory implementations are superseded
+by the integrated versions; old copies were not restored over them. Preserved
+its three unique handoffs and landing-gear solver/tests. That solver remains
+unwired, exactly as LANDING-GEAR-HANDOFF documents. Deleted legacy albedo.worker
+is superseded by orbital-surface workers and remains deleted. Shared working
+directory uncommitted station and equipment art was not included.
+
+
+## Terrain and ground detail — READY FOR REVIEW
+
+Astra: feat/terrain-transitions is stacked on forest PR #6, isolated at /tmp/star-agent-terrain-work. Land/water/shadow parent-triangle morphs, 0.6 s wall-time split/merge, 1.8/2.3 hysteresis, retained parents/skirts, and terrain-material.js ground detail are integrated. 69 unit checks, production terrain/ground inspection, focused shallow-water inspection and four general Chromium cases pass. Original fine buffers remain byte-identical across eight regression fixtures. Review notes/screenshots and limitations: TERRAIN-HANDOFF.md and docs/images/terrain-*.png. Preview http://localhost:5176/?seed=7291. main.js changes are diagnostics only; preserve other branches’ ShipState/controller/moon/ship hooks when integrating. No merge or production deployment by Astra.
+
+## READY FOR REVIEW: MAIN CONSOLIDATION PR34 — 2026-09-06
+
+Runtime0ab1854; current integration ancestrya20ca1e adds only Pyre invariant tests,
+docs and reconciliation of44e426a. See docs/qa/main-integration/README.md and
+pyre-reconciliation.md. Final447/447 unit tests, production build,15/15 core
+browser checks and7/7 Atlas/equipment browser checks pass. Chromium151/AMD860M/
+ANGLE GL; no physical Xbox or controlled FPS claim. Independent Opus functional
+follow-up found all findings fixed and source functionally mergeable; its remaining
+extra-suite condition is satisfied by7/7. Review and final screenshots attached.
+
+Main exists at accepted85aa836; PR34 contains the combined candidate. PM owns the
+ongoing Opus visual/baseline gate and default/Vercel changes. Site is not updated.
+The newer Sun encounter PR35 is reserved for PM's next rebase. Dirty shared station
+and gear work remains untouched. Do not restore older controller/hull/Pyre snapshots
+over the reconciled code. No feature branches deleted. Preview5280 serves this
+runtime; tests and public docs distinguish the Atlas studio from the live fleet.
+
+## ROOT DELIVERED — STARTUP PRELOAD AND STATION DEPARTURE — 2026-09-06
+
+Integration preview http://localhost:5280 now serves main-8-TKQTmE.js.
+Station departure commit1f489b1: one-metre gear lift, no overshoot, obstruction
+cancels a stuck lift, bay speed20m/s instead of6. Automatic capture requires a slow
+arrival near the actual ship parked height, so a slight nose-down departure cannot
+re-dock at the planetary clearance threshold. Both layouts and all20 tilted berths
+covered, plus full physical keyboard and Gamepad boarding/departure journeys.
+
+Startup waits for station/ship/characters/surface maps/Aeon4096 orbital generation,
+settled starting terrain, async shader compilation and rendered warmup before
+handing over controls/cinematic. Stage-labelled progress bar, pre-play resolution
+calibration, held-key release guard, Gamepad neutral gate and sticky graphics-loss
+recovery. Optional orbital-worker failure/disposal releases waiting preload.
+This moves work earlier; no persistent generated-map cache, universal FPS claim
+or whole-universe preload. Initial successful boots20–24s on this machine.
+
+Final458 unit tests/build pass. Six affected startup/opening browser cases pass;
+two startup cases rerun after final held-input/fatal hardening pass. Independent
+Astra review approves this bounded change, loading UI4.0/5, desktop/phone evidence
+and real WEBGL_lose_context warmup recovery. Records: docs/qa/startup-preload/ and
+docs/qa/station-departure/. Hardware gamepad not tested.
+
+PR34 remains DRAFT: request23 full-scene visual blockers remain open. This is not
+READY FOR MERGE for the whole consolidation. main/default/site unchanged. New
+retail435f116/PR20 handoff acknowledged, not merged over this lane; SunPR35 remains
+separate. Updated TOKEN POLICY v2 reviewer ownership acknowledged.
+
+## TEN-PLAYER MULTIPLAYER PREVIEW — 2026-09-07
+
+READY FOR REVIEW: server/, src/multiplayer/, main/MFD/station integration,
+multiplayer tests and deployment templates in feat/multiplayer-ten at
+/tmp/star-agent-multiplayer. Base3e0f3b9 depends on PR38 flight options and PR34
+consolidation; keep the new PR draft against main until those and review gates pass.
+Public isolated preview: https://multiplayer.staragent.site/?intro=0&seed=7291.
+
+Accounts collect callsign/email/password only; PostgreSQL persistence, cookie
+sessions and single-use reset tokens. SMTP adapter is implemented but no delivery
+service configured. Authoritative Navigation30Hz/room snapshots15Hz, ten unique
+assigned suit colours, same seed7291, physical comms-assigned hangars and marker,
+server inventories/transfers/drop expiry, capsule/hull/terrain/station hits with
+ammo/cooldown checks. Remote real meshes use calibrated hand sockets/support IK
+and skin-weight suit masking. Shared fleet starts with Nomad. World frame from
+server overrides cinematic station frame on join. No client position/damage claims.
+
+Checks: npmtest496/496; multiplayer80/80 on Node22 with real dedicated PostgreSQL;
+public HTTPS register/cookie/WSS/hangar probe passed and fixture removed; production
+page ready with zero errors. Two-peer browser1/1 in1.5m, Chromium151/AMD860M ANGLE,
+controller join/comms/request/physical approach/dock/ship+station transfer and
+return, other pilot movement, desktop1440x900/phone390x844. See QA report for exact
+limits. Independent review fixed reconnect/save races, malformed equip IDs,
+restore-capacity invariants, and hull-safe door/lease handling. Post-browser logout
+ordering and destroyed-hull recovery checked in focused tests. Build passes with
+large-chunk warning. Source/palette shader bench passes and screenshots inspected.
+
+Deployment: /opt/staragent/multiplayer-candidate, service staragent-multiplayer,
+loopback8084; separate staragent_multiplayer DB/role, secret env remains server-only
+/etc/staragent/multiplayer.env0600. Existing play/next/current and original DB remain
+untouched. Caddy backup /etc/caddy/Caddyfile.before-multiplayer-20260907. No Vercel.
+Shared mining/building, ship weapons, station shops/concourse, other-player cabins,
+rigidbody ship collisions and lag compensation remain follow-ups. Loose stacks
+are an inventory-list interaction and expire5min/restart; combat checkpoints10sec.
+Physical-controller/full controller text-entry, direct MFD pointer journey, Opus
+visual review and full quality/performance tour remain pending. Do not mark merged.
+
+## MULTIPLAYER ACCOUNT ENTRY — READY FOR REVIEW — 2026-09-07
+
+Root fixes the bare-URL login gap in this branch / PR44. Dedicated frontend builds
+must use VITE_MULTIPLAYER_ENTRY=1 npm run build: Sign in / Create account opens
+once preload is ready, with an explicit Continue offline route. A body-level
+SIGN IN / REGISTER, ACCOUNT or COMMS button remains reachable while the intro
+or player-active mode hides the launcher. Controller Menu opens the account
+screen during the intro; the shared dialog router stays active while it is paused.
+Topbar callbacks no longer pass PointerEvent as an account-view argument. Pointer
+close restores navigation synchronously and ignores late duplicate close events,
+so the first movement key is accepted without clearing fresh input.
+
+Validation: configured unit suite496/496; final focused UI/Gamepad/startup/opening
+40/40; final bare-URL and two-pilot browser journeys2/2 in2.2m. Both start with the
+intro enabled; includes held-stick suppression, immediate pointer-close → W,
+keyboard and phone touch reopen after movement, plus authenticated physical
+hangar approach/dock and inventory transfers. Build passes, existing chunk warning.
+No browser errors, Chromium151 / AMD860M ANGLE,1440x900 and390x844; no FPS claim.
+Public preview keeps its isolated service/DB and requires no API restart. PR44
+stays draft; existing SMTP, full controller text-entry/physical-device and quality
+review limits still apply. Other worktrees and play/next remain untouched.

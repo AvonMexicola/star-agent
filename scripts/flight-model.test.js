@@ -19,7 +19,7 @@ test('vacuum coasting preserves world momentum and does not mutate input', () =>
   assert.deepEqual(structuredClone(initial),saved);
   near(next.orientation.length(),1);
   assert.ok(next.orientation.angleTo(initial.orientation)>.1);
-  assert.deepEqual(step(initial,{},vacuum,0),{...initial,...aerodynamics(initial.velocity,initial.orientation,0)});
+  assert.deepEqual(step(initial,{},vacuum,0),{...initial,engineAcceleration:new Vector3(),...aerodynamics(initial.velocity,initial.orientation,0)});
   assert.throws(()=>step(initial,{},vacuum,NaN),RangeError);
 });
 
@@ -103,14 +103,14 @@ test('V toggles inertial navigation, preserves coasting and gates changes while 
   nav.mode='landed';press('KeyV');assert.equal(nav.flightAssist,true);
   // Landing automation must stop rotation, not hide it until L is cancelled.
   nav.mode='flight';nav.flightAssist=false;nav.position.set(0,RADIUS+5000,0);nav.angularVelocity.set(0,1,0);
-  press('KeyL');assert.equal(nav.autoland,true);near(nav.angularVelocity.length(),0);
-  nav.update(1/60);press('KeyL');assert.equal(nav.autoland,false);
+  press('KeyB');assert.equal(nav.autoland,true);near(nav.angularVelocity.length(),0);
+  nav.update(1/60);press('KeyB');assert.equal(nav.autoland,false);
   const attitude=nav.orientation.clone();nav.update(1/60);near(nav.orientation.angleTo(attitude),0);
   nav.station={ready:true,worldPosition:nav.position.clone(),canDock:()=>true};nav.angularVelocity.set(0,1,0);
-  press('KeyL');assert.equal(nav.autoland,true);near(nav.angularVelocity.length(),0);
+  press('KeyB');assert.equal(nav.autoland,true);near(nav.angularVelocity.length(),0);
   nav.station=null;nav.autoland=false;
   // The new force path must cross the atmosphere without a transit or state reset.
-  nav.mode='flight';nav.flightAssist=false;nav.position.set(0,RADIUS+70010,0);nav.velocity.set(0,-300,0);
+  nav.mode='flight';nav.flightAssist=false;nav.toggleGear();for(let i=0;i<120;i++)nav.update(1/60);assert.equal(nav.gearLimited,false);nav.position.set(0,RADIUS+70010,0);nav.velocity.set(0,-300,0);
   nav.transit=nav.orbit=()=>assert.fail('inertial descent invoked a teleport');
   assert.equal(nav.flightEnvironment.regime,'SPACE');
   for(let i=0;i<120;i++){
