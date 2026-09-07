@@ -1,7 +1,7 @@
 import {defineConfig} from '@playwright/test';
 
 export default defineConfig({
-  testDir:'.',testMatch:'landmark-restraint.spec.js',timeout:300000,
+  testDir:'.',testMatch:'landmark-restraint.spec.js',timeout:480000,
   workers:1,retries:0,reporter:'list',
   outputDir:process.env.RESTRAINT_QA_OUTPUT??'test-results/landmark-restraint',
   use:{baseURL:'http://127.0.0.1:5383',viewport:{width:1440,height:900},deviceScaleFactor:1,

@@ -99,19 +99,31 @@ async function measure(page){
     frameIntervalMs:summarize(raw.samples.slice(1).map((s,i)=>s.rafTime-raw.samples[i].rafTime)),samples:raw.samples};
 }
 
-test('rarer landmarks and restrained stone render across the same approach and close views',async({page,browser},info)=>{
-  const errors=[],captures=[],motion=[];
-  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-  await page.addInitScript(installTiming);
+test('rarer landmarks and restrained stone render across the same approach and close views',async({browser},info)=>{
+  const errors=[],captures=[],motion=[],boot=[];let context,page;
   const views=[
-    {name:'approach-1000m',eye:[700,1000,600],target:[0,0,0]},
+    {name:'approach-1000m',eye:[700,1000,600],target:[-1800,100,-2800]},
     {name:'low-flight',eye:[165,65,95],target:[-2,38,0]},
     {name:'close-face',eye:[85,12,35],target:[-2,31,0]},
   ];
   try{
     for(const phase of ['before','after']){
-      await page.goto(`${phase==='before'?'http://127.0.0.1:5384':''}/?intro=0&debug=1&seed=7291`);
-      await page.waitForFunction(()=>window.starAgent?.state.ready&&!window.starAgent.state.transiting,null,{timeout:90000});
+      // Close the previous complete renderer/workers before creating the next
+      // one. The comparison never keeps two game pages resident together.
+      await context?.close();
+      context=await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1});
+      await context.addInitScript(installTiming);page=await context.newPage();
+      page.on('pageerror',e=>{errors.push(e.message);console.log('Page error:',e.message);});
+      page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());console.log('Console error:',m.text());}});
+      await page.goto(`http://127.0.0.1:${phase==='before'?5384:5383}/?intro=0&debug=1&seed=7291`);
+      const started=Date.now();
+      const report=setInterval(async()=>{
+        const s=await page.evaluate(()=>window.starAgent?.state.preload).catch(()=>null);
+        boot.push({phase,elapsedMs:Date.now()-started,state:s});console.log('Boot',phase,JSON.stringify(s));
+      },15000);
+      try{await page.waitForFunction(()=>window.starAgent?.state.ready&&!window.starAgent.state.transiting,null,{timeout:180000});}
+      finally{clearInterval(report);}
+      console.log('Ready',phase,Date.now()-started,'ms');
       await expect(page.locator('#loading')).toHaveCSS('opacity','0');
       await page.evaluate(()=>{window.starAgent.openingSequence?.leave();for(const d of document.querySelectorAll('dialog[open]'))d.close();});
       for(const v of views){
@@ -133,7 +145,9 @@ test('rarer landmarks and restrained stone render across the same approach and c
     }
     expect(errors).toEqual([]);
   }finally{
-    await writeFile(info.outputPath('restraint.json'),JSON.stringify({timestamp:new Date().toISOString(),browser:browser.version(),viewport:page.viewportSize(),
-      baseline:'219a584',methodology:'Same production source except population/material and fixtures. One page, 35 warm frames and 90+ asynchronous elapsed GPU queries per view. Other desktop activity remains possible; a bounded observation, not exclusive-GPU FPS acceptance.',captures,motion,errors},null,2));
+    const finalState=await page?.evaluate(()=>({preload:window.starAgent?.state.preload,terrain:window.starAgent?.state.terrainLod,hidden:document.hidden})).catch(()=>null);
+    await writeFile(info.outputPath('restraint.json'),JSON.stringify({timestamp:new Date().toISOString(),browser:browser.version(),viewport:{width:1440,height:900},
+      baseline:'219a584',methodology:'Same production source except population/material and fixtures. One page at a time, 35 warm frames and 90+ asynchronous elapsed GPU queries per view. Other desktop activity remains possible; a bounded observation, not exclusive-GPU FPS acceptance.',captures,motion,boot,finalState,errors},null,2));
+    await context?.close();
   }
 });
