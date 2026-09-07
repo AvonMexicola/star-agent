@@ -12,6 +12,17 @@ for(const [ship,size,count] of [['nomad',1,2],['kestrel',2,4],['atlas',3,3]])tes
   expect(state.effects.armament.size).toBe(size);expect(state.hardpoints.length).toBe(count);
   if(state.landingGear.target)await page.keyboard.press('g');
   await page.waitForFunction(()=>starAgent.state.landingGear.progress<.001);
+  if(ship==='nomad'){
+    // Presentation-only regression fixture: emulate the ordinary hidden
+    // cockpit before activation, preserving the actual navigation pose.
+    await page.evaluate(()=>{document.body.classList.remove('player-active');starAgent.navigation.locked=false;});
+    await page.waitForFunction(()=>!starAgent.state.camera.shipVisible);
+    await page.keyboard.down('t');await page.waitForFunction(()=>starAgent.state.effects.armament.shots>0);await page.keyboard.up('t');
+    const pose=await page.evaluate(()=>{const n=starAgent.navigation,shot=starAgent.state.effects.armament.lastShot;return {mount:shot.mount,local:n.position.clone().fromArray(shot.position).sub(n.position).applyQuaternion(n.orientation.clone().invert()).add(n.position.clone().fromArray(n.layout.seatEye)).toArray(),direction:n.position.clone().fromArray(shot.direction).applyQuaternion(n.orientation.clone().invert()).toArray()};});
+    expect(Math.abs(pose.local[0])).toBeCloseTo(2.364,3);expect(pose.local[1]).toBeCloseTo(1.42,3);expect(pose.local[2]).toBeCloseTo(-5.68,3);
+    expect(pose.direction[2]).toBeCloseTo(-1,5);
+    await page.evaluate(()=>document.body.classList.add('player-active'));await frames(page);
+  }
   await page.keyboard.press('4');
   for(const [key,type] of [['1','pulse'],['2','laser'],['3','void']]){
     await page.keyboard.press(key);await frames(page);
@@ -56,7 +67,7 @@ test('touch gestures select and hold fire on the fitted Atlas battery',async({br
  try{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>Object.defineProperty(navigator,'getGamepads',{value:()=>[]}));
-  await page.goto('http://127.0.0.1:5410/?dev=1&ship=atlas&start=orbit&intro=0&debug');
+  await page.goto((process.env.SHIP_WEAPONS_URL??'http://127.0.0.1:5410')+'/?dev=1&ship=atlas&start=orbit&intro=0&debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.enabled&&!starAgent.state.transiting&&starAgent.state.effects.armament?.status==='ready',null,{timeout:90000});
   await page.locator('[data-ship-weapon="void"]').tap();await page.waitForTimeout(160);
   const trigger=await page.locator('.ship-trigger').boundingBox(),cdp=await context.newCDPSession(page);

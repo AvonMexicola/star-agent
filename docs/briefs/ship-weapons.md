@@ -1,6 +1,7 @@
 # SA-WPN-001 — fitted ship weapons in three sizes
 
-Status: active. Human sponsor: Cees. Root owns implementation and integration;
+Status: implemented, checked and locally integrated development candidate; PR61
+is draft and visual acceptance is recorded separately. Human sponsor: Cees. Root owns implementation and integration;
 independent mount/functional/visual review uses separate sessions.
 Base: `a748be101aad4ea672a157481044ce9ed6b03e35` on `dev/all-features`; isolated `feat/ship-weapon-fittings`.
 Preview ports 5410/5411; no shared GPU reservation during CPU authoring.
@@ -66,6 +67,10 @@ counters. Independent review records current assets and any failed iteration.
 
 ## Delivery
 
-Pending implementation and checks. Draft PR and local integration after a coherent
-verified checkpoint. No main merge or deployment. Update this brief, HANDOFF,
-registry, source-head inventory and review evidence with actual results.
+Runtime2faa71c is in draft [PR61](https://github.com/AvonMexicola/star-agent/pull/61).
+The combined RT/menu/account integration5842404, recorded931ea10, is available on
+the shared local preview5178 after686unit/build and three full RT patrol checks.
+Feature checks include the physical Kestrel route, phone firing and MarkII studio.
+See [the production record](../qa/ship-weapons/production-record.md) for exact
+source identity, independent reviews, failures and remaining acceptance limits.
+No main merge or deployment; GPU QA released.
