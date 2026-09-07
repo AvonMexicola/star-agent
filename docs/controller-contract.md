@@ -242,3 +242,18 @@ The storage handoff keeps gameplay paused until storage closes.
 
 See [construction controller evidence](qa/base-building/controller.md) for the
 distinction between the dialog fixture and actual physical gameplay validation.
+
+## Offline space patrols
+
+Menu → Patrol console accepts the two-contact patrol, abandons it, files the combat
+report, and offers recovery after loss. The same console is available from the
+physical hangar cargo terminal. Fly to its world beacon using normal flight.
+A retains ship fire, Menu → Ship weapon chooses the energy array, and Menu → Next
+hostile cycles tracking. RT/LT remain ascent/descent. After combat loss, A invokes
+explicit recovery; it cannot replay the held firing input through the loss gate.
+
+`scripts/space-combat.spec.js` exercises actual Nomad and Kestrel patrols using
+injected standard Gamepads, read-only steering feedback and the real combat model.
+It includes input interruption gates, both kills, the report and return to flight.
+The separate close-up/keyboard fixture uses controlled poses for visual inspection;
+that is not controller-only journey evidence. Physical-device validation is separate.
