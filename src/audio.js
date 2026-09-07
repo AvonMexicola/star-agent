@@ -1,3 +1,4 @@
+import { GameplayAudio } from './audio/gameplay.js';
 import { FlightMusic } from './music.js';
 
 /** Quiet, asset-free flight and surface ambience. Created only on user gesture. */
@@ -57,6 +58,7 @@ export class FlightAudio {
     this.noise.start();
     this.sources.push(this.noise);
     try { this.music = new FlightMusic(context, this.master); } catch { this.music = null; }
+    this.gameplay = new GameplayAudio(context, this.master);
     return true;
   }
 
@@ -67,6 +69,7 @@ export class FlightAudio {
       if (this.enabled) {
         this.enabled = false;
         this.music?.setEnabled(false);
+        this.gameplay?.setEnabled(false);
         this.master.gain.setTargetAtTime(0, this.context.currentTime, 0.08);
         return false;
       }
@@ -75,6 +78,7 @@ export class FlightAudio {
       this.enabled = true;
       this.master.gain.setTargetAtTime(this.suspended ? 0 : 0.7, this.context.currentTime, 0.2);
       this.music?.setEnabled(!this.suspended);
+      this.gameplay?.setEnabled(!this.suspended);
       return true;
     } catch {
       this.enabled = false;
@@ -87,6 +91,7 @@ export class FlightAudio {
     if (!this.context || this.disposed) return;
     this.master.gain.setTargetAtTime(this.enabled && !suspended ? 0.7 : 0, this.context.currentTime, 0.08);
     this.music?.setEnabled(this.enabled && !suspended);
+    this.gameplay?.setEnabled(this.enabled && !suspended);
   }
 
   update({ speed = 0, altitude = 0, musicAltitude = altitude, verticalSpeed = 0, mode = 'flight', boost = false, airless = false,
@@ -118,6 +123,7 @@ export class FlightAudio {
 
   dispose() {
     this.music?.dispose();
+    this.gameplay?.dispose();
     this.disposed = true;
     this.enabled = false;
     for (const source of this.sources) {
