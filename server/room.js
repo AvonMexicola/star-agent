@@ -73,7 +73,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     try{
       if(m.action==='cargo'){const message=await trading.request(p,m);if(message)send(p,{type:'event',event:'notice',message});}
       else if(m.action==='cargoHull'){
-        if(!['nomad','atlas'].includes(m.hull)||!p.nav.dockedAtStation||p.nav.mode!=='walk'||p.nav.insideShip||!p.hangarId||trading.state.accounts[p.id]?.carried)throw new Error('Return to your berth on foot with empty hands to change cargo ships.');
+        if(!['nomad','atlas'].includes(m.hull)||!p.nav.dockedAtStation||p.nav.mode!=='walk'||p.nav.insideShip||!p.hangarId||p.nav.carryingCargo)throw new Error('Return to your berth on foot with empty hands to change cargo ships.');
         const pod=world.pods[p.hangarId-1];if(p.nav.position.distanceTo(pod.padWorldPosition)>80)throw new Error('Return to your berth.');
         await persist(p,p.inventory,{hull:m.hull});setHull(p,m.hull);
       }
