@@ -1481,3 +1481,191 @@ crystals, Verdigris salts, Sporeweave, Caustic brine, Lumen resin, Mycelium cult
 Void pearls and Blackglass. Specialty harvesting, protective suits, engineering,
 power and survival remain future work. Common basic construction stays locally
 obtainable; read docs/base-building-pipeline.md before adding new material IDs.
+
+
+
+## READY FOR REVIEW — BRANDED STATION SHOPS — 2026-09-06
+
+Runtime 435f116 is published to PR20 / origin/feat/hangar-finish from the isolated
+/tmp/star-agent-concourse-work. Cees requested shop identity, posters, textures,
+banners, A5 holders and dirty carpet. WATCHKEEP ARMORY and KESTREL SHIPWORKS now
+have original campaign art, deterministic type, real Blender print hardware,
+worn textile floor coverings and matching accessible purchase menus. Elevator
+GLB SHA 981a229d is unchanged. Physical purchase/cargo routes remain operational.
+
+178 unit tests across 24 files, build, four affected browser cases and fourteen final
+actual-game views pass; isolated branded desktop/mobile evidence was visually
+checked after shared historical /tmp filenames were overwritten by another run.
+Retail rendering is 3 batches / 604 triangles / 4 bounded textures; concourse 25 assemblies,
+44,668 triangles / 8 batches. Alternating retail ON/OFF GPU differences have mixed
+signs; no reproducible multi-ms retail regression. Unchanged hangar timing still
+exceeds 10 ms in the noisy rerun, openly recorded.
+
+Sources/prompts: assets/station-shop/ . Complete proceedings, failed checks/fixes,
+screenshots and profiles: docs/qa/station-shop-branding-record.md and
+station-shop-branding-performance.md. Source and encoding instructions are
+preserved; asset-production-standard.md and STATION-PIPELINE-MEMORY.md updated.
+
+Cees explicitly requested “Use astra instead” for the independent visual review.
+Astra is reviewing 435f116 with its own captures and the same numerical rubric.
+This changes reviewer selection for this task, not the acceptance thresholds.
+No score/waiver/merge is claimed before its result. The interrupted Opus launch
+produced no recorded review. Final review will be station-shop-branding-astra-review.md.
+
+Integration manager: this is a new continuation after the earlier station/ship
+intake, not authorization to overwrite PR34's newer input, equipment, world or
+departure work. Reconcile only the retail changes and preserve PM's outstanding
+PR34 blockers, including the shop enclosure appearance. PR20 remains open.
+Local candidate http://127.0.0.1:5260/ ; actual shop images /review/shops/ .
+This HANDOFF update is the manager notification; no external read receipt exists.
+
+
+## READY FOR REVIEW: ASTRA-REVIEWED SHOP CORRECTION — 2026-09-06
+
+Final runtime025e587 follows branded-shop435f116 and enclosure29885c9 on PR20,
+origin/feat/hangar-finish. Cees selected Astra instead of Opus. Independent Astra
+review now scores the affected shops4/4/4/4/4/4 =4.00 PASS, with its own14 final
+captures and bounded interaction-motion evidence. Original3.50 failure and the
+intermediate shadow-band finding are preserved. Whole-PR merge approval remains
+NO: inherited orbit/coast findings and CPU timing tails are not waived.
+
+Changes: sealed low shop ceilings with cassettes/beams/vents; varied labelled
+weapons/cases/filters/avionics; balanced fixtures below ceilings; readable ivory
+rear branding; corrected poster shadow banding using the existing two shop lights
+with1024² shadow maps. Concourse51,888triangles/8draws/27budgeted assemblies,
+77static boxes; elevator SHA981a229d remains byte-identical. Purchases and all
+existing station/ship gameplay are unchanged by the final shadow correction.
+
+All24 unit-test files and build pass. Corrected29885 resource/mobile browser
+cases pass17.9s; fullscale physical/controller/purchase/cargo/reload recording
+passes48.6s. Final025e58714-view capture has zero browser errors/warnings.
+AMD860M/Chromium151/ANGLE GL at1440×900 scale1: hub269draws/479478tris,
+GPU5.314ms median/5.754p95, CPU6.5/10.1ms; hangar505/684953,
+GPU7.992/9.050ms, CPU7.4/12.0ms. Prior slower runs retained, no universal pass.
+
+Complete record: docs/qa/station-shop-enclosure-record.md; independent final:
+station-shop-enclosure-astra-review.md; bounded motion: station-shop-motion.md;
+profiles: station-shop-branding-performance.md. Original art/prompts in
+assets/station-shop/. STATION-PIPELINE-MEMORY.md and asset-production-standard.md
+carry reusable lessons, including rejected iterations. Portable motion tools
+now preserve unique output paths; temporary source video/trace retention is explicit.
+
+Integration manager: reconcile this retail-only continuation with PR34 and the
+newer fighter/input/world work; do not overwrite those lanes. PR20 remains open;
+no merge/deployment is claimed. Local playable candidate http://127.0.0.1:5260/;
+final actual-game interiors /review/shops/armory-interior.webp and
+/review/shops/components-interior.webp. This file update is the manager
+notification; it does not imply a read receipt.
+
+
+## MESHY RETAIL SOFT PROPS — PREPARED, ACCESS BLOCKED — 2026-09-06
+
+Cees authorized Meshy for more props. Isolated feat/retail-soft-props at
+/tmp/star-agent-retail-props, based on46b978f. Two exact prompts and actual
+counter-top placement/budget contracts are saved in
+assets/station-shop/soft-props/brief.json and README.md: Kestrel maintenance
+roll and Watchkeep folded protective jacket. These complement the reviewed
+shop interiors without overlapping fighter, equipment or base-building work.
+
+No Meshy tool is exposed in this session. The existing Chrome bridge's bounded
+read-only check hit its session limit (midnight Europe/Amsterdam reset); it did
+not reach Meshy. No jobs, generated assets, credit expenditure, integration or
+new review are claimed. Resume through the Meshy-capable browser lane when
+available, retaining source/job provenance and Astra review. The existing
+reviewed local shop build and production remain unchanged. This is a manager
+notification of prepared work and the actual blocker, not READY FOR REVIEW.
+
+
+## USER CORRECTION — GPT BRIDGE FOR MESHY
+
+Cees explicitly said the Meshy bridge should use GPT. The prior Claude Chrome
+check was the wrong route; its session limit does not establish GPT/Meshy
+unavailability. A gpt-6-astra Codex helper has now connected the configured
+Node REPL / browser integration to Chrome and is checking Meshy access. Use
+this GPT route going forward, not the older Claude-browser routing notes.
+No generation or Meshy login is claimed until verified. Prop briefs remain
+in /tmp/star-agent-retail-props, assets/station-shop/soft-props/.
+
+
+## MESHY SOFT PROPS — PROVIDER FINISHED, EXPORT APPROVAL PENDING — 2026-09-06
+
+Update to the earlier access-blocked entries: the GPT/Astra browser bridge
+worked. Both original models were generated, then textured and reduced in Meshy.
+Selected blue Watchkeep jacket: 1,207 Triangle/Faces; ochre Kestrel tool roll:
+2,571. Both show Base Color, Roughness, Metallic and Normal map previews.
+These are provider UI counts, not measured GLB budgets. Total net Meshy cost:
+90 credits including UV failure/refund and texture corrections; no top-ups.
+
+Preserved failures: first jacket UV failed/refunded; UV recovery on its reduced
+version succeeded. First jacket texture missed its palette; a retry restored blue.
+Roll reduction lost the Normal preview; texturing the reduced mesh restored it.
+Remaining review items include angular jacket collar/folds and smooth roll
+pockets/weak buckle material definition. No independent prop acceptance claimed.
+
+All prompts, settings, recovery steps and observations are retained in
+/tmp/star-agent-retail-props/assets/station-shop/soft-props/; proceedings are in
+docs/qa/station-soft-props-record.md and STATION-PIPELINE-MEMORY.md on
+feat/retail-soft-props. The local optional loader and Blender intake are prepared,
+but no model is downloaded, imported by the game, merged or deployed.
+
+The previous GLB download was rejected by automatic/browser approval; the tool
+reported “The user declined permission for this action.” No retry or alternate
+export bypass was attempted during finishing. Next: resolve that specific
+download approval, export the selected versions, measure/fit and inspect them,
+then integrate and obtain actual game checks and independent Astra review.
+Manager notification via HANDOFF only; no read receipt claimed. Preserve other
+active integration work and the accepted local shop preview at port 5260.
+
+
+## GPT IMAGE → MESHY REPLACEMENT — REFERENCES SAVED, UPLOAD BLOCKED — 2026-09-07
+
+Cees rejected the completed text-to-3D shop props and specified GPT isometric
+images on white with no shadows, then Meshy Image to 3D. Do not integrate the old
+models. Root generated and inspected two new built-in GPT images: a neatly folded
+blue/ivory jacket and a closed ochre canvas roll with two snug straps/buckles.
+Source PNGs, exact prompts, dimensions, hashes and limitations are saved under
+/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/.
+Full proceedings and reusable corrections are in docs/qa/station-soft-props-record.md,
+STATION-PIPELINE-MEMORY.md and docs/asset-production-standard.md on
+feat/retail-soft-props. These references are not game or model review evidence.
+
+GPT browser helper reached Image to 3D. A chooser timeout was corrected through
+the visible upload label, but fileChooser.setFiles then failed with code -32000,
+“Not allowed”; the tool supplied no more specific reason. The upload field stayed
+empty. No replacement generation, new Meshy charges, exports, integration or
+review occurred. Do not confuse this with the earlier export denial or claim
+that extra Meshy credits solve it. Next: restore a permitted reference upload,
+verify the actual thumbnail, reconstruct and inspect the two images, then finish
+geometry/PBR and proceed with measured local intake and independent game review.
+This HANDOFF entry notifies the integration manager; no read receipt claimed.
+
+
+## MESHY UPLOAD FIX VERIFIED; IMAGE CANDIDATES READY FOR LOCAL REVIEW — 2026-09-07
+
+Cees enabled ChatGPT extension > Allow access to file URLs. Fresh GPT browser
+attachments then uploaded both exact reference PNGs successfully. This fixes the
+earlier -32000 Not allowed / fileChooser.setFiles failure; no global sandbox or
+browser security disabling was needed. Pipeline memory now records the fix.
+
+Image-to-3D Meshy 7 jacket failed/refunded; its roll completed but reductions
+were poor. A bounded T2 Smart Topology comparison produced both originals.
+Retained provider names and Triangle/Faces counts:
+WATCHKEEP GPT-image v2 T2 - 4330 PBR - UNACCEPTED (5,212 vertices);
+KESTREL GPT-image v2 T2 - 4145 PBR - UNACCEPTED (3,859 vertices).
+All four map previews inspected. Their 1,925/3,926-face remesh variants damaged
+folds/ends and were rejected despite meeting caps. Material and silhouette issues
+remain; originals are candidates, not accepted assets. Caps stay 2,000/4,000.
+
+Recorded resume cost: 45 + 30 = 75 Meshy credits, no top-ups. Source images,
+receipts, failed reductions, credit-attribution limits and exact recovery steps
+live in /tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/
+and docs/qa/station-soft-props-record.md on feat/retail-soft-props.
+The Blender intake now trims only small overshoot to the cap and refuses >10%
+overshoot; syntax checked only. The jacket requires a budget/quality decision
+before cleanup. No GLBs, runtime changes, game renders or independent prop review.
+
+Separate earlier GLB-download approval denial remains unresolved and was not
+retried. Next: approve exporting these new originals for local review, then fit,
+validate and reconcile with current integration work. Accepted shop preview at
+port 5260 and other active lanes remain unaffected. HANDOFF is the manager
+notification, not a read receipt or READY FOR REVIEW claim.

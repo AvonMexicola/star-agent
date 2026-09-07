@@ -17,6 +17,8 @@ export function createStationShopUI(nav, inventory) {
   const number = value => value.toLocaleString('en-US', { maximumFractionDigits: 1 });
   function render() {
     const shop = STATION_SHOPS[activeShop];
+    dialog.dataset.shop = activeShop;
+    dialog.querySelector('.dialog-top .eyebrow').textContent = shop.category;
     dialog.querySelector('#station-shop-title').textContent = shop.name;
     dialog.querySelector('.shop-description').textContent = shop.detail;
     dialog.querySelector('.shop-balance').textContent = `${number(inventory.credits)} CR`;

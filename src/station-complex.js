@@ -7,6 +7,7 @@ import { createStationFinishMaterials } from './station-finish-materials.js';
 import { createStationFinishGraphics } from './station-finish-graphics.js';
 import { createStationFinishLighting, prepareStationFinishShadows } from './station-finish-lighting.js';
 import { attachConcourse } from './station-concourse.js';
+import { loadStationShopGraphics } from './station-shop-graphics.js';
 import { attachPressureElevator } from './station-elevator.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
@@ -76,12 +77,12 @@ export class StationComplex {
   }
   async loadFinish(loader){
     try{
-      const [materials,props,concourse,elevator]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb')]);
+      const [materials,props,concourse,elevator,shopGraphics]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics()]);
       const graphics=createStationFinishGraphics();
       await graphics.readyPromise;
       const rig=createStationFinishLighting();
       this.finishMaterials=materials;this.finishRig=rig;this.finishStatus='ready';
-      return {materials,props,graphics,concourse,elevator};
+      return {materials,props,graphics,concourse,elevator,shopGraphics};
     }catch(error){this.finishStatus='unavailable';this.finishError=error.message;return null;}
   }
   async load(options){
@@ -90,7 +91,7 @@ export class StationComplex {
       const [gltf,lod,finish]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null]);
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       if(finish){
-        attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials});
+        attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials,shopGraphics:finish.shopGraphics});
         // Collision for the batched furniture comes from authored assembly boxes.
         // Keep the room BVH built before these optional props and moving leaves.
         finish.materials.apply(this.hub.group);
@@ -278,7 +279,7 @@ export class StationComplex {
     if(this.location==='hangar'&&p.distanceTo(new THREE.Vector3(-12,floor+nav.layout.eyeHeight,20.7))<2.3){
       return this.activeIndex===this.parkedPod?{kind:'cargo',label:'F · CARGO TRANSFER TERMINAL'}:{kind:'unavailable',label:`SHIP PARKED AT BERTH ${this.parkedPod+1}`};
     }
-    if(this.location==='hub')for(const [x,shopId,name] of [[-10.7,'weapons','AEON ARMORY'],[10.7,'equipment','SHIP COMPONENTS']]){
+    if(this.location==='hub')for(const [x,shopId,name] of [[-10.7,'weapons','WATCHKEEP ARMORY'],[10.7,'equipment','KESTREL SHIPWORKS']]){
       if(Math.hypot(p.x-x,p.z)<1.75)return {kind:'shop',shopId,label:`F · ${name}`};
     }
     const lift=this.lift;

@@ -2,16 +2,18 @@
 export const STARTER_CREDITS = 1500;
 export const STATION_SHOPS = Object.freeze({
   weapons: Object.freeze({
-    name: 'Security supply',
-    detail: 'Stored weapons only. Combat and equipping are not implemented.',
+    name: 'WATCHKEEP ARMORY',
+    category: 'WATCHKEEP / SECURITY SUPPLY',
+    detail: 'For the watch ahead. Stored weapons only. Combat and equipping are not implemented.',
     offers: Object.freeze([
       Object.freeze({ itemId: 'sidearm', price: 350, stock: 3 }),
       Object.freeze({ itemId: 'rifle', price: 700, stock: 2 }),
     ]),
   }),
   equipment: Object.freeze({
-    name: 'Ship outfitter',
-    detail: 'Supplies and replacement parts are stored cargo. Item use and installation are not implemented.',
+    name: 'KESTREL SHIPWORKS',
+    category: 'KESTREL / SHIP COMPONENTS',
+    detail: 'Parts for the next departure. Supplies and replacement components are stored cargo. Item use and installation are not implemented.',
     offers: Object.freeze([
       Object.freeze({ itemId: 'repair', price: 120, stock: 8 }),
       Object.freeze({ itemId: 'scanner', price: 280, stock: 3 }),

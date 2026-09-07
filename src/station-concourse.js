@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { stationFinishPalette } from './station-finish-palette.js';
+import { createStationShopGraphics } from './station-shop-graphics.js';
 
 /** Room architecture is baked into local-metre material batches. The authored
  * shop kit supplies the furniture, stock and human-scale storefronts. */
@@ -32,9 +33,10 @@ export function createConcourse({sign}) {
       box([.45,9.5,.45],[side*21.8,-3.25,z],ivory);
       box([.65,.7,.65],[side*21.8,-7.65,z],steel);
     }
-    box([11.7,.16,.22],[side*14,-4.1,-1],steel);
-    box([.3,.11,1.8],[side*15,-4.19,-1],dark);
-    box([.23,.015,1.65],[side*15,-4.251,-1],glow,true,0);
+    // Mount the display wash beneath the enclosed shop ceiling and its beams.
+    box([11.7,.10,.22],[side*14,-4.70,-1],steel);
+    box([.3,.11,1.8],[side*15,-4.81,-1],dark);
+    box([.23,.015,1.65],[side*15,-4.871,-1],glow,true,0);
     // Flush expansion joints, recessed guidance and perimeter skirting.
     box([.07,.008,33],[side*3.7,-7.992,-1],steel,true,0);
     box([.025,.009,18],[side*3.57,-7.99,1],glow,true,0);
@@ -78,10 +80,10 @@ export function createConcourse({sign}) {
   // Only this occupied hub activates these two small maps; twenty bays do not
   // acquire twenty copies of these lights.
   for(const side of [-1,1]){
-    const light=new THREE.SpotLight(p.ivory,210,21,1.1,.65,2);
-    light.position.set(side*15,-4.3,-1);light.target.position.set(side*15,-8,-1);
-    light.castShadow=true;light.shadow.mapSize.set(512,512);light.shadow.camera.near=.1;
-    light.shadow.camera.far=22;light.shadow.bias=-.0002;light.shadow.normalBias=.025;
+    const light=new THREE.SpotLight(p.ivory,280,21,1.45,.3,2);
+    light.position.set(side*15,-4.91,-1);light.target.position.set(side*16.2,-8,-1);
+    light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.near=.1;
+    light.shadow.camera.far=22;light.shadow.bias=-.001;light.shadow.normalBias=.04;
     group.add(light,light.target);lights.push(light);
   }
   return {group,lights,staticBoxes:[],interiorBox:new THREE.Box3(new THREE.Vector3(-22,-8,-19),new THREE.Vector3(22,1.5,19))};
@@ -93,7 +95,7 @@ export function assetCollisionBoxes(root,offset=new THREE.Vector3()){
   return boxes.map(({min,max})=>new THREE.Box3(new THREE.Vector3(...min).add(offset),new THREE.Vector3(...max).add(offset)));
 }
 
-export function attachConcourse(hub,asset,{sign,materials}){
+export function attachConcourse(hub,asset,{sign,materials,shopGraphics}){
   const props=asset.scene.clone(true);
   // Reuse the station's physical surface maps on the authored material batches.
   props.traverse(mesh=>{if(mesh.isMesh){mesh.material.name=mesh.material.name.replace(/^Concourse/,'Finish');mesh.castShadow=true;mesh.receiveShadow=true;}});
@@ -106,11 +108,11 @@ export function attachConcourse(hub,asset,{sign,materials}){
     const anchor=props.getObjectByName(name);
     if(anchor)sign(anchor,`AEON / DECK 04\n${heading}\n${rows}\nELEVATOR BEHIND YOU`,[0,0,0],.56,1.58,0);
   }
-  for(const [side,id,title] of [[-1,'Armory','AEON ARMORY'],[1,'Components','SHIP COMPONENTS']]){
+  for(const [side,id,title] of [[-1,'Armory','WATCHKEEP / ARMORY'],[1,'Components','KESTREL / SHIP COMPONENTS']]){
     const anchor=props.getObjectByName(id+'Sign');
     if(anchor)sign(anchor,title,[0,0,0],7.05,.29,-side*Math.PI/2);
     const screen=props.getObjectByName(id+'Screen');
     if(screen)sign(screen,'F / BROWSE STOCK',[0,0,0],.43,.24,-side*Math.PI/2);
-
   }
+  if(shopGraphics)hub.group.add(createStationShopGraphics(props,shopGraphics));
 }

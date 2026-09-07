@@ -265,3 +265,190 @@ door bounds and instance transforms at every origin rebase. Physical finish
 materials must not be passed through the legacy whole-model weather shader again.
 Generated room UVs should use metres, and small signs/flush decorative strips
 should not silently become extra shadow casters.
+
+## Retail identity continuation — 2026-09-06
+
+[The shop branding proceedings](docs/qa/station-shop-branding-record.md) extend
+the same pipeline with WATCHKEEP ARMORY and KESTREL SHIPWORKS: actual A5 holders,
+framed campaigns, suspended banners, shelf categories and worn carpet. Original
+generated masters, exact prompts and runtime encoding live in
+`assets/station-shop/`; deterministic type and palette belong to
+`src/station-shop-graphics.js`. `loadStationShopGraphics()` awaits shared images
+and font readiness, then supplies three locally batched native-material meshes.
+Failed image requests keep a usable authored fallback and do not disable the
+hangar. Paper normals follow full GLB anchor quaternions; A5 is .148 × .210 m.
+
+Use `--only-concourse` when refining retail geometry so the player-praised
+elevator appearance is preserved byte-for-byte. Check banner headroom and print
+backings against actual triangles, including all paper corners. Texture sheet
+cells must match the physical print aspect ratio; a shared atlas alone does not
+prevent stretched type. Read both entry and close walking-height camera views.
+
+Browser evidence must use a dedicated output directory and per-test paths.
+Global `/tmp` filenames can be overwritten by another worktree's browser run.
+Verify the visible brand and served bundle, not merely a recent file timestamp.
+For noisy performance, alternate graphics on/off in one camera and preserve all
+pairs. GPU timer values, CPU callback time and RAF cadence remain distinct; other
+active browser work can invalidate a comparison across separate runs.
+
+## Shop enclosure and stock correction — 2026-09-06
+
+The [independent Astra review](docs/qa/station-shop-branding-astra-review.md)
+rejected candidate `435f116`: affected station/shop quality averaged 3.50/5;
+upper shops read as open to space and repeated rifles/canisters looked like
+prototype inventory. Cees authorized Astra as the reviewer substitution, without
+waiving the numerical quality bar. Keep that failed report. Corrected candidate
+`29885c9` is documented in the
+[enclosure correction record](docs/qa/station-shop-enclosure-record.md);
+independent follow-up remains pending at this entry, not accepted by inference
+from the rebuild, tests or author captures.
+
+Give enclosed retail spaces their own physical ceilings. A high station hull
+roof does not close the visible gap above a low shop wall. The corrected kit has
+continuous ceiling skins, recessed panels, beams and end-wall downstands. Its
+lowest underside is Y=-4.68 above floor Y=-8, leaving 3.32 m headroom. Runtime
+fixtures sit below that opaque ceiling, around Y=-4.8. Check upward and oblique
+entry rays, wall-to-roof overlaps and actual lit walking views; adding a roof can
+otherwise hide the lights that previously illuminated the shop.
+
+Stock should communicate different purposes and agree with printed categories:
+longarms, sidearms and field equipment in WATCHKEEP; filters, avionics and repair
+equipment in KESTREL. The correction uses two long rifles, three independently
+constructed compact sidearms, handled/latching cases and varied component
+silhouettes. Count major items and measure their human-scale dimensions in the
+real export. Labels describe decorative display stock; the purchase catalogue
+still belongs to the actual shop modal.
+
+Preserve each print anchor's complete transform, including tilted A5 paper
+orientation. Test the mounted face and all corners against actual backing
+triangles, not just anchor positions or assembly bounds. A print can have the
+right transform yet remain buried in an inherited wall or cloth substrate;
+allow clearance for the whole intended cloth wave as well as the static plane.
+
+Give every capture run a unique output directory containing its candidate and
+run identifier, with distinct paths per test/view. Retain capture time, served
+bundle, camera/backend and source video provenance. Follow the
+[motion evidence record](docs/qa/station-shop-motion.md) for timestamped event
+windows covering walking, doors, travel and UI transitions. Preserve original
+video and extraction commands; sampled contact sheets are not every rendered
+frame, and playback cadence is not GPU timing. Motion capture and independent
+follow-up were still pending when this correction entry was written.
+
+Shadow follow-up runtime025e587 changes only the two concourse spotlights’ shadow
+settings:1024² maps, depth bias−0.001 and normal bias0.04. Astra caught poster/tile
+banding on29885c9; root’s bias-only trial cleared paper but left coarse rack
+shadows before the resolution refinement. Final GPU medians at1440×900/AMD860M
+were5.314ms hub and7.992ms hangar; CPU p95 remains10.1/12ms respectively. Keep
+these separate from the earlier slower runs and the recorded29885c9 interaction
+journey. Exact provenance and the final independent disposition belong to the
+corrective record and Astra follow-up, not an inferred waiver.
+
+Final receipt: independent Astra review of025e587 scores the affected shops4.00/5 (all six criteria4). The broader PR remains unapproved due to inherited world/performance concerns. See docs/qa/station-shop-enclosure-astra-review.md for exact evidence and bounded motion limitations.
+
+
+## User correction: GPT browser bridge for Meshy
+
+Cees explicitly instructed: use GPT for the Meshy bridge. The initial Claude
+Chrome capability check was the wrong route. Its session limit is not evidence
+that the GPT bridge or Meshy is unavailable. Use the configured GPT/Astra Codex
+browser integration, verify actual connection/login, and retain exact job
+provenance. Do not revert to Claude based on older handoff routing notes.
+
+
+## Meshy soft-prop finishing — 2026-09-06
+
+Cees explicitly authorized texturing and topology reduction on generated Meshy
+models. Use the GPT/Astra browser bridge and existing versions. For the bounded
+shop pair, Fixed / Custom / Triangle remesh targets of 1,500 and 2,500 produced
+UI counts of 1,207 jacket faces and 2,571 tool-roll faces. A target is approximate;
+measure actual GLB triangles after export. Preserve originals and rejected versions.
+
+Inspect UV and every PBR map again after reduction. In this run, the jacket's
+initial UV generation failed/refunded; UV generation on its reduced version
+succeeded. Reducing the textured roll retained colour, roughness and metallic
+previews but lost the Normal preview, requiring a final PBR texture pass. Finish
+topology first when practical, then verify texturing on that exact derived mesh.
+The first jacket texture missed its requested palette; a focused colour retry
+restored blue fabric and pale patches. Provider success does not establish art
+acceptance, correct exported maps, or game integration.
+
+Meshy 7 Flagship offered a minimum 2K source texture size in this session. Keep
+that source outside public and derive the project's 1024² runtime maps during
+local intake. Preserve already compliant provider topology instead of applying
+a second unconditional Blender decimation. Check angular collars/folds at the
+actual fitted counter size and obtain independent Astra review in the game.
+
+Exact settings, prompts, failures and recovery instructions live in
+assets/station-shop/soft-props/ and docs/qa/station-soft-props-record.md. Browser
+approval rejected the original GLB download; no export or runtime integration
+is claimed. Complete authorized provider edits separately, then obtain approval
+for that specific rejected download before retrying.
+
+
+## Cees correction: GPT image before Meshy — 2026-09-07
+
+The two text-to-3D retail props were rejected by Cees despite completed provider
+texturing and reduction. Their receipts remain failure history; do not reuse
+the provider ready-for-export status as an art approval.
+
+For this organic/soft-prop pipeline, first use GPT image to establish ONE item
+in an isometric view on a white background, with no cast/contact shadow or scene
+props. Save separate images per item and inspect silhouette, fold construction,
+material palette and whole-object framing before upload. Keep exact prompts,
+source PNGs and hashes. User direction supersedes the earlier text-first route.
+
+Upload the selected image through Meshy Image to 3D, confirm the visible thumbnail
+and record source hash plus provider settings. Compare reconstructed geometry
+with that source from multiple angles before remeshing. Retain detailed originals,
+then reduce with silhouette checks and verify UV/PBR maps on the final version.
+A beautiful reference is not proof of a good generated mesh; provider completion
+is not game acceptance. Keep the Blender scale/origin, actual export budgets,
+local resource loading, game-render checks and independent review steps.
+
+The first replacement reference pair is in
+assets/station-shop/soft-props/image-to-3d-v2/. Root generated and inspected both
+with the built-in GPT image tool; Meshy reconstruction remains separately tracked
+in that directory's receipt. The previous export denial is not approval for a
+new download. No rejected original model has entered the game.
+
+
+## Upload permission diagnosis — 2026-09-07
+
+Read-only diagnosis found no saved file-access grant for the installed ChatGPT
+Chromium extension. Chromium's DOMHandler::SetFileInputFiles returns the exact
+“Not allowed” error when allow_file_access is false, and its extension debugger's
+MayReadLocalFiles delegates to util::AllowFileAccess. The supported setting to
+check is ChatGPT extension Details > Allow access to file URLs. This is the
+likely cause; no setting has been changed and no successful retry is claimed.
+User should enable that specific permission in chrome://extensions, then use a
+fresh bridge attachment for verification. Do not disable browser security or
+change global Codex approval policy. Sources:
+https://raw.githubusercontent.com/chromium/chromium/main/content/browser/devtools/protocol/dom_handler.cc
+https://raw.githubusercontent.com/chromium/chromium/main/chrome/browser/extensions/api/debugger/debugger_api.cc
+https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions
+
+
+## File-access permission verified — 2026-09-07
+
+Cees confirmed enabling ChatGPT extension > Allow access to file URLs. A fresh
+GPT browser attachment then uploaded the exact jacket PNG successfully through
+the documented file chooser. The operator visually verified the thumbnail and
+submitted one High Detail / Meshy 7 Flagship Image-to-3D job, with Texture on
+and Image Enhancement off to retain the supplied reference. This confirms that
+the file-access change resolved the observed upload failure in this workflow.
+
+Keep the pre-permission zero-job receipt intact. The continued operations and
+actual charges belong to image-to-3d-v2/meshy-after-file-permission-receipt.json.
+Model generation, final appearance, topology, maps, exports and game acceptance
+remain separate checks; successful input upload establishes none of those.
+
+
+Smart Topology follow-up: the same images yielded 4,330-face jacket and
+4,145-face roll originals. Their 1,925/3,926-face remesh variants met the caps
+but visibly damaged folds and were rejected. Preserve the better originals for
+local review; never equate a provider triangle count with art acceptance. Even
+a modest Meshy remesh can change topology/silhouette substantially. For a small
+export overshoot, the prepared Blender intake trims to the maximum cap, not the
+lower aspirational target. A much larger budget difference (this jacket) needs
+an explicit author/reviewer decision before cleanup. Actual local GLB fitting,
+PBR-file validation and game review remain pending in the production record.

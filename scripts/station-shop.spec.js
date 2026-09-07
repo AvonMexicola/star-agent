@@ -11,11 +11,11 @@ const errorsFor = page => {
 async function readyDocked(page) {
   await page.goto('/?intro=0&debug=1&seed=7291');
   await page.waitForFunction(() => window.starAgent?.state.ready && starAgent.state.station.ready);
-  await page.evaluate(() => {
-    const n = starAgent.navigation, s = n.station; starAgent.setRenderScale(.55);
+  await page.evaluate(renderScale => {
+    const n = starAgent.navigation, s = n.station; starAgent.setRenderScale(renderScale);
     const p = n.position.clone().set(0, s.interiorBox.min.y + 4, 2);
     n.orbit(); s.toWorld(p, n.position); n.orientation.copy(s.quaternion); n.landOrLaunch();
-  });
+  }, process.env.STATION_MOTION_RENDER_SCALE === '1' ? 1 : .55);
   await page.waitForFunction(() => starAgent.state.station.docked);
 }
 async function walkTo(page, x, z) {
@@ -69,7 +69,7 @@ async function samplePad(page, index, pressed) {
   }, { index, pressed });
 }
 
-test('walk through passenger transit to the armory, buy with a controller, transfer cargo and reload', async ({ page }) => {
+test('walk through passenger transit to the armory, buy with a controller, transfer cargo and reload', async ({ page }, testInfo) => {
   const errors = errorsFor(page);
   await page.addInitScript(() => {
     window.shopPad = { id: 'Station shop test controller', index: 0, connected: true, mapping: 'standard',
@@ -78,6 +78,17 @@ test('walk through passenger transit to the armory, buy with a controller, trans
   });
   await readyDocked(page);
   const parked = await page.evaluate(() => starAgent.navigation.shipPosition.toArray());
+  if (process.env.STATION_MOTION_RENDER_SCALE === '1') {
+    const environment = await page.evaluate(() => {
+      const gl = document.querySelector('canvas').getContext('webgl2');
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      return { renderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : null,
+        version: gl.getParameter(gl.VERSION), renderScale: starAgent.state.renderScale,
+        viewport: [innerWidth, innerHeight], drawingBuffer: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+        timeOrigin: performance.timeOrigin, performanceNow: performance.now(), wallTime: Date.now() };
+    });
+    await testInfo.attach('motion-environment', { body: JSON.stringify(environment, null, 2), contentType: 'application/json' });
+  }
   // Begin in a clear hangar side aisle. Existing boarding tests cover the ship ramp.
   await page.evaluate(() => {
     const n = starAgent.navigation, s = n.station;
@@ -92,10 +103,11 @@ test('walk through passenger transit to the armory, buy with a controller, trans
   await page.getByRole('button', { name: 'Central hub', exact: true }).click();
   await page.waitForFunction(() => starAgent.state.station.location === 'hub' && starAgent.navigation.enabled && starAgent.state.station.elevator > .99);
   await walkTo(page, 0, 0); await walkTo(page, -10.7, 0);
-  await expect.poll(() => page.evaluate(() => starAgent.state.interaction)).toContain('AEON ARMORY');
+  await expect.poll(() => page.evaluate(() => starAgent.state.interaction)).toContain('WATCHKEEP ARMORY');
   await page.keyboard.press('KeyF');
   const dialog = page.locator('#station-shop-dialog');
   await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: 'WATCHKEEP ARMORY', exact: true })).toBeVisible();
   await expect(dialog).toContainText('Combat and equipping are not implemented');
   const position = await page.evaluate(() => starAgent.state.position);
   await samplePad(page, 13, true); await samplePad(page, 13, false);
@@ -112,7 +124,7 @@ test('walk through passenger transit to the armory, buy with a controller, trans
   expect(await page.evaluate(() => starAgent.state.inventory.station.sidearm)).toBe(1);
   await page.evaluate(() => { window.shopPad.axes[1] = 0; });
   await samplePad(page, 0, false);
-  await page.screenshot({ path: '/tmp/star-agent-shop-controller-desktop.png' });
+  await page.screenshot({ path: testInfo.outputPath('shop-controller-desktop.png') });
   await samplePad(page, 1, true); await expect(dialog).toBeHidden(); await samplePad(page, 1, false);
   await page.waitForFunction(() => starAgent.navigation.enabled && starAgent.navigation.gamepad.armed);
   expect(await page.evaluate(() => starAgent.navigation.shipPosition.toArray())).toEqual(parked);
@@ -138,16 +150,17 @@ test('walk through passenger transit to the armory, buy with a controller, trans
   expect(errors).toEqual([]);
 });
 
-test('390×844 touch shop keeps delivery, price and feedback readable in a controlled hub fixture', async ({ browser }) => {
+test('390×844 touch shop keeps delivery, price and feedback readable in a controlled hub fixture', async ({ browser }, testInfo) => {
   const context = await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
   const page = await context.newPage(); const errors = errorsFor(page);
   try {
     await hubFixture(page); await walkTo(page, 10.7, 0);
-    await expect.poll(() => page.evaluate(() => starAgent.state.interaction)).toContain('SHIP COMPONENTS');
+    await expect.poll(() => page.evaluate(() => starAgent.state.interaction)).toContain('KESTREL SHIPWORKS');
     await page.keyboard.press('KeyF');
     const dialog = page.locator('#station-shop-dialog');
     await expect(dialog).toBeVisible();
-    await page.screenshot({ path: '/tmp/star-agent-shop-mobile-top.png' });
+    await expect(dialog.getByRole('heading', { name: 'KESTREL SHIPWORKS', exact: true })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('shop-mobile-top.png') });
     await dialog.getByRole('button', { name: 'Buy Replacement components for 220 credits', exact: true }).tap();
     await expect(dialog.locator('.shop-feedback')).toContainText('Balance: 1280 credits');
     expect(await page.evaluate(() => starAgent.state.inventory.station.replacement)).toBe(1);
@@ -158,7 +171,7 @@ test('390×844 touch shop keeps delivery, price and feedback readable in a contr
     expect(layout.left).toBeGreaterThanOrEqual(0); expect(layout.right).toBeLessThanOrEqual(390);
     expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
     await dialog.locator('.shop-feedback').scrollIntoViewIfNeeded();
-    await page.screenshot({ path: '/tmp/star-agent-shop-mobile.png' });
+    await page.screenshot({ path: testInfo.outputPath('shop-mobile.png') });
     const closeBounds = await dialog.getByRole('button', { name: 'Close shop', exact: true }).boundingBox();
     expect(closeBounds.y).toBeGreaterThanOrEqual(0);
     expect(closeBounds.y + closeBounds.height).toBeLessThanOrEqual(844);
