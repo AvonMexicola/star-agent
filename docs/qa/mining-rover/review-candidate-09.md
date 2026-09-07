@@ -1,0 +1,13 @@
+# Burrow M-04 — localized candidate 09 closure
+
+The last sampled fixed-side cabin gap is closed. This is a localized CPU geometry result, not a new art or whole-mechanism certification.
+
+Reviewer: `/root/kestrel_reviewer`. Candidate 09 SHA256: `0ce536332a9e1b29d89d29981e510739c975cd739514cfe1e9e0b810120617fb`; 21,570 triangles, 2,178,492 bytes. Frozen input and reproducible probes are retained beside this report.
+
+`header-09.mjs` sent 762 outward lateral rays from the closed cabin, from X ±0.76 through the occupied side envelope. All 762 hit the shell within 0.22 m. Candidate 08 had four escapes at the fixed starboard lower panel's aft edge, Z 0.645/0.650 and Y 0.75/1.25. Extending that panel from Z 0.64 to 0.67 closes these samples. This finite grid does not establish global mathematical watertightness, full-body collision safety or a pressure simulation.
+
+`delta-09.mjs` compared the complete 08 and 09 world-space triangle multisets, preserving winding and duplicate counts, with coordinates serialized at 1e-8 m. It found 21,540 identical triangles and 30 removed/30 added triangles, all confined to that fixed starboard lower panel. No changed triangle lies outside the panel. Export welding changed the main mesh vertex count from 11,257 to 11,255; index/topology byte identity is therefore not claimed. The other 24,087 directly comparable vertices match. Materials, nodes, canonical layout and all four embedded texture payload hashes are identical to 08.
+
+The unchanged 08 wheel/link, lamp/cutter, step support and corrected camera-route results remain applicable within their documented sample scope. The three retained header samples show only the already documented rubber/jamb mating contacts: the flattened seal reaches the roof plane with about 12.9 micrometres of export quantization overlap, rather than the old 32 mm intrusion. No fresh exhaustive mechanism run was needed for this 30-triangle fixed panel extension.
+
+The reviewer-authored `capture-09.mjs` preserves the corrected attached-skin synchronization and exact asset identity checks. The parent ran it; its seven native images are separate evidence. The original two shadow-off diagnostics were subsequently found invalid because the renderer retained shadow reception after toggling the global flag on cached materials. `capture-09-shadow-corrected.mjs` starts with shadows disabled before first draw, disables the shadow-casting key and receivers, asserts those states, and produces only the same two diagnostic views in a new directory. Outer and embedded module syntax checks pass; the reviewer did not launch a browser. See the separate visual report for the appearance disposition.
