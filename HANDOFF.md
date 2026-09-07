@@ -2216,3 +2216,64 @@ verified on persistent preview5178; no restart/database change. Combined705/705
 unit tests pass in26.4s and production build passes. Runtime claims released.
 No further navigation GPU checks planned; momentum5398 retains its queue priority.
 PR62 remains draft; no production release or remote dev branch push.
+
+
+## MESHY EXPORT APPROVED; CHROMIUM BLOCKED BOTH DOWNLOADS — 2026-09-07
+
+Cees explicitly approved the two retained GPT-image/T2 native GLB downloads.
+The GPT operator attempted both exact originals, verifying jacket 4,330 faces /
+5,212 vertices and roll 4,145 / 3,859 plus the four PBR controls. Both downloads
+failed with Chromium ERR_BLOCKED_BY_CLIENT at assets.meshy.ai; download events
+timed out, and neither local file exists. This is a fresh browser block; the
+historical refusal is superseded and no new approval-review denial occurred.
+No bypass or billable provider work was attempted.
+
+Export evidence: /tmp/star-agent-retail-props/assets/station-shop/soft-props/
+image-to-3d-v2/export-receipt.json. Root owns export/intake/runtime integration;
+the prop agent prepared blender/review_shop_soft_props.py for three labelled
+CPU studio views and source metadata. Actual Meshy inspection, asset budgets,
+game import and independent review remain pending local GLBs. Accepted preview
+5260 is unchanged. This HANDOFF records the integration-manager notification;
+no read receipt, new art acceptance, merge or deployment is claimed.
+
+
+## READY FOR INTEGRATION REVIEW: user-selected KESTREL roll — 2026-09-07
+
+Cees supplied the acceptable native KESTREL GPT-image/T2 export manually.
+feat/retail-soft-props now contains preserved source5.25MB, editable Blender
+file and repeatable cleanup, optimized268872-byte GLB (4000tri/one material/
+three1024px WebP maps), manifest and optional hub-only hookup. No jacket source
+was found and no jacket request is enabled. Runtime roll receives shadows and
+uses a tiny shared approximate static contact-AO plane instead of the displaced
+cast shadow. Global lights and physical colliders remain untouched.
+
+Astra independently scored4/4/4/4/4/4 =4.00 after correcting the contact issue;
+initial3.83 failure and screenshots are preserved. Dev props viewer's module
+imports, favicon and real1m grid were corrected. Final game/props pages have
+zero browser diagnostics. Runtime cost +2draws/+4002submitted triangles on
+Chromium151 / AMD860M / ANGLE GL /1440×900 /render scale1. Timing samples may
+be contended by outside QA jobs; no whole-scene latency pass is claimed.
+
+Root:186unit tests and build pass. Three focused browser cases passed including
+physical passenger transit→armory/controller purchase→cargo transfer→reload.
+Touch originally stalled with help open/controller detected; isolate host pads
+in its touch-only fixture, then390×844purchase/feedback/close passed11.1s.
+No actual physical-controller hardware validation.
+
+Production review5263; dev props5262; accepted5260 unchanged. Final served
+bundle index-CoFnp-fX.js SHA256
+363bf688666e94b55d7bf460e887732e57e4e45917c168c48b893312fb8b8081.
+Review: docs/qa/station-shop-props-review.md; comprehensive source/receipts and
+failures: docs/qa/station-soft-props-record.md + STATION-PIPELINE-MEMORY.md.
+Manager should integrate the branch changes relative to common ancestor9f02d24
+(current dev/all-features already contains the earlier pipeline preparatory work).
+Shared runtime/uncommitted work was not overwritten. No merge/deployment claimed.
+This HANDOFF is the manager notification, not an acknowledgement.
+
+
+KESTREL INTEGRATION PR — https://github.com/AvonMexicola/star-agent/pull/57
+Draft against dev/all-features, pushed runtime/review head70e4ca7. GitHub reported
+mergeability UNKNOWN at final read; no merge or deployment attempted. Production
+preview5263 still matches the independently reviewed bundle SHA. Full pipeline
+record and source assets are on feat/retail-soft-props. The integration manager
+is notified through this shared handoff; no manager acknowledgement is claimed.
