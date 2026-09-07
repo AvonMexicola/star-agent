@@ -223,3 +223,13 @@ current overview, input frames, ladder/departure images and receipts. All seven
 scene counts match the earlier final-kit table. The phone HUD remains crowded by
 inherited combat panels and the temporary start toast; entry success is not full
 UI art approval. The GPU was released to the queued Aeon-stones QA owner afterward.
+
+Local integration delivery: `dev/all-features` advanced from `7bd4bd5` to verified
+feature head `eb5184d` by fast-forward. Its unrelated unstaged AGENTS.md edit is
+preserved. The existing `npm run dev:all` service remains healthy on5178/8087;
+HTTP checks confirm the new launcher link and the exact hero/distant hashes.
+No API restart was needed. Draft PR55:
+https://github.com/AvonMexicola/star-agent/pull/55, targeting remote dev/all-features.
+The feature branch is pushed; the local dev fast-forward was not pushed and no
+GitHub merge, main merge or deployment was performed. Final documentation commits
+only update the receipt; runtime and asset identities remain as tested above.

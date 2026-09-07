@@ -1841,3 +1841,13 @@ Independent final LOD review retains silhouette 4.0 and closes its two sampled
 far-view count concerns. Final art/material/timing gates remain open. The current
 production review is http://127.0.0.1:5400/?dev=1&intro=0&ship=kestrel&start=orbit&stationExterior=1&exteriorView=overview&seed=7291.
 Selected evidence: `docs/qa/station-exterior/integrated-flight/`. GPU released.
+
+Local integration delivery: `dev/all-features` advanced from `7bd4bd5` to verified
+feature head `eb5184d` by fast-forward. Its unrelated unstaged AGENTS.md edit is
+preserved. The existing `npm run dev:all` service remains healthy on5178/8087;
+HTTP checks confirm the new launcher link and the exact hero/distant hashes.
+No API restart was needed. Draft PR55:
+https://github.com/AvonMexicola/star-agent/pull/55, targeting remote dev/all-features.
+The feature branch is pushed; the local dev fast-forward was not pushed and no
+GitHub merge, main merge or deployment was performed. Final documentation commits
+only update the receipt; runtime and asset identities remain as tested above.
