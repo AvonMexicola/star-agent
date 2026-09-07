@@ -3,6 +3,12 @@ export const FAUNA_SPECIES = Object.freeze({
     aggroRange: 24, biteRange: 2.7, mouthHeight: 1.2, maxBiteHeight: 2.8, windup: .6, cooldown: 1.8, leash: 100 }),
   suloher: Object.freeze({ name: 'Suloher dog', maxHealth: 90, damage: 8, speed: 4,
     aggroRange: 34, biteRange: 1.6, mouthHeight: .65, maxBiteHeight: 2.3, windup: .6, cooldown: 1.8, leash: 100 }),
+  'aeon-amphibian': Object.freeze({ name: 'Tideback', maxHealth: 120, damage: 6, speed: 1.8,
+    aggression: 'provoked', patrolSpeed: .45, aggroRange: 24, biteRange: 1.4,
+    mouthHeight: .35, maxBiteHeight: 2.3, windup: .8, cooldown: 2, leash: 100 }),
+  'aeon-grazer': Object.freeze({ name: 'Mallow grazer', maxHealth: 360, damage: 0, speed: 2,
+    aggression: 'never', patrolSpeed: .55, aggroRange: 0, biteRange: 0,
+    mouthHeight: 1, maxBiteHeight: 0, windup: 1, cooldown: 2, leash: 100 }),
 });
 export const FAUNA_WEAPON_DAMAGE = Object.freeze({ rifle: 30, pistol: 18 });
 const MAX_ENTITIES = 8, MAX_DT = .25, MAX_STEP = .05, TAU = Math.PI * 2;
@@ -49,7 +55,9 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
     if (!finite(player)) return;
     for (const [id, entity] of live) {
       if (distance(entity.position, player) > 600) {
-        if (entity.health > 0 && entity.health < FAUNA_SPECIES[entity.species].maxHealth) wounds.set(id, entity.health);
+        if (entity.health > 0 && entity.health < FAUNA_SPECIES[entity.species].maxHealth) {
+          wounds.set(id, { health: entity.health, provoked: entity.provoked });
+        }
         live.delete(id);
       }
     }
@@ -69,7 +77,8 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
       const entity = { id: spawn.id, species, position: [...spawn.position], normal,
         home: [...spawn.position], homeNormal: [...normal], heading, phase,
         forward: add(z.map(v => -v * Math.cos(heading)), x, -Math.sin(heading)),
-        state: 'patrol', health: wounds.get(spawn.id) ?? config.maxHealth,
+        state: 'patrol', health: wounds.get(spawn.id)?.health ?? config.maxHealth,
+        provoked: wounds.get(spawn.id)?.provoked ?? false,
         deathTime: 0, speed: 0, timer: 0, cooldown: 0, patrolAngle: phase * TAU, lostSight: 0 };
       live.set(entity.id, entity);
     }
@@ -101,6 +110,19 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
   }
   function startReturn(entity) { entity.state = 'return'; entity.timer = 0; entity.lostSight = 0; }
 
+  function flee(entity,player,speed,step){
+    const away=unit(tangent(sub(entity.position,player),entity.normal))??entity.forward;
+    const side=cross(entity.normal,away),preferred=entity.fleeSide??1,previous=[...entity.forward];
+    // A slope/biome edge can block straight retreat. Prefer escape and lateral
+    // steps; a bounded wider turn can get around a convex terrain obstruction.
+    for(const angle of [0,preferred*Math.PI/3,preferred*Math.PI/2,-preferred*Math.PI/3,-preferred*Math.PI/2,preferred*2*Math.PI/3,-preferred*2*Math.PI/3]){
+      const direction=add(away.map(v=>v*Math.cos(angle)),side,Math.sin(angle));
+      move(entity,add(entity.position,direction,8),speed,step);
+      if(entity.speed>0){if(angle)entity.fleeSide=Math.sign(angle);return;}
+    }
+    face(entity,previous);
+  }
+
   function update(dt, player = {}) {
     if (!Number.isFinite(dt) || dt <= 0) { paused = true; return; }
     const p = copyPosition(player.position);
@@ -123,8 +145,13 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
         const config = FAUNA_SPECIES[entity.species];
         entity.cooldown = Math.max(0, entity.cooldown - step);
         const playerDistance = distance(entity.position, p), homeDistance = distance(entity.home, p);
-        if (entity.state === 'patrol' && playerDistance <= config.aggroRange && homeDistance <= config.leash && sees(entity, p, config)) entity.state = 'chase';
-        if (entity.state === 'chase') {
+        const aggressive = config.aggression !== 'never' && (config.aggression !== 'provoked' || entity.provoked);
+        if (entity.state === 'patrol' && aggressive && playerDistance <= config.aggroRange && homeDistance <= config.leash && sees(entity, p, config)) entity.state = 'chase';
+        if (entity.state === 'flee') {
+          entity.timer -= step;
+          if (entity.timer <= 0 || distance(entity.position, entity.home) > config.leash * .75) { startReturn(entity); continue; }
+          flee(entity,p,config.speed,step);
+        } else if (entity.state === 'chase') {
           if (homeDistance > config.leash || playerDistance > config.aggroRange * 2) { startReturn(entity); continue; }
           const visible = sees(entity, p, config);
           entity.lostSight = visible ? 0 : entity.lostSight + step;
@@ -153,7 +180,7 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
         } else if (entity.state === 'patrol') {
           const { x, z } = basis(entity.homeNormal), radius = 8 + entity.phase * 6;
           const target = add(add(entity.home, x, Math.sin(entity.patrolAngle) * radius), z, Math.cos(entity.patrolAngle) * radius);
-          if (move(entity, target, config.speed * .35, step) || entity.speed === 0) entity.patrolAngle += 2.399963229728653;
+          if (move(entity, target, config.patrolSpeed ?? config.speed * .35, step) || entity.speed === 0) entity.patrolAngle += 2.399963229728653;
         }
       }
     }
@@ -163,10 +190,14 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
     if (!entity || entity.health <= 0 || !Number.isFinite(damage) || damage <= 0) return { ok: false };
     const applied = Math.min(damage, entity.health);
     entity.health -= applied; totalHits++;
-    wounds.set(id, entity.health);
+    // Only a validated player hit provokes defensive wildlife. Keep this with
+    // session wounds so streaming an injured actor out cannot make it peaceful.
+    const peaceful = FAUNA_SPECIES[entity.species].aggression === 'never';
+    entity.provoked = !peaceful;
+    wounds.set(id, { health: entity.health, provoked: entity.provoked });
     if (entity.health === 0) {
       defeated.add(id); entity.state = 'dead'; entity.deathTime = 0; entity.speed = 0; entity.timer = 0;
-    } else { entity.state = 'chase'; entity.lostSight = 0; }
+    } else { entity.state = peaceful ? 'flee' : 'chase'; entity.timer = peaceful ? 4 : 0; entity.lostSight = 0; }
     return { ok: true, killed: entity.health === 0, damage: applied, health: entity.health };
   }
   return { reconcile, update, hit, get entities() { return [...live.values()]; },
