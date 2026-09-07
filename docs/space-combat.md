@@ -21,13 +21,14 @@ and controller dialog/input router. No new external services or assets are neede
 |---|---|---|
 | Open mission / combat report | Patrol console button; hangar cargo terminal | Menu → Patrol console |
 | Aim / fly | Existing flight controls | Right / left stick |
-| Fire | Hold T or the ship's Hold to fire button | Hold A / ✕ |
+| Fire | Hold T or the ship's Hold to fire button | Hold RT / R2 |
 | Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship weapon |
 | Next hostile | Tab or Next target button | Menu → Next hostile target |
 | Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Patrol console → Recover |
 | Abandon | Console → Abandon patrol | Same console action |
 
-RT/LT keep flight ascent/descent; no flight binding was repurposed. The selected
+A/B rises/descends and LT brakes (matching EVA). Menu → Controller layout
+shows the complete diagram, also available through Help. The selected
 contact has brackets, shield/hull readings and a projectile lead ring. Edge arrows
 continue tracking targets behind the camera. Solar lance is hitscan and needs no
 lead ring. Tracking does not steer the ship or guarantee a hit.

@@ -16,11 +16,11 @@ mapping, not operating-system Bluetooth status.
 | Dialog | A / B | Activate / close and return |
 | Dialog | Right stick | Scroll |
 | Flight / walking | Left / right stick | Move / aim |
-| Flight | RT / LT | Rise / descend |
-| Flight | A / ✕ | Fire selected ship weapon (pulse / solar lance / singularity) |
+| Flight | A / B | Rise / descend |
+| Flight | RT / R2 | Fire selected ship weapon (pulse / solar lance / singularity) |
 | Flight | LB / RB | Roll |
 | Flight | Y / X | Land or launch / interact |
-| Flight | B / right-stick click | Brake / flight assist |
+| Flight | LT / right-stick click | Brake / flight assist |
 | Walking | A / X | Jump / interact, including hatch and cargo |
 | Walking / EVA | D-pad right | Equip or holster mining tool |
 | Walking / EVA | RT | Fire equipped weapon or mining tool |
@@ -257,3 +257,13 @@ injected standard Gamepads, read-only steering feedback and the real combat mode
 It includes input interruption gates, both kills, the report and return to flight.
 The separate close-up/keyboard fixture uses controlled poses for visual inspection;
 that is not controller-only journey evidence. Physical-device validation is separate.
+
+
+## Controller layout and trigger revision — 2026-09-07
+
+Supersedes earlier A-fire / RT-ascent descriptions in this historical record.
+RT / R2 fires ship weapons; A/B provides vertical thrust; LT brakes and cancels
+drive. EVA and on-foot fire remain RT; A still confirms dialogs and recovers
+a destroyed ship. Menu → Controller layout or Help → View controller layout
+opens a responsive diagram with Flight, On foot, EVA and Shortcuts & menus views.
+The shared dialog router and neutral-input gate apply to the entire route.

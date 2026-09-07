@@ -1906,3 +1906,23 @@ combines the checked local7ba1fbd history with remote governance. Candidate91f00
 passes668 unit tests,12 helper checks and build locally; runtime/assets are exactly
 those already checked at7ba1fbd. Its protected CI/merge record is the current
 publication source; do not infer a public release or completed art review.
+
+## Controller fire/layout — ready for local integration — 2026-09-07
+
+Cees's RT-fire request is implemented in `fix/controller-fire-layout`, isolated
+`/home/cees/projects/star-agent-controller-layout`, based on a748be1. RT/R2 fires,
+LT/L2 brakes/cancels drive, A/B rises/descends. Menu → Controller layout and
+Help → View controller layout show a responsive standard-controller diagram with
+Flight, On foot, EVA and shortcut contexts. Shared native dialog routing and
+neutral arming remain in force. Scoped hooks: gamepad, flight-effects, main/help,
+combat/MFD/map hints, new controller-layout module/CSS and affected tests/docs.
+No dependencies, assets, save schema or server changes.
+
+669 unit tests and production build pass. Three production combat journeys pass
+in4.2m; the final corrected layout case passes1/1 in45.9s. Both Nomad/Kestrel
+complete RT combat/report, with A/B thrust, LT brakes and held-input safety.
+Keyboard/pointer/recovery, desktop1440×900 and phone390×844 pass. Chromium151,
+AMD860M / ANGLE GLES3.2. Physical-controller and independent review remain open.
+Failed width iteration, fixture corrections and final images are retained in
+`docs/qa/controller-layout.md`. Browser QA port5397 is now released. Integrate this
+checked development checkpoint locally; no production deployment is requested.

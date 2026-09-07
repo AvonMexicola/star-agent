@@ -145,7 +145,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
     let reason = route.reason;
     const exclusion = TRAVEL_TARGETS.find(t => nav.position.distanceTo(new Vector3(...t.center)) < t.exclusionRadius);
     if (!route.ok && !state && exclusion && nav.mode === 'flight' && !nav.autoland && !nav.stationLift) reason = `Inside ${exclusion.name}'s exclusion zone. Climb above ${formatRange(exclusion.exclusionRadius - exclusion.radius)} altitude to engage.`;
-    el('map-route-status').textContent = state ? `${state.aborting ? 'Abort braking' : travelPhaseLabel(state.phase)} held. Close to resume; X / B brakes in flight.` : route.ok ? `Route clear · peak ${(route.plan.peakSpeed / LIGHT_SPEED).toFixed(2)}c · ${TRAVEL.spoolSeconds}s spool` : reason;
+    el('map-route-status').textContent = state ? `${state.aborting ? 'Abort braking' : travelPhaseLabel(state.phase)} held. Close to resume; X / LT brakes in flight.` : route.ok ? `Route clear · peak ${(route.plan.peakSpeed / LIGHT_SPEED).toFixed(2)}c · ${TRAVEL.spoolSeconds}s spool` : reason;
     el('map-route-status').classList.toggle('route-blocked', !route.ok && !state);
     el('map-engage').disabled = !route.ok || nav.mode !== 'flight' || nav.autoland || nav.stationLift;
     el('map-drive').classList.toggle('inactive', !state);

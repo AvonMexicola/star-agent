@@ -3,7 +3,7 @@ import { SHIP_LAYOUT } from '../boarding.js';
 import { createWeaponTarget } from './weapon-target.js';
 import { WEAPONS, weaponProfile } from './weapons.js';
 
-/** Input/pose adapter. A fires in flight; RT retains flight ascent and suit fire. */
+/** Input/pose adapter. RT fires in flight and on foot; movement stays independent. */
 export function createFlightEffects({effects,nav,mining,camera,onFire}){
   let cooldown=0,side=1,weapon='pulse',keyHeld=false,pointerHeld=false,controllerFire=false,controllerArmed=false;
   const position=new THREE.Vector3(),forward=new THREE.Vector3(),collector=new THREE.Vector3();
@@ -30,7 +30,7 @@ export function createFlightEffects({effects,nav,mining,camera,onFire}){
   trigger.addEventListener('keyup',e=>{if(['Space','Enter'].includes(e.code)){e.preventDefault();e.stopPropagation();pointerHeld=false;}});
   return {
     select,
-    controller(pad){controllerFire=Boolean(pad.jump&&!pad.ui);},
+    controller(pad){controllerFire=Boolean(pad.fire>0&&!pad.ui);},
     get state(){return {weapon,controllerFire};},
     update(dt,origin,{suspended=false}={}){
       const active=ready()&&!suspended;
@@ -38,7 +38,7 @@ export function createFlightEffects({effects,nav,mining,camera,onFire}){
       if(!active)clear();
       else if(!controllerFire)controllerArmed=true;
       for(const b of panel.querySelectorAll('[data-ship-weapon]'))b.setAttribute('aria-pressed',String(b.dataset.shipWeapon===weapon));
-      panel.querySelector('small').textContent=nav.controllerActive?'A / ✕ · Fire / Menu · Weapon':'T · Fire / 1–3 · Weapon';
+      panel.querySelector('small').textContent=nav.controllerActive?'RT / R2 · Fire / Menu · Weapon':'T · Fire / 1–3 · Weapon';
       position.set(...(nav.layout??SHIP_LAYOUT).seatEye).applyQuaternion(nav.orientation).negate().add(nav.position);
       forward.set(0,0,-1).applyQuaternion(nav.orientation);
       cooldown=Math.max(0,cooldown-dt);

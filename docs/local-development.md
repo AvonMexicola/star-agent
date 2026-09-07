@@ -113,7 +113,7 @@ the frontend and API to be updated together; restart `dev:all` after integration
 The local integration includes the offline patrol loop from `feat/space-combat`.
 Choose **Nomad 02** or **Kestrel**, start in **Orbit**, then open **Patrol console**
 (on-screen button or controller Menu) and accept. Fly to the amber beacon, brake,
-and fight the Nomad/Kestrel pair. T / A fires; 1–3 / Menu selects weapons;
+and fight the Nomad/Kestrel pair. T / RT fires; 1–3 / Menu selects weapons;
 Tab / Menu selects the next hostile. The physical hangar cargo terminal also opens
 the console. File the combat report after both kills, or recover after ship loss.
 
@@ -154,3 +154,11 @@ checked, up-to-date PRs and resolved discussions, with force-push/deletion disab
 The original Chromium guidance is retained. See [framework QA](qa/contributor-framework.md)
 for actual CI/hosted settings and their limits. This changes contribution routing,
 not the local account/save model or public release authority.
+
+### Controller trigger and layout update
+
+Ship fire is **RT / R2**, brake/drive cancellation is **LT / L2**, and vertical
+thrust is **A/B (✕/○)**, matching EVA. Open **Menu → Controller layout** or
+**Help → View controller layout** for the labeled controller diagram and the
+Flight, On foot, EVA and shortcut views. Menu A-confirm/B-back remains unchanged.
+Verification and retained captures: [controller layout QA](qa/controller-layout.md).
