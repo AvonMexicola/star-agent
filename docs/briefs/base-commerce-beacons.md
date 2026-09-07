@@ -18,8 +18,9 @@ and price → advertise the base → another player finds it, lands, buys and le
 with real cargo → the seller receives credits, including while offline.
 
 The desired destination is the player's constructed base. A standalone trading
-pad nearby is not sufficient integration. Give the mainframe a Shop view and an
-explicit public beacon switch. A base can advertise its location without selling;
+pad nearby is not sufficient integration. Provide a physical base trade terminal
+where the owner selects what to sell from that base’s local storage. The mainframe
+retains base administration and the public beacon switch. A base can advertise its location without selling;
 a trading base adds a short list of currently stocked goods to its map entry.
 
 Example map card (illustrative values):
@@ -60,20 +61,32 @@ public base discovery are the actual gap.
 ## Scope and implementation contract
 
 1. **Base identity and physical access.** Bind one shop to a durable account-owned
-   base ID, a real terminal/mainframe, designated sale storage and a compatible
+   base ID, a physical trade terminal, linked local storage and a compatible
    built landing pad. Resolve body-fixed anchors using existing anchor functions.
    Buyers must see and physically reach that base and terminal in the shared world;
    a marker pointing to geometry visible only to the seller does not pass.
-2. **Deliberate sale stock.** Owner deposits actual eligible goods into finite sale
-   storage, sets credits per SBU and can withdraw unsold stock. Ordinary crate
-   contents and the construction/fuel buffer stay private until explicitly moved
-   to sale stock. Start with the existing six trade resources and SBU packing rules.
-   Publish the storage capacity and physical source in the UI; do not mint an
-   unlimited warehouse merely by adding a listing.
+2. **Owner selects local stock at the trade terminal.** The owner view lists eligible
+   goods in storage explicitly linked to this base, with their source container,
+   total quantity, quantity reserved for sale and unlisted remainder. The owner
+   chooses an item, selects the quantity to offer, sets credits per SBU and lists
+   it. They can change the price, adjust the offered quantity or stop selling it.
+   Reserve the offered quantity against its actual source stock; the terminal is
+   an interface to finite base storage, not another warehouse that requires the
+   owner to haul the same goods again. Reserved goods cannot also be consumed by
+   crafting, fuel or another transfer; unlisting releases the reservation. Newly
+   deposited goods remain unlisted until the owner explicitly offers them.
+   Example: 20 SBU of copper stored, 8 offered at 48 CR/SBU, 12 kept for personal
+   use. Visitors see and can buy only the 8 offered SBU. Buying 2 leaves 18 stored,
+   6 offered and 12 unlisted. The owner sees all three values and the earnings.
+   Ordinary storage and construction/fuel buffers default to unlisted; only
+   explicitly linked, eligible sources can supply an offer. Start with the existing
+   six trade resources and SBU packing rules. Show units and any required packing
+   step clearly; a listing never creates stock or extra storage capacity.
 3. **One atomic purchase.** Validate authenticated buyer, current base/shop state,
    authoritative terminal reach, eligible landed ship, stock, price, credits and
    real cargo-grid fit. Atomically remove stock, debit the buyer, credit the owner
-   and create the buyer's cargo. Reject stale price/stock revisions with a refreshed
+   and create the buyer's cargo, deducting the sold quantity from its source storage
+   and reservation exactly once. Reject stale price/stock revisions with a refreshed
    offer before retry. Insufficient funds/stock/space or a failed write changes
    nothing. Retries and two buyers racing for the last unit cannot duplicate value.
 4. **Public discovery.** Owner switches beacon between Private and Public at the
@@ -128,6 +141,11 @@ simulation, new currency, taxation, raiding or custom beacon asset is required.
   hauls authoritative cargo, stocks it, prices it and publishes its beacon. B finds
   it on the map, tracks it, flies/lands, walks to the actual terminal, buys and
   inspects the real loaded cargo. Verify exact stock and both credit deltas.
+- At the owner's physical trade terminal, offer only part of a stored resource;
+  verify the unlisted remainder stays private and unavailable to buyers. Exercise
+  price changes, increasing/decreasing the offer and unlisting. New deposits must
+  not silently increase the offer. Concurrent crafting/transfers cannot spend
+  reserved stock, and source-container removal cannot orphan a live reservation.
 - Repeat a purchase while A is offline. Restart the isolated service and reconnect
   both accounts; base, stock, receipts, cargo and earnings must still agree.
 - Cover last-unit races, double activation, replay/reconnect, stale price, full or
