@@ -33,6 +33,16 @@ play uses the common field; private offline clearings do not hide server obstacl
 procedural plant exclusion remains independent of private claims. New construction's general rock-intersection validation remains outside
 this scenery change. The checkpoint is reversible without touching the database.
 
+Population revision 2 (Cees's subsequent density feedback) lowers the existing
+cell gate from .13 to .026. This is subset removal: retained v1 IDs, transforms,
+geometry and mined/constructed save identities do not change. No static landmark
+is persisted as mineable inventory. Removed rocks also stop excluding plants and
+stop colliding because clients, workers and server share the same descriptor
+gate. Refresh the API and reload clients together when promoting this revision;
+mixing old server obstacles with a newly thinned client is unsupported. Players
+on a removed static ledge may settle onto canonical terrain after that reload.
+No schema migration or regeneration of saved ore/structures is needed.
+
 One worker builds twelve reusable templates and three LODs; a coarse instance is
 retained until its complete finer representations arrive. Swept physical queries
 work without visual residency. Existing CC0 textures are reference-counted, with
