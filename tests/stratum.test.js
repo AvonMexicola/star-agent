@@ -193,7 +193,7 @@ test('canonical pilot forward view retains real glass and excludes opaque centra
     const ray=new THREE.Raycaster(eye,direction,.01,20);
     assert.ok(ray.intersectObjects(glass,false).length,`missing glass at yaw ${yaw}, pitch ${pitch}`);
     const hit=ray.intersectObjects(opaque,false)[0];
-    assert.equal(hit,undefined,`central view at yaw ${yaw}, pitch ${pitch} blocked by ${hit?.object.name}`);
+    assert.ok(!hit,`central view at yaw ${yaw}, pitch ${pitch} blocked by ${hit?.object.name}`);
   }
   for(const mesh of [...glass,...opaque])mesh.material.dispose();
 });
