@@ -149,8 +149,9 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
       hud.dataset.valid = String(Boolean(preview.valid));
       hud.querySelector('.build-cost').textContent = build.removing?'Single piece only · Empty storage and remove supported equipment first':`${amounts(preview.cost || piece?.cost)} · ${sandbox ? 'Sandbox supply bank' : Array.isArray(preview.sources) ? preview.sources.map(id=>store.container(id)?.name ?? id).join(', ') : preview.sources || 'Backpack'}`;
     hud.querySelector('.build-hints').innerHTML=build.removing?'A / Enter · Remove one piece permanently<br>B / P · Build wheel · X / Esc · Exit · RB / Space · Jump':'A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap &nbsp; ↑ ↓ · Height<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump';
+    if(PIECES[build.pieceId]?.mount)hud.querySelector('.build-hints').innerHTML=hud.querySelector('.build-hints').innerHTML.replace(' &nbsp; ↑ ↓ · Height','');
     touch.querySelector('[data-controller-key="build-hud-place"]').textContent=build.removing?'Remove':'Place';
-    for(const key of ['rotate-left','rotate-right','snap','height-up','height-down'])touch.querySelector(`[data-controller-key="build-hud-${key}"]`).hidden=Boolean(build.removing);
+    for(const key of ['rotate-left','rotate-right','snap','height-up','height-down'])touch.querySelector(`[data-controller-key="build-hud-${key}"]`).hidden=Boolean(build.removing||key.startsWith('height-')&&PIECES[build.pieceId]?.mount);
     }
     const materials = JSON.stringify(store.container('pack')?.items);
     if (dialog.open && tab === 'recipes' && materials !== lastMaterials) { lastMaterials = materials; render(); }

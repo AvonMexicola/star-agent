@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {Scene,Vector3,Quaternion,Matrix4,Raycaster} from 'three';import fs from 'node:fs';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {Scene,Group,MeshStandardMaterial,Vector3,Quaternion,Matrix4,Raycaster} from 'three';import fs from 'node:fs';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {constrainBuildStep} from '../src/build/collision.js';
 import {BuildSystem} from '../src/build/system.js';import {BasePower} from '../src/build/power-system.js';import {initialPower,powerDemand} from '../src/build/power.js';import {PIECES,roofProfile,getLocalColliders} from '../src/build/definitions.js';import {mountHeight,mountReason} from '../src/build/mounts.js';import {validBuild} from '../src/build/state.js';import {planRemoval} from '../src/build/removal.js';
 import {MiningStore} from '../src/mining/store.js';import {SELENE,bodySurfacePoint,bodySurfaceNormal} from '../src/celestial.js';import {MOON_LANDING_DIRECTION} from '../src/moon-world.js';
 const p=(id,type,position,rotation=0)=>({id:`build-piece-${id}`,type,position,rotation,doorOpen:false});
@@ -34,4 +35,24 @@ test('authored rounded caps follow their profile and conservative walking steps 
    const top=Math.max(...getLocalColliders(id).filter(b=>x>=b.min[0]&&x<=b.max[0]&&z>=b.min[2]&&z<=b.max[2]).map(b=>b.max[1]));assert.ok(top>=h-1e-7&&top-h<.16,`${id} collision ${top-h}`);
   }
  }
+});
+
+test('roof decks catch landings and allow continued walking across their rounded tops',()=>{
+ for(const type of ['roof-flat','roof-edge','roof-corner']){
+  const roof=p(1,type,[0,3.306,0]);let pos=[0,5.75,0],grounded=false;
+  for(let i=0;i<12;i++){const result=constrainBuildStep(pos,[pos[0]+.05,pos[1]-.09,pos[2]],[roof]);pos=result.point;grounded ||= result.grounded;}
+  assert.ok(grounded,type);assert.ok(pos[0]>.5,`${type} must not trap a landing player`);assert.ok(Math.abs(pos[1]-5.556)<.001,type);
+  for(let i=0;i<18;i++){const result=constrainBuildStep(pos,[pos[0],pos[1]-.05,pos[2]+.1],[roof]);assert.ok(result.point[2]>pos[2]+.09,`${type} walkable curve`);pos=result.point;}
+ }
+});
+test('square caps follow angled ceilings and retain quarter-turn trim choices',()=>{
+ const f=fixture(),c={...f.c,pieces:[p(3,'floor',[0,3.3,0],Math.PI/3)]},target=f.build.toWorld(new Vector3(0,3.3,0),c);
+ for(const type of ['roof-flat','roof-edge','roof-corner'])for(let turn=0;turn<4;turn++){f.build.pieceId=type;f.build.turn=turn;const candidate=f.build.candidates(c,target)[0];assert.equal(mountReason({...candidate,type},c.pieces),null);assert.ok(Math.abs(candidate.rotation-(Math.PI/3+turn*Math.PI/2))<1e-8);}
+ f.build.pieceId='ceiling-light';assert.equal(f.build.candidates({...c,pieces:[...c.pieces,p(4,'floor',[4,3.3,0],Math.PI/3)]},target).length,1,'same-height lamp candidates are deduplicated');f.build.dispose();
+});
+test('live power changes update lamp material and illumination together without a store write',()=>{
+ const f=fixture(),lamp=f.place('ceiling-light',[0,3.12,0]),model=new Group(),material=new MeshStandardMaterial({name:'WarmTaskLight',emissiveIntensity:3});model.userData.buildFinish={uniform:{value:1},materials:new Map([['WarmTaskLight',material]])};f.build.models.set(lamp.id,{group:model,ready:true});
+ let powered=true;f.build.power={status:()=>({powered})};f.build.update(1/60,f.nav.position);const snapshot=f.build.data;assert.equal(material.emissiveIntensity,3);
+ powered=false;f.build.update(1/60,f.nav.position);assert.equal(f.build.data,snapshot);assert.equal(material.emissiveIntensity,0);assert.ok(!f.build.visualDiagnostics.lights.fixtures.some(a=>a.id===lamp.id));
+ powered=true;f.build.update(1/60,f.nav.position);assert.equal(material.emissiveIntensity,3);assert.ok(f.build.visualDiagnostics.lights.fixtures.some(a=>a.id===lamp.id));f.build.dispose();
 });

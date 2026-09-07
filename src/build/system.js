@@ -76,8 +76,8 @@ export class BuildSystem {
   }
   candidates(claim,target){
     const def=PIECES[this.pieceId],local=this.toLocal(target,claim),rotation=this.turn*Math.PI/2;
-    if(def.mount){return claim.pieces.filter(p=>PIECES[p.type].category==='floor').map(p=>({position:def.mount==='ceiling'?[Math.round(local.x*2)/2,mountHeight(p,def.mount),Math.round(local.z*2)/2]:[p.position[0],mountHeight(p,def.mount),p.position[2]],rotation:['triangle','quarter'].includes(def.shape)?p.rotation:rotation})).sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));}
     const panels=claim.pieces.filter(isPanel),sort=items=>{const unique=new Map(items.map(p=>[[...p.position,p.rotation].map(v=>Math.round(v*10000)).join(','),p]));return [...unique.values()].sort((a,b)=>v(a.position).distanceToSquared(local)-v(b.position).distanceToSquared(local));};
+    if(def.mount){return sort(claim.pieces.filter(p=>PIECES[p.type].category==='floor').map(p=>({position:def.mount==='ceiling'?[Math.round(local.x*2)/2,mountHeight(p,def.mount),Math.round(local.z*2)/2]:[p.position[0],mountHeight(p,def.mount),p.position[2]],rotation:['triangle','quarter'].includes(def.shape)?p.rotation:p.rotation+rotation})));}
     if(def.category==='wall'){
       local.y+=this.height;
       const stacked=claim.pieces.filter(p=>PIECES[p.type].category==='wall'&&(PIECES[p.type].shape==='quarter')===(def.shape==='quarter')&&PIECES[p.type].footprint[0]===def.footprint[0]).map(p=>({position:[p.position[0],p.position[1]+PIECES[p.type].height,p.position[2]],rotation:(p.rotation??0)+(def.shape==='quarter'?0:Math.floor(this.turn/2)*Math.PI)}));
@@ -275,10 +275,11 @@ export class BuildSystem {
     for(const c of this.claims){
       const group=this.groups.get(c.id),distance=v(c.origin).distanceTo(this.nav.position),opacity=buildOpacity(distance);group.position.fromArray(c.origin).sub(origin);group.visible=opacity>0;this.claimVisibility.push({id:c.id,distance,opacity});
       if(opacity<=0)continue;
+      const powered=!this.power||this.power.status(c).powered;
       for(const p of c.pieces){
         if(Boolean(PIECES[p.type].door)){const wasBlocked=this.doorMotion.doors.get(p.id)?.blocked;this.doorMotion.update(p.id,p.doorOpen,dt,(previous,next)=>this.canCloseDoor(c,p,previous,next));if(!wasBlocked&&this.doorMotion.doors.get(p.id).blocked)this.nav.notify?.('Closing paused · step clear of the doorway.');}
-        const model=this.models.get(p.id)?.group;if(model){const rotor=this.models.get(p.id)?.rotor;if(rotor&&!BODIES.find(b=>b.id===c.body)?.airless)rotor.rotation.y+=dt;if(PIECES[p.type].door)setDoorOpen(model,this.doorFraction(p));if(model.userData.buildOpacity!==opacity){setBuildOpacity(model,opacity);model.userData.buildOpacity=opacity;}}
-        if(opacity>0&&(!this.power||this.power.status(c).powered)&&(['doorway','mainframe'].includes(p.type)||PIECES[p.type].light&&p.lightOn!==false)){
+        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,powered&&(!PIECES[p.type].light||p.lightOn!==false));const rotor=this.models.get(p.id)?.rotor;if(rotor&&!BODIES.find(b=>b.id===c.body)?.airless)rotor.rotation.y+=dt;if(PIECES[p.type].door)setDoorOpen(model,this.doorFraction(p));if(model.userData.buildOpacity!==opacity){setBuildOpacity(model,opacity);model.userData.buildOpacity=opacity;}}
+        if(opacity>0&&powered&&(['doorway','mainframe'].includes(p.type)||PIECES[p.type].light&&p.lightOn!==false)){
           const offset=PIECES[p.type].light?v([0,-.20,0]):Boolean(PIECES[p.type].door)?v([0,2.36,-.30]):v([0,1.50,-.56]),position=this.toWorld(offset.applyAxisAngle(UP,p.rotation).add(v(p.position)),c);
           fixtures.push({id:p.id,type:p.type,position,distance:position.distanceTo(this.nav.position),opacity});
         }
