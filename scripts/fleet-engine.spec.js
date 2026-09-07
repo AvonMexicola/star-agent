@@ -101,8 +101,11 @@ for (const ship of ['nomad', 'atlas', 'kestrel']) {
     }
     // Ordinary trusted gesture for the browser's audio policy. The flight and
     // power route below then uses the injected standard controller exclusively.
-    if (ship === 'nomad') await page.locator('#camera-button').tap();
-    else await page.keyboard.press('4');
+    if (ship === 'nomad') {
+      await page.locator('#viewport').tap({ position: { x: 720, y: 250 } });
+      if (!before) await page.waitForFunction(() => window.starAgent.state.audio.contextState === 'running' && window.starAgent.state.audio.music?.time > 0, null, { timeout: 20000 });
+    }
+    await page.keyboard.press('4');
     await page.waitForFunction(() => window.starAgent.state.camera.mode === 'external');
     if (!before) {
       await page.waitForFunction(() => window.starAgent.state.audio.contextState === 'running' && window.starAgent.state.audio.music?.time > 0, null, { timeout: 20000 });
