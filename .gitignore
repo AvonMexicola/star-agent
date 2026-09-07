@@ -2,6 +2,8 @@ node_modules
 dist/
 test-results/
 playwright-report/
+/.performance-baseline/
+/.browser-cache/
 *.log
 blender/__pycache__/
 blender/parts/__pycache__/

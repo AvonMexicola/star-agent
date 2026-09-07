@@ -1,0 +1,29 @@
+{
+  "node": "v26.7.0",
+  "samples": 9,
+  "ticksPerSample": 120,
+  "results": [
+    {
+      "scenario": "ten stationary pilots, room and wire encoding only",
+      "players": 10,
+      "drops": 100,
+      "ticks": 1080,
+      "packets": 5400,
+      "positionSnapshots": 54000,
+      "characters": 115568640,
+      "medianMsPerTick": 0.5581625749999991,
+      "p90MsPerTick": 0.6600807499999992
+    },
+    {
+      "scenario": "ten stationary pilots, full navigation and wire encoding",
+      "players": 10,
+      "drops": 100,
+      "ticks": 1080,
+      "packets": 5400,
+      "positionSnapshots": 54000,
+      "characters": 115568640,
+      "medianMsPerTick": 1.1027732499999994,
+      "p90MsPerTick": 1.3560354749999988
+    }
+  ]
+}
