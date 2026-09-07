@@ -337,6 +337,7 @@ inherit launch velocity; collision and lead prediction use that trajectory.
 evidence and limits. This is a local development checkpoint, not release approval.
 
 
+
 ### Integrated creature development checkpoints
 
 The development build includes offline Pyrebear and Suloher encounters. With development

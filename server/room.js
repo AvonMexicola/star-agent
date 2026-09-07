@@ -81,9 +81,9 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     if(!players.has(p.id))return;
     p.busy=true;
     try{
-      if(m.action==='cargo'){const message=await trading.request(p,m);send(p,{type:'event',event:'notice',message});}
+      if(m.action==='cargo'){const message=await trading.request(p,m);if(message)send(p,{type:'event',event:'notice',message});}
       else if(m.action==='cargoHull'){
-        if(!['nomad','atlas'].includes(m.hull)||!p.nav.dockedAtStation||p.nav.mode!=='walk'||p.nav.insideShip||!p.hangarId||trading.state.accounts[p.id]?.carried)throw new Error('Return to your berth on foot with empty hands to change cargo ships.');
+        if(!['nomad','atlas'].includes(m.hull)||!p.nav.dockedAtStation||p.nav.mode!=='walk'||p.nav.insideShip||!p.hangarId||p.nav.carryingCargo)throw new Error('Return to your berth on foot with empty hands to change cargo ships.');
         const pod=world.pods[p.hangarId-1];if(p.nav.position.distanceTo(pod.padWorldPosition)>80)throw new Error('Return to your berth.');
         await persist(p,p.inventory,{hull:m.hull});setHull(p,m.hull);
       }
@@ -137,7 +137,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   function action(p,m){
     if(p.busy||p.health<=0||p.shipHealth<=0)return;
     const n=p.nav;
-    if(trading.state.accounts[p.id]?.carried&&['interact','land','travel','target'].includes(m.action))return;
+    if(p.nav.carryingCargo&&['interact','land','travel','target'].includes(m.action))return;
     const actions={gear:'toggleGear',lights:'toggleLights',power:'togglePower',assist:'toggleFlightAssist',combat:'toggleCombatMode',land:'landOrLaunch',interact:'embark',eva:'toggleEVA',brake:'brake',cancelTravel:'cancelTravel'};
     if(Object.hasOwn(actions,m.action))n[actions[m.action]]();
     else if(m.action==='travel')n.travel?n.cancelTravel():n.beginFreeTravel();
@@ -189,7 +189,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       try{
         p.nav.look(p.lookYaw,p.lookPitch);p.lookYaw=p.lookPitch=0;p.nav.beginFrame(dt);p.nav.update(dt);
         if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
-        if(p.input.fire&&!p.busy&&!trading.state.accounts[p.id]?.carried){
+        if(p.input.fire&&!p.busy&&!p.nav.carryingCargo){
           const event=shoot({shooter:p,players,world,now:t});
           if(event)broadcast({type:'event',event:'fire',peerId:p.id,...event});
         }

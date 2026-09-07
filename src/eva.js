@@ -28,7 +28,7 @@ export function stepEVA(velocity, orientation, translation, dt, { boost=false, b
 const radius=SHIP_LAYOUT.capsuleRadius;
 // The suit capsule extends 1.5 m below its eye and .2 m above it. These are
 // actual cabin surfaces, not infinite walking walls projected through space.
-const boxes=[
+export const EVA_SHIP_BOXES=[
   [-1.85,1.85,.8,1,-4.7,4], [-1.85,1.85,4.1,4.3,-4.7,4],
   [-1.85,-1.65,1,4.1,-4.7,4], [1.65,1.85,1,4.1,-4.7,4],
   [-1.85,1.85,1,4.1,-4.7,-4.5],
@@ -54,7 +54,7 @@ function entry(previous,proposed,box){
 }
 export function constrainEVAShip(previous,proposed,doorOpen){
   let fraction=1;
-  for(const box of doorOpen?boxes:[...boxes,[-.9,.9,1,4.1,3.8,4.1]]){
+  for(const box of doorOpen?EVA_SHIP_BOXES:[...EVA_SHIP_BOXES,[-.9,.9,1,4.1,3.8,4.1]]){
     const hit=entry(previous,proposed,box);if(hit!==null)fraction=Math.min(fraction,Math.max(0,hit-1e-4));
   }
   return {point:previous.clone().lerp(proposed,fraction),hit:fraction<1};

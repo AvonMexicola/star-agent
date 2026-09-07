@@ -10,7 +10,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { AvatarGLB } from './avatar-glb.mjs';
 import { addGripShapes } from './avatar-grips.mjs';
-import { fitRifleStock } from './fit-rifle-stock.mjs';
 import { addShadowIndices } from './avatar-shadow.mjs';
 import { correctLegRig } from './avatar-legs.mjs';
 
@@ -242,7 +241,9 @@ rig.json.materials = [{ name: 'Expedition ceramic, fabric and visor', doubleSide
 rig.json.extensionsUsed = ['EXT_texture_webp']; rig.json.extensionsRequired = ['EXT_texture_webp'];
 rig.json.asset.extras = { provenance: 'assets/character/expedition-v2/README.md', build: 'node blender/prepare-avatar.mjs', requiredClips: animations.map(animation => animation.name) };
 rig.compact(); mkdirSync(resolve('public/models/props'), { recursive: true }); rig.save(OUTPUT);
-fitRifleStock(join(SOURCE, 'rifle-before.glb'), resolve('public/models/props/rifle-laser.glb'));
+// Handheld geometry now rebuilds independently via assets/handheld-tools/build.py.
+// Its Blender source retains the same calibrated stock fit; do not overwrite
+// the textured rifle when regenerating the expedition character.
 const report = { file: 'player-expedition.glb', sha256: sha(readFileSync(OUTPUT)), bytes: readFileSync(OUTPUT).length,
   triangles: rig.json.meshes.reduce((n, m) => n + m.primitives.reduce((sum, p) => sum + rig.json.accessors[p.indices].count / 3, 0), 0),
   joints: rig.json.skins[0].joints.length, textureSize: 2048, textureCount: 2, sourceOrmSize: 4096, height: 1.85, shadow, legRig,
@@ -253,8 +254,5 @@ const manifest = JSON.parse(readFileSync(manifestPath));
 const entry = manifest.find(item => item.name === 'player-expedition');
 Object.assign(entry, { sha256: report.sha256, file_mb: report.bytes / 1e6, shadow_triangles: shadow.triangles,
   budget: { triangles: 65000, file_mb: 9, texture_size: 2048, approval: 'Cees request, 2026-09-07; QUALITY.md §5' } });
-const rifleEntry = manifest.find(item => item.name === 'rifle-laser');
-const rifleBytes = readFileSync(resolve('public/models/props/rifle-laser.glb'));
-Object.assign(rifleEntry, { sha256: sha(rifleBytes), file_mb: rifleBytes.length / 1e6 });
 writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
 console.log(JSON.stringify({ bytes: report.bytes, triangles: report.triangles, joints: report.joints, animations: records.length, textures: '2 × 2048 WebP' }));

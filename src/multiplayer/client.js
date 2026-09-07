@@ -360,7 +360,7 @@ export class MultiplayerClient {
     if (this.accumulator < SEND_INTERVAL) return;
     this.accumulator %= SEND_INTERVAL;
     const input = navigationInput(this.nav, this.lastPad, { mouseYaw: this.mouseYaw, mousePitch: this.mousePitch, fire: this.keyFire || this.pointerFire });
-    if(this.nav.carryingCargo)input.fire=false;
+    if(this.nav.carryingCargo||this.nav.tractorActive)input.fire=false;
     this.mouseYaw = 0; this.mousePitch = 0; this._sendInput(input);
   }
 
