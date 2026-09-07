@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Vector3, Quaternion, Matrix4, Raycaster} from 'three';
+import {Vector3, Quaternion, Matrix4, Raycaster, Scene} from 'three';
 import {readGLBGeometry} from './helpers/gltf-geometry.js';
-import {StratumGameplaySystems, GannetGameplaySystems} from '../src/medium-ship-gameplay.js';
+import {StratumGameplaySystems, GannetGameplaySystems, STRATUM_GAMEPLAY_LAYOUT, GANNET_GAMEPLAY_LAYOUT} from '../src/medium-ship-gameplay.js';
+import {StationComplex} from '../src/station-complex.js';
+import {stationQuaternion} from '../src/station.js';
+import {PLAYABLE_STATION_OPTIONS} from '../src/station-fleet-hangar.js';
 import {sampleRoverSupport, roverShipLocal} from '../src/rover-support.js';
 import {roverCarrierStart, roverCarrierClear, guardRoverCarrier} from '../src/rover-carrier.js';
 import {createRoverPhysics} from '../src/rover-physics.js';
@@ -155,4 +158,35 @@ test('dedicated ore and newly registered freight survive reload without losing l
   for(const hull of ['nomad','atlas','stratum','gannet'])assert.ok(loaded.state.commerce.ships[`${LOCAL_TRADER}:${hull}`]);
   const before=store.state;disk.setItem=()=>{throw Error('quota');};
   assert.equal(store.transfer('basalt','stratum-ore','ship',.001).ok,false);assert.equal(store.state,before);
+});
+
+test('complete medium hulls launch and dock through all twenty actual tilted station bays', async () => {
+  const [gltf,lod,exteriorGltf,exteriorLodGltf] = await Promise.all(
+    ['station','station_lod1','station-exterior','station-exterior-lod1'].map(name =>
+      readGLBGeometry(new URL(`../public/models/${name}.glb`,import.meta.url))));
+  const direction=v([.23,.91,.34]).normalize();
+  const orientation=stationQuaternion(direction,new Quaternion()).multiply(
+    new Quaternion().setFromAxisAngle(v([1,0,0]),Math.PI/9)).normalize();
+  const station=new StationComplex(new Scene(),{...PLAYABLE_STATION_OPTIONS,
+    gltf,lod,exteriorGltf,exteriorLodGltf,direction,orientation});
+  await station.readyPromise;
+  assert.equal(station.pods.length,20);
+  let journeys=0;
+  for(const pod of station.pods)for(const [id,layout] of [['stratum',STRATUM_GAMEPLAY_LAYOUT],['gannet',GANNET_GAMEPLAY_LAYOUT]]){
+    const attitude=pod.inverseQuaternion.clone().multiply(pod.padQuaternion);
+    const pilot=(clearance,rootZ=pod.padLocal.z)=>pod.toWorld(v(layout.seatEye).applyQuaternion(attitude)
+      .add(new Vector3(pod.padLocal.x,pod.interiorBox.min.y+clearance,rootZ)),new Vector3());
+    const dock=pilot(0),hover=pilot(1),outside=pilot(1,pod.openingZ-Math.max(...layout.flightBounds.min.map(Math.abs),...layout.flightBounds.max.map(Math.abs))-8);
+    pod.beginOpening();pod.setOpeningProgress(0);
+    assert.equal(station.constrainStep(outside,hover,pod.padQuaternion,false,layout).hit,true,`${id} berth ${pod.id}: closed door blocks the full hull`);
+    pod.setOpeningProgress(1);
+    assert.equal(pod.canDock(hover,layout,pod.padQuaternion),true,`${id} berth ${pod.id}: complete hull fits`);
+    for(const [from,to,phase] of [[dock,hover,'launch'],[hover,outside,'departure'],[outside,hover,'approach'],[hover,dock,'landing']]){
+      const result=station.constrainStep(from,to,pod.padQuaternion,false,layout);
+      assert.equal(result.hit,false,`${id} berth ${pod.id}: ${phase}`);
+      assert.ok(result.point.distanceTo(to)<1e-7,`${id} berth ${pod.id}: reaches actual ${phase} endpoint`);
+    }
+    journeys++;
+  }
+  assert.equal(journeys,40);
 });

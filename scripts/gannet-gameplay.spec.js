@@ -3,10 +3,11 @@ import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {GANNET_LAYOUT as G} from '../src/gannet-layout.js';
 import {ROVER_LAYOUT as R} from '../src/rover-layout.js';
+import {turnPath} from './gannet-primary-inputs.js';
 
 const output = process.env.GANNET_OUTPUT ?? '/home/cees/projects/.medium-ships-qa/gannet-controller';
 const sourceRoot = process.env.GANNET_SOURCE ?? new URL('..', import.meta.url).pathname;
-const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ship-gameplay.js', 'src/gannet.js',
+const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ship-gameplay.js', 'src/medium-ships.js', 'src/gannet.js',
   'src/gannet-systems.js', 'src/gannet-layout.js', 'src/mining-rover.js', 'src/rover-carrier.js',
   'src/rover-support.js', 'src/rover-physics.js', 'src/gamepad.js', 'src/controller-ui.js',
   'src/ship-inventory-ui.js', 'src/mining/rock.js', 'src/mining/store.js',
@@ -250,7 +251,8 @@ test('controller Gannet → physical Burrow → elevator → real ore → revers
     s = await state(); expect(s.rover.aboard).toBe(false); expect(s.rover.wheels).toHaveLength(4); expect(s.rover.wheels.every(w => w.source === 'terrain')).toBe(true);
     await chord(15); await wait(() => starAgent.state.camera.mode === 'third-person'); await note('All four wheels on canonical terrain'); await shot('03-unloaded-external');
     phase = 'physical-turn-to-outcrop'; await lineTo([G.rover.park[0], 0, 26.5]);
-    const arc = Array.from({length: 65}, (_, i) => { const angle = Math.PI * i / 64; return [G.rover.park[0] - 5 + 5 * Math.cos(angle), 0, 26.5 + 5 * Math.sin(angle)]; });
+    const mineralLocal = await page.evaluate(p => starAgent.navigation.toShipLocal(starAgent.navigation.position.clone().fromArray(p)).toArray(), mineral);
+    const arc = turnPath(G.rover.park[0], mineralLocal);
     await followPath(arc, {maxSpeed: 1.4}); appendPath((await state()).rover.local); recordOutbound = false;
     await aim(mineral); await note('Existing Crescent outcrop reached through controller steering');
     phase = 'real-twin-mining'; const before = await state(); await button(7, true);

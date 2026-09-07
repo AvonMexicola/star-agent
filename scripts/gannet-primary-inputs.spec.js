@@ -223,7 +223,8 @@ test('Gannet chair → physical Burrow → real ore → reverse reload → carri
     if (!phone) { await input.tap('camera'); await wait(page, () => starAgent.state.camera.mode === 'third-person'); }
     await note('All four wheels on canonical terrain'); await shot('03-unloaded');
     phase = 'physical-turn-to-outcrop'; await lineTo([G.rover.park[0], 0, 26.5]);
-    await followPath(turnPath(G.rover.park[0]), {maxSpeed: 1.3}); appendPath((await state(page)).rover.local); recordOutbound = false;
+    const mineralLocal = await page.evaluate(p => starAgent.navigation.toShipLocal(starAgent.navigation.position.clone().fromArray(p)).toArray(), mineral);
+    await followPath(turnPath(G.rover.park[0], mineralLocal), {maxSpeed: 1.3}); appendPath((await state(page)).rover.local); recordOutbound = false;
     await aim(mineral); await note('Existing outcrop reached through digital steering');
     phase = 'real-twin-mining'; const before = await state(page); await input.hold(['mine']);
     await wait(page, mass => starAgent.state.rover.beaming === 2 && starAgent.state.rover.mass > mass + .02, before.rover.mass, 25000);

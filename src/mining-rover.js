@@ -255,7 +255,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       camera.position.copy(nav.position);camera.orientation.copy(nav.orientation);camera.active=false;
       if(phase!=='idle'||!camera.playerExternal)return;
       const up=UP.clone().applyQuaternion(physics.state.quaternion),target=toWorld(new THREE.Vector3(0,1,-.6));
-      let end=toWorld(new THREE.Vector3(3.0,4.0,6.5));if(anchor&&clipShip)end=clipShip(nav.position,end);end=clipTerrainCamera(nav.position,end);
+      let end=toWorld(new THREE.Vector3(3.0,4.0,6.5));if(clipShip)end=clipShip(nav.position,end);end=clipTerrainCamera(nav.position,end);
       if(end.distanceTo(nav.position)<2)return;
       camera.position.copy(end);camera.orientation.setFromRotationMatrix(new THREE.Matrix4().lookAt(end.clone().sub(target),new THREE.Vector3(),up));camera.active=true;
     },

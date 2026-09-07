@@ -13,9 +13,25 @@ export function linePath(start, end, spacing = .35) {
   return Array.from({length: count + 1}, (_, i) => start.map((v, axis) => v + (end[axis] - v) * i / count));
 }
 
-export function turnPath(parkX) {
-  return Array.from({length: 65}, (_, i) => {
-    const angle = Math.PI * i / 64;
+export function turnPath(parkX, mineralLocal = null) {
+  // Continue the physical five-metre turn until the observed deposit sits well
+  // within the existing ±0.4 rad cutter arc. A half-circle alone left it outside
+  // that arc in the first native run; no rover pose or aim limit is changed.
+  let end = Math.PI;
+  if (mineralLocal) {
+    let found = false;
+    for (let angle = Math.PI; angle <= Math.PI + .6; angle += .02) {
+      const x = parkX - 5 + 5 * Math.cos(angle), z = 26.5 + 5 * Math.sin(angle);
+      const dx = mineralLocal[0] - x, dz = mineralLocal[2] - z;
+      const fx = -Math.sin(angle), fz = Math.cos(angle);
+      const error = Math.abs(Math.atan2(fx * dz - fz * dx, fx * dx + fz * dz));
+      if (error <= .16 && Math.hypot(dx, dz) > 4) { end = angle; found = true; break; }
+    }
+    if (!found) throw Error('Observed deposit needs a different physical approach');
+  }
+  const steps = Math.ceil(end / .045);
+  return Array.from({length: steps + 1}, (_, i) => {
+    const angle = end * i / steps;
     return [parkX - 5 + 5 * Math.cos(angle), 0, 26.5 + 5 * Math.sin(angle)];
   });
 }

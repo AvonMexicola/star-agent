@@ -730,7 +730,7 @@ try {
     character.placeCameraRelative(origin);
     remotePlayers.update(dt,origin);
     const fighterCockpit=nav.shipId==='kestrel'&&!shipCamera.active&&['flight','landed'].includes(nav.mode);
-    const viewFov=nav.roverOccupied?76:fighterCockpit?76:nav.shipId==='stratum'&&!shipCamera.active&&['flight','landed'].includes(nav.mode)?66:52;
+    const viewFov=nav.roverOccupied?76:fighterCockpit?76:['stratum','gannet'].includes(nav.shipId)&&!shipCamera.active&&['flight','landed'].includes(nav.mode)?(nav.shipId==='stratum'?66:60):52;
     if(!opening?.placeCamera(camera,origin)){
       if(camera.fov!==viewFov){camera.fov=viewFov;camera.updateProjectionMatrix();}
       // The seated interceptor view includes the side MFDs without moving the
