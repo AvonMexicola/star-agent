@@ -116,3 +116,31 @@ test('local launcher exterior link supports controller entry, held-input suppres
   expect([...messages.warnings,...phoneMessages.warnings]).toEqual([]);
   await writeFile(`${out}/input-evidence.json`,JSON.stringify({controller:'Injected standard Gamepad: launcher entry, flight preview, menu back and held-direction suppression',touch:'390x844 actual tap on launcher link',physicalController:false,errors:[...messages.errors,...phoneMessages.errors],warnings:[...messages.warnings,...phoneMessages.warnings]},null,2));
 });
+
+test('Kestrel physically exits, reboards and departs a bay with the rebuilt exterior',async({page})=>{
+  test.skip(variant!=='authored');
+  await mkdir(out,{recursive:true});const messages=errorsFor(page);
+  await page.goto('/?intro=0&seed=7291&debug=1&dev=1&ship=kestrel&start=hangar&stationExterior=1');
+  await ready(page);
+  expect(await page.evaluate(()=>starAgent.state.mode)).toBe('landed');
+  expect(await page.evaluate(()=>starAgent.state.station.exterior)).toBe('geometry-review');
+  await page.keyboard.press('KeyF');
+  await page.waitForFunction(()=>starAgent.state.mode==='walk'&&starAgent.state.kestrelAccess.phase==='idle',null,{timeout:35000});
+  expect(await page.evaluate(()=>starAgent.state.insideShip)).toBe(false);
+  expect(await page.evaluate(()=>starAgent.state.shipLocal[0])).toBeLessThan(-2.4);
+  await page.screenshot({path:`${out}/physical-port-ladder.png`});
+  await page.keyboard.press('KeyF');
+  await page.waitForFunction(()=>starAgent.state.mode==='landed'&&starAgent.state.kestrelAccess.secured,null,{timeout:40000});
+  await page.keyboard.press('KeyB');
+  await page.waitForFunction(()=>starAgent.state.mode==='flight'&&!starAgent.state.station.lifting);
+  await page.keyboard.press('KeyG');
+  await page.waitForFunction(()=>starAgent.state.kestrel.progress.gear===0);
+  await page.keyboard.press('Digit4');
+  await page.keyboard.down('KeyW');
+  await page.waitForFunction(()=>starAgent.state.station.distance>130,null,{timeout:30000});
+  await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');await frames(page);
+  expect(await page.evaluate(()=>starAgent.state.crash)).toBeNull();
+  await page.screenshot({path:`${out}/physical-departure.png`});
+  await writeFile(`${out}/departure-evidence.json`,JSON.stringify({start:'Explicit developer hangar start; every subsequent ladder/seat/launch/flight step uses keyboard input',state:await page.evaluate(()=>starAgent.state),...messages},null,2));
+  expect(messages.errors).toEqual([]);expect(messages.warnings).toEqual([]);
+});

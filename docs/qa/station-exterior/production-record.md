@@ -136,7 +136,7 @@ that overview helper to override its authoritative placement.
 Combined runtime payload:3,806,864bytes. Both rings reuse one geometry/material
 set per render level. LOD reduces triangles; it does not reduce the22material
 draws. The original exterior used93draws and22,116triangles. The kilometre-scale
-batches use KHR_mesh_quantization (maximum position storage error38.33mm; normals
+batches use KHR_mesh_quantization (maximum position storage error38.47mm; normals
 within0.322degrees). Bay/door/room assets are separate and were not quantized by
 this change. The generic packer is derived from the existing Atlas implementation;
 no decoder or external runtime dependency is added.
@@ -190,3 +190,25 @@ in 3.8 minutes with zero page/console errors or warnings. The controller case us
 an injected standard Gamepad through launcher entry and ordinary flight, menu
 return and held-direction suppression. Touch uses the actual launcher link at
 390×844. Physical controller testing remains unperformed.
+
+## Shared-build integration verification
+
+Feature geometry commit `261ebab` was reconciled with the latest local and remote
+`dev/all-features` at `7bd4bd5`, including patrol combat, in `0880516`. The two
+conflicts were additive HANDOFF entries and the test list; both lanes are retained.
+The narrow main/launcher integration was reviewed against that base. All four
+station runtime modules from the independent CPU review are byte-identical.
+
+Final integrated `npm test`: **664/664 pass**, zero failures/skips, 33.247 seconds
+on Node 26.7.0. `VITE_DEV_TOOLS=1 npm run build`: pass, 5.34 seconds; Vite's
+existing large-chunk advisory remains. Root's logs are local in
+`/tmp/station-exterior-integrated-unit-01.log` and
+`/tmp/station-exterior-integrated-build-01.log`.
+
+The [independent LOD follow-up](lod-review/review.md) closes the sampled distant
+triangle concern without changing the earlier material/art gate. Both own captures
+verify actual LOD draw callbacks and the exact served assets. Quarter: 126 draws /
+319,806 triangles; ring face: 163 / 393,406. World streaming changes whole-scene
+counts, so only the exact kit reduction is attributed to the new LOD. Both images
+preserve the silhouette. No hardware timing or transition-motion approval follows
+from two fixed screenshots.

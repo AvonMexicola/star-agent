@@ -1803,7 +1803,7 @@ console layout. Refreshed captures are in `docs/qa/space-combat/`.
 
 ## READY FOR REVIEW — Aeon exterior geometry preview — 2026-09-07
 
-Files: `blender/build_station_exterior.py`, `blender/pack_rigid_geometry.py`,
+READY FOR REVIEW: `blender/build_station_exterior.py`, `blender/pack_rigid_geometry.py`,
 `assets/station/exterior/`, `public/models/station-exterior*.glb`,
 `src/station-exterior.js`, narrow station/launcher integration and corresponding
 tests; source and actual-render evidence in `docs/qa/station-exterior/`.

@@ -1,0 +1,7 @@
+{
+  "controller": "Injected standard Gamepad: launcher entry, flight preview, menu back and held-direction suppression",
+  "touch": "390x844 actual tap on launcher link",
+  "physicalController": false,
+  "errors": [],
+  "warnings": []
+}

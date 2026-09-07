@@ -57,6 +57,7 @@ Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned serv
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
 | Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
+| Aeon exterior geometry preview, opt-in | `feat/station-exterior` geometry `261ebab`, reconciled with the current combat base in `0880516` |
 
 Atlas now includes its first committed geometry/gear refresh in the studio. Final
 materials, review and flight integration remain open. Further character production
@@ -112,3 +113,22 @@ Progress resets on reload. This first slice is offline and does not add persiste
 contracts or credit rewards. See [combat controls and scope](space-combat.md) and
 [verification evidence](qa/space-combat.md). The asset studios remain inspection
 surfaces; shared gameplay energy weapons do not imply new fitted gun meshes.
+
+## Station exterior geometry preview
+
+Use **Station exterior · geometry preview** in the launcher's footer, or open
+http://127.0.0.1:5178/?dev=1&intro=0&ship=kestrel&start=orbit&stationExterior=1&exteriorView=overview&seed=7291.
+It starts a Kestrel overview of the rebuilt habitat rings, bearings, support bridges
+and spine. Ordinary flight controls remain active; F2 or controller Menu →
+DEV · Ship & location selects another test start. That next launch retains the
+new shell and clears the one-shot overview camera. The explicit `stationExterior=1`
+flag keeps this geometry checkpoint separate from the inherited default exterior.
+
+The 20 hangars, doors and concourse keep their existing frames and interiors.
+Full-detail collision persists while distant geometry reduces rendering cost.
+This is a first geometry pass: final painting, close surface/detail refinement,
+complete art approval and frame timing remain open. See the
+[production and review record](qa/station-exterior/production-record.md) for
+exact source hashes, independent clearance checks and actual browser evidence.
+The merged source passes all 664 unit tests and a production build; the latest
+browser integration result is appended to that record when complete.
