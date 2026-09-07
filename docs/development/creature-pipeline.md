@@ -1,7 +1,7 @@
 # Creature production pipeline
 
 Use this alongside the [asset production standard](../asset-production-standard.md).
-The Pyrebear/Suloher integration and deer gait repair are the worked examples;
+The Pyrebear/Suloher encounters, deer gait repair and Aeon wildlife intake are the worked examples;
 read their current QA status before reusing a claimed result. A source checkpoint
 is distinct from complete visual/controller acceptance or deployment.
 
@@ -96,3 +96,24 @@ The art fixture also sent a weapon key before the tool became active, leaving
 the mining cutter selected. Wait for readiness and assert the equipped weapon
 before actual ammo-authorized firing. These are fixture corrections, not excuses
 to replace the physical controller journey with debug actions.
+
+The Aeon physical-route fixture exposed another useful test error: after leaving
+the rear ramp, steering straight toward a creature behind the ship drove the
+player into the hull. Preserve the failed route, then derive controller-driven
+waypoints outside the measured flight bounds before approaching the animal.
+Do not weaken collision or teleport the player to make an encounter test pass.
+The corrected Tideback route passed with the exact same runtime and asset hashes.
+
+For the Aeon additions, run `scripts/aeon-rig.spec.js` through the creature-rig
+config and `scripts/aeon-fauna.spec.js` through the Aeon-fauna config. Keep new
+receipt directories distinct from earlier failures. A shared GPU queue should
+name its owner and bounded job, record actual completion, and transfer the next
+reserved slot promptly; authoring, unit checks and documentation can continue
+while another browser owns that slot.
+
+An injured grazer then exposed a real runtime constraint: direct retreat reached
+the canonical slope ceiling after 0.451 m. Replaying the saved player/animal
+pose against the real sampler proved the stop occurred before collision. Keep
+the terrain limit; add a bounded search for legal neighboring steps and test
+both that exact failure and fully obstructed movement. Record that local
+steering can require a wider turn and is not a global pathfinding guarantee.

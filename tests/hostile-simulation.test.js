@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHostileSimulation, FAUNA_SPECIES, FAUNA_WEAPON_DAMAGE } from '../src/fauna/hostile-simulation.js';
+import {sampleAeonGrazerFooting} from '../src/fauna/aeon-grazer-habitat.js';
 
 const spawn = (id = 'bear', x = 40) => ({ id, position: [x, 0, 0], normal: [0, 1, 0], heading: 0, phase: .3 });
 const player = (x = 42) => ({ position: [x, 1.75, 0], active: true, health: 100 });
@@ -271,4 +272,27 @@ test('coexisting Aeon species retain separate identities under one global popula
  sim.hit('shore-0',30);assert.equal(sim.entities.find(e=>e.id==='shore-0').provoked,true);
  assert.ok(sim.entities.filter(e=>e.species==='aeon-grazer').every(e=>!e.provoked));
  sim.reconcile([],null,[2000,1.75,0]);assert.equal(sim.entities.length,0);
+});
+
+test('grazer retreats along safe canonical footing when the direct escape reaches a slope edge',()=>{
+ const position=[21788.803286748185,964304.2231862409,1268041.060600692];
+ const normal=[.16813127460127522,.6974328173624235,.6966486487224841];
+ const threat={position:[21784.935562601342,964299.3280400032,1268048.5784136292],active:true,health:100};
+ let rejected=0,bites=0;
+ const sim=createHostileSimulation({sampleGround:(_species,p)=>{
+   const length=Math.hypot(...p),ground=sampleAeonGrazerFooting(p.map(v=>v/length));
+   if(!ground)rejected++;return ground;
+ },onBite:()=>bites++});
+ sim.reconcile([{id:'slope-edge',position,normal}],'aeon-grazer',position.map((v,i)=>v+normal[i]*100));
+ sim.hit('slope-edge',30);advance(sim,3,threat);
+ const e=sim.entities[0];assert.ok(rejected>0,'actual recorded straight retreat is unsafe');
+ assert.ok(Math.hypot(...e.position.map((v,i)=>v-position[i]))>.5,'finds a safe route without relaxing the slope limit');
+ assert.ok(sampleAeonGrazerFooting(e.position));assert.equal(e.provoked,false);assert.equal(bites,0);
+});
+
+test('flee steering remains stopped when every swept movement is obstructed',()=>{
+ let sweeps=0;const {sim,bites}=fixture('aeon-grazer',{canMove:()=>{sweeps++;return false;}});
+ const before=structuredClone(sim.entities[0]);sim.hit('bear',30);sim.update(.05,player(42));
+ assert.deepEqual(sim.entities[0].position,before.position);assert.deepEqual(sim.entities[0].forward,before.forward);
+ assert.equal(sweeps,7);assert.equal(sim.entities[0].speed,0);assert.equal(bites.length,0);
 });

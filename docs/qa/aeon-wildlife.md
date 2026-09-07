@@ -67,3 +67,28 @@ rear hatch and walk down the ramp normally. Scripts/aeon-fauna.spec.js owns the
 physical injected-Gamepad route; the standalone rig viewer is explicitly a
 studio/export review, not gameplay traversal. Physical hardware and final
 continuous-motion aesthetic acceptance remain separately unverified.
+
+
+## Runtime follow-up: blocked grazer retreat
+
+The first physical grazer encounter reached four actual grassland animals and
+applied one real rifle hit (360 → 330 HP), with no provocation, bite or player
+damage. Its retreat moved only 0.451 m before the next canonical footprint
+exceeded the unchanged 12-degree slope ceiling. The gameplay displacement
+assertion failed and remains retained in the browser ledger.
+
+The correction probes at most seven next-step directions, trying direct escape
+and lateral movement before a wider turn around the local terrain obstruction.
+It remembers the chosen side, commits at most one safe step per substep, and
+restores its facing if every option is blocked. All probes use the existing
+canonical terrain and swept collision functions. This is local steering; it
+cannot guarantee a route around every enclosure. It never changes aggression.
+
+The exact recorded terrain-edge regression and a fully obstructed seven-sweep
+regression pass, along with all 21 simulation cases and the focused habitat and
+targeting suites. Independent code review found no blocker. The updated build
+passes and is frozen on preview 5517: main-BExzhz0l.js SHA-256
+63f37b482fce33dba24de21b777b1778cfb09689adc767d810f475b17014715f.
+The Tideback controller route passed against the preceding build; this delta
+affects only flee behavior, which Tidebacks never enter. Grazer-only verification
+of this updated build is pending. Both model hashes remain unchanged.

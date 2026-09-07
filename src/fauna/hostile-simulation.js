@@ -110,6 +110,19 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
   }
   function startReturn(entity) { entity.state = 'return'; entity.timer = 0; entity.lostSight = 0; }
 
+  function flee(entity,player,speed,step){
+    const away=unit(tangent(sub(entity.position,player),entity.normal))??entity.forward;
+    const side=cross(entity.normal,away),preferred=entity.fleeSide??1,previous=[...entity.forward];
+    // A slope/biome edge can block straight retreat. Prefer escape and lateral
+    // steps; a bounded wider turn can get around a convex terrain obstruction.
+    for(const angle of [0,preferred*Math.PI/3,preferred*Math.PI/2,-preferred*Math.PI/3,-preferred*Math.PI/2,preferred*2*Math.PI/3,-preferred*2*Math.PI/3]){
+      const direction=add(away.map(v=>v*Math.cos(angle)),side,Math.sin(angle));
+      move(entity,add(entity.position,direction,8),speed,step);
+      if(entity.speed>0){if(angle)entity.fleeSide=Math.sign(angle);return;}
+    }
+    face(entity,previous);
+  }
+
   function update(dt, player = {}) {
     if (!Number.isFinite(dt) || dt <= 0) { paused = true; return; }
     const p = copyPosition(player.position);
@@ -137,8 +150,7 @@ export function createHostileSimulation({ sampleGround, canMove = () => true,
         if (entity.state === 'flee') {
           entity.timer -= step;
           if (entity.timer <= 0 || distance(entity.position, entity.home) > config.leash * .75) { startReturn(entity); continue; }
-          const away = unit(tangent(sub(entity.position, p), entity.normal)) ?? entity.forward;
-          move(entity, add(entity.position, away, 8), config.speed, step);
+          flee(entity,p,config.speed,step);
         } else if (entity.state === 'chase') {
           if (homeDistance > config.leash || playerDistance > config.aggroRange * 2) { startReturn(entity); continue; }
           const visible = sees(entity, p, config);
