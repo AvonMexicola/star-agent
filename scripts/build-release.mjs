@@ -1,0 +1,11 @@
+import { build } from 'vite';
+import { execFileSync } from 'node:child_process';
+import { writeFile } from 'node:fs/promises';
+const channel = process.argv[2];
+if (!['solo', 'multiplayer'].includes(channel)) throw new Error('Choose solo or multiplayer.');
+process.env.VITE_SOLO_BUILD = channel === 'solo' ? '1' : '0';
+process.env.VITE_DEV_TOOLS = channel === 'solo' ? '1' : '0';
+process.env.VITE_MULTIPLAYER_ENTRY = channel === 'multiplayer' ? '1' : '0';
+const outDir = `dist/${channel}`;
+await build({ build: { outDir } });
+await writeFile(`${outDir}/release.json`, JSON.stringify({ channel, commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), builtAt: new Date().toISOString() }) + '\n');
