@@ -1,0 +1,14 @@
+{
+  "id": "SA-DB-001",
+  "title": "Persistent local multiplayer accounts with PostgreSQL and Prisma",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex persistence session",
+  "status": "review",
+  "branch": "fix/persistent-local-accounts",
+  "base": "a748be101aad4ea672a157481044ce9ed6b03e35",
+  "updated": "2026-09-07",
+  "areas": ["multiplayer", "integration"],
+  "claims": ["server/database.js", "server/local-database.js", "prisma/", "prisma.config.ts", "scripts/dev-all.mjs", "scripts/database.mjs", "scripts/multiplayer.config.js", "tests/server-auth.test.js", "tests/dev-database.test.js", "package.json", "package-lock.json", ".gitignore", ".github/workflows/checks.yml", "docs/briefs/persistent-local-accounts.md", "docs/decisions/0002-persistent-local-accounts.md", "docs/qa/persistent-local-accounts.md"],
+  "brief": "docs/briefs/persistent-local-accounts.md"
+}

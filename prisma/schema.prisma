@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../server/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Tables, expression indexes and checks are owned by server/migrations/.
+// lower(email)/lower(callsign) uniqueness remains enforced in PostgreSQL.
+model Account {
+  id           String          @id @db.Uuid
+  email        String
+  callsign     String
+  passwordHash String          @map("password_hash")
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  sessions     Session[]
+  passwordReset PasswordReset?
+  playerState  PlayerState?
+
+  @@map("accounts")
+}
+
+model Session {
+  tokenHash String   @id @map("token_hash")
+  accountId String   @map("account_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([accountId], map: "sessions_account")
+  @@index([expiresAt], map: "sessions_expiry")
+  @@map("sessions")
+}
+
+model PasswordReset {
+  tokenHash String   @id @map("token_hash")
+  accountId String   @unique(map: "password_resets_account_id_key") @map("account_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("password_resets")
+}
+
+model PlayerState {
+  accountId String   @id @map("account_id") @db.Uuid
+  state     Json     @db.JsonB
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("player_state")
+}
