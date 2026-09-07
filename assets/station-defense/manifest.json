@@ -10,8 +10,8 @@
   "layoutSha256": "e9f34742ee9b4002513abb8f5fbfcaf9a838553977be97e6523f358c94037072",
   "blenderVersion": "5.2.0 LTS",
   "triangles": 9177,
-  "bytes": 908388,
-  "sha256": "adf6c5b03da18710a3d97341dd503ec95433e564d81610ed67037b226af8e4ca",
+  "bytes": 898780,
+  "sha256": "6a0bfd851bc35f4dcc2fc300ea3d2abd16325b506ad0521580dd019ca45c615b",
   "meshPrimitives": 9,
   "meshes": 9,
   "nodes": 17,
@@ -43,24 +43,24 @@
   "textures": [
     {
       "name": "bastion-normal",
-      "bytes": 76496,
-      "sha256": "77b1ebf793c1b69f8b62346eb6d8fa03757be74dbbaece4a1366d6687a90822a",
+      "bytes": 80808,
+      "sha256": "b1444f2694a05a4c33ecc9fe72936672bcf049b0486d5e59fb7f253ad2c0fcf8",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
     },
     {
       "name": "bastion-basecolor",
-      "bytes": 61352,
-      "sha256": "c3f9b6ccfd4db2d7df7706abf549bf2bf9c3c7926f06fd964cad0377cc0b9180",
+      "bytes": 50828,
+      "sha256": "7f7968224fa5150a2bd9c0259e2d66b24663ad80fb9325c29d65685b6ecee558",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
     },
     {
       "name": "bastion-orm",
-      "bytes": 68646,
-      "sha256": "defcd1449b10228d1fefd94e26af648f2f234e7681b4939eeb074eb7132d5d88",
+      "bytes": 65250,
+      "sha256": "dd89adf1c07d0f4b8e0a2c129e88dbc3d4afa54014224a8d8674c0cc451dc5b5",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"

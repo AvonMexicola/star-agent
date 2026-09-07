@@ -8,6 +8,55 @@
     512,
     512
   ],
+  "normalSeed": 7317,
+  "roughnessHashSalts": {
+    "brush": 41,
+    "broadBase": 79
+  },
+  "enamelFinish": {
+    "forkPatchPixels": [
+      0,
+      0,
+      256,
+      128
+    ],
+    "receiverPatchPixels": [
+      256,
+      416,
+      256,
+      96
+    ],
+    "smallPartsPatchPixels": [
+      256,
+      384,
+      256,
+      32
+    ],
+    "forkCoordinatesGameZYMetres": [
+      -4.4,
+      5.4,
+      4.1,
+      11.95
+    ],
+    "receiverMajorFaceMetres": [
+      8.18,
+      3.56
+    ],
+    "coatingReliefMetres": {
+      "forkWitness": -0.004,
+      "receiverWitness": -0.0035,
+      "powderAmplitude": 0.00045
+    },
+    "description": "Existing broad face UVs address deliberate perimeter coatings and shallow rolled witness lines; actual trunnion contact ring gets restrained roughness polish. Pigment boundaries are material zones, with no directional lighting, grunge, extra geometry or runtime shader.",
+    "hashSalts": {
+      "forkPowder": 163,
+      "receiverPowder": 167,
+      "forkSheen": 173,
+      "receiverSheen": 179,
+      "smallPartGrain": 181
+    },
+    "geometryAndRig": "Unchanged candidate06 geometry/rig intended; exact export delta must independently verify"
+  },
   "baseColorSpace": "sRGB",
   "normalSpace": "OpenGL tangent +Y; non-colour data",
   "ormSpace": "linear; R=1, G=roughness, B=metalness; contact AO is separate vertex colour",
@@ -15,28 +64,28 @@
   "font": "Adwaita Sans, system font; optional decorative engraving only",
   "files": {
     "bastion-basecolor.png": {
-      "sha256": "82df1bbca24cd79429ea01d2768318c3f1e0e1524b4bf488961ca3daa2a5f3c1",
-      "bytes": 75286
+      "sha256": "1081d6d355ede1ad0c687a104656d182c5b483f3155e5052c7cb6d5c37543054",
+      "bytes": 62641
     },
     "bastion-basecolor.webp": {
-      "sha256": "c3f9b6ccfd4db2d7df7706abf549bf2bf9c3c7926f06fd964cad0377cc0b9180",
-      "bytes": 61352
+      "sha256": "7f7968224fa5150a2bd9c0259e2d66b24663ad80fb9325c29d65685b6ecee558",
+      "bytes": 50828
     },
     "bastion-normal.png": {
-      "sha256": "1f810992ad792e2ff3aeb7d735b75044b5dfecaf311013584e50024de9b599b5",
-      "bytes": 106241
+      "sha256": "2e76d68165de59f3403845c1ca2f57519d8165edc983f27253123c8a0b4f0dc7",
+      "bytes": 101537
     },
     "bastion-normal.webp": {
-      "sha256": "77b1ebf793c1b69f8b62346eb6d8fa03757be74dbbaece4a1366d6687a90822a",
-      "bytes": 76496
+      "sha256": "b1444f2694a05a4c33ecc9fe72936672bcf049b0486d5e59fb7f253ad2c0fcf8",
+      "bytes": 80808
     },
     "bastion-orm.png": {
-      "sha256": "71bba8c86da8d40b5184c73d4e8b369d6e847facec4b012f644e7fc416ef4597",
-      "bytes": 122602
+      "sha256": "fac6ad3e02e0730177e47e864e9011c27709f4b9a52259de5d61a03a9246906f",
+      "bytes": 116399
     },
     "bastion-orm.webp": {
-      "sha256": "defcd1449b10228d1fefd94e26af648f2f234e7681b4939eeb074eb7132d5d88",
-      "bytes": 68646
+      "sha256": "dd89adf1c07d0f4b8e0a2c129e88dbc3d4afa54014224a8d8674c0cc451dc5b5",
+      "bytes": 65250
     }
   }
 }

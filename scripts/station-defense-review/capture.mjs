@@ -8,10 +8,10 @@ import { execFileSync } from 'node:child_process';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(process.env.BASTION_REVIEW_ROOT || path.join(HERE, '../..'));
-const OUT = path.resolve(process.env.BASTION_REVIEW_OUT || path.join(os.tmpdir(), 'bastion-native-06'));
+const OUT = path.resolve(process.env.BASTION_REVIEW_OUT || path.join(os.tmpdir(), 'bastion-native-07'));
 const PORT = Number(process.env.BASTION_REVIEW_PORT || 5565);
 const BROWSER_TMP = process.env.BASTION_BROWSER_TMP || path.join(os.tmpdir(), 'bs-' + process.pid);
-const EXPECTED_SHA = 'adf6c5b03da18710a3d97341dd503ec95433e564d81610ed67037b226af8e4ca';
+const EXPECTED_SHA = '6a0bfd851bc35f4dcc2fc300ea3d2abd16325b506ad0521580dd019ca45c615b';
 const ASSET = path.join(ROOT, 'public/models/station-defense.glb');
 const LAYOUT = path.join(ROOT, 'assets/station-defense/layout.json');
 const hash = value => createHash('sha256').update(value).digest('hex');

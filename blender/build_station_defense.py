@@ -53,6 +53,14 @@ PALETTE = [(215, 222, 212), (31, 42, 45), (130, 146, 149), (11, 18, 20),
            (42, 82, 83), (174, 127, 44), (70, 84, 89), (182, 239, 209)]
 ROUGHNESS = [.47, .74, .43, .94, .50, .61, .51, .55]
 METALNESS = [.04, .06, .92, .02, .10, .08, .86, .05]
+# The powered material uses constants, not atlas samples. Reclaim its tile for
+# deliberate enamel patches without adding a map, material or draw. Metal and
+# dark liner pixels keep candidate06's exact recipe and atlas locations.
+FORK_PATCH = (0, 0, 256, 128)
+CLEAN_ENAMEL_PATCH = (256, 384, 256, 32)
+RECEIVER_PATCH = (256, 416, 256, 96)
+FORK_EXTENT = (-4.4, 5.4, 4.1, 11.95)  # game Z min/max, Y min/max, metres
+FORK_OUTLINE = [(-3.5,4.5),(-4.0,5.0),(-1.2,10.9),(.4,11.55),(2.7,10.95),(5.0,5.0),(4.5,4.5)]
 
 def png(path, rows):
     def chunk(kind, payload):
@@ -79,6 +87,85 @@ def finish_field(x, y, scale, salt):
     b=signed_noise(ix,iy+1,salt)*(1-u)+signed_noise(ix+1,iy+1,salt)*u
     return a*(1-v)+b*v
 
+def smoothstep(a,b,x):
+    t=max(0,min(1,(x-a)/(b-a)))
+    return t*t*(3-2*t)
+
+def segment_distance(x,y,a,b):
+    dx,dy=b[0]-a[0],b[1]-a[1]
+    t=max(0,min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)))
+    return math.hypot(x-a[0]-t*dx,y-a[1]-t*dy)
+
+def enamel_finish(kind,x,y):
+    """Millimetre-scale coating relief and material response, never illumination.
+
+    A masked perimeter coating follows the existing forged outline or receiver
+    face. A shallow rolled witness line, calm powder enamel and the real journal
+    contact's polished collar make the finish deliberate at the part's scale.
+    """
+    if kind=='fork':
+        distance=min(segment_distance(x,y,a,b) for a,b in zip(FORK_OUTLINE,FORK_OUTLINE[1:]+FORK_OUTLINE[:1]))
+        core=smoothstep(.18,.35,distance)
+        seam=math.exp(-((distance-.34)/.042)**2)
+        contact_radius=math.hypot(x,y-9)
+        contact=(1-smoothstep(1.24,1.40,contact_radius))*smoothstep(1.13,1.20,contact_radius)
+        edge_rgb=(203,213,204)
+        height=-.0040*seam+.00045*finish_field(x,y,.12,163)
+    else:
+        distance=min(x,8.18-x,y,3.56-y)
+        core=smoothstep(.13,.28,distance)
+        seam=math.exp(-((distance-.26)/.037)**2)
+        contact=0
+        edge_rgb=(206,215,207)
+        height=-.0035*seam+.00045*finish_field(x,y,.12,167)
+    broad=finish_field(x,y,.62,173 if kind=='fork' else 179)
+    # Application variation changes sheen. Pigment remains the calm fleet ivory;
+    # the perimeter is a purposeful second coating, not grime or painted shade.
+    colour=tuple(round(edge_rgb[i]*(1-core)+PALETTE[0][i]*core) for i in range(3))
+    rough=.64*(1-core)+.43*core+.027*broad-.12*contact
+    return colour,max(.30,min(.70,rough)),.04,height
+
+def patch_pixel(rect,u,v):
+    x,y,w,h=rect
+    return (x+u*w)/EDGE,1-(y+v*h)/EDGE
+
+def apply_enamel_patches():
+    for kind,rect in [('fork',FORK_PATCH),('receiver',RECEIVER_PATCH)]:
+        ox,oy,w,h=rect
+        if kind=='fork':
+            xmin,xmax,ymin,ymax=FORK_EXTENT
+            dx,dy=(xmax-xmin)/w,(ymax-ymin)/h
+            point=lambda ix,iy:(xmin+(ix+.5)*dx,ymax-(iy+.5)*dy)
+        else:
+            # Main side/top receiver polygons use 3% padding. The named major
+            # face spans are 8.18 x 3.56 m after the existing 0.27 m chamfer.
+            dx,dy=8.18/(w*.94),3.56/(h*.94)
+            point=lambda ix,iy:(((ix+.5)/w-.03)*8.18/.94,(.97-(iy+.5)/h)*3.56/.94)
+        for iy in range(h):
+            for ix in range(w):
+                x,y=point(ix,iy);rgb,rough,metal,height=enamel_finish(kind,x,y)
+                # Finite differences of authored height in actual metres. The
+                # resulting tangent +Y points upward in the UV patch, not toward
+                # any review lamp. Existing material normal scale stays 0.35.
+                gx=(enamel_finish(kind,x+dx,y)[3]-enamel_finish(kind,x-dx,y)[3])/(2*dx)
+                gy=(enamel_finish(kind,x,y+dy)[3]-enamel_finish(kind,x,y-dy)[3])/(2*dy)
+                length=math.sqrt(1+gx*gx+gy*gy)
+                normal=tuple(round(127.5*(v/length+1)) for v in (-gx,-gy,1))
+                offset=(ox+ix)*3;row=oy+iy
+                base_rows[row][offset:offset+3]=bytes(rgb)
+                orm_rows[row][offset:offset+3]=bytes((255,round(rough*255),round(metal*255)))
+                normal_rows[row][offset:offset+3]=bytes(normal)
+    # Plain white rings, small chamfers and the unselected return faces retain
+    # a calm coating. Four-pixel UV margins prevent neighbouring finish bleed.
+    ox,oy,w,h=CLEAN_ENAMEL_PATCH
+    for iy in range(h):
+        for ix in range(w):
+            offset=(ox+ix)*3;row=oy+iy
+            grain=round(signed_noise(ix,iy,181))
+            base_rows[row][offset:offset+3]=bytes(c+grain for c in PALETTE[0])
+            orm_rows[row][offset:offset+3]=bytes((255,round((.47+grain*.004)*255),round(.04*255)))
+            normal_rows[row][offset:offset+3]=bytes((128,128,255))
+
 base_rows, orm_rows, normal_rows = [], [], []
 for y in range(EDGE):
     br, ore, nr = bytearray(), bytearray(), bytearray()
@@ -97,6 +184,7 @@ for y in range(EDGE):
         pore = relief_rng.choice((-2,-1,0,0,0,1,2))
         nr.extend((128+pore,128+(round(brush) if tile in (2,6) else 0),255))
     base_rows.append(br); orm_rows.append(ore); normal_rows.append(nr)
+apply_enamel_patches()
 for name, rows in [('bastion-basecolor', base_rows), ('bastion-orm', orm_rows), ('bastion-normal', normal_rows)]:
     png(TEXTURES / (name + '.png'), rows)
     subprocess.run(['magick', str(TEXTURES / (name + '.png')), '-define', 'webp:lossless=true', '-define', 'webp:method=6',
@@ -211,8 +299,25 @@ def stock(name, verts, faces, parent, tile=0, bevel=0, material=0, smooth_radial
         for li in poly.loop_indices:
             p = mesh.vertices[mesh.loops[li].vertex_index].co
             u, v = [(p[a]-lo[j])/max(1e-7, hi[j]-lo[j]) for j, a in enumerate(axes)]
-            uv.data[li].uv = ((face_tile % 2 + .035 + u * .93)/2,
-                              (3-face_tile // 2 + .035 + v * .93)/4)
+            if face_tile==0 and material==0:
+                gp,gn=game(p),game(poly.normal)
+                if name.startswith('Forged fork cheek ') and abs(gn.x)>.999 and poly.area>8:
+                    zmin,zmax,ymin,ymax=FORK_EXTENT
+                    uv.data[li].uv=patch_pixel(FORK_PATCH,(gp.z-zmin)/(zmax-zmin),(ymax-gp.y)/(ymax-ymin))
+                elif name.startswith('Armoured breech ') and max(abs(gn.x),abs(gn.y))>.999 and poly.area>8:
+                    # Keep the long receiver direction horizontal in the atlas;
+                    # the other face axis points upward in UV tangent space.
+                    points=[game(q) for q in positions]
+                    second=1 if abs(gn.x)>.999 else 0
+                    amin,amax=min(q.z for q in points),max(q.z for q in points)
+                    bmin,bmax=min(q[second] for q in points),max(q[second] for q in points)
+                    pu=(gp.z-amin)/(amax-amin);pv=(gp[second]-bmin)/(bmax-bmin)
+                    uv.data[li].uv=patch_pixel(RECEIVER_PATCH,.03+.94*pu,.97-.94*pv)
+                else:
+                    uv.data[li].uv=patch_pixel(CLEAN_ENAMEL_PATCH,.035+.93*u,.125+.75*(1-v))
+            else:
+                uv.data[li].uv = ((face_tile % 2 + .035 + u * .93)/2,
+                                  (3-face_tile // 2 + .035 + v * .93)/4)
     if smooth_radial:
         # Explicit radial side / flat cap normals avoid the old rounded-end rod
         # artefact. Shape changes and bevel breaks retain authored face normals.
@@ -642,6 +747,13 @@ provenance={'source':'Original deterministic procedural PBR swatches and authore
             'authoringSession':'Codex / root/kestrel_reviewer, Bastion author role (not its independent reviewer)',
             'paletteReference':'Original Meridian fleet language documented in QUALITY.md and assets/ship-weapons; no copied map payload',
             'builder':'blender/build_station_defense.py','seed':7291,'textureSize':[EDGE,EDGE],
+            'normalSeed':7317,'roughnessHashSalts':{'brush':41,'broadBase':79},
+            'enamelFinish':{'forkPatchPixels':FORK_PATCH,'receiverPatchPixels':RECEIVER_PATCH,'smallPartsPatchPixels':CLEAN_ENAMEL_PATCH,
+                'forkCoordinatesGameZYMetres':FORK_EXTENT,'receiverMajorFaceMetres':[8.18,3.56],
+                'coatingReliefMetres':{'forkWitness':-.004,'receiverWitness':-.0035,'powderAmplitude':.00045},
+                'description':'Existing broad face UVs address deliberate perimeter coatings and shallow rolled witness lines; actual trunnion contact ring gets restrained roughness polish. Pigment boundaries are material zones, with no directional lighting, grunge, extra geometry or runtime shader.',
+                'hashSalts':{'forkPowder':163,'receiverPowder':167,'forkSheen':173,'receiverSheen':179,'smallPartGrain':181},
+                'geometryAndRig':'Unchanged candidate06 geometry/rig intended; exact export delta must independently verify'},
             'baseColorSpace':'sRGB','normalSpace':'OpenGL tangent +Y; non-colour data','ormSpace':'linear; R=1, G=roughness, B=metalness; contact AO is separate vertex colour',
             'normalStrength':.35,'font':'Adwaita Sans, system font; optional decorative engraving only',
             'files':{p.name:{'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size} for p in sorted(TEXTURES.glob('*')) if p.suffix in ('.png','.webp')}}
