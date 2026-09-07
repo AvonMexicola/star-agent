@@ -1792,3 +1792,11 @@ also pass and are recorded with captures in `docs/qa/space-combat.md`. Independe
 review and physical-controller testing are not claimed. This is an offline,
 session-only first slice: no reward ledger, persistent mission, physical weapon
 fittings, ship collision damage, component damage, or multiplayer NPC authority.
+
+Patrol integration: `b3f1a87` is on `dev/all-features`; the live 5178 preview serves
+the combat module. Shared gameplay/audio build and all 91 test entries pass.
+Draft review: https://github.com/AvonMexicola/star-agent/pull/53. The unrelated
+shared `AGENTS.md` edit remains unstaged and untouched.
+Final combined patrol browser regression: all three cases pass in 4.4 minutes
+at `b3f1a87`, including keyboard/pointer fire, NPC-caused loss, recovery and phone
+console layout. Refreshed captures are in `docs/qa/space-combat/`.
