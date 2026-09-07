@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createBranchGeometry, createNeedleTexture, addFoliageWind, createTreeImpostor } from './foliage.js';
 import { createSurfaceTexture } from './surface-materials.js';
-import { RADIUS, terrainHeight, moisture, biomeAt, hash } from './world.js';
+import { RADIUS, terrainHeight, terrainSample, moisture, biomeAt, hash } from './world.js';
 
 import { TREE_LODS, TREE_RADIUS, TREE_REBUILD_DISTANCE, treeLodIncludes, addTreeLod } from './tree-lod.js';
 
@@ -214,9 +214,9 @@ export class Vegetation {
       const key = `${col}/${row}`;
       let record = this.treeCache.get(key);
       if (!record) {
-        const h = terrainHeight(x, y, z), m = moisture(x, y, z);
+        const {height:h,rockRelief}=terrainSample(x,y,z), m = moisture(x, y, z);
         const density = m > .46 ? Math.min(.86, .58 + (m - .46) * 2) : m > .4 ? .025 : 0;
-        record = { h, present: h >= 12 && h <= 2200 && hash(col, row, 911) <= density };
+        record = { h, present: rockRelief<.12 && h >= 12 && h <= 2200 && hash(col, row, 911) <= density };
       }
       nextCache.set(key, record);
       if (!record.present) return;
@@ -238,8 +238,8 @@ export class Vegetation {
 
     this.scatter(center, 170, 4.5, 1933, (x, y, z, col, row, a, b) => {
       if (grassTufts >= GRASS_LIMIT || Math.abs(y) > .84 || this.isExcluded(x, y, z)) return;
-      const h = terrainHeight(x, y, z);
-      if (h < 2 || h > 2200 || hash(col, row, 2111) > .86) return;
+      const {height:h,rockRelief}=terrainSample(x,y,z);
+      if (rockRelief>.12 || h < 2 || h > 2200 || hash(col, row, 2111) > .86) return;
       const size = .22 + a * .36;
       this.place(this.grass, grassTufts, x, y, z, h - .025, .3 + b*.5, size, .3 + b*.5, b * TAU);
       this.color.setRGB(.11 + a * .10, .16 + b * .09, .045 + a * .045);
@@ -249,8 +249,8 @@ export class Vegetation {
     // Fine undergrowth around the viewer complements the sparse distant tufts.
     this.scatter(center, 45, 1, 2099, (x,y,z,col,row,a,b) => {
       if (grassTufts >= GRASS_LIMIT || Math.abs(y) > .84 || this.isExcluded(x,y,z) || a > .8) return;
-      const h = terrainHeight(x,y,z);
-      if (h < 12 || h > 2200 || moisture(x,y,z) < .44) return;
+      const {height:h,rockRelief}=terrainSample(x,y,z);
+      if (rockRelief>.12 || h < 12 || h > 2200 || moisture(x,y,z) < .44) return;
       const size = .12+a*.24;
       this.place(this.grass,grassTufts,x,y,z,h-.025,.22+b*.3,size,.22+b*.3,b*TAU);
       this.color.setRGB(.10+a*.09,.13+b*.07,.035+a*.04);

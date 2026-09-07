@@ -1,5 +1,8 @@
+import { PYRE_ARRIVAL_ALTITUDE } from './pyre-world.js';
+import { MIASMA_ARRIVAL_ALTITUDE } from './miasma-world.js';
 import { Vector3 } from 'three';
-import { AEON, SELENE } from './celestial.js';
+import { SUN_STANDOFF, SUN_EXCLUSION } from './stellar-world.js';
+import { AEON, SELENE, PYRE, MIASMA, STAR } from './celestial.js';
 
 export const LIGHT_SPEED = 299_792_458;
 export const TRAVEL = Object.freeze({
@@ -22,6 +25,9 @@ const targetFrom = (body, exclusion, arrival) => Object.freeze({
 export const TRAVEL_TARGETS = Object.freeze([
   targetFrom(AEON, 100_000, 150_000),
   targetFrom(SELENE, 20_000, 50_000),
+  targetFrom(PYRE, 55_000, PYRE_ARRIVAL_ALTITUDE),
+  targetFrom(MIASMA, 40_000, MIASMA_ARRIVAL_ALTITUDE),
+  targetFrom(STAR, SUN_EXCLUSION-STAR.radius, SUN_STANDOFF-STAR.radius),
 ]);
 
 const BODY_TARGETS = TRAVEL_TARGETS;

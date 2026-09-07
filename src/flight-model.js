@@ -11,16 +11,20 @@ export const FLIGHT = Object.freeze({
 });
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 
-export function environmentAt(position, groundRadius) {
+/** Body-relative position. `air` describes another body's atmosphere
+ * ({seaLevelDensity, scaleHeight, height, planeHeight}); the defaults are Aeon's. */
+export function environmentAt(position, groundRadius, air = null, surfaceGravity = FLIGHT.surfaceGravity) {
+  const atmosphereHeight = air?.height ?? FLIGHT.atmosphereHeight, planeHeight = air?.planeHeight ?? FLIGHT.planeHeight;
+  const seaLevelDensity = air?.seaLevelDensity ?? FLIGHT.seaLevelDensity, scaleHeight = air?.scaleHeight ?? FLIGHT.scaleHeight;
   const radius = position.length(), altitude = Math.max(0, radius - groundRadius);
   // Fade the very thin upper atmosphere to exactly zero without a boundary impulse.
-  const fade = clamp((FLIGHT.atmosphereHeight - altitude) / 10000, 0, 1);
+  const fade = clamp((atmosphereHeight - altitude) / 10000, 0, 1);
   return {
     groundRadius, altitude,
-    density: FLIGHT.seaLevelDensity * Math.exp(-altitude / FLIGHT.scaleHeight) * fade * fade * (3 - 2 * fade),
-    gravity: position.clone().normalize().multiplyScalar(-FLIGHT.surfaceGravity * (groundRadius / radius) ** 2),
-    regime: altitude >= FLIGHT.atmosphereHeight ? 'SPACE' : altitude >= FLIGHT.planeHeight ? 'TRANSITION' : 'ATMOSPHERE',
-    atmosphereFraction: clamp((FLIGHT.atmosphereHeight - altitude) / (FLIGHT.atmosphereHeight - FLIGHT.planeHeight), 0, 1),
+    density: seaLevelDensity * Math.exp(-altitude / scaleHeight) * fade * fade * (3 - 2 * fade),
+    gravity: position.clone().normalize().multiplyScalar(-surfaceGravity * (groundRadius / radius) ** 2),
+    regime: altitude >= atmosphereHeight ? 'SPACE' : altitude >= planeHeight ? 'TRANSITION' : 'ATMOSPHERE',
+    atmosphereFraction: clamp((atmosphereHeight - altitude) / (atmosphereHeight - planeHeight), 0, 1),
   };
 }
 

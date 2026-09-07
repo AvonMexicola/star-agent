@@ -2,6 +2,8 @@
 export const RADIUS = 6_371_000 / 4;
 export const ATMOSPHERE_HEIGHT = 70_000;
 export const SUN_DISTANCE = 25_000_000_000;
+export const SUN_RADIUS = 240_000_000;
+export const SUN_ANGULAR_RADIUS = Math.asin(SUN_RADIUS / SUN_DISTANCE);
 export const SUN_DIRECTION = [.9,.35,.12].map(v=>v/Math.hypot(.9,.35,.12));
 import { SEED } from './generation.js';
 export { SEED } from './generation.js';
@@ -29,8 +31,8 @@ export function fbm(x,y,z,octaves=5) {
   return sum/norm;
 }
 // The sole height/biome/material source, shared by navigation and workers.
-import { terrainHeight, moisture, biomeAt, surfaceColor, slopeAt } from './terrain-v2.js';
-export { terrainHeight, moisture, biomeAt, surfaceColor } from './terrain-v2.js';
+import { terrainHeight, terrainSample, moisture, biomeAt, surfaceColor, slopeAt } from './terrain-v2.js';
+export { terrainHeight, terrainSample, moisture, biomeAt, surfaceColor } from './terrain-v2.js';
 export function cubeDirection(face,u,v) {
   let x,y,z;
   if(face===0){x=1;y=v;z=-u;}else if(face===1){x=-1;y=v;z=u;}
@@ -46,10 +48,11 @@ export function generatePatch({face,level,ix,iy}) {
   const count=(GRID+1)**2+4*(GRID+1);
   const positions=new Float32Array(count*3),normals=new Float32Array(count*3),colors=new Float32Array(count*3);
   const directions=new Float32Array(count*3),waterPositions=new Float32Array(count*3);
-  const heights=new Float32Array(count);
+  const heights=new Float32Array(count),rockReliefs=new Float32Array(count);
   const step=Math.max(.4,Math.min(200,size*RADIUS/GRID*.5));
   function write(index,u,v,skirt=0) {
-    const d=cubeDirection(face,u,v),h=terrainHeight(...d),r=RADIUS+h-skirt;
+    const d=cubeDirection(face,u,v),{height:h,rockRelief}=terrainSample(...d),r=RADIUS+h-skirt;
+    rockReliefs[index]=rockRelief;
     const k=index*3;
     for(let a=0;a<3;a++){positions[k+a]=d[a]*r-center[a];directions[k+a]=d[a];waterPositions[k+a]=d[a]*(RADIUS-skirt)-center[a];}
     heights[index]=h;
@@ -73,7 +76,7 @@ export function generatePatch({face,level,ix,iy}) {
   let next=(GRID+1)**2;
   const depth=Math.max(4,size*RADIUS*.045);
   for(const edge of edges){const start=next;for(const src of edge){const i=src%(GRID+1),j=Math.floor(src/(GRID+1));write(next++,u0+size*i/GRID,v0+size*j/GRID,depth);}for(let i=0;i<GRID;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
-  return {center,positions,normals,colors,directions,waterPositions,heights,indices:new Uint16Array(indices)};
+  return {center,positions,normals,colors,directions,waterPositions,heights,rockReliefs,indices:new Uint16Array(indices)};
 }
 
 export function findDestinations() {

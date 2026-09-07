@@ -412,3 +412,60 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+
+## Pyre continuation — 2026-09-06
+
+Cees authorised continuing Fable's planet work. The isolated `feat/pyre-planet-tech`
+branch restores the unfinished Pyre wiring on top of `a18cf81`, then adds shared
+patch surface maps, parent-triangle morphing and canonical basalt/oxide/sulphur
+composition. Scope and integration notes: `docs/pyre.md`. Changes to main,
+navigation, atmosphere and UI are confined to this branch; other agents' working
+copies and the existing surface preview were left intact.
+
+Pyre's local preview is on port 53758 (`star-agent-pyre-planet.service`). Browser
+QA is `scripts/pyre.config.js`; evidence is under `/tmp/star-agent-pyre` with curated
+images in `docs/images/pyre`. Resource surveys and terrain colours share the field;
+Pyre excavation and heat damage remain unimplemented. Aeon/Selene's separate
+material, meadow, stones and expedition PRs still require their own integration.
+
+
+## Stellar encounter — 2026-09-06
+
+Cees requested a larger visible star, a dramatic close approach and real thermal
+ship loss. `feat/stellar-encounter` is isolated from `feat/pyre-planet-tech`; it
+continues the recovered star shader draft and integrates a 500,000 km surface
+clearance arrival, continuous drive destination, stellar cruise, persistent hull
+damage, swept lethal contact and explicit recovery. Scope and physical assumptions
+are in `docs/sun.md`. It owns the additive changes to navigation, the atmosphere
+composite, map/UI and cockpit instruments in this branch only. Other worktrees,
+including Fable's sun checkout, remain untouched.
+
+Local preview: port 53759 (`star-agent-stellar-encounter.service`). QA:
+`scripts/star.config.js`; evidence under `/tmp/star-agent-stellar`. Separate
+impact/re-entry damage branches still need consolidation at integration time.
+
+
+## Pyre twilight and Miasma — feat/pyre-toxic-moon
+
+Based on `feat/stellar-encounter` (PR #36), this adds a landable toxic moon and authored Pyre quadrature: Aeon drive and quick transit arrive with light left/night right at 1,800 km. The new moon's 650 km approach is on the map and in quick transit. Pyre generator v3 reflects named volcano/field longitudes into the visible hemisphere. Miasma shares the canonical quadtree/map/contact machinery, has a third atmosphere slot, animated cloud shell, mineral survey and small decorative fragments. Existing suit sealing is assumed; there is no new toxic-damage or oxygen system. See `docs/miasma.md` for implementation scope and verification commands. Local preview: `http://localhost:53761/?intro=0` (`star-agent-pyre-miasma.service`). Other agents' worktrees remain untouched.
+
+Miasma follow-up: atmosphere reduced to 18 km / 0.065 kg/m³ with sparse 5.2 km wisps. `src/miasma-flora.js` reuses Claude's four existing flora GLBs in deterministic instanced colonies, with gentle wind, mint luminescence and landed-ship clearance. Plants lazy-load below 2.5 km and fade by species at 48–140 m. No new asset downloads or dependencies. Additional browser check: `scripts/miasma-flora.config.js`; evidence `/tmp/star-agent-miasma-flora`. Same preview and PR #39.
+
+Seeded rock formations follow-up (2026-09-07): isolated branch `feat/seeded-rock-formations`, worktree `/tmp/star-agent-rock-work`, stacked on Miasma #39. Shared `rock-formations.js` feeds Aeon/Selene/Pyre/Miasma canonical heights with weathered outcrop groups and boulders, including terrain collision and plant-floor agreement. Aeon follows the URL seed; moons/Pyre retain body seeds. Generator versions bumped. Existing flight test now allows time for the actual destination arc. `npm test` passes 20 files; production Chromium check `scripts/rock-formations.config.js` passes on all four bodies, with inspected 1280×800 SwiftShader captures in `docs/images/rock-formations/` and `/tmp/star-agent-rocks`. Persistent preview: http://localhost:53765/?intro=0 (`star-agent-rock-formations.service`). No overhangs, caves, movable/minable rocks, or merge of other Selene geology/material branches; apply the sampler additions while preserving those branches. Details: `docs/rock-formations.md`.
+
+Rock material follow-up (2026-09-07, same `feat/seeded-rock-formations` / PR #42): exposed formations now use a separate CC0 ambientCG Rock030 set (1K albedo, OpenGL normal, roughness; original JPGs, 4,681,460 bytes total, ~16 MiB GPU incl. mipmaps). `rock-material.js` shares maps across all four bodies and overlays only the canonical `rockRelief` attribute; preserve that field through each worker/buffer path when integrating. Flat caps receive rock too; Aeon/Miasma vegetation rejects exposed rock. All positions/heights/seeds are preserved. 2/8/64 m triplanar periods retain the existing CPU 256 m phase. Texture readiness is atomic with failure/disposal handling. `npm test` passes 20 files; the four-world production material tour and invalid-map fallback both pass (Chromium 151, SwiftShader, 1280×800; no errors on the normal tour). Updated screenshots in `docs/images/rock-formations/`; source/licence/hashes in `public/materials/outcrops/`. Same live preview http://localhost:53765/?intro=0 — refresh for material changes.
+## Main release: textured worlds — 2026-09-07
+
+Cees reviewed the dedicated rock materials and explicitly requested that this
+preview reach the main build. Integration is isolated in
+`/tmp/star-agent-rocks-main`, branch `integrate/rocks-main`, based on `0cda417`.
+It preserves main's Netcup deployment and combines the already requested Pyre,
+stellar encounter, Miasma and seeded-rock chain (PRs 33, 36, 39 and 42). The game
+source and bundled assets are identical to the reviewed `5bb71fe` preview.
+The unrelated PR34 consolidation and shared dirty worktree are not part of this
+release. The next requested atmosphere polish will be a separate follow-up.
+
+153 unit tests and the production build pass on the combined checkout. The
+existing four-world rock screenshots and shader/fallback verification apply
+unchanged; the general production browser suite is running before the merge.

@@ -1,0 +1,27 @@
+{
+  "source": "https://ambientcg.com/a/Rock030",
+  "download": "https://ambientcg.com/get?file=Rock030_1K-JPG.zip",
+  "author": "ambientCG / Lennart Demes",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://docs.ambientcg.com/license/",
+  "archiveSha256": "2fd0bc2d214e2487c19062ed0798a85dd135b41cfc12bbaed42d5acae238f989",
+  "size": [
+    1024,
+    1024
+  ],
+  "processing": "Original maps, renamed only. Albedo is sRGB; OpenGL normal and roughness are linear.",
+  "files": {
+    "albedo.jpg": {
+      "bytes": 1483352,
+      "sha256": "1dca8a336518ce0adca4b5cbe2ab30819c8769388f1c15278082a99f022c615a"
+    },
+    "normal.jpg": {
+      "bytes": 2528233,
+      "sha256": "8fd1d22eb6c7b6e4a374196c0de791f724538b8b86eb9c7a946fec1f5834cb94"
+    },
+    "roughness.jpg": {
+      "bytes": 669875,
+      "sha256": "f37850f72994458994716d084683d80611528d1685264bde3071569e8ca53489"
+    }
+  }
+}

@@ -17,12 +17,14 @@ export function createSystemMap(nav, onTarget = () => {}) {
     <div class="system-map-header"><div><span class="map-eyebrow">SA–01 / NAVIGATION</span><h2 id="system-map-title">The Aeon system<span>01</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
     <div class="system-map-layout">
       <div class="system-chart" aria-label="Schematic system map">
-        <div class="map-grid"></div><div class="map-orbit map-orbit-outer"></div><div class="map-orbit map-orbit-inner"></div>
-        <div class="map-star"><i></i><span>OUR STAR<small>25 M km from Aeon</small></span></div>
+        <div class="map-grid"></div><div class="map-orbit map-orbit-outer"></div><div class="map-orbit map-orbit-inner"></div><div class="map-orbit map-orbit-pyre"></div>
+        <button class="map-body map-star" data-travel-target="star"><i></i><span>OUR STAR<small>STELLAR OBSERVATION</small></span></button>
         <div class="map-route-line"></div>
         <button class="map-body map-aeon" data-travel-target="aeon"><i></i><span>AEON<small>TERRESTRIAL PLANET</small></span></button>
         <button class="map-body map-selene" data-travel-target="selene"><i></i><span>SELENE<small>AIRLESS MOON</small></span></button>
-        <div class="map-chart-caption"><span>2 WORLDS TO EXPLORE</span><span>SCHEMATIC · NOT TO SCALE</span></div>
+        <button class="map-body map-pyre" data-travel-target="pyre"><i></i><span>PYRE<small>TWILIGHT APPROACH</small></span></button>
+        <button class="map-body map-miasma" data-travel-target="miasma"><i></i><span>MIASMA<small>PYRE’S TOXIC MOON</small></span></button>
+        <div class="map-chart-caption"><span>4 WORLDS · 1 STAR</span><span>SCHEMATIC · NOT TO SCALE</span></div>
       </div>
       <section class="map-destination" aria-label="Selected destination">
         <span class="map-eyebrow">DESTINATION</span><h3 id="map-target-name">Where next?</h3><p id="map-target-description">Select a world on the map to plot an approach.</p>
@@ -45,7 +47,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
     if (!target) return;
     const route = nav.travel ? { ok: false, reason: 'Drive paused. Close the map to resume; X aborts in flight.' } : nav.travelRoute();
     el('map-target-name').textContent = target.name;
-    el('map-target-description').textContent = target.id === 'aeon' ? 'Oceans, forests and an atmosphere. Arrive above the atmosphere, then descend in normal flight.' : 'Cratered terrain and low gravity. Arrive above the moon, then fly down to land and explore.';
+    el('map-target-description').textContent = target.id === 'star' ? 'Observe the photosphere, flares and magnetic loops from 500,000 km above the surface. Flying closer raises shield temperature and can destroy the ship. Space + Shift retreats.' : target.id === 'miasma' ? 'Pyre’s sulphur moon. Swirling aerosol clouds veil dark copper-rich basins and pale fractured highlands. Toxic atmosphere; explore the surface in your sealed suit.' : target.id === 'aeon' ? 'Oceans, forests and an atmosphere. Arrive above the atmosphere, then descend in normal flight.' : target.id === 'pyre' ? 'Tidally locked and 400 °C on the day side; lava fields glow through cracked basalt on the night side. Thin CO₂ air. From Aeon, arrive 1,800 km above the twilight line: light side left, glowing night side right. Miasma lies beyond the dark limb.' : 'Cratered terrain and low gravity. Arrive above the moon, then fly down to land and explore.';
     el('map-distance').textContent = formatRange(route.plan?.distance ?? nav.position.distanceTo(new Vector3(...target.center)));
     el('map-eta').textContent = route.ok ? `${route.plan.duration.toFixed(1)} s` : '—';
     el('map-approach').textContent = formatRange(target.arrivalRadius - target.radius);
@@ -56,7 +58,7 @@ export function createSystemMap(nav, onTarget = () => {}) {
   function close() { if (dialog.open) { nav.enabled = wasEnabled; dialog.close(); } }
   function open() {
     if (dialog.open) return;
-    if (document.querySelector('dialog[open]') || !nav.enabled || nav.openingActive) return;
+    if (document.querySelector('dialog[open]') || !nav.enabled || nav.openingActive || nav.mode === 'destroyed') return;
     wasEnabled = nav.enabled; returnFocus = document.activeElement;
     if (document.pointerLockElement) document.exitPointerLock();
     nav.keys.clear(); nav.gamepad?.suspend(); nav.enabled = false;

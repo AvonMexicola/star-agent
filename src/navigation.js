@@ -1,8 +1,12 @@
+import { MIASMA_ARRIVAL_ALTITUDE, miasmaArrivalDirection, constrainMiasmaStep } from './miasma-world.js';
 import * as THREE from 'three';
+import { SUN_POSITION, SUN_AXIS, sunStandoffPoint } from './stellar-world.js';
+import { createStellarThermal, stepStellarThermal, stellarIncursion } from './stellar-thermal.js';
 import { GamepadInput } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
+import { PYRE_ARRIVAL_ALTITUDE, pyreArrivalDirection, pyreLandingDirection, constrainPyreStep, pyreFrame } from './pyre-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
-import { SELENE, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
+import { SELENE, PYRE, MIASMA, bodyAt, bodyOffset, bodyHeight, bodyAltitude, bodySurfacePoint, bodySurfaceNormal } from './celestial.js';
 import { environmentAt, step as stepFlight } from './flight-model.js';
 import { SHIP_LAYOUT, shipFloorAt, constrainShipStep, interactionAt } from './boarding.js';
 
@@ -19,12 +23,13 @@ export class Navigation {
     this.station=null;this.dockedAtStation=false;this.stationLift=false;
     this.flightAssist=true;this.angularVelocity=new THREE.Vector3();
     this.travel=null;this.travelTarget=null;
+    this.stellarThermal=createStellarThermal();this.destruction=null;
     this.orbit();
     document.addEventListener('pointerlockchange',()=>{this.locked=document.pointerLockElement===canvas;document.body.classList.toggle('piloting',this.locked);if(!this.locked)this.keys.clear();});
     document.addEventListener('mousemove',e=>{if(this.locked&&this.enabled){this.controllerActive=false;this.look(-e.movementX*.0018,-e.movementY*.0018);}});
     document.addEventListener('keydown',e=>{
       this.physicalKeys.add(e.code);
-      if(!this.enabled||document.querySelector('dialog[open]'))return;
+      if(!this.enabled||this.mode==='destroyed'||document.querySelector('dialog[open]'))return;
       if(this.openingActive){this.onOpeningKey?.(e);return;}
       if(['Space','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
       if(['KeyW','KeyA','KeyS','KeyD','Space','KeyC'].includes(e.code))this.onTakeControl?.();
@@ -48,21 +53,24 @@ export class Navigation {
   }
   get flightEnvironment(){
     const body=this.body;
-    if(!body.airless)return environmentAt(this.position,RADIUS);
+    if(body.id==='aeon')return environmentAt(this.position,RADIUS);
     const local=bodyOffset(this.position,body),r=Math.max(body.radius,local.length());
+    if(body.atmosphere)return environmentAt(local,body.radius,body.atmosphere,body.gravity);
     return {groundRadius:body.radius,altitude:Math.max(0,r-body.radius),density:0,regime:'SPACE',atmosphereFraction:0,
       gravity:local.normalize().multiplyScalar(-body.gravity*(body.radius/r)**2)};
   }
   capture(){if(!this.enabled)return;try{const result=this.canvas.requestPointerLock();result?.catch(()=>this.notify('Mouse capture unavailable. Drag to look, or use the arrow keys.'));}catch{this.notify('Use arrow keys to steer.');}}
   get speedProfile(){
+    if(this.body.star){const cruise=THREE.MathUtils.lerp(50000,2000000,THREE.MathUtils.smoothstep(this.altitude,30000000,500000000)),boosted=cruise*4,limit=this.boost?boosted:cruise;return {cruise,boosted,limit,speed:limit*this.speedScale,regime:'STELLAR'};}
     return flightSpeedProfile({airless:this.body.airless,altitude:this.flightEnvironment.altitude,
       clearance:this.altitude,stationDistance:this.stationDistance,boost:this.boost,throttle:this.speedScale});
   }
   travelRoute(){
     if(!this.travelTarget)return {ok:false,reason:'Select a world on the map (M).',plan:null};
     if(this.mode!=='flight'||this.autoland||this.stationLift)return {ok:false,reason:'Launch and leave landing assist before engaging the drive.',plan:null};
-    return planTravel(this.position,this.travelTarget,{obstacles:this.station?.ready?
-      [{name:'Aeon Orbital',center:this.station.worldPosition.toArray(),radius:2000}]:[]});
+    const obstacles=[];
+    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:this.station.worldPosition.toArray(),radius:2000});
+    return planTravel(this.position,this.travelTarget,{obstacles});
   }
   beginTravel(){
     if(!this.enabled||this.travel)return false;
@@ -90,14 +98,15 @@ export class Navigation {
     travel.elapsed+=Math.max(0,Number.isFinite(dt)?dt:0);
     const sample=sampleTravel(travel.plan,travel.elapsed);
     if(travel.plan.direction.lengthSq()>0){
-      matrix.lookAt(new THREE.Vector3(),travel.plan.direction,UP);
+      matrix.lookAt(new THREE.Vector3(),travel.plan.direction,travel.targetId==='pyre'||travel.targetId==='miasma'?new THREE.Vector3(...pyreFrame().y):UP);
       const aligned=new THREE.Quaternion().setFromRotationMatrix(matrix);
       this.orientation.slerp(aligned,sample.phase==='spooling'?1-Math.exp(-4*dt):1);
     }
     this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
     if(sample.done){
       this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
-      this.notify(travel.plan.kind==='abort'?'Drive disengaged. Normal flight restored.':'Approach reached. Normal flight restored; descend to land.');
+      if(travel.plan.kind==='travel'&&(travel.targetId==='pyre'||travel.targetId==='miasma'))this.orientToward(new THREE.Vector3(...(travel.targetId==='pyre'?PYRE:MIASMA).center),new THREE.Vector3(...pyreFrame().y));
+      this.notify(travel.plan.kind==='abort'?'Drive disengaged. Normal flight restored.':travel.targetId==='star'?'Stellar observation distance reached. Watch shield temperature; Space + Shift retreats.':'Approach reached. Normal flight restored; descend to land.');
     }
   }
   startStation(){
@@ -114,6 +123,7 @@ export class Navigation {
     this.position.copy(deck);
   }
   orbit(){
+    if(this.mode==='destroyed'&&this.stellarThermal?.destroyed)return;
     this.travel=null;this.keys.clear();
     this.dockedAtStation=false;this.stationLift=false;this.flightAssist=true;this.angularVelocity.set(0,0,0);
     this.position.set(...latLonDirection(20,25)).multiplyScalar(RADIUS*2.8);
@@ -123,8 +133,27 @@ export class Navigation {
     this.velocity.set(0,0,0);this.mode='flight';this.autoland=false;this.shipPosition=null;this.speedScale=1;this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
   }
   orientToward(target,up){matrix.lookAt(this.position,target,up);this.orientation.setFromRotationMatrix(matrix);}
+  transitStar(){
+    this.orbit();this.position.copy(sunStandoffPoint());
+    this.orientToward(new THREE.Vector3(...SUN_POSITION),new THREE.Vector3(...SUN_AXIS));
+  }
+  recoverFromStar(){this.stellarThermal=createStellarThermal();this.destruction=null;this.orbit();this.enabled=true;this.notify('Replacement ship ready in Aeon orbit.');}
+  destroyFromStar(reason){
+    if(this.mode==='destroyed')return;
+    this.stellarThermal={...this.stellarThermal,hull:0,destroyed:true,reason};
+    this.destruction={position:this.position.toArray(),normal:this.sunDirection.clone().negate().toArray(),reason};
+    this.mode='destroyed';this.travel=null;this.autoland=false;this.shipPosition=null;this.dockedAtStation=false;this.stationLift=false;
+    this.keys.clear();this.physicalKeys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+    this.notify('Ship destroyed. Thermal protection failed.');
+  }
+  updateStellarThermal(dt,previous=this.position){
+    const contact=stellarIncursion(previous,this.position);
+    if(contact){this.position.copy(contact);this.destroyFromStar('Photosphere incursion');return;}
+    this.stellarThermal=stepStellarThermal(this.stellarThermal,this.position.distanceTo(new THREE.Vector3(...SUN_POSITION)),dt);
+    if(this.stellarThermal.destroyed)this.destroyFromStar(this.stellarThermal.reason);
+  }
   look(yaw,pitch){
-    if(this.travel||this.openingActive||!this.enabled)return;
+    if(this.travel||this.openingActive||!this.enabled||this.mode==='destroyed')return;
     if(this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift){
       this.angularVelocity.x+=pitch*4;this.angularVelocity.y+=yaw*4;return;
     }
@@ -171,6 +200,27 @@ export class Navigation {
     this.orientToward(this.position.clone().addScaledVector(east,1000).addScaledVector(d,-180),d);
     this.jumpHeight=0;this.jumpVelocity=0;
   }
+  /** High arrival matches the Aeon approach: sunlight left, night right. */
+  transitPyre(altitude=PYRE_ARRIVAL_ALTITUDE,direction=altitude===PYRE_ARRIVAL_ALTITUDE?pyreArrivalDirection():pyreLandingDirection()){
+    this.orbit();
+    const d=new THREE.Vector3(...direction).normalize();
+    this.position.copy(bodySurfacePoint(d,PYRE,altitude));
+    const sun=this.sunDirection,along=new THREE.Vector3().crossVectors(d,sun).normalize();
+    if(along.lengthSq()<.5)along.crossVectors(Math.abs(d.y)<.9?UP:RIGHT,d).normalize();
+    if(along.dot(new THREE.Vector3(...pyreFrame().y))<0)along.negate();
+    const dip=Math.acos(PYRE.radius/(PYRE.radius+Math.max(0,altitude))),pitch=Math.min(1.3,dip+.06);
+    this.orientToward(this.position.clone().addScaledVector(along,1000*Math.cos(pitch)).addScaledVector(d,-1000*Math.sin(pitch)),d);
+    if(altitude===PYRE_ARRIVAL_ALTITUDE)this.orientToward(new THREE.Vector3(...PYRE.center),new THREE.Vector3(...pyreFrame().y));
+    this.jumpHeight=0;this.jumpVelocity=0;
+  }
+  transitMiasma(altitude=MIASMA_ARRIVAL_ALTITUDE,direction=miasmaArrivalDirection()){
+    if(this.mode==='destroyed')return;
+    this.orbit();const d=new THREE.Vector3(...direction).normalize();
+    this.position.copy(bodySurfacePoint(d,MIASMA,altitude));
+    if(altitude>100000)this.orientToward(new THREE.Vector3(...MIASMA.center),new THREE.Vector3(...pyreFrame().y));
+    else {const east=new THREE.Vector3().crossVectors(Math.abs(d.y)<.9?UP:RIGHT,d).normalize();this.orientToward(this.position.clone().addScaledVector(east,1000).addScaledVector(d,-180),d);}
+    this.jumpHeight=0;this.jumpVelocity=0;
+  }
   get stationDistance(){return this.station?.ready?this.position.distanceTo(this.station.worldPosition):Infinity;}
   get stationLocal(){return this.station?.ready?this.station.toLocal(this.position,new THREE.Vector3()):null;}
   get deckClearance(){return this.stationLocal?this.stationLocal.y-this.station.interiorBox.min.y:Infinity;}
@@ -188,8 +238,10 @@ export class Navigation {
     this.dockedAtStation=true;this.stationLift=false;this.doorOpen=false;this.doorProgress=0;
     this.notify('Docked. F to stand; walk aft and open the hatch to explore the hangar.');
   }
-  dryGround(){if(this.body.airless)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
+  dryGround(){if(!this.body.water)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
   landOrLaunch(){
+    if(this.mode==='destroyed')return;
+    if(this.body.star){this.notify('Stars have no landing surface. Maintain observation distance.');return;}
     if(this.travel)return;
     if(this.mode==='walk'){this.notify('Walk to the cockpit and sit in the pilot chair with F before launch.');return;}
     if(this.mode==='landed'){
@@ -213,7 +265,7 @@ export class Navigation {
   touchDown(){
     if(!this.dryGround())return;
     const body=this.body,radial=this.normal;
-    const n=body.airless?bodySurfaceNormal(this.position,body):radial;
+    const n=body.water?radial:bodySurfaceNormal(this.position,body);
     const surface=bodySurfacePoint(radial,body);
     this.position.copy(surface).addScaledVector(n,3.2);
     this.mode='landed';this.autoland=false;this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
@@ -224,6 +276,7 @@ export class Navigation {
     this.notify('Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
   }
   embark(){
+    if(this.mode==='destroyed')return;
     if(this.travel)return;
     if(this.mode==='flight'){this.notify('Land your ship before disembarking. Press L near the surface.');return;}
     if(this.mode==='landed'){
@@ -249,31 +302,32 @@ export class Navigation {
     if(!this.gamepad.connected)this.controllerActive=false;
     if(pad.used)this.controllerActive=true;
     if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
+    if(this.mode==='destroyed'){if(pad.pressed.has(0))this.onRecovery?.();return;}
     if(pad.pressed.has(9))this.onControllerMenu?.();
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
-    if(!this.enabled||document.querySelector('dialog[open]'))return;
+    if(!this.enabled||this.mode==='destroyed'||document.querySelector('dialog[open]'))return;
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
-    if(this.travel){if(pad.brake)this.cancelTravel();this.updateTravel(dt);return;}
+    if(this.travel){const before=this.position.clone();if(pad.brake)this.cancelTravel();this.updateTravel(dt);this.updateStellarThermal(dt,before);return;}
     if(pad.pressed.has(8))this.onControllerHud?.();
     if(pad.pressed.has(11))this.toggleFlightAssist();
     if(pad.pressed.has(3))this.landOrLaunch();
     if(pad.pressed.has(2))this.embark();
     // Interactions may open a modal and disable navigation in this same frame.
-    if(!this.enabled||document.querySelector('dialog[open]'))return;
+    if(!this.enabled||this.mode==='destroyed'||document.querySelector('dialog[open]'))return;
     if(pad.brake){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;}
     if(this.mode==='flight'&&pad.speed)this.speedScale=clamp(this.speedScale*Math.exp(pad.speed*dt),.05,1);
     const axis=(positive,negative,analog=0)=>clamp(Number(this.keys.has(positive))-Number(this.keys.has(negative))+analog,-1,1);
     const moveForward=axis('KeyW','KeyS',pad.forward),strafe=axis('KeyD','KeyA',pad.strafe);
     const turn=axis('ArrowLeft','ArrowRight',pad.yaw),tilt=axis('ArrowUp','ArrowDown',pad.pitch);
     this.doorProgress=clamp(this.doorProgress+(this.doorOpen?dt:-dt)/1.1,0,1);
-    if(pad.brake&&this.mode==='flight'){this.boost=false;return;}
+    if(pad.brake&&this.mode==='flight'){this.boost=false;this.updateStellarThermal(dt);return;}
     const oldBody=this.body,oldNormal=this.normal;
     const yaw=turn*dt*.85;
     const pitch=tilt*dt*.85;
     const inertial=this.mode==='flight'&&!this.flightAssist&&!this.autoland&&!this.stationLift;
     if(!inertial&&(yaw||pitch))this.look(yaw,pitch);
     this.boost=this.keys.has('ShiftLeft')||this.keys.has('ShiftRight')||pad.boost;
-    if(this.mode==='landed')return;
+    if(this.mode==='landed'){this.updateStellarThermal(dt);return;}
     const forward=FORWARD.clone().applyQuaternion(this.orientation),right=RIGHT.clone().applyQuaternion(this.orientation);
     const input=new THREE.Vector3();
     input.addScaledVector(forward,moveForward);
@@ -290,7 +344,7 @@ export class Navigation {
         local=constrainShipStep(localBefore,this.toShipLocal(proposed),this.doorProgress>.98);
         proposed=this.fromShipLocal(local);floor=shipFloorAt(local.x,local.z,this.doorProgress>.98);
       }
-      const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.airless?0:terrainHeight(dir.x,dir.y,dir.z);
+      const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.water?terrainHeight(dir.x,dir.y,dir.z):0;
       if(floor!==null||this.dockedAtStation||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
       this.insideShip=floor!==null&&local.z<=4;
@@ -340,11 +394,19 @@ export class Navigation {
       const steps=clamp(Math.ceil(this.speed*dt/Math.max(10,altitude*.2)),1,96);
       for(let i=0;i<steps;i++){
         const previous=this.position.clone(),proposed=previous.clone().addScaledVector(this.velocity,dt/steps);
+        const solar=stellarIncursion(previous,proposed);
+        if(solar){this.position.copy(solar);this.destroyFromStar('Photosphere incursion');break;}
         const lunar=constrainMoonStep(previous,proposed);
         if(lunar.hit){
           this.position.copy(lunar.point);this.touchDown();break;
         }
         if(lunar.limited){proposed.copy(lunar.point);this.velocity.set(0,0,0);}
+        const pyre=constrainPyreStep(previous,proposed);
+        if(pyre.hit){this.position.copy(pyre.point);this.touchDown();break;}
+        if(pyre.limited){proposed.copy(pyre.point);this.velocity.set(0,0,0);}
+        const toxic=constrainMiasmaStep(previous,proposed);
+        if(toxic.hit){this.position.copy(toxic.point);this.touchDown();break;}
+        if(toxic.limited){proposed.copy(toxic.point);this.velocity.set(0,0,0);}
         const collision=this.station?.constrainStep(previous,proposed,this.orientation);
         this.position.copy(collision?collision.point:proposed);
         if(collision?.hit){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;break;}
@@ -355,9 +417,10 @@ export class Navigation {
       }
       // Assisted travel and inertial flight share the same swept collision path.
     }
+    if(this.mode!=='destroyed')this.updateStellarThermal(dt);
     if(pad.brake){this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);}
     const newNormal=this.normal;
-    if(!inertial&&oldBody===this.body&&this.mode!=='landed'){rotation.setFromUnitVectors(oldNormal,newNormal);this.orientation.premultiply(rotation).normalize();}
+    if(!inertial&&oldBody===this.body&&this.mode!=='landed'&&this.mode!=='destroyed'){rotation.setFromUnitVectors(oldNormal,newNormal);this.orientation.premultiply(rotation).normalize();}
     if(!Number.isFinite(this.position.length())||this.position.length()>SUN_DISTANCE*4){this.orbit();this.notify('Navigation envelope exceeded. Returned to orbit.');}
   }
 }
