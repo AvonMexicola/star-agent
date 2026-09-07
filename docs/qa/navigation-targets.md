@@ -122,3 +122,13 @@ Curated views:
 - [Centred star](navigation-targets/1440-star.png) and [Aeon, its satellites and surface sites](navigation-targets/1440-surface-locations.png).
 - [Phone planet view](navigation-targets/390-aeon.png), [paged surface sites](navigation-targets/390-surface-locations.png), and [filters](navigation-targets/phone-filters.png).
 - [Direct-sight moon lock](navigation-targets/direct-sight-ready.png), [20km arrival](navigation-targets/moon-arrival.png), [single patrol bearing](navigation-targets/mission-arrow.png), and [Kestrel reticle](navigation-targets/kestrel-ready.png).
+
+## Local integration record
+
+The final combined source includes construction audio 3a7775a, preserving its
+placement hook. All 705 unit tests pass (26.4s); the production build passes
+with the existing chunk-size advisory. Navigation source 894b660 was fast-forwarded
+into local dev/all-features and its targeting/map modules were retrieved from
+http://127.0.0.1:5178/ successfully. No service or database restart was needed.
+The audio merge introduced no navigation runtime change after the browser checks
+above. This is local integration, not a production release.

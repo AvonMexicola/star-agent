@@ -238,3 +238,9 @@ Successful building placement now plays a settling/locking sound. The
 Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring remains
 with the in-progress fauna feature; the audio callback patch is in
 [the handoff](qa/construction-audio/README.md). No new control bindings.
+
+Navigation SA-NAV-001 is locally integrated at 894b660 (PR62 draft). Refresh
+http://127.0.0.1:5178/ for the hierarchical map, signal filters, nose-lock ring
+and solo targeted drive. Source endpoints were verified after the fast-forward;
+705 combined unit tests and the build pass. No preview/database restart occurred.
+Final controller/browser evidence and limitations: docs/qa/navigation-targets.md.
