@@ -12,6 +12,7 @@ import { attachPressureElevator } from './station-elevator.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
+import { createAuthoredExterior, attachExteriorLod, STATION_EXTERIOR_URL, STATION_EXTERIOR_LOD_URL } from './station-exterior.js';
 
 /** Bake only cloned LOD geometry into the station frame, then merge compatible
  * material/attribute sets. Each moving door stays separate from static parts
@@ -64,16 +65,23 @@ export class StationComplex {
     for(const name of ['toWorld','toLocal','deckPoint','deckHeightAt','isInsideHangar'])this.hub[name]=Station.prototype[name];
     this.hub.colliders=buildStationColliders(this.hub.group);
     this.hub.lift=createElevator(this.hub.group,14.3);
-    this.ringColliders=this.exterior.rings.map(ring=>{
+    Object.assign(this,this.buildExteriorColliders());
+    this.exteriorStatus='legacy';this.exteriorError=null;this.exteriorLodError=null;
+    this.finishStatus='loading';this.finishRig=null;
+    this.readyPromise=this.load(options);
+  }
+  buildExteriorColliders(exterior=this.exterior){
+    exterior.lod?.group.removeFromParent();
+    const ringColliders=exterior.rings.map(ring=>{
       const x=ring.position.x;ring.position.x=0;
       const tree=buildStationColliders(ring);ring.position.x=x;return tree;
     });
     // Exclude the moving rings from the fixed spine collision tree.
-    for(const ring of this.exterior.rings)ring.removeFromParent();
-    this.spineColliders=buildStationColliders(this.exterior.group);
-    this.exterior.group.add(...this.exterior.rings);
-    this.finishStatus='loading';this.finishRig=null;
-    this.readyPromise=this.load(options);
+    for(const ring of exterior.rings)ring.removeFromParent();
+    let spineColliders;
+    try{spineColliders=buildStationColliders(exterior.group);}
+    finally{exterior.group.add(...exterior.rings);if(exterior.lod)exterior.group.add(exterior.lod.group);}
+    return {ringColliders,spineColliders};
   }
   async loadFinish(loader){
     try{
@@ -88,7 +96,23 @@ export class StationComplex {
   async load(options){
     try{
       const loader=new GLTFLoader();
-      const [gltf,lod,finish]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null]);
+      const exterior=options.exteriorGltf??(options.exteriorRefresh?loader.loadAsync(STATION_EXTERIOR_URL).catch(error=>{this.exteriorError=error.message;return null;}):null);
+      const exteriorLod=options.exteriorLodGltf??(options.exteriorRefresh?loader.loadAsync(STATION_EXTERIOR_LOD_URL).catch(error=>{this.exteriorLodError=error.message;return null;}):null);
+      const [gltf,lod,finish,authoredExterior,authoredLod]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null,exterior,exteriorLod]);
+      if(authoredExterior){
+        // Construct and validate the replacement before removing the fallback.
+        // Readiness remains false until its actual collision is built as well.
+        try{
+          const next=createAuthoredExterior(authoredExterior,finish?.materials);
+          const colliders=this.buildExteriorColliders(next);
+          if(authoredLod){
+            try{attachExteriorLod(next,authoredLod,finish?.materials);}
+            catch(error){this.exteriorLodError=error.message;}
+          }
+          this.exterior.group.removeFromParent();this.exterior=next;this.scene.add(next.group);
+          Object.assign(this,colliders);this.exteriorStatus='geometry-review';
+        }catch(error){this.exteriorError=error.message;}
+      }
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       if(finish){
         attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials,shopGraphics:finish.shopGraphics});
@@ -240,6 +264,7 @@ export class StationComplex {
     this.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
     this.hub.group.visible=cameraDistance<140;
     this.exterior.hubShell.visible=!this.hub.group.visible;
+    this.exterior.updateDetail?.(cameraDistance);
     for(const light of this.hub.lights)light.visible=this.location==='hub'&&position.distanceTo(this.centre)<100;
     this.rebase(origin);
   }
@@ -293,5 +318,5 @@ export class StationComplex {
     if(Math.abs(p.x)<3.4&&p.z>lift.z-3&&p.z<lift.z+.6)return {kind:'door',label:lift.open?'WALK INTO ELEVATOR · F TO CLOSE':'F · CALL ELEVATOR'};
     return null;
   }
-  get snapshot(){return {finish:this.finishStatus,finishError:this.finishError,finishMaterials:this.finishMaterials?.stats,pods:this.pods.length,lodBatches:this.lodBatches.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
+  get snapshot(){return {exterior:this.exteriorStatus,exteriorDetail:this.exterior.detailLevel??'hero',exteriorError:this.exteriorError,exteriorLodError:this.exteriorLodError,finish:this.finishStatus,finishError:this.finishError,finishMaterials:this.finishMaterials?.stats,pods:this.pods.length,lodBatches:this.lodBatches.length,activePod:this.activeIndex+1,parkedPod:this.parkedPod+1,location:this.location,rings:this.exterior.rings.map(r=>r.rotation.x),elevator:this.lift?.progress};}
 }

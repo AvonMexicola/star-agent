@@ -1,0 +1,189 @@
+{
+  "scope": "Independent paired geometry checkpoint; not final asset acceptance. Only legacy/ and authored/ contain valid captures.",
+  "candidateSHA256": "079f7262e992ffaadd56c4ad16c201b69bb23f0664cf19ff2e692312444334a8",
+  "baselineSource": "8576e994b8e03d8987ac487fd72e609062bbae04",
+  "run": "npm run test:browser -- -c /tmp/star-agent-station-baseline-review/capture.config.mjs",
+  "runResult": "1 passed in 1.8 minutes; zero browser console/page warnings or errors",
+  "invalidAttempts": [
+    "invalid-attempt-01/README.md",
+    "invalid-attempt-02/README.md"
+  ],
+  "frames": [
+    {
+      "variant": "legacy",
+      "name": "overview-quarter",
+      "eye": [
+        -4484,
+        2484.2999999999997,
+        -4956
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "drawCalls": 231,
+      "triangles": 365314,
+      "image": "legacy/overview-quarter.png"
+    },
+    {
+      "variant": "legacy",
+      "name": "overview-broadside",
+      "eye": [
+        0,
+        900,
+        -6000
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "drawCalls": 213,
+      "triangles": 317186,
+      "image": "legacy/overview-broadside.png"
+    },
+    {
+      "variant": "legacy",
+      "name": "overview-ring-face",
+      "eye": [
+        -5600,
+        1100,
+        -1800
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "drawCalls": 234,
+      "triangles": 360578,
+      "image": "legacy/overview-ring-face.png"
+    },
+    {
+      "variant": "legacy",
+      "name": "berth-05-scale",
+      "eye": [
+        -5,
+        35,
+        -630
+      ],
+      "target": [
+        -95,
+        -4,
+        -520
+      ],
+      "drawCalls": 386,
+      "triangles": 530382,
+      "image": "legacy/berth-05-scale.png"
+    },
+    {
+      "variant": "legacy",
+      "name": "bearing-scale",
+      "eye": [
+        -1420,
+        250,
+        -380
+      ],
+      "target": [
+        -1110,
+        0,
+        0
+      ],
+      "drawCalls": 225,
+      "triangles": 374410,
+      "image": "legacy/bearing-scale.png"
+    },
+    {
+      "variant": "authored",
+      "name": "overview-quarter",
+      "eye": [
+        -4484,
+        2484.2999999999997,
+        -4956
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "drawCalls": 160,
+      "triangles": 439858,
+      "image": "authored/overview-quarter.png"
+    },
+    {
+      "variant": "authored",
+      "name": "overview-broadside",
+      "eye": [
+        0,
+        900,
+        -6000
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "drawCalls": 142,
+      "triangles": 391730,
+      "image": "authored/overview-broadside.png"
+    },
+    {
+      "variant": "authored",
+      "name": "overview-ring-face",
+      "eye": [
+        -5600,
+        1100,
+        -1800
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "drawCalls": 163,
+      "triangles": 435122,
+      "image": "authored/overview-ring-face.png"
+    },
+    {
+      "variant": "authored",
+      "name": "berth-05-scale",
+      "eye": [
+        -5,
+        35,
+        -630
+      ],
+      "target": [
+        -95,
+        -4,
+        -520
+      ],
+      "drawCalls": 345,
+      "triangles": 605286,
+      "image": "authored/berth-05-scale.png"
+    },
+    {
+      "variant": "authored",
+      "name": "bearing-scale",
+      "eye": [
+        -1420,
+        250,
+        -380
+      ],
+      "target": [
+        -1110,
+        0,
+        0
+      ],
+      "drawCalls": 164,
+      "triangles": 449074,
+      "image": "authored/bearing-scale.png"
+    }
+  ],
+  "assessment": {
+    "legacySilhouette": 3.0,
+    "authoredSilhouette": 4.0,
+    "finalArtAccepted": false,
+    "reason": "Unique material finishing and final functional/motion/timing review remain pending; current two exterior overview frames exceed the 400k orbit triangle limit."
+  }
+}

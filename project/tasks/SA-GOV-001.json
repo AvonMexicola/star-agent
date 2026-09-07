@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex integration session",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/contributor-framework",
   "base": "571d781bde11d575fe229c14f73accfe060251a1",
   "updated": "2026-09-07",
@@ -33,7 +33,8 @@
     "docs/decisions/",
     "docs/archive/roadmap-2026-09-06.md",
     "docs/briefs/contributor-framework.md",
-    "docs/qa/contributor-framework.md"
+    "docs/qa/contributor-framework.md",
+    "docs/qa/contributor-framework/"
   ],
   "brief": "docs/briefs/contributor-framework.md"
 }

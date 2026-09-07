@@ -1,0 +1,486 @@
+{
+  "variant": "authored",
+  "identity": "079f7262e992ffaadd56c4ad16c201b69bb23f0664cf19ff2e692312444334a8",
+  "browser": "151.0.7922.173",
+  "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "viewport": [
+    1440,
+    900
+  ],
+  "seed": 7291,
+  "countsIncludeShadowPasses": true,
+  "timing": "Not measured; other GPU workloads may be active",
+  "errors": [],
+  "warnings": [],
+  "captures": [
+    {
+      "name": "quarter",
+      "eye": [
+        -3800,
+        2100,
+        -4200
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "drawCalls": 148,
+      "triangles": 412210,
+      "camera": {
+        "mode": "cockpit",
+        "shipVisible": false,
+        "selected": false,
+        "obstructed": false,
+        "position": [
+          674512.487403338,
+          442329.976731905,
+          1490612.5246090328
+        ],
+        "fov": 52
+      },
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.0002849399999999986,
+          -0.0002849399999999986
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 1,
+        "distance": 5159.983042607725,
+        "local": [
+          -2945.0000000000155,
+          2099.999999999972,
+          -3679.9999999999063
+        ],
+        "deckClearance": 2107.999999999972,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "renderScale": 1
+    },
+    {
+      "name": "broadside",
+      "eye": [
+        0,
+        900,
+        -6000
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "drawCalls": 148,
+      "triangles": 405554,
+      "camera": {
+        "mode": "cockpit",
+        "shipVisible": false,
+        "selected": false,
+        "obstructed": false,
+        "position": [
+          676082.3216933348,
+          438348.8757378835,
+          1489714.4961143003
+        ],
+        "fov": 52
+      },
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.0001575,
+          -0.0001575
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 1,
+        "distance": 5618.845521991134,
+        "local": [
+          855.0000000000105,
+          899.9999999999459,
+          -5479.999999999991
+        ],
+        "deckClearance": 907.9999999999459,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "renderScale": 1
+    },
+    {
+      "name": "ring-face",
+      "eye": [
+        -5600,
+        1100,
+        -1800
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "drawCalls": 163,
+      "triangles": 435122,
+      "camera": {
+        "mode": "cockpit",
+        "shipVisible": false,
+        "selected": false,
+        "obstructed": false,
+        "position": [
+          671736.4712806143,
+          443809.82417412277,
+          1490290.3662098881
+        ],
+        "fov": 52
+      },
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.0001650149999999987,
+          -0.0001650149999999987
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 1,
+        "distance": 5036.211373641857,
+        "local": [
+          -4744.999999999995,
+          1099.999999999854,
+          -1279.999999999986
+        ],
+        "deckClearance": 1107.999999999854,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "renderScale": 1
+    },
+    {
+      "name": "bearing",
+      "eye": [
+        -1420,
+        250,
+        -380
+      ],
+      "target": [
+        -1110,
+        0,
+        0
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "drawCalls": 164,
+      "triangles": 449074,
+      "camera": {
+        "mode": "cockpit",
+        "shipVisible": false,
+        "selected": false,
+        "obstructed": false,
+        "position": [
+          670548.1795698588,
+          439552.25803189736,
+          1491110.3621578815
+        ],
+        "fov": 52
+      },
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.00019498500000000128,
+          -0.00019498500000000128
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 1,
+        "distance": 633.5021704777254,
+        "local": [
+          -565.0000000000348,
+          249.99999999987222,
+          140.00000000004854
+        ],
+        "deckClearance": 257.9999999998722,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "renderScale": 1
+    },
+    {
+      "name": "spine",
+      "eye": [
+        -445,
+        140,
+        -300
+      ],
+      "target": [
+        -200,
+        -50,
+        0
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "drawCalls": 164,
+      "triangles": 449074,
+      "camera": {
+        "mode": "cockpit",
+        "shipVisible": false,
+        "selected": false,
+        "obstructed": false,
+        "position": [
+          670535.0983745753,
+          438582.01025630423,
+          1491276.4137651804
+        ],
+        "fov": 52
+      },
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.0002700000000000033,
+          -0.0002700000000000033
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 1,
+        "distance": 485.9012245301923,
+        "local": [
+          409.9999999999756,
+          139.99999999985957,
+          219.99999999999932
+        ],
+        "deckClearance": 147.99999999985957,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "renderScale": 1
+    },
+    {
+      "name": "berth05",
+      "eye": [
+        -5,
+        35,
+        -630
+      ],
+      "target": [
+        -95,
+        -4,
+        -520
+      ],
+      "viewport": [
+        1440,
+        900
+      ],
+      "drawCalls": 345,
+      "triangles": 605286,
+      "camera": {
+        "mode": "cockpit",
+        "shipVisible": false,
+        "selected": false,
+        "obstructed": false,
+        "position": [
+          670841.2049029695,
+          438129.8268930013,
+          1491152.5025097334
+        ],
+        "fov": 52
+      },
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.0003374549999999972,
+          -0.0003374549999999972
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 1,
+        "distance": 857.8024248041974,
+        "local": [
+          849.999999999981,
+          34.99999999985927,
+          -110.00000000001302
+        ],
+        "deckClearance": 42.99999999985927,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "renderScale": 1
+    },
+    {
+      "name": "phone-overview",
+      "eye": [
+        -10300,
+        5700,
+        -11400
+      ],
+      "target": [
+        0,
+        -35,
+        0
+      ],
+      "viewport": [
+        390,
+        844
+      ],
+      "drawCalls": 110,
+      "triangles": 354610,
+      "camera": {
+        "mode": "cockpit",
+        "shipVisible": false,
+        "selected": false,
+        "obstructed": false,
+        "position": [
+          681815.5678492218,
+          449540.243165153,
+          1489298.34274851
+        ],
+        "fov": 52
+      },
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.00018751500000000197,
+          -0.00018751500000000197
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 1,
+        "distance": 15494.270715332119,
+        "local": [
+          -9445.000000000027,
+          5699.9999999998845,
+          -10879.99999999997
+        ],
+        "deckClearance": 5707.9999999998845,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "renderScale": 1
+    }
+  ]
+}
