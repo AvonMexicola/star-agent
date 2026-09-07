@@ -4,4 +4,10 @@ test-results/
 playwright-report/
 *.log
 blender/__pycache__/
+blender/parts/__pycache__/
+assets/kestrel/*.blend1
+assets/kestrel/kestrel-blockout.glb
+assets/kestrel/kestrel-detail.glb
+assets/kestrel/kestrel-meshy-input.glb
+assets/kestrel/kestrel-meshy-clean.glb
 .vercel/

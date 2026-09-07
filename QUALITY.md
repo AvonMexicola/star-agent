@@ -22,6 +22,21 @@ Barlow Condensed numerals, DM Sans body) and the base `dialog` chrome. New palet
 **World.** No popping (geomorph + hysteresis), no z-fighting, no flat plane views: at any destination the screenshot must
 show relief, material detail and something on the horizon. Night has light sources. Hangars are lit by their lights.
 
+## 1b. High-quality asset recipe (decided 2026-09-06, Cees: "combine Meshy and Blender")
+
+Blender makes the geometry, Meshy paints it. In order of impact:
+1. **Geometry in Blender by script** (bevels 2-seg, EXACT booleans for seams, clean UVs via smart-project + seams on
+   hard edges); **textures from Meshy's text-to-texture on the uploaded mesh** (PBR: albedo/rough/metal/normal with wear,
+   decals, grime); Blender bakes/packs to 1024² WebP and exports glTF. Hard-surface only goes this way.
+2. **`blender/materials.py`**: procedural Principled node groups — edge wear (bevel + pointiness), cavity grime (AO),
+   panel-line darkening, colour noise — baked at export. Every asset gets it; no uniform materials ship.
+3. **Kitbash part library** (`blender/parts/`): hatches, vents, pipes, clamps, bolts, rails, fixtures, with a manifest;
+   assets are composed from parts.
+4. **Geometry Nodes** for detail density: cables along curves, rivet rows on edges, greeble scatter on flat faces.
+5. **Render-in-the-loop**: EEVEE turntable, 4 angles, HDRI; a reviewer session scores; ≥ 3 rounds before export.
+6. **Reference boards** in `docs/refs/<class>/` (station, ship, gear, flora, UI); match references, not adjectives.
+7. **Meshy for organic base sculpts only** (flora, rocks, creatures), then Blender retopo + the same material pass.
+
 ## 2. Definition of Done — every PR (functional + visual)
 
 - [ ] `npm test` green; `vite build` green; zero console errors/warnings in the browser check.
@@ -30,9 +45,9 @@ show relief, material detail and something on the horizon. Night has light sourc
 - [ ] Perf: draw calls, triangles and ms/frame at the viewpoint the PR affects, within budget (§5), noted in the PR.
 - [ ] Accessibility/reach: works with keyboard, controller and touch where the feature is reachable at all.
 - [ ] HANDOFF `READY FOR REVIEW: <files>` line; PR based on `feat/visual-fidelity`; no branch switching in the shared tree.
-- [ ] **Visual PRs: an Opus review with the rubric (§3), score ≥ 4.0**, or an explicit "polish later" decision from Cees.
+- [ ] **Visual PRs: a reviewer-session review with the rubric (§3), score ≥ 4.0**, or an explicit "polish later" decision from Cees.
 
-## 3. Visual review rubric (Opus reviewer, 1–5 each; merge at ≥ 4.0 average, no item < 3)
+## 3. Visual review rubric (Astra/Codex reviewer session, 1–5 each; merge at ≥ 4.0 average, no item < 3)
 
 | # | Criterion | 5 looks like |
 |---|---|---|
@@ -67,10 +82,10 @@ Assets: props ≤ 10 k tris / ≤ 1 MB, characters ≤ 20 k / ≤ 2 MB, ships �
 
 ## 6. Process
 
-1. **Two-stage review on every PR**: Claude (functional: tests, build, tour, perf) → Opus (visual rubric) for anything
-   the player sees. Findings go to HANDOFF as numbered requests; the PR isn't merged until the score passes or Cees
+1. **Two-stage review on every PR**: Claude (cheap functional gate: tests, build) → an Astra/Codex **reviewer session**
+   (visual rubric, never the session that built the PR) for anything the player sees. Findings go to HANDOFF as numbered requests; the PR isn't merged until the score passes or Cees
    waives it.
-2. **Weekly quality pass** (Claude): full tour at the §4 viewpoints on the integration branch, a scored report in
+2. **Weekly quality pass** (an Astra reviewer session; Claude spot-checks): full tour at the §4 viewpoints on the integration branch, a scored report in
    `docs/qa/weekly-<date>.md`, top-10 defects filed. Cees's own review notes are logged there too.
 3. **Asset intake**: nothing enters `public/models/` without a manifest row, a props-page render, and a rubric score.
 4. **Design tokens are law**: a PR that adds a hex colour or a font-family outside `src/style.css` tokens gets a

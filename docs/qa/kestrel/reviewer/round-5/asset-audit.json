@@ -1,0 +1,487 @@
+{
+  "sha256": "584ec536bd5b369dfca08337728220bc5f3dbdbc9884e4a3a9da6c3bfb91e2df",
+  "bytes": 2456352,
+  "triangles": 36226,
+  "meshCount": 45,
+  "textures": [
+    {
+      "name": "kestrel-normal",
+      "mimeType": "image/webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 82172
+    },
+    {
+      "name": "kestrel-orm",
+      "mimeType": "image/webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 220576
+    },
+    {
+      "name": "kestrel-basecolor",
+      "mimeType": "image/webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 180078
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0.5405092540692759,
+        1,
+        0.7384259200173295
+      ],
+      "extensions": {
+        "KHR_materials_emissive_strength": {
+          "emissiveStrength": 1.2960000336170197
+        }
+      },
+      "name": "Status | mint",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.46700000762939453,
+          0.8640000224113464,
+          0.6380000114440918,
+          1
+        ],
+        "metallicFactor": 0.10000000149011612,
+        "roughnessFactor": 0.30000001192092896
+      }
+    },
+    {
+      "alphaMode": "BLEND",
+      "doubleSided": true,
+      "name": "Canopy | smoked quartz",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0430000014603138,
+          0.11500000208616257,
+          0.13500000536441803,
+          0.28999999165534973
+        ],
+        "metallicFactor": 0.2199999988079071,
+        "roughnessFactor": 0.1599999964237213
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Kestrel | baked manufactured PBR",
+      "normalTexture": {
+        "index": 0
+      },
+      "occlusionTexture": {
+        "index": 1
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 2
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    },
+    {
+      "alphaMode": "BLEND",
+      "doubleSided": true,
+      "name": "HUD | optical glass",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.46000000834465027,
+          0.1599999964237213
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.18000000715255737
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "MFD | unpowered",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.004999999888241291,
+          0.023000000044703484,
+          0.026000000536441803,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.699999988079071
+      }
+    },
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0.5405092540692759,
+        1,
+        0.7384259200173295
+      ],
+      "extensions": {
+        "KHR_materials_emissive_strength": {
+          "emissiveStrength": 1.555199999141692
+        }
+      },
+      "name": "Nozzle | mint core",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.46700000762939453,
+          0.8640000224113464,
+          0.6380000114440918,
+          1
+        ],
+        "metallicFactor": 0.15000000596046448,
+        "roughnessFactor": 0.3199999928474426
+      }
+    }
+  ],
+  "animationChannels": {
+    "CanopyOpen": [
+      {
+        "node": "Canopy",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      }
+    ],
+    "GearDown": [
+      {
+        "node": "Gear_L",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Oleo_L",
+        "path": "translation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "ShoeJoint_L",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Gear_Nose",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Oleo_Nose",
+        "path": "translation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "ShoeJoint_Nose",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Gear_R",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Oleo_R",
+        "path": "translation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "ShoeJoint_R",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      }
+    ],
+    "LadderDown": [
+      {
+        "node": "Ladder",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Ladder_Upper",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Ladder_Middle",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      },
+      {
+        "node": "Ladder_Lower",
+        "path": "rotation",
+        "interpolation": "LINEAR"
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "MFD_1",
+      "normals": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "indices": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          0
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "translation": null,
+      "rotation": null
+    },
+    {
+      "name": "MFD_2",
+      "normals": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "indices": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          0
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "translation": null,
+      "rotation": null
+    },
+    {
+      "name": "MFD_3",
+      "normals": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "indices": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          0
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "translation": null,
+      "rotation": null
+    },
+    {
+      "name": "MFD_4",
+      "normals": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "indices": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          0
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "translation": null,
+      "rotation": null
+    }
+  ]
+}

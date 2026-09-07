@@ -1,0 +1,190 @@
+{
+  "method": "CPU source-only review. Actual main.js selection callback extracted without modification; scene/model loading dependencies are controlled fakes for rollback tests. Actual Kestrel adapter loads original GLB geometry with image references removed; canvas context is stubbed for text/page-data checks. No browser/GPU/visual approval.",
+  "sourceHashes": {
+    "src/main.js": "814f3de1e11f155ae29ce28cb1b024c8cba480c7d9357dc2f66703369f678897",
+    "src/kestrel.js": "db6c7a674c49e52ae08381afb31227eead254f32839d0dc9c70eb2cee572a9dd",
+    "src/fleet.js": "91e35710c7434c46d58950819a5dc1314d4b515694bf80c2e3f5fd5280da407a",
+    "src/test-flight.js": "c0f8e795da03b00bc663f80008ef22a54357bea2b8c9317a338bb0fe0b5ce94d",
+    "src/navigation.js": "4d7eef7e3eb86a43dc21fecf3916ddd7730fce71ee482eecd020c5cb4ecb4bf5",
+    "src/ship-mfd.js": "048bcedc8868870bd8400ac5259f63f7e6e9d195c6586aa1486387732abed3ab"
+  },
+  "assetSha256": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+  "checks": [
+    {
+      "check": "Actual main.js selection callback: rejected load preserves current model/selection/capacity/save, cleans failed model, then successful retry selects Kestrel",
+      "passed": true,
+      "message": "Ship unavailable: injected GLB load failure. Your current ship remains selected."
+    },
+    {
+      "check": "Actual selection callback rechecks cargo after awaited model readiness",
+      "passed": true,
+      "message": "Cargo changed during preparation. Unload before switching to Kestrel."
+    },
+    {
+      "check": "Actual selection callback rechecks minerals after awaited model readiness",
+      "passed": true,
+      "message": "Cargo changed during preparation. Unload before switching to Kestrel."
+    },
+    {
+      "check": "Actual selection callback rechecks depart after awaited model readiness",
+      "passed": true,
+      "message": "Ship selection cancelled: you left the station pad."
+    },
+    {
+      "check": "Actual GLB adapter uses supplied live mechanism progress, full-thrust authored cones and actual flight MFD data, with four empty S2 mounts",
+      "passed": true,
+      "snapshot": {
+        "ready": true,
+        "progress": {
+          "canopy": 0.4,
+          "gear": 0.35,
+          "ladder": 0.6
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 0,
+          "ladder": 1
+        },
+        "throttle": 1,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "VELOCITY: 31.0 m/s",
+              "ALTITUDE AGL: 8.8 km",
+              "FLIGHT CONTROL: ASSIST ON"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "COURSE: FREE EXPLORATION",
+              "BEARING: NO COURSE",
+              "POSITION: 90.00 / 0.00"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: MOVING",
+              "LADDER: MOVING",
+              "LANDING GEAR: MOVING"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "BUILDER: MERIDIAN SHIPWORKS",
+              "WEAPON MOUNTS: 4 × S2 / EMPTY",
+              "CARGO HOLD: NONE / PILOT BACKPACK"
+            ]
+          }
+        ],
+        "hardpoints": [
+          {
+            "node": "HP_Belly",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_Nose",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingL",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingR",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          }
+        ]
+      }
+    },
+    {
+      "check": "Power-off update immediately removes afterburners and paints truthful emergency/access/no-cargo pages",
+      "passed": true,
+      "snapshot": {
+        "ready": true,
+        "progress": {
+          "canopy": 0.4,
+          "gear": 0.35,
+          "ladder": 0.6
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 0,
+          "ladder": 1
+        },
+        "throttle": 0,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "MAIN POWER: OFF",
+              "PROPULSION: DISABLED",
+              "SHIP VELOCITY: 31.0 m/s"
+            ]
+          },
+          {
+            "title": "NAVIGATION",
+            "values": [
+              "MAIN POWER: OFF",
+              "NAVIGATION: STANDBY",
+              "FLIGHT CONTROLS: UNAVAILABLE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "MAIN POWER: OFF",
+              "ACCESS: EMERGENCY POWER",
+              "DISEMBARK: LANDED / DOCKED ONLY"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "BUILDER: MERIDIAN SHIPWORKS",
+              "WEAPON MOUNTS: 4 × S2 / EMPTY",
+              "CARGO HOLD: NONE"
+            ]
+          }
+        ],
+        "hardpoints": [
+          {
+            "node": "HP_Belly",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_Nose",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingL",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingR",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          }
+        ]
+      }
+    }
+  ]
+}

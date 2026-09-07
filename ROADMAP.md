@@ -9,7 +9,14 @@ and fight, on a ¼-Earth procedural planet and its neighbours, with no loading s
 
 ---
 
-## Token policy (decided 2026-09-05)
+## Token policy v2 (2026-09-06 21:10)
+
+Reviews move to Astra too: a Codex/Sol **reviewer session** (never the builder) scores every player-visible PR on the
+QUALITY.md rubric and posts `READY FOR MERGE: #N (score)` in HANDOFF.md. Claude keeps only the cheap gates (tests, build,
+spot-check of the reviewer's screenshots), merges, deploys, and maintains the docs. No Claude subagents unless Cees asks
+for one by name. The v1 policy below stands otherwise.
+
+## Token policy v1 (decided 2026-09-05)
 
 Cees's ChatGPT/Codex plan is now 20×, so **implementation load goes to Astra and its Codex subagents (Sol 5.6 for
 bounded, test-covered pieces)**. Claude's budget is reserved for: project management, design specs and acceptance

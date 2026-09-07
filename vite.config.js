@@ -25,6 +25,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve('index.html'),
+        kestrel: resolve('dev/kestrel.html'),
         effects: resolve('effects/index.html'),
         atlasMarkIIStudio: resolve('src/atlas-mark-ii-studio.js'),
         atlasMarkIIStudioStyle: resolve('src/atlas-mark-ii-studio.css'),
