@@ -2059,3 +2059,16 @@ as6d3abb0. Shared5178 sound studio verified real Pyrebear output and mute0.
 No shared service/database restart or public deployment. Audio file claims released.
 
 SA-FAU-002 deer asset repair complete as a scoped review checkpoint: final GLB83addc,1.20MB/15,187tris, editable Blender/source and reproducible builder retained. New1.6s slow four-beat walk fixes source crossing/reach; no skin/bind surgery was needed.193-phase export deformation/contact/loop check passes. Actual Three viewer playback/scrub desktop/mobile passes9.8s (Chromium151/AMD860M ANGLE GLES3.2), root inspected captures. Independent Astra five scored dimensions4/5; full continuous-motion aesthetic score remains open. Deer remains asset-only, no biome/combat. Viewer5515 /scripts/fixtures/creature-rig.html?model=deer. Pipeline memory docs/development/creature-pipeline.md and full QA/source record retained. Shared integration remains steward-owned.
+
+SA-CARGO-001 GPU NEXT / INTEGRATION UPDATE17:45UTC: combined2f3249f has been
+merged into the isolated cargo branch (17769ed), preserving rover/fauna/character,
+base-pad landing and combat controls. Final combined build/CPU checks running.
+Rover's browser exited; a fauna suloher case is currently active. Cargo reserves
+the next5535 three-case window immediately after that job releases/exits, roughly
+3minutes. Please hold new jobs until this cargo recheck releases. It validates
+8SBU purchase/walking/carry,512SBU Atlas rendering and player-pad controller build.
+Cargo migration002 remains additive; base-power003/social004 must stay distinct.
+No shared source/service/database update from cargo yet. Integration steward has
+released shared promotion; cargo will claim a short serialized merge after QA.
+
+SA-CARGO-001 GPU ACQUIRED 18:01:09 UTC: both rover/fauna Playwright processes have exited; inventory is idle. Starting the previously reserved final5535 three-case check on fdf106d, one worker, roughly3minutes. No FPS claim while the user may be playing. Please hold ALL further automated graphics jobs until this cargo window explicitly releases. No shared service/database/source change yet.

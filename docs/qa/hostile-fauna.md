@@ -1,7 +1,8 @@
 # Hostile fauna integration record
 
-Development candidate on `feat/pyrebear`; local integration, Suloher controller
-journey and final visual acceptance remain pending. The complete Pyrebear route
+Development candidate on `feat/pyrebear`; checkpoint5a3cf0b is included in local
+`dev/all-features` promotion2f3249f. The complete Suloher controller journey now passes; final actual-world visual
+acceptance remains pending. The complete Pyrebear route
 has passed against a frozen production build. This record is updated as
 checks finish; the asset receipt is in [pyrebear-asset.md](pyrebear-asset.md).
 
@@ -106,3 +107,27 @@ run separately reports30 passing individual cases. Final dog-only pose export
 is `58e0ea69a08c5f49adc76fa546dae794ab7b797c44c223591d4b2a3dbf0f3928`,
 with unchanged original walk/skin/materials and scoped corpse score4/5.
 The full independent report retains the earlier3/5 dog rejection.
+
+## Corrected controller rerun
+
+The first post-footing Suloher rerun physically landed, exited and approached
+the same deterministic creature. It advanced at4m/s and successfully bit the
+player, confirming the earlier5.698m stop was fixed in actual gameplay. The
+2.5-minute trial then failed a fixture assertion: after consuming a bandage,
+a later bite reduced health back to92 before the final snapshot. The existing
+bandage transaction heals15 and stops bleeding; the fixture now observes that
+state and quantity decrement while the controller action executes, rather than
+requiring health to remain elevated through a subsequent hostile attack.
+`failure-bandage-race.json` retains the failing trial in ignored evidence.
+No runtime or asset modification accompanied this test correction.
+
+The corrected Suloher route passed in3.4minutes with injected standard Gamepad:
+physical landing/seat exit/hatch/ramp and terrain approach, real bite, quick-slot
+bandage healing/bleeding clear, right-stick aim, three carbine hits, held death,
+close corpse, Menu/held-RT suppression, physical approach to a second creature,
+downing, B cannot escape medical lock, A evacuates to Aeon orbit with100health
+and identical inventory. Chromium151.0.7922.173, AMD860M ANGLE GLES3.2,1280×800;
+no page/console/shader errors. This tested the final58e dog asset and5a3cf0b
+runtime. Root inspected the close corpse image; its steep top-down framing is
+gameplay evidence, not the final art composition. Physical hardware remains
+untested. Final close-world art/motion capture is a separate pending check.

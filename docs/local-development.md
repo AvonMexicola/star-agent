@@ -228,8 +228,9 @@ The fauna branch adds offline Pyrebear and Suloher encounters. With development
 tools enabled, use Test starts → Pyrebear habitat or Suloher habitat, land, exit
 the ship physically, and approach wildlife. Carbine/pistol rounds use the real
 loadout; Pyrebear has 240 HP and Suloher 90 HP. Both have authored walk/death clips.
-The Pyrebear controller journey passed; the corrected Suloher route and final
-actual-world motion review remain pending. These checkpoints are not a claim of
+Both Pyrebear and corrected Suloher controller journeys passed. The Suloher
+route includes biting, bandage use and inventory-preserving medical evacuation.
+Final actual-world motion/art review remains pending. These checkpoints are not a claim of
 complete gameplay acceptance. See [hostile fauna QA](qa/hostile-fauna.md).
 
 The supplied deer has a repaired, calmer walk and preserved skin/bind rig. On a
@@ -238,4 +239,5 @@ for an orbitable animation preview. This is an asset viewer; deer spawning is
 not implemented. The [deer repair record](qa/deer-rig.md) retains source, Blender
 file, exact export identity and before/after evidence. Reuse the
 [creature pipeline](development/creature-pipeline.md) for future animals.
-The integration steward owns shared local merges; public deployment is separate.
+Hostile checkpoint5a3cf0b was included in local promotion2f3249f. Deer checkpoint
+b3eedc0 remains queued for the integration steward; public deployment is separate.
