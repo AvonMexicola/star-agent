@@ -4,8 +4,12 @@ Original compact enclosed four-wheel mining vehicle. This is a development
 candidate; see the current [production record](../../docs/qa/mining-rover/production-record.md)
 for validation and independent review status.
 
-Current export is candidate 10: **21,570 triangles / 2,177,260 bytes**, SHA-256
-`88448d9dd48e0a0acdb2397465302e8ab41335b8ffaab6234050d136bf6cc78f`.
+Current export is windscreen correction 11: **21,526 triangles / 2,175,556 bytes**,
+SHA-256 `831b9569633efda11652e3827057d2f4bc3f47d20f23a47df152fa437cb29468`.
+The [bounded correction record](../../docs/qa/mining-rover/windscreen-open/README.md)
+proves only the 44-triangle center strut was removed; the continuous pane, all
+remaining geometry, PBR maps and mechanisms are unchanged. The paired native cockpit
+comparison passes and confirms the clear forward view at the unchanged pilot eye. The following review scores describe candidate 10.
 The [strict 09→10 delta](../../docs/qa/mining-rover/review-candidate-10-delta.md)
 retains geometry, UVs, hierarchy and mechanism layout; only rod/cap normals and
 the ORM payload change. Native static review is 4.04/5; keyboard motion is 3.8/5,
