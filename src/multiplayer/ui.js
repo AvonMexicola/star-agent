@@ -1,5 +1,6 @@
 import { CATALOG, itemMass, quantityLabel } from '../inventory/containers.js';
 import { SUIT_COLORS } from './protocol.js';
+import { createSocialUI } from './social-ui.js';
 
 if (typeof document !== 'undefined') void import('./ui.css');
 
@@ -38,6 +39,8 @@ export function normalizeMultiplayerState(value = {}) {
     inventory: state?.inventory ?? null,
     health: Number.isFinite(state?.health) ? state.health : Number.isFinite(state?.inventory?.health) ? state.inventory.health : null,
     drops: Array.isArray(state?.drops) ? state.drops : [],
+    error: typeof state?.error === 'string' ? state.error : null,
+    moderation: typeof state?.moderation === 'string' ? state.moderation : null,
   };
 }
 
@@ -194,11 +197,12 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
   commsDialog.id = 'multiplayer-comms-dialog';
   commsDialog.setAttribute('aria-labelledby', 'multiplayer-comms-title');
   commsDialog.innerHTML = `<div class="dialog-top mp-dialog-top"><span class="eyebrow">Ship communications</span><button type="button" data-mp-close aria-label="Close communications">✕</button></div>
-    <h2 id="multiplayer-comms-title">Shared-flight link</h2>
+    <h2 id="multiplayer-comms-title">Communications</h2>
+    <div data-comms-flight>
     <div class="mp-status-grid"><div><span>Connection</span><strong data-comms-connection></strong></div><div><span>Pilots</span><strong data-comms-players></strong></div><div><span>Callsign</span><strong data-comms-callsign></strong></div><div><span>Health</span><strong data-comms-health></strong></div></div>
     <section class="mp-hangar"><span>Hangar assignment</span><strong data-hangar-status></strong><small data-hangar-pad></small><small data-hangar-expiry></small></section>
     <div class="mp-action-row"><button type="button" data-request-hangar data-controller-focus data-controller-key="request-hangar">Request hangar</button><button type="button" data-cancel-hangar data-controller-key="cancel-hangar">Cancel request</button><button type="button" data-comms-join data-controller-key="comms-join">Join multiplayer</button><button type="button" data-comms-leave data-controller-key="comms-leave">Leave multiplayer</button><button type="button" data-open-account data-controller-key="comms-account">Account</button></div>
-    <div class="mp-roster" aria-label="Connected pilots"></div><p class="mp-feedback" role="status" aria-live="polite"></p>
+    <div class="mp-roster" aria-label="Connected pilots"></div></div><p class="mp-feedback" role="status" aria-live="polite"></p>
     <p class="mp-controller-note">Controller: D-pad or left stick to choose · A to confirm · B to return</p>`;
 
   const inventoryDialog = document.createElement('dialog');
@@ -209,6 +213,14 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     <p class="mp-controller-note">Transfers and drops are checked by the server against access, proximity, capacity, and manifest revision.</p>`;
 
   document.body.append(accountDialog, commsDialog, inventoryDialog);
+  const socialUI = createSocialUI({ nav, client, dialog: commsDialog, flight: commsDialog.querySelector('[data-comms-flight]') });
+  const releasedKeys = new Set();
+  const heldKey = event => {
+    if (!event.repeat) releasedKeys.delete(event.code);
+    else if (releasedKeys.has(event.code)) { event.preventDefault(); event.stopImmediatePropagation(); }
+  };
+  const releasedKey = event => releasedKeys.delete(event.code);
+  document.addEventListener('keydown', heldKey, true); document.addEventListener('keyup', releasedKey, true);
   // Outside the launcher: both the cinematic and player-active mode hide it.
   const accessButton = document.createElement('button');
   accessButton.id = 'multiplayer-access'; accessButton.type = 'button';
@@ -290,6 +302,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     commsDialog.querySelector('[data-comms-leave]').hidden = !state.connected;
     commsDialog.querySelector('[data-comms-leave]').disabled = busy;
     commsDialog.querySelector('[data-open-account]').hidden = false;
+    if (!state.connected && (state.moderation || state.error)) setFeedback(commsDialog, state.moderation || state.error, true);
     const roster = commsDialog.querySelector('.mp-roster'); roster.replaceChildren();
     if (!state.connected) { const p = document.createElement('p'); p.textContent = account ? 'Join multiplayer to see the live roster.' : 'Sign in, then choose Join multiplayer.'; roster.append(p); }
     for (const player of state.players) {
@@ -382,13 +395,17 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
 
   function openDialog(dialog) {
     if (disposed || document.querySelector('dialog[open]')) return false;
-    stopNavigation(nav); render(); setFeedback(dialog, ''); currentDialog = dialog; dialog.showModal(); nav.gamepad?.suspend?.(); return true;
+    stopNavigation(nav); client.suspendInput?.(); render();
+    const reason = dialog === commsDialog && !state.connected ? state.moderation || state.error || '' : '';
+    setFeedback(dialog, reason, Boolean(reason)); currentDialog = dialog; dialog.showModal(); nav.gamepad?.suspend?.(); return true;
   }
   function finishDialog(dialog) {
     // Native close events are queued. A pointer close must restore controls
     // before the next key, without a late event clearing newly pressed input.
     if (dialog.open || currentDialog !== dialog) return;
-    currentDialog = null; closeKeyboard(); restoreNavigation(nav);
+    currentDialog = null; closeKeyboard();
+    for (const key of nav.physicalKeys ?? []) releasedKeys.add(key);
+    client.suspendInput?.(); restoreNavigation(nav);
   }
   function closeDialog(dialog) { dialog.close(); finishDialog(dialog); }
   const openAccount = (view = null) => { if (view) showAuthView(view); return openDialog(accountDialog); };
@@ -483,6 +500,6 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     auth, dialogs: { account: accountDialog, comms: commsDialog, inventory: inventoryDialog },
     openAccount, openComms, openInventory, refreshSession,
     render: applyState,
-    dispose() { disposed = true; unsubscribe(); accessButton.remove(); dialogs.forEach(dialog => dialog.remove()); },
+    dispose() { disposed = true; unsubscribe(); socialUI.dispose(); document.removeEventListener('keydown', heldKey, true); document.removeEventListener('keyup', releasedKey, true); accessButton.remove(); dialogs.forEach(dialog => dialog.remove()); },
   };
 }

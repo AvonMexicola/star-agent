@@ -111,6 +111,7 @@ function publicState(account = null) {
     connected: false, account, ownId: null, players: [], maxPlayers: MAX_PLAYERS,
     hangar: null, inventory: null, commerce: null, health: null, doors: null, drops: [], error: null,
     stationFrame: null, hub: null, defense: [],
+    social: null, chat: [], moderation: null,
   };
 }
 
@@ -174,7 +175,7 @@ export class MultiplayerClient {
         clearTimeout(timeout); if (!settled) fail(new Error(event.reason || 'The multiplayer connection closed.'));
         if (this.socket === socket) {
           const wasConnected = this.connected; this.socket = null; this._rejectPending('The multiplayer connection closed.'); this._clearWorld();
-          this._publish({ connected: false, ownId: null, players: [], hangar: null, inventory: null, commerce: null, health: null, error: event.reason || 'Connection lost.' });
+          this._publish({ connected: false, ownId: null, players: [], hangar: null, inventory: null, commerce: null, health: null, hub: null, defense: [], social: null, chat: [], error: event.reason || 'Connection lost.' });
           if (wasConnected) { if (this.nav) { this.nav.enabled = false; this.nav.keys?.clear?.(); } this._emit({ type: 'event', event: 'disconnect', message: event.reason || 'Multiplayer connection lost.' }); }
         }
       });
@@ -227,6 +228,18 @@ export class MultiplayerClient {
       if (request) { clearTimeout(request.timeout); this.pending.delete(message.requestId); message.ok ? request.resolve(message) : request.reject(new Error(message.error || 'Server rejected the request.')); }
       return message;
     }
+    if (message.type === 'social') {
+      const social = { relationships: Array.isArray(message.relationships) ? message.relationships : [], blocked: Array.isArray(message.blocked) ? message.blocked : [] };
+      const hidden = new Set(social.blocked.map(account => account.id));
+      this._publish({ social, chat: this.state.chat.filter(chat => !hidden.has(chat.sender?.id)) }); return message;
+    }
+    if (message.type === 'chat' && typeof message.text === 'string' && message.sender?.id && message.channel === 'server') {
+      if (!this.state.chat.some(chat => chat.id === message.id)) this._publish({ chat: [...this.state.chat, message].slice(-100) });
+      return message;
+    }
+    if (message.type === 'moderation') {
+      this._publish({ moderation: message.message || 'Your message was rejected.', error: message.message || 'Your message was rejected.' }); return message;
+    }
     if (message.type === 'event') { if(message.event==='stationHub')this.nav?.onStationHubEvent?.(message);this._emit(message); return message; }
     if (message.type === 'revoked') {
       this.disconnect({ preserveAccount: false });
@@ -254,22 +267,29 @@ export class MultiplayerClient {
     this.socket.send(JSON.stringify(message)); return true;
   }
   action(action, target) { return this._send({ type: 'action', action, ...(target === undefined ? {} : { target: serialTarget(target) }) }); }
-  request(action, fields = {}) {
+  request(action, fields = {}, type = 'request') {
     if (this.socket?.readyState !== OPEN || !this.connected) return Promise.reject(new Error('Join multiplayer before sending that request.'));
-    const requestId = `${++this.requestSequence}`;
+    const requestId = type === 'social' ? globalThis.crypto.randomUUID() : `${++this.requestSequence}`;
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => { this.pending.delete(requestId); reject(new Error('The server did not confirm the request.')); }, this.requestTimeout);
       this.pending.set(requestId, { resolve, reject, timeout });
-      if (!this._send({ type: 'request', requestId, action, ...fields })) { clearTimeout(timeout); this.pending.delete(requestId); reject(new Error('The multiplayer connection is unavailable.')); }
+      if (!this._send({ ...fields, type, requestId, action })) { clearTimeout(timeout); this.pending.delete(requestId); reject(new Error('The multiplayer connection is unavailable.')); }
     });
   }
   requestHangar() { return this.request('hangar'); }
+  sendChat(text) { return this.request('chat', { text }, 'social'); }
+  friend(action, targetId) { return this.request(action, { targetId }, 'social'); }
+  refreshSocial() { return this.request('refresh', {}, 'social'); }
   cancelHangar() { return this.request('cancelHangar'); }
   transfer(fields) { return this.request('transfer', fields); }
   drop(fields) { return this.request('drop', fields); }
   pickup(id) { return this.request('pickup', { id }); }
   equip(fields) { return this.request('equip', fields); }
   respawn() { return this.request('respawn'); }
+  suspendInput() {
+    this.keyFire = false; this.pointerFire = false; this.mouseYaw = 0; this.mousePitch = 0;
+    if (this.connected) this._sendInput(cleanInput());
+  }
   captureLook(yaw, pitch) {
     if (!this.connected) return;
     if (Number.isFinite(yaw)) this.mouseYaw += yaw;
