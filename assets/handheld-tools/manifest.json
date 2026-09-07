@@ -26,8 +26,8 @@
     ],
     "source": "assets/handheld-tools/rifle-laser.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 887560,
-    "sha256": "3143a2e794d12c436f9d3115e47fcbf97bd76f00c407b69a50c97e1ac6d7a522",
+    "bytes": 924784,
+    "sha256": "bacf3c41f30fac56edb415ddf4642fbe318ddcc17017039386140da83b9f4e6c",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -63,8 +63,8 @@
     "leftGrip": null,
     "source": "assets/handheld-tools/sidearm-pistol.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 285716,
-    "sha256": "ca051485afba709ccd148664bf373e1dc007cb29ecca996749480bbe2a88d6f7",
+    "bytes": 322944,
+    "sha256": "0f1e1cf4d372b660f29359d67f8a0932ed3f88e8b4f81fb2b2491239bf79bdbd",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -104,8 +104,8 @@
     ],
     "source": "assets/handheld-tools/mining-laser-tool.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 742504,
-    "sha256": "4010332c7dc258e7894da48ba7dda679cac624344488a472c193ad2042d6c147",
+    "bytes": 779732,
+    "sha256": "c268a338e0f944c6199f4c2a42337924cad8dfee870989e76b78c6e3146bb141",
     "materials": [
       "Amber",
       "Glass",
@@ -146,8 +146,8 @@
     ],
     "source": "assets/handheld-tools/tractor-beam-tool.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 516012,
-    "sha256": "02729530ceefd5a1abed5d97569c32720c64fe788f3771bd0efd08745af362ba",
+    "bytes": 553240,
+    "sha256": "e58859b278710e83ff4e0680f75b46a8689589b7ee896570b74427b9e6a9e508",
     "materials": [
       "Glass",
       "HandheldFinish",

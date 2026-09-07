@@ -10,15 +10,24 @@ const propsPath=new URL('public/models/props/manifest.json',root);
 const props=JSON.parse(readFileSync(propsPath));
 for(const [name,entry] of Object.entries(manifest)){
   const path=new URL(`public/models/props/${name}.glb`,root),glb=new AvatarGLB(path);
-  for(const im of glb.json.images){
-    const kind=['basecolor','orm','normal'].find(k=>im.name.includes(k));
+  const imageKinds=new Map();
+  for(const material of glb.json.materials) {
+    for(const [kind,slot] of [['normal',material.normalTexture],['basecolor',material.pbrMetallicRoughness?.baseColorTexture],['orm',material.pbrMetallicRoughness?.metallicRoughnessTexture]]) {
+      if(!slot)continue;
+      const tex=glb.json.textures[slot.index],index=tex.source??tex.extensions?.EXT_texture_webp?.source;
+      if(imageKinds.has(index)&&imageKinds.get(index)!==kind)throw Error('Incompatible channels share an image');
+      imageKinds.set(index,kind);
+    }
+  }
+  for(const [index,im] of glb.json.images.entries()){
+    const kind=imageKinds.get(index);
     if(!kind)throw Error(`Unrecognized Blender image ${im.name}`);
     im.name=`HandheldAtlas-v1-${kind}`;
     im.bufferView=glb.addView(readFileSync(new URL(`textures/${kind}.webp`,source)));
     im.mimeType='image/webp';
   }
   for(const tex of glb.json.textures){
-    tex.extensions={...tex.extensions,EXT_texture_webp:{source:tex.source}};
+    tex.extensions={...tex.extensions,EXT_texture_webp:{source:tex.source??tex.extensions?.EXT_texture_webp?.source}};
     delete tex.source;
   }
   for(const key of ['extensionsUsed','extensionsRequired'])glb.json[key]=[...new Set([...(glb.json[key]||[]),'EXT_texture_webp'])];
