@@ -13,6 +13,12 @@
     "multiplayer",
     "interface"
   ],
-  "claims": [],
+  "claims": [
+    "src/cargo/grid.js",
+    "src/trading/model.js",
+    "src/trading/system.js",
+    "server/trading.js",
+    "server/database.js"
+  ],
   "brief": "docs/briefs/sbu-cargo-trading.md"
 }
