@@ -75,6 +75,19 @@ async function friendContract(store) {
 }
 test('memory friend lifecycle requires explicit mutual consent and blocks remove friendship without touching inventory', async () => friendContract(createMemoryStore()));
 
+test('relationship and block capacities are bounded and refusal cannot delete a friendship', async () => {
+  const store = createMemoryStore(), [owner] = await accounts(store), peers = [];
+  for (let i = 0; i < 101; i++) peers.push(await store.createAccount({ email: `capacity${i}@example.test`, callsign: `Capacity_${i}`, passwordHash: 'isolated-fixture' }));
+  for (const peer of peers.slice(0, 100)) assert.equal(await store.socialChange(owner.id, peer.id, 'request'), true);
+  assert.equal(await store.socialChange(owner.id, peers[100].id, 'request'), false);
+  assert.equal((await store.socialList(owner.id)).relationships.length, 100);
+  for (const peer of peers.slice(0, 100)) assert.equal(await store.socialChange(owner.id, peer.id, 'block'), true);
+  await store.socialChange(owner.id, peers[100].id, 'request'); await store.socialChange(peers[100].id, owner.id, 'accept');
+  assert.equal(await store.socialChange(owner.id, peers[100].id, 'block'), false);
+  assert.equal(await store.areFriends(owner.id, peers[100].id), true);
+  assert.equal((await store.socialList(owner.id)).blocked.length, 100);
+});
+
 async function fixture(store = createMemoryStore()) {
   const users = await accounts(store), received = users.map(() => []), kicked = [], errors = [];
   let time = 100_000;

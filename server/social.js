@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { createHash } from 'node:crypto';
 import { moderateChat } from './chat-moderation.js';
-import { validSocialAction } from './social-store.js';
+import { SOCIAL_LIMIT, validSocialAction } from './social-store.js';
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const ACTION_REPLY = 'Friend request handled. Requests arrive only when the pilot is available.';
@@ -86,6 +86,12 @@ export function createSocialService({ store, now = Date.now, moderate = moderate
           if (message.action === 'refresh') { await refresh(peer); finish({ ok: true }); return; }
           if (!validSocialAction(message.action)) { finish({ ok: false, error: 'Unknown Comms action.' }); return; }
           const target = message.targetId;
+          if (message.action === 'block' && !peer.blocks.has(target) && peer.blocks.size >= SOCIAL_LIMIT) {
+            finish({ ok: false, error: 'Your block list is full. Unblock a pilot before adding another.' }); return;
+          }
+          if (message.action === 'request' && !peer.data.relationships.some(account => account.id === target) && peer.data.relationships.length >= SOCIAL_LIMIT) {
+            finish({ ok: false, error: 'Your friend list is full. Remove a friend or request before adding another.' }); return;
+          }
           const known = typeof target === 'string' && UUID.test(target) && target !== peer.account.id
             && (members.has(target) || peer.data.relationships.some(account => account.id === target) || peer.blocks.has(target));
           // Requests originate only in the live roster; other actions may use a
