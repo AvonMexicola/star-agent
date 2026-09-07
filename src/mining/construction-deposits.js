@@ -1,3 +1,4 @@
+import {miningFuelProfile} from './power-fuels.js';
 import {Vector3,Quaternion,Matrix4} from 'three';
 import {bodyAt,bodySurfacePoint,bodySurfaceNormal,bodyAltitude} from '../celestial.js';
 import {toPyreBody,fromPyreBody} from '../pyre-world.js';
@@ -40,7 +41,7 @@ export function constructionDepositDescriptor(body,row,column){
   const id=`${body.id}-construction-v1-${row}-${column}`;
   // Sample at the final anchor, the exact same direction MineableRock uses.
   const anchorDirection=position.clone().sub(center).normalize().toArray(),profile={weights:hash(row,column,2)<.2?[.4,.6,0]:[.96,.04,0],dominant:hash(row,column,2)<.2?'copper':'basalt',province:'construction'};
-  return {id,key:id,rockId:id,row,column,position,direction:anchorDirection,quaternion,resourceWeights:profile.weights,dominant:profile.dominant,province:profile.province,bodyId:body.id,name:`${profile.dominant==='copper'?'Common copper':'Construction mineral'} outcrop`,variant:Math.floor(hash(row,column,4)*6),mineable:true,regional:true};
+  return {id,key:id,rockId:id,row,column,position,direction:anchorDirection,quaternion,resourceWeights:profile.weights,dominant:profile.dominant,province:profile.province,bodyId:body.id,name:miningFuelProfile(id,body.id)?.label??`${profile.dominant==='copper'?'Common copper':'Construction mineral'} outcrop`,variant:Math.floor(hash(row,column,4)*6),mineable:true,regional:true};
 }
 
 /** A bounded spherical-cap query, with no global population or seam state.

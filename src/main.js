@@ -1,4 +1,6 @@
 import { createTradingSystem } from './trading/system.js';
+import {BasePower} from './build/power-system.js';
+import {BaseCloud} from './build/cloud.js';
 import { controllerHints } from './controller-hints.js';
 import {createMiningRover} from './mining-rover.js';
 import {createHostileFauna} from './fauna/hostile-fauna.js';
@@ -194,6 +196,8 @@ try {
   const build=new BuildSystem({scene,nav,store:mining.store,supplySources:()=>sandboxEnabled?SANDBOX_BINS.map(b=>b.id):[]});
   if(sandboxEnabled)spawnInSandbox(nav,build);
   const inventoryUI=createInventoryUI(nav,()=>ship,inventory,mining.store,{loadout,canClaimStarter:()=>!build.blocked&&nav.shipId!=='kestrel'});
+  const basePower=new BasePower({store:mining.store,build,sandbox:sandboxEnabled});build.power=basePower;
+  const baseCloud=new BaseCloud({store:mining.store,build,power:basePower,sandbox:sandboxEnabled});void baseCloud.restore();
   const buildUI=createBuildUI({nav,build,store:mining.store,sandbox,onSandbox:()=>location.assign(sandboxURL(location.href)),onOpenStorage:id=>inventoryUI.openStorage(id)});
   build.onRegisterContainer=definition=>inventoryUI.registerContainer(definition);
   build.onSound=event=>audio.gameplay?.event(event,nav);
@@ -707,7 +711,7 @@ try {
     shipMarker.update(innerWidth,innerHeight);
     navigationTargets.update(dt,{width:innerWidth,height:innerHeight,origin,orientation:camera.quaternion});
     moon.update(nav.position,origin,elapsed,!nav.insideShip,nav.shipPosition);
-    landmarks.update(origin,camera);mining.update(origin);build.update(dt,origin);trading.update(origin);fauna.update(dt,origin);miningTool.update(dt,origin);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
+    landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);trading.update(origin);fauna.update(dt,origin);miningTool.update(dt,origin);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
     pyre.update(origin,origin);
     miasma.update(origin,origin,elapsed,nav.shipPosition);
     // Distant worlds as bright points: Pyre from Aeon and Selene, Aeon from Pyre.

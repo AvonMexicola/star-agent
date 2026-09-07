@@ -51,7 +51,7 @@ test('all processed fractions use the same pack mass budget; malformed material 
  assert.equal(store.commit({field:store.state.field,yieldVolume:[.01,0,0]},0),false);
  assert.equal(store.write(store.state),true);const saved=JSON.parse(disk.getItem(MINING_KEY));saved.materials.pack.concrete=-1;
  const raw=JSON.stringify(saved);disk.setItem(MINING_KEY,raw);assert.equal(new MiningStore(disk).blocked,true);assert.equal(disk.getItem(MINING_KEY),raw);
- assert.equal(MATERIAL_IDS.length,9);
+ assert.equal(MATERIAL_IDS.length,11);
 });
 test('Aeon and Pyre regenerate finite canonical-ground outcrops including local copper',()=>{
  for(const body of [AEON,PYRE]){

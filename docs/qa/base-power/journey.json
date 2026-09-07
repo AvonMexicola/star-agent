@@ -1,0 +1,30 @@
+{
+  "input": "Injected Gamepad only; production sandbox spawn and materials",
+  "pieces": [
+    "mainframe",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "solar-array",
+    "battery",
+    "uranium-generator"
+  ],
+  "power": {
+    "version": 1,
+    "updatedAt": 1788806312847,
+    "health": 100,
+    "charge": 2.0551987410000825,
+    "fuel": {
+      "uranium-ore": 0.09984868518518518,
+      "helium-3-regolith": 0
+    },
+    "unpoweredMs": 0
+  },
+  "errors": []
+}

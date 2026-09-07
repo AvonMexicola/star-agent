@@ -1,0 +1,18 @@
+{
+  "roofkit.png": "8ac6c29504eed0257667d92b1249a9c2f0a5625b18be4f774b2910d9ed0696a8",
+  "ceiling-light.png": "2def87aea110ad652962dc747085872a80a8c5fdc346d34ab890542f2f7fd134",
+  "roof-corner.png": "fe9b506035bdbe38dac6b975527a2b59f9a5ba07c5b8661e211168d81dbfeeba",
+  "roof-quarter.png": "b2b186a4aceba985e42f3a1920abc24a1727fe4ee3fcc1927b3853bc9d33fee4",
+  "roof-triangle.png": "dd07027490b72214b3d7e312e4a75dbf84be12da4c32f14ccf1fe699dd06ffd7",
+  "roof-edge.png": "8b67325a8f9db117e941ed721fa7cae14024b39797504d9072c14f784cc3909d",
+  "roof-flat.png": "a659554e8f1e279a96e6a8ebb531101d329d08b78f6ffb0d12e311cd06447c14",
+  "ceiling-light-on.png": "143af91fae804de474dfdaf6eae736e9d737d962f1fb1866b9d205368e4a9315",
+  "ceiling-light-off.png": "f65d30cda44333edb840dc6e51a19fd1cbd2890f5047f166c04aceeca498627c",
+  "rounded-roof-built.png": "5c0ebfda114d60b0ed0a2caa1ea6ae5a7dd94773e30bcc80806d0dc4a735d334",
+  "roofs-desktop.png": "a727cdb1b46c7ec0b3d4d8cf298835666ab3509cb0ebdb7d692d513d2621708d",
+  "roofs-phone.png": "8755d9373e3a63d7fbc7c22153589134b33e090cdfc816a9617fa1d58e2289dd",
+  "first-unsupported-socket.png": "bcf804cd59beb23326fa65264601032132d1080a0569dc7e70c330aa09243a46",
+  "reviewed-game/ceiling-light-on.png": "12124facd5f287e9e0cd234959202c72698b8a85b8cfdbc5dd48a34d25a6c777",
+  "reviewed-game/ceiling-light-off.png": "22b393b3b1c159a63f4d9d3b98225b7520cda26a6af715e82714f2847779cc44",
+  "reviewed-game/rounded-roof-built.png": "08527cd256356cd3dd974627df0659352cdbbc49c957a9484d8f0880a8bbdc3a"
+}
