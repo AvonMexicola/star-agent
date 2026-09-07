@@ -100,3 +100,18 @@ protocol 3. Cargo, social and controls follow-up tasks are locally integrated;
 base power, newer rover polish and new fauna/landmark refinements remain outside
 this frozen promotion. Public hosting and main were not updated. No physical-
 controller, ten-human soak, backup-restore or hardware FPS acceptance is claimed.
+
+
+## Hosted check portability follow-up
+
+The first PR73 run at `aaf08cc` passed source and browser checks, but the
+multiplayer job failed its cargo PostgreSQL case before database startup:
+`mkdtemp` referenced a developer-specific cache directory absent on CI. The job
+reported 116 passes and one failure; it is not a successful hosted run.
+
+The fixture now creates its disposable cluster under Node's `tmpdir()` using a
+unique cargo prefix. Its authority, migration, concurrency, rollback and restart
+assertions are unchanged. All seven cargo server tests, including real isolated
+PostgreSQL, pass in 2.98 seconds with an explicitly overridden temporary directory.
+The cluster is removed by the fixture; the shared development database is unused.
+No application runtime changed. Hosted checks will rerun on the pushed fix.

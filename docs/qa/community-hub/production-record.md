@@ -68,6 +68,13 @@ portability fix. It uses the operating system's temporary directory rather than
 an author's private cache path. No cargo assertion, transaction or runtime rule
 changes with that fix.
 
+The first hosted PR76 database job (run `34158303451`) failed during module
+loading: the synthetic merge with the newly updated PR73 base duplicated the
+`tmpdir` import because the same fix was inserted at two different locations.
+The branch now merges the exact upstream `5f0d94f` commit and uses its identical
+cargo-test file. This was a merge-source syntax failure, not a database result.
+A new hosted result must be checked separately.
+
 The [initial authority review](reviews/initial-authority-review.md) identified
 real lifecycle, equipment and ramming defects. The subsequent bounded fixes and
 regressions retain those findings. The independent

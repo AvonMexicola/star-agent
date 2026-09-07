@@ -1,7 +1,7 @@
-import { tmpdir } from 'node:os';
 import test from 'node:test';import assert from 'node:assert/strict';import * as THREE from 'three';
 import { createWorld } from '../server/world.js';import { createRoom } from '../server/room.js';import { createMemoryStore,createPostgresStore } from '../server/database.js';
 import { startLocalDatabase } from '../server/local-database.js';import { mkdtemp,rm } from 'node:fs/promises';import { join } from 'node:path';import { createServer } from 'node:net';
+import { tmpdir } from 'node:os';
 import { emptyCommerce,ensureAccount,commerceCommand } from '../src/trading/model.js';
 const worldPromise=createWorld();
 async function setup(t,store=createMemoryStore()){
