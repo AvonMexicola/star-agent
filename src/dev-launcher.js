@@ -10,11 +10,11 @@ export function createDevLauncher({nav,options,seed,available=()=>true}){
   const exteriorLink=document.createElement('a');
   exteriorLink.textContent='Station exterior · geometry preview ↗';
   exteriorLink.dataset.controllerKey='dev-station-exterior';
-  const exteriorURL=new URL(window.location.href);
+  const exteriorURL=new URL(devLaunchURL(window.location.href,{ship:'kestrel',location:'orbit'}));
   for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'kestrel',start:'orbit',stationExterior:'1',exteriorView:'overview',seed:String(seed)}))exteriorURL.searchParams.set(key,value);
   exteriorLink.href=exteriorURL.href;
   dialog.querySelector('.dev-footer').append(exteriorLink);
-  const roverLink=document.createElement('a');roverLink.textContent='Atlas + Burrow mining rover · Selene ↗';roverLink.dataset.controllerKey='dev-mining-rover';const roverURL=new URL(window.location.href);for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'atlas',start:'moon',rover:'1',seed:String(seed)}))roverURL.searchParams.set(key,value);roverLink.href=roverURL.href;dialog.querySelector('.dev-footer').append(roverLink);
+  const roverLink=document.createElement('a');roverLink.textContent='Atlas + Burrow mining rover · Selene ↗';roverLink.dataset.controllerKey='dev-mining-rover';const roverURL=new URL(devLaunchURL(window.location.href,{ship:'atlas',location:'moon'}));for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'atlas',start:'moon',rover:'1',seed:String(seed)}))roverURL.searchParams.set(key,value);roverLink.href=roverURL.href;dialog.querySelector('.dev-footer').append(roverLink);
   const reviews=document.createElement('section');reviews.className='dev-review-list';reviews.hidden=true;reviews.setAttribute('aria-label','Content review pages');
   for(const [label,href,key] of [
     ['Atlas + Burrow mining rover · Selene',roverURL.href,'rover'],

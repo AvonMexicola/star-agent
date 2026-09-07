@@ -13,7 +13,7 @@ export function sandboxStorage(storage){
   // Missing/denied storage must still fail through the ordinary save guards.
   return storage?{getItem:key=>storage.getItem(SANDBOX_PREFIX+key),setItem:(key,value)=>storage.setItem(SANDBOX_PREFIX+key,value),removeItem:key=>storage.removeItem(SANDBOX_PREFIX+key)}:undefined;
 }
-export function sandboxURL(href,enabled=true){const url=new URL(href);if(enabled){url.searchParams.set('sandbox','build');url.searchParams.set('intro','0');url.searchParams.set('seed','7291');}else url.searchParams.delete('sandbox');return url.href;}
+export function sandboxURL(href,enabled=true){const url=new URL(href);if(enabled){url.searchParams.delete('rover');url.searchParams.delete('exteriorView');url.searchParams.set('sandbox','build');url.searchParams.set('intro','0');url.searchParams.set('seed','7291');}else url.searchParams.delete('sandbox');return url.href;}
 export function sandboxClaim(){
   const up=new Vector3(...MOON_LANDING_DIRECTION).normalize(),east=new Vector3(0,1,0).cross(up).normalize(),north=east.clone().cross(up).normalize();
   const pieces=[{id:'build-piece-2',type:'mainframe',position:[8,0,0],rotation:Math.PI,doorOpen:false}];

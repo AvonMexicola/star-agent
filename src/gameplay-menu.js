@@ -87,6 +87,7 @@ export function createGameplayMenu({nav,screens,dev=false}){
     header.querySelector('.gameplay-resume').onclick=()=>dialog.close();
     for(const button of header.querySelectorAll('[data-tab]'))button.onclick=()=>open(button.dataset.tab);
     const footer=document.createElement('footer');footer.className='gameplay-footer';footer.innerHTML='<span><kbd>LB / RB</kbd> Tabs <span class="gameplay-keyboard-tabs">· <kbd>[ / ]</kbd> Keyboard tabs</span></span><span>D-pad selects · A confirms · B resumes</span>';
+    if(dialog.id==='build-dialog')footer.firstElementChild.innerHTML='<kbd>LB / RB</kbd> Build tabs · <kbd>[ / ]</kbd> Gameplay tabs';
     dialog.prepend(header);dialog.append(footer);
     const observer=new MutationObserver(schedule);observer.observe(dialog,{attributes:true,attributeFilter:['open','class'],childList:true,subtree:true});
     dialog.addEventListener('close',()=>{nav.gamepad.suspend();if(active())nav.enabled=false;});
@@ -106,7 +107,12 @@ export function createGameplayMenu({nav,screens,dev=false}){
   function step(direction){const id=tabFor(active()),index=tabs.findIndex(t=>t.id===id);open(tabs[(index+direction+tabs.length)%tabs.length].id);}
   return {open,get active(){return Boolean(active());},controller(pad){
     if(!active())return false;
-    if(pad.ui?.pressed.has(4)||pad.ui?.pressed.has(5)){step(pad.ui.pressed.has(4)?-1:1);return true;}
+    if(pad.ui?.pressed.has(4)||pad.ui?.pressed.has(5)){
+      // The build wheel owns these edges for its piece categories. Let the
+      // shared dialog router apply its action and neutral-input gate first.
+      if(active()?.controllerAction)return false;
+      step(pad.ui.pressed.has(4)?-1:1);return true;
+    }
     return switching;
   }};
 }
