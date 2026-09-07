@@ -208,30 +208,34 @@ keyboard registration and physical-device testing remain separate checks.
 
 ## Construction
 
-Menu → Build enters the shared piece palette while walking outside a ship on a
-planet. Choose a piece with D-pad and A; X reopens the palette while building.
+B enters the shared piece palette while walking outside within 64 m of an owned
+mainframe. Menu → Build also establishes a new site on a planet. Point the left
+stick at a radial slice and press A; B reopens the wheel
+while building. D-pad also browses pieces and the recipes/supplies tabs. Releasing
+the stick retains its highlight; B closes without choosing. A choice never places
+a piece until a fresh A press after controls return to neutral.
 The contextual controls consume the existing shared Gamepad poll:
 
 | Construction action | Controller | Keyboard / touch |
 | --- | --- | --- |
-| Enter | Menu → Build | B or visible Build button |
-| Place one piece | RT edge | Enter or Place button |
-| Next snap target | LT edge | T or Snap button |
-| Rotate / flip wall facing | LB / RB | Q / E or rotate buttons |
+| Enter | B near owned mainframe; Menu → Build anywhere buildable | B or visible Build button |
+| Place one piece | A edge | Enter or Place button |
+| Next snap target | LB edge | T or Snap button |
+| Rotate / flip wall facing | LT / RT edges | Q / E or rotate buttons |
 | Foundation height / upper level | D-pad up / down | Up / Down or height buttons |
-| Piece palette | X | P or Pieces button |
-| Exit construction | B | Escape or Exit button |
-| Move / look / jump | Sticks / A | WASD / look / Space |
+| Piece wheel | B; left stick points, A chooses | P or Pieces button; pointer / Tab + Enter |
+| Exit construction | X | Escape or Exit button |
+| Move / look / jump | Sticks / RB | WASD / look / Space |
 | Backpack / command menu | View / Menu | Existing inventory and menu routes |
 
 Ordinary pieces rotate in quarter turns. Walls flip facing by 180° on their
-selected supporting edge; LT changes the edge. Foundation height uses 0.25m
+selected supporting edge; LB changes the edge. Foundation height uses 0.25m
 steps. Non-foundation height selection uses storeys where supported by the
 piece's placement rules.
 
 Construction suppresses mining/fire, EVA/boarding shortcuts and quick-item
 shortcuts. Its own hints replace the equipment bar and ordinary tool hints.
-Dialog transitions use neutral arming, so held RT cannot replay placement after
+Dialog transitions use neutral arming, so held A cannot replay placement after
 the palette or backpack closes. Construction does not take over EVA controls.
 
 Menu → Field recipes and the palette's Recipes tab use the same native dialog
@@ -286,3 +290,12 @@ the reticle ring, then LB+RB + D-pad up engages the relativistic drive. LT abort
 Charge does not fire the drive automatically; modal/focus/controller changes clear
 it. RT remains weapon fire. Keyboard N/J and the on-screen engage button share the
 same charged-target command. With no target, the shortcut retains free heading.
+
+
+The radial uses optional `dialog.controllerNavigation(ui)` in the shared router.
+It returns a native focus target; confirm/back and device/focus neutral arming
+remain owned by the existing router and GamepadInput. `ui.stickX/stickY` carry
+analog direction without D-pad contributions. Keep eight slice locations stable.
+See `docs/qa/base-building/radial.md` for verification and remaining review limits.
+
+Current B/A/trigger mappings and context checks: [hotkey evidence](qa/base-building/controller-hotkeys.md).

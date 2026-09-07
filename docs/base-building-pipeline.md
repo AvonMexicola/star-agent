@@ -137,8 +137,10 @@ are conservative boxes and do not cover rotation during a movement step.
 
 ## Input and acceptance
 
-Construction has one shared context: RT places once, LT chooses a snap, LB/RB
-rotate, D-pad up/down changes height, X opens the palette, B exits, A jumps.
+Construction has one shared context: A places once, LB chooses a snap, LT/RT
+rotate, D-pad up/down changes height, B opens the palette, X exits, RB jumps.
+Outside placement, B opens the wheel only on foot outside a ship within the owned
+mainframe’s 64 m claim radius. Menu → Build remains the first-site entry.
 Suppress mining/weapon triggers and quick-item bindings until this context ends.
 Use the existing neutral-arming rules through dialogs, focus loss and reconnect;
 never poll the controller a second time. On-foot keyboard B is construction;
@@ -172,3 +174,45 @@ Read `docs/qa/base-building/polish-production.md` for original report dispositio
 536-unit / five-UI-test passes, production door/ghost/fade evidence and studio
 captures. Whole-scene performance and a fresh complete controller construction
 journey remain integration gates; physical Xbox is untested. PR41 stays draft.
+
+
+## Supplied sandbox entry
+
+`?sandbox=build` selects a fully separate prefixed storage adapter before Fleet,
+ShipInventory or MiningStore construction. `src/build/sandbox.js` creates one
+canonical Selene mainframe / 3×3 foundation pad and 4,608 kg of stock atomically.
+Twelve valid eight-box bank containers supply construction through BuildSystem's
+optional `supplySources` callback; ordinary mode receives none. Never widen normal
+cargo access or bypass placement costs/collision to implement this mode. Reload
+keeps stock spent; explicit refill resets only dedicated bank containers. Arrival
+searches clear terrain outside saved pieces. Command-menu entry/exit, palette
+supplies and refill share the existing controller/native-button router.
+
+Controller production entry → wall placement/debit → refill/inventory → reload →
+regular-save return passes. See `docs/qa/base-building/sandbox.md`, including host
+Chromium temporary-storage failure history and the separate-save checks. Keep
+sandbox stock client-local when integrating server-authoritative multiplayer.
+
+
+## Radial build selection
+
+`src/build/radial-selection.js` owns stable clockwise ordering, deadzone and angular
+hysteresis. `radial.js` renders native buttons with original SVG icons and slices.
+BuildUI supplies current piece, exact recipe cost formatting and the existing
+choose callback. GamepadInput's `ui.stickX/stickY` deliberately exclude D-pad;
+ControllerUI accepts an optional native dialog spatial focus target, retaining
+shared confirm/back/scroll and neutral-arming behavior. Never poll again or place
+on release. D-pad can reach recipes/supplies/close. Source and browser evidence:
+`docs/qa/base-building/radial.md`; physical-device acceptance remains separate.
+
+
+## Direct build hotkeys — 2026-09-07
+
+B enters within an owned mainframe radius, A places, LT/RT rotate, LB snap,
+RB jump, B wheel, X exit. `BuildSystem.controllerAvailable` owns proximity;
+`createControllerUI` consumes the existing poll before navigation/tools. Foot,
+cabin, seated and EVA hints come from `src/controller-hints.js`. Do not assign
+A to both jump and place or RT to both mine and rotate in construction.
+Current evidence: `docs/qa/base-building/controller-hotkeys.md` (unit546, UI8,
+production sandbox1 pass). The ordinary-flight B brake and EVA B descent remain;
+reconcile the separate flight-options lane during integration.
