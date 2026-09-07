@@ -1,0 +1,3 @@
+import {defineConfig} from '@playwright/test';
+process.env.TMPDIR='/home/cees/.cache/star-agent-sbu/tmp';
+export default defineConfig({testDir:'../tests/browser',testMatch:'sbu-cargo.spec.js',timeout:240000,workers:1,reporter:'list',outputDir:'/home/cees/.cache/star-agent-sbu/results',use:{baseURL:'http://127.0.0.1:5535',viewport:{width:1440,height:900},actionTimeout:12000,launchOptions:{executablePath:'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']}},webServer:{command:'npm run preview -- --port5535 --strictPort'.replace('--port5535','--port 5535'),url:'http://127.0.0.1:5535',reuseExistingServer:true}});

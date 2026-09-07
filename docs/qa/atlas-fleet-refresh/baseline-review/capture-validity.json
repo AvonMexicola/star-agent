@@ -1,0 +1,43 @@
+{
+  "invalid": [
+    {
+      "file": "desktop-bow.png",
+      "reason": "Reviewer camera z=-105 behind studio backdrop; cannot assess asset from this frame.",
+      "replacement": "desktop-bow-verified.png",
+      "replacementStatus": "valid and visually inspected"
+    },
+    {
+      "file": "desktop-bow-replacement.png",
+      "reason": "Reviewer camera z=-72 still behind actual backdrop z=-68. Test passed; visual inspection invalidated the image.",
+      "replacement": "desktop-bow-verified.png",
+      "replacementStatus": "valid and visually inspected"
+    }
+  ],
+  "validOriginalCaptures": [
+    "desktop-exterior.png",
+    "desktop-low-quarter.png",
+    "desktop-stern.png",
+    "desktop-side.png",
+    "desktop-plan.png",
+    "desktop-aft.png",
+    "desktop-cargo.png",
+    "desktop-bridge.png",
+    "desktop-crew.png",
+    "desktop-galley.png",
+    "desktop-elevator.png",
+    "desktop-mounts.png",
+    "desktop-boarding.png",
+    "desktop-seated.png",
+    "phone-exterior.png",
+    "phone-crew.png",
+    "phone-seated.png"
+  ],
+  "limitations": [
+    "Camera/preset and seating fixtures; not a complete physical input journey.",
+    "Surface sampling is not full swept-volume or vehicle-envelope certification.",
+    "No GPU memory or FPS measurement."
+  ],
+  "validReplacementCaptures": [
+    "desktop-bow-verified.png"
+  ]
+}

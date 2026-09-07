@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"><title>Star Agent · Energy systems</title></head>
+<body><canvas id="viewport" aria-label="Interactive energy effects range"></canvas>
+<header><a href="../">STAR AGENT <span>/ SYSTEMS LAB</span></a><div class="live"><i></i> LIVE SIMULATION</div></header>
+<main><p class="eyebrow">FIELD SYSTEMS / 04</p><h1>Energy,<br>in motion.</h1><p class="intro">From the first spark to the space<br>between worlds.</p>
+<nav aria-label="Effects scenes"><button data-scene="engines" aria-pressed="true"><span>01</span> Plasma drive <b>↗</b></button><button data-scene="mining" aria-pressed="false"><span>02</span> Extraction <b>↗</b></button><button data-scene="weapons" aria-pressed="false"><span>03</span> Pulse cannons <b>↗</b></button><button data-scene="travel" aria-pressed="false"><span>04</span> Deep transit <b>↗</b></button></nav>
+</main>
+<section id="weapon-options" hidden aria-label="Weapon configuration"><p>ENERGY ARRAY</p><div id="weapon-types"></div><div id="weapon-colors" aria-label="Emission color"></div></section>
+<aside class="caption"><span id="tag">NOMAD / TWIN PLASMA DRIVE</span><h2 id="title">Light the afterburners.</h2><p id="description">A white-hot core. Turbulent plasma. Expanding shock diamonds.</p></aside>
+<footer><div class="control"><label for="power">DRIVE OUTPUT <output id="power-value">85%</output></label><input id="power" type="range" min="0" max="100" value="85"></div><button id="boost" aria-pressed="true">AFTERBURNER <span>ON</span></button><button id="pause" aria-pressed="false">PAUSE</button><label class="check"><input id="bloom" type="checkbox" checked> BLOOM</label><label class="check"><input id="motion" type="checkbox"> REDUCED MOTION</label><div class="telemetry"><strong id="particle-count">0</strong><span>LIVE PARTICLES</span></div></footer>
+<div id="hint">Drag to orbit · Scroll to inspect <span>Procedural effects · Real ship asset</span></div>
+<script type="module" src="./lab.js"></script></body></html>

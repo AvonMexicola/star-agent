@@ -1,0 +1,24 @@
+[Unit]
+Description=Star Agent ten-player multiplayer preview
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=staragent
+Group=staragent
+WorkingDirectory=/opt/staragent/multiplayer-candidate
+EnvironmentFile=/etc/staragent/multiplayer.env
+ExecStart=/usr/bin/node server/index.js
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=30
+KillSignal=SIGTERM
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/staragent/multiplayer-candidate
+
+[Install]
+WantedBy=multi-user.target

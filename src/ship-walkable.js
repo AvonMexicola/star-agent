@@ -4,6 +4,8 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { createShipMFDs } from './ship-mfd.js';
+import { createNomadCabin } from './nomad-cabin.js';
+import { mountTransformFromAsset } from './weapon-mounts.js';
 export { SHIP_LAYOUT } from './boarding.js';
 
 /** A hollow, boardable explorer. +Y is up; the cockpit faces -Z.
@@ -12,10 +14,11 @@ export { SHIP_LAYOUT } from './boarding.js';
  */
 export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}models/nomad.glb` } = {}) {
   const ship = new THREE.Group();
-  ship.name = 'Nomad surveyor / Blender explorer';
+  ship.name = 'Nomad / solo utility ship';
   const exterior = new THREE.Group();exterior.name = 'Procedural exterior fallback';ship.add(exterior);
   let activeGroup;
   let cargoLid;
+  let gearRoots = [], driveMaterials = [];
   const shell = new THREE.Group();
   shell.name = 'Rigid hull and furnished cabin';
   ship.add(shell);
@@ -27,12 +30,21 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
     floor: new THREE.MeshStandardMaterial({ color: 0x34464c, metalness: .35, roughness: .8 }),
     fabric: new THREE.MeshStandardMaterial({ color: 0x273f44, metalness: .08, roughness: .98 }),
     amberPaint: new THREE.MeshStandardMaterial({ color: 0xd19a43, metalness: .3, roughness: .6 }),
-    glass: new THREE.MeshStandardMaterial({ color: 0xa7dae5, transparent: true, opacity: .16, metalness: .12, roughness: .08, side: THREE.DoubleSide, depthWrite: false }),
+    glass: new THREE.MeshStandardMaterial({ color: 0x203d42, transparent: true, opacity: .94, metalness: .60, roughness: .15, side: THREE.DoubleSide, depthWrite: false }),
     mint: new THREE.MeshStandardMaterial({ color: 0x98ffe0, emissive: 0x55ffd0, emissiveIntensity: 2, toneMapped: false }),
     amber: new THREE.MeshStandardMaterial({ color: 0xffc078, emissive: 0xff9c43, emissiveIntensity: 1.8, toneMapped: false }),
     blue: new THREE.MeshStandardMaterial({ color: 0x8ce0ff, emissive: 0x348ecb, emissiveIntensity: 1.7, toneMapped: false }),
     display: new THREE.MeshStandardMaterial({ color: 0x073544, emissive: 0x0e596b, emissiveIntensity: .85, roughness: .25 }),
   };
+  // Inside-facing glazing is clear from the pilot eye, with a darker reflective
+  // exterior coating. The standard material retains Three's logarithmic depth.
+  finish.glass.userData.unweathered = true;
+  finish.glass.forceSinglePass = true;
+  finish.glass.onBeforeCompile = shader => {
+    shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>',
+      '#include <color_fragment>\n diffuseColor.a *= gl_FrontFacing ? 0.06 : 1.0;');
+  };
+  finish.glass.customProgramCacheKey = () => 'nomad-directional-glazing-v1';
   function part(geometry, material, x = 0, y = 0, z = 0, parent = activeGroup) {
     const object = new THREE.Mesh(geometry, material);
     object.position.set(x, y, z);
@@ -62,49 +74,48 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
     geometry.setIndex([0, 1, 2, 0, 2, 3]);geometry.computeVertexNormals();
+    if (material === finish.glass) {
+      const normal = new THREE.Vector3().fromBufferAttribute(geometry.attributes.normal, 0);
+      const middle = points.reduce((sum, point) => sum.add(new THREE.Vector3(...point)), new THREE.Vector3()).multiplyScalar(.25);
+      if (normal.dot(new THREE.Vector3(...SHIP_LAYOUT.seatEye).sub(middle)) < 0) {
+        geometry.setIndex([0, 2, 1, 0, 3, 2]);geometry.computeVertexNormals();
+      }
+    }
     return part(geometry, material);
   }
 
   // The cabin is assembled from separate walls and floor; nothing fills its volume.
   box(0, .88, -.25, 3.64, .24, 8.5, finish.floor);
   box(0, .68, -.2, 3.28, .18, 8.25, finish.dark);
-  box(0, 4.06, 1.15, 3.9, .12, 5.8, finish.hull);
-  box(0, 3.986, 1.15, 3.45, .025, 5.65, finish.dark);
   const ceiling = finish.dark.clone();ceiling.side = THREE.DoubleSide;
-  quad([[-1.86, 3.91, -1.78], [-1.76, 3.38, -4.20], [1.76, 3.38, -4.20], [1.86, 3.91, -1.78]], ceiling);
+  box(0, 3.43, .20, 3.18, .08, 4.10, finish.dark);
+  quad([[-1.59, 3.40, 2.25], [-1.53, 3.18, 3.93], [1.53, 3.18, 3.93], [1.59, 3.40, 2.25]], ceiling);
+  quad([[-1.60, 3.40, -1.78], [-1.52, 3.29, -3.98], [1.52, 3.29, -3.98], [1.60, 3.40, -1.78]], ceiling);
   for (const side of [-1, 1]) {
-    // Rear side walls and cockpit sills leave true forward side-window openings.
-    box(side * 1.84, 2.5, 1.1, .18, 3, 5.8, finish.hull);
-    box(side * 1.733, 2.48, 1.1, .025, 2.85, 5.65, finish.dark);
-    box(side * 1.84, 1.39, -3.15, .18, .78, 2.7, finish.hull);
-    quad([[side * .87, 1.48, -6.36], [side * 1.84, 1.72, -1.8], [side * 1.84, 3.96, -1.8], [side * 1.76, 3.43, -4.18]], finish.glass);
-    rod([side * 1.76, 3.43, -4.18], [side * 1.84, 3.96, -1.8], .035, finish.metal);
-    rod([side * .87, 1.48, -6.36], [side * 1.76, 3.43, -4.18], .035, finish.metal);
-    for (const z of [-.65, 1.15, 2.95]) {
-      box(side * 1.707, 2.53, z, .035, 2.76, .085, finish.metal);
-    }
-    box(side * 1.63, 3.88, 1.15, .05, .055, 5.55, finish.mint);
-    rod([side * 1.63, 3.36, -4.10], [side * 1.63, 3.80, -1.80], .012, finish.mint);
-    box(side * 1.62, 1.017, .05, .035, .014, 7.45, finish.amberPaint);
-    // Recessed service panels stay out of the walkable central aisle.
-    box(side * 1.687, 2.22, 1.38, .075, 1.23, 1.42, finish.floor);
-    box(side * 1.636, 2.72, 1.37, .025, .035, 1.10, finish.metal);
-    box(side * 1.636, 2.02, 1.87, .026, .2, .035, finish.mint);
-    box(side * 1.64, 1.35, 2.8, .17, .62, 1.04, finish.fabric);
+    box(side * 1.77, 2.08, 1.1, .18, 2.15, 5.8, finish.hull);
+    box(side * 1.666, 2.09, 1.1, .025, 2.10, 5.65, finish.dark);
+    box(side * 1.84, 1.54, -3.15, .18, 1.08, 2.7, finish.hull);
+    quad([[side * 1.60, 2.09, -4.84], [side * 1.84, 2.19, -2.44], [side * 1.84, 3.59, -2.48], [side * 1.60, 3.34, -3.98]], finish.glass);
+    // The upper liner follows the roof chamfer and stays clear of standing heads.
+    quad([[side * 1.666, 3.16, -1.79], [side * 1.59, 3.40, -1.79], [side * 1.59, 3.40, 2.25], [side * 1.666, 3.16, 3.93]], ceiling);
+    for (const z of [-.65, 1.15, 2.95]) box(side * 1.641, 2.11, z, .035, 2.14, .065, finish.metal);
+    box(side * 1.55, 3.30, .20, .035, .035, 4.05, finish.mint);
+    rod([side * 1.52, 3.27, 2.24], [side * 1.48, 3.12, 3.70], .014, finish.mint);
+    box(side * 1.61, 1.017, .05, .028, .014, 7.45, finish.amberPaint);
   }
   for (let i = 0; i < 11; i++) box(0, 1.006, -4.1 + i * .75, 3.4, .008, .012, finish.dark);
   box(0, 1.015, 3.59, 1.75, .014, .09, finish.amberPaint);
 
   // Large front windscreen: no opaque nose or console intersects the seated view.
-  quad([[-.87, 1.48, -6.36], [.87, 1.48, -6.36], [1.76, 3.43, -4.18], [-1.76, 3.43, -4.18]], finish.glass);
+  quad([[-1.60, 2.09, -4.84], [1.60, 2.09, -4.84], [1.60, 3.34, -3.98], [-1.60, 3.34, -3.98]], finish.glass);
   box(0, 1.18, -4.56, 3.76, .36, .19, finish.hull);
   activeGroup = exterior;
   panel([[-1.87, -4.6], [-.56, -6.72], [.56, -6.72], [1.87, -4.6]], 1.24, .42, finish.hull);
   panel([[-1.4, -4.65], [-.39, -6.56], [.39, -6.56], [1.4, -4.65]], 1.255, .025, finish.dark);
   for (const x of [-.43, .43]) box(x, 1.10, -6.73, .14, .085, .032, finish.mint);
 
-  activeGroup = shell;
-
+  const consoleFallback = new THREE.Group();consoleFallback.name = 'Pilot console fallback';ship.add(consoleFallback);
+  activeGroup = consoleFallback;
   // Low pilot console and two angled side control pods, below the sight line.
   box(0, 1.53, -4.11, 3.05, .6, .57, finish.dark);
   box(0, 1.845, -4.05, 2.99, .04, .48, finish.metal);
@@ -115,6 +126,7 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
     rod([side * .51, 1.71, -2.92], [side * .51, 1.94, -3.03], .045, finish.dark);
   }
   // Chair faces -Z; its back is behind the seated camera, toward the aisle.
+  const chairFallback=new THREE.Group();chairFallback.name='Pilot chair fallback';ship.add(chairFallback);activeGroup=chairFallback;
   part(new THREE.CylinderGeometry(.24, .32, .32, 10), finish.metal, 0, 1.16, -2.8);
   box(0, 1.42, -2.8, .83, .19, .79, finish.fabric);
   const back = box(0, 1.91, -2.415, .83, .98, .15, finish.fabric);
@@ -126,13 +138,15 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
   }
 
   // Rear bulkhead surrounds an unobstructed 1.8m × 2.5m doorway.
+  activeGroup=shell;
   for (const side of [-1, 1]) {
-    box(side * 1.42, 2.5, 4.0, 1.04, 3, .18, finish.hull);
+    box(side * 1.40, 2.225, 4.0, 1.00, 2.45, .18, finish.hull);
     box(side * .956, 2.24, 4.116, .09, 2.47, .1, finish.metal);
     box(side * 1.025, 2.85, 4.145, .035, .53, .025, finish.amber);
   }
-  box(0, 3.85, 4.0, 1.83, .7, .24, finish.dark);
-  box(0, 4.10, 4.02, 2.1, .15, .41, finish.hull);
+  // The compact collar encloses six telescoping slats in separate depth tracks.
+  box(0, 3.75, 3.78, 1.96, .50, .80, finish.dark);
+  box(0, 4.015, 3.78, 2.00, .065, .80, finish.hull);
   box(1.32, 2.15, 4.118, .21, .32, .035, finish.display);
   box(1.32, 2.15, 4.145, .12, .10, .018, finish.mint);
 
@@ -155,12 +169,22 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
   ramp.position.set(0, 1, 4);
   ship.add(ramp);
   const rampLength = Math.hypot(3.2, 1);
+  const leaf = new THREE.Group();leaf.name = 'Folding outer ramp';leaf.position.set(0, -.12, rampLength / 2);ramp.add(leaf);
+  const rampPart = (x, y, z, width, height, depth, material) => {
+    const outer = z >= rampLength / 2;
+    return box(x, y + (outer ? .12 : 0), z - (outer ? rampLength / 2 : 0), width, height, depth, material, outer ? leaf : ramp);
+  };
   // Local upper face y=0 gives the exact walk plane y = 1 - (z - 4) / 3.2.
-  box(0, -.055, rampLength / 2, 1.8, .11, rampLength, finish.floor, ramp);
-  for (const side of [-1, 1]) box(side * .847, .008, rampLength / 2, .045, .016, rampLength - .1, finish.amberPaint, ramp);
-  for (let i = 0; i < 15; i++) box(0, .007, .13 + i * .215, 1.63, .014, .035, finish.metal, ramp);
-  box(0, -.10, rampLength / 2, .1, .025, rampLength - .23, finish.mint, ramp);
-  rod([-.93, 1, 4], [.93, 1, 4], .09, finish.metal);
+  for (const z of [rampLength / 4, rampLength * 3 / 4]) {
+    rampPart(0, -.055, z, 1.8, .11, rampLength / 2 - .012, finish.floor);
+    for (const side of [-1, 1]) rampPart(side * .847, .008, z, .045, .016, rampLength / 2 - .06, finish.amberPaint);
+    rampPart(0, -.10, z, .1, .018, rampLength / 2 - .15, finish.mint);
+  }
+  for (let i = 0; i < 15; i++) rampPart(0, .007, .13 + i * .215, 1.63, .014, .035, finish.metal);
+  for (const side of [-1, 1]) rod([side * .89, -.12, rampLength / 2], [side * .96, -.12, rampLength / 2], .075, finish.metal, ramp);
+  // Outboard pin bearings leave the walking floor continuous at the throat.
+  // A full-width axle here would protrude above the authoritative ramp plane.
+  for (const side of [-1, 1]) rod([side * .93, 1, 4], [side * 1.08, 1, 4], .06, finish.metal);
 
   activeGroup = exterior;
   // All propulsion and large wings live outside the cabin's walkable width.
@@ -222,20 +246,70 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
   }
   // Small physical lights make an enclosed cabin readable independently of sun angle.
   for (const z of [-2.2, 1.6]) {
-    const light = new THREE.PointLight(0xb9f6e7, 9, 7, 2);
-    light.position.set(0, 3.65, z);
+    const light = new THREE.PointLight(0xb9f6e7, 4.5, 6, 2);
+    light.position.set(0, 3.17, z);
     ship.add(light);
   }
   const mfds = createShipMFDs();ship.add(mfds);
+  const cabin = createNomadCabin();ship.add(cabin);
+  // The canonical navigation clock is the sole pose input. This adapter replaces
+  // the generic telescoping rig used by ships in the flight-options lane.
+  ship.updateGear = (_dt, _deployed, authoritativeProgress) => {
+    const progress = THREE.MathUtils.clamp(authoritativeProgress ?? 1, 0, 1);
+    const fold = 1 - progress * progress * (3 - 2 * progress);
+    for (const { object, spec, offset } of gearRoots) {
+      object.position.fromArray(spec.pivot).addScaledVector(offset, fold);
+      object.rotation.z = spec.retractAngle * fold;
+    }
+    ship.userData.gearProgress = progress;ship.userData.gearAssemblies = gearRoots.length;
+  };
+  ship.updateCabin = (nav, store) => {
+    cabin.update(nav, store);
+    ship.updateGear(0, nav.gearDeployed, nav.gearProgress ?? (nav.mode === 'landed' ? 1 : 0));
+    const flying = nav.mode === 'flight' || nav.cabinFlight;
+    const thrust = THREE.MathUtils.clamp((nav.engineAcceleration?.length() ?? 0) / 12, 0, 1);
+    const intensity = nav.powered === false ? 0 : flying ? .24 + thrust * 2 : .055;
+    for (const material of driveMaterials) material.emissiveIntensity = intensity;
+    ship.userData.driveIntensity = intensity;
+  };
+  ship.cabinState = () => ({ ...cabin.userData.cargo });
   ship.updateDisplays = (dt, nav, inventory, course) => mfds.update(dt, nav, inventory, course);
   ship.displayState = () => mfds.snapshot();
   ship.userData.assetStatus = 'loading';
   ship.readyPromise = new GLTFLoader().loadAsync(assetURL).then(({ scene: model }) => {
+    // Validate the whole interactive assembly before adopting any authored part.
+    // A parseable partial GLB must not overlap its cabin with the live fallback.
+    const required = ['CargoLid', 'PilotChair', 'NomadConsole', 'NomadCabin',
+      ...Array.from({ length: 8 }, (_, i) => `CargoBox_${i + 1}`)];
+    for (const name of required) if (!model.getObjectByName(name)) throw new Error(`Nomad asset is missing ${name}`);
     const lid = model.getObjectByName('CargoLid');
-    if (!lid) throw new Error('Nomad asset is missing the cargo lid');
+    const rig = SHIP_LAYOUT.gear.legs.map(spec => ({ spec, object: model.getObjectByName(spec.name), offset: new THREE.Vector3(...spec.retractOffset) }));
+    if (rig.some(leg => !leg.object)) throw new Error('Nomad asset is missing a landing gear root');
+    const hardpoints = SHIP_LAYOUT.hardpoints.map(spec => {
+      const node = model.getObjectByName(spec.name);
+      if (!node) throw new Error(`Nomad asset is missing ${spec.name}`);
+      return { name: node.name, ...node.userData, position: node.position.toArray() };
+    });
     model.name = 'Blender Nomad exterior and storage';
-    model.traverse(object => { if (object.isMesh) { object.castShadow = true;object.receiveShadow = true; } });
+    model.traverse(object => { if (object.isMesh) {
+      object.castShadow = true;object.receiveShadow = true;
+      for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+        if (material.map) material.userData.authoredSurface = true;
+        if (material.name === 'Drive / ion blue' && !driveMaterials.includes(material)) {
+          material.color.set(0x102c37);material.emissive.set(0x42b8ee);driveMaterials.push(material);
+        }
+      }
+    } });
     ship.add(model);cargoLid = lid;exterior.visible = false;cargoFallback.visible = false;
+    if(model.getObjectByName('PilotChair'))chairFallback.visible=false;
+    if(model.getObjectByName('NomadConsole'))consoleFallback.visible=false;
+    cabin.adoptModel(model);
+    gearRoots = rig;ship.userData.hardpoints = hardpoints;
+    ship.mountTransform = (name, attachment) => {
+      const spec = SHIP_LAYOUT.hardpoints.find(point => point.name === name);
+      if (!spec) throw new RangeError(`Unknown Nomad hardpoint ${name}`);
+      return mountTransformFromAsset(model, { node: name, size: spec.size }, attachment);
+    };
     ship.userData.assetStatus = 'ready';
     return model;
   }).catch(error => {
@@ -256,12 +330,14 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
     ship.userData.storageProgress = storageProgress;
     progress = THREE.MathUtils.clamp(progress + (ship.doorOpen ? step : -step), 0, 1);
     const eased = progress * progress * (3 - 2 * progress);
+    const track = Math.min(1, eased / .2), raise = Math.max(0, (eased - .2) / .8);
     for (let i = 0; i < slats.length; i++) {
       const base = 1 + (i + .5) * 2.5 / 6;
-      slats[i].position.y = THREE.MathUtils.lerp(base, 3.735 + i * .035, eased);
-      slats[i].position.z = 4.015 - i * .021 * eased;
+      slats[i].position.y = THREE.MathUtils.lerp(base, 3.725, raise);
+      slats[i].position.z = 4.015 - i * .105 * track;
     }
     ramp.rotation.x = THREE.MathUtils.lerp(-Math.PI / 2, Math.atan2(1, 3.2), eased);
+    leaf.rotation.x = Math.PI * (1 - eased);
     ship.userData.doorProgress = progress;
     ship.userData.rampReady = progress > .995;
   };

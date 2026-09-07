@@ -1,0 +1,65 @@
+{
+  "browser": "151.0.7922.173",
+  "input": "Injected W3C standard Gamepad; no physical controller used",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "mined": {
+    "resourceWeights": [
+      0.6613890135452534,
+      0.015,
+      0.32361098645474656
+    ],
+    "resourceVersion": "1.1",
+    "ready": true,
+    "pending": false,
+    "revision": 5,
+    "position": [
+      -2193727.966415542,
+      95037.49792359378,
+      -23505086.116092708
+    ],
+    "pack": [
+      1.4144122587385937,
+      0.0632745906477794,
+      0.7422440447844565
+    ],
+    "ship": [
+      0,
+      0,
+      0
+    ],
+    "saved": true,
+    "error": "",
+    "triangles": 24856,
+    "meshMs": 482.8999999910593,
+    "publishMs": 9.799999997019768,
+    "groundRevision": 5,
+    "space": false,
+    "targetName": "Crescent deposit",
+    "activeRock": "selene-crescent-ore-01",
+    "activeRevision": 5,
+    "activePosition": [
+      -2193727.966415542,
+      95037.49792359378,
+      -23505086.116092708
+    ],
+    "debrisBrake": false,
+    "surfaceRock": null,
+    "spaceRocks": [],
+    "tool": {
+      "active": true,
+      "hit": [
+        -2193727.7072073654,
+        95037.19349200491,
+        -23505086.09387523
+      ],
+      "heat": 0.26749999999999996,
+      "beaming": false,
+      "selected": true,
+      "toolError": null
+    }
+  },
+  "errors": []
+}

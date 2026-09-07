@@ -1,0 +1,18 @@
+{
+  "byteIdentical": true,
+  "asset": {
+    "path": "public/models/characters/watchkeep-shopkeeper.glb",
+    "bytes": 1752664,
+    "sha256": "6360429f81004eb9bb5a93626a71ceb55679e5a5aa29f28a188b411ccaefce09"
+  },
+  "exporter": {
+    "path": "blender/finish_watchkeep_shopkeeper.py",
+    "bytes": 25843,
+    "sha256": "f847c266d65fe3eeefe221d7e7d5f83ff1cb6a2e7eee7b6be43418d21effd149"
+  },
+  "sourceArchive": {
+    "path": "assets/characters/watchkeep-shopkeeper/source/source-animation-pack.zip",
+    "bytes": 57025870,
+    "sha256": "d35196badb125d4b74080cf42271cb119c5e0747a80c0c29a35036b5c9f64b1b"
+  }
+}

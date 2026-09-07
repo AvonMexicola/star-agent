@@ -1,0 +1,9 @@
+# Human routing owner until Cees appoints maintainers with repository write access.
+# Domain responsibility is documented in project/areas.json; null means unassigned.
+# This file routes review. Required approval/protection is a separate GitHub setting.
+* @AvonMexicola
+/.github/ @AvonMexicola
+/AGENTS.md @AvonMexicola
+/GOVERNANCE.md @AvonMexicola
+/QUALITY.md @AvonMexicola
+/project/ @AvonMexicola

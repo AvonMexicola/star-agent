@@ -1,0 +1,38 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+import * as T from '/tmp/star-agent-kestrel/node_modules/three/build/three.module.js';
+import {GLTFLoader} from '/tmp/star-agent-kestrel/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+const OUT=path.dirname(fileURLToPath(import.meta.url)),ROOT=path.resolve(OUT,'../../../..');
+const asset='public/models/atlas-mark-ii/atlas-mark-ii.glb',bytes=await fs.readFile(path.join(ROOT,asset));
+const sha256=crypto.createHash('sha256').update(bytes).digest('hex');
+assert.equal(sha256,'f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e');
+const n=bytes.readUInt32LE(12),doc=JSON.parse(bytes.subarray(20,20+n)),bin=bytes.subarray(28+n);
+const resources={bytes:bytes.length,triangles:doc.meshes.flatMap(m=>m.primitives).reduce((s,p)=>s+doc.accessors[p.indices??p.attributes.POSITION].count/3,0),meshes:doc.meshes.length,primitives:doc.meshes.reduce((s,m)=>s+m.primitives.length,0),materials:doc.materials.length,images:doc.images.length,embeddedAnimationClips:doc.animations?.length??0,extensionsRequired:doc.extensionsRequired};
+doc.buffers[0].uri='data:application/octet-stream;base64,'+bin.toString('base64');for(const mesh of doc.meshes)for(const p of mesh.primitives)delete p.material;for(const k of ['materials','textures','images','samplers'])delete doc[k];
+globalThis.ProgressEvent??=class{constructor(type,init={}){this.type=type;Object.assign(this,init);}};
+const {scene}=await new GLTFLoader().parseAsync(JSON.stringify(doc),'');scene.traverse(o=>{if(o.isMesh)o.material.side=T.DoubleSide;});
+const layout=JSON.parse(await fs.readFile(path.join(ROOT,'assets/atlas-mark-ii/layout.json'),'utf8'));
+let source=await fs.readFile(path.join(ROOT,'src/atlas-mark-ii-systems.js'),'utf8');
+for(const [a,b] of Object.entries({"'three'":"'file:///tmp/star-agent-kestrel/node_modules/three/build/three.module.js'","'../assets/atlas-mark-ii/layout.json'":`'file://${ROOT}/assets/atlas-mark-ii/layout.json'`,"'../assets/atlas-mark-ii/interior-colliders.json'":`'file://${ROOT}/assets/atlas-mark-ii/interior-colliders.json'`,"'./boarding.js'":`'file://${ROOT}/src/boarding.js'`}))source=source.replaceAll(a,b);
+const {AtlasMarkIISystems}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const systems=new AtlasMarkIISystems().bind(scene);
+const isUnder=(o,name)=>{for(let p=o;p;p=p.parent)if(p.name===name)return true;return false;};
+const vertex=(o,i)=>new T.Vector3().fromBufferAttribute(o.geometry.attributes.position,i).applyMatrix4(o.matrixWorld);
+function bounds(root){const b=new T.Box3();let triangles=0;root.traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++)b.expandByPoint(vertex(o,i));triangles+=(o.geometry.index?.count??p.count)/3;});return {min:b.min.toArray(),max:b.max.toArray(),triangles};}
+function clipY(poly,y,above){const out=[];for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],ina=above?a.y>=y:a.y<=y,inb=above?b.y>=y:b.y<=y;if(ina)out.push(a);if(ina!==inb)out.push(a.clone().lerp(b,(y-a.y)/(b.y-a.y)));}return out;}
+function radialDistanceSq(poly,cx,cz){let best=Infinity,point=null,area=0,positive=false,negative=false;for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],dx=b.x-a.x,dz=b.z-a.z,l=dx*dx+dz*dz,t=l?T.MathUtils.clamp(((cx-a.x)*dx+(cz-a.z)*dz)/l,0,1):0;const d=(a.x+t*dx-cx)**2+(a.z+t*dz-cz)**2;if(d<best){best=d;point=a.clone().lerp(b,t).toArray();}const cross=dx*(cz-a.z)-dz*(cx-a.x);positive ||=cross>1e-10;negative ||=cross< -1e-10;area+=a.x*b.z-a.z*b.x;}if(Math.abs(area)>1e-10&&!(positive&&negative))return {distanceSquared:0,point:null};return {distanceSquared:best,point};}
+const groups=Object.fromEntries(['Interior','PressureBridge','MeridianDorsalShell','PortLoadShoulder','StarboardLoadShoulder','PortDrive','StarboardDrive'].map(name=>[name,bounds(scene.getObjectByName(name))]));
+const currentBounds=bounds(scene),mounts=[];
+for(const m of layout.mounts){const node=scene.getObjectByName(m.node),centre=node.getWorldPosition(new T.Vector3()),normal=new T.Vector3(0,1,0).transformDirection(node.matrixWorld),bore=new T.Vector3(0,0,-1).transformDirection(node.matrixWorld),foreign=[];let nearestRadius=Infinity;
+ scene.traverse(o=>{if(!o.isMesh||isUnder(o,m.node))return;const p=o.geometry.attributes.position,idx=o.geometry.index;for(let i=0;i<(idx?.count??p.count);i+=3){const vs=[0,1,2].map(j=>vertex(o,idx?idx.getX(i+j):i+j));if(Math.max(...vs.map(v=>v.y))<centre.y-.25||Math.min(...vs.map(v=>v.y))>centre.y+1.2)continue;const poly=clipY(clipY(vs,centre.y-.25,true),centre.y+1.2,false);if(!poly.length)continue;const closest=radialDistanceSq(poly,centre.x,centre.z),r=Math.sqrt(closest.distanceSquared);nearestRadius=Math.min(nearestRadius,r);if(r<.875-1e-6)foreign.push({mesh:o.name,triangle:i/3,minimumRadius:r,witnessPoint:closest.point,clippedBounds:{min:new T.Box3().setFromPoints(poly).min.toArray(),max:new T.Box3().setFromPoints(poly).max.toArray()}});}});
+ const supports=[];for(const [dx,dz] of [[0,0],[-.65,0],[.65,0],[0,-.65],[0,.65]]){const hits=new T.Raycaster(new T.Vector3(centre.x+dx,centre.y-.19,centre.z+dz),new T.Vector3(0,-1,0),0,2).intersectObject(scene,true).filter(h=>!isUnder(h.object,m.node));const h=hits[0];supports.push({offsetXZ:[dx,dz],hitY:h?.point.y??null,mesh:h?.object.name??null,relativeToFoundationBottom:h?h.point.y-(centre.y-.5):null});}
+ mounts.push({name:m.node,worldOrigin:centre.toArray(),normal:normal.toArray(),bore:bore.toArray(),metadata:node.userData,cylinder:{radius:.875,minY:centre.y-.25,maxY:centre.y+1.2},foreignTriangleCount:foreign.length,foreignTriangles:foreign.slice(0,16),nearestForeignRadialDistanceWithinVerticalSlab:nearestRadius,supportSamples:supports});
+}
+const gear=[];for(const progress of [1,.5,.18,0]){systems.gear.progress=progress;systems.gear.target=progress;systems.applyTransforms();gear.push({progress,completeBounds:bounds(scene),legs:systems.gear.legs.map(l=>({name:l.node,root:l.nodeObject.getWorldPosition(new T.Vector3()).toArray(),footPin:l.footObject.getWorldPosition(new T.Vector3()).toArray(),rootAngle:l.nodeObject.rotation.x,padAngle:l.footObject.rotation.x,legBounds:bounds(l.nodeObject),doorAngles:l.doors.map(d=>d.nodeObject.rotation.z)}))});}
+const sourceFiles=['assets/atlas-mark-ii/layout.json','assets/atlas-mark-ii/fleet_hull.py','assets/atlas-mark-ii/landing_gear.py','assets/atlas-mark-ii/geo.py','assets/atlas-mark-ii/pack_geometry.py','src/atlas-mark-ii-systems.js','src/atlas-mark-ii-studio.js'];
+const sourceHashes=Object.fromEntries(await Promise.all(sourceFiles.map(async p=>[p,crypto.createHash('sha256').update(await fs.readFile(path.join(ROOT,p))).digest('hex')])));
+const report={sha256,resources,currentBounds,groups,mounts,gear,sourceHashes,scope:'Independent decoded actual GLB resource/bounds/frame audit; exact triangle clipping against each vertical S3 interface cylinder, excluding that mount itself. Support rays are five local samples, not a structural load certificate. Four gear poses establish transform identity, not continuous clearance or animation quality. No whole provisional weapon package, full walking path or GPU performance approval.'};
+await fs.writeFile(path.join(OUT,'geometry-audit.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({sha256,resources,currentBounds,mounts:mounts.map(m=>({name:m.name,foreignTriangleCount:m.foreignTriangleCount,nearestRadius:m.nearestForeignRadialDistanceWithinVerticalSlab,supports:m.supportSamples})),gearMinimumY:gear.map(g=>({p:g.progress,minY:g.completeBounds.min[1]}))},null,2));

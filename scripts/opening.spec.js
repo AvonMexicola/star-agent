@@ -1,6 +1,22 @@
 import {test,expect} from '@playwright/test';
+const evidencePath = path => process.env.CHARACTER_EVIDENCE ? path.replace('/tmp', process.env.CHARACTER_EVIDENCE) : path;
 
-test('hangar reveal hands movement to physical boarding and launch',async({page})=>{
+for(const controller of [false,true])test(`${controller?'controller':'keyboard'} hangar reveal hands movement to physical boarding and launch`,async({page})=>{
+  if(controller)await page.addInitScript(()=>{
+    window.departurePad={id:'Departure pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],
+      buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
+    Object.defineProperty(navigator,'getGamepads',{value:()=>[window.departurePad]});
+  });
+  const held=async(key,down)=>{
+    if(!controller)return down?page.keyboard.down(key):page.keyboard.up(key);
+    await page.evaluate(({key,down})=>{
+      const pad=window.departurePad;
+      if(['w','s','a','d'].includes(key))pad.axes[['a','d'].includes(key)?0:1]=down?(['w','a'].includes(key)?-1:1):0;
+      else {const index={x:1,f:2,b:3}[key];pad.buttons[index]={pressed:down,value:Number(down)};}
+    },{key,down});
+    if(['x','f','b'].includes(key))await page.waitForFunction(({key,down})=>window.starAgent.navigation.gamepad.previous[{x:1,f:2,b:3}[key]]===down,{key,down});
+  };
+  const controls={down:key=>held(key,true),up:key=>held(key,false),press:async key=>{await held(key,true);await held(key,false);}};
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   const started=Date.now();
   await page.goto('/?intro=1&debug');
@@ -14,11 +30,13 @@ test('hangar reveal hands movement to physical boarding and launch',async({page}
   expect(initial.camera.fov).toBe(45);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   const shot=async name=>{
-    await page.evaluate(()=>{window.starAgent.navigation.enabled=false;window.starAgent.setRenderScale(1);});
+    await page.evaluate(()=>window.starAgent.setRenderScale(1));
     await page.waitForFunction(()=>document.getElementById('viewport').width===innerWidth);
-    await page.screenshot({path:name});
-    await page.evaluate(()=>{window.starAgent.setRenderScale(.55);window.starAgent.navigation.enabled=true;});
+    await page.screenshot({path:evidencePath(name)});
+    await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   };
+  await expect(page.locator('#mining-panel')).toBeHidden();
+  expect(await page.evaluate(()=>window.starAgent.state.mining.tool.active)).toBe(false);
   await shot('/tmp/star-agent-opening-0.png');
   await page.waitForFunction(()=>window.starAgent.state.opening.elapsed>=5);
   const restingHands=await page.evaluate(()=>{
@@ -28,43 +46,104 @@ test('hangar reveal hands movement to physical boarding and launch',async({page}
     return ['LeftHand','RightHand'].map(name=>c.model.getObjectByName(name)
       .getWorldPosition(c.worldPosition.clone()).sub(hips).dot(c.up));
   });
-  // Wrist joints rest at the pelvis line; fingers extend down beside the thighs.
-  for(const height of restingHands)expect(height).toBeLessThan(.03);
+  // The expedition rig places Hips lower in the pelvis than the previous pilot.
+  // Relaxed wrists sit just above that joint; the 20 cm gloves reach the thighs.
+  for(const height of restingHands)expect(height).toBeLessThan(.14);
   await shot('/tmp/star-agent-opening-5.png');
   await page.waitForFunction(()=>window.starAgent.state.opening.elapsed>=10);
   await shot('/tmp/star-agent-opening-10.png');
   expect(await page.evaluate(()=>window.starAgent.state.station.doorsOpen)).toBe(1);
   expect(await page.locator('#hud').evaluate(e=>e.inert)).toBe(true);
   const before=await page.evaluate(()=>window.starAgent.state.position);
-  await page.keyboard.press('w');
+  await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.opening.phase==='playing');
   expect(await page.locator('#hud').evaluate(e=>e.inert)).toBe(false);
   await page.waitForFunction(()=>window.starAgent.state.speed>0);
-  await page.keyboard.press('x');
+  await controls.up('w');
+  await controls.press('x');
   expect(await page.evaluate(()=>window.starAgent.state.position)).not.toEqual(before);
-  await page.screenshot({path:'/tmp/star-agent-opening-walk.png'});
+  await page.screenshot({path:evidencePath('/tmp/star-agent-opening-walk.png')});
+  if(controller){
+    const padFrames=()=>page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
+    const padButton=async(index,down)=>{await page.evaluate(({index,down})=>{window.departurePad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await padFrames();};
+    const tap=async index=>{await padButton(index,true);await padButton(index,false);};
+    const chord=async index=>{
+      await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+      await page.evaluate(()=>{for(const i of [4,5])window.departurePad.buttons[i]={pressed:true,value:1};});await padFrames();
+      await tap(index);
+      await page.evaluate(()=>{for(const i of [4,5])window.departurePad.buttons[i]={pressed:false,value:0};});await padFrames();
+    };
+    await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(14);
+    await page.waitForFunction(()=>window.starAgent.state.mining.tool.item==='rifle-laser');
+    await chord(15);await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='character-hand');
+    const ammo=await page.evaluate(()=>window.starAgent.state.mining.tool.ammo);
+    await page.waitForFunction(()=>window.starAgent.state.controller.armed);await padButton(7,true);
+    await page.waitForFunction(before=>window.starAgent.state.mining.tool.ammo<before,ammo);
+    await page.screenshot({path:evidencePath('/tmp/star-agent-controller-held-rifle.png')});await padButton(7,false);
+    await chord(15);await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='first-person');
+    expect(await page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
+    await page.screenshot({path:evidencePath('/tmp/star-agent-character-first-person.png')});
+    await chord(15);await page.waitForFunction(()=>window.starAgent.state.character.visible);
+    await chord(14);await page.waitForFunction(()=>window.starAgent.state.utilities.suit);
+    expect(await page.evaluate(()=>window.starAgent.state.mining.tool.item)).toBe('rifle-laser');
+    await page.screenshot({path:evidencePath('/tmp/star-agent-controller-flashlight.png')});
+    await tap(9);await expect(page.locator('#controller-menu')).toBeVisible();
+    for(let i=0;i<50;i++){
+      if(await page.evaluate(()=>document.activeElement?.dataset.controllerKey==='wave'))break;
+      await tap(13);
+    }
+    await expect(page.locator('[data-controller-key="wave"]')).toBeFocused();
+    const beforeWave=await page.evaluate(()=>window.starAgent.state.mining.tool.ammo);
+    await padButton(7,true);await tap(0);
+    await page.waitForFunction(()=>window.starAgent.state.character.state==='wave');
+    await page.screenshot({path:evidencePath('/tmp/star-agent-character-controller-wave.png')});
+    await page.waitForFunction(()=>window.starAgent.state.character.state==='aim-rifle');
+    expect(await page.evaluate(()=>window.starAgent.state.mining.tool.ammo)).toBe(beforeWave);
+    expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+    await padButton(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  }
   // Walk along the starboard side to the aft hatch, then centre on the ramp.
-  await page.keyboard.down('s');
+  await controls.down('s');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>7.5);
-  await page.keyboard.up('s');await page.keyboard.press('x');
-  await page.keyboard.down('a');
+  await controls.up('s');await controls.press('x');
+  await controls.down('a');
   await page.waitForFunction(()=>Math.abs(window.starAgent.state.shipLocal[0])<.25);
-  await page.keyboard.up('a');await page.keyboard.press('x');
-  await page.keyboard.down('w');
+  await controls.up('a');await controls.press('x');
+  await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<6);
-  await page.keyboard.up('w');await page.keyboard.press('x');await page.keyboard.press('f');
+  await controls.up('w');await controls.press('x');await controls.press('f');
   await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
-  await page.keyboard.down('w');
+  await controls.down('w');
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.6);
-  await page.keyboard.up('w');await page.keyboard.press('x');await page.keyboard.press('f');
+  await controls.up('w');await controls.press('x');
+  if(controller)await page.waitForFunction(()=>window.starAgent.state.character.state==='idle');
+  await controls.press('f');
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
-  await page.screenshot({path:'/tmp/star-agent-opening-cockpit.png'});
-  await page.keyboard.press('l');
+  await page.screenshot({path:evidencePath('/tmp/star-agent-opening-cockpit.png')});
+  await controls.press('b');
   await page.waitForFunction(()=>window.starAgent.state.mode==='flight'&&!window.starAgent.state.station.lifting);
-  await page.keyboard.down('w');
-  await page.waitForFunction(()=>window.starAgent.state.station.local[2]<-65);
-  await page.keyboard.up('w');await page.keyboard.press('x');
-  await page.screenshot({path:'/tmp/star-agent-opening-launch.png'});
+  const hover=await page.evaluate(()=>window.starAgent.state.station.deckClearance);
+  expect(hover).toBeCloseTo(3.55,3);
+  await expect(page.locator('#gear-flight-prompt')).toContainText(controller?'LB+RB + D-PAD ↓':'PRESS G');
+  await controls.down('w');
+  await page.waitForFunction(()=>window.starAgent.state.speed>19);
+  await page.waitForFunction(()=>window.starAgent.state.station.local[2]<-100);
+  expect(await page.evaluate(()=>window.starAgent.state.station.deckClearance)).toBeCloseTo(hover,3);
+  expect(await page.evaluate(()=>window.starAgent.state.speed)).toBeLessThanOrEqual(35.001);
+  await page.screenshot({path:evidencePath(`/tmp/star-agent-gear-down-${controller?'controller':'keyboard'}.png`)});
+  if(controller){
+    const set=async(index,down)=>{await page.evaluate(({index,down})=>{window.departurePad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});};
+    await set(4,true);await set(5,true);await set(13,true);await set(13,false);await set(4,false);await set(5,false);
+  }else await page.keyboard.press('g');
+  await expect(page.locator('#gear-flight-prompt')).toContainText('RETRACTING');
+  expect(await page.evaluate(()=>window.starAgent.state.speedProfile.limit)).toBeLessThanOrEqual(35);
+  await page.waitForFunction(()=>window.starAgent.state.utilities.gearProgress===0);
+  await expect(page.locator('#gear-flight-prompt')).toBeHidden();
+  await page.waitForFunction(()=>window.starAgent.state.speed>80);
+  expect(await page.evaluate(()=>window.starAgent.state.effects.slipstream)).toBe(0);
+  expect(await page.evaluate(()=>window.starAgent.state.tunnel.visible)).toBe(false);
+  await controls.up('w');await controls.press('x');
+  await page.screenshot({path:evidencePath(`/tmp/star-agent-opening-launch-${controller?'controller':'keyboard'}.png`)});
   expect(errors).toEqual([]);
 });
 
@@ -128,7 +207,7 @@ test('hangar floor remains clear while the camera origin moves at eye height',as
         return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
       });
       expect(await page.evaluate(()=>window.starAgent.state.station.deckClearance)).toBeCloseTo(1.75,5);
-      if(step===0||step===7)await page.screenshot({path:`/tmp/star-agent-floor-fixed-${scale}-${step}.png`});
+      if(step===0||step===7)await page.screenshot({path:evidencePath(`/tmp/star-agent-floor-fixed-${scale}-${step}.png`)});
     }
   }
   expect(errors).toEqual([]);

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Star Agent soundtrack check</title>
+<h1>Soundtrack check</h1>
+<p>Development harness: uses the real audio module and local MP3s, without the renderer.</p>
+<button id="sound">Enable sound</button>
+<label>Flight situation <select id="scene">
+  <option value="orbit">Orbit</option><option value="travel">Distant travel</option>
+  <option value="descent">Atmospheric descent</option><option value="moon">Airless approach</option>
+  <option value="walk">On foot</option><option value="crashed">Crashed</option>
+</select></label>
+<button id="ending">Skip to ending</button>
+<pre id="status" aria-live="off"></pre>
+<script type="module">
+import { FlightAudio } from '../src/audio.js';
+const audio = new FlightAudio();
+let analyser, samples;
+const states = {
+  orbit: { altitude: 200000, mode: 'flight' },
+  travel: { altitude: 5000000, mode: 'flight' },
+  descent: { altitude: 60000, verticalSpeed: -200, mode: 'flight' },
+  moon: { altitude: 10000, verticalSpeed: -200, mode: 'flight', airless: true },
+  walk: { altitude: 0, mode: 'walk' }, crashed: { mode: 'crashed' },
+};
+document.querySelector('#sound').onclick = async event => {
+  event.target.disabled = true;
+  await audio.toggle();
+  if (!analyser && audio.music) {
+    analyser = audio.context.createAnalyser();
+    audio.music.volume.connect(analyser);
+    samples = new Float32Array(analyser.fftSize);
+  }
+  event.target.textContent = audio.enabled ? 'Disable sound' : 'Enable sound';
+  event.target.disabled = false;
+};
+document.querySelector('#ending').onclick = () => {
+  const media = audio.music?.active?.media;
+  if (media && Number.isFinite(media.duration)) media.currentTime = media.duration - 7;
+};
+document.addEventListener('visibilitychange', () => audio.setSuspended(document.hidden));
+window.addEventListener('pagehide', () => audio.dispose());
+setInterval(() => {
+  audio.update(states[document.querySelector('#scene').value], 0.1);
+  let rms = 0;
+  if (analyser) { analyser.getFloatTimeDomainData(samples); rms = Math.sqrt(samples.reduce((sum, n) => sum + n * n, 0) / samples.length); }
+  document.querySelector('#status').textContent = JSON.stringify({ enabled: audio.enabled,
+    context: audio.context?.state ?? null, music: audio.music?.state ?? null, musicRms: rms,
+    decks: audio.music?.decks.map(d => ({ file: d.file, paused: d.media.paused, time: d.media.currentTime,
+      ready: d.media.readyState, gain: d.gain.gain.value })) ?? [] }, null, 2);
+}, 100);
+</script></html>

@@ -1,0 +1,700 @@
+{
+  "browser": "151.0.7922.173",
+  "input": "Injected W3C standard Gamepad; no keyboard, pointer, teleport or gameplay state mutation. Physical hardware not tested.",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "final": {
+    "preload": {
+      "phase": "ready",
+      "ready": true,
+      "label": "Ready to explore",
+      "completed": 8,
+      "total": 8,
+      "error": null,
+      "fallbackTasks": [],
+      "orbitalResolution": 4096,
+      "orbitalComplete": true
+    },
+    "reentryHeat": 0,
+    "crash": null,
+    "renderedFrames": 2796,
+    "graphics": {
+      "grassDistance": 80,
+      "grassDensity": 0.75,
+      "resolution": "auto"
+    },
+    "utilities": {
+      "gearDeployed": false,
+      "gearProgress": 0,
+      "gearAssemblies": 4,
+      "ship": false,
+      "suit": false
+    },
+    "pyre": {
+      "position": [
+        16429542934.931208,
+        6796362883.185389,
+        10181322295.11203
+      ],
+      "radius": 1200000,
+      "distance": 20484713915.459435,
+      "visible": false,
+      "patches": 0,
+      "lod": 0,
+      "pending": 0,
+      "builds": 6,
+      "morphing": 0,
+      "error": null,
+      "mapsReady": true,
+      "generatorVersion": 2,
+      "altitude": 20483514431.775673,
+      "ready": false,
+      "epoch": 1788795329502,
+      "resources": null,
+      "region": null
+    },
+    "heat": 0,
+    "terrainDetail": {
+      "orbitalResolution": 4096,
+      "morphing": 0,
+      "waiting": 0,
+      "merging": 0,
+      "settled": true,
+      "visible": 202,
+      "error": null
+    },
+    "terrainLod": {
+      "morphing": 0,
+      "waiting": 0,
+      "merging": 0,
+      "settled": true,
+      "visible": 202,
+      "error": null
+    },
+    "loadout": {
+      "version": 1,
+      "active": "weapon1",
+      "quickIndex": 0,
+      "health": 100,
+      "bleeding": false,
+      "slots": {
+        "weapon1": {
+          "item": "rifle-laser",
+          "quantity": 1
+        },
+        "weapon2": {
+          "item": "sidearm-pistol",
+          "quantity": 1
+        },
+        "tool": {
+          "item": "mining-laser-tool",
+          "quantity": 1
+        },
+        "backpack": {
+          "item": "backpack-life-support",
+          "quantity": 1
+        },
+        "ammo1": {
+          "item": "carbine-charge",
+          "quantity": 59
+        },
+        "ammo2": {
+          "item": "sidearm-charge",
+          "quantity": 36
+        },
+        "quick1": {
+          "item": "bandage",
+          "quantity": 3
+        },
+        "quick2": {
+          "item": "healing-stim",
+          "quantity": 2
+        },
+        "quick3": null,
+        "quick4": null
+      }
+    },
+    "equippedMass": 13.545,
+    "effects": {
+      "spaceDust": 0,
+      "particles": 2,
+      "capacity": 1024,
+      "boost": 0,
+      "travel": 0,
+      "bolts": 0,
+      "miningContacts": 0,
+      "collectedBursts": 0,
+      "weaponShots": 1,
+      "weaponImpacts": 0,
+      "lastWeapon": "laser",
+      "lances": 0,
+      "slipstream": 0,
+      "reducedMotion": false,
+      "weapon": "pulse",
+      "controllerFire": false,
+      "beamVisible": false,
+      "bloom": true
+    },
+    "shipMarker": {
+      "visible": false
+    },
+    "fieldCache": [
+      -2193722.031164278,
+      95037.35990439725,
+      -23505089.8778173
+    ],
+    "containers": {
+      "open": false,
+      "view": "cargo",
+      "target": null,
+      "containers": [
+        {
+          "id": "pack",
+          "name": "Backpack",
+          "kind": "backpack",
+          "boxes": 1,
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          }
+        },
+        {
+          "id": "ship",
+          "name": "Nomad cargo",
+          "kind": "ship",
+          "boxes": 4,
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          }
+        },
+        {
+          "id": "station",
+          "name": "Aeon orbital locker",
+          "kind": "station",
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        },
+        {
+          "id": "crescent-cache",
+          "name": "Crescent field cache",
+          "kind": "base",
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        }
+      ],
+      "saved": true,
+      "warning": ""
+    },
+    "eva": {
+      "active": false,
+      "spaceParked": false,
+      "braking": false,
+      "shipDistance": null,
+      "speed": 0
+    },
+    "rings": {
+      "population": 14336,
+      "width": 20000,
+      "thickness": 2000,
+      "outerDiameter": 1826896,
+      "families": 6,
+      "variants": 24,
+      "nearby": 0,
+      "rendered": 0,
+      "renderedNear": 0,
+      "renderedMid": 0,
+      "renderedFar": 0,
+      "promoted": 0,
+      "visibleIds": [],
+      "viewDistance": 80000,
+      "nearDistance": 4000,
+      "midDistance": 16000,
+      "ice": {
+        "count": 0,
+        "capacity": 1200,
+        "radius": 104,
+        "presence": 0,
+        "cell": "",
+        "sunlight": 1
+      }
+    },
+    "mining": {
+      "resourceWeights": [
+        0.6613890135452534,
+        0.015,
+        0.32361098645474656
+      ],
+      "resourceVersion": "1.1",
+      "ready": true,
+      "pending": false,
+      "revision": 0,
+      "position": [
+        -2193727.966415542,
+        95037.49792359378,
+        -23505086.116092708
+      ],
+      "pack": [
+        0,
+        0,
+        0
+      ],
+      "ship": [
+        0,
+        0,
+        0
+      ],
+      "saved": true,
+      "error": "",
+      "triangles": 24100,
+      "meshMs": 375.69999998807907,
+      "publishMs": 2,
+      "inspection": null,
+      "groundRevision": 0,
+      "space": false,
+      "targetName": "Crescent deposit",
+      "activeRock": "selene-crescent-ore-01",
+      "activeRevision": 0,
+      "activePosition": [
+        -2193727.966415542,
+        95037.49792359378,
+        -23505086.116092708
+      ],
+      "debrisBrake": false,
+      "surfaceRock": null,
+      "nearestRegional": null,
+      "regionalDeposits": [],
+      "spaceRocks": [],
+      "tool": {
+        "active": false,
+        "muzzleDirection": null,
+        "aimDirection": [
+          -0.5271796494429555,
+          -0.3382361531479792,
+          -0.7795369920131175
+        ],
+        "attachment": "first-person",
+        "item": "rifle-laser",
+        "ammo": 59,
+        "hit": null,
+        "heat": 0,
+        "beaming": false,
+        "selected": true,
+        "target": null,
+        "toolError": null
+      }
+    },
+    "fleet": {
+      "surfaceVisited": false,
+      "unlocked": false,
+      "active": "nomad",
+      "saved": true
+    },
+    "shipId": "nomad",
+    "powered": true,
+    "cabinFlight": false,
+    "shipSpeed": 0,
+    "shipVelocity": [
+      0,
+      0,
+      0
+    ],
+    "shipOrientation": [
+      -0.1641349999968499,
+      0.28860215828970387,
+      0.050289852033201236,
+      0.9419338760173336
+    ],
+    "opening": {
+      "phase": "skipped"
+    },
+    "character": {
+      "ready": true,
+      "visible": false,
+      "state": "idle",
+      "position": [
+        1771087.3191484436,
+        1525306.2470549815,
+        3798108.326850021
+      ],
+      "error": null
+    },
+    "camera": {
+      "mode": "cockpit",
+      "shipVisible": true,
+      "selected": false,
+      "obstructed": false,
+      "position": [
+        1771086.2889946885,
+        1525307.2331894848,
+        3798106.8035687017
+      ],
+      "fov": 52
+    },
+    "audio": {
+      "created": false,
+      "enabled": false
+    },
+    "travel": null,
+    "travelTarget": null,
+    "mapOpen": false,
+    "tunnel": {
+      "visible": false,
+      "intensity": 0
+    },
+    "speedProfile": {
+      "cruise": 3000,
+      "boosted": 9000,
+      "limit": 3000,
+      "speed": 3000,
+      "regime": "SPACE"
+    },
+    "moon": {
+      "resources": {
+        "weights": [
+          0.965,
+          0.015,
+          0.02
+        ],
+        "dominant": "basalt",
+        "province": "BASALT HIGHLANDS"
+      },
+      "resourceProvinces": [
+        {
+          "id": "frostwall-ice-province",
+          "name": "FROSTWALL ICE PROVINCE",
+          "resource": "ice",
+          "direction": [
+            0.5198237065902184,
+            0.49384372586223446,
+            0.6970664878570142
+          ],
+          "radius": 145000
+        },
+        {
+          "id": "copper-ejecta-province",
+          "name": "COPPER EJECTA PROVINCE",
+          "resource": "copper",
+          "direction": [
+            0.6388541507273584,
+            -0.06817686213409602,
+            0.766301043694953
+          ],
+          "radius": 150000
+        },
+        {
+          "id": "north-glass-fields",
+          "name": "NORTH GLASS FIELDS",
+          "resource": "ice",
+          "direction": [
+            -0.3014352341778188,
+            0.833970814558632,
+            -0.4622006924059889
+          ],
+          "radius": 120000
+        },
+        {
+          "id": "far-copper-basins",
+          "name": "FAR COPPER BASINS",
+          "resource": "copper",
+          "direction": [
+            -0.9007773489355771,
+            -0.30708318713712857,
+            0.30708318713712857
+          ],
+          "radius": 135000
+        },
+        {
+          "id": "south-ice-fields",
+          "name": "SOUTH ICE FIELDS",
+          "resource": "ice",
+          "direction": [
+            0.10178149998272808,
+            -0.9872805498324623,
+            0.12213779997927368
+          ],
+          "radius": 95000
+        }
+      ],
+      "effects": {
+        "stones": {
+          "visible": false,
+          "pebbles": 0,
+          "rocks": 0,
+          "rebuilds": 0
+        },
+        "orbitalResolution": 0,
+        "settled": true,
+        "ringAsteroids": 14336,
+        "ringRendered": 0,
+        "terrainBuilds": 0,
+        "iceParticles": 0,
+        "generatorVersion": 4
+      },
+      "position": [
+        -2388089.256503974,
+        0,
+        -23880892.565039743
+      ],
+      "radius": 434350,
+      "altitude": 27595355.101567928,
+      "patches": 86,
+      "lod": 2,
+      "distance": 28031273.774506234
+    },
+    "controller": {
+      "id": "Character EVA standard controller",
+      "connected": true,
+      "active": true,
+      "armed": true,
+      "status": "Controller ready · Menu / Options opens the command menu."
+    },
+    "body": "aeon",
+    "seed": 7291,
+    "generatorVersion": 2,
+    "position": [
+      1771086.2889946885,
+      1525307.2331894848,
+      3798106.8035687017
+    ],
+    "altitude": 2866950,
+    "speed": 0,
+    "mode": "flight",
+    "autoland": false,
+    "flightAssist": true,
+    "flightRegime": "SPACE",
+    "atmosphereFraction": 0,
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "angularVelocity": [
+      0,
+      0,
+      0
+    ],
+    "groundHeight": 0,
+    "biome": "OPEN OCEAN",
+    "sunDistance": 24997345195.450153,
+    "patches": 202,
+    "lod": 3,
+    "pending": 0,
+    "vegetation": {
+      "trees": 0,
+      "grassTufts": 0,
+      "rocks": 0,
+      "rebuilds": 0,
+      "forestGeneratorVersion": 2
+    },
+    "drawCalls": 521,
+    "triangles": 390308,
+    "ready": true,
+    "transiting": false,
+    "fps": 60,
+    "shipAsset": "ready",
+    "storageOpen": false,
+    "storageProgress": 0,
+    "inventory": {
+      "ship": {
+        "repair": 3,
+        "ration": 12,
+        "sample": 6,
+        "scanner": 1,
+        "sidearm": 0,
+        "rifle": 0,
+        "replacement": 0
+      },
+      "pack": {
+        "repair": 0,
+        "ration": 2,
+        "sample": 0,
+        "scanner": 0,
+        "sidearm": 0,
+        "rifle": 0,
+        "replacement": 0
+      },
+      "station": {
+        "repair": 12,
+        "ration": 80,
+        "sample": 30,
+        "scanner": 4,
+        "sidearm": 0,
+        "rifle": 0,
+        "replacement": 0
+      },
+      "stationMass": 160,
+      "shipMass": 33,
+      "packMass": 1,
+      "saved": true,
+      "credits": 1500,
+      "shopStock": {
+        "weapons": {
+          "sidearm": 3,
+          "rifle": 2
+        },
+        "equipment": {
+          "repair": 8,
+          "scanner": 3,
+          "sample": 10,
+          "replacement": 4
+        }
+      },
+      "loadError": ""
+    },
+    "mfds": [
+      {
+        "title": "FLIGHT",
+        "values": [
+          "VELOCITY: 0.0 m/s",
+          "ALTITUDE AGL: 2866.9 km",
+          "FLIGHT CONTROL: ASSIST ON"
+        ]
+      },
+      {
+        "title": "NAVIGATION",
+        "values": [
+          "COURSE: FREE EXPLORATION",
+          "BEARING: NO COURSE",
+          "POSITION: 20.00 / 25.00"
+        ]
+      },
+      {
+        "title": "SYSTEMS",
+        "values": [
+          "ENVIRONMENT: SPACE",
+          "HATCH / RAMP: SEALED / STOWED",
+          "LOCAL VERTICAL: 0.0 m/s"
+        ]
+      },
+      {
+        "title": "CARGO",
+        "values": [
+          "SHIP STORAGE: 33.0 / 120 kg",
+          "BACKPACK: 1.0 / 20 kg",
+          "ACCESS: STARBOARD CABIN"
+        ]
+      }
+    ],
+    "doorOpen": false,
+    "doorProgress": 0,
+    "insideShip": false,
+    "station": {
+      "finish": "ready",
+      "finishMaterials": {
+        "replacedMeshes": 393,
+        "generatedUVs": 70,
+        "materialCount": 16,
+        "textureCount": 3,
+        "estimatedTextureBytes": 7077888
+      },
+      "pods": 20,
+      "lodBatches": 26,
+      "activePod": 1,
+      "parkedPod": 1,
+      "location": "hangar",
+      "rings": [
+        0.02212415999999981,
+        -0.02212415999999981
+      ],
+      "elevator": 0,
+      "ready": true,
+      "error": null,
+      "doorsOpen": 0,
+      "distance": 2777422.744511248,
+      "local": [
+        -387939.19279556116,
+        2749584.9170522266,
+        -57991.967895752576
+      ],
+      "deckClearance": 2749592.9170522266,
+      "docked": false,
+      "lifting": false,
+      "canDock": false
+    },
+    "interaction": "F · LEAVE PILOT SEAT",
+    "renderScale": 1,
+    "renderResolution": {
+      "automatic": true,
+      "fullscreen": true,
+      "scale": 1,
+      "pixelRatio": 1,
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

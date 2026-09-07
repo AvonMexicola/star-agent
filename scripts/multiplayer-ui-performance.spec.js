@@ -1,0 +1,97 @@
+import { test, expect } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+
+test('multiplayer panels avoid hidden and unchanged DOM rebuilding while preserving live controls', async ({ page }) => {
+  const output = process.env.PLAYER_PERFORMANCE_EVIDENCE || '/tmp/star-agent-player-performance';
+  await mkdir(output, { recursive: true });
+  const errors = [], samples = {};
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  for (const implementation of ['baseline', 'candidate']) {
+    await page.goto(`/scripts/fixtures/multiplayer-ui-performance.html${implementation === 'baseline' ? '?baseline' : ''}`);
+    await page.waitForFunction(() => window.multiplayerUIPerformance?.ready);
+    const hidden = await page.evaluate(() => window.multiplayerUIPerformance.run());
+    await page.evaluate(() => window.multiplayerUIPerformance.ui.openInventory());
+    const inventory = page.locator('#multiplayer-inventory-dialog');
+    await expect(inventory).toBeVisible();
+    // Let the native dialog/controller router establish its initial selection.
+    await expect.poll(() => page.evaluate(() => document.activeElement?.closest('dialog')?.id)).toBe('multiplayer-inventory-dialog');
+    const transfer = inventory.locator('[data-controller-key="pack-ship-bandage"]');
+    await transfer.focus();
+    const contents = await page.evaluate(() => window.multiplayerUIPerformance.contents());
+    const open = await page.evaluate(() => window.multiplayerUIPerformance.run());
+    expect(await page.evaluate(() => window.multiplayerUIPerformance.contents())).toEqual(contents);
+    samples[implementation] = { hidden, open, contents };
+    if (implementation === 'baseline') await page.evaluate(() => window.multiplayerUIPerformance.dispose());
+  }
+  expect(samples.baseline.hidden.created).toBeGreaterThan(1000);
+  expect(samples.baseline.hidden.replaced).toBeGreaterThanOrEqual(300);
+  expect(samples.candidate.hidden.created).toBe(0); expect(samples.candidate.hidden.replaced).toBe(0);
+  expect(samples.candidate.open.created).toBe(0); expect(samples.candidate.open.replaced).toBe(0);
+  expect(samples.candidate.open.retainedFocus).toBe(true);
+  // Hidden panels intentionally have no DOM until opened; compare manifest text.
+  expect(samples.candidate.contents.inventory).toEqual(samples.baseline.contents.inventory);
+  expect(samples.candidate.contents.summary).toEqual(samples.baseline.contents.summary);
+  const inventory = page.locator('#multiplayer-inventory-dialog');
+  await inventory.locator('[data-mp-close]').click();
+  await expect(inventory).not.toBeVisible();
+  await page.evaluate(() => {
+    const fixture = window.multiplayerUIPerformance, inventory = structuredClone(fixture.client.state.inventory);
+    inventory.revision++; inventory.containers.pack.bandage = 9;
+    fixture.publish({ inventory, health: 42, drops: [] }); fixture.ui.openInventory();
+  });
+  await expect(inventory.locator('.mp-inventory-summary')).toContainText('Revision 5 · Health 42');
+  await expect(inventory.locator('article[data-item="bandage"] p')).toContainText('pack: 9');
+  await expect(inventory.locator('[data-drop-id="drop1"]')).toHaveCount(0);
+  await inventory.locator('[data-controller-key="pack-ship-bandage"]').click();
+  await expect(inventory.locator('[data-controller-key="pack-ship-bandage"]')).toBeDisabled();
+  expect(await page.evaluate(() => window.multiplayerUIPerformance.requests.at(-1))).toEqual({ from: 'pack', to: 'ship', item: 'bandage', quantity: 1, revision: 5 });
+  await page.evaluate(() => window.multiplayerUIPerformance.confirm());
+  await expect(inventory.locator('[data-controller-key="pack-ship-bandage"]')).toBeEnabled();
+  await inventory.locator('[data-mp-close]').click();
+  await page.evaluate(() => window.multiplayerUIPerformance.ui.openComms());
+  await expect(page.locator('.mp-roster .mp-pilot')).toHaveCount(10);
+  await page.locator('[data-controller-key="comms-chat"]').click();
+  await page.locator('#mp-chat-text').fill('Draft survives movement');
+  await page.evaluate(() => window.multiplayerUIPerformance.run());
+  await expect(page.locator('#mp-chat-text')).toHaveValue('Draft survives movement');
+  await page.evaluate(() => {
+    const f = window.multiplayerUIPerformance;
+    f.publish({ chat: [{ id: 'message1', text: 'Live message', sender: { id: 'peer1', callsign: 'Pilot_1' }, sentAt: 100000 }] });
+  });
+  await expect(page.locator('.mp-chat-log')).toContainText('Live message');
+  await page.locator('[data-controller-key="comms-friends"]').click();
+  await expect(page.locator('.mp-social-lists')).toContainText('Online in this server');
+  await page.evaluate(() => { const f = window.multiplayerUIPerformance; f.publish({ players: f.client.state.players.filter(p => p.id !== 'peer1') }); });
+  await expect(page.locator('.mp-social-lists')).toContainText('Offline');
+  await page.locator('[data-controller-key="comms-chat"]').click();
+  await page.locator('[data-chat-keyboard]').click();
+  await expect(page.locator('#multiplayer-chat-keyboard')).toBeVisible();
+  await page.evaluate(() => window.multiplayerUIPerformance.publish({ connected: false, social: null, chat: [], error: 'Connection lost' }));
+  await expect(page.locator('#multiplayer-chat-keyboard')).not.toBeVisible();
+  await expect(page.locator('#mp-chat-text')).toHaveValue('');
+  await expect(page.locator('.mp-social-feedback')).toHaveText('Connection lost');
+  await page.screenshot({ path: `${output}/ui-disconnect.png` });
+  await page.locator('#multiplayer-comms-dialog [data-mp-close]').click();
+  await expect.poll(() => page.evaluate(() => window.multiplayerUIPerformance.nav.enabled)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.multiplayerUIPerformance.nav.gamepad.armed)).toBe(true);
+  await page.evaluate(() => window.uiPad.buttons[8] = { pressed: true, value: 1 });
+  await expect(inventory).toBeVisible();
+  await inventory.locator('[data-mp-close]').click();
+  await expect(inventory).not.toBeVisible();
+  await page.waitForTimeout(200);
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  await page.evaluate(() => window.uiPad.buttons[8] = { pressed: false, value: 0 });
+  await expect.poll(() => page.evaluate(() => window.multiplayerUIPerformance.nav.gamepad.armed)).toBe(true);
+  await page.evaluate(() => window.multiplayerUIPerformance.ui.openInventory());
+  await page.keyboard.down('w');
+  await inventory.locator('[data-mp-close]').click();
+  await page.keyboard.down('w');
+  expect(await page.evaluate(() => window.multiplayerUIPerformance.nav.keys.has('KeyW'))).toBe(false);
+  await page.keyboard.up('w'); await page.keyboard.down('w');
+  expect(await page.evaluate(() => window.multiplayerUIPerformance.nav.keys.has('KeyW'))).toBe(true);
+  await page.keyboard.up('w');
+  await page.evaluate(() => window.multiplayerUIPerformance.dispose());
+  await writeFile(`${output}/ui-measurements.json`, JSON.stringify({ browser: 'Chromium', viewport: page.viewportSize(), samples, errors }, null, 2));
+  expect(errors).toEqual([]);
+});

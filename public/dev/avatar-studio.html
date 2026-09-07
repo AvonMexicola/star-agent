@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Expedition suit · Star Agent</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body class="avatar-studio">
+  <header class="studio-header"><a href="/">Star Agent</a><h1>Expedition suit</h1><a class="studio-play" href="/?intro=1">Open game</a></header>
+  <main class="studio-layout">
+    <section class="studio-stage" aria-label="Character preview">
+      <canvas id="avatar-canvas" aria-label="Drag to orbit the character; scroll to zoom"></canvas>
+      <div class="studio-caption"><strong id="motion-caption">Loading suit…</strong><span>Drag to orbit · Scroll to zoom</span></div>
+      <div class="studio-views" role="group" aria-label="Viewing angle">
+        <button data-view="front">Front</button><button data-view="side">Side</button><button data-view="back">Back</button><button data-view="hands">Hands</button>
+      </div>
+    </section>
+    <aside class="studio-controls">
+      <label for="avatar-model">Character</label>
+      <select id="avatar-model"><option value="player-expedition">Expedition suit v2</option><option value="player-male">Previous suit</option></select>
+      <p id="avatar-spec" class="studio-spec">Preparing the rig and materials.</p>
+      <label for="avatar-motion">Movement</label>
+      <select id="avatar-motion">
+        <option value="idle">Idle</option><option value="walk">Walk</option><option value="run">Run</option>
+        <option value="crouch">Crouch walk</option><option value="carry">Carry</option><option value="wounded">Injured walk</option>
+        <option value="sit">Sit</option><option value="climb">Climb ladder</option><option value="climb-idle">Hold ladder</option><option value="rest">Rest pose</option>
+      </select>
+      <div class="studio-gestures" role="group" aria-label="Actions">
+        <button data-gesture="wave">Wave</button><button data-gesture="hit">Take damage</button>
+        <button data-gesture="jump">Jump</button><button data-gesture="interact">Pick up</button>
+        <button data-gesture="climb-mount">Mount ladder</button><button data-gesture="climb-finish">Leave ladder</button>
+      </div>
+      <label for="avatar-equipment">Equipment</label>
+      <select id="avatar-equipment"><option value="none">Hands free</option><option value="rifle-laser">Laser rifle</option><option value="sidearm-pistol">Energy sidearm</option><option value="mining-laser-tool">Mining cutter</option><option value="tractor-beam-tool">Cargo tractor</option></select>
+      <label class="studio-range" for="avatar-aim">Aim height <output id="aim-output">0°</output></label>
+      <input id="avatar-aim" type="range" min="-55" max="65" value="0" step="1">
+      <div class="studio-gestures"><button id="avatar-fire" disabled>Fire / use</button><button id="avatar-reload" disabled>Reload</button><button id="avatar-holster" disabled>Holster</button><button id="avatar-pause">Pause</button></div>
+      <p class="studio-note">Animation preview. In the game, press <kbd>4</kbd> or <kbd>LB + RB + →</kbd> to switch between first and third person.</p>
+      <details><summary>Inspection</summary><pre id="avatar-audit"></pre><a href="/dev/equipment.html?rig=player-expedition&item=rifle-laser&view=hand">Equipment calibration</a></details>
+      <p id="avatar-status" role="status"></p>
+    </aside>
+  </main>
+<link rel="stylesheet" href="/assets/avatar-studio.css">
+<script type="module" src="/assets/avatar-studio.js"></script>
+</body>
+</html>

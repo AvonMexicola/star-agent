@@ -1,0 +1,1689 @@
+{
+  "scope": "Independent silhouette/scale and visible gear inspection. Camera fixtures; no full journey, materials, controller/touch, flight or performance acceptance.",
+  "browser": "151.0.7922.173",
+  "console": [],
+  "captures": [
+    {
+      "name": "desktop-exterior",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -57.000000000000014,
+          25.000000000000007,
+          -62.000000000000014
+        ],
+        "quaternion": [
+          0.03775670124511962,
+          0.9266621576884271,
+          0.09685584163433658,
+          -0.3612348584517002
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 285.79105527216643,
+        "minY": 330.90579231940285,
+        "maxX": 1094.75461451919,
+        "maxY": 663.7404410410755
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-side",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -90,
+          9.000000000000004,
+          5.5109105961630896e-15
+        ],
+        "quaternion": [
+          -0.00707000742561497,
+          -0.7070714355671579,
+          -0.00707000742561497,
+          0.7070714355671581
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 296.1198529645812,
+        "minY": 348.89506168996485,
+        "maxX": 1192.413420290789,
+        "maxY": 556.8248458815808
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-plan",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          0,
+          125,
+          0.0010000004333546926
+        ],
+        "quaternion": [
+          -0.7071037798767502,
+          0,
+          0,
+          0.7071097824836059
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 547.968736333512,
+        "minY": 155.08529956598792,
+        "maxX": 892.0317571050981,
+        "maxY": 757.1802212355325
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-bow",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          7.592810154713582e-15,
+          13,
+          -61.99999999999994
+        ],
+        "quaternion": [
+          -2.854746892460854e-18,
+          0.9989126241211641,
+          0.0466215547935689,
+          6.116575738789334e-17
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 358.3314921643444,
+        "minY": 311.55102326145425,
+        "maxX": 1081.6694150579756,
+        "maxY": 711.613232927194
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-aft",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          48.00000000000001,
+          23,
+          62.000000000000014
+        ],
+        "quaternion": [
+          -0.09392181536533986,
+          0.32188076600009974,
+          0.032107922265888066,
+          0.9415628212739902
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 175.3177506015056,
+        "minY": 330.70606857765273,
+        "maxX": 1021.0281394061844,
+        "maxY": 674.45002327941
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-stern",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          0,
+          12.000000000000004,
+          67
+        ],
+        "quaternion": [
+          -0.03575217852645088,
+          0,
+          0,
+          0.9993606865044334
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 239.13031403031718,
+        "minY": 303.98320594203784,
+        "maxX": 1200.8726299832235,
+        "maxY": 659.4708963717898
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-gear-down",
+      "wholeModel": false,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -25,
+          3.4000000000000004,
+          -28
+        ],
+        "quaternion": [
+          0.00830862028630317,
+          0.8684196278249325,
+          0.014560428281000898,
+          -0.4955464768975938
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": -223.0672806964674,
+        "minY": -179.2752746897839,
+        "maxX": 2108.300321026796,
+        "maxY": 669.9670376327698
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-gear-folding",
+      "wholeModel": false,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 0.5020222222208987,
+          "target": 0,
+          "moving": true
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -25,
+          3.4000000000000004,
+          -28
+        ],
+        "quaternion": [
+          0.00830862028630317,
+          0.8684196278249325,
+          0.014560428281000898,
+          -0.4955464768975938
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": -223.0672806964674,
+        "minY": -179.2752746897839,
+        "maxX": 2108.300321026796,
+        "maxY": 532.4187041787355
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-gear-stowed",
+      "wholeModel": false,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 0,
+          "target": 0,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -25,
+          3.4000000000000004,
+          -28
+        ],
+        "quaternion": [
+          0.00830862028630317,
+          0.8684196278249325,
+          0.014560428281000898,
+          -0.4955464768975938
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": -223.0672806964674,
+        "minY": -179.2752746897839,
+        "maxX": 2108.300321026796,
+        "maxY": 532.4187041787355
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-exterior-stowed",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 0,
+          "target": 0,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -57.000000000000014,
+          25.000000000000007,
+          -62.000000000000014
+        ],
+        "quaternion": [
+          0.03775670124511962,
+          0.9266621576884271,
+          0.09685584163433658,
+          -0.3612348584517002
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 285.79105527216643,
+        "minY": 330.90579231940285,
+        "maxX": 1094.75461451919,
+        "maxY": 631.1662178829603
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-side-stowed",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 0,
+          "target": 0,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -90,
+          9.000000000000004,
+          5.5109105961630896e-15
+        ],
+        "quaternion": [
+          -0.00707000742561497,
+          -0.7070714355671579,
+          -0.00707000742561497,
+          0.7070714355671581
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 296.1198529645812,
+        "minY": 348.89506168996485,
+        "maxX": 1192.413420290789,
+        "maxY": 529.3549730793007
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-s3-forward-support",
+      "wholeModel": false,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 0,
+          "target": 0,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -21,
+          15,
+          -15.999999999999998
+        ],
+        "quaternion": [
+          0.09572505246012997,
+          0.8694933409349951,
+          0.18601189996677234,
+          -0.44745683308220613
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": -3149.7221608997697,
+        "minY": -59.94175121844495,
+        "maxX": 2001.5584688025617,
+        "maxY": 2064.3916558420337
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-s3-aft-support",
+      "wholeModel": false,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 0,
+          "target": 0,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          10,
+          21,
+          30
+        ],
+        "quaternion": [
+          -0.2070402713985498,
+          0.3620393993004533,
+          0.08281610855941993,
+          0.905098498251133
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": -354.36057587771444,
+        "minY": 102.59203504546741,
+        "maxX": 3572.0333706470797,
+        "maxY": 9865.126751051812
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "desktop-cargo-scale",
+      "wholeModel": false,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          0,
+          5.844001925308299,
+          20.99506386774144
+        ],
+        "quaternion": [
+          -0.007853900888711324,
+          0,
+          0,
+          0.9999691576447898
+        ],
+        "fov": 52
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": -3512240.9132539365,
+        "minY": -72814.24008732423,
+        "maxX": 3513673.4065432916,
+        "maxY": 197629.22955679442
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 1416,
+        "minY": 100,
+        "maxY": 768
+      }
+    },
+    {
+      "name": "phone-exterior-default",
+      "wholeModel": false,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -53.99999999999999,
+          22.999999999999996,
+          -62.00000000000001
+        ],
+        "quaternion": [
+          0.03323681930763696,
+          0.9322882150187489,
+          0.08876644681583189,
+          -0.34907666192279097
+        ],
+        "fov": 43
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": -224.0338568278754,
+        "minY": 309.97171254495646,
+        "maxX": 547.986430340692,
+        "maxY": 624.9648627544973
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 366,
+        "minY": 82,
+        "maxY": 668
+      }
+    },
+    {
+      "name": "phone-exterior-review-framing",
+      "wholeModel": true,
+      "stats": {
+        "meshes": 241,
+        "triangles": 59443,
+        "materials": 13,
+        "textures": 10
+      },
+      "systems": {
+        "gear": {
+          "progress": 1,
+          "target": 1,
+          "moving": false
+        },
+        "ramps": [
+          {
+            "id": "front",
+            "node": "RampFront",
+            "pivot": [
+              0,
+              2.6,
+              -24
+            ],
+            "angle": 1.5707963267948966,
+            "target": 1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          },
+          {
+            "id": "aft",
+            "node": "RampAft",
+            "pivot": [
+              0,
+              2.6,
+              24
+            ],
+            "angle": -1.5707963267948966,
+            "target": -1.5707963267948966,
+            "progress": 0,
+            "moving": false,
+            "tipAngle": 3.141592653589793
+          }
+        ],
+        "elevator": {
+          "id": "crew",
+          "node": "CrewElevator",
+          "centre": [
+            5.5,
+            -4
+          ],
+          "y": 2.6,
+          "target": 2.6,
+          "moving": false,
+          "gates": [
+            {
+              "node": "LiftGateLower",
+              "deck": 2.6,
+              "z": -2.25,
+              "target": -2.25,
+              "moving": false
+            },
+            {
+              "node": "LiftGateUpper",
+              "deck": 9.5,
+              "z": -4,
+              "target": -4,
+              "moving": false
+            }
+          ]
+        }
+      },
+      "camera": {
+        "position": [
+          -57.000000000000014,
+          25.000000000000007,
+          -62.000000000000014
+        ],
+        "quaternion": [
+          0.03775670124511962,
+          0.9266621576884271,
+          0.09685584163433658,
+          -0.3612348584517002
+        ],
+        "fov": 88.62435717308257
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "minX": 30.704969520904324,
+        "minY": 376.937394269867,
+        "maxX": 336.79883109779087,
+        "maxY": 502.87464042794016
+      },
+      "available": {
+        "minX": 24,
+        "maxX": 366,
+        "minY": 82,
+        "maxY": 668
+      }
+    }
+  ],
+  "servedSha256": "f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e",
+  "servedBytes": 3859404
+}

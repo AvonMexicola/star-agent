@@ -1,0 +1,276 @@
+{
+  "file": "player-expedition.glb",
+  "sha256": "04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa",
+  "bytes": 8496328,
+  "triangles": 62177,
+  "joints": 24,
+  "textureSize": 2048,
+  "textureCount": 2,
+  "sourceOrmSize": 4096,
+  "height": 1.85,
+  "shadow": {
+    "triangles": 17442,
+    "cellMetres": 0.018,
+    "maximumRestDisplacementMetres": 0.03117691453623979
+  },
+  "legRig": {
+    "version": 1,
+    "hipLiftMetres": 0.17,
+    "changes": [
+      {
+        "side": "Left",
+        "hipBefore": [
+          0.11388715722946693,
+          0.8355961243149961,
+          0.05385079894514136
+        ],
+        "hipAfter": [
+          0.11388715722946693,
+          1.005596124314996,
+          0.05385079894514136
+        ],
+        "knee": [
+          0.1596449807778011,
+          0.5857534581037223,
+          0.04814833697214831
+        ]
+      },
+      {
+        "side": "Right",
+        "hipBefore": [
+          -0.10297165086016256,
+          0.8340039640374166,
+          0.0535415560664311
+        ],
+        "hipAfter": [
+          -0.10297165086016256,
+          1.0040039640374165,
+          0.0535415560664311
+        ],
+        "knee": [
+          -0.1476846609264601,
+          0.5777922685422154,
+          0.04660225873712329
+        ]
+      }
+    ],
+    "retargetedAnkleSamples": 10208,
+    "maximumAnkleErrorMetres": 0.00002386754318996744
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "source": "Relaxed_Idle",
+      "duration": 2.366666555404663,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "per-frame grounded",
+      "derived": "source breathing and stance with relaxed arm rotations"
+    },
+    {
+      "name": "walk",
+      "source": "Walking",
+      "duration": 1.0666667222976685,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "constant sole clearance"
+    },
+    {
+      "name": "run",
+      "source": "Running",
+      "duration": 0.6666666865348816,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "constant sole clearance"
+    },
+    {
+      "name": "jump",
+      "source": "Regular_Jump",
+      "duration": 1.9333332777023315,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "authored"
+    },
+    {
+      "name": "crouch-walk",
+      "source": "Cautious_Crouch_Walk_Forward",
+      "duration": 1.1666666269302368,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "constant sole clearance"
+    },
+    {
+      "name": "sit-down",
+      "source": "Stand_to_Sit_Transition_M",
+      "duration": 4.800000190734863,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "per-frame grounded"
+    },
+    {
+      "name": "sit-idle",
+      "source": "Chair_Sit_Idle_M",
+      "duration": 10.699999809265137,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "per-frame grounded"
+    },
+    {
+      "name": "stand-up",
+      "source": "Sit_to_Stand_Transition_M",
+      "duration": 6.233333110809326,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "per-frame grounded"
+    },
+    {
+      "name": "carry-walk",
+      "source": "Carry_Heavy_Object_Walk",
+      "duration": 6.5333333015441895,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "constant sole clearance"
+    },
+    {
+      "name": "wounded-walk",
+      "source": "Injured_Walk",
+      "duration": 8.699999809265137,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "constant sole clearance"
+    },
+    {
+      "name": "death",
+      "source": "Shot_and_Fall_Backward",
+      "duration": 3.5333333015441895,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "authored"
+    },
+    {
+      "name": "wave",
+      "source": "Big_Wave_Hello",
+      "duration": 5.366666793823242,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "per-frame grounded"
+    },
+    {
+      "name": "take-damage",
+      "source": "Hit_Reaction",
+      "duration": 1.6666666269302368,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "per-frame grounded"
+    },
+    {
+      "name": "climb-ladder",
+      "source": "Ladder_Climb_Loop",
+      "duration": 1.6333333253860474,
+      "inPlace": true,
+      "loop": true,
+      "footCorrection": "authored"
+    },
+    {
+      "name": "climb-mount",
+      "source": "Ladder_Mount_Start",
+      "duration": 2.066666603088379,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "authored"
+    },
+    {
+      "name": "climb-finish",
+      "source": "Ladder_Climb_Finish",
+      "duration": 4.0333333015441895,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "authored"
+    },
+    {
+      "name": "reload-rifle",
+      "source": "Forward_Reload_Subtle",
+      "duration": 3.700000047683716,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "per-frame grounded"
+    },
+    {
+      "name": "interact",
+      "source": "Collect_Object",
+      "duration": 6.0333333015441895,
+      "inPlace": true,
+      "loop": false,
+      "footCorrection": "per-frame grounded"
+    },
+    {
+      "name": "aim-rifle",
+      "source": "Rifle_Aim_Turn_Right",
+      "sampledAt": 0.1,
+      "duration": 1,
+      "derived": "held pose"
+    },
+    {
+      "name": "aim-pistol",
+      "source": "Cowboy_Quick_Draw_Shooting",
+      "sampledAt": 2,
+      "duration": 1,
+      "derived": "held pose"
+    },
+    {
+      "name": "use-tool",
+      "source": "aim-rifle",
+      "sampledAt": 0,
+      "duration": 1,
+      "derived": "held pose"
+    },
+    {
+      "name": "rest-pose",
+      "source": "Armature|clip0|baselayer",
+      "sampledAt": 0,
+      "duration": 1,
+      "derived": "held pose"
+    },
+    {
+      "name": "climb-idle",
+      "source": "climb-ladder",
+      "sampledAt": 0.4,
+      "duration": 1,
+      "derived": "held pose"
+    },
+    {
+      "name": "fire-rifle",
+      "source": "aim-rifle",
+      "sampledAt": 0,
+      "duration": 0.3,
+      "derived": "held pose with authored recoil"
+    },
+    {
+      "name": "fire-pistol",
+      "source": "aim-pistol",
+      "sampledAt": 0,
+      "duration": 0.3,
+      "derived": "held pose with authored recoil"
+    },
+    {
+      "name": "reload-pistol",
+      "source": "Forward_Reload_Subtle + aim-pistol",
+      "duration": 3.7,
+      "derived": "reload with sidearm firing arm held"
+    }
+  ],
+  "sources": [
+    {
+      "file": "meshy-20-motions.glb",
+      "sha256": "938f2d6118b7a8664fe11699cd8f833effa3593e1ab6d3b12e2a35f9c2a3b874"
+    },
+    {
+      "file": "meshy-idle.glb",
+      "sha256": "18ba26f9769a788ecaf3d19ea642c5256bed573e1710febef4bea508ec8fb423"
+    },
+    {
+      "file": "meshy-remesh-pbr.glb",
+      "sha256": "8e427205bdb8a889af8591c458da8d3c7736dc872ec05e60d730850da826d26c"
+    }
+  ]
+}

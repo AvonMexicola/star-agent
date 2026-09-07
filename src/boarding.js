@@ -1,21 +1,45 @@
 /** Ship-local dimensions in metres. Navigation supplies eye positions. */
 export const SHIP_LAYOUT = Object.freeze({
-  // Closed ship envelope includes the six-metre wings and nose.
+  // Conservative envelope includes the closed ramp and every landing-gear pose.
   flightBounds: Object.freeze({ min: Object.freeze([-6.05, 0, -6.82]), max: Object.freeze([6.05, 4.28, 4.28]) }),
   floorY: 1,
   eyeHeight: 1.75,
   capsuleRadius: 0.25,
-  interior: Object.freeze({ minX: -1.65, maxX: 1.65, minZ: -4.5, maxZ: 3.8 }),
+  interior: Object.freeze({ minX: -1.65, maxX: 1.65, minZ: -4.18, maxZ: 3.8 }),
   hatch: Object.freeze({ x: 0, z: 4, width: 1.8 }),
   ramp: Object.freeze({ minX: -0.9, maxX: 0.9, minZ: 4, maxZ: 7.2, startY: 1, endY: 0 }),
   seat: Object.freeze([0, 1, -2.8]),
   seatEye: Object.freeze([0, 2.55, -2.8]),
   stand: Object.freeze([0, 2.75, -1.2]),
+  nozzles: Object.freeze([Object.freeze([-3.26, 2.12, 4.07]), Object.freeze([3.26, 2.12, 4.07])]),
+  gear: Object.freeze({
+    legs: Object.freeze([-1, 1].flatMap(side => [-2.50, 2.87].map(z => Object.freeze({
+      name: `Gear_${side < 0 ? 'Port' : 'Starboard'}_${z < 0 ? 'Fore' : 'Aft'}`,
+      pivot: Object.freeze([side * 2.35, 1.10, z]),
+      retractAngle: side * 70 * Math.PI / 180,
+      retractOffset: Object.freeze([0, .20, z < 0 ? .85 : -.40]),
+    })))),
+  }),
+  hardpoints: Object.freeze([-1, 1].map(side => Object.freeze({
+    name: `HP_Weapon_${side < 0 ? 'Port' : 'Starboard'}`,
+    position: Object.freeze([side * 2.07, 1.42, -4.03]),
+    rotation: Object.freeze([0, 0, -side * Math.PI / 2]),
+    kind: 'weapon', size: 1, mount: 'fixed', installedWeapon: null,
+    forward: Object.freeze([0, 0, -1]), socketOnly: true,
+  }))),
   storage: Object.freeze({ minX: .93, maxX: 1.65, minZ: .35, maxZ: 1.95, topY: 2.08, accessX: .93, accessZ: 1.15 }),
+  berth: Object.freeze({
+    minX: -1.63, maxX: -.70, minZ: -.85, maxZ: 1.40, topY: 1.80,
+    accessX: -.70, accessZ: .55,
+    eye: Object.freeze([-1.13, 2.02, 1.08]),
+    lookAt: Object.freeze([.25, 2.75, -.65]),
+    stand: Object.freeze([-.30, 2.75, .55]),
+  }),
+  cargoRack: Object.freeze({ minX: -1.65, maxX: -.85, minZ: 2.05, maxZ: 3.65, topY: 3.17, accessX: -.85, accessZ: 2.70 }),
 });
 
 export function shipFloorAt(localX, localZ, doorOpen) {
-  if (Math.abs(localX) <= 1.65 && localZ >= -4.5 && localZ <= 4) return 1;
+  if (Math.abs(localX) <= 1.65 && localZ >= SHIP_LAYOUT.interior.minZ && localZ <= 4) return 1;
   if (doorOpen && Math.abs(localX) <= 0.9 && localZ >= 4 && localZ <= 7.2) {
     return (7.2 - localZ) / 3.2;
   }
@@ -28,16 +52,18 @@ const expanded = (minX, maxX, minZ, maxZ) => [minX - radius, maxX + radius, minZ
 // Walls are thin planes expanded by the walking capsule's horizontal radius.
 // Rear jambs leave a 1.3 m corridor for the capsule centre when the door opens.
 const walls = [
-  expanded(-1.65, -1.65, -4.5, 4),
-  expanded(1.65, 1.65, -4.5, 4),
-  expanded(-1.65, 1.65, -4.5, -4.5),
+  expanded(-1.65, -1.65, SHIP_LAYOUT.interior.minZ, 4),
+  expanded(1.65, 1.65, SHIP_LAYOUT.interior.minZ, 4),
+  expanded(-1.65, 1.65, SHIP_LAYOUT.interior.minZ, SHIP_LAYOUT.interior.minZ),
   expanded(-1.65, -0.9, 4, 4),
   expanded(0.9, 1.65, 4, 4),
   expanded(SHIP_LAYOUT.storage.minX, SHIP_LAYOUT.storage.maxX, SHIP_LAYOUT.storage.minZ, SHIP_LAYOUT.storage.maxZ),
+  expanded(SHIP_LAYOUT.berth.minX, SHIP_LAYOUT.berth.maxX, SHIP_LAYOUT.berth.minZ, SHIP_LAYOUT.berth.maxZ),
+  expanded(SHIP_LAYOUT.cargoRack.minX, SHIP_LAYOUT.cargoRack.maxX, SHIP_LAYOUT.cargoRack.minZ, SHIP_LAYOUT.cargoRack.maxZ),
 ];
 const closedDoor = expanded(-0.9, 0.9, 4, 4);
 
-function crossesWall(previous, proposed, wall) {
+export function crossesWall(previous, proposed, wall) {
   const [minX, maxX, minZ, maxZ] = wall;
   const dx = proposed.x - previous.x, dz = proposed.z - previous.z;
   const inside = previous.x > minX + EPSILON && previous.x < maxX - EPSILON
@@ -78,8 +104,11 @@ export function constrainShipStep(previousLocal, proposedLocal, doorOpen) {
 
 export function interactionAt(localPosition, doorOpen) {
   const { x, z } = localPosition;
-  const inside = Math.abs(x) < 1.65 && z > -4.5 && z < 4;
+  const inside = Math.abs(x) < 1.65 && z > SHIP_LAYOUT.interior.minZ && z < 4;
   if (inside && Math.hypot(x, z + 2.8) <= 1.6) return 'seat';
+  // Side-specific reach leaves F in the centre of the rear aisle for the hatch.
+  if (inside && x < -.05 && x > SHIP_LAYOUT.berth.maxX && Math.hypot(x - SHIP_LAYOUT.berth.accessX, z - SHIP_LAYOUT.berth.accessZ) <= .95) return 'berth';
+  if (inside && x < -.05 && x > SHIP_LAYOUT.cargoRack.maxX && Math.hypot(x - SHIP_LAYOUT.cargoRack.accessX, z - SHIP_LAYOUT.cargoRack.accessZ) <= 1.05) return 'storage';
   if (inside && x < SHIP_LAYOUT.storage.minX && Math.hypot(x - SHIP_LAYOUT.storage.accessX, z - SHIP_LAYOUT.storage.accessZ) <= 1.12) return 'storage';
   if (Math.abs(x) < 2 && Math.abs(z - 4) < 2.2) return 'door';
   return null;

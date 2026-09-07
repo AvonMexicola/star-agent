@@ -1,0 +1,26 @@
+import {EQUIPMENT_SLOTS,HELD_SLOTS,slotAccepts} from './loadout.js';
+import {CATALOG,itemById,itemMass} from './containers.js';
+import {itemIcon,escapeHTML as esc} from './item-icons.js';
+import './loadout.css';
+
+export function loadoutHTML(loadout,selected,sources){
+  const state=loadout.state,slot=EQUIPMENT_SLOTS.find(s=>s.id===selected),equipped=state.slots[selected],item=itemById(equipped?.item),blocked=loadout.store.blocked;
+  const candidates=sources.flatMap(c=>CATALOG.filter(i=>slotAccepts(selected,i.id)&&c.items[i.id]>0).map(i=>({i,c})));
+  return `<section class="loadout-summary"><div><span class="eyebrow">SUIT LOADOUT</span><h3>Ready for the surface.</h3><p>Two weapons. One tool. Carry what you need.</p></div><div class="loadout-stats"><span>HEALTH<strong>${state.health.toFixed(0)} / 100${state.bleeding?' · BLEEDING':''}</strong></span><span>EQUIPPED<strong>${loadout.mass.toFixed(1)} kg</strong></span><span>TOTAL CARRIED<strong>${(loadout.mass+itemMass(loadout.store.container('pack').items)).toFixed(1)} kg</strong></span></div></section>
+    <div class="loadout-layout"><section class="loadout-grid" aria-label="Equipment slots">${EQUIPMENT_SLOTS.map(s=>{const entry=state.slots[s.id],i=itemById(entry?.item);return `<button type="button" class="loadout-slot ${s.kind}${s.id===selected?' selected':''}" data-equipment-slot="${s.id}" data-controller-key="equipment-${s.id}" aria-pressed="${s.id===selected}" aria-label="${s.name}: ${esc(i?.name??'Empty')}"><span class="loadout-slot-label">${s.name}${s.key?`<kbd>${s.key}</kbd>`:''}</span><span class="loadout-slot-art">${i?itemIcon(i):'<span class="loadout-empty">+</span>'}</span><strong>${esc(i?.name??'Empty slot')}</strong><small>${entry?(entry.quantity>1?`${entry.quantity} available`:state.active===s.id?'IN HAND':'EQUIPPED'):`${s.kind==='quick'?'Medical consumables':s.kind+' slot'}`}</small></button>`;}).join('')}</section>
+    <section class="loadout-detail" aria-label="Selected equipment slot"><span class="eyebrow">${slot.name.toUpperCase()}</span><div class="loadout-detail-art">${itemIcon(item)}</div><h3>${esc(item?.name??'Choose your equipment')}</h3><p>${esc(item?.detail??`Assign a ${slot.kind==='quick'?'consumable':slot.kind} from your backpack or nearby storage.`)}</p>
+    <div class="loadout-actions">${equipped&&HELD_SLOTS.includes(selected)?`<button data-loadout-action="select" data-controller-key="draw-${selected}" ${blocked?'disabled':''}>${state.active===selected?'Holster':'Draw'} ${esc(item.name)}</button>`:''}${equipped&&slot.kind==='quick'?`<button data-loadout-action="use" data-controller-key="use-${selected}" ${blocked?'disabled':''}>Use ${esc(item.name)}</button>`:''}${equipped?sources.filter(c=>selected!=='backpack'||c.id!=='pack').map(c=>`<button data-loadout-stow="${esc(c.id)}" data-controller-key="stow-${selected}-${esc(c.id)}" ${blocked?'disabled':''}>Stow in ${esc(c.name)}</button>`).join(''):''}</div>
+    <h4>AVAILABLE TO EQUIP</h4><div class="loadout-candidates">${candidates.map(({i,c})=>`<button data-loadout-assign="${i.id}" data-loadout-from="${esc(c.id)}" data-controller-key="assign-${selected}-${esc(c.id)}-${i.id}" ${blocked?'disabled':''}>${itemIcon(i)}<span><strong>${esc(i.name)}</strong><small>${c.items[i.id]} in ${esc(c.name)}</small></span><span>＋</span></button>`).join('')||'<p class="loadout-muted">No matching items in the available containers. Stow another equipped item to move it between slots.</p>'}</div>
+    <p class="loadout-note">Weapons draw charges from compatible ammo slots. Quick items are retained when they cannot help. Empty your backpack before removing it.</p></section></div>`;
+}
+
+/** Visible touch/mouse shortcuts; controller routes call the same actions. */
+export function createLoadoutBar({loadout,nav,onSelect,onUse,open}){
+  const root=document.createElement('aside');root.id='loadout-bar';root.setAttribute('aria-label','Equipment shortcuts');document.body.append(root);let previous=null;
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.draw)onSelect(b.dataset.draw);else if(b.dataset.quick!==undefined)onUse(Number(b.dataset.quick));else open();});
+  return {update(){
+    root.hidden=!['walk','eva'].includes(nav.mode)||!nav.enabled||!nav.focused||Boolean(document.querySelector('dialog[open]'));
+    if(previous===loadout.state)return;previous=loadout.state;
+    root.innerHTML=HELD_SLOTS.map((id,i)=>{const item=itemById(loadout.state.slots[id]?.item);return `<button data-draw="${id}" aria-label="Draw ${esc(item?.name??id)}" aria-pressed="${loadout.active===id}" ${item?'':'disabled'}><kbd>${i+1}</kbd>${itemIcon(item)}<span>${id==='weapon1'?'W1':id==='weapon2'?'W2':'TOOL'}</span></button>`;}).join('')+Array.from({length:4},(_,i)=>{const s=loadout.state.slots[`quick${i+1}`],item=itemById(s?.item);return `<button data-quick="${i}" aria-label="Use quick ${i+1}: ${esc(item?.name??'Empty')}" class="${loadout.state.quickIndex===i?'quick-selected':''}" ${item?'':'disabled'}><kbd>${i+5}</kbd>${itemIcon(item)}<span>${s?.quantity??'—'}</span></button>`;}).join('')+'<button data-open-loadout aria-label="Open equipment"><span>GEAR</span><kbd>K</kbd></button>';
+  },dispose(){root.remove();}};
+}

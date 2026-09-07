@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { TREE_LODS, TREE_REBUILD_DISTANCE, treeLodCoverage, treeLodIncludes } from '../src/tree-lod.js';
-import { createBranchGeometry } from '../src/foliage.js';
-import { Vegetation } from '../src/vegetation.js';
+import { createBranchGeometry, crownProfile } from '../src/foliage.js';
+import { Vegetation, treeVariant } from '../src/vegetation.js';
 import { findDestinations, RADIUS } from '../src/world.js';
 import * as THREE from 'three';
 
@@ -25,6 +25,30 @@ test('middle tree LOD substantially reduces geometry', () => {
   const near = createBranchGeometry(), mid = createBranchGeometry(true);
   assert.ok(mid.attributes.position.count < near.attributes.position.count / 3);
   near.dispose(); mid.dispose();
+});
+
+test('tree species retain distinct crowns through near and middle geometry',()=>{
+  const crowns=[];
+  for(let variant=0;variant<3;variant++){
+    const near=createBranchGeometry(false,variant),mid=createBranchGeometry(true,variant);
+    near.computeBoundingBox();mid.computeBoundingBox();
+    assert.ok(mid.attributes.position.count<near.attributes.position.count/3);
+    assert.ok(Math.abs(near.boundingBox.max.y-mid.boundingBox.max.y)<.05);
+    assert.ok(Math.abs(near.boundingBox.min.y-mid.boundingBox.min.y)<.05);
+    crowns.push(crownProfile(.3,variant));near.dispose();mid.dispose();
+  }
+  assert.ok(crowns[1].y>crowns[0].y+.2,'pine has a visibly higher crown');
+  assert.ok(crowns[2].spread>crowns[0].spread*1.5,'broadleaf crown is wider');
+});
+
+test('world cells retain species identity and cold regions favour conifers',()=>{
+  const counts=[0,0,0];
+  for(let row=0;row<50;row++)for(let col=0;col<30;col++){
+    const variant=treeVariant(col,row,.25,500);counts[variant]++;
+    assert.equal(treeVariant(col,row,.25,500),variant);
+    assert.ok(treeVariant(col,row,.7,500)<2);assert.ok(treeVariant(col,row,.25,1900)<2);
+  }
+  assert.ok(counts.every(n=>n>200),'all three species appear in temperate stands');
 });
 
 test('moving the vegetation origin preserves shared tree lattice positions and random values', () => {

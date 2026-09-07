@@ -1,0 +1,27 @@
+{
+  "kind": "Blender studio, not game evidence",
+  "asset": {
+    "path": "public/models/characters/watchkeep-shopkeeper.glb",
+    "bytes": 1898296,
+    "sha256": "8653b48492859b71b12a0d838ea0aa6da7da3ff3dcbd59a8f54f5ac129f81f80"
+  },
+  "renderer": "Blender 5.2 Cycles CPU",
+  "threads": 4,
+  "samples": 16,
+  "resolution": [
+    800,
+    900
+  ],
+  "images": [
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/arm-prototype/front-oblique.webp",
+      "bytes": 29892,
+      "sha256": "aef91e6cb92bb86d1ee29affbb47b8a02240c1af840204c576489ac645e96a6c"
+    },
+    {
+      "path": "assets/characters/watchkeep-shopkeeper/arm-prototype/back-oblique.webp",
+      "bytes": 25790,
+      "sha256": "75f28d55daf9eb3cf379f1b9d9da878a03c48117e690a8e7dc8645f4fac03779"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+@import './style.css';
+.nomad-studio canvas{display:block;width:100%;height:100%}
+.studio-header,.studio-specs,.studio-footer{z-index:2}
+.studio-header{position:fixed;inset:28px 36px auto;display:flex;align-items:flex-start;justify-content:space-between;pointer-events:none}
+.studio-eyebrow,.studio-specs,.studio-caption{font:10px var(--mono);letter-spacing:2px;color:var(--muted)}
+.studio-header h1{font:600 48px var(--numerals);letter-spacing:5px;margin:8px 0 0;color:var(--mint)}
+.studio-header h1 span{font:13px var(--mono);color:var(--muted);vertical-align:middle;letter-spacing:0;margin-left:8px}
+.studio-header p{font-size:13px;color:var(--muted);margin:4px 0}
+.studio-eyebrow{display:flex;align-items:center;gap:9px}.studio-eyebrow img{width:25px;height:25px;object-fit:contain}
+.studio-play{pointer-events:auto;color:var(--mint);border-bottom:1px solid var(--line);text-decoration:none;font:11px var(--mono);padding:10px 0}.studio-play span{margin-left:16px}
+.studio-specs{position:fixed;left:36px;top:167px;display:flex;gap:22px;font-size:8px;letter-spacing:1px}
+.studio-footer{position:fixed;inset:auto 36px 28px;display:grid;gap:13px}
+.studio-caption{display:flex;justify-content:space-between;align-items:end;font-size:9px;letter-spacing:1px}.studio-caption small{font-size:10px;letter-spacing:0}
+.studio-footer nav{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));border-top:1px solid var(--line);gap:6px;padding-top:13px}
+.studio-footer button{min-height:43px;padding:11px 9px;font:10px var(--mono);border:1px solid var(--line);background:var(--dialog-bg);color:var(--muted);cursor:pointer;border-radius:3px}
+.studio-footer button[aria-pressed=true],.studio-footer button:hover{color:var(--mint);border-color:var(--mint)}
+.studio-footer button:focus-visible,.studio-play:focus-visible{outline:2px solid var(--mint);outline-offset:4px}
+@media(max-width:700px){.studio-header{inset:21px 19px auto}.studio-eyebrow{font-size:8px;letter-spacing:1px}.studio-header h1{font-size:36px}.studio-header p{font-size:11px}.studio-play{font-size:9px}.studio-specs{left:20px;top:129px;font-size:7px;gap:15px}.studio-footer{inset:auto 16px 20px}.studio-caption{font-size:8px}.studio-caption small{display:none}.studio-footer nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.studio-footer button{font-size:9px;padding:11px 5px}}
+
+@media(max-width:700px){.studio-eyebrow img{width:19px;height:19px}.studio-specs{gap:9px;font-size:6.5px;top:143px}.studio-footer #door{grid-column:span 2}}

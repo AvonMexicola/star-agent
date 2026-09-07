@@ -8,7 +8,7 @@ test('Blender ship: physical cargo access, persistent transfers, live MFDs and b
   await page.waitForFunction(() => window.starAgent?.state.ready && window.starAgent.state.shipAsset === 'ready', null, { timeout: 60000 });
   await page.evaluate(() => window.starAgent.setRenderScale(.4));
   await page.evaluate(() => window.starAgent.transit('forest'));
-  await page.keyboard.press('KeyL');
+  await page.keyboard.press('KeyB');
   await page.waitForFunction(() => window.starAgent.state.mode === 'landed', null, { timeout: 90000 });
   await page.waitForFunction(() => window.starAgent.state.mfds.every(screen => screen.values.length === 3));
   expect(await page.evaluate(() => window.starAgent.state.mfds.map(screen => screen.title))).toEqual(['FLIGHT', 'NAVIGATION', 'SYSTEMS', 'CARGO']);
@@ -61,7 +61,7 @@ test('Blender ship: physical cargo access, persistent transfers, live MFDs and b
   await page.keyboard.down('KeyW');await page.waitForFunction(() => window.starAgent.state.shipLocal[2] < -1.4);
   await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');await page.keyboard.press('KeyF');
   expect(await page.evaluate(() => window.starAgent.state.mode)).toBe('landed');
-  await page.keyboard.press('KeyL');
+  await page.keyboard.press('KeyB');
   expect(await page.evaluate(() => window.starAgent.state.mode)).toBe('flight');
   await page.reload();await page.waitForFunction(() => window.starAgent?.state.ready, null, { timeout: 60000 });
   expect(await page.evaluate(() => window.starAgent.state.inventory)).toEqual(after);
@@ -82,6 +82,10 @@ test('missing GLB keeps the ship boardable and cargo usable', async ({ page }) =
   await expect(page.getByRole('dialog', { name: 'Ship inventory' })).toBeVisible();
   await page.getByRole('button', { name: 'Take Survey scanner', exact: true }).click();
   expect(await page.evaluate(() => window.starAgent.state.inventory.pack.scanner)).toBe(1);
+  await page.getByRole('button',{name:'Take all',exact:true}).click();
+  expect(await page.evaluate(()=>window.starAgent.state.inventory.packMass)).toBe(20);
+  await page.getByRole('button',{name:'Stow all',exact:true}).click();
+  expect(await page.evaluate(()=>window.starAgent.state.inventory.packMass)).toBe(0);
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => window.starAgent.state.mode)).toBe('walk');
   expect(errors).toEqual([]);

@@ -1,5 +1,12 @@
 # Star Agent planet creation pipeline — durable project memory
 
+Updated 2026-09-06: the current expedition combines lunar terrain v4, resource
+geography, surface/space mining, controller navigation, containers and character
+EVA with the sparse ring generator v2. See `docs/selene-expedition.md` for current
+boundaries. Earlier dated delivery records and the original mining research below
+describe their historical branch state; their decorative-only ring scope and
+former population counts are not current implementation limits.
+
 Recorded 2026-09-05 for Fable 5.1, the project manager, humans and future coding
 agents. Reference bodies: Aeon and landable Selene, [moon PR #7](https://github.com/AvonMexicola/star-agent/pull/7).
 This records the implemented pipeline and delivery lessons. Read current source
@@ -306,3 +313,469 @@ explicit destination and complete land–walk–reboard regression journey.
   regression plus the full unit suite and production build.
 - Memory is filed locally and announced in `HANDOFF.md`; review/merge/deployment
   remain in the project manager's queue. No manager read receipt is asserted.
+
+
+## Lunar landscape pipeline update — 2026-09-06, generator v3
+
+Cees requested more interesting terrain, slopes/craters, sunlight-reflecting ice
+particles and majestic asteroid rings, using Cellin as a visual reference. This
+supersedes v2's regolith-only visual scope and the old 4,000 m terrain bound.
+
+`moon-world.js` now owns a 16,000 m conservative upper bound, deeper global crater
+profiles with ejecta/central peaks, local impact basins, fractured ridges and compact
+basalt outcrops. All are in the canonical heightfield, so navigation and rendering
+still share the floor. The original landing direction now has a shelf on a large
+crater rim; a 35 m flat centre blends into the terrain by 150 m. Its absolute height
+changes with generator version 3. Do not reuse old recorded landing coordinates.
+
+`moon-terrain.js` evaluates a one-cell halo and reuses those samples to compute grid
+normals. This avoids four extra heightfield calls per vertex and filters normal
+detail to the rendered grid spacing. Parent fallback and skirts remain; nearby
+orbital views use minimum LOD 3 while distant views keep minimum LOD 2. The expanded
+terrain bound also feeds conservative horizon culling. The maximum LOD remains 17.
+
+`moon.js` shades cool basalt, height bands, frost and fine regolith relief. It owns
+`MoonRings` (`moon-rings.js`) and `MoonIce` (`moon-ice.js`). `main.js` supplies elapsed
+time and whether the player is outside the ship, and exposes effect counts in
+`state.moon.effects`. Ring bands are a transparent annulus with gaps and filtered
+radial striations, plus 1,800 instanced asteroids. Dust-band opacity fades between
+20 and 80 km from the observer to avoid an opaque-looking sheet inside the belt. Both shade the moon's obstruction
+of sunlight. Rock instance translations subtract camera origin in doubles before
+float upload; close-range precision is covered by a regression.
+
+Ice cells are keyed in absolute lunar coordinates. The effect samples the real
+terrain to keep initial particles above it, uses a small drift/glint animation,
+fades at its bounds and is disabled in the ship. A fixed-capacity position/phase
+buffer is updated in place as cells change. Replacing BufferAttributes on every
+cell rebuild would leave old GPU buffers difficult to reclaim; reuse is deliberate.
+
+Rendering lesson: a transparent object with depthWrite=false disappeared against
+empty sky in the previous atmosphere composite, which selected only stars when
+scene depth was clear. Writing opaque depth to force visibility produced speckled
+rings and dark particle dots. The HDR target now clears to alpha zero, retains its
+premultiplied scene color, and composites stars/sun through remaining coverage.
+Normal ring alpha blends normally; additive ice changes RGB without masking the
+sky. Log-depth reconstruction is unchanged. This shared shader change requires
+checking Aeon water/sky as well as the moon; a build alone cannot validate it.
+
+The terrain bounds still fit inside the separate travel contribution's 20 km lunar
+exclusion margin. The ring is decorative and is not a new travel target or collision
+hazard. Mining, moving orbital bodies, terrain deformation, particle thermodynamics,
+ring shadows on the lunar surface and rigid-body asteroid impacts remain future work.
+For merge ownership, review results and screenshots use `LUNAR-LANDSCAPE-HANDOFF.md`.
+
+
+## Surface identity and extreme relief — 2026-09-06, generator v4
+
+Cees found Selene visually uniform and difficult to navigate by landmarks. Two
+causes were identified: the supplied preview address (5178) served opening-work,
+and v3's 1024-wide global albedo map represented kilometres per pixel on foot.
+Always verify the service working directory, successful startup and served asset
+hash against the built dist; HTTP 200 alone does not identify a branch.
+The lunar production preview now has its own star-agent-selene-geology service
+at http://127.0.0.1:5180/; opening's server remains untouched.
+
+V4 removes the orbital albedo texture dependency. moonSurface returns linear RGB
+material colors shared by terrain vertices and skirts. Fixed geographic masks
+produce dark Obsidian Crown, blue-white Glass Rift, Copper Ejecta and icy Frostwall.
+moonRegion names those districts plus Crescent Rim/Basin, Twin Spires and the
+highlands in the existing lunar biome label/state. Labels do not teleport players.
+Broad color fields avoid aliasing on distant meshes; sub-metre detail uses a
+periodic, mipmapped triplanar fracture/relief texture. Do not sample sub-metre noise
+only at distant terrain vertices: this produces a patchwork grid when interpolated.
+
+The canonical heightfield adds a winding 180 m ice-fault trough, deepens local
+impact bowls, and raises three mountain groups with 6.2–7.6 km contributions.
+Peaks are several kilometres from the shelf so the sky and ring remain visible.
+The 35 m level landing area, shared walking floor, low gravity and physical ramp
+remain. The conservative 16 km upper bound and travel exclusion contract remain.
+Heightfield geometry still cannot form overhangs or caves.
+
+Streaming lesson: horizon-culled siblings still form part of a visible parent's
+all-four-children replacement dependency. Evicting them repeatedly rebuilt meshes
+and exposed coarse mountain fallbacks. Mark required siblings recently used, even
+when they are culled. A regression advances the cache clock beyond expiry and
+checks a stationary view requires zero new builds. Visual tours wait for zero
+terrain builds before taking surface/survey evidence; maximum LOD alone only
+proves that some nearby patches are loaded, not the mountain landscape.
+
+Verification covers distinct material/region identities, shared material edges,
+more than 7.5 km local relief, collision/landing/walking, cache stability and actual
+Chromium shaders. Full suite: 77 unit cases across nine test files. Production
+lunar journey and render tour pass; the final shader/cache refinements receive a
+new render tour. Evidence includes docs/selene-geology.png and updated crater view.
+Use LUNAR-LANDSCAPE-HANDOFF.md and PR #15 for integration boundaries and delivery.
+
+
+## Mineable assets and mountain research — 2026-09-06
+
+Cees requested No Man's Sky-inspired mineable rocks and Selene ridges/mountains,
+with freedom to choose an alternative to voxels. The primary-source research and
+proposed implementation are in [docs/selene-mining-research.md](docs/selene-mining-research.md).
+This is research only, not an implemented miner or a measured performance result.
+
+Recommendation: keep the global heightfield, improve connected ridge morphology,
+and introduce smooth scalar-field chunks for local mineable rocks/outcrops. Start
+with worker Marching Cubes; compare Dual Contouring if sharp faces warrant it.
+No Man's Sky's 2024 notes name Dual Marching Cubes, a distinct algorithm. Retain
+WebGL2 initially because renderer migration would require porting custom shaders.
+
+Read Phase 6 and the shared equipment lane before implementation. The existing
+onMine callback reports a beam endpoint and m³/s budget; it needs a validated hit,
+coalesced removal budget, actual removed-material accounting and ore inventory.
+Mesh geometry alone is not a mineable asset. Local rock metadata and reproducible
+chunk memory arithmetic are filed in docs/selene-mining-asset-audit.json and
+scripts/research/audit-mining-assets.py. Topology and runtime speed remain untested.
+
+Key contracts: retain matching mesh/collision revisions, reject stale worker jobs,
+keep edits across distant proxy swaps, compact growing edit logs, and prevent
+repeated empty-space mining/replay from granting resources. Terrain excavation
+must replace both visible surface and radial collision in its owned domain;
+shader-only holes leave an invisible floor. Prototype an independent rock first.
+A 32-cell chunk needs 33 corner samples per axis; choose 0.125–0.25 m cells for
+small rocks, and budget mesh/collision/halo memory in addition to density arrays.
+The roadmap's <4 ms meshing claim is a target awaiting measurement.
+
+
+## First mineable rock implementation — 2026-09-06
+
+Playable implementation is documented in [docs/selene-mining.md](docs/selene-mining.md).
+A single 4 m volume at Crescent Rim uses 32³ cells / 0.125 m sampling, interior
+copper/ice/basalt fields, budgeted subtraction, saved sample containers and the
+existing Equipment mining laser. The first mesher uses a consistent tetrahedral
+split, not the research's proposed Marching Cubes/optional Dual Contouring path.
+Closure tests cover the uncut and carved mesh. This is a bounded proof of mining,
+not a whole-planet voxel conversion.
+
+The worker prepares geometry, packed triangle collision hierarchy and compact
+float snapshot together. Main publishes the mesh/collider only after saving the
+matching field + cargo transaction. Stale results cannot overwrite current state.
+The first render exposed a main-thread stall from building collision and encoding
+JSON there; moving both preparations into the worker reduced publication overhead.
+Measure worker and publish latency separately; no <4 ms worker claim is established.
+
+Navigation's optional surfaceObstacles hook sweeps the player capsule and adds
+support-aware jumping. Removing support makes the player fall under lunar gravity.
+Ship contact uses a conservative clearance sphere. Material color at cut faces is
+procedural in rock-local coordinates, independent of exterior UVs. The survey
+pouch/locker has dedicated 12/48 kg capacities and is accessed through cargo UI.
+Resource mass represents gameplay concentrate, not actual bulk geological density.
+
+Preview is a dedicated star-agent-mining service on http://127.0.0.1:5203/.
+The existing 5180 geology preview is preserved. Save ID and generator version are
+separate from the planet seed. The snapshot is browser-local, single-volume and
+not coordinated across tabs/network peers. No debris physics, cave-floor replacement,
+mining of ring rocks, or resource crafting is claimed. See the guide for merge hooks,
+source provenance, validation and remaining independent manager/visual review.
+
+
+## Expedition follow-up: controller, containers, EVA and populated rings
+
+Cees tested first mining and identified missing visible beam/texture, controller
+access and backpack UI. Explicitly authorized a multi-agent implementation team.
+Controller, inventory and EVA lanes are integrated by the expedition root; see
+docs/selene-expedition.md for the concrete feature and storage boundaries.
+
+- All new interactive features require controller actions, visible bindings, modal
+  navigation, disconnect/focus/re-arm safety and a controller-only acceptance route.
+  The contract is now in AGENTS.md and docs/controller-contract.md.
+- One slot/box inventory schema and dialog serve backpack/ship/station/base caches;
+  resource transfers and density edits remain one atomic browser save. New boxes
+  add slots and mineral capacity; the real Crescent field cache exercises base storage.
+- Laser custom shader uses the scene logarithmic depth convention; material wear
+  is generated locally and sampled in tool coordinates. A beam in empty space
+  produces no resources, and impact effects require a validated hit.
+- Current ring generator v2 retains 14,336 stable descriptors in a 20 km radial
+  by 2 km vertical band, with at least 2,132.11 m neighboring bounding clearance.
+  It supersedes the initial expedition's 20,971,520-descriptor v1 population.
+  Large rocks have 24 fractured variants and three geometry LODs out to 80 km;
+  original small-rock shapes remain editable. Excavation retains two live ring
+  workers and eight persisted additional survey snapshots shared with provinces.
+- Large asteroids remain procedural collision geometry pending chunked mining;
+  small representatives of all six families are hand-mineable in EVA. Preserve this
+  distinction in UI/docs. No massive unbounded mesh allocation or pristine LOD over cuts.
+- EVA uses real hatch/ramp exit and return, suit inertia/thrust/braking and shared
+  obstacle hooks. It adds no remote teleport-to-chair shortcut. Fuel/oxygen and
+  orbital mechanics are not claimed as implemented.
+
+This update replaces no manager review requirement. Final test/evidence counts are
+recorded in the expedition review handoff, not inferred from earlier mining PR #21.
+
+
+## Resource geography is visible from orbit
+
+Cees requested surface color patches that reveal where to find resources. The
+canonical `moonResources(direction)` now supplies normalized basalt/copper/ice
+weights, a dominant mineral and province name. Both orbital fallback and streamed
+ground patches use `moonSurface` colors from those weights; no separate texture or
+heightfield is introduced. Resource version 1 is separate from terrain version 4.
+The existing crater/mountain height fixtures and Crescent landing shelf are intact.
+
+Blue-white marks ice, rust-red copper and dark slate basalt. Five broad provinces
+are large enough to survive orbital mesh sampling. Existing near-Crescent named
+geology overrides those broad masks locally. A HUD legend reports the region below
+the ship, and the shared command menu offers controller-accessible survey routes.
+
+Each province has a deterministic mineable outcrop, with at most one additional
+surface worker. The landing approach is offset from its collider. The outcrop's
+profile drives discrete mineral seams, mesh colors, shader classification and
+worker yield together. Shared atomic saves preserve cuts and collected cargo;
+changing visual LOD cannot regenerate a pristine shell over an edited deposit.
+Crescent retains its saved geometry and now follows the local resource profile.
+The eight additional saved deposit slots are shared by provincial and ring rocks.
+
+The surface heightfield is not itself excavatable. Province fractions describe
+regional composition, not a guarantee that every individual cut returns that exact
+mixture. Keep future assets, scanners and resource yields on this same classifier.
+See docs/resource-geology.md and docs/selene-expedition.md; renderer evidence and
+current acceptance status belong in docs/qa/expedition/ and the review handoff.
+
+
+## Player-reported expedition regressions
+
+Tool availability must depend on player/equipment mode, never distance to a mineral
+node. The first expedition incorrectly hid the tool beyond 90 metres from a deposit;
+this gate is removed. The player can equip and beam into empty space without reward.
+
+Spacecraft yaw/pitch and assisted vertical thrust use the ship's local frame.
+Using lunar radial up at the ring turned horizontal stick input into roll or pitch.
+Gravity-relative walking and atmospheric ascent remain distinct; travel in space
+must not silently transport the ship attitude to follow the moon's radial normal.
+
+Mining preparation prioritizes the asteroid under the aiming ray independently
+of the two-nearest streaming heuristic. Tool rays and nearby collision must use
+visible asteroid geometry; broad spheres are only candidate filters. Static large
+asteroids must explicitly report unavailable hand mining. Retain bounded workers,
+pending-job safety and atomic edits; a targeting fix must not duplicate resources
+or silently restore a pristine shell over an excavated rock.
+
+
+## Sparse navigable ring revision — 2026-09-06, ring generator v2
+
+Cees requested a sparse Yela-style belt with approximately two kilometres between
+asteroids, longer draw distance and sunlight glinting from nearby ice. The current
+layout is 2,048 angular cells × 7 radial cells × 1 vertical cell × 1 body: **14,336
+bodies**. Adjacent radial rows are staggered by half an angular cell. Tangential
+and radial jitter stay within ±70 m, with height jitter within ±500 m. The nominal
+band remains 20 km wide and 2 km thick at radius 903.448 km, giving an outer
+physical diameter of **1,826.896 km**. Do not confuse that diameter with draw range.
+
+V2 neighboring-cell checks cover every potentially nearest pair and the ring seam.
+The minimum measured clearance between bounds of radius `1.95 * descriptor.size`
+is **2,132.1115 m**. Keep every rendered variant inside that bound when changing
+geometry. Three quarters of descriptors are large rocks with size parameters
+24–140; one quarter is small and mineable. `ringRock(5)` remains a small survey
+target. Six families × four variants supply 24 large geological shapes with
+fracture planes, layered surfaces and triplanar mineral/stone/ice materials.
+The original `asteroidField` remains the small-rock geometry and mining authority.
+
+`MoonRings` retains the full deterministic v2 descriptor population. Local cells
+select interaction candidates; they must not replace the population used for
+long-distance drawing. Individual rocks remain visible to 80 km. Near/mid/far
+geometry boundaries are nominally 4/16/80 km, with complementary fades through
+3.2–4.8 km and 14–18 km, and a visibility fade through 64–80 km. A camera cell
+crossing must preserve unrelated distant IDs and geometry. Positions continue to
+subtract the double-precision camera origin before entering GPU buffers.
+
+Saved v1 cuts are not migrated onto v2 asteroid positions. `asteroidDescriptorV1`
+reproduces their original positions, orientations and family exactly. MiningField
+attaches at most eight saved legacy descriptors to `rings.legacyDescriptors`
+before the first frame. Their runtime IDs are `-(oldId + 1)` and their storage
+keys remain `selene-ring-v1-*`; v2 uses positive runtime IDs and `selene-ring-v2-*`
+keys. Hidden instances and collision fallbacks retain both generations without
+awarding resources during restoration. Legacy player-edited deposits are an
+explicit exception to the v2 spacing rule because preserving their positions and
+cuts takes priority. Provincial and ring snapshots still share the eight-slot cap.
+
+`src/ring-ice.js` owns `RingIce`, separate from the larger rock population and from
+surface ice in `moon-ice.js`. Its deterministic 32 m world cells anchor slow-moving
+sunlit facets; rendering keeps at most 1,200 particles inside a 104 m observer
+radius and excludes the inner 12 m around the cabin. Radial/vertical ring edges,
+inner clearance and outer distance fade smoothly. Camera turns and origin rebases
+must not reset particle identity, position phase or sunlight response. Shader
+facets produce glints and dim in lunar shadow using the existing logarithmic depth
+and additive compositing conventions. These particles are visual only: no solid
+collision, excavation or resource awards.
+
+The original 20-million-body design and earlier screenshots remain historical
+v1 evidence. Do not cite those runs as validation of this revision. Numerical
+spacing, legacy-save and descriptor tests support their specific invariants;
+final v2 shader, LOD, visibility, ice and controller browser evidence belongs in
+the current expedition QA record and manager handoff. Independent visual approval
+is a separate review result and is not claimed by this memory update.
+
+Final v2 verification: all 26 numerical files pass; five distinct production
+browser checks pass across the integrated run and targeted reruns, including
+actual ice pixels, full ring dimensions, LOD continuity and space mining. Current
+review evidence and exact fixture provenance: `docs/qa/expedition/sparse-ring/`.
+Preview asset: `index-N8I1Odnu.js` at http://127.0.0.1:5213/ .
+
+
+## Proposed progression — crafting, training, Pyre and Aeon caves
+
+Cees requested material tiers, crafting and skill training, with valuable ore on
+the hot inner planet requiring suit upgrades, plus dangerous Aeon cave fauna and
+special loot. The concrete design draft is
+[Expedition progression](docs/design/progression-crafting-skills.md). This is
+future design, not a claim that crafting, Pyre hazards or creature combat exists.
+
+Use four material tiers, with parallel Pyre industrial and Aeon cave/biological
+branches. Build the first heat-protection kit entirely from accessible materials;
+never require Pyre ore to unlock the first Pyre expedition. Training should credit
+committed recovery, practical milestones and discoveries, not held-trigger time.
+Reuse the shared box UI and controller router for recipes, modules and loot.
+
+First proposed slice: migrate the three-resource/fixed-supply save model safely,
+add station refining and a useful mining-laser heat-sink recipe, fit the result,
+and validate the full controller mining/crafting/reload journey. Then prove suit
+thermal behavior before the first Pyre site. Prove one cave entrance and unified
+collision before adding a creature and its biological recipe. Preserve all old
+cuts/cargo/boxes, atomic transactions, save identities and input suppression.
+
+
+## Carrying limits, mainframe permissions and recovery guidance — 2026-09-06
+
+Cees prioritizes finding a ship after leaving it in space, then practical base
+building and mineral deposits matching regional geology. Implement the recovery
+beacon automatically in outside walk/EVA modes: range to the actual rear ramp,
+on-screen diamond, bounded direction arrow including targets behind the player,
+and hide after boarding. Project relative double coordinates in the suit frame;
+follow the current ship pose, not a cached departure position. The independent
+Nomad/Atlas power lane must supply its active hull name and entry transform when
+integrating. The expedition branch's current physical ship remains the Nomad.
+
+[Cargo and the base mainframe](docs/design/cargo-and-base-mainframe.md) records the
+new design priority. Unify mass/volume/slots while preserving existing supplies;
+ship payload is hull-specific and base storage comes from physical containers. A
+mainframe grants building rights in one bounded claim; owner/builder/visitor roles
+and door/storage permissions are distinct. Local ownership is not secure shared
+multiplayer authorization. First base slice: finite starter kit, core, snapped
+shelter, crate, actual mineral transfer, leave/return/reload using a controller.
+These capacity, claim and construction rules remain proposals, not runtime work.
+
+
+## Regional mineral outcrops — surface deposit generator v1
+
+Cees expects a copper-colored region to contain actual mineable copper deposits.
+`src/mining/surface-deposits.js` now supplies deterministic, slope-aligned regional
+outcrops across Selene in approximately 180 m spherical cells. Cells with copper
+or ice weight >=0.45 are occupied; other cells have 40% occupancy. Each descriptor
+uses the canonical `moonResources` at its final terrain anchor for visible seams
+and actual carve rewards. Six existing editable shape fields supply variation.
+Aeon biome deposits and terrain excavation remain outside this implementation.
+
+`MiningField` caches a wider descriptor neighborhood by spatial cell and renders
+at most three regional excavation workers within 400 m. Named survey/Crescent
+anchors keep an 80 m exclusion, and the existing named worker remains bounded.
+Nearest or aimed local rocks drive tool target/range/bearing; a distant survey
+name must not override them. No extra scanner binding or menu is required.
+
+Stable `selene-deposit-v1-row-column` identities preserve cuts through streaming
+and reload, using the same atomic store and shared eight additional edited-deposit
+limit as ring/province rocks. Pending jobs finish before eviction; duplicate/late
+results cannot credit material twice. Geometry, placement or occupancy changes
+need a versioned compatibility decision rather than relocating saved edits.
+
+Numerical coverage includes arbitrary copper-rich sites, true copper-biased cuts,
+seam/pole identities, terrain normals, collision, save limits and pending travel.
+The real controller journey in `scripts/regional-deposits.spec.js` leaves a named
+landing site and mines a separate regional deposit; exact runtime evidence is
+recorded in the expedition QA directory after the integrated browser run.
+
+Final verification for this follow-up: all 28 numerical files pass; five distinct
+browser journeys pass across the integrated run and targeted marker run (automatic
+beacon exit/return, regional copper, named copper, Crescent and space mining).
+The regional controller trip recovered 3.108 kg copper from a generated outcrop
+101.52 m beyond the nearest named site and preserved cuts/cargo after reload.
+Current evidence: `docs/qa/expedition/ship-marker/` and `regional-deposits/`.
+Dedicated preview http://127.0.0.1:5213/ serves `index-ChFNEySb.js`.
+
+
+## Mining particle integration — 2026-09-06
+
+The current expedition cutter reuses `a81b75e` / PR27's shared ParticlePool,
+EnergyEffects and EnergyBloom. `docs/mining-particles.md` defines the contract.
+Equipment still owns heat, muzzle calibration and validated cuts; old equipment
+VFX is hidden only with a director. A single 1,024-instance pool drives plasma
+contact sparks, dust and mineral-colored fragments attracted to the tool.
+`MineableRock.onExtract` fires only after successful save plus mesh/collider
+publication; request-time position/normal survive asynchronous completion.
+Field forwarding covers ground, province, regional and space rocks. Visuals
+cannot award inventory. Misses have no contact/collection; modal/focus/transit
+suspends effects and the existing controller neutral-arm rules remain in force.
+
+RT/T/mouse/touch routes work. Energy glow and Reduced particle motion settings
+are in Controls and help, reachable with controller focus and A. These settings
+are per session; OS reduced-motion preference supplies the startup default.
+
+Verification: all 29 numerical files; five distinct production browser checks
+pass across the four-journey run and corrected focused regression rerun. The
+first regression run's mobile bounding-box timing failure is documented in QA.
+Evidence: `docs/qa/expedition/mining-particles/`. Preview 5213 now serves
+`index-DY2p5nPi.js`, superseding the earlier asset hash above.
+
+Manager integration: PR27 has ongoing independent flight/weapon edits; preserve
+that work, current regional deposits and recovery marker. Retain one director
+and bloom pass when combining branches, plus all regional extraction callbacks.
+This integration enables mining effects; it does not add weapon damage or flight
+bindings. No manager review acceptance, merge or public deployment is claimed.
+
+
+## Equipment loadout implementation — 2026-09-06
+
+New branch feat/equipment-loadout is stacked on expedition c3ef10c (PR24), isolated
+in /tmp/star-agent-loadout-work. The shared inventory dialog gains Equipment:
+two weapon slots, tool, backpack, two ammo stacks and four quick-item stacks.
+State lives in the SAME MiningStore save as cuts/cargo. Legacy saves receive one
+finite starter kit; swaps/stows/assignments, ammo and medical use save atomically.
+A backpack must be empty before external stow; without it carrying/gathering
+capacity is zero. Existing box mounts return when it is equipped again.
+
+K/Menu→Equipment opens it; View/I opens Storage. D-pad left cycles held slots,
+right retains mining shortcut, up selects a quick slot, down uses it on foot/EVA.
+Flight bindings remain unchanged. Weapon1/2/tool map to keys1/2/3; quick use4–7.
+Ammo authorization runs in Equipment's fire gate before shot effects, one matching
+charge per pulse; failed saves cancel the shot. No magazine/reload timing yet.
+Bandages heal15/stop bleeding, stims heal40, capped100; full-health items aren't
+wasted, and neither revives. There is no ambient/combat injury source yet; injure()
+is an explicit hook. These effects were verified against an injured-save fixture.
+Late asynchronous models cannot reattach after switching, and tool heat is kept
+across slot changes. Shared authored models/rig offsets are not changed.
+
+All30 numerical files pass. Four final production browser cases pass (4.1min):
+complete controller gear+Selene mining+both weapons+backpack, saved medical/mobile
+UI, container transfers and physical space mining. Prior focused mining-input
+regression also passes. Initial duplicate-Backpack-label failure and interrupted
+mixed run are documented; the final dedicated-port suite completes normally.
+Evidence: docs/qa/equipment-loadout/. Contract: docs/equipment-loadout.md.
+Preview http://127.0.0.1:5271/ serves index-BPCnBCsf.js; port5213 remains the prior
+expedition build and has a separate browser save. No physical Xbox/FPS claim.
+
+Fable integration: retain the one particle director and regional callbacks from
+PR24, newer authored gear/rig/ship work, and PR27's independent colored weapons
+and flight integration. Keep the public Equipment authorizeFire hook, inventory
+loadout transactions and contextual D-pad routes; don't restore the old unlimited
+free weapon selector over them. No merge or public deployment is claimed.
+
+
+## Starter laser rifle and current particle effects — 2026-09-06
+
+Cees requested a starter rifle, mining tool and ammo, then the particle agent’s
+latest laser effects. The finite default already grants rifle-laser, mining tool
+and 60 compatible charges (plus sidearm/pack/medical kit). The equipment branch
+now names them Laser rifle / Laser rifle charges and actually selects the solar
+laser profile: immediate orange beam/core, muzzle motes and contact bursts.
+Sidearm uses crimson pulses. Reuses PR27 d9f4d7c EnergyEffects, weapon profiles and
+slipstream dependency; preserves the single director, mining collection callbacks,
+saved IDs and atomic ammo authorization. Small held recoil respects Reduced motion.
+Flight adapter remains PR27’s integration responsibility; no new flight input.
+
+All 30 numerical files pass. Two final production browser checks pass (5.2 min):
+full controller equipment/landing/mining/weapons/backpack and mouse/touch mining
+with menu/focus/disconnect suppression. Six observed rifle shots consume exactly
+six charges and create six impacts; rock revision is unchanged by weapons.
+Fresh default, active laser profile/beam, menu retirement and held RT suppression
+are asserted. No page/console errors. Inspected rifle/sidearm/mining captures and
+updated JSON are under docs/qa/equipment-loadout/. Chromium151, Vulkan SwiftShader;
+no physical Xbox or hardware FPS claim. Preview5271: index-B3rNxrVo.js.
+Preserve shared newer authored gear assets when integrating PR32 with PR27.

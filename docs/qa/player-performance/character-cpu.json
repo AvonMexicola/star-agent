@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-09-07T19:57:49.720Z",
+  "baseline": "4706d62",
+  "node": "v26.7.0",
+  "cpu": "AMD Ryzen AI 7 350 w/ Radeon 860M",
+  "method": "CPU only, one process, alternating baseline/candidate batches after warmup; real expedition rig without textures or rendering. This is not game FPS.",
+  "rig": {
+    "nodes": 27,
+    "skinned": 1
+  },
+  "poseParity": {
+    "frames": 3240,
+    "cases": 18,
+    "comparison": "Exact action phases, weights and playback rates; all node positions, quaternions, scales and morph weights"
+  },
+  "characters": {
+    "count": 10,
+    "framesPerSample": 1800,
+    "samples": 9,
+    "beforeMs": [
+      162.27005299999996,
+      151.45467600000006,
+      146.05270399999995,
+      145.32803000000013,
+      161.32950399999982,
+      167.78172199999972,
+      151.1818830000002,
+      152.55753099999993,
+      149.38550399999986
+    ],
+    "afterMs": [
+      163.33599800000013,
+      127.01523899999984,
+      127.70488600000022,
+      128.32676700000002,
+      133.39989100000003,
+      119.26566999999977,
+      125.46641499999987,
+      119.97763900000018,
+      125.85249199999998
+    ],
+    "beforeMedianMs": 151.45467600000006,
+    "afterMedianMs": 127.01523899999984,
+    "improvementPercent": 16.13646910446015
+  },
+  "ik": {
+    "solvesPerSample": 10000,
+    "samples": 9,
+    "beforeMs": [
+      34.339722000000165,
+      28.182368999999653,
+      27.773079000000052,
+      27.932718999999906,
+      26.984495000000152,
+      27.14325400000007,
+      28.125050999999985,
+      28.07620900000029,
+      26.74998400000004
+    ],
+    "afterMs": [
+      26.26243599999998,
+      26.543083999999908,
+      25.238009000000147,
+      39.939347,
+      25.207010999999966,
+      24.91307800000004,
+      25.353617000000213,
+      25.497767999999724,
+      25.179259000000002
+    ],
+    "beforeMedianMs": 27.932718999999906,
+    "afterMedianMs": 25.353617000000213,
+    "improvementPercent": 9.233265118228207,
+    "eliminatedThreeObjectsPerSolve": 12
+  }
+}

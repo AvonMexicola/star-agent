@@ -1,86 +1,109 @@
 import { Vector3 } from 'three';
-import { TRAVEL_TARGETS, TRAVEL, LIGHT_SPEED } from './travel-model.js';
+import { NAV_FILTERS, NAV_BODIES, BODY_PARENTS, navigationEndpoint } from './navigation-targets.js';
 import './system-map.css';
 
 export function formatRange(metres) {
-  const km = metres / 1000;
-  return km >= 1e6 ? `${(km / 1e6).toFixed(2)} M km` : `${Math.round(km).toLocaleString('en-US')} km`;
+  const km=metres/1000;return km>=1e6?`${(km/1e6).toFixed(2)} M km`:`${Math.round(km).toLocaleString('en-US')} km`;
 }
+export const travelPhaseLabel=phase=>({spooling:'ALIGNING / SPOOLING',accelerating:'ACCELERATING',cruising:'CRUISING',decelerating:'ARRIVAL BRAKING',cooldown:'DRIVE COOLDOWN',done:'ARRIVED'})[phase]??'STANDBY';
 
-/** Target selection never moves the ship. Only the explicit drive action begins
- * navigation; the native dialog pauses controls and retains keyboard focus. */
-export function createSystemMap(nav, onTarget = () => {}) {
-  const dialog = document.createElement('dialog');
-  dialog.id = 'system-map';
-  dialog.setAttribute('aria-labelledby', 'system-map-title');
-  dialog.innerHTML = `
-    <div class="system-map-header"><div><span class="map-eyebrow">SA–01 / NAVIGATION</span><h2 id="system-map-title">The Aeon system<span>01</span></h2></div><button id="close-system-map" aria-label="Close system map">✕ <kbd>M</kbd></button></div>
-    <div class="system-map-layout">
-      <div class="system-chart" aria-label="Schematic system map">
-        <div class="map-grid"></div><div class="map-orbit map-orbit-outer"></div><div class="map-orbit map-orbit-inner"></div><div class="map-orbit map-orbit-pyre"></div>
-        <button class="map-body map-star" data-travel-target="star"><i></i><span>OUR STAR<small>STELLAR OBSERVATION</small></span></button>
-        <div class="map-route-line"></div>
-        <button class="map-body map-aeon" data-travel-target="aeon"><i></i><span>AEON<small>TERRESTRIAL PLANET</small></span></button>
-        <button class="map-body map-selene" data-travel-target="selene"><i></i><span>SELENE<small>AIRLESS MOON</small></span></button>
-        <button class="map-body map-pyre" data-travel-target="pyre"><i></i><span>PYRE<small>TWILIGHT APPROACH</small></span></button>
-        <button class="map-body map-miasma" data-travel-target="miasma"><i></i><span>MIASMA<small>PYRE’S TOXIC MOON</small></span></button>
-        <div class="map-chart-caption"><span>4 WORLDS · 1 STAR</span><span>SCHEMATIC · NOT TO SCALE</span></div>
-      </div>
-      <section class="map-destination" aria-label="Selected destination">
-        <span class="map-eyebrow">DESTINATION</span><h3 id="map-target-name">Where next?</h3><p id="map-target-description">Select a world on the map to plot an approach.</p>
-        <dl><div><dt>DISTANCE</dt><dd id="map-distance">—</dd></div><div><dt>DRIVE LIMIT</dt><dd>0.9<span>c</span></dd></div><div><dt>EST. ARRIVAL</dt><dd id="map-eta">—</dd></div><div><dt>APPROACH ALTITUDE</dt><dd id="map-approach">—</dd></div></dl>
-        <p id="map-route-status" role="status">Your course starts here.</p>
-        <button id="map-engage" class="primary-button" disabled>ENGAGE DRIVE <span>↗</span></button>
-        <p class="map-note">Automatic alignment and arrival braking. Short routes reach a lower peak speed.</p>
-      </section>
-    </div>
-    <footer class="system-map-footer"><span><i></i> FLIGHT PAUSED WHILE MAP IS OPEN</span><span>SELECT A WORLD · <kbd>ESC</kbd> RETURN TO FLIGHT</span></footer>`;
+/** Hierarchy and selection only. The actual nose lock engages outside the modal. */
+export function createSystemMap(nav,targets) {
+  const dialog=document.createElement('dialog');dialog.id='system-map';dialog.className='navigation-map';dialog.setAttribute('aria-labelledby','system-map-title');
+  dialog.innerHTML=`<header class="system-map-header dialog-top"><h2 id="system-map-title">Navigation</h2><button id="close-system-map" aria-label="Close system map">✕</button></header>
+    <div class="nav-map-layout">
+      <nav class="nav-breadcrumbs" aria-label="System hierarchy"></nav>
+      <nav class="nav-map-views" aria-label="Navigation views"><button data-map-view="chart">Chart</button><button data-map-view="locations">Locations</button><button data-map-view="signals">Signals</button><button data-map-view="filters">Filters</button></nav>
+      <section class="nav-map-chart" aria-label="System relationships"><div class="nav-chart-heading"><h3></h3><span>Relationship chart · orbits not to scale</span></div><div class="nav-orbits"><svg viewBox="0 0 600 400" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="300" cy="200" rx="130" ry="92"/><ellipse cx="300" cy="200" rx="240" ry="160"/></svg><div class="nav-orbit-bodies"></div></div><p class="nav-chart-caption">Select a world to open its moons, station and surface sites.</p></section>
+      <section class="nav-map-browser" aria-label="Navigation locations and filters"><h3 id="nav-list-title"></h3><div class="nav-map-list"></div><div class="nav-map-filters"></div><div class="nav-map-pages"><button id="nav-page-previous" aria-label="Previous navigation page">‹</button><span></span><button id="nav-page-next" aria-label="Next navigation page">›</button></div><p class="nav-map-empty"></p></section>
+      <section class="nav-map-selection" aria-label="Selected destination"><div><span id="map-target-kind">Navigation target</span><h3 id="map-target-name">Choose a destination</h3><p id="map-route-status">Select a body or signal, then aim at its marker in flight.</p></div><dl><div><dt>Range to arrival</dt><dd id="map-distance">—</dd></div><div><dt>Arrival clearance</dt><dd id="map-approach">20 km</dd></div></dl><div class="nav-map-actions"><button id="map-clear">Clear target</button><button id="map-engage" class="primary-button" disabled>Follow bearing ↗</button></div></section>
+    </div><footer class="system-map-footer"><button id="map-return">Return to flight</button><span>Flight held · M / Escape to close</span></footer>`;
   document.body.append(dialog);
-  let wasEnabled = true, timer, returnFocus;
-  const el = id => dialog.querySelector(`#${id}`);
-  function refresh() {
-    const target = TRAVEL_TARGETS.find(t => t.id === nav.travelTarget);
-    for (const b of dialog.querySelectorAll('[data-travel-target]')) {
-      b.setAttribute('aria-pressed', String(b.dataset.travelTarget === target?.id));
-      b.disabled = Boolean(nav.travel);
+  const el=id=>dialog.querySelector(`#${id}`),q=sel=>dialog.querySelector(sel);
+  let context='star',view='locations',page=0,wasEnabled=true,returnFocus,timer,signature='',stick=0;
+  const compact=()=>matchMedia('(max-width:749px), (max-height:719px)').matches;
+  function button(label,key,click){const b=document.createElement('button');b.textContent=label;b.dataset.controllerKey=key;b.addEventListener('click',click);return b;}
+  function focusRestore(key){if(key)dialog.querySelectorAll('[data-controller-key]').forEach(b=>{if(b.dataset.controllerKey===key&&!b.hidden)b.focus({preventScroll:true});});}
+  function choose(id,{drill=false}={}){
+    if(nav.travel)return;
+    targets.select(id);
+    if(drill&&NAV_BODIES.some(b=>b.id===id)){context=id;page=0;}
+    render(true);
+  }
+  function listValues(all){
+    if(view==='signals')return all.filter(t=>t.category!=='bodies'&&targets.filters[t.category]);
+    return all.filter(t=>(t.surface||t.category==='bases')&&t.parent===context);
+  }
+  function render(force=false){
+    const all=targets.targets(),selected=targets.selected;
+    const currentSignature=JSON.stringify({context,view,page,compact:compact(),selected:selected?.id,filters:targets.filters,list:all.map(t=>[t.id,t.name,t.parent]),travel:Boolean(nav.travel)});
+    if(force||currentSignature!==signature){
+      signature=currentSignature;const focusKey=document.activeElement?.dataset.controllerKey;
+      dialog.dataset.mapView=view;
+      const crumbs=q('.nav-breadcrumbs');crumbs.replaceChildren();
+      const path=[];let id=context;while(id){path.unshift(id);id=BODY_PARENTS[id];}
+      path.forEach(id=>{const body=NAV_BODIES.find(b=>b.id===id);const b=button(body.name,`map-breadcrumb-${id}`,()=>{context=id;page=0;render(true);});b.setAttribute('aria-current',id===context?'location':'false');crumbs.append(b);});
+      dialog.querySelectorAll('[data-map-view]').forEach(b=>{b.dataset.controllerKey=`map-view-${b.dataset.mapView}`;b.setAttribute('aria-pressed',String(view===b.dataset.mapView));});
+      const central=all.find(t=>t.id===context),children=all.filter(t=>t.parent===context&&(t.category==='bodies'||t.category==='stations'));
+      q('.nav-chart-heading h3').textContent=central.name;
+      const orbitNodes=q('.nav-orbit-bodies');orbitNodes.replaceChildren();
+      [central,...children].forEach((t,i)=>{
+        const b=button('',`map-body-${t.id}`,()=>choose(t.id,{drill:true}));b.className='map-body';b.dataset.travelTarget=t.id;b.dataset.kind=t.kind.toLowerCase().replaceAll(' ','-');b.dataset.central=String(i===0);b.setAttribute('aria-label',`Select ${t.name}`);b.setAttribute('aria-pressed',String(t.id===selected?.id));b.disabled=Boolean(nav.travel);
+        const dot=document.createElement('i'),label=document.createElement('strong'),kind=document.createElement('small');label.textContent=t.name;kind.textContent=t.kind;b.append(dot,label,kind);
+        const slots=[[50,50],[23,29],[80,69],[76,22],[22,78]],pos=slots[i]??[50,85];b.style.left=`${pos[0]}%`;b.style.top=`${pos[1]}%`;orbitNodes.append(b);
+      });
+      q('.nav-chart-caption').textContent=`You: ${nav.body.name} · ${formatRange(nav.altitude)} altitude. ${children.length?'Select a world to explore it.':'No charted satellites.'}`;
+      el('nav-list-title').textContent=view==='filters'?'Show navigation markers':view==='signals'?'Tracked signals':`${central.name} · surface locations`;
+      q('.nav-map-list').replaceChildren();q('.nav-map-filters').replaceChildren();q('.nav-map-empty').textContent='';
+      q('.nav-map-filters').hidden=view!=='filters';q('.nav-map-list').hidden=view==='filters';
+      if(view==='filters'){
+        for(const [id,label] of Object.entries(NAV_FILTERS)){
+          const count=all.filter(t=>t.category===id).length;
+          const b=button(`${label} · ${count}`,`map-filter-${id}`,()=>{targets.setFilter(id,!targets.filters[id]);render(true);});b.dataset.navFilter=id;b.setAttribute('aria-pressed',String(targets.filters[id]));q('.nav-map-filters').append(b);
+        }
+        q('.nav-map-empty').textContent='Friends / pilots shows the live Comms roster. Empty categories gain markers when signals exist.';
+      }else{
+        const values=listValues(all),size=compact()?3:4,pages=Math.max(1,Math.ceil(values.length/size));page=Math.min(page,pages-1);
+        for(const t of values.slice(page*size,(page+1)*size)){
+          const b=button('',`map-signal-${t.id}`,()=>choose(t.id));b.dataset.navTarget=t.id;b.setAttribute('aria-pressed',String(t.id===selected?.id));b.disabled=Boolean(nav.travel);
+          const name=document.createElement('strong'),detail=document.createElement('small');name.textContent=t.name;detail.textContent=`${t.kind} · ${formatRange(nav.position.distanceTo(new Vector3(...t.center)))}`;b.append(name,detail);q('.nav-map-list').append(b);
+        }
+        q('.nav-map-pages span').textContent=`${page+1} / ${pages}`;el('nav-page-previous').setAttribute('aria-disabled',String(page===0));el('nav-page-next').setAttribute('aria-disabled',String(page===pages-1));
+        if(!values.length)q('.nav-map-empty').textContent=view==='signals'?'No signals in the enabled categories. Open Filters to choose what to track.':'No surface sites here. Select a planet or moon in the chart.';
+      }
+      q('.nav-map-pages').hidden=view==='filters'||listValues(all).length<=(compact()?3:4);
+      focusRestore(focusKey);
     }
-    if (!target) return;
-    const route = nav.travel ? { ok: false, reason: 'Drive paused. Close the map to resume; X aborts in flight.' } : nav.travelRoute();
-    el('map-target-name').textContent = target.name;
-    el('map-target-description').textContent = target.id === 'star' ? 'Observe the photosphere, flares and magnetic loops from 500,000 km above the surface. Flying closer raises shield temperature and can destroy the ship. Space + Shift retreats.' : target.id === 'miasma' ? 'Pyre’s sulphur moon. Swirling aerosol clouds veil dark copper-rich basins and pale fractured highlands. Toxic atmosphere; explore the surface in your sealed suit.' : target.id === 'aeon' ? 'Oceans, forests and an atmosphere. Arrive above the atmosphere, then descend in normal flight.' : target.id === 'pyre' ? 'Tidally locked and 400 °C on the day side; lava fields glow through cracked basalt on the night side. Thin CO₂ air. From Aeon, arrive 1,800 km above the twilight line: light side left, glowing night side right. Miasma lies beyond the dark limb.' : 'Cratered terrain and low gravity. Arrive above the moon, then fly down to land and explore.';
-    el('map-distance').textContent = formatRange(route.plan?.distance ?? nav.position.distanceTo(new Vector3(...target.center)));
-    el('map-eta').textContent = route.ok ? `${route.plan.duration.toFixed(1)} s` : '—';
-    el('map-approach').textContent = formatRange(target.arrivalRadius - target.radius);
-    el('map-route-status').textContent = route.ok ? `Route clear · peak ${(route.plan.peakSpeed / LIGHT_SPEED).toFixed(2)}c · ${TRAVEL.spoolSeconds}s spool` : route.reason;
-    el('map-route-status').classList.toggle('route-blocked', !route.ok);
-    el('map-engage').disabled = !route.ok || nav.mode !== 'flight' || nav.autoland || nav.stationLift;
+    el('map-clear').disabled=!selected||Boolean(nav.travel);el('map-engage').disabled=!selected||Boolean(nav.travel);
+    if(selected){
+      const route=targets.route(selected),end=route.plan?.end??navigationEndpoint(nav.position,selected);
+      el('map-target-name').textContent=selected.name;el('map-target-kind').textContent=selected.kind;
+      el('map-distance').textContent=formatRange(nav.position.distanceTo(end));el('map-approach').textContent=selected.id==='star'?'500,000 km':'20 km';
+      el('map-route-status').textContent=nav.travel?'Drive held. Close the map to resume.':route.ok?'Aim at the marker. Hold for charge, then N / J or LB + RB + ↑.':route.reason;
+    }else{el('map-target-name').textContent='Choose a destination';el('map-target-kind').textContent='Navigation target';el('map-distance').textContent='—';el('map-route-status').textContent='Select a body or signal, then aim at its marker in flight.';}
   }
-  function close() { if (dialog.open) { nav.enabled = wasEnabled; dialog.close(); } }
-  function open() {
-    if (dialog.open) return;
-    if (document.querySelector('dialog[open]') || !nav.enabled || nav.openingActive || nav.mode === 'destroyed') return;
-    wasEnabled = nav.enabled; returnFocus = document.activeElement;
-    if (document.pointerLockElement) document.exitPointerLock();
-    nav.keys.clear(); nav.gamepad?.suspend(); nav.enabled = false;
-    dialog.showModal(); refresh(); timer = setInterval(refresh, 250);
+  function close(){if(dialog.open){nav.enabled=wasEnabled;dialog.close();}}
+  function open(){
+    if(dialog.open||document.querySelector('dialog[open]')||!nav.enabled||nav.openingActive||nav.mode==='destroyed')return;
+    wasEnabled=nav.enabled;returnFocus=document.activeElement;stick=0;targets.reset();
+    if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.gamepad.suspend();nav.enabled=false;
+    if(compact())view='chart';dialog.showModal();render(true);timer=setInterval(render,300);
   }
-  dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
-  dialog.addEventListener('close', () => {
-    clearInterval(timer); nav.keys.clear(); nav.enabled = wasEnabled;
-    returnFocus?.focus?.({ preventScroll: true });
-  });
-  el('close-system-map').addEventListener('click', close);
-  for (const body of dialog.querySelectorAll('[data-travel-target]')) body.addEventListener('click', () => {
-    if (nav.travel) return;
-    nav.travelTarget = body.dataset.travelTarget;
-    onTarget(TRAVEL_TARGETS.find(t => t.id === nav.travelTarget)); refresh();
-  });
-  el('map-engage').addEventListener('click', () => {
-    close(); nav.beginTravel();
-  });
-  document.addEventListener('keydown', event => {
-    if (event.code !== 'KeyM' || event.repeat || event.ctrlKey || event.metaKey || event.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName)) return;
-    event.preventDefault(); dialog.open ? close() : open();
-  });
-  return { openMap: open, close, refresh, get open() { return dialog.open; } };
+  dialog.addEventListener('cancel',e=>{e.preventDefault();close();});
+  dialog.addEventListener('close',()=>{clearInterval(timer);nav.keys.clear();nav.gamepad.suspend();targets.reset();nav.enabled=wasEnabled;returnFocus?.focus?.({preventScroll:true});});
+  for(const id of ['close-system-map','map-return','map-engage'])el(id).addEventListener('click',close);
+  el('map-clear').dataset.controllerKey='map-clear';el('map-engage').dataset.controllerKey='map-engage';
+  el('map-clear').addEventListener('click',()=>{targets.clear();render(true);});
+  dialog.querySelectorAll('[data-map-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.mapView;page=0;render(true);}));
+  for(const [id,delta] of [['nav-page-previous',-1],['nav-page-next',1]]){el(id).dataset.controllerKey=id;el(id).addEventListener('click',()=>{if(el(id).getAttribute('aria-disabled')==='true')return;page+=delta;render(true);});}
+  document.addEventListener('keydown',event=>{if(event.code!=='KeyM'||event.repeat||event.ctrlKey||event.metaKey||event.altKey||/^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName))return;event.preventDefault();dialog.open?close():open();});
+  function controllerInput(input){
+    if(!dialog.open||!input)return;
+    if(input.pressed.has(1)||input.pressed.has(9)){close();return;}
+    const direction=Math.abs(input.y)>.5?Math.sign(input.y):Math.abs(input.x)>.5?Math.sign(input.x):0;
+    const step=input.pressed.has(12)||input.pressed.has(14)?-1:input.pressed.has(13)||input.pressed.has(15)?1:direction&&direction!==stick?direction:0;stick=direction;
+    if(step){const buttons=[...dialog.querySelectorAll('button')].filter(b=>!b.disabled&&b.getClientRects().length);const i=buttons.indexOf(document.activeElement);buttons[(Math.max(0,i)+step+buttons.length)%buttons.length]?.focus({preventScroll:true});}
+    if(input.pressed.has(0))document.activeElement?.closest('#system-map button')?.click();
+  }
+  return {openMap:open,close,refresh:render,controllerInput,get open(){return dialog.open;}};
 }

@@ -1,0 +1,881 @@
+{
+  "schemaVersion": 1,
+  "status": "finished-bounded-task-partial-provider-completion",
+  "startedAt": "2026-09-06T23:52:16.839750+00:00",
+  "sourcePipeline": "Built-in GPT image -> exact locally viewed reference PNG -> Meshy Image to 3D",
+  "provider": "Meshy",
+  "authorization": "User confirmed enabling ChatGPT extension Allow access to file URLs, authorized these two uploads, one original per reference and bounded topology/PBR finishing with existing credits. No downloads, purchases, settings changes or original rerolls.",
+  "scopeOwnership": [
+    "assets/station-shop/soft-props/image-to-3d-v2/meshy-after-file-permission-receipt.json",
+    "assets/station-shop/soft-props/image-to-3d-v2/provider-previews/"
+  ],
+  "priorReceipt": {
+    "path": "assets/station-shop/soft-props/image-to-3d-v2/meshy-receipt.json",
+    "sha256": "781fdb5cf02275f46d9355e4907071f79bac553de3b62261aa14c5321556a9c0",
+    "preserved": true,
+    "meaning": "Pre-permission upload failure; zero jobs; not this run.",
+    "shaVerifiedUnchangedAtHandoff": true
+  },
+  "browser": {
+    "integration": "Configured OpenAI Chrome extension through mcp__cua_repl; no Claude",
+    "freshTaskTabId": "2020745747",
+    "workspaceUrl": "https://www.meshy.ai/workspace",
+    "instructionsRead": [
+      "Computer Use and Chrome browser documentation returned by actual tools",
+      "agent.documentation.get(\"file-uploads\")",
+      "agent.documentation.get(\"screenshots\")"
+    ],
+    "permissionState": "User-reported enabling Allow access to file URLs before this run; no settings opened or changed. Documented file choosers on fresh tabs successfully uploaded both exact PNGs; both actual thumbnails visually verified. No upload denial in this run.",
+    "localScreenshots": [],
+    "screenshotEvidence": "Actual screenshots returned and displayed through documented OpenAI browser API for uploads, originals, reductions, final map modes and views. The documented screenshot API returns bytes without a save-path method; no locally saved screenshots claimed.",
+    "rollFreshTaskTabId": "2020745748",
+    "handoffMarkedTabs": [
+      "2020745747",
+      "2020745748"
+    ],
+    "finalVisibleState": "Jacket tab: Generating failed / Credits Refunded. Roll tab: exact renamed 8157-face / 12347-vertex PBR recovery asset in elevated textured view, four map buttons present."
+  },
+  "operations": [
+    {
+      "order": 1,
+      "operation": "Read brief, exact source prompts, production standard and hangar current acceptance status; view both PNGs and verify SHA-256.",
+      "result": "Inputs match prompt-file hashes."
+    },
+    {
+      "order": 2,
+      "operation": "Create fresh task tab at Meshy workspace.",
+      "result": "High Detail / Meshy 7 - Flagship, Ultra 2K, Texture on, Multi-view off, Pose off, Private; quote 35 credits."
+    },
+    {
+      "order": 3,
+      "operation": "Acquire detailed browser tab API handle.",
+      "result": "Initial attempt referenced undefined browser variable; exact error: browser is not defined. Read docs succeeded. Then selected already-configured browser id 1 and acquired same fresh tab; no UI mutation from this error."
+    },
+    {
+      "order": 4,
+      "propId": "watchkeep-folded-protective-jacket",
+      "operation": "Documented visible file chooser upload",
+      "method": "waitForEvent(\"filechooser\") before clicking associated Click / Drag & Drop / Paste Image label; chooser.setFiles with exact absolute PNG path. Actual input[type=file] had zero visible bounds.",
+      "result": "Succeeded; Uploading ... transitioned to actual Re-Upload thumbnail, visually verified.",
+      "billable": false
+    },
+    {
+      "order": 5,
+      "operation": "Disable Image Enhancement for exact source preservation.",
+      "result": "Visible switch Value 0; other generation settings unchanged.",
+      "billable": false
+    },
+    {
+      "order": 6,
+      "propId": "watchkeep-folded-protective-jacket",
+      "operation": "Submit one original job using Generate",
+      "result": "Task created successfully; Creating your model ... progressed through 69%, then Generating failed / Credits Refunded.",
+      "settings": {
+        "workflow": "Image to 3D",
+        "modelType": "High Detail",
+        "model": "Meshy 7 - Flagship",
+        "modelDescription": "Most detail, highest precision",
+        "resolution": "Ultra 2K",
+        "Texture": true,
+        "Multi-view": false,
+        "Split": false,
+        "Pose": false,
+        "Image Enhancement": false,
+        "License": "Private",
+        "displayedTotalCredits": 35,
+        "displayedEstimate": "2 min"
+      },
+      "initialChargedCredits": 25
+    },
+    {
+      "order": 7,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Create second fresh task tab and upload exact roll reference",
+      "result": "Documented chooser succeeded; actual thumbnail visually verified; Image Enhancement disabled.",
+      "billable": false
+    },
+    {
+      "order": 8,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Submit one original job using Generate",
+      "result": "Task created successfully; first generation charge 25 credits; Texture on schedules automatic texture stage.",
+      "settings": {
+        "workflow": "Image to 3D",
+        "modelType": "High Detail",
+        "model": "Meshy 7 - Flagship",
+        "modelDescription": "Most detail, highest precision",
+        "resolution": "Ultra 2K",
+        "Texture": true,
+        "Multi-view": false,
+        "Split": false,
+        "Pose": false,
+        "Image Enhancement": false,
+        "License": "Private",
+        "displayedTotalCredits": 35,
+        "displayedEstimate": "2 min"
+      }
+    },
+    {
+      "order": 9,
+      "propId": "watchkeep-folded-protective-jacket",
+      "operation": "Inspect failure and recovery surface",
+      "result": "Exact Generating failed / Credits Refunded shown centrally with original jacket source thumbnail. Regenerate not clicked. Failed-card popup click produced no visible menu or job ID."
+    },
+    {
+      "order": 10,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Open newly generated grey roll original card",
+      "result": "Topology Triangle, Faces 3,004,190, Vertices 1,502,071. Separate automatically created texture card at 20%. Center in roll tab initially still displayed selected failed jacket; selecting visible new roll geometry card resolved the view. This was not a second roll failure."
+    },
+    {
+      "order": 11,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Inspect original grey geometry and original automatic texture from multiple angles",
+      "result": {
+        "status": "visually-inspected-in-provider",
+        "multiAngleViews": [
+          "Default front oblique grey geometry",
+          "Elevated opposite oblique grey geometry with flap, two buckles and layered end",
+          "Underside/back grey geometry",
+          "Default textured front",
+          "Elevated textured oblique",
+          "Textured underside/back and layered end"
+        ],
+        "appearanceComparison": "Closed compact roll; coherent flap, two snug dark straps, two small rectangular buckles and layered rolled ends correspond to input. Palette is substantially paler tan/beige than the richer ochre source; fine canvas weave and webbing definition are weaker. Lower/back surface is rounded; flat stable runtime support not established.",
+        "fusedStraps": "Straps read as continuous relief tightly fused to the body, with no independent clearance demonstrated.",
+        "floaterGeometry": "No obvious detached pieces in the inspected views; not a topology audit.",
+        "hollows": "Layered end crevices are visible; no obvious through-hole. Watertightness unvalidated.",
+        "materialMisses": "Paler/desaturated tan, faint cloth weave, very dark buckles with weak metal/fabric separation.",
+        "unexplainedShapes": "Some irregular dense fold channels at rolled ends. No exposed tools, tool rack or extra props observed."
+      }
+    },
+    {
+      "order": 12,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Submit Remesh Fixed / Custom / 4000 / Triangle",
+      "result": "Confirm entered disabled pending state after click; displayed 0 credits. Detailed grey and textured originals preserved.",
+      "chargedCredits": 0
+    },
+    {
+      "order": 13,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Inspect completed 4000-target derivative",
+      "result": {
+        "views": [
+          "Textured default front",
+          "Textured elevated oblique",
+          "Grey elevated oblique"
+        ],
+        "finding": "Coherent overall roll, straps and buckles remain, but reduced rolled ends and cloth edges become angular/jagged and some end channels look torn or collapsed. Normal preview absent. Not accepted.",
+        "floaterGeometry": "No obvious detached pieces in these views; topology not exported.",
+        "hollows": "Irregular deep channels at layered end; actual open boundaries not validated.",
+        "fusedStraps": "Continuous relief remains fused to body; strap edge transitions are angular.",
+        "budget": "4085 triangle faces exceed requested/brief maximum 4000 by 85 (2.125%); target 2500 not met."
+      },
+      "actualCounts": {
+        "providerLabels": [
+          "Topology Triangle",
+          "Faces 4,085",
+          "Vertices 7,044"
+        ],
+        "faces": 4085,
+        "triangles": 4085,
+        "vertices": 7044
+      }
+    },
+    {
+      "order": 14,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Select preserved detailed textured original, verify counts, submit Remesh Fixed / Custom / 8000 / Triangle",
+      "result": "0-credit Confirm clicked once, entered disabled pending state. No original geometry reroll."
+    },
+    {
+      "order": 15,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Inspect completed higher-count derivative",
+      "result": {
+        "views": [
+          "Default textured front",
+          "Elevated grey geometry"
+        ],
+        "finding": "Folded ends smoother than 4085-face derivative but uneven/angular folded layers remain. Main bundle, two straps and two buckles remain coherent. No obvious detached pieces. Provider Printability icon is a warning; cause was not exposed or investigated as a topology diagnosis.",
+        "budget": "8157 faces exceed requested 8000, intake 8000, prop maximum 4000 and target 2500; intentionally unaccepted higher-count candidate."
+      },
+      "actualCounts": {
+        "providerLabels": [
+          "Topology Triangle",
+          "Faces 8,157",
+          "Vertices 12,347"
+        ],
+        "faces": 8157,
+        "triangles": 8157,
+        "vertices": 12347
+      }
+    },
+    {
+      "order": 16,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Open Edit Texture on exact 8157-face derivative and verify reused source thumbnail",
+      "result": "Image Input selected, supplied ochre roll PNG visibly matches; Meshy 7 - Flagship / Most detail, sharpest textures; PBR maps on; Multi-view off; 2K selected, minimum offered. No new image generated or substituted."
+    },
+    {
+      "order": 17,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Submit one required Texture recovery",
+      "result": "Texture clicked once; entered disabled pending state. 10-credit quote. Save to Model pending.",
+      "settings": {
+        "status": "submitted-once",
+        "operation": "Edit Texture -> Image Input -> Texture",
+        "model": "Meshy 7 - Flagship",
+        "modelDescription": "Most detail, sharpest textures",
+        "reference": "roll-reference-v1.png",
+        "actualInputThumbnailVerified": true,
+        "Multi-view": false,
+        "Generate PBR Maps": true,
+        "Texture Resolution": "2K",
+        "offeredTextureResolutions": [
+          "2K",
+          "4K",
+          "8K"
+        ],
+        "displayedCredits": 10,
+        "displayedEstimate": "2 min",
+        "geometryTarget": "Exact selected 8157-face / 12347-vertex derivative",
+        "modelId": null,
+        "jobId": null,
+        "Save to Model": "pending"
+      }
+    },
+    {
+      "order": 18,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Resolve apparent unchanged Edit Texture history",
+      "result": "History remained Original Texture and Save to Model disabled; Texture was not clicked again. Closed editor and image-input popup; a new completed asset appeared above the 8157-face source and visible credit delta was -10."
+    },
+    {
+      "order": 19,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Select exact separate PBR recovery asset and inspect all four map previews",
+      "result": {
+        "exactFinalMesh": "New separate texture-recovery asset, not the preceding 8157-face remesh; Topology Triangle, Faces 8157, Vertices 12347",
+        "textureResolution": "2K selected; 2K/4K/8K offered, actual exported image dimensions unvalidated",
+        "UVPresence": "Mapped textures render on the exact final derived mesh. No separate UV unwrap was required or submitted; raw UV coordinates, overlaps and texel density remain unvalidated without export.",
+        "Base Color": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Base Color preview",
+          "finding": "Tan/ochre cloth, dark straps and buckles; paler and less saturated than source image; seams and dark edge shading present."
+        },
+        "Roughness": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Roughness preview",
+          "finding": "Light fabric and webbing, darker buckles; useful cloth/metal roughness separation visible."
+        },
+        "Metallic": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Metallic preview",
+          "finding": "Cloth and straps black/non-metal; buckle rims light/metal, visibly distinct."
+        },
+        "Normal": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Normal preview",
+          "finding": "Recovered after being absent on both reduced versions. Mostly uniform violet at inspected scale, with weak visible relief; presence does not establish useful weave depth, map convention or valid exported data."
+        }
+      }
+    },
+    {
+      "order": 20,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Inspect final textured result from front, elevated oblique and underside/back",
+      "result": {
+        "status": "provider-multi-angle-inspection-complete-unaccepted",
+        "multiAngleViews": [
+          "Default finished front oblique",
+          "Elevated finished oblique, flap, two buckles and layered end",
+          "Finished underside/back and opposite rolled end"
+        ],
+        "appearanceComparison": "Recognizable closed roll with two snug straps, two small rectangular buckles and rolled cloth ends. No tools or rack. Smoother than 4085-face reduction, but irregular folded edges/channels remain. Tan cloth is paler than the rich ochre source; fabric/webbing weave is weak compared with reference.",
+        "fusedStraps": "Straps are closely fused surface relief; independent mesh separation or clearance not proven.",
+        "floaterGeometry": "No obvious detached pieces in inspected final views; disconnected components not audited.",
+        "hollows": "Deep end-fold crevices, not visibly an open tool compartment. No obvious through-hole, but topology not validated.",
+        "materialMisses": "Pale/desaturated cloth, subdued weave/normal relief, some dark edge shading; roughness/metallic buckle separation now visible in map modes.",
+        "unexplainedShapes": "Uneven folded end channels and local edge distortions remain; no separate unexplained prop or tool.",
+        "supportAndScale": "Back/underside looks rounded; flat stable contact, exact dimensions, metre scale, orientation and base-centre origin await exported-file/root validation.",
+        "printability": "Provider warning icon visible on reduced/final mesh; cause not diagnosed, not a measured watertightness result.",
+        "acceptance": "Not accepted: exceeds triangle budgets, material/silhouette limitations remain, and game review/export validation pending."
+      }
+    },
+    {
+      "order": 21,
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Inspect final asset menu and rename for recovery",
+      "result": "Visible menu exposed Rename but no model/job ID. Renamed Canvas Tool Roll to KESTREL GPT-image v2 - 8157 PBR - UNACCEPTED. Reopened Rename and verified exact persisted value with Save disabled, then Cancelled. No sharing, licensing, download or account changes."
+    },
+    {
+      "order": 22,
+      "operation": "Final handoff and local provenance verification",
+      "result": "Both task tabs marked for handoff; final roll counts and all four maps visible, jacket failure unchanged. Receipt JSON parsed, both source PNG hashes and prior meshy-receipt.json hash verified unchanged. No export or integration."
+    }
+  ],
+  "creditEvents": [
+    {
+      "order": 1,
+      "propId": "watchkeep-folded-protective-jacket",
+      "event": "original generation charge",
+      "chargedCredits": 25,
+      "basis": "Immediate visible credit delta after its Generate success."
+    },
+    {
+      "order": 2,
+      "propId": "kestrel-maintenance-roll",
+      "event": "original generation charge",
+      "chargedCredits": 25,
+      "basis": "Immediate visible credit delta after its Generate success."
+    },
+    {
+      "order": 3,
+      "propId": "watchkeep-folded-protective-jacket",
+      "event": "generation refund",
+      "refundedCredits": 25,
+      "basis": "Explicit Credits Refunded message plus aggregate visible credit delta after roll automatic texture stage; refund amount inferred from staged 25/10-credit operation arithmetic, no ledger inspected."
+    },
+    {
+      "order": 4,
+      "propId": "kestrel-maintenance-roll",
+      "event": "automatic texture stage",
+      "chargedCredits": 10,
+      "basis": "Texture-on 35-credit total quote less initial 25-credit original stage; separate auto texture card appeared. Subsequent visible aggregate credit delta is consistent. Stage amount inferred, no ledger inspected."
+    },
+    {
+      "order": 5,
+      "propId": "kestrel-maintenance-roll",
+      "event": "Remesh Fixed / Custom / 4000 / Triangle",
+      "chargedCredits": 0,
+      "basis": "Visible 0-credit confirmation quote; submitted once."
+    },
+    {
+      "order": 6,
+      "propId": "kestrel-maintenance-roll",
+      "event": "Remesh Fixed / Custom / 8000 / Triangle",
+      "chargedCredits": 0,
+      "basis": "Visible 0-credit confirmation quote; submitted once."
+    },
+    {
+      "order": 7,
+      "propId": "kestrel-maintenance-roll",
+      "event": "Single required PBR texture recovery on 8157-face derivative",
+      "chargedCredits": 10,
+      "quotedCredits": 10,
+      "basis": "Visible -10 credit delta after the single recovery submission; new completed provider asset verified."
+    }
+  ],
+  "cost": {
+    "quotedOriginalTotalCredits": 70,
+    "chargedCredits": 70,
+    "refundedCredits": 25,
+    "netCredits": 45,
+    "pendingQuotedCredits": 0,
+    "basis": "Immediate observed original-stage charges: 25 per prop (50 total). Roll original automatic texture: 10 inferred from Texture-on 35 quote minus 25 geometry charge. One final texture recovery: observed 10 debit. Jacket explicitly marked Credits Refunded; 25 refund inferred from these staged operations and observed aggregate delta. Net 45 directly agrees with visible start-to-final delta. No ledger inspected or remaining balance/account identifier recorded.",
+    "purchasesOrTopups": 0
+  },
+  "props": [
+    {
+      "id": "watchkeep-folded-protective-jacket",
+      "status": "provider-original-failed-no-reroll",
+      "sourceImage": {
+        "path": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/jacket-reference-v1.png",
+        "sha256": "746353c2191173dc6c2d91e96e639841ef5f950dcbba035a471ed3cfe0029e7d",
+        "bytes": 1894418,
+        "locallyViewed": true,
+        "shaVerifiedUnchangedAtHandoff": true
+      },
+      "intent": {
+        "targetSizeMetres": [
+          0.38,
+          0.12,
+          0.52
+        ],
+        "targetTriangles": 1500,
+        "maxTriangles": 2000
+      },
+      "upload": {
+        "status": "verified",
+        "actualThumbnailVerified": true,
+        "attemptsThisRun": 1,
+        "inspection": "Visible thumbnail is the compact petrol-blue folded jacket with ivory shoulder panels, charcoal collar, zipper and pockets, matching the viewed PNG."
+      },
+      "original": {
+        "status": "failed",
+        "modelId": null,
+        "jobId": null,
+        "settings": {
+          "workflow": "Image to 3D",
+          "modelType": "High Detail",
+          "model": "Meshy 7 - Flagship",
+          "modelDescription": "Most detail, highest precision",
+          "resolution": "Ultra 2K",
+          "Texture": true,
+          "Multi-view": false,
+          "Split": false,
+          "Pose": false,
+          "Image Enhancement": false,
+          "License": "Private",
+          "displayedTotalCredits": 35,
+          "displayedEstimate": "2 min"
+        },
+        "counts": {
+          "providerLabels": [],
+          "vertices": null,
+          "faces": null,
+          "triangles": null,
+          "reason": "Generation failed before producing inspectable jacket geometry."
+        },
+        "failure": {
+          "visibleMessage": "Generating failed",
+          "refundMessage": "Credits Refunded",
+          "detail": null,
+          "noRegenerateClicked": true
+        }
+      },
+      "derivedVersions": [],
+      "finalCandidate": null,
+      "mapInspection": {
+        "exactFinalMesh": null,
+        "textureResolution": null,
+        "UVPresence": null,
+        "Base Color": null,
+        "Roughness": null,
+        "Metallic": null,
+        "Normal": null,
+        "reason": "No generated jacket result."
+      },
+      "inspection": {
+        "status": "not-possible",
+        "appearanceComparison": null,
+        "multiAngleViews": [],
+        "fusedStraps": null,
+        "floaterGeometry": null,
+        "hollows": null,
+        "materialMisses": null,
+        "unexplainedShapes": null,
+        "reason": "Jacket original displays Generating failed / Credits Refunded; no output geometry or texture exists."
+      },
+      "finalVersionRecoverySteps": [
+        "Open handoff Chrome tab 2020745747 at https://www.meshy.ai/workspace. It retains the jacket failed-original view and uploaded blue jacket source.",
+        "Verify central Generating failed and Credits Refunded, with the supplied jacket shown by the source/reuse-prompt thumbnail. No replacement jacket version exists.",
+        "No Regenerate was clicked. A new original reroll is outside this bounded authorization; root must handle any changed scope. Do not recover rejected earlier text-to-3D jackets."
+      ],
+      "limitations": [
+        "No geometry or textured jacket preview exists; reconstruction, counts, UVs and maps cannot be assessed. No original reroll authorized or attempted."
+      ],
+      "completion": {
+        "provider": "failed",
+        "actualExportedFileValidation": "none",
+        "rootIntegration": "none",
+        "independentGameReview": "pending"
+      }
+    },
+    {
+      "id": "kestrel-maintenance-roll",
+      "status": "provider-finished-unaccepted-candidate-ready-for-separate-export-handoff",
+      "sourceImage": {
+        "path": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/roll-reference-v1.png",
+        "sha256": "ac84a456acf6b4cdf71df86c5322a1f36571281cdd1fb9e2a542bcfd08e9b47a",
+        "bytes": 1899905,
+        "locallyViewed": true,
+        "shaVerifiedUnchangedAtHandoff": true
+      },
+      "intent": {
+        "targetSizeMetres": [
+          0.32,
+          0.13,
+          0.46
+        ],
+        "targetTriangles": 2500,
+        "maxTriangles": 4000
+      },
+      "upload": {
+        "status": "verified",
+        "actualThumbnailVerified": true,
+        "attemptsThisRun": 1,
+        "inspection": "Actual visible thumbnail shows the supplied closed ochre roll with two dark snug straps and two buckles; matches locally viewed PNG.",
+        "method": "Documented filechooser then setFiles exact absolute PNG path; actual input[type=file] had zero bounds so its associated visible label was clicked."
+      },
+      "original": {
+        "status": "geometry-and-automatic-texture-complete",
+        "modelId": null,
+        "jobId": null,
+        "settings": {
+          "workflow": "Image to 3D",
+          "modelType": "High Detail",
+          "model": "Meshy 7 - Flagship",
+          "modelDescription": "Most detail, highest precision",
+          "resolution": "Ultra 2K",
+          "Texture": true,
+          "Multi-view": false,
+          "Split": false,
+          "Pose": false,
+          "Image Enhancement": false,
+          "License": "Private",
+          "displayedTotalCredits": 35,
+          "displayedEstimate": "2 min"
+        },
+        "counts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 3,004,190",
+            "Vertices 1,502,071"
+          ],
+          "vertices": 1502071,
+          "faces": 3004190,
+          "triangles": 3004190,
+          "basis": "Provider visible counts; no exported-file validation."
+        },
+        "texturedVersion": {
+          "modelId": null,
+          "jobId": null,
+          "counts": {
+            "providerLabels": [
+              "Topology Triangle",
+              "Faces 3,004,190",
+              "Vertices 1,546,730"
+            ],
+            "triangles": 3004190,
+            "faces": 3004190,
+            "vertices": 1546730
+          },
+          "mapsVisible": [
+            "Base Color",
+            "Roughness",
+            "Metallic",
+            "Normal"
+          ],
+          "mapPreviewsFullyInspected": false
+        }
+      },
+      "derivedVersions": [
+        {
+          "localLabel": "roll-remesh-fixed-custom-4000-triangle",
+          "status": "complete-rejected-for-quality-and-budget",
+          "modelId": null,
+          "jobId": null,
+          "source": "Automatically textured 3,004,190-face roll original",
+          "operation": "Remesh",
+          "settings": {
+            "Target Polycount": "Fixed",
+            "Count Mode": "Custom",
+            "Polycount": 4000,
+            "Topology": "Triangle"
+          },
+          "displayedCredits": 0,
+          "displayedEstimate": "1 min",
+          "counts": {
+            "providerLabels": [
+              "Topology Triangle",
+              "Faces 4,085",
+              "Vertices 7,044"
+            ],
+            "faces": 4085,
+            "triangles": 4085,
+            "vertices": 7044
+          },
+          "rationale": "Use brief maximum 4000 before considering 2500 target, to protect silhouette. UI warned that fewer than 3000 polygons may result in significant quality loss. Detailed originals retained.",
+          "mapsVisible": [
+            "Base Color",
+            "Roughness",
+            "Metallic"
+          ],
+          "NormalPreviewPresent": false,
+          "inspection": {
+            "views": [
+              "Textured default front",
+              "Textured elevated oblique",
+              "Grey elevated oblique"
+            ],
+            "finding": "Coherent overall roll, straps and buckles remain, but reduced rolled ends and cloth edges become angular/jagged and some end channels look torn or collapsed. Normal preview absent. Not accepted.",
+            "floaterGeometry": "No obvious detached pieces in these views; topology not exported.",
+            "hollows": "Irregular deep channels at layered end; actual open boundaries not validated.",
+            "fusedStraps": "Continuous relief remains fused to body; strap edge transitions are angular.",
+            "budget": "4085 triangle faces exceed requested/brief maximum 4000 by 85 (2.125%); target 2500 not met."
+          }
+        },
+        {
+          "localLabel": "roll-remesh-fixed-custom-8000-triangle",
+          "status": "complete-preserved-unaccepted-high-count-candidate",
+          "modelId": null,
+          "jobId": null,
+          "source": "Preserved automatically textured detailed original; verified Faces 3,004,190 / Vertices 1,546,730 before remeshing. Not derived from 4085-face reduction.",
+          "operation": "Remesh",
+          "settings": {
+            "Target Polycount": "Fixed",
+            "Count Mode": "Custom",
+            "Polycount": 8000,
+            "Topology": "Triangle"
+          },
+          "displayedCredits": 0,
+          "displayedEstimate": "1 min",
+          "counts": {
+            "providerLabels": [
+              "Topology Triangle",
+              "Faces 8,157",
+              "Vertices 12,347"
+            ],
+            "faces": 8157,
+            "triangles": 8157,
+            "vertices": 12347
+          },
+          "rationale": "Root instructed the operator to retain a higher-count unaccepted candidate when low-count reduction looks jagged. This candidate intentionally exceeds 4000 maximum and is not a budget pass; protect roll silhouette before single required texture recovery.",
+          "mapsVisibleBeforeRecovery": [
+            "Base Color",
+            "Roughness",
+            "Metallic"
+          ],
+          "NormalPreviewPresentBeforeRecovery": false,
+          "inspection": {
+            "views": [
+              "Default textured front",
+              "Elevated grey geometry"
+            ],
+            "finding": "Folded ends smoother than 4085-face derivative but uneven/angular folded layers remain. Main bundle, two straps and two buckles remain coherent. No obvious detached pieces. Provider Printability icon is a warning; cause was not exposed or investigated as a topology diagnosis.",
+            "budget": "8157 faces exceed requested 8000, intake 8000, prop maximum 4000 and target 2500; intentionally unaccepted higher-count candidate."
+          },
+          "textureRecovery": {
+            "status": "complete-separate-provider-asset",
+            "operation": "Edit Texture -> Image Input -> Texture",
+            "model": "Meshy 7 - Flagship",
+            "modelDescription": "Most detail, sharpest textures",
+            "reference": "roll-reference-v1.png",
+            "actualInputThumbnailVerified": true,
+            "Multi-view": false,
+            "Generate PBR Maps": true,
+            "Texture Resolution": "2K",
+            "offeredTextureResolutions": [
+              "2K",
+              "4K",
+              "8K"
+            ],
+            "displayedCredits": 10,
+            "displayedEstimate": "2 min",
+            "geometryTarget": "Exact selected 8157-face / 12347-vertex derivative",
+            "modelId": null,
+            "jobId": null,
+            "Save to Model": "Not clicked. Edit Texture history remained at Original Texture, but closing the editor revealed a separate completed provider asset created by the single Texture operation. Selecting that new asset verified exact counts and restored Normal preview.",
+            "actualChargedCredits": 10,
+            "finalCounts": {
+              "providerLabels": [
+                "Topology Triangle",
+                "Faces 8,157",
+                "Vertices 12,347"
+              ],
+              "faces": 8157,
+              "triangles": 8157,
+              "vertices": 12347
+            }
+          }
+        },
+        {
+          "localLabel": "roll-8157-pbr-recovery-final",
+          "status": "provider-complete-unaccepted",
+          "modelId": null,
+          "jobId": null,
+          "originalProviderName": "Canvas Tool Roll",
+          "nameSaveVerification": "Verified by reopening Rename: exact saved name persisted; Save disabled, then Cancel clicked without changes.",
+          "source": "8157-face remesh from preserved detailed original",
+          "operation": "One image-input Meshy 7 texture recovery with PBR maps on, 2K",
+          "counts": {
+            "providerLabels": [
+              "Topology Triangle",
+              "Faces 8,157",
+              "Vertices 12,347"
+            ],
+            "faces": 8157,
+            "triangles": 8157,
+            "vertices": 12347
+          },
+          "mapsVisible": [
+            "Base Color",
+            "Roughness",
+            "Metallic",
+            "Normal"
+          ],
+          "providerName": "KESTREL GPT-image v2 - 8157 PBR - UNACCEPTED"
+        }
+      ],
+      "finalCandidate": {
+        "providerName": "KESTREL GPT-image v2 - 8157 PBR - UNACCEPTED",
+        "modelId": null,
+        "jobId": null,
+        "workspaceUrl": "https://www.meshy.ai/workspace",
+        "handoffTabId": "2020745748",
+        "localVersionLabel": "roll-8157-pbr-recovery-final",
+        "counts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 8,157",
+            "Vertices 12,347"
+          ],
+          "faces": 8157,
+          "triangles": 8157,
+          "vertices": 12347
+        },
+        "Texture Resolution": "2K selected in recovery",
+        "maps": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "acceptance": "Unaccepted: exceeds budget, remaining appearance issues and no exported-file/game validation."
+      },
+      "mapInspection": {
+        "exactFinalMesh": "New separate texture-recovery asset, not the preceding 8157-face remesh; Topology Triangle, Faces 8157, Vertices 12347",
+        "textureResolution": "2K selected; 2K/4K/8K offered, actual exported image dimensions unvalidated",
+        "UVPresence": "Mapped textures render on the exact final derived mesh. No separate UV unwrap was required or submitted; raw UV coordinates, overlaps and texel density remain unvalidated without export.",
+        "Base Color": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Base Color preview",
+          "finding": "Tan/ochre cloth, dark straps and buckles; paler and less saturated than source image; seams and dark edge shading present."
+        },
+        "Roughness": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Roughness preview",
+          "finding": "Light fabric and webbing, darker buckles; useful cloth/metal roughness separation visible."
+        },
+        "Metallic": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Metallic preview",
+          "finding": "Cloth and straps black/non-metal; buckle rims light/metal, visibly distinct."
+        },
+        "Normal": {
+          "present": true,
+          "previewOpened": true,
+          "mode": "Provider on-model Normal preview",
+          "finding": "Recovered after being absent on both reduced versions. Mostly uniform violet at inspected scale, with weak visible relief; presence does not establish useful weave depth, map convention or valid exported data."
+        }
+      },
+      "inspection": {
+        "original": {
+          "status": "visually-inspected-in-provider",
+          "multiAngleViews": [
+            "Default front oblique grey geometry",
+            "Elevated opposite oblique grey geometry with flap, two buckles and layered end",
+            "Underside/back grey geometry",
+            "Default textured front",
+            "Elevated textured oblique",
+            "Textured underside/back and layered end"
+          ],
+          "appearanceComparison": "Closed compact roll; coherent flap, two snug dark straps, two small rectangular buckles and layered rolled ends correspond to input. Palette is substantially paler tan/beige than the richer ochre source; fine canvas weave and webbing definition are weaker. Lower/back surface is rounded; flat stable runtime support not established.",
+          "fusedStraps": "Straps read as continuous relief tightly fused to the body, with no independent clearance demonstrated.",
+          "floaterGeometry": "No obvious detached pieces in the inspected views; not a topology audit.",
+          "hollows": "Layered end crevices are visible; no obvious through-hole. Watertightness unvalidated.",
+          "materialMisses": "Paler/desaturated tan, faint cloth weave, very dark buckles with weak metal/fabric separation.",
+          "unexplainedShapes": "Some irregular dense fold channels at rolled ends. No exposed tools, tool rack or extra props observed."
+        },
+        "final": {
+          "status": "provider-multi-angle-inspection-complete-unaccepted",
+          "multiAngleViews": [
+            "Default finished front oblique",
+            "Elevated finished oblique, flap, two buckles and layered end",
+            "Finished underside/back and opposite rolled end"
+          ],
+          "appearanceComparison": "Recognizable closed roll with two snug straps, two small rectangular buckles and rolled cloth ends. No tools or rack. Smoother than 4085-face reduction, but irregular folded edges/channels remain. Tan cloth is paler than the rich ochre source; fabric/webbing weave is weak compared with reference.",
+          "fusedStraps": "Straps are closely fused surface relief; independent mesh separation or clearance not proven.",
+          "floaterGeometry": "No obvious detached pieces in inspected final views; disconnected components not audited.",
+          "hollows": "Deep end-fold crevices, not visibly an open tool compartment. No obvious through-hole, but topology not validated.",
+          "materialMisses": "Pale/desaturated cloth, subdued weave/normal relief, some dark edge shading; roughness/metallic buckle separation now visible in map modes.",
+          "unexplainedShapes": "Uneven folded end channels and local edge distortions remain; no separate unexplained prop or tool.",
+          "supportAndScale": "Back/underside looks rounded; flat stable contact, exact dimensions, metre scale, orientation and base-centre origin await exported-file/root validation.",
+          "printability": "Provider warning icon visible on reduced/final mesh; cause not diagnosed, not a measured watertightness result.",
+          "acceptance": "Not accepted: exceeds triangle budgets, material/silhouette limitations remain, and game review/export validation pending."
+        }
+      },
+      "finalVersionRecoverySteps": [
+        "Open handoff Chrome tab 2020745748 at https://www.meshy.ai/workspace; exact final textured roll is selected and retained in an elevated oblique view.",
+        "If navigating from the asset library, use Search my generation for KESTREL GPT-image v2 - 8157 PBR - UNACCEPTED. The saved name was verified through Rename. Search recovery itself was not executed.",
+        "Verify Topology Triangle, Faces 8,157 and Vertices 12,347; verify Base Color, Roughness, Metallic and Normal preview buttons all exist and render.",
+        "Do not confuse the preceding 8,157-face remesh with this final texture-recovery version: the preceding remesh lacks Normal. The rejected lower reduction is 4,085 faces / 7,044 vertices. The preserved detailed original is 3,004,190 faces (1,502,071 raw vertices; 1,546,730 textured vertices).",
+        "Cards are dated 09/07/2026. At handoff the final renamed recovery asset is above its 8,157-face source, then the 4,085-face rejected reduction, then the detailed textured and grey originals; future jobs can change that ordering.",
+        "Visible menus and workspace URL exposed no model/job IDs; those remain null. DOM radix IDs and the x4 toolbar/card badge are not recorded as provider job IDs or generated-model counts. The x4 controls were never clicked.",
+        "No Download or GLB export was attempted. Root handles the separate unresolved export authorization, then exported geometry/UV/PBR/scale/size validation, 1024 runtime texture conversion, integration and independent game review."
+      ],
+      "limitations": [
+        "8157 triangle faces exceed the prop maximum 4000, target 2500 and general brief intake 8000. No budget waiver or acceptance inferred.",
+        "Folded ends remain irregular, straps fused in surface relief, cloth paler than source and weave/normal relief weak. Provider printability warning is unresolved.",
+        "No raw mesh, watertightness, connected-component, UV topology, material-count, map-file, byte-size, metre-scale, flat support or origin validation.",
+        "All inspection occurred in Meshy provider rendering, not Star Agent renderer. No GLB export, root integration, game tests or independent acceptance.",
+        "One single paid texture recovery completed. No further material reroll attempted."
+      ],
+      "completion": {
+        "provider": "finished-with-material-and-budget-issues",
+        "actualExportedFileValidation": "none",
+        "rootIntegration": "none",
+        "independentGameReview": "pending"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "operation": "Detailed browser handle acquisition",
+      "error": "browser is not defined",
+      "resolution": "Reused documented configured Chrome browser id 1 and fresh tab."
+    },
+    {
+      "propId": "watchkeep-folded-protective-jacket",
+      "operation": "Meshy 7 High Detail original generation",
+      "error": "Generating failed",
+      "refundMessage": "Credits Refunded",
+      "cause": "Not exposed by provider UI.",
+      "resolution": "No reroll; preserve failure and continue independent roll work."
+    },
+    {
+      "propId": "kestrel-maintenance-roll",
+      "operation": "4000-target remesh quality check",
+      "error": "Actual 4085 faces; angular/jagged folded ends; Normal preview missing.",
+      "resolution": "Preserved this rejected derivative; requested higher 8000-target derivative from original, with one texture recovery planned on exact final mesh."
+    },
+    {
+      "propId": "kestrel-maintenance-roll",
+      "operation": "Higher-count final candidate acceptance",
+      "error": "8157 faces remain over brief/intake budgets; folded-end and palette/relief limitations persist. Provider Printability warning icon remains.",
+      "resolution": "Retain as unaccepted candidate; no further decimation or original reroll. Single texture recovery restored Normal preview, but does not certify geometry or game readiness."
+    }
+  ],
+  "completion": {
+    "provider": {
+      "jacket": "failed-before-geometry; no reroll",
+      "roll": "original plus two reductions retained; exact final PBR recovery completed and inspected, unaccepted"
+    },
+    "actualExportedFileValidation": "none",
+    "rootIntegration": "none",
+    "independentGameReview": "pending"
+  },
+  "exportBoundary": "Do not download any GLB; earlier approval denial remains unresolved. Final provider versions will be handed off for a separate concrete export decision.",
+  "updatedAt": "2026-09-07T00:13:48.465976+00:00",
+  "referencePrompts": {
+    "path": "assets/station-shop/soft-props/image-to-3d-v2/prompts.json",
+    "sha256": "413e34a25382640ebe3ab59ad4ac587cfbed7901fa91c8cae843cbfa20ed0ed6",
+    "modified": false
+  },
+  "statusMeaning": "Authorized uploads and exactly one original job per reference submitted. Jacket failed/refunded; roll provider finishing and inspections complete as unaccepted candidate. This is not two successful replacements and not runtime delivery.",
+  "export": {
+    "attempted": false,
+    "filesDownloaded": 0,
+    "reason": "Earlier automatic approval review rejected GLB download with stated reason: The user declined permission for this action. User explicitly left this denial unresolved. No retry or alternate export mechanism used."
+  },
+  "verification": {
+    "receiptJson": "parsed successfully",
+    "inputPNGs": "SHA-256 unchanged",
+    "priorReceipt": "SHA-256 unchanged",
+    "newLocalScreenshots": 0,
+    "GLBValidation": "none",
+    "npmBuildTests": "not run; no code or runtime asset changed",
+    "browserInspection": "Actual reference thumbnails, original roll grey/textured multi-angle views, reductions, exact final PBR map modes and multi-angle result."
+  },
+  "completedAt": "2026-09-07T00:13:48.465976+00:00"
+}

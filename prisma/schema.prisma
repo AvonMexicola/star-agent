@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../server/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Tables, expression indexes and checks are owned by server/migrations/.
+// lower(email)/lower(callsign) uniqueness remains enforced in PostgreSQL.
+model Account {
+  id           String          @id @db.Uuid
+  email        String
+  callsign     String
+  passwordHash String          @map("password_hash")
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  sessions     Session[]
+  passwordReset PasswordReset?
+  playerState  PlayerState?
+  baseSites    BaseSites?
+  friendshipsLow Friendship[] @relation("FriendLow")
+  friendshipsHigh Friendship[] @relation("FriendHigh")
+  friendshipRequests Friendship[] @relation("FriendRequester")
+  socialBlocks SocialBlock[] @relation("SocialBlocker")
+  socialBlockedBy SocialBlock[] @relation("SocialBlocked")
+
+  @@map("accounts")
+}
+
+model Friendship {
+  accountLow String @map("account_low") @db.Uuid
+  accountHigh String @map("account_high") @db.Uuid
+  requestedBy String @map("requested_by") @db.Uuid
+  status String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  low Account @relation("FriendLow", fields: [accountLow], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  high Account @relation("FriendHigh", fields: [accountHigh], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  requester Account @relation("FriendRequester", fields: [requestedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([accountLow, accountHigh])
+  @@index([accountHigh], map: "friendships_high")
+  @@map("friendships")
+}
+
+model SocialBlock {
+  blocker String @db.Uuid
+  blocked String @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  source Account @relation("SocialBlocker", fields: [blocker], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  target Account @relation("SocialBlocked", fields: [blocked], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([blocker, blocked])
+  @@index([blocked], map: "social_blocks_target")
+  @@map("social_blocks")
+}
+
+model Session {
+  tokenHash String   @id @map("token_hash")
+  accountId String   @map("account_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([accountId], map: "sessions_account")
+  @@index([expiresAt], map: "sessions_expiry")
+  @@map("sessions")
+}
+
+model PasswordReset {
+  tokenHash String   @id @map("token_hash")
+  accountId String   @unique(map: "password_resets_account_id_key") @map("account_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("password_resets")
+}
+
+model PlayerState {
+  accountId String   @id @map("account_id") @db.Uuid
+  state     Json     @db.JsonB
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("player_state")
+}
+
+model CommerceState {
+  id String @id
+  state Json @db.JsonB
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  @@map("commerce_state")
+}
+
+model BaseSites {
+  accountId String @id @map("account_id") @db.Uuid
+  revision Int @default(0)
+  state Json @db.JsonB
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  account Account @relation(fields:[accountId],references:[id],onDelete:Cascade,onUpdate:NoAction)
+  @@map("base_sites")
+}

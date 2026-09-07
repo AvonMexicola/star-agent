@@ -1,0 +1,650 @@
+{
+  "schemaVersion": 1,
+  "status": "ready-for-export",
+  "provider": "Meshy",
+  "operator": {
+    "family": "GPT/Astra",
+    "browserIntegration": "Configured OpenAI Chrome via mcp__cua_repl",
+    "delegated": false
+  },
+  "startedAt": "2026-09-06T21:13:26.773836+00:00",
+  "updatedAt": "2026-09-06T21:33:09.368583+00:00",
+  "scope": "Texture and reduce only the two existing soft props through visible Meshy UI. Preserve original variants. No original geometry regeneration, downloads, purchases, account changes, or runtime changes.",
+  "sourceRecords": [
+    "assets/station-shop/soft-props/brief.json",
+    "assets/station-shop/soft-props/generation-receipt.json"
+  ],
+  "workspaceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d&sidebar=assets",
+  "browserSessionNote": "The preserved Meshy props tab could not be selected because it belonged to an earlier browser session. Opened the same asset workspace in a new configured Chrome task tab. No unrelated tab contents inspected.",
+  "timestampConvention": "UTC observation/recording times, not precise provider server timestamps.",
+  "export": {
+    "status": "blocked-not-attempted-this-turn",
+    "reason": "Automatic approval review previously rejected the Meshy download because browser download permission was denied.",
+    "downloadAttempted": false,
+    "downloadedGlbs": [],
+    "downloadedPbrMaps": [],
+    "alternateExportMechanismAttempted": false
+  },
+  "props": [
+    {
+      "id": "kestrel-maintenance-roll",
+      "status": "ready-for-export",
+      "targetTriangles": 2500,
+      "maximumTriangles": 4000,
+      "original": {
+        "candidate": "Default original candidate in existing 09/06/2026 x4 Smart Topology batch",
+        "visibleJobId": null,
+        "visibleVersionId": null,
+        "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+        "topologyLabel": "Triangle",
+        "displayedFaceCount": 22431,
+        "displayedVertexCount": 11245,
+        "countSource": "prior generation receipt",
+        "preserved": true,
+        "priorUvStatus": "completed per prior receipt; derived UV result not yet inspected this turn"
+      },
+      "selectedDerivedResult": {
+        "visibleJobId": null,
+        "visibleVersionId": null,
+        "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+        "topologyLabel": "Triangle",
+        "displayedFaceCount": 2571,
+        "displayedVertexCount": 4863,
+        "mapPreviewLabels": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "libraryBadge": "x4",
+        "preserved": true,
+        "identity": "Ochre/charcoal roll using the texture prompt beginning Ochre and charcoal woven canvas maintenance tool roll, produced from existing UV result -> PBR texture -> 2,500-target Triangle remesh -> final PBR texture.",
+        "selectionObservedBy": "2026-09-06T21:33:09.368583+00:00",
+        "recoverySteps": [
+          "Open My Assets > Models.",
+          "Search maintenance tool roll.",
+          "Open the newest ochre/charcoal textured thumbnail.",
+          "Verify Triangle / Faces 2,571 / Vertices 4,863, all four map-preview controls, and texture prompt beginning Ochre and charcoal woven canvas maintenance tool roll.",
+          "The prior reduced result also has 2,571 Faces but lacks a Normal preview and has the earlier Realistic PBR textile surface prompt; select the final retextured result instead."
+        ],
+        "providerStagesComplete": true,
+        "visualAcceptance": "Not accepted for runtime; root fitting and Astra review pending."
+      },
+      "operations": [
+        {
+          "order": 0,
+          "stage": "existing-uv-result-inspection",
+          "status": "completed-visibly-verified",
+          "observedBy": "2026-09-06T21:16:49.068595+00:00",
+          "input": "Existing standalone UV result from prior roll operation",
+          "result": {
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 22429,
+            "displayedVertexCount": 59574,
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d"
+          },
+          "evidence": "View UV control and populated UV Layout with islands, 3D Seams and UV Checker displayed. This result differs by two Faces from the original selected 22,431-face source."
+        },
+        {
+          "order": 1,
+          "stage": "texturing",
+          "status": "completed-visibly-verified",
+          "observedBy": "2026-09-06T21:16:49.068595+00:00",
+          "input": "Existing roll UV result, 22,429 Faces / Triangle",
+          "settings": {
+            "inputMode": "Text Input",
+            "model": "Meshy 7 - Flagship",
+            "generatePbrMaps": true,
+            "textureResolutionLabel": "2K",
+            "offeredResolutions": [
+              "2K",
+              "4K",
+              "8K"
+            ],
+            "displayedEstimate": "2 min",
+            "displayedCostCredits": 10
+          },
+          "exactPrompt": "Realistic PBR textile surface for this existing compact maintenance tool roll. Heavy ochre waxed canvas body and rolled fabric, charcoal canvas pockets and matte dark woven webbing straps. Fine canvas weave, subtle wax variation, compressed fold abrasion, stitched hems expressed in texture and normal detail, restrained seam grime and oil-dark wear only at contact areas. Keep cloth nonmetallic and rough; limit brushed dark metal to small existing buckles and exposed tool ends. Preserve the existing geometry and readable folds. Neutral unbaked base color, independent physically plausible roughness and normal detail. No baked lighting, cast shadows, highlights, lettering, logos, emissive cloth, new geometry or scene background.",
+          "visibleEvidence": "New Creating ... result card; observed 10-credit deduction.",
+          "visibleJobId": null,
+          "visibleVersionId": null,
+          "completionObservedBy": "2026-09-06T21:20:53.729222+00:00",
+          "completionEvidence": "Opened colored textured result card; 3D preview renders ochre and charcoal material. Base Color, Roughness, Metallic and Normal buttons and map thumbnails visibly present.",
+          "result": {
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 22429,
+            "displayedVertexCount": 59574,
+            "mapPreviewLabels": [
+              "Base Color",
+              "Roughness",
+              "Metallic",
+              "Normal"
+            ],
+            "libraryBadge": "x4",
+            "selectedCandidate": "Default displayed textured result; badge is recorded without claiming extra submissions or a verified candidate count."
+          }
+        },
+        {
+          "order": 2,
+          "stage": "remesh",
+          "status": "completed-visibly-verified-normal-preview-not-retained",
+          "observedBy": "2026-09-06T21:20:53.729222+00:00",
+          "input": "Completed textured roll, Triangle / Faces 22,429 / Vertices 59,574",
+          "settings": {
+            "panelLabel": "Target Polycount",
+            "mode": "Fixed",
+            "preset": "Custom",
+            "targetPolycount": 2500,
+            "topology": "Triangle",
+            "displayedEstimate": "1 min",
+            "displayedCostCredits": 0,
+            "providerWarning": "Reducing the number of polygons to lower than 3000 may result in significant quality loss."
+          },
+          "visibleEvidence": "Confirm submitted once; control became disabled with processing indicator.",
+          "visibleJobId": null,
+          "visibleVersionId": null,
+          "completionObservedBy": "2026-09-06T21:28:04.714897+00:00",
+          "result": {
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 2571,
+            "displayedVertexCount": 4863,
+            "mapPreviewLabels": [
+              "Base Color",
+              "Roughness",
+              "Metallic"
+            ],
+            "normalPreviewPresent": false,
+            "countUnitNote": "Target Polycount was 2,500 with Triangle selected. Result reads Faces 2,571; this is a UI count, not independent GLB measurement.",
+            "preserved": true
+          },
+          "completionEvidence": "Separate colored low-poly result opened; counts visible; original high-detail textured result and original source remain separately listed."
+        },
+        {
+          "order": 3,
+          "stage": "texturing-after-remesh",
+          "status": "completed-visibly-verified",
+          "observedBy": "2026-09-06T21:28:04.714897+00:00",
+          "input": "Remeshed textured roll: 2,571 Faces / Triangle, 4,863 Vertices",
+          "reason": "Remeshing retained three map preview controls but dropped the Normal preview. Finish PBR texturing on the reduced mesh and request matte woven rather than glossy pockets.",
+          "settings": {
+            "inputMode": "Text Input",
+            "model": "Meshy 7 - Flagship",
+            "generatePbrMaps": true,
+            "textureResolutionLabel": "2K",
+            "displayedEstimate": "2 min",
+            "displayedCostCredits": 10
+          },
+          "exactPrompt": "Ochre and charcoal woven canvas maintenance tool roll. Warm ochre heavy canvas body and rolled sides, matte charcoal woven canvas pockets and dark textile straps. Clearly visible fine canvas weave, soft nonmetallic roughness, subtle stitching and hem detail in normal maps, slight abrasion at fold ridges and restrained seam grime. Keep all cloth matte, with no smooth glossy leather or rubber pockets. Brushed dark metal only on the small existing buckles and tool ends. Preserve the existing shape and folds. Neutral unlit base-color texture with separate normal, roughness and metallic maps. No baked highlights, lighting or cast shadows, lettering, logos, emissive cloth, new geometry or scene background.",
+          "visibleEvidence": "New Creating ... card; observed 10-credit deduction.",
+          "visibleJobId": null,
+          "visibleVersionId": null,
+          "completionObservedBy": "2026-09-06T21:33:09.368583+00:00",
+          "completionEvidence": "Completed standalone textured result opened; front and dragged opposite oblique previews inspected. Base Color, Roughness, Metallic and Normal controls and thumbnails are present again, with Triangle / Faces 2,571 / Vertices 4,863.",
+          "result": {
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 2571,
+            "displayedVertexCount": 4863,
+            "mapPreviewLabels": [
+              "Base Color",
+              "Roughness",
+              "Metallic",
+              "Normal"
+            ],
+            "libraryBadge": "x4",
+            "preserved": true
+          },
+          "refundObservedCredits": 0
+        }
+      ],
+      "creditEvents": [
+        {
+          "stage": "texturing",
+          "displayedCostCredits": 10,
+          "observedChargeCredits": 10,
+          "observedBy": "2026-09-06T21:16:49.068595+00:00"
+        },
+        {
+          "stage": "remesh",
+          "displayedCostCredits": 0,
+          "observedChargeCredits": 0,
+          "observedBy": "2026-09-06T21:20:53.729222+00:00"
+        },
+        {
+          "stage": "texturing-after-remesh",
+          "displayedCostCredits": 10,
+          "observedChargeCredits": 10,
+          "observedBy": "2026-09-06T21:28:04.714897+00:00"
+        }
+      ],
+      "previewEvidence": [
+        {
+          "kind": "Meshy browser screenshot/readback",
+          "stage": "textured-before-reduction",
+          "observedBy": "2026-09-06T21:20:53.729222+00:00",
+          "viewportPixels": [
+            781,
+            807
+          ],
+          "localPath": null,
+          "sha256": null,
+          "findings": [
+            "Ochre main body and near-black pockets/trim are clearly separated.",
+            "Compressed folds, folded hems, side roll and small upper buckles remain readable.",
+            "Several exposed tool ends remain from the original geometry.",
+            "Dark pockets look smooth and relatively glossy, closer to coated fabric or leather than obvious woven canvas at this preview scale.",
+            "No visible invented lettering, emissive cloth or modelled scene background in the inspected front-oblique preview."
+          ],
+          "acceptance": "Texture operation and map preview presence verified; textile fidelity and exported PBR maps are not accepted or measured."
+        },
+        {
+          "kind": "Meshy browser screenshot/readback",
+          "stage": "remeshed-textured-roll",
+          "observedBy": "2026-09-06T21:28:04.714897+00:00",
+          "viewportPixels": [
+            781,
+            807
+          ],
+          "localPath": null,
+          "sha256": null,
+          "findings": [
+            "Front and opposite oblique views retain three pocket folds, two top buckles, side roll and compact silhouette.",
+            "Tool-end and pocket outlines are coarser and visibly angular.",
+            "Ochre and charcoal colors were retained; map preview controls show Base Color, Roughness and Metallic but no Normal.",
+            "No obvious floating separate pieces or modelled scene background in these views; watertightness and unseen underside remain unverified."
+          ],
+          "acceptance": "Triangle-labelled face budget met in UI; final PBR completion pending because Normal preview was absent after remesh."
+        },
+        {
+          "kind": "Meshy browser screenshot/readback",
+          "stage": "selected-final-PBR-roll",
+          "observedBy": "2026-09-06T21:33:09.368583+00:00",
+          "viewportPixels": [
+            781,
+            807
+          ],
+          "localPath": null,
+          "sha256": null,
+          "findings": [
+            "Front and dragged opposite oblique previews retain the ochre body, charcoal pockets, compressed pocket folds, two upper buckles and side roll.",
+            "Canvas-like fine mottling is visible on the body; pockets still show smooth broad highlights and do not unambiguously read as rough woven canvas at this scale.",
+            "Buckles and exposed tool ends appear brown/ochre with restrained contrast; a brushed-metal response is not convincingly established by these small views.",
+            "The original exposed tool ends and open-pouch silhouette remain; this is not a newly enclosed tool roll.",
+            "Reduction leaves angular tool and pocket edges, with no obvious disconnected floating pieces seen in inspected views.",
+            "No visible invented lettering, emissive cloth, stand or modelled scene background. Full underside integrity and absence of baked lighting are not proven."
+          ],
+          "acceptance": "Both in-Meshy reduction and PBR texturing completion verified; production material fidelity and runtime visual acceptance remain pending."
+        }
+      ],
+      "limitations": [
+        "The lowest offered texturing resolution is labelled 2K; root must later downsize to the 1024-edge runtime brief after actual export.",
+        "Pocket roughness/weave and small buckle metal definition remain visual review items; the final prompt did not fully establish these appearances in the provider preview.",
+        "Original geometry reads as an open tool pouch/partially rolled kit with exposed tool ends rather than enclosed contents.",
+        "No file-level evidence establishes absence of baked scene lighting or correct normal/roughness values."
+      ]
+    },
+    {
+      "id": "watchkeep-folded-protective-jacket",
+      "status": "ready-for-export",
+      "targetTriangles": 1500,
+      "maximumTriangles": 2000,
+      "original": {
+        "candidate": "Default original candidate in existing 09/06/2026 x4 Smart Topology batch",
+        "visibleJobId": null,
+        "visibleVersionId": null,
+        "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+        "topologyLabel": "Triangle",
+        "displayedFaceCount": 25244,
+        "displayedVertexCount": 12866,
+        "countSource": "prior generation receipt; confirmed in current viewer",
+        "preserved": true,
+        "priorUvStatus": "failed per prior receipt; 5 credits charged then refunded; failure card visibly confirmed this turn"
+      },
+      "selectedDerivedResult": {
+        "visibleJobId": null,
+        "visibleVersionId": null,
+        "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+        "topologyLabel": "Triangle",
+        "displayedFaceCount": 1207,
+        "displayedVertexCount": 2224,
+        "mapPreviewLabels": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "libraryBadge": "x4",
+        "preserved": true,
+        "identity": "Blue textured jacket from the color-focused prompt beginning Deep petrol-blue woven fabric jacket, produced after remesh -> UV recovery -> first grey PBR texture -> color-focused PBR retry.",
+        "selectionObservedBy": "2026-09-06T21:30:30.082065+00:00",
+        "recoverySteps": [
+          "Open My Assets > Models.",
+          "Search protective work jacket.",
+          "Open the newest blue jacket thumbnail (the prior grey texture and grey geometry cards remain separate).",
+          "Verify Triangle / Faces 1,207 / Vertices 2,224 and the texture prompt beginning Deep petrol-blue woven fabric jacket."
+        ],
+        "providerStagesComplete": true,
+        "visualAcceptance": "Not accepted for runtime; root fitting and Astra review pending."
+      },
+      "operations": [
+        {
+          "stage": "remesh",
+          "status": "completed-visibly-verified",
+          "observedBy": "2026-09-06T21:14:58.433223+00:00",
+          "input": "Default original jacket candidate, Triangle / Faces 25,244 / Vertices 12,866",
+          "order": 1,
+          "settings": {
+            "panelLabel": "Target Polycount",
+            "mode": "Fixed",
+            "preset": "Custom",
+            "targetPolycount": 1500,
+            "topology": "Triangle",
+            "displayedEstimate": "1 min",
+            "displayedCostCredits": 0,
+            "providerWarning": "Reducing the number of polygons to lower than 3000 may result in significant quality loss."
+          },
+          "result": {
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 1207,
+            "displayedVertexCount": 2122,
+            "countUnitNote": "UI labels the count Faces with topology Triangle; exported triangle count is not independently measured.",
+            "libraryIdentity": "New standalone jacket card preceding the existing failed UV card and preserved x4 original batch."
+          }
+        },
+        {
+          "stage": "uv-unwrap",
+          "status": "completed-visibly-verified",
+          "observedBy": "2026-09-06T21:14:58.433223+00:00",
+          "order": 2,
+          "input": "Remeshed jacket: Triangle, 1,207 Faces, 2,122 Vertices",
+          "retryOf": "Prior original jacket UV failure recorded in generation-receipt.json; this is the one authorized retry using the remeshed version.",
+          "displayedCostCredits": 5,
+          "visibleEvidence": "Task created successfully; new job at 11%; observed credit deduction 5.",
+          "visibleJobId": null,
+          "visibleVersionId": null,
+          "completionObservedBy": "2026-09-06T21:19:12.824220+00:00",
+          "result": {
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 1207,
+            "displayedVertexCount": 2224
+          },
+          "completionEvidence": "New standalone result card opened; View UV and populated UV Layout visibly inspected. No additional failure or refund."
+        },
+        {
+          "order": 3,
+          "stage": "texturing",
+          "status": "completed-provider-stage-visual-palette-failed",
+          "observedBy": "2026-09-06T21:19:12.824220+00:00",
+          "input": "UV-prepared remeshed jacket: 1,207 Faces / Triangle, 2,224 Vertices",
+          "settings": {
+            "inputMode": "Text Input",
+            "model": "Meshy 7 - Flagship",
+            "generatePbrMaps": true,
+            "textureResolutionLabel": "2K",
+            "offeredResolutions": [
+              "2K",
+              "4K",
+              "8K"
+            ],
+            "displayedEstimate": "2 min",
+            "displayedCostCredits": 10
+          },
+          "exactPrompt": "Realistic PBR fabric surface for this existing folded protective work jacket. Petrol-blue heavy technical textile as the dominant material, restrained warm ivory reinforcement patches at shoulders and elbows, matte charcoal trim and inner collar. Fine woven fibers, padded fabric seams, double stitched hems and small stitches expressed as texture and normal detail. Soft cloth roughness, nonmetallic fabric, subtle abrasion at raised folds and light grime only in seams and contact areas. Preserve the crossed tucked sleeves, layered folds and existing silhouette. Neutral unbaked base color with independent roughness and normal surface detail. No baked lighting, cast shadows, highlights, invented lettering, logos, glowing or emissive cloth, armour shell, new geometry or scene background.",
+          "visibleEvidence": "New Creating ... card; observed 10-credit deduction.",
+          "visibleJobId": null,
+          "visibleVersionId": null,
+          "completionObservedBy": "2026-09-06T21:24:39.573904+00:00",
+          "completionEvidence": "PBR-rendered model and Base Color, Roughness, Metallic and Normal previews exist, but both shaded and Base Color views show grey/ivory cloth without the requested petrol and charcoal palette.",
+          "result": {
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 1207,
+            "displayedVertexCount": 2224,
+            "mapPreviewLabels": [
+              "Base Color",
+              "Roughness",
+              "Metallic",
+              "Normal"
+            ],
+            "preserved": true
+          },
+          "refundObservedCredits": 0
+        },
+        {
+          "order": 4,
+          "stage": "texturing-color-retry",
+          "status": "completed-visibly-verified",
+          "observedBy": "2026-09-06T21:24:39.573904+00:00",
+          "input": "Existing completed but grey-textured reduced jacket, 1,207 Faces / Triangle",
+          "reason": "Repair the failed palette check with one color-focused texturing retry; no original geometry regeneration or replacement Retry control used. Material Adjustment exposed only metalness and roughness intensity/contrast, with no color controls.",
+          "settings": {
+            "inputMode": "Text Input",
+            "model": "Meshy 7 - Flagship",
+            "generatePbrMaps": true,
+            "textureResolutionLabel": "2K",
+            "displayedEstimate": "2 min",
+            "displayedCostCredits": 10
+          },
+          "exactPrompt": "Deep petrol-blue woven fabric jacket with small warm ivory reinforcement patches and matte charcoal collar lining, cuffs and binding. Paint the broad body panels and both crossed sleeves petrol blue. Keep ivory limited to small shoulder and elbow patches. Rough nonmetallic technical textile, fine fabric weave and subtle seam stitching in normal detail, restrained fold abrasion. Preserve the existing folded shape. Neutral unlit base-color texture with separate physically plausible roughness and normal maps. No grey or white overall coat, leather shine, metal cloth, baked highlights or shadows, lettering, logos, emission, new geometry or background.",
+          "visibleEvidence": "New Creating ... card; observed 10-credit deduction; prior grey result still present separately.",
+          "visibleJobId": null,
+          "visibleVersionId": null,
+          "furtherTextureRetriesPlanned": false,
+          "completionObservedBy": "2026-09-06T21:30:30.082065+00:00",
+          "completionEvidence": "Completed blue textured card opened. Front and dragged oblique PBR previews show blue body, small pale reinforcement areas and dark trim; Base Color, Roughness, Metallic and Normal controls/thumbnails visibly present.",
+          "result": {
+            "visibleJobId": null,
+            "visibleVersionId": null,
+            "url": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+            "topologyLabel": "Triangle",
+            "displayedFaceCount": 1207,
+            "displayedVertexCount": 2224,
+            "mapPreviewLabels": [
+              "Base Color",
+              "Roughness",
+              "Metallic",
+              "Normal"
+            ],
+            "libraryBadge": "x4",
+            "preserved": true
+          },
+          "refundObservedCredits": 0
+        }
+      ],
+      "creditEvents": [
+        {
+          "stage": "remesh",
+          "displayedCostCredits": 0,
+          "observedChargeCredits": 0,
+          "observedBy": "2026-09-06T21:14:58.433223+00:00"
+        },
+        {
+          "stage": "uv-unwrap-remeshed-retry",
+          "displayedCostCredits": 5,
+          "observedChargeCredits": 5,
+          "observedBy": "2026-09-06T21:14:58.433223+00:00"
+        },
+        {
+          "stage": "texturing",
+          "displayedCostCredits": 10,
+          "observedChargeCredits": 10,
+          "observedBy": "2026-09-06T21:19:12.824220+00:00"
+        },
+        {
+          "stage": "texturing-color-retry",
+          "displayedCostCredits": 10,
+          "observedChargeCredits": 10,
+          "observedBy": "2026-09-06T21:24:39.573904+00:00"
+        }
+      ],
+      "previewEvidence": [
+        {
+          "kind": "Meshy browser screenshot/readback",
+          "stage": "remesh-before-UV",
+          "observedBy": "2026-09-06T21:14:58.433223+00:00",
+          "viewportPixels": [
+            781,
+            807
+          ],
+          "localPath": null,
+          "sha256": null,
+          "findings": [
+            "Folded crossed sleeves, collar/lapels and layered rectangular body remain recognizable.",
+            "Reduction makes the collar rim and cloth folds visibly angular in the wireframe preview; tiny seams are simplified.",
+            "No surrounding modelled scene, stand or disconnected floating pieces apparent in the single frontal view."
+          ],
+          "acceptance": "Provider preview only; oblique, textured, underside and runtime acceptance pending."
+        },
+        {
+          "kind": "Meshy browser screenshot/readback",
+          "stage": "uv-unwrap",
+          "observedBy": "2026-09-06T21:19:12.824220+00:00",
+          "viewportPixels": [
+            781,
+            807
+          ],
+          "localPath": null,
+          "sha256": null,
+          "findings": [
+            "UV Layout contains wireframe islands concentrated toward its lower half and a large mostly empty upper area. Packing quality and overlap cannot be established from this small provider view."
+          ],
+          "acceptance": "UV operation completion only; exported UV validation remains pending."
+        },
+        {
+          "kind": "Meshy browser screenshot/readback",
+          "stage": "first-texture-palette-failure",
+          "observedBy": "2026-09-06T21:24:39.573904+00:00",
+          "viewportPixels": [
+            781,
+            807
+          ],
+          "localPath": null,
+          "sha256": null,
+          "findings": [
+            "Grey/ivory material in both PBR shaded and Base Color display modes; required petrol-blue body and charcoal trim missing.",
+            "Angular crossed sleeves and collar are readable, but the rim is visibly jagged after reduction.",
+            "Fine mottled textile-like detail is visible; actual map files and correct UV sampling remain unverified."
+          ],
+          "acceptance": "Failed palette check; not selected as the final result."
+        },
+        {
+          "kind": "Meshy browser screenshot/readback",
+          "stage": "selected-final-textured-jacket",
+          "observedBy": "2026-09-06T21:30:30.082065+00:00",
+          "viewportPixels": [
+            781,
+            807
+          ],
+          "localPath": null,
+          "sha256": null,
+          "findings": [
+            "Front and dragged oblique views show a deep blue body consistent with the requested petrol-blue direction, small pale ivory/grey reinforcement areas, and darker trim/inner folds. Exact colors were not sampled.",
+            "Crossed folded sleeves, lapels/collar and layered body remain recognizable.",
+            "Collar/top rim and some folds are visibly angular and jagged after the 1,500-target reduction; the result still reads somewhat as a folded workcoat/robe.",
+            "Cloth looks matte with fine mottled surface detail in this preview; fine weave and stitch fidelity are not resolved well enough for acceptance.",
+            "No visible invented lettering, emissive cloth, stand, mannequin or modelled scene background in the inspected views.",
+            "No obvious disconnected floating pieces in those views; full underside and mesh integrity remain unverified."
+          ],
+          "acceptance": "Both in-Meshy reduction and PBR texturing completion verified. This is provider preview evidence, not GLB map validation, production render or independent visual acceptance."
+        }
+      ],
+      "limitations": [
+        "The lowest offered texture resolution is labelled 2K; root must later downsize to the 1024-edge runtime brief after actual export.",
+        "Selected texture fixes the predominantly grey first result, but subtle ivory/charcoal separation and exact petrol hue require root review after export.",
+        "Angular collar/rim and folds need assessment at final fitted retail size.",
+        "No file-level evidence establishes absence of baked scene lighting or correct normal/roughness values."
+      ]
+    }
+  ],
+  "events": [
+    {
+      "recordedAt": "2026-09-06T21:13:26.773836+00:00",
+      "stage": "navigation",
+      "details": "The x4 asset-card control opened a Confirm retry? dialog warning that the current version would be replaced. Both opened dialogs were canceled; no Retry action was submitted. Opened the visible jacket thumbnail instead."
+    },
+    {
+      "recordedAt": "2026-09-06T21:28:36.163133+00:00",
+      "stage": "progress",
+      "details": "Jacket color-retry and final post-remesh roll texturing both observed at 70%. Existing original and intermediate result cards remain present."
+    }
+  ],
+  "limitations": [
+    "No source or derived provider job/version IDs or unique model permalinks were exposed by the inspected visible controls. Generic workspace URLs, exact prompts, operation chain, dated cards and displayed counts identify the selected results; DOM element IDs are not provider job IDs.",
+    "Screenshots are browser preview readback evidence only, never GLB export or runtime acceptance.",
+    "The documented browser screenshot API returns image bytes but exposes no save-path method; no local screenshots claimed.",
+    "Blender fitting, measured GLB triangle counts, texture/map-file validation, runtime integration, game tests and independent Astra review remain root work."
+  ],
+  "creditSummary": {
+    "scope": "This helper turn only; prior geometry/UV charges and original jacket refund remain in generation-receipt.json. No account identifiers or remaining balance stored.",
+    "remeshDisplayedCostsCredits": 0,
+    "uvRecoveryChargesCredits": 5,
+    "textureChargesCredits": 40,
+    "observedNewRefundsCredits": 0,
+    "observedNetChargesCredits": 45,
+    "purchasesOrTopups": false
+  },
+  "completedAt": "2026-09-06T21:33:09.368583+00:00",
+  "statusMeaning": "Both selected derived results have visibly verified in-Meshy topology reduction and PBR texturing completion. Ready-for-export is a provider-stage status only: no export permission, actual GLB/PBR file verification or visual/runtime acceptance is implied.",
+  "operationSummary": {
+    "newOriginalGeometrySubmissions": 0,
+    "remeshSubmissions": 2,
+    "uvRecoverySubmissions": 1,
+    "textureSubmissions": 4,
+    "jacketTextureColorRetries": 1,
+    "rollPostRemeshTexturePasses": 1,
+    "providerStagesCompletedForBothSelectedResults": true,
+    "downloadRequestsThisTurn": 0,
+    "confirmedLocalGlbs": 0,
+    "confirmedLocalPbrMapFiles": 0,
+    "runtimeReady": false
+  },
+  "handoff": {
+    "browserTaskTabId": "2020745646",
+    "tabIdNote": "Browser tab identifier, not a provider model/job/version ID.",
+    "taskTabMarkedForHandoff": true,
+    "activePreview": "Selected final reduced and PBR-textured Kestrel roll",
+    "workspaceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d&sidebar=assets",
+    "nextStep": "Root reviews this receipt and the selected derived previews, resolves the existing browser-download permission through its approval flow, then exports these exact two existing derived results through the normal visible Meshy UI. No export or permission change was requested in this helper turn. Root then verifies actual GLBs/maps, fits in Blender, downsizes textures, integrates, tests and obtains Astra review."
+  },
+  "verification": {
+    "receiptJsonParsed": true,
+    "providerPreviewViews": [
+      "jacket front and oblique",
+      "roll front and opposite oblique"
+    ],
+    "uiFaceCountLabel": "Faces",
+    "uiTopologyLabel": "Triangle",
+    "independentlyMeasuredExportTriangleCounts": false,
+    "pbrMapPreviewLabelsVerified": [
+      "Base Color",
+      "Roughness",
+      "Metallic",
+      "Normal"
+    ],
+    "pbrMapFilesDownloadedOrValidated": false,
+    "localScreenshotsSaved": false,
+    "localScreenshotReason": "Documented screenshot observations rendered in the tool conversation; no documented screenshot save-path API was exposed. No alternate browser/network export was used.",
+    "gameTestsRun": false,
+    "gameTestsReason": "Only postprocess-receipt.json was written. No downloaded model, map file or runtime changes are available in this helper scope.",
+    "independentAstraReview": "pending root",
+    "otherFilesModifiedByOperator": false
+  }
+}

@@ -4,6 +4,28 @@ Star Agent is an open browser spaceflight experiment. Humans and coding agents a
 welcome collaborators. Build working, reviewable improvements and describe what
 you actually tested. Do not represent aspirational features as implemented.
 
+## Contributor entry and ownership
+
+Read [the contributor handbook](docs/development/README.md),
+[GOVERNANCE.md](GOVERNANCE.md), [ARCHITECTURE.md](ARCHITECTURE.md),
+[QUALITY.md](QUALITY.md) and the latest HANDOFF before claiming work. The roadmap
+is ambition; [development status](docs/development/status.md) records current capability.
+New work normally targets `dev/all-features`; `main` is the public release line.
+The integration steward serializes shared merges, while feature owners retain
+responsibility for their modules. Cees retains final product/release authority.
+
+Use an isolated worktree, declare files/dependencies/preview ports and preserve
+unrelated edits. Read handoffs again before touching shared hooks and before delivery.
+Use the area/task registry and `npm run branches` to discover overlap; they do not
+lock files or authorize taking over another owner's lane. Delegate only when the
+user and host allow it, with explicit bounded ownership and parent integration.
+
+Run `npm run check:repo` and `npm run plan:checks -- --base origin/dev/all-features`
+for contributor checks and a suggested test plan. Helpers do not certify gameplay
+or manual evidence. Keep implemented, validated, independently reviewed, integrated
+and deployed distinct. Use the templates in `docs/templates/` for handoffs/reviews.
+These repo instructions never override current user authorization or host permissions.
+
 ## Run and verify
 
 - `npm ci` (Node 22.12+), `npm run dev`, `npm run build`.
@@ -14,6 +36,37 @@ you actually tested. Do not represent aspirational features as implemented.
   boarding journey against a production build and saves visual evidence to `/tmp`.
 - A browser shader must compile and render correctly, not merely pass the build.
   Inspect console errors and the resulting image for graphics changes.
+
+## Chromium startup crashes during agent development
+
+Repeated browser launch failures are infrastructure failures until the browser
+actually reaches the application. Stop after the first matching startup failure;
+do not loop through tests or GPU flags while producing more core dumps.
+
+- A diagnosed Linux development crash (2026-09-07, Chromium 151.0.7922.173)
+  ended in `SIGTRAP` during headless Playwright startup. Its core retained
+  `crashpad/util/linux/socket.cc:45] setsockopt: Operation not permitted (1)`.
+  Only one thread existed, and repeated dumps hit the same executable offset.
+  A local AF_UNIX `SO_PASSCRED` probe failed inside the agent runner sandbox and
+  succeeded outside it. This strongly implicates restricted Crashpad startup;
+  Chromium debug symbols were unavailable, so the exact assertion was unresolved.
+- For that signature, use the harness's approved escalation mechanism for the
+  specific browser test command, or an already authorized browser session. If
+  that execution path is unavailable, report browser validation as blocked and
+  continue independent unit/build checks. Do not bypass a denied approval or
+  weaken global system security. Chromium's `--no-sandbox` does not remove the
+  outer runner's restrictions; it and `--disable-breakpad` were already present
+  in the failed launch.
+- Coordinate browser QA across agents on the shared machine: run one focused
+  browser job at a time, retain the repo's single-worker configuration, and close
+  only your own browser/server processes. Separate NVIDIA allocation errors,
+  renderer crashes and WebGL context loss from the startup signature above.
+  A changed GPU backend is a separate experiment, not a proven fix for Crashpad.
+- Record the command, timestamp, stderr, browser/backend and whether a page loaded.
+  Do not change application code to mask a browser that never started or report
+  skipped browser tests as passed. Diagnose a different crash from its own logs
+  and core; the startup finding does not explain every Chromium failure.
+
 
 ## Architecture contracts
 
@@ -51,3 +104,38 @@ you actually tested. Do not represent aspirational features as implemented.
 Do not commit tokens, personal machine configuration, recordings containing private
 information, `node_modules`, build output, or generated test reports. Do not overwrite
 other agents' modules or fabricate successful test results. Keep public docs accurate.
+
+## Asset production reference
+
+Use [the asset production standard](docs/asset-production-standard.md) for new
+ships, station modules, props, materials and graphics. Cees designated the hangar
+production process as the reference workflow: preserve source/provenance, build
+reproducibly, connect the asset to actual gameplay, inspect it in the game renderer,
+record failed checks and fixes, and retain the final review and delivery evidence.
+
+[The hangar production record](docs/qa/hangar-production-record.md) is the worked
+example. Read its current status before reusing any result; pending visual review
+or deployment is not approval. `QUALITY.md` remains the acceptance bar, with the
+ship and station pipeline memories supplying the specific runtime contracts.
+
+## Controller acceptance is mandatory
+
+Every new playable feature must support a standard controller through its complete
+journey, including feature entry, aiming or selection, activation, result inventory
+and return to play. Follow [the controller contract](docs/controller-contract.md).
+Use the shared input and dialog router, provide discoverable bindings and visible
+focus, and coordinate contextual mappings before changing them. Input-only unit
+tests or a simulated trigger after debug teleport do not establish full support.
+Add or extend an actual controller-only browser journey, test held-input suppression
+across focus/dialog/disconnect transitions, and report physical-device testing
+separately from injected Gamepad tests. Features missing this route remain incomplete.
+
+## Shared local test integration
+
+Cees requests new coherent feature commits merged into `dev/all-features` for
+local testing as they become ready. Keep the ship/location launcher and the
+`npm run dev:all` preview working, resolve overlap with other integrated features,
+and update HANDOFF.md plus docs/local-development.md after checks. This standing
+local integration request does not require a production PR to be merged first.
+Do not copy unfinished edits from another owner's worktree or deploy this branch
+as a side effect. Pending source/asset work must remain accurately labelled.

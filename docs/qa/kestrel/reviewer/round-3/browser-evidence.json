@@ -1,0 +1,3413 @@
+{
+  "captures": [
+    {
+      "name": "desktop-exterior",
+      "before": {
+        "view": "exterior",
+        "frames": 22,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "exterior",
+        "frames": 28,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "desktop-rear",
+      "before": {
+        "view": "rear",
+        "frames": 41,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "rear",
+        "frames": 48,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "desktop-top",
+      "before": {
+        "view": "top",
+        "frames": 61,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "top",
+        "frames": 68,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "desktop-cockpit",
+      "before": {
+        "view": "cockpit",
+        "frames": 80,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 22,
+        "triangles": 26256,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "cockpit",
+        "frames": 89,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 22,
+        "triangles": 26256,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "desktop-boarding",
+      "before": {
+        "view": "boarding",
+        "frames": 103,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 111,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "desktop-belly",
+      "before": {
+        "view": "belly",
+        "frames": 121,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "belly",
+        "frames": 128,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "canopy-25",
+      "before": {
+        "view": "boarding",
+        "frames": 176,
+        "ready": true,
+        "progress": {
+          "canopy": 0.26110000000000005,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: DEPLOYING",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 186,
+        "ready": true,
+        "progress": {
+          "canopy": 0.32216666666666666,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: DEPLOYING",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "canopy-60",
+      "before": {
+        "view": "boarding",
+        "frames": 230,
+        "ready": true,
+        "progress": {
+          "canopy": 0.6110666666666669,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: DEPLOYING",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 239,
+        "ready": true,
+        "progress": {
+          "canopy": 0.6666000000000005,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: DEPLOYING",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "canopy-open",
+      "before": {
+        "view": "boarding",
+        "frames": 348,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 355,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "ladder-25",
+      "before": {
+        "view": "boarding",
+        "frames": 381,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0.2592222290892664
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYING",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 391,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0.35183334265373456
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYING",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "ladder-60",
+      "before": {
+        "view": "boarding",
+        "frames": 416,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0.6111111273000274
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYING",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 423,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0.6758889067938305
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYING",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "ladder-deployed",
+      "before": {
+        "view": "boarding",
+        "frames": 478,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 486,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "gear-retracting",
+      "before": {
+        "view": "belly",
+        "frames": 846,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 0.7361666771504597,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: STOWING"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "belly",
+        "frames": 850,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 0.6805000126957883,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: STOWING"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "gear-stowed",
+      "before": {
+        "view": "belly",
+        "frames": 903,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: STOWING"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "belly",
+        "frames": 908,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: RETRACTED"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "engine-idle",
+      "before": {
+        "view": "rear",
+        "frames": 1018,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "rear",
+        "frames": 1023,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "engine-full",
+      "before": {
+        "view": "rear",
+        "frames": 1040,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 1,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 100 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 47,
+        "triangles": 35528,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "rear",
+        "frames": 1044,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 1,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 100 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 47,
+        "triangles": 35528,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "phone-exterior",
+      "before": {
+        "view": "exterior",
+        "frames": 31,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "exterior",
+        "frames": 35,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "phone-rear",
+      "before": {
+        "view": "rear",
+        "frames": 48,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "rear",
+        "frames": 51,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "phone-top",
+      "before": {
+        "view": "top",
+        "frames": 64,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "top",
+        "frames": 67,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 45,
+        "triangles": 35368,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "phone-cockpit",
+      "before": {
+        "view": "cockpit",
+        "frames": 80,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 22,
+        "triangles": 26256,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "cockpit",
+        "frames": 84,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 22,
+        "triangles": 26256,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "phone-boarding",
+      "before": {
+        "view": "boarding",
+        "frames": 96,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 25,
+        "triangles": 27248,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 100,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 25,
+        "triangles": 27248,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "phone-belly",
+      "before": {
+        "view": "belly",
+        "frames": 113,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "belly",
+        "frames": 117,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "name": "phone-deployed",
+      "before": {
+        "view": "boarding",
+        "frames": 469,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYING",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 25,
+        "triangles": 27248,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      },
+      "after": {
+        "view": "boarding",
+        "frames": 474,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 25,
+        "triangles": 27248,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    }
+  ],
+  "mechanisms": [
+    {
+      "key": "canopy",
+      "value": 1,
+      "snapshot": {
+        "view": "boarding",
+        "frames": 348,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "key": "ladder",
+      "value": 1,
+      "snapshot": {
+        "view": "boarding",
+        "frames": 477,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "key": "ladder",
+      "value": 0,
+      "snapshot": {
+        "view": "boarding",
+        "frames": 601,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "key": "canopy",
+      "value": 0,
+      "snapshot": {
+        "view": "boarding",
+        "frames": 826,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 39,
+        "triangles": 31956,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "key": "gear",
+      "value": 0,
+      "snapshot": {
+        "view": "belly",
+        "frames": 902,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 0,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: STOWING"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "key": "gear",
+      "value": 1,
+      "snapshot": {
+        "view": "belly",
+        "frames": 1015,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 44,
+        "triangles": 35366,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "key": "canopy",
+      "value": 1,
+      "snapshot": {
+        "view": "boarding",
+        "frames": 355,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 25,
+        "triangles": 27248,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    },
+    {
+      "key": "ladder",
+      "value": 1,
+      "snapshot": {
+        "view": "boarding",
+        "frames": 469,
+        "ready": true,
+        "progress": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "target": {
+          "canopy": 1,
+          "gear": 1,
+          "ladder": 1
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: OPEN",
+              "LADDER: DEPLOYING",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "calls": 25,
+        "triangles": 27248,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+      }
+    }
+  ],
+  "console": [],
+  "assetSha256": "e24f17b4479fbd5640a90d4bb92e8e64c570aa8cce45ae9429e9b58f08ee5c76",
+  "browser": "151.0.7922.173",
+  "desktopScreens": {
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900
+    },
+    "controlsTop": 696,
+    "screens": [
+      {
+        "name": "MFD_1",
+        "corners": [
+          {
+            "x": 576.8714237213616,
+            "y": 420.67084075638314,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 565.2360134033036,
+            "y": 324.0750700169947,
+            "z": 0.945478950271636
+          },
+          {
+            "x": 709.7097100655252,
+            "y": 420.67084075638314,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 708.8731772864503,
+            "y": 324.0750700169947,
+            "z": 0.945478950271636
+          }
+        ]
+      },
+      {
+        "name": "MFD_2",
+        "corners": [
+          {
+            "x": 730.2902899344748,
+            "y": 420.67084075638314,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 731.1268227135497,
+            "y": 324.0750700169947,
+            "z": 0.945478950271636
+          },
+          {
+            "x": 863.1285762786384,
+            "y": 420.67084075638314,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 874.7639865966964,
+            "y": 324.0750700169947,
+            "z": 0.945478950271636
+          }
+        ]
+      },
+      {
+        "name": "MFD_3",
+        "corners": [
+          {
+            "x": 436.75448061398225,
+            "y": 592.8799488272764,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 415.37859761857806,
+            "y": 516.2027424953396,
+            "z": 0.9379619895915514
+          },
+          {
+            "x": 560.7411857320993,
+            "y": 592.8799488272764,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 548.7222920629008,
+            "y": 516.2027424953396,
+            "z": 0.9379619895915514
+          }
+        ]
+      },
+      {
+        "name": "MFD_4",
+        "corners": [
+          {
+            "x": 879.2588142679007,
+            "y": 592.8799488272764,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 891.2777079370992,
+            "y": 516.2027424953396,
+            "z": 0.9379619895915514
+          },
+          {
+            "x": 1003.2455193860178,
+            "y": 592.8799488272764,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 1024.621402381422,
+            "y": 516.2027424953396,
+            "z": 0.9379619895915514
+          }
+        ]
+      }
+    ]
+  },
+  "interlockClosed": "Extend the gear and open the canopy before deploying the ladder.",
+  "canopyBlocked": "Stow the ladder before closing the canopy.",
+  "phoneScreens": {
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 523.265625
+    },
+    "controlsTop": 523.265625,
+    "screens": [
+      {
+        "name": "MFD_1",
+        "corners": [
+          {
+            "x": 111.7841511979979,
+            "y": 244.5806560085159,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 105.01925091776447,
+            "y": 188.4192711770683,
+            "z": 0.945478950271636
+          },
+          {
+            "x": 189.01716111778424,
+            "y": 244.5806560085159,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 188.53079573170024,
+            "y": 188.4192711770683,
+            "z": 0.945478950271636
+          }
+        ]
+      },
+      {
+        "name": "MFD_2",
+        "corners": [
+          {
+            "x": 200.98283888221576,
+            "y": 244.5806560085159,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 201.46920426829973,
+            "y": 188.4192711770683,
+            "z": 0.945478950271636
+          },
+          {
+            "x": 278.21584880200214,
+            "y": 244.5806560085159,
+            "z": 0.9496218009538847
+          },
+          {
+            "x": 284.98074908223555,
+            "y": 188.4192711770683,
+            "z": 0.945478950271636
+          }
+        ]
+      },
+      {
+        "name": "MFD_3",
+        "corners": [
+          {
+            "x": 30.319284744473112,
+            "y": 344.7041077478587,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 17.891212771676354,
+            "y": 300.12350075393107,
+            "z": 0.9379619895915514
+          },
+          {
+            "x": 102.40593001705341,
+            "y": 344.7041077478587,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 95.41807011969595,
+            "y": 300.12350075393107,
+            "z": 0.9379619895915514
+          }
+        ]
+      },
+      {
+        "name": "MFD_4",
+        "corners": [
+          {
+            "x": 287.5940699829466,
+            "y": 344.7041077478587,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 294.581929880304,
+            "y": 300.12350075393107,
+            "z": 0.9379619895915514
+          },
+          {
+            "x": 359.6807152555269,
+            "y": 344.7041077478587,
+            "z": 0.9423562644005594
+          },
+          {
+            "x": 372.10878722832365,
+            "y": 300.12350075393107,
+            "z": 0.9379619895915514
+          }
+        ]
+      }
+    ]
+  },
+  "assetUnchanged": true
+}

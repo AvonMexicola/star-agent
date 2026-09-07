@@ -36,8 +36,15 @@ export function createLighting(renderer, scene) {
     sun, ambient,
     // `profile` describes another body's ambient light ({sky, ground, ambientNight,
     // ambientDay, environment}); without it Aeon/Selene behave exactly as before.
-    update(normal, sunDirection, altitude, airless=false, profile=null) {
-      sun.position.copy(sunDirection).multiplyScalar(320);
+    update(normal, sunDirection, altitude, airless=false, profile=null,shadowSpan=110) {
+      // Large nearby bedrock must fit inside the local shadow frustum. Retain
+      // the usual close-detail coverage elsewhere and the same 2K texture size.
+      const shadowCamera=sun.shadow.camera;
+      if(shadowCamera.right!==shadowSpan){
+        Object.assign(shadowCamera,{left:-shadowSpan,right:shadowSpan,top:shadowSpan,bottom:-shadowSpan,far:shadowSpan*4+210});
+        shadowCamera.updateProjectionMatrix();
+      }
+      sun.position.copy(sunDirection).multiplyScalar(shadowSpan*2+100);
       sun.target.position.set(0, 0, 0);
       ambient.position.copy(normal);
       const daylight = THREE.MathUtils.smoothstep(normal.dot(sunDirection), -.12, .35);

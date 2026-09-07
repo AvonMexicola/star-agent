@@ -1,0 +1,1 @@
+The first attempt launched Chromium successfully outside the sandbox, then failed before loading a page: GET http://127.0.0.1:5178/src/station-architecture.js returned ECONNREFUSED. No renderer or screenshot evidence was produced. The test ended in 155 ms; the application was never loaded. The replacement preview was explicitly supplied by the builder.

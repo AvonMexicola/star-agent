@@ -1,8 +1,8 @@
 /**
  * src/equipment.js — what the player character holds: a laser rifle, a sidearm
  * pistol, a two-handed mining laser, plus the life-support backpack and the
- * helmet. Items are parented to the rig's bones, so they follow the animation
- * without any per-frame matrix work of our own.
+ * helmet. Items follow skeletal sockets; an arm IK pass keeps both palms on
+ * their grips while the barrel follows the player's aim.
  *
  * Self-contained: it reads `character.js` through its public surface (`skeleton`,
  * `model`, `readyPromise`, `update` input) and never edits it.
@@ -14,8 +14,8 @@
  *   - forward is -Z and up is +Y in the character's own frame.
  *
  * Calibration lives in `public/models/props/equipment-sockets.json`, keyed by
- * rig and item, because the three rigs disagree about hand-bone orientation
- * (and the two Meshy pilots carry a 0.01 armature scale). Offsets in that file
+ * rig and item, because the rigs disagree about hand-bone orientation
+ * (and Meshy rigs carry a 0.01 armature scale). Offsets in that file
  * are **metres and degrees in the socket bone's own frame**: the item hangs off
  * a scale-compensating group, so the same numbers mean the same thing on every
  * rig. Re-calibrate on /dev/equipment.html.
@@ -26,7 +26,10 @@
  */
 
 import * as THREE from 'three';
+import { textureMiningTool } from './mining/tool-materials.js';
+import { shareHandheldTextures, hasAuthoredHandheldFinish, clearHandheldTextureCache } from './equipment-materials.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { solveArm, rotateBoneWorld } from './character-ik.js';
 
 // Re-exported like character.js does, so the raw-served page under /public/dev/
 // shares this module's Vite-optimised three instance instead of a second copy.
@@ -35,7 +38,7 @@ export { THREE };
 // ---------------------------------------------------------------- the contract
 
 /** Rig names the calibration file is keyed by. */
-export const RIGS = Object.freeze(['mannequin', 'player-male', 'player-female']);
+export const RIGS = Object.freeze(['mannequin', 'player-male', 'player-female', 'player-expedition']);
 
 /** Logical socket names. The calibration file maps each to a real bone per rig. */
 export const SOCKETS = Object.freeze(['RightHand', 'LeftHand', 'Spine2', 'Head']);
@@ -64,11 +67,11 @@ const PROPS = '/models/props/';
 export const ITEMS = Object.freeze({
   'rifle-laser': {
     name: 'rifle-laser',
-    label: 'Laser carbine',
+    label: 'Laser rifle',
     file: `${PROPS}rifle-laser.glb`,
     socket: 'RightHand',
     handed: 2,
-    length: 1.10,
+    length: .77,
     barrelAxis: [-1, 0, 0],
     muzzle: [-0.55, 0.115, 0],
     leftGrip: [-0.29, 0.012, 0],
@@ -93,8 +96,7 @@ export const ITEMS = Object.freeze({
     barrelAxis: [-1, 0, 0],
     muzzle: [-0.15, 0.055, 0],
     leftGrip: null,
-    // Meshy shipped no `aim-pistol`; character.js maps it to the rifle aim.
-    aimClip: 'aim-rifle',
+    aimClip: 'aim-pistol',
     fireClip: 'fire-pistol',
     aiming: 'pistol',
     fireRate: 3,
@@ -115,9 +117,9 @@ export const ITEMS = Object.freeze({
     barrelAxis: [-1, 0, 0],
     muzzle: [-0.60, 0.14, 0],
     leftGrip: [-0.30, 0.01, 0],
-    aimClip: 'aim-rifle',              // no `use-tool` clip exists; the rifle aim holds it up
+    aimClip: 'use-tool',
     fireClip: null,                    // a continuous beam has no recoil one-shot
-    aiming: 'rifle',
+    aiming: 'tool',
     fireRate: 0,                       // continuous
     shot: 'beam',
     range: 60,
@@ -125,6 +127,14 @@ export const ITEMS = Object.freeze({
     beam: { radius: 0.035, color: 0xb6efd1, impact: 0.34, opacity: 0.85 },
     heat: { rise: 0.35, cool: 0.5, lockout: 2 },
     miningRate: 0.35,                  // handed to onMine() as `rate`, m³/s at full beam
+  },
+  'tractor-beam-tool': {
+    name: 'tractor-beam-tool', label: 'Cargo tractor', file: `${PROPS}tractor-beam-tool.glb`,
+    socket: 'RightHand', handed: 2, length: .80,
+    barrelAxis: [-1, 0, 0], muzzle: [-.60, .14, 0], leftGrip: [-.30, .01, 0],
+    aimClip: 'use-tool', fireClip: null, aiming: 'tool',
+    // Cargo owns the beam and authorization. This held model never fires/mines.
+    fireRate: 0, shot: null, range: 12, holsterable: true,
   },
   'backpack-life-support': {
     name: 'backpack-life-support',
@@ -372,7 +382,8 @@ export function loadItemGLTF(url, loader = null) {
   let pending = _gltfCache.get(url);
   if (!pending) {
     const use = loader || sharedLoader();
-    pending = new Promise((resolve, reject) => use.load(url, resolve, undefined, reject));
+    pending = new Promise((resolve, reject) => use.load(url, resolve, undefined, reject))
+      .then(gltf => { shareHandheldTextures(gltf.scene || gltf.scenes[0]); return gltf; });
     _gltfCache.set(url, pending);
   }
   return pending;
@@ -397,6 +408,7 @@ export function loadSocketCalibration(url = SOCKETS_URL, fetchImpl = null) {
 /** Test / hot-reload hook: forget the cached GLBs and calibration. */
 export function clearEquipmentCache() {
   _gltfCache.clear();
+  clearHandheldTextureCache();
   _socketsPending = null;
 }
 
@@ -406,6 +418,17 @@ const _v1 = new THREE.Vector3();
 const _v2 = new THREE.Vector3();
 const _v3 = new THREE.Vector3();
 const _v4 = new THREE.Vector3();
+// aimHeld is synchronous. Keep its scratch separate from muzzle/socket helpers
+// and character-ik.js, which it calls while these values are still in use.
+const _aimForward = new THREE.Vector3(), _aimDirection = new THREE.Vector3();
+const _aimTarget = new THREE.Vector3(), _aimPole = new THREE.Vector3(), _aimArm = new THREE.Vector3();
+const _aimBarrel = new THREE.Vector3(), _aimUp = new THREE.Vector3();
+const _aimX = new THREE.Vector3(), _aimY = new THREE.Vector3(), _aimZ = new THREE.Vector3();
+const _aimPalm = new THREE.Vector3(), _aimShoulder = new THREE.Vector3(), _aimElbow = new THREE.Vector3(), _aimWrist = new THREE.Vector3();
+const _aimPitch = new THREE.Quaternion(), _aimGrip = new THREE.Quaternion(), _aimOffset = new THREE.Quaternion();
+const _aimDelta = new THREE.Quaternion(), _aimBone = new THREE.Quaternion(), _aimIdentity = new THREE.Quaternion();
+const _aimBasis = new THREE.Matrix4();
+const NO_AIM_STATES = ['sit', 'climb', 'dead', 'rest'];
 const _e1 = new THREE.Euler();
 const _backwards = new THREE.Vector3();
 const ZERO = new THREE.Vector3();
@@ -538,7 +561,7 @@ export class Equipment {
       this._equipped = name;
       this._holstered = false;
       this._gate = new FireGate(spec.fireRate);
-      if (spec.shot === 'beam') this._heat.reset();
+      // Keep tool heat across slot changes; update() cools it while stowed.
     }
     return this._ensure(name).then(() => { this._attach(name); return this; });
   }
@@ -575,14 +598,15 @@ export class Equipment {
 
   /**
    * The support hand's grip point on the held item, in the item's own space.
-   * An IK step can pull `LeftHand` onto `leftHandTargetWorld()`; for now the
-   * aim clips already hold both hands up and nothing reads it.
+   * The arm IK places the palm on this point. A rig calibration can move it
+   * along a vertical handle to accommodate a different glove width.
    * @returns {THREE.Vector3|null}
    */
   get leftHandTargetLocal() {
     const spec = this.item;
     if (!spec || spec.handed < 2 || !spec.leftGrip) return null;
-    return read(spec.leftGrip, this._leftLocal || (this._leftLocal = new THREE.Vector3()));
+    const calibrated = this.sockets?.rigs?.[this.rig]?.items?.[this._equipped]?.supportPosition;
+    return read(calibrated || spec.leftGrip, this._leftLocal || (this._leftLocal = new THREE.Vector3()));
   }
 
   /** That same grip point in world metres, or null. */
@@ -627,6 +651,7 @@ export class Equipment {
    */
   setRenderOrigin(origin) {
     this._originOverride = origin ? (this._originOverride || new THREE.Vector3()).copy(origin) : null;
+    if (origin) this._renderOrigin.copy(origin);
     return this;
   }
 
@@ -705,10 +730,10 @@ export class Equipment {
     this._firePulse = false;
     this._gate.update(step);
 
-    if (held && spec.shot === 'beam') this._updateBeam(step, wantsFire, source.targetWorldPoint);
+    if (held && spec.shot === 'beam') this._updateBeam(step, wantsFire, source.targetWorldPoint, source.hasHit !== false);
     else { this._beaming = false; this._heat.update(step, false); this._hideBeam(); }
 
-    if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle()) {
+    if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle() && (!source.authorizeFire || source.authorizeFire(spec.name))) {
       this._spawnTracer(spec, source.targetWorldPoint);
       this._spawnFlash(spec);
       this._firePulse = true;
@@ -722,9 +747,12 @@ export class Equipment {
   dispose() {
     this.disposed = true;
     // The item meshes are `clone(true)` of the shared GLTF cache and share its
-    // geometry and materials, so they are detached, never disposed — freeing them
-    // would pull the rug from under the next Equipment that loads the same item.
-    for (const name of [...this._items.keys()]) this._detach(name);
+    // geometry and original materials. Dispose only instance mining wear
+    // materials/texture, then detach; shared cache resources stay alive.
+    for (const name of [...this._items.keys()]) {
+      this._items.get(name).root.userData.disposeMiningTexture?.();
+      this._detach(name);
+    }
     this._items.clear();
     for (const group of this._socketGroups.values()) if (group.parent) group.parent.remove(group);
     this._socketGroups.clear();
@@ -764,6 +792,7 @@ export class Equipment {
       root.traverse((node) => {
         if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false; }
       });
+      if (name === 'mining-laser-tool' && !hasAuthoredHandheldFinish(root)) textureMiningTool(root);
       const group = new THREE.Group();
       group.name = `equipment-${name}`;
       group.add(root);
@@ -821,6 +850,75 @@ export class Equipment {
     return found || null;
   }
 
+  /** Final pose correction after the animation mixer: keep the firing hand
+   * and held barrel aimed together, then bring the support wrist to its grip. */
+  aimHeld(direction) {
+    if(this._holstered||!this._equipped)return;
+    if(this.character?.gestureActive || NO_AIM_STATES.includes(this.character?.state))return;
+    const hand=this._bone('RightHand');
+    if(!hand?.parent || direction.lengthSq()<1e-8)return;
+    // Pitch the shoulder and forearm together before the final wrist alignment.
+    // This keeps an aimed-up rifle connected to the body instead of hinging at the wrist.
+    const arm=hand.parent?.parent;
+    const forward=this.character?.forwardVector?.(_aimForward);
+    const pitch = forward ? _aimPitch.setFromUnitVectors(forward.normalize(), _aimDirection.copy(direction).normalize()) : _aimPitch.identity();
+    if (this.rig === 'player-expedition' && arm?.isBone) {
+      const target = this._equipped === 'sidearm-pistol' ? _aimTarget.set(.005, -.075, -.45)
+        : ITEMS[this._equipped].aiming === 'tool' ? _aimTarget.set(-.04, -.23, -.05) : _aimTarget.set(-.025, -.075, -.135);
+      target.applyQuaternion(this.character.object.quaternion)
+        .applyQuaternion(pitch).add(arm.getWorldPosition(_aimArm));
+      const pole = _aimPole.set(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch);
+      solveArm(this.character, hand, target, pole);
+    } else if(arm?.isBone && forward)rotateBoneWorld(this.character,arm,pitch);
+    const barrel=this.muzzleWorldDirection(_aimBarrel);
+    if(!barrel)return;
+    let gripRotation = null;
+    if (this.rig === 'player-expedition') {
+      const up = _aimUp.set(0, 1, 0).applyQuaternion(this.character.object.quaternion);
+      const x = _aimX.copy(direction).normalize().negate();
+      const z = _aimZ.crossVectors(x, up).normalize();
+      if (z.lengthSq() < 1e-8) z.set(1, 0, 0).applyQuaternion(this.character.object.quaternion);
+      const y = _aimY.crossVectors(z, x).normalize();
+      const gun = _aimGrip.setFromRotationMatrix(_aimBasis.makeBasis(x, y, z));
+      const offset = this._items.get(this._equipped).group.quaternion;
+      gripRotation = gun.multiply(_aimOffset.copy(offset).invert());
+      rotateBoneWorld(this.character, hand, _aimDelta.copy(gripRotation).multiply(hand.getWorldQuaternion(_aimBone).invert()));
+    } else rotateBoneWorld(this.character,hand,_aimDelta.setFromUnitVectors(barrel.normalize(),_aimDirection.copy(direction).normalize()));
+    const left=this._bone('LeftHand'),target=this.leftHandTargetWorld(_aimTarget);
+    if(!left||!target)return;
+    target.sub(this._renderOrigin);
+    // Put the palm around the vertical foregrip, with the thumb above the fingers.
+    // A wrist snapped directly onto the grip leaves the glove floating past it.
+    if (gripRotation) target.sub(_aimPalm.set(-.007, .107, 0).applyQuaternion(gripRotation));
+    if (gripRotation) {
+      const shoulder = left.parent.parent.getWorldPosition(_aimShoulder);
+      const elbow = left.parent.getWorldPosition(_aimElbow);
+      const reach = shoulder.distanceTo(elbow) + elbow.distanceTo(left.getWorldPosition(_aimWrist)) - .018;
+      const excess = target.distanceTo(shoulder) - reach;
+      if (excess > 0) {
+        // Bring the whole tool closer during extreme aim/locomotion blends;
+        // never stretch an arm or leave the support glove behind the grip.
+        const shift = shoulder.sub(target).normalize().multiplyScalar(excess);
+        const wrist = hand.getWorldPosition(_aimWrist).add(shift);
+        solveArm(this.character, hand, wrist, _aimPole.set(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch));
+        rotateBoneWorld(this.character, hand, _aimDelta.copy(gripRotation).multiply(hand.getWorldQuaternion(_aimBone).invert()));
+        this.leftHandTargetWorld(target).sub(this._renderOrigin).sub(_aimPalm.set(-.007, .107, 0).applyQuaternion(gripRotation));
+      }
+    }
+    // Solve the two arm joints only; the character root/spine stay authored.
+    const pole = _aimPole.set(-.5, -.85, .15).applyQuaternion(this.character?.object?.quaternion || _aimIdentity).applyQuaternion(pitch);
+    solveArm(this.character, left, target, pole);
+    if (gripRotation) rotateBoneWorld(this.character, left, _aimDelta.copy(gripRotation).multiply(left.getWorldQuaternion(_aimBone).invert()));
+  }
+
+  bindCharacter(character, rig, sockets) {
+    if(this.character===character&&this.rig===rig&&this.sockets===sockets)return;
+    for(const group of this._socketGroups.values())group.removeFromParent();
+    this._socketGroups.clear();this._bonesBound=false;
+    this.character=character;this.rig=rig;this.sockets=sockets;
+    this._bindBones();
+  }
+
   /** Re-parent everything once the rig's GLB has landed (or been swapped). */
   _bindBones() {
     const skeleton = this.character && this.character.skeleton;
@@ -833,6 +931,8 @@ export class Equipment {
   }
 
   _attach(name) {
+    // An older asynchronous model load may finish after a different slot was drawn.
+    if(this.disposed || (ITEMS[name]?.worn ? !this._worn.has(name) : this._equipped!==name))return;
     const entry = this._items.get(name);
     if (!entry) return;
     const spec = ITEMS[name];
@@ -1068,7 +1168,7 @@ export class Equipment {
     }
   }
 
-  _updateBeam(dt, wantsFire, targetWorldPoint) {
+  _updateBeam(dt, wantsFire, targetWorldPoint, hasHit = true) {
     const spec = this.item;
     const on = this._heat.update(dt, wantsFire) && this._updateMuzzle();
     this._beaming = on;
@@ -1096,15 +1196,15 @@ export class Equipment {
 
     _v4.copy(_v1).addScaledVector(_v3, length);
     const pulse = spec.beam.impact * (0.85 + 0.15 * Math.sin(this._elapsed * 37));
-    this._impact.visible = true;
+    this._impact.visible = hasHit;
     this._impact.position.copy(_v4).addScaledVector(_v3, -0.02);
     this._impact.quaternion.setFromUnitVectors(UNIT_Z, _backwards.copy(_v3).negate());
     this._impact.scale.setScalar(pulse);
-    this._impactLight.visible = true;
+    this._impactLight.visible = hasHit;
     this._impactLight.position.copy(_v4);
     this._impactLight.intensity = 3.5 * (0.85 + 0.15 * Math.sin(this._elapsed * 23));
 
-    if (this.onMine) {
+    if (this.onMine && hasHit) {
       _v4.add(this._renderOrigin);
       this.onMine({ item: spec.name, point: _v4, dt, rate: spec.miningRate, heat: this._heat.heat });
     }
@@ -1144,21 +1244,27 @@ const FLASH_FRAG = /* glsl */`
     float star = pow(max(0.0, 1.0 - min(abs(p.x), abs(p.y)) * 7.0), 3.0) * (1.0 - r);
     float alpha = uOpacity * clamp(core * 1.6 + star * 0.8, 0.0, 1.4);
     vec3 colour = mix(uColor, vec3(1.0), pow(core, 1.5));
-    gl_FragColor = vec4(colour, alpha);
+    gl_FragColor = vec4(colour * 2.0, alpha);
+    #include <logdepthbuf_fragment>
   }
 `;
 
 const BEAM_VERT = /* glsl */`
+  #include <common>
+  #include <logdepthbuf_pars_vertex>
   varying vec2 vUv;
   void main() {
     vUv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    #include <logdepthbuf_vertex>
   }
 `;
 
 // A mint core with a noisy, scrolling alpha along the beam plus a soft edge
 // falloff across it, so the beam flickers like a plasma cutter instead of a tube.
 const BEAM_FRAG = /* glsl */`
+  #include <common>
+  #include <logdepthbuf_pars_fragment>
   precision highp float;
   varying vec2 vUv;
   uniform vec3 uColor;
@@ -1186,7 +1292,8 @@ const BEAM_FRAG = /* glsl */`
     float body = pow(across, 0.35);
     float alpha = uOpacity * flicker * taper * body;
     vec3 colour = mix(uColor, vec3(1.0), 0.55 * pow(across, 3.0));
-    gl_FragColor = vec4(colour, alpha);
+    gl_FragColor = vec4(colour * 2.0, alpha);
+    #include <logdepthbuf_fragment>
   }
 `;
 
