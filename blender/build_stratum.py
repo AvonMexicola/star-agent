@@ -148,12 +148,11 @@ g.box('Deck central runner',[0,1.345,1.10],[1.08,.009,11.80],rubber,.001,static)
 g.loft('Armored nose', [(-9.00,0,.84,1.50,1.75,1.91),(-8.25,0,1.48,1.20,2.00,2.20),
                       (-6.70,0,2.22,1.04,1.75,2.12)],ivory,static)
 
-# Raked windshield, slender load-bearing mullions and armored cheek returns.
+# Raked windshield, unobstructed centre sightline and armored cheek returns.
 wind=[(-1.30,2.18,-8.31),(1.30,2.18,-8.31),(1.66,3.81,-6.64),(-1.66,3.81,-6.64)]
 g.panel('Forward glazing',wind[::-1],glass,.018,static,.004)
 for a,b in zip(wind,wind[1:]+wind[:1]):
     g.rod('Windshield armored rim',a,b,.075,structure,static,12)
-g.rod('Windshield centre mullion',[0,2.18,-8.31],[0,3.81,-6.64],.037,metal,static,10)
 for side in [-1,1]:
     sideglass=[(side*1.39,2.19,-8.16),(side*2.26,2.24,-6.65),
                (side*2.41,3.43,-4.98),(side*1.70,3.84,-6.63)]

@@ -2,9 +2,9 @@
   "id": "stratum",
   "version": 1,
   "stage": "silhouette candidate 01; native visual gate pending",
-  "sha256": "7cce466e64bb500fd35f7f559fd28b15a67db79df6e618f604512be5b2229058",
-  "bytes": 3574792,
-  "triangles": 28688,
+  "sha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
+  "bytes": 3573040,
+  "triangles": 28652,
   "meshCount": 62,
   "primitiveCount": 62,
   "nodeCount": 92,
@@ -15,8 +15,8 @@
     1024,
     1024
   ],
-  "sourceSha256": "2db8fb90f698f29f1753c33fe7942b86ebb1970f6e37078960a1908e98fa11d0",
-  "builderSha256": "c763348e58828082b1527113ba07212e5ba6646c10eacd99387695e85f065ff2",
+  "sourceSha256": "0c65507945dadde909f2d7b3461b8230607f54b2bc8212be16c287625a71091c",
+  "builderSha256": "af02dc23b75dace32972e595d58ef2049eed48ea889c444d07080b02f83cb211",
   "geometryHelperSha256": "9ee3f65cbb5fff71d7a8e91304f12e18c4845ab68bb1fe26dcf8cbbd6d7f07e7",
   "layoutSha256": "a17f9159a02de736fc1463da132a4a709d95135ca5fcb93647e762d6abe5ff44",
   "budgets": {
