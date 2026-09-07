@@ -96,6 +96,7 @@ export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } 
     if (Number.isFinite(peer[key])) nav[key] = peer[key];
   }
   if (typeof peer.shipId === 'string') nav.shipId = peer.shipId;
+  if (Array.isArray(peer.freighter)&&nav.freighter)for(const state of peer.freighter){const lift=nav.freighter.lifts.find(l=>l.id===state.id);if(lift&&Number.isFinite(state.y)&&Number.isFinite(state.target)){lift.y=state.y;lift.target=state.target;}}
   if (typeof peer.mode === 'string') nav.mode = peer.mode;
   nav.multiplayerDead = peer.mode === 'dead' || peer.health <= 0 || peer.shipHealth <= 0;
   nav.travel = reviveTravel(peer.travel);
@@ -108,7 +109,7 @@ export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } 
 function publicState(account = null) {
   return {
     connected: false, account, ownId: null, players: [], maxPlayers: MAX_PLAYERS,
-    hangar: null, inventory: null, health: null, doors: null, drops: [], error: null,
+    hangar: null, inventory: null, commerce: null, health: null, doors: null, drops: [], error: null,
     stationFrame: null,
   };
 }
@@ -173,7 +174,7 @@ export class MultiplayerClient {
         clearTimeout(timeout); if (!settled) fail(new Error(event.reason || 'The multiplayer connection closed.'));
         if (this.socket === socket) {
           const wasConnected = this.connected; this.socket = null; this._rejectPending('The multiplayer connection closed.'); this._clearWorld();
-          this._publish({ connected: false, ownId: null, players: [], hangar: null, inventory: null, health: null, error: event.reason || 'Connection lost.' });
+          this._publish({ connected: false, ownId: null, players: [], hangar: null, inventory: null, commerce: null, health: null, error: event.reason || 'Connection lost.' });
           if (wasConnected) { if (this.nav) { this.nav.enabled = false; this.nav.keys?.clear?.(); } this._emit({ type: 'event', event: 'disconnect', message: event.reason || 'Multiplayer connection lost.' }); }
         }
       });
@@ -203,7 +204,7 @@ export class MultiplayerClient {
       }
       const patch = {
         connected: true, ownId: message.id, maxPlayers: message.maxPlayers ?? MAX_PLAYERS,
-        players: Array.isArray(message.players) ? message.players : [], inventory: message.inventory ?? null,
+        players: Array.isArray(message.players) ? message.players : [], inventory: message.inventory ?? null, commerce: message.commerce ?? null,
         health: message.health ?? message.inventory?.health ?? null, doors: message.doors ?? null,
         hangar: message.hangar ?? null, stationFrame: message.stationFrame ?? null,
         drops: Array.isArray(message.drops) ? message.drops : [], error: null,
@@ -213,7 +214,7 @@ export class MultiplayerClient {
     if (message.type === 'state') {
       const patch = {
         players: Array.isArray(message.players) ? message.players : this.state.players,
-        inventory: message.inventory ?? this.state.inventory, health: message.health ?? message.inventory?.health ?? this.state.health,
+        inventory: message.inventory ?? this.state.inventory, commerce: message.commerce ?? this.state.commerce, health: message.health ?? message.inventory?.health ?? this.state.health,
         doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar,
         stationFrame: message.stationFrame ?? this.state.stationFrame,
         drops: Array.isArray(message.drops) ? message.drops : this.state.drops,
@@ -289,6 +290,7 @@ export class MultiplayerClient {
     for (const [name, [action, target]] of actions) {
       if (typeof nav[name] !== 'function') continue;
       const original = nav[name]; const wrapper = (...args) => {
+        if(this.connected&&name==='embark'&&nav.cargoAction?.())return true;
         // The local target adapter owns charge/availability. Do not let the
         // legacy network command bypass its explicit targeted-drive gate.
         if (this.connected && nav.targeting && (name === 'beginTravel' || (name === 'beginFreeTravel' && nav.targeting.hasTarget))) return nav.targeting.engage();
@@ -331,6 +333,7 @@ export class MultiplayerClient {
     if (this.accumulator < SEND_INTERVAL) return;
     this.accumulator %= SEND_INTERVAL;
     const input = navigationInput(this.nav, this.lastPad, { mouseYaw: this.mouseYaw, mousePitch: this.mousePitch, fire: this.keyFire || this.pointerFire });
+    if(this.nav.carryingCargo)input.fire=false;
     this.mouseYaw = 0; this.mousePitch = 0; this._sendInput(input);
   }
 
