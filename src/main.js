@@ -137,6 +137,7 @@ try {
   if(sandboxEnabled)for(const bin of SANDBOX_BINS)inventoryUI.registerContainer({id:bin.id,name:mining.store.container(bin.id).name,kind:'base',boxes:8,available:()=>true});
   nav.surfaceObstacles=createBuildObstacles(mining,build);
   nav.baseAction=()=>build.interact();nav.baseInteraction=()=>build.interaction;
+  nav.baseLandingSurface=()=>build.landingSurface();
   nav.buildingRaycast=(start,direction,range)=>build.raycast(start,direction,range);
   const useQuick=index=>{const result=loadout.useQuick(index);nav.notify(result.message);};
   const loadoutBar=createLoadoutBar({loadout,nav,onSelect:id=>{if(build.active)build.cancel();miningTool.select(id);},onUse:useQuick,open:()=>inventoryUI.openEquipment()});

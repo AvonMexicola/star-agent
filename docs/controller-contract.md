@@ -190,3 +190,15 @@ analog direction without D-pad contributions. Keep eight slice locations stable.
 See `docs/qa/base-building/radial.md` for verification and remaining review limits.
 
 Current B/A/trigger mappings and context checks: [hotkey evidence](qa/base-building/controller-hotkeys.md).
+
+
+## Expanded construction menus
+
+LB/RB changes the active native build tab (Blocks/Shapes/Facilities/Resources/
+Sandbox supplies/Mainframe when available). Tab changes consume the shared UI
+edge before analog focus or A confirmation and suspend until neutral. The hooks
+are `dialog.controllerAction(ui)` for tab changes and `controllerNavigation(ui)`
+for the wheel; neither polls Gamepad independently. B enter uses the actual saved
+claim radius,64m normally or96m after placing a large pad. X outside build mode
+operates rack/terminal/hangar/pad-designation interactions through the same shared
+native inventory/dialog flow. See `qa/base-building/expansion.md` for evidence.

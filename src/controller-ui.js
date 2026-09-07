@@ -57,7 +57,7 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
       else if (openBuild && nav.mode==='walk' && !nav.insideShip && pad.pressed.has(1)) {
         pad.pressed.clear();pad.brake=false;pad.mine=0;pad.jump=false;
         if(canOpenBuild())openBuild();
-        else nav.notify('Approach your mainframe (within 64 m) to build. Menu → Build can establish a new site.');
+        else nav.notify('Approach your mainframe claim (64 m; 96 m with a large pad) to build. Menu → Build can establish a new site.');
       }
       else if (nav.mode === 'walk' || nav.mode === 'eva') {
         if(pad.pressed.has(15))toggleTool();
@@ -76,6 +76,8 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
     if (!items.includes(document.activeElement)) focus(items.find(el => focusKey && (el.dataset.controllerKey || el.id) === focusKey) || items[Math.min(focusIndex, items.length - 1)], items);
     if (!pad.ui) return;
     if (pad.ui.pressed.has(1) || pad.ui.pressed.has(9)) { dialog.close(); nav.gamepad.suspend(); return; }
+    const tabTarget=dialog.controllerAction?.(pad.ui);
+    if(tabTarget){focus(tabTarget,controls(dialog));direction=0;repeat=0;return;}
     // Optional spatial selection still uses this shared focus/confirm/back router.
     const spatial=dialog.controllerNavigation?.(pad.ui);
     if(spatial&&items.includes(spatial)){

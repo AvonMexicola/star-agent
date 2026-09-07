@@ -173,7 +173,7 @@ The independent Opus polish review scores 4.0/5 and rechecks phone wrapping.
 Read `docs/qa/base-building/polish-production.md` for original report dispositions,
 536-unit / five-UI-test passes, production door/ghost/fade evidence and studio
 captures. Whole-scene performance and a fresh complete controller construction
-journey remain integration gates; physical Xbox is untested. PR41 stays draft.
+journey remain integration gates; physical Xbox is untested. PR 41 stays draft.
 
 
 ## Supplied sandbox entry
@@ -216,3 +216,39 @@ A to both jump and place or RT to both mine and rotate in construction.
 Current evidence: `docs/qa/base-building/controller-hotkeys.md` (unit546, UI8,
 production sandbox1 pass). The ordinary-flight B brake and EVA B descent remain;
 reconcile the separate flight-options lane during integration.
+
+
+## Shapes, facilities and pads — 2026-09-07
+
+Canonical `definitions.js` now has 21 pieces. `polygons.js` owns convex footprint
+transforms, SAT volume overlap, circle clearance and prism ray clipping.
+`structure.js` owns edge matching and grounded support propagation; use it in both
+placement and save validation. Equilateral edges require 30-degree rotation steps
+in saved validation. Existing quarter-turn saves remain valid. Never fill a
+triangle/curved slab’s empty bounding-box corners with collision.
+
+Roof support: one wall anchors a roof, then at most two adjacent roof panels;
+unsupported cycles are invalid. Crates select the floor nearest target Y.
+Facilities: rack 8 boxes, terminal site access while within 4 m, header-collapsing
+hangar curtain, 4 m ramp, S16×16/M32×40/L48×72 pad foundations with 8 m piers.
+`landingPad` is an optional boolean only on pad pieces. Large-pad transactions
+may expand radius 64→96, subject to other-claim overlap. Bounds may extend to -16 m
+for piers; other kit retains the -2 m boundary. Storage and designation stay atomic.
+
+`Navigation.baseLandingSurface` is the narrow landing adapter. Check the full
+ship footprint plus 1 m and a clear deck, then return the slab’s world point and
+normal. Do not teleport to a pad from a menu or treat markings as collision.
+The hypothetical heavy ship is 2× Atlas linear dimensions, 4× footprint area.
+
+Rebuild all GLBs with `ALSOFT_DRIVERS=null blender --background --factory-startup
+--python-exit-code 1 --python blender/build_base.py`. The studio module lives in `src/build/studio.js`; public/dev/build.js
+loads it so Vite resolves bare imports. Keep geometry, cost/footprint definitions,
+export manifest and gameplay evidence together. Current checks and known review
+limits live in `docs/qa/base-building/expansion.md`.
+
+Walking support must test the full capsule disk against support polygons; centre
+and four cardinal samples miss diagonal slab corners. Stacked matching walls
+propagate support without an intermediate floor, permitting tall hangars.
+Interaction candidates prioritize facing alignment before distance within reach;
+terminal access resolves the current claim by ID so newly added terminals work
+with already registered racks. Pad near-edge anchoring applies to all three sizes.
