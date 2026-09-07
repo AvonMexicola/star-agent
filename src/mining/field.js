@@ -147,7 +147,7 @@ export class MiningField {
     if(descriptor?.looseStone&&!hit.rock){
       this.aimedDescriptor=null;this.regionalAimed=descriptor.id;
       const rock=this.regionalRocks.get(descriptor.id);if(rock)this.active=rock;
-      return this.inspectState={status:hit.distance>range?'out-of-range':!this.store.canEditRock(descriptor.id)?'save-full':'preparing',name:descriptor.name,distance:hit.distance,mineable:true,rockId:descriptor.id,point:hit.point};
+      return this.inspectState={status:distance>range?'out-of-range':!this.store.canEditRock(descriptor.id)?'save-full':'preparing',name:descriptor.name,distance,mineable:true,rockId:descriptor.id,point:hit.point};
     }
     if(!descriptor||hit.rock&&!hit.rock.space){
       this.aimedDescriptor=null;this.regionalAimed=descriptor?.regional?descriptor.id:null;this.active=hit.rock;

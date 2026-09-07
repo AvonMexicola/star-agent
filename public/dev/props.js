@@ -1,6 +1,6 @@
 // Contact sheet for the Meshy props in public/models/props/manifest.json.
-// Served raw out of public/. A source-module bridge lets Vite resolve both
-// Three.js and the loader's bare imports. This viewer requires the dev server.
+// Dev uses a source-module bridge for Three.js/addon imports. The production
+// entry is bundled to /assets/props-viewer.js by vite.config.js.
 //
 //   ?t=<seconds>  freeze the turntable at a fixed time (deterministic screenshots)
 //   ?cols=<n>     force the column count
