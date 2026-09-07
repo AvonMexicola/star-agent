@@ -49,7 +49,9 @@
     "src/nomad-cabin-controls.js",
     "scripts/mining-rover-inputs.spec.js",
     "scripts/mining-rover-inputs.config.js",
-    "src/ship-inventory-ui.js"
+    "src/ship-inventory-ui.js",
+    "scripts/rover-review/",
+    "src/secondary-touch-buttons.js"
   ],
   "brief": "docs/briefs/mining-rover.md"
 }

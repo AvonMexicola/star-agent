@@ -22,7 +22,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
   const object=new THREE.Group();object.name='Meridian Burrow';object.visible=false;scene.add(object);
   const touch=new Set(),power=createRoverPower(),beams=[new Plasma(scene),new Plasma(scene)],targetRay=createWeaponTarget({nav,mining});
   let model=null,ready=false,error=null,spawned=false,occupied=false,phase='idle',door=0,route=[],routeIndex=0;
-  let anchor=null,anchorRotation=null,lastLiftY=4,anchorLift=null,aimYaw=0,aimPitch=-.06,held=false,keyHeld=false,trigger=false,time=0;
+  let anchor=null,anchorRotation=null,lastLiftY=4,anchorLift=null,aimYaw=0,aimPitch=-.20,held=false,keyHeld=false,trigger=false,time=0;
   let renderedOrigin=new THREE.Vector3(),message='Approach the port door to board.',lastHits=[],sampledBeams=[];
   const wheels=[],cutters=[],rays=new THREE.Raycaster();
   const shipPose=()=>({position:nav.shipPosition?.clone()??nav.position.clone().sub(v(nav.layout.seatEye).applyQuaternion(nav.orientation)),quaternion:(nav.shipPosition?nav.shipOrientation:nav.orientation).clone()});
@@ -90,6 +90,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
     const opening=phase==='opening-in'||phase==='opening-out';
     if(opening){door=Math.min(1,door+dt/1.1);if(door===1){phase=phase==='opening-in'?'climbing-in':'climbing-out';routeIndex=0;}}
     else if(phase==='closing-in'||phase==='closing-out'){
+      if(phase==='closing-in')nav.orientation.slerp(physics.state.quaternion.clone().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(aimPitch,aimYaw,0,'YXZ'))),1-Math.exp(-dt*4));
       door=Math.max(0,door-dt/1.1);
       if(door===0){const seated=phase==='closing-in';phase='idle';if(seated){occupied=true;nav.roverOccupied=true;posePilot();message='Parking brake · Y / G lowers Atlas lift.';}else{nav.roverOccupied=false;message='Cabin secured. X / F boards.';}nav.keys.clear();nav.gamepad.suspend();}
     }else if(phase==='climbing-in'||phase==='climbing-out'){
@@ -228,7 +229,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
   api.readyPromise=new GLTFLoader().loadAsync('/models/mining-rover.glb').then(gltf=>{
     model=gltf.scene;const required=['CabinDoor','BoardingSteps','SteeringYoke','RoverDisplay',...L.links.map(l=>l.node),...L.wheels.flatMap(w=>[w.node,'Suspension_'+w.id,w.steer||'Axle_'+w.id]),...L.cutters.flatMap(c=>[c.pivot,c.muzzle])];
     for(const name of required)if(!model.getObjectByName(name))throw new Error('Missing rover mechanism '+name);
-    object.add(model);model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+    object.add(model);model.traverse(o=>{if(o.isMesh){const materials=Array.isArray(o.material)?o.material:[o.material];o.castShadow=materials.some(m=>!m.transparent||m.alphaTest>0);o.receiveShadow=true;}});
     for(const w of L.wheels){const s=model.getObjectByName('Suspension_'+w.id);wheels.push({spin:model.getObjectByName(w.node),steer:model.getObjectByName(w.steer||'Axle_'+w.id),suspension:s,baseY:s.position.y});}
     for(const c of L.cutters)cutters.push({pivot:model.getObjectByName(c.pivot),muzzle:model.getObjectByName(c.muzzle)});
     screen=document.createElement('canvas');screen.width=512;screen.height=224;screenTexture=new THREE.CanvasTexture(screen);screenTexture.colorSpace=THREE.SRGBColorSpace;

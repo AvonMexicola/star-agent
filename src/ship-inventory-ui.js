@@ -1,4 +1,5 @@
 import { shipCargoAccess, shipCargoLabel } from './inventory/ship-access.js';
+import {secondaryTouchButtons} from './secondary-touch-buttons.js';
 import { MiningStore } from './mining/store.js';
 import { CATALOG, MATERIAL_IDS, SLOTS_PER_BOX, stacksFor, itemById, itemMass, quantityLabel } from './inventory/containers.js';
 import './inventory/inventory.css';
@@ -36,6 +37,7 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
     <footer class="inventory-footer"><p class="cargo-feedback" role="status" aria-live="polite">Select a stack to inspect or transfer it.</p><p class="cargo-save"></p></footer>`;
   (document.querySelector('.top-actions') || document.body).append(launcher);
   document.body.append(dialog);
+  const disposeSecondaryTouch = secondaryTouchButtons(dialog);
 
   function accessible(id) {
     if (id === 'pack') return true;
@@ -155,6 +157,6 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
     get open() { return dialog.open; }, openPack, openEquipment, openContainer, openStorage, update,
     get state() { return { open: dialog.open, view, target: targetId, shipAccess: shipCargoAccess(nav), containers: ['pack', 'ship', ...Object.keys(store.state.remote)].map(id => container(id)), saved: store.saved, warning: store.warning }; },
     registerContainer(definition) { const { available, ...def } = definition; if (!store.registerContainer(def)) return false; availability.set(def.id, typeof available === 'function' ? available : () => false); return true; },
-    dispose() { clearInterval(ticker); document.removeEventListener('keydown', keyHandler); dialog.remove(); launcher.remove(); },
+    dispose() { clearInterval(ticker); document.removeEventListener('keydown', keyHandler); disposeSecondaryTouch(); dialog.remove(); launcher.remove(); },
   };
 }

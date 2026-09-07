@@ -125,3 +125,36 @@ menu PR #60 (`f8e48d9`). Rover does not depend on the fitted ship-weapon modules
 those unrelated local integrations are excluded from this PR. Cees gates the
 PR and release. Final input, visual, performance and combined integration status
 remain separate; no public merge or deployment is claimed.
+
+## Candidate 10 follow-through
+
+GLB `88448d9dd48e0a0acdb2397465302e8ab41335b8ffaab6234050d136bf6cc78f`,
+21,570 triangles / 2,177,260 bytes. The strict [09→10 asset delta](review-candidate-10-delta.md)
+proves all world/local triangles, hierarchy, mechanisms, UVs and layout are
+identical; only rod normals and the ORM texture change. Flat cap normals and
+rougher steel remove the soft chrome appearance. Runtime transparent glazing
+now avoids opaque shadow casting. A lower initial operator gaze and a smooth
+closing-in camera transition keep the full live MFD in view; rendered review
+of these changes is pending. Portable header and cabin probes pass, along with
+28 focused units and the production build.
+
+The first keyboard route reached actual mining/storage and passed the modal
+neutral check; its tab-focus fixture timed out because Playwright forces every
+tab focused by default. A plain-DOM diagnostic proves trusted blur/focus after
+disabling that browser override. The first touch route boarded and unloaded,
+then its helper released the remaining throttle contact instead of the intended
+steering contact. The corrected native diagnostic verifies exact released IDs.
+These failed videos/JSON remain outside the repository in the input-01 record.
+
+That diagnostic also exposed a real UI issue: a second finger does not produce
+a native button click while the primary mining finger is held. A narrow reusable
+button adapter now activates rover actions and inventory buttons on a valid
+secondary touch release, preserving keyboard/primary activation and rejecting
+drag/cancel/duplicate clicks. The native held-contact cargo open/close test passes
+with the actual production helper. Full corrected gameplay replay is pending.
+
+Draft [PR66](https://github.com/AvonMexicola/star-agent/pull/66) is open. The bounded
+branch has passed697/697 unit tests and its production build at65f806f; newer
+material/input changes are undergoing the final checks. Cees has the stable
+5417 test-drive build. Further work uses a separate5419 preview so that session
+is not rebuilt underneath the player.
