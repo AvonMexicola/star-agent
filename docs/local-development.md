@@ -220,3 +220,20 @@ patrol journeys pass. The weapon branch also passed the physical Kestrel ladder,
 launch and Selene landing/exit route and Atlas touch controls. The final visual
 and frame-time acceptance status is recorded in [weapon QA](qa/ship-weapons/production-record.md).
 No service/database restart or public deployment accompanies this integration.
+
+### Combat momentum checkpoint
+
+Fly-by-wire now uses finite thrust to correct drift and brake on release. V / R3
+unlocks coasting; rotate and fire while travelling backwards. Hold X / LT for full
+braking. Z or Menu → Ship → Combat / cruise selects speed independently of assist.
+Combat caps are Kestrel220, Nomad180, Atlas120 m/s; cruise, boost, overspeed and
+lowered landing gear lock weapons. Landing assist requires speed below10 m/s.
+All ships carry momentum through turns, with Atlas taking the longest to recover.
+At100 m/s in vacuum, full nose-axis braking to below1 m/s takes approximately
+58m/1.5s,97m/2.4s and251m/7.4s respectively. The HUD estimates stopping distance
+at the current attitude; it is not a collision-avoidance guarantee.
+
+Moving rifle pulses and ship lasers follow the actual muzzle. Ballistic shots
+inherit launch velocity; collision and lead prediction use that trajectory.
+[Momentum QA](qa/combat-momentum.md) records the exact checked source, failures,
+evidence and limits. This is a local development checkpoint, not release approval.

@@ -52,7 +52,7 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
       const status=armament?.status==='ready'?'S'+armament.size+' / '+armament.state.mounts.length+' GUNS':'WEAPONS '+(armament?.status==='unavailable'?'UNAVAILABLE':'LOADING');
       panel.querySelector('span').textContent='SHIP / '+status;
       trigger.disabled=!armed;
-      trigger.textContent=!secured?'GEAR DOWN · RAISE TO FIRE':'HOLD TO FIRE';
+      trigger.textContent=!secured?'GEAR DOWN · RAISE TO FIRE':weaponStatus==='WEAPONS READY'?'HOLD TO FIRE':weaponStatus;
       if(!secured)panel.querySelector('small').textContent=nav.controllerActive?'Raise landing gear: Menu → Ship → Gear':'Raise landing gear to fire · G';
       panel.querySelector('.ship-combat-mode').textContent=`${nav.combatMode?'COMBAT':'CRUISE'} · Z / Menu → Ship`;
       if(weaponStatus!=='WEAPONS READY')panel.querySelector('small').textContent=weaponStatus;
