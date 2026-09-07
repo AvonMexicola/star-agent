@@ -10,10 +10,11 @@ export function createGameplayMenu({nav,screens,dev=false}){
   const tabs=screens.filter(s=>!s.dev||dev),records=new Map(),pages=new Map();
   let selected='contracts',switching=false,scheduled=false;
   const active=()=>[...records.keys()].find(d=>d.open);
+  const topDialog=()=>[...document.querySelectorAll('dialog[open]')].at(-1);
   const tabFor=d=>d.id==='cargo-dialog'?(d.classList.contains('equipment-view')?'loadout':'inventory'):records.get(d)?.tab;
   async function open(id=selected){
     const tab=tabs.find(t=>t.id===id);if(!tab||switching)return;
-    const current=document.querySelector('dialog[open]');
+    const current=topDialog();
     if(current&&!records.has(current))return;
     switching=true;
     try{
@@ -100,13 +101,13 @@ export function createGameplayMenu({nav,screens,dev=false}){
   document.addEventListener('keydown',event=>{
     if(event.repeat||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(event.code==='Escape'&&!document.querySelector('dialog[open]')&&nav.enabled&&!nav.openingActive&&nav.mode!=='destroyed'){event.preventDefault();open();return;}
-    if(!active())return;
+    if(!active()||topDialog()!==active())return;
     if(['BracketLeft','BracketRight'].includes(event.code)){event.preventDefault();step(event.code==='BracketLeft'?-1:1);}
   });
   window.addEventListener('resize',schedule);
   function step(direction){const id=tabFor(active()),index=tabs.findIndex(t=>t.id===id);open(tabs[(index+direction+tabs.length)%tabs.length].id);}
   return {open,get active(){return Boolean(active());},controller(pad){
-    if(!active())return false;
+    if(!active()||topDialog()!==active())return false;
     if(pad.ui?.pressed.has(4)||pad.ui?.pressed.has(5)){
       // The build wheel owns these edges for its piece categories. Let the
       // shared dialog router apply its action and neutral-input gate first.

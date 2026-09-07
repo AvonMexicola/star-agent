@@ -4,6 +4,8 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { createAuth, SESSION_COOKIE } from './auth.js';
 import { createMemoryStore, createPostgresStore } from './database.js';
 import { createSMTPMailer } from './mail.js';
+import { createSocialService } from './social.js';
+import { CHAT_POLICY, createChatModerator } from './chat-moderation.js';
 
 const MAX_BODY = 16 * 1024;
 const MAX_BUFFERED = 256 * 1024;
@@ -60,7 +62,7 @@ function cookieValue(cookie) {
 
 /** Owns supplied room/store/mail lifecycle. Mount /api and /ws behind the same origin as the game. */
 export async function createServer({ store, mail, room, publicOrigin, secureCookies = false,
-  trustProxy = false, heartbeatIntervalMs = 30000, logger = console } = {}) {
+  trustProxy = false, heartbeatIntervalMs = 30000, logger = console, chatPolicy = CHAT_POLICY } = {}) {
   if (!room || !store) throw new Error('An explicit room and account store are required.');
   if (!Number.isFinite(heartbeatIntervalMs) || heartbeatIntervalMs < 10) throw new Error('Heartbeat interval must be at least 10 ms.');
   const origin = new URL(publicOrigin).origin;
@@ -68,6 +70,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
   const peers = new Map(), tasks = new Set(), upgradeSockets = new Set();
   let closing = false, closePromise;
   const diagnostic = code => { try { logger.error?.(code); } catch { /* logging must not crash the server */ } };
+  const social = createSocialService({ store, onError: diagnostic, moderate: createChatModerator(chatPolicy) });
   function track(task) {
     const promise = Promise.resolve(task).catch(() => diagnostic('ROOM_OPERATION_FAILED'));
     tasks.add(promise); promise.finally(() => tasks.delete(promise)); return promise;
@@ -82,6 +85,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
     else if (ws.readyState === WebSocket.CONNECTING) ws.terminate();
   }
   function leavePeer(peer) {
+    social.leave(peer.social);
     if (peer.id === null || peer.leaveStarted) return;
     peer.leaveStarted = true;
     track(peer.receiveChain.then(() => room.leave(peer.id)));
@@ -182,25 +186,36 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
           let message;
           try { message = JSON.parse(data.toString()); if (!message || typeof message !== 'object' || Array.isArray(message)) throw new Error(); }
           catch { endPeer(ws, 1007, 'Send a valid JSON object.'); return; }
-          if (peer.id === null) return; // admission sends welcome before accepting game commands
           peer.pendingMessages++;
           peer.receiveChain = peer.receiveChain.then(async () => {
-            if (!peer.closed && ws.readyState === WebSocket.OPEN) await room.receive(peer.id, message);
+            // The room can send welcome before social storage finishes loading.
+            // Keep early commands in the same bounded queue until admission is
+            // complete; never silently drop a request the client will await.
+            await peer.admission;
+            if (!peer.closed && peer.id !== null && peer.social && ws.readyState === WebSocket.OPEN) {
+              if (message.type === 'social') await social.receive(peer.social, message);
+              else await room.receive(peer.id, message);
+            }
           }).catch(() => { diagnostic('ROOM_MESSAGE_REJECTED'); endPeer(ws, 1008, 'Invalid multiplayer command.'); })
             .finally(() => { peer.pendingMessages--; });
           track(peer.receiveChain);
         });
-        track((async () => {
+        peer.admission = (async () => {
           try {
             peer.id = await room.join(account, send);
+            if (!peer.closed && !closing) peer.social = await social.join(account, send, (code, reason) => {
+              peer.closed = true; endPeer(ws, code, reason); leavePeer(peer);
+            });
             if (peer.closed || closing) leavePeer(peer);
           } catch (error) {
             const known = error?.code === 'ROOM_FULL' || error?.code === 'ACCOUNT_CONNECTED';
             if (!known) diagnostic('ROOM_JOIN_FAILED');
             send({ type: 'error', code: known ? error.code : 'JOIN_FAILED', message: errorMessage(error) });
             endPeer(ws, error?.code === 'ROOM_FULL' ? 1013 : 1008, errorMessage(error).slice(0, 120));
+            if (peer.id !== null) leavePeer(peer);
           }
-        })());
+        })();
+        track(peer.admission);
       });
     })().catch(() => { diagnostic('WEBSOCKET_UPGRADE_FAILED'); rejectUpgrade(socket, 400, 'WebSocket upgrade failed.'); }));
   });
@@ -242,7 +257,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
         await Promise.all([...peers.values()].map(peer => peer.receiveChain));
         while (tasks.size) await Promise.all([...tasks]);
         const failures = [];
-        for (const release of [() => room.close(), () => mail?.close?.(), () => store.close?.()]) {
+        for (const release of [() => social.close(), () => room.close(), () => mail?.close?.(), () => store.close?.()]) {
           try { await release(); } catch (error) { failures.push(error); }
         }
         await httpClosed;
