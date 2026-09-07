@@ -1,0 +1,197 @@
+{
+  "candidate": "a50c060",
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "viewport": [
+    1440,
+    900
+  ],
+  "phoneViewport": [
+    390,
+    844
+  ],
+  "hdrCanvas": [
+    1000,
+    700
+  ],
+  "checks": [
+    {
+      "name": "Nomad tractor controller journey",
+      "seconds": 57.3,
+      "errors": []
+    },
+    {
+      "name": "four before/after GLBs and actual rig motion",
+      "seconds": 11.0,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "Selene land/walk/mine/fire/camera controller journey",
+      "duration": "1.2 minutes",
+      "errors": []
+    },
+    {
+      "name": "HDR/log-depth texture and beam occlusion",
+      "seconds": 55.5,
+      "errors": []
+    }
+  ],
+  "sharedAtlasTextures": 3,
+  "assetMetrics": [
+    {
+      "item": "rifle-laser",
+      "calls": 3,
+      "triangles": 9611,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.5524999499320984,
+          -0.08111850172281265,
+          -0.05100000277161598
+        ],
+        "max": [
+          0.2209400087594986,
+          0.22200000286102295,
+          0.053829535841941833
+        ]
+      }
+    },
+    {
+      "item": "sidearm-pistol",
+      "calls": 3,
+      "triangles": 2404,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.15299999713897705,
+          -0.0902111679315567,
+          -0.020999999716877937
+        ],
+        "max": [
+          0.14999999105930328,
+          0.09000000357627869,
+          0.020999999716877937
+        ]
+      }
+    },
+    {
+      "item": "mining-laser-tool",
+      "calls": 4,
+      "triangles": 7868,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.6034999489784241,
+          -0.08065185695886612,
+          -0.09853807836771011
+        ],
+        "max": [
+          0.20900000631809235,
+          0.32350000739097595,
+          0.09853808581829071
+        ]
+      }
+    },
+    {
+      "item": "tractor-beam-tool",
+      "calls": 3,
+      "triangles": 5164,
+      "textures": 3,
+      "textured": 1,
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "bounds": {
+        "min": [
+          -0.6020000576972961,
+          -0.08065185695886612,
+          -0.09099999815225601
+        ],
+        "max": [
+          0.20000000298023224,
+          0.27000001072883606,
+          0.09099999815225601
+        ]
+      }
+    }
+  ],
+  "hdr": {
+    "browser": "151.0.7922.173",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "meta": {
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "logDepth": true,
+      "hdrType": 1016,
+      "textures": 3,
+      "muzzle": [
+        0.2900000065565109,
+        -0.2099999999627471,
+        -1.0699999999999998
+      ],
+      "target": [
+        0,
+        0,
+        -4
+      ],
+      "beamEnd": [
+        5.495603971894525e-15,
+        -3.969047313034935e-15,
+        -4.000000000000002
+      ]
+    },
+    "materialDiff": {
+      "count": 92017,
+      "total": 10007694,
+      "max": 169
+    },
+    "beamDiff": {
+      "count": 12656,
+      "total": 1417152,
+      "max": 232
+    },
+    "blocked": {
+      "count": 0,
+      "total": 0,
+      "max": 0
+    },
+    "errors": []
+  },
+  "physicalController": false,
+  "performanceAcceptance": false,
+  "motion": "Original Playwright WebM files retained under /home/cees/.cache/star-agent-tool-art/run04/results; three short consecutive game/rig events, no FPS claim.",
+  "images": {
+    "rifle-laser-before.png": "a3367c419ec670f52ced227842f557036575ab22ef6bc8ff4881369fa945c68c",
+    "rifle-laser-after.png": "0869849fb9cc9dced547e93ca82f6a566339996c80e7bf8f12c6a3e6c17ddfda",
+    "rifle-laser-hands.png": "ec4a6973c6851cacac6294e779eae3253d1cf18d752589f1ec24fd7863ad7cb9",
+    "rifle-laser-side.png": "5eb61f7de329c6916bf62fea5ba1e56a5ec7a418b994459c4b1f3dfa9cfa5428",
+    "sidearm-pistol-before.png": "fa21becc062d02bf2c616f8f781688732d21486b1a0117409a08931eab3d5589",
+    "sidearm-pistol-after.png": "73fbd7ecd1928bce75bb3a0ef373c4e0b8ffe9d3ac377cac2d953531f4dd72cc",
+    "sidearm-pistol-hands.png": "0ae20175dac878dab7799105ba3955da5b8ce4e2fe5130156bf2db97c9461ecc",
+    "sidearm-pistol-side.png": "909b70d1c698599a2f424f956d535d0c27db5099cc4221f14407e6cd5e99d424",
+    "mining-laser-tool-before.png": "6a80c8d266e0e08642d8753c5756ff3c26ffbec33634e7718ef2510a0939e256",
+    "mining-laser-tool-after.png": "4f918c70b1ec423257f4a24df5a7d1c8e1fcd70bd105d358e834bcff8eefd5f8",
+    "mining-laser-tool-hands.png": "3eb94d310d8f3df470d124d54c59f69971e118905f8cd51aabef93bc4b18842a",
+    "mining-laser-tool-side.png": "5c9a0d00389a92176e0080e999e6423f8da3191c46b31f53728a32909858234f",
+    "tractor-beam-tool-before.png": "71db9240625f8e8d7ee30adb3a8673a466eb2006bee3ec937bfcc19c9e532523",
+    "tractor-beam-tool-after.png": "c3ecf19cdab9473a26b27a9477afaf79b7ebf6bea6b7fb7cea75c961e0910417",
+    "tractor-beam-tool-hands.png": "35ea42efd5155f831154d8130a1e8ed41853e2fdc8d40acc137b521135d91f69",
+    "tractor-beam-tool-side.png": "fe1a544e0a0f84511fcac2fc0b177a01654a266635a31c11be49fa96e7691399",
+    "nomad-tractor.png": "63ddec561ffd3dd081e65f713ea202649552ade31fbefc1378b3cf03ad6625b0",
+    "tractor-cargo-phone.png": "ed1c3df8f093a63d689db747c427cd69db56b8af2c7122afb4ac3253edfaa1c5",
+    "comparison.png": "fb0096f65a16d4899e0cbcf60c1c91e9584b3843ab04ef325ff7c54756667eec",
+    "game-cutter.png": "70272ab0c7f21ef6547e9f98a93fccd22160b95e7eb4af8ae0d8cd8932fdd393",
+    "game-rifle-laser.png": "8590e055b16aab1f8bd4725dec1d485f2db3f1bf168c9fd49898049a1ffaf572",
+    "game-sidearm-pistol.png": "c4680f9970764c01e9a01c386a4945bec678fc19e00e284a2a35a35858a8d02b",
+    "game-third-person.png": "aaee3ba69c315710e14f755e46d4082926239f98b04509f0a9ea3e7645ddd4c4",
+    "tool-firing-hdr.png": "dc3362496bf81c0eb97c47a48d43a5ef3211b67e13cdb4a692b1543ca1348106",
+    "tractor-rig-phone.png": "b438507672b4dd72acbe1ef98762d704f28ddcd66955eaf017fad0d530e4f2ec"
+  }
+}

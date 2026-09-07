@@ -7,6 +7,8 @@ import { tradeSite,onTradePad,POST_COST } from '../src/trading/sites.js';
 import { shipPose,aboard,nearCrate,nearGrid } from '../src/cargo/access.js';
 import { crateBounds } from '../src/cargo/grid.js';
 import { constrainShipAttachments } from '../src/ship-attachment-collision.js';
+import { tractorContext } from '../src/cargo/tractor-context.js';
+import { tractorWorldClear,constrainLooseCargo } from '../src/cargo/tractor-physics.js';
 const fail=message=>{throw new Error(message);};
 /** One durable world ledger. All money/cargo/stock writes and loose-resource
  * deductions share a database transaction; publish only after COMMIT. */
@@ -20,7 +22,11 @@ export function createTrading({store,players,world,persistent,flushWrites,now=Da
     return state.terminals[id]?new THREE.Vector3(...state.terminals[id].position).add(new THREE.Vector3(0,1.3,0).applyQuaternion(new THREE.Quaternion(...state.terminals[id].quaternion))):null;
   };
   const terminalReach=(p,id)=>{const point=terminalPoint(id);return point&&p.health>0&&p.nav.mode==='walk'&&p.nav.position.distanceTo(point)<2.8;};
+  const physicalShips=()=>Object.values(state.ships).filter(s=>pose(s)).map(s=>({...s,pose:pose(s),speed:players.get(s.owner).nav.shipSpeed,open:players.get(s.owner).nav.doorProgress>.98,systems:players.get(s.owner).nav.freighter}));
+  const loose=()=>Object.values(state.loose??{});
   function context(p){return {
+    now,
+    tractor:tractorContext({nav:p.nav,ships:physicalShips,loose,worldClear:tractorWorldClear(p.nav,world.station,world.occludes),enabled:()=>p.weapon==='mining-laser-tool'}),
     terminal:id=>terminalReach(p,id),
     docked:(s,id)=>{const n=players.get(s.owner)?.nav;return n&&n.shipId===s.hull&&n.shipSpeed<1&&!n.travel&&(stationed(p,id)||onTradePad(pose(s)?.position,state.terminals[id]));},
     resources:id=>(state.accounts[p.id]?.resources?.[id]??0)+(p.inventory.containers.pack[id]??0),
@@ -36,13 +42,14 @@ export function createTrading({store,players,world,persistent,flushWrites,now=Da
     },
     snapshot(p){
       // Credits only for self. Manifests are physical public cargo, never account details.
-      return {version:state.version,revision:state.revision,account:state.accounts[p.id],ships:Object.values(state.ships).filter(s=>s.owner===p.id||players.has(s.owner)),terminals:Object.values(state.terminals),rocks:Object.entries(state.rocks??{}).filter(([,r])=>p.nav.position.distanceTo(new THREE.Vector3(...r.position))<40).map(([id,r])=>({id,revision:r.revision}))};
+      return {version:state.version,revision:state.revision,account:state.accounts[p.id],ships:Object.values(state.ships).filter(s=>s.owner===p.id||players.has(s.owner)),loose:loose().filter(c=>p.nav.position.distanceTo(new THREE.Vector3(...c.position))<2000),terminals:Object.values(state.terminals),rocks:Object.entries(state.rocks??{}).filter(([,r])=>p.nav.position.distanceTo(new THREE.Vector3(...r.position))<40).map(([id,r])=>({id,revision:r.revision}))};
     },
     attach(p){
-      p.nav.cargoEVA=(a,b)=>constrainCargoEVA(a,b,Object.values(state.ships).filter(s=>pose(s)).map(s=>({...s,pose:pose(s),open:players.get(s.owner).nav.doorProgress>.98,systems:players.get(s.owner).nav.freighter})));
+      Object.defineProperty(p.nav,'carryingCargo',{configurable:true,get:()=>Boolean(state.accounts[p.id]?.carried||loose().some(c=>c.holder===p.id&&c.until>now()))});
+      p.nav.cargoEVA=(a,b)=>{const hit=constrainCargoEVA(a,b,physicalShips());const point=constrainLooseCargo(a,hit.point,loose(),{eva:true});return {point,hit:hit.hit||!point.equals(hit.point)};};
       p.nav.cargoLandingSurface=position=>pads.floorAt(position);
-      p.nav.cargoWalk=(a,b)=>{const ships=Object.values(state.ships).filter(s=>s.owner!==p.id&&pose(s)).map(s=>({...s,pose:pose(s),open:players.get(s.owner).nav.doorProgress>.98,systems:players.get(s.owner).nav.freighter}));const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point);return {...pad,grounded:pad.grounded||foreign.grounded,hit:pad.hit||pad.grounded||foreign.hit};};
-      p.nav.cargoConstrain=(previous,proposed)=>constrainShipAttachments(previous,proposed,(state.ships[shipKey(p.id,p.nav.shipId)]?.crates??[]).map(c=>crateBounds(p.nav.shipId,c)));},
+      p.nav.cargoWalk=(a,b)=>{const ships=physicalShips().filter(s=>s.owner!==p.id);const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point),point=constrainLooseCargo(a,pad.point,loose());return {...pad,point,grounded:pad.grounded||foreign.grounded,hit:pad.hit||pad.grounded||foreign.hit||!point.equals(pad.point)};};
+      p.nav.cargoConstrain=(previous,proposed)=>{const constrained=constrainShipAttachments(previous,proposed,(state.ships[shipKey(p.id,p.nav.shipId)]?.crates??[]).map(c=>crateBounds(p.nav.shipId,c)));return p.nav.toShipLocal(constrainLooseCargo(p.nav.fromShipLocal(previous),p.nav.fromShipLocal(constrained),loose()));};},
     async request(p,m){
       if(p.health<=0)fail('Respawn before handling cargo.');
       await flushWrites(p);

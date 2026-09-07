@@ -5,10 +5,11 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-Latest local promotion: **`f861f8f`**, with checked social tools, SBU cargo and
-flight-controls help. Frontend and API were refreshed together, and existing
-accounts/saves retained in the same persistent database. Refresh the browser to
-use protocol 3; [delivery evidence](qa/social-cargo-integration.md) records checks.
+Latest local promotion: **`638a5e4`**, with the physical cargo tractor and Blender
+handheld pass, preserving checked social tools, wildlife and player optimisation.
+Frontend and API were refreshed together, retaining the same persistent database.
+Refresh the browser to use protocol 4; [delivery evidence](qa/handheld-tools.md)
+records the checked exports, gameplay journeys and local verification.
 
 ## Multiplayer chat and friends
 
@@ -208,7 +209,7 @@ journey. That journey exercises assigned deck spawns, COMMS/transfers, controlle
 jump, physical EVA exit/return and held-input suppression across menu, focus and
 controller reconnection. No browser errors were recorded. Feature-wide checks and
 captures are in `docs/qa/multiplayer-hangar-physics.md`. That checkpoint used
-protocol 2; the current cargo/social update uses protocol 3. The frontend and API
+protocol 2; the current tractor update uses protocol 4. The frontend and API
 must be updated together; restart `dev:all` after integration.
 
 ## Space patrol combat
@@ -337,6 +338,7 @@ inherit launch velocity; collision and lead prediction use that trajectory.
 evidence and limits. This is a local development checkpoint, not release approval.
 
 
+
 ### Integrated creature development checkpoints
 
 The development build includes offline Pyrebear and Suloher encounters. With development
@@ -390,3 +392,24 @@ The preview/API restarted once with the same persistent database. Refresh the
 client to use the updated modules. Final combined checks pass 876 unit tests,
 125 SQL-enabled multiplayer/UI tests and the production build; two focused
 browser comparisons preserve exact pixels and controller/state behaviour.
+
+## Cargo tractor and handheld finish
+
+The physical tractor and four-tool Blender pass are live at
+http://127.0.0.1:5178/ from runtime `638a5e4`. Open **Menu → Trade → Cargo → Equip
+tractor**, aim at a crate and hold **RT** to move it. Use D-pad up/down for distance,
+left to align, **X** to secure to a nearby compatible grid, and right to holster.
+Only 1 SBU boxes can be carried by hand; the beam handles 1–64 SBU, with larger
+crates moving more slowly. See [all controls and limits](cargo-tractor.md).
+
+The tractor now has its own open induction head. It, the mining cutter, laser
+rifle and sidearm use authored textures, contact shading and service plates, with
+preserved grips and muzzle positions. Editable Blender sources are in
+`assets/handheld-tools/`; [before/after views](qa/handheld-tools/comparison.png) and
+[rendered gameplay checks](qa/handheld-tools.md) are available for review.
+
+The paired client/API restart uses protocol 4 without a schema migration or save
+reset. Four final browser cases passed, including physical controller mining,
+both weapons and cargo securing. The live four GLB hashes and eight served source
+modules match the checked candidate. This is builder-tested local development;
+independent visual and physical-controller acceptance remain separate.

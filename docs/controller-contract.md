@@ -1,5 +1,12 @@
 # Controller is a feature requirement
 
+Cargo tractor: Menu → Trade → Cargo equips the handheld beam. Hold RT to lock and
+guide a crate; sticks retain move/aim, D-pad up/down changes hold distance, left
+aligns to the nearby ship and right holsters. X secures a compatible nearby grid.
+These D-pad actions consume the existing equipment/quick-item shortcuts only in
+tractor mode. Menus and focus/device loss stop the beam and retain the shared
+neutral-input gate. See [tractor controls](cargo-tractor.md).
+
 Every playable feature must work with a standard controller from entry through exit.
 A trigger value in a unit test is insufficient: players must be able to discover the
 action, equip its tool, reach its target, activate it, inspect the result and return

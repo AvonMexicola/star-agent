@@ -11,6 +11,7 @@ export function createTradingUI(api,nav){
   const button=(label,key,fn,disabled=false)=>{const b=document.createElement('button');b.textContent=label;b.dataset.controllerKey=key;b.disabled=disabled;b.onclick=fn;return b;};
   const select=(list,current,fn,prefix)=>{const wrap=document.createElement('div');wrap.className='trade-choices';for(const o of list){const b=button(o.label,`${prefix}-${o.id}`,()=>{fn(o.id);render();},o.disabled);b.setAttribute('aria-pressed',String(o.id===current));wrap.append(b);}return wrap;};
   async function run(fields){if(busy)return;const focusKey=document.activeElement?.dataset?.controllerKey;busy=true;message='Saving transaction…';render();try{const result=await api.command({...fields,ship:shipId,terminal,source});message=result.message??'Transaction saved.';}catch(e){message=e.message;}finally{busy=false;render();if(focusKey)dialog.querySelector(`[data-controller-key="${CSS.escape(focusKey)}"]:not(:disabled)`)?.focus({preventScroll:true});}}
+  async function tractor(){if(busy)return;busy=true;try{await api.tractor.equip();dialog.close();}catch(e){message=e.message;}finally{busy=false;if(dialog.open)render();}}
   function render(){
     const focused=document.activeElement?.dataset?.controllerKey,s=api.snapshot(),ships=s.ships;
     if(!ships.some(h=>h.id===shipId))shipId=ships.find(h=>h.hull===nav.shipId&&h.owner===s.owner)?.id??ships[0]?.id??'';
@@ -36,13 +37,13 @@ export function createTradingUI(api,nav){
       }
       if(!near||!dock){const p=document.createElement('p');p.className='trade-reason';p.textContent=!near?'Walk to the terminal to trade.':'Land the selected ship at this terminal’s pad first.';content.append(p);}
     }else if(view==='cargo'){
+      selection.append(button('Equip tractor beam','equip-tractor',tractor,busy||!['walk','eva'].includes(nav.mode)||Boolean(s.account?.carried)));
       const crates=ship?.crates??[];totalPages=Math.max(1,Math.ceil(crates.length/3));page=Math.min(page,totalPages-1);
       for(const c of crates.slice(page*3,page*3+3)){
         const row=document.createElement('article'),text=document.createElement('div'),title=document.createElement('h3');title.textContent=`${c.sbu} SBU · ${resourceById(c.resource).name}`;text.append(title);
         const sub=document.createElement('p');sub.textContent=`${c.grid} · ${c.sbu*16} kg packed resources`;text.append(sub);const actions=document.createElement('div');actions.className='trade-row-actions';
-        actions.append(button(c.sbu===1?'Carry':'Needs cargo handler',`take-${c.id}`,()=>run({op:'take',crate:c.id}),busy||c.sbu!==1||Boolean(s.account?.carried)||!api.canTake(ship,c)));
+        actions.append(c.sbu===1?button('Carry',`take-${c.id}`,()=>run({op:'take',crate:c.id}),busy||Boolean(s.account?.carried)||!api.canTake(ship,c)):button('Tractor beam',`tractor-${c.id}`,tractor,busy||Boolean(s.account?.carried)||!['walk','eva'].includes(nav.mode)));
         if(near&&dock&&ship.owner===s.owner){actions.append(button(own?'List for sale':'Sell',`sell-${c.id}`,()=>run({op:own?'stock':'sell',crate:c.id,resource:c.resource,sbu:c.sbu}),busy||Boolean(t&&!own)));}
-        if(ship.owner!==s.owner)actions.append(button('Salvage to my ship',`haul-${c.id}`,()=>run({op:'haul',crate:c.id,destination:s.ships.find(h=>h.owner===s.owner&&h.hull===nav.shipId)?.id}),busy));
         row.append(text,actions);content.append(row);
       }
       if(!crates.length){const p=document.createElement('p');p.textContent='Cargo grid empty. Buy a shipment or pack your mined resources at a terminal.';content.append(p);}
