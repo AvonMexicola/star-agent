@@ -58,3 +58,15 @@ final-shutdown snapshot was prepared to preserve any account created before cuto
 Shared-build cutover and its exact integrated commit are recorded in HANDOFF.
 This is local development delivery, with independent review pending. Production
 deployment and SMTP delivery are outside this change.
+
+## Shared preview integration
+
+Source `b100d8f` is integrated in `4ebf807`, retaining controller source `741d82a`.
+Clean `npm ci` regenerated the Prisma client. The merged runner passes all three
+persistence/restore/failure tests, repository checks and build. Its production
+two-pilot controller journey passes again in 2.0 minutes with zero recorded browser
+errors. A synthetic HTTP account/session also survived a controlled restart of
+the actual shared service at port5178 and its native PostgreSQL database51224.
+The fixture was deleted by exact ID/email afterward; pre-existing/remaining
+accounts both0. All hosted checks on PR59 are green. The running local preview is
+managed by `star-agent-persistent-preview.service`; see HANDOFF for restart details.

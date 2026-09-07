@@ -1,6 +1,6 @@
 # SA-DB-001 — keep multiplayer accounts across preview restarts
 
-Status: review. Milestone M0. Sponsor: Cees / @AvonMexicola.
+Status: integrated locally. Milestone M0. Sponsor: Cees / @AvonMexicola.
 Implementation: Codex persistence session. Independent review pending.
 Branch: `fix/persistent-local-accounts`, base `a748be10`.
 
