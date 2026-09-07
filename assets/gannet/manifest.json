@@ -2,10 +2,10 @@
   "model": "Gannet T-06",
   "builder": "blender/build_gannet.py",
   "layoutSha256": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
-  "builderSha256": "7b7a6a92b9c6540dbac2c446c02bb87dabc5583d26e14ba89a02fb515e84b9f5",
+  "builderSha256": "4f0b622c014e3e0b07568c1c771da68eb11e5f32737083b672c261c32e15ded2",
   "geometryHelperSha256": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
   "inputHashes": {
-    "blender/build_gannet.py": "7b7a6a92b9c6540dbac2c446c02bb87dabc5583d26e14ba89a02fb515e84b9f5",
+    "blender/build_gannet.py": "4f0b622c014e3e0b07568c1c771da68eb11e5f32737083b672c261c32e15ded2",
     "blender/fighter_geometry.py": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
     "blender/gannet_textures.py": "b05002d33b11604b61ecf42b8f7174b86d5c0fdee24b0e0bdfdc683b6e075b91",
     "assets/gannet/layout.json": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
@@ -27,7 +27,7 @@
       11.0
     ]
   },
-  "sourceTriangles": 40010,
+  "sourceTriangles": 39966,
   "sourceMeshes": 33,
   "materials": [
     "Gannet / approved Meridian emblem",
@@ -45,18 +45,18 @@
   },
   "status": "Authored geometry/material checkpoint; runtime visual and physical game acceptance pending",
   "asset": "public/models/gannet.glb",
-  "bytes": 2423964,
-  "triangles": 40010,
+  "bytes": 2422260,
+  "triangles": 39966,
   "meshPrimitives": 33,
   "nodes": 96,
   "images": 4,
   "textureFormat": "WebP",
-  "sha256": "af58046dbbbed92f7a291e72e6d1331125dd43ca80f7f69a15a5799fa3d2082e",
-  "sourceSha256": "9484e27c8344ec72636b930c9b9a342c7c0685cbdd9debd4c7b6c60aae4fa946",
-  "collisionSha256": "f56400334c3fe7a2df35a90b9652d1d7a5b135d34831168ab91223a37dbb2e25",
+  "sha256": "3ec6d45d7468454f7e2588192323518024882fee9492674b5a984569872339cd",
+  "sourceSha256": "b64ef93ec331041c5684b586a21e4f66edaf213e1a6fe354c666fa4d958c7bcc",
+  "collisionSha256": "3f96f38d5f9b8a9c2ce7015816bdf332af060fd2db13171dcdbb3bb3e3d02b1f",
   "packing": {
-    "inputBytes": 4095544,
-    "outputBytes": 3184648,
+    "inputBytes": 4092976,
+    "outputBytes": 3182944,
     "maximumPositionErrorMetres": 0.00030769028348416394,
     "maximumNormalErrorDegrees": 0.36234294148684904,
     "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"

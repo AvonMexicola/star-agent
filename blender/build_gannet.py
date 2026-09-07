@@ -112,7 +112,6 @@ for side in (-1,1):
     rod('Pressure glazing waist rail',(side*1.91,2.26,-10.62),(side*2.03,2.26,-7.50),.053,1,cabin)
     rod('Upper cockpit side rail',(side*1.80,4.16,-10.1),(side*2.04,4.20,-7.5),.055,2,cabin)
 panel('Forward pressure glazing',[(-1.84,2.29,-10.75),(1.84,2.29,-10.75),(1.75,4.12,-10.10),(-1.75,4.12,-10.10)],parent=cabin,mat=glass,thick=.018)
-rod('Central windscreen mullion',(0,2.27,-10.76),(0,4.16,-10.09),.043,1,cabin)
 rod('Windscreen top seal',(-1.78,4.17,-10.09),(1.78,4.17,-10.09),.06,1,cabin)
 rod('Windscreen lower seal',(-1.92,2.26,-10.77),(1.92,2.26,-10.77),.06,1,cabin)
 prism('Faceted cockpit crown',[(-1.80,-10.12),(1.80,-10.12),(2.25,-8.90),(2.26,-7.20),(-2.26,-7.20),(-2.25,-8.90)],4.33,4.17,0)

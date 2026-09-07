@@ -207,3 +207,26 @@ test('actual authored cabin, vestibule and lift floors support the clear walking
   }
   assert.ok(count>130);
 });
+
+test('canonical pilot forward rays cross retained pressure glass without an opaque centre brace',async()=>{
+  const {scene}=await asset();pose(scene,{gearProgress:1,hatchProgress:0,liftY:P.high});
+  const glassNames=new Set();scene.traverse(n=>{if(n.isMesh&&/pressure.glazing/i.test(n.name))glassNames.add(n.name);});
+  assert.ok(glassNames.size,'actual pressure-glazing mesh must be retained');
+  const solid=soup(scene,glassNames),glass=[];
+  scene.traverse(n=>{if(glassNames.has(n.name))glass.push(...soup(n));});
+  const eye=point(L.seatEye),failures=[];
+  function first(ray,triangles){
+    const hit=new THREE.Vector3();let distance=Infinity;
+    for(const {triangle:p} of triangles)if(ray.intersectTriangle(p.a,p.b,p.c,false,hit)){
+      const d=hit.distanceTo(eye);if(d>.01&&d<20)distance=Math.min(distance,d);
+    }
+    return distance;
+  }
+  for(const pitch of [-5,0,10])for(const yaw of [-8,0,8]){
+    const direction=point([Math.sin(yaw*Math.PI/180),Math.tan(pitch*Math.PI/180),-Math.cos(yaw*Math.PI/180)]).normalize();
+    const ray=new THREE.Ray(eye,direction),pane=first(ray,glass),obstacle=first(ray,solid);
+    if(!Number.isFinite(pane))failures.push(`missing actual glass at yaw ${yaw}, pitch ${pitch}`);
+    if(Number.isFinite(obstacle))failures.push(`opaque obstacle ${obstacle.toFixed(6)} m ahead at yaw ${yaw}, pitch ${pitch}`);
+  }
+  assert.deepEqual(failures,[],'the main pilot sightline must remain free of central structure');
+});
