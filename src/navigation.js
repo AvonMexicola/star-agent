@@ -54,8 +54,11 @@ export class Navigation {
       if(['Space','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
     if(this.mode==='crashed')return;
       if(['KeyW','KeyA','KeyS','KeyD','Space','KeyC'].includes(e.code))this.onTakeControl?.();
-      this.controllerActive=false;this.keys.add(e.code);if(e.repeat)return;
+      this.controllerActive=false;
+      if(this.roverOccupied&&e.repeat&&!this.keys.has(e.code))return;
+      this.keys.add(e.code);if(e.repeat)return;
       if(this.buildActive)return;
+      if(this.vehicle?.key(e))return;
       if(e.code==='KeyG'){if(this.mode==='eva'||this.mode==='walk'&&!this.insideShip)this.toggleEVA();else this.toggleGear();return;}
       if(e.code==='KeyL'){this.toggleLights();return;}
       if(e.code==='KeyN'){this.travel?this.cancelTravel():this.beginFreeTravel();return;}
@@ -255,6 +258,7 @@ export class Navigation {
     if(this.stellarThermal.destroyed)this.destroyFromStar(this.stellarThermal.reason);
   }
   look(yaw,pitch,direct=this.brakeFlight??false){
+    if(this.vehicle?.look(yaw,pitch))return;
     if(this.mode==='destroyed'||this.mode==='crashed'||this.travel||this.openingActive||!this.enabled)return;
     if(this.mode==='flight'&&!this.powered)return;
     const handling=shipHandling(this.shipId);
@@ -291,6 +295,7 @@ export class Navigation {
   get interaction(){
     if(this.kestrelAccess?.busy)return `KESTREL · ${this.kestrelAccess.phase.toUpperCase()} · PORT LADDER`;
     if(this.kestrelAccess&&this.mode==='flight')return 'SINGLE-SEAT COCKPIT · LAND OR DOCK TO DISEMBARK';
+    if(this.vehicle?.interaction)return this.vehicle.interaction;
     if(this.kestrelAccess&&this.mode==='landed')return 'F · OPEN CANOPY & DESCEND PORT LADDER';
     if(this.buildActive)return 'BUILD MODE · SELECT A PIECE OR EXIT TO INTERACT';
     const baseInteraction=this.baseInteraction?.();if(baseInteraction)return baseInteraction;
@@ -466,6 +471,7 @@ export class Navigation {
     this.notify('Hangar gravity engaged. Walk / jump; the open doorway leads to EVA.');
   }
   embark(){
+    if(this.vehicle?.interact())return;
     if(this.mode==='destroyed')return;
     if(this.mode==='crashed')return;
     if(this.travel)return;
@@ -676,7 +682,8 @@ export class Navigation {
     if(pad.used)this.controllerActive=true;
     if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
-    if(!this.enabled||document.querySelector('dialog[open]')){this.resetSteering();return;}
+    if(!this.enabled||document.querySelector('dialog[open]')){this.resetSteering();this.vehicle?.step(0,pad);return;}
+    if(this.vehicle?.step(dt,pad))return;
     this.updateLandingGear(dt);
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
     if(this.travel){const before=this.position.clone();this.resetSteering();if(pad.brake)this.cancelTravel();this.updateTravel(dt);this.updateStellarThermal(dt,before);return;}
@@ -793,6 +800,7 @@ export class Navigation {
         this.position.copy(result.point);
         if(result.hit){this.jumpHeight=Math.max(0,bodyAltitude(this.position,this.body)-SHIP_LAYOUT.eyeHeight);if(result.grounded&&this.jumpVelocity<0)this.jumpVelocity=0;}
       }
+      if(this.vehicle)this.position.copy(this.vehicle.constrainWalker(previous,this.position));
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
       this.advanceFlight(dt,{moveForward,strafe,vertical:axis('Space','KeyC',pad.vertical),turn,tilt,roll:axis('KeyE','KeyQ',pad.roll)});

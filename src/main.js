@@ -1,4 +1,5 @@
 import { controllerHints } from './controller-hints.js';
+import {createMiningRover} from './mining-rover.js';
 import {createSpaceCombat} from './combat/space-combat.js';
 import { rockTextureState } from './rock-material.js';
 import { Miasma } from './miasma.js';
@@ -192,7 +193,9 @@ try {
   landmarks.useClearings=()=>!nav.multiplayer?.connected;
   nav.surfaceObstacles=createLandmarkObstacles(createBuildObstacles(mining,build),landmarks,nav);
   nav.baseAction=()=>build.interact();nav.baseInteraction=()=>build.interaction;
-  nav.buildingRaycast=(start,direction,range)=>build.raycast(start,direction,range);
+  nav.buildingRaycast=(start,direction,range,envelope)=>build.raycast(start,direction,range,envelope);
+  const rover=devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1'?createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&nav.shipId==='atlas'}):null;
+  nav.vehicle=rover;
   const useQuick=index=>{const result=loadout.useQuick(index);nav.notify(result.message);};
   const loadoutBar=createLoadoutBar({loadout,nav,onSelect:id=>{if(build.active)build.cancel();miningTool.select(id);},onUse:useQuick,open:()=>inventoryUI.openEquipment()});
   document.addEventListener('keydown',e=>{if(e.repeat||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||document.querySelector('dialog[open]'))return;if(e.code==='KeyK'){e.preventDefault();inventoryUI.openEquipment();}else if(!build.active&&nav.enabled&&nav.focused&&['walk','eva'].includes(nav.mode)&&/^Digit[5-8]$/.test(e.code))useQuick(Number(e.code.slice(5))-5);});
@@ -409,12 +412,14 @@ try {
     if(nav.berthRest||nav.berthTransition)return;
     if(opening?.active||transiting||!nav.enabled||inventoryUI.open||document.querySelector('dialog[open]'))return;
     if(!shipCamera.toggle(nav.mode))return;
+    if(rover?.occupied){notify(shipCamera.playerExternal?'Burrow chase camera. 4 returns to its cockpit.':'Burrow cockpit. 4 opens its chase camera.');return;}
     if(nav.mode==='walk'||nav.mode==='eva'){notify(shipCamera.playerExternal?'Third-person view. 4 returns to first person.':'First-person view. 4 shows your character.');return;}
     notify(shipCamera.external?'External ship view. Flight controls unchanged; 4 returns to cockpit.':'Cockpit view. 4 shows the ship.');
   }
   $('camera-button').addEventListener('click',toggleCamera);
   document.addEventListener('keydown',event=>{if(isShipCameraKey(event)){event.preventDefault();toggleCamera();}});
   async function transit(name){
+    if(rover?.occupied||rover?.busy){notify('Leave the rover cabin before using quick transit.');return;}
     // Elevator travel closes its dialog before the fade ends, while navigation
     // stays paused. A second transit must wait for that owner to release control.
     if(multiplayer.connected){notify('Quick transit is unavailable in shared flight. Use the system map drive.');return;}
@@ -495,6 +500,7 @@ try {
     if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
     if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
+    if(rover?.occupied&&!pad.shortcuts?.size){if(pad.pressed.has(8))rover.openCargo();return;}
     controllerUI.update(pad,dt);flightEffects.controller(pad);
   };
   const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();gameplayMenu.open('ship');});document.querySelector('.menu-actions').append(systemsHelp);
@@ -514,9 +520,9 @@ try {
     $('keyboard-hints').hidden=controller;$('controller-hints').hidden=!controller;
     const onFoot=nav.mode==='walk'||nav.mode==='eva',eva=nav.mode==='eva';document.body.classList.toggle('on-foot',onFoot);
     const canControllerBuild=build.controllerAvailable;
-    const hints=nav.berthRest?[[controller?'X':'F','LEAVE BERTH'],[controller?'RS':'ARROWS','LOOK'],[controller?'VIEW':'I','BACKPACK']]:controller?(nav.controllerShortcutModifier?[['LB + RB','HOLD'],['↑','DRIVE ON / OFF'],['↓','GEAR'],['←',onFoot?'FLASHLIGHT':'LIGHTS'],['→','CAMERA'],['MENU','GRAPHICS']]:controllerHints({mode:nav.mode,insideShip:nav.insideShip,dockedAtStation:nav.dockedAtStation,canBuild:canControllerBuild,tool:loadout.item})):onFoot?[['WASD','MOVE'],[eva?'SPACE / C':'SPACE',eva?'RISE / LOWER':'JUMP'],['T / MOUSE',loadout.item==='mining-laser-tool'?'MINE':'FIRE'],['F','INTERACT'],['I / K','PACK / GEAR'],['L','FLASHLIGHT'],['M','MAP']]:[['WASD','MOVE'],['SPACE / C','UP / DOWN'],['B','LAND / LAUNCH'],['N','DRIVE'],['G','GEAR'],['L','LIGHTS'],['F','INTERACT / EVA'],['M','MAP']];
+    const hints=nav.roverOccupied?(controller?[['LS','DRIVE / STEER'],['RS','AIM CUTTERS'],['RT','TWIN BEAMS'],['LT','BRAKE'],['X','EXIT'],['Y','ATLAS LIFT'],['VIEW','ORE BINS'],['MENU','COMMANDS']]:[['WASD','DRIVE / STEER'],['ARROWS','AIM CUTTERS'],['T / MOUSE','TWIN BEAMS'],['X','BRAKE'],['F','EXIT'],['G','ATLAS LIFT'],['I','ORE BINS'],['4','CAMERA']]):nav.berthRest?[[controller?'X':'F','LEAVE BERTH'],[controller?'RS':'ARROWS','LOOK'],[controller?'VIEW':'I','BACKPACK']]:controller?(nav.controllerShortcutModifier?[['LB + RB','HOLD'],['↑','DRIVE ON / OFF'],['↓','GEAR'],['←',onFoot?'FLASHLIGHT':'LIGHTS'],['→','CAMERA'],['MENU','GRAPHICS']]:controllerHints({mode:nav.mode,insideShip:nav.insideShip,dockedAtStation:nav.dockedAtStation,canBuild:canControllerBuild,tool:loadout.item})):onFoot?[['WASD','MOVE'],[eva?'SPACE / C':'SPACE',eva?'RISE / LOWER':'JUMP'],['T / MOUSE',loadout.item==='mining-laser-tool'?'MINE':'FIRE'],['F','INTERACT'],['I / K','PACK / GEAR'],['L','FLASHLIGHT'],['M','MAP']]:[['WASD','MOVE'],['SPACE / C','UP / DOWN'],['B','LAND / LAUNCH'],['N','DRIVE'],['G','GEAR'],['L','LIGHTS'],['F','INTERACT / EVA'],['M','MAP']];
     $('controller-hints').classList.toggle('utility-shortcuts',controller&&nav.controllerShortcutModifier);
-    const hintsNode=$(controller?'controller-hints':'keyboard-hints'),hintMode=`${controller}-${nav.mode}-${nav.berthRest}-${nav.insideShip}-${nav.dockedAtStation}-${loadout.item}-${nav.controllerShortcutModifier}-${canControllerBuild}`;
+    const hintsNode=$(controller?'controller-hints':'keyboard-hints'),hintMode=`${controller}-${nav.roverOccupied}-${nav.mode}-${nav.berthRest}-${nav.insideShip}-${nav.dockedAtStation}-${loadout.item}-${nav.controllerShortcutModifier}-${canControllerBuild}`;
     if(hintsNode.dataset.mode!==hintMode){hintsNode.innerHTML=hints.filter(([,label])=>!(label==='JUMP'&&nav.insideShip)&&!(label==='SUIT'&&(nav.insideShip||nav.dockedAtStation))).map(([key,label])=>`<span><kbd>${key}</kbd> ${label}</span>`).join('');hintsNode.dataset.mode=hintMode;}
     const nearMoon=nav.body.id==='selene',onPyre=nav.body.id==='pyre',onMiasma=nav.body.id==='miasma',onStar=nav.body.star===true;document.body.classList.toggle('surveying-moon',nearMoon);
     const resources=nearMoon?moonResources(...nav.normal.toArray()):null;resourceLegend.hidden=!nearMoon||onFoot;
@@ -549,11 +555,11 @@ try {
     $('altitude-meter').style.width=`${Math.min(100,Math.log10(alt+1)/7*100)}%`;
     const lat=Math.asin(n.y)*180/Math.PI,lon=Math.atan2(n.x,n.z)*180/Math.PI;
     $('latitude').textContent=`${Math.abs(lat).toFixed(3)}° ${lat>=0?'N':'S'}`;$('longitude').textContent=`${Math.abs(lon).toFixed(3)}° ${lon>=0?'E':'W'}`;
-    const mode=nav.mode==='destroyed'||nav.mode==='crashed'?'SHIP DESTROYED':onStar?'STELLAR APPROACH':onMiasma?(nav.mode==='walk'?'MIASMA EXPLORATION':nav.mode==='landed'?'LANDED · MIASMA':alt>MIASMA_ATMOSPHERE.height?'MIASMA ORBIT':'MIASMA · TOXIC ATMOSPHERE'):onPyre?(nav.mode==='walk'?'PYRE EXPLORATION':nav.mode==='landed'?'LANDED · PYRE':'PYRE FLIGHT'):nav.mode==='eva'?'EVA · SUIT THRUSTERS':nav.cabinFlight?'IN-FLIGHT CABIN':nearMoon?(nav.mode==='walk'?'LUNAR EXPLORATION':nav.mode==='landed'?'LANDED · SELENE':'LUNAR FLIGHT'):nav.dockedAtStation?(nav.mode==='walk'?'STATION EXPLORATION':'DOCKED'):nav.mode==='walk'?'SURFACE EXPLORATION':nav.mode==='landed'?'LANDED':flightEnv.regime==='SPACE'?'SPACE FLIGHT':flightEnv.regime==='TRANSITION'?`TRANSITION · ATMO ${Math.round(flightEnv.atmosphereFraction*100)}%`:'ATMOSPHERIC FLIGHT';
+    const mode=nav.roverOccupied?'BURROW · GROUND VEHICLE':nav.mode==='destroyed'||nav.mode==='crashed'?'SHIP DESTROYED':onStar?'STELLAR APPROACH':onMiasma?(nav.mode==='walk'?'MIASMA EXPLORATION':nav.mode==='landed'?'LANDED · MIASMA':alt>MIASMA_ATMOSPHERE.height?'MIASMA ORBIT':'MIASMA · TOXIC ATMOSPHERE'):onPyre?(nav.mode==='walk'?'PYRE EXPLORATION':nav.mode==='landed'?'LANDED · PYRE':'PYRE FLIGHT'):nav.mode==='eva'?'EVA · SUIT THRUSTERS':nav.cabinFlight?'IN-FLIGHT CABIN':nearMoon?(nav.mode==='walk'?'LUNAR EXPLORATION':nav.mode==='landed'?'LANDED · SELENE':'LUNAR FLIGHT'):nav.dockedAtStation?(nav.mode==='walk'?'STATION EXPLORATION':'DOCKED'):nav.mode==='walk'?'SURFACE EXPLORATION':nav.mode==='landed'?'LANDED':flightEnv.regime==='SPACE'?'SPACE FLIGHT':flightEnv.regime==='TRANSITION'?`TRANSITION · ATMO ${Math.round(flightEnv.atmosphereFraction*100)}%`:'ATMOSPHERIC FLIGHT';
     $('mode-label').textContent=mode;$('biome').textContent=onStar?'OUR STAR · CORONA':onMiasma?`MIASMA · ${miasmaSurface(n.x,n.y,n.z).region}`:onPyre?`PYRE · ${pyreRegion(n.x,n.y,n.z)}`:nearMoon?`SELENE · ${moonRegion(n.x,n.y,n.z)}`:nav.stationDistance<500?'AEON ORBITAL':alt>70000?'EXOSPHERE':biomeAt(n.x,n.y,n.z);$('fps').textContent=`${fps} FPS`;
     $('flight-state').classList.toggle('base-target',Boolean(build.nearbyInteraction()));
     $('state-text').textContent=nav.mode==='crashed'?'CRITICAL IMPACT · FLIGHT SYSTEMS OFFLINE':nav.stationLift?'UNDOCKING':nav.autoland?(nav.stationDistance<500?'DOCKING ASSIST':'LANDING ASSIST'):nav.mode==='walk'||nav.mode==='landed'?nav.interaction:nav.stationDistance<500?(station.doorsOpen<.98?'HANGAR DOORS OPENING':nav.canDock?'B · DOCK ON DECK':'FLY OVER THE CENTRAL PAD'):nav.boost?'BOOST ENGAGED':'FREE FLIGHT';
-    $('drive-label').textContent=nav.mode==='eva'?`EVA · ${nav.speed.toFixed(1)} m/s`:!nav.powered?'MAIN POWER OFF':nav.cabinFlight?(nav.flightAssist?'COURSE HOLD':'INERTIAL COAST'):nav.mode==='walk'?'ON FOOT':nav.autoland?'AUTOLAND':nav.flightAssist?`ASSIST ×${nav.speedScale.toFixed(1)}`:'INERTIAL · V TO ASSIST';
+    $('drive-label').textContent=nav.roverOccupied?'WHEELED DRIVE':nav.mode==='eva'?`EVA · ${nav.speed.toFixed(1)} m/s`:!nav.powered?'MAIN POWER OFF':nav.cabinFlight?(nav.flightAssist?'COURSE HOLD':'INERTIAL COAST'):nav.mode==='walk'?'ON FOOT':nav.autoland?'AUTOLAND':nav.flightAssist?`ASSIST ×${nav.speedScale.toFixed(1)}`:'INERTIAL · V TO ASSIST';
     if(travel){$('mode-label').textContent='RELATIVISTIC DRIVE';$('drive-label').textContent='0.9c MAX';$('state-text').textContent=travel.aborting?'ABORT BRAKING':travel.manual&&travel.phase==='spooling'?'HEADING LOCKED · SPOOLING':travelPhaseLabel(travel.phase);}
     if(!nav.powered&&nav.mode==='flight')$('state-text').textContent=nav.kestrelAccess?'P · MAIN POWER ON':'P · MAIN POWER ON / F · LEAVE SEAT';
     if(controller){$('state-text').textContent=$('state-text').textContent.replace(/\bF ·/g,'X / □ ·').replace(/\bB ·/g,'Y / △ ·').replace('P · MAIN POWER ON','MENU · MAIN POWER');$('drive-label').textContent=$('drive-label').textContent.replace('V TO ASSIST','R3 TO ASSIST');}
@@ -619,10 +625,11 @@ try {
       clipStation:(start,end,orientation)=>station.constrainStep(start,end,orientation,true).point,
       clipShip:nav.shipPosition?(start,end)=>clipShipCamera(start,end,ship,point=>nav.toShipLocal(point)):undefined,
     });
+    rover?.camera(shipCamera,nav.shipPosition?(start,end)=>clipShipCamera(start,end,ship,point=>nav.toShipLocal(point)):null);
     const onFoot=nav.mode==='walk'||nav.mode==='eva';
     if(!opening?.active){
       character.setHeadHidden(false);
-      character.setVisible(onFoot&&shipCamera.active&&!nav.kestrelAccess?.busy);
+      character.setVisible(onFoot&&shipCamera.active&&!nav.kestrelAccess?.busy&&!nav.roverOccupied);
     }
     if(onFoot&&!opening?.active){
       const eva=nav.mode==='eva',up=eva?new THREE.Vector3(0,1,0).applyQuaternion(nav.orientation):playerUp(nav),feet=nav.position.clone().addScaledVector(up,-SHIP_LAYOUT.eyeHeight);
@@ -636,7 +643,7 @@ try {
     character.placeCameraRelative(origin);
     remotePlayers.update(dt,origin);
     const fighterCockpit=nav.shipId==='kestrel'&&!shipCamera.active&&['flight','landed'].includes(nav.mode);
-    const viewFov=fighterCockpit?76:52;
+    const viewFov=nav.roverOccupied?76:fighterCockpit?76:52;
     if(!opening?.placeCamera(camera,origin)){
       if(camera.fov!==viewFov){camera.fov=viewFov;camera.updateProjectionMatrix();}
       // The seated interceptor view includes the side MFDs without moving the
@@ -654,7 +661,7 @@ try {
     shipMarker.update(innerWidth,innerHeight);
     navigationTargets.update(dt,{width:innerWidth,height:innerHeight,origin,orientation:camera.quaternion});
     moon.update(nav.position,origin,elapsed,!nav.insideShip,nav.shipPosition);
-    landmarks.update(origin,camera);mining.update(origin);build.update(dt,origin);miningTool.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
+    landmarks.update(origin,camera);mining.update(origin);build.update(dt,origin);miningTool.update(dt,origin);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
     pyre.update(origin,origin);
     miasma.update(origin,origin,elapsed,nav.shipPosition);
     // Distant worlds as bright points: Pyre from Aeon and Selene, Aeon from Pyre.
@@ -691,7 +698,7 @@ try {
     combat.update(dt,origin,{weapon:flightEffects.state.weapon,suspended:transiting||!nav.enabled||!nav.focused||Boolean(document.querySelector('dialog[open]'))});
     flightEffects.update(dt,origin,{suspended:transiting||!nav.enabled||!nav.focused||Boolean(document.querySelector('dialog[open]'))});
     audio.flyby?.update([...remotePlayers.peers].filter(([,entry])=>entry.ship.visible).map(([id,entry])=>({id,position:entry.shipPosition})),origin,camera.quaternion,realDt,{active:!transiting&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]')});
-    audio.gameplay?.update(nav,dt,{active:!transiting&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]'),mining:effects.miningInput,heat:miningTool.equipment.heat,overheated:miningTool.equipment.overheated});
+    audio.gameplay?.update(nav,dt,{active:!transiting&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]'),mining:rover?.audioMining??effects.miningInput,heat:miningTool.equipment.heat,overheated:miningTool.equipment.overheated});
     audio.update({throttle:Math.min(1,nav.engineAcceleration.length()/25),powered:nav.powered,speed:nav.shipSpeed,altitude,musicAltitude:nav.flightEnvironment.altitude,verticalSpeed:(nav.cabinFlight?nav.shipVelocity:nav.velocity).dot(nav.normal),mode:nav.cabinFlight?'flight':nav.mode,boost:!nav.cabinFlight&&nav.boost,airless:nav.body.airless,inHangar,doorMotion:station.doorsOpen>0&&station.doorsOpen<1?1:0},dt);
     if(audioDebug)audioDebug.textContent=JSON.stringify({mode:nav.mode,audio:audio.enabled,music:audio.music?.state,engine:audio.engineAudio?.state,flyby:audio.flyby?.state,effects:audio.gameplay?.state},null,2);
     renderer.info.reset();
@@ -713,7 +720,12 @@ try {
           if(devOptions.autoStart){
             enterPlayerInterface();canvas.focus({preventScroll:true});
             const launch=devOptions.location!=='hangar'?transit(devOptions.location):Promise.resolve();
-            launch.then(()=>{
+            launch.then(async()=>{
+              if(rover){
+                if(devOptions.location==='moon')nav.touchDown();
+                await rover.spawn();
+                notify('Atlas + Burrow mining test. F leaves the Atlas chair; walk aft to the rover’s port door.');
+              }
               if(new URLSearchParams(location.search).get('exteriorView')==='overview'&&station.exterior.authored){
                 placeStationExteriorPreview(nav,innerWidth/innerHeight);
                 notify('Station exterior · geometry preview. Fly freely; F2 opens test locations.');
