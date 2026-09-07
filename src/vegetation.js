@@ -1,3 +1,4 @@
+import {landmarkExcludes} from './landmark-distribution.js';
 import * as THREE from 'three';
 import { DistantMeadow } from './distant-meadow.js';
 import { Meadow } from './meadow.js';
@@ -143,6 +144,7 @@ export class Vegetation {
   }
 
   isExcluded(x, y, z, canopyMargin = 0) {
+    if(landmarkExcludes(x,y,z,canopyMargin))return true;
     if (!this.exclusionPosition) return false;
     // Compare unit directions at planet radius so terrain height cannot shrink
     // the clearing. Subtraction and multiplication both remain in CPU doubles.

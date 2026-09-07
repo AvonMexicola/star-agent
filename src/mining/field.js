@@ -138,7 +138,8 @@ export class MiningField {
     const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
     const ring=this.rings.raycast?.(origin,direction,probe,{exclude,includeHidden:true});
     const stone=this.stones.raycast(origin,direction,probe,new Set([...this.regionalRocks].filter(([,r])=>r.ready).map(([id])=>id)));
-    const raw=stone&&(!ring||stone.distance<ring.distance)?stone:ring;
+    const landmark=this.landmarks?.raycast(origin,direction,probe);
+    const raw=[stone,ring,landmark].filter(Boolean).sort((a,b)=>a.distance-b.distance)[0];
     const hit=ready&&(!raw||ready.distance<=raw.distance)?ready:raw;
     if(!hit||this.fieldCache.raycast(origin,direction,hit.distance)){this.aimedDescriptor=null;this.regionalAimed=null;this.inspectState=null;return null;}
     const descriptor=hit.descriptor??hit.rock?.descriptor;
@@ -163,7 +164,7 @@ export class MiningField {
   }
   raycast(origin,direction,range=8){
     let nearest=this.readyRaycast(origin,direction,range);
-    if(nearest&&this.fieldCache.raycast(origin,direction,nearest.distance))nearest=null;
+    if(nearest&&(this.fieldCache.raycast(origin,direction,nearest.distance)||this.landmarks?.raycast(origin,direction,nearest.distance)))nearest=null;
     if(nearest){
       const exclude=new Set([...this.cache].filter(([,rock])=>rock.ready).map(([id])=>id));
       if(this.rings.raycast?.(origin,direction,nearest.distance,{exclude}))nearest=null;

@@ -1,7 +1,8 @@
+import {landmarkExcludes} from './landmark-distribution.js';
 import { RADIUS, hash, moisture, noise, smoothstep, terrainSample } from './world.js';
 
 // Layout version is independent of the unchanged terrain generator.
-export const FOREST_GENERATOR_VERSION = 2;
+export const FOREST_GENERATOR_VERSION = 3;
 export const FOREST_CELL_SIZE = 16;
 export const FOREST_TILE_CELLS = 16;
 export const FOREST_RECORD_STRIDE = 9;
@@ -129,7 +130,7 @@ export function buildForestTile(tile) {
       const density = forestDensity(x, y, z, 100);
       if (hash(globalColumn, globalRow, 911) > density) continue;
       const { height, rockRelief } = terrainSample(x, y, z);
-      if (rockRelief > .12 || height < 12 || height > 2200) continue;
+      if (rockRelief > .12 || height < 12 || height > 2200 || landmarkExcludes(x,y,z,12)) continue;
 
       const tintA = hash(globalColumn, globalRow, 1103);
       const tintB = hash(globalColumn, globalRow, 1144);

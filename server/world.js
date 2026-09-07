@@ -8,6 +8,10 @@ import {Navigation} from '../src/navigation.js';
 import {setPlanetSeed} from '../src/generation.js';
 import {WORLD_SEED} from '../src/multiplayer/protocol.js';
 import {stationPhysicsAt} from '../src/station-physics.js';
+import {LandmarkRocks,createLandmarkObstacles} from '../src/landmark-rocks.js';
+
+const openStep=(_previous,point)=>({point,hit:false,grounded:false});
+const noSurfaceObjects={grounded:false,constrainWalker:openStep,constrainEVA:openStep,constrainFlight:openStep};
 
 // Only this dedicated Node process installs inert browser event registration.
 // Network clients never receive a writable navigation object on the server.
@@ -25,10 +29,12 @@ export async function createWorld(){
   const scene=new THREE.Scene();let station;
   try{station=new StationComplex(scene,{gltf,lod:{scene:new THREE.Group()},finish:false});await station.readyPromise;}
   finally{if(savedDocument)globalThis.document=savedDocument;installHeadlessEvents();}
+  const landmarks=new LandmarkRocks(scene,{render:false});
   const pods=station.pods;for(const pod of pods)pod.beginOpening();
   return {pods,center:station.centre,scene,station,
     createNavigation(slot,notify){
       const n=new Navigation({addEventListener(){}},notify),pod=pods[slot];
+      n.surfaceObstacles=createLandmarkObstacles(noSurfaceObjects,landmarks,n);
       n.station=pod;n.startStation();
       n.gamepad.connected=true;n.gamepad.armed=true;return n;
     },
@@ -61,7 +67,8 @@ export async function createWorld(){
       station.exterior.rings.forEach((ring,i)=>{
         const q=ring.quaternion.clone().invert(),a=start.clone().sub(ring.position).applyQuaternion(q),b=end.clone().sub(ring.position).applyQuaternion(q);
         const r=constrainStationSweep(station.ringColliders[i],[],a,b,min,max);if(r.hit)distance=Math.min(distance,a.distanceTo(r.point));
-      });return Number.isFinite(distance)?distance:null;
+      });const rock=landmarks.raycast(origin,direction,range);if(rock)distance=Math.min(distance,rock.distance);
+      return Number.isFinite(distance)?distance:null;
     },
   };
 }
