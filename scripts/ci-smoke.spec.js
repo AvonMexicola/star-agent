@@ -16,6 +16,9 @@ test('production renders, controller menu suppresses held input, and all map tar
   // Only the input device is simulated. The game boots normally and receives
   // semantic keyboard/Gamepad input; no navigation state or scene is replaced.
   await page.addInitScript(() => {
+    // Real persisted user setting: a functional smoke profile for a CPU renderer.
+    // Native-resolution visual/performance acceptance runs separately on hardware.
+    localStorage.setItem('star-agent.graphics.v1', JSON.stringify({ resolution: 0.6 }));
     window.smokePad = { id: 'CI standard Gamepad', index: 0, connected: true,
       mapping: 'standard', axes: [0, 0, 0, 0],
       buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
@@ -37,6 +40,7 @@ test('production renders, controller menu suppresses held input, and all map tar
     expect(initial.seed).toBe(7291);
     expect(initial.triangles).toBeGreaterThan(0);
     expect(initial.drawCalls).toBeGreaterThan(0);
+    expect(initial.graphics.resolution).toBe(0.6);
     await page.waitForFunction(() => window.starAgent.state.controller.armed);
     await press(9);
     await expect(page.locator('#controller-menu')).toBeVisible();
@@ -71,7 +75,7 @@ test('production renders, controller menu suppresses held input, and all map tar
         return { backend: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : 'unavailable',
           viewport: [innerWidth, innerHeight], deviceScale: devicePixelRatio,
           seed: state?.seed, renderedFrames: state?.renderedFrames, triangles: state?.triangles,
-          drawCalls: state?.drawCalls, resolution: state?.renderResolution };
+          drawCalls: state?.drawCalls, resolution: state?.renderResolution, preload: state?.preload };
       }).catch(() => ({ pageUnavailable: true }));
       await info.attach('diagnostics', { body: Buffer.from(JSON.stringify({ browser: browser.version(),
         ...renderer, errors, warnings, performanceClaim: false, input: 'injected standard Gamepad + keyboard/mouse' }, null, 2)),

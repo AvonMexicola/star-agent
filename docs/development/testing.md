@@ -28,8 +28,11 @@ command and CI profile where practical; an unused `.spec.js` is not a regression
 The existing local harness uses system Chromium with `CHROMIUM_PATH` override.
 The CI smoke config can use a Playwright-managed Chromium when that variable is
 absent; install it with `npx playwright install --with-deps chromium`. Run one focused
-GPU job at a time, one worker, on your owned port. The CI smoke owns port 4780
-and refuses to reuse an existing server. It defaults to SwiftShader; an explicit
+GPU job at a time, one worker, on your owned port. The CI smoke owns frontend 4780
+and memory API 4781, and refuses to reuse an existing server. It uses the ordinary
+saved 60% render-resolution setting at a 1440×900 viewport to bound CPU rendering
+cost; it is a functional gate, not a native-resolution art/performance baseline.
+It defaults to SwiftShader; an explicit
 `CI_BROWSER_BACKEND=gl` selects an available hardware backend for local inspection.
 Record the actual renderer from its diagnostics; the setting alone is not evidence.
  A failure before the browser

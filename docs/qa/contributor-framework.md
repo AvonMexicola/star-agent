@@ -31,10 +31,22 @@ registry, not filesystem locks. Existing HANDOFF owners remain authoritative.
 
 ## Hosted validation and settings
 
-The PR workflow will exercise the same source checks, an isolated PostgreSQL 16
-service, and one production WebGL/map/controller smoke journey. Results and exact
-run/commit IDs are recorded here after execution. Software browser evidence does
-not establish laptop FPS, full controller support or visual acceptance.
+First hosted run [34111156797](https://github.com/AvonMexicola/star-agent/actions/runs/34111156797)
+at `db5b4c1`: source/planner pass and **88 multiplayer checks pass, no skips**, using
+PostgreSQL 16. The browser job failed and the aggregate `verify` correctly failed.
+The trace proves the app reached real WebGL: Chromium 153.0.8010.12 / ANGLE Vulkan
+SwiftShader, 1440×900, scale 1, 37 rendered frames. It timed out during startup
+warm-up, and the account-session request returned HTTP 500 because the test had
+omitted its API. This was not a Chromium startup crash. The trace also records
+the inherited missing `KHR_parallel_shader_compile` extension warning.
+
+Correction: the harness owns a real disposable memory API on 4781, with database
+and SMTP settings explicitly empty, alongside production preview 4780. The browser
+uses the game's persisted 60% resolution option to bound software-renderer cost;
+startup readiness, renderer errors, controller behavior and target assertions remain.
+No app shader/physics bypass or synthetic server response is added. Follow-up
+results will be recorded after execution. Software browser evidence does not
+establish laptop FPS, full controller support or visual acceptance.
 
 Before activation: private repository, default `feat/visual-fidelity`, main and
 `dev/all-features` unprotected. CODEOWNERS is routing metadata; required reviews
