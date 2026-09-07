@@ -279,6 +279,14 @@ Tab switches await native close cleanup and require neutral input again.
 Dev → Console list opens the actual console; Dev is present only with the enabled
 development launcher. Settings includes graphics, sound and the controller diagram.
 
+Navigation targeting: Map uses the common fixed gameplay screen. D-pad left opens
+it in flight; D-pad/left stick selects, A confirms and B resumes. LB/RB changes
+outer gameplay tabs. Point the nose at a visible body or enabled beacon to charge
+the reticle ring, then LB+RB + D-pad up engages the relativistic drive. LT aborts.
+Charge does not fire the drive automatically; modal/focus/controller changes clear
+it. RT remains weapon fire. Keyboard N/J and the on-screen engage button share the
+same charged-target command. With no target, the shortcut retains free heading.
+
 ## Combat momentum — 2026-09-07
 
 Flight defaults to fly-by-wire with finite thrust and drift correction. R3 / V

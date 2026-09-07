@@ -25,13 +25,7 @@ dialog.gameplay-screen[open]{display:flex!important;flex-direction:column!import
 #patrol-console.gameplay-screen .patrol-actions{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
 #patrol-console.gameplay-screen p{font-size:14px;line-height:1.65}
 #patrol-console.gameplay-screen small{max-width:85ch}
-#system-map.gameplay-screen .gameplay-content{padding:0;display:flex}
-#system-map.gameplay-screen .system-map-layout{width:100%;height:100%;min-height:0;grid-template-columns:minmax(0,1fr) 330px}
-#system-map.gameplay-screen .map-chart-panel{padding:20px;min-height:0}
-#system-map.gameplay-screen .system-chart{min-height:130px;margin:10px 0}
-#system-map.gameplay-screen .map-projection-note{display:none}
-#system-map.gameplay-screen .map-destination{padding:20px;min-height:0}
-#system-map.gameplay-screen .map-destination dl{gap:10px}
+
 #cargo-dialog.gameplay-screen .gameplay-content{display:flex;flex-direction:column;gap:10px}
 #cargo-dialog.gameplay-screen .inventory-header{padding:0;border:0;flex:none}
 #cargo-dialog.gameplay-screen .inventory-header .eyebrow,#cargo-dialog.gameplay-screen .inventory-view-tabs,#cargo-dialog.gameplay-screen .inventory-mining-skill,#cargo-dialog.gameplay-screen .inventory-toolbar>p,#cargo-dialog.gameplay-screen .cargo-save,#cargo-dialog.gameplay-screen .inventory-empty-context{display:none!important}
@@ -109,12 +103,7 @@ dialog.gameplay-screen[open]{display:flex!important;flex-direction:column!import
  #patrol-console.gameplay-screen .eyebrow{font-size:9px;margin:0}#patrol-console.gameplay-screen h2{font-size:32px;margin:4px 0}
  #patrol-console.gameplay-screen p{font-size:12px;line-height:1.5;margin:3px 0}#patrol-console.gameplay-screen dl{padding:10px;margin:4px 0;font-size:11px;align-self:stretch}#patrol-console.gameplay-screen dl dt{font-size:9px}#patrol-console.gameplay-screen dl dd{margin-bottom:8px}
  #patrol-console.gameplay-screen .patrol-actions{gap:8px;margin:4px 0}#patrol-console.gameplay-screen small{font-size:9px;line-height:1.5}
- #system-map.gameplay-screen .system-map-layout{grid-template-columns:1fr;grid-template-rows:minmax(170px,1fr) auto}
- #system-map.gameplay-screen .map-chart-panel{padding:8px 12px}#system-map.gameplay-screen .map-chart-top,#system-map.gameplay-screen .map-legend{display:none}
- #system-map.gameplay-screen .system-chart{min-height:140px;margin:0}#system-map.gameplay-screen .map-chart-tools{gap:8px}
- #system-map.gameplay-screen .map-destination{padding:10px 12px;border-left:0;border-top:1px solid var(--line)}
- #system-map.gameplay-screen .map-destination>.eyebrow,#system-map.gameplay-screen #map-description,#system-map.gameplay-screen .map-note{display:none}
- #system-map.gameplay-screen .map-destination h3{font-size:24px;margin:0 0 6px}#system-map.gameplay-screen .map-destination dl{display:grid;grid-template-columns:1fr 1fr;margin:6px 0;gap:4px 12px}#system-map.gameplay-screen .map-destination dl>div{margin:0}#system-map.gameplay-screen .map-destination dd{font-size:15px}#system-map.gameplay-screen .map-destination dt{font-size:8px}#system-map.gameplay-screen #map-route-status{font-size:10px;line-height:1.5;margin:6px 0}#system-map.gameplay-screen #map-engage{padding:10px;min-height:40px}
+
  #cargo-dialog.gameplay-screen .gameplay-content{gap:7px;padding:10px 12px}#cargo-dialog.gameplay-screen h2{font-size:20px;margin:0}
  #cargo-dialog.gameplay-screen .inventory-columns{grid-template-columns:1fr!important;gap:0;flex:none}
  #cargo-dialog.gameplay-screen .inventory-container{padding:8px}#cargo-dialog.gameplay-screen .inventory-container h3{font-size:16px}
@@ -138,25 +127,7 @@ dialog.gameplay-screen[open]{display:flex!important;flex-direction:column!import
 #fleet-dialog.gameplay-screen .fleet-close,#fleet-dialog.gameplay-screen .meridian-lockup,#fleet-dialog.gameplay-screen .fleet-save{display:none}
 #fleet-dialog.gameplay-screen .gameplay-content{max-width:1100px;width:100%;align-self:center}
 @media(max-width:749px){#fleet-dialog.gameplay-screen .fleet-ships{grid-template-columns:1fr}.gameplay-screen .fleet-ships button{padding:10px;min-height:70px}}
-#system-map.gameplay-screen .system-map-layout{display:grid!important}
-@media(max-width:749px),(max-height:719px){
- #system-map.gameplay-screen .system-map-layout{grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
- #system-map.gameplay-screen .map-chart-panel{height:auto;min-height:0;overflow:hidden}
- #system-map.gameplay-screen .system-chart{min-height:0;height:auto;flex:1}
- #system-map.gameplay-screen .map-chart-tools{flex:none;min-height:40px}
- #system-map.gameplay-screen .map-destination{display:flex;flex-direction:column;gap:5px;overflow:hidden}
- #system-map.gameplay-screen .map-destination h3{flex:none;margin:0}
- #system-map.gameplay-screen .map-destination p{line-height:1.4;font-size:10px;margin:0}
- #system-map.gameplay-screen .map-destination dl{display:grid!important;grid-template-columns:1fr 1fr;gap:5px 12px;margin:2px 0;flex:none}
- #system-map.gameplay-screen .map-destination dl .map-range{grid-column:auto}
- #system-map.gameplay-screen .map-destination dl>div{padding:0;border:0}
- #system-map.gameplay-screen #map-engage{margin-top:auto;flex:none}
-}
-@media(max-width:749px),(max-height:719px){
- #system-map.gameplay-screen #map-target-description,#system-map.gameplay-screen #map-route-status{min-height:0}
- #system-map.gameplay-screen #map-drive.inactive{display:none}
- #system-map.gameplay-screen #map-drive{min-height:28px}
-}
+
 #multiplayer-account-dialog.gameplay-screen .gameplay-content:has(.mp-keyboard:not([hidden]))>:not(.mp-keyboard):not(h2){display:none!important}
 #multiplayer-account-dialog.gameplay-screen .mp-keyboard{margin-top:12px}
 #fleet-dialog.gameplay-screen .fleet-ships{max-height:none;overflow:visible}

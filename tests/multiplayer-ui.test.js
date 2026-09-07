@@ -201,3 +201,16 @@ test('a destroyed own hull offers recovery even when suit health remains positiv
   assert.equal(normalizeMultiplayerState({...alive,health:0}).needsRespawn,true);
   assert.equal(normalizeMultiplayerState({connected:true,health:null}).needsRespawn,false);
 });
+
+test('network travel commands respect the targeted-drive adapter and retain untargeted heading travel',t=>{
+ const savedDocument=Object.getOwnPropertyDescriptor(globalThis,'document'),savedWindow=Object.getOwnPropertyDescriptor(globalThis,'window');
+ Object.defineProperty(globalThis,'document',{configurable:true,value:new EventTarget()});
+ Object.defineProperty(globalThis,'window',{configurable:true,value:new EventTarget()});
+ t.after(()=>{if(savedDocument)Object.defineProperty(globalThis,'document',savedDocument);else delete globalThis.document;if(savedWindow)Object.defineProperty(globalThis,'window',savedWindow);else delete globalThis.window;});
+ const client=new MultiplayerClient({url:'ws://test/ws'}),sent=[];let gates=0;
+ const nav={gamepad:{poll:()=>({})},beginTravel:()=>true,beginFreeTravel:()=>true,cancelTravel:()=>true,targeting:{hasTarget:true,engage(){gates++;return false;}}};
+ client.action=action=>{sent.push(action);return true;};client.state.connected=true;client.attach({nav});
+ assert.equal(nav.beginTravel(),false);assert.equal(nav.beginFreeTravel(),false);assert.equal(gates,2);assert.deepEqual(sent,[]);
+ nav.targeting.hasTarget=false;assert.equal(nav.beginFreeTravel(),true);nav.cancelTravel();assert.deepEqual(sent,['travel','cancelTravel']);
+ client.detach();
+});

@@ -288,7 +288,12 @@ export class MultiplayerClient {
     ]);
     for (const [name, [action, target]] of actions) {
       if (typeof nav[name] !== 'function') continue;
-      const original = nav[name]; const wrapper = (...args) => this.connected ? this.action(action, target?.(...args)) : original.apply(nav, args);
+      const original = nav[name]; const wrapper = (...args) => {
+        // The local target adapter owns charge/availability. Do not let the
+        // legacy network command bypass its explicit targeted-drive gate.
+        if (this.connected && nav.targeting && (name === 'beginTravel' || (name === 'beginFreeTravel' && nav.targeting.hasTarget))) return nav.targeting.engage();
+        return this.connected ? this.action(action, target?.(...args)) : original.apply(nav, args);
+      };
       this.restoreMethods.set(name, { original, wrapper }); nav[name] = wrapper;
     }
     if (typeof nav.updateTravel === 'function') {

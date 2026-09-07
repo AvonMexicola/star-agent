@@ -135,7 +135,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     const flightControl = nav.cabinFlight
       ? nav.flightAssist ? 'CABIN / ASSIST' : 'CABIN / INERTIAL'
       : nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase();
-    paint(screens[0], [['VELOCITY', `${shipSpeed.toFixed(1)} m/s`], [nav.body?.star?'PHOTOSPHERE CLEARANCE':'ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', flightControl]], nav.controllerActive?'R3 ASSIST   B BRAKE   Y LAND / LAUNCH':'V ASSIST   X BRAKE   B LAND / LAUNCH', 0);
+    paint(screens[0], [['VELOCITY', `${shipSpeed.toFixed(1)} m/s`], [nav.body?.star?'PHOTOSPHERE CLEARANCE':'ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', flightControl]], nav.controllerActive?'R3 ASSIST   LT BRAKE   Y LAND / LAUNCH':'V ASSIST   X BRAKE   B LAND / LAUNCH', 0);
     let bearing = 'NO COURSE';
     if (course) {
       const position = nav.cabinFlight && nav.shipPosition ? nav.shipPosition : nav.position;
@@ -143,7 +143,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
       const angle = Math.atan2(offset.x, -offset.z) * 180 / Math.PI;
       bearing = `${Math.abs(angle).toFixed(0)} DEG ${angle < 0 ? 'LEFT' : 'RIGHT'}`;
     }
-    paint(screens[1], [['COURSE', course ? course.name.toUpperCase() : 'FREE EXPLORATION'], ['BEARING', bearing], ['POSITION', `${(Math.asin(n.y) * 180 / Math.PI).toFixed(2)} / ${(Math.atan2(n.x, n.z) * 180 / Math.PI).toFixed(2)}`]], 'SHIFT + DESTINATION TO SET COURSE', 1);
+    paint(screens[1], [['COURSE', course ? course.name.toUpperCase() : 'FREE EXPLORATION'], ['BEARING', bearing], ['POSITION', `${(Math.asin(n.y) * 180 / Math.PI).toFixed(2)} / ${(Math.atan2(n.x, n.z) * 180 / Math.PI).toFixed(2)}`]], 'M MAP / AIM TO CHARGE DRIVE', 1);
     if(profile==='kestrel-flight'&&!multiplayer?.connected){
       const a=nav.kestrelAccess;
       const mechanism=(value,closed,open)=>value<.001?closed:value>.999?open:'MOVING';

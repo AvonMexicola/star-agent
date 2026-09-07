@@ -152,7 +152,9 @@ export class BuildSystem {
     if(p.type==='mainframe'||p.type==='crate')next=addBuildContainer(next,bufferId(c,p),p.type==='mainframe'?`${c.name} supplies`:`${c.name} crate ${c.pieces.filter(p=>p.type==='crate').length}`);
     if(!validBuild(data)||!this.store.validContainers(next))return {ok:false,message:'Building or storage limits reached.'};
     if(!this.store.write(next))return {ok:false,message:this.store.warning};
-    this.revision++;this.sync();this.refreshPreview();return {ok:true,message:`${PIECES[p.type].label} placed.`,pieceId:p.id,claimId:c.id};
+    this.revision++;this.sync();this.refreshPreview();
+    this.onSound?.({type:'building-placement',point:this.toWorld(v(p.position),c),pieceId:p.id,claimId:c.id});
+    return {ok:true,message:`${PIECES[p.type].label} placed.`,pieceId:p.id,claimId:c.id};
   }
   setBufferEnabled(id,enabled){
     const c=this.claims.find(c=>c.id===id),core=c?.pieces.find(p=>p.type==='mainframe');

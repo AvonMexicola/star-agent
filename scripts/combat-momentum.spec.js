@@ -15,7 +15,10 @@ async function tap(page,i){await button(page,i,true);await button(page,i,false);
 async function choose(page,key){
  for(let i=0;i<100;i++){
   const focused=await page.evaluate(()=>document.activeElement?.dataset.controllerKey);
-  if(focused===key){await tap(page,0);return;}
+  if(focused===key){
+   if(key==='dev-launch'){await Promise.all([page.waitForURL(url=>url.searchParams.get('start')==='moon'),page.evaluate(()=>window.testPad.buttons[0]={pressed:true,value:1})]);return;}
+   await tap(page,0);return;
+  }
   if(focused?.startsWith('page-')&&focused.endsWith('-next')&&!await page.locator(`[data-controller-key="${key}"]`).isVisible())await tap(page,0);
   else await tap(page,13);
  }

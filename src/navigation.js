@@ -158,6 +158,7 @@ export class Navigation {
     return planFreeTravel(this.position,FORWARD.clone().applyQuaternion(this.orientation),{body:this.body,altitude:this.altitude,outsideAtmosphere:this.flightEnvironment.atmosphereFraction===0,obstacles});
   }
   beginFreeTravel(){
+    if(this.targeting?.hasTarget)return this.targeting.engage();
     if(!this.enabled||this.travel)return false;
     const route=this.freeTravelRoute();if(!route.ok){this.notify(route.reason);return false;}
     this.travel={plan:route.plan,elapsed:0,targetId:null,manual:true,obstruction:route.obstruction};
@@ -165,6 +166,7 @@ export class Navigation {
     this.notify('Heading locked. Drive spooling · N disengages.'+(route.obstruction?` Automatic braking before ${route.obstruction}.`:''));return true;
   }
   travelRoute(){
+    if(this.targeting)return this.targeting.route();
     if(!this.powered)return {ok:false,reason:'Power on with P before engaging the travel drive.',plan:null};
     if(this.gearLimited)return {ok:false,reason:'Retract landing gear before engaging the drive: G / LB+RB + D-pad down.',plan:null};
     if(!this.travelTarget)return {ok:false,reason:'Select a world on the map (M).',plan:null};
@@ -174,6 +176,7 @@ export class Navigation {
     return planTravel(this.position,this.travelTarget,{obstacles});
   }
   beginTravel(){
+    if(this.targeting)return this.targeting.engage();
     if(!this.enabled||this.travel)return false;
     const route=this.travelRoute();
     if(!route.ok){this.notify(route.reason);return false;}
@@ -191,7 +194,7 @@ export class Navigation {
     if(!this.travel)return null;
     const sample=sampleTravel(this.travel.plan,this.travel.elapsed);
     return {...sample,position:sample.position.toArray(),targetId:this.travel.targetId,
-      manual:Boolean(this.travel.manual),targetName:this.travel.manual?'FREE HEADING':TRAVEL_TARGETS.find(t=>t.id===this.travel.targetId)?.name,
+      manual:Boolean(this.travel.manual),targetName:this.travel.targetName??(this.travel.manual?'FREE HEADING':TRAVEL_TARGETS.find(t=>t.id===this.travel.targetId)?.name??'Navigation target'),
       aborting:this.travel.plan.kind==='abort',eta:Math.max(0,this.travel.plan.duration-this.travel.elapsed)};
   }
   updateTravel(dt){
@@ -205,6 +208,7 @@ export class Navigation {
     }
     this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
     if(sample.done){
+      if(travel.targeted){this.gamepad.suspend();this.targeting?.reset();}
       this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
       if(travel.plan.kind==='travel'&&(travel.targetId==='pyre'||travel.targetId==='miasma'))this.orientToward(new THREE.Vector3(...(travel.targetId==='pyre'?PYRE:MIASMA).center),new THREE.Vector3(...pyreFrame().y));
       this.notify(travel.plan.kind==='abort'?'Drive disengaged. Normal flight restored.':travel.targetId==='star'?'Stellar observation distance reached. Watch shield temperature; Space + Shift retreats.':'Approach reached. Normal flight restored; descend to land.');

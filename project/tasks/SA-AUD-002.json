@@ -1,0 +1,26 @@
+{
+  "id": "SA-AUD-002",
+  "title": "Construction placement and hostile creature sounds",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Nova audio implementation",
+  "status": "review",
+  "branch": "feat/construction-fauna-audio",
+  "base": "7c173f55cc98f368d233cbce9670055bc80c9cae",
+  "updated": "2026-09-07",
+  "areas": [
+    "audio",
+    "industry"
+  ],
+  "claims": [
+    "src/audio/synthesis.js",
+    "src/audio/gameplay.js",
+    "src/build/system.js",
+    "src/main.js",
+    "tests/gameplay-audio.html",
+    "tests/gameplay-audio.test.js",
+    "tests/build-state.test.js",
+    "docs/qa/construction-audio/"
+  ],
+  "brief": "docs/briefs/construction-audio.md"
+}

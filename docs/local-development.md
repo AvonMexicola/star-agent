@@ -84,6 +84,7 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
 | Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
+| Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
 | Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
@@ -220,6 +221,29 @@ patrol journeys pass. The weapon branch also passed the physical Kestrel ladder,
 launch and Selene landing/exit route and Atlas touch controls. The final visual
 and frame-time acceptance status is recorded in [weapon QA](qa/ship-weapons/production-record.md).
 No service/database restart or public deployment accompanies this integration.
+
+Navigation-target development adds a centred star/planet map, paged surface sites,
+filterable HUD bearings and a three-second nose-lock ring. M or Menu → Map opens
+it. Hold the nose on a visible destination, then N/J or both bumpers + D-pad up
+engages a continuous20km approach (stellar thermal stand-off remains500,000km).
+The menu and ring use existing RT weapon controls. Local base/Comms/patrol signals
+come from their live systems; targeted drive is currently solo-only. Lore lives
+in docs/lore.md and the in-game help field note. QA uses port5493 independently of
+the persistent preview5178/API8087/database51224; it never restarts that service.
+
+### Construction and creature audio
+
+Successful building placement now plays a settling/locking sound. The
+[sound studio](http://127.0.0.1:5178/tests/gameplay-audio.html) includes a deep
+Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring is connected in the in-progress fauna worktree;
+that feature is not yet integrated here. The audio callback record is in
+[the handoff](qa/construction-audio/README.md). No new control bindings.
+
+Navigation SA-NAV-001 is locally integrated at 894b660 (PR62 draft). Refresh
+http://127.0.0.1:5178/ for the hierarchical map, signal filters, nose-lock ring
+and solo targeted drive. Source endpoints were verified after the fast-forward;
+705 combined unit tests and the build pass. No preview/database restart occurred.
+Final controller/browser evidence and limitations: docs/qa/navigation-targets.md.
 
 ### Combat momentum checkpoint
 
