@@ -39,6 +39,9 @@ simulates at 30 Hz and sends whole-room snapshots at 15 Hz. All-to-all snapshot
 traffic grows roughly with the square of the player count. Monitor actual tick
 cost, memory, bandwidth and client frame time before raising the cap. No extra
 hosting service, paid plan, cloud GPU, or server was provisioned for this release.
+An initial host-only twenty-pilot simulation/serialization baseline averaged
+2.00 ms per tick but emitted about 53.8 Mbit/s of raw JSON across the room; see
+[the QA record](qa/public-launch/README.md) for conditions and excluded costs.
 
 ## Release procedure
 

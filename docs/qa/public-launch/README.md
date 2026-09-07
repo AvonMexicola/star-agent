@@ -62,3 +62,42 @@ storage correction separately; it does not change the game source or GPU flags.
 Raw browser recordings, logs, reports and any extracted diagnostic memory remain
 outside Git. Curated public media and final page/viewer screenshots are the shared
 artifacts. The test uses one Chromium worker and coordinates the shared GPU slot.
+
+A separate host-only baseline on the frozen multiplayer runtime measured 1,800
+simulation/JSON ticks after warmup: twenty pilots averaged **2.00 ms/tick**, p95
+3.58 ms, maximum 5.61 ms, against a 33.3 ms nominal interval. Raw per-pilot state
+JSON totaled **53.8 Mbit/s** (6.72 MB/s across all twenty), about four times the
+10-pilot baseline. Socket/TLS, SQL, combat-heavy scenes and client rendering are
+excluded. This is useful headroom/traffic evidence, not full-load certification.
+The reproducible script and complete limits are in PR #78. Bandwidth deserves
+attention before increasing the room limit again.
+
+## Final solo/homepage acceptance
+
+`npm run test:browser -- -c scripts/public-launch.config.js`: **both cases pass**,
+completed 2026-09-07 21:26:57 UTC. Chromium 151.0.7922.173, AMD Radeon 860M,
+ANGLE OpenGL ES 3.2 / radeonsi krackan1 ACO, DPR 1. Game/desktop viewport
+1440×900; phone layout 390×844. Captures use the exact static production files,
+with no Vite source server or API proxy. The final tested game entry is
+`main-DJKsrr8c.js`, SHA-256
+`2e6b77b44087a9ec053e223c99c313be2eb1c6387afc6896f18b4187e789ae2e`.
+
+- Fresh solo boot opens the development launcher. Injected standard-controller
+  B/Menu and keyboard F2/ship/location actions work. Multiplayer entry/account/
+  Comms UI is absent; no API request or WebSocket is opened.
+- Kestrel coast and Nomad hangar starts render with their graphics contexts intact.
+  Both real eight-second clips and clean canvas posters were recorded. The joined
+  H.264 film is 15.86 seconds, 1280×800, approximately 1.60 MB, without audio.
+- The packaged equipment viewer reaches asset readiness and renders the actual
+  expedition character/rifle with no reported model error.
+- Both target links, ambient playback/pause, user-operated film, keyboard focus,
+  reduced-motion no-autoload behavior and phone width are checked.
+- Zero page/console errors, failed HTTP responses or solo API/WS connections.
+  The earlier viewer favicon 404 was corrected by packaging an explicit icon link.
+- `npm test`: all 117 configured test files pass on Node 26; production solo build,
+  repository checks, all 13 homepage files and all 40 viewer references pass.
+
+Builder inspection: [desktop](homepage-desktop.webp), [phone](homepage-phone.webp),
+[equipment viewer](equipment-viewer.webp). Images were checked for layout, readable
+content, missing assets and game-only capture content. There is no independent art
+review, physical controller-device test or client FPS claim in this release.
