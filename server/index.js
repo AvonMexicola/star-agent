@@ -203,7 +203,9 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
         peer.admission = (async () => {
           try {
             peer.id = await room.join(account, send);
-            if (!peer.closed && !closing) peer.social = await social.join(account, send, (code, reason) => endPeer(ws, code, reason));
+            if (!peer.closed && !closing) peer.social = await social.join(account, send, (code, reason) => {
+              peer.closed = true; endPeer(ws, code, reason); leavePeer(peer);
+            });
             if (peer.closed || closing) leavePeer(peer);
           } catch (error) {
             const known = error?.code === 'ROOM_FULL' || error?.code === 'ACCOUNT_CONNECTED';
