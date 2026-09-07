@@ -1,0 +1,14 @@
+{
+  "id": "SA-SOCIAL-001",
+  "title": "Authenticated multiplayer chat and persistent mutual friends",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex social feature session",
+  "status": "review",
+  "branch": "feat/multiplayer-chat-friends",
+  "base": "46947764d4bf86501d71c16a7fbdb25003fc2e62",
+  "updated": "2026-09-07",
+  "areas": ["multiplayer", "interface"],
+  "claims": ["server/social.js", "server/social-store.js", "server/chat-moderation.js", "server/migrations/004-social.sql", "src/multiplayer/social-state.js", "src/multiplayer/social-ui.js", "src/multiplayer/social-ui.css", "tests/server-social.test.js", "tests/server-social-http.test.js", "tests/multiplayer-social-ui.test.js", "scripts/social-database.mjs", "scripts/social-browser-server.mjs", "scripts/social.config.js", "scripts/social.spec.js", "docs/multiplayer-social.md", "docs/briefs/multiplayer-social.md", "docs/qa/multiplayer-social.md", "docs/qa/multiplayer-social/", "docs/decisions/0003-multiplayer-social.md"],
+  "brief": "docs/briefs/multiplayer-social.md"
+}

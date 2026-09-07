@@ -213,7 +213,9 @@
         "src/inventory/**",
         "src/mining/**",
         "src/build/**",
-        "src/equipment.js"
+        "src/equipment.js",
+        "src/cargo/**",
+        "src/trading/**"
       ],
       "contracts": [
         "ARCHITECTURE.md",
@@ -260,7 +262,8 @@
         "public/models/**",
         "public/textures/**",
         "src/character*.js",
-        "src/nomad*.js"
+        "src/nomad*.js",
+        "assets/cargo/**"
       ],
       "contracts": [
         "docs/asset-production-standard.md",
