@@ -21,7 +21,8 @@
     "src/navigation.js",
     "src/main.js",
     "src/ship-marker-projection.js",
-    "src/ship-mfd.js"
+    "src/ship-mfd.js",
+    "src/multiplayer/client.js"
   ],
   "brief": "docs/briefs/navigation-targets.md"
 }
