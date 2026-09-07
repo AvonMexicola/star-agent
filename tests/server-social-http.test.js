@@ -67,6 +67,18 @@ test('closing during delayed admission releases room and social membership witho
   assert.equal(next.messages.some(message => message.type === 'chat'), false);
   assert.equal((await next.send('chat', { text: 'fresh connection' })).ok, true); assert.deepEqual(f.errors, []);
 });
+test('a kicked client cannot retain room membership by refusing the close handshake', async t => {
+  const f = await fixture(t), account = await f.register('Nova'), peer = f.connect(account);
+  await until(() => peer.messages.find(message => message.type === 'social'));
+  // Deliberately suppress this ws test client's automatic close reply. The
+  // application uses public WebSocket APIs; this hostile fixture does not.
+  peer.socket._receiver.removeAllListeners('conclude');
+  await peer.send('chat', { text: 'heil hitler' });
+  await until(() => f.room.members.size === 0);
+  assert.equal(peer.socket.readyState, WebSocket.OPEN);
+  peer.socket.send(JSON.stringify({ type: 'request', action: 'hangar', requestId: 'stale-after-kick' }));
+  await delay(30); assert.equal(f.room.commands.length, 0); peer.socket.terminate(); assert.deepEqual(f.errors, []);
+});
 test('real authenticated room IDs drive friendship, presence, kicks, reconnect and preserved inventory', async t => {
   const store = createMemoryStore(), world = await createWorld(), simulationErrors = [];
   const room = createRoom({ store, world, onError: error => simulationErrors.push(error.message) });
