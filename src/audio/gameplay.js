@@ -26,11 +26,12 @@ export class GameplayAudio {
     }
     return this.cache.get(key);
   }
-  play(kind,{gain=.1,pan=0}={}){
+  play(kind,{gain=.1,pan=0,pitch=1}={}){
     if(!this.enabled||this.disposed||this.context.state!=='running'||!SOUND_KINDS.includes(kind)||gain<.0005)return false;
     if(this.voices.size>=24)return false;
     const source=this.context.createBufferSource(),volume=this.context.createGain(),panner=this.context.createStereoPanner();
     source.buffer=this.buffer(kind,this.serial++%4);volume.gain.value=gain;panner.pan.value=clamp(pan,-1,1);
+    if(source.playbackRate)source.playbackRate.value=clamp(pitch,.5,1.5);
     source.connect(volume);volume.connect(panner);panner.connect(this.bus);
     const voice={stop:()=>{try{source.stop();}catch{}source.disconnect();volume.disconnect();panner.disconnect();this.voices.delete(voice);}};
     source.onended=voice.stop;this.voices.add(voice);source.start();this.last=kind;return true;
@@ -39,13 +40,14 @@ export class GameplayAudio {
     if(!this.enabled||!nav.focused||globalThis.document?.hidden||nav.mode==='crashed'||nav.mode==='destroyed')return;
     const kind=event.type==='shot'?weaponSound(event.sound??event.weapon):event.type;
     let gain=event.type==='shot'?.115:event.type==='impact'?.065:.045,pan=0;
+    if(event.type==='shot')gain*=1+.18*(clamp(event.size??1,1,3)-1);
     if(event.point&&nav.position){
       const delta=event.point.clone().sub(nav.position),distance=delta.length();
       if(distance>300)return;
       gain*=1/(1+Math.pow(distance/18,1.5));
       if(distance>1&&nav.orientation){delta.applyQuaternion(nav.orientation.clone().invert());pan=delta.x/Math.max(1,Math.hypot(delta.x,delta.z));}
     }
-    if(this.play(kind,{gain,pan})){
+    if(this.play(kind,{gain,pan,pitch:event.pitch??1})){
       if(event.type==='shot')this.counts.shots++;
       if(event.type==='impact')this.counts.impacts++;
     }

@@ -63,3 +63,15 @@ test('mixer gates pre-gesture voices, caps polyphony, attenuates distant shots a
   audio.setEnabled(true);audio.event({type:'shot',weapon:'pulse',point:new THREE.Vector3(1000,0,0)},{focused:true,position:new THREE.Vector3()});assert.equal(audio.state.shots,0);
   audio.dispose();assert.equal(audio.play('pulse'),false);assert.equal(audio.state.buffers,0);
 });
+
+test('sized ship shots lower pitch and increase the bounded gain without altering default personal shots',()=>{
+  const context=mockContext(),sources=[];const original=context.createBufferSource;
+  context.createBufferSource=()=>{const node=original();node.playbackRate={value:1};sources.push(node);return node;};
+  const audio=new GameplayAudio(context,context.createGain());audio.setEnabled(true);
+  const calls=[],play=audio.play.bind(audio);audio.play=(kind,options)=>{calls.push(options);return play(kind,options);};
+  const nav={focused:true,position:new THREE.Vector3()};
+  audio.event({type:'shot',weapon:'pulse'},nav);
+  audio.event({type:'shot',weapon:'pulse',size:3,pitch:.72},nav);
+  assert.equal(sources[0].playbackRate.value,1);assert.equal(sources[1].playbackRate.value,.72);
+  assert.ok(calls[1].gain>calls[0].gain);assert.ok(calls[1].gain<.2);audio.dispose();
+});

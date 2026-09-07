@@ -106,7 +106,7 @@ export function createKestrel({url,flight=false}={}){
  root.updateGear=(dt,deployed,progress)=>{if(flight){values.gear=progress;targets.gear=deployed?1:0;root.userData.gearProgress=progress;evaluate();}};
  root.updateDisplays=(dt,live,inventory,course)=>mfd.update(dt,live,inventory,course);
  root.displayState=()=>mfd.snapshot();
- root.snapshot=()=>({ready,progress:{...values},target:{...targets},throttle,displays:mfd.snapshot(),hardpoints:hardpoints.map(mount=>({...mount}))});
+ root.snapshot=()=>({ready,progress:{...values},target:{...targets},throttle,displays:mfd.snapshot(),hardpoints:(root.userData.hardpoints??hardpoints).map(mount=>({...mount}))});
  root.getNode=name=>asset?.getObjectByName(name);
  root.dispose=()=>{
   mixer?.stopAllAction();const geos=new Set(),mats=new Set(),maps=new Set(textures);
