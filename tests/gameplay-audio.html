@@ -2,6 +2,8 @@
 <style>body{background:#0a1420;color:#e3f6ee;font:16px system-ui;max-width:820px;margin:40px auto;padding:20px}button{margin:5px;padding:12px;background:#203a43;color:inherit;border:1px solid #609588;border-radius:6px;cursor:pointer}h2{margin-top:30px}pre{background:#10252c;padding:15px}label{display:block;margin:15px 0}</style>
 <h1>Star Agent sound studio</h1><p>Original synthesized game effects. Enable sound, then choose a surface or weapon.</p>
 <button id="enable">Enable sound</button>
+<h2>Ship engine</h2><div id="engine"></div>
+<h2>Ship flybys</h2><div id="flybys"></div><p>Passing ship at 180 m/s, with stereo movement and Doppler pitch.</p>
 <h2>Footsteps</h2><div id="steps"></div>
 <h2>Weapons and feedback</h2><div id="weapons"></div>
 <h2>Construction and creatures</h2><div id="world"></div>
@@ -9,16 +11,34 @@
 <h2>Output</h2><pre id="state"></pre>
 <script type="module">
 import { FlightAudio } from '../src/audio.js';
+import { Vector3, Quaternion } from 'three';
 import { SOUND_KINDS } from '../src/audio/synthesis.js';
 const audio=new FlightAudio();let analyser,data,contact=false,heat=0,mining=false;
+let enginePreset={powered:false};
+const enginePresets={'Engine off':{powered:false},'Engine idle':{mode:'landed'},'Cruise':{mode:'flight',throttle:.18},'Full thrust':{mode:'flight',throttle:1},'Boost':{mode:'flight',throttle:1,boost:true}};
+for(const [label,state] of Object.entries(enginePresets)){const b=document.createElement('button');b.textContent=label;b.onclick=()=>{enginePreset=state;audio.engineAudio?.update(state);};document.querySelector('#engine').append(b);}
 const labels={rock:'Rock',grass:'Grass',snow:'Snow',water:'Water',sand:'Sand',metal:'Metal deck',carbine:'Carbine',sidearm:'Sidearm',pulse:'Cobalt pulse',laser:'Solar lance',void:'Singularity',impact:'Impact',collect:'Ore collected',overheat:'Overheat','building-placement':'Place building','pyrebear-attack':'Pyrebear · deep growl','sulphurhound-attack':'Sulphurhound · attack snarl'};
 for(const [i,kind] of SOUND_KINDS.entries()){const b=document.createElement('button');b.textContent=labels[kind];b.onclick=()=>audio.gameplay?.play(kind,{gain:.15});document.querySelector(i<6?'#steps':i<14?'#weapons':'#world').append(b);}
-document.querySelector('#enable').onclick=async event=>{await audio.toggle();event.target.textContent=audio.enabled?'Mute sound':'Enable sound';if(!analyser){analyser=audio.context.createAnalyser();data=new Float32Array(analyser.fftSize);audio.gameplay.bus.connect(analyser);}if(!audio.enabled){mining=false;document.querySelector('#mine').textContent='Start cutter';}};
+document.querySelector('#enable').onclick=async event=>{await audio.toggle();audio.engineAudio?.update(enginePreset);event.target.textContent=audio.enabled?'Mute sound':'Enable sound';if(!analyser){analyser=audio.context.createAnalyser();data=new Float32Array(analyser.fftSize);audio.master.connect(analyser);}if(!audio.enabled){mining=false;document.querySelector('#mine').textContent='Start cutter';}};
 const update=()=>{audio.gameplay?.setMining(mining,contact,heat);document.querySelector('#mine').textContent=mining?'Stop cutter':'Start cutter';};
 document.querySelector('#mine').onclick=()=>{mining=!mining;update();};
 document.querySelector('#contact').onchange=e=>{contact=e.target.checked;update();};document.querySelector('#heat').oninput=e=>{heat=Number(e.target.value);update();};
 document.addEventListener('visibilitychange',()=>{audio.setSuspended(document.hidden);mining=false;update();});
-window.addEventListener('blur',()=>{mining=false;update();});window.addEventListener('pagehide',()=>audio.dispose());
-let peakRms=0;
-setInterval(()=>{let rms=0;if(analyser){analyser.getFloatTimeDomainData(data);rms=Math.sqrt(data.reduce((s,n)=>s+n*n,0)/data.length);peakRms=Math.max(peakRms,rms);}document.querySelector('#state').textContent=JSON.stringify({enabled:audio.enabled,context:audio.context?.state??null,rms,peakRms,effects:audio.gameplay?.state??null},null,2);},50);
+window.addEventListener('blur',()=>{mining=false;enginePreset={powered:false};audio.engineAudio?.update(enginePreset);update();});window.addEventListener('pagehide',()=>audio.dispose());
+let pass=null,previousTime=performance.now(),peakRms=0;
+for(const [label,direction,distance] of [['Left to right',1,25],['Right to left',-1,25],['Distant pass',1,160]]){
+  const b=document.createElement('button');b.textContent=label;b.onclick=()=>{if(!audio.enabled)return;audio.flyby.suspend();pass={start:performance.now(),direction,distance};};document.querySelector('#flybys').append(b);
+}
+function animate(now){
+  const dt=(now-previousTime)/1000;previousTime=now;
+  if(pass&&audio.enabled&&!document.hidden){
+    const elapsed=(now-pass.start)/1000;
+    if(elapsed<4.5)audio.flyby.update([{id:'studio',position:new Vector3((elapsed-2.25)*180*pass.direction,0,-pass.distance)}],new Vector3(),new Quaternion(),dt);
+    else{pass=null;audio.flyby.suspend();}
+  }else{pass=null;audio.flyby?.suspend();}
+  requestAnimationFrame(animate);
+}
+window.addEventListener('blur',()=>{pass=null;audio.flyby?.suspend();});
+requestAnimationFrame(animate);
+setInterval(()=>{let rms=0;if(analyser){analyser.getFloatTimeDomainData(data);rms=Math.sqrt(data.reduce((s,n)=>s+n*n,0)/data.length);peakRms=Math.max(peakRms,rms);}document.querySelector('#state').textContent=JSON.stringify({enabled:audio.enabled,context:audio.context?.state??null,rms,peakRms,engine:audio.engineAudio?.state??null,flyby:audio.flyby?.state??null,effects:audio.gameplay?.state??null},null,2);},50);
 </script></html>
