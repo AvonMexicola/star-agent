@@ -10,6 +10,7 @@ for(const device of [{name:'desktop',width:1440,height:900,touch:false},{name:'p
       recordVideo:{dir:info.outputPath('video'),size:{width:device.width,height:device.height}}});
     const page=await context.newPage(),errors=[],warnings=[],record={device,started:new Date().toISOString(),scope:'authored studio; no flight/mining/persistence or hardware controller claim',views:[]};
     page.on('pageerror',error=>errors.push(error.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());else if(m.type()==='warning')warnings.push(m.text());});
+    page.on('response',response=>{if(response.status()>=400)errors.push(`${response.status()} ${response.url()}`);});
     const activate=async locator=>device.touch?locator.tap():locator.click();
     const snapshot=()=>page.evaluate(()=>window.stratumStudio.snapshot());
     async function capture(name){await page.screenshot({path:info.outputPath(name+'.png')});record.views.push({name,...await snapshot()});}
