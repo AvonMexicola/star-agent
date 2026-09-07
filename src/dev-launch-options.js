@@ -6,6 +6,7 @@ export const DEV_SHIPS = Object.freeze([
 ]);
 export const DEV_LOCATIONS = Object.freeze([
   {id:'hangar',name:'Station hangar',detail:'Parked · boarding, cabins and departure'},
+  {id:'rover-surface',name:'Burrow mining — Selene surface',detail:'Seated in the ground rover · nearby outcrop · ready to drive and mine'},
   {id:'station',name:'Station approach',detail:'Flight · docking and hull inspection'},
   {id:'coast',name:'Aeon · coast',detail:'95 m · ocean, grass and ground materials'},
   {id:'amphibian-habitat',name:'Aeon · Tideback beach',detail:'35 m · land and meet peaceful shore wildlife'},

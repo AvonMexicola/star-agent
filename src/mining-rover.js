@@ -10,6 +10,7 @@ import { MATERIAL_IDS } from './inventory/containers.js';
 import { Plasma } from './effects/energy-effects.js';
 import { createWeaponTarget } from './effects/weapon-target.js';
 import { clipTerrainCamera } from './ship-camera.js';
+import { roverSurfaceStart } from './rover-surface-start.js';
 
 const UP=new THREE.Vector3(0,1,0),FWD=new THREE.Vector3(0,0,-1),clamp=THREE.MathUtils.clamp;
 const v=p=>new THREE.Vector3(...p),yaw=a=>new THREE.Quaternion().setFromAxisAngle(UP,a);
@@ -28,7 +29,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
   const shipPose=()=>({position:nav.shipPosition?.clone()??nav.position.clone().sub(v(nav.layout.seatEye).applyQuaternion(nav.orientation)),quaternion:(nav.shipPosition?nav.shipOrientation:nav.orientation).clone()});
   function shipLocal(p){const s=shipPose();return p.clone().sub(s.position).applyQuaternion(s.quaternion.invert());}
   function fromShip(p){const s=shipPose();return p.clone().applyQuaternion(s.quaternion).add(s.position);}
-  const lift=()=>nav.shipId==='atlas'?nav.freighter?.lifts.find(l=>l.id==='main'):null;
+  const lift=()=>nav.shipId==='atlas'?nav.freighter?.lifts?.find(l=>l.id==='main'):null;
   function toLocal(p){return p.clone().sub(physics.state.position).applyQuaternion(physics.state.quaternion.clone().invert());}
   function toWorld(p){return p.clone().applyQuaternion(physics.state.quaternion).add(physics.state.position);}
   const support=point=>sampleRoverSupport(point,{freighter:lift()?nav.freighter:null,frame:lift()?shipPose():null});
@@ -92,7 +93,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
     else if(phase==='closing-in'||phase==='closing-out'){
       if(phase==='closing-in')nav.orientation.slerp(physics.state.quaternion.clone().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(aimPitch,aimYaw,0,'YXZ'))),1-Math.exp(-dt*4));
       door=Math.max(0,door-dt/1.1);
-      if(door===0){const seated=phase==='closing-in';phase='idle';if(seated){occupied=true;nav.roverOccupied=true;posePilot();message='Parking brake · Y / G lowers Atlas lift.';}else{nav.roverOccupied=false;message='Cabin secured. X / F boards.';}nav.keys.clear();nav.gamepad.suspend();}
+      if(door===0){const seated=phase==='closing-in';phase='idle';if(seated){occupied=true;nav.roverOccupied=true;posePilot();message=anchor?'Parking brake · Y / G lowers Atlas lift.':'Surface drive ready · RT / T operates twin cutters.';}else{nav.roverOccupied=false;message='Cabin secured. X / F boards.';}nav.keys.clear();nav.gamepad.suspend();}
     }else if(phase==='climbing-in'||phase==='climbing-out'){
       const target=route[routeIndex](),delta=target.clone().sub(nav.position),distance=delta.length();
       if(distance<.003){routeIndex++;if(routeIndex===route.length){const seated=phase==='climbing-in';phase=seated?'closing-in':'closing-out';if(!seated){occupied=false;nav.roverOccupied=false;nav.insideShip=Boolean(anchor);nav.jumpHeight=0;nav.jumpVelocity=0;}}}
@@ -123,10 +124,35 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
   }
   const api={object,physics,power,touch,
     get acceptInput(){return occupied&&phase==='idle'&&usable();},get occupied(){return occupied;},get busy(){return phase!=='idle';},
-    get interaction(){return phase!=='idle'?'BURROW · CABIN ACCESS MOVING':occupied?'BURROW · X / F EXIT · Y / G ATLAS LIFT':nearby()?'X / F · BOARD BURROW CABIN':'';},
+    get interaction(){return phase!=='idle'?'BURROW · CABIN ACCESS MOVING':occupied?`BURROW · X / F EXIT${anchor?' · Y / G ATLAS LIFT':''}`:nearby()?'X / F · BOARD BURROW CABIN':'';},
     async spawn(){
       await api.readyPromise;if(!ready||nav.shipId!=='atlas'||!available())return false;
+      if(!lift()){nav.notify('This Atlas has no compatible cargo lift. Choose Burrow mining — Selene surface in F2.');return false;}
       anchor=v(L.atlas.park);anchorLift='main';anchor.y=lift().y;anchorRotation=yaw(L.atlas.heading);lastLiftY=lift().y;spawned=true;carrier();physics.step(1/60,{brake:1});syncModel(renderedOrigin);message='Rover secured on Atlas belly elevator.';return true;
+    },
+    /** Explicit dev start only. Ordinary boarding still follows the door/steps. */
+    async spawnSurface({target=mining.ground.position}={}){
+      await api.readyPromise;if(!ready||!available()||nav.travel)return false;
+      const obstacle=nav.surfaceObstacles??mining;
+      const pose=roverSurfaceStart(target,{isClear:({position,quaternion})=>{
+        const world=point=>v(point).applyQuaternion(quaternion).add(position);
+        for(const x of [-1.4,0,1.4])for(const y of [1.75,2.4]){
+          if(obstacle.constrainWalker(world([x,y,2.35]),world([x,y,-2.8])).hit)return false;
+        }
+        const route=[L.cabin.entryGround,...L.cabin.entryRoute].map(world);
+        return route.every((point,i)=>i===0||!obstacle.constrainWalker(route[i-1],point).hit);
+      }});
+      if(!pose){nav.notify('Burrow surface start unavailable: no clear, supported terrain by the outcrop.');return false;}
+      clear();anchor=null;anchorLift=null;anchorRotation=null;
+      physics.setPose(pose.position,pose.quaternion);physics.step(1/60,{brake:1});
+      if(physics.state.blocked||!physics.state.supported){nav.notify('Burrow surface start could not settle its wheels.');return false;}
+      nav.resetCabinFlight();nav.resetSteering();nav.mode='walk';nav.dockedAtStation=false;nav.stationLift=false;nav.autoland=false;nav.spaceParked=false;
+      nav.jumpHeight=0;nav.jumpVelocity=0;nav.boost=false;nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.toolTrigger=0;
+      nav.keys.clear();nav.physicalKeys?.clear();nav.gamepad.suspend();
+      spawned=true;occupied=true;phase='idle';door=0;route=[];routeIndex=0;aimYaw=0;
+      const aim=toLocal(target).sub(v(L.cabin.pilotEye));aimPitch=clamp(Math.atan2(aim.y,Math.hypot(aim.x,aim.z)),L.mining.pitchMin,L.mining.pitchMax);
+      posePilot();syncModel(renderedOrigin);message='Selene surface drive ready · twin cutters face the Crescent deposit.';
+      nav.notify('Burrow mining — Selene surface. LS / WASD drives; RT / T mines; View / I opens ore bins; X / F exits.');return true;
     },
     interact(){
       if(!usable())return phase!=='idle';
@@ -162,7 +188,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       if(!usable()){clear();physics.step(0,{active:false});return true;}
       if(pad.pressed.has(2))api.interact();if(pad.pressed.has(3))api.toggleLift();
       // Occupied navigation returns before the normal walking lift step.
-      if(nav.freighter&&nav.shipPosition&&nav.powered){nav.freighter.update(dt,null);carrier();}
+      if(anchor&&nav.freighter&&nav.shipPosition&&nav.powered){nav.freighter.update(dt,null);carrier();}
       if(phase!=='idle'){updateAccess(dt);return true;}
       const l=lift(),moving=anchor&&l&&Math.abs(l.y-l.target)>.001;
       const axis=(a,b,n=0)=>clamp(Number(nav.keys.has(a))-Number(nav.keys.has(b))+n,-1,1);
@@ -236,7 +262,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
     const display=new THREE.Mesh(new THREE.PlaneGeometry(.55,.235),new THREE.MeshBasicMaterial({map:screenTexture}));display.position.z=.008;model.getObjectByName('RoverDisplay').add(display);
     ready=true;return model;
   }).catch(e=>{error=e.message;nav.notify('Burrow unavailable: '+error);return null;});
-  if(nav.freighter)nav.freighter.canMove=platform=>roverLiftMayMove(physics.state,platform,shipPose(),{spawned,busy:phase!=='idle'});
+  if(lift())nav.freighter.canMove=platform=>roverLiftMayMove(physics.state,platform,shipPose(),{spawned,busy:phase!=='idle'});
   inventoryUI.registerContainer({id:L.cargo.id,name:L.cargo.name,kind:'ship',boxes:L.cargo.boxes,available:()=>spawned&&(occupied||nearby())});
   canvas.addEventListener('pointerdown',e=>{if(e.button===0&&nav.locked&&api.acceptInput)held=true;});
   document.addEventListener('keyup',e=>{if(e.code==='KeyT')keyHeld=false;});

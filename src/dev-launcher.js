@@ -15,8 +15,11 @@ export function createDevLauncher({nav,options,seed,available=()=>true}){
   exteriorLink.href=exteriorURL.href;
   dialog.querySelector('.dev-footer').append(exteriorLink);
   const roverLink=document.createElement('a');roverLink.textContent='Atlas + Burrow mining rover · Selene ↗';roverLink.dataset.controllerKey='dev-mining-rover';const roverURL=new URL(devLaunchURL(window.location.href,{ship:'atlas',location:'moon'}));for(const [key,value] of Object.entries({dev:'1',intro:'0',ship:'atlas',start:'moon',rover:'1',seed:String(seed)}))roverURL.searchParams.set(key,value);roverLink.href=roverURL.href;dialog.querySelector('.dev-footer').append(roverLink);
+  const roverSurfaceLink=document.createElement('a');roverSurfaceLink.textContent='Burrow mining — Selene surface ↗';roverSurfaceLink.dataset.controllerKey='dev-rover-surface';
+  const roverSurfaceURL=devLaunchURL(window.location.href,{ship,location:'rover-surface'});roverSurfaceLink.href=roverSurfaceURL;dialog.querySelector('.dev-footer').prepend(roverSurfaceLink);
   const reviews=document.createElement('section');reviews.className='dev-review-list';reviews.hidden=true;reviews.setAttribute('aria-label','Content review pages');
   for(const [label,href,key] of [
+    ['Burrow mining — Selene surface',roverSurfaceURL,'rover-surface'],
     ['Atlas + Burrow mining rover · Selene',roverURL.href,'rover'],
     ['Expedition character · animation studio','/dev/avatar-studio.html','character'],
     ['Atlas Mark II · 64 m studio preview','/dev/atlas-mark-ii.html','atlas'],
@@ -33,8 +36,11 @@ export function createDevLauncher({nav,options,seed,available=()=>true}){
   function render(){
     for(const b of shipButtons)b.setAttribute('aria-pressed',String(b.dataset.ship===ship));
     for(const b of locationButtons)b.setAttribute('aria-pressed',String(b.dataset.location===location));
-    dialog.querySelector('.dev-selection').textContent=DEV_SHIPS.find(s=>s.id===ship).name+' → '+DEV_LOCATIONS.find(s=>s.id===location).name;
-    dialog.querySelector('.dev-seed').textContent='Shared procedural seed '+seed+' · ship unlocks bypassed in this test session';
+    const surface=location==='rover-surface';
+    dialog.querySelector('.dev-selection').textContent=surface?'Burrow M-04 → Selene surface':DEV_SHIPS.find(s=>s.id===ship).name+' → '+DEV_LOCATIONS.find(s=>s.id===location).name;
+    dialog.querySelector('.dev-seed').textContent=surface?'Temporary rover inventory · your selected ship stays at the station':'Shared procedural seed '+seed+' · ship unlocks bypassed in this test session';
+    dialog.querySelector('.dev-launch').textContent=surface?'Start ground mining ↗':'Launch test flight ↗';
+    roverSurfaceLink.href=devLaunchURL(window.location.href,{ship,location:'rover-surface'});
   }
   function suspend(){nav.keys.clear();nav.toolTrigger=0;nav.gamepad.suspend();nav.resetSteering();}
   function open(){

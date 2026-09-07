@@ -37,6 +37,8 @@ test('cabin movement uses local position, and elevated ground under a ship is no
   const state=walkingAudioState(nav);assert.match(state.frame,/ship/);assert.equal(state.metal,true);
   nav.position.x+=10000;assert.deepEqual(walkingAudioState(nav).position,state.position);
   nav.toShipLocal=()=>new THREE.Vector3(0,100,0);assert.equal(walkingAudioState(nav).metal,false);
+  nav.roverOccupied=true;assert.equal(walkingAudioState(nav).active,false,'driving a seated rover cannot create walking footsteps');
+  nav.roverOccupied=false;assert.equal(walkingAudioState(nav).active,true,'steps return after leaving the rover');
   nav.mode='eva';assert.equal(walkingAudioState(nav).active,false);
 });
 test('every original sound has finite, non-clipping PCM and variants differ',()=>{
