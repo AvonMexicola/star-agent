@@ -1932,3 +1932,51 @@ exactly the verified feature tree. The shared preview was stopped; `npm run dev:
 was restarted on5178/API8087 and serves the updated controller module. Final
 records release the claim; this remains a development checkpoint with injected
 controller evidence, not hardware acceptance or production deployment.
+
+## Active gameplay menu — 2026-09-07
+
+Cees requests a fixed in-game menu with Comms, Map, Contracts, Inventory, Loadout,
+Ship and Settings tabs, plus a development-only Dev console list. Codex owns
+`feat/gameplay-menu` in `/home/cees/projects/star-agent-gameplay-menu`: new
+`src/gameplay-menu.*`, scoped main/controller router/combat entry hooks and menu
+QA/docs. Reuses real native panels and transactions; paginates long lists instead
+of player scrolling. No dependencies or protocol changes. One focused production
+browser QA job uses5491; preserve these hooks during other feature integration.
+
+## Persistent local accounts — integrated and verified — 2026-09-07
+
+SA-DB-001 / `fix/persistent-local-accounts` at `b100d8f`, PR59:
+https://github.com/AvonMexicola/star-agent/pull/59. Integrated locally in `4ebf807`
+after controller source741d82a and record6eda47f, without conflicts. No production
+or MijnSchoolInzicht database was changed. Prisma7.9.1 now implements the existing
+SQL account/session/reset/player-state store. The local runner starts native
+PostgreSQL16.14 and retains its existing migration history and credential hashes.
+
+Shared http://127.0.0.1:5178/ and API8087 now run through the owned transient user
+unit `star-agent-persistent-preview.service`; PostgreSQL listens only on127.0.0.1:51224.
+Restart with `systemctl --user restart star-agent-persistent-preview.service`.
+Its KillMode=mixed allows the main runner to drain API save queues before stopping
+SQL. Stop the unit before running another `npm run dev:all` on those ports. The
+unit does not install a boot service; `npm run dev:all` reopens the same database.
+Do not restore the old STAR_AGENT_MEMORY=1 launcher configuration.
+
+Data: `~/.local/share/star-agent/postgres/star-agent-local/`, directory0700 with
+private credentials.json0600 and cluster/. This location is independent of Git
+worktrees and node_modules. Follow docs/local-development.md for cold backup and
+restore to a different database name; do not delete/reinitialize it on updates.
+The live shared service passed a controlled full restart: the same HTTP account,
+password login and cookie session survived. Its synthetic fixture was removed by
+exact account ID/email afterward; pre-existing and remaining accounts both0.
+A private RAM snapshot also contained no accounts; no credential values were logged.
+
+Feature checks:668 unit tests,88 native-PostgreSQL multiplayer tests/no skips,
+3 restart/backup-restore/failure tests,12 helper tests, Prisma generation,
+repository checks, build and zero-advisory audit pass. Both production browser
+journeys pass against native SQL in3.2m, including the full injected Gamepad route.
+Combined checks: clean npm ci/generated client,3 full-runner persistence tests,
+repository checks, build and the two-pilot browser journey pass (2.0m). The browser
+report has zero page/console/request errors; Vite records WebSocket resets during
+test-server teardown. All PR59 hosted checks, including verify, are green. Details and failed PGlite trial are in
+docs/qa/persistent-local-accounts.md and ADR0002. Independent review and public
+release remain separate. Browser QA is released. Preserve the running shared
+preview's database51224; database51254 was an isolated synthetic SQL QA target.
