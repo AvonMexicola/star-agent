@@ -121,3 +121,14 @@ The first combined SQL rerun failed during PostgreSQL initialization, before
 any test ran. Repeating with an owned project-backed temporary directory passes
 all 125 checks. No shared database or application change was used to obtain this
 pass. Final combined unit/build logs and both SQL attempts are retained in `/tmp`.
+
+## Local delivery
+
+Local `dev/all-features` now includes runtime **af419c7**, with the current
+wildlife integration retained. The persistent preview was gracefully restarted
+once at 20:36:52 UTC. Frontend 5178 and API 8087 return HTTP 200; all eight changed
+client modules serve the expected optimisation code and the running service uses
+the matching server source. The PostgreSQL cluster inode remains 947632. No
+protocol/schema/database reset or production deployment occurred. Refresh the
+local client at http://127.0.0.1:5178/. Exact reviewed assets are in
+[asset hashes](asset-hashes.json).
