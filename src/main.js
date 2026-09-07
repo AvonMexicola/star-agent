@@ -169,6 +169,7 @@ try {
   const inventoryUI=createInventoryUI(nav,()=>ship,inventory,mining.store,{loadout,canClaimStarter:()=>!build.blocked&&nav.shipId!=='kestrel'});
   const buildUI=createBuildUI({nav,build,store:mining.store,onOpenStorage:id=>inventoryUI.openStorage(id)});
   build.onRegisterContainer=definition=>inventoryUI.registerContainer(definition);
+  build.onSound=event=>audio.gameplay?.event(event,nav);
   build.onMainframe=claim=>buildUI.openMainframe(claim);
   build.onOpenStorage=id=>inventoryUI.openStorage(id);
   nav.surfaceObstacles=createBuildObstacles(mining,build);

@@ -4,14 +4,15 @@
 <button id="enable">Enable sound</button>
 <h2>Footsteps</h2><div id="steps"></div>
 <h2>Weapons and feedback</h2><div id="weapons"></div>
+<h2>Construction and creatures</h2><div id="world"></div>
 <h2>Mining cutter</h2><button id="mine">Start cutter</button><label><input type="checkbox" id="contact">Cutting rock</label><label>Heat <input id="heat" type="range" min="0" max="1" step=".01" value="0"></label>
 <h2>Output</h2><pre id="state"></pre>
 <script type="module">
 import { FlightAudio } from '../src/audio.js';
 import { SOUND_KINDS } from '../src/audio/synthesis.js';
 const audio=new FlightAudio();let analyser,data,contact=false,heat=0,mining=false;
-const labels={rock:'Rock',grass:'Grass',snow:'Snow',water:'Water',sand:'Sand',metal:'Metal deck',carbine:'Carbine',sidearm:'Sidearm',pulse:'Cobalt pulse',laser:'Solar lance',void:'Singularity',impact:'Impact',collect:'Ore collected',overheat:'Overheat'};
-for(const [i,kind] of SOUND_KINDS.entries()){const b=document.createElement('button');b.textContent=labels[kind];b.onclick=()=>audio.gameplay?.play(kind,{gain:.15});document.querySelector(i<6?'#steps':'#weapons').append(b);}
+const labels={rock:'Rock',grass:'Grass',snow:'Snow',water:'Water',sand:'Sand',metal:'Metal deck',carbine:'Carbine',sidearm:'Sidearm',pulse:'Cobalt pulse',laser:'Solar lance',void:'Singularity',impact:'Impact',collect:'Ore collected',overheat:'Overheat','building-placement':'Place building','pyrebear-attack':'Pyrebear · deep growl','sulphurhound-attack':'Sulphurhound · attack snarl'};
+for(const [i,kind] of SOUND_KINDS.entries()){const b=document.createElement('button');b.textContent=labels[kind];b.onclick=()=>audio.gameplay?.play(kind,{gain:.15});document.querySelector(i<6?'#steps':i<14?'#weapons':'#world').append(b);}
 document.querySelector('#enable').onclick=async event=>{await audio.toggle();event.target.textContent=audio.enabled?'Mute sound':'Enable sound';if(!analyser){analyser=audio.context.createAnalyser();data=new Float32Array(analyser.fftSize);audio.gameplay.bus.connect(analyser);}if(!audio.enabled){mining=false;document.querySelector('#mine').textContent='Start cutter';}};
 const update=()=>{audio.gameplay?.setMining(mining,contact,heat);document.querySelector('#mine').textContent=mining?'Stop cutter':'Start cutter';};
 document.querySelector('#mine').onclick=()=>{mining=!mining;update();};
