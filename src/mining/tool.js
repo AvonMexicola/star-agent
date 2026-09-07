@@ -12,7 +12,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   const mount=new THREE.Group(),hand=new THREE.Bone(),back=new THREE.Bone();hand.name='RightHand';back.name='Spine2';
   hand.rotation.y=-Math.PI/2;back.visible=false;mount.add(hand,back);scene.add(mount);
   const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:Object.fromEntries(['mining-laser-tool','rifle-laser','sidearm-pistol'].map(id=>[id,{position:[0,0,0],rotation:[0,0,0]}]))}}};
-  let hit=null,held=false,keyHeld=false,selected=true,active=false,recoil=0,direction=new THREE.Vector3();
+  let hit=null,held=false,keyHeld=false,selected=true,active=false,recoil=0,direction=new THREE.Vector3(),tractorBefore=false;
   const viewRig={skeleton:{bones:[hand,back]}};let rigSockets=null,external=false,attached=false;
   const aimOrigin=new THREE.Vector3(),handAim=new THREE.Vector3();
   loadSocketCalibration().then(value=>{rigSockets=value;});
@@ -39,6 +39,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
     get pose(){const held=!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.querySelector('dialog[open]');return {aiming:held?equipment.aimingInput():'none',firing:held&&equipment.firingInput()};},
     toggle(){select(loadout?(loadout.active==='tool'?null:'tool'):(selected?null:'tool'));},
     update(dt,origin){
+      if(tractorBefore!==Boolean(nav.tractorActive)){clear();tractorBefore=Boolean(nav.tractorActive);}
       if(loadout){const item=nav.tractorActive?'mining-laser-tool':loadout.item;selected=Boolean(item);if(equipment.equipped!==item){clear();if(item)equipment.equip(item);else equipment.unequip();}}
       const isMining=equipment.equipped==='mining-laser-tool';
       const distance=nav.position.distanceTo(rock.position);

@@ -87,14 +87,15 @@ export function constrainLooseCargo(previous,proposed,loose,{eva=false,eyeHeight
  * the full envelope as well as the centre, not just the beam's thin ray. */
 export function tractorWorldClear(nav,station,occludes){
   return (a,b,c)=>{
+    const half=c?v(crateSize(c.sbu)).multiplyScalar(.5).addScalar(-.01):new THREE.Vector3(.002,.002,.002);
+    const sweep=station?.constrainStep?.(a,b,c?q(c.quaternion):new THREE.Quaternion(),false,{seatEye:[0,0,0],flightBounds:{min:half.clone().negate().toArray(),max:half.toArray()}});
+    if(sweep?.hit&&sweep.point.distanceTo(b)>.01)return false;
     const offsets=[new THREE.Vector3()];
     if(c){const half=v(crateSize(c.sbu)).multiplyScalar(.5).addScalar(-.01);for(let bits=0;bits<8;bits++)offsets.push(new THREE.Vector3(bits&1?half.x:-half.x,bits&2?half.y:-half.y,bits&4?half.z:-half.z).applyQuaternion(q(c.quaternion)));}
     for(const offset of offsets){const start=a.clone().add(offset),end=b.clone().add(offset),delta=end.clone().sub(start),length=delta.length();
       if(nav.altitude<50&&bodyAltitude(end,nav.body)<.002)return false;
+      const pad=nav.cargoLandingSurface?.(end);if(pad&&end.clone().sub(pad.point).dot(pad.up)<-.005)return false;
       if(length>.00001){const distance=occludes?.(start,delta.clone().normalize(),length);if(Number.isFinite(distance)&&distance<length-.01)return false;}
-      // Tiny box avoids applying a human eye-height offset to cargo corners.
-      const hit=station?.constrainStep?.(start,end,new THREE.Quaternion(),false,{seatEye:[0,0,0],flightBounds:{min:[-.002,-.002,-.002],max:[.002,.002,.002]}});
-      if(hit?.hit&&hit.point.distanceTo(end)>.01)return false;
     }
     return true;
   };

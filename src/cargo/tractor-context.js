@@ -9,7 +9,7 @@ export function tractorContext({nav,ships,loose,worldClear,enabled=()=>true}){
       const all=ships(),ship=source&&all.find(s=>s.id===source.id);
       if(source&&(!ship?.pose||ship.speed>=1))return false;
       const target=aimedCrate(nav.position,nav.orientation,all,loose(),worldClear);
-      if(target?.id!==c.id)return false;
+      if(!target||target.id!==c.id)return false;
       return source?detachedPose(ship,c):true;
     },
     move(c,distance,elapsed){

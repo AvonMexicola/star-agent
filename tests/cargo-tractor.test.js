@@ -28,6 +28,13 @@ test('expired/disconnected lease retains physical freight and can be reclaimed e
   assert.throws(()=>r.run('alice',{op:'tractor-move',crate:'freight',distance:4}),/expired/);
   r.run('bob',{op:'tractor-grab',crate:'freight'});assert.throws(()=>r.run('alice',{op:'tractor-release',crate:'freight'}),/No tractor lock/);assert.equal(r.state.loose.freight.holder,'bob');assert.equal(validCommerce(r.state),true);
 });
+test('hostile identifiers and replayed movement cannot mutate prototypes or duplicate freight',()=>{
+  const r=rig();r.nav.orientation.set(0,0,0,1);
+  for(const crate of ['__proto__','constructor','prototype',null])assert.throws(()=>r.run('alice',{op:'tractor-grab',crate}),/Invalid tractor crate/);
+  assert.equal(Object.prototype.holder,undefined);
+  const fresh=rig(),request={commandId:'unique',revision:0,op:'tractor-grab',ship:'alice:nomad',crate:'freight'};
+  const one=commerceCommand(fresh.state,'alice',request,fresh.context),two=commerceCommand(one.state,'alice',request,fresh.context);assert.equal(two.replayed,true);assert.equal(two.state,one.state);assert.equal(Object.keys(two.state.loose).length,1);
+});
 test('theft, empty hands, aim and support rules still apply to a powered tractor',()=>{
   const r=rig();r.context.loot=()=>false;assert.throws(()=>r.run('bob',{op:'tractor-grab',crate:'freight'}),/Board/);
   r.nav.orientation.set(0,0,0,1);assert.throws(()=>r.run('alice',{op:'tractor-grab',crate:'freight'}),/Aim/);

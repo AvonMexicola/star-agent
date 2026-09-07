@@ -8,12 +8,13 @@ export function validLooseCargo(loose){
 /** Called inside the same transaction as normal purchases and grid changes.
  * The context supplies server-derived transforms, never a submitted position. */
 export function tractorCommand(state,owner,m,ctx){
+  check(typeof m.crate==='string'&&/^[a-zA-Z0-9][a-zA-Z0-9:_-]{0,119}$/.test(m.crate)&&!['__proto__','constructor','prototype'].includes(m.crate),'Invalid tractor crate.');
   const now=Math.floor(ctx.now?.()??Date.now()),loose=state.loose??={},account=state.accounts[owner];state.loose=loose;
   check(!account.carried,'Stow your hand-carried crate first.');
   const held=()=>Object.values(loose).find(c=>c.holder===owner&&c.until>now);
   if(m.op==='tractor-grab'){
     check(!held(),'Release or secure your current tractor crate first.');
-    let c=loose[m.crate];
+    let c=Object.hasOwn(loose,m.crate)?loose[m.crate]:null;
     if(c){check(!c.holder||c.until<=now,'Another pilot has a tractor lock on this crate.');check(ctx.tractor?.grab(c,null),'Aim the tractor at a reachable crate.');}
     else{
       const ship=state.ships[m.ship],source=ship?.crates.find(c=>c.id===m.crate);check(source,'Crate no longer present.');
