@@ -2216,3 +2216,23 @@ verified on persistent preview5178; no restart/database change. Combined705/705
 unit tests pass in26.4s and production build passes. Runtime claims released.
 No further navigation GPU checks planned; momentum5398 retains its queue priority.
 PR62 remains draft; no production release or remote dev branch push.
+
+SA-WORLD-002 GPU ACQUIRED 17:17 UTC: active jobs have exited. Starting the reserved5383 single-worker material comparison now; expect3min. Cargo5535 follows the explicit release. Preserve this one job; no shared preview/database change.
+
+SA-WORLD-002 visual correction: first full before/after capture compiled and
+rendered; inspection rejected overly broad dark contour-like fissures. Grain,
+relief and seed variation read clearly. Narrowing/breaking those joints only,
+then one candidate-only rerender before release (~2min more). Geometry and
+shared sources stay fixed. Cargo5535 remains immediately after this release;
+all first-pass images are retained as rejected material evidence.
+
+SA-CARGO-001 implementation checkpoint in feat/sbu-cargo-trading. Measured
+Nomad4SBU / playableAtlas512SBU grids; Blender crate family and terminal,
+instanced cargo, fixed Trade menu, atomic local/server purchases/resources,
+carry1only, physical foreign boarding and theft, player-owned pad shops.
+PostgreSQL migration002 is additive; protocol3 adds cargo and Atlas lift state.
+716full units and95multiplayer tests pass (one existing environment-dependent
+skip); isolatedPG cargo migration/rollback/reconnect is tested directly.
+Browser5535 now running; not yet a validated render/input checkpoint. Shared
+source and services remain steward-owned; no database/preview restart occurred.
+Preserve incoming rover/momentum/character/base runtime from SA-INT-002.

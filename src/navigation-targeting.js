@@ -18,7 +18,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   // Touch players can use the same command without synthesizing keyboard events.
   const engageButton=document.createElement('button');engageButton.id='navigation-engage';engageButton.textContent='Engage relativistic drive';engageButton.hidden=true;parent.append(engageButton);
   function targets(){
-    const values=[...fixed];
+    const values=[...fixed,...(nav.tradeBeacons?.()??[])];
     if(station.ready)values.push({id:'station-aeon',name:'Aeon Orbital',kind:'Space station',category:'stations',parent:'aeon',body:'aeon',center:(station.centre??station.worldPosition).toArray(),radius:2000});
     if(nav.shipPosition&&['walk','eva'].includes(nav.mode))values.push({id:'your-ship',name:'Your ship',kind:'Recovery beacon',category:'ships',parent:nav.body.id,center:nav.shipPosition.toArray(),radius:0});
     for(const claim of build.claims??[])values.push({id:`base-${claim.id}`,name:claim.name||'Your base',kind:'Surface base',category:'bases',parent:claim.body,body:claim.body,surface:true,center:[...claim.origin],radius:0});

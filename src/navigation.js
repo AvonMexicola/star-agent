@@ -293,6 +293,7 @@ export class Navigation {
     if(this.kestrelAccess&&this.mode==='flight')return 'SINGLE-SEAT COCKPIT · LAND OR DOCK TO DISEMBARK';
     if(this.kestrelAccess&&this.mode==='landed')return 'F · OPEN CANOPY & DESCEND PORT LADDER';
     if(this.buildActive)return 'BUILD MODE · SELECT A PIECE OR EXIT TO INTERACT';
+    const cargoInteraction=this.cargoInteraction?.();if(cargoInteraction)return cargoInteraction;
     const baseInteraction=this.baseInteraction?.();if(baseInteraction)return baseInteraction;
     if(this.mode==='flight')return this.autoland||this.stationLift||this.travel?'FINISH MANEUVER TO LEAVE SEAT':'F · LEAVE PILOT SEAT';
     if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.position.distanceTo(this.shipPosition))+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
@@ -414,8 +415,9 @@ export class Navigation {
     if(!this.dryGround())return;
     this.gearProgress=1;this.gearDeployed=true;this.gearContactHold=false;
     const body=this.body,radial=this.normal;
-    const n=body.water?radial:bodySurfaceNormal(this.position,body);
-    const surface=bodySurfacePoint(radial,body);
+    const padSurface=this.cargoLandingSurface?.(this.position);
+    const n=padSurface?.up??(body.water?radial:bodySurfaceNormal(this.position,body));
+    const surface=padSurface?.point??bodySurfacePoint(radial,body);
     this.position.copy(surface).addScaledVector(n,3.2);
     this.gearDeployed=true;this.gearProgress=1;this.mode='landed';this.autoland=false;this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
     this.shipPosition=surface;
@@ -472,6 +474,8 @@ export class Navigation {
     if(this.berthTransition)return;
     if(this.berthRest){this.useBerth(false);return;}
     if(this.buildActive)return;
+    if(['walk','eva'].includes(this.mode)&&this.cargoAction?.())return;
+    if(this.carryingCargo){this.notify('Stow the carried crate before using ship controls.');return;}
     if(this.mode==='walk'&&!this.insideShip&&this.baseAction?.())return;
     if(this.mode==='walk'&&!this.cabinFlight&&this.stationAction?.())return;
     if(this.kestrelAccess){this.kestrelAccess.interact(this);return;}
@@ -756,6 +760,7 @@ export class Navigation {
       let local=null,floor=null;
       if(localBefore&&localBefore.length()<55){
         local=this.kestrelAccess?constrainKestrelStep(localBefore,this.toShipLocal(proposed)):this.freighter?this.freighter.constrain(localBefore,this.toShipLocal(proposed)):constrainShipStep(localBefore,this.toShipLocal(proposed),this.doorProgress>.98);
+        local=this.cargoConstrain?.(localBefore,local)??local;
         local=constrainShipAttachments(localBefore,local,this.layout?.weaponParts,{eyeHeight:this.layout?.eyeHeight??1.75});
         proposed=this.fromShipLocal(local);floor=this.kestrelAccess?null:this.freighter?this.freighter.floorAt(local):shipFloorAt(local.x,local.z,this.doorProgress>.98);
       }
@@ -793,6 +798,7 @@ export class Navigation {
         this.position.copy(result.point);
         if(result.hit){this.jumpHeight=Math.max(0,bodyAltitude(this.position,this.body)-SHIP_LAYOUT.eyeHeight);if(result.grounded&&this.jumpVelocity<0)this.jumpVelocity=0;}
       }
+      const cargoStep=this.cargoWalk?.(previous,this.position);if(cargoStep){this.position.copy(cargoStep.point);if(cargoStep.grounded){this.jumpHeight=Math.max(0,(stationGrid?this.deckClearance:bodyAltitude(this.position,this.body))-this.layout.eyeHeight);if(this.jumpVelocity<0)this.jumpVelocity=0;}}
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{
       this.advanceFlight(dt,{moveForward,strafe,vertical:axis('Space','KeyC',pad.vertical),turn,tilt,roll:axis('KeyE','KeyQ',pad.roll)});

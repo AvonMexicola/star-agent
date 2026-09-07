@@ -48,7 +48,7 @@ export class MiningStore {
           if (typeof rawRockField === 'string') this.encodedFields.set(rock.field, rawRockField);
           if (!safeId(id) || !Number.isSafeInteger(rock.revision) || rock.revision < 0 || !validField(rock.field)) throw Error('Invalid rock save');
         }
-        if (!Number.isSafeInteger(this.state.economy?.credits) || this.state.economy.credits<0 || this.state.economy.credits>STARTER_CREDITS || !Object.entries(STATION_SHOPS).every(([id,shop])=>shop.offers.every(offer=>Number.isSafeInteger(this.state.economy.shopStock?.[id]?.[offer.itemId])&&this.state.economy.shopStock[id][offer.itemId]>=0&&this.state.economy.shopStock[id][offer.itemId]<=offer.stock)))throw Error('Invalid shop ledger');
+        if (!Number.isSafeInteger(this.state.economy?.credits) || this.state.economy.credits<0 || this.state.economy.credits>1_000_000_000 || !Object.entries(STATION_SHOPS).every(([id,shop])=>shop.offers.every(offer=>Number.isSafeInteger(this.state.economy.shopStock?.[id]?.[offer.itemId])&&this.state.economy.shopStock[id][offer.itemId]>=0&&this.state.economy.shopStock[id][offer.itemId]<=offer.stock)))throw Error('Invalid shop ledger');
         if (!validStarterConstruction(this.state.starterConstruction)) throw Error('Invalid starter construction receipt');
         if (!validMiningProgression(this.state.progression)) throw Error('Invalid mining progression');
         if (!validLoadout(this.state.loadout) || !this.validContainers(this.state)) throw Error('Invalid containers');

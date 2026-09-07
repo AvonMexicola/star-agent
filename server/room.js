@@ -1,3 +1,6 @@
+import { FREIGHTER_LAYOUT,FreighterSystems } from '../src/freighter-layout.js';
+import { SHIP_LAYOUT } from '../src/boarding.js';
+import { createTrading } from './trading.js';
 import { randomUUID } from 'node:crypto';
 import * as THREE from 'three';
 import { MAX_PLAYERS, MULTIPLAYER_VERSION, WORLD_SEED, cleanInput, WEAPON_RULES } from '../src/multiplayer/protocol.js';
@@ -19,6 +22,7 @@ export function playerSnapshot(p) {
   s.shipPosition=(n.shipPosition??(n.mode==='flight'?n.position.clone().sub(new THREE.Vector3(...n.layout.seatEye).applyQuaternion(n.orientation)):null))?.toArray()??null;
   s.parkedShipPosition=n.shipPosition?.toArray()??null;
   s.travel=n.travel?JSON.parse(JSON.stringify(n.travel)):null;s.travelTarget=n.travelTarget;s.crash=n.crash;
+  s.freighter=n.freighter?.snapshot??null;
   s.physicsFrame=n.physicsFrame??null;
   s.physicsUp=s.physicsFrame?n.stationPhysics.up.toArray():null;
   return s;
@@ -27,12 +31,13 @@ export function playerSnapshot(p) {
 export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>{}}) {
   const players=new Map(),joining=new Set(),reservedColors=new Map(),leases=new Map(),drops=new Map(),writes=new Map(),departing=new Map(),failedDepartures=new Map();
   let closed=false,queue=Promise.resolve(),lastSave=now(),lastTime=now(),accumulator=0,tickCount=0;
+  const trading=createTrading({store,players,world,persistent,now,flushWrites:p=>writes.get(p.id)??Promise.resolve()});
   const doors=Object.fromEntries(world.pods.map(p=>[p.id,0]));
   const send=(p,data)=>{try{p.send(data);}catch{}};
   const broadcast=data=>{for(const p of players.values())send(p,data);};
-  const state=p=>({type:'state',stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:[...players.values()].map(playerSnapshot),doors:{...doors},hangar:hangar(p),inventory:p.inventory,health:p.health,drops:[...drops.values()].filter(d=>p.nav.position.distanceTo(new THREE.Vector3(...d.position))<500).map(d=>({...d}))});
+  const state=p=>({type:'state',stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:[...players.values()].map(playerSnapshot),doors:{...doors},hangar:hangar(p),inventory:p.inventory,commerce:trading.snapshot(p),health:p.health,drops:[...drops.values()].filter(d=>p.nav.position.distanceTo(new THREE.Vector3(...d.position))<500).map(d=>({...d}))});
   function hangar(p){const l=leases.get(p.hangarId);if(!l)return null;const pod=world.pods[l.id-1];return {id:l.id,status:l.status,pad:pod.padWorldPosition.toArray(),approach:pod.approachWorldPosition.toArray(),expiresAt:l.expiresAt};}
-  function persistent(p,inventory=p.inventory){return {version:1,inventory,health:p.health,shipHealth:p.shipHealth,weapon:p.weapon};}
+  function persistent(p,inventory=p.inventory){return {version:1,inventory,health:p.health,shipHealth:p.shipHealth,weapon:p.weapon,hull:p.nav.shipId};}
   function persist(p,inventory=p.inventory,overrides={}){
     const data=structuredClone({...persistent(p,inventory),...overrides});
     const previous=writes.get(p.account.id)??Promise.resolve();
@@ -66,7 +71,13 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     if(!players.has(p.id))return;
     p.busy=true;
     try{
-      if(m.action==='hangar')requestHangar(p);
+      if(m.action==='cargo'){const message=await trading.request(p,m);send(p,{type:'event',event:'notice',message});}
+      else if(m.action==='cargoHull'){
+        if(!['nomad','atlas'].includes(m.hull)||!p.nav.dockedAtStation||p.nav.mode!=='walk'||p.nav.insideShip||!p.hangarId||trading.state.accounts[p.id]?.carried)throw new Error('Return to your berth on foot with empty hands to change cargo ships.');
+        const pod=world.pods[p.hangarId-1];if(p.nav.position.distanceTo(pod.padWorldPosition)>80)throw new Error('Return to your berth.');
+        await persist(p,p.inventory,{hull:m.hull});setHull(p,m.hull);
+      }
+      else if(m.action==='hangar')requestHangar(p);
       else if(m.action==='cancelHangar'){
         if(p.nav.dockedAtStation||p.hangarId&&(world.pods[p.hangarId-1].isInsideHangar(p.nav.position)||p.nav.shipPosition&&world.pods[p.hangarId-1].isInsideHangar(p.nav.shipPosition)))throw new Error('Leave the hangar before releasing it.');
         release(p);
@@ -108,12 +119,15 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     }catch(error){send(p,{type:'ack',requestId:m.requestId,ok:false,error:error.code==='ECONNREFUSED'?'Storage unavailable. Try again.':error.message});}
     finally{p.busy=false;}
   }
+  function setHull(p,hull){const n=p.nav,pod=world.pods[p.hangarId-1];n.shipId=hull;n.layout=hull==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;n.freighter=hull==='atlas'?new FreighterSystems():null;n.shipPosition=pod.padWorldPosition.clone();n.shipOrientation.copy(pod.padQuaternion);n.insideShip=false;n.doorOpen=false;n.doorProgress=0;}
   function attach(p){
+    trading.attach(p);
     p.nav.station=world.adapter(p);p.nav.gamepad.poll=()=>({...p.input,mouseYaw:0,mousePitch:0,evaVertical:p.input.vertical,evaBrake:p.input.brake,mine:0,speed:0,scroll:0,shortcutModifier:false,used:true,ui:false,pressed:new Set()});
   }
   function action(p,m){
     if(p.busy||p.health<=0||p.shipHealth<=0)return;
     const n=p.nav;
+    if(trading.state.accounts[p.id]?.carried&&['interact','land','travel','target'].includes(m.action))return;
     const actions={gear:'toggleGear',lights:'toggleLights',power:'togglePower',assist:'toggleFlightAssist',land:'landOrLaunch',interact:'embark',eva:'toggleEVA',brake:'brake',cancelTravel:'cancelTravel'};
     if(Object.hasOwn(actions,m.action))n[actions[m.action]]();
     else if(m.action==='travel')n.travel?n.cancelTravel():n.beginFreeTravel();
@@ -159,7 +173,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       try{
         p.nav.look(p.lookYaw,p.lookPitch);p.lookYaw=p.lookPitch=0;p.nav.beginFrame(dt);p.nav.update(dt);
         if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
-        if(p.input.fire&&!p.busy){
+        if(p.input.fire&&!p.busy&&!trading.state.accounts[p.id]?.carried){
           const event=shoot({shooter:p,players:[...players.values()],world,now:t});
           if(event)broadcast({type:'event',event:'fire',peerId:p.id,...event});
         }
@@ -171,7 +185,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   }
   const timer=autoStart?setInterval(()=>{const t=now();accumulator+=Math.min(.25,(t-lastTime)/1000);lastTime=t;while(accumulator>=STEP){tick();accumulator-=STEP;}},10):null;
   timer?.unref();
-  return {players,leases,drops,doors,tick,state,
+  return {players,leases,drops,doors,tick,state,trading,
     async join(account,sendFn){
       if(closed)throw failure('Server restarting.','ROOM_CLOSED');
       if(players.has(account.id)||joining.has(account.id))throw failure('This account is already connected.','ACCOUNT_CONNECTED');
@@ -190,7 +204,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(saved){p.health=Math.max(0,Math.min(100,Number.isFinite(saved.health)?saved.health:100));p.shipHealth=Math.max(0,Math.min(100,Number.isFinite(saved.shipHealth)?saved.shipHealth:100));}
         if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&p.weapon!=='mining-laser-tool')p.weapon=null;
         const spawnSlot=reserveSpawn(p);p.spawnPod=p.hangarId;
-        p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));attach(p);await persist(p);
+        p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));if(saved?.hull==='atlas')setHull(p,'atlas');attach(p);await persist(p);await trading.join(p);
         if(closed)throw failure('Server restarting.','ROOM_CLOSED');
         players.set(p.id,p);
         send(p,{...state(p),type:'welcome',id:p.id,seed:WORLD_SEED,version:MULTIPLAYER_VERSION,maxPlayers:MAX_PLAYERS,colorIndex:slot});return p.id;
