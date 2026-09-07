@@ -159,10 +159,16 @@ test.afterEach(async ({ page, browser }, info) => {
 });
 
 test('controller physically visits both merchants, observes all idles, purchases and returns', async ({ page }) => {
+  // Optional offline authentication only; economy/navigation remain real.
+  await page.route('**/api/auth/session', route => route.request().method() === 'GET'
+    ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ account: null }) })
+    : route.continue());
   await page.goto('/?dev=1&ship=nomad&start=hangar&intro=0&debug&seed=7291');
   await page.waitForFunction(() => window.starAgent?.state.ready && window.starAgent.state.shipAsset === 'ready'
     && window.starAgent.state.controller.armed);
   expect((await state(page)).shipId).toBe('nomad');
+  expect((await state(page)).dev, 'preview must enable VITE_DEV_TOOLS=1 for supported hangar entry').not.toBeNull();
+  await page.waitForFunction(() => window.starAgent.state.station.docked && window.starAgent.state.station.ready);
   const initial = await state(page); await shot(page, 'hangar-start');
   await tap(page, 2); await page.waitForFunction(() => window.starAgent.state.mode === 'walk');
   await walk(page, 'ship', 0, 2.7, 'hatch control');
@@ -229,8 +235,8 @@ test('controller physically visits both merchants, observes all idles, purchases
   await note(page, 'held-input disconnect and reconnect remain unarmed');
   await neutral(page);
   expect((await state(page)).controller.armed).toBe(true);
-  await tap(page, 9); await expect(page.locator('#controller-menu')).toBeVisible();
-  await neutral(page); await tap(page, 1); await expect(page.locator('#controller-menu')).not.toBeVisible();
+  await tap(page, 9); await expect(page.locator('dialog[open].gameplay-screen')).toBeVisible();
+  await neutral(page); await tap(page, 1); await expect(page.locator('dialog[open].gameplay-screen')).toHaveCount(0);
   await neutral(page); await note(page, 'held purchase, close, focus and menu guards');
   await walk(page, 'station', 0, 0, 'cross central aisle');
   await walk(page, 'station', 10.7, 0, 'Kestrel customer position');

@@ -8,7 +8,7 @@ mkdirSync(temporary, { recursive: true });
 process.env.TMPDIR = temporary;
 export default defineConfig({
   testDir: '.', testMatch: 'shopkeeper.spec.js', workers: 1, timeout: 720000,
-  expect: { timeout: 30000 }, reporter: 'list', outputDir: '../test-results/shopkeeper-browser',
+  expect: { timeout: 30000 }, reporter: 'list', outputDir: `../test-results/shopkeeper-browser-${Date.now()}`,
   use: {
     baseURL: process.env.SHOPKEEPER_URL || 'http://127.0.0.1:5572',
     viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1,

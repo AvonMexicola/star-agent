@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex Astra shopkeeper team",
-  "status": "active",
+  "status": "review",
   "branch": "feat/station-shopkeeper",
   "base": "4706d62e92c002ce5a326c53cd8ee9ac07543645",
   "updated": "2026-09-07",
@@ -24,5 +24,6 @@
     "public/models/characters/kestrel-shopkeeper.glb",
     "public/models/characters/kestrel-shopkeeper-manifest.json"
   ],
-  "brief": "docs/briefs/station-shopkeeper.md"
+  "brief": "docs/briefs/station-shopkeeper.md",
+  "review": "docs/qa/station-shopkeeper-browser.md"
 }

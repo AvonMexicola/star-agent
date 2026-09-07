@@ -194,3 +194,53 @@ The source-versus-reduced geometry comparison must use identical bone poses on
 both meshes: intentional arm retargeting is not decimation error. Female's
 20-phase comparison therefore explicitly uses original poses before retargeting.
 Browser route and final delivery identities follow in the QA record.
+
+## Physical game verification and delivery
+
+Implementation commit 35a7a93 and provenance follow-up 6bcfc4f are published in
+[draft PR80](https://github.com/AvonMexicola/star-agent/pull/80), stacked on PR75.
+The final source fixture adds only clearer entry assertions, canonical anonymous
+read-only session isolation and the current controller-menu selector.
+
+The first browser attempt used a normal production build, which intentionally
+ignores developer hangar parameters unless VITE_DEV_TOOLS=1. It began in flight
+and failed before either merchant loaded. The corrected preview is built with
+`VITE_DEV_TOOLS=1 npm run build`, producing main-Dzobk9le.js, then served on 5572.
+The isolated preview's optional auth proxy returned 500 in that first attempt;
+subsequent tests intercept ONLY GET /api/auth/session with the canonical
+`{account:null}` response. Shop transactions, storage, navigation and controls
+remain real. This is offline merchant coverage, not authentication/API acceptance.
+
+The second attempt reached Watchkeep, all four idles and the purchase/input guards
+but failed on a legacy controller-menu selector. The actual Menu opened the shared
+Contracts gameplay screen correctly. Updating that fixture selector retained the
+same real Menu/B inputs. Both failures and their video/trace artifacts remain in
+ignored test-results. A sandbox build also failed with EROFS while Vite wrote
+through shared node_modules; the approved specific build then passed.
+
+Final single-worker controller case: 1/1 PASS in 3.1 minutes, receipt
+`test-results/shopkeeper-evidence/1788815649310-0/report.json`. It physically
+stood from the Nomad chair, opened the rear hatch, descended the ramp, walked
+the hangar/lift route, visited both counters, observed all eight natural idles,
+purchased exactly one 350 CR sidearm and one 120 CR repair kit into the station
+warehouse, exercised held confirm/movement/fire suppression through dialog,
+focus and device disconnect/reconnect, and returned through the lift to the
+hangar. No position, stock or inventory writes were used. Page/console/HTTP
+errors and warnings were empty in this scoped final run.
+
+Chromium 151 / ANGLE AMD Radeon 860M (radeonsi krackan1 ACO), GLES 3.2. Final
+merchant desktop views used 1440×900 viewport and drawing buffer, render scale 1;
+390×844 views resize that desktop browser and do not establish native touch.
+Watchkeep 418 draws / 896,664 triangles; Kestrel 318 / 798,242; opaque purchase dialogs
+0/0. Returned hangar 631 draws / 883,344 triangles exceeds the 600 draw target while both
+merchants are hidden; this is not full-station performance acceptance. The earlier
+partial run used 0.8 render scale at merchant views, so it must not be represented
+as full-resolution evidence. No FPS or physical-controller claim is made.
+
+The shared GPU slot was explicitly released after the successful case. Curated
+game evidence and independent motion/visual limitations are in the browser QA
+record. Source archives, corrected/original exports, editable Blends, exact
+correction receipts and byte-identical private rebuild evidence are retained.
+The coherent result is ready for serialized local development integration by
+the steward; shared 5178/API/database and public deployment were not changed by
+this lane. Current task state is review, not integrated or publicly released.
