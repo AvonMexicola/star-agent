@@ -1,0 +1,31 @@
+{
+  "id": "SA-FAU-001",
+  "title": "Hostile Pyrebear and Suloher wildlife with animated deaths",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex Astra fauna team",
+  "status": "active",
+  "branch": "feat/pyrebear",
+  "base": "4d38827d3c41ecd6250455d6ceace4365c743365",
+  "updated": "2026-09-07",
+  "areas": [
+    "world",
+    "combat",
+    "assets"
+  ],
+  "claims": [
+    "src/fauna/",
+    "blender/finish_pyrebear.py",
+    "src/main.js",
+    "src/mining/tool.js",
+    "src/effects/weapon-target.js",
+    "src/dev-launch-options.js",
+    "public/models/creatures/pyrebear.glb",
+    "public/models/creatures/pyrebear-manifest.json",
+    "public/models/creatures/suloher-dog.glb",
+    "public/models/creatures/suloher-dog-manifest.json",
+    "assets/creatures/pyrebear/",
+    "assets/creatures/suloher-dog/"
+  ],
+  "brief": "docs/briefs/hostile-fauna.md"
+}

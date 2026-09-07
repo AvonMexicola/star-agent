@@ -84,6 +84,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
           const ray=end.clone().sub(start).normalize();
           const trajectory=rifle?ray:ray.clone().multiplyScalar(450).add(nav.velocity).normalize();
           const contact=weaponTarget(start,trajectory,origin,range);
+          if(contact?.kind==='fauna')nav.onFaunaWeaponHit?.(contact,equipment.equipped);
           effects.fire(start,ray,{hit:contact,range,velocity:nav.velocity,muzzlePosition:()=>active&&equipment.equipped==='rifle-laser'?equipment.muzzleWorldPosition():null,sound:rifle?'carbine':'sidearm',weapon:rifle?'laser':'pulse',color:rifle?0xff902d:0xff395f,power:rifle?.45:.32});
           if(!effects.reducedMotion)recoil=rifle?.065:.04;
         }
