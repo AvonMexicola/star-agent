@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
-const out='/tmp/star-agent-ship-weapons';
+const out=process.env.SHIP_WEAPONS_OUTPUT??'/tmp/star-agent-ship-weapons';
 const frames=page=>page.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(r=>requestAnimationFrame(r));});
 for(const [ship,size,count] of [['nomad',1,2],['kestrel',2,4],['atlas',3,3]])test(ship+' fitted weapons, keyboard and touch firing and actual hull views',async({page,browser})=>{
   await mkdir(out,{recursive:true});const errors=[],warnings=[];
@@ -49,4 +49,33 @@ for(const [ship,size,count] of [['nomad',1,2],['kestrel',2,4],['atlas',3,3]])tes
   const backend=await page.evaluate(()=>{const gl=document.querySelector('#viewport').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);});
   await writeFile(out+'/'+ship+'.json',JSON.stringify({browser:browser.version(),backend,errors,warnings,state:await page.evaluate(()=>starAgent.state),physicalController:false},null,2));
   expect(errors).toEqual([]);expect(warnings).toEqual([]);
+});
+
+test('touch gestures select and hold fire on the fitted Atlas battery',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true}),page=await context.newPage();
+ try{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.addInitScript(()=>Object.defineProperty(navigator,'getGamepads',{value:()=>[]}));
+  await page.goto('http://127.0.0.1:5410/?dev=1&ship=atlas&start=orbit&intro=0&debug');
+  await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.enabled&&!starAgent.state.transiting&&starAgent.state.effects.armament?.status==='ready',null,{timeout:90000});
+  await page.locator('[data-ship-weapon="void"]').tap();await page.waitForTimeout(160);
+  const trigger=await page.locator('.ship-trigger').boundingBox(),cdp=await context.newCDPSession(page);
+  const before=await page.evaluate(()=>starAgent.state.effects.armament.shots);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:trigger.x+trigger.width/2,y:trigger.y+trigger.height/2,id:1}]});
+  await page.waitForFunction(before=>starAgent.state.effects.armament.shots>before,before);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await page.screenshot({path:out+'/atlas-touch.png'});
+  const shots=await page.evaluate(()=>starAgent.state.effects.armament.shots);
+  await page.waitForTimeout(1400);expect(await page.evaluate(()=>starAgent.state.effects.armament.shots)).toBe(shots);
+  expect(await page.evaluate(()=>starAgent.state.effects.armament.lastShot)).toMatchObject({type:'void',size:3});expect(errors).toEqual([]);
+ }finally{await context.close();}
+});
+
+test('Atlas Mark II studio carries three S3 guns with its aft bore preserved',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(['error','warning'].includes(m.type()))errors.push(m.text());});
+ await page.goto('/dev/atlas-mark-ii.html');await page.waitForFunction(()=>window.atlasMarkIIStudio?.model?.armament?.status==='ready');
+ const state=await page.evaluate(()=>{const arm=atlasMarkIIStudio.model.armament;return {state:arm.state,bores:arm.state.mounts.map((m,i)=>({name:m.node,direction:arm.muzzle(i,{local:true}).direction.toArray()}))};});
+ expect(state.state.size).toBe(3);expect(state.state.mounts.length).toBe(3);
+ expect(state.bores.find(b=>b.name==='Mount_S3_Aft').direction[2]).toBeCloseTo(1,5);
+ await page.evaluate(()=>atlasMarkIIStudio.view('mounts',true));await frames(page);await page.screenshot({path:out+'/atlas-mark-ii-mounts.png'});expect(errors).toEqual([]);
 });

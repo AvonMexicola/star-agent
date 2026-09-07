@@ -50,7 +50,9 @@
     "scripts/ship-weapon-sheet.mjs",
     "src/ship-attachment-collision.js",
     "scripts/ship-weapons-patrol.config.js",
-    "docs/space-combat.md"
+    "docs/space-combat.md",
+    "scripts/space-combat.spec.js",
+    "scripts/kestrel-flight.spec.js"
   ],
   "brief": "docs/briefs/ship-weapons.md"
 }

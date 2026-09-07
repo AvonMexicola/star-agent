@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 const output='/tmp/star-agent-combat-evidence';
-for(const ship of ['nomad','kestrel'])test(`${ship}: controller patrol console, physical flight, targeting, engagement and combat report`,async({page,browser})=>{
+for(const ship of ['nomad','kestrel','atlas'])test(`${ship}: controller patrol console, physical flight, targeting, engagement and combat report`,async({page,browser})=>{
  const evidence=`${output}/${ship}`;await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>{
   window.combatPad={id:'Combat test standard controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};

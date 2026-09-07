@@ -95,7 +95,7 @@ test('weapon obstruction follows visible station-complex roots at a large render
  const origin=v(1e9,2e9,3e9),group=new THREE.Group();
  const wall=new THREE.Mesh(new THREE.BoxGeometry(4,4,1),new THREE.MeshBasicMaterial());wall.position.z=-4;group.add(wall);
  const hidden=new THREE.Group();hidden.visible=false;const decoy=wall.clone();decoy.position.z=-1;hidden.add(decoy);group.add(hidden);group.updateMatrixWorld(true);
- const nav={station:{pods:[{group}],hub:{group:new THREE.Group()}},stationDistance:20,body:AEON,normal:v(0,1,0)};
+ const nav={station:{pods:[{group}],hub:{group:new THREE.Group()}},stationDistance:90000,body:AEON,normal:v(0,1,0)};
  const target=createWeaponTarget({nav,mining:{raycast:()=>null}});
  const hit=target(origin,v(0,0,-1),origin,20);
  assert.ok(hit);assert.ok(Math.abs(hit.distance-3.5)<1e-8);assert.ok(hit.point.distanceTo(origin.clone().add(v(0,0,-3.5)))<1e-6);

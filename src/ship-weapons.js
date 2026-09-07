@@ -19,10 +19,15 @@ export function prepareShipWeaponKit(gltf){
     const muzzle=root?.getObjectByName('Muzzle_'+id);
     if(!root||!muzzle||root.userData.weaponSize!==size||root.userData.weaponType!==type)
       throw new Error('Incomplete weapon asset: '+id);
+    let triangles=0;
     root.traverse(node=>{if(node.isMesh){
+      triangles+=(node.geometry.index?.count??node.geometry.attributes.position?.count??0)/3;
       node.castShadow=true;node.receiveShadow=true;
       for(const material of [node.material].flat())material.userData={...material.userData,authoredSurface:true,unweathered:true};
     }});
+    const bounds=new THREE.Box3().setFromObject(root);
+    if(triangles<1||bounds.isEmpty()||![...bounds.min.toArray(),...bounds.max.toArray(),...muzzle.position.toArray()].every(Number.isFinite))
+      throw new Error('Weapon has no valid physical body: '+id);
     variants.set(id,root);
   }
   return {variants,scene:gltf.scene};
@@ -48,13 +53,20 @@ export function attachShipWeapons(ship,shipId,kit){
   const size=SHIP_WEAPON_SIZES[shipId];if(!size)throw new Error('Unknown armed ship: '+shipId);
   const sockets=socketsFor(ship,shipId);
   for(const socket of sockets)if(!mountAccepts(socket.userData.size??socket.userData.mountSize,size))throw new Error('Weapon does not fit '+socket.name);
+  // Validate every dependency before changing the hull. A partial fitting must
+  // never remain visible without its corresponding physical envelopes.
+  const plans=sockets.map(socket=>{
+    const name=shipId==='nomad'?'Adapter_Nomad':socket.name==='HP_Nose'?'Adapter_Kestrel_Nose':socket.name.startsWith('HP_Wing')?'Adapter_Kestrel_'+socket.name.slice(3):socket.userData.foundation;
+    const adapter=name?kit.scene.getObjectByName(name):null;
+    if(name&&!adapter)throw new Error('Missing weapon foundation: '+name);
+    return {socket,adapter};
+  });
   let selected='pulse',cursor=0,shots=0,lastShot=null;
   const flashGeometry=new THREE.ConeGeometry(1,1,8,1,true);
   flashGeometry.rotateX(-Math.PI/2);flashGeometry.translate(0,0,-.5);
-  const mounts=sockets.map(socket=>{
+  const mounts=plans.map(({socket,adapter})=>{
     const group=new THREE.Group();group.name='Fitted guns / '+socket.name;socket.add(group);
-    const adapterName=shipId==='nomad'?'Adapter_Nomad':socket.name==='HP_Nose'?'Adapter_Kestrel_Nose':socket.name.startsWith('HP_Wing')?'Adapter_Kestrel_'+socket.name.slice(3):socket.userData.foundation;
-    if(adapterName){const adapter=kit.scene.getObjectByName(adapterName);if(!adapter)throw new Error('Missing weapon foundation: '+adapterName);group.add(adapter.clone(true));}
+    if(adapter)group.add(adapter.clone(true));
     const weapons=new Map();
     for(const type of TYPES){
       const id=type+'-s'+size,model=kit.variants.get(id).clone(true),profile=shipWeaponProfile(type,size);

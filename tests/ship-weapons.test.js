@@ -112,4 +112,23 @@ test('new barrels block walking and EVA without creating cabin floors',async()=>
   const entry=new THREE.Vector3(-3,1.75,-1.75),ladder=new THREE.Vector3(-2.45,1.75,-1.75);
   assert.deepEqual(constrainShipAttachments(entry,ladder,arm.flightParts),ladder);
   arm.dispose();
+  const nomad=attachShipWeapons(hulls.nomad.gltf.scene.clone(true),'nomad',kit);
+  const overlap=new THREE.Vector3(-2.50,1.75,-4.50),escape=new THREE.Vector3(-2.52,1.75,-4.50);
+  assert.deepEqual(constrainShipAttachments(overlap,escape,nomad.flightParts),escape);
+  const inward=new THREE.Vector3(-2.48,1.75,-4.50);
+  assert.deepEqual(constrainShipAttachments(overlap,inward,nomad.flightParts),overlap);
+  nomad.dispose();
+});
+
+test('malformed gun bodies are rejected and a missing foundation leaves no partial fitted hull',async()=>{
+ const empty=gun.gltf.scene.clone(true),root=empty.getObjectByName('Weapon_pulse-s1');
+ for(const node of [...root.children])if(node.isMesh||node.children.some(child=>child.isMesh))node.removeFromParent();
+ assert.throws(()=>prepareShipWeaponKit({scene:empty}),/no valid physical body/);
+ const broken=prepareShipWeaponKit({scene:gun.gltf.scene.clone(true)});
+ broken.scene.getObjectByName('Adapter_Kestrel_WingL').removeFromParent();
+ const ship=hulls.kestrel.gltf.scene.clone(true);ship.readyPromise=Promise.resolve(ship);
+ const previous=console.warn;console.warn=()=>{};
+ try{equipShipWeapons(ship,'kestrel',{kitPromise:Promise.resolve(broken)});await ship.readyPromise;}finally{console.warn=previous;}
+ assert.equal(ship.armament.status,'unavailable');
+ let fitted=0;ship.traverse(node=>{if(node.name.startsWith('Fitted guns /'))fitted++;});assert.equal(fitted,0);
 });

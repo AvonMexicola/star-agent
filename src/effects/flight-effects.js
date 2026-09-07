@@ -13,20 +13,21 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
   document.body.append(panel);const trigger=panel.querySelector('.ship-trigger');
   const clear=()=>{keyHeld=false;pointerHeld=false;controllerArmed=false;getShip?.()?.armament?.stop?.();};
   const ready=()=>nav.mode==='flight'&&nav.powered!==false&&!nav.travel&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
+  const fireReady=()=>ready()&&!nav.multiplayer?.connected;
   function select(id){if(!WEAPONS[id])return;weapon=id;clear();nav.gamepad.suspend();controllerFire=false;cooldown=.12;}
   for(const [i,[id,profile]] of Object.entries(Object.entries(WEAPONS))){
     const button=document.createElement('button');button.type='button';button.textContent=`${Number(i)+1} · ${profile.label}`;button.dataset.shipWeapon=id;button.onclick=()=>select(id);panel.querySelector('.ship-weapon-options').append(button);
   }
   document.addEventListener('keydown',e=>{
-    if(!ready()||e.repeat||e.target.closest('input,dialog'))return;
+    if(!fireReady()||e.repeat||e.target.closest('input,dialog'))return;
     const id={Digit1:'pulse',Digit2:'laser',Digit3:'void'}[e.code];if(id)select(id);
     if(e.code==='KeyT')keyHeld=true;
   });
   document.addEventListener('keyup',e=>{if(e.code==='KeyT')keyHeld=false;});
   window.addEventListener('blur',clear);document.addEventListener('visibilitychange',clear);
-  trigger.addEventListener('pointerdown',e=>{if(!ready())return;e.preventDefault();pointerHeld=true;trigger.setPointerCapture(e.pointerId);});
+  trigger.addEventListener('pointerdown',e=>{if(!fireReady())return;e.preventDefault();pointerHeld=true;trigger.setPointerCapture(e.pointerId);});
   for(const event of ['pointerup','pointercancel','lostpointercapture'])trigger.addEventListener(event,()=>pointerHeld=false);
-  trigger.addEventListener('keydown',e=>{if(['Space','Enter'].includes(e.code)){e.preventDefault();e.stopPropagation();if(!e.repeat&&ready())pointerHeld=true;}});
+  trigger.addEventListener('keydown',e=>{if(['Space','Enter'].includes(e.code)){e.preventDefault();e.stopPropagation();if(!e.repeat&&fireReady())pointerHeld=true;}});
   trigger.addEventListener('keyup',e=>{if(['Space','Enter'].includes(e.code)){e.preventDefault();e.stopPropagation();pointerHeld=false;}});
   return {
     select,
@@ -39,7 +40,7 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
       armament?.update?.(dt);
       const active=ready()&&!suspended;
       const secured=nav.gearProgress<=.001&&!nav.gearDeployed;
-      const armed=active&&secured&&armament?.status==='ready';
+      const armed=active&&!nav.multiplayer?.connected&&secured&&armament?.status==='ready';
       panel.hidden=Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
       if(!armed)clear();
       else if(!controllerFire)controllerArmed=true;
