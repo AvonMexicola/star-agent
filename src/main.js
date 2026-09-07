@@ -128,7 +128,7 @@ try {
   character.setVisible(false);
   const remotePlayers=new RemotePlayers(scene),multiplayer=new MultiplayerClient();
   multiplayer.attach({nav,station,remotePlayers});
-  let localInventoryStorage;try{localInventoryStorage=testFlight?testFlightStorage():window.localStorage;}catch{}
+  let localInventoryStorage;try{localInventoryStorage=testFlight?testFlightStorage(devOptions&&new URLSearchParams(location.search).get('cargo-test')==='1'?(window.__starAgentCargoTestSeed??[]):[]):window.localStorage;}catch{}
   const fleet=new Fleet(localInventoryStorage),freighterSystems=new FreighterSystems();
   if(devOptions){fleet.active=devOptions.ship;fleet.unlocked=true;fleet.surfaceVisited=true;}
   else if(testFlight)fleet.active='kestrel';

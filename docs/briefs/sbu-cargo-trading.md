@@ -7,7 +7,7 @@ narrow inventory/database/station/controller/navigation hooks. Existing Atlas
 geometry, rover routes and abstract expedition lockers remain owned elsewhere.
 
 One cell is0.6m on each side. A1SBU crate is hand carried; a64SBU container is
-1.2×2.4×4.8m. Nomad uses one1×2×2 grid, capacity4SBU. The playable30m Atlas uses
+1.2×2.4×4.8m. Nomad uses one1×4×2 grid, capacity8SBU. The playable30m Atlas uses
 two2×8×16 side-deck grids, capacity512SBU. Its8×10m belly elevator, two smaller
 lifts, fore corridor and sample chest are excluded. The64m Atlas MarkII studio
 is a different unintegrated hull and must not inherit these dimensions.

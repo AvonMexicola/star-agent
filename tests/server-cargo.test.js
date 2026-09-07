@@ -48,6 +48,10 @@ test('player builds a shared surface trading pad, stocks it and earns from a vis
  assert.equal((await f.request(a.id,{op:'buy',ship:`${a.id}:nomad`,terminal:`station:${a.hangarId}`,resource:'basalt',sbu:1})).ok,true);
  const up=new THREE.Vector3(...MOON_LANDING_DIRECTION);a.nav.position.copy(bodySurfacePoint(up,SELENE,1.75));a.nav.mode='walk';a.nav.insideShip=false;a.nav.dockedAtStation=false;a.nav.orientation.setFromUnitVectors(new THREE.Vector3(0,1,0),up).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),12*Math.PI/8));
  const deployed=await f.request(a.id,{op:'deploy'});assert.equal(deployed.ok,true,deployed.error);const pad=Object.values(f.room.trading.state.terminals)[0],q=new THREE.Quaternion(...pad.quaternion),origin=new THREE.Vector3(...pad.origin);
+ // Walk from the original surface approach to the newly built terminal using protocol inputs.
+ let previous=a.nav.position.clone();for(let i=0;i<35;i++){f.time();f.room.receive(a.id,{type:'input',sequence:i+1,input:{forward:1}});f.room.tick();assert.ok(a.nav.position.distanceTo(previous)<.5,'pad approach remains continuous');previous.copy(a.nav.position);}
+ const approach=a.nav.position.clone().sub(origin).applyQuaternion(q.clone().invert());assert.ok(approach.y>=1.99,`walked onto raised pad at ${approach.toArray()}`);
+ assert.equal((await f.request(a.id,{op:'price',terminal:pad.id,resource:'basalt',price:45})).ok,true,'terminal reachable by walking');
  const park=p=>{p.nav.mode='walk';p.nav.insideShip=false;p.nav.dockedAtStation=false;p.nav.shipPosition=new THREE.Vector3(0,.25,0).applyQuaternion(q).add(origin);p.nav.shipOrientation.copy(q);p.nav.position.copy(new THREE.Vector3(0,2,17.5).applyQuaternion(q).add(origin));p.nav.velocity.set(0,0,0);};park(a);
  const crate=f.room.trading.state.ships[`${a.id}:nomad`].crates[0];assert.equal((await f.request(a.id,{op:'stock',ship:`${a.id}:nomad`,terminal:pad.id,resource:'basalt',sbu:1,crate:crate.id})).ok,true);
  assert.equal((await f.request(a.id,{op:'price',terminal:pad.id,resource:'basalt',price:45})).ok,true);const balance=f.room.trading.state.accounts[a.id].credits;await f.room.leave(a.id);park(b);

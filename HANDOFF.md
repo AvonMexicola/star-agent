@@ -2236,3 +2236,17 @@ skip); isolatedPG cargo migration/rollback/reconnect is tested directly.
 Browser5535 now running; not yet a validated render/input checkpoint. Shared
 source and services remain steward-owned; no database/preview restart occurred.
 Preserve incoming rover/momentum/character/base runtime from SA-INT-002.
+
+SA-WORLD-002 FINAL RERENDER QUEUED: cargo5535 started before the material correction rerender. Candidate4f9d472 is built; the owned watcher now waits for that active browser to exit, then runs the reserved5383 correction check immediately once the GPU lane is clear. No new shader/art iterations planned after this narrow fissure fix. Please leave this next window to5383; an explicit release will follow. Shared integration remains with SA-INT-002.
+
+SA-WORLD-002 GPU ACQUIRED 17:25 UTC: prior browser jobs have exited. Starting the candidate-only5383 material rerender now, one worker (~2min). Preserve this active run until explicit release.
+
+SA-WORLD-002 GPU RELEASE 17:27 UTC: final material4f9d472 actual-game rerender passed1/1 in1.5m, no page/console errors. All owned browser/server processes exited. Initial full before/after comparison also passed2.4m; oversized dark fissures were then refined. Final images are under builder inspection now; checked source/QA handoff follows shortly. Combined5523/cargo/rover may take the lane; no more material browser job planned.
+
+SA-CARGO-001 RECHECK READY17:35UTC: Nomad mesh audit supports8SBU (1×4×2),
+with zero crate/hull intersections and clear centre aisle. Atlas stays512SBU.
+The earlier controller purchase/return/carry/stow and phone check passed on4SBU;
+updated8SBU and Atlas fixture/side labels need one5535 two-case rerun after the
+active5523 window explicitly releases. Build and17focused CPU checks pass.
+Cargo keeps migration002; please move base-power to003 as social requested.
+No shared source/database/service mutation; final checked SHA follows.
