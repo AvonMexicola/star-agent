@@ -78,3 +78,37 @@ test('engine spools with actual thrust and boost, idles seated, and stops when p
   engine.update({powered:false});assert.equal(engine.exhaustGain.gain.value,0);
   engine.dispose();engine.update({throttle:1});assert.equal(engine.exhaustGain.gain.value,0);
 });
+
+
+test('flyby approaches high, recedes low, pans with the camera and fades with distance',async()=>{
+  const {flybyMix}=await import('../src/audio/flyby.js');
+  const velocity=new THREE.Vector3(180,0,0),mix=(x,z=-25,q)=>flybyMix(new THREE.Vector3(x,0,z),velocity,q);
+  assert.ok(mix(-100).doppler>1&&mix(100).doppler<1);
+  assert.ok(mix(-100).pan<0&&mix(100).pan>0);
+  assert.ok(mix(0).gain>mix(0,-160).gain);
+  assert.ok(mix(-100,-25,new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI)).pan>0);
+  assert.equal(mix(500),null);
+  assert.equal(flybyMix(new THREE.Vector3(20,0,0),new THREE.Vector3()),null);
+});
+test('flyby rejects first samples, co-moving ships, warps and gaps; limits and clears audio voices',async()=>{
+  const {FlybyTracker,FlybyAudio}=await import('../src/audio/flyby.js');
+  const tracker=new FlybyTracker(),q=new THREE.Quaternion(),listener=new THREE.Vector3();
+  const ships=x=>Array.from({length:9},(_,id)=>({id,position:new THREE.Vector3(x,0,-25-id)}));
+  assert.equal(tracker.update(ships(-100),listener,q,.1).length,0);
+  assert.equal(tracker.update(ships(-82),listener,q,.1).length,4);
+  assert.equal(tracker.update(ships(-64),new THREE.Vector3(18,0,0),q,.1).length,0,'co-moving listener');
+  assert.equal(tracker.update(ships(10000),listener,q,.1).length,0);
+  assert.equal(tracker.update(ships(-100),listener,q,2).length,0);
+  assert.equal(tracker.update(ships(-82),listener,q,.1).length,0);
+  const c=mockContext(),audio=new FlybyAudio(c,{},c.createBufferSource());
+  audio.update(ships(-100),listener,q,.1);assert.equal(audio.voices.length,0);
+  audio.setEnabled(true);audio.update(ships(-100),listener,q,.1);audio.update(ships(-82),listener,q,.1);
+  assert.equal(audio.state.voices,4);assert.equal(audio.voices.length,4);
+  assert.ok(audio.voices.every(v=>v.noiseGain.gain.value>0));
+  audio.update([],listener,q,.1);assert.equal(audio.state.voices,0);assert.ok(audio.voices.every(v=>v.noiseGain.gain.value===0));
+  audio.update(ships(-100),listener,q,.1);audio.update(ships(-82),listener,q,.1);
+  audio.setEnabled(false);assert.equal(audio.tracker.previous.size,0);assert.ok(audio.voices.every(v=>v.toneGain.gain.value===0));
+  audio.setEnabled(true);audio.update(ships(-64),listener,q,.1);assert.equal(audio.state.voices,0);
+  audio.update(ships(-46),listener,q,.1,{active:false});assert.equal(audio.tracker.previous.size,0);
+  audio.dispose();assert.equal(audio.voices.length,0);
+});

@@ -1,3 +1,4 @@
+import { FlybyAudio } from './audio/flyby.js';
 import { EngineAudio } from './audio/engine.js';
 import { GameplayAudio } from './audio/gameplay.js';
 import { FlightMusic } from './music.js';
@@ -61,6 +62,7 @@ export class FlightAudio {
     try { this.music = new FlightMusic(context, this.master); } catch { this.music = null; }
     this.gameplay = new GameplayAudio(context, this.master);
     this.engineAudio = new EngineAudio(context, this.master, this.noise);
+    this.flyby = new FlybyAudio(context, this.master, this.noise);
     return true;
   }
 
@@ -72,6 +74,7 @@ export class FlightAudio {
         this.enabled = false;
         this.music?.setEnabled(false);
         this.gameplay?.setEnabled(false);
+        this.flyby?.setEnabled(false);
         this.master.gain.setTargetAtTime(0, this.context.currentTime, 0.08);
         return false;
       }
@@ -81,6 +84,7 @@ export class FlightAudio {
       this.master.gain.setTargetAtTime(this.suspended ? 0 : 0.7, this.context.currentTime, 0.2);
       this.music?.setEnabled(!this.suspended);
       this.gameplay?.setEnabled(!this.suspended);
+      this.flyby?.setEnabled(!this.suspended);
       return true;
     } catch {
       this.enabled = false;
@@ -94,6 +98,7 @@ export class FlightAudio {
     this.master.gain.setTargetAtTime(this.enabled && !suspended ? 0.7 : 0, this.context.currentTime, 0.08);
     this.music?.setEnabled(this.enabled && !suspended);
     this.gameplay?.setEnabled(this.enabled && !suspended);
+    this.flyby?.setEnabled(this.enabled && !suspended);
   }
 
   update({ speed = 0, altitude = 0, musicAltitude = altitude, verticalSpeed = 0, mode = 'flight', boost = false, airless = false,
@@ -125,6 +130,7 @@ export class FlightAudio {
   }
 
   dispose() {
+    this.flyby?.dispose();
     this.engineAudio?.dispose();
     this.music?.dispose();
     this.gameplay?.dispose();

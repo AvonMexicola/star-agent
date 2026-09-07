@@ -84,3 +84,22 @@ power-off/mute controls. No new control bindings or physical-controller test.
 Final engine revision: all 68 configured test files pass; Chrome engine-off
 settles to zero analyser output, metal plays successfully, and mute shows zero
 output with no console warnings/errors.
+
+## Ship flybys
+
+Nearby rendered multiplayer ships now produce a stereo turbine/whoosh as their
+position changes relative to the camera. Approach raises pitch, recession lowers
+it, and distance rolls off the sound to silence by 400 m. Relative motion keeps
+stationary and co-moving ships quiet. Four strongest passes share a bounded mixer;
+spawn, large network/camera warps, frame gaps, disconnect, mute, focus loss, menus,
+map and transit reset tracking or silence voices. Positions remain JS doubles.
+The local player's ship is excluded by the existing remote-player collection.
+This adds presentation to existing flight controls; no new bindings.
+
+The studio includes left-to-right, right-to-left and distant 180 m/s passes.
+Chrome produced nonzero flyby output (peak RMS approximately .020), returned to
+zero after the pass, and showed muted/zero output with no captured console errors.
+Nine focused gameplay-audio cases pass, including Doppler/pan/distance, formation
+flight, warps, lifecycle and voice limits. Full `npm test -- --test-concurrency=4`
+reports 511 passing cases; production build passes with the inherited chunk warning.
+The real two-pilot listening journey and physical-controller testing remain untested.
