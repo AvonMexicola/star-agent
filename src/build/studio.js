@@ -18,6 +18,7 @@ if(only&&PIECES[only]?.padSize){
  const size=PIECES[only].footprint;camera.far=400;camera.position.set(size[0]*.7,Math.max(...size)*.9,size[1]*.65);camera.lookAt(0,0,0);camera.updateProjectionMatrix();ground.scale.set(3,3,3);ground.position.y=-.6;
  if(params.has('ship')){const atlas=only!=='foundation-pad-small',ship=(await new GLTFLoader().loadAsync(atlas?'/models/atlas.glb':'/models/nomad.glb')).scene;if(only==='foundation-pad-large')ship.scale.setScalar(2);scene.add(ship);}
 }
+if(only==='wind-turbine'){camera.position.set(8,6,9);camera.lookAt(0,2.8,0);}
 if(only==='hangar-door'){camera.position.set(18,10,19);camera.lookAt(0,2,0);setDoorOpen(scene.children.find(o=>o.userData.pieceType===only),params.has('open')?1:0);}
 const human=new THREE.Group();const material=new THREE.MeshStandardMaterial({color:0xb6efd1,roughness:.6});
 const body=new THREE.Mesh(new THREE.CapsuleGeometry(.22,1.15,4,8),material);body.position.y=.8;human.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(.13,12,8),material);head.position.y=1.66;human.add(head);human.position.set(only?-2:3.3,0,only?0:-1.5);scene.add(human);

@@ -211,3 +211,25 @@ unless it overlaps another claim. Other claims remain 64 m. The 64-piece/site li
 still applies; a complete prefab pad counts as one piece. In the Selene sandbox,
 the small pad fits west of the starter pad; the large pad fits farther east,
 for example near claim-local X 36/Z 0. Refill the bank between expensive pads.
+
+
+## Base electricity and server saves
+
+Use B → LB/RB → Power to build solar arrays, wind turbines, batteries and fuel
+generators. Batteries start empty and charge from surplus generation. Wind does
+not work on Selene. Solar needs sunlight and clearance above the array. Mine
+Selene surface rocks for helium-3-rich regolith, or survey Pyre outcrops for rare
+uranium-bearing ore; put fuel in mainframe supplies and load0.1 kg batches there.
+
+X/F at a mainframe or power machine shows generation, load, battery energy, fuel
+and health. Once generation and batteries cannot meet demand, the base loses
+health over72 real hours. Restoring power stops decay;5 kg metal stock repairs25
+health. At zero, the base and its stored contents are removed. Manual storage and
+mainframe access remain available without electricity. Sandbox health is protected.
+
+Bases are browser-local until **Connect / restore server base save** is used at
+a mainframe while signed in. An existing account save is restored, with a local
+backup retained first. Connected solo saves upload every ten seconds and restore
+across browsers; server upkeep continues offline. Check the displayed saved/pending
+status before leaving. Multiplayer construction remains disabled in this slice.
+See [power and server-save memory](base-power-pipeline.md) for integration details.

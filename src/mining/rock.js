@@ -1,3 +1,4 @@
+import {miningFuelProfile} from './power-fuels.js';
 import * as THREE from 'three';
 import { MOON_LANDING_DIRECTION, LANDING_FRAME, MOON_RADIUS, MOON_POSITION, moonResources, MOON_RESOURCE_VERSION } from '../moon-world.js';
 import { bodySurfacePoint, bodyAltitude, bodyAt, SELENE } from '../celestial.js';
@@ -13,7 +14,7 @@ export class MineableRock {
     const direction=up.clone().addScaledVector(east,-19/MOON_RADIUS).addScaledVector(north,8/MOON_RADIUS).normalize();
     this.position=bodySurfacePoint(direction,SELENE,1.35);this.up=direction;
     this.quaternion=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(east,direction,east.clone().cross(direction).normalize()));
-    if(position)this.position.copy(position);this.body=bodyAt(this.position);if(quaternion)this.quaternion.copy(quaternion);
+    if(position)this.position.copy(position);this.body=bodyAt(this.position);this.fuelProfile=miningFuelProfile(rockId,this.body.id,space);if(quaternion)this.quaternion.copy(quaternion);
     const resourceDirection=this.position.clone().sub(new THREE.Vector3(...MOON_POSITION)).normalize();
     this.resourceWeights=normalizeResourceWeights(resourceWeights??(space?null:moonResources(...resourceDirection.toArray()).weights));
     this.resourceVersion=space?RESOURCE_VEIN_VERSION:`${MOON_RESOURCE_VERSION}.${RESOURCE_VEIN_VERSION}`;
@@ -56,7 +57,7 @@ export class MineableRock {
     const geometry=new THREE.BufferGeometry();
     for(const key of ['positions','normals','colors'])geometry.setAttribute({positions:'position',normals:'normal',colors:'color'}[key],new THREE.BufferAttribute(data[key],3));
     geometry.computeBoundingSphere();const collision=new RockCollision(data.positions,data.collision);
-    if(this.job.revision!==this.snapshot.revision||(this.job.carving&&!this.store.commitRock(this.rockId,data,this.job.revision,this.job.destination))){geometry.dispose();return;}
+    if(this.job.revision!==this.snapshot.revision||(this.job.carving&&!this.store.commitRock(this.rockId,data,this.job.revision,this.job.destination,this.fuelProfile))){geometry.dispose();return;}
     if(this.mesh){const old=this.mesh.geometry;this.mesh.geometry=geometry;old.dispose();}
     else{this.mesh=new THREE.Mesh(geometry,this.material);this.mesh.castShadow=true;this.mesh.receiveShadow=true;this.group.add(this.mesh);}
     this.collision=collision;this.ready=true;this.meshMs=data.meshMs;this.publishMs=performance.now()-start;

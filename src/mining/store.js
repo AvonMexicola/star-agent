@@ -107,7 +107,7 @@ export class MiningStore {
     } catch {
       this.saved = false; this.blocked = true; this.warning = 'Save unavailable. Previous cuts and cargo retained. Reload to retry.'; return false;
     }
-    this.state = next; this.syncManifest(); return true;
+    this.state = next; this.syncManifest(); this.onWrite?.(next); return true;
   }
   bindManifest(manifest) { this.manifest = manifest; this.syncManifest(); }
   syncManifest() {
@@ -130,7 +130,7 @@ export class MiningStore {
   }
   releaseRock(id) { this.initialRocks.delete(id); }
   canEditRock(id) { return safeId(id) && !this.blocked && (id === ROCK_ID || Object.hasOwn(this.state.rocks, id) || Object.keys(this.state.rocks).length < MAX_SAVED_ROCKS); }
-  commitRock(id, result, revision, destination = 'pack') {
+  commitRock(id, result, revision, destination = 'pack', fuelProfile = null) {
     if (!this.canEditRock(id)) { this.warning = this.blocked ? this.warning : `Rock save slots are full (${MAX_SAVED_ROCKS} surveyed deposits). Existing deposits remain mineable.`; return false; }
     const target = this.container(destination);
     if (!target) { this.warning = 'Mining destination is unavailable. Previous cuts and cargo retained.'; return false; }
@@ -141,7 +141,8 @@ export class MiningStore {
     if (result.encodedField) this.encodedFields.set(result.field, result.encodedField);
     const items = { ...target.items };
     for (const [key, amount] of Object.entries(resourceItems(added))) items[key] += amount;
-    const next = destination === 'pack' ? { ...this.state, pack: this.state.pack.map((v, i) => v + added[i]) } : this.withItems(this.state, destination, items);
+    if(fuelProfile&&['uranium-ore','helium-3-regolith'].includes(fuelProfile.item)&&Number.isFinite(fuelProfile.fraction)&&fuelProfile.fraction>0&&fuelProfile.fraction<=.1){const fuel=added[0]*fuelProfile.fraction;items.basalt-=fuel;items[fuelProfile.item]=(items[fuelProfile.item]??0)+fuel;}
+    const next = this.withItems(this.state, destination, items);
     if (!fitsBox(this.container(destination, next).items, next.boxes[destination], this.limits(destination, next))) { this.warning = destination === 'pack' ? 'Backpack stack slots are full. Use Deposit all resources at ship cargo or attach another box.' : `${target.name} stack slots are full. Unload cargo or attach another box.`; return false; }
     next.progression = awardMiningXP(this.state.progression, added.reduce((a,b)=>a+b,0));
     if (id === ROCK_ID) { next.field = result.field; next.revision = revision + 1; }
