@@ -180,3 +180,7 @@ Development listening studio: `/tests/gameplay-audio.html`. The optional
 `?audioDebug` dev view shows emitted sounds and provides short movement/fire
 inputs for integration checks. These controls are absent from production builds.
 Water footsteps represent the existing wet shoreline, not new wading/swimming.
+
+The engine score includes a turbine and exhaust layer that spools with actual
+thrust and boost, idles while powered and seated, and fades out on shutdown.
+Metal deck footsteps are muffled, with a soft sole impact and short low ring.

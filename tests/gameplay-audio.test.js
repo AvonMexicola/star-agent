@@ -63,3 +63,18 @@ test('mixer gates pre-gesture voices, caps polyphony, attenuates distant shots a
   audio.setEnabled(true);audio.event({type:'shot',weapon:'pulse',point:new THREE.Vector3(1000,0,0)},{focused:true,position:new THREE.Vector3()});assert.equal(audio.state.shots,0);
   audio.dispose();assert.equal(audio.play('pulse'),false);assert.equal(audio.state.buffers,0);
 });
+
+test('engine spools with actual thrust and boost, idles seated, and stops when power is lost',async()=>{
+  const {engineMix,EngineAudio}=await import('../src/audio/engine.js');
+  const idle=engineMix({mode:'landed'}),thrust=engineMix({throttle:1}),boost=engineMix({throttle:1,boost:true});
+  assert.ok(idle.tone>0&&thrust.tone>idle.tone&&boost.exhaust>thrust.exhaust);
+  assert.equal(engineMix({throttle:0,boost:true}).boost,false,'holding boost while coasting does not fire engines');
+  for(const mode of ['walk','eva','crashed','destroyed'])assert.equal(engineMix({mode,throttle:1}).exhaust,0);
+  assert.equal(engineMix({powered:false,throttle:1,boost:true}).tone,0);
+  assert.equal(engineMix({throttle:NaN}).load,0);
+  const context=mockContext(),noise=context.createBufferSource(),engine=new EngineAudio(context,{},noise);
+  assert.equal(engine.toneGain.gain.value,0,'constructed engine is silent until updated after gesture');
+  engine.update({throttle:1});assert.ok(engine.exhaustGain.gain.value>idle.exhaust);
+  engine.update({powered:false});assert.equal(engine.exhaustGain.gain.value,0);
+  engine.dispose();engine.update({throttle:1});assert.equal(engine.exhaustGain.gain.value,0);
+});

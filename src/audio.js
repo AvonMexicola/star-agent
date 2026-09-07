@@ -1,3 +1,4 @@
+import { EngineAudio } from './audio/engine.js';
 import { GameplayAudio } from './audio/gameplay.js';
 import { FlightMusic } from './music.js';
 
@@ -59,6 +60,7 @@ export class FlightAudio {
     this.sources.push(this.noise);
     try { this.music = new FlightMusic(context, this.master); } catch { this.music = null; }
     this.gameplay = new GameplayAudio(context, this.master);
+    this.engineAudio = new EngineAudio(context, this.master, this.noise);
     return true;
   }
 
@@ -95,8 +97,9 @@ export class FlightAudio {
   }
 
   update({ speed = 0, altitude = 0, musicAltitude = altitude, verticalSpeed = 0, mode = 'flight', boost = false, airless = false,
-    inHangar = false, doorMotion = 0, powered = true } = {}, dt = 0) {
+    inHangar = false, doorMotion = 0, powered = true, throttle = 0 } = {}, dt = 0) {
     if (!this.context || this.disposed || !this.enabled || this.suspended) return;
+    this.engineAudio?.update({mode,powered,throttle,boost});
     this.music?.update({ altitude: musicAltitude, verticalSpeed, mode, airless });
     const time = this.context.currentTime;
     const velocity = Number.isFinite(speed) ? Math.abs(speed) : 0;
@@ -122,6 +125,7 @@ export class FlightAudio {
   }
 
   dispose() {
+    this.engineAudio?.dispose();
     this.music?.dispose();
     this.gameplay?.dispose();
     this.disposed = true;

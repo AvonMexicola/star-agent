@@ -63,3 +63,24 @@ Dev diagnostics: `/?audioDebug`, including short walk/fire test inputs. These
 controls and their status output are excluded from the production build.
 
 The standalone main-branch music preview remains at http://127.0.0.1:5305/.
+
+## Engine and muffled deck revision
+
+Cees requested an audible engine and more muffled metallic steps. Added a
+triangle turbine, upper harmonic and filtered exhaust, smoothed on the audio
+clock. Actual shared simulation engine acceleration drives load for keyboard,
+controller, automatic flight and braking; coasting speed alone cannot trigger
+full thrust. Powered seated/flight modes idle; power loss, walking away, EVA
+and crash silence the new layer. The existing Sound/visibility gate applies.
+
+Metal footsteps now use a 12 ms attack, shorter low resonances, filtered low
+noise and a lower peak (.44 versus .72), removing the bright deck ring.
+Sound studio now includes engine idle/cruise/full-thrust/boost/off controls.
+
+25 focused gameplay/engine/moon/hangar cases pass; production build passes.
+Chrome verifies real nonzero engine output, rising thrust/boost parameters and
+power-off/mute controls. No new control bindings or physical-controller test.
+
+Final engine revision: all 68 configured test files pass; Chrome engine-off
+settles to zero analyser output, metal plays successfully, and mute shows zero
+output with no console warnings/errors.
