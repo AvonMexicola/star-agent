@@ -24,7 +24,7 @@ shared texture derivatives, manifest and geometry tests. Runtime agent owns
 BuildSystem, motion, pooled service lighting and collision integration. Root owns
 instance finish/ghost/disposal helpers, console/HUD/UI, integration and delivery.
 Independent reviewer owns baseline/current in-game captures and bounded acceptance
-checks; separate Claude/Opus acceptance is pending after source freeze.
+checks; the completed independent Claude Opus functional/visual report is linked below.
 
 ## Contracts
 
@@ -73,8 +73,10 @@ right-stick scroll regression was found independently: the dialog now delegates
 to its explicitly marked inner scroll area. Updated build-ui4/4pass11.1s includes
 right-stick scrolling80px with stable focus and visible close action. Root's
 final focused finish/motion/geometry suites pass. See polish-functional-review.md.
-Visual: pending new independent review; historical Opus3.5/5 is not a pass.
-Performance: pending affected-scene measurement; inherited world failures remain.
+Visual: independent Claude Opus review passed all six criteria at 4/5, average
+4.0/5. See opus-polish-review.md and the dispositions below. Historical Opus3.5/5
+is preserved. Performance: affected-scene measurement failed the frame target;
+inherited orbit/hangar budget failures remain. No merge approval is claimed.
 Physical Xbox: untested. Merge and deployment: not performed.
 
 
@@ -110,3 +112,58 @@ Blender export was deterministic; source, manifest hashes, named door pivots,
 vertex colours and measured envelopes are checked together. Optional local
 Blender-addon/deprecation warnings did not block export; null OpenAL avoided an
 audio-shutdown hang after the first export had already written artifacts.
+
+
+Final author verification at commit `9ea6b32`: `npm test` passed all **536 tests
+across 75 configured files** in 27.46 s. `npm run build` passed with 156 modules
+in 3.42 s (existing chunk-size advisory). The persistent 5296 preview returned
+HTTP 200 and its index matched the final dist byte-for-byte.
+
+
+## Completed independent review and delivery disposition
+
+[Independent Opus report](opus-polish-review.md), with 18 self-captured images,
+records a **4.0/5 visual pass** and its separate functional examination. Reviewer
+identity is harness-reported `claude-opus-5`; the CLI completed successfully. It
+independently rechecked the phone paused-door wrapping fix on a fresh build.
+Original observations and recommendations are retained without rewriting them.
+
+Author dispositions (these are not a new reviewer score):
+
+- Phone clipping is fixed and independently verified. Final build-UI suite passes
+  **5/5 in 11.3 s**, including D-pad focus/activation, right-stick inner scrolling,
+  held-trigger suppression, keyboard/touch and the longest phone interaction copy.
+  These use a focused fixture, not a new full physical construction journey.
+- Delivered preview was rebuilt after the final CSS fix: 156 modules, 3.46 s,
+  `main-DSorPQyt.js` / `main-Bfq4WWOU.css`. HTTP 200 from port 5296 and exact index
+  comparison to `dist/index.html` pass. This clears the stale-delivery observation.
+- The report cites older mainframe lighting values. Current source already uses
+  offset `[0,1.50,-.56]` and base intensity 1.25, reduced before commit `9ea6b32`.
+  Doorway intensity remains 8. Visible housing brightness and nighttime readability
+  remain art-tuning observations; changing the corrected console to the suggested
+  intensity 4 would increase its light. No further lighting change was made.
+- Ghosts keep native `depthTest:true`; `depthWrite:false` does not disable testing
+  against opaque foreground geometry. Transparent self-overlap can still reduce
+  readability. Preserve this distinction before implementing a depth prepass.
+- D-pad browsing is exercised by `focus()` in the UI suite. The full physical
+  eight-piece controller journey in controller.md is a historical pass, predating
+  this polish and carrying rebalance. The fresh-starter route passed at `4d934d1`.
+  Neither is relabelled as a fresh full-kit run. Physical Xbox remains untested;
+  current complete-journey acceptance remains an integration gate.
+- Broader HUD-offset/layout optimisations, longer nighttime fixture visibility,
+  stronger distance material separation and whole-world performance remain follow-up
+  findings. The draft is unmerged; no budget waiver or deployment is claimed.
+
+## Refreshed isolated asset studio
+
+Reproduce with `node scripts/capture-base-kit.mjs http://127.0.0.1:5305
+ docs/qa/base-building/polish-studio` while the dev server runs on 5305.
+This Three.js authoring studio is separate from production game captures and has
+its own ground, lighting and 1.80 m reference. Desktop 1440×900, native ANGLE GL
+on AMD Radeon 860M: 70 draws / 30,110 triangles in the assembled studio; zero
+browser errors. Source/export totals above exclude the studio/reference geometry.
+
+[Kit](polish-studio/kit-desktop.png), [doorway](polish-studio/doorway-desktop.png)
+and [mainframe](polish-studio/mainframe-desktop.png) were inspected. Concrete casting,
+armour, rails and fixture details are visible; the mainframe studio face is an
+asset placeholder, while the production game attaches its live status display.

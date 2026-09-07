@@ -159,3 +159,16 @@ with `scripts/build-gameplay.config.js`, `scripts/materials-gameplay.config.js`,
 `scripts/ship-radius-gameplay.config.js`. Run heavy browser
 captures sequentially on native AMD ANGLE GL; coordinate explicit GPU handoffs.
 Independent visual review and whole-scene budgets remain review gates.
+
+
+## Polish delivery, 2026-09-07
+
+Eight-piece export and physical dimensions are verified; polished assets total
+21,228 triangles / 1,869,528 GLB bytes, with two shared 256² WebP finish maps.
+Mainframe spill uses local `[0,1.50,-.56]`, base intensity 1.25; preserve its reduced
+brightness when integrating. Long base-interaction copy wraps on phone widths.
+The independent Opus polish review scores 4.0/5 and rechecks phone wrapping.
+Read `docs/qa/base-building/polish-production.md` for original report dispositions,
+536-unit / five-UI-test passes, production door/ghost/fade evidence and studio
+captures. Whole-scene performance and a fresh complete controller construction
+journey remain integration gates; physical Xbox is untested. PR41 stays draft.

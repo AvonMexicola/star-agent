@@ -32,4 +32,6 @@
 .build-feedback:empty{min-height:0;margin:0}
 #build-dialog .build-description{font-size:12px;line-height:1.6}
 #flight-state.base-target{top:calc(50% + 140px);max-width:calc(100vw - 32px)}
+.exploring #flight-state.base-target{white-space:normal;align-items:center;line-height:1.6}
+#flight-state.base-target #state-text{min-width:0;overflow-wrap:break-word}
 @media(max-width:600px){#build-dialog h2{margin:10px 0}.build-description{margin:10px 0}.build-scroll-hint{font-size:9px}#flight-state.base-target{top:calc(50% + 110px)}}

@@ -1,5 +1,16 @@
 import {test,expect} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
+
+test('paused-door interaction text wraps inside a phone viewport',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture);
+  // Shared HUD markup with the actual longest door-state copy; this isolates
+  // text layout from the separately exercised moving-door collision route.
+  await page.evaluate(()=>{document.body.classList.add('exploring');const chip=document.createElement('div');chip.id='flight-state';chip.className='base-target';chip.innerHTML='<span id="state-icon">◇</span><span id="state-text">F / X · Closing paused · step clear · Open base door</span>';document.body.append(chip);});
+  const bounds=await page.locator('#state-text').evaluate(el=>{const b=el.getBoundingClientRect();return {left:b.left,right:b.right,height:b.height};});
+  expect(bounds.left).toBeGreaterThanOrEqual(16);expect(bounds.right).toBeLessThanOrEqual(374);expect(bounds.height).toBeGreaterThan(16);
+  await mkdir('/tmp/star-agent-build-ui',{recursive:true});await page.screenshot({path:'/tmp/star-agent-build-ui/paused-door-phone.png'});
+});
 const tap=async(page,id)=>{await page.evaluate(id=>window.pad.buttons[id]={pressed:true,value:1},id);await page.waitForFunction(id=>window.fixture.nav.gamepad.previous[id],id);await page.evaluate(id=>window.pad.buttons[id]={pressed:false,value:0},id);await page.waitForFunction(id=>!window.fixture.nav.gamepad.previous[id],id);};
 async function focus(page,key){for(let i=0;i<35;i++){if(await page.locator(`[data-controller-key="${key}"]`).evaluate(el=>el===document.activeElement))return;await tap(page,13);}throw Error(`Cannot focus ${key}`);}
 test('construction dialogs share controller focus, recipe transactions and held-trigger suppression',async({page})=>{
