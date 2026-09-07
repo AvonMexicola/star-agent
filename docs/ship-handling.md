@@ -29,6 +29,16 @@ is the route that demonstrates the Atlas's longer stopping distance. In inertial
 mode, releasing input preserves momentum; turning and thrust authority still
 vary by hull. Unpowered coasting remains governed by existing gravity/aerodynamics.
 
+Deployed or retracting landing gear limits powered flight to **35m/s**, including
+boost and inertial thrust. Automatic surface descent uses the same ceiling.
+**G** or **LB+RB + D-pad down** retracts gear in1.8seconds; the departure prompt
+shows the current binding and clears when stowed. Keep thrust held to accelerate
+after retraction. Near the hangar, the station safety limit may remain tighter.
+Both relativistic drive modes require fully stowed gear. Orbital entry starts
+stowed; boarding/launch starts with gear down. Ordinary spaceflight uses dust;
+the tunnel appears only while the relativistic drive is engaged.
+[Departure validation](qa/gear-departure/record.md).
+
 Ground clearance, station and debris safety caps remain authoritative. Ordinary
 flight crosses the atmosphere continuously; all ships retain the same travel
 spool and0.9c drive limit. Boost and throttle cannot bypass those safety caps.
