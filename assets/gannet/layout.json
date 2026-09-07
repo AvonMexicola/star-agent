@@ -1,0 +1,408 @@
+{
+  "id": "gannet",
+  "name": "Gannet T-06",
+  "manufacturer": "Meridian Shipworks",
+  "version": 1,
+  "units": "metres",
+  "up": "+Y",
+  "forward": "-Z",
+  "flightBounds": {
+    "min": [
+      -8,
+      0,
+      -13
+    ],
+    "max": [
+      8,
+      7.2,
+      11
+    ]
+  },
+  "floorY": 1.4,
+  "controls": [
+    {"node": "LiftCall_Upper", "position": [2.872, 2.61, 4.25], "normal": [-1, 0, 0], "standingEye": [2.5, 3.15, 4.85]},
+    {"node": "LiftCall_Lower", "position": [3.31, 1.0, 10.985], "normal": [0, 0, 1], "standingEye": [3.31, 1.75, 12.0]}
+  ],
+  "vestibule": {"minX": -2.9, "maxX": 2.9, "minZ": 3.4, "maxZ": 4.5},
+  "eyeHeight": 1.75,
+  "capsuleRadius": 0.25,
+  "interior": {
+    "minX": -2,
+    "maxX": 2,
+    "minZ": -9.5,
+    "maxZ": 3.4,
+    "ceiling": 3.8
+  },
+  "seat": [
+    0,
+    1.4,
+    -8.4
+  ],
+  "seatEye": [
+    0,
+    2.95,
+    -8.4
+  ],
+  "stand": [
+    0,
+    3.15,
+    -6.8
+  ],
+  "cabinPortal": {
+    "z": 3.4,
+    "minX": -0.85,
+    "maxX": 0.85,
+    "bottom": 1.4,
+    "top": 3.8
+  },
+  "lift": {
+    "id": "vehicle",
+    "name": "Vehicle elevator",
+    "node": "VehicleLift",
+    "minX": -2.9,
+    "maxX": 2.9,
+    "minZ": 4.5,
+    "maxZ": 11,
+    "low": 0,
+    "high": 1.4,
+    "speed": 0.4,
+    "thickness": 0.16,
+    "ceiling": 4.6,
+    "control": [
+      2.5,
+      1.4,
+      4.85
+    ],
+    "rearExitZ": 11
+  },
+  "hatch": {
+    "node": "RearHatch",
+    "pivot": [
+      0,
+      4.6,
+      10.83
+    ],
+    "minX": -2.9,
+    "maxX": 2.9,
+    "bottom": 1.4,
+    "top": 4.6,
+    "slats": 6,
+    "slatHeight": 0.5333333333333333,
+    "slatDepth": 0.06,
+    "trackSpacing": 0.075,
+    "closedZ": 10.93,
+    "openBottom": 4.62,
+    "seconds": 3.2
+  },
+  "gear": {
+    "seconds": 1.8,
+    "travel": 1.8,
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "nodes": [
+      {
+        "node": "Gear_Port_Fore",
+        "position": [
+          -5.45,
+          0.1,
+          -6.5
+        ]
+      },
+      {
+        "node": "Gear_Starboard_Fore",
+        "position": [
+          5.45,
+          0.1,
+          -6.5
+        ]
+      },
+      {
+        "node": "Gear_Port_Aft",
+        "position": [
+          -5.45,
+          0.1,
+          7.8
+        ]
+      },
+      {
+        "node": "Gear_Starboard_Aft",
+        "position": [
+          5.45,
+          0.1,
+          7.8
+        ]
+      }
+    ]
+  },
+  "engines": [
+    {
+      "node": "EngineNozzle_Port",
+      "position": [
+        -6.3,
+        3.72,
+        10.65
+      ],
+      "direction": [
+        0,
+        0,
+        1
+      ],
+      "radius": 0.78
+    },
+    {
+      "node": "EngineNozzle_Starboard",
+      "position": [
+        6.3,
+        3.72,
+        10.65
+      ],
+      "direction": [
+        0,
+        0,
+        1
+      ],
+      "radius": 0.78
+    }
+  ],
+  "mfdMounts": [
+    {
+      "node": "MFD_1",
+      "anchor": "MFD_Mount_1",
+      "position": [
+        -0.99,
+        2.55,
+        -10
+      ],
+      "rotation": [
+        -0.18,
+        0,
+        0
+      ],
+      "width": 0.6,
+      "height": 0.375
+    },
+    {
+      "node": "MFD_2",
+      "anchor": "MFD_Mount_2",
+      "position": [
+        -0.33,
+        2.55,
+        -10
+      ],
+      "rotation": [
+        -0.18,
+        0,
+        0
+      ],
+      "width": 0.6,
+      "height": 0.375
+    },
+    {
+      "node": "MFD_3",
+      "anchor": "MFD_Mount_3",
+      "position": [
+        0.33,
+        2.55,
+        -10
+      ],
+      "rotation": [
+        -0.18,
+        0,
+        0
+      ],
+      "width": 0.6,
+      "height": 0.375
+    },
+    {
+      "node": "MFD_4",
+      "anchor": "MFD_Mount_4",
+      "position": [
+        0.99,
+        2.55,
+        -10
+      ],
+      "rotation": [
+        -0.18,
+        0,
+        0
+      ],
+      "width": 0.6,
+      "height": 0.375
+    }
+  ],
+  "rover": {
+    "id": "meridian-mining-rover",
+    "park": [
+      -0.3,
+      1.4,
+      7.525
+    ],
+    "heading": 3.141592653589793,
+    "clearanceMargin": 0.35,
+    "entryEye": [
+      2.1,
+      3.15,
+      7.625
+    ],
+    "approach": [
+      [
+        0,
+        3.15,
+        3.8
+      ],
+      [
+        2.1,
+        3.15,
+        4.1
+      ],
+      [
+        2.1,
+        3.15,
+        7.625
+      ]
+    ]
+  },
+  "cargo": {
+    "capacitySBU": 128,
+    "cellMetres": 0.6,
+    "grids": [
+      {
+        "id": "port",
+        "min": [
+          -4.1,
+          1.4,
+          4.5
+        ],
+        "cells": [
+          2,
+          4,
+          8
+        ]
+      },
+      {
+        "id": "starboard",
+        "min": [
+          2.9,
+          1.4,
+          4.5
+        ],
+        "cells": [
+          2,
+          4,
+          8
+        ]
+      }
+    ]
+  },
+  "suppliesKg": 960,
+  "obstacles": [
+    {
+      "id": "pilot-seat",
+      "min": [
+        -0.39,
+        1.4,
+        -8.72
+      ],
+      "max": [
+        0.39,
+        2.72,
+        -7.87
+      ]
+    },
+    {
+      "id": "passenger-seat",
+      "min": [
+        0.9,
+        1.4,
+        -6.2
+      ],
+      "max": [
+        1.7,
+        2.72,
+        -5.32
+      ]
+    },
+    {
+      "id": "berth-port",
+      "min": [
+        -2,
+        1.4,
+        -3.8
+      ],
+      "max": [
+        -0.98,
+        2.32,
+        -1.65
+      ]
+    },
+    {
+      "id": "berth-starboard",
+      "min": [
+        0.98,
+        1.4,
+        -3.8
+      ],
+      "max": [
+        2,
+        2.32,
+        -1.65
+      ]
+    },
+    {
+      "id": "service-port",
+      "min": [
+        -2,
+        1.4,
+        -0.55
+      ],
+      "max": [
+        -1.32,
+        3.45,
+        1.6
+      ]
+    },
+    {
+      "id": "service-starboard",
+      "min": [
+        1.32,
+        1.4,
+        -0.55
+      ],
+      "max": [
+        2,
+        3.45,
+        1.6
+      ]
+    }
+  ],
+  "requiredNodes": [
+    "LiftCall_Upper",
+    "LiftCall_Lower",
+    "GannetHull",
+    "Cabin",
+    "VehicleLift",
+    "RearHatch",
+    "PilotChair",
+    "PilotEye",
+    "StandEye",
+    "RoverPark",
+    "CargoGrid_Port",
+    "CargoGrid_Starboard",
+    "CabinFloor",
+    "LiftDeck",
+    "EngineNozzle_Port",
+    "EngineNozzle_Starboard",
+    "MFD_1",
+    "MFD_2",
+    "MFD_3",
+    "MFD_4"
+  ],
+  "budgets": {
+    "triangles": 60000,
+    "glbBytes": 4000000,
+    "textureEdge": 1024
+  }
+}

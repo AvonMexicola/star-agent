@@ -1,0 +1,64 @@
+{
+  "model": "Gannet T-06",
+  "builder": "blender/build_gannet.py",
+  "layoutSha256": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
+  "builderSha256": "47e6ba37b0d10abb441a332654ba49db71172e1f048a3fe01dd57b9b5613b8a0",
+  "geometryHelperSha256": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
+  "inputHashes": {
+    "blender/build_gannet.py": "47e6ba37b0d10abb441a332654ba49db71172e1f048a3fe01dd57b9b5613b8a0",
+    "blender/fighter_geometry.py": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
+    "blender/gannet_textures.py": "b05002d33b11604b61ecf42b8f7174b86d5c0fdee24b0e0bdfdc683b6e075b91",
+    "assets/gannet/layout.json": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
+    "assets/gannet/textures/surface-basecolor.png": "d72737a371f40df3fc00fc6b902b6e702701dc9b51ca2f58624d9862ffa57b6f",
+    "assets/gannet/textures/surface-orm.png": "59919154268abdf5b9c9fbc52e1f406dca134ca8f596a6c04a12312d8e687255",
+    "assets/gannet/textures/surface-normal.png": "1e34e858dc103042c3fba40233b6d6dd9b9b5fea7cf6cbfe12fe95874a5eba35",
+    "assets/gannet/textures/manufacturer.png": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
+  },
+  "blenderVersion": "5.2.0 LTS",
+  "sourceBounds": {
+    "min": [
+      -7.800000190734863,
+      0.0,
+      -13.0
+    ],
+    "max": [
+      7.800000190734863,
+      7.191483974456787,
+      11.0
+    ]
+  },
+  "sourceTriangles": 39878,
+  "sourceMeshes": 33,
+  "materials": [
+    "Gannet / approved Meridian emblem",
+    "Gannet / original Meridian PBR",
+    "Gannet MFD placeholder / replaced with actual telemetry",
+    "Gannet amber access emitters",
+    "Gannet manufacturer lettering",
+    "Gannet pressure glazing",
+    "Gannet restrained mint emitters"
+  ],
+  "coordinateSystem": {
+    "units": "metres",
+    "up": "+Y",
+    "forward": "-Z"
+  },
+  "status": "Authored geometry/material checkpoint; runtime visual and physical game acceptance pending",
+  "asset": "public/models/gannet.glb",
+  "bytes": 2417904,
+  "triangles": 39878,
+  "meshPrimitives": 33,
+  "nodes": 96,
+  "images": 4,
+  "textureFormat": "WebP",
+  "sha256": "90aafdb501abd00062bbbf6b99df1aee5d1e89350e1919bec4708b91e508e483",
+  "sourceSha256": "1b5f5167c522d282ef2d680fdbd039a66fd211739433c81e68dbe2aca757bda6",
+  "collisionSha256": "f2bf62fe8c025e5ce16d80a5df762c34fb3bdc80c12767e0c747e1425da50eef",
+  "packing": {
+    "inputBytes": 4086312,
+    "outputBytes": 3178584,
+    "maximumPositionErrorMetres": 0.00030769028348416394,
+    "maximumNormalErrorDegrees": 0.36234294148684904,
+    "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
+  }
+}

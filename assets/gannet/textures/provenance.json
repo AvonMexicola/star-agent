@@ -1,0 +1,42 @@
+{
+  "source": "Original deterministic procedural PBR swatches; reused approved Meridian emblem only",
+  "builder": "blender/gannet_textures.py",
+  "layout": "4 columns \u00d7 2 rows; deterministic face projection with four-pixel margins",
+  "size": [
+    1024,
+    1024
+  ],
+  "baseColorSpace": "sRGB",
+  "dataMaps": "linear ORM and tangent normal",
+  "ambientOcclusion": "white; not a whole-ship bake",
+  "files": {
+    "manufacturer.png": {
+      "bytes": 85286,
+      "sha256": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
+    },
+    "surface-basecolor.png": {
+      "bytes": 466877,
+      "sha256": "d72737a371f40df3fc00fc6b902b6e702701dc9b51ca2f58624d9862ffa57b6f"
+    },
+    "surface-basecolor.webp": {
+      "bytes": 127056,
+      "sha256": "0963bdd47282ad016e90da3fb1b8341eaa28da193647185133b04d9b1b704757"
+    },
+    "surface-normal.png": {
+      "bytes": 317259,
+      "sha256": "1e34e858dc103042c3fba40233b6d6dd9b9b5fea7cf6cbfe12fe95874a5eba35"
+    },
+    "surface-normal.webp": {
+      "bytes": 80818,
+      "sha256": "3ac7474bd8e5c9f99b1ca5f52af23356515771b025aeaac1d33d7c4b5113cfcb"
+    },
+    "surface-orm.png": {
+      "bytes": 503915,
+      "sha256": "59919154268abdf5b9c9fbc52e1f406dca134ca8f596a6c04a12312d8e687255"
+    },
+    "surface-orm.webp": {
+      "bytes": 366442,
+      "sha256": "5e9ac5f2db2a2e51f8aeb05ae649e5b296bf51e9295f34ab0e0f39ea49bfbf9d"
+    }
+  }
+}

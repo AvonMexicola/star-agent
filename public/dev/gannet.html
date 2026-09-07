@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e1920"><title>Gannet T-06 · Meridian Shipworks</title><link rel="icon" href="data:,"><link rel="stylesheet" href="/assets/gannet-studio.css"></head>
+<body>
+  <main class="gannet-overlay">
+    <header><p class="eyebrow">MERIDIAN SHIPWORKS · HULL INSPECTION</p><h1>Gannet <span>T-06</span></h1><p class="description">Vehicle transport / Burrow M-04 carrier</p><p id="asset-state" role="status">Loading authored assembly…</p></header>
+    <nav aria-label="Inspection view" class="views">
+      <button data-view="exterior" aria-pressed="true">Exterior</button><button data-view="rear">Rear</button><button data-view="side">Side</button><button data-view="top">Top</button><button data-view="underside">Underside</button><button data-view="bay">Vehicle bay</button><button data-view="cabin">Cabin</button><button data-view="cockpit">Pilot view</button>
+    </nav>
+    <section class="mechanisms" aria-label="Inspection mechanisms">
+      <div><button data-command="open">Open hatch</button><button data-command="close">Close hatch</button></div>
+      <div><button data-command="lower">Lower lift</button><button data-command="raise">Raise lift</button></div>
+      <div><button id="gear" aria-pressed="false">Retract gear</button><button id="rover" aria-pressed="false">Burrow reference</button></div>
+      <p id="mechanism-state" aria-live="polite">Hatch closed · Elevator secured</p>
+    </section>
+    <footer><span>24.0 m length</span><span>5.8 m clear bay</span><span>128 SBU freight</span><small>Geometry/material development candidate · flight and carriage integration pending</small></footer>
+  </main>
+  <script type="module" src="/assets/gannet-studio.js"></script>
+</body></html>
