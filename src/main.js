@@ -713,11 +713,7 @@ try {
     shipMarker.update(innerWidth,innerHeight);
     navigationTargets.update(dt,{width:innerWidth,height:innerHeight,origin,orientation:camera.quaternion});
     moon.update(nav.position,origin,elapsed,!nav.insideShip,nav.shipPosition);
-<<<<<<< HEAD
-    landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);trading.update(origin);fauna.update(dt,origin);miningTool.update(dt,origin);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
-=======
-    landmarks.update(origin,camera);mining.update(origin);build.update(dt,origin);fauna.update(dt,origin);miningTool.update(dt,origin);trading.update(origin,dt);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
->>>>>>> 40a0fb4
+    landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);fauna.update(dt,origin);miningTool.update(dt,origin);trading.update(origin,dt);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
     pyre.update(origin,origin);
     miasma.update(origin,origin,elapsed,nav.shipPosition);
     // Distant worlds as bright points: Pyre from Aeon and Selene, Aeon from Pyre.
