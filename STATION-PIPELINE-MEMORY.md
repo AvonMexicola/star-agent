@@ -510,3 +510,14 @@ GLTFLoader's bare Three.js import. Raw public JavaScript cannot assume addon
 imports are transformed. Its adaptive grid had misleading 1m wording; the grid
 is now actually fixed to 1m cells alongside the 1.8m human silhouette. Validate
 reference graphics themselves before using their labels as scale evidence.
+
+
+The completed KESTREL example passed independent Astra visual review4.00/5
+after the contact/viewer corrections,186unit tests, build and four focused
+browser cases (touch after isolating host-controller input). Preserve the first
+failed touch attempt as fixture history; avoid overwriting earlier test output
+when a focused rerun uses the same Playwright outputDir. Final screenshots and
+review are in docs/qa/station-soft-props/ and station-shop-props-review.md.
+Draft integration PR57 contains the source-to-game pipeline. This is the current
+worked example for future small static props; it is not a whole-scene performance
+waiver or proof that every Meshy result will pass.

@@ -405,3 +405,13 @@ KESTREL was the only confirmed new download; no speculative jacket was enabled.
 All raw provider originals, reference prompts and images, rejected iterations,
 Blender source, cleanup script, measured receipts and review corrections remain
 available as the reusable production record. No additional Meshy credits spent.
+
+## Published review handoff
+
+[Draft PR57](https://github.com/AvonMexicola/star-agent/pull/57) targets
+dev/all-features from feat/retail-soft-props. Runtime/review commit70e4ca7 was
+pushed; final rebuild retains the independently reviewed bundle hash above.
+GitHub mergeability was UNKNOWN at the final read, not a successful merge check.
+The manager handoff records the PR and evidence. No main/shared runtime overwrite,
+merge or deployment was performed. Subsequent integration must reconcile current
+dev changes and retain the stated performance/motion limits.

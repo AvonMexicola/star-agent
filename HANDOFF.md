@@ -850,3 +850,11 @@ Manager should integrate the branch changes relative to common ancestor9f02d24
 (current dev/all-features already contains the earlier pipeline preparatory work).
 Shared runtime/uncommitted work was not overwritten. No merge/deployment claimed.
 This HANDOFF is the manager notification, not an acknowledgement.
+
+
+KESTREL INTEGRATION PR — https://github.com/AvonMexicola/star-agent/pull/57
+Draft against dev/all-features, pushed runtime/review head70e4ca7. GitHub reported
+mergeability UNKNOWN at final read; no merge or deployment attempted. Production
+preview5263 still matches the independently reviewed bundle SHA. Full pipeline
+record and source assets are on feat/retail-soft-props. The integration manager
+is notified through this shared handoff; no manager acknowledgement is claimed.
