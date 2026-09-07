@@ -1,12 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Quaternion,Vector3,Group,Mesh,BoxGeometry,MeshBasicMaterial,DoubleSide} from 'three';
+import {Quaternion,Vector3,Euler,Group,Mesh,BoxGeometry,MeshBasicMaterial,DoubleSide} from 'three';
 import {ShipCamera,clipTerrainCamera,isShipCameraKey,clipShipCamera,groundRadiusAt} from '../src/ship-camera.js';
 import {SELENE,bodySurfacePoint} from '../src/celestial.js';
 import {SHIP_LAYOUT} from '../src/boarding.js';
 const near=(a,b,eps=1e-8)=>assert.ok(Math.abs(a-b)<eps,`${a} != ${b}`);
 const nav=()=>({position:new Vector3(0,1692750,0),orientation:new Quaternion(),mode:'flight',normal:new Vector3(0,1,0),velocity:new Vector3(120,30,-50),shipPosition:null});
 const noGround={surfaceRadius:()=>0};
+
+test('EVA shares the on-foot camera toggle while respecting the complete suit attitude',()=>{
+  const body=nav();body.mode='eva';body.position.set(25e9,1e9,-8e9);
+  body.orientation.setFromEuler(new Euler(.6,.4,.8));
+  const before=structuredClone(body),view=new ShipCamera();
+  view.toggle('eva');view.update(body,noGround);
+  assert.equal(view.active,true);assert.equal(view.playerExternal,true);
+  near(view.orientation.length(),1);assert.deepEqual(structuredClone(body),before);
+  view.toggle('eva');view.update(body,noGround);assert.deepEqual(view.position,body.position);
+  near(view.orientation.angleTo(body.orientation),0);
+});
 
 test('4 toggles an above-and-behind view and never changes the navigation pose or momentum',()=>{
   const body=nav(),saved=structuredClone(body),view=new ShipCamera();
@@ -80,6 +91,14 @@ test('walking view follows look without changing physical eye and hides in a tig
   view.update(body,{...noGround,clipShip:start=>start.clone()});
   assert.equal(view.active,false);assert.equal(view.obstructed,true);assert.equal(view.playerExternal,true);
   view.update(body,noGround);assert.equal(view.active,true);
+});
+
+test('on-foot sight line clears the head and torso instead of pointing through the player',()=>{
+  const body=nav();body.mode='walk';const view=new ShipCamera();view.toggle('walk');view.update(body,noGround);
+  const direction=new Vector3(0,0,-1).applyQuaternion(view.orientation);
+  const t=(body.position.z-view.position.z)/direction.z;
+  const sightAtBody=view.position.clone().addScaledVector(direction,t).sub(body.position);
+  assert.ok(sightAtBody.x>.7, 'central sight line stays beside the right shoulder');
 });
 
 test('ship triangle obstruction clips visible walls and ignores hidden fallback meshes',()=>{

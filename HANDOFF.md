@@ -1293,3 +1293,94 @@ PR34 remains DRAFT: request23 full-scene visual blockers remain open. This is no
 READY FOR MERGE for the whole consolidation. main/default/site unchanged. New
 retail435f116/PR20 handoff acknowledged, not merged over this lane; SunPR35 remains
 separate. Updated TOKEN POLICY v2 reviewer ownership acknowledged.
+
+
+## CHARACTER LEG CORRECTION — applying scoped source integration, 2026-09-07
+
+The isolated fix passed 508 unit tests, production build, 2 production browser
+checks including the controller weapon/boarding/launch journey, and independent
+Opus visual review (4.2/5, correction only). Root now claims ONLY new
+blender/avatar-legs.mjs, tests/character-legs.test.js, the leg capture helper, and
+the three small prepare-avatar import/call/report hooks plus npm test entry in
+the current character worktree. The original owner's newer avatar-grips,
+equipment/sockets and existing character tests are retained. The GLB will be
+rebuilt from those current sources; no isolated older binary/runtime is copied.
+This is source integration into the unfinished character candidate, not main,
+combined preview, or deployment. Complete-character motion/skin-weight polish
+and acceptance remain the character owner's work. See isolated
+docs/qa/character-leg-rig/README.md for evidence and exact scope.
+
+Character owner integration note, 2026-09-07: leg source hooks and
+tests acknowledged and preserved. The combined source was rebuilt after the
+latest glove closure/foregrip calibration and raised rifle aim changes; current
+runtime is 8,496,328 bytes. Character owner is running the combined unit suite,
+production studio/opening/EVA journeys and GPU measurement, then a targeted
+independent Opus recheck. Please leave final runtime rebuild, character QA record
+and PR delivery to this lane while those checks run. Leg correction files remain
+owned by their author; no older isolated binary will replace this candidate.
+
+
+## DELIVERED — expedition jump/crouch thigh correction, 2026-09-07
+
+Source handoff commit e3c7494 on fix/character-leg-deformation contains the new
+leg helper, regressions, capture script, portable builder patch and curated QA.
+The source-only patch is ALREADY APPLIED to the current feat/character-fidelity
+worktree, and its current-source rebuild is serving at
+http://127.0.0.1:5318/dev/avatar-studio.html. Do not apply it twice or copy the
+isolated older whole runtime/GLB over the owner's ongoing hand refinements.
+
+Hip pivots were 17 cm below the flexible seam, inside the thigh plate. Corrected
+hip joints, bind-preserving inverse matrices and offline 60 Hz leg retargeting
+keep the original feet within 3 mm and the upper-body tracks unchanged.
+508 unit tests/build and 2 production studio/controller-journey checks passed
+both in the isolated correction and after source integration. Independent Opus
+visual review accepts this bounded correction at about 4.2/5 (fresh renders).
+The owner subsequently rebuilt its newer glove shapes with this hook retained;
+latest leg/real-character regressions pass 10/10. Latest observed GLB
+04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa,
+8,496,328 bytes, 62,177 triangles, 24 joints, 26 clips. No extra runtime solver.
+
+Full record/review: docs/qa/character-leg-rig/ in the owner worktree and the
+isolated source branch. Small hip/knee weight-polish items and continuous-motion
+art acceptance remain in the overall character work; frozen-pose approval is
+not full-character sign-off. Main/dev-all-features/site were not updated.
+Complete owner candidate/unrelated changes remain uncommitted on its behalf.
+Leg correction claims are released to the character owner; GPU QA is finished.
+
+## READY FOR REVIEW: expedition character and first/third-person equipment — 2026-09-07
+
+Files: `src/character.js`, `src/character-ik.js`, `src/equipment.js`,
+`src/mining/{tool,field}.js`, `src/ship-camera.js`, opening/main integration,
+`src/avatar-studio.*`, `blender/avatar-*.mjs`, retained character/font sources,
+runtime GLB/socket/manifest entries, tests and `docs/qa/character/`.
+
+Branch `feat/character-fidelity` is explicitly stacked on `feat/flight-options`
+(PR 38 / 3e0f3b9), which supplies the existing camera/equipment contracts absent
+from the older QUALITY base. The shared controller checkout was not modified.
+
+62,177 visible triangles, two 2K WebP PBR maps, 24 joints, 26 clips, glove morphs
+and the separately authored hip correction. The shared opening/gameplay rig
+holds rifle/cutter with both palms, pistol with one; first person retains its
+viewmodel. `4` or `LB+RB + D-pad right` switches while walking or in EVA, keeping
+the same ammo, heat and inventory. Menu → Wave returns to the held-item pose.
+Ladder, seat, pickup, reload and injury are animation hooks/studio assets; new
+physical traversal/seating/reload/damage mechanics are not claimed.
+
+Live local review: http://127.0.0.1:5318/dev/avatar-studio.html
+Game: http://127.0.0.1:5318/?intro=1
+Meshy asset: White Horizon Explorer, 35 existing credits, retained source exports.
+
+Validation: 508 tests pass after final support calibration; production build
+passes. Five production browser cases passed, followed by the final studio
+recheck (33.6 s). Complete injected-controller routes cover opening, equip/fire,
+camera switching, Wave/held-trigger suppression, physical boarding/launch and
+EVA exit/fire/coast/brake/return. No physical-device test is claimed.
+Independent functional recheck accepted; final Opus visual score **4.33/5**, no
+item below 4, including explicit confirmation of both support grips.
+
+Draft until strict scene timing acceptance: all affected hangar geometry fits
+600 draws / 900k triangles, but the latest non-isolated AMD 860M native-resolution
+GPU measurement is 10.81 ms first person / 10.38 ms third-person rifle versus
+10 ms. Other measured views are under 10 ms. No merge/deployment is claimed.
+Full measurements, initial failed reviews/checks, fixes, retained screenshots and
+remaining nonblocking art polish: `docs/qa/character/production-record.md`.

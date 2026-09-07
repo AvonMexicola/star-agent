@@ -1,0 +1,196 @@
+{
+  "browser": "151.0.7922.173",
+  "captures": [
+    {
+      "name": "rifle-laser-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707,
+        "clip": "idle-lower",
+        "mixerTime": 0.9212000000119214
+      }
+    },
+    {
+      "name": "rifle-laser-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707,
+        "clip": "idle-lower",
+        "mixerTime": 1.6878000000119209
+      }
+    },
+    {
+      "name": "rifle-laser-palms",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707,
+        "clip": "idle-lower",
+        "mixerTime": 2.47110000001192
+      }
+    },
+    {
+      "name": "sidearm-pistol-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369,
+        "clip": "idle-lower",
+        "mixerTime": 3.254500000011918
+      }
+    },
+    {
+      "name": "sidearm-pistol-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369,
+        "clip": "idle-lower",
+        "mixerTime": 4.037700000011918
+      }
+    },
+    {
+      "name": "sidearm-pistol-palms",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369,
+        "clip": "idle-lower",
+        "mixerTime": 4.821100000011928
+      }
+    },
+    {
+      "name": "mining-laser-tool-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585,
+        "clip": "idle-lower",
+        "mixerTime": 5.6709000000119385
+      }
+    },
+    {
+      "name": "mining-laser-tool-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585,
+        "clip": "idle-lower",
+        "mixerTime": 6.420900000011947
+      }
+    },
+    {
+      "name": "mining-laser-tool-palms",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585,
+        "clip": "idle-lower",
+        "mixerTime": 7.220800000011958
+      }
+    }
+  ],
+  "errors": [],
+  "note": "Continuous live playback sampled at frame intervals. No animation time or bone transforms were set by the harness."
+}

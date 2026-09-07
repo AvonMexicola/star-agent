@@ -1,8 +1,8 @@
 /**
  * src/equipment.js — what the player character holds: a laser rifle, a sidearm
  * pistol, a two-handed mining laser, plus the life-support backpack and the
- * helmet. Items are parented to the rig's bones, so they follow the animation
- * without any per-frame matrix work of our own.
+ * helmet. Items follow skeletal sockets; an arm IK pass keeps both palms on
+ * their grips while the barrel follows the player's aim.
  *
  * Self-contained: it reads `character.js` through its public surface (`skeleton`,
  * `model`, `readyPromise`, `update` input) and never edits it.
@@ -14,8 +14,8 @@
  *   - forward is -Z and up is +Y in the character's own frame.
  *
  * Calibration lives in `public/models/props/equipment-sockets.json`, keyed by
- * rig and item, because the three rigs disagree about hand-bone orientation
- * (and the two Meshy pilots carry a 0.01 armature scale). Offsets in that file
+ * rig and item, because the rigs disagree about hand-bone orientation
+ * (and Meshy rigs carry a 0.01 armature scale). Offsets in that file
  * are **metres and degrees in the socket bone's own frame**: the item hangs off
  * a scale-compensating group, so the same numbers mean the same thing on every
  * rig. Re-calibrate on /dev/equipment.html.
@@ -28,6 +28,7 @@
 import * as THREE from 'three';
 import { textureMiningTool } from './mining/tool-materials.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { solveArm, rotateBoneWorld } from './character-ik.js';
 
 // Re-exported like character.js does, so the raw-served page under /public/dev/
 // shares this module's Vite-optimised three instance instead of a second copy.
@@ -36,7 +37,7 @@ export { THREE };
 // ---------------------------------------------------------------- the contract
 
 /** Rig names the calibration file is keyed by. */
-export const RIGS = Object.freeze(['mannequin', 'player-male', 'player-female']);
+export const RIGS = Object.freeze(['mannequin', 'player-male', 'player-female', 'player-expedition']);
 
 /** Logical socket names. The calibration file maps each to a real bone per rig. */
 export const SOCKETS = Object.freeze(['RightHand', 'LeftHand', 'Spine2', 'Head']);
@@ -69,7 +70,7 @@ export const ITEMS = Object.freeze({
     file: `${PROPS}rifle-laser.glb`,
     socket: 'RightHand',
     handed: 2,
-    length: 1.10,
+    length: .77,
     barrelAxis: [-1, 0, 0],
     muzzle: [-0.55, 0.115, 0],
     leftGrip: [-0.29, 0.012, 0],
@@ -94,8 +95,7 @@ export const ITEMS = Object.freeze({
     barrelAxis: [-1, 0, 0],
     muzzle: [-0.15, 0.055, 0],
     leftGrip: null,
-    // Meshy shipped no `aim-pistol`; character.js maps it to the rifle aim.
-    aimClip: 'aim-rifle',
+    aimClip: 'aim-pistol',
     fireClip: 'fire-pistol',
     aiming: 'pistol',
     fireRate: 3,
@@ -116,9 +116,9 @@ export const ITEMS = Object.freeze({
     barrelAxis: [-1, 0, 0],
     muzzle: [-0.60, 0.14, 0],
     leftGrip: [-0.30, 0.01, 0],
-    aimClip: 'aim-rifle',              // no `use-tool` clip exists; the rifle aim holds it up
+    aimClip: 'use-tool',
     fireClip: null,                    // a continuous beam has no recoil one-shot
-    aiming: 'rifle',
+    aiming: 'tool',
     fireRate: 0,                       // continuous
     shot: 'beam',
     range: 60,
@@ -576,14 +576,15 @@ export class Equipment {
 
   /**
    * The support hand's grip point on the held item, in the item's own space.
-   * An IK step can pull `LeftHand` onto `leftHandTargetWorld()`; for now the
-   * aim clips already hold both hands up and nothing reads it.
+   * The arm IK places the palm on this point. A rig calibration can move it
+   * along a vertical handle to accommodate a different glove width.
    * @returns {THREE.Vector3|null}
    */
   get leftHandTargetLocal() {
     const spec = this.item;
     if (!spec || spec.handed < 2 || !spec.leftGrip) return null;
-    return read(spec.leftGrip, this._leftLocal || (this._leftLocal = new THREE.Vector3()));
+    const calibrated = this.sockets?.rigs?.[this.rig]?.items?.[this._equipped]?.supportPosition;
+    return read(calibrated || spec.leftGrip, this._leftLocal || (this._leftLocal = new THREE.Vector3()));
   }
 
   /** That same grip point in world metres, or null. */
@@ -628,6 +629,7 @@ export class Equipment {
    */
   setRenderOrigin(origin) {
     this._originOverride = origin ? (this._originOverride || new THREE.Vector3()).copy(origin) : null;
+    if (origin) this._renderOrigin.copy(origin);
     return this;
   }
 
@@ -830,24 +832,64 @@ export class Equipment {
    * and held barrel aimed together, then bring the support wrist to its grip. */
   aimHeld(direction) {
     if(this._holstered||!this._equipped)return;
-    const hand=this._bone('RightHand'),barrel=this.muzzleWorldDirection();
-    if(!hand?.parent||!barrel)return;
+    if(this.character?.gestureActive || ['sit','climb','dead','rest'].includes(this.character?.state))return;
+    const hand=this._bone('RightHand');
+    if(!hand?.parent || direction.lengthSq()<1e-8)return;
     const rotateWorld=(bone,delta)=>{
-      const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());
-      const local=parent.clone().invert().multiply(delta).multiply(parent);
-      bone.quaternion.premultiply(local);bone.updateWorldMatrix(false,true);
+      rotateBoneWorld(this.character, bone, delta);
     };
-    rotateWorld(hand,new THREE.Quaternion().setFromUnitVectors(barrel.normalize(),direction.clone().normalize()));
+    // Pitch the shoulder and forearm together before the final wrist alignment.
+    // This keeps an aimed-up rifle connected to the body instead of hinging at the wrist.
+    const arm=hand.parent?.parent;
+    const forward=this.character?.forwardVector?.();
+    const pitch = forward ? new THREE.Quaternion().setFromUnitVectors(forward.normalize(), direction.clone().normalize()) : new THREE.Quaternion();
+    if (this.rig === 'player-expedition' && arm?.isBone) {
+      const offset = this._equipped === 'sidearm-pistol' ? [.005, -.075, -.45]
+        : this._equipped === 'mining-laser-tool' ? [-.04, -.23, -.05] : [-.025, -.075, -.135];
+      const target = new THREE.Vector3(...offset).applyQuaternion(this.character.object.quaternion)
+        .applyQuaternion(pitch).add(arm.getWorldPosition(new THREE.Vector3()));
+      const pole = new THREE.Vector3(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch);
+      solveArm(this.character, hand, target, pole);
+    } else if(arm?.isBone && forward)rotateWorld(arm,pitch);
+    const barrel=this.muzzleWorldDirection();
+    if(!barrel)return;
+    let gripRotation = null;
+    if (this.rig === 'player-expedition') {
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(this.character.object.quaternion);
+      const x = direction.clone().normalize().negate();
+      const z = new THREE.Vector3().crossVectors(x, up).normalize();
+      if (z.lengthSq() < 1e-8) z.set(1, 0, 0).applyQuaternion(this.character.object.quaternion);
+      const y = new THREE.Vector3().crossVectors(z, x).normalize();
+      const gun = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+      const offset = this._items.get(this._equipped).group.quaternion;
+      gripRotation = gun.multiply(offset.clone().invert());
+      rotateWorld(hand, gripRotation.clone().multiply(hand.getWorldQuaternion(new THREE.Quaternion()).invert()));
+    } else rotateWorld(hand,new THREE.Quaternion().setFromUnitVectors(barrel.normalize(),direction.clone().normalize()));
     const left=this._bone('LeftHand'),target=this.leftHandTargetWorld();
     if(!left||!target)return;
     target.sub(this._renderOrigin);
-    // CCD on the two arm joints only; the character root/spine stay authored.
-    const joints=[left.parent,left.parent?.parent].filter(b=>b?.isBone&&/arm/i.test(b.name));
-    for(let pass=0;pass<5;pass++)for(const joint of joints){
-      const pivot=joint.getWorldPosition(new THREE.Vector3());
-      const from=left.getWorldPosition(new THREE.Vector3()).sub(pivot),to=target.clone().sub(pivot);
-      if(from.lengthSq()>1e-8&&to.lengthSq()>1e-8)rotateWorld(joint,new THREE.Quaternion().setFromUnitVectors(from.normalize(),to.normalize()));
+    // Put the palm around the vertical foregrip, with the thumb above the fingers.
+    // A wrist snapped directly onto the grip leaves the glove floating past it.
+    if (gripRotation) target.sub(new THREE.Vector3(-.007, .107, 0).applyQuaternion(gripRotation));
+    if (gripRotation) {
+      const shoulder = left.parent.parent.getWorldPosition(new THREE.Vector3());
+      const elbow = left.parent.getWorldPosition(new THREE.Vector3());
+      const reach = shoulder.distanceTo(elbow) + elbow.distanceTo(left.getWorldPosition(new THREE.Vector3())) - .018;
+      const excess = target.distanceTo(shoulder) - reach;
+      if (excess > 0) {
+        // Bring the whole tool closer during extreme aim/locomotion blends;
+        // never stretch an arm or leave the support glove behind the grip.
+        const shift = shoulder.sub(target).normalize().multiplyScalar(excess);
+        const wrist = hand.getWorldPosition(new THREE.Vector3()).add(shift);
+        solveArm(this.character, hand, wrist, new THREE.Vector3(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch));
+        rotateWorld(hand, gripRotation.clone().multiply(hand.getWorldQuaternion(new THREE.Quaternion()).invert()));
+        this.leftHandTargetWorld(target).sub(this._renderOrigin).sub(new THREE.Vector3(-.007, .107, 0).applyQuaternion(gripRotation));
+      }
     }
+    // Solve the two arm joints only; the character root/spine stay authored.
+    const pole = new THREE.Vector3(-.5, -.85, .15).applyQuaternion(this.character?.object?.quaternion || new THREE.Quaternion()).applyQuaternion(pitch);
+    solveArm(this.character, left, target, pole);
+    if (gripRotation) rotateWorld(left, gripRotation.clone().multiply(left.getWorldQuaternion(new THREE.Quaternion()).invert()));
   }
 
   bindCharacter(character, rig, sockets) {
