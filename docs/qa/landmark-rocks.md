@@ -1,5 +1,9 @@
 # Rare Aeon landmark rocks — development evidence
 
+The subsequent [surface refinement and current material screenshots](landmark-weathering/README.md)
+address Cees's texture-detail feedback while retaining these shapes and collision.
+The original captures below remain the geometry checkpoint's historical evidence.
+
 7 September 2026. Builder inspection by Codex; independent visual acceptance and
 physical controller testing are pending. This is a local development checkpoint.
 
