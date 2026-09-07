@@ -18,7 +18,7 @@ try{
     ws.on('message',raw=>{
       const m=JSON.parse(raw);
       if(m.type==='welcome'){
-        if(m.maxPlayers!==10||m.seed!==7291){clearTimeout(timeout);reject(new Error('Unexpected world contract.'));return;}
+        if(m.maxPlayers!==20||m.seed!==7291){clearTimeout(timeout);reject(new Error('Unexpected world contract.'));return;}
         ws.send(JSON.stringify({type:'request',requestId:'probe',action:'hangar'}));
       }
       if(m.type==='ack'&&m.requestId==='probe'){clearTimeout(timeout);m.ok?resolve():reject(new Error('Hangar request rejected.'));}

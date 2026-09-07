@@ -17,17 +17,17 @@ async function setup(t,count=1){
   let requestId=0;
   return {room,store,world,accounts,errors,messages,advance(seconds){for(let i=0;i<seconds*30;i++){time+=1000/30;room.tick();}},async request(id,m){await room.receive(id,{type:'request',requestId:String(++requestId),...m});return messages.get(id).findLast(m=>m.type==='ack');}};
 }
-test('ten simultaneous joins have ten distinct server colours; eleventh and duplicate account rejected',async t=>{
-  const {room,store,accounts}=await setup(t,10);
-  assert.equal(new Set([...room.players.values()].map(p=>p.colorIndex)).size,10);
+test('twenty simultaneous joins have twenty distinct server colours; twenty-first and duplicate account rejected',async t=>{
+  const {room,store,accounts}=await setup(t,20);
+  assert.equal(new Set([...room.players.values()].map(p=>p.colorIndex)).size,20);
   await assert.rejects(room.join(accounts[0],()=>{}),{code:'ACCOUNT_CONNECTED'});
   const extra=await store.createAccount({email:'extra@example.test',callsign:'extra',passwordHash:'x'});
   await assert.rejects(room.join(extra,()=>{}),{code:'ROOM_FULL'});
 });
 test('concurrent comms reservations open unique physical doors and release on disconnect',async t=>{
-  const {room,accounts,request,advance,world,errors}=await setup(t,10);
+  const {room,accounts,request,advance,world,errors}=await setup(t,20);
   const replies=await Promise.all(accounts.map(a=>request(a.id,{action:'hangar'})));
-  assert.ok(replies.every(a=>a.ok));assert.equal(room.leases.size,10);
+  assert.ok(replies.every(a=>a.ok));assert.equal(room.leases.size,20);
   advance(3.5);
   for(const p of room.players.values()){assert.equal(world.pods[p.hangarId-1].doorsOpen,1);assert.deepEqual(room.state(p).hangar.pad,world.pods[p.hangarId-1].padWorldPosition.toArray());}
   const id=accounts[0].id,berth=room.players.get(id).hangarId;await room.leave(id);advance(3.5);

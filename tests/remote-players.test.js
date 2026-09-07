@@ -41,8 +41,8 @@ async function ready(manager) {
   await Promise.resolve();
 }
 
-test('ten server colors are distinct and clones own their skeleton/materials', () => {
-  assert.equal(new Set(PLAYER_COLORS).size, 10);
+test('twenty server colors are distinct and clones own their skeleton/materials', () => {
+  assert.equal(new Set(PLAYER_COLORS).size, 20);
   const a = cloneCharacterGLTF(rig), b = cloneCharacterGLTF(rig);
   const am = meshOf(a.scene), bm = meshOf(b.scene), original = meshOf(rig.scene);
   assert.notEqual(am.skeleton, bm.skeleton);
