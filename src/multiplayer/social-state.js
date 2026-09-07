@@ -11,4 +11,3 @@ export function socialView(state = {}) {
     pilots: [...live.values()].filter(player => player.id !== state.ownId && !blocked.has(player.id)).map(({ id, callsign }) => ({ id, callsign })).sort(sortName),
   };
 }
-
