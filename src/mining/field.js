@@ -3,7 +3,8 @@ import {MineableRock} from './rock.js';
 import {createDensity} from './volume.js';
 import {asteroidField,asteroidDescriptorV1,LEGACY_RING_POPULATION,RING_POPULATION,ringRock,ringPathIntervals,ringCellAt,nearbyAsteroids} from '../ring-world.js';
 import {MOON_POSITION,MOON_RADIUS,RESOURCE_PROVINCES,moonResources} from '../moon-world.js';
-import {bodySurfacePoint,bodySurfaceNormal,SELENE} from '../celestial.js';
+import {bodySurfacePoint,bodySurfaceNormal,bodyAt,SELENE} from '../celestial.js';
+import {nearbyConstructionDeposits,constructionDepositCell} from './construction-deposits.js';
 import {FieldCache} from '../inventory-cache.js';
 import {nearbySurfaceDeposits,surfaceDepositCell,SURFACE_DEPOSIT_RANGE,SURFACE_DEPOSIT_WORKERS,SURFACE_DEPOSIT_SPACING} from './surface-deposits.js';
 
@@ -80,10 +81,11 @@ export class MiningField {
     this.ground.update(origin);this.fieldCache.update(origin);
   }
   updateRegionalDeposits(origin){
-    const key=`${surfaceDepositCell(origin).join(':')}:${Math.floor(origin.distanceTo(new THREE.Vector3(...MOON_POSITION))/SURFACE_DEPOSIT_SPACING)}`;
+    const body=bodyAt(origin);
+    const key=`${body.id}:${(body.id==='selene'?surfaceDepositCell(origin):constructionDepositCell(origin)).join(':')}:${Math.floor(origin.distanceTo(new THREE.Vector3(...body.center))/SURFACE_DEPOSIT_SPACING)}`;
     if(this.regionalQueryKey!==key){
       this.regionalQueryKey=key;this.regionalQueryOrigin=origin.clone();
-      this.regionalDescriptors=nearbySurfaceDeposits(origin,SURFACE_DEPOSIT_RANGE+2*SURFACE_DEPOSIT_SPACING);
+      this.regionalDescriptors=body.id==='selene'?nearbySurfaceDeposits(origin,SURFACE_DEPOSIT_RANGE+2*SURFACE_DEPOSIT_SPACING):nearbyConstructionDeposits(origin,SURFACE_DEPOSIT_RANGE+2*SURFACE_DEPOSIT_SPACING);
     }
     const nearby=this.regionalDescriptors.filter(d=>d.position.distanceTo(origin)<SURFACE_DEPOSIT_RANGE).sort((a,b)=>a.position.distanceToSquared(origin)-b.position.distanceToSquared(origin));
     if(this.regionalAimed&&!nearby.some(d=>d.id===this.regionalAimed&&d.position.distanceTo(origin)<80))this.regionalAimed=null;

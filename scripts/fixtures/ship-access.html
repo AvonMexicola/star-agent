@@ -1,0 +1,9 @@
+<!doctype html><html><head><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ship access edge fixture</title></head><body><canvas tabindex="0"></canvas><script type="module">
+import '/src/style.css';import {MiningStore} from '/src/mining/store.js';import {ShipInventory} from '/src/ship-inventory.js';import {emptyItems} from '/src/inventory/containers.js';import {createInventoryUI} from '/src/ship-inventory-ui.js';import {GamepadInput} from '/src/gamepad.js';import {createControllerUI} from '/src/controller-ui.js';
+const store=new MiningStore(localStorage),manifest=new ShipInventory(localStorage);
+if(!sessionStorage.getItem('edge-fixture')){const next=store.withItems(store.state,'ship',{...emptyItems(),basalt:store.limits('ship').resources});if(!store.write(next))throw Error(store.warning);sessionStorage.setItem('edge-fixture','1');}
+store.claimStarterConstruction();
+window.pad={id:'Standard edge-fixture controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};const gamepad=new GamepadInput(()=>[window.pad]);
+const nav={gamepad,keys:new Set(),enabled:true,focused:true,mode:'walk',insideShip:false,position:{x:0,y:0,z:20},shipPosition:{x:0,y:0,z:0},stationDistance:Infinity,canvas:document.querySelector('canvas'),notify:message=>window.message=message};
+const inventory=createInventoryUI(nav,{setStorage(){}},manifest,store),controller=createControllerUI({nav});window.fixture={store,nav,inventory,emptyItems};let last=performance.now();function frame(now){controller.update(gamepad.poll({enabled:nav.enabled,ui:Boolean(document.querySelector('dialog[open]'))}),(now-last)/1000);last=now;requestAnimationFrame(frame);}requestAnimationFrame(frame);
+</script></body></html>

@@ -205,3 +205,40 @@ Menu reopen, Continue offline, and physical movement into play. The two-pilot
 journey also starts there before registration, Join, COMMS and physical docking.
 Registration text is still entered with desktop controls; a full controller
 keyboard registration and physical-device testing remain separate checks.
+
+## Construction
+
+Menu → Build enters the shared piece palette while walking outside a ship on a
+planet. Choose a piece with D-pad and A; X reopens the palette while building.
+The contextual controls consume the existing shared Gamepad poll:
+
+| Construction action | Controller | Keyboard / touch |
+| --- | --- | --- |
+| Enter | Menu → Build | B or visible Build button |
+| Place one piece | RT edge | Enter or Place button |
+| Next snap target | LT edge | T or Snap button |
+| Rotate / flip wall facing | LB / RB | Q / E or rotate buttons |
+| Foundation height / upper level | D-pad up / down | Up / Down or height buttons |
+| Piece palette | X | P or Pieces button |
+| Exit construction | B | Escape or Exit button |
+| Move / look / jump | Sticks / A | WASD / look / Space |
+| Backpack / command menu | View / Menu | Existing inventory and menu routes |
+
+Ordinary pieces rotate in quarter turns. Walls flip facing by 180° on their
+selected supporting edge; LT changes the edge. Foundation height uses 0.25m
+steps. Non-foundation height selection uses storeys where supported by the
+piece's placement rules.
+
+Construction suppresses mining/fire, EVA/boarding shortcuts and quick-item
+shortcuts. Its own hints replace the equipment bar and ordinary tool hints.
+Dialog transitions use neutral arming, so held RT cannot replay placement after
+the palette or backpack closes. Construction does not take over EVA controls.
+
+Menu → Field recipes and the palette's Recipes tab use the same native dialog
+router. Batch presets, disabled ingredient/capacity failures, actual processing
+actions and stable focus keys work without text entry. A nearby physical mainframe
+opens its owner overview, explicit supply-buffer toggle and real storage dialog.
+The storage handoff keeps gameplay paused until storage closes.
+
+See [construction controller evidence](qa/base-building/controller.md) for the
+distinction between the dialog fixture and actual physical gameplay validation.

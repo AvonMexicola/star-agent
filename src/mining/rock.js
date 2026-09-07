@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { MOON_LANDING_DIRECTION, LANDING_FRAME, MOON_RADIUS, MOON_POSITION, moonResources, MOON_RESOURCE_VERSION } from '../moon-world.js';
-import { bodySurfacePoint, bodyAltitude, SELENE } from '../celestial.js';
+import { bodySurfacePoint, bodyAltitude, bodyAt, SELENE } from '../celestial.js';
 import { RockCollision } from './collision.js';
-import { MiningStore } from './store.js';
+import { MiningStore, RECOVERED_KG_PER_CUBIC_METRE } from './store.js';
 import { ROCK_ID, normalizeResourceWeights, MINERAL_GLSL, RESOURCE_VEIN_VERSION } from './volume.js';
 
 export class MineableRock {
@@ -13,7 +13,7 @@ export class MineableRock {
     const direction=up.clone().addScaledVector(east,-19/MOON_RADIUS).addScaledVector(north,8/MOON_RADIUS).normalize();
     this.position=bodySurfacePoint(direction,SELENE,1.35);this.up=direction;
     this.quaternion=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(east,direction,east.clone().cross(direction).normalize()));
-    if(position)this.position.copy(position);if(quaternion)this.quaternion.copy(quaternion);
+    if(position)this.position.copy(position);this.body=bodyAt(this.position);if(quaternion)this.quaternion.copy(quaternion);
     const resourceDirection=this.position.clone().sub(new THREE.Vector3(...MOON_POSITION)).normalize();
     this.resourceWeights=normalizeResourceWeights(resourceWeights??(space?null:moonResources(...resourceDirection.toArray()).weights));
     this.resourceVersion=space?RESOURCE_VEIN_VERSION:`${MOON_RESOURCE_VERSION}.${RESOURCE_VEIN_VERSION}`;
@@ -64,10 +64,10 @@ export class MineableRock {
     const localOrigin=this.toLocal(origin),localDirection=direction.clone().applyQuaternion(this.inverse),hit=this.collision.raycast(localOrigin,localDirection,range);
     if(!hit)return null;
     const point=this.toWorld(hit.point);
-    // The exposed rock can be mined; the untouched moon underneath cannot.
-    if(!this.space&&bodyAltitude(point,SELENE)<.04)return null;
+    // The exposed rock can be mined; the untouched terrain underneath cannot.
+    if(!this.space&&bodyAltitude(point,this.body)<.04)return null;
     // Reject terrain occlusion along the short tool ray.
-    for(let d=.15;!this.space&&d<hit.distance;d+=.15)if(bodyAltitude(origin.clone().addScaledVector(direction,d),SELENE)<.02)return null;
+    for(let d=.15;!this.space&&d<hit.distance;d+=.15)if(bodyAltitude(origin.clone().addScaledVector(direction,d),this.body)<.02)return null;
     return {...hit,point,localPoint:hit.point,normal:hit.normal.applyQuaternion(this.quaternion)};
   }
   /** Equipment adapter: point must be the validated nearest rock hit, in world metres. */
@@ -77,7 +77,7 @@ export class MineableRock {
     this.budget=Math.min(.045,this.budget+Math.min(.1,Math.max(0,dt))*Math.max(0,Math.min(.35,rate)));
     if(this.pending||this.budget<.018)return;
     const local=this.toLocal(point.clone().addScaledVector(direction,.08));
-    const budget=Math.min(this.budget,this.store.free/12);this.budget=0;
+    const budget=Math.min(this.budget,this.store.free/RECOVERED_KG_PER_CUBIC_METRE);this.budget=0;
     const contactNormal=normal?.clone()??direction.clone().negate();
     this.request(local.toArray(),budget,{normal:contactNormal,point:point.clone().addScaledVector(contactNormal,.035)});
   }

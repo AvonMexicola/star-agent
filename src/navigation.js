@@ -53,6 +53,7 @@ export class Navigation {
     if(this.mode==='crashed')return;
       if(['KeyW','KeyA','KeyS','KeyD','Space','KeyC'].includes(e.code))this.onTakeControl?.();
       this.controllerActive=false;this.keys.add(e.code);if(e.repeat)return;
+      if(this.buildActive)return;
       if(e.code==='KeyG'){if(this.mode==='eva'||this.mode==='walk'&&!this.insideShip)this.toggleEVA();else this.toggleGear();return;}
       if(e.code==='KeyL'){this.toggleLights();return;}
       if(e.code==='KeyN'){this.travel?this.cancelTravel():this.beginFreeTravel();return;}
@@ -285,6 +286,8 @@ export class Navigation {
     if(this.kestrelAccess?.busy)return `KESTREL · ${this.kestrelAccess.phase.toUpperCase()} · PORT LADDER`;
     if(this.kestrelAccess&&this.mode==='flight')return 'SINGLE-SEAT COCKPIT · LAND OR DOCK TO DISEMBARK';
     if(this.kestrelAccess&&this.mode==='landed')return 'F · OPEN CANOPY & DESCEND PORT LADDER';
+    if(this.buildActive)return 'BUILD MODE · SELECT A PIECE OR EXIT TO INTERACT';
+    const baseInteraction=this.baseInteraction?.();if(baseInteraction)return baseInteraction;
     if(this.mode==='flight')return this.autoland||this.stationLift||this.travel?'FINISH MANEUVER TO LEAVE SEAT':'F · LEAVE PILOT SEAT';
     if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.position.distanceTo(this.shipPosition))+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
     if(this.mode==='landed')return 'F · LEAVE PILOT SEAT';
@@ -451,6 +454,8 @@ export class Navigation {
     if(this.travel)return;
     if(this.berthTransition)return;
     if(this.berthRest){this.useBerth(false);return;}
+    if(this.buildActive)return;
+    if(this.mode==='walk'&&!this.insideShip&&this.baseAction?.())return;
     if(this.mode==='walk'&&!this.cabinFlight&&this.stationAction?.())return;
     if(this.kestrelAccess){this.kestrelAccess.interact(this);return;}
     if(this.mode==='flight'){
@@ -739,7 +744,7 @@ export class Navigation {
         this.position.copy(proposed);this.mode='eva';this.insideShip=false;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.projectOnPlane(UP.clone().applyQuaternion(this.shipOrientation));
         this.notify('EVA. Release thrust to coast; X / LT brakes. Return slowly to the open ramp.');return;
       }
-      const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.airless?0:terrainHeight(dir.x,dir.y,dir.z);
+      const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.water?terrainHeight(dir.x,dir.y,dir.z):0;
       if(floor!==null||this.dockedAtStation||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
       this.insideShip=floor!==null&&(this.freighter?local.z<=10:local.z<=4);
