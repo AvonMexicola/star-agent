@@ -90,13 +90,13 @@ export class EnergyEffects {
       this.spray(point,normal,25,{speed:2,color,life:.8,size:.4,kind:0,gain:1.4});
     }
   }
-  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color,sound=weapon}={}){
+  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color,sound=weapon,muzzle=true,size=1,pitch=1}={}){
     const profile=weaponProfile(weapon),kind=profile.kind;
     if(hit&&start.distanceTo(hit.point)>range)hit=null;
     speed??=profile.speed;power??=profile.power;
     const tint=color===undefined?(kind==='pulse'?CYAN.clone():new THREE.Color(profile.color).multiplyScalar(2)):new THREE.Color(color).multiplyScalar(2);
     if(this.bolts.length>=32)return;
-    this.weaponShots++;this.lastWeapon=kind;this.onSound?.({type:'shot',weapon,sound,point:start});
+    this.weaponShots++;this.lastWeapon=kind;this.onSound?.({type:'shot',weapon,sound,point:start,size,pitch});
     const end=hit?.point.clone()??start.clone().addScaledVector(direction,range);
     if(kind==='laser'){
       const lance=this.lances.find(l=>!l.active)??this.lances[0];
@@ -107,8 +107,10 @@ export class EnergyEffects {
       const length=Math.min(80,start.distanceTo(end));
       for(let i=0;i<16;i++){const p=start.clone().addScaledVector(direction,length*i/16);this.spray(p,direction,1,{color:tint,speed:2,life:.28,size:.06});}
     }else this.bolts.push({start:start.clone(),p:start.clone(),direction:direction.clone().normalize(),velocity:velocity.clone(),age:0,speed,range,power,tint,kind,hit:hit?{point:hit.point.clone(),normal:hit.normal?.clone()??direction.clone().negate()}:null,travelled:0});
-    this.particles.emit(start,ZERO,{color:kind==='pulse'&&color===undefined?0xbceaff:tint,life:.12,size:.6*power,stretch:0,gain:4});
-    this.spray(start,direction,6,{color:tint,speed:3,size:.07,life:.2});
+    if(muzzle){
+      this.particles.emit(start,ZERO,{color:kind==='pulse'&&color===undefined?0xbceaff:tint,life:.12,size:.6*power,stretch:0,gain:4});
+      this.spray(start,direction,6,{color:tint,speed:3,size:.07,life:.2});
+    }
   }
   reset(){
     this.particles.clear();this.bolts.length=0;this.carries={};this.boost=0;this.throttle=0;this.travel=0;
@@ -181,7 +183,7 @@ export class EnergyEffects {
           const offset=new THREE.Vector3(Math.cos(phase),Math.sin(phase),0).multiplyScalar(.45*b.power).applyQuaternion(rotation);
           this.particles.emit(b.p.clone().add(offset),ZERO,{color:j?b.tint:0x62ffee,life:.23,size:.13*b.power,stretch:0,gain:2});
         }
-      }else this.particles.emit(b.p,this._v,{color:b.tint,life:.045,size:.12*b.power,kind:1,stretch:.025,gain:3});
+      }else this.particles.emit(b.p,this._v,{color:b.tint,life:.045,size:.12*b.power,kind:1,stretch:Math.min(.025,b.travelled/b.speed),gain:3});
     }
     const speed=velocity.length(),targetTravel=flying&&inSpace&&!relativistic&&!this.reducedMotion?clamp(Math.log10(Math.max(1,speed)/25)/3,0,1):0;
     this.travel+=(targetTravel-this.travel)*(1-Math.exp(-dt*3));

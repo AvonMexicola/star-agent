@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs/promises';
-const out='/tmp/star-agent-kestrel-flight-browser';
+const out=process.env.KESTREL_FLIGHT_OUTPUT??'/tmp/star-agent-kestrel-flight-browser';
 test.afterEach(async({page},info)=>{
   if(info.status===info.expectedStatus)return;
   await fs.mkdir(out,{recursive:true});
@@ -11,13 +11,15 @@ test('Kestrel boards, secures, launches, flies and lands in the production game'
   await fs.mkdir(out,{recursive:true});const errors=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(['error','warning'].includes(m.type()))errors.push(m.text());});
   await page.addInitScript(()=>{localStorage.setItem('kestrel-save-sentinel','leave this intact');});
-  await page.goto('/?ship=kestrel&intro=0&debug=1');
+  await page.goto('/?dev=1&ship=kestrel&start=hangar&intro=0&debug=1');
   await page.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:90000});
   const state=()=>page.evaluate(()=>window.starAgent.state);
   expect((await state()).shipId).toBe('kestrel');expect((await state()).mode).toBe('landed');expect((await state()).inventory.shipMass).toBe(0);
   await expect(page.locator('#loading')).toHaveCSS('opacity','0');
   await page.screenshot({path:out+'/00-flight-card.png'});
-  await page.locator('#kestrel-begin').click();await page.keyboard.press('Escape');
+  if(await page.locator('#kestrel-begin').isVisible())await page.locator('#kestrel-begin').click();
+  await page.waitForFunction(()=>window.starAgent.state.enabled&&!window.starAgent.state.dev?.open&&!window.starAgent.state.transiting);
+  await page.keyboard.press('Escape');
   await page.screenshot({path:out+'/01-cockpit.png'});
   await page.keyboard.press('KeyU');await expect(page.locator('#fleet-dialog')).toBeVisible();
   await page.screenshot({path:out+'/02-meridian-fleet.png'});await page.locator('.fleet-close').click();
@@ -25,6 +27,9 @@ test('Kestrel boards, secures, launches, flies and lands in the production game'
   await page.keyboard.press('KeyF');
   await page.waitForFunction(()=>window.starAgent.state.kestrelAccess.phase==='traversing',null,{timeout:18000});
   await page.keyboard.press('KeyB');expect((await state()).mode).toBe('walk');
+  // B now opens construction on foot. Resume its intentional modal pause
+  // before checking that the physical ladder route reaches the ground.
+  if(await page.locator('#build-dialog[open]').isVisible())await page.keyboard.press('Escape');
   await page.waitForFunction(()=>window.starAgent.state.mode==='walk'&&window.starAgent.state.kestrelAccess.phase==='idle',null,{timeout:25000});
   expect((await state()).insideShip).toBe(false);expect((await state()).shipLocal[0]).toBeLessThan(-2.4);
   await expect(page.locator('#state-text')).not.toContainText('TRAVERSING');
