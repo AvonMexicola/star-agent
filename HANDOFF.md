@@ -2574,6 +2574,9 @@ still pending. Avoid unnecessary GPU load during the human test drive; no FPS
 claim. Shared integration/services remain steward-owned.
 SA-FLIGHT-001 FINAL HANDOFF: fix/combat-momentum386483e is pushed with draft PR67: https://github.com/AvonMexicola/star-agent/pull/67 . Complete validated runtime6f8b195, evasive patrol fixture6619bbe, disk-backed result configuration1911960 and final QA386483e.715units,90multiplayer(1DBskip), all-hull braking/unlocked checks, moving rifle/ship route and complete controller patrol pass. Curated source/evidence: docs/qa/combat-momentum.md. Registry review claim is QA-document-only; all runtime hooks released. SA-INT-002 owns final shared merge/promotion; merge386483e to retain the fixture/docs after the runtime already included in the candidate. A dedicated OFFLINE production playtest preview is now running on5398 from the verified build (HTTP200), separate from shared5178. No Chromium remains owned by momentum and no further GPU work is requested. Preserve this HTTP preview until the shared candidate is promoted; no database or shared service restart was performed by this task.
 
+
+SA-WORLD-002 GPU ACQUIRED 17:17 UTC: active jobs have exited. Starting the reserved5383 single-worker material comparison now; expect3min. Cargo5535 follows the explicit release. Preserve this one job; no shared preview/database change.
+
 SA-WORLD-002 visual correction: first full before/after capture compiled and
 rendered; inspection rejected overly broad dark contour-like fissures. Grain,
 relief and seed variation read clearly. Narrowing/breaking those joints only,
@@ -2601,6 +2604,17 @@ base-power/cargo/deer gameplay changes stay on their owner branches; checked
 material-only delta may join if released before this final frozen build. Shared
 HANDOFF was committed as9b5e799 and merged; later appended notes will be preserved
 as well. API/database have not restarted; existing cluster inode947632 retained.
+
+SA-CARGO-001 implementation checkpoint in feat/sbu-cargo-trading. Measured
+Nomad4SBU / playableAtlas512SBU grids; Blender crate family and terminal,
+instanced cargo, fixed Trade menu, atomic local/server purchases/resources,
+carry1only, physical foreign boarding and theft, player-owned pad shops.
+PostgreSQL migration002 is additive; protocol3 adds cargo and Atlas lift state.
+716full units and95multiplayer tests pass (one existing environment-dependent
+skip); isolatedPG cargo migration/rollback/reconnect is tested directly.
+Browser5535 now running; not yet a validated render/input checkpoint. Shared
+source and services remain steward-owned; no database/preview restart occurred.
+Preserve incoming rover/momentum/character/base runtime from SA-INT-002.
 
 SA-WORLD-002 FINAL RERENDER QUEUED: cargo5535 started before the material correction rerender. Candidate4f9d472 is built; the owned watcher now waits for that active browser to exit, then runs the reserved5383 correction check immediately once the GPU lane is clear. No new shader/art iterations planned after this narrow fissure fix. Please leave this next window to5383; an explicit release will follow. Shared integration remains with SA-INT-002.
 
@@ -2684,6 +2698,7 @@ performing a read-only authority/friends/hub/selection audit. No new shared sour
 claims yet; rover final input/art checks finish first and shared integration stays
 with SA-INT-002. Current user test-drive5417 stays frozen.
 
+
 SA-CARGO-001 RECHECK READY17:35UTC: Nomad mesh audit supports8SBU (1×4×2),
 with zero crate/hull intersections and clear centre aisle. Atlas stays512SBU.
 The earlier controller purchase/return/carry/stow and phone check passed on4SBU;
@@ -2761,6 +2776,54 @@ SA-SOCIAL-001 NARROW ROUTER CLAIM: integration steward requested a topmost-nativ
 SA-SOCIAL-001 BACKEND CHECKPOINT c619dd0fd6d6006e7d94b2b11f29a56b55b1ed1a is coherent and frozen for hub dependency. Use the existing createRoom({store,...}) store: await store.areFriends(attackerAccountId, targetAccountId) supplies accepted/unblocked mutual consent; no additional room signature or social-service reference is required. This check must complete before an exempt security decision; do not cache pending friendship as accepted. Canonical locks/atomic blocks, admission queue cancellation, explicit policy and real roster IDs are covered. No global migration/service was run. UI/paging/controller/browser changes remain uncommitted and should not be consumed yet.
 
 
+SA-CARGO-001 GPU NEXT / INTEGRATION UPDATE17:45UTC: combined2f3249f has been
+merged into the isolated cargo branch (17769ed), preserving rover/fauna/character,
+base-pad landing and combat controls. Final combined build/CPU checks running.
+Rover's browser exited; a fauna suloher case is currently active. Cargo reserves
+the next5535 three-case window immediately after that job releases/exits, roughly
+3minutes. Please hold new jobs until this cargo recheck releases. It validates
+8SBU purchase/walking/carry,512SBU Atlas rendering and player-pad controller build.
+Cargo migration002 remains additive; base-power003/social004 must stay distinct.
+No shared source/service/database update from cargo yet. Integration steward has
+released shared promotion; cargo will claim a short serialized merge after QA.
+
+SA-CARGO-001 GPU ACQUIRED17:46UTC: rover and fauna browser processes have exited; host has no active Playwright job. Starting reserved5535 three-case combined cargo check, one worker, about3minutes. Please preserve this active window until cargo releases. Shared5178/source/database remain unchanged.
+
+SA-CARGO-001 GPU WINDOW EXTENSION17:49UTC: Nomad bought all8 and passed phone/desktop layout, then feedback steering approached the open ramp obliquely and stalled against its jamb. Adding a centred ramp waypoint/forward look; no runtime boarding bypass. Full-case rerun plus Atlas/pad follows in the same owned5535 window, about3minutes. CPU combined848unit/96multiplayer pass,1existing skip.
+
+SA-CARGO-001 CONTRACT FOR SA-HUB-001: current isolated checkpoint17769ed
+contains a version1 commerce ledger (protocol3), additive migration002, and
+server/trading.js createTrading with atomic buy/sell/stock/withdraw/price/take/haul.
+PLAYER shops have finite stock and owner-set prices; Aeon NPC exchange currently
+has unlimited catalogue stock and fixed buy/sell prices. Dynamic Aeon pricing or
+finite station-market replenishment is NOT implemented or claimed in this cargo
+scope. The user's original task here is physicalSBU/trade/player shops; please
+keep any newly requested market simulation in your isolated follow-up, using
+TRADE_RESOURCES and the existing SQL transaction boundary rather than another
+wallet. Cargo final browser recheck is active5535; tested source release and local
+promotion follow. Security may deny a cargo action before trading.request or add
+an authoritative loot predicate; current loot is disabled-or-physically-aboard,
+with no station/friend exemption yet. Preserve migration003(base)/004(social).
+
+SA-CARGO-001 GPU RELEASE17:54UTC: combined Nomad8SBU controller purchase,
+walking return, carry/stow passes2.4m. Atlas fixture loaded512SBU and keyboard
+walk/reticle opened the real cargo dialog; its test then matched a hidden inventory
+button too (unscoped view-cargo selector). Scope fixed; camera capture moved away
+from the huge container face to the forward aisle. UI focus restoration and
+actual-ship-speed transfer guard are the only pending small runtime refinements.
+All5535 browser processes exited. Rover's queued touch-only rerun can proceed;
+cargo requests one final3case window after that release. Player-pad case has not
+run yet. No shared source/service/database changes from cargo.
+
+SA-VEH-001 GPU ACQUIRED 17:58 UTC: cargo explicitly released at 17:54 and offered the queued rover touch-only rerun. Fauna's close-art process has also exited; host inventory is now idle. Starting the one-worker touch full return journey on frozen 5419, about 3 minutes. Production source remains 84860a6; fixture-only b477c3f uses the actual phone container pager and Resume. Cargo's final recheck follows explicit rover release.
+
+SA-HUB-001 MARKET FOLLOW-UP: cargo confirms dynamic NPC pricing is outside its bounded scope and directs this follow-up to its coherent 17769ed ledger contract. Root's existing agent now works in /home/cees/projects/star-agent-station-market, feat/aeon-station-market from that checkpoint. Owns new market module and narrow trading model/UI/server hooks; no competing wallet, migrations or shared service changes. Canonical future-extensible station ID is aeon-orbital. Hub frame/selection implementation stays separate; root owns room/client/main integration.
+
+SA-CARGO-001 GPU ACQUIRED 18:01:09 UTC: both rover/fauna Playwright processes have exited; inventory is idle. Starting the previously reserved final5535 three-case check on fdf106d, one worker, roughly3minutes. No FPS claim while the user may be playing. Please hold ALL further automated graphics jobs until this cargo window explicitly releases. No shared service/database/source change yet.
+
+SA-VEH-001 GPU RELEASE 18:04 UTC: touch-only run ended. Its initial feedback walk overran while resolving uncached touch button positions and reached the Atlas cargo chest jamb. No application/console error. Fixture now warms the four cabin controls before movement and explicitly aligns with the clear aisle before walking aft. Independent review also found the MFD footer behind the shelf; baseline moved upward, with unchanged geometry and mechanics. Isolated 5419 rebuild is CPU-only. Cargo may take its requested final window; rover requests one corrected touch rerun after cargo. User 5417 stays unchanged.
+
+
 SA-WORLD-003 GPU READY18:08UTC: inspected code is built,9landmark/server
 invariants pass. The18:01 request was for one5383 comparison after the then
 current rover/cargo queue. Cargo5535 now has no running Playwright process;
@@ -2768,6 +2831,9 @@ please publish its release and leave one~3minute window for this ready before/
 after1km+close material/density capture before starting new repeat graphics jobs.
 Two production previews5383/5384, ONE game page/browser, one worker. No browser
 has started yet. Current source only changes two landmark runtime modules.
+
+
+SA-CARGO-001 GPU RELEASE 18:08:49 UTC: all3 browser cases pass3.2m (Nomad1.5m, Atlas53.5s, pad47.2s), no captured errors. No owned browser remains. Final CPU audit found Nomad's procedural sloping liner is not included in the standalone GLB audit; expanding to the actual complete ship assembly and correcting capacity before integration. Atlas512 is unchanged. Cargo EVA closed-hull protection also gained23passing focused checks. Other queued GPU owners may proceed; cargo will need only the affected Nomad case after this clearance correction. No shared source/service/database edits.
 
 
 SA-WORLD-003 GPU ACQUIRED 18:10:13 UTC: cargo explicitly released18:08:49 and no
@@ -2788,3 +2854,21 @@ SA-CARGO-001 ACKNOWLEDGES SOCIAL OVERLAP: cargo used an outdated social log and 
 SA-CARGO-001 FINAL GPU RELEASE 18:23:06 UTC: both affected final cases PASS (Nomad6SBU1.6m; controller pad/phone shop50.2s), no captured console/page errors. Full Atlas512SBU53.5s case passed in the preceding suite. Cargo has NO remaining browser job or rerun planned. SOCIAL gets the next immediate slot for its two remaining cases as the steward directed; hold new world/rover/power launches until social releases. Runtime3c7af88 is frozen;849units,97multiplayer pass with1existing skip, real SQL/socket/complete-hull tests pass. Curated evidence and checked source handoff/local integration follow, CPU-only.
 
 SA-INT-002 SHARED INTEGRATION CLAIM / SOCIAL+CARGO: with cargo3c7af88 now frozen and browser-checked, steward claims the next shared dev promotion in /home/cees/projects/star-agent-social-review (feat/dev-social-review). Preparing cargo+social+requested controls copy together so protocol3 and additive002/004 are checked and activated in one serialized service restart. Preflight conflicts are limited to database.js migration runner, multiplayer/client.js state clear, and HANDOFF appends; preserve both features. Cargo owner: please provide final QA/docs checkpoint and do not separately merge/restart shared5178/8087 while this claim is active. Your remaining CPU/docs work remains yours. Social owns the active two-case browser slot. Parent will run combined disposable SQL/socket/build checks before any promotion; shared persistent DB is not a fixture. Main/public hosting remain out of scope.
+
+SA-CARGO-001 FINAL CAPACITY CORRECTION 18:13:53 UTC: complete runtime Nomad assembly (procedural liner + GLB) finds42 intersections for8SBU;6SBU (1×3×2) clears all actual visible triangles. Atlas512 also clears. All24focused packing/local/SQL/socket/EVA checks pass. Please use final cargo grid6/512 when consuming source; historical17769ed/PR70 checkpoints used8. A final two-case Nomad6 + phone shop/display recheck follows the currently reserved5383 rock comparison. Source remains isolated, no database changes.
+
+
+SA-WORLD-003 READY / SERIALIZED PROMOTION NOTE18:26UTC: runtimebb75c4c is
+frozen,23focused landmark/server/forest/meadow/mining checks and production builds
+pass on isolated local and bounded PR63 sources. Shader/distribution are the only
+runtime edits. Corrected capturef992019 waits behind the currently reserved
+social/rover/power jobs; do not consume before its actual shader/image pass.
+Population revision2 needs the API/client refresh together, unlike prior material-
+only updates. If final graphics evidence arrives before SA-INT-002's combined
+restart, this branch can join that coherent promotion; otherwise preserve the
+steward claim and this lane will hand off after it. No schema/migration/save change.
+Curated record is being prepared at docs/qa/landmark-restraint/README.md.
+
+SA-CARGO-001 CHECKED DELIVERY FOR SA-INT-002 18:25:53 UTC: consume feat/sbu-cargo-trading7b3bed8 (runtime3c7af88; complete QA/curated6images/docs/task in7b3bed8; CI4a6f7f0 merged via c547eca). Final Nomad6SBU and Atlas512SBU; all7crate sizes,1SBU hand-only, station buying/packing/selling, persisted player pads/stock/prices/sales, physical theft/handler and EVA closed-hull collision.849units,97multiplayer with1existing skip; actual isolated SQL migration twice/concurrent sale/rollback/reopen and authenticated socket/reconnect checks pass. Browser final Nomad6 passes1.6m, pad/shop phone50.2s, preceding unchanged Atlas51253.5s; no captured console/page errors. Images inspected, including no roof overlap and phone row bounds. docs/qa/sbu-cargo.md is complete and candid; docs/sbu-cargo.md is the player guide. PR70 is stacked on PR68’s feature branch to keep cargo delta bounded.
+
+Cargo acknowledges steward’s active SOCIAL+CARGO shared claim and WILL NOT merge or restart shared5178/8087 independently. Please preserve generic ordered migrations (002cargo,004social;003base reserved), both client state resets, all existing ledger methods and cargo EVA hooks. Normal solo/test/server saves stay distinct. Set SA-CARGO-001 integrated on successful promotion; docs/local-development.md already includes the cargo guide/6/512 row. Existing live cluster inode947632 verified unchanged before handoff; no cargo mutation of live DB has happened yet. Please publish final promotion/checkpoint so this user can receive the live test link. No further cargo source/GPU work remains; handler animation, persistent offline wrecks, broad online rendered playtest and dynamic NPC pricing are explicitly outside this slice.
