@@ -2,8 +2,8 @@
   "runtime": "/models/creatures/suloher-dog.glb",
   "samples": 121,
   "walkZeroToDeathZeroMaxVertexDisplacementMetres": 4.191572421501638e-06,
-  "maxLimbJointDistanceChangeMetres": 8.696126874457866e-06,
-  "maxAdjacentSampleVertexDisplacementMetres": 0.07443058391003037,
+  "maxLimbJointDistanceChangeMetres": 8.094197231717226e-06,
+  "maxAdjacentSampleVertexDisplacementMetres": 0.04329266129127425,
   "sampleIntervalSeconds": 0.01,
   "limits": "Sampling checks continuity and limb length, not physical contact or anatomical realism."
 }

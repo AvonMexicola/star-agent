@@ -1,5 +1,9 @@
 # Hostile fauna — independent asset review
 
+**Latest scoped update:** the published dog pose revision below resolves the earlier corpse-readability finding to **4/5**. Full game and motion acceptance remains open. The original review and its 3/5 score are retained as historical evidence.
+
+## Original export review (superseded dog pose)
+
 Reviewer: GPT-6 Astra. Date: 2026-09-07. Scope: the final exported Pyrebear and Suloher dog and eight supplied Blender studio images. This reviewer did not author either asset, death action or runtime renderer. I did author the habitat queries and initial hostile simulation, so this record does **not** claim independent review of those modules. The separate root integration code review and its corrections are recorded below.
 
 **Disposition: retain as development candidates; full visual acceptance is not established.** Pyrebear's final still pose is satisfactory. Suloher's final pose is grounded but retains an aggressive-crouch reading that weakens its death-state communication. Continuous final-export motion and actual game lighting/contact remain unverified for both. Missing applicable evidence is not an N/A exemption from QUALITY.md.
@@ -56,3 +60,22 @@ I independently read the root-authored renderer/targeting/main/tool changes. The
 That source signoff is not a browser, visual or performance pass. Cosmetic HUD visibility could evaluate up to319 canonical terrain samples each frame at160m; I recommended a bounded target/visibility cadence while leaving weapon-hit and bite-impact validation fresh. Audio forwarding was seen reaching the gameplay event adapter; synthesis and audibility were outside that inspection. Subsequent edits must be verified against their own final build.
 
 No runtime/assets were modified for this review. Only this review record was written. Final game art/motion acceptance remains open.
+
+
+## Published dog pose follow-up — 2026-09-07
+
+Reviewer: GPT-6 Astra, independent of asset authoring. I independently hashed the published `public/models/creatures/suloher-dog.glb`: **`58e0ea69a08c5f49adc76fa546dae794ab7b797c44c223591d4b2a3dbf0f3928`**. Pyrebear remains unchanged at the hash above. This review is tied to the export hash; it does not assert a final integration commit identity.
+
+I first inspected the isolated candidate's side and oblique PNGs, comparing them with the old dog death-side and death-final WebPs. After publication I independently reopened all three following current WebPs. The published final poses visibly match that candidate correction. The original table's dog image paths now resolve to these newer images; its original observations and scores refer to the old `41333568…` export, not the replacement.
+
+| Personally inspected published image | SHA-256 |
+| --- | --- |
+| [death-mid](../../assets/creatures/suloher-dog/review/death-mid.webp) | `1fa68c7c6fe56863bb586df8f99bea4da4506207ea72f080b4a28f232da3f2b4` |
+| [death-final](../../assets/creatures/suloher-dog/review/death-final.webp) | `5bed785eea2b10889fbea1db12af8aa871f148a126fce07d07fe65bc61814937` |
+| [death-side](../../assets/creatures/suloher-dog/review/death-side.webp) | `0eae33dde3a5950f514f5737861968a5ea31636d9eb341bea5715fe9ce2029fd` |
+
+**Scoped information/physical-function pose score: 4/5, improved from 3/5.** The head and jaw now drop sideways toward the ground; asymmetric forepaws and broad belly support communicate collapse, particularly in the oblique final view. The side-view tail no longer stands vertically. A bent foreleg and raised curved tail still retain some tension, but these two final views no longer present a blocking death-state ambiguity. The midpoint preserves recognizable anatomy; it cannot prove the transition's timing or weight.
+
+These are author-captured Blender 5.2 Cycles CPU studio renders, 800×600, 12 samples and four threads, not my own captures or game evidence. I used no browser/GPU. The current manifest reports a 121-sample death minimum of **−25.372mm**, within the authored 30mm tolerance, and the motion validation ledger reports continuity and limb-length checks. I read those results but did not independently rerun deformation sampling. This is neither perfect ground contact nor a ragdoll claim.
+
+**Disposition:** accept this bounded final-pose correction. The old corpse-readability finding is resolved for these stills. No complete six-criterion mean is awarded: actual planetary lighting, terrain contact, gait at chase speed, arbitrary-phase death blending and continuous final-export motion remain applicable and unverified. The earlier partial studio scores cannot substitute for that full acceptance gate. No assets or runtime files were changed by this follow-up.

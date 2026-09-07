@@ -13,6 +13,7 @@ for(const[species,start]of[['pyrebear','pyrebear-habitat'],['suloher','suloher-h
   const n=window.starAgent.navigation,e=window.starAgent.state.fauna.entities.find(e=>e.species===species),up=n.position.clone().fromArray(e.normal),target=n.position.clone().fromArray(e.position),forward=n.position.clone().fromArray(e.forward);
   n.mode='walk';n.insideShip=false;n.enabled=true;n.focused=true;n.autoland=false;n.position.copy(target).addScaledVector(forward,8).addScaledVector(up,1.75);n.velocity.set(0,0,0);n.orientToward(target.clone().addScaledVector(up,species==='pyrebear'?.9:.5),up);return e.id;
  },species);
+ await page.evaluate(id=>{function follow(){const n=window.starAgent.navigation,e=window.starAgent.state.fauna.entities.find(e=>e.id===id);if(e){const up=n.position.clone().fromArray(e.normal),target=n.position.clone().fromArray(e.position).addScaledVector(up,e.health>0?(e.species==='pyrebear'?.9:.5):.35);n.orientToward(target,up);}requestAnimationFrame(follow);}follow();},id);
  await page.keyboard.press('1');
  await page.waitForFunction(()=>!document.querySelector('#fauna-status').hidden);
  const checks=[];

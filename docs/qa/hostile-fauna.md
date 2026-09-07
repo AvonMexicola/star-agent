@@ -86,3 +86,23 @@ fresh. HUD moved above the equipment bar after a real screenshot exposed overlap
 The optional onAttack sound hook now connects to SA-AUD-002's committed synthesis
 modules; its real simulation-to-mixer checks pass for both species, including
 pause/death suppression. The updated build and focused tests pass.
+
+## Dog approach regression
+
+The first Suloher controller trial physically landed/exited/approached, then
+waited unsuccessfully for a bite. Saved state had a chasing dog5.698m from the
+player, zero speed and clear line of sight. Replaying those exact coordinates
+proved the broad5m habitat footprint returned null before the swept obstacle
+callback ran. Body-sized canonical footing produced movement and a bite within
+three seconds in the controlled CPU replay; the controller rerun remains pending.
+Spawn clearance is unchanged, and no rock/ship/building collision was bypassed.
+The failed browser trace also had a truncated-stream error; saved screenshot
+and JSON state remain available, so the gameplay diagnosis uses that evidence.
+
+Latest corrected-source validation: production build in
+`test-results/fauna-build` passed; the complete `npm test` invocation passed all
+99 test-file suites with no failed/skipped files. Focused habitat/simulation
+run separately reports30 passing individual cases. Final dog-only pose export
+is `58e0ea69a08c5f49adc76fa546dae794ab7b797c44c223591d4b2a3dbf0f3928`,
+with unchanged original walk/skin/materials and scoped corpse score4/5.
+The full independent report retains the earlier3/5 dog rejection.

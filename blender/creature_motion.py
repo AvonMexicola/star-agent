@@ -92,7 +92,7 @@ def author_death(arm, mesh, doc, fit, duration):
         at=world.translation.copy()
         bone.matrix=arm.matrix_world.inverted() @ Matrix.Translation(at) @ rotation @ Matrix.Translation(-at) @ world
         bpy.context.view_layer.update()
-    def solve_chain(chain, target, side, bend, influence):
+    def solve_chain(chain, target, side, bend, influence, relaxed_paw=0):
         points=[arm.matrix_world @ bone.head for bone in chain]
         lengths=[(b-a).length for a,b in zip(points,points[1:])]
         anchor=points[0].copy()
@@ -117,6 +117,8 @@ def author_death(arm, mesh, doc, fit, duration):
         foot=chain[-1]
         at=arm.matrix_world @ foot.head
         _,rotation,scale=original_feet[foot.name].decompose()
+        if relaxed_paw:
+            rotation = (Matrix.Rotation(-side*.65*relaxed_paw,4,'Z') @ Matrix.Rotation(side*.25*relaxed_paw,4,'Y') @ rotation.to_matrix().to_4x4()).to_quaternion()
         foot.matrix=arm.matrix_world.inverted() @ Matrix.LocRotScale(at,rotation,scale)
         bpy.context.view_layer.update()
     for i in range(61):
@@ -133,11 +135,15 @@ def author_death(arm, mesh, doc, fit, duration):
         bpy.context.view_layer.update()
         turn_bone(arm.pose.bones['chest'],Matrix.Rotation(-.12*collapse,4,'X'))
         turn_bone(arm.pose.bones['head'],Matrix.Rotation(-.24*collapse-.10*settle,4,'X'))
+        if duration < 1.5:
+            turn_bone(arm.pose.bones['head'],Matrix.Rotation(.60*settle,4,'Y') @ Matrix.Rotation(-.12*settle,4,'Z'))
         # Relax the lifted dog tail to a low lateral curve rather than a spring.
         tail_pitch=(-.50 if duration<1.5 else 0)*collapse
         turn_bone(arm.pose.bones['tail'],Matrix.Rotation(tail_pitch,4,'X') @ Matrix.Rotation(.20*collapse,4,'Z'))
         for name in ['tailstart','tail1','tail2','tail3']:
-            turn_bone(arm.pose.bones[name],Matrix.Rotation((.28 if name=='tail3' and duration<1.5 else 0)*settle,4,'X'))
+            turn_bone(arm.pose.bones[name],Matrix.Rotation((.95 if name=='tail3' and duration<1.5 else 0)*settle,4,'X'))
+        if duration < 1.5:
+            turn_bone(arm.pose.bones['tail2'],Matrix.Rotation(-.25*settle,4,'Z'))
         points=skin_points(mesh)
         heights=sorted(points[index].z for index in torso)
         # Broad central belly support, excluding peripheral plate tips. A small
@@ -171,13 +177,15 @@ def author_death(arm, mesh, doc, fit, duration):
             chest=arm.matrix_world @ arm.pose.bones['chest'].head
             hip=arm.matrix_world @ hips.head
             front='front' in prefix
-            fore_width = (.43 if side > 0 else .34) if duration > 1.5 else .37
+            fore_width = (.43 if side > 0 else .34) if duration > 1.5 else (.46 if side > 0 else .28)
+            front_reach = .13 if duration > 1.5 else (.22 if side > 0 else .04)
+            relaxed_paw = settle if front and duration < 1.5 else 0
             goal=Vector((pivot.x+side*body_width*(fore_width if front else .30),
-                         chest.y+body_height*.13 if front else hip.y-body_height*.28,
-                         -sole_offsets[foot_name]+.006))
+                         chest.y+body_height*front_reach if front else hip.y-body_height*.28,
+                         -sole_offsets[foot_name]+.006+.01*relaxed_paw))
             target=old.lerp(goal,fold)
             chain=[arm.pose.bones[prefix+suffix] for suffix in ['', '0','1','2']]
-            solve_chain(chain,target,side,1 if front else -1,fold)
+            solve_chain(chain,target,side,1 if front else -1,fold,relaxed_paw)
         for bone in arm.pose.bones:
             for path in ['location','rotation_quaternion','scale']:
                 bone.keyframe_insert(data_path=path,frame=frame,group=bone.name)

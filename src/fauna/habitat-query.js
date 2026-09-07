@@ -17,10 +17,10 @@ export function createHabitatQueries(config, planet) {
   }
 
   /** Canonical terrain only; null means unsuitable. Eight surrounding samples
-   * reject lava/biome boundaries and slopes across a 2m/5m creature footprint.
+   * reject lava/biome boundaries and slopes at the selected footprint radii.
    * Returned positions are Aeon-centred doubles; normals are world unit vectors.
    * This local suitability check is not swept collision or a path planner. */
-  function sampleHabitat(bodyDirection) {
+  function sampleFootprint(bodyDirection, radii) {
     const d = unit(bodyDirection);
     if (!d || !planet.directionSuitable(d)) return null;
     const center = planet.sample(...d);
@@ -28,7 +28,7 @@ export function createHabitatQueries(config, planet) {
     const east = unit(cross(Math.abs(d[1]) < .9 ? [0, 1, 0] : [1, 0, 0], d));
     const north = cross(d, east), gradients = [];
     let slope = 0;
-    for (const metres of config.footprintRadii) {
+    for (const metres of radii) {
       for (const tangent of [east, north]) {
         const heights = [];
         for (const sign of [-1, 1]) {
@@ -49,6 +49,10 @@ export function createHabitatQueries(config, planet) {
       position: offset.map((v, i) => v + planet.position[i]), height: center.height,
       slope, region: center.region, activity: center.activity, fresh: center.fresh };
   }
+  // Broad spawn clearance is deliberately separate from body-sized locomotion:
+  // a distant boulder must not make an otherwise safe next footstep impassable.
+  const sampleHabitat = direction => sampleFootprint(direction, config.footprintRadii);
+  const sampleFooting = direction => sampleFootprint(direction, config.footingRadii ?? config.footprintRadii);
 
   /** Deterministic nearby population, with no mutable RNG, cache or traversal state.
    * A Cartesian terrain-frame shell lattice avoids latitude/pole/cube-face seams.
@@ -95,5 +99,5 @@ export function createHabitatQueries(config, planet) {
     return result.sort((a, b) => distanceSquared(a.position, p) - distanceSquared(b.position, p) || a.id.localeCompare(b.id)).slice(0, config.maxSpawns);
   }
 
-  return { sampleHabitat, enumerateSpawns };
+  return { sampleHabitat, sampleFooting, enumerateSpawns };
 }
