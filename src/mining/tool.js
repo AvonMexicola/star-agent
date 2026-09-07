@@ -81,8 +81,10 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
         if(start){
           const rifle=equipment.equipped==='rifle-laser';
           const target=attached?sightTarget:weaponTarget(aimOrigin,direction,origin,range),end=target?.point??sightEnd;
-          const ray=end.clone().sub(start).normalize(),contact=weaponTarget(start,ray,origin,range);
-          effects.fire(start,ray,{hit:contact,range,sound:rifle?'carbine':'sidearm',weapon:rifle?'laser':'pulse',color:rifle?0xff902d:0xff395f,power:rifle?.45:.32});
+          const ray=end.clone().sub(start).normalize();
+          const trajectory=rifle?ray:ray.clone().multiplyScalar(450).add(nav.velocity).normalize();
+          const contact=weaponTarget(start,trajectory,origin,range);
+          effects.fire(start,ray,{hit:contact,range,velocity:nav.velocity,muzzlePosition:()=>active&&equipment.equipped==='rifle-laser'?equipment.muzzleWorldPosition():null,sound:rifle?'carbine':'sidearm',weapon:rifle?'laser':'pulse',color:rifle?0xff902d:0xff395f,power:rifle?.45:.32});
           if(!effects.reducedMotion)recoil=rifle?.065:.04;
         }
       }

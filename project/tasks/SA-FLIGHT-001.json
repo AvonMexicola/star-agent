@@ -1,0 +1,33 @@
+{
+  "id": "SA-FLIGHT-001",
+  "title": "Finite ship momentum, flight modes and moving muzzle effects",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex momentum repair",
+  "status": "active",
+  "branch": "fix/combat-momentum",
+  "base": "931ea102ca7ef95082bc8f741a0ebaf88ab9f87c",
+  "updated": "2026-09-07",
+  "areas": [
+    "flight",
+    "combat",
+    "interface",
+    "multiplayer"
+  ],
+  "claims": [
+    "src/flight-model.js",
+    "src/combat/flight-policy.js",
+    "src/combat/simulation.js",
+    "src/combat/space-combat.js",
+    "src/effects/energy-effects.js",
+    "src/effects/flight-effects.js",
+    "src/mining/tool.js",
+    "src/navigation.js",
+    "src/main.js",
+    "src/gameplay-menu.js",
+    "src/controller-layout.js",
+    "server/room.js",
+    "src/multiplayer/client.js"
+  ],
+  "brief": "docs/briefs/combat-momentum.md"
+}

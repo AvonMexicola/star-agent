@@ -94,7 +94,7 @@ export function createGameplayMenu({nav,screens,dev=false}){
   // Commands already represented by top-level screens are removed from the Ship
   // grid; their real handlers remain available to existing contextual shortcuts.
   const commands=document.querySelector('#controller-menu .controller-command-list');
-  const shipKeys=new Set(['resume','free-drive','gear','lights','camera-view','wave','combat-target','power','fleet','crash-recover','weapon-pulse','weapon-laser','weapon-void','build','build-sandbox','sandbox-exit','recipes','tool']);
+  const shipKeys=new Set(['resume','combat-mode','free-drive','gear','lights','camera-view','wave','combat-target','power','fleet','crash-recover','weapon-pulse','weapon-laser','weapon-void','build','build-sandbox','sandbox-exit','recipes','tool']);
   if(commands)for(const button of commands.children)if(!shipKeys.has(button.dataset.controllerKey)){button.dataset.menuExcluded='true';button.hidden=true;}
   document.addEventListener('keydown',event=>{
     if(event.repeat||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;

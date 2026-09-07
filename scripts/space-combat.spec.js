@@ -35,7 +35,7 @@ for(const ship of ['nomad','kestrel','atlas'])test(`${ship}: controller patrol c
  for(const [i,sign] of [[0,1],[1,-1]]){
   await button(i,true);await page.waitForFunction(sign=>{const n=window.starAgent.navigation;return n.velocity.clone().applyQuaternion(n.orientation.clone().invert()).y*sign>1;},sign);
   expect(await page.evaluate(()=>window.starAgent.state.effects.controllerFire)).toBe(false);
-  await button(i,false);await tap(6);
+  await button(i,false);await button(6,true);await page.waitForFunction(()=>window.starAgent.state.speed<.05);await button(6,false);
  }
  await button(7,true);await frames();expect(await page.evaluate(()=>window.starAgent.state.speed)).toBeLessThan(.1);await button(7,false);
  await tap(9);await choose('patrol-console');await expect(page.locator('#patrol-console')).toBeVisible();await frames();await tap(0);
@@ -44,7 +44,7 @@ for(const ship of ['nomad','kestrel','atlas'])test(`${ship}: controller patrol c
  await tap(1);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
  // Navigate the accepted waypoint only by the flight stick; no pose/teleport calls.
  await page.evaluate(()=>{window.combatPad.axes[1]=-.65;});await page.waitForFunction(()=>window.starAgent.state.combat.phase==='engage',{},{timeout:45000}).catch(async e=>{console.log('Arrival state',await page.evaluate(()=>({combat:window.starAgent.state.combat,position:window.starAgent.state.position,speed:window.starAgent.state.speed,enabled:window.starAgent.state.enabled,controller:window.starAgent.state.controller,mode:window.starAgent.state.mode,keys:[...window.starAgent.navigation.keys],focused:window.starAgent.state.focused,transiting:window.starAgent.state.transiting})));throw e;});
- await page.evaluate(()=>{window.combatPad.axes[1]=0;});await button(6,true);await button(6,false);
+ await page.evaluate(()=>{window.combatPad.axes[1]=0;});await button(6,true);await page.waitForFunction(()=>window.starAgent.state.speed<.05);await button(6,false);
  await page.waitForFunction(()=>window.starAgent.state.combat.models===2);
  await page.screenshot({path:`${evidence}/arrival.png`});
  // Switch target through the real command menu, then select the hitscan ship gun.

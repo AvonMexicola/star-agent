@@ -299,3 +299,15 @@ analog direction without D-pad contributions. Keep eight slice locations stable.
 See `docs/qa/base-building/radial.md` for verification and remaining review limits.
 
 Current B/A/trigger mappings and context checks: [hotkey evidence](qa/base-building/controller-hotkeys.md).
+
+## Combat momentum — 2026-09-07
+
+Flight defaults to fly-by-wire with finite thrust and drift correction. R3 / V
+selects unlocked flight; releasing thrust coasts while the ship turns independently.
+Hold LT / L2 (keyboard X) for maximum braking, allowing stopping distance.
+Menu → Ship → Combat / cruise (keyboard Z) selects the speed regime independently:
+Kestrel 220, Nomad 180, Atlas 120 m/s. RT fires only in combat mode, within its
+speed limit, with boost off and landing gear retracted. Cruise locks weapons.
+Landing assist requires speed below 10 m/s. All hulls retain momentum; Atlas
+has the slowest correction. Injected Gamepad evidence is documented separately
+from physical controller testing.

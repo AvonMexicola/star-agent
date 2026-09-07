@@ -1,4 +1,5 @@
 import {Vector3,Quaternion} from 'three';
+import {step as stepFlight} from '../flight-model.js';
 import {shipWeaponProfile,SHIP_WEAPON_SIZES} from '../ship-weapon-profiles.js';
 
 export const SHIP_STATS=Object.freeze({
@@ -42,7 +43,7 @@ export function interceptPoint(start,target,velocity,speed){
  * behind the named muzzle before it has travelled its full visual length. */
 export function projectileSpan(shot,maximum=8*(shot.profile?.effectScale??1)){
   const length=Math.max(0,Math.min(maximum,shot.travelled??0));
-  return {length,position:shot.position.clone().addScaledVector(shot.direction,-length*.5)};
+  return {length,position:shot.position.clone().addScaledVector((shot.velocity??shot.direction).clone().normalize(),-length*.5)};
 }
 export class CombatSimulation{
   constructor({onShot=()=>{},onHit=()=>{},obstruction=()=>null}={}){
@@ -63,19 +64,19 @@ export class CombatSimulation{
   get living(){return this.enemies.filter(e=>e.integrity.hull>0);}
   get target(){return this.living.find(e=>e.id===this.targetId)??null;}
   cycle(){const living=this.living;if(living.length)this.targetId=living[(living.findIndex(e=>e.id===this.targetId)+1)%living.length].id;}
-  fire(start,direction,weapon='pulse',wall=null,profile=null){
+  fire(start,direction,weapon='pulse',wall=null,profile=null,velocity=new Vector3(),muzzlePosition=null){
     if(this.player.hull<=0)return;
     const gun=profile??shipWeaponProfile(weapon,SHIP_WEAPON_SIZES[this.shipId]??1);
-    const shot=this.launch(start,direction,gun,'player',gun.kind??weapon,wall);
+    const shot=this.launch(start,direction,gun,'player',gun.kind??weapon,wall,velocity,muzzlePosition);
     if(shot)this.shots++;
     return shot;
   }
-  launch(start,direction,gun,owner,weapon,wall=null){
+  launch(start,direction,gun,owner,weapon,wall=null,velocity=new Vector3(),muzzlePosition=null){
     if(direction.lengthSq()<1e-12||(!Number.isFinite(gun.speed)&&gun.speed!==Infinity))return null;
     if(Number.isFinite(gun.speed)&&this.projectiles.length>=128)return null;
     if(!Number.isFinite(wall?.distance)||wall.distance>gun.range)wall=null;
     const range=Math.max(0,Math.min(gun.range,wall?.distance??Infinity));
-    const shot={id:++this.serial,start:start.clone(),position:start.clone(),direction:direction.clone().normalize(),speed:gun.speed,damage:gun.damage,remaining:range,travelled:0,owner,weapon,wall,profile:gun};
+    const shot={id:++this.serial,start:start.clone(),position:start.clone(),direction:direction.clone().normalize(),speed:gun.speed,damage:gun.damage,remaining:range,travelled:0,owner,weapon,wall,profile:gun,muzzlePosition,velocity:direction.clone().normalize().multiplyScalar(Number.isFinite(gun.speed)?gun.speed:0).add(velocity)};
     if(!Number.isFinite(gun.speed)){
       if(!this.trace(shot,start.clone().addScaledVector(shot.direction,range),false))this.impactWall(shot);
     }else if(range>0)this.projectiles.push(shot);
@@ -127,14 +128,14 @@ export class CombatSimulation{
         e.strategy=e.breakTime>0?'break':distance<1000?'attack':'intercept';e.breakTime=Math.max(0,e.breakTime-dt);
       }
       const gun=shipWeaponProfile('pulse',SHIP_WEAPON_SIZES[e.ship]??1);
-      const aim=interceptPoint(e.position,position,velocity,gun.speed);
+      const aim=interceptPoint(e.position,position,velocity.clone().sub(e.velocity),gun.speed);
       let desired=aim.clone().sub(e.position);
       if(e.strategy==='return')desired=this.point.clone().sub(e.position);
       if(e.strategy==='break')desired=e.position.clone().sub(position).add(new Vector3((e.slot?1:-1)*220,100,0).applyQuaternion(orientation));
       const wanted=new Quaternion().setFromUnitVectors(FORWARD,desired.normalize());e.orientation.rotateTowards(wanted,stats.turn*dt);
       const forward=FORWARD.clone().applyQuaternion(e.orientation);
       const speed=stats.speed*(e.strategy==='break'?1.35:e.strategy==='attack'?.7:1);
-      e.velocity.lerp(forward.clone().multiplyScalar(speed),1-Math.exp(-dt*1.8));e.position.addScaledVector(e.velocity,dt);
+      e.velocity.copy(stepFlight(e,{shipId:e.ship,assist:true,targetVelocity:forward.clone().multiplyScalar(speed)},{density:0,gravity:new Vector3()},dt).velocity);e.position.addScaledVector(e.velocity,dt);
       e.cooldown-=dt;
       if(e.strategy==='attack'&&distance<1250&&forward.dot(aim.clone().sub(e.position).normalize())>.994&&e.cooldown<=0){
         // Model transforms still contain the previous render frame here. Ask
@@ -143,11 +144,12 @@ export class CombatSimulation{
         if(!pose?.position||!pose.direction||!pose.profile||pose.direction.lengthSq()<1e-12)continue;
         const start=pose.position.clone().applyQuaternion(e.orientation).add(e.position);
         const direction=pose.direction.clone().applyQuaternion(e.orientation).normalize();
-        const lead=interceptPoint(start,position,velocity,pose.profile.speed).sub(start).normalize();
+        const lead=interceptPoint(start,position,velocity.clone().sub(e.velocity),pose.profile.speed).sub(start).normalize();
         // Fixed guns cannot bend their bores toward a selected target.
         if(direction.dot(lead)<=.994)continue;
-        const wall=this.obstruction(start,direction,pose.profile.range,e);
-        const shot=this.launch(start,direction,pose.profile,e.id,pose.type??pose.profile.kind??'pulse',wall);
+        const trajectory=Number.isFinite(pose.profile.speed)?direction.clone().multiplyScalar(pose.profile.speed).add(e.velocity).normalize():direction;
+        const wall=this.obstruction(start,trajectory,pose.profile.range,e);
+        const shot=this.launch(start,direction,pose.profile,e.id,pose.type??pose.profile.kind??'pulse',wall,e.velocity);
         if(shot){
           e.armament.fired(pose);
           // Sized hits use the common damage profile. Pulse spacing is 1.5 s
@@ -158,7 +160,7 @@ export class CombatSimulation{
       }
     }
     this.projectiles=this.projectiles.filter(shot=>{
-      const step=Math.min(shot.remaining,shot.speed*dt),end=shot.position.clone().addScaledVector(shot.direction,step);
+      const speed=shot.velocity.length(),step=Math.min(shot.remaining,speed*dt),end=shot.position.clone().addScaledVector(shot.velocity,speed>0?step/speed:0);
       if(this.trace(shot,end))return false;shot.position.copy(end);shot.remaining-=step;shot.travelled+=step;
       if(shot.remaining<=0)this.impactWall(shot);
       return shot.remaining>0;

@@ -27,12 +27,12 @@ test('assisted acceleration and stopping distinguish hulls without changing even
   ordered(speeds);
   const distances=ids.map(shipId=>{
     let s=state(),distance=0;s.velocity.set(0,0,-300);
-    for(let i=0;i<600;i++){s=step(s,{shipId,assist:true},vacuum,1/60);distance+=s.velocity.length()/60;}
+    for(let i=0;i<2400;i++){s=step(s,{shipId,assist:true},vacuum,1/60);distance+=s.velocity.length()/60;}
     assert.ok(s.velocity.length()<.1);return distance;
   });
   ordered([...distances].reverse());
   for(const shipId of ids){
-    const next=step(state(),{shipId,assist:true,targetVelocity:new Vector3(0,0,-300)},vacuum,20);
+    const next=step(state(),{shipId,assist:true,targetVelocity:new Vector3(0,0,-300)},vacuum,40);
     near(next.velocity.length(),300,.001);
   }
 });
