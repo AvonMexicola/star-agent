@@ -107,3 +107,13 @@ GPU before launching. `STONE_QA_URL` selects an already running preview;
 
 Independent functional/rubric review remains pending. This record establishes
 bounded implementation and observed checks, not production art sign-off.
+
+
+## Shared local integration
+
+Merged at `b4468d4` with the newer station exterior preview. All **668 unit tests**
+and the production build pass. The actual shared **5178** preview passed the
+settled 6/55/100 m render check in58.9s with zero page/console errors. This latest
+check establishes the modules served by the combined development preview; the
+controller journey above is attributed to its tested feature/base revision.
+The unrelated dirty AGENTS.md edit was retained. No main merge or deployment.

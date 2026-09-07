@@ -1841,3 +1841,32 @@ Independent final LOD review retains silhouette 4.0 and closes its two sampled
 far-view count concerns. Final art/material/timing gates remain open. The current
 production review is http://127.0.0.1:5400/?dev=1&intro=0&ship=kestrel&start=orbit&stationExterior=1&exteriorView=overview&seed=7291.
 Selected evidence: `docs/qa/station-exterior/integrated-flight/`. GPU released.
+
+
+## READY FOR REVIEW — Aeon mineable stones — 2026-09-07
+
+Cees requested replacement of the pale decorative Aeon pebbles with mineable
+concrete feedstock. Feature `feat/aeon-mineable-stones` at `554cb17`, draft PR
+https://github.com/AvonMexicola/star-agent/pull/54. Source: new `src/mining/aeon-stones.js`,
+`loose-stones.js`, `stone-material.js`; scoped field/rock integration, shared map
+lease and removal of Vegetation's old stone layer. Reuses existing CC0 Rock030
+maps, six seeded density shapes, canonical ground and actual forest trunk records.
+Exact nearby meshes, collision and saved cuts agree; three regional workers remain
+bounded. Basalt feeds the existing aggregate/binder/concrete recipes and finite
+inventory. The sixteen-edited-rock save limit still applies.
+
+Merged locally into dev/all-features at `b4468d4`, retaining the concurrent station
+exterior preview and dirty AGENTS.md edit. Shared http://127.0.0.1:5178/ serves the
+new modules. Integrated 668/668 unit tests and production build pass; actual merged
+local 6/55/100 m render check passes in58.9s, zero page/console errors. Feature
+controller journey passes in1.7m: explicit Menu transit, physical landing and cabin
+exit, stick aim/walk, RT mining2.098kg, native aggregate/binder processing, exact
+remainder, backpack and return. Held RT menu/focus/reconnect and390x844 recipe
+layout pass. Complete10kg concrete/mass conservation is covered by finite-stone
+unit tests. Chromium151 / AMD860M ANGLE GLES3.2, scale1; no physical-controller,
+isolated frame-time or independent art approval claim. QA, actual images and
+retained fixture-failure explanations: docs/qa/aeon-stones.md. No production deploy.
+The launcher intentionally resets its temporary inventory/cuts on reload; ordinary
+offline saves persist. GPU QA is now released; all this lane's browser jobs exited.
+Remote dev concurrently acquired the governance PR52 commits; those unrelated
+policy updates were not overwritten or force-pushed during local integration.
