@@ -1,0 +1,14 @@
+{
+  "id": "SA-TRADE-001",
+  "title": "Constructed base shops and public sales beacons",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Implementation unassigned; brief prepared by Codex",
+  "status": "proposed",
+  "branch": "feat/base-commerce-beacons",
+  "base": "40a0fb4a77dfecb70d1fdb2d081e2fe7462425fa",
+  "updated": "2026-09-08",
+  "areas": ["industry", "multiplayer", "interface"],
+  "claims": ["docs/briefs/base-commerce-beacons.md", "project/tasks/SA-TRADE-001.json"],
+  "brief": "docs/briefs/base-commerce-beacons.md"
+}
