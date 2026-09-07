@@ -1,0 +1,17 @@
+{
+  "purpose": "Topology/reduction comparison under identical original source idle poses BEFORE intentional resting-arm retarget",
+  "source": {
+    "path": "assets/characters/watchkeep-shopkeeper/source/combined-idles.glb",
+    "bytes": 8925992,
+    "sha256": "a123fe5d8448596558ace89ffcab5437afa3df0feba8301d1a915b21e65d907f"
+  },
+  "derived": {
+    "path": "assets/characters/watchkeep-shopkeeper/derived-reduced-source-idles.glb",
+    "bytes": 1732356,
+    "sha256": "7f918ebd59c763babb3c2a0f63a3e19d0f2bfbc7a8c079a9376928d885064970"
+  },
+  "intentionalArmCorrectionAppliedToEitherSide": false,
+  "poseCount": 20,
+  "normalizationScaleAppliedInQA": 1.0542675028719575,
+  "result": "animated-reduction-comparison.json"
+}
