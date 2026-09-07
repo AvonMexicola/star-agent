@@ -18,7 +18,7 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
   const clear=()=>{key=false;pointer=false;requireRelease=true;nav.gamepad.suspend();};
   async function command(op,fields={}){
     if(busy)return;busy=true;
-    try{const result=await api.command({op,...fields});if(result.message)message=result.message;}
+    try{const result=await api.command({op,...fields});if(op==='tractor-grab')message='';else if(result.message)message=result.message;}
     catch(e){message=e.message;requireRelease=true;key=false;pointer=false;}
     finally{busy=false;}
   }
