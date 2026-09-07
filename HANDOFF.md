@@ -2734,3 +2734,36 @@ the separately pending cargo/base-power/deer/social/rover-polish branches.
 limits are recorded. No owner dirty source was copied after the frozen checkpoints.
 
 SA-INT-002 CI FOLLOW-UP CLAIM: integration steward owns scripts/ci-smoke.spec.js and its QA/HANDOFF records in isolated feat/dev-content-review. PR68 hosted browser reached the running game but expected the former #controller-menu default after Menu; the current registered default is Contracts. Updating the assertion to the actual gameplay dialog while retaining focused-control, held-stick suppression, rearming and all map-target coverage. No shared runtime changes or local GPU job. Hosted CI will verify the narrow test repair. Social UI/router remain SA-SOCIAL-001-owned.
+
+
+SA-WORLD-003 CLAIM 18:01 UTC: Cees requests fewer giant formations from 1 km,
+a calmer shader and an instancing/performance diagnosis. New isolated worktree
+/home/cees/projects/star-agent-rock-restraint, art/landmark-restraint from219a584.
+Own src/landmark-distribution.js, src/landmark-material.js, affected landmark
+fixtures/invariants and bounded QA/brief/task docs. Preserve shape geometry,
+retained landmark positions/IDs, local coordinates and collision agreement.
+Plan approximately80% deterministic population thinning plus materially simpler
+surface shading. Population change affects shared server collision too: consume
+as a coherent checkpoint and refresh client/API together; no DB/schema change.
+At18:00 the fauna-art and rover-touch browser jobs were both rendering alongside
+desktop Chromium while Cees reported low FPS. Please serialize GPU jobs; our lane
+will request one focused before/after 5383 window after current rover/cargo queues.
+No browser started, no shared runtime source or processes changed by this lane.
+
+
+SA-WORLD-003 GPU READY18:08UTC: inspected code is built,9landmark/server
+invariants pass. The18:01 request was for one5383 comparison after the then
+current rover/cargo queue. Cargo5535 now has no running Playwright process;
+please publish its release and leave one~3minute window for this ready before/
+after1km+close material/density capture before starting new repeat graphics jobs.
+Two production previews5383/5384, ONE game page/browser, one worker. No browser
+has started yet. Current source only changes two landmark runtime modules.
+
+
+SA-WORLD-003 GPU ACQUIRED 18:10:13 UTC: cargo explicitly released18:08:49 and no
+Playwright job is active. Starting the reserved5383/5384 single-page before/after
+comparison now, one worker, about3minutes. Candidatebb75c4c, frozen baseline219a584.
+Please preserve this active window until explicit release. Shared5178/API/DB
+remain untouched; this job records bounded timings without an exclusive-GPU claim.
+
+SA-INT-002 CI VERIFIED: hosted run34149795606 at4a6f7f0 passes source/plan/multiplayer/browser/verify. Real PostgreSQL91multiplayer+3database tests pass with no skips. Production smoke passes6.4m with visible controller focus, held-stick suppression/rearming and all five map targets. Captured map/scene inspected: zero errors; SwiftShader lacks KHR_parallel_shader_compile, one recorded warning. Chromium153,1440x900 CSS,.6render scale is functional evidence only. PR68 body now records this. No owned browser/service remains; no runtime changed after the earlier local promotion.
