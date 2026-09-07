@@ -9,9 +9,9 @@
   "forward": "-Z",
   "layoutSha256": "e9f34742ee9b4002513abb8f5fbfcaf9a838553977be97e6523f358c94037072",
   "blenderVersion": "5.2.0 LTS",
-  "triangles": 9177,
-  "bytes": 898780,
-  "sha256": "6a0bfd851bc35f4dcc2fc300ea3d2abd16325b506ad0521580dd019ca45c615b",
+  "triangles": 9877,
+  "bytes": 948632,
+  "sha256": "8d0dcbb6395479ad083cd609217833b97c74008acdd15b72ed9182ced46b64ae",
   "meshPrimitives": 9,
   "meshes": 9,
   "nodes": 17,
@@ -43,24 +43,24 @@
   "textures": [
     {
       "name": "bastion-normal",
-      "bytes": 80808,
-      "sha256": "b1444f2694a05a4c33ecc9fe72936672bcf049b0486d5e59fb7f253ad2c0fcf8",
+      "bytes": 80716,
+      "sha256": "1a24595528562dc8aad51ea092a48820587325f298ff8e4ee47d975433012686",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
     },
     {
       "name": "bastion-basecolor",
-      "bytes": 50828,
-      "sha256": "7f7968224fa5150a2bd9c0259e2d66b24663ad80fb9325c29d65685b6ecee558",
+      "bytes": 50968,
+      "sha256": "ffc08614338b26befebecee1a47511b7a01fac64b7efa6e9381344dc7afdbc6d",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
     },
     {
       "name": "bastion-orm",
-      "bytes": 65250,
-      "sha256": "dd89adf1c07d0f4b8e0a2c129e88dbc3d4afa54014224a8d8674c0cc451dc5b5",
+      "bytes": 65204,
+      "sha256": "78c305902ef09c8de155b084dbb323648a12bb3bcb2621148829dc2af418d90a",
       "width": 512,
       "height": 512,
       "format": "lossless WebP"
@@ -69,9 +69,9 @@
   "textureDecodedBytesEstimateRGBA8WithMips": 4194303,
   "vertexColorPacking": {
     "format": "normalized RGBA8",
-    "vertices": 17269,
-    "sourceBytes": 207228,
-    "packedBytes": 69076,
+    "vertices": 18537,
+    "sourceBytes": 222444,
+    "packedBytes": 74148,
     "maxChannelError": 0.0019607723927965726
   },
   "pitchLimits": [
@@ -929,6 +929,125 @@
       ]
     },
     {
+      "name": "Journal octagonal backing -1",
+      "parent": "Bastion_Yaw",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.597999572753906,
+        7.279999732971191,
+        -1.7200000286102295
+      ],
+      "max": [
+        -8.545999526977539,
+        10.720000267028809,
+        1.7200000286102295
+      ]
+    },
+    {
+      "name": "Fork aft inspection -1 gasket",
+      "parent": "Bastion_Yaw",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.579999923706055,
+        5.320000171661377,
+        2.0199999809265137
+      ],
+      "max": [
+        -8.543000221252441,
+        8.720000267028809,
+        4.1824750900268555
+      ]
+    },
+    {
+      "name": "Fork aft inspection -1 returned plate",
+      "parent": "Bastion_Yaw",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.640000343322754,
+        5.394999980926514,
+        2.0950000286102295
+      ],
+      "max": [
+        -8.574000358581543,
+        8.645000457763672,
+        4.098292827606201
+      ]
+    },
+    {
+      "name": "Fork aft inspection -1 captive hex 0",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.687000274658203,
+        5.601747035980225,
+        2.255000114440918
+      ],
+      "max": [
+        -8.633999824523926,
+        5.818253040313721,
+        2.505000114440918
+      ]
+    },
+    {
+      "name": "Fork aft inspection -1 captive hex 1",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.687000274658203,
+        5.601747035980225,
+        3.6449999809265137
+      ],
+      "max": [
+        -8.633999824523926,
+        5.818253040313721,
+        3.8949999809265137
+      ]
+    },
+    {
+      "name": "Fork aft inspection -1 captive hex 2",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.687000274658203,
+        8.201746940612793,
+        2.255000114440918
+      ],
+      "max": [
+        -8.633999824523926,
+        8.418253898620605,
+        2.505000114440918
+      ]
+    },
+    {
+      "name": "Fork BASTION identifier -1",
+      "parent": "Bastion_Yaw",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -8.704000473022461,
+        5.489999771118164,
+        -0.8100000023841858
+      ],
+      "max": [
+        -8.704000473022461,
+        5.889999866485596,
+        1.6100000143051147
+      ]
+    },
+    {
       "name": "Forged fork cheek 1",
       "parent": "Bastion_Yaw",
       "tile": 0,
@@ -1062,6 +1181,125 @@
         8.744999885559082,
         9.395000457763672,
         0.6100000143051147
+      ]
+    },
+    {
+      "name": "Journal octagonal backing 1",
+      "parent": "Bastion_Yaw",
+      "tile": 6,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.545999526977539,
+        7.279999732971191,
+        -1.7200000286102295
+      ],
+      "max": [
+        8.597999572753906,
+        10.720000267028809,
+        1.7200000286102295
+      ]
+    },
+    {
+      "name": "Fork aft inspection 1 gasket",
+      "parent": "Bastion_Yaw",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.543000221252441,
+        5.320000171661377,
+        2.0199999809265137
+      ],
+      "max": [
+        8.579999923706055,
+        8.720000267028809,
+        4.1824750900268555
+      ]
+    },
+    {
+      "name": "Fork aft inspection 1 returned plate",
+      "parent": "Bastion_Yaw",
+      "tile": 0,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.574000358581543,
+        5.394999980926514,
+        2.0950000286102295
+      ],
+      "max": [
+        8.640000343322754,
+        8.645000457763672,
+        4.098292827606201
+      ]
+    },
+    {
+      "name": "Fork aft inspection 1 captive hex 0",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.633999824523926,
+        5.601747035980225,
+        2.255000114440918
+      ],
+      "max": [
+        8.687000274658203,
+        5.818253040313721,
+        2.505000114440918
+      ]
+    },
+    {
+      "name": "Fork aft inspection 1 captive hex 1",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.633999824523926,
+        5.601747035980225,
+        3.6449999809265137
+      ],
+      "max": [
+        8.687000274658203,
+        5.818253040313721,
+        3.8949999809265137
+      ]
+    },
+    {
+      "name": "Fork aft inspection 1 captive hex 2",
+      "parent": "Bastion_Yaw",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.633999824523926,
+        8.201746940612793,
+        2.255000114440918
+      ],
+      "max": [
+        8.687000274658203,
+        8.418253898620605,
+        2.505000114440918
+      ]
+    },
+    {
+      "name": "Fork BASTION identifier 1",
+      "parent": "Bastion_Yaw",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        8.704000473022461,
+        5.489999771118164,
+        -0.8100000023841858
+      ],
+      "max": [
+        8.704000473022461,
+        5.889999866485596,
+        1.6100000143051147
       ]
     },
     {
@@ -1575,6 +1813,108 @@
       ]
     },
     {
+      "name": "Receiver forward inspection -1 gasket",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.204999923706055,
+        -1.5,
+        -5.019999980926514
+      ],
+      "max": [
+        -6.168000221252441,
+        1.5,
+        -1.8799999952316284
+      ]
+    },
+    {
+      "name": "Receiver forward inspection -1 returned plate",
+      "parent": "Bastion_Pitch",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.264999866485596,
+        -1.4249999523162842,
+        -4.945000171661377
+      ],
+      "max": [
+        -6.198999881744385,
+        1.4249999523162842,
+        -1.9550000429153442
+      ]
+    },
+    {
+      "name": "Receiver forward inspection -1 captive hex 0",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.311999797821045,
+        -1.2082531452178955,
+        -4.744999885559082
+      ],
+      "max": [
+        -6.258999824523926,
+        -0.9917468428611755,
+        -4.494999885559082
+      ]
+    },
+    {
+      "name": "Receiver forward inspection -1 captive hex 1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.311999797821045,
+        0.9917468428611755,
+        -4.744999885559082
+      ],
+      "max": [
+        -6.258999824523926,
+        1.2082531452178955,
+        -4.494999885559082
+      ]
+    },
+    {
+      "name": "Receiver forward inspection -1 captive hex 2",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.311999797821045,
+        0.9917468428611755,
+        -2.4049999713897705
+      ],
+      "max": [
+        -6.258999824523926,
+        1.2082531452178955,
+        -2.1549999713897705
+      ]
+    },
+    {
+      "name": "Receiver forward inspection -1 captive hex 3",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        -6.311999797821045,
+        -1.2082531452178955,
+        -2.4049999713897705
+      ],
+      "max": [
+        -6.258999824523926,
+        -0.9917468428611755,
+        -2.1549999713897705
+      ]
+    },
+    {
       "name": "Armoured breech 1",
       "parent": "Bastion_Pitch",
       "tile": 0,
@@ -1810,6 +2150,108 @@
         4.75,
         2.196500062942505,
         1.0
+      ]
+    },
+    {
+      "name": "Receiver forward inspection 1 gasket",
+      "parent": "Bastion_Pitch",
+      "tile": 1,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.168000221252441,
+        -1.5,
+        -5.019999980926514
+      ],
+      "max": [
+        6.204999923706055,
+        1.5,
+        -1.8799999952316284
+      ]
+    },
+    {
+      "name": "Receiver forward inspection 1 returned plate",
+      "parent": "Bastion_Pitch",
+      "tile": 4,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.198999881744385,
+        -1.4249999523162842,
+        -4.945000171661377
+      ],
+      "max": [
+        6.264999866485596,
+        1.4249999523162842,
+        -1.9550000429153442
+      ]
+    },
+    {
+      "name": "Receiver forward inspection 1 captive hex 0",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.258999824523926,
+        -1.2082531452178955,
+        -4.744999885559082
+      ],
+      "max": [
+        6.311999797821045,
+        -0.9917468428611755,
+        -4.494999885559082
+      ]
+    },
+    {
+      "name": "Receiver forward inspection 1 captive hex 1",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.258999824523926,
+        0.9917468428611755,
+        -4.744999885559082
+      ],
+      "max": [
+        6.311999797821045,
+        1.2082531452178955,
+        -4.494999885559082
+      ]
+    },
+    {
+      "name": "Receiver forward inspection 1 captive hex 2",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.258999824523926,
+        0.9917468428611755,
+        -2.4049999713897705
+      ],
+      "max": [
+        6.311999797821045,
+        1.2082531452178955,
+        -2.1549999713897705
+      ]
+    },
+    {
+      "name": "Receiver forward inspection 1 captive hex 3",
+      "parent": "Bastion_Pitch",
+      "tile": 2,
+      "material": 0,
+      "joint": null,
+      "min": [
+        6.258999824523926,
+        -1.2082531452178955,
+        -2.4049999713897705
+      ],
+      "max": [
+        6.311999797821045,
+        -0.9917468428611755,
+        -2.1549999713897705
       ]
     },
     {
@@ -2511,6 +2953,516 @@
       "max": null
     }
   ],
+  "candidate08Additions": {
+    "baselineSha256": "6a0bfd851bc35f4dcc2fc300ea3d2abd16325b506ad0521580dd019ca45c615b",
+    "names": [
+      "Journal octagonal backing -1",
+      "Fork aft inspection -1 gasket",
+      "Fork aft inspection -1 returned plate",
+      "Fork aft inspection -1 captive hex 0",
+      "Fork aft inspection -1 captive hex 1",
+      "Fork aft inspection -1 captive hex 2",
+      "Fork BASTION identifier -1",
+      "Journal octagonal backing 1",
+      "Fork aft inspection 1 gasket",
+      "Fork aft inspection 1 returned plate",
+      "Fork aft inspection 1 captive hex 0",
+      "Fork aft inspection 1 captive hex 1",
+      "Fork aft inspection 1 captive hex 2",
+      "Fork BASTION identifier 1",
+      "Receiver forward inspection -1 gasket",
+      "Receiver forward inspection -1 returned plate",
+      "Receiver forward inspection -1 captive hex 0",
+      "Receiver forward inspection -1 captive hex 1",
+      "Receiver forward inspection -1 captive hex 2",
+      "Receiver forward inspection -1 captive hex 3",
+      "Receiver forward inspection 1 gasket",
+      "Receiver forward inspection 1 returned plate",
+      "Receiver forward inspection 1 captive hex 0",
+      "Receiver forward inspection 1 captive hex 1",
+      "Receiver forward inspection 1 captive hex 2",
+      "Receiver forward inspection 1 captive hex 3"
+    ],
+    "components": [
+      {
+        "name": "Journal octagonal backing -1",
+        "parent": "Bastion_Yaw",
+        "tile": 6,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -8.597999572753906,
+          7.279999732971191,
+          -1.7200000286102295
+        ],
+        "max": [
+          -8.545999526977539,
+          10.720000267028809,
+          1.7200000286102295
+        ],
+        "triangles": 64
+      },
+      {
+        "name": "Fork aft inspection -1 gasket",
+        "parent": "Bastion_Yaw",
+        "tile": 1,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -8.579999923706055,
+          5.320000171661377,
+          2.0199999809265137
+        ],
+        "max": [
+          -8.543000221252441,
+          8.720000267028809,
+          4.1824750900268555
+        ],
+        "triangles": 28
+      },
+      {
+        "name": "Fork aft inspection -1 returned plate",
+        "parent": "Bastion_Yaw",
+        "tile": 0,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -8.640000343322754,
+          5.394999980926514,
+          2.0950000286102295
+        ],
+        "max": [
+          -8.574000358581543,
+          8.645000457763672,
+          4.098292827606201
+        ],
+        "triangles": 44
+      },
+      {
+        "name": "Fork aft inspection -1 captive hex 0",
+        "parent": "Bastion_Yaw",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -8.687000274658203,
+          5.601747035980225,
+          2.255000114440918
+        ],
+        "max": [
+          -8.633999824523926,
+          5.818253040313721,
+          2.505000114440918
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Fork aft inspection -1 captive hex 1",
+        "parent": "Bastion_Yaw",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -8.687000274658203,
+          5.601747035980225,
+          3.6449999809265137
+        ],
+        "max": [
+          -8.633999824523926,
+          5.818253040313721,
+          3.8949999809265137
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Fork aft inspection -1 captive hex 2",
+        "parent": "Bastion_Yaw",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -8.687000274658203,
+          8.201746940612793,
+          2.255000114440918
+        ],
+        "max": [
+          -8.633999824523926,
+          8.418253898620605,
+          2.505000114440918
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Fork BASTION identifier -1",
+        "parent": "Bastion_Yaw",
+        "tile": 4,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -8.704000473022461,
+          5.489999771118164,
+          -0.8100000023841858
+        ],
+        "max": [
+          -8.704000473022461,
+          5.889999866485596,
+          1.6100000143051147
+        ],
+        "triangles": 2
+      },
+      {
+        "name": "Journal octagonal backing 1",
+        "parent": "Bastion_Yaw",
+        "tile": 6,
+        "material": 0,
+        "joint": null,
+        "min": [
+          8.545999526977539,
+          7.279999732971191,
+          -1.7200000286102295
+        ],
+        "max": [
+          8.597999572753906,
+          10.720000267028809,
+          1.7200000286102295
+        ],
+        "triangles": 64
+      },
+      {
+        "name": "Fork aft inspection 1 gasket",
+        "parent": "Bastion_Yaw",
+        "tile": 1,
+        "material": 0,
+        "joint": null,
+        "min": [
+          8.543000221252441,
+          5.320000171661377,
+          2.0199999809265137
+        ],
+        "max": [
+          8.579999923706055,
+          8.720000267028809,
+          4.1824750900268555
+        ],
+        "triangles": 28
+      },
+      {
+        "name": "Fork aft inspection 1 returned plate",
+        "parent": "Bastion_Yaw",
+        "tile": 0,
+        "material": 0,
+        "joint": null,
+        "min": [
+          8.574000358581543,
+          5.394999980926514,
+          2.0950000286102295
+        ],
+        "max": [
+          8.640000343322754,
+          8.645000457763672,
+          4.098292827606201
+        ],
+        "triangles": 44
+      },
+      {
+        "name": "Fork aft inspection 1 captive hex 0",
+        "parent": "Bastion_Yaw",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          8.633999824523926,
+          5.601747035980225,
+          2.255000114440918
+        ],
+        "max": [
+          8.687000274658203,
+          5.818253040313721,
+          2.505000114440918
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Fork aft inspection 1 captive hex 1",
+        "parent": "Bastion_Yaw",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          8.633999824523926,
+          5.601747035980225,
+          3.6449999809265137
+        ],
+        "max": [
+          8.687000274658203,
+          5.818253040313721,
+          3.8949999809265137
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Fork aft inspection 1 captive hex 2",
+        "parent": "Bastion_Yaw",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          8.633999824523926,
+          8.201746940612793,
+          2.255000114440918
+        ],
+        "max": [
+          8.687000274658203,
+          8.418253898620605,
+          2.505000114440918
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Fork BASTION identifier 1",
+        "parent": "Bastion_Yaw",
+        "tile": 4,
+        "material": 0,
+        "joint": null,
+        "min": [
+          8.704000473022461,
+          5.489999771118164,
+          -0.8100000023841858
+        ],
+        "max": [
+          8.704000473022461,
+          5.889999866485596,
+          1.6100000143051147
+        ],
+        "triangles": 2
+      },
+      {
+        "name": "Receiver forward inspection -1 gasket",
+        "parent": "Bastion_Pitch",
+        "tile": 1,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -6.204999923706055,
+          -1.5,
+          -5.019999980926514
+        ],
+        "max": [
+          -6.168000221252441,
+          1.5,
+          -1.8799999952316284
+        ],
+        "triangles": 28
+      },
+      {
+        "name": "Receiver forward inspection -1 returned plate",
+        "parent": "Bastion_Pitch",
+        "tile": 4,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -6.264999866485596,
+          -1.4249999523162842,
+          -4.945000171661377
+        ],
+        "max": [
+          -6.198999881744385,
+          1.4249999523162842,
+          -1.9550000429153442
+        ],
+        "triangles": 44
+      },
+      {
+        "name": "Receiver forward inspection -1 captive hex 0",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -6.311999797821045,
+          -1.2082531452178955,
+          -4.744999885559082
+        ],
+        "max": [
+          -6.258999824523926,
+          -0.9917468428611755,
+          -4.494999885559082
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Receiver forward inspection -1 captive hex 1",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -6.311999797821045,
+          0.9917468428611755,
+          -4.744999885559082
+        ],
+        "max": [
+          -6.258999824523926,
+          1.2082531452178955,
+          -4.494999885559082
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Receiver forward inspection -1 captive hex 2",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -6.311999797821045,
+          0.9917468428611755,
+          -2.4049999713897705
+        ],
+        "max": [
+          -6.258999824523926,
+          1.2082531452178955,
+          -2.1549999713897705
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Receiver forward inspection -1 captive hex 3",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          -6.311999797821045,
+          -1.2082531452178955,
+          -2.4049999713897705
+        ],
+        "max": [
+          -6.258999824523926,
+          -0.9917468428611755,
+          -2.1549999713897705
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Receiver forward inspection 1 gasket",
+        "parent": "Bastion_Pitch",
+        "tile": 1,
+        "material": 0,
+        "joint": null,
+        "min": [
+          6.168000221252441,
+          -1.5,
+          -5.019999980926514
+        ],
+        "max": [
+          6.204999923706055,
+          1.5,
+          -1.8799999952316284
+        ],
+        "triangles": 28
+      },
+      {
+        "name": "Receiver forward inspection 1 returned plate",
+        "parent": "Bastion_Pitch",
+        "tile": 4,
+        "material": 0,
+        "joint": null,
+        "min": [
+          6.198999881744385,
+          -1.4249999523162842,
+          -4.945000171661377
+        ],
+        "max": [
+          6.264999866485596,
+          1.4249999523162842,
+          -1.9550000429153442
+        ],
+        "triangles": 44
+      },
+      {
+        "name": "Receiver forward inspection 1 captive hex 0",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          6.258999824523926,
+          -1.2082531452178955,
+          -4.744999885559082
+        ],
+        "max": [
+          6.311999797821045,
+          -0.9917468428611755,
+          -4.494999885559082
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Receiver forward inspection 1 captive hex 1",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          6.258999824523926,
+          0.9917468428611755,
+          -4.744999885559082
+        ],
+        "max": [
+          6.311999797821045,
+          1.2082531452178955,
+          -4.494999885559082
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Receiver forward inspection 1 captive hex 2",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          6.258999824523926,
+          0.9917468428611755,
+          -2.4049999713897705
+        ],
+        "max": [
+          6.311999797821045,
+          1.2082531452178955,
+          -2.1549999713897705
+        ],
+        "triangles": 20
+      },
+      {
+        "name": "Receiver forward inspection 1 captive hex 3",
+        "parent": "Bastion_Pitch",
+        "tile": 2,
+        "material": 0,
+        "joint": null,
+        "min": [
+          6.258999824523926,
+          -1.2082531452178955,
+          -2.4049999713897705
+        ],
+        "max": [
+          6.311999797821045,
+          -0.9917468428611755,
+          -2.1549999713897705
+        ],
+        "triangles": 20
+      }
+    ],
+    "actualAddedTriangles": 700,
+    "originalGeometry": "Intended unchanged; strict additive delta required",
+    "identifierPatchPixels": [
+      8,
+      4,
+      48,
+      11
+    ],
+    "expectedAddedTriangles": 700
+  },
   "validation": {
     "sourceExport": "PASS",
     "motionClearance": "PENDING actual triangle sweep",

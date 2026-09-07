@@ -69,7 +69,7 @@ export function createTradingUI(api,nav){
       const small=document.createElement('p');small.textContent=s.online?'Shared stock and credits save on the server. Visitors can buy while the owner is away.':'Solo cargo saves with your mining inventory. Join Comms to build a shared trading pad.';content.append(small);
     }
     const pages=$('.trade-pages');pages.replaceChildren(button('Previous','previous-page',()=>{page--;render();},page<=0),document.createTextNode(` ${page+1} / ${totalPages} `),button('Next','next-page',()=>{page++;render();},page>=totalPages-1));
-    $('.trade-feedback').textContent=message||s.error|| (s.online?'Server cargo ledger · Aeon exchanges share stock and prices':'Cargo saved with this browser’s mining inventory');
+    $('.trade-feedback').textContent=message||s.error|| (s.online?'Aeon exchanges share stock and prices':'Cargo saved with this browser’s mining inventory');
     if(focused)dialog.querySelector(`[data-controller-key="${CSS.escape(focused)}"]`)?.focus({preventScroll:true});
   }
   $('[data-close]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{nav.keys.clear();nav.gamepad.suspend();nav.enabled=!document.querySelector('dialog[open]');nav.canvas.focus({preventScroll:true});});

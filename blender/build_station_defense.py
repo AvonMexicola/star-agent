@@ -57,6 +57,7 @@ METALNESS = [.04, .06, .92, .02, .10, .08, .86, .05]
 # deliberate enamel patches without adding a map, material or draw. Metal and
 # dark liner pixels keep candidate06's exact recipe and atlas locations.
 FORK_PATCH = (0, 0, 256, 128)
+IDENTIFIER_PATCH = (8, 4, 48, 11)  # verified unused corner of the actual07 UV atlas
 CLEAN_ENAMEL_PATCH = (256, 384, 256, 32)
 RECEIVER_PATCH = (256, 416, 256, 96)
 FORK_EXTENT = (-4.4, 5.4, 4.1, 11.95)  # game Z min/max, Y min/max, metres
@@ -185,6 +186,31 @@ for y in range(EDGE):
         nr.extend((128+pore,128+(round(brush) if tile in (2,6) else 0),255))
     base_rows.append(br); orm_rows.append(ore); normal_rows.append(nr)
 apply_enamel_patches()
+# A small original 5x7 engineering stencil occupies a measured empty atlas corner.
+# These are pigment letters, not painted shading. The two supported outward
+# label quads alone use this patch; no existing fork triangle reaches it.
+STENCIL = {
+    'B': ['11110','10001','10001','11110','10001','10001','11110'],
+    'A': ['01110','10001','10001','11111','10001','10001','10001'],
+    'S': ['01111','10000','10000','01110','00001','00001','11110'],
+    'T': ['11111','00100','00100','00100','00100','00100','00100'],
+    'I': ['11111','00100','00100','00100','00100','00100','11111'],
+    'O': ['01110','10001','10001','10001','10001','10001','01110'],
+    'N': ['10001','11001','11001','10101','10011','10011','10001'],
+}
+ox,oy,w,h=IDENTIFIER_PATCH
+for py in range(h):
+    for px in range(w):
+        offset=(ox+px)*3;row=oy+py
+        base_rows[row][offset:offset+3]=bytes(PALETTE[4])
+        orm_rows[row][offset:offset+3]=bytes((255,128,26))
+        normal_rows[row][offset:offset+3]=bytes((128,128,255))
+for letter_index,letter in enumerate('BASTION'):
+    for py,row in enumerate(STENCIL[letter]):
+        for px,value in enumerate(row):
+            if value=='1':
+                offset=(ox+3+letter_index*6+px)*3
+                base_rows[oy+2+py][offset:offset+3]=bytes(PALETTE[0])
 for name, rows in [('bastion-basecolor', base_rows), ('bastion-orm', orm_rows), ('bastion-normal', normal_rows)]:
     png(TEXTURES / (name + '.png'), rows)
     subprocess.run(['magick', str(TEXTURES / (name + '.png')), '-define', 'webp:lossless=true', '-define', 'webp:method=6',
@@ -431,6 +457,74 @@ def cheek(name, side, parent):
     return stock(name,verts,faces,parent,0,.13)
 
 
+# Candidate08 has a bounded additive component set. These covers are made from
+# shallow gasket stock, returned armor and captive heads; the original07 solid
+# geometry remains in place. Convex outlines are in the parent's game (Y,Z).
+ADDED_COMPONENT_NAMES=[]
+def chamfer_outline(outline, distance):
+    result=[]
+    for i,point in enumerate(outline):
+        p=Vector(point);previous=Vector(outline[i-1]);following=Vector(outline[(i+1)%len(outline)])
+        result.extend([tuple(p+(previous-p).normalized()*distance),tuple(p+(following-p).normalized()*distance)])
+    return result
+
+def inset_outline(outline,distance):
+    area=sum(a[0]*b[1]-b[0]*a[1] for a,b in zip(outline,outline[1:]+outline[:1]))
+    direction=1 if area>0 else -1
+    result=[]
+    for i,point in enumerate(outline):
+        a,b,c=Vector(outline[i-1]),Vector(point),Vector(outline[(i+1)%len(outline)])
+        ab,bc=(b-a).normalized(),(c-b).normalized()
+        n1=Vector((-ab.y,ab.x))*direction;n2=Vector((-bc.y,bc.x))*direction
+        u,v=b+n1*distance,b+n2*distance
+        cross=ab.x*bc.y-ab.y*bc.x
+        assert abs(cross)>1e-6,'Panel outline has parallel adjacent edges'
+        delta=v-u;t=(delta.x*bc.y-delta.y*bc.x)/cross
+        result.append(tuple(u+ab*t))
+    return result
+
+def cover_stock(name,side,layers,parent,tile):
+    n=len(layers[0][1]);assert all(len(outline)==n for _,outline in layers)
+    verts=[(side*x,y,z) for x,outline in layers for y,z in outline]
+    faces=[tuple(reversed(range(n))),tuple((len(layers)-1)*n+i for i in range(n))]
+    for layer in range(len(layers)-1):
+        for i in range(n):
+            a=layer*n+i;b=layer*n+(i+1)%n
+            faces.append((a,b,b+n,a+n))
+    ADDED_COMPONENT_NAMES.append(name)
+    return stock(name,verts,faces,parent,tile)
+
+def service_cover(name,side,shell_x,outline,parent,tile,head_points):
+    # Back gasket buries 7mm into the supporting face. Returned cover buries
+    # 6mm into that gasket and presents an actual 65mm chamfer at its front.
+    perimeter=chamfer_outline(outline,.16)
+    edge=inset_outline(perimeter,.075);face=inset_outline(edge,.065)
+    cover_stock(name+' gasket',side,[(shell_x-.007,perimeter),(shell_x+.030,perimeter)],parent,1)
+    cover_stock(name+' returned plate',side,[(shell_x+.024,edge),(shell_x+.054,edge),(shell_x+.090,face)],parent,tile)
+    for i,(y,z) in enumerate(head_points):
+        part=name+' captive hex %d'%i
+        # Six millimetres of head burial into the actual front face. At the
+        # receiver the furthest new X is6.312, still inside its6.34m journal.
+        ADDED_COMPONENT_NAMES.append(part)
+        rod(part,(side*(shell_x+.084),y,z),(side*(shell_x+.137),y,z),.125,parent,2,6)
+
+def identifier(side):
+    # Lower band of the existing service panel, below its two raised seams.
+    x=side*8.704;y0,y1=5.49,5.89;z0,z1=-.81,1.61
+    verts=[(x,y0,z0),(x,y1,z0),(x,y1,z1),(x,y0,z1)]
+    faces=[(0,1,2,3)] if side>0 else [(3,2,1,0)]
+    name='Fork BASTION identifier '+str(side);ADDED_COMPONENT_NAMES.append(name)
+    obj=stock(name,verts,faces,yaw,4)
+    uv=obj.data.uv_layers.active
+    for loop in obj.data.loops:
+        point=game(obj.data.vertices[loop.vertex_index].co)
+        u=(z1-point.z)/(z1-z0) if side>0 else (point.z-z0)/(z1-z0)
+        v=(y1-point.y)/(y1-y0)
+        # Half-pixel inset keeps bilinear samples inside the uniform border.
+        px,py,w,h=IDENTIFIER_PATCH
+        uv.data[loop.index].uv=patch_pixel(IDENTIFIER_PATCH,(.5+u*(w-1))/w,(.5+v*(h-1))/h)
+
+
 # Fixed interface: octagonal load spreader, continuous annular bearing/seal, four
 # supported power/cooling junctions. Every fixed vertex stays inside 20×4×20m.
 profile_y('Octagonal foundation armour',[(0,9.45),(.23,10),(.95,10),(1.18,9.60)],8,fixed,1)
@@ -466,6 +560,14 @@ for side in (-1,1):
     # Shaft enters the forged cheek; the exposed cap must not float in the bore.
     rod('Trunnion center pin '+str(side),(side*8.36,9,0),(side*8.82,9,0),.32,yaw,2,10)
     box('Pitch travel caution '+str(side),(side*8.72,9.30,0),(.05,.19,1.22),yaw,5,0)
+    # Octagonal journal backing spreads the round lock load into the forged
+    # cheek. It is behind the original lock and never enters the moving side.
+    part='Journal octagonal backing '+str(side);ADDED_COMPONENT_NAMES.append(part)
+    tube(part,(side*8.572,9,0),1.19,1.72,.052,yaw,6,8,'X')
+    service_cover('Fork aft inspection '+str(side),side,8.55,
+                  [(5.32,2.02),(5.32,4.24),(8.72,2.93),(8.72,2.02)],yaw,0,
+                  [(5.71,2.38),(5.71,3.77),(8.31,2.38)])
+    identifier(side)
 # Rear transverse brace avoids the pitch sweep, whose local rear limit is <4.8m.
 box('Rear fork cross tie',(0,4.80,6.0),(14.2,.66,1.28),yaw,2,.10)
 for side in (-1,1):
@@ -501,6 +603,12 @@ for side in (-1,1):
         tube('Recoil gland %s %s'%(side,dy),(x,y,-8.0),.15,.30,.24,pitch,2,12,joint='recoil-plunger')
     box('Breech caution band '+str(side),(x,2.069,1.80),(1.90,.055,.21),pitch,5,0)
     box('Breech ready lamp '+str(side),(x,2.174,.95),(1.10,.045,.10),pitch,7,0,1)
+    # Forward outboard receiver access stays outside the trunnion's1.55m YZ
+    # radius and inside the existing outer journal X. Four captive heads give
+    # the large removable panel a readable manufactured attachment pattern.
+    service_cover('Receiver forward inspection '+str(side),side,6.175,
+                  [(-1.50,-5.02),(1.50,-5.02),(1.50,-1.88),(-1.50,-1.88)],pitch,4,
+                  [(-1.10,-4.62),(1.10,-4.62),(1.10,-2.28),(-1.10,-2.28)])
 
 # Actual moving barrels. Hollow profiled tube has one continuous inside wall and
 # a large 2.16m clear mouth; there is no disk or luminous cap across the bore.
@@ -735,7 +843,14 @@ manifest={'name':LAYOUT['name'],'stage':'authored export; independent visual and
           'namedNodes':{n['name']:{k:n[k] for k in ('translation','rotation','scale','children') if k in n}
                         for n in j['nodes'] if n.get('name') in ['Bastion','Bastion_Base','Bastion_Yaw','Bastion_Pitch','Bastion_Recoil_Port','Bastion_Recoil_Starboard','Bastion_Muzzle_Port','Bastion_Muzzle_Starboard']},
           'components':[{k:v for k,v in p.items() if k!='object'} for p in PARTS],
+          'candidate08Additions':{'baselineSha256':'6a0bfd851bc35f4dcc2fc300ea3d2abd16325b506ad0521580dd019ca45c615b',
+              'names':ADDED_COMPONENT_NAMES,'components':[{k:v for k,v in part.items() if k!='object'} | {'triangles':len(part['object'].data.loop_triangles)} for part in PARTS if part['name'] in ADDED_COMPONENT_NAMES],
+              'actualAddedTriangles':sum(len(part['object'].data.loop_triangles) for part in PARTS if part['name'] in ADDED_COMPONENT_NAMES),
+              'originalGeometry':'Intended unchanged; strict additive delta required',
+              'identifierPatchPixels':IDENTIFIER_PATCH,'expectedAddedTriangles':700},
           'validation':{'sourceExport':'PASS','motionClearance':'PENDING actual triangle sweep','nativePBR':'PENDING','actualGame':'PENDING','independentArt':'PENDING','performance':'PENDING'}}
+assert manifest['candidate08Additions']['actualAddedTriangles']==700, 'Unexpected additive component triangle count'
+assert manifest['triangles']==9877, 'Unexpected retained07 or new08 triangle count'
 assert manifest['triangles']<=LAYOUT['budget']['triangles'],f"Triangle budget exceeded: {manifest['triangles']}"
 assert manifest['bytes']<=LAYOUT['budget']['bytes'],f"Byte budget exceeded: {manifest['bytes']}"
 for i in range(3):
@@ -753,9 +868,10 @@ provenance={'source':'Original deterministic procedural PBR swatches and authore
                 'coatingReliefMetres':{'forkWitness':-.004,'receiverWitness':-.0035,'powderAmplitude':.00045},
                 'description':'Existing broad face UVs address deliberate perimeter coatings and shallow rolled witness lines; actual trunnion contact ring gets restrained roughness polish. Pigment boundaries are material zones, with no directional lighting, grunge, extra geometry or runtime shader.',
                 'hashSalts':{'forkPowder':163,'receiverPowder':167,'forkSheen':173,'receiverSheen':179,'smallPartGrain':181},
-                'geometryAndRig':'Unchanged candidate06 geometry/rig intended; exact export delta must independently verify'},
+                'geometryAndRig':'Candidate08 retains original07 geometry/rig and adds four supported inspection covers, two octagonal backing rings,14 captive heads and2 supported label quads; additive delta and matching motion/placement are required'},
             'baseColorSpace':'sRGB','normalSpace':'OpenGL tangent +Y; non-colour data','ormSpace':'linear; R=1, G=roughness, B=metalness; contact AO is separate vertex colour',
-            'normalStrength':.35,'font':'Adwaita Sans, system font; optional decorative engraving only',
+            'normalStrength':.35,'font':'Adwaita Sans for preserved aft engraving; original deterministic5x7 BASTION stencil for new supported side identifiers',
+            'candidate08Identifier':{'patchPixels':IDENTIFIER_PATCH,'text':'BASTION','method':'Original stencil glyphs, pigment-only flat normal map, on existing service plate lower band'},
             'files':{p.name:{'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size} for p in sorted(TEXTURES.glob('*')) if p.suffix in ('.png','.webp')}}
 (TEXTURES/'provenance.json').write_text(json.dumps(provenance,indent=2)+'\n')
 print('BASTION_EXPORTED '+json.dumps({k:manifest[k] for k in ('sha256','bytes','triangles','meshPrimitives','bounds','baseBounds')}))

@@ -123,7 +123,7 @@ model.traverse(node => {
   assetMeshes++;
   assetTriangles += (node.geometry.index?.count ?? node.geometry.attributes.position.count) / 3;
 });
-if (assetTriangles !== 9177 || assetMeshes !== 9 || nativeMaterials.length !== 2) {
+if (assetTriangles !== 9877 || assetMeshes !== 9 || nativeMaterials.length !== 2) {
   throw new Error('Unexpected native asset resource counts');
 }
 const mapped = nativeMaterials.find(material => material.maps.some(map => map.present));

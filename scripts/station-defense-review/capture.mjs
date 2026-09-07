@@ -8,10 +8,10 @@ import { execFileSync } from 'node:child_process';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(process.env.BASTION_REVIEW_ROOT || path.join(HERE, '../..'));
-const OUT = path.resolve(process.env.BASTION_REVIEW_OUT || path.join(os.tmpdir(), 'bastion-native-07'));
+const OUT = path.resolve(process.env.BASTION_REVIEW_OUT || path.join(os.tmpdir(), 'bastion-native-08'));
 const PORT = Number(process.env.BASTION_REVIEW_PORT || 5565);
 const BROWSER_TMP = process.env.BASTION_BROWSER_TMP || path.join(os.tmpdir(), 'bs-' + process.pid);
-const EXPECTED_SHA = '6a0bfd851bc35f4dcc2fc300ea3d2abd16325b506ad0521580dd019ca45c615b';
+const EXPECTED_SHA = '8d0dcbb6395479ad083cd609217833b97c74008acdd15b72ed9182ced46b64ae';
 const ASSET = path.join(ROOT, 'public/models/station-defense.glb');
 const LAYOUT = path.join(ROOT, 'assets/station-defense/layout.json');
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -36,6 +36,7 @@ const report = {
   sceneScriptSHA: hash(nativeSource), captureScriptSHA: hash(captureSource),
   sourceCommit: execFileSync('git', ['-C', ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   sourceDirty: Boolean(execFileSync('git', ['-C', ROOT, 'status', '--porcelain'], { encoding: 'utf8' }).trim()),
+  sourceDirtyFiles: execFileSync('git', ['-C', ROOT, 'status', '--porcelain'], { encoding: 'utf8' }).trim().split('\n').filter(Boolean),
   startedAt: new Date().toISOString(), complete: false, messages: [], images: [],
   lighting: { toneMapping: 'ACESFilmic', exposure: 0.95, outputColorSpace: 'sRGB',
     environment: 'native RoomEnvironment PMREM', environmentIntensity: 0.75,

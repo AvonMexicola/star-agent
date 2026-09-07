@@ -32,3 +32,10 @@ The fixed base spans X/Z[−10,+10] and Y[0,4] exactly. Rest whole-asset bounds 
 The integrator retains the original build logs, motion02/03 failures, AO packing diagnostic, contact-classifier regression and below-bar native05 evidence alongside the current reports. The candidate06 capture fixture changes only the expected asset identity and output directory from the validated05 fixture. The scene module, cameras, lights, crops and poses are unchanged. Its five stills are for a separate reviewer; no author-issued art acceptance is claimed here.
 
 Candidate07 export subsequently completed cleanly: SHA `6a0bfd851bc35f4dcc2fc300ea3d2abd16325b506ad0521580dd019ca45c615b`, 898,780 bytes / 9,177 triangles. All thirteen stricter06-to-07 delta checks pass, including unchanged corner normals. The matching actual-GLB audit passes188/188 poses,77,720 candidate pairs in15.00s. Native recapture and independent art disposition remain pending.
+
+
+## Candidate08 — supported service detail
+
+The07 UV response was present, but the broad patch cores used nearly flat normals and uniform pigment. The visible result under-delivered; the native3.90 failure is preserved.08 adds four supported gasketed covers, two octagonal journal backing rings,14 captive hex heads and two supported BASTION identifier quads. Existing07 geometry/UV/normals/rig remain exact; the small identifier reserve was unused by all existing triangles with a4px guard.
+
+Frozen builder SHA25627053c6edd6e23039cdc5a6c37801d23f1c9559c218153f959e5f9f5c7234a3a exports08 SHA2568d0dcbb6395479ad083cd609217833b97c74008acdd15b72ed9182ced46b64ae:948632B,9877tri,9primitives,2materials. The strict additive probe875cb9f532e84367d7e0f763a56337c38a2e8de5a40968759eec5fab77c7ec7b passes16checks; actual-motion188/188passes15.405s. The fresh station placement audit records full support at4mounts and zero non-contact cylinder intrusions; closest upper station geometry is6.411933m outside that bound. Native appearance, actual-game firing and final independent acceptance are pending at this checkpoint.

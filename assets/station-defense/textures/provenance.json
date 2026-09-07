@@ -55,37 +55,47 @@
       "receiverSheen": 179,
       "smallPartGrain": 181
     },
-    "geometryAndRig": "Unchanged candidate06 geometry/rig intended; exact export delta must independently verify"
+    "geometryAndRig": "Candidate08 retains original07 geometry/rig and adds four supported inspection covers, two octagonal backing rings,14 captive heads and2 supported label quads; additive delta and matching motion/placement are required"
   },
   "baseColorSpace": "sRGB",
   "normalSpace": "OpenGL tangent +Y; non-colour data",
   "ormSpace": "linear; R=1, G=roughness, B=metalness; contact AO is separate vertex colour",
   "normalStrength": 0.35,
-  "font": "Adwaita Sans, system font; optional decorative engraving only",
+  "font": "Adwaita Sans for preserved aft engraving; original deterministic5x7 BASTION stencil for new supported side identifiers",
+  "candidate08Identifier": {
+    "patchPixels": [
+      8,
+      4,
+      48,
+      11
+    ],
+    "text": "BASTION",
+    "method": "Original stencil glyphs, pigment-only flat normal map, on existing service plate lower band"
+  },
   "files": {
     "bastion-basecolor.png": {
-      "sha256": "1081d6d355ede1ad0c687a104656d182c5b483f3155e5052c7cb6d5c37543054",
-      "bytes": 62641
+      "sha256": "993cb5c72e2cbe207539424ea0ae8fb8c7121971f8a8b8f6a43cb79484c7274d",
+      "bytes": 62723
     },
     "bastion-basecolor.webp": {
-      "sha256": "7f7968224fa5150a2bd9c0259e2d66b24663ad80fb9325c29d65685b6ecee558",
-      "bytes": 50828
+      "sha256": "ffc08614338b26befebecee1a47511b7a01fac64b7efa6e9381344dc7afdbc6d",
+      "bytes": 50968
     },
     "bastion-normal.png": {
-      "sha256": "2e76d68165de59f3403845c1ca2f57519d8165edc983f27253123c8a0b4f0dc7",
-      "bytes": 101537
+      "sha256": "7a2fe068bdd41f05e021dbd5b12164a6fe9e40c7b133779b23af9976494938d4",
+      "bytes": 101463
     },
     "bastion-normal.webp": {
-      "sha256": "b1444f2694a05a4c33ecc9fe72936672bcf049b0486d5e59fb7f253ad2c0fcf8",
-      "bytes": 80808
+      "sha256": "1a24595528562dc8aad51ea092a48820587325f298ff8e4ee47d975433012686",
+      "bytes": 80716
     },
     "bastion-orm.png": {
-      "sha256": "fac6ad3e02e0730177e47e864e9011c27709f4b9a52259de5d61a03a9246906f",
-      "bytes": 116399
+      "sha256": "91f753cb1703e95b65fcbb676db750e24a1a4d39be67f36fa0de04850d12c378",
+      "bytes": 116351
     },
     "bastion-orm.webp": {
-      "sha256": "dd89adf1c07d0f4b8e0a2c129e88dbc3d4afa54014224a8d8674c0cc451dc5b5",
-      "bytes": 65250
+      "sha256": "78c305902ef09c8de155b084dbb323648a12bb3bcb2621148829dc2af418d90a",
+      "bytes": 65204
     }
   }
 }

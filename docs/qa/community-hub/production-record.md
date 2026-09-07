@@ -3,7 +3,7 @@
 This is the development implementation of SA-HUB-001 on
 `feat/aeon-community-hub`, stacked on the coherent social/cargo/control snapshot
 `aaf08cc` (PR73). It covers Aeon's main orbital station only. Final browser and
-candidate06 visual acceptance are in progress; shared integration and public
+candidate08 visual acceptance are in progress; shared integration and public
 release are not claimed here.
 
 ## Implemented player behavior
@@ -73,7 +73,7 @@ loading: the synthetic merge with the newly updated PR73 base duplicated the
 `tmpdir` import because the same fix was inserted at two different locations.
 The branch now merges the exact upstream `5f0d94f` commit and uses its identical
 cargo-test file. This was a merge-source syntax failure, not a database result.
-A new hosted result must be checked separately.
+Hosted run `34158626790` on `78fa508` subsequently passed all five required jobs (source, plan, multiplayer, browser and verify). Later candidate08 changes require their own result.
 
 The [initial authority review](reviews/initial-authority-review.md) identified
 real lifecycle, equipment and ramming defects. The subsequent bounded fixes and
@@ -179,3 +179,8 @@ unchanged normals and188/188actualmotionposes. Its five native images rendered
 without diagnostics, but [independent review](reviews/bastion-native-07.md)
 remains3.90: broad white surfaces still need a readable manufactured treatment.
 Candidate08 authoring is isolated; this is not final art acceptance.
+
+
+Candidate08 is exported at `8d0dcbb6…`,948632B/9877tri, with700 supported service-detail triangles added to the exact07 geometry/rig/UV/normals. All16 additive checks, the analytic full-articulation vertex cylinder,188/188actual motion poses and17renderer/security tests pass. A fresh placement audit against the actual station GLBs finds four supported foundations and no non-contact articulation-cylinder intrusion. Native08 and the actual defense witness remain pending.
+
+Attempt08 was immediately interrupted by root after postlaunch inventory discovered a nearly simultaneous NPC browser job. Its keyboard case was interrupted and touch did not run. No application or assertion was changed to conceal that coordination failure. Remaining keyboard/touch acceptance will use a fresh evidence directory.
