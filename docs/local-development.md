@@ -498,3 +498,25 @@ See the [roof guide](base-ceilings-roofs.md), [power pipeline](base-power-pipeli
 and [roof](qa/base-ceilings-roofs/README.md)/[power](qa/base-power/README.md) source
 receipts. Their owner controller/SQL evidence and remaining art limits are
 retained; combined browser validation and shared promotion are pending.
+
+
+### Atlas + Burrow meadow
+
+Open **F2 → Aeon · Atlas + Burrow meadow → Start meadow adventure**, or use
+**Menu → Dev → Test locations** with a controller. The preset selects the 64 m
+Atlas automatically, parks Burrow beside it and starts you on foot in the same
+Aeon meadow used for Cees's successful rover loading and takeoff playtest.
+A fresh launch restores both vehicles and the reviewed terrain seed 7291.
+Normal fleet, construction and mining saves remain separate.
+
+Direct development link: `/?dev=1&ship=atlas&start=atlas-meadow&intro=0&seed=7291`.
+This needs the development build (`VITE_DEV_TOOLS=1`); public entry ignores it.
+Use LS / WASD to walk, X / F to interact and A / Space to jump. Drive Burrow up
+Atlas's loading ramp, park aboard, then board Atlas and fly. Initial setup uses
+the existing rover door and steps, so let that brief animation finish. Switching
+tabs or opening a menu pauses setup safely.
+
+The terrain ramp fixes and clear Burrow windscreen are included in the preset's
+fleet dependency. Cees manually verified driving aboard and flying away with the
+rover; this records local solo gameplay, not multiplayer rover replication.
+See [scene verification](qa/atlas-meadow-launcher.md) for checks and limitations.
