@@ -233,3 +233,7 @@ backup retained first. Connected solo saves upload every ten seconds and restore
 across browsers; server upkeep continues offline. Check the displayed saved/pending
 status before leaving. Multiplayer construction remains disabled in this slice.
 See [power and server-save memory](base-power-pipeline.md) for integration details.
+
+In the build sandbox, open the mainframe and choose **Refill sandbox reactor fuel**
+to supply 1 kg each of uranium and helium-3 feedstock. Build the matching generator,
+then load fuel from that same panel. Regular bases must obtain their fuel by mining.

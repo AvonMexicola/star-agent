@@ -96,6 +96,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
         const text=document.createElement('p');text.dataset.basePower='';content.append(text);
         description.textContent='Base upkeep draws electricity. Surplus generation charges empty batteries. Without enough power, health decays over 72 real hours; at zero the base and its storage are removed. Repair costs 5 kg metal stock for 25 health.';
         content.append(button('Load uranium · 0.1 kg','power-fuel-uranium',()=>powerAction(()=>build.power.action(claim.id,'fuel','uranium-ore'))),button('Load helium-3 feedstock · 0.1 kg','power-fuel-helium',()=>powerAction(()=>build.power.action(claim.id,'fuel','helium-3-regolith'))),button('Repair base · 5 kg metal stock','power-repair',()=>powerAction(()=>build.power.action(claim.id,'repair'))));
+        if(sandbox)content.append(button('Refill sandbox reactor fuel','power-sandbox-fuel',()=>powerAction(()=>build.power.action(claim.id,'sandbox-fuel'))));
         if(!sandbox)content.append(button('Connect / restore server base save','power-cloud',()=>powerAction(()=>build.power.cloud.connect())));
         const rules=document.createElement('p');rules.textContent=sandbox?'Sandbox health decay is paused. Batteries still need generation to charge.':'Put mined fuel in mainframe supplies before loading. Solar needs sunlight and a clear sky; wind needs atmosphere. Server connection requires your signed-in account. Existing server bases are restored on connection; a local backup is retained.';content.append(rules);
       }

@@ -1,3 +1,4 @@
+import {BasePower} from '../src/build/power-system.js';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {BaseCloud} from '../src/build/cloud.js';import {MiningStore} from '../src/mining/store.js';import {withClaimAnchor} from '../src/build/anchors.js';import {createMemoryStore} from '../server/database.js';import {createBaseSites} from '../server/base-sites.js';import {DECAY_MS} from '../src/build/power.js';import {bodySurfacePoint,SELENE} from '../src/celestial.js';import {MOON_LANDING_DIRECTION} from '../src/moon-world.js';import {Vector3} from 'three';
 async function fixture(){
@@ -40,4 +41,12 @@ test('lost fuel acknowledgement cannot restore spent fuel from the old local buf
 test('switching the authenticated account stops background saves before any upload',async()=>{
  const f=await fixture();await f.cloud.connect();let posts=0;const previous=f.cloud.fetchImpl;f.cloud.fetchImpl=async(url,options)=>{if(options.body)posts++;const response=await previous(url,options);return {...response,json:async()=>({...await response.json(),accountId:'different-account'})};};
  await f.cloud.sync();assert.equal(posts,0);assert.match(f.cloud.status,/Account changed/);
+});
+
+test('sandbox fuel refill is explicit and unavailable in regular play; local expiry cleans containers',async()=>{
+ const f=await fixture();let time=0;const build={blocked:false,get claims(){return f.store.state.build.claims;}},power=new BasePower({store:f.store,build,now:()=>time});
+ const before=f.store.state;assert.equal(power.action('build-claim-1','sandbox-fuel').ok,false);assert.equal(f.store.state,before);
+ power.sandbox=true;assert.equal(power.action('build-claim-1','sandbox-fuel').ok,true);assert.equal(f.store.container('build-core-1').items['helium-3-regolith'],1);
+ assert.equal(power.action('build-claim-1','fuel','uranium-ore').ok,true);assert.equal(f.store.container('build-core-1').items['uranium-ore'],.9);
+ power.sandbox=false;f.store.write({...f.store.state,build:{...f.store.state.build,claims:f.store.state.build.claims.map(c=>({...c,power:{...c.power,fuel:{'uranium-ore':0,'helium-3-regolith':0}}}))}});time=DECAY_MS+12*3600000;assert.equal(power.action('build-claim-1','repair').ok,false);power.update();assert.equal(build.claims.length,0);assert.equal(f.store.container('build-core-1'),null);
 });

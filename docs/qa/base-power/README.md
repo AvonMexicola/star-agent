@@ -31,12 +31,50 @@ than retroactively decayed. Sandbox health does not decay.
 - Full unit suite passes114 configured files; production build succeeds with the
   inherited chunk-size advisory. Later final checks recorded below.
 
-Controller/browser and final prop captures are queued behind the shared host GPU
-window. Independent visual score, full multiplayer building and physical Xbox
-are not claimed. See [pipeline memory](../../base-power-pipeline.md).
+Controller and prop renderer checks are complete below. Independent visual score,
+full multiplayer building and physical Xbox are not claimed. See [pipeline memory](../../base-power-pipeline.md).
 
 Additional regressions pass for a lost fuel acknowledgement, immediate pending
 status, a remote layout change and an account-cookie switch. The actual HTTP/SQL
 test rejects a POST bound to another account. Wind rotor separation initially
 created six mesh batches; sharing rotor-arm material reduces it to the existing
 five-batch limit. All exported bounds and budgets pass after that correction.
+
+Final local/cloud regressions pass 8/8, including explicit sandbox-only fuel supply,
+actual inventory debit and refusal to repair an already expired site.
+`check:repo` reports pre-existing overlapping active task claims (audio/fauna/flight/
+vehicle/integration); no unrelated registry claims were changed. `plan:checks`
+completes but its remote-dev comparison includes the broader inherited integration
+baseline; feature validation is scoped to this branch’s base-power changes.
+
+## Final power checkpoint evidence
+
+- Full unit suite: 114/114 files, 53.45 s. Production build succeeds
+  (`main-BlZZ6LPS.js`, inherited chunk-size advisory).
+- Controller-only production sandbox: 1/1 passed, 2.8 min. Placed solar, battery
+  and uranium generator through the wheel, physically walked to the mainframe,
+  observed charging, rejected fuel without its generator, supplied sandbox fuel,
+  debited 0.1 kg uranium, inspected the remaining 0.9 kg in storage, returned to
+  play and reloaded all pieces/charge. No debug teleport or state-injected placement.
+- Shared UI: 8/9 initially; the legacy isolation case expected B-brake/RT-rise.
+  Canonical current controls use B-descend/LT-brake/RT-fire. Fixture-only correction
+  passes the focused case in 5.1 s. All nine cases have passing evidence, including
+  the new Power tab and held-input suppression.
+- Five power prop views: one renderer case passes in 6.6 s, Chromium 151.0.7922.173,
+  ANGLE/OpenGL on AMD Radeon 860M, 1440×900. Studio draw counts include ground and
+  human scale reference. No page/console errors. Gameplay/phone captures inspected.
+- Exported kit: 26 pieces, 57,460 triangles, 5,115,660 bytes. Distinct reactor
+  silhouettes/markings remain a future art-polish opportunity; current cabinet
+  assets are functional and share the construction palette, not independent art
+  acceptance. UI is readable at desktop and phone widths with scrolling.
+- The standalone production test has no auth backend on its inherited proxy8084;
+  unauthenticated session requests log ECONNREFUSED. Sandbox still completes with
+  zero page errors. Real authenticated persistence is separately covered by the
+  isolated PostgreSQL/HTTP test and live preview5557/API8557.
+
+Commands: `npm test`; `node --test tests/base-power-database.test.js`;
+`npm run test:browser -- -c scripts/base-power.config.js`;
+`npm run test:browser -- -c scripts/build-ui.config.js` (focused `--grep 'B enters'`
+correction); `npm run test:browser -- -c scripts/base-power-assets.config.js`.
+Browser runs use the authorized host path and home-disk TMPDIR/output; only one
+browser job ran at a time in this lane. GPU window released after captures.

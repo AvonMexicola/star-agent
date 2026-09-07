@@ -101,8 +101,9 @@ B → LB/RB to Power → stick/A selects generators and batteries. Existing A pl
 LT/RT rotation, LB snap, RB jump and X exit remain. X/F at a mainframe or power
 machine opens health/load/charge/fuel/server status. Fuel comes from **mainframe
 supplies**, not invented tank stock. Fuel and repair use native buttons/shared
-controller routing with async duplicate suppression. Sandbox server connection
-is disabled. The user can sign in through Online, return to solo, then connect
+controller routing with async duplicate suppression. In the sandbox, “Refill sandbox reactor fuel” puts 1 kg of each feedstock into
+mainframe supplies; loading still transfers actual inventory into the tank. This
+refill is unavailable in regular play. Sandbox server connection is disabled. The user can sign in through Online, return to solo, then connect
 base saves; joining multiplayer still disables construction.
 
 Original deterministic asset source: `blender/build_base.py`. Build using the

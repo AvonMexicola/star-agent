@@ -19,13 +19,16 @@ test('controller installs solar and storage, reads live power, and returns to a 
  test.setTimeout(300000);await mkdir(out,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>{window.testPad={id:'Base power controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.testPad];});
  await page.goto('/?sandbox=build&intro=0&debug&seed=7291');await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);
- await buildPiece(page,'solar-array','power',[0,.3,2]);await buildPiece(page,'battery','power',[3,.3,2]);
+ await buildPiece(page,'solar-array','power',[0,.3,2]);await buildPiece(page,'battery','power',[3,.3,2]);await buildPiece(page,'uranium-generator','power',[-3,.3,2]);
  await page.waitForFunction(()=>window.starAgent.state.build.claims[0].power?.charge>2.001,null,{timeout:40000});
  await page.screenshot({path:`${out}/solar-battery-built.png`});
  await walkTo(page,await worldPoint(page,[6,2.05,5]));
  const core=await page.evaluate(()=>window.starAgent.state.build.claims[0].pieces.find(p=>p.type==='mainframe').position);
  await walkTo(page,await worldPoint(page,[core[0]-2,core[1]+1.75,core[2]+1]));await aimAt(page,await worldPoint(page,[core[0],core[1]+.8,core[2]]));await tap(page,2);await expect(page.locator('[data-base-power]')).toContainText('POWERED');await expect(page.locator('[data-base-power]')).toContainText('14 kWh');
- await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'power-fuel-uranium');await expect(page.locator('.build-feedback')).toContainText('matching generator');
+ await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'power-fuel-helium');await expect(page.locator('.build-feedback')).toContainText('matching generator');
+ await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'power-sandbox-fuel');await expect(page.locator('.build-feedback')).toContainText('Sandbox fuel supplied');
+ await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'power-fuel-uranium');await expect(page.locator('.build-feedback')).toContainText('Fuel loaded');
+ await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'build-supplies');await expect(page.locator('#cargo-dialog')).toBeVisible();expect((await saved(page)).remote['build-core-1'].items['uranium-ore']).toBe(.9);await tap(page,1);await ready(page);await tap(page,2);await expect(page.locator('[data-base-power]')).toContainText('POWERED');
  await page.screenshot({path:`${out}/mainframe-power.png`});await page.setViewportSize({width:390,height:844});await page.screenshot({path:`${out}/power-phone.png`});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await tap(page,1);await ready(page);const before=await saved(page);await page.reload();await ready(page);const after=await saved(page);expect(after.build.claims[0].pieces).toEqual(before.build.claims[0].pieces);expect(after.build.claims[0].power.charge).toBeGreaterThanOrEqual(before.build.claims[0].power.charge);expect(errors).toEqual([]);
  await writeFile(`${out}/journey.json`,JSON.stringify({input:'Injected Gamepad only; production sandbox spawn and materials',pieces:after.build.claims[0].pieces.map(p=>p.type),power:after.build.claims[0].power,errors},null,2));

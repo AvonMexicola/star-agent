@@ -111,6 +111,7 @@ test('radial ignores held selection through focus loss, disconnect and replaceme
 });
 
 test('B enters near a mainframe and build hotkeys stay separate from ship and EVA controls',async({page})=>{
+  test.setTimeout(30000);
   await page.goto('/scripts/fixtures/build-ui.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);
   await tap(page,1);await expect(page.locator('#build-dialog')).toBeVisible();await page.waitForFunction(()=>window.fixture.nav.gamepad.uiArmed);
   await page.evaluate(()=>window.pad.axes=[1,0,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','doorway');await tap(page,0);await page.evaluate(()=>window.pad.axes.fill(0));await page.waitForFunction(()=>window.fixture.nav.gamepad.armed);
@@ -122,11 +123,12 @@ test('B enters near a mainframe and build hotkeys stay separate from ship and EV
   await page.evaluate(()=>window.fixture.build.state.controllerAvailable=false);await tap(page,1);await expect(page.locator('#build-dialog')).not.toBeVisible();expect(await page.evaluate(()=>window.message)).toContain('64 m');
   for(const mode of ['flight','eva','walk']){
     await page.evaluate(mode=>{window.fixture.nav.mode=mode;window.fixture.nav.insideShip=mode==='walk';window.fixture.build.state.controllerAvailable=true;},mode);
-    await page.evaluate(()=>window.pad.buttons[1]={pressed:true,value:1});await page.waitForFunction(()=>window.fixture.lastPad.brake);await expect(page.locator('#build-dialog')).not.toBeVisible();
+    await page.evaluate(()=>window.pad.buttons[1]={pressed:true,value:1});await page.waitForFunction(()=>window.fixture.lastPad.vertical===-1);expect(await page.evaluate(()=>window.fixture.lastPad.brake)).toBe(false);await expect(page.locator('#build-dialog')).not.toBeVisible();
     if(mode==='eva')expect(await page.evaluate(()=>window.fixture.lastPad.evaVertical)).toBe(-1);
     await page.evaluate(()=>window.pad.buttons[1]={pressed:false,value:0});await page.waitForFunction(()=>!window.fixture.nav.gamepad.previous[1]);
   }
-  await page.evaluate(()=>{window.fixture.nav.mode='flight';window.pad.buttons[7]={pressed:true,value:1};});await page.waitForFunction(()=>window.fixture.lastPad.vertical===1);expect(await page.evaluate(()=>window.fixture.build.state.rotations)).toBe(0);
+  await page.evaluate(()=>{window.fixture.nav.mode='flight';window.pad.buttons[7]={pressed:true,value:1};});await page.waitForFunction(()=>window.fixture.lastPad.fire===1);expect(await page.evaluate(()=>window.fixture.lastPad.vertical)).toBe(0);expect(await page.evaluate(()=>window.fixture.build.state.rotations)).toBe(0);
+  await page.evaluate(()=>{window.pad.buttons[7]={pressed:false,value:0};window.pad.buttons[6]={pressed:true,value:1};});await page.waitForFunction(()=>window.fixture.lastPad.brake);expect(await page.evaluate(()=>window.fixture.build.state.rotations)).toBe(0);
 });
 
 test('bumpers switch blocks, shapes, facilities and resources without confirming held A',async({page})=>{
