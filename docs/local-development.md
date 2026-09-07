@@ -5,6 +5,23 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+## Physical cargo and trading
+
+The SBU cargo slice (runtime `3c7af88`, draft PR70) adds **6 SBU in Nomad 02**
+and **512 SBU in the playable Atlas**. Walk to the station's **Cargo & Trade**
+console, press F / controller X, select a resource, size and docked ship, and buy.
+The purchased crates appear on the real grid. Only1SBU can be carried by hand.
+Menu → Trade → Build creates a500CR player terminal with a36m landing pad;
+land centrally, pack mined ore, list cargo and set prices for visitors.
+
+Normal solo saves keep cargo with mining inventory; development test starts reset
+on reload. Online cargo, stock, credits and common-outcrop yields persist through
+additive PostgreSQL migration002. Joining supplies the server-owned ledger; local
+saves are not imported. Protocol3 requires refreshing an older connected client.
+Player shop sales continue when the seller disconnects. Larger salvage is an initial
+mechanical transfer action; no crane animation or persistent offline wreck is claimed.
+See the [player guide](sbu-cargo.md) and [actual QA record](qa/sbu-cargo.md).
+
 ## Run and use
 
 ```sh
