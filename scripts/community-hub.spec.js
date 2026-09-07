@@ -20,6 +20,7 @@ async function setup(page,context,mode,callsign){
  await page.addInitScript(controller=>{window.hubPad={id:'Community standard acceptance controller',index:0,connected:controller,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>hubPad.connected?[hubPad]:[]});},mode==='controller');
  const response=await context.request.post('/api/auth/register',{headers:{Origin:origin},data:{email:callsign+'@example.test',callsign,password:'isolated community password'}});expect(response.status()).toBe(201);const account=(await response.json()).account;
  await page.goto('/?debug&intro=0');await expect.poll(()=>page.evaluate(()=>window.starAgent?.state.ready),{timeout:90000}).toBe(true);
+ if(await page.locator('#dev-launcher').isVisible())await activate(page,mode,'tab-comms');
  await expect(page.locator('#multiplayer-account-dialog')).toBeVisible();await activate(page,mode,'join-multiplayer');await expect.poll(async()=>(await state(page)).multiplayer.connected).toBe(true);
  await close(page,mode);await expect.poll(()=>page.evaluate(()=>starAgent.navigation.enabled)).toBe(true);
  if(mode==='controller')await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
