@@ -1,0 +1,38 @@
+{
+  "id": "SA-PERF-001",
+  "title": "Preserve player fidelity while removing repeated CPU work",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex performance session",
+  "status": "review",
+  "branch": "fix/player-multiplayer-performance",
+  "base": "4706d62e92c002ce5a326c53cd8ee9ac07543645",
+  "updated": "2026-09-07",
+  "areas": [
+    "flight",
+    "assets",
+    "multiplayer"
+  ],
+  "claims": [
+    "src/navigation.js",
+    "src/character.js",
+    "src/character-ik.js",
+    "src/multiplayer/remote-players.js",
+    "src/multiplayer/client.js",
+    "server/room.js",
+    "server/index.js",
+    "tests/navigation-performance.test.js",
+    "tests/character-performance.test.js",
+    "tests/server-performance.test.js",
+    "scripts/player-performance.config.js",
+    "scripts/player-performance.spec.js",
+    "docs/briefs/player-performance.md",
+    "docs/qa/player-performance/",
+    "src/equipment.js",
+    "src/multiplayer/ui.js",
+    "src/multiplayer/social-ui.js",
+    "tests/multiplayer-ui-performance.test.js",
+    "scripts/multiplayer-ui-performance.spec.js"
+  ],
+  "brief": "docs/briefs/player-performance.md"
+}

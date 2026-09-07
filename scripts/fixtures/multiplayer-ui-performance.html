@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/favicon.svg"><title>Multiplayer UI performance fixture</title></head><body><canvas id="viewport" tabindex="0"></canvas>
+<script type="module">
+import '/src/style.css';
+import { GamepadInput } from '/src/gamepad.js';
+import { createControllerUI } from '/src/controller-ui.js';
+const baseline = new URLSearchParams(location.search).has('baseline');
+const { createMultiplayerUI } = await import(baseline ? '/.performance-baseline/src/multiplayer/ui.js' : '/src/multiplayer/ui.js');
+window.uiPad = { id: 'UI performance standard controller', index: 0, connected: true, mapping: 'standard', axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
+const gamepad = new GamepadInput(() => [window.uiPad]);
+const canvas = document.querySelector('canvas');
+const nav = { canvas, gamepad, keys: new Set(), physicalKeys: new Set(), enabled: true, focused: true, mode: 'walk', insideShip: false, velocity: { set() {} } };
+let sequence = 0, pending;
+const listeners = new Set(), requests = [];
+const client = { state: {
+  connected: true, account: { id: 'self', callsign: 'Pilot_0' }, ownId: 'self', maxPlayers: 10, health: 100,
+  players: Array.from({ length: 10 }, (_, i) => ({ id: i ? `peer${i}` : 'self', callsign: `Pilot_${i}`, colorIndex: i, mode: 'walk', health: 100, shipHealth: 100, position: [i * 10, 0, 0] })),
+  hangar: { id: 1, status: 'occupied', pad: [1, 2, 3], expiresAt: 100000 },
+  inventory: { revision: 4, containers: { pack: { bandage: 2, 'rifle-laser': 1, 'carbine-charge': 60, ice: 2 }, ship: { bandage: 1, ice: 20 }, station: { basalt: 100 } }, capacity: { pack: 20, ship: 120, station: 10000 } },
+  drops: [{ id: 'drop1', item: 'bandage', quantity: 1, position: [1, 0, 0], expiresAt: 200000 }],
+  social: { relationships: [{ id: 'peer1', callsign: 'Pilot_1', status: 'friend' }], blocked: [] }, chat: [] },
+  subscribe(listener) { listeners.add(listener); listener(this.state); return () => listeners.delete(listener); },
+  suspendInput() {},
+  transfer(payload) { requests.push(payload); return new Promise(resolve => { pending = resolve; }); },
+};
+const ui = createMultiplayerUI({ nav, client, fetcher: async () => ({ ok: true, json: async () => ({ account: client.state.account }) }) });
+const controller = createControllerUI({ nav, openBackpack: () => ui.openInventory() });
+document.addEventListener('keydown', event => { if (nav.enabled && !event.defaultPrevented) nav.keys.add(event.code); nav.physicalKeys.add(event.code); });
+document.addEventListener('keyup', event => { nav.keys.delete(event.code); nav.physicalKeys.delete(event.code); });
+const metrics = { created: 0, replaced: 0 };
+const createElement = document.createElement.bind(document), replaceChildren = Element.prototype.replaceChildren;
+document.createElement = (...args) => { metrics.created++; return createElement(...args); };
+Element.prototype.replaceChildren = function(...args) { metrics.replaced++; return replaceChildren.apply(this, args); };
+const publish = patch => { client.state = { ...client.state, ...patch }; for (const listener of listeners) listener(client.state); };
+let running = true, last = performance.now();
+function frame(now) {
+  if (!running) return;
+  const pad = gamepad.poll({ focused: true, enabled: nav.enabled, ui: Boolean(document.querySelector('dialog[open]')) });
+  controller.update(pad, (now - last) / 1000); last = now; requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.multiplayerUIPerformance = {
+  ui, nav, client, requests, publish,
+  run(count = 150) {
+    const focused = document.activeElement;
+    metrics.created = metrics.replaced = 0;
+    const start = performance.now();
+    for (let i = 0; i < count; i++) {
+      publish({ players: client.state.players.map((p, index) => ({ ...p, position: [index * 10 + ++sequence / 1000, 0, 0] })),
+        inventory: structuredClone(client.state.inventory), drops: structuredClone(client.state.drops),
+        hangar: { ...client.state.hangar, expiresAt: 100000 + i } });
+    }
+    return { publications: count, durationMs: performance.now() - start, ...metrics, retainedFocus: document.activeElement === focused && focused.isConnected };
+  },
+  contents() { return { inventory: document.querySelector('.mp-inventory-list').textContent, summary: document.querySelector('.mp-inventory-summary').textContent,
+    roster: document.querySelector('.mp-roster').textContent }; },
+  confirm() { const resolve = pending; pending = null; resolve?.({ message: 'Server confirmed the transfer.' }); },
+  dispose() { running = false; ui.dispose(); controller.dispose(); document.createElement = createElement; Element.prototype.replaceChildren = replaceChildren; },
+};
+await document.fonts.ready;
+await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+window.multiplayerUIPerformance.ready = true;
+</script></body></html>
