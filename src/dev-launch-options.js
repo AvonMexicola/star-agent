@@ -2,6 +2,8 @@
 export const DEV_SHIPS = Object.freeze([
   {id:'nomad',name:'Nomad 02',detail:'Utility · walkable cabin, berth & cargo'},
   {id:'kestrel',name:'Kestrel',detail:'Interceptor · port ladder · energy weapons'},
+  {id:'stratum',name:'Stratum M-05',detail:'Medium miner · twin cutters · 384 kg ore bin'},
+  {id:'gannet',name:'Gannet T-06 + Burrow',detail:'Medium transport · vehicle elevator · 128 SBU freight'},
   {id:'atlas',name:'Atlas',detail:'64 m freighter · loading ramps & crew lift'},
 ]);
 export const DEV_LOCATIONS = Object.freeze([

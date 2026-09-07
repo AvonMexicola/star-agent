@@ -1,4 +1,4 @@
-import { emptyCommerce,ensureAccount,validCommerce,commerceCommand } from './model.js';
+import { emptyCommerce,ensureAccount,validCommerce,commerceCommand,shipKey } from './model.js';
 import { POST_COST,tradeSite } from './sites.js';
 import * as THREE from 'three';
 export const LOCAL_TRADER='local-player';
@@ -11,6 +11,14 @@ export class LocalTrading {
     const s=(this.error?null:this.store.state.commerce)??emptyCommerce();
     if(!s.accounts[LOCAL_TRADER])ensureAccount(s,LOCAL_TRADER,this.store.state.economy.credits);
     return s;
+  }
+  registerHull(hull){
+    if(!['stratum','gannet'].includes(hull))return true;
+    if(this.error||this.store.blocked)return false;
+    const id=shipKey(LOCAL_TRADER,hull);if(this.state.ships[id])return true;
+    const s=structuredClone(this.state);s.ships[id]={id,owner:LOCAL_TRADER,hull,crates:[]};
+    if(!validCommerce(s))return false;
+    return this.store.write({...this.store.state,commerce:s});
   }
   command(m,ctx){
     if(this.error||this.store.blocked)throw new Error(this.error||this.store.warning);

@@ -1,0 +1,11 @@
+#ship-mining{position:fixed;left:24px;top:454px;width:235px;padding:12px;border:1px solid var(--line);background:var(--dialog-bg);z-index:12;color:var(--mint);font:10px var(--mono);box-sizing:border-box}
+#ship-mining[hidden],.photo-mode #ship-mining{display:none}
+#ship-mining>span{display:block;letter-spacing:.1em;font-size:9px;color:var(--muted)}
+#ship-mining label{display:flex;align-items:center;gap:8px;margin:12px 0 8px}
+#ship-mining meter{min-width:0;width:100%;accent-color:var(--mint)}
+#ship-mining strong{font-size:12px;font-variant-numeric:tabular-nums}
+#ship-mining p{line-height:1.4;min-height:28px}
+#ship-mining button{width:100%;min-height:38px;margin-top:6px;touch-action:none}
+#ship-mining small{display:block;margin-top:8px;color:var(--muted);line-height:1.4}
+#ship-mining button:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+@media(max-width:700px){#ship-mining{left:12px;top:auto;bottom:82px;width:180px;padding:9px}#ship-mining p{font-size:9px;margin:6px 0}#ship-mining small{display:none}#ship-mining button{min-height:38px}}

@@ -1,6 +1,6 @@
 # Meridian medium mining ship and rover transport
 
-Cees requests two playable ships between Nomad and Atlas: a dedicated mining ship and a transport that can carry a miner. The working payload is the existing Burrow M-04 rover. Stratum M-05 and Gannet T-06 are working names. This is an active production brief; no new ship is implemented, validated or accepted by this record.
+Cees requests two playable ships between Nomad and Atlas: a dedicated mining ship and a transport that can carry a miner. The working payload is the existing Burrow M-04 rover. Stratum M-05 and Gannet T-06 are working names. Authored assets and solo gameplay integration are now implemented in an isolated branch; browser, independent art and complete gameplay acceptance remain pending. See the [integration record](../qa/medium-ships/integration.md) for the tested scope.
 
 ## Result and physical targets
 
@@ -14,6 +14,8 @@ Geometry targets are binding within each checkpoint; changes to floor/portal/pla
 ## Art and acceptance
 
 Original Meridian ivory ceramic, graphite structure, petrol service panels, brushed mechanism metal, restrained mint status and amber hazards. Stratum has distinct extraction booms and ore machinery; Gannet has a protected rear loading volume and outboard drives. Both need a strong silhouette at30m, fitted panels, believable access mechanisms, measured1.8m human scale and a clear real pilot view. Preserve source/provenance, deterministic Blender builder, editable blend, UV/PBR maps and failed iterations. Use existing Kestrel/hangar workflow; core play and production do not require a paid service.
+
+Cees's permanent visibility rule applies to both current candidates: **no central strut, mullion or opaque brace across the main forward pilot view or usable display faces**. Keep framing around the perimeter and retain closed glazing. Check the actual seated eye and settled in-game cockpit; changing the camera to conceal a blocked view is not acceptance. The rule is recorded in [ship pipeline memory](../../SHIP-PIPELINE-MEMORY.md).
 
 Default per-ship budget:60k triangles,4MB GLB, textures at most1024² WebP. Count interior and moving fittings; additionally measure loaded Gannet + Burrow + freight. Independent review must satisfy QUALITY (average at least4.0, no applicable criterion below3); silhouette target4.5 before final material detail. Never substitute a studio score for actual cockpit, boarding, mining or rover carriage acceptance.
 

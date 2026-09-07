@@ -29,7 +29,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   const docked=(s,id)=>s.owner===snapshot().owner&&s.hull===nav.shipId&&nav.shipSpeed<1&&!nav.travel&&(id?.startsWith('station:')?nav.dockedAtStation&&Number(id.split(':')[1])===(multiplayer.connected?multiplayer.state.hangar?.id:station.parkedPod+1):onTradePad(pose(s)?.position,snapshot().terminals.find(t=>t.id===id)));
   const canTake=(s,c)=>{const p=pose(s);return p&&['walk','eva'].includes(nav.mode)&&aboard(nav.position,p,s.hull)&&nearCrate(nav.position,p,s.hull,c);};
   const canStow=s=>{const p=pose(s);return s.owner===snapshot().owner&&p&&nav.mode==='walk'&&aboard(nav.position,p,s.hull)&&nearGrid(nav.position,p,s.hull);};
-  const sources=()=>{const a=[{id:'pack',name:'Backpack'}];if(!multiplayer.connected){if(nav.insideShip||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50)a.push({id:'ship',name:'Ship sample lockers'});for(const c of build.claims)if(new THREE.Vector3(...c.origin).distanceTo(nav.position)<20)for(const [id,v]of Object.entries(store.state.remote))if(id.includes(c.id))a.push({id,name:v.name});}return a;};
+  const sources=()=>{const a=[{id:'pack',name:'Backpack'}];if(!multiplayer.connected){if(nav.insideShip||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50)a.push({id:'ship',name:'Ship sample lockers'});if(nav.shipId==='stratum'&&store.container('stratum-ore')&&(nav.insideShip||nav.mode==='landed'||nav.mode==='flight'||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50))a.push({id:'stratum-ore',name:'Stratum ore bin'});for(const c of build.claims)if(new THREE.Vector3(...c.origin).distanceTo(nav.position)<20)for(const [id,v]of Object.entries(store.state.remote))if(id.includes(c.id))a.push({id,name:v.name});}return a;};
   const physicalShips=()=>snapshot().ships.filter(s=>pose(s)).map(s=>{const own=s.owner===snapshot().owner,peer=multiplayer.state.players.find(p=>p.id===s.owner);return {...s,pose:pose(s),speed:own?nav.shipSpeed:Math.hypot(...(peer?.shipVelocity??[0,0,0])),open:own?nav.doorProgress>.98:(peer?.doorProgress??0)>.98,systems:own?nav.freighter:peerLifts.get(s.owner)};});
   const worldClear=tractorWorldClear(nav,station,(a,d,r)=>nav.buildingRaycast?.(a,d,r)?.distance);
   const api={callShip:hull=>multiplayer.request('cargoHull',{hull}),snapshot,atTerminal,nearestTerminal,docked,canTake,canStow,sources,
@@ -56,7 +56,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   const nearbyGrid=()=>snapshot().ships.some(s=>{const p=pose(s);return p&&aimedGrid(nav.position,nav.orientation,p,s.hull);});
   nav.cargoInteraction=()=>nav.buildActive?'':tractor.held?(tractor.state.slot?'F / X · Secure tractor crate':'Tractor · Guide crate to your cargo grid'):nearestTerminal()?'F / X · Trade terminal':nearbyGrid()&&nav.mode==='walk'?'F / X · Physical SBU cargo':'';
   nav.cargoAction=()=>{if(tractor.held){if(!tractor.secure())nav.notify('Guide the crate closer to its free slot, or release RT to leave it here.');return true;}if(!nav.cargoInteraction())return false;return ui.openView(nearestTerminal()?'buy':'cargo');};
-  return {ui,api,tractor,
+  return {ui,api,tractor,registerHull:hull=>!multiplayer.connected&&local.registerHull(hull),
     get state(){return {...snapshot(),tractor:tractor.state,error:local.error,carrying:nav.carryingCargo,visuals:[...visuals].map(([id,v])=>({id,objects:v.root.children.length,error:v.root.userData.error??null})),terminal:nearestTerminal()};},
     update(origin,dt=.016){
       const s=snapshot(),ids=new Set();

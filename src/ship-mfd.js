@@ -14,7 +14,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
   const group = new THREE.Group();
   group.name = 'Four rectangular multifunction displays';
   const frameFinish = new THREE.MeshStandardMaterial({ color: 0x111f26, metalness: .65, roughness: .36 });
-  const screenTitles=profile==='kestrel'?['FLIGHT','VESSEL','SYSTEMS','DRIVE']:profile==='kestrel-flight'?['FLIGHT','NAVIGATION','SYSTEMS','VESSEL']:titles;
+  const screenTitles=profile==='stratum'?['FLIGHT','NAVIGATION','MINING','CARGO']:profile==='kestrel'?['FLIGHT','VESSEL','SYSTEMS','DRIVE']:profile==='kestrel-flight'?['FLIGHT','NAVIGATION','SYSTEMS','VESSEL']:titles;
   const screens = screenTitles.map((title, i) => {
     const canvas = document.createElement('canvas');canvas.width = 512;canvas.height = height;
     const ctx = canvas.getContext('2d');

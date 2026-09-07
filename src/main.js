@@ -1,3 +1,7 @@
+import {createShipMining} from './ship-mining.js';
+import {createShipMiningInput} from './ship-mining-input.js';
+import {createMediumShip} from './medium-ships.js';
+import {StratumGameplaySystems,GannetGameplaySystems,STRATUM_GAMEPLAY_LAYOUT,GANNET_GAMEPLAY_LAYOUT} from './medium-ship-gameplay.js';
 import { createTradingSystem } from './trading/system.js';
 import {BasePower} from './build/power-system.js';
 import {BaseCloud} from './build/cloud.js';
@@ -147,24 +151,28 @@ try {
   let localInventoryStorage;try{localInventoryStorage=testFlight&&!sandboxEnabled?testFlightStorage(devOptions&&new URLSearchParams(location.search).get('cargo-test')==='1'?(window.__starAgentCargoTestSeed??[]):[]):window.localStorage;}catch{}
   if(sandboxEnabled)localInventoryStorage=sandboxStorage(localInventoryStorage);
   const fleet=new Fleet(localInventoryStorage),freighterSystems=new FreighterSystems();
+  const mediumSystems={stratum:new StratumGameplaySystems(),gannet:new GannetGameplaySystems()};
+  let rover=null;
   if(devOptions){fleet.active=devOptions.ship;fleet.unlocked=true;fleet.surfaceVisited=true;}
   else if(testFlight)fleet.active='kestrel';
   nav.testFlight=testFlight;
-  const layoutFor=id=>armedShipLayout(id==='kestrel'?KESTREL_LAYOUT:id==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT,shipModels.get(id)?.armament);
+  const layoutFor=id=>armedShipLayout(id==='stratum'?STRATUM_GAMEPLAY_LAYOUT:id==='gannet'?GANNET_GAMEPLAY_LAYOUT:id==='kestrel'?KESTREL_LAYOUT:id==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT,shipModels.get(id)?.armament);
   function configureShip(id){
     if(id==='atlas'&&nav.freighter!==freighterSystems)freighterSystems.reset({gearProgress:nav.gearProgress});
-    nav.shipId=id;nav.layout=layoutFor(id);nav.freighter=id==='atlas'?freighterSystems:null;
+    nav.shipId=id;nav.layout=layoutFor(id);nav.freighter=mediumSystems[id]??(id==='atlas'?freighterSystems:null);
+    if(mediumSystems[id])mediumSystems[id].reset({gearProgress:nav.gearProgress});
+    rover?.bindCarrier();
     nav.kestrelAccess=id==='kestrel'?new KestrelAccess():null;
-    shipMarker.setShip({shipName:SHIPS[id].name,entryLocal:new THREE.Vector3(...(id==='kestrel'?KESTREL_LAYOUT.entryEye:id==='atlas'?ATLAS_RAMP_CALLS.find(r=>r.id==='front').approach:[0,shipFloorAt(0,6,true)+SHIP_LAYOUT.eyeHeight,6])),accessLabel:id==='kestrel'?'PORT LADDER':id==='atlas'?'FORWARD RAMP':'REAR RAMP'});
+    shipMarker.setShip({shipName:SHIPS[id].name,entryLocal:new THREE.Vector3(...(mediumSystems[id]?mediumSystems[id].entry:id==='kestrel'?KESTREL_LAYOUT.entryEye:id==='atlas'?ATLAS_RAMP_CALLS.find(r=>r.id==='front').approach:[0,shipFloorAt(0,6,true)+SHIP_LAYOUT.eyeHeight,6])),accessLabel:mediumSystems[id]?.accessLabel??(id==='kestrel'?'PORT LADDER':id==='atlas'?'FORWARD RAMP':'REAR RAMP')});
   }
   const shipModels=new Map();
   function modelFor(id){
     if(!shipModels.has(id)){
-      const model=id==='kestrel'?createKestrel({url:kestrelURL,flight:true}):id==='atlas'?createFreighter(freighterSystems):createWalkableShip();
-      equipShipWeapons(model,id);
+      const model=mediumSystems[id]?createMediumShip(id,mediumSystems[id]):id==='kestrel'?createKestrel({url:kestrelURL,flight:true}):id==='atlas'?createFreighter(freighterSystems):createWalkableShip();
+      if(!mediumSystems[id])equipShipWeapons(model,id);
       model.readyPromise.then(()=>{if(nav.shipId===id)nav.layout=layoutFor(id);},()=>{});
       if(!model.updateGear)installLandingGear(model);model.visible=false;scene.add(model);
-      if(id!=='kestrel'){weatherShip(model,planet.surfaceTexture);model.readyPromise.then(asset=>{if(asset)weatherShip(asset,planet.surfaceTexture);});}
+      if(id!=='kestrel'&&!mediumSystems[id]){weatherShip(model,planet.surfaceTexture);model.readyPromise.then(asset=>{if(asset)weatherShip(asset,planet.surfaceTexture);});}
       const heating=new ReentryHeating(model);model.userData.reentryHeating=heating;
       model.readyPromise.then(()=>heating.refresh(),()=>{});
       shipModels.set(id,model);
@@ -213,17 +221,22 @@ try {
   nav.baseAction=()=>build.interact();nav.baseInteraction=()=>build.interaction;
   nav.baseLandingSurface=()=>build.landingSurface();
   nav.buildingRaycast=(start,direction,range,envelope)=>build.raycast(start,direction,range,envelope);
-  const rover=surfaceRoverStart||(devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1')?createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&(surfaceRoverStart||nav.shipId==='atlas')}):null;
-  nav.vehicle=rover;
+  const ensureRover=()=>{if(!rover)rover=createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&(surfaceRoverStart||['atlas','gannet'].includes(nav.shipId))});nav.vehicle=rover;rover.bindCarrier();return rover;};
+  if(surfaceRoverStart||fleet.active==='gannet'||(devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1'))ensureRover();
+  const ensureMediumStorage=id=>id!=='stratum'||inventoryUI.registerContainer({id:'stratum-ore',name:'Stratum dedicated ore bin',kind:'ship',boxes:8,available:()=>nav.shipId==='stratum'&&!multiplayer.connected&&(nav.insideShip||['flight','landed'].includes(nav.mode)||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50)});
+  ensureMediumStorage(fleet.active);nav.openShipStorage=id=>inventoryUI.openStorage(id);
   const useQuick=index=>{const result=loadout.useQuick(index);nav.notify(result.message);};
   const loadoutBar=createLoadoutBar({loadout,nav,onSelect:id=>{if(build.active)build.cancel();miningTool.select(id);},onUse:useQuick,open:()=>inventoryUI.openEquipment()});
   document.addEventListener('keydown',e=>{if(e.repeat||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||document.querySelector('dialog[open]'))return;if(e.code==='KeyK'){e.preventDefault();inventoryUI.openEquipment();}else if(!build.active&&nav.enabled&&nav.focused&&['walk','eva'].includes(nav.mode)&&/^Digit[5-8]$/.test(e.code))useQuick(Number(e.code.slice(5))-5);});
+  const shipMining=createShipMining({scene,nav,mining,getShip:()=>ship,effects,context:()=>({online:multiplayer.connected,blocked:transiting,inputContext:`${nav.gamepad.id}:${nav.gamepad.connected}:${nav.gamepad.status}`})});
+  const shipMiningInput=createShipMiningInput({nav,canvas,mining,cutter:shipMining,inventoryUI});
   const combat=createSpaceCombat({scene,nav,camera,effects,mining});
   nav.openPatrolConsole=()=>combat.open();
   const flightEffects=createFlightEffects({effects,nav,mining,camera,getShip:()=>ship,onFire:(...args)=>{if(combat.state.phase!=='engage')return false;combat.fire(...args);return true;}});
   inventoryUI.registerContainer?.({id:'crescent-cache',name:'Crescent field cache',kind:'base',boxes:2,available:()=>nav.mode==='walk'&&!nav.insideShip&&nav.position.distanceTo(mining.fieldCache.position)<4});
   bindStationLedger(inventory,mining.store);
   const trading=createTradingSystem({scene,nav,station,store:mining.store,multiplayer,getShip:()=>ship,build,mining,remotePlayers,getMuzzle:()=>miningTool.equipment.muzzleWorldPosition()});
+  if(mediumSystems[fleet.active]&&!trading.registerHull(fleet.active))notify(mining.store.warning||'Ship cargo registration unavailable.');
   if(testFlight&&fleet.active==='kestrel')inventory.transferAll('ship','station');
   const shipCargoLoaded=()=>Object.values(mining.store.container('ship')?.items??{}).some(quantity=>quantity>0);
   if(fleet.active==='kestrel'&&shipCargoLoaded()){
@@ -253,6 +266,8 @@ try {
   let selectingShip=false;
   const fleetUI=createFleetUI(nav,fleet,async id=>{
     if(selectingShip)return 'Ship preparation in progress.';
+    if(multiplayer.connected&&mediumSystems[id])return 'The medium ships are available in solo play while multiplayer integration is pending.';
+    if(rover?.state.aboard&&id!==nav.shipId)return 'Unload the Burrow before changing carriers.';
     if(!fleet.allows(id)||!SHIPS[id])return 'This ship is locked.';
     if(nav.mode!=='landed'||!nav.dockedAtStation)return 'Dock at Aeon Orbital before switching ships.';
     if(inventory.mass('ship')>SHIPS[id].capacity)return 'Too much cargo for this ship. Transfer supplies before switching.';
@@ -269,6 +284,7 @@ try {
       const bounds=layout.flightBounds;
       if(bounds.max[0]-bounds.min[0]>b.max.x-b.min.x-2||bounds.max[2]-bounds.min[2]>b.max.z-b.min.z-2||bounds.max[1]>b.max.y-b.min.y-1)return 'This hangar cannot accommodate the selected ship.';
       centre.x-=(bounds.min[0]+bounds.max[0])/2;centre.z-=(bounds.min[2]+bounds.max[2])/2;
+      if(mediumSystems[id]&&(!ensureMediumStorage(id)||!trading.registerHull(id)))return mining.store.warning||'Ship cargo save unavailable.';
       ship.visible=false;ship=next;configureShip(id);
       nav.shipPosition=station.toWorld(centre,centre);nav.shipOrientation.copy(orientation);nav.orientation.copy(orientation);
       nav.position.copy(nav.fromShipLocal(new THREE.Vector3(...layout.seatEye)));nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);
@@ -276,6 +292,7 @@ try {
       if(layout.gear){nav.gearProgress=1;nav.gearDeployed=true;}
       inventory.capacity.ship=SHIPS[id].capacity;fleet.active=id;fleet.record('selection');
       nav.gearDeployed=true;nav.gearProgress=1;
+      if(id==='gannet'&&!ensureRover().state.spawned)await rover.spawn();
       return `${SHIPS[id].name} ready. Close Fleet, then ${id==='kestrel'?'B to launch or F to descend the port ladder':'F to stand and explore'}.`;
     }catch(error){
       const failed=shipModels.get(id);if(failed!==ship&&failed?.userData.assetStatus==='error'){failed.removeFromParent();failed.dispose();shipModels.delete(id);}
@@ -541,6 +558,7 @@ try {
     content.prepend(tabs);content.append(consoles);
   }
   nav.onControllerInput=(pad,dt)=>{
+    shipMiningInput.controller(pad);
     if(!firstReady)return;
     const audioInput=Boolean(pad.used||pad.pressed?.size||pad.menuPressed?.size||pad.ui?.pressed?.size);
     if(audioInput&&!controllerAudioUsed&&!document.activeElement?.matches?.('#sound-button,[data-controller-key="menu-audio"]'))unlockAudio();
@@ -552,7 +570,7 @@ try {
     if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
     if(rover?.occupied&&!pad.shortcuts?.size){if(pad.pressed.has(8))rover.openCargo();return;}
-    trading.tractor.controller(pad);controllerUI.update(pad,dt);flightEffects.controller(pad);
+    trading.tractor.controller(pad);controllerUI.update(pad,dt);flightEffects.controller(nav.shipId==='stratum'?{...pad,fire:0}:pad);
   };
   const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();gameplayMenu.open('ship');});document.querySelector('.menu-actions').append(systemsHelp);
   $('controller-layout-help').addEventListener('click',()=>{closeHelp();controllerLayout.open();});
@@ -698,7 +716,7 @@ try {
     character.placeCameraRelative(origin);
     remotePlayers.update(dt,origin);
     const fighterCockpit=nav.shipId==='kestrel'&&!shipCamera.active&&['flight','landed'].includes(nav.mode);
-    const viewFov=nav.roverOccupied?76:fighterCockpit?76:52;
+    const viewFov=nav.roverOccupied?76:fighterCockpit?76:nav.shipId==='stratum'&&!shipCamera.active&&['flight','landed'].includes(nav.mode)?66:52;
     if(!opening?.placeCamera(camera,origin)){
       if(camera.fov!==viewFov){camera.fov=viewFov;camera.updateProjectionMatrix();}
       // The seated interceptor view includes the side MFDs without moving the
@@ -716,7 +734,7 @@ try {
     shipMarker.update(innerWidth,innerHeight);
     navigationTargets.update(dt,{width:innerWidth,height:innerHeight,origin,orientation:camera.quaternion});
     moon.update(nav.position,origin,elapsed,!nav.insideShip,nav.shipPosition);
-    landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);fauna.update(dt,origin);miningTool.update(dt,origin);trading.update(origin,dt);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
+    landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);fauna.update(dt,origin);shipMiningInput.beforeUpdate();miningTool.update(dt,origin);trading.update(origin,dt);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
     pyre.update(origin,origin);
     miasma.update(origin,origin,elapsed,nav.shipPosition);
     // Distant worlds as bright points: Pyre from Aeon and Selene, Aeon from Pyre.
@@ -747,7 +765,7 @@ try {
     updateShipEngineVisuals(ship,engine);
     camera.updateMatrixWorld();sun.update(origin,camera,dt,elapsed,{atmosphereFraction:nav.flightEnvironment.atmosphereFraction});atmosphere.setSun(sun);
     if(destructionEffects.update(nav.destruction,origin,dt))playStellarDestruction(audio);
-    ship.updateGear(dt,nav.gearDeployed,nav.gearProgress);utilityLights.update(nav,origin);
+    ship.updateGear(dt,nav.gearDeployed,nav.gearProgress);shipMining.update(dt,origin);shipMiningInput.update();utilityLights.update(nav,origin);
     ship.userData.reentryHeating.update({density:nav.flightEnvironment.density,velocity:nav.cabinFlight?nav.shipVelocity:nav.velocity,active:nav.mode==='flight'||nav.cabinFlight,reset:transiting},dt,camera);
     document.body.classList.toggle('crashed',nav.mode==='crashed');
     $('crash-panel').hidden=nav.mode!=='crashed';
@@ -756,7 +774,7 @@ try {
     combat.update(dt,origin,{weapon:flightEffects.state.weapon,suspended:transiting||!nav.enabled||!nav.focused||Boolean(document.querySelector('dialog[open]'))});
     flightEffects.update(dt,origin,{suspended:effectsSuspended,engine});
     audio.flyby?.update([...remotePlayers.peers].filter(([,entry])=>entry.ship.visible).map(([id,entry])=>({id,position:entry.shipPosition})),origin,camera.quaternion,realDt,{active:!transiting&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]')});
-    audio.gameplay?.update(nav,dt,{active:!transiting&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]'),mining:rover?.audioMining??effects.miningInput,heat:miningTool.equipment.heat,overheated:miningTool.equipment.overheated});
+    audio.gameplay?.update(nav,dt,{active:!transiting&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]'),mining:rover?.audioMining??shipMining.audioMining??effects.miningInput,heat:miningTool.equipment.heat,overheated:miningTool.equipment.overheated});
     audio.update({...engine,speed:nav.shipSpeed,altitude,musicAltitude:nav.flightEnvironment.altitude,verticalSpeed:(nav.cabinFlight?nav.shipVelocity:nav.velocity).dot(nav.normal),airless:nav.body.airless,inHangar,doorMotion:station.doorsOpen>0&&station.doorsOpen<1?1:0},dt);
     if(audioDebug)audioDebug.textContent=JSON.stringify({mode:nav.mode,audio:audio.enabled,music:audio.music?.state,engine:audio.engineAudio?.state,flyby:audio.flyby?.state,effects:audio.gameplay?.state},null,2);
     renderer.info.reset();
@@ -784,7 +802,7 @@ try {
               if(rover&&!surfaceRoverStart){
                 if(devOptions.location==='moon')nav.touchDown();
                 if(!await rover.spawn())throw new Error('Burrow cargo placement failed.');
-                notify('Atlas + Burrow mining test. F leaves the chair; ride the crew lift to the cargo deck, then walk aft to the rover’s port door.');
+                notify(nav.shipId==='gannet'?'Gannet + Burrow. F leaves the chair; walk aft and approach the rover’s port door.':'Atlas + Burrow mining test. F leaves the chair; ride the crew lift to the cargo deck, then walk aft to the rover’s port door.');
               }
               if(new URLSearchParams(location.search).get('exteriorView')==='overview'&&station.exterior.authored){
                 placeStationExteriorPreview(nav,innerWidth/innerHeight);
@@ -798,8 +816,8 @@ try {
     }
     if(planet.error)stopGraphics(planet.error);
   }
-  window.addEventListener('beforeunload',()=>{landmarks.dispose();multiplayerUI.dispose();multiplayer.dispose();remotePlayers.dispose();},{once:true});
+  window.addEventListener('beforeunload',()=>{shipMiningInput.dispose();shipMining.dispose();landmarks.dispose();multiplayerUI.dispose();multiplayer.dispose();remotePlayers.dispose();},{once:true});
   requestAnimationFrame(frame);
   // Explicit read-only diagnostics plus navigational hooks for reproducible browser tests.
-  window.starAgent={get state(){return {trading:trading.state,fauna:fauna.state,rover:rover?.state??null,sandbox:sandboxEnabled,landmarks:landmarks.stats,navigationTargets:navigationTargets.state,combat:combat.state,surfaceWeather:surfaceWeather.state,dev:devLauncher?.state??null,build:build.state,enabled:nav.enabled,focused:nav.focused,manufacturer:MERIDIAN.name,testFlight,kestrel:ship.snapshot?.()??null,kestrelAccess:nav.kestrelAccess?.snapshot??null,rockMaterial:rockTextureState(),sun:{distance:sun.distance,clearance:sun.distance-SUN_RADIUS,angularRadius:sun.angularRadius,sphereVisible:sun.sphere.visible,diskWeight:sun.diskWeight,visibility:sun.visibility},stellarThermal:{...nav.stellarThermal},multiplayer:{...multiplayer.state,remote:remotePlayers.state},preload:{...preload.state,orbitalResolution:planet.orbitalSurface.resolution,orbitalComplete:planet.orbitalSurface.complete},reentryHeat:ship.userData.reentryHeating.heat,crash:nav.crash?structuredClone(nav.crash):null,renderedFrames,graphics:graphicsSettings.state,utilities:{gearDeployed:nav.gearDeployed,gearProgress:ship.userData.gearProgress,gearAssemblies:ship.userData.gearAssemblies,...utilityLights.state},miasma:{...miasma.state,altitude:bodyAltitude(nav.position,MIASMA),surface:nav.body.id==='miasma'?miasmaSurface(...nav.normal.toArray()):null},pyre:{...pyre.state,altitude:bodyAltitude(nav.position,PYRE),ready:pyre.ready,epoch:PYRE_EPOCH,generatorVersion:PYRE_GENERATOR_VERSION,resources:nav.body.id==='pyre'?pyreResources(...nav.normal.toArray()):null,region:nav.body.id==='pyre'?pyreRegion(...nav.normal.toArray()):null},heat,terrainDetail:planet.detailStats,terrainLod:planet.lodStats,loadout:structuredClone(loadout.state),equippedMass:loadout.mass,effects:{...effects.state,...flightEffects.state,beamVisible:effects.beam.mesh.visible,bloom:atmosphere.bloom.enabled},shipMarker:shipMarker.state,fieldCache:mining.fieldCache.position.toArray(),containers:inventoryUI.state,eva:nav.evaState,rings:moon.rings.state,mining:{...mining.state,tool:miningTool.state},fleet:fleet.snapshot,shipId:nav.shipId,powered:nav.powered,cabinFlight:nav.cabinFlight,berthRest:nav.berthRest,berthTransition:Boolean(nav.berthTransition),nomadCargo:ship.cabinState?.(),landingGear:{progress:nav.gearProgress,target:nav.gearDeployed,visual:ship.userData.gearProgress},hardpoints:ship.userData.hardpoints??[],shipSpeed:nav.shipSpeed,shipVelocity:nav.shipVelocity.toArray(),shipPosition:nav.shipPosition?.toArray(),shipOrientation:nav.shipOrientation.toArray(),lifts:nav.freighter?.snapshot,opening:opening?.state??{phase:'skipped'},character:{ready:character.ready,visible:character.object.visible,state:character.state,position:character.worldPosition.toArray(),error:character.error},camera:{mode:(nav.mode==='walk'||nav.mode==='eva')?(shipCamera.active?'third-person':'first-person'):(shipCamera.active?'external':'cockpit'),shipVisible:ship.visible,selected:shipCamera.selected(nav.mode),obstructed:shipCamera.obstructed,position:origin.toArray(),fov:camera.fov},audio:audio.state,travel:nav.travelState,travelTarget:nav.travelTarget,mapOpen:systemMap.open,tunnel:travelEffects.state,speedProfile:nav.speedProfile,moon:{resources:moonResources(...nav.position.clone().sub(moon.worldPosition).normalize().toArray()),resourceProvinces:RESOURCE_PROVINCES,effects:moon.effects,position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,pending:moon.terrain.jobs.size+moon.terrain.queue.length+moon.terrain.waitingCount,distance:nav.position.distanceTo(moon.worldPosition)},controller:{id:nav.gamepad.id,connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,combatMode:nav.combatMode,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{...station.snapshot,ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:nav.canDock},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale:resolution.scale,renderResolution:resolution.state};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){resolution.setScale(THREE.MathUtils.clamp(value,.4,1));resizePending=true;},get openingSequence(){return new URLSearchParams(location.search).has('debug')?opening:undefined;},get planet(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?planet:undefined;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;},get miasmaSites(){return MIASMA_SITES;},get pyreSites(){return {landing:pyreLandingDirection(),volcanoes:VOLCANOES.map(v=>({name:v.name,height:v.height,active:v.active,direction:fromPyreBody(...v.direction)})),fields:LAVA_FIELDS.map(f=>({name:f.name,direction:fromPyreBody(...f.direction)}))};}};
+  window.starAgent={get state(){return {trading:trading.state,fauna:fauna.state,rover:rover?.state??null,sandbox:sandboxEnabled,landmarks:landmarks.stats,navigationTargets:navigationTargets.state,combat:combat.state,surfaceWeather:surfaceWeather.state,dev:devLauncher?.state??null,build:build.state,enabled:nav.enabled,focused:nav.focused,manufacturer:MERIDIAN.name,testFlight,kestrel:ship.snapshot?.()??null,kestrelAccess:nav.kestrelAccess?.snapshot??null,rockMaterial:rockTextureState(),sun:{distance:sun.distance,clearance:sun.distance-SUN_RADIUS,angularRadius:sun.angularRadius,sphereVisible:sun.sphere.visible,diskWeight:sun.diskWeight,visibility:sun.visibility},stellarThermal:{...nav.stellarThermal},multiplayer:{...multiplayer.state,remote:remotePlayers.state},preload:{...preload.state,orbitalResolution:planet.orbitalSurface.resolution,orbitalComplete:planet.orbitalSurface.complete},reentryHeat:ship.userData.reentryHeating.heat,crash:nav.crash?structuredClone(nav.crash):null,renderedFrames,graphics:graphicsSettings.state,utilities:{gearDeployed:nav.gearDeployed,gearProgress:ship.userData.gearProgress,gearAssemblies:ship.userData.gearAssemblies,...utilityLights.state},miasma:{...miasma.state,altitude:bodyAltitude(nav.position,MIASMA),surface:nav.body.id==='miasma'?miasmaSurface(...nav.normal.toArray()):null},pyre:{...pyre.state,altitude:bodyAltitude(nav.position,PYRE),ready:pyre.ready,epoch:PYRE_EPOCH,generatorVersion:PYRE_GENERATOR_VERSION,resources:nav.body.id==='pyre'?pyreResources(...nav.normal.toArray()):null,region:nav.body.id==='pyre'?pyreRegion(...nav.normal.toArray()):null},heat,terrainDetail:planet.detailStats,terrainLod:planet.lodStats,loadout:structuredClone(loadout.state),equippedMass:loadout.mass,effects:{...effects.state,...flightEffects.state,beamVisible:effects.beam.mesh.visible,bloom:atmosphere.bloom.enabled},shipMarker:shipMarker.state,fieldCache:mining.fieldCache.position.toArray(),containers:inventoryUI.state,eva:nav.evaState,rings:moon.rings.state,mining:{...mining.state,tool:miningTool.state,ship:nav.shipMiningState},fleet:fleet.snapshot,shipId:nav.shipId,powered:nav.powered,cabinFlight:nav.cabinFlight,berthRest:nav.berthRest,berthTransition:Boolean(nav.berthTransition),nomadCargo:ship.cabinState?.(),landingGear:{progress:nav.gearProgress,target:nav.gearDeployed,visual:ship.userData.gearProgress},hardpoints:ship.userData.hardpoints??[],shipSpeed:nav.shipSpeed,shipVelocity:nav.shipVelocity.toArray(),shipPosition:nav.shipPosition?.toArray(),shipOrientation:nav.shipOrientation.toArray(),lifts:nav.freighter?.snapshot,opening:opening?.state??{phase:'skipped'},character:{ready:character.ready,visible:character.object.visible,state:character.state,position:character.worldPosition.toArray(),error:character.error},camera:{mode:(nav.mode==='walk'||nav.mode==='eva')?(shipCamera.active?'third-person':'first-person'):(shipCamera.active?'external':'cockpit'),shipVisible:ship.visible,selected:shipCamera.selected(nav.mode),obstructed:shipCamera.obstructed,position:origin.toArray(),fov:camera.fov},audio:audio.state,travel:nav.travelState,travelTarget:nav.travelTarget,mapOpen:systemMap.open,tunnel:travelEffects.state,speedProfile:nav.speedProfile,moon:{resources:moonResources(...nav.position.clone().sub(moon.worldPosition).normalize().toArray()),resourceProvinces:RESOURCE_PROVINCES,effects:moon.effects,position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,pending:moon.terrain.jobs.size+moon.terrain.queue.length+moon.terrain.waitingCount,distance:nav.position.distanceTo(moon.worldPosition)},controller:{id:nav.gamepad.id,connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,combatMode:nav.combatMode,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{...station.snapshot,ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:nav.canDock},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale:resolution.scale,renderResolution:resolution.state};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){resolution.setScale(THREE.MathUtils.clamp(value,.4,1));resizePending=true;},get openingSequence(){return new URLSearchParams(location.search).has('debug')?opening:undefined;},get planet(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?planet:undefined;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;},get miasmaSites(){return MIASMA_SITES;},get pyreSites(){return {landing:pyreLandingDirection(),volcanoes:VOLCANOES.map(v=>({name:v.name,height:v.height,active:v.active,direction:fromPyreBody(...v.direction)})),fields:LAVA_FIELDS.map(f=>({name:f.name,direction:fromPyreBody(...f.direction)}))};}};
 }catch(error){console.error(error);fatal(`Could not start WebGL 2. Use a current desktop browser with hardware acceleration enabled. ${error.message}`);}
