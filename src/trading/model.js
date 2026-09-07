@@ -1,4 +1,5 @@
 import { SBU_SIZES, capacitySBU, placeCrate, validGrid, canRemoveCrate } from '../cargo/grid.js';
+import { AEON_MARKET_ID,createMarket,validMarkets,marketIdForTerminal,quoteMarket } from './market.js';
 export const TRADE_RESOURCES=Object.freeze([
   {id:'basalt',name:'Basalt concentrate',kgPerSBU:16,buy:20,sell:12,color:0x9aa4ac},
   {id:'copper',name:'Copper ore',kgPerSBU:16,buy:48,sell:30,color:0xc58c60},
@@ -9,7 +10,7 @@ export const TRADE_RESOURCES=Object.freeze([
 ]);
 export const resourceById=id=>TRADE_RESOURCES.find(r=>r.id===id);
 export const shipKey=(owner,hull)=>`${owner}:${hull}`;
-export const emptyCommerce=()=>({version:1,revision:0,nextId:1,accounts:{},ships:{},terminals:{},receipts:{}});
+export const emptyCommerce=()=>({version:1,marketVersion:1,revision:0,nextId:1,accounts:{},ships:{},terminals:{},receipts:{},markets:{[AEON_MARKET_ID]:createMarket(TRADE_RESOURCES)}});
 const check=(condition,message)=>{if(!condition)throw new Error(message);};
 const int=(n,max=1e9)=>Number.isSafeInteger(n)&&n>=0&&n<=max;
 const safe=id=>typeof id==='string'&&/^[a-zA-Z0-9][a-zA-Z0-9:_-]{0,119}$/.test(id)&&!['constructor','prototype','__proto__'].includes(id);
@@ -25,6 +26,10 @@ export function validCommerce(s){
   try{
     check(s?.version===1&&int(s.revision)&&int(s.nextId)&&s.nextId>0,'version');
     check(s.accounts&&s.ships&&s.terminals&&s.receipts,'state');
+    // Absence alone identifies the legacy fixed-price ledger. Partial/corrupt
+    // market records must never be repaired by resetting their finite supply.
+    const legacy=!Object.hasOwn(s,'markets')&&!Object.hasOwn(s,'marketVersion');
+    check(legacy||s.marketVersion===1&&validMarkets(s.markets,TRADE_RESOURCES),'markets');
     const ids=new Set();
     const crate=c=>{check(c&&safe(c.id)&&!ids.has(c.id)&&SBU_SIZES.includes(c.sbu)&&resourceById(c.resource),'crate');ids.add(c.id);};
     for(const [id,a] of Object.entries(s.accounts)){check(safe(id)&&int(a.credits)&&Object.entries(a.resources??{}).every(([r,n])=>resourceById(r)&&Number.isFinite(n)&&n>=0&&n<=48),'account');if(a.carried){crate(a.carried);check(a.carried.sbu===1,'carry');}}
@@ -37,39 +42,52 @@ export function validCommerce(s){
     return true;
   }catch{return false;}
 }
+/** Add finite NPC stock to the legacy JSON ledger. Call inside the existing save
+ * transaction and persist the result once; normalized reads retain all stock. */
+export function normalizeCommerce(source){
+  check(validCommerce(source),'Cargo save is invalid; original data retained.');
+  return Object.hasOwn(source,'markets')?source:{...structuredClone(source),marketVersion:1,markets:{[AEON_MARKET_ID]:createMarket(TRADE_RESOURCES)}};
+}
 /** Pure commands consume trusted context. Caller derives reach, docking and theft
  * permission from authoritative pose; no client-supplied permission is accepted. */
 export function commerceCommand(source,owner,m,ctx){
-  check(validCommerce(source),'Cargo save is invalid; original data retained.');
+  source=normalizeCommerce(source);
   check(safe(m.commandId),'Missing transaction identity.');
   const receiptKey=`${owner}:${m.commandId}`;
   if(Object.hasOwn(source.receipts,receiptKey))return {state:source,...source.receipts[receiptKey],replayed:true};
   check(m.revision===source.revision,'Cargo changed. Review the manifest and try again.');
-  const s=structuredClone(source),a=ensureAccount(s,owner),ship=s.ships[m.ship],r=resourceById(m.resource),terminal=s.terminals[m.terminal];
-  let message='',resourceDelta=0;
+  const s=structuredClone(source),a=ensureAccount(s,owner),ship=s.ships[m.ship],r=resourceById(m.resource),terminal=Object.hasOwn(s.terminals,m.terminal)?s.terminals[m.terminal]:null;
+  let message='',resourceDelta=0,quote=null;
   const ownedShip=()=>check(ship?.owner===owner,'Choose your ship.');
   const docked=()=>{ownedShip();check(ctx.docked?.(ship,m.terminal),'Choose a ship docked at this terminal.');};
   const atTerminal=()=>check(ctx.terminal?.(m.terminal),'Walk up to the trade terminal.');
   const add=(c)=>{const placed=placeCrate(ship.hull,ship.crates,c);check(placed,'No cargo grid space for that crate. Smaller crates may fit.');ship.crates.push(placed);};
   const selected=()=>{const c=ship?.crates.find(c=>c.id===m.crate);check(c,'Crate no longer present.');check(canRemoveCrate(ship.hull,ship.crates,c.id),'Remove the crates above this one first.');return c;};
   const remove=c=>{ship.crates=ship.crates.filter(x=>x.id!==c.id);};
+  const stationQuote=(side,sbu)=>{
+    // The resolver is trusted server/local context, never a client market ID.
+    const id=ctx.stationMarket?ctx.stationMarket(m.terminal):marketIdForTerminal(m.terminal);
+    check(typeof id==='string'&&Object.hasOwn(s.markets,id),'Unknown station market.');
+    quote=quoteMarket(s.markets[id],r,side,sbu);check(quote.ok,quote.reason);return quote;
+  };
   if(['buy','sell','pack','stock'].includes(m.op)){
     atTerminal();docked();check(r,'Choose a resource.');
     check(SBU_SIZES.includes(m.sbu),'Choose a crate size.');
   }
   if(m.op==='buy'){
-    const price=(terminal?.prices[r.id]??r.buy)*m.sbu;
+    const price=terminal?(terminal.prices[r.id]??r.buy)*m.sbu:stationQuote('buy',m.sbu).total;
     check(a.credits>=price,'Insufficient credits.');
     if(terminal){check((terminal.stock[r.id]??0)>=m.sbu,'Seller does not have that much stock.');check(terminal.owner!==owner,'Use Withdraw stock for your own terminal.');}
-    else check(m.terminal.startsWith('station:'),'Unknown terminal.');
     add({id:`sbu-${s.nextId++}`,resource:r.id,sbu:m.sbu});
     a.credits-=price;
     if(terminal){terminal.stock[r.id]-=m.sbu;s.accounts[terminal.owner].credits+=price;}
-    message=`Loaded ${m.sbu} SBU of ${r.name} aboard ${ship.hull}.`;
+    else s.markets[quote.marketId].stock[r.id]=quote.stockAfter;
+    message=`Loaded ${m.sbu} SBU of ${r.name} aboard ${ship.hull} for ${price} CR.`;
   }else if(m.op==='sell'){
     check(!terminal,'Player terminals buy only stock deposited by their owner.');
-    const c=selected();check(c.resource===r.id&&c.sbu===m.sbu,'Crate changed.');remove(c);a.credits+=r.sell*c.sbu;
-    message=`Sold ${c.sbu} SBU of ${r.name}.`;
+    const c=selected();check(c.resource===r.id&&c.sbu===m.sbu,'Crate changed.');stationQuote('sell',c.sbu);
+    remove(c);a.credits+=quote.total;s.markets[quote.marketId].stock[r.id]=quote.stockAfter;
+    message=`Sold ${c.sbu} SBU of ${r.name} for ${quote.total} CR.`;
   }else if(m.op==='pack'){
     check(ctx.resources?.(r.id)>=r.kgPerSBU*m.sbu,'Not enough loose resources in the selected source.');
     add({id:`sbu-${s.nextId++}`,resource:r.id,sbu:m.sbu});resourceDelta=-r.kgPerSBU*m.sbu;
@@ -98,7 +116,7 @@ export function commerceCommand(source,owner,m,ctx){
     const placed=placeCrate(to.hull,to.crates,c);check(placed,'Receiving cargo grid has no space.');remove(c);to.crates.push(placed);message='Salvaged crate loaded aboard.';
   }else throw new Error('Unknown cargo command.');
   check(int(a.credits)&&(!terminal||int(s.accounts[terminal.owner].credits)),'Credit limit exceeded.');
-  s.revision++;const receipt={message,resourceDelta,resource:m.resource};s.receipts[receiptKey]=receipt;
+  s.revision++;const receipt={message,resourceDelta,resource:m.resource,...(quote?{quote}:{})};s.receipts[receiptKey]=receipt;
   // Bounded history plus revision validation: old retries cannot execute again.
   const keys=Object.keys(s.receipts);if(keys.length>512)delete s.receipts[keys[0]];
   check(validCommerce(s),'Cargo transaction failed validation.');return {state:s,...receipt};
