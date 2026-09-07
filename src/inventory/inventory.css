@@ -31,3 +31,8 @@
   .top-actions .inventory-launcher{width:44px;height:44px;justify-content:center;padding:7px!important}
   .top-actions .inventory-launcher>span:nth-child(2),.top-actions .inventory-launcher kbd{display:none}
 }
+
+.inventory-ship-link{margin:0;padding:8px 18px;color:var(--muted);font:11px/1.5 var(--mono);border-bottom:1px solid var(--line)}
+.inventory-starter{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--line);font:11px/1.5 var(--mono);color:var(--muted)}
+.inventory-starter[hidden]{display:none}
+.inventory-starter button{padding:9px;color:var(--mint);background:var(--dialog-solid);border:1px solid var(--line)}

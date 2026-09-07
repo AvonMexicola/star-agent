@@ -21,3 +21,5 @@
 .build-cost,.build-hints{font:10px/1.8 var(--mono);color:var(--muted)}.build-hints{border-top:1px solid var(--line);padding-top:10px}
 @media(max-width:600px){#build-dialog{padding:20px}.build-content{grid-template-columns:1fr}.build-recipe{padding:12px}#build-hud{left:12px;bottom:64px;width:calc(100vw - 24px);padding:12px}.build-hints{font-size:9px}.build-touch{gap:5px}#build-hud button{padding:7px 9px}}
 @media(max-width:600px){#build-hud{bottom:16px;padding:10px}#build-hud>.build-eyebrow{display:none}.build-selected{font-size:17px;margin:4px 0}.build-placement,.build-cost{margin:6px 0}.build-hints{font-size:8px;line-height:1.4;margin:8px 0;padding-top:6px}}
+
+.build-ship-link{font:10px/1.5 var(--mono);color:var(--muted)}

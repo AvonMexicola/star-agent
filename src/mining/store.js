@@ -4,6 +4,7 @@ import { ShipInventory, ITEMS } from '../ship-inventory.js';
 import { defaultLoadout, validLoadout } from '../inventory/loadout.js';
 import { CATALOG, MATERIAL_IDS, PROCESSED_IDS, resourceItems, resourceAmounts, emptyItems, fitsBox, planTransfer, validItems, MAX_BOXES, MINERAL_CAPACITY_PER_BOX } from '../inventory/containers.js';
 import { defaultMiningProgression, validMiningProgression, awardMiningXP } from './progression.js';
+import { STARTER_CONSTRUCTION_ITEMS, defaultStarterConstruction, validStarterConstruction } from './starter-construction.js';
 export const RECOVERED_KG_PER_CUBIC_METRE = 1;
 export const MINING_KEY = 'star-agent.selene-mining.v1';
 export const POUCH_CAPACITY = MINERAL_CAPACITY_PER_BOX;
@@ -25,7 +26,7 @@ export class MiningStore {
       id: ROCK_ID, version: ROCK_VERSION, revision: 0, field: createDensity(), pack: [0, 0, 0], ship: [0, 0, 0],
       economy: {credits:legacy.credits,shopStock:structuredClone(legacy.shopStock)},
       boxes: { pack: 1, ship: 4, station: 2 }, supplies: oldSupplies, loadout: defaultLoadout(),
-      materials: { pack: {}, ship: {} }, progression: defaultMiningProgression(),
+      materials: { pack: {}, ship: {} }, progression: defaultMiningProgression(), starterConstruction: defaultStarterConstruction(),
       remote: { station: { name: 'Aeon orbital locker', kind: 'station', items: emptyItems() } }, rocks: {},
     };
     const initialState = this.state;
@@ -48,6 +49,7 @@ export class MiningStore {
           if (!safeId(id) || !Number.isSafeInteger(rock.revision) || rock.revision < 0 || !validField(rock.field)) throw Error('Invalid rock save');
         }
         if (!Number.isSafeInteger(this.state.economy?.credits) || this.state.economy.credits<0 || this.state.economy.credits>STARTER_CREDITS || !Object.entries(STATION_SHOPS).every(([id,shop])=>shop.offers.every(offer=>Number.isSafeInteger(this.state.economy.shopStock?.[id]?.[offer.itemId])&&this.state.economy.shopStock[id][offer.itemId]>=0&&this.state.economy.shopStock[id][offer.itemId]<=offer.stock)))throw Error('Invalid shop ledger');
+        if (!validStarterConstruction(this.state.starterConstruction)) throw Error('Invalid starter construction receipt');
         if (!validMiningProgression(this.state.progression)) throw Error('Invalid mining progression');
         if (!validLoadout(this.state.loadout) || !this.validContainers(this.state)) throw Error('Invalid containers');
       }
@@ -156,6 +158,18 @@ export class MiningStore {
       next = this.withItems(this.withItems(next, 'pack', result.from), 'ship', result.to);
     }
     return this.write(next);
+  }
+  /** Called after startup validation, or explicitly retried at ship cargo. */
+  claimStarterConstruction() {
+    if (this.blocked) return {ok:false,message:this.warning};
+    if (!validStarterConstruction(this.state.starterConstruction)) return {ok:false,message:'Invalid starter construction receipt.'};
+    if (this.state.starterConstruction.claimed) return {ok:true,message:'Starter construction supplies already received.'};
+    const target=this.container('ship'), items={...target.items};
+    for (const [id,amount] of Object.entries(STARTER_CONSTRUCTION_ITEMS)) items[id]=(items[id]??0)+amount;
+    if (!fitsBox(items,target.boxes,this.limits('ship'))) return {ok:false,message:'Starter construction supplies pending: free 103 kg and enough stack slots in ship cargo, then claim the kit.'};
+    const next={...this.withItems(this.state,'ship',items),starterConstruction:{version:1,claimed:true}};
+    const ok=this.write(next);
+    return {ok,message:ok?'Starter construction supplies delivered to ship cargo: 103 kg.':this.warning};
   }
   addBox(id) {
     if(id==='pack'&&!this.state.loadout.slots.backpack)return {ok:false,message:'Equip a backpack first.'};

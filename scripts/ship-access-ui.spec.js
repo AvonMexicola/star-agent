@@ -1,0 +1,23 @@
+import {test,expect} from '@playwright/test';
+import {mkdir} from 'node:fs/promises';
+const browserProblems=new WeakMap();
+test.beforeEach(({page})=>{const errors=[];browserProblems.set(page,errors);page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(['error','warning'].includes(m.type()))errors.push(m.text());});});
+test.afterEach(({page})=>expect(browserProblems.get(page)).toEqual([]));
+const tap=async(page,i)=>{await page.evaluate(i=>window.pad.buttons[i]={pressed:true,value:1},i);await page.waitForFunction(i=>window.fixture.nav.gamepad.previous[i],i);await page.evaluate(i=>window.pad.buttons[i]={pressed:false,value:0},i);await page.waitForFunction(i=>!window.fixture.nav.gamepad.previous[i],i);};
+async function choose(page,key,hold=false){const el=page.locator(`[data-controller-key="${key}"]`);for(let i=0;i<60;i++){if(await el.evaluate(e=>e===document.activeElement))break;await tap(page,13);}await expect(el).toBeFocused();if(hold){await page.evaluate(()=>window.pad.buttons[0]={pressed:true,value:1});await page.waitForFunction(()=>window.fixture.nav.gamepad.previous[0]);}else await tap(page,0);}
+test('open cargo invalidates moving ship range and recovers its controller location',async({page})=>{
+ await page.goto('/scripts/fixtures/ship-access.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);await tap(page,8);await choose(page,'location-ship');await expect(page.locator('[data-container="ship"]')).toBeVisible();
+ // Synthetic moving-ship edge: the real inventory stays open and its normal
+ // timer must invalidate access. No production navigation claim is made here.
+ await page.evaluate(()=>window.fixture.nav.shipPosition.z=100);await expect(page.locator('[data-controller-key="location-ship"]')).toHaveCount(0);await expect(page.locator('[data-container="ship"]')).toHaveCount(0);expect(await page.evaluate(()=>window.fixture.inventory.state.target)).toBe(null);await expect(page.locator('#cargo-dialog')).toBeVisible();await expect(page.locator('.inventory-ship-link')).toContainText('out of reach');
+ await page.evaluate(()=>window.fixture.nav.shipPosition.z=0);await expect(page.locator('[data-controller-key="location-ship"]')).toBeVisible();await choose(page,'location-ship');await expect(page.locator('[data-container="ship"]')).toBeVisible();await tap(page,1);
+});
+test('pending full-ship starter kit retries through controller once and survives reload',async({page})=>{
+ await page.goto('/scripts/fixtures/ship-access.html');await page.waitForFunction(()=>window.fixture?.nav.gamepad.armed);await tap(page,8);const before=await page.evaluate(()=>window.fixture.store.container('ship').items);await choose(page,'starter-kit');await expect(page.locator('.cargo-feedback')).toContainText('pending');expect(await page.evaluate(()=>window.fixture.store.container('ship').items)).toEqual(before);expect(await page.evaluate(()=>window.fixture.store.state.starterConstruction.claimed)).toBe(false);
+ await mkdir('/tmp/star-agent-ship-radius',{recursive:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/star-agent-ship-radius/pending-kit-phone.png'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.setViewportSize({width:1440,height:900});
+ // Disclosed synthetic cargo-space change isolates retry/button behavior; the
+ // action itself uses the real shared router, store transaction and receipt.
+ await page.evaluate(()=>{const f=window.fixture;if(!f.store.write(f.store.withItems(f.store.state,'ship',f.emptyItems())))throw Error(f.store.warning);});await choose(page,'starter-kit',true);await expect(page.locator('.cargo-feedback')).toContainText('delivered');await expect(page.locator('[data-controller-key="starter-kit"]')).not.toBeVisible();const after=await page.evaluate(()=>window.fixture.store.container('ship').items);expect(after.concrete).toBe(80);expect(after['metal-stock']).toBe(16);expect(after.conductor).toBe(3);expect(after.glass).toBe(4);
+ await page.waitForTimeout(400);expect(await page.evaluate(()=>window.fixture.store.container('ship').items)).toEqual(after);await expect(page.locator('#cargo-dialog')).toBeVisible();await page.evaluate(()=>window.pad.buttons[0]={pressed:false,value:0});await page.waitForFunction(()=>!window.fixture.nav.gamepad.previous[0]);
+ await page.reload();await page.waitForFunction(()=>window.fixture);expect(await page.evaluate(()=>window.fixture.store.container('ship').items)).toEqual(after);expect(await page.evaluate(()=>window.fixture.store.state.starterConstruction)).toEqual({version:1,claimed:true});
+});

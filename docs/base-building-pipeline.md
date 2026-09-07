@@ -22,6 +22,31 @@ make every saved base a remotely accessible inventory tab. Only an explicitly
 enabled mainframe can supply construction costs across its local claim. Current
 owner identity is local single-player state, not multiplayer security.
 
+## Starter allocation and nearby ship cargo
+
+`src/mining/starter-construction.js` owns the version-1 finite ledger: concrete80,
+metal-stock16, conductor3, glass4 kg. Missing `state.starterConstruction` migrates
+to `{version:1,claimed:false}`. `claimStarterConstruction()` saves the entire
+103 kg allocation and its receipt together; no partial grant, repeated reload
+award or XP. Preserve existing cargo/cuts/equipment. Full mass or slots leaves it
+pending for the shared inventory's controller-focusable claim button.
+
+Startup claims only after `BuildSystem` validates and restores the base extension,
+and only when neither system is blocked. Do not move this write into the store
+constructor: it must not rewrite malformed base saves. The manual retry shares
+the blocked-build guard. Test fixtures importing finite stock must explicitly
+record `starterConstruction:{version:1,claimed:true}` if no grant is intended.
+
+`src/inventory/ship-access.js` is the shared access policy: aboard/seated, or a
+walk/EVA actor within 50 m of the current actual ship origin in three-dimensional
+double-precision world space. Missing/invalid origins and crashed mode fail closed.
+Use it for every UI action and build payment, independent of navigation.enabled
+(dialogs pause navigation). Recheck access at activation, refresh open-dialog
+availability without requiring it to close, and show live range in both inventory
+and placement. Construction source order is pack, opt-in local buffer, nearby
+ship. Field recipes continue to use only the backpack. Physical hatch boarding,
+station access and other base container proximity rules remain their own contracts.
+
 ## Materials and new worlds
 
 Legacy `pack` and `ship` arrays still mean basalt/copper/ice. Six processed material
@@ -108,6 +133,7 @@ passes and retain corrections in `docs/qa/base-building/`.
 
 Useful commands: `npm test`, `npm run build`, and `npm run test:browser -- -c`
 with `scripts/build-gameplay.config.js`, `scripts/materials-gameplay.config.js`,
-`scripts/base-scene.config.js` or `scripts/build-ui.config.js`. Run heavy browser
+`scripts/base-scene.config.js`, `scripts/build-ui.config.js` or
+`scripts/ship-radius-gameplay.config.js`. Run heavy browser
 captures sequentially on native AMD ANGLE GL; coordinate explicit GPU handoffs.
 Independent visual review and whole-scene budgets remain review gates.

@@ -53,10 +53,10 @@ test('failed core write rolls back materials, piece IDs, claims and remote stora
 });
 test('buffer requires explicit nearby opt-in, combines sources once and persists its choice',()=>{
  const f=setup(),c=f.core();f.fund({concrete:12},'build-core-1');f.aim([4,0,0]);f.system.select('foundation');
- assert.equal(f.system.preview.valid,false);assert.deepEqual(f.system.preview.sources,['pack']);
+ assert.equal(f.system.preview.valid,false);assert.deepEqual(f.system.preview.sources,['pack','ship']);
  assert.equal(f.system.setBufferEnabled(c.id,true).ok,false,'distant settings changes rejected');
  f.nav.position.copy(f.system.toWorld(v([0,1.65,2]),c));assert.equal(f.system.setBufferEnabled(c.id,true).ok,true);
- f.aim([4,0,0]);f.system.refreshPreview();assert.deepEqual(f.system.preview.sources,['pack','build-core-1']);
+ f.aim([4,0,0]);f.system.refreshPreview();assert.deepEqual(f.system.preview.sources,['pack','build-core-1','ship']);
  const placed=f.system.place();assert.equal(placed.ok,true,placed.message);assert.equal(f.store.container('build-core-1').items.concrete,0);
  assert.equal(f.system.data.nextId,4);assert.equal(f.system.claims[0].pieces.length,2);assert.equal(new MiningStore(f.disk).state.build.claims[0].useBuffer,true);
  const cost=planCost(f.store,f.store.withItems(f.store.state,'pack',{concrete:6}),{concrete:12},['pack','pack']);assert.equal(cost.ok,false,'duplicate source identifiers cannot spend the same stack twice');
@@ -161,4 +161,23 @@ test('an upper slab can seat onto its two supporting wall tops without allowing 
 test('the opening cinematic cannot enter construction or spend a mainframe kit',()=>{
  const f=setup();f.fund(PIECES.mainframe.cost);const before=f.store.state;f.nav.openingActive=true;
  assert.equal(f.system.begin('mainframe').ok,false);assert.equal(f.system.active,false);assert.equal(f.store.state,before);
+});
+
+test('nearby ship pays exact core costs and placement rechecks access after preview',()=>{
+ const f=setup();f.fund(PIECES.mainframe.cost,'ship');f.system.begin('mainframe');
+ assert.equal(f.system.preview.valid,true,f.system.preview.reason);
+ const before=f.store.state,raw=f.disk.getItem(MINING_KEY);
+ const originalShip=f.nav.shipPosition.clone();f.nav.shipPosition.addScalar(100);
+ assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);assert.equal(f.disk.getItem(MINING_KEY),raw);
+ assert.deepEqual(f.system.preview.sources,['pack']);
+ f.nav.shipPosition.copy(originalShip);
+ assert.equal(f.system.place().ok,true);assert.equal(itemMass(f.store.container('ship').items),0);
+ assert.equal(f.system.claims[0].pieces.length,1);
+});
+test('mixed pack and nearby ship payment rolls back together on failed save',()=>{
+ const f=setup();f.fund({'metal-stock':2});f.fund({'metal-stock':3,conductor:3,glass:2},'ship');
+ f.system.begin('mainframe');assert.equal(f.system.preview.valid,true,f.system.preview.reason);
+ const before=f.store.state,raw=f.disk.getItem(MINING_KEY);f.disk.setItem=()=>{throw Error('quota');};
+ assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);assert.equal(f.disk.getItem(MINING_KEY),raw);
+ assert.equal(f.system.claims.length,0);
 });

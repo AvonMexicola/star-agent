@@ -1,3 +1,4 @@
+import { shipCargoAccess, shipCargoLabel } from '../inventory/ship-access.js';
 import './build.css';
 import { PIECES } from './definitions.js';
 import { routeBuildInput } from './input.js';
@@ -18,7 +19,7 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
   const close = button('Close · B / Esc', 'build-close', () => dialog.close()); dialog.querySelector('.dialog-top').append(close);
   const content = dialog.querySelector('.build-content'), description = dialog.querySelector('.build-description'), feedback = dialog.querySelector('.build-feedback');
   const hud = document.createElement('section'); hud.id = 'build-hud'; hud.hidden = true; hud.setAttribute('aria-label', 'Construction placement');
-  hud.innerHTML = '<span class="build-eyebrow">CONSTRUCTION MODE</span><strong class="build-selected"></strong><p class="build-placement" role="status"></p><p class="build-cost"></p><p class="build-hints">RT / Enter · Place once &nbsp; LT / T · Next snap<br>LB RB / Q E · Rotate &nbsp; ↑ ↓ · Height<br>X / P · Pieces &nbsp; B / Esc · Exit &nbsp; A / Space · Jump</p><div class="build-touch"></div>';
+  hud.innerHTML = '<span class="build-eyebrow">CONSTRUCTION MODE</span><strong class="build-selected"></strong><p class="build-placement" role="status"></p><p class="build-cost"></p><p class="build-ship-link"></p><p class="build-hints">RT / Enter · Place once &nbsp; LT / T · Next snap<br>LB RB / Q E · Rotate &nbsp; ↑ ↓ · Height<br>X / P · Pieces &nbsp; B / Esc · Exit &nbsp; A / Space · Jump</p><div class="build-touch"></div>';
   const shortcut = button('Build · B', 'build-open', () => open()); shortcut.id = 'build-shortcut'; shortcut.hidden = true;
   document.body.append(dialog, hud, shortcut);
   let tab = 'pieces', batch = 1, claim = null, lastPreview = '', lastMaterials = '';
@@ -35,7 +36,7 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
     content.replaceChildren(); feedback.textContent = '';
     for (const el of dialog.querySelector('.build-tabs').children) el.setAttribute('aria-pressed', String(el.dataset.controllerKey === `build-tab-${tab}`));
     if (tab === 'pieces') {
-      description.textContent = 'Place a mainframe on clear ground to claim a site. Materials come from your backpack or an enabled local mainframe buffer. Walls provide physical cover; environmental life support is not installed.';
+      description.textContent = 'Place a mainframe on clear ground to claim a site. Materials come from your backpack, an enabled local mainframe buffer, or ship cargo within 50 m. Walls provide physical cover; environmental life support is not installed.';
       for (const piece of Object.values(PIECES)) {
         const el = button('', `build-piece-${piece.id}`, () => choose(piece.id)); el.className = 'build-piece';
         const title = document.createElement('strong'); title.textContent = piece.label;
@@ -103,6 +104,7 @@ export function createBuildUI({nav, build, store, onMessage = message => nav.not
     document.body.classList.toggle('building',build.active);
     shortcut.hidden = nav.openingActive || build.active || nav.mode !== 'walk' || nav.insideShip || !nav.enabled || Boolean(document.querySelector('dialog[open]'));
     hud.hidden = !build.active || dialog.open;
+    hud.querySelector('.build-ship-link').textContent = shipCargoLabel(shipCargoAccess(nav));
     const preview = build.preview || {}, piece = PIECES[preview.pieceId || build.pieceId];
     const snapshot = JSON.stringify([piece?.id,preview.valid,preview.reason,preview.cost,preview.sources]);
     if (snapshot !== lastPreview) {

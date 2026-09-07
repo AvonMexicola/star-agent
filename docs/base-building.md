@@ -8,11 +8,23 @@ remains a roadmap; engineering stations, power and survival upgrades are later w
 ## Try it
 
 Start from the opening station with your normal mining tool and laser rifle.
-Take a ship to a world, land and physically leave through its hatch. Find an
-outcrop, select the mining tool and mine basalt and copper. Aeon now has common
+The Nomad receives a one-time construction kit: **80 kg concrete, 16 kg metal
+stock, 3 kg conductor and 4 kg glass**. This funds a mainframe, three foundations,
+two walls, a doorway, window wall, stairs, upper floor and crate. Existing saves
+receive it too, without replacing cargo. If the hold is full, free space and use
+**Claim starter construction supplies** in the inventory; the kit stays pending.
+Reloading or spending it never awards another kit.
+
+Take a ship to a world, land and physically leave through its hatch. Stay within
+**50 m of the ship** and choose **Build → Mainframe** to spend its cargo directly.
+The inventory and placement HUD show the cargo range and connection. Building
+spends backpack materials first, then an enabled mainframe buffer, then nearby
+ship cargo; it checks range again when you place each piece.
+
+To replenish materials, find an outcrop, select the mining tool and mine basalt and copper. Aeon now has common
 construction outcrops on dry land; Pyre has fewer, more widely spaced outcrops.
 Selene retains its existing mineral geography. Mining and backpack capacity remain
-finite; a new player receives no free construction stock.
+finite after the starter allocation.
 
 Open **Build → Recipes** with keyboard **B**, the on-screen Build button, or
 controller **Menu → Field recipes**. Processing currently uses only backpack
@@ -32,20 +44,21 @@ recipe contracts are in [field materials](design/field-materials-slice.md).
 All processed resources use the existing backpack, ship and base inventory grids,
 with 48 kg mineral capacity, 16 kg material stacks and eight slots per attached
 box. The starter backpack has one box; its second mount raises capacity to 96 kg.
-The ship starts with four boxes (192 kg) and can mount eight (384 kg). Carry materials back
-from the ship through the physical cargo interaction. An installed mainframe and
+The ship starts with four boxes (192 kg) and can mount eight (384 kg). Open the backpack within 50 m of the ship to access cargo, transfer items or
+equip stored gear. Cargo remains available while aboard; outside that radius it
+disappears from the inventory, even if the dialog was already open. An installed mainframe and
 crate each provide two storage boxes through that same interface. Approach a
 mainframe, press **F / controller X**, open its supplies and transfer materials.
 Enable its construction supply buffer to spend those stored materials while
 standing within that site's boundary. The buffer is opt-in and never draws from
-remote ships or other bases.
+ships beyond 50 m or other bases.
 
 Typical complete outcrops now recover about 8–14 kg of concentrate, giving a
 starter backpack room for at least three of the largest measured typical rocks,
 provided other carried items leave enough stack slots. The original large test
 rock yields about 22.55 kg. Old collected cargo keeps its existing quantities.
 
-At the ship, open **Backpack → Nomad cargo → Deposit all resources**. On a
+Aboard or within 50 m of the ship, open **Backpack → Nomad cargo → Deposit all resources**. On a
 controller, use **View**, select the ship's storage and confirm the deposit action
 with **A**. The button moves all raw and processed materials together. Carried
 weapons, ammo, medical items and supplies stay with you. A full destination or

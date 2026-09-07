@@ -120,8 +120,9 @@ try {
   $('mining-reduced-motion').checked=effects.reducedMotion;
   $('mining-reduced-motion').addEventListener('change',()=>{effects.reducedMotion=$('mining-reduced-motion').checked;resetMiningEffects();});
   $('mining-bloom').addEventListener('change',()=>atmosphere.bloom.enabled=$('mining-bloom').checked);
-  const inventoryUI=createInventoryUI(nav,()=>ship,inventory,mining.store,{loadout});
   const build=new BuildSystem({scene,nav,store:mining.store});
+  if (!build.blocked && !mining.store.blocked) mining.store.claimStarterConstruction();
+  const inventoryUI=createInventoryUI(nav,()=>ship,inventory,mining.store,{loadout,canClaimStarter:()=>!build.blocked});
   const buildUI=createBuildUI({nav,build,store:mining.store,onOpenStorage:id=>inventoryUI.openStorage(id)});
   build.onRegisterContainer=definition=>inventoryUI.registerContainer(definition);
   build.onMainframe=claim=>buildUI.openMainframe(claim);

@@ -116,7 +116,7 @@ test(fullKit?'controller constructs and uses all eight base pieces with physical
   // Explicit phase-1 imported-material fixture. No construction, movement or pose
   // is injected. Supplies obey actual container mass and stack limits.
   const memory=new Map(),storage={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)},store=new MiningStore(storage);
-  let initial={...store.state,boxes:{...store.state.boxes,pack:2,ship:8}};
+  let initial={...store.state,starterConstruction:{version:1,claimed:true},boxes:{...store.state.boxes,pack:2,ship:8}};
   initial=store.withItems(initial,'pack',{...store.container('pack',initial).items,concrete:12,'metal-stock':5,conductor:3,glass:2});
   initial=store.withItems(initial,'ship',{...store.container('ship',initial).items,concrete:fullKit?48:40,'metal-stock':12,glass:2});
   expect(store.validContainers(initial)).toBe(true);expect(store.write(initial)).toBe(true);

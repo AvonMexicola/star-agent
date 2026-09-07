@@ -1,3 +1,4 @@
+import { shipCargoAccess } from '../inventory/ship-access.js';
 import * as THREE from 'three';
 import { bodyAt, bodyAltitude, bodyOffset, bodySurfacePoint, BODIES } from '../celestial.js';
 import { terrainHeight } from '../world.js';
@@ -84,6 +85,7 @@ export class BuildSystem {
     const actor=claim?this.toLocal(this.nav.position,claim):null;
     const sources=claim?.useBuffer&&this.pieceId!=='mainframe'&&Math.hypot(actor.x,actor.z)<=claim.radius?['pack',bufferId(claim,claim.pieces.find(p=>p.type==='mainframe'))]:['pack'];
     let reason=!claim?'Place a mainframe to establish building rights.':!candidate?'Place a supporting foundation first.':this.validate(claim,p);
+    if(shipCargoAccess(this.nav).available)sources.push('ship');
     const cost=PIECES[p.type].cost,resources=planCost(this.store,this.store.state,cost,sources);
     if(!reason&&!resources.ok)reason=resources.message;
     this.preview={pieceId:p.type,piece:p,claim,position:claim?this.toWorld(v(p.position),claim).toArray():target.toArray(),valid:!reason,reason:reason||'Ready to place',cost,sources,snapCount:candidates.length};
@@ -153,7 +155,7 @@ export class BuildSystem {
     if(!c||this.nav.mode!=='walk'||this.nav.insideShip||typeof enabled!=='boolean'||this.nav.position.distanceTo(this.toWorld(v(core.position),c))>4)return {ok:false,message:'Approach your mainframe to configure supplies.'};
     const data={...this.data,claims:this.data.claims.map(c=>c.id===id?{...c,useBuffer:enabled}:c)};
     if(!this.store.write({...this.store.state,build:data}))return {ok:false,message:this.store.warning};
-    this.refreshPreview();return {ok:true,message:enabled?'Local construction buffer enabled.':'Construction uses backpack materials only.'};
+    this.refreshPreview();return {ok:true,message:enabled?'Local construction buffer enabled.':'Local buffer disabled. Backpack and nearby ship cargo remain available.'};
   }
   sync(){
     for(const c of this.claims){

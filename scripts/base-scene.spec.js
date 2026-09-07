@@ -11,7 +11,7 @@ const up=new THREE.Vector3(...MOON_LANDING_DIRECTION),east=new THREE.Vector3(0,1
 const origin=bodySurfacePoint(up,SELENE),quaternion=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(east,up,north));
 const world=point=>new THREE.Vector3(...point).applyQuaternion(quaternion).add(origin).toArray();
 function fixture(){
- const disk=new Map(),storage={getItem:k=>disk.get(k)??null,setItem:(k,v)=>disk.set(k,v)},store=new MiningStore(storage);
+ const disk=new Map(),storage={getItem:k=>disk.get(k)??null,setItem:(k,v)=>disk.set(k,v)},store=new MiningStore(storage);store.state.starterConstruction={version:1,claimed:true};
  const rows=[['mainframe',[8,0,0],Math.PI],['foundation',[0,.3,0]],['foundation',[0,.3,-4]],['foundation',[-4,.3,0]],['stairs',[0,.3,0]],['wall',[-2,.3,-4],Math.PI/2],['window',[2,.3,-4],Math.PI/2],['doorway',[0,.3,-6]],['floor',[0,3.3,-4]],['crate',[-4,.3,0]]];
  const c={id:'build-claim-1',body:'selene',name:'Crescent construction test',owner:'local-player',useBuffer:false,radius:64,origin:origin.toArray(),quaternion:quaternion.toArray(),pieces:rows.map(([type,position,rotation=0],i)=>({id:`build-piece-${i+2}`,type,position,rotation,doorOpen:false}))};
  const build={version:1,nextId:rows.length+2,claims:[c]};if(!validBuild(build))throw Error('Review fixture violates build schema');
