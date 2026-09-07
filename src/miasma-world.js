@@ -1,3 +1,4 @@
+import { rockFormationHeight } from './rock-formations.js';
 import { Vector3 } from 'three';
 import { PYRE_POSITION, pyreFrame, pyreArrivalDirection } from './pyre-world.js';
 import { resourceProfile, resourceColor } from './resource-profile.js';
@@ -8,7 +9,7 @@ export const MIASMA_RADIUS = 340_000;
 export const MIASMA_ORBIT_RADIUS = 6_400_000;
 export const MIASMA_MAX_HEIGHT = 6500;
 export const MIASMA_ARRIVAL_ALTITUDE = 650_000;
-export const MIASMA_GENERATOR_VERSION = 1;
+export const MIASMA_GENERATOR_VERSION = 2;
 // A frozen inclined satellite orbit, clear of the Aeon approach corridor. The
 // moon sits above the dark limb in the authored Pyre arrival composition.
 const north = new Vector3(...pyreFrame().y), towardAeon = new Vector3(...pyreArrivalDirection());
@@ -60,10 +61,12 @@ export function miasmaSurface(x,y,z) {
     basin=Math.max(basin,bowl);rim=Math.max(rim,edge);
   }
   height+= (fbm(x*160,y*160,z*160,3)-.5)*150-fracture*70+(noise(x*2200,y*2200,z*2200)-.5)*3;
+  const rocks=rockFormationHeight(x,y,z,MIASMA_RADIUS,0x4d494153);
+  height+=rocks;
   const sulphur=clamp(.24+continent*.75+rim*.3-basin*.75),copper=basin*.92;
   const resources=resourceProfile(MIASMA_RESOURCE_IDS,[sulphur,Math.max(.06,1-sulphur-copper),copper],region);
-  const color=resourceColor(resources,PALETTE).map(v=>v*(.8+continent*.3)*(1-fracture*.24));
-  return {height,color,resources,region,activity:0,fresh:basin,sulphur,oxide:0};
+  const color=resourceColor(resources,PALETTE).map(v=>v*(.8+continent*.3)*(1-fracture*.24)*(1-smooth(.3,3,rocks)*.34));
+  return {height,rockRelief:rocks,color,resources,region,activity:0,fresh:basin,sulphur,oxide:0};
 }
 export const MIASMA_TERRAIN = Object.freeze({name:'Miasma',radius:MIASMA_RADIUS,position:MIASMA_POSITION,maxHeight:MIASMA_MAX_HEIGHT,orbitLevel:4,sample:miasmaSurface});
 export function miasmaArrivalDirection() {return new Vector3(...PYRE_POSITION).sub(new Vector3(...MIASMA_POSITION)).normalize().toArray();}

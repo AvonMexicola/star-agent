@@ -13,6 +13,7 @@ export function floraCandidates(up,shipLocal=null){
   const candidates=[];
   scatterMinerals(up,(d,col,row,a,b)=>{
     const surface=miasmaSurface(...d.toArray()),colony=.5+.5*Math.sin(d.x*MIASMA_RADIUS/85+Math.sin(d.z*MIASMA_RADIUS/110))*Math.sin(d.y*MIASMA_RADIUS/97);
+    if(surface.rockRelief>.12)return;
     if(hash(col,row,6101)>.28+colony*.6)return;
     const pick=hash(col,row,7311),species=pick<.18?0:pick<.30?1:pick<.64?2:3;
     const size=(species<2?.55:.75)+hash(col,row,2713)*.5,point=d.clone().multiplyScalar(MIASMA_RADIUS+surface.height);

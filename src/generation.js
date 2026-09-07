@@ -1,5 +1,5 @@
 export const DEFAULT_SEED = 7291;
-export const GENERATOR_VERSION = 2;
+export const GENERATOR_VERSION = 3;
 
 export function parsePlanetSeed(value) {
   if (value === null || value === undefined || value === '') return DEFAULT_SEED;

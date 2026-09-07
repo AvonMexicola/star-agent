@@ -1,3 +1,4 @@
+import { attachRockMaterial } from './rock-material.js';
 import * as THREE from 'three';
 import { MOON_RADIUS, MOON_POSITION, moonSurface } from './moon-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION } from './world.js';
@@ -42,6 +43,7 @@ export class Moon {
           diffuseColor.rgb*=mix(1.0,.65+grain*.7,detailFade);`);
     };
     this.material.customProgramCacheKey=()=> 'selene-terrain-v2';
+    this.releaseRockMaterial=attachRockMaterial(this.material,{pointAttribute:'moonPoint',tint:[1.14,1.16,1.22]});
     this.terrain=new MoonTerrain(scene,this.material);
     this.sun=new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
   }
@@ -55,5 +57,5 @@ export class Moon {
     this.material.color.setScalar(.035+.965*visibility);
   }
   get ready(){return this.terrain.ready;}
-  dispose(){this.terrain.dispose();this.grain.dispose();this.material.dispose();this.maps.color.dispose();}
+  dispose(){this.releaseRockMaterial();this.terrain.dispose();this.grain.dispose();this.material.dispose();this.maps.color.dispose();}
 }

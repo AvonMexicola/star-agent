@@ -27,6 +27,7 @@ export function generatePyrePatch({ face, level, ix, iy }, body = PYRE_TERRAIN) 
   const d0 = cubeDirection(face, u0 + size / 2, v0 + size / 2), centerRadius = radius + surface(...d0).height, center = d0.map(v => v * centerRadius);
   const count = (grid + 1) ** 2 + 4 * (grid + 1);
   const positions = new Float32Array(count * 3), normals = new Float32Array(count * 3), directions = new Float32Array(count * 3), points = new Float32Array(count * 3), colors = new Float32Array(count * 3), data = new Float32Array(count * 4);
+  const rockReliefs = new Float32Array(count);
   const stride = grid + 3, samples = [];
   for (let y = -1; y <= grid + 1; y++) for (let x = -1; x <= grid + 1; x++) {
     const d = cubeDirection(face, u0 + size * x / grid, v0 + size * y / grid), sample = surface(...d);
@@ -43,6 +44,7 @@ export function generatePyrePatch({ face, level, ix, iy }, body = PYRE_TERRAIN) 
       if (normal[0] * d[0] + normal[1] * d[1] + normal[2] * d[2] < 0) normal = normal.map(v => -v);
       entry.normal = normal;
     }
+    rockReliefs[index]=sample.rockRelief??0;
     data.set([sample.activity, sample.fresh, sample.sulphur, sample.height], index * 4);
     if (!skirt) { maxHeight = Math.max(maxHeight, sample.height); minHeight = Math.min(minHeight, sample.height); }
     for (let axis = 0; axis < 3; axis++) {
@@ -59,7 +61,7 @@ export function generatePyrePatch({ face, level, ix, iy }, body = PYRE_TERRAIN) 
   const depth = Math.max(.15, size * radius * .18);
   for (const edge of edges) { const start = next; for (const index of edge) write(next++, index % (grid + 1), Math.floor(index / (grid + 1)), depth); for (let i = 0; i < grid; i++) indices.push(edge[i], start + i, edge[i + 1], edge[i + 1], start + i, start + i + 1); }
   const field=level>=6&&level<=13?generatePatchSurface({face,level,ix,iy,radius,directionAt:cubeDirection,sample:surface}):null;
-  return { grid, field, center, positions, normals, directions, points, colors, data, indices: new Uint16Array(indices), maxHeight, minHeight };
+  return { grid, field, center, positions, normals, directions, points, colors, data, rockReliefs, indices: new Uint16Array(indices), maxHeight, minHeight };
 }
 
 /** Worker-streamed cubed-sphere quadtree for Pyre. Falls back to synchronous
@@ -115,6 +117,7 @@ export class PyreTerrain {
   upload(node, data) {
     const geometry = new THREE.BufferGeometry();
     for (const [name, values] of [['position', data.positions], ['normal', data.normals], ['pyreDirection', data.directions], ['pyrePoint', data.points], ['color', data.colors]]) geometry.setAttribute(name, new THREE.BufferAttribute(values, 3));
+    geometry.setAttribute('rockRelief',new THREE.BufferAttribute(data.rockReliefs,1));
     geometry.setAttribute('pyreData', new THREE.BufferAttribute(data.data, 4));
     geometry.setAttribute('uv', new THREE.BufferAttribute(patchSurfaceUV(data.grid,data.field?.width??65), 2));
     geometry.setAttribute('parentPosition',new THREE.BufferAttribute(data.positions.slice(),3));
