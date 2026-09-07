@@ -235,3 +235,16 @@ its release owner is finishing the separately requested homepage film replacemen
 This observation establishes the served release identifier, not its final subsequent
 media commit. Public multiplayer is updated by its own deployment owner with an
 isolated restore/migration check and a paired static/API switch.
+
+
+Final release verification: development [PR83](https://github.com/AvonMexicola/star-agent/pull/83)
+merged normally at `bda56329`; main [PR82](https://github.com/AvonMexicola/star-agent/pull/82)
+merged normally at `15978328`, both after all five required checks passed. Live
+solo is `614c034` at https://play.staragent.site/; live multiplayer is `623430d`
+(protocol5, cap20) at https://multiplayer.staragent.site/, with branch documentation
+head `9422285`. Real live registration/WSS/hangar and eight MP artifact hashes pass;
+all pre-existing account/session/player digests match the final backup after the
+synthetic fixture was removed. The extra bounded public launcher smoke rendered
+without diagnostics, but its second-page readiness wait hit its time cap; it is
+not a complete flight pass. Parent full gameplay and hosted browser checks passed.
+The separately owned next homepage film does not change the checked game bundle.
