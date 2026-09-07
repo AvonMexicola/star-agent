@@ -53,7 +53,15 @@ projectile sweeps/tails and server-owned mode snapshots plus sustained braking.
   desktop viewport1440×900 and phone390×844. The full moving-weapon controller
   route passed again after the flash fix (1.9m), with no page/console errors.
   Kestrel, Nomad and Atlas each passed the controlled braking/retreat browser check.
-- Nomad patrol completion remains pending the final isolated rerun; see failures below.
+- Final Nomad controller patrol passed (1.6m;1.7m including startup) on the
+  unchanged final runtime, with evasive stick input, two kills, combat report and
+  return to play. No page/console errors. It used project-disk evidence/results
+  after the quota failure. Browser fixture/output commit1911960; runtime6f8b195.
+- Production builds passed throughout the focused browser runs; only the existing
+  Vite chunk-size and NO_COLOR/FORCE_COLOR warnings remain. Repository checks pass.
+- The integration steward SA-INT-002 already includes runtime6f8b195 in its combined
+  candidate. Final shared preview promotion/restart is serialized by that steward;
+  this record does not claim production deployment.
 
 Initial browser attempts failed before useful gameplay verification: restricted
 /tmp capacity caused resource/page/WebGL failures, and an overlong alternative
@@ -65,8 +73,11 @@ replaced it. Current fixtures use RT fire, LT braking and the real tabbed menu.
 A server regression initially omitted the input envelope, then let its input lease
 expire; the final fixture supplies sustained sequenced brake intent like a client.
 
-Raw evidence/logs remain in /tmp/star-agent-momentum-evidence and
-/tmp/momentum-integrated-{unit,online,browser,build}.log. Curated captures follow.
+Raw core evidence/logs remain in /tmp/star-agent-momentum-evidence and
+/tmp/momentum-integrated-{unit,online,browser,build}.log. The final patrol record is
+in /home/cees/projects/star-agent/test-results/momentum-patrol/nomad and
+/home/cees/projects/star-agent/test-results/momentum-browser-final.log. Curated
+captures follow.
 The fitted-gun route first failed when the Dev launcher intentionally reloaded
 and destroyed the old animation-frame callback. The fixture now waits for the
 new URL and neutral controller state. A later patrol run lost while sitting still
@@ -90,3 +101,5 @@ The ship frame uses the fitted gun source, with its authored local flash retaine
 
 Physical controller hardware, independent visual acceptance and FPS targets have
 not been verified. Online ship combat and persistent patrols remain out of scope.
+
+![Completed controller patrol report](combat-momentum/patrol-report.png)
