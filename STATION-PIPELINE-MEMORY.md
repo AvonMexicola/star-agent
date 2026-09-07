@@ -452,3 +452,26 @@ export overshoot, the prepared Blender intake trims to the maximum cap, not the
 lower aspirational target. A much larger budget difference (this jacket) needs
 an explicit author/reviewer decision before cleanup. Actual local GLB fitting,
 PBR-file validation and game review remain pending in the production record.
+
+## Aeon exterior geometry checkpoint — 2026-09-07
+
+The opt-in `?dev=1&stationExterior=1` exterior is reproduced by
+`blender/build_station_exterior.py` (hero and `--lod`), with editable sources and
+manifests under `assets/station/exterior/`. FixedStructure, RingTemplate and
+HubShellDetail are required nonempty assemblies. Runtime clones one ring at each
+X ±1110 m pivot. Never change the twenty original bay frames to fit new artwork.
+
+Hero and distant GLBs total 3,806,864 bytes; their assembled counts are
+96,704/54,944 triangles and 22 draws each. The distant export removes bevel detail,
+switches at 4200/3800 m with hysteresis, and follows the exact hero ring poses.
+Collision always uses the immutable hero trees. Both ring instances share mesh
+resources. Grain UVs are reconstructed once from decoded geometry; Blender keeps
+editable UVs, but a unique painting atlas and final material pass do not yet exist.
+
+Validate actual triangle/room intersections, not only vertices: a rejected support
+face crossed the concourse while all corners stayed outside the room. Empty named
+assemblies must fail before replacing the legacy mesh/BVHs. Independent final CPU
+review passes the corrected geometry, optional-load fallback and LOD physics.
+See `docs/qa/station-exterior/production-record.md` for exact hashes, failed checks,
+actual Chromium images and input coverage. Silhouette 4.0/5 is a geometry-direction
+score; materials 2.8/5, final art approval and hardware timing remain pending.

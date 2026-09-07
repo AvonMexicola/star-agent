@@ -1775,3 +1775,33 @@ exhaustion (write errno122). Test-specific temporary files/evidence on the home
 disk allowed validation to complete without system configuration changes.
 Curated captures and details: docs/qa/multiplayer-hangar-physics.md. Preserve the
 unrelated unstaged AGENTS.md edit owned by the shared development lane.
+
+## READY FOR REVIEW — Aeon exterior geometry preview — 2026-09-07
+
+Files: `blender/build_station_exterior.py`, `blender/pack_rigid_geometry.py`,
+`assets/station/exterior/`, `public/models/station-exterior*.glb`,
+`src/station-exterior.js`, narrow station/launcher integration and corresponding
+tests; source and actual-render evidence in `docs/qa/station-exterior/`.
+Isolated branch `feat/station-exterior` starts from `dev/all-features` at `8576e99`.
+
+The first exterior geometry pass replaces the two segmented wheels with continuous
+pressure rings, paired truss spokes and separate fixed/rotating bearings. A
+reinforced spine, twenty support bridges, reactor housings and radiators retain
+all existing bay frames and the concourse. The new geometry requires explicit
+`?dev=1&stationExterior=1`; the local launcher's labelled geometry-preview link
+starts a Kestrel overview with ordinary flight controls. Other test starts clear
+the one-shot overview. Original bay/door/interior assets are unchanged.
+
+Final hero SHA `5b39b183…b76e6` and distant SHA `ec98e225…ffdcb` total 3,806,864 bytes.
+Visible assembled geometry is 96,704/54,944 triangles and 22 material draws. Hero-only
+collision persists across render detail changes. Independent CPU review passes
+22 station tests, 21 room volumes, 48 sampled ring poses, 60 approach sweeps and optional
+loading/fallback cases. Two discovered defects were fixed and independently
+rechecked. Author Chromium scene/input cases pass 2/2 with zero browser errors or
+warnings, including injected Gamepad entry/menu return/held-input suppression
+and 390×844 touch entry. No physical-controller or FPS claim.
+
+Silhouette review improved 3.0→4.0; materials 2.8 remain unfinished. Final painting,
+bearing/centre/rim detail hierarchy, complete art acceptance and hardware timing
+remain open. This is a development checkpoint, not a finished-art or production
+merge request. Shared-build integration and its validation follow separately.
