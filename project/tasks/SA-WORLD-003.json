@@ -1,0 +1,22 @@
+{
+  "id": "SA-WORLD-003",
+  "title": "Rarer Aeon landmarks with restrained and cheaper stone shading",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex landmark restraint",
+  "status": "review",
+  "branch": "art/landmark-restraint",
+  "base": "219a584d7e9da5d2262c94829a69c9ca61ced247",
+  "updated": "2026-09-07",
+  "areas": ["world", "rendering", "multiplayer"],
+  "claims": [
+    "src/landmark-distribution.js",
+    "src/landmark-material.js",
+    "tests/landmark-rocks.test.js",
+    "scripts/landmark-restraint.spec.js",
+    "scripts/landmark-restraint.config.js",
+    "docs/briefs/landmark-restraint.md",
+    "docs/qa/landmark-restraint/"
+  ],
+  "brief": "docs/briefs/landmark-restraint.md"
+}
