@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex social feature session",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/multiplayer-chat-friends",
   "base": "46947764d4bf86501d71c16a7fbdb25003fc2e62",
   "updated": "2026-09-07",
