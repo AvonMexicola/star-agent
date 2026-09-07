@@ -1349,6 +1349,8 @@ Leg correction claims are released to the character owner; GPU QA is finished.
 
 ## READY FOR REVIEW: expedition character and first/third-person equipment — 2026-09-07
 
+Draft PR: https://github.com/AvonMexicola/star-agent/pull/65
+
 Files: `src/character.js`, `src/character-ik.js`, `src/equipment.js`,
 `src/mining/{tool,field}.js`, `src/ship-camera.js`, opening/main integration,
 `src/avatar-studio.*`, `blender/avatar-*.mjs`, retained character/font sources,
@@ -1368,6 +1370,7 @@ physical traversal/seating/reload/damage mechanics are not claimed.
 
 Live local review: http://127.0.0.1:5318/dev/avatar-studio.html
 Game: http://127.0.0.1:5318/?intro=1
+The final production studio preview is also retained on port 5319.
 Meshy asset: White Horizon Explorer, 35 existing credits, retained source exports.
 
 Validation: 508 tests pass after final support calibration; production build

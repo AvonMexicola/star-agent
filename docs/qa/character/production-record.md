@@ -4,6 +4,9 @@ Status: implementation, source build and independent reviews complete. Final
 visual score **4.33/5**; functional recheck accepted. Draft review delivery awaits
 the strict scene timing gate described below. Not merged or deployed.
 
+Review delivery: [draft PR #65](https://github.com/AvonMexicola/star-agent/pull/65).
+Local studio: http://127.0.0.1:5318/dev/avatar-studio.html.
+
 Worktree/branch: `feat/character-fidelity`, based on `feat/flight-options` at
 `3e0f3b9a5087f3231cfcf3f193a3cec300cfbf7d` (PR 38). The shared controller checkout
 was not modified. This explicit stack retains the camera/equipment integration
