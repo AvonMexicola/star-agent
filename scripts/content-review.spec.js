@@ -6,12 +6,16 @@ const output=join(process.env.CONTENT_REVIEW_CACHE||join(homedir(),'.cache','sta
 const state=page=>page.evaluate(()=>window.starAgent.state);
 const frames=(page,n=4)=>page.evaluate(async n=>{for(let i=0;i<n;i++)await new Promise(r=>requestAnimationFrame(r));},n);
 const ready=page=>page.waitForFunction(()=>window.starAgent?.state.ready&&!window.starAgent.state.transiting,null,{timeout:100000});
-function diagnostics(page){const errors=[],warnings=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});return {errors,warnings};}
+function diagnostics(page){const errors=[],warnings=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push('HTTP '+r.status()+' '+r.url());});page.on('console',m=>{if(m.type()==='error')errors.push(m.text()+' '+m.location().url);if(m.type()==='warning')warnings.push(m.text());});return {errors,warnings};}
 async function controller(page){
  await page.addInitScript(()=>{window.reviewPad={id:'Content review standard Gamepad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>[window.reviewPad]});});
  const button=async(i,down)=>{await page.evaluate(({i,down})=>window.reviewPad.buttons[i]={pressed:down,value:Number(down)},{i,down});await frames(page);};
  const tap=async i=>{await button(i,true);await button(i,false);};
- const choose=async key=>{for(let i=0;i<100;i++){if(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)===key){await tap(0);return;}await tap(13);}throw Error('Controller cannot reach '+key);};
+ const choose=async(key,navigation)=>{for(let i=0;i<100;i++){if(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)===key){
+  if(navigation){const loaded=page.waitForURL(navigation);await page.evaluate(()=>window.reviewPad.buttons[0]={pressed:true,value:1});await loaded;await page.waitForLoadState('domcontentloaded');}
+  else await tap(0);
+  return;
+ }await tap(13);}throw Error('Controller cannot reach '+key);};
  const axes=values=>page.evaluate(values=>window.reviewPad.axes=values,values);
  const camera=async()=>{await button(4,true);await button(5,true);await tap(15);await button(4,false);await button(5,false);};
  return {button,tap,choose,axes,camera};
@@ -52,7 +56,7 @@ test('content review links, construction categories and isolated sandbox saves s
  const routes=await page.locator('.dev-review-list>a').evaluateAll(links=>links.map(a=>({key:a.dataset.controllerKey,href:a.href})));
  expect(routes).toHaveLength(7);
  for(const route of routes){const response=await page.request.get(route.href);expect(response.status(),route.href).toBe(200);}
- await pad.choose('dev-review-construction');await page.waitForURL(/sandbox=build/);await ready(page);
+ await pad.choose('dev-review-construction',/sandbox=build/);await ready(page);
  await page.waitForFunction(()=>window.starAgent.state.build.assetsReady&&window.starAgent.state.controller.armed);
  expect((await state(page)).mode).toBe('walk');expect((await state(page)).sandbox).toBe(true);
  expect((await state(page)).build.controllerAvailable).toBe(true);await pad.tap(1);await expect(page.locator('#build-dialog')).toBeVisible();
@@ -78,7 +82,7 @@ test.describe('phone review',()=>{test.use({hasTouch:true,viewport:{width:390,he
 });
 
 test('bundled prop and sound studios load their real content',async({page})=>{
- const log=diagnostics(page);await page.goto('/dev/props.html?only=kestrel-maintenance-roll&t=0');await page.waitForFunction(()=>window.__propsReady);
+ const log=diagnostics(page);await page.goto('/dev/props.html?only=kestrel-maintenance-roll&t=0');await page.waitForFunction(()=>window.__propsReady);expect(await page.evaluate(()=>window.__propsError??null)).toBe(null);expect(await page.evaluate(()=>window.__propsFailed)).toEqual([]);expect(await page.evaluate(()=>window.__propsStats.map(p=>p.name))).toEqual(['kestrel-maintenance-roll']);
  await page.screenshot({path:join(output,'kestrel-prop.png')});
  await page.goto('/tests/gameplay-audio.html');await page.getByRole('button',{name:'Enable sound',exact:true}).click();await page.getByRole('button',{name:'Full thrust',exact:true}).click();await frames(page,20);
  await page.getByRole('button',{name:'Engine off',exact:true}).click();await page.getByRole('button',{name:'Pyrebear · deep growl',exact:true}).click();await frames(page,15);

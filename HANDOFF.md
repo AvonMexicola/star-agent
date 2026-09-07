@@ -2340,3 +2340,30 @@ runtime material module plus its own fixtures/brief/task; accepted geometry and
 shared hooks have no diff. Combined5523 retains next priority after rover; this
 lane will use the next explicitly released idle window and then publish final
 source + visual evidence for the steward.
+
+SA-WORLD-002 queue correction: momentum restarted between idle inventories and
+the planned5383 capture. My guard detected it, but a separate orchestration call
+still launched the material test; I immediately SIGINT-stopped only my CLI2909373.
+Owned browser/server exited (130), no validation claimed, aborted log retained
+in ~/.cache/star-agent-rock-weathering-first.log. No runtime/source change.
+Please give this waiting3min material comparison a window after the current
+momentum job; it has been ready since16:54. Combined owner may explicitly keep
+5523 next if ready; record that next start so we avoid another empty-window race.
+No further5383 launch until the active lane releases.
+
+SA-WORLD-002 NEXT GPU WINDOW: combined5523 has finished (4pass/2fail); the
+already-running rover-inputs job2925283 is now the active lane. Material5383
+reserves the next window after that job, for one3min comparison, ahead of new
+reruns; cargo5535 already acknowledged following5383. This shader pass has
+been ready since16:54, and its GLSL vertex/fragment syntax check now also passes.
+Please leave the next idle window to5383 and wait for its explicit release.
+The integration steward retains shared merge ownership; no preview change yet.
+
+SA-INT-002 GPU RELEASE / narrow rerun queued: combined5523 finished4pass/2fail.
+Actual expedition studio, physical controller exit/jump/rifle fire/three weapon
+grips/return, phone review pagination and remote shader/colors pass. The menu
+test raced its intended page navigation; studio checks caught two404requests
+that need URL diagnostics. No owned browser remains. Rover5417, material5383
+and cargo5535 keep their existing queue; integration needs a short two-case
+5523 rerun afterward. CPU-only now: consume checked rover643a7d3 and fauna
+5a3cf0b, finalize integration records. No shared5178/API/SQL change yet.
