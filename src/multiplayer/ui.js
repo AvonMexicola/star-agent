@@ -1,5 +1,6 @@
 import { CATALOG, itemMass, quantityLabel } from '../inventory/containers.js';
 import { SUIT_COLORS, MAX_PLAYERS } from './protocol.js';
+import { createSocialUI } from './social-ui.js';
 
 if (typeof document !== 'undefined') void import('./ui.css');
 
@@ -34,9 +35,12 @@ export function normalizeMultiplayerState(value = {}) {
     players: Array.isArray(state?.players) ? state.players : [],
     maxPlayers: Number.isFinite(state?.maxPlayers) ? state.maxPlayers : null,
     hangar: state?.hangar ?? null,
+    handsFree: Boolean(state?.hub?.handsFree || state?.hub?.transit),
     inventory: state?.inventory ?? null,
     health: Number.isFinite(state?.health) ? state.health : Number.isFinite(state?.inventory?.health) ? state.inventory.health : null,
     drops: Array.isArray(state?.drops) ? state.drops : [],
+    error: typeof state?.error === 'string' ? state.error : null,
+    moderation: typeof state?.moderation === 'string' ? state.moderation : null,
   };
 }
 
@@ -109,6 +113,19 @@ function expiryLabel(expiresAt) {
   return Number.isNaN(date.valueOf()) ? '' : `Expires ${date.toISOString().slice(11, 16)} UTC`;
 }
 
+/** Compare the values a panel actually displays, excluding moving world poses.
+ * Inventory contents remain included even if a server reuses its revision. */
+export function multiplayerPanelKey(panel, state, account = state.account, busy = false) {
+  if (panel === 'account') return JSON.stringify([Boolean(account), safeCallsign(account), state.connected, busy]);
+  if (panel === 'inventory') return JSON.stringify([state.connected, state.needsRespawn, state.handsFree, state.health, state.inventory,
+    state.drops.map(({ id, item, quantity }) => [id, item, quantity]), busy]);
+  return JSON.stringify([state.connected, Boolean(account), safeCallsign(account), state.maxPlayers, state.health,
+    hangarLabel(state.hangar), state.hangar ? padLabel(state.hangar.pad) : null, expiryLabel(state.hangar?.expiresAt),
+    state.error, state.moderation, busy, state.players.map(player => [player.callsign,
+      SUIT_COLORS[player.colorIndex] ?? player.color ?? player.suitColor ?? '#879699',
+      Number.isInteger(player.colorIndex) ? player.colorIndex + 1 : '', player.id === state.ownId ? 'You' : player.mode])]);
+}
+
 function stopNavigation(nav) {
   nav.keys?.clear?.();
   nav.velocity?.set?.(0, 0, 0);
@@ -141,6 +158,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
   let currentDialog = null;
   let busy = false;
   let disposed = false;
+  const renderedPanels = new Map();
 
   const accountDialog = document.createElement('dialog');
   accountDialog.id = 'multiplayer-account-dialog';
@@ -193,11 +211,12 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
   commsDialog.id = 'multiplayer-comms-dialog';
   commsDialog.setAttribute('aria-labelledby', 'multiplayer-comms-title');
   commsDialog.innerHTML = `<div class="dialog-top mp-dialog-top"><span class="eyebrow">Ship communications</span><button type="button" data-mp-close aria-label="Close communications">✕</button></div>
-    <h2 id="multiplayer-comms-title">Shared-flight link</h2>
+    <h2 id="multiplayer-comms-title">Communications</h2>
+    <div data-comms-flight>
     <div class="mp-status-grid"><div><span>Connection</span><strong data-comms-connection></strong></div><div><span>Pilots</span><strong data-comms-players></strong></div><div><span>Callsign</span><strong data-comms-callsign></strong></div><div><span>Health</span><strong data-comms-health></strong></div></div>
     <section class="mp-hangar"><span>Hangar assignment</span><strong data-hangar-status></strong><small data-hangar-pad></small><small data-hangar-expiry></small></section>
     <div class="mp-action-row"><button type="button" data-request-hangar data-controller-focus data-controller-key="request-hangar">Request hangar</button><button type="button" data-cancel-hangar data-controller-key="cancel-hangar">Cancel request</button><button type="button" data-comms-join data-controller-key="comms-join">Join multiplayer</button><button type="button" data-comms-leave data-controller-key="comms-leave">Leave multiplayer</button><button type="button" data-open-account data-controller-key="comms-account">Account</button></div>
-    <div class="mp-roster" aria-label="Connected pilots"></div><p class="mp-feedback" role="status" aria-live="polite"></p>
+    <div class="mp-roster" aria-label="Connected pilots"></div></div><p class="mp-feedback" role="status" aria-live="polite"></p>
     <p class="mp-controller-note">Controller: D-pad or left stick to choose · A to confirm · B to return</p>`;
 
   const inventoryDialog = document.createElement('dialog');
@@ -208,6 +227,14 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     <p class="mp-controller-note">Transfers and drops are checked by the server against access, proximity, capacity, and manifest revision.</p>`;
 
   document.body.append(accountDialog, commsDialog, inventoryDialog);
+  const socialUI = createSocialUI({ nav, client, dialog: commsDialog, flight: commsDialog.querySelector('[data-comms-flight]') });
+  const releasedKeys = new Set();
+  const heldKey = event => {
+    if (!event.repeat) releasedKeys.delete(event.code);
+    else if (releasedKeys.has(event.code)) { event.preventDefault(); event.stopImmediatePropagation(); }
+  };
+  const releasedKey = event => releasedKeys.delete(event.code);
+  document.addEventListener('keydown', heldKey, true); document.addEventListener('keyup', releasedKey, true);
   // Outside the launcher: both the cinematic and player-active mode hide it.
   const accessButton = document.createElement('button');
   accessButton.id = 'multiplayer-access'; accessButton.type = 'button';
@@ -289,6 +316,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     commsDialog.querySelector('[data-comms-leave]').hidden = !state.connected;
     commsDialog.querySelector('[data-comms-leave]').disabled = busy;
     commsDialog.querySelector('[data-open-account]').hidden = false;
+    if (!state.connected && (state.moderation || state.error)) setFeedback(commsDialog, state.moderation || state.error, true);
     const roster = commsDialog.querySelector('.mp-roster'); roster.replaceChildren();
     if (!state.connected) { const p = document.createElement('p'); p.textContent = account ? 'Join multiplayer to see the live roster.' : 'Sign in, then choose Join multiplayer.'; roster.append(p); }
     for (const player of state.players) {
@@ -310,6 +338,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     const revision = Number.isSafeInteger(inventory.revision) ? inventory.revision : null;
     const health = state.health == null ? '—' : state.health;
     summary.textContent = `Revision ${revision ?? '—'} · Health ${health} · Pack ${itemMass(inventory.containers.pack ?? {}).toFixed(1)} / ${inventory.capacity?.pack ?? '—'} kg · Ship ${itemMass(inventory.containers.ship ?? {}).toFixed(1)} / ${inventory.capacity?.ship ?? '—'} kg`;
+    if(state.handsFree)summary.textContent+=' · Community hub: weapons and tools remain stowed.';
     if (state.needsRespawn) {
       const respawn = document.createElement('button'); respawn.type = 'button'; respawn.textContent = 'Respawn';
       respawn.dataset.inventoryRequest = 'respawn'; respawn.dataset.controllerKey = 'respawn'; respawn.disabled = busy;
@@ -333,7 +362,8 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
       if (['rifle-laser', 'sidearm-pistol', 'mining-laser-tool'].includes(item.id)) {
         const equip = document.createElement('button'); equip.type = 'button'; equip.textContent = 'Equip';
         equip.dataset.inventoryRequest = 'equip'; equip.dataset.weapon = item.id; equip.dataset.controllerKey = `equip-${item.id}`;
-        equip.disabled = busy || amounts.pack <= 0; actions.append(equip);
+        equip.disabled = busy || amounts.pack <= 0 || state.handsFree || state.needsRespawn;
+        if(state.handsFree)equip.title='Community hub: weapons and tools remain stowed.';actions.append(equip);
       }
       article.append(info, actions); list.append(article);
     }
@@ -349,7 +379,18 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     }
   }
 
-  function render() { if (!disposed) { renderAccount(); renderComms(); renderInventory(); } }
+  function render(opening = null) {
+    if (disposed) return;
+    const account = currentAccount();
+    // Account rendering also updates the always-visible access button. Hidden
+    // rosters/manifests wait until opening, using the latest authoritative state.
+    for (const [panel, dialog, draw] of [['account', accountDialog, renderAccount], ['comms', commsDialog, renderComms], ['inventory', inventoryDialog, renderInventory]]) {
+      if (panel !== 'account' && !dialog.open && opening !== dialog) continue;
+      const key = multiplayerPanelKey(panel, state, account, busy);
+      if (renderedPanels.get(panel) === key && opening !== dialog) continue;
+      renderedPanels.set(panel, key); draw();
+    }
+  }
   function applyState(next) { state = normalizeMultiplayerState(next ?? client.state); if (state.account) sessionAccount = state.account; render(); }
 
   async function perform(dialog, pendingMessage, action) {
@@ -379,13 +420,17 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
 
   function openDialog(dialog) {
     if (disposed || document.querySelector('dialog[open]')) return false;
-    stopNavigation(nav); render(); setFeedback(dialog, ''); currentDialog = dialog; dialog.showModal(); nav.gamepad?.suspend?.(); return true;
+    stopNavigation(nav); client.suspendInput?.(); render(dialog);
+    const reason = dialog === commsDialog && !state.connected ? state.moderation || state.error || '' : '';
+    setFeedback(dialog, reason, Boolean(reason)); currentDialog = dialog; dialog.showModal(); nav.gamepad?.suspend?.(); return true;
   }
   function finishDialog(dialog) {
     // Native close events are queued. A pointer close must restore controls
     // before the next key, without a late event clearing newly pressed input.
     if (dialog.open || currentDialog !== dialog) return;
-    currentDialog = null; closeKeyboard(); restoreNavigation(nav);
+    currentDialog = null; closeKeyboard();
+    for (const key of nav.physicalKeys ?? []) releasedKeys.add(key);
+    client.suspendInput?.(); restoreNavigation(nav);
   }
   function closeDialog(dialog) { dialog.close(); finishDialog(dialog); }
   const openAccount = (view = null) => { if (view) showAuthView(view); return openDialog(accountDialog); };
@@ -480,6 +525,6 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
     auth, dialogs: { account: accountDialog, comms: commsDialog, inventory: inventoryDialog },
     openAccount, openComms, openInventory, refreshSession,
     render: applyState,
-    dispose() { disposed = true; unsubscribe(); accessButton.remove(); dialogs.forEach(dialog => dialog.remove()); },
+    dispose() { disposed = true; unsubscribe(); socialUI.dispose(); document.removeEventListener('keydown', heldKey, true); document.removeEventListener('keyup', releasedKey, true); accessButton.remove(); dialogs.forEach(dialog => dialog.remove()); },
   };
 }

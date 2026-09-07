@@ -1,5 +1,5 @@
-// Gameplay response, not a cargo-mass simulation. Nomad preserves the existing
-// baseline. Speed differences are deliberately much smaller than agility gaps.
+// Hull-specific thruster authority in m/s². Speed caps do not erase momentum.
+// Hover compensation is separate from the manoeuvring acceleration reserve.
 export const SHIP_HANDLING = Object.freeze({
   kestrel: Object.freeze({speed:1.05, turn:1.55, steeringLag:0, assistResponse:5.5, thrust:58, rcs:30, torque:2.65}),
   nomad: Object.freeze({speed:1, turn:1, steeringLag:0, assistResponse:3.5, thrust:35, rcs:18, torque:1.6}),

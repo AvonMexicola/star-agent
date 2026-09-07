@@ -34,8 +34,8 @@ export function fbm(x,y,z,octaves=5) {
   return sum/norm;
 }
 // The sole height/biome/material source, shared by navigation and workers.
-import { terrainHeight, moisture, biomeAt, surfaceColor, slopeAt } from './terrain-v2.js';
-export { terrainHeight, moisture, biomeAt, surfaceColor } from './terrain-v2.js';
+import { terrainHeight, terrainSample, moisture, biomeAt, surfaceColor, slopeAt } from './terrain-v2.js';
+export { terrainHeight, terrainSample, moisture, biomeAt, surfaceColor } from './terrain-v2.js';
 export function cubeDirection(face,u,v) {
   let x,y,z;
   if(face===0){x=1;y=v;z=-u;}else if(face===1){x=-1;y=v;z=u;}
@@ -52,9 +52,9 @@ export function generatePatch({face,level,ix,iy,grid=GRID,parentGrid=grid,surfac
   const count=(grid+1)**2+4*(grid+1);
   const positions=new Float32Array(count*3),normals=new Float32Array(count*3),colors=new Float32Array(count*3);
   const directions=new Float32Array(count*3),waterPositions=new Float32Array(count*3);
-  const heights=new Float32Array(count);
+  const heights=new Float32Array(count),rockReliefs=new Float32Array(count);
   function sample(u,v,sampleLevel,sampleGrid) {
-    const d=cubeDirection(face,u,v),h=terrainHeight(...d);
+    const d=cubeDirection(face,u,v),{height:h,rockRelief}=terrainSample(...d);
     const step=Math.max(.4,Math.min(200,(2/2**sampleLevel)*RADIUS/sampleGrid*.5));
     let tx=d[2],ty=0,tz=-d[0];let len=Math.hypot(tx,tz);
     if(len<.01){tx=1;tz=0;len=1;}tx/=len;tz/=len;
@@ -67,12 +67,12 @@ export function generatePatch({face,level,ix,iy,grid=GRID,parentGrid=grid,surfac
     const color=surfaceColor(...d,h,Math.atan(Math.hypot(dhT,dhB)));
     const nx=d[0]-tx*dhT-bx*dhB,ny=d[1]-ty*dhT-by*dhB,nz=d[2]-tz*dhT-bz*dhB;
     const nl=Math.hypot(nx,ny,nz);
-    return {d,h,color,normal:[nx/nl,ny/nl,nz/nl]};
+    return {d,h,rockRelief,color,normal:[nx/nl,ny/nl,nz/nl]};
   }
   function write(index,u,v,skirt=0) {
-    const {d,h,color,normal}=sample(u,v,level,grid),k=index*3;
+    const {d,h,rockRelief,color,normal}=sample(u,v,level,grid),k=index*3;
     for(let a=0;a<3;a++){positions[k+a]=d[a]*(RADIUS+h-skirt)-center[a];directions[k+a]=d[a];waterPositions[k+a]=d[a]*(RADIUS-skirt)-center[a];}
-    heights[index]=h;normals.set(normal,k);colors.set(color,k);
+    heights[index]=h;rockReliefs[index]=rockRelief;normals.set(normal,k);colors.set(color,k);
   }
   for(let j=0;j<=grid;j++)for(let i=0;i<=grid;i++)write(j*(grid+1)+i,u0+size*i/grid,v0+size*j/grid);
   const indices=[];
@@ -129,7 +129,7 @@ export function generatePatch({face,level,ix,iy,grid=GRID,parentGrid=grid,surfac
     }
   }
   const field=surfaceDetail?generatePatchSurface({face,level,ix,iy,radius:RADIUS,directionAt:cubeDirection,sample:(...d)=>({height:terrainHeight(...d)}),colorAt:surfaceColor}):null;
-  return {center,positions,normals,colors,directions,waterPositions,heights,parentPositions,parentWaterPositions,parentNormals,parentColors,parentHeights,indices:new Uint16Array(indices),field};
+  return {center,positions,normals,colors,directions,waterPositions,heights,rockReliefs,parentPositions,parentWaterPositions,parentNormals,parentColors,parentHeights,indices:new Uint16Array(indices),field};
 }
 
 export function findDestinations() {

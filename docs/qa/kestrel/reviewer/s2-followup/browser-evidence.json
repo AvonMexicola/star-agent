@@ -1,0 +1,212 @@
+{
+  "browser": "151.0.7922.173",
+  "assetSha256": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+  "console": [],
+  "captures": [
+    {
+      "name": "desktop-exterior",
+      "state": {
+        "view": "exterior",
+        "frames": 19,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "hardpoints": [
+          {
+            "node": "HP_Belly",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_Nose",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingL",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingR",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          }
+        ],
+        "calls": 46,
+        "triangles": 36480,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "cameraPosition": [
+          9.000000000000004,
+          6.800000000000002,
+          -12.000000000000004
+        ],
+        "label": {
+          "text": "4 × S2 hardpoints",
+          "x": 1306.375,
+          "y": 125.671875,
+          "width": 97.625,
+          "height": 16
+        },
+        "window": {
+          "width": 1440,
+          "height": 900
+        }
+      }
+    },
+    {
+      "name": "phone-exterior",
+      "state": {
+        "view": "exterior",
+        "frames": 14,
+        "ready": true,
+        "progress": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "target": {
+          "canopy": 0,
+          "gear": 1,
+          "ladder": 0
+        },
+        "throttle": 0.15,
+        "displays": [
+          {
+            "title": "FLIGHT",
+            "values": [
+              "SHIP STATUS: PARKED",
+              "RIG CLEARANCE: 0.9 m",
+              "CONTROLS: INSPECTION"
+            ]
+          },
+          {
+            "title": "VESSEL",
+            "values": [
+              "ROLE: SINGLE-SEAT INTERCEPTOR",
+              "LENGTH / SPAN: 13.5 / 9.0 m",
+              "FLIGHT SYSTEM: OFFLINE"
+            ]
+          },
+          {
+            "title": "SYSTEMS",
+            "values": [
+              "CANOPY: SEALED",
+              "LADDER: STOWED",
+              "LANDING GEAR: DOWN"
+            ]
+          },
+          {
+            "title": "DRIVE",
+            "values": [
+              "ENGINE GLOW: 15 %",
+              "DRY MASS: 9,000 kg",
+              "FUEL / HEAT: NOT CONNECTED"
+            ]
+          }
+        ],
+        "hardpoints": [
+          {
+            "node": "HP_Belly",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_Nose",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingL",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          },
+          {
+            "node": "HP_WingR",
+            "size": 2,
+            "mount": "fixed",
+            "installedWeapon": null
+          }
+        ],
+        "calls": 46,
+        "triangles": 36480,
+        "viewport": {
+          "width": 390,
+          "height": 523
+        },
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "cameraPosition": [
+          16.999999999999996,
+          11.999999999999996,
+          -22.999999999999996
+        ],
+        "label": {
+          "text": "4 × S2 hardpoints",
+          "x": 288.640625,
+          "y": 98.28125,
+          "width": 81.359375,
+          "height": 13
+        },
+        "window": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    }
+  ],
+  "assetUnchanged": true
+}

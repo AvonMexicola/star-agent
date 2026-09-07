@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { authRequest, consumeResetToken, inventoryCommand, inventoryRows, normalizeMultiplayerState, signOutSession, validateAuth } from '../src/multiplayer/ui.js';
+import { FreighterSystems } from '../src/freighter-layout.js';
 import { createShipMFDs } from '../src/ship-mfd.js';
-import { applyAuthoritativePeer, MultiplayerClient, reviveTravel, websocketURL } from '../src/multiplayer/client.js';
+import { applyAuthoritativePeer, MultiplayerClient, reviveTravel, websocketURL, navigationInput } from '../src/multiplayer/client.js';
 
 test('auth validation enforces callsigns and 12–128 Unicode-character passwords without real-name fields', () => {
   assert.match(validateAuth('register', { email: 'pilot@example.test', callsign: 'bad space', password: 'twelve-chars!' }), /Callsign/);
@@ -97,7 +98,7 @@ test('inventory commands carry the server revision and never mutate the source s
 });
 
 function canvasDocument() {
-  const context = { fillRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {} };
+  const context = { setTransform() {}, fillRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {} };
   return { createElement(name) { assert.equal(name, 'canvas'); return { width: 0, height: 0, getContext: type => type === '2d' ? context : null }; } };
 }
 
@@ -159,6 +160,44 @@ test('authoritative reconciliation distinguishes always-rendered hull pose from 
   assert.equal(nav.multiplayerDead, true);
 });
 
+test('authoritative frame changes snap across the boundary even when walking mode is unchanged',()=>{
+  const nav={mode:'walk',position:new THREE.Vector3(0,2,0),orientation:new THREE.Quaternion(),authoritativePhysicsFrame:'hangar:1'};
+  applyAuthoritativePeer(nav,{mode:'walk',position:[3,2,0],physicsFrame:'hangar:2',health:100,shipHealth:100});
+  assert.deepEqual(nav.position.toArray(),[3,2,0]);
+  assert.equal(nav.authoritativePhysicsFrame,'hangar:2');
+  applyAuthoritativePeer(nav,{mode:'walk',position:[4,2,0],physicsFrame:'hangar:2',health:100,shipHealth:100});
+  assert.ok(nav.position.x>3&&nav.position.x<4,'same-frame prediction still blends');
+});
+
+test('reconciliation retains exact vector blending, quaternion normalization and invalid-field handling', () => {
+  for (const blend of [0, .38, 1]) for (const offset of [.125, 100, 100.125]) {
+    const nav = {
+      mode: 'walk', position: new THREE.Vector3(25_000_000_000, 4, -8),
+      orientation: new THREE.Quaternion().setFromEuler(new THREE.Euler(.2, -.3, .1)),
+      velocity: new THREE.Vector3(1, 2, 3),
+    };
+    const snapshot = {
+      mode: 'walk', position: [25_000_000_000 + offset, 4, -8], orientation: [.1, -.4, .25, 2],
+      velocity: [NaN, 1, 2], angularVelocity: [0, 0, 0], health: 100, shipHealth: 100,
+    };
+    const retained = { position: nav.position, orientation: nav.orientation, velocity: nav.velocity };
+    const expectedPosition = nav.position.clone(), source = new THREE.Vector3().fromArray(snapshot.position);
+    if (expectedPosition.distanceToSquared(source) > 10000) expectedPosition.copy(source);
+    else expectedPosition.lerp(source, blend);
+    const expectedOrientation = nav.orientation.clone().slerp(new THREE.Quaternion().fromArray(snapshot.orientation).normalize(), blend).normalize();
+    const before = structuredClone(snapshot);
+    applyAuthoritativePeer(nav, snapshot, { blend });
+    assert.equal(nav.position, retained.position);
+    assert.equal(nav.orientation, retained.orientation);
+    assert.equal(nav.velocity, retained.velocity);
+    assert.deepEqual(nav.position.toArray(), expectedPosition.toArray());
+    assert.deepEqual(nav.orientation.toArray(), expectedOrientation.toArray());
+    assert.deepEqual(nav.velocity.toArray(), [1, 2, 3]);
+    assert.deepEqual(nav.angularVelocity.toArray(), [0, 0, 0]);
+    assert.deepEqual(snapshot, before, 'the authoritative snapshot remains unmodified');
+  }
+});
+
 test('requests wait for an authoritative acknowledgement and carry exact equip fields', async t => {
   class Socket {
     constructor() { this.readyState = 1; this.sent = []; this.listeners = {}; Socket.instance = this; }
@@ -191,4 +230,41 @@ test('a destroyed own hull offers recovery even when suit health remains positiv
   assert.equal(normalizeMultiplayerState({...alive,players:[{id:'self',shipHealth:0}]}).needsRespawn,true);
   assert.equal(normalizeMultiplayerState({...alive,health:0}).needsRespawn,true);
   assert.equal(normalizeMultiplayerState({connected:true,health:null}).needsRespawn,false);
+});
+
+test('network travel commands respect the targeted-drive adapter and retain untargeted heading travel',t=>{
+ const savedDocument=Object.getOwnPropertyDescriptor(globalThis,'document'),savedWindow=Object.getOwnPropertyDescriptor(globalThis,'window');
+ Object.defineProperty(globalThis,'document',{configurable:true,value:new EventTarget()});
+ Object.defineProperty(globalThis,'window',{configurable:true,value:new EventTarget()});
+ t.after(()=>{if(savedDocument)Object.defineProperty(globalThis,'document',savedDocument);else delete globalThis.document;if(savedWindow)Object.defineProperty(globalThis,'window',savedWindow);else delete globalThis.window;});
+ const client=new MultiplayerClient({url:'ws://test/ws'}),sent=[];let gates=0;
+ const nav={gamepad:{poll:()=>({})},beginTravel:()=>true,beginFreeTravel:()=>true,cancelTravel:()=>true,targeting:{hasTarget:true,engage(){gates++;return false;}}};
+ client.action=action=>{sent.push(action);return true;};client.state.connected=true;client.attach({nav});
+ assert.equal(nav.beginTravel(),false);assert.equal(nav.beginFreeTravel(),false);assert.equal(gates,2);assert.deepEqual(sent,[]);
+ nav.targeting.hasTarget=false;assert.equal(nav.beginFreeTravel(),true);nav.cancelTravel();assert.deepEqual(sent,['travel','cancelTravel']);
+ client.detach();
+});
+
+
+test('authoritative Atlas reconciliation carries real ramp, crew lift and gear state',()=>{
+  const source=new FreighterSystems(),nav={freighter:new FreighterSystems(),mode:'walk',position:new THREE.Vector3(),orientation:new THREE.Quaternion(),keys:new Set()};
+  source.operate('ramp:aft',null);source.update(1.2);source.setGear(.37,false);
+  source.toggleElevator(new THREE.Vector3(5.5,4.35,-4));source.update(.5);
+  const snapshot=source.snapshot;
+  applyAuthoritativePeer(nav,{mode:'walk',shipId:'atlas',freighter:snapshot,health:100,shipHealth:100},{snap:true});
+  assert.deepEqual(nav.freighter.snapshot,snapshot);
+  assert.equal(nav.freighter.lifts.length,1);
+  assert.equal(nav.freighter.elevator.id,'crew');
+  applyAuthoritativePeer(nav,{freighter:[{id:'main',y:0,target:0}]});
+  assert.deepEqual(nav.freighter.snapshot,snapshot,'retired elevator arrays cannot reintroduce a platform');
+});
+
+
+test('the multiplayer shoulder opening holds server intent until the player takes control',()=>{
+  const nav={enabled:true,focused:true,openingActive:true,mode:'walk',keys:new Set(['KeyW','Space','KeyT'])};
+  const pad={forward:1,strafe:.5,yaw:.4,mine:1,jump:true};
+  const input=navigationInput(nav,pad,{mouseYaw:.2,fire:true});
+  assert.ok(Object.values(input).every(v=>v===0||v===false));
+  nav.openingActive=false;
+  assert.equal(navigationInput(nav,pad).forward,1);
 });

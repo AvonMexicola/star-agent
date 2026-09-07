@@ -1,3 +1,4 @@
+import { rockFormationHeight } from './rock-formations.js';
 import { Vector3 } from 'three';
 
 // A quarter-scale lunar radius with a compressed, fixed orbit for this prototype.
@@ -7,7 +8,7 @@ export const MOON_DISTANCE = 24_000_000;
 export const MOON_POSITION = Object.freeze(new Vector3(-.1, 0, -1).normalize().multiplyScalar(MOON_DISTANCE).toArray());
 export const MOON_MAX_HEIGHT = 16_000;
 export const MOON_GRAVITY = 1.62;
-export const MOON_GENERATOR_VERSION = 4;
+export const MOON_GENERATOR_VERSION = 5;
 export const MOON_LANDING_DIRECTION = Object.freeze(new Vector3(.45,.22,.87).normalize().toArray());
 export const MOON_NAME = 'Selene';
 
@@ -179,7 +180,9 @@ function relief(x,y,z){
   const resources=moonResources(x,y,z);
   const palette=MOON_RESOURCE_PALETTE;
   const color=[0,1,2].map(i=>(palette.basalt[i]*resources.weights[0]+palette.copper[i]*resources.weights[1]+palette.ice[i]*resources.weights[2])*(.80+veins*.32)+fresh*.10);
-  return {height,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075-rock*.05)),frost:Math.max(ice*.15,resources.weights[2]),color,resources,resource:resources.dominant};
+  const rockRelief=rockFormationHeight(x,y,z,MOON_RADIUS,0x53454c45);
+  height+=rockRelief;
+  return {height,rockRelief,albedo:Math.max(.065,Math.min(.38,.145-maria*.055+(detail-.5)*.065+fresh+frost*.075-rock*.05)),frost:Math.max(ice*.15,resources.weights[2]),color,resources,resource:resources.dominant};
 }
 const landingHeight=relief(landing.x,landing.y,landing.z).height;
 /** Direction-based color and canonical geometry remain continuous at UV seams. */
@@ -187,7 +190,9 @@ export function moonSurface(x,y,z){
   const sample=relief(x,y,z),dot=x*landing.x+y*landing.y+z*landing.z;
   if(dot>.9999998){
     const distance=Math.sqrt(Math.max(0,2-2*dot))*MOON_RADIUS;
-    sample.height=landingHeight+(sample.height-landingHeight)*smooth(35,150,distance);
+    const blend=smooth(35,150,distance);
+    sample.height=landingHeight+(sample.height-landingHeight)*blend;
+    sample.rockRelief*=blend;
   }
   return sample;
 }

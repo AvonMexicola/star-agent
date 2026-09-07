@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createConcourse, attachConcourse } from '../src/station-concourse.js';
 import { createPressureElevator, attachPressureElevator } from '../src/station-elevator.js';
 import { updateElevator, elevatorBoxes } from '../src/station-architecture.js';
-import { constrainStationSweep } from '../src/station-collision.js';
+import { buildStationColliders, constrainStationSweep } from '../src/station-collision.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
 
 const vector = point => new THREE.Vector3(...point);
@@ -62,7 +62,7 @@ test('actual concourse and elevator exports fit their assembly budgets and measu
       assert.ok(assembly.standaloneBytes > 0 && assembly.standaloneBytes <= 1_000_000, `${assembly.name} byte budget`);
     }
     assert.ok(asset.bytes <= manifest.reduce((sum, assembly) => sum + assembly.standaloneBytes, 0), 'batching is smaller than the complete individual exports');
-    assert.equal(meshes, name === 'station-concourse' ? 6 : 18, 'static materials batch independently from moving leaves');
+    assert.equal(meshes, name === 'station-concourse' ? 8 : 18, 'static materials batch independently from moving leaves; paper and Kestrel paint share two extra batches');
     totalDraws += meshes;
     const bounds = new THREE.Box3().setFromObject(scene);
     if (name === 'station-concourse') {
@@ -113,6 +113,110 @@ test('attached shop collision preserves central circulation and access but stops
     const seat = seatRay.intersectObject(hub.props, true)[0];
     assert.ok(seat, 'waiting seat has a physical cushion surface');
     close(seat.point.y, -7.54, 'seat surface is 0.46 m above the concourse floor');
+  }
+});
+
+test('low shop ceilings seal wall-top gaps and keep full walking headroom', async () => {
+  const scene = (await load('station-concourse')).scene.clone(true);
+  scene.updateMatrixWorld(true);
+  for (const side of [-1, 1]) {
+    for (const x of [9, 12, 15, 18]) for (const z of [-10.5, -6.5, -2.5, 1.5, 7.5]) {
+      const ray = new THREE.Raycaster(new THREE.Vector3(side * x, -6.1, z), new THREE.Vector3(0, 1, 0), 0, 3);
+      const hit = ray.intersectObject(scene, true)[0];
+      assert.ok(hit, `shop ceiling closes the sky above ${side * x},${z}`);
+      assert.ok(hit.point.y >= -4.69 && hit.point.y <= -4.39, 'visible underside has 3.31–3.61 m floor clearance');
+    }
+    for (const z of [-8, -3, 2, 6]) {
+      const ray = new THREE.Raycaster(new THREE.Vector3(side * 10.7, -6.25, z), new THREE.Vector3(side * .75, .6, 0).normalize(), 0, 20);
+      const hit = ray.intersectObject(scene, true)[0];
+      assert.ok(hit && hit.point.y >= -4.69 && hit.point.y <= -4.39, 'upward view from customer aisle meets ceiling rather than escaping above the display wall');
+    }
+    const seamRay = new THREE.Raycaster(new THREE.Vector3(side * 14, -6.25, 0), new THREE.Vector3(0, 1.69, -11.1).normalize(), 0, 15);
+    const seam = seamRay.intersectObject(scene, true)[0];
+    assert.ok(seam && seam.point.y > -4.69 && seam.point.y < -4.4, 'end-wall downstand seals the old daylight slot');
+  }
+  const colliders = buildStationColliders(scene), eye = -8 + SHIP_LAYOUT.eyeHeight;
+  for (const side of [-1, 1]) {
+    const result = constrainStationSweep(colliders, [], vector([side * 10.7, eye, 4]), vector([side * 17, eye, 4]), extentMin, extentMax);
+    assert.equal(result.hit, false, 'roof and supports retain the complete player crosswalk');
+  }
+});
+
+test('rack stock contains compact sidearms, longarms and equipment with distinct physical scale', async () => {
+  const scene = (await load('station-concourse')).scene;
+  scene.updateMatrixWorld(true);
+  const stock = JSON.parse(scene.userData.stockManifest);
+  const rifles = stock.filter(item => item.kind === 'longRifle');
+  const sidearms = stock.filter(item => item.kind === 'sidearm');
+  assert.equal(rifles.length, 2, 'only the longarm rack carries long rifles');
+  assert.equal(sidearms.length, 3);
+  assert.equal(new Set(sidearms.map(item => item.rack)).size, 1, 'sidearms have their own display rack');
+  for (const item of sidearms) {
+    const size = vector(item.bounds.max).sub(vector(item.bounds.min));
+    assert.ok(size.y < .30 && size.z > .20 && size.z < .33, 'short slide and grip fit a handheld sidearm envelope');
+    assert.ok(size.x < .07, 'sidearm retains a human-scale grip width');
+    const ray = new THREE.Raycaster(new THREE.Vector3(-18.7, -6.317, item.bounds.min[2] + .08), new THREE.Vector3(-1, 0, 0), 0, 1);
+    const hit = ray.intersectObject(scene, true)[0];
+    assert.ok(hit && hit.point.x >= item.bounds.min[0] - .001 && hit.point.x <= item.bounds.max[0] + .005, 'actual compact slide is visible ahead of its mounting tile');
+  }
+  const filters = stock.filter(item => item.kind === 'filterCanister');
+  const avionics = stock.filter(item => item.kind === 'avionics');
+  const cases = stock.filter(item => item.kind === 'equipmentCase');
+  assert.ok(filters.length >= 3 && avionics.length >= 2 && cases.length >= 4);
+  assert.ok(filters.every(item => item.rack === 'ComponentsRack0'), 'filter stock no longer repeats across all three racks');
+  assert.ok(avionics.every(item => item.rack === 'ComponentsRack1'), 'avionics has its own rack');
+  assert.ok(cases.some(item => item.rack === 'ComponentsRack2') && cases.some(item => item.rack === 'ArmoryRack2'), 'repair and field equipment use distinct case displays');
+  assert.ok(new Set(filters.map(item => (item.bounds.max[1] - item.bounds.min[1]).toFixed(2))).size >= 3, 'filter variants have deliberately different dimensions');
+});
+
+test('retail print anchors face their real backing, A5 covers tilt correctly, and banner hardware clears a walking body', async () => {
+  const scene = (await load('station-concourse')).scene.clone(true);
+  scene.updateMatrixWorld(true);
+  const collisionRows = JSON.parse(scene.userData.collisionBoxes);
+  assert.ok(!collisionRows.some(row => /Brochure|BannerHardware/.test(row.name)), 'above-counter paper and cloth add no new collision volumes');
+  const materialNames = new Set();
+  scene.traverse(mesh => { if (mesh.isMesh) materialNames.add(mesh.material.name); });
+  assert.ok(materialNames.has('FinishOchre') && materialNames.has('FinishPaper'), 'warm brand accents and nonmetal paper keep their physical finishes');
+  function paperRay(anchor, normal, maxGap = .02) {
+    const position = anchor.getWorldPosition(new THREE.Vector3());
+    const ray = new THREE.Raycaster(position.clone().addScaledVector(normal, .05), normal.clone().negate(), 0, .1);
+    const hit = ray.intersectObject(scene, true)[0];
+    assert.ok(hit, `${anchor.name} has a real physical backing`);
+    assert.equal(hit.object.material.name, 'FinishPaper', `${anchor.name} is not hidden behind its frame or another wall`);
+    const gap = position.clone().sub(hit.point).dot(normal);
+    assert.ok(gap > 0 && gap < maxGap, `${anchor.name} print-to-paper clearance ${gap}`);
+  }
+  for (const [side, brand] of [[-1, 'Watchkeep'], [1, 'Kestrel']]) {
+    const inward = new THREE.Vector3(-side, 0, 0);
+    for (const suffix of ['PosterEnd', 'PosterGap0', 'PosterGap1', 'Banner']) {
+      const anchor = scene.getObjectByName(brand + suffix);
+      assert.ok(anchor, 'named print surface survives material batching');
+      paperRay(anchor, suffix === 'PosterEnd' ? new THREE.Vector3(0, 0, 1) : inward);
+    }
+    for (const index of [0, 1]) {
+      const anchor = scene.getObjectByName(brand + 'Brochure' + index);
+      assert.ok(anchor, 'each A5 pocket has an independent artwork anchor');
+      const quaternion = anchor.getWorldQuaternion(new THREE.Quaternion());
+      const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(quaternion);
+      const expected = new THREE.Vector3(-side * Math.cos(Math.PI / 10), Math.sin(Math.PI / 10), 0);
+      assert.ok(normal.distanceTo(expected) < 1e-6, 'cover normal has the authored eighteen-degree backward tilt');
+      paperRay(anchor, normal, .003);
+      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(quaternion);
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(quaternion);
+      for (const u of [-.070, .070]) for (const v of [-.100, .100]) {
+        const point = anchor.getWorldPosition(new THREE.Vector3()).addScaledVector(right, u).addScaledVector(up, v).addScaledVector(normal, .03);
+        const hit = new THREE.Raycaster(point, normal.clone().negate(), 0, .06).intersectObject(scene, true)[0];
+        assert.equal(hit?.object.material.name, 'FinishPaper', '148×210 mm cover corners remain visible within their holder');
+      }
+    }
+  }
+  // Use triangles from the actual kit too: omitting cloth metadata must not hide
+  // a solid clamp or hanging rail crossing the physical player's head.
+  const tree = buildStationColliders(scene), eye = -8 + SHIP_LAYOUT.eyeHeight;
+  for (const side of [-1, 1]) {
+    const start = vector([side * 6.5, eye, 5.9]), end = vector([side * 10, eye, 5.9]);
+    const result = constrainStationSweep(tree, [], start, end, extentMin, extentMax);
+    assert.equal(result.hit, false, 'the complete walking body passes below the lowest banner fittings');
   }
 });
 

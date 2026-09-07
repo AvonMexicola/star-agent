@@ -1,0 +1,22 @@
+{
+  "sourceSha256": "2d182600cc4d0b689ef14061f1a72d268ab9965ad883fccb1b3def36f8537fcd",
+  "boundsGameMetres": {
+    "min": [
+      -4.5,
+      0.0,
+      -6.7510480880737305
+    ],
+    "max": [
+      4.5,
+      3.2100741863250732,
+      6.75
+    ]
+  },
+  "triangles": 3802,
+  "renderer": "Blender EEVEE",
+  "resolution": [
+    1200,
+    1200
+  ],
+  "sourceUnchanged": true
+}

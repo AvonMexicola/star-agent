@@ -1,0 +1,3 @@
+import {defineConfig} from '@playwright/test';
+process.env.TMPDIR='/home/cees/.cache/star-agent-tractor/tmp';
+export default defineConfig({testDir:'../tests/browser',testMatch:'cargo-tractor.spec.js',timeout:180000,workers:1,reporter:'list',outputDir:'/home/cees/.cache/star-agent-tractor/results',use:{baseURL:'http://127.0.0.1:5537',viewport:{width:1440,height:900},actionTimeout:12000,launchOptions:{executablePath:'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']}},webServer:{command:'VITE_DEV_TOOLS=1 npm run build && npm run preview -- --port5537 --strictPort'.replace('--port5537','--port 5537'),url:'http://127.0.0.1:5537',reuseExistingServer:false}});

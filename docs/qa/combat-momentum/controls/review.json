@@ -1,0 +1,24 @@
+{
+  "browser": "151.0.7922.173",
+  "backend": "DOM-only, GPU disabled; no game scene",
+  "timestamp": "2026-09-07T18:14:53.787Z",
+  "checks": [
+    {
+      "label": "desktop",
+      "width": 1440,
+      "height": 900,
+      "helpFits": true,
+      "controllerFits": true,
+      "contextSwitch": true
+    },
+    {
+      "label": "phone",
+      "width": 390,
+      "height": 844,
+      "helpFits": true,
+      "controllerFits": true,
+      "contextSwitch": true
+    }
+  ],
+  "errors": []
+}

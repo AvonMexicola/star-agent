@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { cloneCharacterGLTF, tintCharacterSuit, RemotePlayers, PLAYER_COLORS, applySuitColor } from '../src/multiplayer/remote-players.js';
+import { cloneCharacterGLTF, tintCharacterSuit, RemotePlayers, PLAYER_COLORS, applySuitColor, SHIP_URLS } from '../src/multiplayer/remote-players.js';
 import { clearEquipmentCache } from '../src/equipment.js';
+import { PLAYER_AVATAR } from '../src/player-avatar.js';
+import { FreighterSystems } from '../src/freighter-layout.js';
+import { atlasGearPose } from '../src/atlas-mark-ii-systems.js';
 
 // Read real rig/bones/animations and real weapon geometry without a GPU or image
 // decoder. Only PBR textures are omitted; browser coverage renders the textures.
@@ -19,9 +22,9 @@ async function readModel(url) {
   json.materials = (json.materials || []).map(m => ({ name: m.name, pbrMetallicRoughness: { baseColorFactor: [1, 1, 1, 1] } }));
   return new Promise((resolve, reject) => new GLTFLoader().parse(JSON.stringify(json), '', resolve, reject));
 }
-const rig = await readModel('/models/props/player-male.glb');
+const rig = await readModel(PLAYER_AVATAR.url);
 const sockets = JSON.parse(await readFile(new URL('../public/models/props/equipment-sockets.json', import.meta.url)));
-const models = new Map([['/models/props/player-male.glb', rig]]);
+const models = new Map([[PLAYER_AVATAR.url, rig]]);
 const loader = { load(url, ready, progress, error) {
   if (!models.has(url)) models.set(url, readModel(url));
   Promise.resolve(models.get(url)).then(ready, error);
@@ -44,6 +47,8 @@ async function ready(manager) {
 test('twenty server colors are distinct and clones own their skeleton/materials', () => {
   assert.equal(new Set(PLAYER_COLORS).size, 20);
   const a = cloneCharacterGLTF(rig), b = cloneCharacterGLTF(rig);
+  assert.deepEqual(a.asset.extras.requiredClips, rig.asset.extras.requiredClips);
+  assert.equal(a.parser, rig.parser, 'optional shadow accessors use the cached parser');
   const am = meshOf(a.scene), bm = meshOf(b.scene), original = meshOf(rig.scene);
   assert.notEqual(am.skeleton, bm.skeleton);
   assert.notEqual(am.skeleton.bones[0], bm.skeleton.bones[0]);
@@ -97,8 +102,10 @@ test('real remote rifle/pistol/cutter sockets follow the firing hand and aim dir
     assert.ok(direction.dot(new THREE.Vector3(0, 0, -1)) > .9999, `barrel must face the remote aim: ${entry.peer.weapon}`);
     const target = entry.equipment.leftHandTargetWorld();
     if (target) {
-      const wrist = entry.character.skeleton.bones.find(bone => bone.name === 'LeftHand').getWorldPosition(new THREE.Vector3()).add(origin);
-      assert.ok(wrist.distanceTo(target) < .06, `support wrist must reach the actual two-handed grip: ${entry.peer.weapon} ${wrist.distanceTo(target)}`);
+      const hand = entry.character.skeleton.bones.find(bone => bone.name === 'LeftHand');
+      const palm = hand.getWorldPosition(new THREE.Vector3()).add(origin)
+        .add(new THREE.Vector3(-.007, .107, 0).applyQuaternion(hand.getWorldQuaternion(new THREE.Quaternion())));
+      assert.ok(palm.distanceTo(target) < .04, `support palm must reach the actual two-handed grip: ${entry.peer.weapon} ${palm.distanceTo(target)}`);
     }
     const worldSize = new THREE.Box3().setFromObject(held).getSize(new THREE.Vector3()).length();
     assert.ok(worldSize > .2 && worldSize < 2, `socket scale must compensate the 0.01 armature: ${worldSize}`);
@@ -152,7 +159,7 @@ test('disconnect releases only the instance; cached skin buffers live until mana
   clearEquipmentCache();
   let loads = 0;
   const countingLoader = { load(url, done, progress, error) {
-    if (url.endsWith('player-male.glb')) loads++;
+    if (url === PLAYER_AVATAR.url) loads++;
     loader.load(url, done, progress, error);
   } };
   const manager = new RemotePlayers(new THREE.Scene(), { loader: countingLoader, sockets });
@@ -189,12 +196,95 @@ test('real ship models retain double poses and animate the actual landing assemb
   assert.equal(entry.character.object.visible, false);
   let meshes = 0; entry.shipModel.traverse(node => { if (node.isMesh) meshes++; });
   assert.ok(meshes > 20, 'actual authored Atlas hierarchy is loaded');
-  assert.equal(entry.gears.length, 4);
-  for (const gear of entry.gears) near(gear.scale.y, .08);
+  assert.equal(entry.gears.length, 0, 'retired stretching legs are absent');
+  assert.equal(entry.atlasSystems.gear.legs.length, 6);
+  for (const leg of entry.atlasSystems.gear.legs) {
+    near(leg.nodeObject.rotation.x, atlasGearPose(0,leg.foldSign).angle);
+    near(leg.footObject.rotation.x, atlasGearPose(0,leg.foldSign).padAngle);
+    near(leg.nodeObject.scale.y, 1);
+  }
   manager.sync([peer('1', { shipId: 'atlas', gearProgress: 1, weapon: null })], 'self');
   manager.update(.05, new THREE.Vector3(25_000_000_000, 0, 0));
-  for (const gear of entry.gears) near(gear.scale.y, 1);
+  for (const leg of entry.atlasSystems.gear.legs) near(leg.nodeObject.rotation.x,atlasGearPose(1,leg.foldSign).angle);
   assert.ok(entry.ship.position.x < 101, 'ship was made camera relative before any GPU upload');
+  manager.dispose();
+});
+
+test('cached ship transforms match authored hulls exactly across origin, attitude and gear changes', async () => {
+  const scene = new THREE.Scene(), manager = new RemotePlayers(scene, { loader, sockets });
+  for (const shipId of ['nomad', 'atlas']) {
+    manager.sync([peer('1', { shipId, mode: 'flight', weapon: null })], 'self');
+    await ready(manager);
+    const entry = manager.peers.get('1');
+    const source = await manager.assets.get(SHIP_URLS[shipId]);
+    const reference = new THREE.Group();
+    reference.add(source.scene.clone(true));
+    const authority=shipId==='atlas'?new FreighterSystems().bind(reference.children[0]):null;
+    const expectedNodes = [], actualNodes = [], gears = [];
+    reference.children[0].traverse(node => {
+      expectedNodes.push(node);
+      if (!node.isMesh && node.name.startsWith('LandingGear_')) gears.push(node);
+    });
+    entry.shipModel.traverse(node => actualNodes.push(node));
+    assert.equal(actualNodes.length, expectedNodes.length);
+    assert.ok(actualNodes.length > 20, 'compare the complete authored hull hierarchy');
+    let compositions = 0;
+    for (const node of actualNodes) {
+      const update = node.updateMatrix;
+      node.updateMatrix = function () { compositions++; return update.call(this); };
+    }
+    for (const gear of [0, .37, 1, .62, 0]) {
+      const attitude = new THREE.Quaternion().setFromEuler(new THREE.Euler(gear * .6, -.7, .2));
+      const origin = new THREE.Vector3(25_000_000_000 + gear * 4000, gear * 1200, -gear * 700);
+      if(authority){
+        authority.setGear(gear,gear>=.5);
+        for(const ramp of authority.ramps){ramp.target=ramp.openAngle;ramp.moving=true;}
+        authority.update(.37);
+      }
+      manager.sync([peer('1', { shipId, mode: 'flight', weapon: null, gearProgress: gear, freighter:authority?.snapshot,
+        shipPosition: [25_000_000_050 + gear * 8, gear * 5, gear * 7], shipOrientation: attitude.toArray() })], 'self');
+      compositions = 0;
+      manager.update(1 / 60, origin);
+      scene.updateMatrixWorld(true);
+      assert.equal(compositions, actualNodes.filter(node => entry.gears.includes(node)).length,
+        'Nomad changes only moving gear; Atlas mechanisms are composed at snapshot receipt');
+      reference.position.copy(entry.ship.position);
+      reference.quaternion.copy(entry.ship.quaternion);
+      const eased = gear * gear * (3 - 2 * gear);
+      for (const node of gears) node.scale.y = .08 + .92 * eased;
+      reference.updateMatrixWorld(true);
+      for (let i = 0; i < actualNodes.length; i++) {
+        assert.deepEqual(actualNodes[i].matrixWorld.elements, expectedNodes[i].matrixWorld.elements, actualNodes[i].name);
+      }
+      compositions = 0;
+      manager.update(1 / 60, origin);
+      scene.updateMatrixWorld(true);
+      assert.equal(compositions, 0, 'interpolating the hull never recomposes unchanged descendant transforms');
+    }
+  }
+  manager.dispose();
+});
+
+test('remote snapshot inputs refresh speed, gravity and damage while preserving one-frame fire pulses', async () => {
+  const manager = new RemotePlayers(new THREE.Scene(), { loader, sockets });
+  manager.sync([peer('1', { weapon: null, velocity: [3, 4, 0], health: 75,
+    physicsFrame: 'hangar:1', physicsUp: [2, 0, 0] })], 'self');
+  await ready(manager);
+  const entry = manager.peers.get('1'), inputs = [];
+  entry.character.update = (dt, input) => { inputs.push({ ...input }); };
+  manager.fire('1');
+  manager.update(1 / 60, new THREE.Vector3());
+  manager.update(1 / 60, new THREE.Vector3());
+  assert.equal(inputs[0].speed, 5);
+  assert.equal(inputs[0].health, .75);
+  assert.equal(inputs[0].firing, true);
+  assert.equal(inputs[1].firing, false);
+  assert.ok(entry.character.up.distanceTo(new THREE.Vector3(1, 0, 0)) < 1e-12);
+  manager.sync([peer('1', { mode: 'eva', weapon: null, velocity: [30, 40, 0], health: 50 })], 'self');
+  manager.update(1 / 60, new THREE.Vector3());
+  assert.equal(inputs[2].speed, 0, 'EVA continues its authored floating pose');
+  assert.equal(inputs[2].health, .5);
+  assert.equal(inputs[2].firing, false);
   manager.dispose();
 });
 
@@ -225,5 +315,19 @@ test('looking up does not tilt remote boots off the canonical planetary floor', 
   assert.ok(entry.character.up.dot(new THREE.Vector3(0, 1, 0)) > .9999);
   const aim = new THREE.Vector3(0, 0, -1).applyQuaternion(pitch);
   assert.ok(entry.equipment.muzzleWorldDirection().dot(aim) > .9999);
+  manager.dispose();
+});
+
+test('remote boots follow the server hangar gravity away from their parked ship',async()=>{
+  clearEquipmentCache();
+  const manager=new RemotePlayers(new THREE.Scene(),{loader,sockets});
+  const up=new THREE.Vector3(1,1,0).normalize(),eye=new THREE.Vector3(0,1_692_751.75,0);
+  const attitude=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),up);
+  manager.sync([peer('1',{body:'aeon',position:eye.toArray(),orientation:attitude.toArray(),shipPosition:null,physicsFrame:'hangar:2',physicsUp:up.toArray()})],'self');
+  await ready(manager);
+  for(let i=0;i<25;i++)manager.update(1/60,eye);
+  const entry=manager.peers.get('1');
+  assert.ok(entry.character.up.dot(up)>.9999);
+  assert.ok(entry.character.object.position.distanceTo(up.clone().multiplyScalar(-1.75))<1e-6);
   manager.dispose();
 });

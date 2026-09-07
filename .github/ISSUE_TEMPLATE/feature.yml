@@ -1,0 +1,30 @@
+name: Feature or engineering proposal
+description: One bounded step toward the roadmap
+title: '[Feature] '
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Player or contributor outcome
+      description: What becomes possible? Link a roadmap milestone and current implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: First complete slice
+      description: Included work, exclusions, dependencies, affected areas and proposed file ownership.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance and verification
+      description: Observable result, failure cases, complete input route, server/save impacts and visual/performance evidence.
+    validations:
+      required: true
+  - type: input
+    id: sponsor
+    attributes:
+      label: Human sponsor and proposed implementer
+      description: Handles are enough. State agent assistance; do not claim a role has accepted without agreement.

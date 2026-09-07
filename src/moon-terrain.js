@@ -49,6 +49,7 @@ export class MoonTerrain {
   install(node,data){
     const grid=terrainGridForLevel(node.level),geometry=new THREE.BufferGeometry();
     for(const [name,values] of [['position',data.positions],['normal',data.normals],['moonDirection',data.directions],['moonPoint',data.points],['color',data.colors]])geometry.setAttribute(name,new THREE.BufferAttribute(values,3));
+    geometry.setAttribute('rockRelief',new THREE.BufferAttribute(data.rockReliefs,1));
     geometry.setAttribute('moonSurfaceData',new THREE.BufferAttribute(data.surface,2));
     geometry.setAttribute('uv',new THREE.BufferAttribute(data.field?patchSurfaceUV(grid,data.field.width):new Float32Array(data.positions.length/3*2),2));
     geometry.setIndex(new THREE.BufferAttribute(data.indices,1));geometry.computeBoundingSphere();

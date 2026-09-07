@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="icon" href="/favicon.svg"><title>Remote expedition integration fixture</title><style>body{margin:0;background:#131d26}canvas{display:block}p{position:absolute;bottom:15px;left:24px;color:#c5d9df;font:14px sans-serif}</style></head><body><p>Remote expedition suit fixture · three assigned colors · rifle, sidearm and cutter</p><script type="module">
+import * as THREE from 'three';
+import {RemotePlayers} from '/src/multiplayer/remote-players.js';
+import {loadSocketCalibration} from '/src/equipment.js';
+const renderer=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true});renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;document.body.prepend(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#18242e');const camera=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,.05,1000);camera.position.set(.3,1.7,-6.8);camera.lookAt(0,.95,0);
+scene.add(new THREE.HemisphereLight(0xd0eaff,0x293322,2));const sun=new THREE.DirectionalLight(0xffe7cc,4);sun.position.set(-4,7,-5);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,30).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x34444b,roughness:.82}));floor.receiveShadow=true;scene.add(floor);
+const manager=new RemotePlayers(scene,{sockets:await loadSocketCalibration()}),origin=new THREE.Vector3(25e9,0,0);
+const peers=['rifle-laser','sidearm-pistol','mining-laser-tool'].map((weapon,i)=>({id:String(i),colorIndex:[0,3,7][i],position:[25e9+(i-1)*1.5,1.75,0],orientation:[0,0,0,1],velocity:[0,0,0],bodyOrientation:[0,0,0,1],mode:'walk',shipId:'nomad',shipPosition:null,weapon,health:100}));manager.sync(peers,'self');
+await Promise.all([...manager.peers.values()].map(p=>p.character.readyPromise));await Promise.all([...manager.peers.values()].map(p=>p.equipment.equip(p.peer.weapon)));
+let last=performance.now();function frame(now){requestAnimationFrame(frame);manager.update(Math.min(.05,(now-last)/1000),origin);last=now;renderer.render(scene,camera);}requestAnimationFrame(frame);
+window.remoteReview={ready:true,snapshot(){const gl=renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return {peers:manager.state,backend:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),viewport:[innerWidth,innerHeight],triangles:renderer.info.render.triangles,draws:renderer.info.render.calls};}};
+</script></body></html>

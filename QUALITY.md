@@ -1,79 +1,127 @@
-# Star Agent — Quality bar
+# Star Agent — quality bar
 
-*Owner: Claude (PM/QA). Added 2026-09-06 after Cees's review: "assets look whiteboxy, the map had three giant blobs that
-should have been an obvious planetary system". Tests passing is not the bar. Looking finished is.*
+Cees owns product acceptance; independent reviewers assess applicable criteria and
+the integration steward verifies combined behavior. The [review process](docs/development/reviews.md)
+explains proportional checks and the distinction between local checkpoints and releases.
+A passing build is necessary for code changes, but cannot establish finished art or gameplay.
 
-## 1. Art direction (what "finished" looks like)
+## 1. Art direction
 
-**Faction language.** White armour (0.8) and matte dark polymer (0.16) with brushed metal (metallic .65 / rough .35) and
-**mint #b6efd1** emissive accents; warm amber only for warnings and hangar interiors. Reference board: Star Citizen
-(ships, stations, MFDs), Elite Dangerous (system map, HUD hierarchy), Mass Effect (gear), Alien: Isolation (UI grain).
+White armor, matte dark polymer, brushed metal and mint `#b6efd1` accents form the
+shared language. Warm amber signals warnings and selected interiors. Use the
+existing design tokens, type hierarchy and dialog chrome. Star Citizen is a
+fidelity reference, with original designs and assets; existing accepted manufacturer
+briefs add their own specific language.
 
-**No whitebox ships.** An asset is *not done* if it is untextured primitives, uniform grey, or a Meshy blob. Every shipped
-mesh has all of: a readable silhouette at 30 m, material definition (bevels that catch light, panel lines, insets, edge
-wear or grime where plausible), at least one emissive/status detail where the design calls for it, correct scale against
-the 1.80 m silhouette on `/dev/props.html`, an origin where the manifest says (grip, base, back-plate, feet), and a
-review render in `docs/qa/`. Hard-surface = Blender script; organic = Meshy; both are re-buildable from the repo.
+A finished asset has readable silhouette/scale, believable material separation,
+bevels/insets where needed, plausible wear and light response, intentional status
+lights where called for, correct origin and a game-rendered review. Uniform gray
+primitives or unexamined generated meshes are development candidates, not finished ships.
+Compare against a measured human and the actual camera, not adjectives.
 
-**UI is information first.** A map shows where you are, where you're going, the route, and the scale. An MFD page shows
-the number that matters largest. Every screen uses the design tokens (`--mint`, `--line`, `--muted`, Space Mono labels,
-Barlow Condensed numerals, DM Sans body) and the base `dialog` chrome. New palette = defect.
+Maps show position, route and scale; MFDs show real state with clear hierarchy.
+Material detail and relief remain coherent across LODs. No unexplained flicker,
+z-fighting, holes or hard vegetation disappearance. Interiors are lit by plausible
+sources with contact and readable depth. Night scenes must remain intentionally legible.
 
-**World.** No popping (geomorph + hysteresis), no z-fighting, no flat plane views: at any destination the screenshot must
-show relief, material detail and something on the horizon. Night has light sources. Hangars are lit by their lights.
+## 1b. Asset production
 
-## 2. Definition of Done — every PR (functional + visual)
+Follow [the production standard](docs/asset-production-standard.md), the relevant
+pipeline and the accepted brief. Manufactured geometry is authored reproducibly
+in Blender with deliberate bevels, topology, UVs and named moving parts. Organic
+or generated bases require inspection/cleanup. Use the approved procedural/baked
+or painted PBR workflow; texture-generation tools do not replace geometry, UV,
+collision or performance work. Preserve any stricter maps-only/UV-freeze requirement
+in an existing asset brief. Paid tools need existing spending authorization.
 
-- [ ] `npm test` green; `vite build` green; zero console errors/warnings in the browser check.
-- [ ] Screenshot tour at the 5 fixed viewpoints (§4) attached to the PR (or in `docs/qa/pr-N/`), plus before/after for
-      anything visual, at 1440×900 **and** 390×844 for UI.
-- [ ] Perf: draw calls, triangles and ms/frame at the viewpoint the PR affects, within budget (§5), noted in the PR.
-- [ ] Accessibility/reach: works with keyboard, controller and touch where the feature is reachable at all.
-- [ ] HANDOFF `READY FOR REVIEW: <files>` line; PR based on `feat/visual-fidelity`; no branch switching in the shared tree.
-- [ ] **Visual PRs: an Opus review with the rubric (§3), score ≥ 4.0**, or an explicit "polish later" decision from Cees.
+Retain source/provenance, exact prompts/settings when generation is used, reusable
+parts/materials, measured GLB/texture/LOD budgets and failed iterations. Inspect
+exports in the real loader, then the actual physical game route. Reference art,
+Blender renders, studio renders and game captures are distinct evidence.
 
-## 3. Visual review rubric (Opus reviewer, 1–5 each; merge at ≥ 4.0 average, no item < 3)
+## 2. Definition of done
 
-| # | Criterion | 5 looks like |
-|---|---|---|
-| 1 | Silhouette & scale | reads instantly at distance; correct size next to the human/ship |
-| 2 | Materials & detail | bevels, panel lines, wear, emissives; nothing uniform or blobby |
-| 3 | Lighting & integration | sits in the scene's light; shadows; matches ACES exposure; no blown emissives |
-| 4 | Cohesion | faction language, design tokens, same product as the rest of the screen |
-| 5 | Information design (UI) / Function (assets) | the map maps, the gauge gauges, the grip is in the hand |
-| 6 | Motion | no popping, no flicker, transitions eased, animation timing believable |
+For the affected scope, provide:
 
-Reviewer prompt (reuse): *"You are a senior game art/UI reviewer. Score §3 for `<PR>` from screenshots you take
-yourself at the §4 viewpoints (desktop + phone for UI). Be concrete: file + element + fix. Rank top 5. Say mergeable
-yes/no and why."*
+- Relevant unit/invariant tests and build; actual browser checks for runtime visual/input changes.
+- No new page/console errors. Inspect and explain warnings; inherited warnings stay recorded.
+- Full reachable keyboard/controller/touch journeys, with focus/neutral-input safety.
+  Follow [the controller contract](docs/controller-contract.md); injected input is not hardware testing.
+- Real before/after and motion evidence for visual changes; affected scene metrics
+  against the budgets below. UI captures include 1440×900 and 390×844.
+- Source/asset/protocol/save identity, dependencies, limitations and a resumable handoff.
+- Independent review for claimed acceptance. Visual changes require average >=4.0,
+  no applicable item below 3, or Cees's explicit scoped exception. Stricter briefs remain binding.
 
-## 4. Fixed QA viewpoints (screenshot regression)
+Documentation-only and small low-impact changes use appropriate checks; do not
+require a six-scene GPU tour for a spelling fix. Broad renderer changes and release
+candidates use the complete scene set. Local integration of a labeled development
+checkpoint is allowed by the standing user instruction; it does not mean final acceptance.
 
-`?intro=0&seed=7291`, 1600×900, HUD hidden unless the PR is UI: **orbit** (start), **coast** at 95 m facing the sea,
-**forest** at 95 m, **highlands** at 700 m, **hangar** (opening t = 10 s), **cockpit** (seated). Playwright captures to
-`docs/qa/baseline/*.png`; a PR's captures are diffed (pixelmatch, 2 % tolerance, masked HUD clock/fps); any diff is a
-review item, not an automatic fail. Baselines are updated only in the merge commit that intentionally changes the look.
+## 3. Independent visual rubric
 
-## 5. Budgets (laptop GPU, 1440×900)
+Score applicable dimensions from 1 to 5, with evidence for each. Mark genuinely
+inapplicable dimensions N/A rather than awarding a free 5. Record the exact export,
+commit and reviewer. A new asset or changed camera/lighting may invalidate an old score.
 
-| Scene | draw calls | triangles | frame |
-|---|---|---|---|
-| Orbit | ≤ 300 | ≤ 400 k | ≤ 8 ms |
-| Surface (forest) | ≤ 900 | ≤ 1.8 M | ≤ 12 ms |
-| Hangar / cockpit | ≤ 600 | ≤ 900 k | ≤ 10 ms |
-| Modal open (map/menu) | scene render skipped or ≤ 25 % of the above | | |
+| Criterion | A strong result |
+| --- | --- |
+| Silhouette and scale | Reads at use distance, measured against human/ship references |
+| Materials and detail | Purposeful bevels, panels, roughness, wear; no uniform or blobby result |
+| Lighting and integration | Contact, plausible light response, compatible exposure, no blown details |
+| Cohesion | Consistent manufacturer/faction language and interface tokens |
+| Information or physical function | Map/gauge communicates truth; controls, grips and clearances work |
+| Motion | Stable LOD, no flicker, believable mechanisms and transitions |
 
-Assets: props ≤ 10 k tris / ≤ 1 MB, characters ≤ 20 k / ≤ 2 MB, ships ≤ 60 k / ≤ 4 MB, textures ≤ 1024² WebP.
+Use [the review template](docs/templates/review.md). A different human or agent
+session reviews; the builder's own summary or generated reference image is not independent evidence.
 
-## 6. Process
+Character exception, 2026-09-07: Cees explicitly requested a higher polygon and
+higher texture Meshy player. `player-expedition` may use ≤ 65 k triangles,
+≤ 9 MB and two 2048² WebP textures. The per-entry manifest budget drives the props
+reviewer. This exception does not waive scene performance or independent review.
 
-1. **Two-stage review on every PR**: Claude (functional: tests, build, tour, perf) → Opus (visual rubric) for anything
-   the player sees. Findings go to HANDOFF as numbered requests; the PR isn't merged until the score passes or Cees
-   waives it.
-2. **Weekly quality pass** (Claude): full tour at the §4 viewpoints on the integration branch, a scored report in
-   `docs/qa/weekly-<date>.md`, top-10 defects filed. Cees's own review notes are logged there too.
-3. **Asset intake**: nothing enters `public/models/` without a manifest row, a props-page render, and a rubric score.
-4. **Design tokens are law**: a PR that adds a hex colour or a font-family outside `src/style.css` tokens gets a
-   review item automatically (grep in CI).
-5. **"Whitebox" is a label, not a shipped state**: placeholder assets (mannequin, capsules, boxes) may be merged only
-   behind the `?dev=` flag or when the roadmap marks the slice as placeholder-allowed.
+## 4. Shared viewpoints
+
+Six reference views, seed 7291: orbit, coast at 95 m facing sea, forest at 95 m,
+highlands at 700 m, hangar after the opening doors reveal the planet, and seated
+cockpit. Use 1440×900 for current baseline comparisons; older 1600×900 records
+remain historical evidence, not directly comparable pixels. Add Selene, Pyre,
+Miasma, stellar, gear/ramp and other viewpoints when those systems change.
+
+Keep HUD hidden for art comparisons, visible for interface reviews. Record exact
+pose/time/settings when reproducing an opening or weather state. Store curated
+captures under `docs/qa/<task>/`; large traces/reports stay ignored or in temporary
+CI artifacts. Automated image diffing is not claimed unless its actual tool and
+result are provided. A changed image prompts review, not automatic approval.
+
+## 5. Budgets and measurements
+
+Targets on a declared laptop GPU at 1440×900; these are acceptance targets, not a
+claim that every current scene meets them:
+
+| Scene | Draw calls | Triangles | Frame time |
+| --- | --- | --- | --- |
+| Orbit | <=300 | <=400k | <=8 ms |
+| Forest surface | <=900 | <=1.8M | <=12 ms |
+| Hangar/cockpit | <=600 | <=900k | <=10 ms |
+| Opaque modal | Scene skipped or <=25% of the relevant scene cost | — | — |
+
+Default asset targets: props <=10k triangles/1 MB; characters <=20k/2 MB;
+ships <=60k/4 MB; textures <=1024² WebP. A stricter feature brief applies. An
+exception needs measured reason, affected platforms/settings and explicit approval;
+do not silently enlarge budgets to fit an export. Measure texture residency,
+materials/draws and LOD behavior as well as download size.
+
+Use a comparable cold/warm/traversal record with sample duration, median/p95 and
+resource growth. Shared machine contention and software rasterizers must be stated;
+neither establishes hardware FPS acceptance. See [the benchmark template](docs/templates/benchmark.md).
+
+## 6. Maintaining the bar
+
+The steward keeps functional, input, visual and performance findings separate.
+Hold a regular fixed-view playtest when reviewers are available; record top defects
+with owners and actionable reproductions. Review introduced colors/fonts against
+tokens rather than claiming an unimplemented CI palette check. Asset intake follows
+its manifest/source/runtime contracts. Prototype flags and honest status keep
+experiments usable without representing whiteboxes as release-ready art.

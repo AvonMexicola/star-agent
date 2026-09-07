@@ -107,7 +107,7 @@ def build_interior(g, m, layout):
         if z != -4:
             g.box(
                 f"Cargo ceiling frame {rib_index:02d}",
-                (0, cargo_ceiling - .12, z),
+                (0, cargo_ceiling + .30, z),
                 (cargo["maxX"] * 2 - .42, .20, .20),
                 steel,
                 bevel=.035,
@@ -136,8 +136,8 @@ def build_interior(g, m, layout):
     for side in (-1, 1):
         g.rod(
             f"Cargo overhead gantry rail {side:+d}",
-            (side * 3.25, cargo_ceiling - .28, -22.4),
-            (side * 3.25, cargo_ceiling - .28, 22.4),
+            (side * 3.25, cargo_ceiling + .15, -22.4),
+            (side * 3.25, cargo_ceiling + .15, 22.4),
             .072,
             steel,
             vertices=12,
@@ -145,8 +145,8 @@ def build_interior(g, m, layout):
         )
         g.rod(
             f"Cargo overhead power bus {side:+d}",
-            (side * 3.52, cargo_ceiling - .38, -22.1),
-            (side * 3.52, cargo_ceiling - .38, 22.1),
+            (side * 3.52, cargo_ceiling + .29, -22.1),
+            (side * 3.52, cargo_ceiling + .29, 22.1),
             .045,
             petrol,
             vertices=10,
@@ -157,7 +157,7 @@ def build_interior(g, m, layout):
                 continue
             g.box(
                 f"Cargo gantry hanger {side:+d} {index:02d}",
-                (side * 3.38, cargo_ceiling - .27, z),
+                (side * 3.38, cargo_ceiling + .20, z),
                 (.42, .34, .12),
                 dark,
                 bevel=.025,
@@ -237,7 +237,7 @@ def build_interior(g, m, layout):
     for index, z in enumerate(range(-21, 22, 6)):
         g.box(
             f"Cargo light housing {index:02d}",
-            (0, cargo_ceiling - .18, z),
+            (0, cargo_ceiling + .095, z),
             (2.8, .12, .46),
             dark,
             bevel=.06,
@@ -245,7 +245,7 @@ def build_interior(g, m, layout):
         )
         g.box(
             f"Cargo light diffuser {index:02d}",
-            (0, cargo_ceiling - .245, z),
+            (0, cargo_ceiling + .03, z),
             (2.34, .025, .22),
             mint,
             bevel=.02,

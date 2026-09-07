@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked-upload",
+  "startedAt": "2026-09-06T22:40:36.382526+00:00",
+  "scope": "Exactly two replacement Image to 3D originals; authorized input uploads and existing credits; no exports, account changes, purchases, rerolls or old-job continuation.",
+  "sourcePipeline": "Built-in GPT image -> locally viewed reference PNG -> Meshy Image to 3D",
+  "browser": {
+    "integration": "OpenAI documented Chrome extension through mcp__cua_repl",
+    "workspaceUrl": "https://www.meshy.ai/workspace",
+    "tabId": "2020745687",
+    "instructionsRead": [
+      "Computer Use and Chrome browser documentation returned by actual tools",
+      "agent.documentation.get(\"file-uploads\")",
+      "agent.documentation.get(\"screenshots\")",
+      "agent.documentation.get(\"chrome-file-upload-troubleshooting\")"
+    ],
+    "handoffMarked": true,
+    "finalVisibleState": "Image to 3D selected; Smart Topology selected; Meshy T2; input still shows Click / Drag & Drop / Paste Image, Supported Formats: .png, .jpg, .jpeg, .webp, Max size: 20MB; no uploaded thumbnail."
+  },
+  "referencePromptFile": "assets/station-shop/soft-props/image-to-3d-v2/prompts.json",
+  "provider": "Meshy",
+  "observedUiOptions": {
+    "highDetail": {
+      "model": "Meshy 7 - Flagship",
+      "description": "Most detail, highest precision",
+      "resolution": [
+        "Standard",
+        "Ultra 2K"
+      ],
+      "initialSelectedResolution": "Ultra 2K",
+      "displayedCostWithTexture": 35
+    },
+    "smartTopology": {
+      "model": "Meshy T2",
+      "description": "Fastest for game assets",
+      "otherModel": "Meshy T1 Legacy model",
+      "initialPolyCount": 4000,
+      "displayedCostWithTexture": 15
+    },
+    "note": "Options only inspected; no generation submitted yet. No option literally named Low Poly observed in initial model-type controls."
+  },
+  "operations": [
+    {
+      "order": 1,
+      "operation": "Local source inspection",
+      "result": "Both exact PNGs viewed with view_image; SHA-256 and bytes computed locally. Inputs unchanged."
+    },
+    {
+      "order": 2,
+      "operation": "Open isolated Meshy Chrome tab",
+      "result": "Actual Image to 3D panel observed in https://www.meshy.ai/workspace. No old model selected or resumed."
+    },
+    {
+      "order": 3,
+      "operation": "Read current model options",
+      "result": "High Detail: Meshy 7 - Flagship / Most detail, highest precision, Ultra 2K, Texture on, displayed 35 credits. Switched to Smart Topology: Meshy T2 / Fastest for game assets, Poly Count 4000, Texture on, Pose off, Private, displayed 15 credits and 2 min. Smart Topology dropdown also offered Meshy T1 Legacy model. These were UI quotations only, not charges. No final generation settings submitted."
+    },
+    {
+      "order": 4,
+      "propId": "watchkeep-folded-protective-jacket",
+      "operation": "First documented file chooser attempt",
+      "method": "mtab.playwright.waitForEvent(\"filechooser\", {timeoutMs:10000}) before clicking the Image to 3D upload text with meshy.click(58).",
+      "result": "Timed out after 3000ms waiting for file chooser.",
+      "setFilesReached": false,
+      "billable": false
+    },
+    {
+      "order": 5,
+      "operation": "Documented upload troubleshooting and viewport inspection",
+      "result": "Read chrome-file-upload-troubleshooting; screenshot showed a small/clipped generation panel. A panel scroll did not visibly reveal the input. Read-only DOM inspection found an input[type=file] with zero bounds, so the visible associated upload label was used. No browser settings changed."
+    },
+    {
+      "order": 6,
+      "propId": "watchkeep-folded-protective-jacket",
+      "operation": "Corrective documented file chooser attempt on exact associated upload label",
+      "method": "mtab.playwright.waitForEvent(\"filechooser\", {timeoutMs:10000}); mtab.playwright.getByText(\"Click / Drag & Drop / Paste Image\", {exact:true}).click(); chooser.setFiles([\"/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/jacket-reference-v1.png\"]).",
+      "chooserReturned": true,
+      "setFilesReached": true,
+      "result": "Error: {\"code\":-32000,\"message\":\"Not allowed\"}\nfileChooser.setFiles failed",
+      "billable": false
+    },
+    {
+      "order": 7,
+      "operation": "Post-error visible UI verification",
+      "result": "Fresh AX state still showed empty Image to 3D upload placeholder. No actual upload thumbnail was present. No Generate click occurred."
+    },
+    {
+      "order": 8,
+      "operation": "Stop and hand off",
+      "result": "No further upload attempt, no roll upload, no alternate mechanism, no generation, no remesh, no texture recovery, no export. Meshy tab marked for handoff."
+    }
+  ],
+  "creditEvents": [],
+  "cost": {
+    "chargedCredits": 0,
+    "refundedCredits": 0,
+    "netCredits": 0,
+    "basis": "No Generate, Remesh, UV or Texture operation submitted. Inspected 35-credit and 15-credit labels are uncharged UI quotations. No ledger inspection or account balance recorded."
+  },
+  "props": [
+    {
+      "id": "watchkeep-folded-protective-jacket",
+      "status": "in-progress",
+      "sourceImage": {
+        "path": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/jacket-reference-v1.png",
+        "repositoryPath": "assets/station-shop/soft-props/image-to-3d-v2/jacket-reference-v1.png",
+        "sha256": "746353c2191173dc6c2d91e96e639841ef5f950dcbba035a471ed3cfe0029e7d",
+        "bytes": 1894418,
+        "locallyViewed": true,
+        "inspection": "Compact blue folded jacket; tucked sleeves; ivory shoulder panels; charcoal lined standing collar and zipper; layered hem; white background. The reference itself includes natural self-shading and faint edge/contact grey despite the shadowless prompt.",
+        "shaVerifiedUnchangedAtHandoff": true
+      },
+      "intent": {
+        "targetSizeMetres": [
+          0.38,
+          0.12,
+          0.52
+        ],
+        "targetTriangles": 1500,
+        "maxTriangles": 2000
+      },
+      "upload": {
+        "status": "blocked",
+        "attemptCount": 2,
+        "chooserReturnedOnSecondAttempt": true,
+        "setFilesAttemptCount": 1,
+        "actualThumbnailVerified": false,
+        "findings": "Fresh visible UI after the Not allowed error still shows the empty upload placeholder; no upload success or thumbnail observed.",
+        "blockerId": "upload-not-allowed"
+      },
+      "original": {
+        "status": "not-started",
+        "modelId": null,
+        "jobId": null,
+        "settings": null,
+        "counts": {
+          "providerLabels": [],
+          "vertices": null,
+          "faces": null,
+          "triangles": null,
+          "reason": "No model generated."
+        },
+        "inspection": {
+          "status": "not-possible",
+          "reason": "No generated geometry or textured preview exists for this run.",
+          "multiAngleViews": [],
+          "fusedStraps": null,
+          "floaterGeometry": null,
+          "hollows": null,
+          "materialMisses": null,
+          "unexplainedShapes": null,
+          "appearanceComparison": null
+        }
+      },
+      "derivedVersions": [],
+      "finalCandidate": null,
+      "maps": {
+        "Base Color": null,
+        "Roughness": null,
+        "Metallic": null,
+        "Normal": null
+      },
+      "finalVersionRecoverySteps": [
+        "No Image to 3D version or job exists for this reference; model/job IDs are null.",
+        "Return to the handoff Chrome tab 2020745687 at https://www.meshy.ai/workspace; verify Image to 3D is selected and the upload field is empty.",
+        "Root must resolve the documented upload blocker before any dependent generation resumes; do not change browser permissions or use alternate upload/export mechanisms within this task.",
+        "Once an authorized supported upload is available, upload this exact sourceImage path and verify the actual thumbnail before submitting its one original job. Existing rejected text-to-3D jobs are not recovery targets.",
+        "The earlier GLB export denial remains unresolved; root handles any separate concrete final export handoff."
+      ],
+      "limitations": [
+        "No provider result exists, so reconstruction appearance, counts, UVs and map presence cannot be assessed.",
+        "No exported-file validation; no root integration; independent game review pending."
+      ],
+      "outcome": "blocked-before-generation",
+      "mapInspection": {
+        "exactFinalMesh": null,
+        "textureResolution": null,
+        "UVPresence": null,
+        "Base Color": "not-generated / not-inspected",
+        "Roughness": "not-generated / not-inspected",
+        "Metallic": "not-generated / not-inspected",
+        "Normal": "not-generated / not-inspected"
+      }
+    },
+    {
+      "id": "kestrel-maintenance-roll",
+      "status": "in-progress",
+      "sourceImage": {
+        "path": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/roll-reference-v1.png",
+        "repositoryPath": "assets/station-shop/soft-props/image-to-3d-v2/roll-reference-v1.png",
+        "sha256": "ac84a456acf6b4cdf71df86c5322a1f36571281cdd1fb9e2a542bcfd08e9b47a",
+        "bytes": 1899905,
+        "locallyViewed": true,
+        "inspection": "Closed ochre canvas roll with layered right rolled end, two snug charcoal straps and two rectangular buckles. No exposed tools or rack. White background; natural self-shading and slight contact grey remain in source.",
+        "shaVerifiedUnchangedAtHandoff": true
+      },
+      "intent": {
+        "targetSizeMetres": [
+          0.32,
+          0.13,
+          0.46
+        ],
+        "targetTriangles": 2500,
+        "maxTriangles": 4000
+      },
+      "upload": {
+        "status": "not-attempted-because-upload-blocked",
+        "attemptCount": 0,
+        "setFilesAttemptCount": 0,
+        "actualThumbnailVerified": false,
+        "findings": "Stopped dependent work after the jacket chooser setFiles call was denied; did not attempt another PNG through the blocked mechanism.",
+        "blockerId": "upload-not-allowed"
+      },
+      "original": {
+        "status": "not-started",
+        "modelId": null,
+        "jobId": null,
+        "settings": null,
+        "counts": {
+          "providerLabels": [],
+          "vertices": null,
+          "faces": null,
+          "triangles": null,
+          "reason": "No model generated."
+        },
+        "inspection": {
+          "status": "not-possible",
+          "reason": "No generated geometry or textured preview exists for this run.",
+          "multiAngleViews": [],
+          "fusedStraps": null,
+          "floaterGeometry": null,
+          "hollows": null,
+          "materialMisses": null,
+          "unexplainedShapes": null,
+          "appearanceComparison": null
+        }
+      },
+      "derivedVersions": [],
+      "finalCandidate": null,
+      "maps": {
+        "Base Color": null,
+        "Roughness": null,
+        "Metallic": null,
+        "Normal": null
+      },
+      "finalVersionRecoverySteps": [
+        "No Image to 3D version or job exists for this reference; model/job IDs are null.",
+        "Return to the handoff Chrome tab 2020745687 at https://www.meshy.ai/workspace; verify Image to 3D is selected and the upload field is empty.",
+        "Root must resolve the documented upload blocker before any dependent generation resumes; do not change browser permissions or use alternate upload/export mechanisms within this task.",
+        "Once an authorized supported upload is available, upload this exact sourceImage path and verify the actual thumbnail before submitting its one original job. Existing rejected text-to-3D jobs are not recovery targets.",
+        "The earlier GLB export denial remains unresolved; root handles any separate concrete final export handoff."
+      ],
+      "limitations": [
+        "No provider result exists, so reconstruction appearance, counts, UVs and map presence cannot be assessed.",
+        "No exported-file validation; no root integration; independent game review pending."
+      ],
+      "outcome": "blocked-before-generation",
+      "mapInspection": {
+        "exactFinalMesh": null,
+        "textureResolution": null,
+        "UVPresence": null,
+        "Base Color": "not-generated / not-inspected",
+        "Roughness": "not-generated / not-inspected",
+        "Metallic": "not-generated / not-inspected",
+        "Normal": "not-generated / not-inspected"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "id": "chooser-timeout",
+      "stage": "jacket-upload-initial-control-click",
+      "exactToolMessage": "Timed out after 3000ms waiting for file chooser.",
+      "interpretation": "The first control action did not return a chooser. A corrective semantic-label attempt was made only after inspecting current UI and the documented troubleshooting."
+    },
+    {
+      "id": "upload-not-allowed",
+      "stage": "jacket-upload-chooser-setFiles",
+      "exactToolMessage": "Error: {\"code\":-32000,\"message\":\"Not allowed\"}\nfileChooser.setFiles failed",
+      "interpretation": "The chooser returned, but its documented setFiles call was denied. The tool exposed no more specific reason. This was not a Meshy generation failure.",
+      "blocking": true,
+      "dependentWorkStopped": [
+        "jacket thumbnail verification",
+        "jacket original generation",
+        "roll upload and generation",
+        "geometry and texture finishing",
+        "all provider preview and map inspections"
+      ],
+      "settingsChangesPerformed": false,
+      "bypassAttempted": false
+    }
+  ],
+  "providerScreenshots": [],
+  "providerCompletion": "blocked-before-generation; neither original submitted",
+  "actualExportedFileValidation": "none",
+  "rootIntegration": "none",
+  "independentGameReview": "pending",
+  "exportRestriction": {
+    "status": "not-authorized-in-this-task",
+    "priorAutomaticApprovalRejection": "The user declined permission for this action.",
+    "action": "GLB download",
+    "thisRunDownloadAttempts": 0,
+    "handoff": "Root handles concrete final export approval separately."
+  },
+  "outcome": "blocked-upload",
+  "updatedAt": "2026-09-06T22:43:26.000175+00:00",
+  "operatorWorkState": "stopped-at-concrete-blocker",
+  "screenshotLimitations": "A browser screenshot was displayed by the documented API for diagnosing the clipped UI, but no screenshot file was saved locally. No local provider-preview evidence is claimed.",
+  "rootDisposition": "Helper completed and released files. Root normalized top-level status from in-progress to blocked-upload to match the recorded outcome; no upload retry or provider work performed."
+}

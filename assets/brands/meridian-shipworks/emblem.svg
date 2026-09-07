@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="#b6efd1">
+  <title>Meridian Shipworks</title>
+  <desc>A split meridian ring around an angular flight chevron and navigation axis.</desc>
+  <path d="M49 82A94 94 0 0 1 118 35L116 49A80 80 0 0 0 61 89Z"/>
+  <path d="M207 82A94 94 0 0 0 138 35L140 49A80 80 0 0 1 195 89Z"/>
+  <path d="M41 101A94 94 0 0 0 118 221L116 207A80 80 0 0 1 53 110Z"/>
+  <path d="M215 101A94 94 0 0 1 138 221L140 207A80 80 0 0 0 203 110Z"/>
+  <path d="M128 8L143 106L128 115L113 106Z"/>
+  <path d="M16 66L128 119L240 66L128 158Z"/>
+  <path d="M73 124L102 146L113 195L73 171Z"/>
+  <path d="M183 124L154 146L143 195L183 171Z"/>
+  <path d="M118 158L128 167L138 158L128 248Z"/>
+</svg>

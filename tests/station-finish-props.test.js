@@ -6,14 +6,16 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Station } from '../src/station.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
 import { FREIGHTER_LAYOUT } from '../src/freighter-layout.js';
+import { fleetHangarAsset, FLEET_HANGAR } from '../src/station-fleet-hangar.js';
 
 const assetURL = name => new URL(`../public/models/${name}.glb`, import.meta.url);
 async function load(name) {
   const bytes = await readFile(assetURL(name));
   return new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
 }
-async function fixture(t) {
-  const [gltf, props] = await Promise.all([load('station'), load('station-props')]);
+async function fixture(t, { fleet = false } = {}) {
+  const [source, props] = await Promise.all([load('station'), load('station-props')]);
+  const gltf = fleet ? fleetHangarAsset(source) : source;
   gltf.scene.add(props.scene);
   const station = new Station(new THREE.Scene(), { gltf, lodUrl: null, direction: new THREE.Vector3(.23, .91, .34).normalize() });
   await station.readyPromise;
@@ -98,18 +100,23 @@ test('finished props preserve side aisles, rear crosswalk, cargo approach and op
 });
 
 test('Atlas complete flight envelope docks and launches past the finished service props', async t => {
-  const { station } = await fixture(t);
+  const { station, props } = await fixture(t, { fleet: true });
   const floor = station.interiorBox.min.y;
+  assert.ok(station.padLocal.distanceTo(new THREE.Vector3(...FLEET_HANGAR.pad))<1e-6);
+  assert.deepEqual(props.scale.toArray(),[1,1,1],'human service props remain outside the enlarged shell frame');
+  assert.equal(props.parent,station.model);
+  const seatX = station.padLocal.x + FREIGHTER_LAYOUT.seatEye[0];
   const seatZ = station.padLocal.z + FREIGHTER_LAYOUT.seatEye[2];
-  const hover = floor + 6.55, docked = floor + FREIGHTER_LAYOUT.seatEye[1];
-  const approach = [0, hover, -70], overPad = [0, hover, seatZ];
+  const docked = floor + FREIGHTER_LAYOUT.seatEye[1], hover = docked + 1;
+  const outside = station.openingZ + FREIGHTER_LAYOUT.seatEye[2] - FREIGHTER_LAYOUT.flightBounds.max[2] - 5;
+  const approach = [seatX, hover, outside], overPad = [seatX, hover, seatZ];
   assert.equal(station.constrainStep(toWorld(station, approach), toWorld(station, overPad), station.quaternion, false, FREIGHTER_LAYOUT).hit, true, 'closed hangar door still intercepts the full Atlas');
   station.openDoors(); station.doorMixer.update(6); station.updateDoorColliders();
   assert.equal(station.doorsOpen, 1);
   clearSweep(station, approach, overPad, false, FREIGHTER_LAYOUT);
   assert.equal(station.canDock(toWorld(station, overPad), FREIGHTER_LAYOUT, station.quaternion), true);
-  clearSweep(station, overPad, [0, docked, seatZ], false, FREIGHTER_LAYOUT);
-  clearSweep(station, [0, docked, seatZ], overPad, false, FREIGHTER_LAYOUT);
+  clearSweep(station, overPad, [seatX, docked, seatZ], false, FREIGHTER_LAYOUT);
+  clearSweep(station, [seatX, docked, seatZ], overPad, false, FREIGHTER_LAYOUT);
   clearSweep(station, overPad, approach, false, FREIGHTER_LAYOUT);
 });
 

@@ -1,3 +1,4 @@
+import { attachRockMaterial } from './rock-material.js';
 import * as THREE from 'three';
 import { MOON_RADIUS, MOON_POSITION, MOON_GENERATOR_VERSION } from './moon-world.js';
 import { RADIUS, SUN_DISTANCE, SUN_DIRECTION } from './world.js';
@@ -108,6 +109,7 @@ export class Moon {
       shader.fragmentShader=shader.fragmentShader.replace('vec3 q0=dFdx(-vViewPosition)', 'normal=normalize(mix(normal,orbitalViewNormal(md),orbitalFade));\nvec3 q0=dFdx(-vViewPosition)');
     };
     this.material.customProgramCacheKey=()=> 'selene-terrain-orbital-v2';
+    this.releaseRockMaterial=attachRockMaterial(this.material,{pointAttribute:'moonPoint',tint:[1.14,1.16,1.22]});
     this.terrain=new MoonTerrain(scene,this.material);
     this.rings=new MoonRings(scene);this.ice=new MoonIce(scene);this.stones=new MoonStones(scene,this.grain);
     this.sun=new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
@@ -126,5 +128,5 @@ export class Moon {
   }
   get ready(){return this.terrain.ready;}
   get effects(){return {stones:this.stones.stats,orbitalResolution:this.orbitalSurface.resolution,settled:this.terrain.waitingCount===0,ringAsteroids:this.rings.state.population,ringRendered:this.rings.state.rendered,terrainBuilds:this.terrain.buildsLastFrame,iceParticles:this.ice.points.visible?this.ice.descriptors.length:0,generatorVersion:MOON_GENERATOR_VERSION};}
-  dispose(){this.stones.dispose();this.orbitalSurface.dispose();this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.terrainMaps.dispose();this.material.dispose();}
+  dispose(){this.releaseRockMaterial();this.stones.dispose();this.orbitalSurface.dispose();this.rings.dispose();this.ice.dispose();this.terrain.dispose();this.grain.dispose();this.terrainMaps.dispose();this.material.dispose();}
 }

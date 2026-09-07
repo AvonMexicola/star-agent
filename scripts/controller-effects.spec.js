@@ -28,7 +28,7 @@ test('controller equips ship and ground weapons, walks to target, fires, mines a
  const shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await page.waitForTimeout(350);
  expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);
  await button(page,0,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
- await button(page,0,true);await page.waitForFunction(()=>window.starAgent.state.effects.lastWeapon==='laser'&&window.starAgent.state.effects.weaponShots>0);await button(page,0,false);
+ await button(page,7,true);await page.waitForFunction(()=>window.starAgent.state.effects.lastWeapon==='laser'&&window.starAgent.state.effects.weaponShots>0);await button(page,7,false);
  await command(page,'destination-moon');await page.waitForFunction(()=>window.starAgent.state.body==='selene'&&!window.starAgent.state.transiting&&window.starAgent.state.controller.armed);
  await tap(page,3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
  await axes(page,[0,-1,0,0]);await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>2.3);await axes(page,[0,0,0,0]);await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);

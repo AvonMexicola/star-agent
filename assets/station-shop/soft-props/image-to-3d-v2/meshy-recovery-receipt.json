@@ -1,0 +1,680 @@
+{
+  "schemaVersion": 1,
+  "status": "partial",
+  "startedAt": "2026-09-07T00:19:10.999149+00:00",
+  "provider": "Meshy",
+  "sourcePipeline": "Existing GPT reference PNG -> exact documented Image to 3D upload -> Meshy T2 Smart Topology recovery/alternative",
+  "authorization": {
+    "jacket": "One recovery original after prior High Detail / Meshy 7 service failure and refund.",
+    "roll": "One Smart Topology alternative as recorded quality correction after high-detail/reduced variants failed quality and budget. Not a service-failure retry.",
+    "limits": "No further original rerolls; one required texture/UV recovery per successful new model. Existing credits only; no purchases/topups, downloads, permission/configuration changes, code or runtime integration."
+  },
+  "ownership": [
+    "assets/station-shop/soft-props/image-to-3d-v2/meshy-recovery-receipt.json"
+  ],
+  "previousFailureReference": {
+    "path": "assets/station-shop/soft-props/image-to-3d-v2/meshy-after-file-permission-receipt.json",
+    "sha256": "98e249052ef4531dd6f5185ebe8b359bc0a1cf62ede417c01655854ac845d697",
+    "preserved": true,
+    "earlierUploadFailureReceipt": "assets/station-shop/soft-props/image-to-3d-v2/meshy-receipt.json",
+    "earlierUploadFailureReceiptSha256": "781fdb5cf02275f46d9355e4907071f79bac553de3b62261aa14c5321556a9c0",
+    "distinction": "Pre-permission upload access failed before jobs. After permission, exact uploads succeeded; jacket Meshy generation failed/refunded. Roll completed but failed quality/budget."
+  },
+  "inputDocuments": {
+    "assets/station-shop/soft-props/image-to-3d-v2/prompts.json": "413e34a25382640ebe3ab59ad4ac587cfbed7901fa91c8cae843cbfa20ed0ed6",
+    "assets/station-shop/soft-props/brief.json": "d40c898d9fb23e3e41cf8e8e75e4f0ea6b6721ea1d98043fd76b70ba03efc6ee"
+  },
+  "browser": {
+    "integration": "Configured OpenAI Chrome extension via documented mcp__cua_repl APIs",
+    "workspaceUrl": "https://www.meshy.ai/workspace",
+    "newJacketTaskTabId": "2020745751",
+    "priorTabAccess": "Prior tab belonged to another browser session; no usable handle. A subsequent handle reference failed. Opened authorized fresh task tab; no settings changed.",
+    "localScreenshots": [],
+    "screenshotEvidence": "Documented screenshot API returns bytes with crop/fullPage options; no documented filesystem save path. Cropped provider screenshots displayed in tool outputs; no saved provider PNG claimed.",
+    "newRollTaskTabId": "2020745753",
+    "inspectionInterruption": {
+      "error": "Detached while handling command.",
+      "operation": "Click Metallic during jacket candidate map inspection",
+      "recovery": "Read documented browser-troubleshooting. Existing browser.tabs.list returned []; relevant user.openTabs showed earlier task tabs but not the two new current tabs. Reused selected Chrome browser binding and opened one new Meshy inspection tab; no original resubmissions, downloads or permission/configuration changes.",
+      "newInspectionTabId": "2020745761",
+      "handoffMarked": true,
+      "cause": "not established"
+    },
+    "finalHandoffTabId": "2020745761",
+    "finalVisibleState": "WATCHKEEP T2 automatic-texture original, Triangle Faces 4330 / Vertices 5212, four map buttons, default textured front. Saved exact name re-open verified.",
+    "viewportNote": "Window layout changed between original task tabs and fresh final tab; used current screenshots to adapt coordinates without setting viewport or changing configuration. No GPU/performance measurement or FPS claim."
+  },
+  "preservedPreviousResults": {
+    "currentProviderInspection": [
+      "Failed jacket selected: Generating failed / Credits Refunded and exact blue jacket source thumbnail.",
+      "8157 faces / 12347 vertices final PBR roll selected, rotated and inspected; all four map buttons visible. Pale canvas and uneven folded-end layers remain.",
+      "4085 faces / 7044 vertices roll selected; three map buttons visible, Normal absent. Angular edges remain.",
+      "Detailed textured roll selected: 3004190 faces / 1546730 vertices, all four map buttons and green Printability indicator. Source and all derivatives remain in library."
+    ],
+    "acceptance": "All historical unaccepted dispositions retained; no deletes or overwrites."
+  },
+  "props": [
+    {
+      "id": "watchkeep-folded-protective-jacket",
+      "status": "partial",
+      "sourceImage": {
+        "path": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/jacket-reference-v1.png",
+        "sha256": "746353c2191173dc6c2d91e96e639841ef5f950dcbba035a471ed3cfe0029e7d",
+        "bytes": 1894418,
+        "locallyViewed": true,
+        "shaVerifiedUnchangedAtHandoff": true
+      },
+      "intent": {
+        "targetTriangles": 1500,
+        "maxTriangles": 2000
+      },
+      "authorizedOriginalAttempts": 1,
+      "originalAttemptsSubmitted": 1,
+      "authorizedRequiredTextureUvRecoveries": 1,
+      "modelId": null,
+      "jobId": null,
+      "operations": [
+        {
+          "operation": "Generate",
+          "submissions": 1,
+          "result": "Task created successfully; geometry followed by automatic texture card. No original reroll."
+        },
+        {
+          "operation": "Inspect original and automatic texture from multiple angles against exact locally viewed source",
+          "result": "Complete; provider-render observations recorded under original, not exported-file or game validation."
+        },
+        {
+          "operation": "Supported Remesh Fixed / Custom / Triangle",
+          "result": "One derivative completed; preserved and rejected for silhouette damage. Original retained."
+        },
+        {
+          "operation": "Select retained automatically textured original and inspect Base Color, Roughness, Metallic and Normal",
+          "result": "All four preview modes opened and visually checked on exact face/vertex count. No additional texture or UV recovery submitted."
+        }
+      ],
+      "derivedVersions": [
+        {
+          "operation": "Remesh",
+          "source": "Preserved automatically textured 4330-face / 5212-vertex original",
+          "status": "complete-rejected-for-shape",
+          "settings": {
+            "Target Polycount": "Fixed",
+            "mode": "Custom",
+            "Polycount": 1900,
+            "Topology": "Triangle"
+          },
+          "rationale": "Near upper runtime limit rather than crushing to 1500 target; leaves room below 2000 maximum for provider count overshoot. UI warns below 3000 may cause significant quality loss. Higher original preserved.",
+          "quotedCredits": 0,
+          "modelId": null,
+          "jobId": null,
+          "counts": {
+            "providerLabels": [
+              "Topology Triangle",
+              "Faces 1,925",
+              "Vertices 3,499"
+            ],
+            "faces": 1925,
+            "triangles": 1925,
+            "vertices": 3499
+          },
+          "mapsVisible": [
+            "Base Color",
+            "Roughness",
+            "Metallic"
+          ],
+          "NormalPreviewPresent": false,
+          "inspection": {
+            "views": [
+              "Default textured front",
+              "Elevated top and side textured",
+              "Same elevated geometry with part colors"
+            ],
+            "finding": "Overall folded garment recognizable, but collar rim, pockets, zipper path and hem/fold corners become more angular or jagged than original. Larger irregular pale patch inside collar. Geometry preview confirms faceted collapsed collar/folds. Not accepted simply because under maximum.",
+            "budget": "1925 is below 2000 maximum, above 1500 target; shape fails."
+          }
+        }
+      ],
+      "actualExportedFileValidation": "none",
+      "independentGameReview": "pending",
+      "upload": {
+        "status": "verified",
+        "attempts": 1,
+        "method": "waitForEvent(filechooser) before visible Click / Drag & Drop / Paste Image control, chooser.setFiles exact absolute source PNG",
+        "actualThumbnailVerifiedBeforeGenerate": true
+      },
+      "original": {
+        "status": "geometry-and-automatic-texture-complete",
+        "settings": {
+          "workflow": "Image to 3D",
+          "Model Type": "Smart Topology",
+          "model": "Meshy T2",
+          "modelDescription": "Fastest for game assets",
+          "Poly Count": 4000,
+          "Texture": true,
+          "Pose": false,
+          "License": "Private",
+          "Image Enhancement": {
+            "explicitlySetOffInHighDetailBeforeSwitch": true,
+            "smartTopologyControlExposed": false,
+            "hiddenBackendState": "not inspected"
+          },
+          "resolution": "not offered in Smart Topology original form",
+          "TopologyChoice": "not offered in original form; output label Triangle",
+          "Multi-view": "not offered in Smart Topology form; off before switch",
+          "Split": "not offered in Smart Topology form",
+          "displayedCredits": 15,
+          "displayedEstimate": "2 min"
+        },
+        "modelId": null,
+        "jobId": null,
+        "counts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 4,330",
+            "Vertices 2,220"
+          ],
+          "faces": 4330,
+          "triangles": 4330,
+          "vertices": 2220
+        },
+        "inspection": {
+          "views": [
+            "Default assembled part-colored wireframe",
+            "Elevated oblique wireframe",
+            "Top grey wireframe"
+          ],
+          "finding": "Compact folded jacket, two pocket flaps and central zipper. Collar has angular irregular rim; cloth layers compressed and connected. Four part entries in provider segmented preview; mesh/component/material count not exported. Underside not yet established."
+        },
+        "texturedCounts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 4,330",
+            "Vertices 5,212"
+          ],
+          "faces": 4330,
+          "triangles": 4330,
+          "vertices": 5212
+        },
+        "mapsVisible": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "texturedInspection": {
+          "views": [
+            "Default textured front",
+            "Elevated oblique top and side",
+            "Full underside/back"
+          ],
+          "finding": "Compact folded blue/ivory jacket, tucked folded layers, pockets and central zipper preserved; not robe. Collar rim angular, weave weak relative to image. Small pale triangular patch inside collar and pale line along bottom edge. Back is very flat feature-poor slab; no obvious back hollow in inspected texture view, actual support/planarity unvalidated."
+        },
+        "preserved": true
+      },
+      "candidateDecision": "Prefer retained automatically textured 4330-face original for unaccepted handoff. It has all four map buttons; maps still to inspect. No paid texture recovery on rejected 1925-face geometry.",
+      "mapInspection": {
+        "exactMesh": "Automatically textured T2 original, 4330 faces / 5212 vertices",
+        "Base Color": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Deep petrol-blue cloth, ivory shoulders, charcoal trim; weak seam/weave detail, pale bottom border and collar interior artifact."
+        },
+        "Roughness": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Mostly light/rough cloth, subtle darker trim/zipper differentiation."
+        },
+        "Metallic": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Nearly uniformly black/non-metallic jacket. No convincing separate metallic zipper-hardware region visible at inspected scale."
+        },
+        "Normal": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Mostly uniform violet with very weak seam/fold relief. Does not establish strong cloth weave, valid normal convention or actual exported map data."
+        },
+        "UVPresence": "All four maps render on exact candidate. Raw UV coordinates, overlap, texel density, dimensions and file linkage not validated.",
+        "actualTextureImageDimensions": null
+      },
+      "textureUvRecovery": {
+        "additionalRecoverySubmissions": 0,
+        "authorizedMaximum": 1,
+        "reason": "All four maps are present and visibly render on the retained higher-count automatic texture result. Rejected remesh lacks Normal, but its damaged silhouette is not repaired by texture/UV generation; no paid texture stage was submitted on rejected geometry.",
+        "automaticTextureStageCompleted": true,
+        "separateUnwrapSubmitted": false,
+        "actualTextureImageDimensions": null,
+        "actualUvCoordinatesValidated": false
+      },
+      "completion": {
+        "providerOriginal": "succeeded",
+        "automaticTexture": "succeeded",
+        "remesh": "completed-rejected-for-shape",
+        "providerInspection": "completed",
+        "actualExportedFileValidation": "none",
+        "rootIntegration": "none",
+        "independentGameReview": "pending"
+      },
+      "finalCandidate": {
+        "providerName": "WATCHKEEP GPT-image v2 T2 - 4330 PBR - UNACCEPTED",
+        "originalProviderName": null,
+        "originalProviderNameObservation": "Rename field was blank before naming.",
+        "nameSaveVerification": "Saved, reopened Rename, exact name persisted with Save disabled; Cancel exited without mutation.",
+        "modelId": null,
+        "jobId": null,
+        "workspaceUrl": "https://www.meshy.ai/workspace",
+        "handoffTabId": "2020745761",
+        "counts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 4,330",
+            "Vertices 5,212"
+          ],
+          "faces": 4330,
+          "triangles": 4330,
+          "vertices": 5212
+        },
+        "maps": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "acceptance": "unaccepted",
+        "budget": "4330 exceeds target 1500 and maximum 2000; retained because 1925 derivative damages silhouette.",
+        "textureResolution": "No resolution offered in original T2 form; actual image dimensions unvalidated."
+      },
+      "finalVersionRecoverySteps": [
+        "Open handoff Chrome tab 2020745761 at https://www.meshy.ai/workspace. Final retained jacket is selected in textured view, with four map buttons visible.",
+        "If needed, use Search my generation for WATCHKEEP GPT-image v2 T2 - 4330 PBR - UNACCEPTED. Saved name was independently verified by reopening Rename; this jacket search itself was not executed.",
+        "Verify exact Topology Triangle, Faces 4,330, Vertices 5,212 and four map buttons. This is the automatic-texture result from the new T2 original, not old text-to-3D or the earlier failed High Detail jacket.",
+        "Preserved raw new original is Faces 4,330 / Vertices 2,220 with four provider part entries. Rejected remesh is Faces 1,925 / Vertices 3,499 and lacks Normal; do not choose it solely because under maximum.",
+        "Earlier Meshy 7 High Detail failed jacket remains Generating failed / Credits Refunded. No historical receipt or model deleted.",
+        "No model/job ID exposed by inspected visible UI or workspace URL. DOM radix IDs and x4 badges are not job IDs or output counts.",
+        "Root handles separate concrete export approval, actual GLB/map/UV/geometry/scale/support/byte validation, runtime texture conversion, integration and independent game review. No downloads were attempted."
+      ],
+      "remainingDeficiencies": [
+        "Retained 4330 triangles exceed jacket maximum 2000 and target 1500; no waiver or budget pass.",
+        "Collar rim and folded layers angular even in original; 1925 reduction visibly worsens collar, pockets, zipper path and hem.",
+        "Pale bottom border and small pale interior-collar patch; subdued cloth weave/seam detail; very weak Normal relief.",
+        "Back is unusually flat and feature-poor. Folds/pockets closely fused in relief; four provider part entries do not establish mesh/material count or connectivity.",
+        "No obvious detached object or large open back hollow in inspected original views, but watertightness, connected components, exact flat support and metre scale not validated."
+      ]
+    },
+    {
+      "id": "kestrel-maintenance-roll",
+      "status": "partial",
+      "sourceImage": {
+        "path": "/tmp/star-agent-retail-props/assets/station-shop/soft-props/image-to-3d-v2/roll-reference-v1.png",
+        "sha256": "ac84a456acf6b4cdf71df86c5322a1f36571281cdd1fb9e2a542bcfd08e9b47a",
+        "bytes": 1899905,
+        "locallyViewed": true,
+        "shaVerifiedUnchangedAtHandoff": true
+      },
+      "intent": {
+        "targetTriangles": 2500,
+        "maxTriangles": 4000
+      },
+      "authorizedOriginalAttempts": 1,
+      "originalAttemptsSubmitted": 1,
+      "authorizedRequiredTextureUvRecoveries": 1,
+      "modelId": null,
+      "jobId": null,
+      "operations": [
+        {
+          "operation": "Generate",
+          "submissions": 1,
+          "result": "Task created successfully; geometry followed by automatic texture card. No original reroll."
+        },
+        {
+          "operation": "Inspect original and automatic texture from multiple angles against exact locally viewed source",
+          "result": "Complete; provider-render observations recorded under original, not exported-file or game validation."
+        },
+        {
+          "operation": "Supported Remesh Fixed / Custom / Triangle",
+          "result": "One derivative completed; preserved and rejected for silhouette damage. Original retained."
+        },
+        {
+          "operation": "Select retained automatically textured original and inspect Base Color, Roughness, Metallic and Normal",
+          "result": "All four preview modes opened and visually checked on exact face/vertex count. No additional texture or UV recovery submitted."
+        }
+      ],
+      "derivedVersions": [
+        {
+          "operation": "Remesh",
+          "source": "Preserved new automatically textured 4145-face / 3859-vertex original",
+          "status": "complete-rejected-for-shape",
+          "settings": {
+            "Target Polycount": "Fixed",
+            "mode": "Custom",
+            "Polycount": 3800,
+            "Topology": "Triangle"
+          },
+          "rationale": "Modest reduction to preserve silhouette and leave room beneath 4000 maximum for count overshoot. 2500 target deliberately not forced.",
+          "quotedCredits": 0,
+          "modelId": null,
+          "jobId": null,
+          "counts": {
+            "providerLabels": [
+              "Topology Triangle",
+              "Faces 3,926",
+              "Vertices 6,368"
+            ],
+            "faces": 3926,
+            "triangles": 3926,
+            "vertices": 6368
+          },
+          "mapsVisible": [
+            "Base Color",
+            "Roughness",
+            "Metallic"
+          ],
+          "NormalPreviewPresent": false,
+          "inspection": {
+            "views": [
+              "Default textured front",
+              "Elevated textured end/flap"
+            ],
+            "finding": "Severe silhouette damage despite modest reduction: rolled ends collapsed into splayed jagged flaps, visible dark gaps/holes and flattened buckle forms. Provider preview, not a watertightness audit. Reject; do not certify because below maximum.",
+            "budget": "3926 below 4000 maximum, above 2500 target; quality fails."
+          }
+        }
+      ],
+      "actualExportedFileValidation": "none",
+      "independentGameReview": "pending",
+      "upload": {
+        "status": "verified",
+        "attempts": 1,
+        "method": "waitForEvent(filechooser) before visible Click / Drag & Drop / Paste Image control, chooser.setFiles exact absolute source PNG",
+        "actualThumbnailVerifiedBeforeGenerate": true
+      },
+      "original": {
+        "status": "geometry-and-automatic-texture-complete",
+        "settings": {
+          "workflow": "Image to 3D",
+          "Model Type": "Smart Topology",
+          "model": "Meshy T2",
+          "modelDescription": "Fastest for game assets",
+          "Poly Count": 4000,
+          "Texture": true,
+          "Pose": false,
+          "License": "Private",
+          "Image Enhancement": {
+            "explicitlySetOffInHighDetailBeforeSwitch": true,
+            "smartTopologyControlExposed": false,
+            "hiddenBackendState": "not inspected"
+          },
+          "resolution": "not offered in Smart Topology original form",
+          "TopologyChoice": "not offered in original form; output label Triangle",
+          "Multi-view": "not offered in Smart Topology form; off before switch",
+          "Split": "not offered in Smart Topology form",
+          "displayedCredits": 15,
+          "displayedEstimate": "2 min"
+        },
+        "modelId": null,
+        "jobId": null,
+        "counts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 4,145",
+            "Vertices 2,225"
+          ],
+          "faces": 4145,
+          "triangles": 4145,
+          "vertices": 2225
+        },
+        "inspection": {
+          "views": [
+            "Default part-colored wireframe",
+            "Elevated grey wireframe showing rolled end"
+          ],
+          "finding": "Enclosed roll, two snug straps and two buckle forms. Smoother continuous layered end than High Detail reductions; core remains enclosed. Nine entries in provider parts list, including small strap-side details. Actual components/material count unvalidated. 4145 faces exceed 4000 maximum by 145."
+        },
+        "texturedCounts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 4,145",
+            "Vertices 3,859"
+          ],
+          "faces": 4145,
+          "triangles": 4145,
+          "vertices": 3859
+        },
+        "mapsVisible": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "texturedInspection": {
+          "views": [
+            "Default front",
+            "Elevated flap and rolled end",
+            "Underside/back"
+          ],
+          "finding": "Closed compact canvas roll with two straps and two buckle forms; continuous rolled-end layers smoother than old High Detail reductions, but still flattened/irregular. Palette remains paler tan than ochre source. Extra thin dark strap-side strips and pale small oblong marks appear near lower straps; not in source. Buckles broad and fused-looking. No exposed tools/tool rack, no obvious detached parts. Underside continuous slightly rounded, no visible open back hollow; flat stable support unvalidated."
+        },
+        "preserved": true
+      },
+      "candidateDecision": "Retain automatically textured 4145-face original, unaccepted because 145 above maximum and material/shape limitations remain. Reject 3926 remesh; no texture recovery on visibly damaged geometry.",
+      "mapInspection": {
+        "exactMesh": "New Smart Topology automatic texture result: Triangle, Faces 4145, Vertices 3859",
+        "Base Color": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Pale tan/ochre canvas, dark straps; extra thin strap-side dark strips and pale oblong marks; weaker weave than reference."
+        },
+        "Roughness": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Light rough cloth and webbing, subtly darker buckle rims; map variation visible."
+        },
+        "Metallic": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Cloth/webbing black; light outlines concentrated on buckle rims. Remaining small metal-looking strap-side marks not in source."
+        },
+        "Normal": {
+          "present": true,
+          "previewOpened": true,
+          "finding": "Mostly uniform violet with weak fold/edge relief at provider scale; map presence does not establish useful textile detail, convention or actual exported data."
+        },
+        "UVPresence": "Maps visibly render on exact candidate; UV coordinates, overlaps, texel density and actual map files not validated."
+      },
+      "finalCandidate": {
+        "providerName": "KESTREL GPT-image v2 T2 - 4145 PBR - UNACCEPTED",
+        "originalProviderName": "Canvas Tool Roll",
+        "counts": {
+          "providerLabels": [
+            "Topology Triangle",
+            "Faces 4,145",
+            "Vertices 3,859"
+          ],
+          "faces": 4145,
+          "triangles": 4145,
+          "vertices": 3859
+        },
+        "modelId": null,
+        "jobId": null,
+        "maps": [
+          "Base Color",
+          "Roughness",
+          "Metallic",
+          "Normal"
+        ],
+        "acceptance": "unaccepted",
+        "nameVerification": "Save completed. Searching the exact saved name reduced pagination from 1/37 to 1/1 and showed the new roll family, including derivatives. Search is not unique to one version; verify counts and four maps.",
+        "workspaceUrl": "https://www.meshy.ai/workspace",
+        "handoffTabId": "2020745761",
+        "budget": "4145 exceeds target 2500 and maximum 4000 by 145 (3.625%); retained because 3926 derivative badly damages silhouette.",
+        "textureResolution": "No resolution offered in original T2 form; actual image dimensions unvalidated."
+      },
+      "textureUvRecovery": {
+        "additionalRecoverySubmissions": 0,
+        "authorizedMaximum": 1,
+        "reason": "All four maps are present and visibly render on the retained higher-count automatic texture result. Rejected remesh lacks Normal, but its damaged silhouette is not repaired by texture/UV generation; no paid texture stage was submitted on rejected geometry.",
+        "automaticTextureStageCompleted": true,
+        "separateUnwrapSubmitted": false,
+        "actualTextureImageDimensions": null,
+        "actualUvCoordinatesValidated": false
+      },
+      "completion": {
+        "providerOriginal": "succeeded",
+        "automaticTexture": "succeeded",
+        "remesh": "completed-rejected-for-shape",
+        "providerInspection": "completed",
+        "actualExportedFileValidation": "none",
+        "rootIntegration": "none",
+        "independentGameReview": "pending"
+      },
+      "finalVersionRecoverySteps": [
+        "Open https://www.meshy.ai/workspace in configured Chrome, or use retained tab 2020745761. It currently shows the jacket.",
+        "Use Search my generation for KESTREL GPT-image v2 T2 - 4145 PBR - UNACCEPTED. This exact query was tested and narrowed the library to one page of the new roll family; related raw/remesh versions also appear.",
+        "Select the intact textured roll and verify Topology Triangle, Faces 4,145, Vertices 3,859 plus Base Color, Roughness, Metallic and Normal. This is the retained automatic texture result, not a new texture-recovery submission.",
+        "Preserved raw T2 original is Faces 4,145 / Vertices 2,225 with nine provider part entries. Rejected remesh is Faces 3,926 / Vertices 6,368, lacks Normal and shows splayed torn-looking end flaps/gaps.",
+        "All previous High Detail / Meshy 7 variants remain separate: original 3,004,190 faces, 4,085-face rejected reduction, 8,157-face reduction and KESTREL GPT-image v2 - 8157 PBR - UNACCEPTED. Preserve and compare them; they are not this T2 alternative.",
+        "No model/job ID was exposed in inspected visible UI or workspace URL. Use saved name, exact counts, maps, thumbnail and source image together. Names/search may group derivatives.",
+        "No Download/GLB/maps action was clicked. Root must handle separate concrete final export approval, exported-file validation and independent game review."
+      ],
+      "remainingDeficiencies": [
+        "Retained 4145 triangles are 145 over maximum 4000, and above target 2500; no budget waiver.",
+        "Smoother enclosed end layers than old reductions, but flattened/uneven layered channels remain. Reduction to actual 3926 severely collapses ends into jagged flaps with visible gaps and deforms buckles.",
+        "Canvas remains pale tan/desaturated relative to rich ochre PNG; texture weave/Normal relief weak.",
+        "Two primary snug straps and two buckles remain. Extra thin dark strips and pale oblong marks near strap sides differ from source; buckles look broad/fused. No tool rack or exposed tools observed.",
+        "Back/underside looks continuous and slightly rounded. No obvious open back hollow in retained original, but exact support, watertightness, connectivity and metre scale unvalidated.",
+        "Nine provider part entries are preview segmentation, not validated material, node or connected-component counts."
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "operation": "Read source prompts, brief, prior receipt, asset standard, QUALITY and hangar acceptance boundary; inspect exact PNGs through view_image and verify hashes.",
+      "result": "Inputs match source records. Historical hangar blocked review not treated as acceptance."
+    },
+    {
+      "operation": "Inspect existing provider failure and completed roll variants in fresh task tab.",
+      "result": "Previous failure/results preserved."
+    },
+    {
+      "operation": "Jacket setup: selected Smart Topology; returned to High Detail to explicitly set Image Enhancement off; returned to Smart Topology.",
+      "result": "Meshy T2 / Fastest for game assets; Poly Count 4000; Texture on; Pose off; Private; quote 15 credits / 2 min. Image Enhancement control absent in Smart Topology."
+    },
+    {
+      "operation": "Jacket upload through waitForEvent(filechooser) before visible upload label click, chooser.setFiles exact absolute PNG.",
+      "result": "Uploading ... shown; thumbnail verification pending.",
+      "finalResolution": "Upload completed; actual jacket thumbnail verified before Generate. Roll upload independently succeeded and actual exact roll thumbnail verified before its single Generate."
+    },
+    {
+      "operation": "Provider viewer inspection synchronization",
+      "result": "Several orbit attempts followed by blank viewer and library thumbnails, then remounted controls. Not a generation failure. No Generate repeated; used bounded visible Faces wait and re-observed UI. Successful jacket underside view obtained; roll underside still pending."
+    },
+    {
+      "operation": "Bounded original attempts",
+      "result": "Exactly one T2 recovery original for jacket and one T2 quality alternative for roll. Both completed with automatic textures. No further originals or reference generation."
+    },
+    {
+      "operation": "Provider reduction checks",
+      "result": "Jacket target 1900 produced 1925 faces / 3499 vertices; roll target 3800 produced 3926 faces / 6368 vertices. Both preserved, rejected for visible silhouette damage, and lack Normal. Higher originals chosen as unaccepted."
+    },
+    {
+      "operation": "Final maps on retained original texture derivatives",
+      "result": "Jacket 4330 faces / 5212 vertices and roll 4145 faces / 3859 vertices each have Base Color, Roughness, Metallic, Normal; each map opened and visually inspected. No assumption from Texture toggle alone."
+    },
+    {
+      "operation": "Provider names and recovery",
+      "result": "Retained originals named with T2, count and UNACCEPTED. Jacket name re-open verified; roll exact-name search verified, with related family cards also returned. No model/job IDs exposed."
+    },
+    {
+      "operation": "Final browser handoff",
+      "result": "Fresh single inspection tab 2020745761 retained and marked handoff, showing jacket 4330 faces / 5212 vertices textured view. Earlier new task tabs vanished during detachment; their provider jobs persisted."
+    }
+  ],
+  "creditEvents": [
+    {
+      "propId": "watchkeep-folded-protective-jacket",
+      "event": "original geometry submission",
+      "chargedCredits": 5,
+      "basis": "Immediate visible delta following single Generate and Task created successfully."
+    },
+    {
+      "propId": "watchkeep-folded-protective-jacket",
+      "event": "automatic texture stage",
+      "chargedCredits": 10,
+      "basis": "Subsequent visible delta before roll submission; automatic texture card visible. No ledger inspected."
+    },
+    {
+      "propId": "kestrel-maintenance-roll",
+      "event": "original geometry submission",
+      "chargedCredits": 5,
+      "basis": "Immediate visible delta following single Generate and Task created successfully."
+    },
+    {
+      "propId": "kestrel-maintenance-roll",
+      "event": "automatic texture stage",
+      "chargedCredits": 10,
+      "basis": "Subsequent aggregate visible delta consistent with quoted 15-credit original total and automatic texture stage. No ledger inspected; concurrent unrelated library card observed, not interacted with."
+    },
+    {
+      "propId": "watchkeep-folded-protective-jacket",
+      "event": "Remesh Fixed / Custom / 1900 / Triangle",
+      "chargedCredits": 0,
+      "basis": "Visible 0-credit Confirm quote, submitted once."
+    },
+    {
+      "propId": "kestrel-maintenance-roll",
+      "event": "Remesh Fixed / Custom / 3800 / Triangle",
+      "chargedCredits": 0,
+      "basis": "Visible 0-credit Confirm quote, submitted once."
+    }
+  ],
+  "export": {
+    "attempted": false,
+    "filesDownloaded": 0,
+    "reason": "Earlier separate browser export approval denial remains unresolved; root owns concrete export approval. No bypass or alternate export route."
+  },
+  "runtimeChanges": 0,
+  "purchasesOrTopups": 0,
+  "completion": {
+    "provider": {
+      "jacket": "original and automatic texture succeeded; remesh rejected; higher original retained unaccepted",
+      "roll": "alternative original and automatic texture succeeded; remesh rejected; higher original retained unaccepted"
+    },
+    "providerMaps": "all four on each retained exact candidate visibly inspected",
+    "exportAuthorization": "pending separate root action; earlier denial not bypassed",
+    "actualExportedFileValidation": "none",
+    "rootIntegration": "none",
+    "independentGameReview": "pending"
+  },
+  "updatedAt": "2026-09-07T00:40:11.793003+00:00",
+  "statusMeaning": "Both bounded Smart Topology originals and automatic textures succeeded. Both supported remesh derivatives failed shape checks and are preserved as rejected. Better higher-count originals retained with four inspected provider maps, but neither accepted for runtime or export authorization.",
+  "cost": {
+    "quotedOriginalTotalCredits": 30,
+    "chargedCredits": 30,
+    "refundedCreditsObservedThisRun": 0,
+    "netCreditsObservedThisRun": 30,
+    "remeshQuotedCredits": 0,
+    "additionalTextureUvRecoveryCredits": 0,
+    "purchasesOrTopups": 0,
+    "basis": "Observed UI changes: each Generate immediately debited 5 credits; automatic texture stages debit 10 credits each, consistent with quoted 15-credit total per prop. Initial-to-final visible delta 30 credits. No ledger inspected; one unrelated new card appeared during the task but was not interacted with. Stage attribution from operation timing and totals, not a transaction ledger. No balance/account identifiers recorded. No failure/refund UI on either new job. Historical jacket refund remains only in the prior receipt."
+  },
+  "completedAt": "2026-09-07T00:40:11.793003+00:00",
+  "verification": {
+    "integrity": {
+      "watchkeep-folded-protective-jacketSourceUnchanged": true,
+      "kestrel-maintenance-rollSourceUnchanged": true,
+      "previousReceiptUnchanged": true,
+      "earlierUploadReceiptUnchanged": true,
+      "inputDocumentsUnchanged": {
+        "assets/station-shop/soft-props/image-to-3d-v2/prompts.json": true,
+        "assets/station-shop/soft-props/brief.json": true
+      }
+    },
+    "receiptJson": "parsed successfully",
+    "browser": "Actual source thumbnails, prior result preservation, new originals, remeshes and all four maps on retained candidates visually inspected.",
+    "filesDownloaded": 0,
+    "runtimeChanges": 0,
+    "localScreenshotsSaved": 0,
+    "npmBuildTests": "not run; only receipt authored, no code or runtime assets changed",
+    "actualGlbMapFiles": "not exported or validated"
+  }
+}

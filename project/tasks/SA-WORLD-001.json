@@ -1,0 +1,35 @@
+{
+  "id": "SA-WORLD-001",
+  "title": "Rare large Aeon rock landmarks with physical overhangs",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex landmark rocks",
+  "status": "integrated",
+  "branch": "feat/landmark-rocks",
+  "base": "f8e48d916c849111cc8d557fdb6a88b4d2c7b521",
+  "updated": "2026-09-07",
+  "areas": [
+    "world",
+    "rendering",
+    "multiplayer"
+  ],
+  "claims": [
+    "src/landmark-distribution.js",
+    "src/landmark-geometry.js",
+    "src/landmark-rocks.js",
+    "src/landmark-material.js",
+    "src/forest-distribution.js",
+    "src/vegetation.js",
+    "src/mining/field.js",
+    "tests/landmark-rocks.test.js",
+    "scripts/landmark-rocks.spec.js",
+    "scripts/landmark-rocks.config.js",
+    "src/landmark.worker.js",
+    "src/mining/aeon-stones.js",
+    "project/areas.json",
+    "server/world.js",
+    "tests/server-landmarks.test.js",
+    "src/lighting.js"
+  ],
+  "brief": "docs/briefs/landmark-rocks.md"
+}

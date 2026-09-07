@@ -1,0 +1,482 @@
+{
+  "id": "aeon-amphibian",
+  "status": "development-candidate; independent/game review pending",
+  "source": {
+    "path": "assets/creatures/aeon-amphibian/source/aeon-amphibian-walking.glb",
+    "bytes": 8138996,
+    "sha256": "a5954d75022d8f764bfa7da404dd69757428012c2258c4265ea392f0f800fd84"
+  },
+  "runtime": {
+    "path": "public/models/creatures/aeon-amphibian.glb",
+    "bytes": 1119644,
+    "sha256": "ba95f093ffa9703670456457ce299d0865051503b137eb15ebd5de3cd619de9e"
+  },
+  "builder": "blender/finish_aeon_amphibian.py",
+  "displayName": "Tideback",
+  "coordinates": "glTF Y-up, metres, front -Z; base-centre across the sampled walk envelope",
+  "triangles": 14242,
+  "vertices": 10261,
+  "materials": 1,
+  "drawPrimitives": 2,
+  "localizedRepair": {
+    "boundaryVertexIndices": [
+      99,
+      6434,
+      6433,
+      6435,
+      9306,
+      8822,
+      8821,
+      7521,
+      5723,
+      5722,
+      10139,
+      9264,
+      4423,
+      4415,
+      3745,
+      3739,
+      5006,
+      5009,
+      10195,
+      8643,
+      8644,
+      8641,
+      1108,
+      1103,
+      1985,
+      1988,
+      777,
+      775,
+      778,
+      5662,
+      5663,
+      4427,
+      6899,
+      6894,
+      4879,
+      9737,
+      9738,
+      9870
+    ],
+    "addedVertices": 39,
+    "addedTriangles": 38,
+    "addedPrimitives": 1,
+    "addedMaterials": 0,
+    "addedJoints": 0,
+    "rimOverlapFactor": 1.03,
+    "rimInsetDesignMetres": 0.003,
+    "centreInsetDesignMetres": 0.025,
+    "material": "existing authored baseColor, matte material0",
+    "uvSampleSourceVertex": 7575,
+    "scope": "Small inner membrane beneath the single38vertex upper-shell boundary; original mesh/UV/skin buffers retained."
+  },
+  "joints": 27,
+  "texture": {
+    "file": "/models/creatures/aeon-amphibian.glb (embedded)",
+    "format": "WebP",
+    "maxEdge": 1024,
+    "maps": [
+      "authored baseColor only"
+    ],
+    "roughness": 0.85,
+    "metalness": 0,
+    "emissive": 0
+  },
+  "shellCrownHeightMetres": 0.8,
+  "anatomicalLandmark": "Phase-zero dorsal shell crown above grounded skin minimum",
+  "crownMeasurement": "Phase-zero maximum evaluated shell skin height, relative to the same phase plantar skin minimum; dense per-phase wrapper grounding",
+  "boundsMetres": {
+    "min": [
+      -0.5323448777198792,
+      -8.756543223853441e-08,
+      -0.6561334133148193
+    ],
+    "max": [
+      0.5326376557350159,
+      0.8424139022827148,
+      0.6561333537101746
+    ]
+  },
+  "sizeMetres": [
+    1.064982533454895,
+    0.8424139898481471,
+    1.312266767024994
+  ],
+  "dimensions": {
+    "width": 1.064982533454895,
+    "height": 0.8424139898481471,
+    "length": 1.312266767024994
+  },
+  "gaitSpeed": 0.7,
+  "deathDuration": 1.6,
+  "collision": {
+    "halfWidth": 0.5326376557350159,
+    "halfLength": 0.6561334133148193,
+    "height": 0.8424139022827148
+  },
+  "animation": {
+    "name": "walk",
+    "sourceName": "Armature|Unreal Take|baselayer",
+    "durationSeconds": 1.0,
+    "channels": 82,
+    "sourceJointChannels": 81,
+    "inPlace": true,
+    "horizontalRootSpanMetres": [
+      0.0,
+      1.862645149230957e-07
+    ],
+    "verticalRootBobMetres": 0.06943032145500183,
+    "rootMotionEdit": "Source is horizontally in-place. One new wrapper translation track grounds each sampled pose; all81 source joint channels/samplers and non-image buffer data remain intact.",
+    "estimatedWalkSpeedMetresPerSecond": 0.7341277599334729,
+    "recommendedWalkSpeedMetresPerSecond": 0.7,
+    "speedMethod": "Median positive backward sole-centre speed across samples in the lowest35% of each weighted foot region height range",
+    "footMinYRange": [
+      -8.756543223853441e-08,
+      1.220959120473708e-07
+    ],
+    "sampleCount": 241,
+    "denseSampleCount": 481,
+    "denseGroundMinimumMetres": -0.00018350014579482377,
+    "denseGroundMaximumMetres": 0.0004576220235321671
+  },
+  "normalization": {
+    "uniformScale": 373.30085578120935,
+    "sourceBaseBlender": [
+      0.0003088867524638772,
+      -0.0002322751097381115,
+      -2.139903517672792e-05
+    ],
+    "sourceShellCrownTopBlenderZ": 0.0022023648489266634,
+    "wrapperNode": {
+      "name": "aeon-amphibianRoot",
+      "children": [
+        28
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "scale": [
+        373.30085578120935,
+        373.30085578120935,
+        373.30085578120935
+      ],
+      "translation": [
+        0.11530768903424393,
+        0.007988278144364735,
+        0.08670849724191133
+      ],
+      "extras": {
+        "origin": "base-centre over full sampled walk",
+        "front": "-Z",
+        "units": "metres",
+        "assetStatus": "development-candidate"
+      }
+    },
+    "sourceObjectTransforms": [
+      {
+        "name": "Armature",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "char1",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "allNonImageBufferViewsPreservedSha256": {
+      "0": "d1e45a516bece17542fe543f507e0346278ebb516f65df075611b21fdaa2be32",
+      "1": "69a35478e42c5ed0beff0ebe15dae61889ac67cf1cf4e709467f44b56cee094a",
+      "2": "0b55741684a50bcb3be67b13e148ee7e0333d1ceb30319eaff4d7bdb1e7c640d",
+      "3": "58dc523f37358ceb7f021c2261c5a8d3855c3990afe5d92aaefe5e959ea3c998",
+      "4": "768f326f203932d6f6f5d11fa46a7803cd9f9f09dc3abf3f2d46e2539428ec3c",
+      "5": "55f6c247ab2c2e695b564bca5e56d588638adc41bcd38677414ddabeb3bfbcee",
+      "7": "4f6dae6897b3e6f0cd54cfa89aefb357e818c2a10e28fd6391d0ea601e46ec28",
+      "8": "ad1bd086a0eb3d329064d763c58b134bdebf8e6036407109f9475b3f6e1b8b67",
+      "9": "66ae3be8ad423715241bab503a182e5ca351f5dcc3d4eccb5991ff46d538ea2e",
+      "10": "e9ddb7faae33881501389bd57d27b3cebc82caca81684b67d47d53a42e7c7f3c",
+      "11": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+      "12": "67c8fe5612d1c4eb5d3601585b6025eebb173e6fcc900f72ee0f53573f903173",
+      "13": "dc161c254adadbc39fe87be7a0d64a9fb820dc8866d0285c7c92bc91d11a61bc",
+      "14": "6bd081bc546596e3f2abfc21d803e7fd92e10542053fb689bc90ef08e05a08c9",
+      "15": "dd33326267304b42b6ef7576824ea2de9ce8d6166cc09a4d6da769635a26f24a",
+      "16": "7555ff4564b5f1ef3100deb9279a15e815f6b33ebfec9d50ba020fee6d3d535c",
+      "17": "c2b8bda5395ed8b14835c70388b71d333b74437664ab90a15cfcf87e123674a9",
+      "18": "e06c0cbee056f6e722fdec765826968756d3e4c4095c12fcdccecb52f5f0bdba",
+      "19": "3d7412d752075b26151d9df2bd7fd7e43a27efc55b5ab63ac516a9fefaf76c10",
+      "20": "770139dbdb61667a62b11ad9390c9701708c91e33000cab185d90fcf91e06829",
+      "21": "701fc4a33b626d80ea1a0aa4596c7b3358fa40524ebe85a97d38c4673441e5bf",
+      "22": "1066d8d2e4b3c2e6a23ced8bef08f24077fa17502385df4faefc45b11eb5d58d",
+      "23": "1cd9dd2a6d469ff92479b4e49bdde49b348736d1fb37daf4371cd0b8d39a7888",
+      "24": "d290c97dc686870d2b296206f1b05a4c7fbd477ac36e4e94382a572eca2a2ec8",
+      "25": "e607f056c68ab89264b11ee0048d9b4b2f354e8334f9defc3cda51231dab4804",
+      "26": "2a2974aeb644ca27aa58105504989866fdc64f7dadcd0b110d6b372d52b669f3",
+      "27": "60f6147afda3ca92d8d3e326c194dc3f61c9a5670ff45f87d8e75725bb1c381c",
+      "28": "1f5326587328043eb1a62bea446860a71db645274197b9378a6839d1665cbbf2",
+      "29": "c3d971b5f178dc6af757e2f771582547f040a733b8fd006a08bcd40aa39fb1a7",
+      "30": "5deb290909285bb448ae03339531810bfafeb4d283b3ada7da289e1bcf56d7a3",
+      "31": "9874399771950dad58ec5672a70c7039dc8b82b84d9d2b30f82e2c9e1b8787f7",
+      "32": "07c60950112d0fa4d59a2361aae9fd59ac29254dd2f2e760099d6461c2cd80b0",
+      "33": "2e1d5832d2de458ed2ec9318cb919079ba483efbc35de419afad9224f7d52ef0",
+      "34": "13ba9f0df098d988ad835b787061793fad7e6654c149fa29eae715f1c1e78c6d",
+      "35": "43f0169902e39da7837777b6713c8d458abeaf9571f2c678f57d36b39326c146",
+      "36": "3956667a6908966e058b9c12576e6ca44aae037b39d9fc1dd837a0ec1569716d",
+      "37": "e62988e5bea251df06d107b98992924e5d33a72ab8d62e4f9aba1b948afdd615",
+      "38": "1a33f5525dfdd991f198c4b52aa249364a1383335195958bbe142ba3ba1308e4",
+      "39": "13c0d4d994bd89a2690b8c6f3783f87d7f26a148b31f1ff288d90478d8853d1c",
+      "40": "81d088160238282e52accf848c74067ca91904d25c7c430a8380760ed9379a86",
+      "41": "ad19d7f55f17d5cea0a5a072375d7ecaf05db10837f6fea9ad7497809f6f0989",
+      "42": "fe33137391e343423024161f0045a38b499fcf25577da1a624aba08aa96bce05",
+      "43": "1d01fdd163be0137886f43ff87647ffa3308b538cfc76c95d9dda5b8c8f85d1c",
+      "44": "057de959e00401275d99a2e9c4e0ae8da0b29e65053d0792c27cae25305c48dd",
+      "45": "d07ce8c444e5438cf53f2b22ca7d5a1009c44eb4f81ea51495bd36614bacdd7f",
+      "46": "cca069b95147365e3b0666847d2700af28bc98e34c878a94084571d7fcf59d9d",
+      "47": "07425a135e5405c12951ce517e6e7f7b7052e23cd199fbe2cbb9ad1a484d092e",
+      "48": "01e8cf9686a6be01973f084dcb74515952bb958c8c37d33f819c36bd6481e2d0",
+      "49": "b616d52f930c9600cacab8a78d7c4bb97a07bd5fbe56eacb0ede715a44f42093",
+      "50": "4c996905bbef8bbc9cf79d55465ba35897136114137d117c4505bb81cae27211",
+      "51": "d6c01685b4a22a8f00f340bc11276be5f92aeef0b46ed26a14688def0799ba1f",
+      "52": "70f9a779c8c7a83b812935088237c8de14c63ac9343e0c29a4f622e4dc1e9ee0",
+      "53": "4f5055efc810a6a0207abdffb6a7987849af5f8597eee68c0689acb052735c28",
+      "54": "51e05949f74d465e9c1c8bae25fd87c2aee018c13ebb62d971eca87ebd76af42",
+      "55": "a334098fde5eda29cec766c1fd65315e2a984808ac902977bd60314b6e88c502",
+      "56": "bdfe3973348404e16743b1a1e45467eda824eb2c5b110e8f20ab21ffd660e932",
+      "57": "25b777758b7372b2ce256a40ecc4ef1cd9510c811e7dc093e629c8f90e6f0504",
+      "58": "77392f0aa8fde0e37793ece1790850f1509f4b962b8e378f11e192f8bef2697c",
+      "59": "20dec1e03b743b7c41be1d0c4ee3f27b2feaa5b55b3e55b7f4b3fcfdbe94fef6",
+      "60": "48ee5cc83bd2cfb762fcdc7228118e86adf433c86da25d50c2794cf04ec7a146",
+      "61": "f98cf7eafe9b2588d5389c15102c4fcb7637888e13820e5bc84a812d1148a1c7",
+      "62": "ebb30768a4f3b4840000b3b8c8d84043259b26441183941bb2633b31c8f22676",
+      "63": "5fe6ac49ca9e96f44985c4ec0c45655ee94f1ded27760ac925907f7e58d05306",
+      "64": "f49c6503e76fee1fe612e070c70373daeef8a42decf57aa40ab68a95748a9261",
+      "65": "4d2769d4a973de0ce9a5d4c9e175312446703a4d659f308891ea8a661a95dc11",
+      "66": "cf4862b424f7b8c0a0e265de8343a457315b5a83abce13ce3fa56cc1e5dcdd31",
+      "67": "deb9849e4de10272aa31fc3332622c4ee404418b4e2f6a448d7aa9874a7aa8f4",
+      "68": "3250a82746030c8cf3129fbf89d8a14cd8d450c368541701112ac368eeb9a2f9",
+      "69": "04eac9dc8bb91aa4ac393d0507bb085886880c1a538f30f42f3614cf851ac07c",
+      "70": "88f8866c4db1b2678663d545dbf27b425b19f445a9d2f38d46c467bc465c77e3",
+      "71": "5ba49fa3a1e71f780c4104ed681d1624965c912965c63edff8d0b58ecab84f17",
+      "72": "15098ae866a1ad55521be7c30ab8e1c9d3680c0075855b0021deef7f0e996f93",
+      "73": "a3ccc6feda6468211bcb38296a91ab26425be9ac0231381e0b06fe328fb99dad",
+      "74": "35a20459238348b088a95bb7832a0de3914ea43075a50a59ec77ac7c483049c2",
+      "75": "bd8ea48f71e2d269b92a0022f5c07d4a0009586fe8d795cb6af5fff99afebebe",
+      "76": "142f117e779d0bd8a47ecf4b2bac10548887b948c96fa5ca5200c729d8d9a496",
+      "77": "1221b5bb0bf44f3382aed10d7fad73bd599f35d724e20a840d1332f80be64f31",
+      "78": "263137a79176061fb65fcbcfb77a50ba6b42ced27a3ee588e6fd10c5afa1970a",
+      "79": "4eaedc0fb2b2ce2032570aaa8204dc8510eccaf511d37808f1f92b703f5fcd39",
+      "80": "9c9e0d2f0d285c450ad49d63c77562d497b98143bc64e04f0649d7bb810517df",
+      "81": "1d84465cede8935dec0bcae1522af51a011e35b9a4857ffd2d36354345295cca",
+      "82": "1c9e7d038b9eb700845c49fe9f56001d403f44d204fb7a288f9acdb5b73c1183",
+      "83": "2af6c5e8b5000abb169416beedc4c4a1f1f54f32f72ee8b24b9d6ca28c72d909",
+      "84": "8d518045cbbddcf351eddb72ddc4aefa3eb818830dca817f98f6afbad4e72a21",
+      "85": "0a49b70f8646d3b29f8e6528cf1bb6fee462fcf832829f767b4a383da2367637",
+      "86": "01a179c3a78854f65a250517966681691455df6efb6b44571d7ffcecae22e5f8",
+      "87": "52b577c510f66fbce2dd0beb5f0c803b825a58b2adbd71992c401c127edffa32",
+      "88": "1cb90f9b871775a79d0d43c9a997164ce25eee7eb96ccbfaf28aed446c2791da",
+      "89": "88f15d31cde3893f93fc70fed7db3c564c9896230f8021cdb63001df536c040a",
+      "90": "6266a9025835310af98b96a2181b22a5a03a97026b1c0728722742ef171ad19f"
+    },
+    "allSourceSkinAccessorsOriginalPrimitiveJointChannelsSamplersUnchanged": true,
+    "blenderRuntimeReimportMaxBoundsErrorMetres": 1.9371509552001953e-07,
+    "helperExcludedFromBounds": [
+      "Icosphere"
+    ],
+    "actualSampleReport": "assets/creatures/aeon-amphibian/deformation-samples.json",
+    "motion": {
+      "sampleCount": 121,
+      "upperShellVertexCount": 482,
+      "upperShellMaxRelativeMotionMetres": 1.5985272326354845e-06,
+      "maxLimbJointDistanceChangeMetres": 1.3977289585936914e-05,
+      "walkZeroToDeathZeroMaxVertexDisplacementMetres": 9.821538355724954e-06,
+      "maxAdjacentSampleVertexDisplacementMetres": 0.021009912022457326,
+      "sampleIntervalSeconds": 0.013333333333333334,
+      "scope": "Upper shell region above80% crown height and central75% crown-height width; full skin/limb sampling is not terrain or continuous visual acceptance."
+    }
+  },
+  "limitations": [
+    "One supplied forward walk and one Blender-authored death; no attack/idle/swim animation authored.",
+    "Studio renders do not establish browser shading, gameplay, performance or independent visual acceptance.",
+    "Gait ground clearance is sampled, not continuously proven; terrain placement belongs to runtime."
+  ],
+  "death": {
+    "name": "death",
+    "durationSeconds": 1.6,
+    "loop": false,
+    "holdFinalPose": true,
+    "authoring": "Blender shell-preserving belly collapse, 14-degree late lean, asymmetric relaxed distal paddles and folded joint-length-constrained limbs; chest/head/tail/proximal limbs retain their mutual source pose; two distal segments of each limb fold while the rigid shell settles onto broad underside support",
+    "boundsMetres": {
+      "min": [
+        -0.5148639678955078,
+        -0.02290891297161579,
+        -0.5633606314659119
+      ],
+      "max": [
+        0.6724651455879211,
+        0.7999997138977051,
+        0.4851751923561096
+      ]
+    },
+    "finalBoundsMetres": {
+      "min": [
+        -0.4763560891151428,
+        -0.01958095282316208,
+        -0.4852067530155182
+      ],
+      "max": [
+        0.6377369165420532,
+        0.582420825958252,
+        0.4189697504043579
+      ]
+    },
+    "groundMinimumMetres": -0.02290891297161579,
+    "reimportBoundsErrorMetres": 6.5267086029052734e-06,
+    "denseSampleCount": 121,
+    "denseGroundMinimumMetres": -0.02290891297161579
+  },
+  "studio": {
+    "renderer": "Blender 5.2.0 LTS Cycles CPU",
+    "samples": 12,
+    "threads": 4,
+    "resolution": [
+      800,
+      600
+    ],
+    "views": [
+      {
+        "path": "assets/creatures/aeon-amphibian/review/front.webp",
+        "phase": 0,
+        "cameraBlender": [
+          0.0,
+          6.0,
+          1.899999976158142
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/side.webp",
+        "phase": 0,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          1.6999999284744263
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/walk-000.webp",
+        "phase": 0,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/walk-025.webp",
+        "phase": 0.25,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/walk-050.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/walk-075.webp",
+        "phase": 0.75,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/death-mid.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/death-final.webp",
+        "phase": 1,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-amphibian/review/death-side.webp",
+        "phase": 1,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          1.6999999284744263
+        ]
+      }
+    ]
+  }
+}

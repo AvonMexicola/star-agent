@@ -1,0 +1,611 @@
+{
+  "sourceRoot": "/home/cees/projects/star-agent-dev",
+  "gitHead": "8576e994b8e03d8987ac487fd72e609062bbae04",
+  "sourceFiles": {
+    "src/station-architecture.js": {
+      "bytes": 7737,
+      "sha256": "f1289e684cfabedaef6f6186765c373bd64b6f93f00197b42f72a6e64c189214"
+    },
+    "src/station-complex.js": {
+      "bytes": 20322,
+      "sha256": "08dc81c19030f447307ae41ec7a5f04e99c4dab1caddc9e98f78d938dc34cdca"
+    },
+    "src/station.js": {
+      "bytes": 25766,
+      "sha256": "62ba140ab856158df8fe3dc3e90d30f75ef5b3fc103c0d3641ecefba4580b69d"
+    },
+    "src/station-collision.js": {
+      "bytes": 3305,
+      "sha256": "7113833f80c76e6c0a3fab1af134fb90a417e8d850a895b8ab244a371691a978"
+    },
+    "QUALITY.md": {
+      "bytes": 7041,
+      "sha256": "3fe0f87e5ecbf1cbfdcc99e76dc085891d551479e49e07f55a088c841c23c788"
+    },
+    "STATION-PIPELINE-MEMORY.md": {
+      "bytes": 27508,
+      "sha256": "281a078e1ab2c7b11420d582f52923b24f5c2b8f06997d1aa087b10e78bec9b1"
+    }
+  },
+  "units": "metres; station-complex +Y up; each pod has its own yaw frame",
+  "exterior": {
+    "all": {
+      "meshes": 93,
+      "nominalColourPassDrawsBeforeCulling": 93,
+      "instancedTriangleSum": 22116,
+      "expandedPositionCount": 22390,
+      "materials": 8,
+      "bounds": {
+        "min": [
+          -1150,
+          -1476,
+          -1476
+        ],
+        "max": [
+          1150,
+          1476,
+          1476
+        ],
+        "size": [
+          2300,
+          2952,
+          2952
+        ]
+      }
+    },
+    "fixed": {
+      "meshes": 59,
+      "nominalColourPassDrawsBeforeCulling": 59,
+      "instancedTriangleSum": 708,
+      "expandedPositionCount": 1416,
+      "materials": 3,
+      "bounds": {
+        "min": [
+          -1140,
+          -137.5,
+          -500
+        ],
+        "max": [
+          1140,
+          1,
+          500
+        ],
+        "size": [
+          2280,
+          138.5,
+          1000
+        ]
+      }
+    },
+    "rings": [
+      {
+        "centre": [
+          -1110,
+          0,
+          0
+        ],
+        "meshes": 17,
+        "nominalColourPassDrawsBeforeCulling": 17,
+        "instancedTriangleSum": 10704,
+        "expandedPositionCount": 10487,
+        "materials": 5,
+        "bounds": {
+          "min": [
+            -1150,
+            -1476,
+            -1476
+          ],
+          "max": [
+            -1068.5,
+            1476,
+            1476
+          ],
+          "size": [
+            81.5,
+            2952,
+            2952
+          ]
+        },
+        "allRotationSweep": {
+          "localMinX": -40,
+          "localMaxX": 41.5,
+          "maxRadiusYZ": 1476.2849161682577
+        }
+      },
+      {
+        "centre": [
+          1110,
+          0,
+          0
+        ],
+        "meshes": 17,
+        "nominalColourPassDrawsBeforeCulling": 17,
+        "instancedTriangleSum": 10704,
+        "expandedPositionCount": 10487,
+        "materials": 5,
+        "bounds": {
+          "min": [
+            1068.5,
+            -1476,
+            -1476
+          ],
+          "max": [
+            1150,
+            1476,
+            1476
+          ],
+          "size": [
+            81.5,
+            2952,
+            2952
+          ]
+        },
+        "allRotationSweep": {
+          "localMinX": -41.5,
+          "localMaxX": 40,
+          "maxRadiusYZ": 1476.2849161682577
+        }
+      }
+    ],
+    "radius": 1450,
+    "radiansPerSecond": 0.00045,
+    "rotationPeriodSeconds": 13962.634015954636
+  },
+  "podLayout": [
+    {
+      "id": 1,
+      "offset": [
+        -855,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 2,
+      "offset": [
+        -665,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 3,
+      "offset": [
+        -475,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 4,
+      "offset": [
+        -285,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 5,
+      "offset": [
+        -95,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 6,
+      "offset": [
+        95,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 7,
+      "offset": [
+        285,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 8,
+      "offset": [
+        475,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 9,
+      "offset": [
+        665,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 10,
+      "offset": [
+        855,
+        0,
+        -520
+      ],
+      "yaw": 0
+    },
+    {
+      "id": 11,
+      "offset": [
+        -855,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 12,
+      "offset": [
+        -665,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 13,
+      "offset": [
+        -475,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 14,
+      "offset": [
+        -285,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 15,
+      "offset": [
+        -95,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 16,
+      "offset": [
+        95,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 17,
+      "offset": [
+        285,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 18,
+      "offset": [
+        475,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 19,
+      "offset": [
+        665,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": 20,
+      "offset": [
+        855,
+        0,
+        520
+      ],
+      "yaw": 3.141592653589793
+    }
+  ],
+  "assets": [
+    {
+      "file": "station.glb",
+      "sha256": "59c4e38845f2ce6d93e25bc7e7f5ac2eb709591a06a1fdeac464ad2dde03863d",
+      "bytes": 3804976,
+      "triangles": 89944,
+      "primitives": 121,
+      "meshes": 98,
+      "materials": 29,
+      "bounds": {
+        "min": [
+          -74.1500015258789,
+          -11.600000381469727,
+          -44.79999923706055
+        ],
+        "max": [
+          75.75,
+          27.850000381469727,
+          44.79999923706055
+        ],
+        "size": [
+          149.9000015258789,
+          39.45000076293945,
+          89.5999984741211
+        ]
+      },
+      "contractNodes": [
+        {
+          "name": "ApproachPoint",
+          "origin": [
+            0,
+            -4.800000190734863,
+            -112
+          ],
+          "bounds": null
+        },
+        {
+          "name": "DoorTrigger",
+          "origin": [
+            0,
+            -4.800000190734863,
+            -272
+          ],
+          "bounds": null
+        },
+        {
+          "name": "HangarDoor_L",
+          "origin": [
+            -21.399999618530273,
+            -1.399999976158142,
+            -45.05999755859375
+          ],
+          "bounds": {
+            "min": [
+              -21.399999618530273,
+              -9.050000548362732,
+              -23.209999084472656
+            ],
+            "max": [
+              0,
+              7.649999260902405,
+              -21.724998474121094
+            ],
+            "size": [
+              21.399999618530273,
+              16.699999809265137,
+              1.4850006103515625
+            ]
+          }
+        },
+        {
+          "name": "HangarDoor_R",
+          "origin": [
+            21.399999618530273,
+            -1.399999976158142,
+            -45.05999755859375
+          ],
+          "bounds": {
+            "min": [
+              0,
+              -9.050000548362732,
+              -23.209999084472656
+            ],
+            "max": [
+              21.399999618530273,
+              7.649999260902405,
+              -21.724998474121094
+            ],
+            "size": [
+              21.399999618530273,
+              16.699999809265137,
+              1.4850006103515625
+            ]
+          }
+        },
+        {
+          "name": "LandingDeck",
+          "origin": [
+            0,
+            -8.199999809265137,
+            2
+          ],
+          "bounds": {
+            "min": [
+              -21,
+              -8.399999812245369,
+              -22
+            ],
+            "max": [
+              21,
+              -8,
+              26
+            ],
+            "size": [
+              42,
+              0.39999981224536896,
+              48
+            ]
+          }
+        },
+        {
+          "name": "LandingPad",
+          "origin": [
+            0,
+            -8,
+            2
+          ],
+          "bounds": null
+        }
+      ],
+      "animations": [
+        {
+          "name": "DoorsOpen",
+          "channels": 2
+        }
+      ]
+    },
+    {
+      "file": "station_lod1.glb",
+      "sha256": "adb8019a1c76b2bd684c4c46997718b793a61f7ba7cd214300e082227d54ce3b",
+      "bytes": 250796,
+      "triangles": 6932,
+      "primitives": 48,
+      "meshes": 12,
+      "materials": 20,
+      "bounds": {
+        "min": [
+          -74.1500015258789,
+          -11.600000381469727,
+          -44.79999923706055
+        ],
+        "max": [
+          75.75,
+          27.850000381469727,
+          44.79999923706055
+        ],
+        "size": [
+          149.9000015258789,
+          39.45000076293945,
+          89.5999984741211
+        ]
+      },
+      "contractNodes": [
+        {
+          "name": "ApproachPoint",
+          "origin": [
+            0,
+            -4.800000190734863,
+            -112
+          ],
+          "bounds": null
+        },
+        {
+          "name": "DoorTrigger",
+          "origin": [
+            0,
+            -4.800000190734863,
+            -272
+          ],
+          "bounds": null
+        },
+        {
+          "name": "HangarDoor_L",
+          "origin": [
+            -21.399999618530273,
+            -1.399999976158142,
+            -45.05999755859375
+          ],
+          "bounds": {
+            "min": [
+              -21.399999618530273,
+              -8.399999976158142,
+              -23.209999084472656
+            ],
+            "max": [
+              0,
+              6.999999642372131,
+              -22.049997329711914
+            ],
+            "size": [
+              21.399999618530273,
+              15.399999618530273,
+              1.1600017547607422
+            ]
+          }
+        },
+        {
+          "name": "HangarDoor_R",
+          "origin": [
+            21.399999618530273,
+            -1.399999976158142,
+            -45.05999755859375
+          ],
+          "bounds": {
+            "min": [
+              0,
+              -8.399999976158142,
+              -23.209999084472656
+            ],
+            "max": [
+              21.399999618530273,
+              6.999999642372131,
+              -22.049997329711914
+            ],
+            "size": [
+              21.399999618530273,
+              15.399999618530273,
+              1.1600017547607422
+            ]
+          }
+        },
+        {
+          "name": "LandingDeck",
+          "origin": [
+            0,
+            -8.199999809265137,
+            2
+          ],
+          "bounds": {
+            "min": [
+              -21,
+              -8.399999812245369,
+              -22
+            ],
+            "max": [
+              21,
+              -7.9999998062849045,
+              26
+            ],
+            "size": [
+              42,
+              0.4000000059604645,
+              48
+            ]
+          }
+        },
+        {
+          "name": "LandingPad",
+          "origin": [
+            0,
+            -8,
+            2
+          ],
+          "bounds": null
+        }
+      ],
+      "animations": [
+        {
+          "name": "DoorsOpen",
+          "channels": 2
+        }
+      ]
+    }
+  ],
+  "scope": "Read-only vertex and resource audit of base8576e99. No swept ship/door clearance certification; material counts are authored nodes, not prepared runtime material stats."
+}

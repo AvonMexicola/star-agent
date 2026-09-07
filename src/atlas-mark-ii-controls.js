@@ -17,10 +17,12 @@ export function describeAtlasControl(systems, position, seated = false) {
     const ramp = systems.ramps.find(item => id === `ramp:${item.id}`);
     const state = ramp.moving ? ramp.target === ramp.openAngle ? 'opening' : 'closing'
       : Math.abs(ramp.angle - ramp.closedAngle) < .001 ? 'closed' : 'open';
+    const exterior = systems.exteriorRampCallAt?.(position);
     const [x, y, z] = ramp.control;
     return { id, target: `${ramp.id === 'front' ? 'Forward' : 'Aft'} loading ramp`,
-      anchor: [x, y + 1.13, z - ramp.outward * .29], ...controlAction('ramp', state) };
+      anchor: exterior?.anchor ?? [x, y + 1.13, z - ramp.outward * .29], ...controlAction('ramp', state) };
   }
+  if (id === 'storage') return null;
   let state;
   if (lift.moving) state = lift.waitingForGates ? 'securing' : 'moving';
   else if (onLift) state = Math.abs(lift.y - lift.low) < .2 ? 'up' : 'down';
@@ -28,7 +30,8 @@ export function describeAtlasControl(systems, position, seated = false) {
   return {
     id, target: onLift ? 'Crew lift' : floor < (lift.low + lift.high) / 2 ? 'Cargo deck lift' : 'Upper deck lift',
     anchor: onLift ? [lift.centre[0], lift.y + 1.13, lift.centre[1] - 1.39]
-      : [3.5, floor + 1.33, lift.centre[1] - .975],
+      : [lift.callPanel.centre[0], floor + lift.callPanel.touchHeight,
+        lift.callPanel.centre[1] + lift.callPanel.touchOffsetZ + .025],
     ...controlAction('lift', state),
   };
 }

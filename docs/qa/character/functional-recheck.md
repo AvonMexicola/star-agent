@@ -1,0 +1,37 @@
+# Independent Claude Opus functional recheck — 2026-09-07
+
+Preserved exact report. Both residual robustness findings were subsequently fixed and fault-injection tested; see production-record.md.
+
+All seven rechecks done, plus the shadow LOD. Four targeted test files run: **80 tests, 0 failures** (`tests/player-expedition.test.js`, `tests/character.test.js`, `tests/equipment.test.js`, `scripts/ship-camera.test.js`). No browsers, no edits, no historical images.
+
+## Recheck of the seven defects
+
+**1 — reticle over the torso: fixed in code, visual confirmation out of scope here.** `ship-camera.js:88` walking offset is now `(.8, .35, 3.7)` and `:102`'s look target `(.8, -.65, -2)`. Both carry the same `+.8` lateral term, so the view axis runs *parallel* to the player's forward axis, 0.8 m to their right — the body centre sits 0.8 m left of the screen-centre ray at every depth, well clear of a ~0.25 m shoulder half-width. I also checked the change does not disturb the boom's collision behaviour: `|offset|` moved 3.77→3.80 m and the clip scales the whole vector, so the `actualOffset.length() < .85` bail at `:97` still fires at the same fraction of the boom. Whether the whole character stays framed is a render question, correctly left to the visual review.
+
+**3 — hit lock: fixed and regression-covered.** `character.js:664` no longer special-cases `'hit'` (`this._gestureActive && speed <= SPEED.idle`), so locomotion resolves out of it exactly like `wave`; `_hitCooldown` (`:343,572-573,649`) = clip duration + .25 s blocks re-entry into a playing hit. Verified by execution: `player-expedition.test.js:161-176` holds `speed: 4` with damage every frame for 3.2 s and asserts `state === 'run'` throughout, and asserts `action.time > .3` (ticks do not restart the clip). A swallowed hit while running does consume the cooldown, so a reaction can be skipped for ~1.9 s after stopping — cosmetic, not a defect.
+
+**5 — phantom `take-damage`: fixed.** `_lastHealth = null` (`:342`) and the compare/assign are both inside `if (Number.isFinite(source.health))` (`:652-655`), so health-free opening frames cannot seed the baseline. `:163-165` of the regression drives 30 health-free frames, then `health: .8`, and asserts `idle`.
+
+**8 — barrel/bolt divergence: fixed.** `tool.js:63-64` computes one `sightTarget = weaponTarget(aimOrigin, direction, origin, weaponRange)` / `sightEnd`; `handAim` uses `sightEnd` (`:67`) and the effects branch uses `attached ? sightTarget : …` with the same `sightEnd` fallback (`:80`). The 100 m constant is gone and the muzzle re-raycast (`:81`) and the muzzle-obstruction cull (`:73`) both survive.
+
+**9 — clip diagnostic: fixed.** Named `REQUIRED_CLIPS` (`:29-32`, the same 14 legacy clips the old `indexOf < 14` selected) with a per-asset override at `:421`, checked at `:532`. The shipped GLB declares all 26 in `asset.extras.requiredClips`, and `player-expedition.test.js:49` asserts that list equals the actual export's clips. Reordering `CLIPS` can no longer change behaviour. See residual defect 2 below.
+
+**10 — contract: fixed.** `get gestureActive()` at `character.js:579`; `equipment.js:834`, `mining/tool.js:60` and `avatar-studio.js:96,99` all use the public getter. No `_gestureActive` reads remain outside `character.js`.
+
+**12 — HUD/weapon during the cinematic: fixed.** `tool.js:44` and the `pose` getter at `:38` both gate on `!nav.openingActive`; `panel.hidden` and `mount.visible` follow `active`. `scripts/opening.spec.js` no longer touches `navigation.enabled` and now asserts `#mining-panel` hidden and `state.mining.tool.active === false` before capturing, so the evidence gap that made this unfalsifiable is closed.
+
+## Shadow-index LOD
+
+Mechanically sound. The GLB carries `char1.extras.shadowIndices → accessor 10` (52,326 SCALAR/5125 indices = **17,442 tris**, max index 66,480), and the colour primitive is untouched at **62,177 tris** — I read this out of the binary, not the record. `avatar-glb.mjs:124` remaps the extras accessor during `compact()`, so it survives pruning. `Character._load:384-402` only attaches `onBeforeShadow`/`onAfterShadow` on skinned meshes with an integer accessor and swaps `geometry.index` alone; the skin/morph/UV buffers and the bounding sphere are shared and untouched. Three 0.180.0 supports the callbacks, and it reads `geometry.index` *after* `onBeforeShadow` in `renderBufferDirect`, then uploads/binds it through `bindingStates.setup`, so the swapped LOD is what the depth pass actually draws. `player-expedition.test.js:33-42` proves the round trip on the real load path, including identity restoration of the original index object. The decimation itself (`avatar-shadow.mjs`) collapses only to *existing* vertices, keyed by dominant joint, so no seam can be welded across a bone boundary; worst-case rest displacement is √3 × 0.018 ≈ 3.1 cm of shadow silhouette. Cost of the per-frame swap is one extra VAO rebind on one mesh — negligible against 44,735 fewer triangles per shadow-casting light.
+
+## Unresolved defects
+
+1. **[Low · new code] An optional depth LOD can take down the entire character.** `character.js:388-402`: the `shadowIndices` accessor promise is wired to `failed` via `Promise.all(shadows).then(ready, failed)`, and `failed` (`:378-381`) sets `this.error` and resolves the ready promise **without setting `this.ready = true`**. A GLB whose `extras.shadowIndices` cannot be built (out-of-range accessor, a bufferView dropped by a partial rebuild, a hand-edited export) therefore reports "Character rig could not be prepared" and leaves an already-adopted model permanently un-ready — `tool.js:47` then never attaches equipment and the player keeps the mannequin. A shadow-only optimisation should degrade to full-detail shadows: `.catch(warn)` per accessor and always call `ready()`.
+
+2. **[Low · new code] A rig can silently opt out of its own clip contract.** `character.js:421`: `new Set(gltf.asset?.extras?.requiredClips || REQUIRED_CLIPS)` — `[]` is truthy, so an export that writes an empty `requiredClips` disables the missing-clip warning entirely (and a string value would build a Set of characters), while `scripts/character.spec.js`'s `expect(warnings).toEqual([])` still passes. This is a narrower version of the hazard finding 9 was meant to remove. `Array.isArray(x) && x.length ? x : REQUIRED_CLIPS`.
+
+Neither is reachable with the asset currently in the repo; both are latent failure modes introduced by this change set, not pre-existing code.
+
+## Updated functional verdict
+
+**Functionally ready to merge on the scope I rechecked.** All seven defects I originally reproduced (1, 3, 5, 8, 9, 10, 12) are genuinely fixed in the source, not just dispositioned — three of them now have real-GLB regressions that assert the specific broken behaviour, and the opening spec no longer suppresses the flag that hid finding 12. Finding 2 is reported passed by the controller-only EVA journey at 54.1 s with the disabled HUD camera button fixed; that route and its original failure are recorded, which is what AGENTS.md asks for. The new shadow-index LOD is correctly scoped to the depth pass and leaves the colour mesh bit-identical at 62,177 triangles. The two residual defects above are low-severity robustness gaps in the new code and are safe to schedule rather than block on. I did not re-examine findings 4, 6, 7, 11 or 13, and the visual verdict on finding 1's framing remains with the visual review.

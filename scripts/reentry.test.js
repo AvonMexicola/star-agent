@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial, PerspectiveCamera, ShaderLib, Vector3 } from 'three';
+import { BoxGeometry, Group, Mesh, MeshStandardMaterial, PerspectiveCamera, ShaderLib, Texture, Vector3 } from 'three';
 import { REENTRY, ReentryHeating, reentryTarget, stepReentry } from '../src/reentry.js';
 import { environmentAt } from '../src/flight-model.js';
 import { RADIUS } from '../src/world.js';
+import { weatherShip } from '../src/surface-materials.js';
 const near=(a,b,eps=1e-9)=>assert.ok(Math.abs(a-b)<=eps,`${a} != ${b}`);
 
 test('heat starts at q*v threshold, grows smoothly and saturates without infinities',()=>{
@@ -75,6 +76,23 @@ test('glass, instruments and explicit material opt-outs retain original material
   const heating=new ReentryHeating(ship);
   materials.forEach((material,i)=>assert.equal(mesh.material[i],material));
   heating.dispose();assert.equal(mesh.material,materials);
+});
+
+test('authored PBR skips generic weather but retains its maps and reentry heating',()=>{
+  const map=new Texture(),normalMap=new Texture(),original=new MeshStandardMaterial({map,normalMap});
+  original.userData.authoredSurface=true;
+  const ship=new Group(),mesh=new Mesh(new BoxGeometry(),original);ship.add(mesh);
+  const compile=original.onBeforeCompile;weatherShip(ship,new Texture());
+  assert.equal(original.onBeforeCompile,compile,'authored maps retain their original surface shader');
+  const heating=new ReentryHeating(ship);
+  assert.notEqual(mesh.material,original,'authored PBR remains eligible for hull heating');
+  assert.equal(mesh.material.map,map);assert.equal(mesh.material.normalMap,normalMap);
+  const shader={uniforms:{},vertexShader:ShaderLib.standard.vertexShader,fragmentShader:ShaderLib.standard.fragmentShader};
+  mesh.material.onBeforeCompile(shader,{});
+  assert.ok(shader.fragmentShader.includes('totalEmissiveRadiance += reentryColour'));
+  assert.ok(shader.fragmentShader.includes('#include <normal_fragment_maps>'));
+  assert.ok(shader.fragmentShader.includes('#include <logdepthbuf_fragment>'));
+  heating.dispose();assert.equal(mesh.material,original);
 });
 
 test('late meshes and animated local transforms work without world-position precision loss',()=>{

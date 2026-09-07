@@ -1,0 +1,101 @@
+{
+  "source": "Original deterministic procedural PBR swatches and authored Blender geometry; no external imagery, generated model or hosted service",
+  "authoringSession": "Codex / root/kestrel_reviewer, Bastion author role (not its independent reviewer)",
+  "paletteReference": "Original Meridian fleet language documented in QUALITY.md and assets/ship-weapons; no copied map payload",
+  "builder": "blender/build_station_defense.py",
+  "seed": 7291,
+  "textureSize": [
+    512,
+    512
+  ],
+  "normalSeed": 7317,
+  "roughnessHashSalts": {
+    "brush": 41,
+    "broadBase": 79
+  },
+  "enamelFinish": {
+    "forkPatchPixels": [
+      0,
+      0,
+      256,
+      128
+    ],
+    "receiverPatchPixels": [
+      256,
+      416,
+      256,
+      96
+    ],
+    "smallPartsPatchPixels": [
+      256,
+      384,
+      256,
+      32
+    ],
+    "forkCoordinatesGameZYMetres": [
+      -4.4,
+      5.4,
+      4.1,
+      11.95
+    ],
+    "receiverMajorFaceMetres": [
+      8.18,
+      3.56
+    ],
+    "coatingReliefMetres": {
+      "forkWitness": -0.004,
+      "receiverWitness": -0.0035,
+      "powderAmplitude": 0.00045
+    },
+    "description": "Existing broad face UVs address deliberate perimeter coatings and shallow rolled witness lines; actual trunnion contact ring gets restrained roughness polish. Pigment boundaries are material zones, with no directional lighting, grunge, extra geometry or runtime shader.",
+    "hashSalts": {
+      "forkPowder": 163,
+      "receiverPowder": 167,
+      "forkSheen": 173,
+      "receiverSheen": 179,
+      "smallPartGrain": 181
+    },
+    "geometryAndRig": "Candidate08 retains original07 geometry/rig and adds four supported inspection covers, two octagonal backing rings,14 captive heads and2 supported label quads; additive delta and matching motion/placement are required"
+  },
+  "baseColorSpace": "sRGB",
+  "normalSpace": "OpenGL tangent +Y; non-colour data",
+  "ormSpace": "linear; R=1, G=roughness, B=metalness; contact AO is separate vertex colour",
+  "normalStrength": 0.35,
+  "font": "Adwaita Sans for preserved aft engraving; original deterministic5x7 BASTION stencil for new supported side identifiers",
+  "candidate08Identifier": {
+    "patchPixels": [
+      8,
+      4,
+      48,
+      11
+    ],
+    "text": "BASTION",
+    "method": "Original stencil glyphs, pigment-only flat normal map, on existing service plate lower band"
+  },
+  "files": {
+    "bastion-basecolor.png": {
+      "sha256": "993cb5c72e2cbe207539424ea0ae8fb8c7121971f8a8b8f6a43cb79484c7274d",
+      "bytes": 62723
+    },
+    "bastion-basecolor.webp": {
+      "sha256": "ffc08614338b26befebecee1a47511b7a01fac64b7efa6e9381344dc7afdbc6d",
+      "bytes": 50968
+    },
+    "bastion-normal.png": {
+      "sha256": "7a2fe068bdd41f05e021dbd5b12164a6fe9e40c7b133779b23af9976494938d4",
+      "bytes": 101463
+    },
+    "bastion-normal.webp": {
+      "sha256": "1a24595528562dc8aad51ea092a48820587325f298ff8e4ee47d975433012686",
+      "bytes": 80716
+    },
+    "bastion-orm.png": {
+      "sha256": "91f753cb1703e95b65fcbb676db750e24a1a4d39be67f36fa0de04850d12c378",
+      "bytes": 116351
+    },
+    "bastion-orm.webp": {
+      "sha256": "78c305902ef09c8de155b084dbb323648a12bb3bcb2621148829dc2af418d90a",
+      "bytes": 65204
+    }
+  }
+}

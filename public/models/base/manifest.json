@@ -1,0 +1,774 @@
+{
+  "builder": "blender/build_base.py",
+  "coordinates": "metres, Y up; origin support surface, wall x width; stair rises toward -Z",
+  "source": "original deterministic scripted construction; no external imagery",
+  "pieces": {
+    "foundation": {
+      "triangles": 840,
+      "drawPrimitives": 5,
+      "bytes": 78396,
+      "sha256": "0ec0361d44720e02254352562c65901cdbb833ff5905070ddd340c92f607e360",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.6000000238418579,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.001999999862164259,
+          2.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "floor": {
+      "triangles": 840,
+      "drawPrimitives": 5,
+      "bytes": 78372,
+      "sha256": "b04101dae494cad843064cbf3b41d90dcda3a1edc4fb64cea1a3b63ea59229fa",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.18000000715255737,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.001999999862164259,
+          2.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "wall": {
+      "triangles": 2484,
+      "drawPrimitives": 4,
+      "bytes": 218656,
+      "sha256": "6f928fa61c92b7325e20788badfeb93f86c636229fc2fac77af62bb835c9654a",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.16300000250339508
+        ],
+        "max": [
+          2.0,
+          3.0,
+          0.16300001740455627
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "doorway": {
+      "triangles": 4320,
+      "drawPrimitives": 10,
+      "bytes": 378928,
+      "sha256": "2f0cb2a76ad123cf146ee260ae2c1df1f68612c1b98f2413d515148b8a24502c",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.22500000894069672
+        ],
+        "max": [
+          2.0,
+          3.0,
+          0.16300001740455627
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "window": {
+      "triangles": 3348,
+      "drawPrimitives": 5,
+      "bytes": 294200,
+      "sha256": "6f79bde1b3bc449ed27bc3d4f0d3f76be7d9c47beec5059418c8bf4a6daa1d92",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.16300000250339508
+        ],
+        "max": [
+          2.0,
+          3.0,
+          0.16300001740455627
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour",
+        "WindowGlass"
+      ]
+    },
+    "stairs": {
+      "triangles": 5616,
+      "drawPrimitives": 5,
+      "bytes": 489128,
+      "sha256": "b050b7da6da306bdb7ca60227c6c28d8b334da4e2e4d967e7ae224a73d11bfd0",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          1.0,
+          3.998380661010742,
+          2.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "foundation-triangle": {
+      "triangles": 476,
+      "drawPrimitives": 4,
+      "bytes": 46112,
+      "sha256": "d94b4d8a3b348ce78abac65c9cc131c43566c4281bd19032c522243af89a05ca",
+      "bounds": {
+        "min": [
+          -2.0138564109802246,
+          -0.6000000238418579,
+          -1.1707005500793457
+        ],
+        "max": [
+          2.0138564109802246,
+          0.002250000135973096,
+          2.317401170730591
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "floor-triangle": {
+      "triangles": 476,
+      "drawPrimitives": 4,
+      "bytes": 46100,
+      "sha256": "2871a9402e3889f016612aed73778307ca7a2498cb1f767b47ca55c7b95c272e",
+      "bounds": {
+        "min": [
+          -2.0138564109802246,
+          -0.18000000715255737,
+          -1.1707005500793457
+        ],
+        "max": [
+          2.0138564109802246,
+          0.002250000135973096,
+          2.317401170730591
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "foundation-quarter": {
+      "triangles": 908,
+      "drawPrimitives": 4,
+      "bytes": 81416,
+      "sha256": "699f354a12132bae7a5fc35b7fb9750e57594248474628fa870e028ed1bd28d3",
+      "bounds": {
+        "min": [
+          -2.0160000324249268,
+          -0.6000000238418579,
+          -2.0160000324249268
+        ],
+        "max": [
+          2.015991449356079,
+          0.002250000135973096,
+          2.015991449356079
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "floor-quarter": {
+      "triangles": 908,
+      "drawPrimitives": 4,
+      "bytes": 81396,
+      "sha256": "4bb60923ba553736dc7e64ea9a7bc8471288ff15532da3ea4d0b56ebd3f99423",
+      "bounds": {
+        "min": [
+          -2.0160000324249268,
+          -0.18000000715255737,
+          -2.0160000324249268
+        ],
+        "max": [
+          2.015991449356079,
+          0.002250000135973096,
+          2.015991449356079
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "wall-quarter": {
+      "triangles": 2556,
+      "drawPrimitives": 4,
+      "bytes": 237296,
+      "sha256": "20fb219f70381ca55247de763013a02ed3fb5f17dc8472744b8c71f80ff7cfbc",
+      "bounds": {
+        "min": [
+          -2.0799999237060547,
+          0.0,
+          -2.0799999237060547
+        ],
+        "max": [
+          2.149869203567505,
+          3.0,
+          2.149869203567505
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "window-quarter": {
+      "triangles": 4316,
+      "drawPrimitives": 5,
+      "bytes": 402712,
+      "sha256": "5590323352bf2bb2629f7e82c69c4eaab43b0c669f528a8785621374c88b5005",
+      "bounds": {
+        "min": [
+          -2.0799999237060547,
+          0.0,
+          -2.0799999237060547
+        ],
+        "max": [
+          2.149869203567505,
+          3.0,
+          2.149869203567505
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour",
+        "WindowGlass"
+      ]
+    },
+    "foundation-ramp": {
+      "triangles": 756,
+      "drawPrimitives": 4,
+      "bytes": 69644,
+      "sha256": "54c56c6154481eaf58e6fab047f553d6759a7616089ed97a1eddecd788cad0ef",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.6097829341888428,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.009782880544662476,
+          2.0
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "foundation-pad-small": {
+      "triangles": 1140,
+      "drawPrimitives": 5,
+      "bytes": 104244,
+      "sha256": "383e9718e2c9d8d51b24a0aeae43e13ce1617e2db3b454bcd3aaa96ea746482a",
+      "bounds": {
+        "min": [
+          -8.015999794006348,
+          -8.0,
+          -8.015999794006348
+        ],
+        "max": [
+          8.015999794006348,
+          0.002250000135973096,
+          8.015999794006348
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "foundation-pad-medium": {
+      "triangles": 1260,
+      "drawPrimitives": 5,
+      "bytes": 114592,
+      "sha256": "073303b1bbed964e82873892b61183c9f237c9ca614a1d1539aa18b04eaf71cf",
+      "bounds": {
+        "min": [
+          -16.016000747680664,
+          -8.0,
+          -20.016000747680664
+        ],
+        "max": [
+          16.016000747680664,
+          0.002250000135973096,
+          20.016000747680664
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "foundation-pad-large": {
+      "triangles": 1404,
+      "drawPrimitives": 5,
+      "bytes": 126972,
+      "sha256": "545dcff01d356c3fe36ae3130df77f86bf4713f19b68f65434275d0f7a9e9f60",
+      "bounds": {
+        "min": [
+          -24.016000747680664,
+          -8.0,
+          -36.01599884033203
+        ],
+        "max": [
+          24.016000747680664,
+          0.002250000135973096,
+          36.01599884033203
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "rack": {
+      "triangles": 4320,
+      "drawPrimitives": 4,
+      "bytes": 376580,
+      "sha256": "1407d0383f3d18d774bb438ff44bbcefdc5d3f87eabb4968d1158f3c884bd986",
+      "bounds": {
+        "min": [
+          -1.1999999284744263,
+          0.0,
+          -0.5
+        ],
+        "max": [
+          1.1999999284744263,
+          2.4000000953674316,
+          0.5
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "terminal": {
+      "triangles": 1728,
+      "drawPrimitives": 4,
+      "bytes": 153664,
+      "sha256": "44f040333547fe62a599fae418fd6609044b3ed28c01398aa4610b36a6907157",
+      "bounds": {
+        "min": [
+          -0.6899999976158142,
+          0.0,
+          -0.4180000126361847
+        ],
+        "max": [
+          0.6899999380111694,
+          1.4800000190734863,
+          0.38999998569488525
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "hangar-door": {
+      "triangles": 4428,
+      "drawPrimitives": 5,
+      "bytes": 386828,
+      "sha256": "6934b877c661605c1c61afd09f717282341099b918e5acfee526057e6cb22787",
+      "bounds": {
+        "min": [
+          -8.0,
+          0.0,
+          -0.33400002121925354
+        ],
+        "max": [
+          8.0,
+          6.0,
+          0.30000001192092896
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "ceiling-light": {
+      "triangles": 756,
+      "drawPrimitives": 3,
+      "bytes": 68220,
+      "sha256": "3b8f115c9b2a95736ebd114d22a24c57f359d6d5fd69725b5eca6203e997bbd8",
+      "bounds": {
+        "min": [
+          -0.4000000059604645,
+          -0.11999999731779099,
+          -0.4000000059604645
+        ],
+        "max": [
+          0.4000000059604645,
+          0.0,
+          0.4000000059604645
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "WarmTaskLight",
+        "WhiteArmour"
+      ]
+    },
+    "roof-flat": {
+      "triangles": 156,
+      "drawPrimitives": 2,
+      "bytes": 15932,
+      "sha256": "1588bcab9491efda52174b12412b6e4e8b11c0cacbdade77f97c9c5d1ecd7028",
+      "bounds": {
+        "min": [
+          -2.012500047683716,
+          0.0,
+          -2.012500047683716
+        ],
+        "max": [
+          2.012500047683716,
+          0.6029999852180481,
+          2.012500047683716
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-edge": {
+      "triangles": 216,
+      "drawPrimitives": 2,
+      "bytes": 15484,
+      "sha256": "d22afa319aaff399b543624073a3d04175f8964cb3b04dbb9316a909c41be41e",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.6039999723434448,
+          2.0
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-corner": {
+      "triangles": 1560,
+      "drawPrimitives": 2,
+      "bytes": 124892,
+      "sha256": "eade0bc4528e823a56958a0abfe4bca431d99eb88c7871a7a07b93a659208ed9",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          0.6039999723434448,
+          2.0
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-triangle": {
+      "triangles": 116,
+      "drawPrimitives": 2,
+      "bytes": 12648,
+      "sha256": "2a6f3043257f54ec184ba63ab39c99ddc5118ff97e81f6291d2270674f4d047f",
+      "bounds": {
+        "min": [
+          -2.0108253955841064,
+          0.0,
+          -1.1672005653381348
+        ],
+        "max": [
+          2.0108253955841064,
+          0.6029999852180481,
+          2.3156511783599854
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "roof-quarter": {
+      "triangles": 668,
+      "drawPrimitives": 2,
+      "bytes": 58264,
+      "sha256": "62df52792f89bab898316402f9549c36b3f4c78aed57be303e19683bbdae36bc",
+      "bounds": {
+        "min": [
+          -2.012500047683716,
+          0.0,
+          -2.012500047683716
+        ],
+        "max": [
+          2.012493371963501,
+          0.6029999852180481,
+          2.012493371963501
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete"
+      ]
+    },
+    "solar-array": {
+      "triangles": 5292,
+      "drawPrimitives": 4,
+      "bytes": 460208,
+      "sha256": "2f5125fe9ec289cc3af419fbb5d1f2a6a8e817f09ca4b02ec4f75f2e1423caa5",
+      "bounds": {
+        "min": [
+          -1.7999999523162842,
+          0.0,
+          -1.2050000429153442
+        ],
+        "max": [
+          1.7999999523162842,
+          1.193000078201294,
+          1.2049999237060547
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "wind-turbine": {
+      "triangles": 1728,
+      "drawPrimitives": 5,
+      "bytes": 153172,
+      "sha256": "0f6c51f33961e45ca35b0b6650c95760c8b3e78592879c6f3008da040952aa7a",
+      "bounds": {
+        "min": [
+          -1.3200000524520874,
+          0.0,
+          -1.3200000524520874
+        ],
+        "max": [
+          1.3200000524520874,
+          5.900000095367432,
+          1.3200000524520874
+        ]
+      },
+      "materials": [
+        "EdgeSteel",
+        "MineralConcrete",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "battery": {
+      "triangles": 1512,
+      "drawPrimitives": 4,
+      "bytes": 135080,
+      "sha256": "81765bb10c1c7a714cf0469d40270d1cc0244238d985e80a65a27bc2c79bcb1a",
+      "bounds": {
+        "min": [
+          -0.800000011920929,
+          0.0,
+          -0.5400000214576721
+        ],
+        "max": [
+          0.800000011920929,
+          1.7200000286102295,
+          0.5
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "uranium-generator": {
+      "triangles": 1512,
+      "drawPrimitives": 4,
+      "bytes": 135064,
+      "sha256": "7f4fa2059da2b69deffa7db8117738d5595210295da144a5970d0b3b2347ebd3",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -1.0399999618530273
+        ],
+        "max": [
+          1.0,
+          2.320000171661377,
+          1.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "helium-generator": {
+      "triangles": 1512,
+      "drawPrimitives": 4,
+      "bytes": 135052,
+      "sha256": "ad993cfc7c4ccd97d68f5d958fb17e1a61f8715bb0fe29d2be77b684f37eee06",
+      "bounds": {
+        "min": [
+          -1.5,
+          0.0,
+          -1.0399999618530273
+        ],
+        "max": [
+          1.5,
+          2.320000171661377,
+          1.0
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "mainframe": {
+      "triangles": 2268,
+      "drawPrimitives": 4,
+      "bytes": 200120,
+      "sha256": "a359be30918d181cd4022395e56fbb58dccc65cc5177df6a7cd380fa2dd31881",
+      "bounds": {
+        "min": [
+          -0.550000011920929,
+          0.0,
+          -0.3970000147819519
+        ],
+        "max": [
+          0.5499999523162842,
+          1.7799999713897705,
+          0.3499999940395355
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WhiteArmour"
+      ]
+    },
+    "crate": {
+      "triangles": 1512,
+      "drawPrimitives": 3,
+      "bytes": 131728,
+      "sha256": "21a8da0d5b67fcb4c34329757ca299ec7b163a65a0116b1c233fe74f24d104e5",
+      "bounds": {
+        "min": [
+          -0.6000000238418579,
+          0.0,
+          -0.45249998569488525
+        ],
+        "max": [
+          0.6000000238418579,
+          0.75,
+          0.4000000059604645
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "WhiteArmour"
+      ]
+    }
+  },
+  "aggregateBytes": 5411100,
+  "aggregateTriangles": 60932
+}

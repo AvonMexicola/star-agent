@@ -776,30 +776,31 @@ def preview(item, objs, path):
         bpy.ops.render.render(write_still=True)
     print('PREVIEW', path)
 
-REPORT = {}
-for item, build in ITEMS.items():
-    if ONLY and item != ONLY: continue
-    reset_scene()
-    faction_materials()
-    points = build()
-    objs = finalize(item)
-    lo, hi = bounds(objs)
-    tris = tri_count(objs)
-    path = export(item, objs)
-    info = {
-        'tris': tris,
-        'size_gltf': (round(hi.x - lo.x, 4), round(hi.z - lo.z, 4), round(hi.y - lo.y, 4)),
-        'min_gltf': to_gltf(Vector((lo.x, hi.y, lo.z))), 'max_gltf': to_gltf(Vector((hi.x, lo.y, hi.z))),
-        'materials': sorted(o.data.materials[0].name for o in objs),
-        'muzzle_gltf': to_gltf(points['muzzle']) if points.get('muzzle') else None,
-        'leftGrip_gltf': to_gltf(points['leftGrip']) if points.get('leftGrip') else None,
-        'file_mb': round(os.path.getsize(path) / 1e6, 3),
-    }
-    REPORT[item] = info
-    print('BUILT', item, json.dumps(info))
-    if PREVIEW_DIR:
-        os.makedirs(PREVIEW_DIR, exist_ok=True)
-        preview(item, objs, os.path.join(PREVIEW_DIR, f'{item}.png'))
+if __name__ == '__main__':
+    REPORT = {}
+    for item, build in ITEMS.items():
+        if ONLY and item != ONLY: continue
+        reset_scene()
+        faction_materials()
+        points = build()
+        objs = finalize(item)
+        lo, hi = bounds(objs)
+        tris = tri_count(objs)
+        path = export(item, objs)
+        info = {
+            'tris': tris,
+            'size_gltf': (round(hi.x - lo.x, 4), round(hi.z - lo.z, 4), round(hi.y - lo.y, 4)),
+            'min_gltf': to_gltf(Vector((lo.x, hi.y, lo.z))), 'max_gltf': to_gltf(Vector((hi.x, lo.y, hi.z))),
+            'materials': sorted(o.data.materials[0].name for o in objs),
+            'muzzle_gltf': to_gltf(points['muzzle']) if points.get('muzzle') else None,
+            'leftGrip_gltf': to_gltf(points['leftGrip']) if points.get('leftGrip') else None,
+            'file_mb': round(os.path.getsize(path) / 1e6, 3),
+        }
+        REPORT[item] = info
+        print('BUILT', item, json.dumps(info))
+        if PREVIEW_DIR:
+            os.makedirs(PREVIEW_DIR, exist_ok=True)
+            preview(item, objs, os.path.join(PREVIEW_DIR, f'{item}.png'))
 
-print('REPORT', json.dumps(REPORT))
-print(f'DONE in {time.time() - T0:.1f}s')
+    print('REPORT', json.dumps(REPORT))
+    print(f'DONE in {time.time() - T0:.1f}s')

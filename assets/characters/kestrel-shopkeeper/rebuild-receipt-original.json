@@ -1,0 +1,9 @@
+{
+  "runtimeSha256": "cb6238203ea14e55789ece92d912af04a087bf546960ab540e8597b366fb1e97",
+  "bytes": 1511512,
+  "independentFullBuilds": 2,
+  "byteIdentical": true,
+  "blender": "5.2.0 LTS fbe6228777e7",
+  "renderedRuntimeSha256": "cb6238203ea14e55789ece92d912af04a087bf546960ab540e8597b366fb1e97",
+  "note": "Second full numeric build reproduced identical GLB. Later archive-unpack and documentation changes do not change exporter geometry or animation logic; syntax checked separately."
+}

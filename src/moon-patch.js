@@ -12,6 +12,7 @@ export function generateMoonPatch({face,level,ix,iy,grid=MOON_GRID,surfaceDetail
   const size=2/2**level,u0=-1+ix*size,v0=-1+iy*size;
   const d=cubeDirection(face,u0+size/2,v0+size/2),centerRadius=MOON_RADIUS+moonSurface(...d).height,center=d.map(v=>v*centerRadius);
   const count=(grid+1)**2+4*(grid+1),positions=new Float32Array(count*3),normals=new Float32Array(count*3),directions=new Float32Array(count*3),points=new Float32Array(count*3),colors=new Float32Array(count*3),surface=new Float32Array(count*2);
+  const rockReliefs=new Float32Array(count);
   const stride=grid+3,samples=[];
   for(let y=-1;y<=grid+1;y++)for(let x=-1;x<=grid+1;x++){
     const d=cubeDirection(face,u0+size*x/grid,v0+size*y/grid),sample=moonSurface(...d);
@@ -27,6 +28,7 @@ export function generateMoonPatch({face,level,ix,iy,grid=MOON_GRID,surfaceDetail
       if(normal.reduce((sum,v,i)=>sum+v*d[i],0)<0)normal=normal.map(v=>-v);
       data.normal=normal;
     }
+    rockReliefs[index]=sample.rockRelief;
     surface[index*2]=sample.height;surface[index*2+1]=sample.frost;
     for(let axis=0;axis<3;axis++){
       const value=p[axis]-d[axis]*skirt-center[axis],k=index*3+axis;
@@ -41,5 +43,5 @@ export function generateMoonPatch({face,level,ix,iy,grid=MOON_GRID,surfaceDetail
   let next=(grid+1)**2;
   for(const edge of edges){const start=next;for(const index of edge)write(next++,index%(grid+1),Math.floor(index/(grid+1)),Math.max(.15,size*MOON_RADIUS*.18));for(let i=0;i<grid;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
   const field=surfaceDetail?generatePatchSurface({face,level,ix,iy,radius:MOON_RADIUS,directionAt:cubeDirection,sample:moonSurface}):null;
-  return {center,positions,normals,directions,points,colors,surface,indices:new Uint16Array(indices),field};
+  return {center,positions,normals,directions,points,colors,surface,rockReliefs,indices:new Uint16Array(indices),field};
 }

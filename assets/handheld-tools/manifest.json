@@ -1,0 +1,183 @@
+{
+  "rifle-laser": {
+    "triangles": 9611,
+    "drawPrimitives": 3,
+    "bounds": {
+      "min": [
+        -0.5525,
+        -0.0811,
+        -0.051
+      ],
+      "max": [
+        0.2209,
+        0.222,
+        0.0538
+      ]
+    },
+    "muzzle": [
+      -0.55,
+      0.115,
+      0
+    ],
+    "leftGrip": [
+      -0.29,
+      0.012,
+      0
+    ],
+    "source": "assets/handheld-tools/rifle-laser.blend",
+    "builder": "assets/handheld-tools/build.py",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 43,
+      "outwardWindingRepaired": 1,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 917060,
+    "sha256": "c0460bb3e4cd27519332016d6040e4beb869c9235fb448b395c0ad12b89535a0",
+    "materials": [
+      "Glass",
+      "HandheldFinish",
+      "Mint"
+    ],
+    "textures": 3,
+    "textureSize": 1024,
+    "textureFormat": "WebP",
+    "textureResidencyMiB": 16,
+    "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+  },
+  "sidearm-pistol": {
+    "triangles": 2404,
+    "drawPrimitives": 3,
+    "bounds": {
+      "min": [
+        -0.153,
+        -0.0902,
+        -0.021
+      ],
+      "max": [
+        0.15,
+        0.09,
+        0.021
+      ]
+    },
+    "muzzle": [
+      -0.15,
+      0.055,
+      0
+    ],
+    "leftGrip": null,
+    "source": "assets/handheld-tools/sidearm-pistol.blend",
+    "builder": "assets/handheld-tools/build.py",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 0,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 315472,
+    "sha256": "f8844e93e316f0131db4d0dec57fb3688d1e7cbc3bca81564eb7c12bc7c207a7",
+    "materials": [
+      "Glass",
+      "HandheldFinish",
+      "Mint"
+    ],
+    "textures": 3,
+    "textureSize": 1024,
+    "textureFormat": "WebP",
+    "textureResidencyMiB": 16,
+    "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+  },
+  "mining-laser-tool": {
+    "triangles": 7868,
+    "drawPrimitives": 4,
+    "bounds": {
+      "min": [
+        -0.6035,
+        -0.0807,
+        -0.0985
+      ],
+      "max": [
+        0.209,
+        0.3235,
+        0.0985
+      ]
+    },
+    "muzzle": [
+      -0.6,
+      0.14,
+      0
+    ],
+    "leftGrip": [
+      -0.3,
+      0.01,
+      0
+    ],
+    "source": "assets/handheld-tools/mining-laser-tool.blend",
+    "builder": "assets/handheld-tools/build.py",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 48,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 771980,
+    "sha256": "acaa2f44f0f8a946c19e4625351f71c758341d03d4bba387090d0604c33fdb43",
+    "materials": [
+      "Amber",
+      "Glass",
+      "HandheldFinish",
+      "Mint"
+    ],
+    "textures": 3,
+    "textureSize": 1024,
+    "textureFormat": "WebP",
+    "textureResidencyMiB": 16,
+    "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+  },
+  "tractor-beam-tool": {
+    "triangles": 5164,
+    "drawPrimitives": 3,
+    "bounds": {
+      "min": [
+        -0.602,
+        -0.0807,
+        -0.091
+      ],
+      "max": [
+        0.2,
+        0.27,
+        0.091
+      ]
+    },
+    "muzzle": [
+      -0.6,
+      0.14,
+      0
+    ],
+    "leftGrip": [
+      -0.3,
+      0.01,
+      0
+    ],
+    "source": "assets/handheld-tools/tractor-beam-tool.blend",
+    "builder": "assets/handheld-tools/build.py",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 0,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    },
+    "bytes": 545768,
+    "sha256": "ce83cf842ab9e014ce8c52551c16679a3b976fb5c2302fd0bfb13e06971c66eb",
+    "materials": [
+      "Glass",
+      "HandheldFinish",
+      "Mint"
+    ],
+    "textures": 3,
+    "textureSize": 1024,
+    "textureFormat": "WebP",
+    "textureResidencyMiB": 16,
+    "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+  }
+}

@@ -20,9 +20,10 @@ separate preview; port 5180 still serves the earlier geology branch.
    holsters it and **3** equips it again.
 5. Let the laser cool when it overheats. Copper and ice follow interior seams;
    the dark material is basalt. A mounted light helps inspect the cut.
-6. Return to the ship's cargo access, press **F**, and choose **Stow survey pouch**.
-   The dedicated pouch holds 12 kg; the sample locker holds 48 kg. They are separate
-   from the existing expedition-supply manifest.
+6. Return to the ship's cargo access, press **F**, and choose **Deposit all resources**.
+   The starter backpack holds 48 kg and the initial ship boxes hold 192 kg of
+   materials, sharing the inventory with expedition supplies. A second backpack
+   box raises its material capacity to 96 kg. Mining level appears in that inventory.
 
 Mining saves are stored under `star-agent.selene-mining.v1`. Storage failure pauses
 mining without publishing the unsaved cut or granting its samples. An unreadable
@@ -56,7 +57,7 @@ save is retained and mining pauses. The first slice provides no reset/delete UI.
 - `store.js`: one localStorage transaction includes density and both sample
   containers. The compact snapshot preserves float samples exactly. Replaying the
   same revision cannot award another yield. Collected mass is a gameplay concentrate
-  yield (12 kg/m³ removed), not the physical density of basalt/ice. Empty space
+  yield (1 kg/m³ removed for new cuts; existing cargo stays unchanged), not the physical density of basalt/ice. Empty space
   yields no resources; the removal budget and remaining pouch capacity cap each cut.
 - `tool.js`: a first-person socket adapter reuses the existing `Equipment` class,
   heat/overheat behavior, laser beam and procedural Blender mining-tool model from
