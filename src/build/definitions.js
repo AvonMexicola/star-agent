@@ -15,7 +15,7 @@ const curved=(window)=>Array.from({length:ARC_SEGMENTS},(_,i)=>{
  const poly=(inner,outer)=>[[outer*Math.cos(a)-2,outer*Math.sin(a)-2],[outer*Math.cos(b)-2,outer*Math.sin(b)-2],[inner*Math.cos(b)-2,inner*Math.sin(b)-2],[inner*Math.cos(a)-2,inner*Math.sin(a)-2]];
  return window&&i>1&&i<ARC_SEGMENTS-2?[prism(poly(3.85,4.15),0,1),prism(poly(3.85,4.15),2.4,3),prism(poly(3.97,4.03),1,2.4,'glass')]:[prism(poly(3.85,4.15),0,3)];
 }).flat();
-const padSlab=(id,label,width,length,cost,size)=>{const d=slab(id,label,'pad',rectangle(width,length),.6,cost);d.padSize=size;for(const x of [-width/2+.7,width/2-.7])for(const z of [-length/2+.7,length/2-.7])d.colliders.push(box([x-.3,-8,z-.3],[x+.3,-.6,z+.3]));return d;};
+const padSlab=(id,label,width,length,cost,size)=>{const d=slab(id,label,'pad',rectangle(width,length),.6,cost);d.padSize=size;d.cost={...cost,concrete:cost.concrete+40,'metal-stock':cost['metal-stock']+8};for(const x of [-width/2+.7,width/2-.7])for(const z of [-length/2+.7,length/2-.7])d.colliders.push(box([x-.3,-8,z-.3],[x+.3,-.6,z+.3]));return d;};
 export const ROOF_HEIGHT=.6;
 export const roofProfile=(shape,x,z)=>{const rounded=v=>Math.sqrt(Math.max(0,1-(Math.max(0,v-(2-ROOF_HEIGHT))/ROOF_HEIGHT)**2));return ROOF_HEIGHT*(shape==='edge'||shape==='corner'?rounded(z):1)*(shape==='corner'?rounded(x):1);};
 const roofCuts=[-2,2-ROOF_HEIGHT,...Array.from({length:6},(_,i)=>2-ROOF_HEIGHT+ROOF_HEIGHT*Math.sin((i+1)*Math.PI/12))];
@@ -34,9 +34,9 @@ export const PIECES = Object.freeze({
   'wall-quarter':{id:'wall-quarter',label:'Quarter-circle wall',category:'wall',shape:'quarter',cost:{concrete:12},footprint:[4.3,4.3],height:3,colliders:curved(false)},
   'window-quarter':{id:'window-quarter',label:'Quarter-circle glazed wall',category:'wall',shape:'quarter',cost:{concrete:6,glass:4,'metal-stock':2},footprint:[4.3,4.3],height:3,colliders:curved(true)},
   'foundation-ramp':{id:'foundation-ramp',label:'Approach ramp',category:'foundation',shape:'ramp',cost:{concrete:10,'metal-stock':2},footprint:[4,4],height:.6,support:true,colliders:Array.from({length:32},(_,i)=>box([-2,-.6,2-(i+1)/8],[2,-.6+(i+1)*.6/32,2-i/8]))},
-  'foundation-pad-small':padSlab('foundation-pad-small','Small pad foundation · Nomad',16,16,{concrete:192,'metal-stock':16},'S'),
-  'foundation-pad-medium':padSlab('foundation-pad-medium','Medium pad foundation · Atlas',32,40,{concrete:960,'metal-stock':80},'M'),
-  'foundation-pad-large':padSlab('foundation-pad-large','Large pad foundation',48,72,{concrete:2592,'metal-stock':216},'L'),
+  'foundation-pad-small':padSlab('foundation-pad-small','Landing pad S · Nomad',16,16,{concrete:192,'metal-stock':16},'S'),
+  'foundation-pad-medium':padSlab('foundation-pad-medium','Landing pad M · Atlas',32,40,{concrete:960,'metal-stock':80},'M'),
+  'foundation-pad-large':padSlab('foundation-pad-large','Landing pad L · Heavy',48,72,{concrete:2592,'metal-stock':216},'L'),
   rack:{id:'rack',label:'Storage rack',category:'utility',cost:{'metal-stock':10},footprint:[2.4,1],height:2.4,storageBoxes:8,colliders:[box([-1.2,0,-.5],[1.2,2.4,.5])]},
   terminal:{id:'terminal',label:'Inventory terminal',category:'utility',cost:{'metal-stock':5,conductor:3,glass:2},footprint:[1.4,.8],height:1.5,colliders:[box([-.7,0,-.4],[.7,1.5,.4])]},
   'hangar-door':{id:'hangar-door',label:'Nomad hangar door',category:'wall',cost:{concrete:48,'metal-stock':32,conductor:4},footprint:[16,.6],height:6,colliders:[box([-8,0,-.3],[-7.3,6,.3]),box([7.3,0,-.3],[8,6,.3]),box([-7.3,5.4,-.3],[7.3,6,.3])],door:[{...box([-7.29,0,-.12],[7.29,5.39,.12],'door'),collapse:.96}]},

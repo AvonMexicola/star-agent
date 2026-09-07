@@ -1,0 +1,23 @@
+{
+  "input": "Injected Gamepad only, no pose/inventory fixture",
+  "pieces": [
+    "mainframe",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation",
+    "foundation-pad-small",
+    "foundation-ramp",
+    "foundation-ramp",
+    "foundation-ramp",
+    "foundation-ramp",
+    "hangar-door",
+    "foundation-ramp"
+  ],
+  "errors": []
+}

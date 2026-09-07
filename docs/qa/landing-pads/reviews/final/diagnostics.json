@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-07T22:00:20.255Z",
+  "browser": "151.0.7922.173",
+  "viewport": [
+    1440,
+    900
+  ],
+  "diagnostics": [
+    {
+      "size": "small",
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "draws": 25,
+      "triangles": 6400,
+      "geometries": 13,
+      "textures": 4,
+      "camera": [
+        11.2,
+        14.4,
+        10.4
+      ],
+      "markingY": 0.005
+    },
+    {
+      "size": "large",
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "draws": 25,
+      "triangles": 11944,
+      "geometries": 13,
+      "textures": 4,
+      "camera": [
+        33.599999999999994,
+        64.8,
+        46.800000000000004
+      ],
+      "markingY": 0.005
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,67 @@
+{
+  "browser": "151.0.7922.173",
+  "viewport": "1440x900",
+  "views": [
+    {
+      "name": "small",
+      "paintMask": 1,
+      "ramps": 4,
+      "paint": true,
+      "paintEmission": 1,
+      "paintColor": 0,
+      "beaconEmission": 1.2,
+      "draws": 25,
+      "triangles": 6400,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "small-night",
+      "paintMask": 1,
+      "ramps": 4,
+      "paint": true,
+      "paintEmission": 1,
+      "paintColor": 0,
+      "beaconEmission": 1.2,
+      "draws": 25,
+      "triangles": 6400,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "small-off",
+      "paintMask": 1,
+      "ramps": 4,
+      "paint": true,
+      "paintEmission": 1,
+      "paintColor": 0,
+      "beaconEmission": 0,
+      "draws": 25,
+      "triangles": 6400,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "medium",
+      "paintMask": 1,
+      "ramps": 4,
+      "paint": true,
+      "paintEmission": 1,
+      "paintColor": 0,
+      "beaconEmission": 1.2,
+      "draws": 25,
+      "triangles": 8920,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "large",
+      "paintMask": 1,
+      "ramps": 4,
+      "paint": true,
+      "paintEmission": 1,
+      "paintColor": 0,
+      "beaconEmission": 1.2,
+      "draws": 25,
+      "triangles": 11944,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    }
+  ],
+  "errors": []
+}

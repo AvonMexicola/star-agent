@@ -252,3 +252,34 @@ propagate support without an intermediate floor, permitting tall hangars.
 Interaction candidates prioritize facing alignment before distance within reach;
 terminal access resolves the current claim by ID so newly added terminals work
 with already registered racks. Pad near-edge anchoring applies to all three sizes.
+
+
+## Complete landing pad kit — 2026-09-07
+
+`pad-kit.js` provides four ordinary ramp placements and shared beacon locations;
+`pad-markings.js` draws the original H, octagonal touchdown outline, broken white
+perimeter and S/M/L labels in metre coordinates. Three cached CanvasTextures
+stay within 1024 pixels per dimension, preserving the physical aspect ratio.
+White paint is a rough, non-emissive surface. `LandingLens` is a separately powered
+material, batched into the pad GLB. Designated pads mask the hidden underlying
+concrete top/dark joints through the existing material hook, preventing depth
+interference while retaining shadow geometry. Unmarking restores them. Nearby
+illumination shares the existing four
+service lights. No per-beacon dynamic light or additional save type is allocated.
+
+New pads start designated and buy five pieces atomically: full original deck and
+four outward 4×4 m ramps. Price adds 40 concrete / 8 metal stock to the former
+pad cost. All staged parts check ownership, claim capacity/bounds, occupancy,
+terrain, player and ship clearance before payment. Only assembly ramp reach is
+exempt: the player aims at the near deck edge, not each far-side ramp. Assembly
+ramps share the pad's 8 m terrain clearance limit; fixed 0.6 m ramp drops do not
+promise ground access from an elevated deck. Legacy saves retain piece counts
+and manually chosen designation; never insert new ramps on loading a save.
+
+Partial GLB export: `BASE_ONLY=foundation-pad-small,foundation-pad-medium,foundation-pad-large
+blender --background -noaudio --factory-startup --python-exit-code 1 --python blender/build_base.py`.
+The manifest preserves other pieces and recomputes aggregate totals. Use the
+host-approved exporter if restricted audio shutdown hangs; preserve failed logs.
+`tests/build-pad-kit.test.js` verifies atomic cost/save, blocked approaches,
+rotated walk-on collision and power/paint separation. Focused browser recipe:
+`scripts/landing-pad.config.js`; evidence record: `qa/landing-pads/README.md`.

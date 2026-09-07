@@ -1,4 +1,6 @@
-import { CanvasTexture, Mesh, PlaneGeometry, MeshStandardMaterial, TextureLoader, RepeatWrapping, SRGBColorSpace, EdgesGeometry, LineBasicMaterial, LineSegments, Color } from 'three';
+import {padMarkingTexture} from './pad-markings.js';
+import {padApproaches} from './pad-kit.js';
+import { Mesh, PlaneGeometry, MeshStandardMaterial, TextureLoader, RepeatWrapping, SRGBColorSpace, EdgesGeometry, LineBasicMaterial, LineSegments, Color } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { getPieceDefinition } from './definitions.js';
 const loader=new GLTFLoader(), templates=new Map();
@@ -9,6 +11,7 @@ const MINT=new Color(0xb6efd1),WARNING=new Color(0xe2bf87);
  * Screen-door coverage keeps opaque kit surfaces in the normal depth pass. */
 export function setBuildOpacity(root,opacity) {
   const state=root.userData.buildFinish??={uniform:{value:1},materials:new Map()};
+  state.padPaint??={value:0};
   state.uniform.value=Math.max(0,Math.min(1,opacity));
   root.traverse(mesh=>{
     if(!mesh.isMesh)return;
@@ -17,7 +20,17 @@ export function setBuildOpacity(root,opacity) {
       if(state.materials.has(source))return state.materials.get(source);
       const material=source.clone();
       material.userData.buildFadeUniform=state.uniform;
+      const padUnderlay=root.userData.pieceType?.startsWith('foundation-pad-')&&['MineralConcrete','DarkPolymer'].includes(source.name);
       material.onBeforeCompile=shader=>{
+        if(padUnderlay){
+          // Replace the hidden deck/joint surface while keeping its original
+          // shadow geometry. Depth-tested paint and beacon lenses remain separate.
+          shader.uniforms.basePadPaint=state.padPaint;
+          shader.vertexShader='varying vec2 basePadTop;\n'+shader.vertexShader;
+          shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nbasePadTop = vec2(transformed.y, normal.y);');
+          shader.fragmentShader='uniform float basePadPaint; varying vec2 basePadTop;\n'+shader.fragmentShader;
+          shader.fragmentShader=shader.fragmentShader.replace('#include <clipping_planes_fragment>',`#include <clipping_planes_fragment>\nif (basePadPaint > .5 && basePadTop.x > -.001 && ${source.name==='DarkPolymer'?'true':'basePadTop.y > .5'}) discard;`);
+        }
         shader.uniforms.buildVisibility=state.uniform;
         shader.fragmentShader='uniform float buildVisibility;\n'+shader.fragmentShader;
         shader.fragmentShader=shader.fragmentShader.replace('#include <dithering_fragment>', `
@@ -26,7 +39,7 @@ export function setBuildOpacity(root,opacity) {
           if (coverage >= buildVisibility) discard;
         `);
       };
-      material.customProgramCacheKey=()=> 'base-coverage-v1';
+      material.customProgramCacheKey=()=>padUnderlay?`base-pad-coverage-v2-${source.name}`:'base-coverage-v1';
       state.materials.set(source,material);
       return material;
     };
@@ -39,7 +52,7 @@ export function disposeBuildVisual(root) {
   for(const material of root.userData.buildFinish?.materials.values()??[])material.dispose();
   const display=root.userData.statusDisplay;
   if(display){display.texture.dispose();display.mesh.geometry.dispose();display.sourceMaterial.dispose();}
-  const markings=root.getObjectByName('LandingPadMarkings');if(markings){markings.geometry.dispose();markings.material.dispose();root.userData.padMap?.dispose();}
+  const markings=root.getObjectByName('LandingPadMarkings');if(markings){markings.geometry.dispose();root.userData.padMarkingMaterial?.dispose();}
   root.removeFromParent();
 }
 function concreteFinish() {
@@ -60,16 +73,13 @@ export async function createBuildVisual(piece) {
   }
   const root=(await templates.get(def.id)).clone(true);
   root.userData.pieceType=def.id;
-  setBuildOpacity(root,1);
   if(def.padSize){
-    const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1024;const ctx=canvas.getContext('2d');
-    ctx.strokeStyle='#b6efd1';ctx.fillStyle='#b6efd1';ctx.lineWidth=8;ctx.setLineDash([36,20]);ctx.strokeRect(45,45,934,934);ctx.setLineDash([]);
-    ctx.lineWidth=12;ctx.strokeRect(270,270,484,484);ctx.font='bold 72px sans-serif';ctx.textAlign='center';for(const x of [120,904])for(const y of [145,940])ctx.fillText(def.padSize,x,y);ctx.font='bold 210px sans-serif';ctx.textAlign='center';ctx.fillText(def.padSize,512,570);
-    ctx.font='bold 46px sans-serif';ctx.fillText(`${def.padSize==='S'?'NOMAD':def.padSize==='M'?'ATLAS':'HEAVY'} · ${def.footprint.join(' × ')} M`,512,675);
-    for(const z of [120,840])for(const x of [150,512,874]){ctx.beginPath();ctx.moveTo(x-25,z+40);ctx.lineTo(x,z);ctx.lineTo(x+25,z+40);ctx.stroke();}
-    const map=new CanvasTexture(canvas);map.colorSpace=SRGBColorSpace;const markings=new Mesh(new PlaneGeometry(...def.footprint),new MeshStandardMaterial({map,transparent:true,depthWrite:false,roughness:.8,emissive:0xb6efd1,emissiveMap:map,emissiveIntensity:.4}));
-    markings.name='LandingPadMarkings';markings.rotation.x=-Math.PI/2;markings.position.y=.009;markings.visible=Boolean(piece?.landingPad);root.add(markings);root.userData.padMap=map;
+    const markings=new Mesh(new PlaneGeometry(...def.footprint),new MeshStandardMaterial({map:padMarkingTexture(def),roughness:.92}));
+    root.userData.padMarkingMaterial=markings.material;markings.name='LandingPadMarkings';markings.rotation.x=-Math.PI/2;markings.position.y=.005;markings.visible=Boolean(piece?.landingPad);markings.receiveShadow=true;root.add(markings);
+
   }
+  setBuildOpacity(root,1);
+  if(def.padSize)setLandingPadVisual(root,Boolean(piece?.landingPad),true);
   setDoorOpen(root,Number(piece?.doorOpen??0));
   return root;
 }
@@ -93,10 +103,12 @@ export async function createBuildGhost(piece) {
     root.userData.ghostEdges.push(edges);
   }
   setBuildGhostValid(root,true);
+  if(getPieceDefinition(piece)?.padSize&&piece?.landingPad){root.userData.ghostParts=[];for(const p of padApproaches({...piece,position:[0,0,0],rotation:0})){const ramp=await createBuildGhost(p);ramp.position.fromArray(p.position);ramp.rotation.y=p.rotation;root.add(ramp);root.userData.ghostParts.push(ramp);}}
   return root;
 }
 
 export function setBuildGhostValid(root,valid) {
+  for(const part of root.userData.ghostParts??[])setBuildGhostValid(part,valid);
   const color=valid?MINT:WARNING;
   for(const material of root.userData.buildFinish?.materials.values()??[]){
     material.color.copy(color);
@@ -106,6 +118,7 @@ export function setBuildGhostValid(root,valid) {
 }
 
 export function disposeBuildGhost(root) {
+  for(const part of root.userData.ghostParts??[])disposeBuildGhost(part);
   for(const edge of root.userData.ghostEdges??[]){edge.geometry.dispose();edge.material.dispose();}
   disposeBuildVisual(root);
 }
@@ -122,5 +135,13 @@ export function setBuildPowered(root,powered){
  for(const material of root.userData.buildFinish?.materials.values()??[])if(material.name==='MintStatus'||material.name==='WarmTaskLight'){
   material.userData.powerIntensity??=material.emissiveIntensity;material.emissiveIntensity=powered?material.userData.powerIntensity:material.name==='WarmTaskLight'?0:.015;
  }
- const markings=root.getObjectByName('LandingPadMarkings');if(markings)markings.material.emissiveIntensity=powered?.4:0;
+
+}
+
+/** White paint remains visible without electricity; only the runway lenses switch. */
+export function setLandingPadVisual(root,enabled,powered){
+ const markings=root.getObjectByName('LandingPadMarkings');if(markings)markings.visible=enabled;
+ if(root.userData.buildFinish?.padPaint)root.userData.buildFinish.padPaint.value=enabled?1:0;
+ const on=Boolean(enabled&&powered);if(root.userData.padLightsOn===on)return;root.userData.padLightsOn=on;
+ for(const material of root.userData.buildFinish?.materials.values()??[])if(material.name==='LandingLens')material.emissiveIntensity=on?1.2:0;
 }

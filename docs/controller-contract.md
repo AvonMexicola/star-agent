@@ -352,3 +352,12 @@ and quarter-circle tiles inherit the supporting ceiling rotation. Lights appear
 in Power and Roofs, mount underneath ceilings, and use aimed X/F to switch after
 leaving build mode. Held X must toggle only once; a saved off switch remains off
 after reload. See [ceiling and roof record](base-ceilings-roofs.md).
+
+
+Landing pad finish: B → LB/RB → Facilities → Landing pad S/M/L → A selects;
+aim at the near deck edge and A places the complete deck plus four ramps.
+LT/RT retains rotation and D-pad up/down adjusts height. X exits construction;
+walk onto the pad by an approach ramp, then X opens designation controls. New
+pads start marked; toggling designation uses the same native dialog/neutral gate.
+The five-piece preview and all-in price are authoritative. See
+`qa/landing-pads/README.md` for the actual injected-controller journey.

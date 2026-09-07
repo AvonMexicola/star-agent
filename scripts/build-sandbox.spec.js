@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {MINING_KEY} from '../src/mining/store.js';
 import {SANDBOX_PREFIX} from '../src/build/sandbox.js';
-const out='/tmp/star-agent-build-sandbox';
+const out=process.env.BUILD_EVIDENCE_DIR??'/tmp/star-agent-build-sandbox';
 async function tap(page,i){await page.evaluate(i=>window.testPad.buttons[i]={pressed:true,value:1},i);await page.waitForFunction(i=>window.starAgent.navigation.gamepad.previous[i],i);await page.evaluate(i=>window.testPad.buttons[i]={pressed:false,value:0},i);await page.waitForFunction(i=>!window.starAgent.navigation.gamepad.previous[i],i);}
 async function choose(page,key,navigates=false){const el=page.locator(`[data-controller-key="${key}"]`);for(let i=0;i<100;i++){if(await el.evaluate(e=>e===document.activeElement))break;await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await tap(page,13);}await expect(el).toBeFocused();if(navigates)await page.evaluate(()=>window.testPad.buttons[0]={pressed:true,value:1});else await tap(page,0);}
 const ready=page=>page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed,null,{timeout:90000});
@@ -37,7 +37,7 @@ test('controller enters supplied sandbox, builds, checks/refills stock, reloads 
 async function aimAt(page,point){for(let i=0;i<140;i++){const error=await page.evaluate(point=>{const n=window.starAgent.navigation,local=n.position.clone().fromArray(point).sub(n.position).applyQuaternion(n.orientation.clone().invert());return [Math.atan2(local.x,-local.z),Math.atan2(local.y,Math.hypot(local.x,local.z))];},point);if(error.every(v=>Math.abs(v)<.03)){await page.evaluate(()=>window.testPad.axes.fill(0));return;}await page.evaluate(e=>window.testPad.axes=[0,0,...[e[0],-e[1]].map(v=>Math.sign(v)*Math.min(.7,.2+Math.abs(v)))],error);await page.waitForTimeout(90);}throw Error('Controller aim did not converge');}
 const worldPoint=(page,p)=>page.evaluate(p=>{const c=window.starAgent.state.build.claims[0],n=window.starAgent.navigation;return n.position.clone().fromArray(p).applyQuaternion(n.orientation.clone().fromArray(c.quaternion)).add(n.position.clone().fromArray(c.origin)).toArray();},p);
 async function selectBuild(page,id,tab){await tap(page,1);await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);for(let i=0;i<6&&!(await page.locator(`[data-controller-key="build-tab-${tab}"]`).getAttribute('aria-pressed')==='true');i++){await tap(page,5);await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);}await choose(page,`build-piece-${id}`);await ready(page);}
-async function buildPiece(page,id,tab,point){await aimAt(page,await worldPoint(page,point));await selectBuild(page,id,tab);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid,null,{timeout:10000});const before=await page.evaluate(()=>window.starAgent.state.build.pieceCount);await tap(page,0);await page.waitForFunction(n=>window.starAgent.state.build.pieceCount===n+1,before);await tap(page,2);}
+async function buildPiece(page,id,tab,point){await aimAt(page,await worldPoint(page,point));await selectBuild(page,id,tab);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid,null,{timeout:10000});const before=await page.evaluate(()=>window.starAgent.state.build.pieceCount);await tap(page,0);await page.waitForFunction(expected=>window.starAgent.state.build.pieceCount===expected,before+(id.startsWith('foundation-pad-')?5:1));await tap(page,2);}
 
 test('controller builds new shapes, open roofs and workshop storage through the production sandbox',async({page})=>{
  test.setTimeout(360000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -58,16 +58,24 @@ test('controller builds new shapes, open roofs and workshop storage through the 
  await writeFile(`${out}/expansion-journey.json`,JSON.stringify({input:'Injected Gamepad, no pose/inventory fixture',pieces:before.build.claims[0].pieces.map(p=>p.type),errors},null,2));
 });
 
-async function walkTo(page,point){await aimAt(page,point);await page.evaluate(()=>window.testPad.axes=[0,-.5,0,0]);await page.waitForFunction(point=>{const n=window.starAgent.navigation,c=window.starAgent.state.build.claims[0],delta=n.position.clone().fromArray(point).sub(n.position).applyQuaternion(n.orientation.clone().fromArray(c.quaternion).invert());return Math.hypot(delta.x,delta.z)<.45;},point,{timeout:45000});await page.evaluate(()=>window.testPad.axes.fill(0));}
-test('controller places and designates a Nomad pad, builds its ramp and opens a traversable hangar door',async({page})=>{
- test.setTimeout(360000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+async function walkTo(page,point){
+ await aimAt(page,point);
+ for(let i=0;i<450;i++){
+  const feedback=await page.evaluate(point=>{const n=window.starAgent.navigation,c=window.starAgent.state.build.claims[0],delta=n.position.clone().fromArray(point).sub(n.position),local=delta.clone().applyQuaternion(n.orientation.clone().invert()),flat=delta.clone().applyQuaternion(n.orientation.clone().fromArray(c.quaternion).invert());return {distance:Math.hypot(flat.x,flat.z),yaw:Math.atan2(local.x,-local.z),pitch:Math.atan2(local.y,Math.hypot(local.x,local.z))};},point);
+  if(feedback.distance<.45){await page.evaluate(()=>window.testPad.axes.fill(0));return;}
+  await page.evaluate(f=>{const axis=v=>Math.abs(v)<.015?0:Math.sign(v)*Math.min(.7,.2+Math.abs(v));window.testPad.axes=[0,f.distance<1?-.3:-.5,axis(f.yaw),axis(-f.pitch)];},feedback);await page.waitForTimeout(100);
+ }
+ await page.evaluate(()=>window.testPad.axes.fill(0));throw Error('Controller walking did not reach target within 45 seconds');
+}
+test('controller places a marked and lit Nomad pad with four ramps and opens a traversable hangar door',async({page})=>{
+ test.setTimeout(360000);await mkdir(out,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>{window.testPad={id:'Hangar construction controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.testPad];});
  await page.goto('/?sandbox=build&intro=0&debug&seed=7291');await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);
- await walkTo(page,await worldPoint(page,[-6,1.75,6]));await buildPiece(page,'foundation-pad-small','facilities',[-9,0,4]);
- await walkTo(page,await worldPoint(page,[-9,2.05,8]));await tap(page,2);await expect(page.locator('#build-dialog')).toContainText('Landing pad S');await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'pad-designate');await expect(page.locator('.build-feedback')).toContainText('Landing pad marked');await tap(page,1);await ready(page);
- await walkTo(page,await worldPoint(page,[-10,2.05,4]));await buildPiece(page,'hangar-door','facilities',[-16,.3,-4]);
- await walkTo(page,await worldPoint(page,[-16,2.05,-1.5]));await aimAt(page,await worldPoint(page,[-16,1.3,-4]));await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.build.visuals.doors.some(d=>d.fraction===1));await walkTo(page,await worldPoint(page,[-16,1.75,-6]));await page.screenshot({path:`${out}/hangar-traversed.png`});
- await walkTo(page,await worldPoint(page,[-26,1.75,-6]));await walkTo(page,await worldPoint(page,[-26,1.75,16]));await buildPiece(page,'foundation-ramp','facilities',[-22,.3,14]);await page.screenshot({path:`${out}/pad-ramp.png`});
- const before=await saved(page);expect(before.build.claims[0].pieces.find(p=>p.type==='foundation-pad-small').landingPad).toBe(true);expect(before.build.claims[0].pieces.find(p=>p.type==='hangar-door').doorOpen).toBe(true);await page.reload();await ready(page);expect((await saved(page)).build).toEqual(before.build);expect(errors).toEqual([]);
+ await walkTo(page,await worldPoint(page,[-6,1.75,6]));await buildPiece(page,'foundation-pad-small','facilities',[-15,0,4]);
+ await walkTo(page,await worldPoint(page,[-12.5,1.75,4]));await walkTo(page,await worldPoint(page,[-17,2.05,4]));expect((await saved(page)).build.claims[0].pieces.filter(p=>p.type==='foundation-ramp')).toHaveLength(4);await aimAt(page,await worldPoint(page,[-24,.3,4]));await page.screenshot({path:`${out}/marked-pad-on-foot.png`});await tap(page,2);await expect(page.locator('#build-dialog')).toContainText('Landing pad S');await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'pad-designate');await expect(page.locator('.build-feedback')).toContainText('designation removed');await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await choose(page,'pad-designate');await expect(page.locator('.build-feedback')).toContainText('Landing pad marked');await tap(page,1);await ready(page);
+ await walkTo(page,await worldPoint(page,[-18,2.05,4]));await buildPiece(page,'hangar-door','facilities',[-24,.3,-4]);
+ await walkTo(page,await worldPoint(page,[-24,2.05,-1.5]));await aimAt(page,await worldPoint(page,[-24,1.3,-4]));await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.build.visuals.doors.some(d=>d.fraction===1));await walkTo(page,await worldPoint(page,[-24,1.75,-6]));await page.screenshot({path:`${out}/hangar-traversed.png`});
+ await walkTo(page,await worldPoint(page,[-34,1.75,-6]));await walkTo(page,await worldPoint(page,[-34,1.75,16]));await buildPiece(page,'foundation-ramp','facilities',[-30,.3,14]);await page.screenshot({path:`${out}/pad-ramp.png`});
+ const before=await saved(page);expect(before.build.claims[0].pieces.find(p=>p.type==='foundation-pad-small').landingPad).toBe(true);expect(before.build.claims[0].pieces.find(p=>p.type==='hangar-door').doorOpen).toBe(true);await page.reload();await ready(page);expect((await saved(page)).build.claims[0].pieces).toEqual(before.build.claims[0].pieces);expect(errors).toEqual([]);
  await writeFile(`${out}/pad-journey.json`,JSON.stringify({input:'Injected Gamepad only, no pose/inventory fixture',pieces:before.build.claims[0].pieces.map(p=>p.type),errors},null,2));
 });

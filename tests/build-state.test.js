@@ -237,10 +237,10 @@ test('rack capacity, terminal access and landing-pad designations persist throug
 
 test('a large pad is aimed from its near edge and expands its claim only with an atomic paid placement',async()=>{
  const {prepareSandbox,SANDBOX_BINS}=await import('../src/build/sandbox.js');const f=setup();assert.equal(prepareSandbox(f.store).ok,true);f.system.supplySources=()=>SANDBOX_BINS.map(b=>b.id);f.nav.shipPosition=null;
- const c=f.system.claims[0];f.target.copy(f.system.toWorld(v([12,.3,0]),c));f.nav.position.copy(f.system.toWorld(v([2,1.75,6]),c));f.system.begin('foundation-pad-large');
- assert.ok(f.system.preview.piece.position.every((n,i)=>Math.abs(n-[36,.3,0][i])<1e-7));assert.equal(f.system.preview.claim.radius,96);assert.equal(f.system.preview.valid,true,f.system.preview.reason);
+ const c=f.system.claims[0];f.target.copy(f.system.toWorld(v([12,.3,-12]),c));f.nav.position.copy(f.system.toWorld(v([2,1.75,-6]),c));f.system.begin('foundation-pad-large');f.system.height=.2;f.system.refreshPreview();
+ assert.ok(f.system.preview.piece.position.every((n,i)=>Math.abs(n-[36,.5,-12][i])<1e-7));assert.equal(f.system.preview.claim.radius,96);assert.equal(f.system.preview.valid,true,f.system.preview.reason);
  const before=f.store.state,raw=f.disk.getItem(MINING_KEY),write=f.disk.setItem;f.disk.setItem=()=>{throw Error('quota');};assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);assert.equal(f.system.claims[0].radius,64);assert.equal(f.disk.getItem(MINING_KEY),raw);f.disk.setItem=write;
- const reloaded=new MiningStore(f.disk),retry=new BuildSystem({scene:new Scene(),nav:f.nav,store:reloaded,render:false,supplySources:()=>SANDBOX_BINS.map(b=>b.id)});retry.target=()=>f.target.clone();retry.begin('foundation-pad-large');assert.equal(retry.place().ok,true);assert.equal(retry.claims[0].radius,96);assert.equal(validBuild(retry.data),true);assert.equal(SANDBOX_BINS.reduce((sum,b)=>sum+(reloaded.container(b.id).items.concrete??0),0),480);
+ const reloaded=new MiningStore(f.disk),retry=new BuildSystem({scene:new Scene(),nav:f.nav,store:reloaded,render:false,supplySources:()=>SANDBOX_BINS.map(b=>b.id)});retry.target=()=>f.target.clone();retry.begin('foundation-pad-large');retry.height=.2;retry.refreshPreview();assert.equal(retry.place().ok,true,retry.preview.reason);assert.equal(retry.claims[0].radius,96);assert.equal(validBuild(retry.data),true);assert.equal(SANDBOX_BINS.reduce((sum,b)=>sum+(reloaded.container(b.id).items.concrete??0),0),440);
  const restored=new BuildSystem({scene:new Scene(),nav:f.nav,store:new MiningStore(f.disk),render:false});assert.equal(restored.blocked,false);assert.equal(restored.claims[0].radius,96);
 });
 

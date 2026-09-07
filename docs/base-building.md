@@ -197,8 +197,12 @@ currently use the flying Nomad/Atlas collision layouts on this branch. Landing
 clearance includes 1 m around the full ship footprint. Rotated ships must still fit.
 
 Aim at the near edge when placing pad prefabs; their centres extend
-beyond normal tool reach. Place the foundation, leave build mode, approach or stand on it and press **X/F →
-Mark as landing pad**. Size-specific perimeter/approach markings persist. Landing
+beyond normal tool reach. New pads arrive designated, with a large white **H**,
+white touchdown/perimeter paint, four edge ramps and recessed landing lights.
+Leave four metres free outside each edge for the ramps. The complete five-piece
+kit appears in the preview and its displayed cost includes all four ramps.
+After leaving build mode, **X/F** on the pad can toggle designation.
+Paint remains visible without power; landing lights follow base electricity. Landing
 assist uses a clear, sufficiently large designated slab for touchdown; objects
 on the pad or an undersized footprint prevent pad capture. Approach manually
 above the pad and use the usual Y/L landing assist. No automatic flight-to-pad
@@ -208,9 +212,12 @@ Pad piers extend 8 m below the deck for uneven terrain. Choose a site where the
 whole deck clears terrain and the supports reach it; use foundation height
 adjustment if needed. Large-pad placement expands a 64 m claim to 96 m atomically,
 unless it overlaps another claim. Other claims remain 64 m. The 1,024-piece/site limit
-still applies; a complete prefab pad counts as one piece. In the Selene sandbox,
-the small pad fits west of the starter pad; the large pad fits farther east,
-for example near claim-local X 36/Z 0. Refill the bank between expensive pads.
+still applies; a new pad kit counts as five pieces. Ramps can be removed separately.
+The fixed ramps drop 0.6 m over 4 m; a high deck above uneven ground may need
+additional access construction. Old saves gain the revised finish on designated
+pads, with no extra ramps inserted into existing buildings.
+In the Selene sandbox the small pad fits west of the starter pad. A large pad
+fits near claim-local X 36/Z -12 with deck height 0.5 m (raise by 0.2 m). Refill the bank between expensive pads.
 
 
 ## Base electricity and server saves

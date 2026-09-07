@@ -7,7 +7,7 @@ from mathutils import Vector
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 OUT=os.path.join(ROOT,'public/models/base');os.makedirs(OUT,exist_ok=True)
-defs=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {PIECES} from './src/build/definitions.js';console.log(JSON.stringify(PIECES))"],text=True))
+defs=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {PIECES} from './src/build/definitions.js';import {padLightPositions} from './src/build/pad-kit.js';console.log(JSON.stringify(Object.fromEntries(Object.entries(PIECES).map(([id,d])=>[id,{...d,padLights:d.padSize?padLightPositions(...d.footprint):undefined}]))))"],text=True))
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 M={}
 def mat(name,col,metal=0,rough=.7,emission=0,alpha=1):
@@ -15,6 +15,7 @@ def mat(name,col,metal=0,rough=.7,emission=0,alpha=1):
  if emission:p.inputs['Emission Color'].default_value=(*col,1);p.inputs['Emission Strength'].default_value=emission
  if alpha<1:m.surface_render_method='DITHERED'
  M[name]=m
+mat('LandingLens',(.42,1,.66),0,.25,1.2)
 mat('WarmTaskLight',(1,.82,.60),0,.35,3)
 mat('MineralConcrete',(.48,.47,.43));mat('EdgeSteel',(.24,.28,.29),.65,.35);mat('DarkPolymer',(.16,.16,.16),0,.72);mat('WhiteArmour',(.8,.8,.8),.2,.45);mat('MintStatus',(.47,.86,.65),.1,.35,.7);mat('WindowGlass',(.24,.38,.35),.05,.18,alpha=.24)
 # Deterministic metre-scaled form-board colour and independent fine relief textures.
@@ -81,7 +82,10 @@ def trim_edge(a,c,y,width=.045,material='EdgeSteel'):
  dx,dz=c[0]-a[0],c[1]-a[1];length=math.hypot(dx,dz);nx,nz=-dz/length*width/2,dx/length*width/2
  return prism('PerimeterRail',[(a[0]-nx,a[1]-nz),(c[0]-nx,c[1]-nz),(c[0]+nx,c[1]+nz),(a[0]+nx,a[1]+nz)],y-.045,y,material,0)
 manifest={'builder':'blender/build_base.py','coordinates':'metres, Y up; origin support surface, wall x width; stair rises toward -Z','source':'original deterministic scripted construction; no external imagery','pieces':{}}
+selected=set(filter(None,os.environ.get('BASE_ONLY','').split(',')))
+if selected:manifest=json.load(open(os.path.join(OUT,'manifest.json')))
 for id,d in defs.items():
+ if selected and id not in selected:continue
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False);objects=[]
  if id=='ceiling-light':
   b('CeilingMount',(0,-.026,0),(.8,.052,.8),'EdgeSteel',.01)
@@ -210,9 +214,12 @@ for id,d in defs.items():
      # Inset hardware stays inside the convex footprint.
      center=[sum(p[j] for p in poly)/len(poly) for j in range(2)];delta=[center[j]-mid[j] for j in range(2)];length=math.hypot(*delta);x,z=[mid[j]+delta[j]/length*.20 for j in range(2)]
      b('PanelArmour',(x,-.002,z),(.22,.008,.22),'WhiteArmour',.001)
-     b('PanelStatus',(x,.002,z),(.12,.0005,.018),'MintStatus',0)
+     b('PanelStatus',(x,.002,z),(.12,.0005,.018),'LandingLens' if d.get('padSize') else 'MintStatus',0)
    if d.get('padSize'):
     w,dep=d['footprint']
+    for x,y,z in d['padLights']:
+     b('RecessedLandingLight',(x,.005,z),(.56,.006,.26),'EdgeSteel',.001)
+     b('LandingLightLens',(x,.010,z),(.40,.003,.13),'LandingLens',0)
     for x in range(-int(w/2)+4,int(w/2),4):b('ExpansionJoint',(x,.001,0),(.012,.002,dep-.2),'DarkPolymer',0)
     for z in range(-int(dep/2)+4,int(dep/2),4):b('ExpansionJoint',(0,.001,z),(w-.2,.002,.012),'DarkPolymer',0)
   elif d.get('shape')=='ramp':

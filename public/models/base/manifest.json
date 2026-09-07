@@ -322,10 +322,10 @@
       ]
     },
     "foundation-pad-small": {
-      "triangles": 1140,
+      "triangles": 3060,
       "drawPrimitives": 5,
-      "bytes": 104244,
-      "sha256": "383e9718e2c9d8d51b24a0aeae43e13ce1617e2db3b454bcd3aaa96ea746482a",
+      "bytes": 269480,
+      "sha256": "91db3035c9765ca6a71f69c2c3b82c9ae4bc7b63753916feeee72b057cdf03fd",
       "bounds": {
         "min": [
           -8.015999794006348,
@@ -334,23 +334,23 @@
         ],
         "max": [
           8.015999794006348,
-          0.002250000135973096,
+          0.011500000022351742,
           8.015999794006348
         ]
       },
       "materials": [
         "DarkPolymer",
         "EdgeSteel",
+        "LandingLens",
         "MineralConcrete",
-        "MintStatus",
         "WhiteArmour"
       ]
     },
     "foundation-pad-medium": {
-      "triangles": 1260,
+      "triangles": 5580,
       "drawPrimitives": 5,
-      "bytes": 114592,
-      "sha256": "073303b1bbed964e82873892b61183c9f237c9ca614a1d1539aa18b04eaf71cf",
+      "bytes": 486236,
+      "sha256": "8e9bca205f8612e60642d2060d50414fdb8c48a2d9e0e1a8def74e26b35a0275",
       "bounds": {
         "min": [
           -16.016000747680664,
@@ -359,23 +359,23 @@
         ],
         "max": [
           16.016000747680664,
-          0.002250000135973096,
+          0.011500000022351742,
           20.016000747680664
         ]
       },
       "materials": [
         "DarkPolymer",
         "EdgeSteel",
+        "LandingLens",
         "MineralConcrete",
-        "MintStatus",
         "WhiteArmour"
       ]
     },
     "foundation-pad-large": {
-      "triangles": 1404,
+      "triangles": 8604,
       "drawPrimitives": 5,
-      "bytes": 126972,
-      "sha256": "545dcff01d356c3fe36ae3130df77f86bf4713f19b68f65434275d0f7a9e9f60",
+      "bytes": 746308,
+      "sha256": "c768045bf73c6139e33ba101818d49896413c3ccba1dd1d1cb5b488879572afe",
       "bounds": {
         "min": [
           -24.016000747680664,
@@ -384,15 +384,15 @@
         ],
         "max": [
           24.016000747680664,
-          0.002250000135973096,
+          0.011500000022351742,
           36.01599884033203
         ]
       },
       "materials": [
         "DarkPolymer",
         "EdgeSteel",
+        "LandingLens",
         "MineralConcrete",
-        "MintStatus",
         "WhiteArmour"
       ]
     },
@@ -769,6 +769,6 @@
       ]
     }
   },
-  "aggregateBytes": 5411100,
-  "aggregateTriangles": 60932
+  "aggregateBytes": 6567316,
+  "aggregateTriangles": 74372
 }
