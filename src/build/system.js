@@ -296,11 +296,11 @@ export class BuildSystem {
   dispose(){
     this.disposed=true;this.ghostRequest++;if(this.ghostModel)this.ghostDisposer(this.ghostModel);this.ghostModel=null;this.ghost.clear();for(const entry of this.models.values())if(entry.group)disposeBuildVisual(entry.group);this.models.clear();this.removeOutline.geometry.dispose();this.removeOutline.material.dispose();this.scene.remove(this.removeRoot,this.ghost,this.boundary,this.workLight,this.workLight.target,...this.serviceLights,...this.groups.values());this.boundary.geometry.dispose();this.boundary.material.dispose();this.workLight.dispose();this.serviceLights.forEach(l=>l.dispose());
   }
-  landingSurface(){
+  landingSurface({position=this.nav.position,orientation=this.nav.orientation}={}){
     const nav=this.nav;if(!nav.layout?.flightBounds)return null;
-    for(const c of this.claims){if(c.body!==nav.body.id)continue;const local=this.toLocal(nav.position,c);
+    for(const c of this.claims){if(c.body!==bodyAt(position).id)continue;const local=this.toLocal(position,c);
       for(const p of c.pieces){if(!p.landingPad||!PIECES[p.type].padSize)continue;
-        const normal=UP.clone().applyQuaternion(q(c.quaternion)),forward=FORWARD.clone().applyQuaternion(nav.orientation).projectOnPlane(normal).normalize();if(forward.lengthSq()<.5)continue;
+        const normal=UP.clone().applyQuaternion(q(c.quaternion)),forward=FORWARD.clone().applyQuaternion(orientation).projectOnPlane(normal).normalize();if(forward.lengthSq()<.5)continue;
         const attitude=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(),forward,normal));
         const transform=q(c.quaternion).invert().multiply(attitude),corners=[];
         for(const x of [nav.layout.flightBounds.min[0]-1,nav.layout.flightBounds.max[0]+1])for(const z of [nav.layout.flightBounds.min[2]-1,nav.layout.flightBounds.max[2]+1])corners.push(v([x,0,z]).applyQuaternion(transform).add(v([local.x,p.position[1],local.z])));

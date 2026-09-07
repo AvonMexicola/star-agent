@@ -51,6 +51,8 @@ export function createTrading({store,players,world,persistent,flushWrites,now=Da
       Object.defineProperty(p.nav,'carryingCargo',{configurable:true,get:()=>Boolean(state.accounts[p.id]?.carried||loose().some(c=>c.holder===p.id&&c.until>now()))});
       p.nav.cargoEVA=(a,b)=>{const hit=constrainCargoEVA(a,b,physicalShips());const point=constrainLooseCargo(a,hit.point,loose(),{eva:true});return {point,hit:hit.hit||!point.equals(hit.point)};};
       p.nav.cargoLandingSurface=position=>pads.floorAt(position);
+      // Pad poses are immutable after deployment; ignore unrelated ledger changes.
+      p.nav.cargoLandingRevision=()=>Object.keys(state.terminals).length;
       p.nav.cargoWalk=(a,b)=>{const ships=physicalShips().filter(s=>s.owner!==p.id);const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point),point=constrainLooseCargo(a,pad.point,loose());return {...pad,point,grounded:pad.grounded||foreign.grounded,hit:pad.hit||pad.grounded||foreign.hit||!point.equals(pad.point)};};
       p.nav.cargoConstrain=(previous,proposed)=>{const constrained=constrainShipAttachments(previous,proposed,(state.ships[shipKey(p.id,p.nav.shipId)]?.crates??[]).map(c=>crateBounds(p.nav.shipId,c)));return p.nav.toShipLocal(constrainLooseCargo(p.nav.fromShipLocal(previous),p.nav.fromShipLocal(constrained),loose()));};},
     async request(p,m){
