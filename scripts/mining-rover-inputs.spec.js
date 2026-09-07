@@ -134,6 +134,7 @@ async function nativeFocusNeutral(page,input,report){
 
 async function stop(page,input){await input.hold(['brake']);await wait(page,()=>Math.abs(starAgent.state.rover.speed)<.035);await input.hold([]);}
 async function walk(page,input,target){
+  if(input.warm)await input.warm(['walkForward','walkBackward','walkLeft','walkRight']);
   for(let i=0;i<360;i++){
     const d=await page.evaluate(target=>{const n=starAgent.navigation,p=n.fromShipLocal(n.position.clone().fromArray(target)).sub(n.position).applyQuaternion(n.orientation.clone().invert());return {x:p.x,z:p.z,distance:Math.hypot(p.x,p.z)};},target);
     if(d.distance<.19){await input.hold([]);await page.waitForTimeout(300);return;}
@@ -283,7 +284,7 @@ test('Atlas pilot → physical rover → twin mining → ore bins → resumed pl
     await wait(page,()=>window.starAgent?.state.ready&&starAgent.state.rover?.spawned&&!starAgent.state.transiting,null,90000);
     let s=await state(page);expect(s.dev,'Preview must be built with VITE_DEV_TOOLS=1').not.toBeNull();expect(s.mode).toBe('landed');expect(s.rover.fitsLift).toBe(true);expect(s.rover.error).toBeNull();
     await input.tap('seat');await wait(page,()=>starAgent.state.mode==='walk');
-    await walk(page,input,[1.5,5.75,-7.7]);await walk(page,input,[1.5,5.75,5.1]);await walk(page,input,[.8,5.75,5.1]);
+    await walk(page,input,[1.5,5.75,-8.8]);await walk(page,input,[1.5,5.75,-7.7]);await walk(page,input,[1.5,5.75,5.1]);await walk(page,input,[.8,5.75,5.1]);
     expect((await state(page)).rover.near).toBe(true);await shot('01-physical-door-approach');
     await page.evaluate(()=>{window.__roverInputAccess={active:true,points:[]};function record(t){if(!__roverInputAccess.active)return;__roverInputAccess.points.push({t,p:starAgent.state.position});requestAnimationFrame(record);}requestAnimationFrame(record);});
     await input.tap('entry');await wait(page,()=>starAgent.state.rover.occupied&&!starAgent.state.rover.busy,null,25000);
