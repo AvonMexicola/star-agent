@@ -1,3 +1,4 @@
+import { GEAR_FLIGHT } from '../src/gear-flight.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
@@ -133,6 +134,11 @@ test('real inertial contact touches down softly and crashes at hard terrain spee
 
   stageImpact(navigation, destinations.forest, 6);
   navigation.update(1 / 60);
+  assert.equal(navigation.mode, 'flight', 'soft contact holds conservative clearance while the gear deploys');
+  assert.equal(navigation.autoland, true);
+  assert.ok(navigation.gearProgress < 1);
+  near(navigation.velocity.length(), 0);
+  for (let frame = 0; frame < (GEAR_FLIGHT.seconds + .3) * 60; frame++) navigation.update(1 / 60);
   assert.equal(navigation.mode, 'landed');
   assert.equal(navigation.crash, null);
   near(navigation.velocity.length(), 0);

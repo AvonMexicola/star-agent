@@ -1,0 +1,16 @@
+{
+  "provider": "Meshy",
+  "model": "Meshy 7",
+  "operation": "Text Input retexture",
+  "resultLabel": "nomad-meshy-clean",
+  "jobId": null,
+  "requestedResolution": "2K",
+  "pbrEnabled": true,
+  "keepOriginalTextureAndUV": true,
+  "visibility": "private",
+  "displayedCredits": 10,
+  "promptSha256": "d2a7ba6f3022b7395b743000dd056fed0cfdea4eacc4f1effa82e6953f5d9dc0",
+  "uploadSha256": "5ed4a120a5b664b14084ae2f96237106abf6587b3544144eb90b5f85aa8ffaa4",
+  "expectedDownloadName": "Meshy_AI_nomad_meshy_clean_0907003926_texture.glb",
+  "evidence": "Settings and credit charge observed in the Meshy workspace UI; no provider job ID was exposed. Returned maps require separate local validation."
+}

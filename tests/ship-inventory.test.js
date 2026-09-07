@@ -3,8 +3,7 @@ import assert from 'node:assert/strict';
 import { ShipInventory, ITEMS, INVENTORY_KEY, CAPACITY } from '../src/ship-inventory.js';
 import { constrainShipStep, interactionAt, SHIP_LAYOUT } from '../src/boarding.js';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { readFile } from 'node:fs/promises';
+import { readGLBGeometry } from './helpers/gltf-geometry.js';
 
 function storage() {
   const values = new Map();
@@ -55,9 +54,10 @@ test('cargo interaction is inside the cabin and its solid body leaves the boardi
   assert.deepEqual(constrainShipStep(v(.8, 0), v(.8, 2.4), true), v(.8, 0));
 });
 test('Blender asset fits the navigation envelope with a correctly placed movable cargo lid', async () => {
-  const data = await readFile(new URL('../public/models/nomad.glb', import.meta.url));
-  const { scene } = await new GLTFLoader().parseAsync(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength), '');
-  const bounds = new THREE.Box3().setFromObject(scene);
+  const { scene } = await readGLBGeometry(new URL('../public/models/nomad.glb', import.meta.url));
+  // Measure vertices: rotated rigid gear batches have deliberately conservative
+  // cached local AABBs whose transformed corners overestimate the actual hull.
+  const bounds = new THREE.Box3().setFromObject(scene, true);
   for (const [index, axis] of ['x', 'y', 'z'].entries()) {
     assert.ok(bounds.min[axis] >= SHIP_LAYOUT.flightBounds.min[index] - .01, `${axis} minimum ${bounds.min[axis]}`);
     assert.ok(bounds.max[axis] <= SHIP_LAYOUT.flightBounds.max[index] + .01, `${axis} maximum ${bounds.max[axis]}`);

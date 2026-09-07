@@ -176,11 +176,11 @@ test('inspection MFD pages expose actual actuator state and explicit disconnecte
   assert.equal(atlasInspectionPages(systems)[2].rows[0][1], 'OPEN');
 });
 
-test('shared S1 and S3 slots have coherent metre-scale fitting geometry', () => {
+test('shared S1, S2 and S3 slots have coherent metre-scale fitting geometry', () => {
   assert.deepEqual(mountStandard.coordinateSystem, {
     origin: 'centre of docking plane', normal: '+Y', bore: '-Z', right: '+X',
   });
-  assert.deepEqual(mountStandard.geometrySlots.map(slot => slot.id), ['S1', 'S3']);
+  assert.deepEqual(mountStandard.geometrySlots.map(slot => slot.id), ['S1', 'S2', 'S3']);
   for (const slot of mountStandard.geometrySlots) {
     assert.equal(slot.size, Number(slot.id.slice(1)));
     assert.ok(slot.clearanceEnvelope.diameter > slot.dockingDiameter);
@@ -207,7 +207,7 @@ test('mount compatibility is exact by default and rejects unknown sizes', () => 
   assert.equal(mountAccepts({ size: 3 }, { size: 1 }), false);
   assert.equal(mountAccepts({ size: 3 }, { size: 1 }, { exactSize: false }), true);
   assert.equal(mountAccepts({ size: 1 }, { size: 3 }, { exactSize: false }), false);
-  assert.throws(() => mountGeometrySlot(2), /S1, S3/);
+  assert.throws(() => mountGeometrySlot(4), /S1, S2, S3/);
   assert.throws(() => mountAccepts({ size: 3 }, { size: NaN }), /Attachment size/);
   assert.throws(() => mountAccepts({ size: '3' }, { size: 3 }), /Mount size/);
 });

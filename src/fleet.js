@@ -1,6 +1,8 @@
+import nomad from '../assets/ship/identity.json' with { type: 'json' };
+
 export const FLEET_KEY = 'star-agent.fleet.v1';
 export const SHIPS = Object.freeze({
-  nomad: { name: 'Nomad', capacity: 120, description: 'Starter surveyor · rear boarding ramp · 120 kg storage' },
+  nomad: { name: nomad.name, revision: nomad.revision, capacity: 120, description: 'Solo utility ship · walkable cabin & berth · rear cargo access · 120 kg supplies' },
   atlas: { name: 'Atlas', capacity: 2400, description: '30 m freighter · 8 × 10 m belly elevator · twin cargo lifts · 2,400 kg storage' },
 });
 
