@@ -1,0 +1,29 @@
+name: Asset production brief
+description: A ship, station, prop, character or material with a measurable contract
+title: '[Asset] '
+body:
+  - type: textarea
+    id: role
+    attributes:
+      label: Asset role and actual game use
+      description: Existing importer/camera, intended silhouette/scale, interactions and bounded first delivery.
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Runtime and production contract
+      description: Metres/axes/origin, bounds, named nodes/pivots, collision/clearance, LOD/material/texture budgets and rebuild source.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: References, provenance and acceptance
+      description: Original or permitted sources, intended workflow, real-game route and independent review plan. Generated references are not implementation evidence.
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Sponsor, owner and affected feature branches

@@ -1,49 +1,71 @@
 # Bring your agent. Build the next frontier.
 
-Star Agent asks a practical question: how far can a browser universe go when people
-and their coding agents build it together? You do not need to build a whole engine.
-A better tree, a precision fix, a good test or a smoother ramp is a useful contribution.
+A reliable ramp, better ocean, useful test or measured performance fix is a valuable
+contribution. You do not need a particular AI tool or paid service. The repository
+is currently invitation-based; ask Cees for access through your existing contact
+channel. This guide does not change repository visibility.
 
-## Your first flight
+## Start here
 
-Fork the repository, clone your fork, install Node 22.12 or newer, then:
+1. Read [the roadmap](ROADMAP.md), [verified status](docs/development/status.md) and
+   [contributor handbook](docs/development/README.md).
+2. Read [AGENTS](AGENTS.md), [architecture](ARCHITECTURE.md) and [QUALITY](QUALITY.md)
+   before changing a system.
+3. Check issues, PRs and the latest [handoff](HANDOFF.md). Agree one bounded result
+   and claim files with the integration steward. A session limit does not abandon a task.
+
+## Run the combined build
+
+Install Node 22.12+ and Git. In your own clone:
 
 ```sh
+git fetch origin
+git switch --create feat/my-bounded-change origin/dev/all-features
 npm ci
-npm run dev
+npm run dev:all
 ```
 
-Pick a destination, land with **L**, stand with **F**, walk to the rear hatch, press
-**F** to lower the ramp, and explore. Return to the cockpit and press **F** at the
-pilot chair before launching. Try the thing you want to improve in the actual app.
+Open http://127.0.0.1:5178/. Choose a ship and location after preload. F2 or controller
+Menu reopens the launcher. B lands/launches, G handles gear, L controls lights,
+F interacts, M opens the map and H opens help. Test saves are temporary.
+The [local guide](docs/local-development.md) explains ports, seeds and the separate
+Atlas studio. `npm run dev` retains the ordinary game entry.
 
-## Your first contribution
+For a shared checkout, create a separate worktree instead of switching its branch:
 
-Open an issue describing the result you want, or pick an existing one. For large
-changes, agree on an approach before investing days in an implementation. Work on a
-branch and submit a focused pull request with a clear explanation and test evidence.
-Agent-written code is welcome. Say which parts were assisted, review the result,
-and follow [AGENTS.md](AGENTS.md) for the engine's coordinate and rendering contracts.
+```sh
+git worktree add -b feat/my-bounded-change ../star-agent-my-change origin/dev/all-features
+```
 
-Useful starting points:
+Never use another person's existing directory. Each worktree owns its dependencies
+and preview port. Stop only processes you started.
 
-- Terrain transitions: reduce visible LOD changes while preserving continuous collision.
-- Surface life: richer grass, tree shapes, biome variation and deterministic object collision.
-- Flight feel: input configuration, controller support and a selectable Newtonian flight model.
-- Atmosphere: better multiple scattering and a measured, scalable rendering budget.
-- Ship interiors: richer interactions, cockpit instrumentation and better local collision.
-- Accessibility: remappable keys, clearer interaction prompts and adjustable visual effects.
-- Performance: profile real hardware, share reproducible scenarios, and improve a measured bottleneck.
+## Choose and submit work
 
-The current renderer is WebGL 2. A WebGPU backend, multiplayer, terrain edits and
-persistent worlds are research directions, not existing promises.
+Use the issue forms or a [feature brief](docs/templates/feature.md). Include player
+result, roadmap milestone, exclusions, dependencies, claimed paths and checks.
+Start small before taking a whole subsystem. `npm run branches` reports branch
+state without changing refs; `npm run plan:checks -- --base origin/dev/all-features`
+suggests affected areas and verification.
 
-## Before opening a PR
+Run the appropriate checks in [the testing guide](docs/development/testing.md).
+Open a PR against **dev/all-features**, using its template and linking your issue
+or brief. Drafts are welcome. An independent reviewer checks the result; the steward
+resolves combined-branch conflicts and integrates the checked commit. Public
+promotion follows a separate release process.
 
-Run `npm test` and `npm run build`. Run `npm run test:browser` for changes to controls,
-boarding, rendering or startup. Include a screenshot/video for visible changes and
-the exact browser/GPU/resolution for performance claims. Mark anything you could not
-test; a clear limitation is more useful than an invented green check.
+## Evidence and responsibility
 
-Keep discussion constructive and specific. Critique code and decisions, treat people
-with respect, and do not post secrets or personal information in issues or logs.
+Explain the trigger, previous behavior and result. Report exact commands and
+results, including skips/failures. Visible changes need actual game captures and
+input journeys with commit, seed, browser, GPU/backend, resolution and render scale.
+Software-rendered CI is not a laptop benchmark. Assets also need source, provenance
+and measured exports. Documentation-only edits need document checks, not an invented GPU tour.
+
+Disclose agent assistance and ownership; review generated work before submitting it.
+Keep secrets, personal recordings, build output and downloaded dependencies out of
+commits. Preserve third-party provenance. Another game's models/textures are not
+contribution material. [LICENSE](LICENSE) remains unchanged.
+
+Follow [conduct](CODE_OF_CONDUCT.md), report vulnerabilities via [SECURITY](SECURITY.md),
+and use [GOVERNANCE](GOVERNANCE.md) for decision and integration authority.

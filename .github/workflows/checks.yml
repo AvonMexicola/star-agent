@@ -1,19 +1,137 @@
-name: Build and world checks
+name: Contributor checks
+
 on:
   push:
-    branches: [main]
+    branches: [main, dev/all-features]
   pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  workflow_dispatch:
+
 permissions:
   contents: read
+
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  verify:
+  plan:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      browser: ${{ steps.paths.outputs.browser }}
+      multiplayer: ${{ steps.paths.outputs.multiplayer }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - id: paths
+        run: node scripts/development/plan.mjs --ci
+
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Validate workflow syntax and expressions
+        run: |
+          lint_dir="$(mktemp -d)"
+          trap 'rm -rf "$lint_dir"' EXIT
+          curl --fail --location --retry 2 https://github.com/rhysd/actionlint/releases/download/v1.7.7/actionlint_1.7.7_linux_amd64.tar.gz -o "$lint_dir/actionlint.tar.gz"
+          printf '%s  %s\n' '023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757' "$lint_dir/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$lint_dir/actionlint.tar.gz" -C "$lint_dir" actionlint
+          "$lint_dir/actionlint" -shellcheck= -pyflakes=
+      - run: npm run check:repo -- --ci
+      - run: npm run test:development
       - run: npm test
       - run: npm run build
+
+  multiplayer:
+    needs: plan
+    if: needs.plan.outputs.multiplayer == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: star_agent_test
+          POSTGRES_PASSWORD: disposable_ci_only
+          POSTGRES_DB: star_agent_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U star_agent_test -d star_agent_test"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      TEST_DATABASE_URL: postgresql://star_agent_test:disposable_ci_only@127.0.0.1:5432/star_agent_test
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:multiplayer
+
+  browser:
+    needs: plan
+    if: needs.plan.outputs.browser == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:ci-browser
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: browser-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/ci-browser/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # Stable required context: path-specific jobs may skip, this job never does.
+  verify:
+    needs: [plan, source, multiplayer, browser]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      JOB_RESULTS: ${{ toJSON(needs) }}
+    steps:
+      - name: Require the planned checks to pass
+        run: |
+          node --input-type=module <<'NODE'
+          const jobs = JSON.parse(process.env.JOB_RESULTS);
+          for (const name of ['plan', 'source']) {
+            if (jobs[name].result !== 'success') throw Error(`${name}: ${jobs[name].result}`);
+          }
+          for (const name of ['multiplayer', 'browser']) {
+            const selected = jobs.plan.outputs[name];
+            if (!['true', 'false'].includes(selected)) throw Error(`Missing plan for ${name}`);
+            const expected = selected === 'true' ? 'success' : 'skipped';
+            if (jobs[name].result !== expected) throw Error(`${name}: ${jobs[name].result}, expected ${expected}`);
+          }
+          console.log('All planned contributor checks passed. Manual review remains a separate requirement.');
+          NODE
