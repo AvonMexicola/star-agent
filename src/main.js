@@ -417,11 +417,7 @@ try {
   });
   $('map-button').addEventListener('click',()=>{closeHelp();systemMap.openMap();});
   $('help-fly').addEventListener('click',()=>{closeHelp();capture();});
-  $('sound-button').addEventListener('click',async()=>{
-    const button=$('sound-button');button.disabled=true;
-    try{await audio.toggle();syncAudioControls();}
-    finally{button.disabled=false;}
-  });
+  $('sound-button').addEventListener('click',toggleAudio);
   const photo=()=>{hidden=!hidden;document.body.classList.toggle('photo-mode',hidden);};$('photo-button').addEventListener('click',()=>{closeHelp();photo();});
   document.addEventListener('keydown',e=>{if(opening?.active||e.repeat||inventoryUI.open||fleetUI.open||(document.querySelector('dialog[open]')&&!help.open)||systemMap.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='Tab'&&!help.open){e.preventDefault();photo();}if(e.code==='KeyO'&&!help.open)transit('orbit');});
   function toggleCamera(){
@@ -504,10 +500,16 @@ try {
   nav.openGameplayMenu=()=>gameplayMenu.open();
   function switchScreen(open){const dialog=document.querySelector('dialog[open]');if(dialog){dialog.addEventListener('close',()=>open(),{once:true});dialog.close();}else open();}
   const controlsSettings=document.createElement('button');controlsSettings.type='button';controlsSettings.dataset.controllerKey='controller-layout';controlsSettings.textContent='Controller layout';controlsSettings.onclick=()=>switchScreen(()=>controllerLayout.open());document.querySelector('#graphics-settings .graphics-options').after(controlsSettings);
-  const menuAudio=document.createElement('button');menuAudio.type='button';menuAudio.dataset.controllerKey='menu-audio';menuAudio.onclick=async()=>{menuAudio.disabled=true;try{await audio.toggle();syncAudioControls();}finally{menuAudio.disabled=false;}};controlsSettings.after(menuAudio);
+  const menuAudio=document.createElement('button');menuAudio.type='button';menuAudio.dataset.controllerKey='menu-audio';menuAudio.onclick=toggleAudio;controlsSettings.after(menuAudio);
   function syncAudioControls(){
     const enabled=audio.enabled;menuAudio.textContent='Sound · '+(enabled?'On':'Off');menuAudio.setAttribute('aria-pressed',String(enabled));
     $('sound-button').textContent=enabled?'SOUND ON':'SOUND OFF';$('sound-button').setAttribute('aria-pressed',String(enabled));
+  }
+  function toggleAudio(){
+    const pending=audio.toggle();syncAudioControls();
+    // A browser-blocked resume may remain pending. Keep the desired state
+    // visible and let the player mute again without waiting for that promise.
+    void pending.then(syncAudioControls);
   }
   function refreshAudioSuspension(){
     audio.setSuspended(graphicsStopped||document.hidden||!nav.focused||transiting||!firstReady||systemMap.open||Boolean(document.querySelector('dialog[open]'))||(!nav.enabled&&!opening?.active));
@@ -516,7 +518,7 @@ try {
     if(event?.isTrusted===false||(!firstReady&&!opening?.active)||audio.disposed)return;
     if(event?.target?.closest?.('#sound-button,[data-controller-key="menu-audio"]'))return;
     if(audio.enabled&&audio.context?.state==='running'&&!audio.music?.state.activationRequired)return;
-    refreshAudioSuspension();void audio.unlock().then(syncAudioControls);
+    refreshAudioSuspension();const pending=audio.unlock();syncAudioControls();void pending.then(syncAudioControls);
   }
   syncAudioControls();
   document.addEventListener('pointerdown',unlockAudio,{capture:true});

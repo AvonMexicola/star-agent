@@ -90,6 +90,15 @@ for (const ship of ['nomad', 'atlas', 'kestrel']) {
     await page.waitForFunction(() => window.starAgent?.state.ready && !window.starAgent.state.transiting && window.starAgent.state.controller.armed && window.starAgent.state.shipAsset === 'ready', null, { timeout: 120000 });
     await expect(page.locator('#loading')).toHaveCSS('opacity', '0');
     expect((await state(page)).audio.created).toBe(false);
+    if (!before && ship === 'nomad') {
+      // Gamepad polling is not browser user activation. A pending first resume
+      // must not swallow the native touch gesture that follows it.
+      await tap(page, 9); await expect(page.locator('dialog[open]')).toHaveCount(1);
+      expect((await state(page)).audio.created).toBe(true);
+      stages.controllerActivation = await state(page);
+      await tap(page, 1); await expect(page.locator('dialog[open]')).toHaveCount(0);
+      await page.waitForFunction(() => window.starAgent.state.controller.armed);
+    }
     // Ordinary trusted gesture for the browser's audio policy. The flight and
     // power route below then uses the injected standard controller exclusively.
     if (ship === 'nomad') await page.locator('#camera-button').tap();
