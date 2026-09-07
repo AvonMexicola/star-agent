@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import {raycastFauna,parkedShipHit,faunaOrientation} from '../src/fauna/fauna-target.js';
+import {raycastFauna,parkedShipHit,faunaOrientation,faunaMovementBounds} from '../src/fauna/fauna-target.js';
+import {BuildSystem} from '../src/build/system.js';
 import {createWeaponTarget} from '../src/effects/weapon-target.js';
 import {AEON} from '../src/celestial.js';
 const v=(...a)=>new THREE.Vector3(...a),origin=v(25e9,2e9,-3e9);
@@ -36,4 +37,17 @@ test('parked ship blocker uses navigation hull and supports an expanded fauna cl
  assert.equal(parkedShipHit(nav,start,v(0,0,-1),20).distance,7);
  assert.equal(parkedShipHit(nav,start,v(0,0,-1),20,1).distance,6);
  assert.equal(parkedShipHit(nav,start,v(1,0,0),20),null);
+});
+test('a four metre grazer stops its nose before a hull or building wall',()=>{
+ const e=entity('grazer',0),size={width:1.797,height:2.438,length:4.091};
+ const bounds=faunaMovementBounds(e,size),nav={shipPosition:origin,shipOrientation:new THREE.Quaternion(),layout:{flightBounds:{min:[-2,0,-3],max:[2,3,3]}}};
+ const start=origin.clone().add(v(0,.65,5.1)),dir=v(0,0,-1);
+ assert.equal(parkedShipHit(nav,start,dir,.1,1.1),null,'old clearance misses visible nose crossing');
+ assert.ok(parkedShipHit(nav,start,dir,.1,bounds.radius));
+ // Exercise the real building sweep against a wall in a stellar-coordinate claim.
+ const claim={origin:origin.toArray(),quaternion:[0,0,0,1],radius:30,pieces:[{id:'wall',type:'wall',position:[0,0,0],rotation:0}]};
+ const build={claims:[claim],toLocal:(p)=>p.clone().sub(origin),toWorld:(p)=>p.clone().add(origin),doorFraction:()=>0};
+ const wallStart=origin.clone().add(v(0,.65,2.15));
+ assert.equal(BuildSystem.prototype.raycast.call(build,wallStart,dir,.1),null);
+ assert.ok(BuildSystem.prototype.raycast.call(build,wallStart,dir,.1,bounds.envelope));
 });

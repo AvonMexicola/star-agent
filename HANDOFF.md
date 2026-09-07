@@ -2788,6 +2788,8 @@ SA-SOCIAL-001 BACKEND CHECKPOINT c619dd0fd6d6006e7d94b2b11f29a56b55b1ed1a is coh
 
 
 
+SA-FAU-002 deer asset repair complete as a scoped review checkpoint: final GLB83addc,1.20MB/15,187tris, editable Blender/source and reproducible builder retained. New1.6s slow four-beat walk fixes source crossing/reach; no skin/bind surgery was needed.193-phase export deformation/contact/loop check passes. Actual Three viewer playback/scrub desktop/mobile passes9.8s (Chromium151/AMD860M ANGLE GLES3.2), root inspected captures. Independent Astra five scored dimensions4/5; full continuous-motion aesthetic score remains open. Deer remains asset-only, no biome/combat. Viewer5515 /scripts/fixtures/creature-rig.html?model=deer. Pipeline memory docs/development/creature-pipeline.md and full QA/source record retained. Shared integration remains steward-owned.
+
 SA-CARGO-001 GPU NEXT / INTEGRATION UPDATE17:45UTC: combined2f3249f has been
 merged into the isolated cargo branch (17769ed), preserving rover/fauna/character,
 base-pad landing and combat controls. Final combined build/CPU checks running.
@@ -3138,6 +3140,117 @@ SA-INT-002 SOCIAL / SBU CARGO / CONTROLS LIVE: dev/all-features runtimef861f8f i
 Shared HANDOFF notes were committed before merge; the persistent preview was restarted ONCE after local Prisma generation. Frontend/direct API health pass. Live cargo/protocol modules match source exactly; social/help/rover launcher match after Vite import normalization. PostgreSQL migrations are now1/2/4; same cluster inode947632, retained account/player-state row counts, no shared test accounts/chat. Private pre-promotion dump is outside Git. Refresh the client for protocol3. Cees's latest request to put SBU cargo on the dev server is handled. SA-SOCIAL-001 and SA-CARGO-001 are integrated in the shared registry. Public hosting/main were not changed.
 
 The frozen promotion is COMPLETE and this shared merge/restart claim is released. Parent needs no GPU window and leaves the persistent user preview running. New power/rover/fauna/WORLD/hub work remains separately owned and is not in this receipt. Coordinate the next coherent update against f861f8f; do not replace its social UI, final immediate kick cleanup, generic ordered migrations or either client state-reset hook with older backend-onlyc619dd0. Full delivery evidence: docs/qa/social-cargo-integration.md; player entry: Menu→Comms for chat/friends, station Cargo & Trade for SBU crates.
+
+
+SA-WORLD-003 NARROW SHARED INTEGRATION CLAIM 19:08:21 UTC: SA-INT-002 has
+explicitly released the completed social/cargo promotion. Root prepared an
+isolated merge of checked92dadad onto runtimef861f8f in
+/home/cees/projects/star-agent-rock-restraint-integration (integrate/landmark-restraint).
+Taking the next narrow shared merge/API-refresh window for the two landmark
+runtime modules plus checked QA/docs. Preserve social/cargo/protocol3 and ordered
+migrations1/2/4. This lane adds no DB/schema change, does not touch private data,
+and will publish verification/release after one coordinated client/API refresh.
+Please hold other shared merges/restarts for this brief update; no GPU job needed.
+
+
+SA-INT-002 REVIEW RECEIPT: combined source and exact local delivery are pushed at aaf08cc993f3e5c53511868a3afe9e01dd7e3a79, feat/dev-social-review, draft PR73 https://github.com/AvonMexicola/star-agent/pull/73 stacked on feat/dev-content-review. GitHub reports MERGEABLE; this new PR's hosted checks are running, not yet claimed passed. Social-only PR72 at a4c533d now passes all five hosted jobs. Shared dev remains runtimef861f8f/docs3ed204b; service active and API healthy at final verification. All combined local checks passed as recorded; no remaining owned runtime work or GPU job. Later other-owner HANDOFF appends are preserved. Local SBU request is delivered; new feature lanes remain separately coordinated.
+
+
+SA-WORLD-003 LOCAL UPDATE LIVE / WINDOW RELEASED 19:14:35 UTC: shared dev/all-features
+runtime6e548ad (checked combinedd992e52, final source92dadad), receipt/inventory
+4706d62 is live at http://127.0.0.1:5178/. Twenty-three focused checks, production
+build and repo/whitespace checks passed on the combined source. Persistent
+preview/API restarted once19:09:44UTC; frontend/API health200 and served material
+key/populationrevision2 verified. Three current screenshots serve exact PNGs.
+Refresh clients for matching sparse rendering/server collision. Cluster inode
+947632 retained, no new schema migration; current social/cargo/protocol3 and
+ordered migrations1/2/4 preserved. SA-WORLD-003 is integrated. Final actual-game
+shader capture passed1/1 with inspected images; modest measured GPU change only,
+no large FPS gain or independent final art acceptance claimed. All owned browser,
+preview and watcher processes exited. Shared merge/restart and GPU claims are
+released. See docs/qa/landmark-restraint/README.md. No public/main deployment.
+
+
+SA-INT-002 ROCK UPDATE VERIFICATION 19:18 UTC: Cees asks to merge the planetary rock update into dev. The owner had already completed SA-WORLD-003 at runtime6e548ad/docs4706d62. Steward verified both bb75c4c and reviewed92dadad are ancestors of shared dev; the only runtime changes after social/cargo are landmark-distribution.js and landmark-material.js. Both served modules match reviewed source after Vite import resolution, material keyaeon-landmark-pbr-v3 and populationrevision2/.026 are current, and frontend/API health pass. Inspected current1km and close-face evidence; owner record retains23focused passes, production build and actual shader capture1/1. No redundant merge/restart or new GPU run was performed. Request is already satisfied at http://127.0.0.1:5178/; refresh the client. This is the Aeon large-landmark update; smaller rock fields remain outside its scope. Other-owner HANDOFF edits are preserved.
+
+
+SA-CARGO-002 GPU ACQUIRED 19:24:35 UTC: host has no active Playwright job and preceding WORLD slot is explicitly released. Running ONLY the first two focused tractor cases, one worker, on5537 (expected3minutes;180s per-case ceiling). Sourceec7fd4d + merged live4706d62 viae1358bb and current fixture additions; 20packing/tractor tests,8cargo/SQL/server tests and build/repo pass. Shared5178/API8087/DB untouched. Please hold new automated GPU launches until explicit release; no FPS acceptance.
+
+
+SA-CARGO-002 GPU RELEASE: first tractor browser job stopped after its first failed case and owned5537/Chromium processes exited. It reached the game, but the fixture built without the dev launcher and therefore began in orbit rather than the requested hangar; its station-frame walking target timed out. No tractor activation occurred, so no feature pass is claimed. Correcting the build flag before one bounded rerun. Unit857/857 and actual cargoSQL/server8/8 pass. Shared services unchanged; other ready GPU owners can proceed while this fixture is corrected.
+
+
+SA-CARGO-002 GPU ACQUIRED 19:29:00 UTC: no other active Playwright job/new acquired claim after our release. One bounded rerun of the TWO tractor cases on frozen c985687,5537, now explicitly building with VITE_DEV_TOOLS=1 and asserting a real docked start before walking. First pass never activated the tractor. Shared preview/API/DB remain untouched; release follows.
+
+
+SA-CARGO-002 GPU RELEASE: second bounded job reached and visibly operated the real2SBU tractor (movement and menu-stop passed; image retained), then the fixture pressed B before neutral-arming the newly opened menu while RT was still held. Shared router correctly ignored that unarmed input. Correcting fixture to release/arm in-menu, then hold RT across its actual close. Also correcting cached HUD hints so tractor mode shows TRACTOR instead of the previous MINE label. Atlas case has not yet run. No startup/shader error or physical movement fault observed; whole journey is not yet passed. Owned5537/browser are stopped.
+
+
+SA-CARGO-002 GPU ACQUIRED 19:33:14 UTC: next bounded2case job on71d59b6/5537, completing actual grid return and first Atlas64touch operation. Menu-neutral fixture and cached HUD label are corrected; no overlapping Playwright process/new owner acquisition is present. Release follows, shared services untouched.
+
+
+SA-INT-002 WILDLIFE INTEGRATION CLAIM 19:36 UTC: Cees explicitly requests wildlife merged into the dev build. Steward is reviewing clean/frozen feat/pyrebear e904192 (PR69): Aeon Tidebacks and Mallow grazers, corrected deer studio asset, later Suloher/Pyrebear evidence. Preparing isolated feat/dev-wildlife-review at /home/cees/projects/star-agent-wildlife-review from live4706d62. Scope: reconcile src/main.js/dev launcher/fauna hooks, package tests and docs with current social/cargo/rock changes; preserve all owner asset/source records. Parent owns the NEXT shared source promotion and final runtime verification. No shared merge/restart yet. Cargo tractor's currently acquired GPU slot stays intact; parent starts with CPU/source review and will reserve only necessary combined browser checks afterward. Please queue other shared promotions until this bounded wildlife update releases.
+
+
+SA-CARGO-002 GPU RELEASE: complete Nomad2SBU controller journey PASSES58.7s on71d59b6, including physical approach/equip/beam movement/menu release/held-trigger return/relock/stow/holster and phone cargo page. Inspected beam and390px cargo captures. Atlas physical approach passed but its test selector matched Trade tabs in13 hidden dialogs; fixing fixture to scope dialog[open]. Only the unrun Atlas tractor portion needs its next bounded run. No cargo source change is needed for this selector failure. Owned5537/browser stopped.
+
+
+SA-CARGO-002 GPU ACQUIRED 19:37:45 UTC: running ONLY the remaining Atlas64SBU keyboard/native-touch tractor case on8bace8b/5537. Passed Nomad controller case is retained and not rerun. No competing active Playwright process/new acquired claim is present. Expected60seconds after boot; shared services unchanged.
+
+SA-CARGO-001 GPU ACQUIRED 18:01:09 UTC: both rover/fauna Playwright processes have exited; inventory is idle. Starting the previously reserved final5535 three-case check on fdf106d, one worker, roughly3minutes. No FPS claim while the user may be playing. Please hold ALL further automated graphics jobs until this cargo window explicitly releases. No shared service/database/source change yet.
+
+
+SA-INT-002 WILDLIFE COMBINED CANDIDATE: isolated feat/dev-wildlife-review merges reviewed e904192 into live4706d62. Runtime overlap at main's building-raycast hook already contains the wildlife envelope on current dev; preserve that current block together with base-pad support and Burrow binding. Keep the full current test command and append both new habitat suites. Preserve both documentation/journal append sides. No server/database/protocol source is changed by this delta. Combined CPU/build checks and the two existing physical Aeon controller journeys will validate this exact source before shared promotion; no new animal/input/runtime redesign. Shared promotion remains steward-owned.
+
+
+SA-INT-002 WILDLIFE GPU NEXT REQUEST: combined wildlife36a5a56 builds successfully (main-DOLopA0u.js), repo/whitespace and40focused habitat/simulation/launcher checks pass; full units are finishing. Reusing the owner's TWO physical Tideback/Mallow controller encounters on isolated5566, with current cargo/social/rock source, one worker, about6minutes. Parent reserves the next window AFTER the currently acquired HUB5564 controller04 releases; preserve that active job. Please leave this combined acceptance before new repeat/cargo/art launches so the requested dev merge can complete. No sharedAPI/SQL fixture, no pending asset generation, no changed gameplay assertion. Wildlife source promotion remains parent-owned.
+
+
+SA-CARGO-002 GPU RELEASE: Atlas64 case visibly locked/moved/released/relocked64SBU and phone panel fit, then native two-finger Secure exposed a real input bug: lifting the secondary control finger cleared the primary beam hold; multi-touch also cannot rely on synthesized click. Fixing pointer-ID tracking, native secondary pointerdown actions and queuing Secure behind a pending movement write. This also removes movement-save flicker from action availability. All four captures inspected; full touch completion remains pending. Owned5537/browser stopped; next run will be only this affected Atlas case, with prior Nomad controller evidence retained.
+
+
+SA-CARGO-002 GPU ACQUIRED 19:42:37 UTC: one affected Atlas64SBU native-touch rerun on frozen501a6fb/5537, after the documented primary/secondary pointer fix. No other acquired claim/active Playwright process is present. Nomad controller pass retained; no full-suite rerun. Shared5178/API8087/DB unchanged.
+
+
+SA-INT-002 WILDLIFE NEXT GPU WINDOW CONFIRMED: wildlife36a5a56 is fully frozen and now passes869units,40focused checks, exact3asset hashes and the production build. Its NEXT reservation was posted while HUB04 was active. HUB04 has since ended and cargo launched501a6fb/5537 at19:42:37; preserve that already-running job. Wildlife5566 takes the IMMEDIATE next slot after that Atlas case exits, before any further tractor/hub/art rerun. Parent is ready to launch only the two existing species encounters, one worker, expected~6minutes. Please publish release and hold new launches for this user-requested merged-build acceptance. No shared source/API/SQL change has happened; preview promotion is waiting solely for these two combined routes.
+
+
+SA-CARGO-002 FINAL GPU RELEASE 19:44:48 UTC: affected Atlas64SBU keyboard/native two-finger touch journey PASSES59.9s on501a6fb. Full Nomad2SBU controller journey passed58.7s on71d59b6; subsequent pointer-specific changes are exercised by the Atlas case. Both real hull approaches, physical movement, locks/releases, securing and phone layouts are covered; no page/console errors. No owned browser/5537 process remains and no further GPU job is planned. Final CPU/docs followup adds an exact detached-crate SQL close/reopen assertion; it found only an undefined optional receipt field dropped by JSON, now normalized without changing gameplay. Shared5178/API8087/DB unchanged by tractor work.
+
+
+SA-INT-002 WILDLIFE GPU ACQUIRED 19:46:57 UTC: tractor explicitly released19:44:48 and final inventory is idle. Starting the reserved TWO physical wildlife cases on frozen36a5a56 / main-DOLopA0u.js, isolated5566, one worker, approximately6minutes. Current log /home/cees/.cache/star-agent-wildlife-review/browser.log. Preserve this active window until explicit release; hub/tractor/art follow after it. No sharedAPI/SQL/source mutation or hardware FPS claim.
+
+
+SA-INT-002 WILDLIFE NEXT GPU WINDOW CONFIRMED: wildlife36a5a56 is fully frozen and now passes869units,40focused checks, exact3asset hashes and the production build. Its NEXT reservation was posted while HUB04 was active. HUB04 has since ended and cargo launched501a6fb/5537 at19:42:37; preserve that already-running job. Wildlife5566 takes the IMMEDIATE next slot after that Atlas case exits, before any further tractor/hub/art rerun. Parent is ready to launch only the two existing species encounters, one worker, expected~6minutes. Please publish release and hold new launches for this user-requested merged-build acceptance. No shared source/API/SQL change has happened; preview promotion is waiting solely for these two combined routes.
+
+
+SA-INT-002 WILDLIFE GPU ACQUIRED 19:46:57 UTC: tractor explicitly released19:44:48 and final inventory is idle. Starting the reserved TWO physical wildlife cases on frozen36a5a56 / main-DOLopA0u.js, isolated5566, one worker, approximately6minutes. Current log /home/cees/.cache/star-agent-wildlife-review/browser.log. Preserve this active window until explicit release; hub/tractor/art follow after it. No sharedAPI/SQL/source mutation or hardware FPS claim.
+
+SA-HUB-001 GPU YIELD 19:48:35 UTC: postlaunchinventory found wildlifeintegration3395809 starting7s after rootcontroller3395330, withbothbrowsersjustcreated. Root sentSIGINTONLYtoowned3395330 immediately, preservingwildlifejob/sharedservices. Root05interruptionisnotapass; sourcea70ba68unchanged. PLEASE give root the next reservedcontroller/nativewindow AFTER wildlifeintegration release; rootwillinventoryandreannouncebeforelaunch. No other process touched. This records andcorrects a launchrace; noGPUperformanceclaim.
+
+
+SA-INT-002 WILDLIFE GPU ACTIVE / CACHE CORRECTION: first5566 invocation stopped before Chromium while Playwright wrote its default transform cache (errno-122 quota). Verified the cache initializes before imported config can set TMPDIR. Preserved browser-cache-failure.log and set process-start TMPDIR/FAUNA_TMPDIR/PWTEST_CACHE_DIR to an owned writable cache. The corrected two-case job is now running in the same reserved window, current log /home/cees/.cache/star-agent-wildlife-review/browser.log. No application/config/runtime assertion change and no shader/startup crash. Please retain wildlife's acquired window until explicit release; parent needs no further broad suite.
+
+
+SA-CARGO-002 CHECKED DELIVERY FOR STEWARD: feat/cargo-tractor0b2d10b is pushed and ready (runtime70fcaad; base live4706d62). Handheld1–64SBU tractor replaces instant haul; existing tool/muzzle, physical detached crates, shape sweeps, server-derived theft/aim, durable short exclusive leases, native two-finger securing and neutral suppression. Nomad6/Atlas512 and1SBU hand limit unchanged. Protocol4 requires coherent client/API refresh; optional loose JSON ledger uses existing commerce table, NO migration/account reset/import. Full857units,116multiplayer plus both SQL-only cases subsequently passed in27SQL tests; final17focused include actual detached25e9+.125m SQL roundtrip, failed write, lock reclaim and hull-switch guard. Actual Nomad controller58.7s and Atlas64keyboard/native-touch59.9s pass with4inspected captures and no console/page errors. Build/repo checks pass. Full record docs/qa/cargo-tractor.md, player controls docs/cargo-tractor.md. Claims retained, taskreview.
+
+Please consume this checked tractor follow-up in your next serialized local promotion after the already active wildlife window; no tractor GPU rerun is needed or planned, and the frozen wildlife source/browser route remains yours. Narrow shared hooks: main.js creation/update/hints/controller callback, server room fire/cargoHull/notice guards, existing mining-tool neutral transition, protocol4 and client fire suppression. Preserve current social resets/ordered migrations, wildlife and base-owned modules. Cargo owner will not merge/restart shared5178/8087 during your promotion work; please publish delivery so the user can receive the live beam link. All owned5537/automation is stopped.
+
+
+SA-CARGO-002 PR74 REVIEW LINK: https://github.com/AvonMexicola/star-agent/pull/74 is a pushed draft stacked on PR73/feat/dev-social-review. Checked delivery0b2d10b/runtime70fcaad above is unchanged. Final exact detached-cargo PostgreSQL close/reopen, account-lock/hull-switch checks and production build pass; four inspected captures are committed. Cargo has no remaining implementation/browser/test work. Shared local promotion remains steward-owned, queued after its current wildlife acceptance. No public/main deployment is requested.
+
+
+SA-PERF-001 ISOLATED CLAIM: Cees requests maximum fidelity-preserving optimisation of the merged local dev build for both release modes. Working from4706d62 in /home/cees/projects/star-agent/.worktrees/player-performance (perf/player-multiplayer). Own src/navigation.js altitude memoization, src/character{,-ik}.js rig work, src/multiplayer/{client,remote-players}.js and server/{room,index}.js snapshot/door work, focused tests and performance QA. No shared main hook, assets, schema, protocol, rates or quality reductions. Preserve current wildlife/tractor/hub ownership; will reconcile newer checked commits before integration. Ports5572/5573 reserved; CPU-only now. Request a single focused browser window AFTER the existing wildlife/hub queue releases. No shared source promotion/service/API/DB change claimed. Please preserve this performance lane when merging newer server/client code.
+
+SA-PUBLIC-001 RELEASE CLAIM 2026-09-07: Cees explicitly requests staragent.site/www landing page with real captures; play solo with dev tools branched from local dev; multiplayer cap20. Isolated feat/public-launch at .worktrees/public-launch frozen from dev4706d62, owns site/, scripts/build-release.mjs, narrow solo main.js/dev-launcher gates, release docs/workflow. Separate release/public-multiplayer at .worktrees/public-multiplayer frozen from LIVE f7a30ef: only cap20, palette, admission text and focused tests. Public server update will preserve deployed protocol1/accounts/SQL; no automatic dev protocol3/4 migration. No shared dev merge/restart; preserve wildlife/tractor/hub and PERF snapshot ownership. Homepage preview5568, solo5569 reserved. GPU CAPTURE REQUEST after wildlife/hub currently running: one browser, real short in-game captures plus solo no-API/launcher and responsive site checks, no FPS claim. Please release before new repeated jobs. Parent will check process/handoff before acquiring. Direct existing netcup hosting; play snapshots remain frozen until explicit promotion.
+
+
+SA-INT-002 WILDLIFE GPU RELEASE 19:55:17 UTC: both combined physical controller encounters PASS on36a5a56: Tideback2.8min, Mallow2.7min, total5.6min, no captured page/console errors. Corrected cache-startup invocation exited0 and owned5566/Chromium are stopped; no further wildlife GPU run is planned. Images are being inspected and archived before the already claimed client-only shared promotion. HUB may take its reserved next controller/native window after inventory. The initial pre-Chromium cache failure and briefly yielded HUB05 overlap are retained; no hardware/FPS claim. Shared wildlife promotion remains steward-owned, current cargo/social/rock foundations preserved.
+
+SA-INT-002 WILDLIFE GPU RELEASE 19:55:17 UTC: both combined physical controller encounters PASS on36a5a56: Tideback2.8min, Mallow2.7min, total5.6min, no captured page/console errors. Corrected cache-startup invocation exited0 and owned5566/Chromium are stopped; no further wildlife GPU run is planned. Images are being inspected and archived before the already claimed client-only shared promotion. HUB may take its reserved next controller/native window after inventory. The initial pre-Chromium cache failure and briefly yielded HUB05 overlap are retained; no hardware/FPS claim. Shared wildlife promotion remains steward-owned, current cargo/social/rock foundations preserved.
+
+
+SA-INT-002 PORTABLE CARGO QA FIX CLAIM: PR73 hosted multiplayer job exposed tests/server-cargo.test.js using the machine-specific /home/cees/.cache/star-agent-sbu/database- prefix, causing ENOENT before its SQL case in CI. Steward owns a narrow test-only follow-up in feat/dev-social-review replacing that prefix with join(tmpdir(), ...), plus an isolated SQL rerun; no cargo runtime or assertion changes. The same commit will join wildlife integration. Tractor owner should preserve this portability fix when its independently checked follow-up is later consumed; steward is not editing tractor worktree runtime/test source.
 
 
 SA-INT-002 WILDLIFE LIVE / SHARED WINDOW RELEASED: dev/all-features runtime c4f6b5b now serves reviewed wildlife e904192 (PR69), combined candidate c160ece, at http://localhost:5178/. Tideback beach and Mallow grassland entries are available through F2; deer repair is installed in the rig viewer only. Both physical controller routes pass (2.8/2.7min, total5.6min),869units/build/repo checks pass, four actual-game captures inspected, zero browser/console errors. Live3GLB SHA/bytes match reviewed exports; main/options/habitat/simulation/target/rendered-fauna sources match after Vite imports/env normalization. Existing cargo/social/rock/runtime hooks remain intact. Complete evidence docs/qa/wildlife-integration.md.

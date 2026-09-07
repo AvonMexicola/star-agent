@@ -1,0 +1,10 @@
+{
+  "sampleCount": 121,
+  "upperShellVertexCount": 482,
+  "upperShellMaxRelativeMotionMetres": 1.5985272326354845e-06,
+  "maxLimbJointDistanceChangeMetres": 1.3977289585936914e-05,
+  "walkZeroToDeathZeroMaxVertexDisplacementMetres": 9.821538355724954e-06,
+  "maxAdjacentSampleVertexDisplacementMetres": 0.021009912022457326,
+  "sampleIntervalSeconds": 0.013333333333333334,
+  "scope": "Upper shell region above80% crown height and central75% crown-height width; full skin/limb sampling is not terrain or continuous visual acceptance."
+}

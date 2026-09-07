@@ -1,0 +1,18 @@
+{
+  "runtimeSha256": "b5c84bb43bc7ba4434d3ca88639a63c8b83109409f32dc3438903ea442ef3bd8",
+  "scopedPhysicalReadabilityScore": 3,
+  "files": [
+    {
+      "name": "death-mid.webp",
+      "sha256": "cf515bd1d3ee2ca61dc65f9cacab04a813312966faa7026c036a902f10167ce3"
+    },
+    {
+      "name": "death-final.webp",
+      "sha256": "869e0dc6c8d290b4b92ac65252127087179b60f395208d4fef96fce22f67d773"
+    },
+    {
+      "name": "death-side.webp",
+      "sha256": "83439b086c8eb9cd6925633e7e2fdc943e70e72f0ad7ab5eaf9da082e669b938"
+    }
+  ]
+}
