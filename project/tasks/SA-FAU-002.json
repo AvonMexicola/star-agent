@@ -1,0 +1,14 @@
+{
+  "id":"SA-FAU-002",
+  "title":"Repair the supplied deer's rig and walking gait",
+  "milestone":"M0",
+  "owner":"@AvonMexicola",
+  "agent":"Codex Astra deer rig",
+  "status":"integrated",
+  "branch":"feat/pyrebear",
+  "base":"4d38827d3c41ecd6250455d6ceace4365c743365",
+  "updated":"2026-09-07",
+  "areas":["assets"],
+  "claims":["assets/creatures/deer/","public/models/creatures/deer.glb","public/models/creatures/deer-manifest.json","blender/finish_deer.py","docs/qa/deer-rig.md"],
+  "brief":"docs/briefs/deer-rig.md"
+}
