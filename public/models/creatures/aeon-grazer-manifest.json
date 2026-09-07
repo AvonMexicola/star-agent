@@ -1,0 +1,427 @@
+{
+  "id": "aeon-grazer",
+  "displayName": "Mallow grazer",
+  "status": "development-candidate; independent/game review pending",
+  "source": {
+    "path": "assets/creatures/aeon-grazer/source/aeon-grazer-walking.glb",
+    "bytes": 7555904,
+    "sha256": "8edeacf0cdb52013d50f1ce2210acc996cfa661fc7adc1f2f8631884296576fd"
+  },
+  "runtime": {
+    "path": "public/models/creatures/aeon-grazer.glb",
+    "bytes": 978832,
+    "sha256": "78598117a9a47bbc0eebedd708a8248a1a1e4a61b5923e9bb6e7640a16f41bb9"
+  },
+  "builder": "blender/finish_aeon_grazer.py",
+  "coordinates": "glTF Y-up, metres, front -Z; base-centre across the sampled walk envelope",
+  "triangles": 13697,
+  "vertices": 9568,
+  "materials": 1,
+  "drawPrimitives": 1,
+  "joints": 27,
+  "texture": {
+    "file": "/models/creatures/aeon-grazer.glb (embedded)",
+    "format": "WebP",
+    "maxEdge": 1024,
+    "maps": [
+      "authored baseColor only"
+    ],
+    "roughness": 0.85,
+    "metalness": 0,
+    "emissive": 0
+  },
+  "shoulderHeightMetres": 2.0,
+  "shoulderMeasurement": "Phase-0 dorsal skin maximum within 20% total width and 7.5% depth of chest joint, relative to grounded phase-0 skin minimum; root base uses full61-sample envelope with per-phase grounding",
+  "boundsMetres": {
+    "min": [
+      -0.8983838558197021,
+      -2.6210275905214075e-07,
+      -2.045043468475342
+    ],
+    "max": [
+      0.8983839154243469,
+      2.437044858932495,
+      2.0450432300567627
+    ]
+  },
+  "sizeMetres": [
+    1.796767771244049,
+    2.437045121035254,
+    4.0900866985321045
+  ],
+  "dimensions": {
+    "width": 1.796767771244049,
+    "height": 2.437045121035254,
+    "length": 4.0900866985321045
+  },
+  "gaitSpeed": 2.1,
+  "deathDuration": 2.4,
+  "collision": {
+    "halfWidth": 0.8983839154243469,
+    "halfLength": 2.045043468475342,
+    "height": 2.437044858932495
+  },
+  "animation": {
+    "name": "walk",
+    "sourceName": "Armature|Unreal Take|baselayer",
+    "durationSeconds": 1.0,
+    "channels": 82,
+    "sourceJointChannels": 81,
+    "inPlace": true,
+    "horizontalRootSpanMetres": [
+      9.313225746154785e-09,
+      7.748603820800781e-07
+    ],
+    "verticalRootBobMetres": 0.10756456851959229,
+    "rootMotionEdit": "Source is horizontally in-place. One new wrapper translation track grounds each sampled pose; all81 source joint channels/samplers and non-image buffer data remain intact.",
+    "estimatedWalkSpeedMetresPerSecond": 2.12654113769532,
+    "recommendedWalkSpeedMetresPerSecond": 2.1,
+    "speedMethod": "Median positive backward sole-centre speed across samples in the lowest35% of each weighted foot region height range",
+    "footMinYRange": [
+      -2.6210275905214075e-07,
+      3.6094286315346835e-07
+    ],
+    "sampleCount": 241,
+    "denseSampleCount": 481,
+    "loopMaxVertexErrorMetres": 0.003984649795793238,
+    "denseGroundMinimumMetres": -0.0012335010105744004,
+    "denseGroundMaximumMetres": 0.005015522241592407
+  },
+  "normalization": {
+    "uniformScale": 1076.7973416128168,
+    "sourceBaseBlender": [
+      1.8475315300747752e-05,
+      -0.000557688414119184,
+      2.8167110940557905e-05
+    ],
+    "sourceShoulderTopBlenderZ": 0.0019349304493516684,
+    "wrapperNode": {
+      "name": "aeon-grazerRoot",
+      "children": [
+        28
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "scale": [
+        1076.7973416128168,
+        1076.7973416128168,
+        1076.7973416128168
+      ],
+      "translation": [
+        0.019894170401303778,
+        -0.03033027018170604,
+        0.600517401771805
+      ],
+      "extras": {
+        "origin": "base-centre over full sampled walk",
+        "front": "-Z",
+        "units": "metres",
+        "assetStatus": "development-candidate"
+      }
+    },
+    "sourceObjectTransforms": [
+      {
+        "name": "Armature",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "char1",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "allNonImageBufferViewsPreservedSha256": {
+      "0": "9ccd0c12f2ed56b4e2fe6b3ffd72046ebbe79c9298284981b23d66c5bf4107ee",
+      "1": "955f105bd6e6b3cdbecfba0545caf3840d23798bb91af5bc5098969fa30b1ac4",
+      "2": "befc575d4bd436943e3e6268aa4c288df61d967ae23c2b15861271161dcfe3df",
+      "3": "51e1da2334011690ba9a1dd77b73f2225f5c433813db338f0ab9725e8f1d2e93",
+      "4": "f75c531899b0783ae9ffe94bfd7754fbba1aaf278c01036b485f3cd93aff5e5d",
+      "5": "06432d0b2cb27525e6d2a9587d53d53f97148a2558daf063f963db67d85ce190",
+      "7": "b764d0adb5b7e92d09f8350d8d0c483fb723f8806189da8730103eda82675b3a",
+      "8": "ad1bd086a0eb3d329064d763c58b134bdebf8e6036407109f9475b3f6e1b8b67",
+      "9": "a25feda8da24df275fa2d7ded7547d2d8c17d25b0778ece6d68bc6037a449df4",
+      "10": "4b1e66f7418fd10e4df42dd257edb4bc9facef82702191b615ab4531baeb5942",
+      "11": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+      "12": "3a6d430338db2cbee6ca61a457f0333a695e538020962f524a6800c82fb8d27a",
+      "13": "6f2efab4758d645888ed31750476a3af7358dbec04cf7f77b520d8faca09652e",
+      "14": "997b6932754eb5673e3422124b5d325276f4b8633fec34d2716a2c3caccb3bd1",
+      "15": "9a087fa8096f0bde164ee86e8aa19694d1a92239b65e7c1cab6808291cba99d4",
+      "16": "d8f8da93f68618d5fc0929a7dd2b65d8bdcce2aa297d45bf9c5700fce65d62b2",
+      "17": "89b9b14023630094666d857d05f770805488297f657b91f9b02ac4115ad9430b",
+      "18": "978b7be2be96660d833ddf5e57888b71a22b7c2855b6077f172a8612a4c0f9c1",
+      "19": "1abfb5db9624fbab42eabc8cf3911805054885e32974c905bb7e24e35aec2542",
+      "20": "b6c9000331e5bff4e34f7d9cd707b4572d3362d1df8d8c22d748e88e05ea2f0c",
+      "21": "47a868da7a8e91814750b2d60b6b6dbc80b409a413b58f2d689203686000a7e7",
+      "22": "f37f9b3c0a568846304d7cb3c2f71b6b7a8e6ef9f5c67ac3835e4126e9ab0493",
+      "23": "881682c429bf23f3b3a3482c0e5d512416f06df193f3e19df2629f45e655a49e",
+      "24": "a88dd811f245b7aee95e20863c9a01491dab4da700649fdaac2424d784f54394",
+      "25": "8348e9b501f7af2a990e2208cc12e045d41800cfeca7125b91fbb3c42241ba66",
+      "26": "4f3e96ef06b95c7ec720e640f3f60497153b3242fe928ee63c24a2097b6a811b",
+      "27": "28b1a2412b0087527e0328383b8c1198dc535fab2eb1f648ecec19c98f94ed4d",
+      "28": "9b9022187e830e8e19def4dce04940a5bb1e87e5ec1a24a08acdfe22cc1420cf",
+      "29": "bde4ad706501c6607e56415caf6f89c8729d8e6b1ff60a4b5795121f2dc29afa",
+      "30": "5e0f6e56a0516a32caca7b6ebb7ae5fa0c9e2db90f5d19e2d7418a1c24f660b5",
+      "31": "c84828f3c8a8a286d612afb893512279e694beeb6b11a3ff604fb26ffe4d2906",
+      "32": "65bc5111974653df4ad3ae57ce0881422ec79bedaabc95a3a8ab98f3a74673b0",
+      "33": "1b6b02eadade92dc8ee6625a23c9b3aeedde3d6670763aabf4d1dd19d2840d0d",
+      "34": "e483c8b8aed54308d6e10c2960e2c64d33f75735383a238ff50ffc1440fa23e8",
+      "35": "8faa85a728fd6470231aecbf60c0623959e1808e6adfd00debdb554641ea013d",
+      "36": "997c302a1870a085364086a57bfd63bd8c9f7bba4ead220a834237c222f95253",
+      "37": "d9fe3efbc2e4fff27a618aaed7178be1b4c05db3e67fc93e24aaf331537c40e9",
+      "38": "08366bfb78dc7800b406e0a161e9c60f759258020ef87d5e8e301c5d5fa47bcc",
+      "39": "b070b321c9f6985fdb54b62166f04bc597bf939d814ef00d221502f68ca00d9d",
+      "40": "8a0302087c9a63973d5a19a0622e75b4ef0febe88ef1720d2254a67703488ce8",
+      "41": "e740b6e288bec86a4ac95459fd1b5dda80dd7defbb92556e2b50552a9d7e33be",
+      "42": "ea09661de511acd622f0052e1e8244db321c8b0ba1811b40ddaa2585adeeeb85",
+      "43": "9299046cc866b874545d5ccd0fe81b51762e0ad7da9146cc23702098bac9a8d1",
+      "44": "4d1d3338f36454e0ecb6f3f65bd7473e2916f8471deff968b2b85888181a91ed",
+      "45": "963dbc0fc64b28434548b3826c2f81a1ee1e38f445c01087fa1391878ac61e1a",
+      "46": "e3dea66d7591a1cd0e83d5f8ffcdc238d9215492017cb9b6f39fcf0732af1970",
+      "47": "52b30363ba8f6c61f2a8748766796407c0a70453766235a72fe3e25dc9c41af2",
+      "48": "4f2a0618e7b7d846d5f2ae52140980f82f57cefb7a8221295eda6c5a8ec23b51",
+      "49": "fee4ad2a98c68c09e5e26344fcd3a1b27a1e9ae67f374171a3e77a42570faa21",
+      "50": "b56097cebb76c19584e255c5e0e2c55e9868c9c9e9e49c5611ff40360f9f8df5",
+      "51": "a984fc6846d653964edda8d74a365180b9383fc798a04020d028cf9d9ee8eee3",
+      "52": "85a3aa35ddc46b454c4566509475ee40009c835478ef99dd3f6fc54892d65286",
+      "53": "b6b7a0d591d8f86882d44738e01c009c08a05ef3fee79dbbfbe326e66e03345f",
+      "54": "e341a4065365283a52a7edc979f6e76307da00616a11330ae6dd2d876934b6cf",
+      "55": "286a0e03824dc190c8563883765f9fb40e27b433a0b6ef358e14caa0e32e542a",
+      "56": "2be4a49da4526c8eed28d07777857b6f820d8b97e8d07a3847acaef69504dc28",
+      "57": "5aa65c9d5683686b540a19cedf3f40fc992a74c912ec6279a74d1bfe1e2e9c48",
+      "58": "f9e4a75b0bc5b9196a69b6ccc52ad07bf72ede2185facf54d01d8b50b59c5809",
+      "59": "e12fa98213b19f6b0fff6a2568af4e6ad02ac886ded9c251315822a5d92997d8",
+      "60": "454006ce8f3aaae125f2ccc681ea8ced743249997038148ba9a589a6d7335675",
+      "61": "06c3329681a3e5de45279fc27555b7e0c450cb7413c9f5eb927c5baadf98019d",
+      "62": "0be385e8111a2fac01df6d535e68c8dd50016393c199f040a332d6bfd9d0e4cf",
+      "63": "f27c212441b57fcba9dd647918b32bebc7d0b6792c371a3c0e9a635a5d232e11",
+      "64": "9686bbd1cd65760e1b6a7d5ac9b3fe8998ee4dbbb62427b7bbdc81919c7c89c1",
+      "65": "30285e4a8f144cc44cddeac7e1b9f6aa911ce109ce3dfd5d6b88f89a61edd54e",
+      "66": "d5bfbbf1e35331c9c40162d962132df012c7999155bd589d53aca683d5ef80b5",
+      "67": "a8fa46d03adc514b9e8e52c3816966e80f78211e8d6c34cab0c597628b13fbec",
+      "68": "4b1e34d59fae04f32e969a3ab96df2dae661e9817291c9c967756b20af17f540",
+      "69": "c8418fc2c1cefeb50dcf508a0e669e5240a210aeea257ce172b34d9381911494",
+      "70": "43ac9dc4ce6bf83b8cfd1e071d876d1db48bc8775300a8db724e48a6be5a9db5",
+      "71": "afc225681683e1adf9db80d68e2497ce4896d92863ddb5721583df7d6bd5c5a2",
+      "72": "d96e611ec3ecb4f02ea372cd39a9b2ae936c7a961ea33d0f61e5e71964a17ffc",
+      "73": "759c77d0715c105825276c997b7bc1839fe26fcc301aa7e538b5b5b1a1b9ccd3",
+      "74": "211699b2576a7d389e41d6e2a2e9979acdbddd5110785369af16c0ed56adf072",
+      "75": "40352cbdfae45d79f2c5bed97ecedb69585e392461eb9d1b68fbe0beb32c366e",
+      "76": "fb24d78e89c4031b514cda876fd5da7822f9fc435af616093aa1b7e4145bf841",
+      "77": "39a8fd60f7d489a6e4b89eb79e0752c4916cd12d6ab500a2a76382278ac6efe4",
+      "78": "1ff6eb243e460816baac27da93372a8c125866e313b366cf8b82d69712bcb376",
+      "79": "4c12213ce01a084b36def9394cdaf4307011ae0ffd3673592c08abe5a68af82f",
+      "80": "a2dea9fc10a17a92e1704173ddb7f5794baf253fcf2f78f3f49a3b121fb44b46",
+      "81": "54c7f15f6e6440fa38ac19988eb93e4dd1409e661a8ea621f4e18c1231c841bf",
+      "82": "c3076fcb07fe87c3869e9eedf47b20e570215748fa3b32c4956a6698035643c9",
+      "83": "b7a8617951c00e7ef06454cd910dd46241f5fb0542bfc376d77f288885199127",
+      "84": "e6181117a26ff176bd88fec1f551ef258d2a4f2ebbfd58ed44bd84235f99dd27",
+      "85": "9313ee3cef2b04cc9eab93e36ce9b8c011e6998e085879cdcec27ccdcfd8e072",
+      "86": "6e91453952e11a41dcc395d56773a5f3227c01ff4b5046e9bb9d9ac55f2cd21e",
+      "87": "513d32874eb063a7eaa2c5eb30f1c107e39d459e6b70266e98abfd12b4160180",
+      "88": "52aa5311d8e74e60cff4e227fbee94df06618dc2d4d2c0c4eb3c8cdcbcdd5cc6",
+      "89": "8c766313a401f8af72ea490ee61a6bec4d5c162c69306dc61d1fde6835ada304",
+      "90": "123e5c0260196d5e8876225dc5c1526ff6353f5dabad4681bc8d492221b7991c"
+    },
+    "allSourceSkinsAccessorsMeshJointChannelsSamplersUnchanged": true,
+    "blenderRuntimeReimportMaxBoundsErrorMetres": 9.872019290924072e-07,
+    "helperExcludedFromBounds": [
+      "Icosphere"
+    ],
+    "actualSampleReport": "assets/creatures/aeon-grazer/deformation-samples.json",
+    "deathMotion": {
+      "sampleCount": 121,
+      "sampleIntervalSeconds": 0.02,
+      "walkZeroToDeathZeroMaxVertexMetres": 2.4489100730621437e-05,
+      "maxLimbJointDistanceChangeMetres": 3.19237860199606e-05,
+      "maxAdjacentSampleVertexDisplacementMetres": 0.033947289959900075
+    }
+  },
+  "limitations": [
+    "One supplied walk and one Blender-authored death; no attack/idle animation authored.",
+    "The preserved source walk has a measured3.985mm endpoint seam at2m shoulder; not an exact closed loop.",
+    "Studio renders do not establish browser shading, gameplay, performance or independent visual acceptance.",
+    "Gait ground clearance is sampled, not continuously proven; terrain placement belongs to runtime."
+  ],
+  "death": {
+    "name": "death",
+    "durationSeconds": 2.4,
+    "loop": false,
+    "holdFinalPose": true,
+    "authoring": "Blender forward-kneel/belly collapse, 8-degree lean, folded joint-length-constrained limbs, lowered head and relaxed tail; broad torso support with small measured local contact intersections",
+    "boundsMetres": {
+      "min": [
+        -0.9395687580108643,
+        -0.0030592584516853094,
+        -2.052995443344116
+      ],
+      "max": [
+        0.9883461594581604,
+        2.359238386154175,
+        2.14182710647583
+      ]
+    },
+    "finalBoundsMetres": {
+      "min": [
+        -0.9395687580108643,
+        -0.0030592584516853094,
+        -2.048612117767334
+      ],
+      "max": [
+        0.9883461594581604,
+        1.4350084066390991,
+        2.14182710647583
+      ]
+    },
+    "groundMinimumMetres": -0.0030592584516853094,
+    "reimportBoundsErrorMetres": 6.198883056640625e-06,
+    "denseSampleCount": 121,
+    "denseGroundMinimumMetres": -0.0030592584516853094
+  },
+  "studio": {
+    "renderer": "Blender 5.2.0 LTS Cycles CPU",
+    "samples": 12,
+    "threads": 4,
+    "resolution": [
+      800,
+      600
+    ],
+    "views": [
+      {
+        "path": "assets/creatures/aeon-grazer/review/front.webp",
+        "phase": 0,
+        "cameraBlender": [
+          0.0,
+          6.0,
+          2.6500000953674316
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/side.webp",
+        "phase": 0,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          2.4499998092651367
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/walk-000.webp",
+        "phase": 0,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.75
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/walk-025.webp",
+        "phase": 0.25,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.75
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/walk-050.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.75
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/walk-075.webp",
+        "phase": 0.75,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.75
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/death-mid.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.75
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/death-final.webp",
+        "phase": 1,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.75
+        ]
+      },
+      {
+        "path": "assets/creatures/aeon-grazer/review/death-side.webp",
+        "phase": 1,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          2.4499998092651367
+        ]
+      }
+    ]
+  }
+}

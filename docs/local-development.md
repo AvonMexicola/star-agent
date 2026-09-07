@@ -241,3 +241,13 @@ file, exact export identity and before/after evidence. Reuse the
 [creature pipeline](development/creature-pipeline.md) for future animals.
 Hostile checkpoint5a3cf0b was included in local promotion2f3249f. Deer checkpoint
 b3eedc0 remains queued for the integration steward; public deployment is separate.
+
+
+The Aeon wildlife candidate adds **Aeon · Tideback beach** and
+**Aeon · Mallow grassland** to Test starts. Tidebacks inhabit dry low coastland
+and retaliate after injury; the large Mallow grazers inhabit grassland and flee
+instead of attacking. Both use the existing ammunition, health and animation
+systems. These are offline, session-local encounters. See the
+[Aeon wildlife record](qa/aeon-wildlife.md) for exact habitat and validation scope.
+The isolated candidate preview is port 5517; this is not yet a shared-preview
+integration or public-deployment claim.

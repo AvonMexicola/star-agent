@@ -2,6 +2,8 @@ import {createHostileFauna} from './fauna/hostile-fauna.js';
 import {parkedShipHit} from './fauna/fauna-target.js';
 import {samplePyrebearHabitat} from './fauna/pyrebear-habitat.js';
 import {sampleSuloherHabitat} from './fauna/suloher-habitat.js';
+import {AEON_AMPHIBIAN_QA} from './fauna/aeon-amphibian-habitat.js';
+import {AEON_GRAZER_QA} from './fauna/aeon-grazer-habitat.js';
 import {createSpaceCombat} from './combat/space-combat.js';
 import { rockTextureState } from './rock-material.js';
 import { Miasma } from './miasma.js';
@@ -185,7 +187,7 @@ try {
   build.onOpenStorage=id=>inventoryUI.openStorage(id);
   nav.surfaceObstacles=createBuildObstacles(mining,build);
   nav.baseAction=()=>build.interact();nav.baseInteraction=()=>build.interaction;
-  nav.buildingRaycast=(start,direction,range)=>build.raycast(start,direction,range);
+  nav.buildingRaycast=(start,direction,range,envelope)=>build.raycast(start,direction,range,envelope);
   const useQuick=index=>{const result=loadout.useQuick(index);nav.notify(result.message);};
   const loadoutBar=createLoadoutBar({loadout,nav,onSelect:id=>{if(build.active)build.cancel();miningTool.select(id);},onUse:useQuick,open:()=>inventoryUI.openEquipment()});
   document.addEventListener('keydown',e=>{if(e.repeat||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||document.querySelector('dialog[open]'))return;if(e.code==='KeyK'){e.preventDefault();inventoryUI.openEquipment();}else if(!build.active&&nav.enabled&&nav.focused&&['walk','eva'].includes(nav.mode)&&/^Digit[5-8]$/.test(e.code))useQuick(Number(e.code.slice(5))-5);});
@@ -426,6 +428,8 @@ try {
     else if(name==='pyre'||name==='pyre-surface'){nav.transitPyre(name==='pyre-surface'?180:undefined);pyre.terrain.prewarm(pyreLandingDirection(),9);}
     else if(name==='pyrebear-habitat'){const site=samplePyrebearHabitat(pyreLatLon(5,90));const direction=fromPyreBody(...site.bodyDirection);nav.transitPyre(35,direction);pyre.terrain.prewarm(direction,9);}
     else if(name==='suloher-habitat'){const site=sampleSuloherHabitat([1,0,0]);nav.transitMiasma(35,site.bodyDirection);}
+    else if(name==='amphibian-habitat')nav.transit(AEON_AMPHIBIAN_QA.direction,35);
+    else if(name==='grazer-habitat')nav.transit(AEON_GRAZER_QA.direction,35);
     else if(name==='miasma-surface')nav.transitMiasma(180);
     else if(name==='station'){const target=station.transitParams(180,6);nav.transit(target.direction,target.altitude);nav.orientToward(target.lookAt,target.up);}
     else if(name==='orbit')nav.orbit();else nav.transit(destinations[name],name==='mountain'?700:name==='polar'?90:95);
@@ -436,7 +440,7 @@ try {
     const limit=name.startsWith('pyre')||(name.startsWith('miasma')||name==='suloher-habitat')?12000:6500;
     while(performance.now()-started<limit){await new Promise(r=>setTimeout(r,150));if(performance.now()-started>1100 && planet.pending<4 && (name==='moon'||resourceRoute?moon.terrain.maxLevel>=14:name.startsWith('pyre')?pyre.ready:(name.startsWith('miasma')||name==='suloher-habitat')?miasma.ready:name==='star'||name==='orbit'||name==='station'||name==='ring'||planet.maxVisibleLevel>=12))break;}
     $('transit').classList.remove('active');transiting=false;nav.enabled=true;
-    notify(name.endsWith('-habitat')?'Wildlife habitat · Y / B lands · X / F leaves the seat. On foot: RT / T fires · D-pad left selects weapon.':name==='pyre-surface'?'Pyre surface test. B / Y lands; F / X leaves the seat.':name==='miasma-surface'?'Miasma surface test. B / Y lands; F / X leaves the seat.':name==='star'?'Stellar observation point: 500,000 km above the photosphere. Space + Shift retreats; watch shield temperature.':resourceRoute?`${resourceRoute.label}. B / Y lands. The marked outcrop shares this region's minerals; the terrain itself cannot be excavated.`:name==='ring'?'Ring survey. Brake to a stop, F leaves the chair; open the hatch and walk outside. G activates suit thrusters.':name==='moon'?'Selene descent. B lands; F leaves the chair. Open the rear hatch and walk down the ramp to explore.':name==='miasma'?'Miasma: sulphur clouds, mineral basins and toxic air. Descend to land; surface exploration uses your sealed suit.':name==='pyre'?`Pyre, ${PYRE_ARRIVAL_ALTITUDE/1000} km above the twilight line. Sunlight left, glowing night side right; Miasma above the dark limb. Descend to explore.`:name==='station'?'Station approach. W enters the bay; X brakes. Over the central pad, B docks.':name==='orbit'?'High orbit. Click to fly. W approaches Aeon; Space moves away.':'Arrival complete. Click to fly · B lands · F leaves the pilot chair.');
+    notify(name==='amphibian-habitat'?'Tideback beach · Y / B lands · X / F leaves the seat. Tidebacks defend themselves if attacked.':name==='grazer-habitat'?'Mallow grassland · Y / B lands · X / F leaves the seat. These large grazers are peaceful.':name.endsWith('-habitat')?'Wildlife habitat · Y / B lands · X / F leaves the seat. On foot: RT / T fires · D-pad left selects weapon.':name==='pyre-surface'?'Pyre surface test. B / Y lands; F / X leaves the seat.':name==='miasma-surface'?'Miasma surface test. B / Y lands; F / X leaves the seat.':name==='star'?'Stellar observation point: 500,000 km above the photosphere. Space + Shift retreats; watch shield temperature.':resourceRoute?`${resourceRoute.label}. B / Y lands. The marked outcrop shares this region's minerals; the terrain itself cannot be excavated.`:name==='ring'?'Ring survey. Brake to a stop, F leaves the chair; open the hatch and walk outside. G activates suit thrusters.':name==='moon'?'Selene descent. B lands; F leaves the chair. Open the rear hatch and walk down the ramp to explore.':name==='miasma'?'Miasma: sulphur clouds, mineral basins and toxic air. Descend to land; surface exploration uses your sealed suit.':name==='pyre'?`Pyre, ${PYRE_ARRIVAL_ALTITUDE/1000} km above the twilight line. Sunlight left, glowing night side right; Miasma above the dark limb. Descend to explore.`:name==='station'?'Station approach. W enters the bay; X brakes. Over the central pad, B docks.':name==='orbit'?'High orbit. Click to fly. W approaches Aeon; Space moves away.':'Arrival complete. Click to fly · B lands · F leaves the pilot chair.');
   }
   $('crash-recover').addEventListener('click',()=>transit('orbit'));
   const ringButton=document.createElement('button');ringButton.type='button';ringButton.className=$('moon-destination')?.className??'destination';ringButton.dataset.destination='ring';ringButton.innerHTML='<span class="destination-icon">⌁</span><span><strong>Selene rings</strong><small>ASTEROID SURVEY · EVA</small></span>';document.querySelector('[data-destination="moon"]').after(ringButton);

@@ -1,0 +1,115 @@
+{
+  "bytes": 8138996,
+  "sha256": "a5954d75022d8f764bfa7da404dd69757428012c2258c4265ea392f0f800fd84",
+  "meshCount": 1,
+  "triangles": 14204,
+  "materials": [
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        1,
+        1,
+        1
+      ],
+      "emissiveTexture": {
+        "index": 0
+      },
+      "extensions": {
+        "KHR_materials_specular": {
+          "specularColorFactor": [
+            2.0,
+            2.0,
+            2.0
+          ]
+        },
+        "KHR_materials_ior": {
+          "ior": 1.4500000476837158
+        }
+      },
+      "name": "Material_1",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        }
+      }
+    }
+  ],
+  "skins": [
+    {
+      "inverseBindMatrices": 6,
+      "joints": [
+        26,
+        4,
+        3,
+        2,
+        1,
+        0,
+        8,
+        7,
+        6,
+        5,
+        12,
+        11,
+        10,
+        9,
+        25,
+        16,
+        13,
+        14,
+        15,
+        20,
+        19,
+        18,
+        17,
+        24,
+        23,
+        22,
+        21
+      ],
+      "name": "Armature",
+      "jointNames": [
+        "Hips",
+        "tail",
+        "tailstart",
+        "tail1",
+        "tail2",
+        "tail3",
+        "backleg",
+        "backleg0",
+        "backleg1",
+        "backleg2",
+        "R_backleg",
+        "R_backleg0",
+        "R_backleg1",
+        "R_backleg2",
+        "chest",
+        "head",
+        "headend",
+        "earend",
+        "R_earend",
+        "frontleg",
+        "frontleg0",
+        "frontleg1",
+        "frontleg2",
+        "R_frontleg",
+        "R_frontleg0",
+        "R_frontleg1",
+        "R_frontleg2"
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "name": "Armature|Unreal Take|baselayer",
+      "channels": 81,
+      "duration": 1
+    }
+  ],
+  "images": [
+    {
+      "bufferView": 6,
+      "mimeType": "image/png",
+      "name": "texture_0"
+    }
+  ]
+}

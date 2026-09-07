@@ -5,18 +5,22 @@ import {createHostileSimulation,FAUNA_SPECIES} from './hostile-simulation.js';
 import {createPyrebearMedical} from './pyrebear-medical.js';
 import {enumeratePyrebearSpawns,samplePyrebearFooting} from './pyrebear-habitat.js';
 import {enumerateSuloherSpawns,sampleSuloherFooting} from './suloher-habitat.js';
+import {enumerateAeonAmphibianSpawns,sampleAeonAmphibianFooting} from './aeon-amphibian-habitat.js';
+import {enumerateAeonGrazerSpawns,sampleAeonGrazerFooting} from './aeon-grazer-habitat.js';
 import {PYRE_POSITION,toPyreBody} from '../pyre-world.js';
 import {MIASMA_POSITION} from '../miasma-world.js';
 import {bodyAltitude} from '../celestial.js';
-import {faunaOrientation,raycastFauna,parkedShipHit} from './fauna-target.js';
+import {faunaOrientation,raycastFauna,parkedShipHit,faunaMovementBounds} from './fauna-target.js';
 import './hostile-fauna.css';
 
-const ASSETS={pyrebear:'pyrebear',suloher:'suloher-dog'};
+const ASSETS={pyrebear:'pyrebear',suloher:'suloher-dog','aeon-amphibian':'aeon-amphibian','aeon-grazer':'aeon-grazer'};
+const HABITATS={pyrebear:enumeratePyrebearSpawns,suloher:enumerateSuloherSpawns,'aeon-amphibian':enumerateAeonAmphibianSpawns,'aeon-grazer':enumerateAeonGrazerSpawns};
+const BODY_SPECIES={pyre:['pyrebear'],miasma:['suloher'],aeon:['aeon-amphibian','aeon-grazer']};
 // Replaced from the measured manifests before an actor becomes damageable.
-const DEFAULT_DIMENSIONS={pyrebear:{width:2.02,height:1.732,length:2.981},suloher:{width:1,height:1,length:2}};
+const DEFAULT_DIMENSIONS={pyrebear:{width:2.02,height:1.732,length:2.981},suloher:{width:1,height:1,length:2},'aeon-amphibian':{width:1.065,height:.843,length:1.313},'aeon-grazer':{width:1.797,height:2.438,length:4.091}};
 const v=a=>new THREE.Vector3(...a);
 export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false,onSound=()=>{}}){
-  const group=new THREE.Group();group.name='Hostile wildlife';scene.add(group);
+  const group=new THREE.Group();group.name='Surface wildlife';scene.add(group);
   const medical=createPyrebearMedical({nav,loadout,enabled:()=>!online()});
   const assets=new Map(),actors=new Map(),dimensions=structuredClone(DEFAULT_DIMENSIONS);
   let disposed=false,queryClock=1,lastBody=null,shots=0,kills=0,lastHit=null,hudClock=1,hudTarget=null;
@@ -24,12 +28,14 @@ export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false
   status.innerHTML='<strong></strong><meter min="0" aria-label="Creature health"></meter><span></span>';document.body.append(status);
   const label=status.querySelector('strong'),meter=status.querySelector('meter'),detail=status.querySelector('span');
   function sampleGround(species,position){
+    if(species==='aeon-amphibian')return sampleAeonAmphibianFooting(v(position).normalize().toArray());
+    if(species==='aeon-grazer')return sampleAeonGrazerFooting(v(position).normalize().toArray());
     const center=species==='pyrebear'?PYRE_POSITION:MIASMA_POSITION,d=v(position).sub(v(center)).normalize();
     return species==='pyrebear'?samplePyrebearFooting(toPyreBody(...d.toArray())):sampleSuloherFooting(d.toArray());
   }
-  function blocked(from,to,padding=0){
+  function blocked(from,to,padding=0,envelope=null){
     const start=v(from),end=v(to),ray=end.clone().sub(start),range=ray.length();if(range<.001)return false;ray.divideScalar(range);
-    if(parkedShipHit(nav,start,ray,range,padding)||nav.buildingRaycast?.(start,ray,range))return true;
+    if(parkedShipHit(nav,start,ray,range,padding)||nav.buildingRaycast?.(start,ray,range,envelope))return true;
     // Terrain occludes attacks even when both endpoints are legal standing spots.
     const steps=Math.max(1,Math.ceil(range/.5));
     for(let i=1;i<steps;i++)if(bodyAltitude(start.clone().lerp(end,i/steps),nav.body)<=0)return true;
@@ -37,7 +43,7 @@ export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false
   }
   const simulation=createHostileSimulation({sampleGround,
     onAttack:event=>onSound({...event,point:v(event.position)}),
-    canMove:(from,to,entity)=>{const up=v(entity.normal),a=v(from).addScaledVector(up,.65),b=v(to).addScaledVector(up,.65);return !blocked(a.toArray(),b.toArray(),entity.species==='pyrebear'?.8:.4);},
+    canMove:(from,to,entity)=>{const up=v(entity.normal),a=v(from).addScaledVector(up,.65),b=v(to).addScaledVector(up,.65),bounds=faunaMovementBounds(entity,dimensions[entity.species]);return !blocked(a.toArray(),b.toArray(),bounds.radius,bounds.envelope);},
     lineOfSight:(from,to)=>!blocked(from,to),
     onBite:(damage,attacker)=>{const result=medical.applyBite(damage,attacker);if(result.ok)nav.notify(`${attacker.creatureName} bite · Suit ${loadout.state.health}% · Use a quick-slot medical item`);return result;},
   });
@@ -76,24 +82,31 @@ export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false
   }
   return {medical,raycast,weaponHit,
     update(dt,origin){
-      const body=nav.body.id,species=body==='pyre'?'pyrebear':body==='miasma'?'suloher':null;
-      group.visible=!online()&&Boolean(species);status.hidden=true;
+      const body=nav.body.id,species=BODY_SPECIES[body]??[];
+      group.visible=!online()&&species.length>0;status.hidden=true;
       const paused=online()||!nav.enabled||!nav.focused||document.hidden||Boolean(document.querySelector('dialog[open]'));
       queryClock+=Math.min(dt,.25);hudClock+=Math.min(dt,.25);
       if(body!==lastBody){hudTarget=null;hudClock=1;}
-      if(!online()&&species&&nav.altitude<500&&(queryClock>=1||body!==lastBody)){
-        queryClock=0;requestAsset(species);
-        const spawns=(species==='pyrebear'?enumeratePyrebearSpawns:enumerateSuloherSpawns)(nav.position,{seed});
-        simulation.reconcile(spawns,species,nav.position.toArray());
-      }else if(queryClock>=1||body!==lastBody||online()){queryClock=0;simulation.reconcile([],species,nav.position.toArray());}
+      if(!online()&&species.length&&nav.altitude<500&&(queryClock>=1||body!==lastBody)){
+        queryClock=0;
+        const candidates=species.flatMap(type=>{
+          const spawns=HABITATS[type](nav.position,{seed});
+          // Empty habitats need no download; invisible actors cannot attack.
+          if(spawns.length)requestAsset(type);
+          return assets.get(type)?.status==='ready'?spawns.map(spawn=>({type,spawn,distance:v(spawn.position).distanceToSquared(nav.position)})):[];
+        }).sort((a,b)=>a.distance-b.distance||a.spawn.id.localeCompare(b.spawn.id));
+        simulation.reconcile([],null,nav.position.toArray());
+        // At most twelve candidates; both Aeon species share the same eight actors.
+        for(const {type,spawn} of candidates)simulation.reconcile([spawn],type,nav.position.toArray());
+      }else if(queryClock>=1||body!==lastBody||online()){queryClock=0;simulation.reconcile([],null,nav.position.toArray());}
       lastBody=body;
-      const ready=assets.get(species)?.status==='ready';
+      const ready=species.some(type=>assets.get(type)?.status==='ready');
       simulation.update(paused||!ready?0:dt,{position:nav.position.toArray(),active:ready&&!paused&&nav.mode==='walk'&&!nav.insideShip&&!nav.dockedAtStation,health:loadout.state.health});
       const ids=new Set(simulation.entities.map(e=>e.id));for(const id of actors.keys())if(!ids.has(id))removeActor(id);
       for(const entity of simulation.entities){
         const asset=assets.get(entity.species);if(asset?.status!=='ready')continue;
         const actor=actors.get(entity.id)??createActor(entity,asset),distance=v(entity.position).distanceTo(nav.position);
-        actor.root.visible=entity.species===species&&distance<550;
+        actor.root.visible=species.includes(entity.species)&&distance<550;
         actor.root.position.copy(v(entity.position).sub(origin));actor.root.quaternion.copy(faunaOrientation(entity));
         if(entity.health<=0&&!actor.dead){actor.dead=true;actor.death.reset().play();actor.walk.crossFadeTo(actor.death,.12,false);}
         if(!paused){
@@ -108,7 +121,7 @@ export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false
         if(hudClock>=.1){hudClock=0;const forward=new THREE.Vector3(0,0,-1).applyQuaternion(nav.orientation),target=raycast(nav.position,forward,160);hudTarget=target&&!blocked(nav.position.toArray(),target.point.toArray())?target.id:null;}
         let entity=simulation.entities.find(e=>e.id===hudTarget&&e.health>0);
         if(!entity)entity=simulation.entities.filter(e=>e.health>0&&e.state==='windup').sort((a,b)=>v(a.position).distanceToSquared(nav.position)-v(b.position).distanceToSquared(nav.position))[0];
-        if(entity){status.hidden=false;label.textContent=FAUNA_SPECIES[entity.species].name;meter.max=FAUNA_SPECIES[entity.species].maxHealth;meter.value=entity.health;detail.textContent=entity.state==='windup'?'ATTACK INCOMING · MOVE AWAY':`${entity.health} HP · ${Math.round(v(entity.position).distanceTo(nav.position))} m`;status.dataset.attack=String(entity.state==='windup');}
+        if(entity){status.hidden=false;label.textContent=FAUNA_SPECIES[entity.species].name;meter.max=FAUNA_SPECIES[entity.species].maxHealth;meter.value=entity.health;detail.textContent=entity.state==='windup'?'ATTACK INCOMING · MOVE AWAY':`${FAUNA_SPECIES[entity.species].aggression==='never'?'Peaceful · ':FAUNA_SPECIES[entity.species].aggression==='provoked'&&!entity.provoked?'Calm · ':''}${entity.health} HP · ${Math.round(v(entity.position).distanceTo(nav.position))} m`;status.dataset.attack=String(entity.state==='windup');}
       }
     },
     get state(){return {...simulation.state,entities:simulation.entities.map(e=>({...e,position:[...e.position],normal:[...e.normal]})),assets:Object.fromEntries([...assets].map(([id,a])=>[id,{status:a.status,error:a.error}])),rendered:actors.size,shots,kills,lastHit,medical:medical.state};},

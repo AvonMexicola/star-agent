@@ -169,3 +169,106 @@ test('attack audio cue fires once at windup entry and stays silent while paused'
  sim.update(0,player());advance(sim,.55);assert.equal(cues.length,1);
  advance(sim,.1);advance(sim,1.8);advance(sim,.1);assert.equal(cues.length,2);
 });
+
+test('Tideback patrol ignores the player even at contact and invalid hits do not provoke it', () => {
+  const cues = [], near = fixture('aeon-amphibian', { onAttack: cue => cues.push(cue) });
+  const far = fixture('aeon-amphibian');
+  assert.equal(FAUNA_SPECIES['aeon-amphibian'].maxHealth, 120);
+  for (const damage of [0, -1, NaN, Infinity]) assert.equal(near.sim.hit('bear', damage).ok, false);
+  assert.equal(near.sim.hit('absent', 30).ok, false);
+  // Follow the animal at exact horizontal contact; its route must remain the
+  // same as a patrol with a distant player rather than approach either player.
+  for (let i = 0; i < 100; i++) {
+    const [x, , z] = near.sim.entities[0].position;
+    near.sim.update(.05, { ...player(), position: [x, 1.75, z] });
+    far.sim.update(.05, player(0));
+    assert.equal(near.sim.entities[0].state, 'patrol');
+    assert.equal(near.sim.entities[0].provoked, false);
+    assert.ok(Math.abs(near.sim.entities[0].speed - .45) < 1e-10);
+  }
+  assert.deepEqual(near.sim.entities, far.sim.entities);
+  assert.deepEqual(near.bites, []);
+  assert.deepEqual(cues, []);
+});
+
+test('a real nonfatal hit makes Tideback chase, warn for .8s and bite for6', () => {
+  const { sim, bites } = fixture('aeon-amphibian');
+  assert.deepEqual(sim.hit('bear', 18), { ok: true, killed: false, damage: 18, health: 102 });
+  assert.equal(sim.entities[0].provoked, true);
+  sim.update(.05, player(50));
+  assert.equal(sim.entities[0].state, 'chase');
+  assert.ok(Math.abs(sim.entities[0].speed - 1.8) < 1e-10);
+  const [x, , z] = sim.entities[0].position;
+  const close = { ...player(), position: [x + 1, 1.75, z] };
+  sim.update(.05, close);
+  assert.equal(sim.entities[0].state, 'windup');
+  advance(sim, .75, close); assert.equal(bites.length, 0);
+  sim.update(.05, close);
+  assert.deepEqual(bites, [{ damage: 6, creatureName: 'Tideback' }]);
+  assert.equal(sim.entities[0].state, 'recovery');
+  advance(sim, 1.95, close); assert.equal(bites.length, 1);
+  advance(sim, .9, close); assert.equal(bites.length, 2);
+});
+
+test('Tideback remembers injury and provocation across unload, but a new session is peaceful', () => {
+  const { sim, bites } = fixture('aeon-amphibian');
+  sim.hit('bear', 30);
+  sim.reconcile([], null, [2000, 1.75, 0]);
+  assert.equal(sim.entities.length, 0);
+  sim.reconcile([spawn()], 'aeon-amphibian', [0, 1.75, 0]);
+  assert.equal(sim.entities[0].health, 90);
+  assert.equal(sim.entities[0].provoked, true);
+  advance(sim, .9, player(41));
+  assert.equal(bites.length, 1);
+  const fresh = fixture('aeon-amphibian');
+  assert.equal(fresh.sim.entities[0].health, 120);
+  assert.equal(fresh.sim.entities[0].provoked, false);
+  advance(fresh.sim, 1, player(41));
+  assert.equal(fresh.bites.length, 0);
+});
+
+test('provoked Tideback still respects pause, inactive/downed players and death', () => {
+  const { sim, bites } = fixture('aeon-amphibian');
+  sim.hit('bear', 30);
+  advance(sim, .3, player(41));
+  assert.equal(sim.entities[0].state, 'windup');
+  const before = structuredClone(sim.entities);
+  sim.update(0, player(41)); assert.deepEqual(sim.entities, before);
+  advance(sim, 1, { ...player(41), active: false });
+  advance(sim, 1, { ...player(41), health: 0 });
+  assert.equal(bites.length, 0);
+  assert.equal(sim.hit('bear', 90).killed, true);
+  advance(sim, 3, player(41));
+  assert.equal(sim.entities[0].state, 'dead');
+  assert.equal(bites.length, 0);
+  assert.equal(sim.hit('bear', 1).ok, false);
+  sim.reconcile([], null, [2000, 1.75, 0]);
+  sim.reconcile([spawn()], 'aeon-amphibian', [0, 1.75, 0]);
+  assert.equal(sim.entities.length, 0);
+});
+
+test('large friendly grazers never attack; injury makes them retreat and remain peaceful after streaming', () => {
+  const cues=[],{sim,bites}=fixture('aeon-grazer',{onAttack:e=>cues.push(e)});
+  assert.equal(sim.entities[0].health,360);
+  for(let i=0;i<80;i++){const [x,,z]=sim.entities[0].position;sim.update(.05,{...player(),position:[x,1.75,z]});}
+  assert.equal(sim.entities[0].state,'patrol');assert.equal(bites.length,0);
+  const before=[...sim.entities[0].position],near={...player(),position:[before[0]+1,1.75,before[2]]};
+  assert.equal(sim.hit('bear',30).health,330);assert.equal(sim.entities[0].state,'flee');
+  advance(sim,1,near);assert.ok(sim.entities[0].position[0]<before[0]-1);
+  assert.equal(sim.entities[0].provoked,false);assert.equal(bites.length,0);assert.deepEqual(cues,[]);
+  sim.reconcile([],null,[2000,1.75,0]);sim.reconcile([spawn()],'aeon-grazer',[0,1.75,0]);
+  assert.equal(sim.entities[0].health,330);assert.equal(sim.entities[0].provoked,false);
+  advance(sim,3,player(41));assert.equal(bites.length,0);
+  sim.hit('bear',330);advance(sim,3,player(41));assert.equal(sim.entities[0].state,'dead');assert.equal(bites.length,0);
+});
+
+test('coexisting Aeon species retain separate identities under one global population cap', () => {
+ const sim=createHostileSimulation({sampleGround:flat});
+ sim.reconcile(Array.from({length:6},(_,i)=>spawn(`shore-${i}`,40+i*3)),'aeon-amphibian',[0,1.75,0]);
+ sim.reconcile(Array.from({length:4},(_,i)=>spawn(`grazer-${i}`,70+i*3)),'aeon-grazer',[0,1.75,0]);
+ assert.equal(sim.entities.length,8);assert.equal(sim.entities.filter(e=>e.species==='aeon-grazer').length,2);
+ assert.equal(sim.entities.filter(e=>e.species==='aeon-amphibian').length,6);
+ sim.hit('shore-0',30);assert.equal(sim.entities.find(e=>e.id==='shore-0').provoked,true);
+ assert.ok(sim.entities.filter(e=>e.species==='aeon-grazer').every(e=>!e.provoked));
+ sim.reconcile([],null,[2000,1.75,0]);assert.equal(sim.entities.length,0);
+});

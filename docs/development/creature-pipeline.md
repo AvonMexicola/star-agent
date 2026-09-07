@@ -61,3 +61,38 @@ The reusable studio fixture is `scripts/fixtures/creature-rig.html`; its browser
 check is `scripts/creature-rig.spec.js`. Hostile gameplay and actual-terrain motion
 checks are `scripts/fauna.spec.js` and `scripts/fauna-art.spec.js`. Test videos,
 traces and raw screenshots go in ignored test-results, never the source commit.
+
+## Further evidence from the Aeon intake
+
+The Tideback shell looked closed under the source's bright emission. Neutral
+materials exposed a true crown opening. Boundary-edge inspection isolated38rim
+vertices; a small inner membrane can repair that opening without flattening the
+raised armour or replacing the original primitive. Retain the source and record
+added topology, UV/material choice, skin weights, draw calls and all-clip checks.
+Source preservation is not a reason to keep a demonstrated visual defect.
+
+A generic mammalian death template is not universal. Tideback shell vertices had
+up to22% weight on a proximal leg; rotating that joint peeled the crown. Holding
+proximal supports and folding distal segments preserved the shell. The Mallow
+barrel belly also depended on proximal legs. Its first torso-only support probe
+lowered the body too far. Probe the actual weighted underside, not chosen bone
+names alone. A distal IK branch flip then required an exact two-segment solve
+with a continuously transported bend direction; per-step skin displacement
+caught the defect before publication.
+
+When a creature appears buried in game, compare its deformed vertices against
+the canonical world before changing its anchor. Pyrebear's rejected screenshot
+showed severe burial while Pyre still had63pending patches and28morphs. Actual
+CPU-skinned vertices at the saved world pose penetrated canonical terrain by at
+most19.7mm, within the declared30mm authoring tolerance. The coarse rendering
+was the leading explanation. Pause the staged encounter while its terrain
+settles and retain both failed and corrected evidence; never invent a second
+floor or raise the animal blindly to disguise streaming terrain.
+
+Browser fixtures must observe real transactions at the time they occur. A
+Suloher bandage test sampled health after another bite and falsely failed;
+observing the healing/bleeding-clear state during the action fixed the race.
+The art fixture also sent a weapon key before the tool became active, leaving
+the mining cutter selected. Wait for readiness and assert the equipped weapon
+before actual ammo-authorized firing. These are fixture corrections, not excuses
+to replace the physical controller journey with debug actions.
