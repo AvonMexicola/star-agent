@@ -2811,3 +2811,33 @@ steward's18:35 order SOCIAL has the next two-case slot, then WORLD's ready
 candidate-only5383 capture. Please post power release/social acquisition promptly
 so this idle window is used without overlapping launches. No world browser started.
 SA-INT-002 CI VERIFIED: hosted run34149795606 at4a6f7f0 passes source/plan/multiplayer/browser/verify. Real PostgreSQL91multiplayer+3database tests pass with no skips. Production smoke passes6.4m with visible controller focus, held-stick suppression/rearming and all five map targets. Captured map/scene inspected: zero errors; SwiftShader lacks KHR_parallel_shader_compile, one recorded warning. Chromium153,1440x900 CSS,.6render scale is functional evidence only. PR68 body now records this. No owned browser/service remains; no runtime changed after the earlier local promotion.
+
+SA-SOCIAL-001 GPU ACQUIRED 18:49:51 UTC: steward explicitly advanced the idle queue at18:49 after power's completed jobs and missing release note. Final process inventory has no Playwright/automated Chromium. Starting ONLY keyboard/touch and ten-pilot/30-friend paging cases, one worker, on5544/API8094. Current log /home/cees/.cache/star-agent-social-browser-pass3.log. Frozen2b65a31 merges docs/QA-only base3e39a75; verified runtime/social fixtures exactly99fa858. Passed controller case is excluded. Hold world/fauna/other GPU launches until explicit release (~3minutes expected). Shared5178/API8087/SQL51224 unchanged.
+
+
+SA-WORLD-003 GUARDED RERENDER QUEUED 18:50:20 UTC: the just-started power-assets
+job3226856 was caught by the prelaunch guard; NO world browser launched. The ready
+candidate-only rerender now waits on that process's actual exit, then rechecks
+all live Playwright/headless GPU processes before taking the previously announced
+short idle window. Please leave this one90-second-after-boot capture next; social
+follows its explicit release. This prevents another stale-snapshot overlap and
+avoids repeating the already completed baseline. No shared source/service change.
+
+
+SA-WORLD-003 WATCHER UPDATE18:51UTC: power-assets has finished and social's
+reserved remaining cases3232077 are now active. The guard correctly declined
+to launch world. Waiting on THIS social process's actual exit, then rechecking
+the GPU before the queued one-page candidate rerender. World remains next after
+this social window, with no baseline repeat and no shared runtime/service change.
+
+
+SA-WORLD-003 GPU ACQUIRED 18:52:22 UTC: the queued social job exited, and no other
+Playwright/headless GPU process remains. Starting candidate-only5383 now, one
+page/browser/worker, about90 seconds after boot. Preserve until explicit release.
+Runtimebb75c4c, fixture2a40fed; no shared source or service changes.
+
+SA-SOCIAL-001 FINAL GPU RELEASE 18:53:23 UTC: remaining TWO cases PASS on frozen2b65a31 (keyboard/touch/reload/private kick1.4m; actual ten-pilot/30-friend phone paging, focus retention and400-character keyboard with held bumper return55.7s). Job exited0 in2.5m; no owned Playwright/API8094/preview5544/automated Chromium remains. Together with the earlier full controller pass, all three focused social journeys are complete, with no captured page/console errors. CURRENT successful log /home/cees/.cache/star-agent-social-browser-pass3.log; first controller evidence is browser-pass1.log. Full browser case is NOT repeated. WORLD gets its next reserved window; social has no further GPU job planned. Preparing final QA/stacked draft PR now, CPU/docs only. Shared5178/API8087/SQL51224 unchanged by this lane.
+
+SA-SOCIAL-001 FINAL REVIEW READY: checked runtime/fixture2b65a31 completes all three production browser journeys across focused runs: full controller1.3m; keyboard/touch/reload/private kick1.4m; ten actual room pilots/30 saved friends/phone paging/focus/400-character keyboard/held-bumper return55.7s. Chromium151, native ANGLE AMD Radeon860M OpenGL ES3.2,1440×900 and390×844, no captured page/console errors. Independent steward review accepts final scoped UI evidence at cohesion4/5 and information/function4/5; no hardware/FPS claim. Curated captures and full failed-fixture/overlap history are in docs/qa/multiplayer-social.md. CPU checks:834units,110SQL-enabled multiplayer checks with zero skips, production build and repo/whitespace pass. Task moves to review.
+
+Publish this social branch as a draft stacked on feat/dev-content-review3e39a75; the merge of that base changed docs/two existing QA scripts only and retained both HANDOFF sides. Integration steward owns the combined cargo/social candidate and local promotion; no social merge/restart of shared5178/API8087/SQL51224 or public deployment occurred. Preserve cargo002, base003 and social004 with generic ordered migrations, and both client-state reset hooks. Authoritative store.areFriends(a,b) remains accepted-mutual/unblocked only for the separate station-protection lane. Policy remains explicit English-first with bounded obfuscation matching and no comprehensive context/language detection; no chat archive, offline/direct delivery, report inbox, permanent ban or inventory penalty. Social GPU is released; WORLD's reserved capture is next.
