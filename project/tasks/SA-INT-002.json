@@ -4,8 +4,8 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex integration steward",
-  "status": "in_progress",
-  "branch": "integrate/dev-content-review",
+  "status": "active",
+  "branch": "feat/dev-content-review",
   "base": "afe0654541ab814b524f34ac2b724e2d33aaf286",
   "updated": "2026-09-07",
   "areas": [
@@ -19,7 +19,9 @@
     "package.json",
     "vite.config.js",
     "docs/local-development.md",
-    "docs/qa/dev-content-review/**"
+    "docs/qa/dev-content-review/",
+    "src/gameplay-menu.js",
+    "src/gameplay-menu.css"
   ],
   "brief": "docs/briefs/dev-content-review.md"
 }
