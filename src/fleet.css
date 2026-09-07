@@ -6,3 +6,4 @@
 .opening-active #fleet-button{visibility:hidden;pointer-events:none}
 .meridian-lockup{display:flex;align-items:center;gap:14px;color:#b6efd1;margin-bottom:24px}.meridian-lockup img{width:58px;height:58px}.meridian-lockup strong{display:block;font:600 20px var(--font-display,sans-serif);letter-spacing:5px}.meridian-lockup span{display:block;margin-top:5px;font:10px monospace;letter-spacing:7px}#fleet-dialog{max-width:880px}
 .fleet-ships{grid-template-columns:repeat(3,minmax(0,1fr))}.fleet-ships article{display:flex;flex-direction:column;padding:18px}.fleet-ships p{flex:1}.fleet-ships button{min-height:44px}#fleet-dialog{width:min(880px,90vw)}@media(max-width:700px){.fleet-ships{grid-template-columns:1fr}.fleet-ships h3{margin:12px 0}.meridian-lockup img{width:46px;height:46px}}
+.fleet-maker{display:flex;align-items:center;gap:8px;font:10px var(--mono);color:var(--muted)}.fleet-maker img{width:23px;height:23px;object-fit:contain}

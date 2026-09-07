@@ -53,3 +53,12 @@ legacy debug-gauge export for existing callers.
 New HP_ nodes expose glTF extras `{kind:'weapon', size:1|2|3, mount:'fixed',
 installedWeapon:null, forward:[0,0,-1], socketOnly:true}`. Names remain ship-specific
 and stable; runtime consumers read size and frame from the actual exported node.
+
+Nomad 02 exposes two empty S1 sockets, `HP_Weapon_Port` and
+`HP_Weapon_Starboard`, with visible mating discs and six open bores. Their local
+`+Y` points outward from the corresponding cheek; local `-Z` remains ship-forward.
+Each exports `{kind: 'weapon', size: 1, mount: 'fixed', installedWeapon: null,
+forward: [0, 0, -1], socketOnly: true}`. Runtime inspection reads the named nodes
+and metadata. `NOMAD_FUTURE_S1_ATTACHMENT` remains a fitting-check definition,
+not an installed weapon.
+

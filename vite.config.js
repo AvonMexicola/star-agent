@@ -34,6 +34,7 @@ export default defineConfig({
         main: resolve('index.html'),
         kestrel: resolve('dev/kestrel.html'),
         effects: resolve('effects/index.html'),
+        nomad: resolve('nomad/index.html'),
         atlasMarkIIStudio: resolve('src/atlas-mark-ii-studio.js'),
         atlasMarkIIStudioStyle: resolve('src/atlas-mark-ii-studio.css'),
       },

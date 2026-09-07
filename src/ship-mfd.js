@@ -162,7 +162,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     } else {
       paint(screens[2], [['ENVIRONMENT', nav.body?.toxic&&env.atmosphereFraction>0?'TOXIC · SUIT SEALED':env.regime], [nav.freighter?'CARGO LIFTS':'HATCH / RAMP', nav.freighter?(nav.freighter.secured?'SECURED':'DEPLOYED'):nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${!nav.cabinFlight && nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
     }
-    paint(screens[3], [['SHIP STORAGE', `${cargoMass('ship').toFixed(1)} / ${cargoCapacity('ship')} kg`], ['BACKPACK', `${cargoMass('pack').toFixed(1)} / ${cargoCapacity('pack')} kg`], ['ACCESS', serverInventory?'SERVER AUTHORITY':'STARBOARD CABIN']], serverInventory?'OPEN SERVER INVENTORY TO TRANSFER':'ON FOOT: F AT THE CARGO CONTAINER', 3);
+    paint(screens[3], [['SHIP STORAGE', `${cargoMass('ship').toFixed(1)} / ${cargoCapacity('ship')} kg`], ['BACKPACK', `${cargoMass('pack').toFixed(1)} / ${cargoCapacity('pack')} kg`], ['ACCESS', serverInventory?'SERVER AUTHORITY':nav.freighter?'CARGO DECK':'AFT RACK / PORT']], serverInventory?'OPEN SERVER INVENTORY TO TRANSFER':'ON FOOT: F AT THE CARGO CONTAINER', 3);
   };
   group.snapshot = () => screens.map(screen => ({ title: screen.title, values: [...screen.values] }));
   // Asset studios can bind the same bounded-rate canvases to authored glTF quads.

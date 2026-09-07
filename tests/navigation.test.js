@@ -163,6 +163,9 @@ test('walking cannot pass through a closed hatch or either cabin side wall', t =
   assert.ok(navigation.toShipLocal().z <= 3.75 + 1e-6, 'closed rear door stops the walking capsule');
   assert.ok(navigation.toShipLocal().z > 3.5, 'walker reached the rear door');
   for (const key of ['KeyD', 'KeyA']) {
+    // The aft port wall is now occupied by the Nomad cargo rack. Check the
+    // side walls in the clear cross-aisle behind the cockpit instead.
+    navigation.position.copy(navigation.fromShipLocal(new THREE.Vector3(0, 2.75, -1.4)));
     keyDown(key);
     advance(4);
     keyUp(key);

@@ -218,7 +218,7 @@ export function weatherShip(ship, texture) {
     object.castShadow = !object.material.transparent;
     object.receiveShadow = true;
     const material = object.material;
-    if(material.userData.unweathered)return;
+    if(material.userData.unweathered||material.userData.authoredSurface)return;
     if(material.transparent){
       material.color.set(0xdce8ec);material.opacity=.04;material.roughness=.2;
       material.metalness=0;material.envMapIntensity=.3;return;

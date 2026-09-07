@@ -27,6 +27,14 @@ Press **V** while freely flying to toggle inertial flight. Releasing thrust then
 
 **P** toggles ship main power from the pilot chair. **F** lets you stand during ordinary flight: assisted flight holds the current course and speed while you walk inside either ship. Approach the chair and press F to resume piloting. Shutdown preserves momentum and disables propulsion; external exits remain secured in flight. See [ship power and cabin flight](docs/ship-power.md).
 
+[Nomad 02](docs/nomad-ship.md) is Meridian Shipworks’ compact utility ship. Walk
+through its living cabin, rest in the port berth, transfer saved cargo at the aft
+rack, and board through the folding rear ramp. **G** commands its landing legs
+in powered flight; **U** opens Fleet. Its two visible S1 fittings are empty
+mounts. The [/nomad/ inspection route](nomad/) shows the authored ship and
+mechanisms; [the delivery record](docs/nomad-utility.md) identifies the current
+testing and pending finish review.
+
 Press **4** (or the **EXTERNAL 4** button) to see the ship from above and behind; press again to return to the cockpit. Normal flight controls still steer the ship. The camera retracts near terrain and station walls, temporarily returns to cockpit in tight spaces, and keeps independent view selections for walking and piloting. On foot, **4** toggles first person / an animated third-person player view; normal walking and jumping controls still apply.
 
 Forest layout is independently versioned at **2**: seeded groves and clearings replace the previous dense tree lattice. This changes tree placement for existing seeds without changing terrain heights or destinations. Clients must run matching generation versions to reproduce the same world.

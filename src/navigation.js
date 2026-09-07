@@ -37,6 +37,7 @@ export class Navigation {
     this.travel=null;this.travelTarget=null;
     this.stellarThermal=createStellarThermal();this.destruction=null;
     this.powered=true;this.cabinFlight=false;this.gearDeployed=true;this.gearProgress=1;this.shipLightsOn=false;this.flashlightOn=false;
+    this.berthRest=false;this.berthTransition=null;this.gearContactHold=false;
     this.shipVelocity=new THREE.Vector3();this.shipAngularVelocity=new THREE.Vector3();
     this.cruiseVelocity=new THREE.Vector3();
     this.engineAcceleration=new THREE.Vector3();
@@ -88,7 +89,7 @@ export class Navigation {
     this.frameLook.copy(this.pendingLook).multiplyScalar(dt>0?1/dt:0);this.pendingLook.set(0,0);
   }
   resetSteering(){this.frameLook.set(0,0);this.pendingLook.set(0,0);this.assistedTurn.set(0,0,0);}
-  resetCabinFlight(){this.resetSteering();this.cabinFlight=false;this.shipVelocity.set(0,0,0);this.shipAngularVelocity.set(0,0,0);this.cruiseVelocity.set(0,0,0);}
+  resetCabinFlight(){this.resetSteering();this.cabinFlight=false;this.berthRest=false;this.berthTransition=null;this.gearContactHold=false;this.shipVelocity.set(0,0,0);this.shipAngularVelocity.set(0,0,0);this.cruiseVelocity.set(0,0,0);}
   crashAt(impact,normal){
     if(this.mode!=='flight'||!impact.crashed)return false;
     this.crash={...impact,position:this.position.toArray(),normal:normal.toArray()};
@@ -197,6 +198,7 @@ export class Navigation {
     if(Number.isInteger(this.station.activeIndex))this.station.parkedPod=this.station.activeIndex;
     this.gearDeployed=true;this.gearProgress=1;
     this.resetCabinFlight();this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
+    this.gearProgress=1;this.gearDeployed=true;
     this.mode='walk';this.autoland=false;this.flightAssist=true;this.dockedAtStation=true;this.stationLift=false;
     this.shipPosition=this.station.padWorldPosition.clone();this.shipOrientation.copy(this.station.padQuaternion);
     this.orientation.copy(this.shipOrientation);this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
@@ -216,6 +218,7 @@ export class Navigation {
     this.gearDeployed=false;this.gearProgress=0;
     this.spaceParked=false;
     this.resetCabinFlight();
+    this.gearProgress=0;this.gearDeployed=false;
     this.travel=null;this.keys.clear();
     this.dockedAtStation=false;this.stationLift=false;this.flightAssist=true;this.angularVelocity.set(0,0,0);
     this.position.set(...latLonDirection(20,25)).multiplyScalar(RADIUS*2.8);
@@ -286,6 +289,8 @@ export class Navigation {
     if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.position.distanceTo(this.shipPosition))+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
     if(this.mode==='landed')return 'F · LEAVE PILOT SEAT';
     if(this.mode!=='walk'||!this.shipPosition)return '';
+    if(this.berthTransition)return this.berthRest?'SETTLING INTO BERTH':'LEAVING BERTH';
+    if(this.berthRest)return 'F · LEAVE BERTH';
     const service=!this.cabinFlight&&this.station?.interaction?.(this);if(service)return service.label;
     const hit=this.shipInteraction(this.toShipLocal());
     if(hit==='ladder')return 'F · CLIMB LADDER & BOARD KESTREL';
@@ -293,6 +298,7 @@ export class Navigation {
     if(hit?.startsWith('lift:')){const lift=this.freighter.lifts.find(l=>l.id===hit.slice(5));return `F · ${lift.name.toUpperCase()} · ${Math.abs(lift.y-lift.target)>.001?'MOVING':lift.y===lift.low?'RAISE':'LOWER'}`;}
     if(hit==='seat')return 'F · SIT IN PILOT CHAIR';
     if(hit==='storage')return 'F · OPEN CARGO STORAGE';
+    if(hit==='berth')return 'F · REST IN BERTH';
     if(hit==='door')return this.cabinFlight&&!this.spaceParked?'HATCH · SECURED IN FLIGHT':this.doorOpen?'F · CLOSE HATCH & RAMP':'F · OPEN HATCH & LOWER RAMP';
     if(this.cabinFlight)return 'IN-FLIGHT CABIN · RETURN TO CHAIR TO PILOT';
     if(this.dockedAtStation&&!this.insideShip)return this.station?.location==='hub'?'CENTRAL CONCOURSE · ELEVATORS AT REAR':'CARGO TERMINAL & CENTRAL HUB · AFT WALL';
@@ -359,7 +365,7 @@ export class Navigation {
     const eye=station.deckPoint(this.position,this.layout.seatEye[1]);
     this.shipPosition=eye.clone().sub(new THREE.Vector3(...this.layout.seatEye).applyQuaternion(this.shipOrientation));
     this.position.copy(eye);this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.gearDeployed=true;this.gearProgress=1;this.mode='landed';this.autoland=false;
-    this.dockedAtStation=true;this.stationLift=false;this.doorOpen=false;this.doorProgress=0;
+    this.dockedAtStation=true;this.stationLift=false;this.doorOpen=false;this.doorProgress=0;this.gearContactHold=false;
     this.kestrelAccess?.reset();
     this.notify(this.kestrelAccess?'Docked. F opens the canopy and descends the port ladder.':this.freighter?'Docked. F to stand; walk aft to the belly elevator controls.':'Docked. F to stand; walk aft and open the hatch to explore the hangar.');
     this.onVoyage?.('dock');
@@ -397,6 +403,7 @@ export class Navigation {
   touchDown(){
     if(this.mode==='crashed')return;
     if(!this.dryGround())return;
+    this.gearProgress=1;this.gearDeployed=true;this.gearContactHold=false;
     const body=this.body,radial=this.normal;
     const n=body.water?radial:bodySurfaceNormal(this.position,body);
     const surface=bodySurfacePoint(radial,body);
@@ -410,6 +417,25 @@ export class Navigation {
     this.kestrelAccess?.reset();
     this.notify(this.kestrelAccess?'Touchdown. F opens the canopy and descends the port ladder.':this.freighter?'Touchdown. F leaves the pilot chair; walk aft to lower the belly elevator.':'Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
   }
+  get gearReady(){return this.gearProgress>=1;}
+  updateLandingGear(dt){
+    // Landing/parking are explicit requests. Ordinary flight and moving-cabin
+    // posture retain the pilot's selection, independent of altitude or thrust.
+    if(this.mode==='landed'||(this.mode==='walk'&&!this.cabinFlight&&!this.spaceParked)||this.autoland||this.stationLift)this.gearDeployed=true;
+    if(!this.autoland)this.gearContactHold=false;
+    // Soft contact has emergency lowering power. Ordinary unpowered flight
+    // still pauses a selected transition; a held contact must never deadlock.
+    if(this.powered||this.gearContactHold)this.gearProgress=gearStep(this.gearProgress,this.gearDeployed,dt);
+  }
+  holdForLandingGear(){
+    // Hold the existing conservative contact clearance until the real feet are
+    // down. Physics, cockpit indication and the Blender rig share this progress.
+    if(this.gearReady)return false;
+    this.gearDeployed=true;this.autoland=true;this.gearContactHold=true;
+    this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);return true;
+  }
+  finishLanding(){if(!this.holdForLandingGear())this.touchDown();}
+  finishDocking(){if(!this.holdForLandingGear())this.dock();}
   toggleEVA(){
     if(this.kestrelAccess?.busy)return;
     if(this.mode==='walk'&&!this.insideShip&&!this.dockedAtStation){this.mode='eva';this.jumpHeight=0;this.jumpVelocity=0;this.notify('Suit thrusters active. WASD / left stick · Space/C or A/B vertical · X or LT brakes.');}
@@ -423,6 +449,8 @@ export class Navigation {
     if(this.mode==='destroyed')return;
     if(this.mode==='crashed')return;
     if(this.travel)return;
+    if(this.berthTransition)return;
+    if(this.berthRest){this.useBerth(false);return;}
     if(this.mode==='walk'&&!this.cabinFlight&&this.stationAction?.())return;
     if(this.kestrelAccess){this.kestrelAccess.interact(this);return;}
     if(this.mode==='flight'){
@@ -455,6 +483,8 @@ export class Navigation {
         this.doorOpen=!this.doorOpen;this.notify(this.doorOpen?'Hatch opening. Ramp lowering — walk through when clear.':'Hatch closing. Ramp retracting.');
       }else if(hit==='storage'){
         this.keys.clear();this.velocity.set(0,0,0);this.openInventory?.();
+      }else if(hit==='berth'){
+        this.useBerth(true);
       }else if(hit==='seat'){
         this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.seatEye)));this.orientation.copy(this.shipOrientation);
         this.mode=this.cabinFlight||this.spaceParked?'flight':'landed';this.insideShip=!this.cabinFlight;this.keys.clear();this.boost=false;
@@ -463,6 +493,34 @@ export class Navigation {
         this.notify('Pilot seat engaged. P main power · F stand · B land / launch.');
       }else this.notify(this.interaction||'Approach the ship’s rear hatch.');
     }
+  }
+  useBerth(rest){
+    const berth=this.layout.berth;
+    if(!berth||this.mode!=='walk'||!this.shipPosition||this.berthTransition)return false;
+    if(rest&&(!this.insideShip||this.shipInteraction(this.toShipLocal())!=='berth'))return false;
+    if(!rest&&!this.berthRest)return false;
+    const from=this.toShipLocal();
+    const target=new THREE.Vector3(...(rest?berth.eye:berth.stand));
+    const targetLook=rest?new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(target,new THREE.Vector3(...berth.lookAt),UP)):new THREE.Quaternion().setFromAxisAngle(UP,Math.PI);
+    this.berthRest=rest;
+    this.berthTransition={from,target,look:this.shipOrientation.clone().invert().multiply(this.orientation),targetLook,elapsed:0};
+    this.keys.clear();this.velocity.set(0,0,0);this.jumpHeight=0;this.jumpVelocity=0;this.boost=false;this.toolTrigger=0;
+    this.gamepad.suspend();
+    this.notify(rest?`Resting in the berth. F / interact to stand.${this.cabinFlight?' Ship continues its current course.':''}`:'Standing beside the berth.');
+    return true;
+  }
+  updateBerth(dt){
+    if(!this.berthRest&&!this.berthTransition)return false;
+    this.velocity.set(0,0,0);this.boost=false;this.toolTrigger=0;
+    const transition=this.berthTransition;
+    if(transition){
+      transition.elapsed+=Math.max(0,dt);
+      const t=clamp(transition.elapsed/.65,0,1),smooth=t*t*(3-2*t);
+      this.position.copy(this.fromShipLocal(transition.from.clone().lerp(transition.target,smooth)));
+      this.orientation.copy(this.shipOrientation).multiply(transition.look.clone().slerp(transition.targetLook,smooth));
+      if(t===1)this.berthTransition=null;
+    }else this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.berth.eye)));
+    return true;
   }
   updateCabinFlight(dt){
     // Keep the walker in the hull's rigid local frame, but advance the hull via
@@ -514,11 +572,11 @@ export class Navigation {
         else this.velocity.copy(this.station.up).multiplyScalar(dt>0?Math.min(3,remaining/dt):0);
       }else if(this.autoland && this.stationDistance<500){
         if(!this.canDock){this.autoland=false;this.velocity.set(0,0,0);this.notify('Docking cancelled: move over the central pad.');}
-        else if(this.deckClearance<this.layout.seatEye[1]+.05){this.dock();return;}
+        else if(this.deckClearance<this.layout.seatEye[1]+.05){this.finishDocking();return;}
         else this.velocity.copy(this.station.up).multiplyScalar(-Math.max(.5,Math.min(3,(this.deckClearance-this.layout.seatEye[1])*.8)));
       }else if(this.autoland){
         if(!this.dryGround()){this.autoland=false;this.notify('Landing cancelled: open water.');}
-        else if(altitude<this.landingClearance+.4){this.touchDown();return;}
+        else if(altitude<this.landingClearance+.4){this.finishLanding();return;}
         else this.velocity.copy(oldNormal).multiplyScalar(-Math.min(GEAR_FLIGHT.speed,Math.max(1,(altitude-this.landingClearance)*.65)));
       }else{
         input.addScaledVector(this.spaceFlightAttitude?UP.clone().applyQuaternion(this.orientation):oldNormal,vertical);input.clampLength(0,1);
@@ -547,14 +605,14 @@ export class Navigation {
         if(lunar.hit){
           this.position.copy(lunar.point);
           const normal=bodySurfaceNormal(this.position,SELENE),impact=assessImpact(this.velocity,normal,'lunar regolith');
-          if(!this.crashAt(impact,normal))this.touchDown();break;
+          if(!this.crashAt(impact,normal))this.finishLanding();break;
         }
         if(lunar.limited){proposed.copy(lunar.point);this.velocity.set(0,0,0);}
         const pyre=constrainPyreStep(previous,proposed,this.landingClearance);
-        if(pyre.hit){this.position.copy(pyre.point);const normal=bodySurfaceNormal(this.position,PYRE);if(!this.crashAt(assessImpact(this.velocity,normal,'volcanic rock'),normal))this.touchDown();break;}
+        if(pyre.hit){this.position.copy(pyre.point);const normal=bodySurfaceNormal(this.position,PYRE);if(!this.crashAt(assessImpact(this.velocity,normal,'volcanic rock'),normal))this.finishLanding();break;}
         if(pyre.limited){proposed.copy(pyre.point);this.velocity.set(0,0,0);}
         const toxic=constrainMiasmaStep(previous,proposed,this.landingClearance);
-        if(toxic.hit){this.position.copy(toxic.point);const normal=bodySurfaceNormal(this.position,MIASMA);if(!this.crashAt(assessImpact(this.velocity,normal,'toxic regolith'),normal))this.touchDown();break;}
+        if(toxic.hit){this.position.copy(toxic.point);const normal=bodySurfaceNormal(this.position,MIASMA);if(!this.crashAt(assessImpact(this.velocity,normal,'toxic regolith'),normal))this.finishLanding();break;}
         if(toxic.limited){proposed.copy(toxic.point);this.velocity.set(0,0,0);}
         const collision=this.station?.constrainStep(previous,proposed,this.orientation,false,this.layout);
         this.position.copy(collision?collision.point:proposed);
@@ -568,7 +626,7 @@ export class Navigation {
         // Capture only a gentle deck arrival at this ship's actual parked height.
         // The planetary eye-clearance threshold would re-dock a departing Nomad
         // after just 35 cm of descent, even at full bay speed.
-        if(!this.stationLift && this.canDock && this.speed<=3 && this.deckClearance<this.layout.seatEye[1]+.1 && this.velocity.dot(this.station.up)<0){this.dock();break;}
+        if(!this.stationLift && this.canDock && this.speed<=3 && this.deckClearance<this.layout.seatEye[1]+.1 && this.velocity.dot(this.station.up)<0){this.finishDocking();break;}
         const n=this.normal;const ground=this.groundHeight;
         const height=bodyAltitude(this.position,this.body);
         if(height<this.landingClearance){
@@ -578,7 +636,7 @@ export class Navigation {
           const impact=assessImpact(this.velocity,surfaceNormal,surface);
           if(impact.crashed){this.crashAt(impact,surfaceNormal);break;}
           this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
-          if(this.dryGround())this.touchDown();else this.notify('Surface hover. Open water — landing unavailable.');
+          if(this.dryGround())this.finishLanding();else this.notify('Surface hover. Open water — landing unavailable.');
           break;
         }
       }
@@ -597,7 +655,7 @@ export class Navigation {
     if(this.openingActive){if(this.enabled)this.onOpeningInput?.(pad);return;}
     if(pad.scroll)this.onControllerScroll?.(pad.scroll*dt*500);
     if(!this.enabled||document.querySelector('dialog[open]')){this.resetSteering();return;}
-    if(this.powered)this.gearProgress=gearStep(this.gearProgress,this.gearDeployed,dt);
+    this.updateLandingGear(dt);
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
     if(this.travel){const before=this.position.clone();this.resetSteering();if(pad.brake)this.cancelTravel();this.updateTravel(dt);this.updateStellarThermal(dt,before);return;}
     if(pad.pressed.has(11))this.toggleFlightAssist();
@@ -620,6 +678,9 @@ export class Navigation {
     const pitch=tilt*dt*.85;
     const inertial=this.mode==='flight'&&(!this.powered||!this.flightAssist)&&!this.autoland&&!this.stationLift&&!brakeFlight;
     if(!inertial&&(yaw||pitch))this.look(yaw,pitch,brakeFlight);
+    // Rest is a supported ship-local posture, never a flight mode or teleport.
+    // The shared flight step above continues carrying and colliding the hull.
+    if(this.updateBerth(dt))return;
     this.boost=!brakeFlight&&(this.mode==='walk'||this.powered)&&(this.keys.has('ShiftLeft')||this.keys.has('ShiftRight')||pad.boost);
     const rider=this.mode==='walk'?this.toShipLocal():null;
     if(this.freighter&&this.shipPosition&&this.powered){const carry=this.freighter.update(dt,rider);if(carry){rider.y+=carry;this.position.copy(this.fromShipLocal(rider));this.velocity.set(0,0,0);}}

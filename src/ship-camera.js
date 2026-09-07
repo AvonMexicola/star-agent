@@ -82,6 +82,9 @@ export class ShipCamera {
 
     this.active=false;this.obstructed=false;
     this.position.copy(nav.position);this.orientation.copy(nav.orientation);
+    // The standing avatar has no reclining animation. Use the physical berth eye
+    // and preserve the player's selected walking camera for when they stand.
+    if(nav.berthRest||nav.berthTransition)return;
     if(!this.selected(nav.mode))return;
     const attitude=walking?nav.orientation:(nav.shipPosition ? nav.shipOrientation : nav.orientation);
     const layout=nav.layout??SHIP_LAYOUT, scale=Math.max(1,(layout.flightBounds.max[2]-layout.flightBounds.min[2])/(SHIP_LAYOUT.flightBounds.max[2]-SHIP_LAYOUT.flightBounds.min[2]));

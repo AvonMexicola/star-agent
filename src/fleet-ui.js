@@ -1,5 +1,5 @@
 import { SHIPS } from './fleet.js';
-import { MERIDIAN } from './ship-manufacturers.js';
+import { MERIDIAN, shipManufacturer } from './ship-manufacturers.js';
 import './fleet.css';
 
 export function createFleetUI(nav, fleet, selectShip) {
@@ -10,7 +10,10 @@ export function createFleetUI(nav, fleet, selectShip) {
   function render() {
     dialog.querySelector('.fleet-progress').textContent=fleet.unlocked?'Exploration milestone complete. Atlas is yours.':fleet.surfaceVisited?'Surface landing recorded. Dock at Aeon Orbital to unlock Atlas.':'Unlock Atlas: land on Aeon or Selene, then dock at Aeon Orbital. Quick transit to an approach is allowed; you must land and dock.';
     const canSelect=nav.mode==='landed'&&nav.dockedAtStation;
-    dialog.querySelector('.fleet-ships').innerHTML=Object.entries(SHIPS).map(([id,ship])=>`<article><span>${ship.registry}</span><h3>${ship.name}</h3><p>${ship.description}</p><button data-ship="${id}" ${!canSelect||!fleet.allows(id)||nav.shipId===id?'disabled':''}>${nav.shipId===id?'ACTIVE SHIP':fleet.allows(id)?'BOARD '+ship.name.toUpperCase():'LOCKED'}</button></article>`).join('');
+    dialog.querySelector('.fleet-ships').innerHTML=Object.entries(SHIPS).map(([id,ship])=>{
+      const maker=shipManufacturer(id);
+      return `<article><span>${ship.registry}</span><h3>${ship.name}</h3>${maker?`<p class="fleet-maker"><img src="${maker.emblemURL}" alt="">${maker.name}</p>`:''}<p>${ship.description}</p><button data-ship="${id}" ${!canSelect||!fleet.allows(id)||nav.shipId===id?'disabled':''}>${nav.shipId===id?'ACTIVE SHIP':fleet.allows(id)?'BOARD '+ship.name.toUpperCase():'LOCKED'}</button></article>`;
+    }).join('');
     dialog.querySelector('.fleet-message').textContent=canSelect?'Switch ships while seated on the station pad. Your supplies transfer with you; a smaller ship needs enough free capacity.':'Dock at the station and sit in the pilot seat to switch ships.';
     dialog.querySelector('.fleet-save').textContent=nav.testFlight?'Test flight · temporary session · your regular save is unchanged.':fleet.saved?'Unlock and selected ship saved in this browser.':'Browser storage unavailable. Unlock progress lasts for this session.';
   }

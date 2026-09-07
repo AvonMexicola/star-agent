@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { ParticlePool, additive } from './particles.js';
 import { Slipstream } from './slipstream.js';
 import { weaponProfile } from './weapons.js';
+import { SHIP_LAYOUT } from '../boarding.js';
 
 const ZERO=new THREE.Vector3(),Z=new THREE.Vector3(0,0,1);
 const CYAN=new THREE.Color(.12,1.3,2.8),MINT=new THREE.Color(.18,2.3,1.2);
@@ -56,7 +57,7 @@ export class EnergyEffects {
     this.lances=Array.from({length:6},()=>({shell:new Plasma(scene),core:new Plasma(scene),active:false}));
     this.beam=new Plasma(scene);this.jets=[new Plasma(scene,true),new Plasma(scene,true)];
     this.light=new THREE.PointLight(0x88ffd4,0,7,2);scene.add(this.light);
-    this.nozzles=[new THREE.Vector3(-2.56,1.86,4.08),new THREE.Vector3(2.56,1.86,4.08)];
+    this.nozzles=SHIP_LAYOUT.nozzles.map(point=>new THREE.Vector3(...point));
     this.bolts=[];this.boost=0;this.throttle=0;this.travel=0;this.carries={};
     this._p=new THREE.Vector3();this._v=new THREE.Vector3();this._collector=new THREE.Vector3();
     this._previousOrigin=null;this.miningContacts=0;this.collectedBursts=0;this.weaponShots=0;this.weaponImpacts=0;this.lastWeapon='pulse';

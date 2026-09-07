@@ -1,0 +1,17 @@
+#nomad-cabin-controls{display:none}
+@media(pointer:coarse){
+  #nomad-cabin-controls:not([hidden]){display:grid;position:fixed;right:16px;bottom:88px;z-index:8;width:156px;gap:8px;pointer-events:auto}
+  #nomad-cabin-controls button{min-height:44px;border:1px solid var(--line);background:var(--dialog-bg);color:var(--mint);font:11px var(--mono);touch-action:none;user-select:none}
+  #nomad-cabin-controls button:active{background:color-mix(in srgb,var(--mint) 22%,var(--dialog-solid))}
+  #nomad-cabin-controls button:disabled{color:var(--muted);border-color:var(--line)}
+  #nomad-cabin-controls small{font:9px var(--mono);color:var(--muted);text-align:right;text-shadow:0 1px 3px var(--dialog-solid)}
+  .nomad-walk-pad:not([hidden]){display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+  .nomad-walk-pad button{font-size:20px!important}
+  .nomad-walk-pad button:first-child{grid-column:2}
+  .nomad-walk-pad button:nth-child(2){grid-column:1;grid-row:2}
+  .nomad-walk-pad button:nth-child(3){grid-column:2;grid-row:2}
+  .nomad-walk-pad button:nth-child(4){grid-column:3;grid-row:2}
+  body:has(#nomad-cabin-controls:not([hidden])) #fleet-button{display:none}
+  body:has(#nomad-cabin-controls:not([hidden])) .flight-hints{display:none!important}
+  .photo-mode #nomad-cabin-controls:not([hidden]){display:none}
+}

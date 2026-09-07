@@ -360,3 +360,20 @@ test('a shallow downward departure is not captured by the planetary landing thre
   assert.equal(nav.mode,'flight','small nose-down correction cannot re-dock a departing ship');
   assert.ok(nav.speed>17);
 });
+
+test('a gentle manual deck arrival waits for animated gear even without ship power',async t=>{
+  const {station}=await createStation();t.after(()=>station.dispose());
+  const {navigation:nav,advance}=setupNavigation(t,station);
+  nav.position.copy(station.toWorld(new THREE.Vector3(0,station.interiorBox.min.y+SHIP_LAYOUT.seatEye[1]+.08,station.padLocal.z+SHIP_LAYOUT.seatEye[2]),new THREE.Vector3()));
+  nav.orientation.copy(station.padQuaternion);nav.powered=false;nav.flightAssist=false;
+  nav.velocity.copy(station.up).multiplyScalar(-.3);
+  advance(.1);
+  assert.equal(nav.mode,'flight');assert.equal(nav.gearContactHold,true);
+  assert.ok(nav.gearProgress<.1,'manual capture does not bypass gear motion');
+  advance(.8);assert.ok(nav.gearProgress>.4&&nav.gearProgress<.6);
+  advance(1.2);
+  assert.equal(nav.mode,'landed');assert.equal(nav.dockedAtStation,true);
+  assert.equal(nav.powered,false);assert.equal(nav.gearProgress,1);
+  assert.equal(nav.gearContactHold,false);
+  near(nav.deckClearance,SHIP_LAYOUT.seatEye[1]);
+});
