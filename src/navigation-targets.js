@@ -51,6 +51,9 @@ export function planNavigationTravel(start,target,{obstacles=[]}={}) {
   if(target.category==='bodies'&&from.distanceTo(v(target.center))<=end.distanceTo(v(target.center))+1)return fail(target.id==='star'?'At stellar observation range.':'Within 20 km of the surface. Continue in normal flight.');
   for(const hazard of navigationHazards(obstacles)) {
     if(!valid(hazard.center)||!Number.isFinite(hazard.radius)||hazard.radius<0)return fail('Invalid navigation obstacle.');
+    // A body approach follows one radial all the way to its canonical surface
+    // +20 km. A global highest-peak envelope must not reject a deep crater.
+    if(target.category==='bodies'&&target.id===hazard.id&&target.id!=='star')continue;
     if(segmentIntersectsSphere(from,end,hazard.center,hazard.radius))return fail(`Route blocked by ${hazard.name}. Climb or fly around its limb.`);
   }
   return {ok:true,reason:null,plan:createTravelPlan(from,end)};
@@ -66,7 +69,7 @@ export function aimedNavigationTarget(position,orientation,targets,selectedId=nu
     const cosine=offset.dot(forward)/distance;if(cosine<=0)continue;
     const angular=Math.acos(Math.min(1,cosine));
     const apparent=t.radius?Math.asin(Math.min(1,t.radius/distance)):0;
-    const cone=t.category==='bodies'?Math.max(.018,Math.min(.12,apparent)):.035;
+    const cone=t.category==='bodies'?Math.max(.018,apparent):.035;
     if(angular>cone)continue;
     const surfaceDistance=distance-(t.radius||0);
     // Test the sightline itself, with solid radii (not drive exclusions).

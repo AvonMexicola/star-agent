@@ -22,7 +22,7 @@ test('controller map bearing, charge, abort, direct-sight moon arrival and retur
  await page.waitForFunction(()=>!window.starAgent.state.travel&&window.starAgent.state.body==='selene',undefined,{timeout:30000});
  await page.evaluate(()=>clearInterval(window.sampleNav));const arrival=await page.evaluate(()=>({alt:window.starAgent.state.altitude,speed:window.starAgent.state.speed,samples:window.navSamples}));
  expect(arrival.alt).toBeCloseTo(20000,0);expect(arrival.speed).toBeLessThan(.1);expect(arrival.samples.filter(s=>s.speed>1000).length).toBeGreaterThan(2);
- await page.screenshot({path:`${evidence}/moon-arrival.png`});await button(0,true);await page.waitForFunction(()=>window.starAgent.state.speed>1);await button(0,false);await tap(6);
+ await page.waitForFunction(()=>window.starAgent.state.moon.lod>=12,undefined,{timeout:15000});for(let i=0;i<15;i++)await frames(page);await page.screenshot({path:`${evidence}/moon-arrival.png`});await button(0,true);await page.waitForFunction(()=>window.starAgent.state.speed>1);await button(0,false);await tap(6);
  await record(page,browser,'controller-travel',{arrival,errors,requests});expect(errors).toEqual([]);
 });
 

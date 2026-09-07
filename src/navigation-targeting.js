@@ -26,6 +26,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
       if(peer.mode==='flight'||peer.shipPosition)values.push({id:`ship-${peer.id}`,name:`${peer.callsign||peer.name||'Pilot'} · ship`,kind:'Shared ship',category:'ships',parent:peer.body??'aeon',center:[...(peer.shipPosition??peer.position)],radius:0});
     }
     const mission=combat.state;
+    if(mission.phase==='engage')for(const enemy of mission.enemies.filter(e=>e.hull>0))values.push({id:`hostile-${enemy.id}`,name:`${enemy.ship} raider`,kind:'Hostile ship',category:'ships',parent:'aeon',center:enemy.position,radius:0});
     if(mission.point&&['transit','engage'].includes(mission.phase))values.push({id:'mission-patrol',name:'Patrol signal',kind:'Attack contract',category:'missions',parent:'aeon',center:mission.point,radius:0});
     return values;
   }
@@ -62,12 +63,13 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     aimed=enabled?aimedNavigationTarget(nav.position,nav.orientation,lastTargets.filter(t=>t.category==='bodies'||filters[t.category]||t.id===selectedId),selectedId):null;
     const planned=aimed?route(aimed):null;reason=planned?.reason??'';
     lock.update(dt,aimed,enabled&&planned?.ok);
+    document.body.classList.toggle('navigation-acquired',Boolean(aimed));
     ring.hidden=!aimed;ring.dataset.ready=String(lock.ready);fill.style.strokeDashoffset=String(1-lock.charge);
     const nose=origin.clone().addScaledVector(new Vector3(0,0,-1).applyQuaternion(nav.orientation),100_000);
     const p=projectShipMarker(origin,orientation,nose,{width,height,fov:camera.getEffectiveFOV()});ring.style.left=`${p.x}px`;ring.style.top=`${p.y}px`;
     if(aimed){ring.querySelector('strong').textContent=`${aimed.name} · ${markerDistance(nav.position.distanceTo(new Vector3(...aimed.center))-(aimed.radius||0))}`;
       ring.querySelector('span').textContent=reason|| (lock.ready?'Relativistic drive ready':'Powering relativistic drive');
-      ring.querySelector('small').textContent=reason?'Keep flying to a clear approach':lock.ready?(nav.controllerActive?'LB + RB + ↑ · Engage':'N / J · Engage'):`Hold nose on target · ${Math.floor(lock.charge*100)}%`;}
+      ring.querySelector('small').textContent=reason?(reason.startsWith('Within')||reason.startsWith('At stellar')?'Arrival zone · manual flight':'Keep flying to a clear approach'):lock.ready?(nav.controllerActive?'LB + RB + ↑ · Engage':'N / J · Engage'):`Hold nose on target · ${Math.floor(lock.charge*100)}%`;}
     engageButton.hidden=!lock.ready||!enabled;
     markers.hidden=modal||Boolean(nav.travel)||!['flight','walk','eva'].includes(nav.mode);
     const shown=lastTargets.filter(t=>filters[t.category]||t.id===selectedId).sort((a,b)=>(b.id===selectedId)-(a.id===selectedId)||nav.position.distanceTo(new Vector3(...a.center))-nav.position.distanceTo(new Vector3(...b.center))).slice(0,16);
@@ -75,8 +77,8 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     const placed=[];
     for(const target of shown){
       let node=nodes.get(target.id);if(!node){node=document.createElement('div');node.className='navigation-marker';node.innerHTML='<i></i><strong></strong>';markers.append(node);nodes.set(target.id,node);}
-      const projected=projectShipMarker(origin,orientation,new Vector3(...target.center),{width,height,fov:camera.getEffectiveFOV()});
-      let y=projected.y;for(const prev of placed)if(Math.abs(projected.x-prev.x)<155&&Math.abs(y-prev.y)<28)y=Math.min(height-90,prev.y+29);placed.push({x:projected.x,y});
+      const projected=projectShipMarker(origin,orientation,new Vector3(...target.center),{width,height,fov:camera.getEffectiveFOV(),bounds:{left:Math.min(350,width*.26),right:width-Math.min(350,width*.26),top:height*.25,bottom:height*.65}});
+      let y=projected.y;for(const prev of placed)if(Math.abs(projected.x-prev.x)<155&&Math.abs(y-prev.y)<28)y=Math.min(height*.72,prev.y+29);placed.push({x:projected.x,y});
       node.dataset.id=target.id;node.dataset.edge=String(!projected.onScreen);node.dataset.selected=String(target.id===selectedId);node.dataset.category=target.category;
       node.style.left=`${projected.x}px`;node.style.top=`${y}px`;node.querySelector('i').textContent=projected.onScreen?'◇':'➤';node.querySelector('i').style.transform=projected.onScreen?'':`rotate(${projected.angle}deg)`;
       node.querySelector('strong').textContent=`${target.name} · ${markerDistance(projected.distance-(target.radius||0))}`;
@@ -87,6 +89,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   window.addEventListener('blur',reset);document.addEventListener('visibilitychange',reset);
   return {targets,select,route,update,engage,reset,clear(){selectedId=null;nav.travelTarget=null;reset();},
     setFilter(id,value){if(!(id in filters))return;filters[id]=Boolean(value);try{localStorage.setItem('star-agent-nav-filters',JSON.stringify(filters));}catch{}},
+    get course(){const target=targets().find(t=>t.id===selectedId)??aimed;return target?{name:target.name,point:new Vector3(...target.center)}:null;},
     get filters(){return {...filters};},get selected(){return targets().find(t=>t.id===selectedId)??null;},
     get state(){return {selectedId,aimedId:aimed?.id??null,charge:lock.charge,ready:lock.ready,reason,filters:{...filters},targets:lastTargets.map(t=>({...t})),arrivalTarget:activeTarget?.id??null};}};
 }

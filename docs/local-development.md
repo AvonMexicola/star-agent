@@ -220,3 +220,12 @@ patrol journeys pass. The weapon branch also passed the physical Kestrel ladder,
 launch and Selene landing/exit route and Atlas touch controls. The final visual
 and frame-time acceptance status is recorded in [weapon QA](qa/ship-weapons/production-record.md).
 No service/database restart or public deployment accompanies this integration.
+
+Navigation-target development adds a centred star/planet map, paged surface sites,
+filterable HUD bearings and a three-second nose-lock ring. M or Menu → Map opens
+it. Hold the nose on a visible destination, then N/J or both bumpers + D-pad up
+engages a continuous20km approach (stellar thermal stand-off remains500,000km).
+The menu and ring use existing RT weapon controls. Local base/Comms/patrol signals
+come from their live systems; targeted drive is currently solo-only. Lore lives
+in docs/lore.md and the in-game help field note. QA uses port5493 independently of
+the persistent preview5178/API8087/database51224; it never restarts that service.

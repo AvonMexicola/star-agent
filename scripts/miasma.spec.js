@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {steer,mapBody} from '../tests/browser/navigation-helpers.js';
 import {mkdir,writeFile} from 'node:fs/promises';
 const path='/tmp/star-agent-miasma';
 async function setup(page){
@@ -37,24 +38,24 @@ test('Pyre twilight and Miasma orbit, clouds, descent and ground render',async({
   states.push(await capture(page,`miasma-${altitude}m`));expect(errors).toEqual([]);expect(states.at(-1).body).toBe('miasma');expect(states.at(-1).miasma.error).toBeNull();expect(states.at(-1).miasma.ready).toBe(true);
  }
  await page.keyboard.press('Tab');await expect(page.locator('#toxic-warning')).toBeVisible();await expect(page.locator('#pyre-composition')).toContainText('SULPHUR');await capture(page,'miasma-survey');
- await page.evaluate(()=>{const n=window.starAgent.navigation;n.enabled=true;n.transitPyre();});await page.keyboard.press('m');await page.locator('[data-travel-target="miasma"]').click();
+ await page.evaluate(()=>{const n=window.starAgent.navigation;n.enabled=true;n.transitPyre();});await page.keyboard.press('m');await mapBody(page,'miasma');
  await expect(page.locator('#map-target-name')).toHaveText('Miasma');await expect(page.locator('#map-engage')).toBeEnabled();await capture(page,'map');
  const backend=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return gl.getParameter(e.UNMASKED_RENDERER_WEBGL);});
  await writeFile(`${path}/environment.json`,JSON.stringify({browser:browser.version(),backend,viewport:[1280,800],errors,states},null,2));expect(errors).toEqual([]);
 });
 
-test('continuous Aeon approach and local moon drive preserve the twilight composition',async({page})=>{
+test('charged interplanetary approaches preserve continuous flight and 20 km clearance',async({page})=>{
  const errors=await setup(page);
  await page.evaluate(()=>window.starAgent.setRenderScale(.4));await page.keyboard.press('m');await page.locator('[data-travel-target="pyre"]').click();
- await expect(page.locator('#map-approach')).toHaveText('1,800 km');await expect(page.locator('#map-engage')).toBeEnabled();await page.locator('#map-engage').click();
+ await expect(page.locator('#map-approach')).toHaveText('20 km');await expect(page.locator('#map-engage')).toBeEnabled();await page.locator('#map-engage').click();await steer(page,'pyre','keyboard');await page.keyboard.press('n');
  await page.waitForFunction(()=>window.starAgent.state.travel?.phase==='cruising',null,{timeout:60000});
  await page.waitForFunction(()=>!window.starAgent.state.travel&&window.starAgent.state.body==='pyre',null,{timeout:300000});
  const arrival=await page.evaluate(()=>{const s=window.starAgent,n=s.navigation;return {state:s.state,sun:n.sunDirection.applyQuaternion(n.orientation.clone().invert()).toArray()};});
- expect(arrival.state.altitude).toBeGreaterThan(1790000);expect(arrival.state.altitude).toBeLessThan(1801000);expect(arrival.sun[0]).toBeLessThan(-.99);expect(arrival.state.speed).toBe(0);
+ expect(arrival.state.altitude).toBeCloseTo(20000,0);expect(arrival.state.speed).toBe(0);
  await page.keyboard.press('Tab');await capture(page,'drive-arrival');await page.keyboard.press('Tab');
- await page.keyboard.press('m');await page.locator('[data-travel-target="miasma"]').click();await expect(page.locator('#map-engage')).toBeEnabled();await page.locator('#map-engage').click();
+ await page.evaluate(()=>window.starAgent.navigation.transitPyre());await page.keyboard.press('m');await mapBody(page,'miasma');await expect(page.locator('#map-engage')).toBeEnabled();await page.locator('#map-engage').click();await steer(page,'miasma','keyboard');await page.keyboard.press('n');
  await page.waitForFunction(()=>!window.starAgent.state.travel&&window.starAgent.state.body==='miasma',null,{timeout:90000});
- expect(await page.evaluate(()=>window.starAgent.state.altitude)).toBeGreaterThan(640000);expect(errors).toEqual([]);
+ expect(await page.evaluate(()=>window.starAgent.state.altitude)).toBeCloseTo(20000,0);expect(errors).toEqual([]);
  await writeFile(`${path}/drive.json`,JSON.stringify({arrival,moon:await page.evaluate(()=>window.starAgent.state),errors},null,2));
 });
 

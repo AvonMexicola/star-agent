@@ -8,3 +8,5 @@
 #navigation-engage{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:6;min-height:44px;background:#10232a;color:var(--mint);font:12px var(--font-body)}
 #navigation-markers[hidden],#navigation-lock[hidden],#navigation-engage[hidden],.navigation-marker[hidden]{display:none!important}.photo-mode #navigation-markers,.photo-mode #navigation-lock,.photo-mode #navigation-engage{display:none!important}
 @media(max-width:749px){.navigation-marker strong{font-size:8px;max-width:130px}#navigation-lock{width:88px;height:88px}#navigation-lock>div{width:280px}#navigation-engage{bottom:76px}}
+
+body.navigation-acquired #flight-state{visibility:hidden}

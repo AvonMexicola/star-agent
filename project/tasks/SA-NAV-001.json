@@ -19,7 +19,9 @@
     "src/navigation-targeting.js",
     "src/navigation-targeting.css",
     "src/navigation.js",
-    "src/main.js"
+    "src/main.js",
+    "src/ship-marker-projection.js",
+    "src/ship-mfd.js"
   ],
   "brief": "docs/briefs/navigation-targets.md"
 }

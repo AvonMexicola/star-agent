@@ -50,3 +50,10 @@ test('invalid signals and obstacles cannot construct a travel plan',()=>{
  assert.equal(planNavigationTravel([0,0,AEON.radius*3],null).ok,false);
  const route=planNavigationTravel(v(SELENE.center).add(new Vector3(0,0,SELENE.radius*5)),moon,{obstacles:[{center:[NaN,0,0],radius:1}]});assert.equal(route.ok,false);
 });
+
+test('near-side lunar crater approaches remain valid below the global highest-peak envelope',()=>{
+ const direction=new Vector3(.7315901433539745,.6625,-.16084033122109326);
+ const start=direction.multiplyScalar(SELENE.radius*3).add(v(SELENE.center));
+ const result=planNavigationTravel(start,moon);assert.ok(result.ok,result.reason);
+ assert.ok(Math.abs(bodyAltitude(result.plan.end,SELENE)-NAV_ARRIVAL)<1e-6);
+});

@@ -52,7 +52,7 @@ export function createSystemMap(nav,targets) {
         const dot=document.createElement('i'),label=document.createElement('strong'),kind=document.createElement('small');label.textContent=t.name;kind.textContent=t.kind;b.append(dot,label,kind);
         const slots=[[50,50],[23,29],[80,69],[76,22],[22,78]],pos=slots[i]??[50,85];b.style.left=`${pos[0]}%`;b.style.top=`${pos[1]}%`;orbitNodes.append(b);
       });
-      q('.nav-chart-caption').textContent=children.length?'Select a world to explore it; select the centre to track it.':'No charted satellites. Choose a surface site or track the body at centre.';
+      q('.nav-chart-caption').textContent=`You: ${nav.body.name} · ${formatRange(nav.altitude)} altitude. ${children.length?'Select a world to explore it.':'No charted satellites.'}`;
       el('nav-list-title').textContent=view==='filters'?'Show navigation markers':view==='signals'?'Tracked signals':`${central.name} · surface locations`;
       q('.nav-map-list').replaceChildren();q('.nav-map-filters').replaceChildren();q('.nav-map-empty').textContent='';
       q('.nav-map-filters').hidden=view!=='filters';q('.nav-map-list').hidden=view==='filters';

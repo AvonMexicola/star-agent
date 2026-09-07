@@ -657,7 +657,7 @@ try {
     else{ship.quaternion.copy(nav.orientation);ship.position.copy(nav.position).sub(origin).sub(new THREE.Vector3(...nav.layout.seatEye).applyQuaternion(nav.orientation));}
     if(ship.visible){
       ship.syncFlight?.(nav);ship.setDoor(nav.doorOpen);ship.update(dt);
-      ship.updateDisplays(dt,nav,inventory,course);
+      ship.updateDisplays(dt,nav,inventory,navigationTargets.course??course);
       ship.updateCabin?.(nav,mining.store);
     }
     camera.updateMatrixWorld();sun.update(origin,camera,dt,elapsed,{atmosphereFraction:nav.flightEnvironment.atmosphereFraction});atmosphere.setSun(sun);
