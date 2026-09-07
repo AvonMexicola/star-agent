@@ -5,6 +5,7 @@ export default defineConfig({
   testDir: '.', testMatch: 'social.spec.js', workers: 1, timeout: 240000, reporter: 'list',
   outputDir: '../test-results/social',
   use: {
+    actionTimeout: 15000,
     baseURL: 'http://127.0.0.1:5544', viewport: { width: 1440, height: 900 }, hasTouch: true,
     launchOptions: { executablePath: process.env.CHROMIUM_PATH ?? '/usr/bin/chromium', args: ['--no-sandbox', '--enable-gpu', '--ignore-gpu-blocklist', '--disable-dev-shm-usage', '--use-gl=angle', '--use-angle=gl'] },
   },
