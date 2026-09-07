@@ -1,5 +1,6 @@
 // Version 5 retains the version 4 tractor ledger and adds the full-size Atlas
-// ramp/crew-lift snapshot and the matching authored station/bay collision profile.
+// ramp/crew-lift snapshot, the authored station/bay collision profile, passenger
+// hub/defense state and finite markets in the same durable cargo ledger.
 export const MULTIPLAYER_VERSION=5;
 export const WORLD_SEED=7291;
 export const MAX_PLAYERS=10;

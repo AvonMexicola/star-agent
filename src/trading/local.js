@@ -1,16 +1,23 @@
-import { emptyCommerce,ensureAccount,validCommerce,commerceCommand } from './model.js';
+import { emptyCommerce,ensureAccount,normalizeCommerce,commerceCommand } from './model.js';
 import { POST_COST,tradeSite } from './sites.js';
 import * as THREE from 'three';
 export const LOCAL_TRADER='local-player';
 /** MiningStore keeps cuts, loose ore, cash and SBU cargo in one atomic save. */
 export class LocalTrading {
   constructor(store){this.store=store;this.error='';
-    if(store.state.commerce&&!validCommerce(store.state.commerce))this.error='Cargo save is invalid. Original data retained.';
+    this.unavailable={...emptyCommerce(),markets:{}};ensureAccount(this.unavailable,LOCAL_TRADER,store.state.economy.credits);
+    if(store.blocked){this.error=store.warning;return;}
+    try{
+      const previous=store.state.commerce;
+      let next=Object.hasOwn(store.state,'commerce')?normalizeCommerce(previous):emptyCommerce();
+      if(!next.accounts[LOCAL_TRADER]){next=structuredClone(next);ensureAccount(next,LOCAL_TRADER,store.state.economy.credits);}
+      // One normalizing save, including initial stock, before quoting. A read of
+      // an exhausted market never creates fresh inventory or writes a new save.
+      if(next!==previous&&!store.write({...store.state,commerce:next}))this.error=store.warning;
+    }catch(e){this.error=e.message;}
   }
   get state(){
-    const s=(this.error?null:this.store.state.commerce)??emptyCommerce();
-    if(!s.accounts[LOCAL_TRADER])ensureAccount(s,LOCAL_TRADER,this.store.state.economy.credits);
-    return s;
+    return this.error?this.unavailable:this.store.state.commerce??this.unavailable;
   }
   command(m,ctx){
     if(this.error||this.store.blocked)throw new Error(this.error||this.store.warning);

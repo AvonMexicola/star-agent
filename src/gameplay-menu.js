@@ -65,6 +65,7 @@ export function createGameplayMenu({nav,screens,dev=false}){
       const candidates=dialog.querySelector('.loadout-candidates');if(candidates)paginate(candidates,':scope > button','available equipment',compact?1:3);
     }
     if(dialog.id==='fleet-dialog')paginate(dialog.querySelector('.fleet-ships'),':scope > article','fleet',compact?1:3);
+    if(dialog.id==='station-elevator-dialog')paginate(dialog.querySelector('.station-destinations'),':scope > button','berths',innerHeight<550?2:compact?6:12);
     if(dialog.id==='build-dialog')paginate(dialog.querySelector('.build-content'),':scope > .build-piece,:scope > .build-recipe','construction',2);
     if(dialog.id==='dev-launcher'){
       paginate(dialog.querySelector('.dev-locations'),':scope > button','test locations',compact?4:8);

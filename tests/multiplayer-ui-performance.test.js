@@ -19,7 +19,7 @@ test('panel dependencies ignore movement but include all displayed manifest, ros
   changed.drops[0].position[0] += 10; changed.drops[0].expiresAt += 1000;
   for (const panel of ['account', 'comms', 'inventory']) assert.equal(multiplayerPanelKey(panel, changed), multiplayerPanelKey(panel, state));
   for (const edit of [s => s.inventory.containers.pack.bandage++, s => s.inventory.capacity.pack++, s => s.inventory.revision++,
-    s => s.health--, s => s.needsRespawn = true, s => s.drops[0].quantity++, s => s.drops.push({ id: 'new', item: 'ice', quantity: 1 }), s => s.connected = false]) {
+    s => s.health--, s => s.needsRespawn = true, s => s.handsFree = true, s => s.drops[0].quantity++, s => s.drops.push({ id: 'new', item: 'ice', quantity: 1 }), s => s.connected = false]) {
     const next = structuredClone(state); edit(next);
     assert.notEqual(multiplayerPanelKey('inventory', next), multiplayerPanelKey('inventory', state));
   }
@@ -94,11 +94,21 @@ test('hidden snapshots create no rows; unchanged open controls retain identity a
   for (let i = 0; i < 150; i++) publish(movement());
   assert.deepEqual(metrics, { created: 0, replaced: 0 });
   assert.deepEqual(list.children, controls); assert.equal(document.activeElement, focused);
+  const equip = () => list.children.find(child => child.dataset.item === 'rifle-laser').children[1].children.find(child => child.dataset.weapon === 'rifle-laser');
+  assert.equal(equip().disabled, false);
+  publish({ hub: { handsFree: true, transit: null } });
+  assert.equal(equip().disabled, true, 'an open cached manifest applies physical hub restrictions without an inventory revision');
+  assert.match(ui.dialogs.inventory.querySelector('.mp-inventory-summary').textContent, /remain stowed/);
+  publish({ hub: { handsFree: false, transit: { from: 'hub', to: 1 } } });
+  assert.equal(equip().disabled, true, 'passenger transfer retains the same restriction');
+  publish({ hub: { handsFree: false, transit: null } });
+  assert.equal(equip().disabled, false, 'arrival outside the hub restores the existing manifest controls');
+  const afterArrival = [...list.children];
   ui.dialogs.inventory.close(); await new Promise(resolve => setImmediate(resolve));
   assert.equal(nav.enabled, true);
   const inventory = structuredClone(client.state.inventory); inventory.containers.pack.bandage = 9; inventory.revision++;
   publish({ inventory, health: 42, drops: [] });
-  assert.deepEqual(list.children, controls, 'hidden updates retain state without rebuilding its dormant tree');
+  assert.deepEqual(list.children, afterArrival, 'hidden updates retain state without rebuilding its dormant tree');
   assert.equal(ui.openInventory(), true);
   assert.match(ui.dialogs.inventory.querySelector('.mp-inventory-summary').textContent, /Revision 5 · Health 42/);
   assert.match(list.children.find(child => child.dataset.item === 'bandage').children[0].children[1].textContent, /pack: 9/);
