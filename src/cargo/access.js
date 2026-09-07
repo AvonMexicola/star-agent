@@ -23,3 +23,13 @@ export function nearGrid(position,pose,hull){
   const p=localPoint(position,pose);
   return (CARGO_GRIDS[hull]??[]).some(g=>p.distanceTo(p.clone().clamp(new THREE.Vector3(...g.min),new THREE.Vector3(...g.min.map((v,i)=>v+g.cells[i]*.6))))<2.2);
 }
+/** Recognise the visible grid volume, including the side of a long container. */
+export function aimedGrid(position,orientation,pose,hull){
+  if(!aboard(position,pose,hull)||!nearGrid(position,pose,hull))return false;
+  const eye=localPoint(position,pose),direction=new THREE.Vector3(0,0,-1).applyQuaternion(orientation).applyQuaternion(pose.quaternion.clone().invert());
+  const ray=new THREE.Ray(eye,direction),hit=new THREE.Vector3();
+  return (CARGO_GRIDS[hull]??[]).some(g=>{
+    const box=new THREE.Box3(new THREE.Vector3(...g.min),new THREE.Vector3(...g.min.map((v,i)=>v+g.cells[i]*.6)));
+    return ray.intersectBox(box,hit)&&eye.distanceTo(hit)<3.2;
+  });
+}

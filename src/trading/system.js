@@ -6,8 +6,8 @@ import * as THREE from 'three';
 import { LocalTrading,LOCAL_TRADER } from './local.js';
 import { createTradingUI } from './ui.js';
 import { createCargoVisual,cargoAsset } from '../cargo/visuals.js';
-import { shipPose,aboard,nearCrate,nearGrid } from '../cargo/access.js';
-import { CARGO_GRIDS,crateBounds } from '../cargo/grid.js';
+import { shipPose,aboard,nearCrate,nearGrid,aimedGrid } from '../cargo/access.js';
+import { crateBounds } from '../cargo/grid.js';
 import { constrainShipAttachments } from '../ship-attachment-collision.js';
 import { createTradingPads } from './pads.js';
 import { onTradePad } from './sites.js';
@@ -41,7 +41,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   const oldWalker=nav.cargoWalk;nav.cargoWalk=(a,b)=>{const previous=oldWalker?.(a,b)??{point:b,hit:false};const peers=snapshot().ships.filter(s=>s.owner!==snapshot().owner&&pose(s)).map(s=>({...s,pose:pose(s),open:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:peerLifts.get(s.owner)}));const foreign=walkForeignShips(a,previous.point,peers);const result=pads.constrain(a,foreign.point,nav.layout.eyeHeight);return {...result,grounded:result.grounded||foreign.grounded,hit:result.hit||previous.hit||result.grounded||foreign.hit};};
   nav.tradeBeacons=()=>snapshot().terminals.map(t=>({id:`trade-${t.id}`,name:t.name,kind:'Player trading pad',category:'bases',parent:t.body,body:t.body,surface:true,center:t.origin,radius:0}));
   nav.cargoLandingSurface=p=>pads.floorAt(p);
-  const nearbyGrid=()=>snapshot().ships.some(s=>{const p=pose(s);if(!p||!aboard(nav.position,p,s.hull)||!nearGrid(nav.position,p,s.hull))return false;const forward=new THREE.Vector3(0,0,-1).applyQuaternion(nav.orientation);return (CARGO_GRIDS[s.hull]??[]).some(g=>new THREE.Vector3(...g.min.map((v,i)=>v+g.cells[i]*.3)).applyQuaternion(p.quaternion).add(p.position).sub(nav.position).normalize().dot(forward)>.92);});
+  const nearbyGrid=()=>snapshot().ships.some(s=>{const p=pose(s);return p&&aimedGrid(nav.position,nav.orientation,p,s.hull);});
   nav.cargoInteraction=()=>nav.buildActive?'':nearestTerminal()?'F / X · Trade terminal':nearbyGrid()&&nav.mode==='walk'?'F / X · Physical SBU cargo':'';
   nav.cargoAction=()=>{if(!nav.cargoInteraction())return false;return ui.openView(nearestTerminal()?'buy':'cargo');};
   return {ui,api,

@@ -133,7 +133,7 @@ export class StationComplex {
         if(finish)attachPressureElevator(pod.lift,finish.elevator,{sign,materials:finish.materials});
         pod.services=new THREE.Group();pod.group.add(pod.services);
         sign(pod.services,`BERTH ${String(pod.id).padStart(2,'0')} / AEON`,[0,9,-26],18,2);
-        sign(pod.services,'CARGO TRANSFER\nF  /  OPEN TERMINAL',[-12,pod.interiorBox.min.y+1.72,22.69],1.72,1.12);
+        sign(pod.services,'CARGO & TRADE\nF / X  ·  TERMINAL',[-12,pod.interiorBox.min.y+1.72,22.69],1.72,1.12);
         sign(pod.services,`BERTH ${String(pod.id).padStart(2,'0')}`,[0,pod.interiorBox.min.y+5.2,22.15],5,.75);
         this.pods.push(pod);
       }

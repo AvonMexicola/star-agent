@@ -5,6 +5,7 @@ import { SHIP_LAYOUT,constrainShipStep } from '../src/boarding.js';
 import { FREIGHTER_LAYOUT,LIFTS } from '../src/freighter-layout.js';
 import { constrainShipAttachments } from '../src/ship-attachment-collision.js';
 import { readGLBGeometry } from './helpers/gltf-geometry.js';
+import { aimedGrid } from '../src/cargo/access.js';
 const context={terminal:()=>true,docked:()=>true,crate:()=>true,grid:()=>true,loot:()=>true,haul:()=>true,resources:()=>1024};
 function setup(){const s=emptyCommerce();ensureAccount(s,'alice',100000);ensureAccount(s,'bob',100000);return s;}
 let id=0;function command(s,owner,m,ctx=context){return commerceCommand(s,owner,{commandId:`test-${++id}`,revision:s.revision,ship:shipKey(owner,'nomad'),terminal:'station:1',resource:'basalt',sbu:1,...m},ctx);}
@@ -43,3 +44,9 @@ test('player stock settles both wallets exactly once and cannot be oversold',()=
 test('packing debits16kg perSBU and never imports insufficient loose ore',()=>{const s=setup();const r=command(s,'alice',{op:'pack',sbu:2});assert.equal(r.resourceDelta,-32);assert.throws(()=>command(s,'alice',{op:'pack',sbu:2},{...context,resources:()=>31}),/loose resources/);});
 
 test('removing a supporting crate is denied without repacking its neighbours',()=>{const crates=[];for(let i=0;i<4;i++)crates.push(placeCrate('nomad',crates,{id:`support-${i}`,sbu:1}));assert.equal(canRemoveCrate('nomad',crates,crates[0].id),false);assert.equal(canRemoveCrate('nomad',crates,crates[2].id),true);});
+test('looking at the side of Atlas cargo recognises it while looking down the Nomad aisle leaves hatch control free',()=>{
+ const pose={position:new THREE.Vector3(),quaternion:new THREE.Quaternion()},right=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,-1),new THREE.Vector3(1,0,0));
+ assert.equal(aimedGrid(new THREE.Vector3(3.8,5.75,3),right,pose,'atlas'),true);
+ assert.equal(aimedGrid(new THREE.Vector3(0,2.75,2.75),right,pose,'nomad'),true);
+ assert.equal(aimedGrid(new THREE.Vector3(0,2.75,3),new THREE.Quaternion(),pose,'nomad'),false);
+});
