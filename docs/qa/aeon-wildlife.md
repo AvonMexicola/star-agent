@@ -1,9 +1,9 @@
 # Aeon Tideback and Mallow wildlife
 
 Development source candidate on feat/pyrebear. User requested the latest
-amphibious GLB on Aeon beaches, then a large friendly grazer. Assets, authored
-poses and browser encounters are under final review; this is not a full visual
-acceptance or shared-preview integration claim. The original deer remains a
+amphibious GLB on Aeon beaches, then a large friendly grazer. The exported models and physical
+controller encounters now pass browser checks. This is a scoped development
+checkpoint, not full visual acceptance or shared-preview integration. The original deer remains a
 separate asset-only repair.
 
 ## Behavior and habitat
@@ -44,7 +44,8 @@ friendly face at2.0m dorsal shoulder. Exact source/runtime identities and failed
 animation iterations belong in each asset record. No generation credits or new
 hosted service were used.
 
-The complete npm test invocation passes101test-file suites, no failures/skips.
+The final full npm test invocation passes 748 individual cases across 101 test
+files, with no failures or skips (36.707 seconds on source 95c8056).
 Focused cases cover canonical habitats, seeded anchors, wrong-biome/water/slope
 exclusions, large-body footing, peaceful contact, real provocation, attack pause,
 injury persistence, grazer retreat and the combined population cap. The measured body sweep regression also passes against a parked hull and the
@@ -52,8 +53,7 @@ actual building collision system at stellar coordinates. An independent code
 review confirmed full grazer clearance (about 2.23 m radius), with an oriented
 building envelope. Conservative bounds can stop an animal slightly early.
 
-The final asset-dependent production build passes. Browser checks are pending;
-preview 5517 is frozen for the QA owner. Its main-582ZOfRE.js SHA-256 is
+The initial asset-dependent production build passed. Its main-582ZOfRE.js SHA-256 is
 eedcaeeb614300e736eef4105f2ef7f07f78784ba4cf8fdaab202db6c8da7f31.
 [Tideback asset record](aeon-amphibian-asset.md) and
 [Mallow asset record](aeon-grazer-asset.md) retain exact identities, source,
@@ -91,4 +91,32 @@ passes and is frozen on preview 5517: main-BExzhz0l.js SHA-256
 63f37b482fce33dba24de21b777b1778cfb09689adc767d810f475b17014715f.
 The Tideback controller route passed against the preceding build; this delta
 affects only flee behavior, which Tidebacks never enter. Grazer-only verification
-of this updated build is pending. Both model hashes remain unchanged.
+of this updated build passed in 2.6 minutes. Both model hashes remain unchanged.
+
+
+## Completed browser checkpoint
+
+Both exported models passed desktop/mobile Three.js walk/death rendering and
+held-final-pose checks (two tests, 12.9 seconds). Tideback's physical controller
+route passed in 2.8 minutes on c8162f9: actual landing, cabin/ramp exit, walking
+around the parked hull, peaceful approach, four ammunition-authorized hits, one
+provoked bite, death hold and menu-held-trigger suppression. Its first approach
+fixture hit the ship hull; the corrected route used physical waypoints without
+changing runtime collision.
+
+Mallow's physical route passed on 95c8056 with the terrain-edge steering fix:
+landing and exit, four real grassland spawns, peaceful approach, one rifle hit
+(360 → 330 HP), observable retreat, zero bites and player health remaining 100,
+followed by menu-held-trigger suppression and return to play.
+
+All four final browser cases report zero console/page errors. Browser:
+Chromium 151.0.7922.173, ANGLE AMD Radeon 860M / OpenGL ES 3.2; gameplay viewport
+1280 × 800, model viewer also 390 × 844. Actual-world screenshots were personally
+inspected by root and the QA agent. The [browser ledger](aeon-fauna-browser.md)
+contains commands, exact identities, retained failures and screenshot locations.
+
+No FPS or physical-device claim follows from these injected-controller tests.
+Full continuous-motion aesthetics and complete six-criterion art acceptance
+remain open; the independently reviewed studio poses and working encounters
+qualify this as a scoped development checkpoint. Shared integration remains
+with the steward.

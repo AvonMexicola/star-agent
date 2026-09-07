@@ -131,3 +131,22 @@ no page/console/shader errors. This tested the final58e dog asset and5a3cf0b
 runtime. Root inspected the close corpse image; its steep top-down framing is
 gameplay evidence, not the final art composition. Physical hardware remains
 untested. Final close-world art/motion capture is a separate pending check.
+
+
+## Settled Pyrebear contact follow-up
+
+The previous actual-world Pyrebear capture showed broad burial while terrain
+was still streaming. CPU skin replay found only millimetre-scale intersections
+against canonical terrain; the agent retained that failed evidence rather than
+raising the model. The corrected fixture pauses the encounter until Pyre is
+ready. A settled but unlit capture was too dark to judge, so the final bounded
+repeat used the real suit flashlight via L.
+
+That final bear-only case passed in 1.4 minutes on the unchanged 5a3cf0b build
+and 30afc5a9 asset: LOD17, ready=true, zero pending/morphing patches and zero
+browser errors. Root and the independent reviewer personally inspected the
+full head and forelimbs visibly above the settled surface. The earlier severe
+burial finding is resolved for this scoped view; continuous animation and
+complete night-lighting/art acceptance remain separate. See the
+[independent review](hostile-fauna-independent-review.md) and
+[browser ledger](aeon-fauna-browser.md) for retained failures and exact evidence.

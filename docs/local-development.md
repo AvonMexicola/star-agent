@@ -249,5 +249,6 @@ and retaliate after injury; the large Mallow grazers inhabit grassland and flee
 instead of attacking. Both use the existing ammunition, health and animation
 systems. These are offline, session-local encounters. See the
 [Aeon wildlife record](qa/aeon-wildlife.md) for exact habitat and validation scope.
-The isolated candidate preview is port 5517; this is not yet a shared-preview
-integration or public-deployment claim.
+The isolated candidate preview is port 5517. Both model-viewer and physical
+controller encounters pass; the grazer includes a verified terrain-edge retreat
+fix. Shared-preview integration and public deployment remain separate.

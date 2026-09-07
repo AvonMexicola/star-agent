@@ -1,6 +1,6 @@
 # Hostile fauna — independent asset review
 
-**Latest runtime finding:** actual-terrain Pyrebear corpse capture is rejected for substantial visible burial; CPU skinning does not reproduce substantial penetration against canonical terrain. See the final addendum. Earlier studio scores do not override this failure.
+**Latest runtime follow-up:** settled-terrain capture with the actual player flashlight resolves the earlier severe Pyrebear corpse burial in the inspected frame. Earlier failed/dark receipts remain below; continuous motion and broader lighting acceptance are not implied.
 
 **Earlier scoped update:** the published dog pose revision below resolves the earlier corpse-readability finding to **4/5**. Full game and motion acceptance remains open. The original review and its 3/5 score are retained as historical evidence.
 
@@ -106,3 +106,14 @@ I wrote and ran an isolated Node CPU diagnostic, `test-results/fauna-ground-diag
 A concrete distinguishing state is terrain convergence: Pyre's receipt reports `ready=false`, LOD13, 63 pending patches and 28 morphing patches. Miasma reports `ready=true`, LOD17, zero pending and zero morphing. A mismatch between the rendered coarse/morphing Pyre surface and canonical terrain is therefore the leading explanation. This remains an inference: the recorded data do not contain the exact drawn triangle beneath each vertex, and I did not independently capture or raycast that rendered surface.
 
 **Required bounded follow-up:** preserve this failed art receipt, let terrain settle at the staged camera/target before killing and capturing, then repeat the actual-terrain view. If visible burial persists after convergence, compare the rendered triangle surface with canonical terrain directly. Do not add an arbitrary model offset to conceal the failed render. A passing scripted kill test is functional evidence, not art acceptance. This reviewer ran no browser, GPU or Blender job and changed no runtime/asset/helper files for this diagnosis.
+
+
+## Independent settled-terrain and flashlight resolution
+
+I operated the final two bounded bear recaptures against the restored exact older5516 preview, without changing terrain, asset or placement code. The first settled capture passed its functional script in1.3minutes, with LOD17/ready=true/zero pending/zero morphing, but was too dark to judge ground contact confidently. That dark receipt remains in `test-results/fauna-evidence/settled2-c8162`. An earlier unavailable-preview attempt failed before application load and is separately retained; it was not an art failure.
+
+The final capture passed in1.4minutes using the actual **L-key player flashlight**. The fixture asserts `navigation.flashlightOn===true`; its JSON records flashlightOn=true and errors[]. Pre-action and final Pyre receipts both show ready=true,LOD17,pending0,morphing0. Browser Chromium151.0.7922.173; AMD Radeon860M / ANGLE OpenGL ES3.2; final1280×800 viewport/drawing buffer at renderScale1. UI checks additionally capture1440×900 and390×844; these are different viewport captures, not a1440×900 performance baseline.
+
+I personally inspected `test-results/fauna-evidence/settled-flashlight/pyrebear-motion-3.2.png`, SHA256 **`908e4e9739f6fa759f5df0c2b34b33c533d216bddd2d82763e1af2412713db06`**. The lowered head, forelimbs and claws are now visibly above the settled terrain; the previous broad clipping through the head/body is absent. **Scoped corpse integration/contact in this flashlight-lit frame:4/5**, resolving the earlier severe-burial finding for this bounded result. No arbitrary ground offset or asset deformation was needed. This agrees with the earlier CPU result that the exact final corpse was already within small authored contact tolerance against canonical terrain.
+
+The earlier coarse/morphing screenshot remains a real failed visual receipt; it is not retrospectively relabeled a pass. The new evidence supports waiting for terrain convergence in this art fixture, not a claim that moving/streaming terrain can never occlude animals. The surrounding night terrain remains very dark and the weapon is brightly lit; broader exposure/lighting behavior is not approved by this contact score. No continuous-video judgment, perfect terrain adaptation, ragdoll physics or six-criterion whole-feature mean is claimed. See [browser verification ledger](aeon-fauna-browser.md) for exact trials, identities and GPU release.
