@@ -55,7 +55,8 @@
         "src/vegetation*.js",
         "src/celestial.js",
         "src/tree*.js",
-        "src/foliage.js"
+        "src/foliage.js",
+        "src/landmark*.js"
       ],
       "contracts": [
         "ARCHITECTURE.md",

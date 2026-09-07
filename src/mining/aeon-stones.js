@@ -1,3 +1,4 @@
+import {landmarkExcludes} from '../landmark-distribution.js';
 import {Vector3,Quaternion} from 'three';
 import {SEED,RADIUS,hash,terrainHeight,biomeAt} from '../world.js';
 import {AEON,bodyAt,bodyAltitude,bodySurfaceNormal} from '../celestial.js';
@@ -38,7 +39,7 @@ export function aeonStoneDescriptor(row,column){
   const lat=-Math.PI/2+(row+.15+hash(column,row,3012)*.7)*step,lon=(column+.15+hash(column,row,3013)*.7)/columns*TAU;
   const direction=new Vector3(Math.cos(lat)*Math.cos(lon),Math.sin(lat),Math.cos(lat)*Math.sin(lon));
   const height=terrainHeight(...direction.toArray());
-  if(height<2||biomeAt(...direction.toArray(),height)==='POLAR ICE')return null;
+  if(height<2||biomeAt(...direction.toArray(),height)==='POLAR ICE'||landmarkExcludes(...direction.toArray()))return null;
   const ground=direction.clone().multiplyScalar(RADIUS+height),normal=bodySurfaceNormal(ground,AEON);
   // Avoid precarious cliff faces; embed the bottom, not the whole boulder.
   if(normal.dot(direction)<.8)return null;
