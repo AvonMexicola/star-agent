@@ -11,7 +11,7 @@ import './mining.css';
 export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,loadout=null,character=null,thirdPerson=()=>false}){
   const mount=new THREE.Group(),hand=new THREE.Bone(),back=new THREE.Bone();hand.name='RightHand';back.name='Spine2';
   hand.rotation.y=-Math.PI/2;back.visible=false;mount.add(hand,back);scene.add(mount);
-  const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:Object.fromEntries(['mining-laser-tool','rifle-laser','sidearm-pistol'].map(id=>[id,{position:[0,0,0],rotation:[0,0,0]}]))}}};
+  const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:Object.fromEntries(['mining-laser-tool','tractor-beam-tool','rifle-laser','sidearm-pistol'].map(id=>[id,{position:[0,0,0],rotation:[0,0,0]}]))}}};
   let hit=null,held=false,keyHeld=false,selected=true,active=false,recoil=0,direction=new THREE.Vector3(),tractorBefore=false;
   const viewRig={skeleton:{bones:[hand,back]}};let rigSockets=null,external=false,attached=false;
   const aimOrigin=new THREE.Vector3(),handAim=new THREE.Vector3();
@@ -36,11 +36,11 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   document.addEventListener('keyup',e=>{if(e.code==='KeyT')keyHeld=false;});
   return {
     equipment,select,cycle,
-    get pose(){const held=!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.querySelector('dialog[open]');return {aiming:held?equipment.aimingInput():'none',firing:held&&equipment.firingInput()};},
+    get pose(){const held=!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.querySelector('dialog[open]');return {aiming:held?equipment.aimingInput():'none',firing:held&&equipment.firingInput()};},
     toggle(){select(loadout?(loadout.active==='tool'?null:'tool'):(selected?null:'tool'));},
     update(dt,origin){
       if(tractorBefore!==Boolean(nav.tractorActive)){clear();tractorBefore=Boolean(nav.tractorActive);}
-      if(loadout){const item=nav.tractorActive?'mining-laser-tool':loadout.item;selected=Boolean(item);if(equipment.equipped!==item){clear();if(item)equipment.equip(item);else equipment.unequip();}}
+      if(loadout){const item=nav.tractorActive?'tractor-beam-tool':loadout.item;selected=Boolean(item);if(equipment.equipped!==item){clear();if(item)equipment.equip(item);else equipment.unequip();}}
       const isMining=equipment.equipped==='mining-laser-tool';
       const distance=nav.position.distanceTo(rock.position);
       active=(!nav.carryingCargo||nav.tractorActive)&&!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');

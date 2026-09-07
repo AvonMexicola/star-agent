@@ -35,6 +35,7 @@ export function createSocialUI({ nav, client, dialog, flight }) {
     <p class="mp-social-note">D-pad / left stick selects · A adds a character · B returns to chat. Choose Send message when your draft is ready.</p>`;
   document.body.append(keyboard);
   let page = 'flight', busy = false, uppercase = false, state = client.state, previousList = '', previousChats = null, lastAccount = state.account?.id;
+  let previousInputs = null;
   let friendFilter = 'friends', friendPage = 0, savedFocus = null;
   const input = panel.querySelector('input'), log = panel.querySelector('.mp-chat-log'), feedback = panel.querySelector('.mp-social-feedback');
   const pageButtons = new Map();
@@ -164,6 +165,12 @@ export function createSocialUI({ nav, client, dialog, flight }) {
   }
   function render(next, force = false) {
     state = next;
+    // Movement snapshots replace the players array, but social presence only
+    // depends on IDs/callsigns. Chat/social objects change on their own events.
+    const roster = JSON.stringify((state.players ?? []).map(({ id, callsign }) => [id, callsign]));
+    const inputs = [state.connected, state.account?.id, state.ownId, state.social, state.chat, state.moderation, state.error, roster];
+    if (!force && previousInputs && inputs.every((value, index) => value === previousInputs[index])) return;
+    previousInputs = inputs;
     if (lastAccount !== state.account?.id || !state.connected) { input.value = ''; lastAccount = state.account?.id; if (keyboard.open) closeKeyboard(); }
     const view = socialView(state);
     input.disabled = busy || !view.ready; panel.querySelector('[data-chat-keyboard]').disabled = busy || !view.ready;

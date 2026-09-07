@@ -27,6 +27,7 @@
 
 import * as THREE from 'three';
 import { textureMiningTool } from './mining/tool-materials.js';
+import { shareHandheldTextures, hasAuthoredHandheldFinish, clearHandheldTextureCache } from './equipment-materials.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { solveArm, rotateBoneWorld } from './character-ik.js';
 
@@ -126,6 +127,14 @@ export const ITEMS = Object.freeze({
     beam: { radius: 0.035, color: 0xb6efd1, impact: 0.34, opacity: 0.85 },
     heat: { rise: 0.35, cool: 0.5, lockout: 2 },
     miningRate: 0.35,                  // handed to onMine() as `rate`, m³/s at full beam
+  },
+  'tractor-beam-tool': {
+    name: 'tractor-beam-tool', label: 'Cargo tractor', file: `${PROPS}tractor-beam-tool.glb`,
+    socket: 'RightHand', handed: 2, length: .80,
+    barrelAxis: [-1, 0, 0], muzzle: [-.60, .14, 0], leftGrip: [-.30, .01, 0],
+    aimClip: 'use-tool', fireClip: null, aiming: 'tool',
+    // Cargo owns the beam and authorization. This held model never fires/mines.
+    fireRate: 0, shot: null, range: 12, holsterable: true,
   },
   'backpack-life-support': {
     name: 'backpack-life-support',
@@ -373,7 +382,8 @@ export function loadItemGLTF(url, loader = null) {
   let pending = _gltfCache.get(url);
   if (!pending) {
     const use = loader || sharedLoader();
-    pending = new Promise((resolve, reject) => use.load(url, resolve, undefined, reject));
+    pending = new Promise((resolve, reject) => use.load(url, resolve, undefined, reject))
+      .then(gltf => { shareHandheldTextures(gltf.scene || gltf.scenes[0]); return gltf; });
     _gltfCache.set(url, pending);
   }
   return pending;
@@ -398,6 +408,7 @@ export function loadSocketCalibration(url = SOCKETS_URL, fetchImpl = null) {
 /** Test / hot-reload hook: forget the cached GLBs and calibration. */
 export function clearEquipmentCache() {
   _gltfCache.clear();
+  clearHandheldTextureCache();
   _socketsPending = null;
 }
 
@@ -407,6 +418,17 @@ const _v1 = new THREE.Vector3();
 const _v2 = new THREE.Vector3();
 const _v3 = new THREE.Vector3();
 const _v4 = new THREE.Vector3();
+// aimHeld is synchronous. Keep its scratch separate from muzzle/socket helpers
+// and character-ik.js, which it calls while these values are still in use.
+const _aimForward = new THREE.Vector3(), _aimDirection = new THREE.Vector3();
+const _aimTarget = new THREE.Vector3(), _aimPole = new THREE.Vector3(), _aimArm = new THREE.Vector3();
+const _aimBarrel = new THREE.Vector3(), _aimUp = new THREE.Vector3();
+const _aimX = new THREE.Vector3(), _aimY = new THREE.Vector3(), _aimZ = new THREE.Vector3();
+const _aimPalm = new THREE.Vector3(), _aimShoulder = new THREE.Vector3(), _aimElbow = new THREE.Vector3(), _aimWrist = new THREE.Vector3();
+const _aimPitch = new THREE.Quaternion(), _aimGrip = new THREE.Quaternion(), _aimOffset = new THREE.Quaternion();
+const _aimDelta = new THREE.Quaternion(), _aimBone = new THREE.Quaternion(), _aimIdentity = new THREE.Quaternion();
+const _aimBasis = new THREE.Matrix4();
+const NO_AIM_STATES = ['sit', 'climb', 'dead', 'rest'];
 const _e1 = new THREE.Euler();
 const _backwards = new THREE.Vector3();
 const ZERO = new THREE.Vector3();
@@ -770,7 +792,7 @@ export class Equipment {
       root.traverse((node) => {
         if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false; }
       });
-      if (name === 'mining-laser-tool') textureMiningTool(root);
+      if (name === 'mining-laser-tool' && !hasAuthoredHandheldFinish(root)) textureMiningTool(root);
       const group = new THREE.Group();
       group.name = `equipment-${name}`;
       group.add(root);
@@ -832,64 +854,61 @@ export class Equipment {
    * and held barrel aimed together, then bring the support wrist to its grip. */
   aimHeld(direction) {
     if(this._holstered||!this._equipped)return;
-    if(this.character?.gestureActive || ['sit','climb','dead','rest'].includes(this.character?.state))return;
+    if(this.character?.gestureActive || NO_AIM_STATES.includes(this.character?.state))return;
     const hand=this._bone('RightHand');
     if(!hand?.parent || direction.lengthSq()<1e-8)return;
-    const rotateWorld=(bone,delta)=>{
-      rotateBoneWorld(this.character, bone, delta);
-    };
     // Pitch the shoulder and forearm together before the final wrist alignment.
     // This keeps an aimed-up rifle connected to the body instead of hinging at the wrist.
     const arm=hand.parent?.parent;
-    const forward=this.character?.forwardVector?.();
-    const pitch = forward ? new THREE.Quaternion().setFromUnitVectors(forward.normalize(), direction.clone().normalize()) : new THREE.Quaternion();
+    const forward=this.character?.forwardVector?.(_aimForward);
+    const pitch = forward ? _aimPitch.setFromUnitVectors(forward.normalize(), _aimDirection.copy(direction).normalize()) : _aimPitch.identity();
     if (this.rig === 'player-expedition' && arm?.isBone) {
-      const offset = this._equipped === 'sidearm-pistol' ? [.005, -.075, -.45]
-        : this._equipped === 'mining-laser-tool' ? [-.04, -.23, -.05] : [-.025, -.075, -.135];
-      const target = new THREE.Vector3(...offset).applyQuaternion(this.character.object.quaternion)
-        .applyQuaternion(pitch).add(arm.getWorldPosition(new THREE.Vector3()));
-      const pole = new THREE.Vector3(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch);
+      const target = this._equipped === 'sidearm-pistol' ? _aimTarget.set(.005, -.075, -.45)
+        : ITEMS[this._equipped].aiming === 'tool' ? _aimTarget.set(-.04, -.23, -.05) : _aimTarget.set(-.025, -.075, -.135);
+      target.applyQuaternion(this.character.object.quaternion)
+        .applyQuaternion(pitch).add(arm.getWorldPosition(_aimArm));
+      const pole = _aimPole.set(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch);
       solveArm(this.character, hand, target, pole);
-    } else if(arm?.isBone && forward)rotateWorld(arm,pitch);
-    const barrel=this.muzzleWorldDirection();
+    } else if(arm?.isBone && forward)rotateBoneWorld(this.character,arm,pitch);
+    const barrel=this.muzzleWorldDirection(_aimBarrel);
     if(!barrel)return;
     let gripRotation = null;
     if (this.rig === 'player-expedition') {
-      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(this.character.object.quaternion);
-      const x = direction.clone().normalize().negate();
-      const z = new THREE.Vector3().crossVectors(x, up).normalize();
+      const up = _aimUp.set(0, 1, 0).applyQuaternion(this.character.object.quaternion);
+      const x = _aimX.copy(direction).normalize().negate();
+      const z = _aimZ.crossVectors(x, up).normalize();
       if (z.lengthSq() < 1e-8) z.set(1, 0, 0).applyQuaternion(this.character.object.quaternion);
-      const y = new THREE.Vector3().crossVectors(z, x).normalize();
-      const gun = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+      const y = _aimY.crossVectors(z, x).normalize();
+      const gun = _aimGrip.setFromRotationMatrix(_aimBasis.makeBasis(x, y, z));
       const offset = this._items.get(this._equipped).group.quaternion;
-      gripRotation = gun.multiply(offset.clone().invert());
-      rotateWorld(hand, gripRotation.clone().multiply(hand.getWorldQuaternion(new THREE.Quaternion()).invert()));
-    } else rotateWorld(hand,new THREE.Quaternion().setFromUnitVectors(barrel.normalize(),direction.clone().normalize()));
-    const left=this._bone('LeftHand'),target=this.leftHandTargetWorld();
+      gripRotation = gun.multiply(_aimOffset.copy(offset).invert());
+      rotateBoneWorld(this.character, hand, _aimDelta.copy(gripRotation).multiply(hand.getWorldQuaternion(_aimBone).invert()));
+    } else rotateBoneWorld(this.character,hand,_aimDelta.setFromUnitVectors(barrel.normalize(),_aimDirection.copy(direction).normalize()));
+    const left=this._bone('LeftHand'),target=this.leftHandTargetWorld(_aimTarget);
     if(!left||!target)return;
     target.sub(this._renderOrigin);
     // Put the palm around the vertical foregrip, with the thumb above the fingers.
     // A wrist snapped directly onto the grip leaves the glove floating past it.
-    if (gripRotation) target.sub(new THREE.Vector3(-.007, .107, 0).applyQuaternion(gripRotation));
+    if (gripRotation) target.sub(_aimPalm.set(-.007, .107, 0).applyQuaternion(gripRotation));
     if (gripRotation) {
-      const shoulder = left.parent.parent.getWorldPosition(new THREE.Vector3());
-      const elbow = left.parent.getWorldPosition(new THREE.Vector3());
-      const reach = shoulder.distanceTo(elbow) + elbow.distanceTo(left.getWorldPosition(new THREE.Vector3())) - .018;
+      const shoulder = left.parent.parent.getWorldPosition(_aimShoulder);
+      const elbow = left.parent.getWorldPosition(_aimElbow);
+      const reach = shoulder.distanceTo(elbow) + elbow.distanceTo(left.getWorldPosition(_aimWrist)) - .018;
       const excess = target.distanceTo(shoulder) - reach;
       if (excess > 0) {
         // Bring the whole tool closer during extreme aim/locomotion blends;
         // never stretch an arm or leave the support glove behind the grip.
         const shift = shoulder.sub(target).normalize().multiplyScalar(excess);
-        const wrist = hand.getWorldPosition(new THREE.Vector3()).add(shift);
-        solveArm(this.character, hand, wrist, new THREE.Vector3(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch));
-        rotateWorld(hand, gripRotation.clone().multiply(hand.getWorldQuaternion(new THREE.Quaternion()).invert()));
-        this.leftHandTargetWorld(target).sub(this._renderOrigin).sub(new THREE.Vector3(-.007, .107, 0).applyQuaternion(gripRotation));
+        const wrist = hand.getWorldPosition(_aimWrist).add(shift);
+        solveArm(this.character, hand, wrist, _aimPole.set(.6, -.8, .15).applyQuaternion(this.character.object.quaternion).applyQuaternion(pitch));
+        rotateBoneWorld(this.character, hand, _aimDelta.copy(gripRotation).multiply(hand.getWorldQuaternion(_aimBone).invert()));
+        this.leftHandTargetWorld(target).sub(this._renderOrigin).sub(_aimPalm.set(-.007, .107, 0).applyQuaternion(gripRotation));
       }
     }
     // Solve the two arm joints only; the character root/spine stay authored.
-    const pole = new THREE.Vector3(-.5, -.85, .15).applyQuaternion(this.character?.object?.quaternion || new THREE.Quaternion()).applyQuaternion(pitch);
+    const pole = _aimPole.set(-.5, -.85, .15).applyQuaternion(this.character?.object?.quaternion || _aimIdentity).applyQuaternion(pitch);
     solveArm(this.character, left, target, pole);
-    if (gripRotation) rotateWorld(left, gripRotation.clone().multiply(left.getWorldQuaternion(new THREE.Quaternion()).invert()));
+    if (gripRotation) rotateBoneWorld(this.character, left, _aimDelta.copy(gripRotation).multiply(left.getWorldQuaternion(_aimBone).invert()));
   }
 
   bindCharacter(character, rig, sockets) {

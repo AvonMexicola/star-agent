@@ -1,0 +1,35 @@
+{
+  "workload": "1000 positions × 20 altitude reads, 2 warmup and 7 alternating measured rounds; CPU microbenchmark, not game FPS",
+  "rows": [
+    {
+      "body": "aeon",
+      "baselineMs": 204.40262400000006,
+      "candidateMs": 27.95847200000003,
+      "checksum": 36007081.80760362
+    },
+    {
+      "body": "selene",
+      "baselineMs": 253.3473570000001,
+      "candidateMs": 14.908808999999565,
+      "checksum": 36004578.464426026
+    },
+    {
+      "body": "pyre",
+      "baselineMs": 267.54072199999973,
+      "candidateMs": 17.606974000000264,
+      "checksum": 36006554.18382046
+    },
+    {
+      "body": "miasma",
+      "baselineMs": 134.22657399999844,
+      "candidateMs": 9.048076999999466,
+      "checksum": 36010888.7979327
+    },
+    {
+      "body": "star",
+      "baselineMs": 5.916006000001289,
+      "candidateMs": 4.171666000000187,
+      "checksum": 36005542.86712289
+    }
+  ]
+}

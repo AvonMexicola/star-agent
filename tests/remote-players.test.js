@@ -203,6 +203,78 @@ test('real ship models retain double poses and animate the actual landing assemb
   manager.dispose();
 });
 
+test('cached ship transforms match authored hulls exactly across origin, attitude and gear changes', async () => {
+  const scene = new THREE.Scene(), manager = new RemotePlayers(scene, { loader, sockets });
+  for (const shipId of ['nomad', 'atlas']) {
+    manager.sync([peer('1', { shipId, mode: 'flight', weapon: null })], 'self');
+    await ready(manager);
+    const entry = manager.peers.get('1');
+    const source = await manager.assets.get(`/models/${shipId}.glb`);
+    const reference = new THREE.Group();
+    reference.add(source.scene.clone(true));
+    const expectedNodes = [], actualNodes = [], gears = [];
+    reference.children[0].traverse(node => {
+      expectedNodes.push(node);
+      if (!node.isMesh && node.name.startsWith('LandingGear_')) gears.push(node);
+    });
+    entry.shipModel.traverse(node => actualNodes.push(node));
+    assert.equal(actualNodes.length, expectedNodes.length);
+    assert.ok(actualNodes.length > 20, 'compare the complete authored hull hierarchy');
+    let compositions = 0;
+    for (const node of actualNodes) {
+      const update = node.updateMatrix;
+      node.updateMatrix = function () { compositions++; return update.call(this); };
+    }
+    for (const gear of [0, .37, 1, .62, 0]) {
+      const attitude = new THREE.Quaternion().setFromEuler(new THREE.Euler(gear * .6, -.7, .2));
+      const origin = new THREE.Vector3(25_000_000_000 + gear * 4000, gear * 1200, -gear * 700);
+      manager.sync([peer('1', { shipId, mode: 'flight', weapon: null, gearProgress: gear,
+        shipPosition: [25_000_000_050 + gear * 8, gear * 5, gear * 7], shipOrientation: attitude.toArray() })], 'self');
+      compositions = 0;
+      manager.update(1 / 60, origin);
+      scene.updateMatrixWorld(true);
+      assert.equal(compositions, actualNodes.filter(node => entry.gears.includes(node)).length,
+        'a changed deployment recomposes only the moving gear groups');
+      reference.position.copy(entry.ship.position);
+      reference.quaternion.copy(entry.ship.quaternion);
+      const eased = gear * gear * (3 - 2 * gear);
+      for (const node of gears) node.scale.y = .08 + .92 * eased;
+      reference.updateMatrixWorld(true);
+      for (let i = 0; i < actualNodes.length; i++) {
+        assert.deepEqual(actualNodes[i].matrixWorld.elements, expectedNodes[i].matrixWorld.elements, actualNodes[i].name);
+      }
+      compositions = 0;
+      manager.update(1 / 60, origin);
+      scene.updateMatrixWorld(true);
+      assert.equal(compositions, 0, 'interpolating the hull never recomposes unchanged descendant transforms');
+    }
+  }
+  manager.dispose();
+});
+
+test('remote snapshot inputs refresh speed, gravity and damage while preserving one-frame fire pulses', async () => {
+  const manager = new RemotePlayers(new THREE.Scene(), { loader, sockets });
+  manager.sync([peer('1', { weapon: null, velocity: [3, 4, 0], health: 75,
+    physicsFrame: 'hangar:1', physicsUp: [2, 0, 0] })], 'self');
+  await ready(manager);
+  const entry = manager.peers.get('1'), inputs = [];
+  entry.character.update = (dt, input) => { inputs.push({ ...input }); };
+  manager.fire('1');
+  manager.update(1 / 60, new THREE.Vector3());
+  manager.update(1 / 60, new THREE.Vector3());
+  assert.equal(inputs[0].speed, 5);
+  assert.equal(inputs[0].health, .75);
+  assert.equal(inputs[0].firing, true);
+  assert.equal(inputs[1].firing, false);
+  assert.ok(entry.character.up.distanceTo(new THREE.Vector3(1, 0, 0)) < 1e-12);
+  manager.sync([peer('1', { mode: 'eva', weapon: null, velocity: [30, 40, 0], health: 50 })], 'self');
+  manager.update(1 / 60, new THREE.Vector3());
+  assert.equal(inputs[2].speed, 0, 'EVA continues its authored floating pose');
+  assert.equal(inputs[2].health, .5);
+  assert.equal(inputs[2].firing, false);
+  manager.dispose();
+});
+
 
 test('server color applied to the local player clones materials and leaves other assets unchanged', async () => {
   const model = cloneCharacterGLTF(rig).scene;

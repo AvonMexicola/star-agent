@@ -1,0 +1,47 @@
+[
+  {
+    "path": "public/models/nomad.glb",
+    "bytes": 3413568,
+    "sha256": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da"
+  },
+  {
+    "path": "public/models/atlas.glb",
+    "bytes": 3771268,
+    "sha256": "5548d428e4d5cb4fa0f8e3d506803b3e2f63f53fcf9e3e3ad9051b66655b1cea"
+  },
+  {
+    "path": "public/models/props/player-expedition.glb",
+    "bytes": 8496328,
+    "sha256": "04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa"
+  },
+  {
+    "path": "public/models/props/rifle-laser.glb",
+    "bytes": 243692,
+    "sha256": "f77661d8ee504e95bd22fc08abf335fddf86649e1758cead8942954519b44edb"
+  },
+  {
+    "path": "public/models/props/sidearm-pistol.glb",
+    "bytes": 66292,
+    "sha256": "fe05d86cd7b522e90812ce55148bdf678b69867ed03cae3662df16c9d9768e7b"
+  },
+  {
+    "path": "public/models/props/mining-laser-tool.glb",
+    "bytes": 240816,
+    "sha256": "6b7f48bfff8601d8e26b6b3cc4da9eba5bf49d2c29a99a75e00cf822123a0251"
+  },
+  {
+    "path": "public/models/props/backpack-life-support.glb",
+    "bytes": 196696,
+    "sha256": "4d6d53616adb9e3f074383693960d86f2fc01a86580fede28d6ef22a73edf35e"
+  },
+  {
+    "path": "public/models/props/helmet-standalone.glb",
+    "bytes": 165204,
+    "sha256": "8406eba032880f578295ab69a609d98a14af803e996bcc2024b2924d23df14f9"
+  },
+  {
+    "path": "public/models/props/equipment-sockets.json",
+    "bytes": 6647,
+    "sha256": "9525423959fa331739e1636fa495f275c9655eeb03130fd1e54fa67ddb1a258b"
+  }
+]

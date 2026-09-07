@@ -5,10 +5,11 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-Latest local promotion: **`f861f8f`**, with checked social tools, SBU cargo and
-flight-controls help. Frontend and API were refreshed together, and existing
-accounts/saves retained in the same persistent database. Refresh the browser to
-use protocol 3; [delivery evidence](qa/social-cargo-integration.md) records checks.
+Latest local promotion: **`638a5e4`**, with the physical cargo tractor and Blender
+handheld pass, preserving checked social tools, wildlife and player optimisation.
+Frontend and API were refreshed together, retaining the same persistent database.
+Refresh the browser to use protocol 4; [delivery evidence](qa/handheld-tools.md)
+records the checked exports, gameplay journeys and local verification.
 
 ## Multiplayer chat and friends
 
@@ -155,7 +156,7 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Expedition character, corrected hips, hands, animations and studio | Preserved owner checkpoint `0bb6a6a`; combined local/remote binding in `3bd7d61` |
 | Burrow twin-cutter rover aboard Atlas, offline development start | `feat/meridian-mining-rover` through `643a7d3` |
 | Finite ship momentum, combat/cruise mode and moving muzzle effects | `fix/combat-momentum` through `6f8b195`; controls explanation `f5c6933` |
-| Hostile Pyrebear and Sulphurhound habitats, shots, bites and medical recovery | `feat/pyrebear` through `5a3cf0b` |
+| Pyrebear/Sulphurhound habitats and medical recovery; Aeon Tidebacks/Mallow; repaired deer studio asset | `feat/pyrebear` reviewed `e904192`, combined wildlife `c160ece`, local runtime `c4f6b5b`; [combined wildlife QA](qa/wildlife-integration.md) |
 | Atlas Mark II geometry/gear checkpoint and review, studio only | `feat/atlas-fleet-refresh` at `0b2d852` |
 | Aeon exterior geometry preview and review, opt-in | `feat/station-exterior` at `9d0728f` (draft PR #55) |
 
@@ -164,7 +165,7 @@ materials, character performance, rover art/keyboard/touch and fauna
 full motion/touch acceptance remain open. The rover's complete injected-controller
 mining/return/flight-carriage journey passed on its source checkpoint. Rover, construction and wildlife use offline
 state; they are not new multiplayer replication features. The unprovided shop
-jacket and the separately started deer repair are not installed content. See the
+jacket is not installed content. The deer is available in the rig viewer only. See the
 [combined review record](qa/dev-content-review.md) for exact validation and limits.
 Read shared HANDOFF.md and feature heads before updating this table.
 
@@ -208,7 +209,7 @@ journey. That journey exercises assigned deck spawns, COMMS/transfers, controlle
 jump, physical EVA exit/return and held-input suppression across menu, focus and
 controller reconnection. No browser errors were recorded. Feature-wide checks and
 captures are in `docs/qa/multiplayer-hangar-physics.md`. That checkpoint used
-protocol 2; the current cargo/social update uses protocol 3. The frontend and API
+protocol 2; the current tractor update uses protocol 4. The frontend and API
 must be updated together; restart `dev:all` after integration.
 
 ## Space patrol combat
@@ -337,11 +338,78 @@ inherit launch velocity; collision and lead prediction use that trajectory.
 evidence and limits. This is a local development checkpoint, not release approval.
 
 
-## Cargo tractor follow-up
 
-Checked on `feat/cargo-tractor` (runtime70fcaad), pending the next shared local
-promotion. Menu → Trade → Cargo → Equip tractor beam; hold RT / T to guide a
-crate and X / F to secure its compatible grid. Phone controls support a second
-finger while the first powers the beam. All SBU sizes work; only1SBU is hand
-carriable. This follow-up requires matching protocol4 client/API; no new SQL
-migration. See [controls](cargo-tractor.md) and [actual QA](qa/cargo-tractor.md).
+### Integrated creature development checkpoints
+
+The development build includes offline Pyrebear and Suloher encounters. With development
+tools enabled, use Test starts → Pyrebear habitat or Suloher habitat, land, exit
+the ship physically, and approach wildlife. Carbine/pistol rounds use the real
+loadout; Pyrebear has 240 HP and Suloher 90 HP. Both have authored walk/death clips.
+Both Pyrebear and corrected Suloher controller journeys passed. The Suloher
+route includes biting, bandage use and inventory-preserving medical evacuation.
+Final actual-world motion/art review remains pending. These checkpoints are not a claim of
+complete gameplay acceptance. See [hostile fauna QA](qa/hostile-fauna.md).
+
+The supplied deer has a repaired, calmer walk and preserved skin/bind rig. On a
+Vite development server, open `/scripts/fixtures/creature-rig.html?model=deer`
+for an orbitable animation preview. This is an asset viewer; deer spawning is
+not implemented. The [deer repair record](qa/deer-rig.md) retains source, Blender
+file, exact export identity and before/after evidence. Reuse the
+[creature pipeline](development/creature-pipeline.md) for future animals.
+Hostile checkpoint `5a3cf0b` was included in local promotion `2f3249f`. Deer
+checkpoint `b3eedc0` and the later reviewed wildlife source `e904192` are now
+integrated at local runtime `c4f6b5b`.
+
+
+The development launcher includes **Aeon · Tideback beach** and
+**Aeon · Mallow grassland** to Test starts. Tidebacks inhabit dry low coastland
+and retaliate after injury; the large Mallow grazers inhabit grassland and flee
+instead of attacking. Both use the existing ammunition, health and animation
+systems. These are offline, session-local encounters. See the
+[Aeon wildlife record](qa/aeon-wildlife.md) for exact habitat and validation scope.
+Refresh http://localhost:5178/ and press **F2** to open the ship/location launcher.
+Select Nomad and either named Aeon habitat, then launch, land and walk out of the
+ship. Both combined physical controller encounters pass, including the grazer
+terrain-edge retreat fix. The repaired deer viewer is also served by this local
+build. See [integration evidence and captures](qa/wildlife-integration.md).
+Animals remain offline and session-local; public hosting was not updated by this
+integration.
+
+
+### Player and multiplayer CPU optimisation
+
+The checked player optimisation preserves current assets, animation cadence,
+rendering quality, network rates and physical authority. It removes duplicate
+server snapshot construction, rig/equipment allocations, static remote hull
+transform composition, repeated exact-position terrain sampling and unchanged
+multiplayer manifest rebuilding. The cache includes the world seed. Measured
+CPU workloads improve while before/after nine-player and nine-hull captures
+remain pixel-identical. See [measurements, regressions and limitations](qa/player-performance/README.md).
+No protocol/save migration or public deployment accompanies this change.
+
+Player optimisation is live at http://127.0.0.1:5178/ from runtime `af419c7`.
+The preview/API restarted once with the same persistent database. Refresh the
+client to use the updated modules. Final combined checks pass 876 unit tests,
+125 SQL-enabled multiplayer/UI tests and the production build; two focused
+browser comparisons preserve exact pixels and controller/state behaviour.
+
+## Cargo tractor and handheld finish
+
+The physical tractor and four-tool Blender pass are live at
+http://127.0.0.1:5178/ from runtime `638a5e4`. Open **Menu → Trade → Cargo → Equip
+tractor**, aim at a crate and hold **RT** to move it. Use D-pad up/down for distance,
+left to align, **X** to secure to a nearby compatible grid, and right to holster.
+Only 1 SBU boxes can be carried by hand; the beam handles 1–64 SBU, with larger
+crates moving more slowly. See [all controls and limits](cargo-tractor.md).
+
+The tractor now has its own open induction head. It, the mining cutter, laser
+rifle and sidearm use authored textures, contact shading and service plates, with
+preserved grips and muzzle positions. Editable Blender sources are in
+`assets/handheld-tools/`; [before/after views](qa/handheld-tools/comparison.png) and
+[rendered gameplay checks](qa/handheld-tools.md) are available for review.
+
+The paired client/API restart uses protocol 4 without a schema migration or save
+reset. Four final browser cases passed, including physical controller mining,
+both weapons and cargo securing. The live four GLB hashes and eight served source
+modules match the checked candidate. This is builder-tested local development;
+independent visual and physical-controller acceptance remain separate.

@@ -15,6 +15,7 @@ export const PLAYER_COLORS = SUIT_COLORS;
 const SHIP_URLS = { nomad: '/models/nomad.glb', atlas: '/models/atlas.glb' };
 const FORWARD = new THREE.Vector3(0, 0, -1);
 const UP = new THREE.Vector3(0, 1, 0);
+const NO_FIRE = Object.freeze({ firing: false });
 
 /** SkeletonUtils is essential: Object3D.clone shares the original skin bones. */
 export function cloneCharacterGLTF(gltf) {
@@ -223,6 +224,9 @@ export class RemotePlayers {
       shipPosition: new THREE.Vector3(), shipTarget: new THREE.Vector3(),
       shipOrientation: new THREE.Quaternion(), shipTargetOrientation: new THREE.Quaternion(),
       ship: new THREE.Group(), shipId: null, shipModel: null, shipToken: 0, gears: [],
+      body: null, physicsUp: new THREE.Vector3(), hasPhysicsUp: false,
+      animationInput: { speed: 0, grounded: true, health: 1, dead: false, aiming: 'none', firing: false },
+      gearScale: 1,
       firePulse: false, disposed: false,
     };
     entry.character = new Character(this.scene, {
@@ -269,6 +273,11 @@ export class RemotePlayers {
       entry.shipModel.traverse(node => {
         if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
         if (!node.isMesh && node.name.startsWith('LandingGear_')) entry.gears.push(node);
+        // These visual-only hulls have no animation mixer. Their authored local
+        // transforms stay fixed; moving gear explicitly refreshes its matrix.
+        // World matrices still follow the interpolated, camera-relative parent.
+        if (node.matrixAutoUpdate) node.updateMatrix();
+        node.matrixAutoUpdate = false;
       });
       entry.ship.add(entry.shipModel);
       entry.ship.userData.assetStatus = 'ready';
@@ -292,6 +301,17 @@ export class RemotePlayers {
       const changedMode = entry.peer.mode !== peer.mode;
       const changedFrame = entry.peer.physicsFrame !== peer.physicsFrame;
       entry.peer = peer;
+      entry.body = BODIES.find(body => body.id === peer.body);
+      entry.hasPhysicsUp = Boolean(peer.physicsFrame && Array.isArray(peer.physicsUp)
+        && peer.physicsUp.length === 3 && peer.physicsUp.every(Number.isFinite));
+      if (entry.hasPhysicsUp) entry.physicsUp.fromArray(peer.physicsUp).normalize();
+      const animation = entry.animationInput;
+      animation.speed = peer.mode === 'eva' ? 0 : Math.hypot(...(peer.velocity || [0, 0, 0]));
+      animation.health = peer.health / 100;
+      animation.dead = peer.mode === 'dead';
+      const gear = THREE.MathUtils.clamp(peer.gearProgress ?? 1, 0, 1);
+      const eased = gear * gear * (3 - 2 * gear);
+      entry.gearScale = .08 + .92 * eased;
       entry.target.fromArray(peer.position);
       entry.targetOrientation.fromArray(peer.orientation);
       if (changedMode || changedFrame || entry.position.distanceToSquared(entry.target) > 1e6) {
@@ -329,9 +349,9 @@ export class RemotePlayers {
         this._bodyRotation.fromArray(peer.bodyOrientation);
         this._up.copy(UP).applyQuaternion(this._bodyRotation);
       } else if (peer.mode === 'walk' || peer.mode === 'dead') {
-        const body = BODIES.find(body => body.id === peer.body);
-        if (peer.physicsFrame && Array.isArray(peer.physicsUp) && peer.physicsUp.length===3 && peer.physicsUp.every(Number.isFinite)) {
-          this._up.fromArray(peer.physicsUp).normalize();
+        const body = entry.body;
+        if (entry.hasPhysicsUp) {
+          this._up.copy(entry.physicsUp);
         } else if (peer.shipPosition && entry.position.distanceToSquared(entry.shipPosition) < 625) {
           this._up.copy(UP).applyQuaternion(entry.shipOrientation);
         } else if (body) {
@@ -353,21 +373,20 @@ export class RemotePlayers {
       const onFoot = peer.mode === 'walk' || peer.mode === 'eva' || peer.mode === 'dead';
       character.setVisible(onFoot);
       equipment.setRenderOrigin(origin);
-      equipment.update(step, { firing: false });
-      const speed = Math.hypot(...(peer.velocity || [0, 0, 0]));
-      character.update(step, {
-        speed: peer.mode === 'eva' ? 0 : speed, grounded: true, health: peer.health / 100,
-        dead: peer.mode === 'dead', aiming: equipment.aimingInput(), firing: entry.firePulse,
-      });
+      equipment.update(step, NO_FIRE);
+      entry.animationInput.aiming = equipment.aimingInput();
+      entry.animationInput.firing = entry.firePulse;
+      character.update(step, entry.animationInput);
       entry.firePulse = false;
       // This must follow mixer.update, otherwise animation overwrites the hand.
       if (onFoot && equipment.equipped) poseHeldEquipment(character, equipment, this._direction, origin);
       entry.ship.visible = Boolean(peer.shipPosition) || peer.mode === 'flight' || peer.mode === 'landed';
       entry.ship.position.copy(entry.shipPosition).sub(origin);
       entry.ship.quaternion.copy(entry.shipOrientation);
-      const gear = THREE.MathUtils.clamp(peer.gearProgress ?? 1, 0, 1);
-      const eased = gear * gear * (3 - 2 * gear);
-      for (const node of entry.gears) node.scale.y = .08 + .92 * eased;
+      for (const node of entry.gears) if (node.scale.y !== entry.gearScale) {
+        node.scale.y = entry.gearScale;
+        node.updateMatrix();
+      }
     }
   }
 
