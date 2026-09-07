@@ -98,7 +98,7 @@ export function commerceCommand(source,owner,m,ctx){
     throw new Error('Equip the tractor beam to move larger crates physically.');
   }else throw new Error('Unknown cargo command.');
   check(int(a.credits)&&(!terminal||int(s.accounts[terminal.owner].credits)),'Credit limit exceeded.');
-  s.revision++;const receipt={message,resourceDelta,resource:m.resource};s.receipts[receiptKey]=receipt;
+  s.revision++;const receipt={message,resourceDelta,...(m.resource?{resource:m.resource}:{})};s.receipts[receiptKey]=receipt;
   // Bounded history plus revision validation: old retries cannot execute again.
   const keys=Object.keys(s.receipts);if(keys.length>512)delete s.receipts[keys[0]];
   check(validCommerce(s),'Cargo transaction failed validation.');return {state:s,...receipt};
