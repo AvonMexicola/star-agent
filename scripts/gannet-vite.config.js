@@ -4,6 +4,7 @@ import {copyFile,mkdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 const root=resolve(import.meta.dirname,'..'),qa=process.env.GANNET_QA_DIR??resolve(tmpdir(),'star-agent-gannet-qa'),out=resolve(qa,'build');
 export default defineConfig({root,base:'/',publicDir:false,resolve:{preserveSymlinks:true},cacheDir:resolve(qa,'vite-cache'),
+  server:{host:'127.0.0.1'},preview:{host:'127.0.0.1'},
   plugins:[{
     name:'gannet-isolated-studio',
     configureServer(server){server.middlewares.use((req,_res,next)=>{
