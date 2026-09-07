@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex controller follow-up",
-  "status": "review",
+  "status": "integrated",
   "branch": "fix/controller-fire-layout",
   "base": "a748be101aad4ea672a157481044ce9ed6b03e35",
   "updated": "2026-09-07",

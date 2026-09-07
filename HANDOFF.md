@@ -1926,3 +1926,9 @@ AMD860M / ANGLE GLES3.2. Physical-controller and independent review remain open.
 Failed width iteration, fixture corrections and final images are retained in
 `docs/qa/controller-layout.md`. Browser QA port5397 is now released. Integrate this
 checked development checkpoint locally; no production deployment is requested.
+
+Controller integration completed: local `dev/all-features` fast-forwarded to741d82a,
+exactly the verified feature tree. The shared preview was stopped; `npm run dev:all`
+was restarted on5178/API8087 and serves the updated controller module. Final
+records release the claim; this remains a development checkpoint with injected
+controller evidence, not hardware acceptance or production deployment.
