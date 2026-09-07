@@ -65,11 +65,12 @@ export class EnergyEffects {
   }
   random(){this.seed=(Math.imul(this.seed,1664525)+1013904223)>>>0;return this.seed/4294967296;}
   budget(key,rate,dt){const amount=(this.carries[key]??0)+rate*dt,n=Math.floor(amount);this.carries[key]=amount-n;return Math.min(n,120);}
-  spray(point,normal,count,{color=0xffb45c,speed=4,size=.07,life=.65,kind=1,attract=false,gain=1}={}){
+  spray(point,normal,count,{color=0xffb45c,speed=4,size=.07,life=.65,kind=1,attract=false,gain=1,velocity=ZERO}={}){
     for(let i=0;i<count;i++){
       this._v.set(this.random()-.5,this.random()-.5,this.random()-.5).normalize();
       if(this._v.dot(normal)<0)this._v.negate();
       this._v.addScaledVector(normal,.4).multiplyScalar(speed*(.25+this.random()));
+      this._v.add(velocity);
       this.particles.emit(point,this._v,{color,life:life*(.7+this.random()*.6),size:size*(.5+this.random()),kind,stretch:kind===1?.035:0,drag:attract?0:1.3,attract,gain});
     }
   }
@@ -90,25 +91,27 @@ export class EnergyEffects {
       this.spray(point,normal,25,{speed:2,color,life:.8,size:.4,kind:0,gain:1.4});
     }
   }
-  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color,sound=weapon}={}){
+  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color,sound=weapon,muzzle=true,muzzlePosition=null,size=1,pitch=1}={}){
     const profile=weaponProfile(weapon),kind=profile.kind;
     if(hit&&start.distanceTo(hit.point)>range)hit=null;
     speed??=profile.speed;power??=profile.power;
     const tint=color===undefined?(kind==='pulse'?CYAN.clone():new THREE.Color(profile.color).multiplyScalar(2)):new THREE.Color(color).multiplyScalar(2);
     if(this.bolts.length>=32)return;
-    this.weaponShots++;this.lastWeapon=kind;this.onSound?.({type:'shot',weapon,sound,point:start});
+    this.weaponShots++;this.lastWeapon=kind;this.onSound?.({type:'shot',weapon,sound,point:start,size,pitch});
     const end=hit?.point.clone()??start.clone().addScaledVector(direction,range);
     if(kind==='laser'){
       const lance=this.lances.find(l=>!l.active)??this.lances[0];
-      Object.assign(lance,{active:true,start:start.clone(),end,age:0,life:.22,power,tint});
+      Object.assign(lance,{active:true,start:start.clone(),end,age:0,life:muzzlePosition ? .06 : .22,power,tint,muzzlePosition,fresh:Boolean(muzzlePosition)});
       lance.shell.material.uniforms.color.value.copy(tint);lance.core.material.uniforms.color.value.setRGB(3,2.8,2.2);
       if(hit)this.impact(end,hit.normal??direction.clone().negate(),power,{color:tint,kind});
       // Ionised motes peel from the length of the fired lance.
       const length=Math.min(80,start.distanceTo(end));
       for(let i=0;i<16;i++){const p=start.clone().addScaledVector(direction,length*i/16);this.spray(p,direction,1,{color:tint,speed:2,life:.28,size:.06});}
     }else this.bolts.push({start:start.clone(),p:start.clone(),direction:direction.clone().normalize(),velocity:velocity.clone(),age:0,speed,range,power,tint,kind,hit:hit?{point:hit.point.clone(),normal:hit.normal?.clone()??direction.clone().negate()}:null,travelled:0});
-    this.particles.emit(start,ZERO,{color:kind==='pulse'&&color===undefined?0xbceaff:tint,life:.12,size:.6*power,stretch:0,gain:4});
-    this.spray(start,direction,6,{color:tint,speed:3,size:.07,life:.2});
+    if(muzzle){
+      this.particles.emit(start,velocity,{anchor:muzzlePosition,color:kind==='pulse'&&color===undefined?0xbceaff:tint,life:.12,size:.6*power,stretch:0,gain:4});
+      this.spray(start,direction,6,{color:tint,speed:3,size:.07,life:.2,velocity});
+    }
   }
   reset(){
     this.particles.clear();this.bolts.length=0;this.carries={};this.boost=0;this.throttle=0;this.travel=0;
@@ -160,19 +163,20 @@ export class EnergyEffects {
       }
     }
     for(const l of this.lances){
-      if(!l.active)continue;l.age+=dt;
+      if(!l.active)continue;if(l.fresh)l.fresh=false;else l.age+=dt;
       if(l.age>=l.life){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;continue;}
+      if(l.muzzlePosition){const start=l.muzzlePosition();if(!start){l.active=false;l.shell.mesh.visible=false;l.core.mesh.visible=false;continue;}l.start.copy(start);}
       const fade=Math.pow(1-l.age/l.life,.5);
       l.shell.set(l.start,l.end,.11*l.power,origin,this.time,fade*1.4);
       l.core.set(l.start,l.end,.025*l.power,origin,this.time,fade*2);
     }
     for(let i=this.bolts.length-1;i>=0;i--){
-      const b=this.bolts[i],step=b.speed*dt;b.age+=dt;b.travelled+=step;
+      const b=this.bolts[i],worldVelocity=b.direction.clone().multiplyScalar(b.speed).add(b.velocity),step=worldVelocity.length()*dt;b.age+=dt;b.travelled+=step;
       const hitDistance=b.hit?b.start.distanceTo(b.hit.point):Infinity;
       if(b.travelled>=hitDistance){this.impact(b.hit.point,b.hit.normal,b.power,{color:b.tint,kind:b.kind});this.bolts.splice(i,1);continue;}
       if(b.travelled>b.range||b.age>b.range/b.speed+.5){this.bolts.splice(i,1);continue;}
-      b.p.copy(b.start).addScaledVector(b.direction,b.travelled).addScaledVector(b.velocity,b.age);
-      this._v.copy(b.direction).multiplyScalar(b.speed);
+      b.p.copy(b.start).addScaledVector(worldVelocity,b.age);
+      this._v.copy(worldVelocity);
       if(b.kind==='void'){
         this.particles.emit(b.p,ZERO,{color:b.tint,life:.08,size:.85*b.power,stretch:0,gain:2});
         const rotation=new THREE.Quaternion().setFromUnitVectors(Z,b.direction);
@@ -181,7 +185,7 @@ export class EnergyEffects {
           const offset=new THREE.Vector3(Math.cos(phase),Math.sin(phase),0).multiplyScalar(.45*b.power).applyQuaternion(rotation);
           this.particles.emit(b.p.clone().add(offset),ZERO,{color:j?b.tint:0x62ffee,life:.23,size:.13*b.power,stretch:0,gain:2});
         }
-      }else this.particles.emit(b.p,this._v,{color:b.tint,life:.045,size:.12*b.power,kind:1,stretch:.025,gain:3});
+      }else this.particles.emit(b.p,this._v,{color:b.tint,life:.045,size:.12*b.power,kind:1,stretch:Math.min(.025,b.travelled/b.speed),gain:3});
     }
     const speed=velocity.length(),targetTravel=flying&&inSpace&&!relativistic&&!this.reducedMotion?clamp(Math.log10(Math.max(1,speed)/25)/3,0,1):0;
     this.travel+=(targetTravel-this.travel)*(1-Math.exp(-dt*3));

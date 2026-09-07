@@ -1,0 +1,11 @@
+# Hierarchical navigation and aimed travel
+
+A fixed map centres the star with its planets, then a selected planet with its moons and orbital station. Surface sites appear in a paged list. A schematic relationship chart is labelled honestly; ranges are measured from actual double-precision positions. Filters control real world beacons for bodies, stations, ships, local bases, shared pilots and active patrols.
+
+Map selection arms a bearing only. Holding the ship nose on a visible destination for three seconds charges the reticle ring. N / J / both bumpers + D-pad up engages only a fully charged target; LT/X aborts. Unselected celestial bodies can be acquired by sight. Existing free heading travel remains available when there is no aimed or selected target. Arrival is 20 km from a point or above a body's canonical surface; the star retains its safe thermal stand-off. Obstructed paths are rejected, never routed through a world. Moving target positions are sampled again on engage; the arrival point is then fixed for a continuous flight.
+
+Navigation targets own selection, filter preferences and charge; navigation owns movement, power, gear, modal/focus gates and abort. Existing online authority is preserved: local targeted travel is unavailable during shared flight. No fabricated contacts, bases or missions, new server protocol, dependency, save schema or orbital simulation. Shared pilots means the live comms roster, not an implemented social friendship service.
+
+Visual direction: retain navy #07151c/#10232a, mint #b6efd1, white #edf5f1, muted #8ea6aa and amber #efbf75. Existing display/body faces label the map; numerals report ranges. The chart is the focal element; orbit relationships and breadcrumbs provide hierarchy. Quiet paged lists and filter buttons fit the viewport. Phone pages switch Chart, Locations and Filters instead of scrolling.
+
+Validate route precision/occlusion/arrival, charge resets and input safety, keyboard/pointer and complete injected-controller selection, charge, flight, arrival and return. Inspect desktop1440×900 and phone390×844. Physical controller and independent acceptance reported separately. Add an in-world relativistic-drive field note to lore.

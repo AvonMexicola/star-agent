@@ -74,7 +74,7 @@ test('controller-only orbital heading, utilities and graphics menu return safely
   expect(await page.evaluate(()=>window.starAgent.state.effects.slipstream)).toBe(0);
   expect(await page.evaluate(()=>window.starAgent.state.tunnel.visible)).toBe(false);
   await page.screenshot({path:`${output}/controller-normal-space-dust.png`});
-  await page.evaluate(()=>{window.optionPad.axes[1]=0;});await tap(1);
+  await page.evaluate(()=>{window.optionPad.axes[1]=0;});await tap(6);
   // Aim away using only the right stick. Read orientation solely as steering feedback.
   await page.evaluate(()=>{window.optionPad.axes[2]=1;});
   await page.waitForFunction(()=>{const n=window.starAgent.navigation,q=n.orientation,up=n.normal;return -(2*(q.x*q.z+q.w*q.y)*up.x+2*(q.y*q.z-q.w*q.x)*up.y+(1-2*(q.x*q.x+q.y*q.y))*up.z)>.2;});
@@ -119,12 +119,12 @@ test('controller-only orbital heading, utilities and graphics menu return safely
   // Held ascent across modal closure must not replay until neutral is restored.
   const lightBeforeClose=await page.evaluate(()=>window.starAgent.state.utilities.ship);
   await page.evaluate(()=>{for(const i of [4,5,14])window.optionPad.buttons[i]={pressed:true,value:1};});await frames();
-  await button(7,true);await tap(1);await frames();
+  await button(0,true);await tap(1);await frames();
   expect(await page.evaluate(()=>window.starAgent.state.utilities.ship)).toBe(lightBeforeClose);
   expect((await page.evaluate(()=>window.starAgent.state)).speed).toBeLessThan(1);
   expect((await page.evaluate(()=>window.starAgent.state)).controller.armed).toBe(false);
-  await button(7,false);await page.evaluate(()=>{for(const i of [4,5,14])window.optionPad.buttons[i]={pressed:false,value:0};});await frames();await page.waitForFunction(()=>window.starAgent.state.controller.armed);
-  await button(7,true);await page.waitForFunction(()=>window.starAgent.state.speed>1);await button(7,false);await tap(1);
+  await button(0,false);await page.evaluate(()=>{for(const i of [4,5,14])window.optionPad.buttons[i]={pressed:false,value:0};});await frames();await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+  await button(0,true);await page.waitForFunction(()=>window.starAgent.state.speed>1);await button(0,false);await tap(6);
   await chord(13);await page.waitForFunction(()=>window.starAgent.state.utilities.gearDeployed);
   expect(errors).toEqual([]);
 });

@@ -89,7 +89,7 @@ export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } 
   nav.shipOrientation = setQuaternion(nav.shipOrientation, peer.shipOrientation, blend, hard);
   nav.shipVelocity = setVector(nav.shipVelocity, peer.shipVelocity, 1, true);
   nav.shipAngularVelocity = setVector(nav.shipAngularVelocity, peer.shipAngularVelocity, 1, true);
-  for (const key of ['powered', 'cabinFlight', 'insideShip', 'dockedAtStation', 'stationLift', 'doorOpen', 'gearDeployed', 'flightAssist', 'autoland', 'spaceParked', 'shipLightsOn', 'flashlightOn']) {
+  for (const key of ['powered', 'cabinFlight', 'insideShip', 'dockedAtStation', 'stationLift', 'doorOpen', 'gearDeployed', 'flightAssist', 'combatMode', 'autoland', 'spaceParked', 'shipLightsOn', 'flashlightOn']) {
     if (typeof peer[key] === 'boolean') nav[key] = peer[key];
   }
   for (const key of ['doorProgress', 'gearProgress', 'jumpHeight', 'jumpVelocity', 'speedScale']) {
@@ -281,14 +281,19 @@ export class MultiplayerClient {
     nav.gamepad.poll = options => { const result = originalPoll(options); this.lastPad = result; return result; };
     this.cleanup.push(() => { nav.gamepad.poll = originalPoll; });
     const actions = new Map([
-      ['toggleGear', ['gear']], ['toggleLights', ['lights']], ['togglePower', ['power']], ['toggleFlightAssist', ['assist']],
+      ['toggleGear', ['gear']], ['toggleLights', ['lights']], ['togglePower', ['power']], ['toggleFlightAssist', ['assist']], ['toggleCombatMode', ['combat']],
       ['landOrLaunch', ['land']], ['embark', ['interact']], ['toggleEVA', ['eva']], ['brake', ['brake']],
       ['cancelTravel', ['cancelTravel']], ['beginTravel', ['target', () => nav.travelTarget]],
       ['beginFreeTravel', ['travel']],
     ]);
     for (const [name, [action, target]] of actions) {
       if (typeof nav[name] !== 'function') continue;
-      const original = nav[name]; const wrapper = (...args) => this.connected ? this.action(action, target?.(...args)) : original.apply(nav, args);
+      const original = nav[name]; const wrapper = (...args) => {
+        // The local target adapter owns charge/availability. Do not let the
+        // legacy network command bypass its explicit targeted-drive gate.
+        if (this.connected && nav.targeting && (name === 'beginTravel' || (name === 'beginFreeTravel' && nav.targeting.hasTarget))) return nav.targeting.engage();
+        return this.connected ? this.action(action, target?.(...args)) : original.apply(nav, args);
+      };
       this.restoreMethods.set(name, { original, wrapper }); nav[name] = wrapper;
     }
     if (typeof nav.updateTravel === 'function') {

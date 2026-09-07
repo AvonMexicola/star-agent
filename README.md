@@ -29,8 +29,9 @@ Ship & location** reopens it. Each launch has a fresh temporary inventory and
 unlocked fleet; normal browser saves are untouched. The 64 m Atlas Mark II has a
 separate asset-studio link and is not the flyable fleet version.
 
-This command also starts an isolated in-memory multiplayer API on port 8087.
-Local accounts reset when it stops; SMTP is not configured. Public deployments
+This command also starts a persistent local PostgreSQL database and multiplayer
+API on port 8087. Accounts, sessions and inventory survive restarts; Prisma handles
+account storage. SMTP is not configured. Public deployments
 are separate. See [the local integration guide](docs/local-development.md) for
 included feature branches, pending work, updates and validation.
 
@@ -209,3 +210,5 @@ Development listening studio: `/tests/gameplay-audio.html`. The optional
 `?audioDebug` dev view shows emitted sounds and provides short movement/fire
 inputs for integration checks. These controls are absent from production builds.
 Water footsteps represent the existing wet shoreline, not new wading/swimming.
+
+Read the [Aeon field notes](docs/lore.md) for the relativistic drive’s “promise ring.”

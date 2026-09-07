@@ -9,6 +9,7 @@ import { createShipMFDs } from './ship-mfd.js';
 import { atlasInspectionPages, describeAtlasControl } from './atlas-mark-ii-controls.js';
 import { createProjectedActionLabel } from './projected-action-label.js';
 import { shipManufacturer } from './ship-manufacturers.js';
+import {loadShipWeaponKit,attachShipWeapons} from './ship-weapons.js';
 
 const MODEL_URL = '/models/atlas-mark-ii/atlas-mark-ii.glb';
 const WALK_SPEED = 4.2;
@@ -327,10 +328,14 @@ function updateDynamicShadows() {
   dynamicShadowsActive = moving;
 }
 
-const assetPromise = new GLTFLoader().loadAsync(MODEL_URL).then((gltf) => {
+const weaponKit=loadShipWeaponKit().then(kit=>({kit}),error=>({error}));
+const assetPromise = new GLTFLoader().loadAsync(MODEL_URL).then(async (gltf) => {
   model = gltf.scene;
   model.name = 'AtlasMarkII';
   bindSystems(model);
+  const weapons=await weaponKit;
+  try{if(weapons.error)throw weapons.error;attachShipWeapons(model,'atlas-mark-ii',weapons.kit);}
+  catch(error){console.warn('Atlas weapon fitting unavailable:',error);}
   collectStats(model);
   model.add(mfds);
   scene.add(model);

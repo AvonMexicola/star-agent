@@ -1906,3 +1906,313 @@ combines the checked local7ba1fbd history with remote governance. Candidate91f00
 passes668 unit tests,12 helper checks and build locally; runtime/assets are exactly
 those already checked at7ba1fbd. Its protected CI/merge record is the current
 publication source; do not infer a public release or completed art review.
+
+## Controller fire/layout — ready for local integration — 2026-09-07
+
+Cees's RT-fire request is implemented in `fix/controller-fire-layout`, isolated
+`/home/cees/projects/star-agent-controller-layout`, based on a748be1. RT/R2 fires,
+LT/L2 brakes/cancels drive, A/B rises/descends. Menu → Controller layout and
+Help → View controller layout show a responsive standard-controller diagram with
+Flight, On foot, EVA and shortcut contexts. Shared native dialog routing and
+neutral arming remain in force. Scoped hooks: gamepad, flight-effects, main/help,
+combat/MFD/map hints, new controller-layout module/CSS and affected tests/docs.
+No dependencies, assets, save schema or server changes.
+
+669 unit tests and production build pass. Three production combat journeys pass
+in4.2m; the final corrected layout case passes1/1 in45.9s. Both Nomad/Kestrel
+complete RT combat/report, with A/B thrust, LT brakes and held-input safety.
+Keyboard/pointer/recovery, desktop1440×900 and phone390×844 pass. Chromium151,
+AMD860M / ANGLE GLES3.2. Physical-controller and independent review remain open.
+Failed width iteration, fixture corrections and final images are retained in
+`docs/qa/controller-layout.md`. Browser QA port5397 is now released. Integrate this
+checked development checkpoint locally; no production deployment is requested.
+
+Controller integration completed: local `dev/all-features` fast-forwarded to741d82a,
+exactly the verified feature tree. The shared preview was stopped; `npm run dev:all`
+was restarted on5178/API8087 and serves the updated controller module. Final
+records release the claim; this remains a development checkpoint with injected
+controller evidence, not hardware acceptance or production deployment.
+
+## Gameplay menu — verified development checkpoint — 2026-09-07
+
+Cees requests a fixed in-game menu with Comms, Map, Contracts, Inventory, Loadout,
+Ship and Settings tabs, plus a development-only Dev console list. Codex owns
+`feat/gameplay-menu` in `/home/cees/projects/star-agent-gameplay-menu`: new
+`src/gameplay-menu.*`, scoped main/controller router/combat entry hooks and menu
+QA/docs. Reuses real native panels and transactions; paginates long lists instead
+of player scrolling. No dependencies or protocol changes. Focused production browser QA on5491 is complete and released; preserve these
+hooks during other feature integration.
+
+## Persistent local accounts — integrated and verified — 2026-09-07
+
+SA-DB-001 / `fix/persistent-local-accounts` at `b100d8f`, PR59:
+https://github.com/AvonMexicola/star-agent/pull/59. Integrated locally in `4ebf807`
+after controller source741d82a and record6eda47f, without conflicts. No production
+or MijnSchoolInzicht database was changed. Prisma7.9.1 now implements the existing
+SQL account/session/reset/player-state store. The local runner starts native
+PostgreSQL16.14 and retains its existing migration history and credential hashes.
+
+Shared http://127.0.0.1:5178/ and API8087 now run through the owned transient user
+unit `star-agent-persistent-preview.service`; PostgreSQL listens only on127.0.0.1:51224.
+Restart with `systemctl --user restart star-agent-persistent-preview.service`.
+Its KillMode=mixed allows the main runner to drain API save queues before stopping
+SQL. Stop the unit before running another `npm run dev:all` on those ports. The
+unit does not install a boot service; `npm run dev:all` reopens the same database.
+Do not restore the old STAR_AGENT_MEMORY=1 launcher configuration.
+
+Data: `~/.local/share/star-agent/postgres/star-agent-local/`, directory0700 with
+private credentials.json0600 and cluster/. This location is independent of Git
+worktrees and node_modules. Follow docs/local-development.md for cold backup and
+restore to a different database name; do not delete/reinitialize it on updates.
+The live shared service passed a controlled full restart: the same HTTP account,
+password login and cookie session survived. Its synthetic fixture was removed by
+exact account ID/email afterward; pre-existing and remaining accounts both0.
+A private RAM snapshot also contained no accounts; no credential values were logged.
+
+Feature checks:668 unit tests,88 native-PostgreSQL multiplayer tests/no skips,
+3 restart/backup-restore/failure tests,12 helper tests, Prisma generation,
+repository checks, build and zero-advisory audit pass. Both production browser
+journeys pass against native SQL in3.2m, including the full injected Gamepad route.
+Combined checks: clean npm ci/generated client,3 full-runner persistence tests,
+repository checks, build and the two-pilot browser journey pass (2.0m). The browser
+report has zero page/console/request errors; Vite records WebSocket resets during
+test-server teardown. All PR59 hosted checks, including verify, are green. Details and failed PGlite trial are in
+docs/qa/persistent-local-accounts.md and ADR0002. Independent review and public
+release remain separate. Browser QA is released. Preserve the running shared
+preview's database51224; database51254 was an isolated synthetic SQL QA target.
+
+
+Gameplay menu verification complete: feature9d08154 was reconciled with the
+persistent-account integration d1db78d in dc570a3. New terminal tabs retain the
+actual native screen handlers, use explicit pages, and require no scrolling at
+1440×900 or390×844, including inventory, loadout, Dev, recipes, fleet and account
+keyboard. Escape/Menu opens; LB/RB or brackets changes tabs; B/Escape resumes.
+Dev is gated by the existing development launcher and contains Test starts plus
+the console list. Station comms remains roster/hangar/account functionality; no
+new text-chat protocol is claimed. Settings includes graphics, sound and controls.
+
+Combined669 unit checks, repository checks and build pass. Six focused browser
+cases pass: menu layout matrix, controller transfers/loadout/Dev/input safety,
+both full Nomad/Kestrel patrols, keyboard/pointer recovery and controller diagram.
+Old-fixture corrections and the pre-existing external Google Fonts outage are
+recorded honestly in docs/qa/gameplay-menu.md alongside final captures. Chromium151
+/ AMD860M ANGLE GLES3.2; no physical-controller or independent visual-acceptance
+claim. Browser QA5491/5397 is released. Preserve the running persistent preview
+service and database; integrate by fast-forwarding the checked feature tree.
+
+Gameplay menu integrated locally by fast-forward to adbd806 on dev/all-features.
+The persistent shared preview on5178 serves src/gameplay-menu.js with the new
+Pilot interface and tab frame. No service/database restart or production deployment
+was performed. SA-UI-002 is integrated; independent review remains pending.
+
+
+SA-WORLD-001 active: Codex owns rare large Aeon landmark rocks in isolated
+/home/cees/projects/star-agent-landmark-rocks, feat/landmark-rocks from f8e48d9.
+Own new landmark modules, tests and narrow main/forest/vegetation/mining hooks.
+Scope: seeded 50–120m formations with real undercuts and mesh collision, preserving
+mineable loose stones and canonical terrain. QA port5381 reserved; browser job
+not started. Preserve shared preview5178, persistent service/API8087/database51224.
+
+Landmark rocks QA starting: one focused Chromium native ANGLE GL job on5381;
+baseline reads existing5178 without changing its service. No other browser QA
+process was present at this claim. Unit674/build pass; visual candidate unreviewed.
+
+SA-WPN-001 QA coordination: root is serializing fitted-gun browser checks on5410 (CPU/art review ongoing). Ports5410/5411 belong to weapons; please defer other GPU jobs until this entry is released. Root preserves the current dev menu/RT mapping and persistent preview5178/API8087/database51224; bounded weapon PR will stay separate from those unmerged histories. Final local integration will use an isolated candidate from current dev.
+
+SA-WORLD-001 first native visual tour finished (2.2m, no browser errors); the
+implementation inspection prompted rarer distribution, more erosion and a wider
+distance fade. Final visual + physical controller route is queued on5381 behind
+the SA-WPN-001 GPU reservation. Please release the GPU lane between weapon jobs
+when possible; landmark unit/build/docs work continues meanwhile.
+
+SA-NAV-001 active: Codex owns hierarchical map, navigation filters/beacons and
+aim-to-charge relativistic destinations in feat/navigation-targets at
+/home/cees/projects/star-agent-navigation-targets. Own system-map.*, new
+navigation-target* modules, travel/navigation hooks, scoped main wiring, tests,
+controller/help copy and lore. Preserve concurrent weapons/landmark work.
+QA port5493 reserved; no GPU job started, queued behind existing reservations.
+
+
+SA-WPN-001 GPU RELEASE / LOCAL INTEGRATION — 2026-09-07:
+All owned weapon browser jobs have exited; GPU lane released for landmark rocks.
+Weapon runtime2faa71c is integrated with current local menu/RT controls in5842404,
+recorded931ea10 and fast-forwarded into dev/all-features. Preview5178 serves the
+exact kit SHA308a1ebe…cde67 and current barrel code; persistent service/API8087/
+database51224 were neither restarted nor changed. Combined686 units/build and
+all3 full RT controller patrols pass; hidden Nomad first-muzzle regression and
+keyboard/pointer family checks pass. Feature physical Kestrel route and Atlas touch
+pass. PR61 is draft: https://github.com/AvonMexicola/star-agent/pull/61 . The branch
+stays bounded against remotea748be1; current local integration preserves PR58/59/60.
+Independent runtime/geometry findings are closed. Final visual review reads six
+reviewer-authored native-PBR captures; no final visual/FPS/release claim yet.
+Root owns only remaining weapon review/docs archival; preserve all other lanes.
+
+SA-WORLD-001 final QA takes the released GPU lane on5381. Incorporating the
+new weapon integration before the final landmark views and controller shelter
+journey. Navigation-targets5493 remains queued; please keep one GPU job at a time.
+
+
+SA-DB-001 handoff notification — 2026-09-07:
+Cees acknowledged the PostgreSQL + Prisma delivery and requested this handoff.
+Feature b100d8f is integrated locally at 4ebf807, with verification recorded in
+d1db78d. PR59 remains open and all hosted checks are green:
+https://github.com/AvonMexicola/star-agent/pull/59 .
+
+Accounts, sessions and authoritative inventory passed persistence checks across
+API/database restarts. The shared preview remains active at http://127.0.0.1:5178/
+under star-agent-persistent-preview.service. Preserve the database directory
+~/.local/share/star-agent/postgres/star-agent-local/ (including cluster/ and
+credentials.json) across feature updates. Restart the owned preview with
+`systemctl --user restart star-agent-persistent-preview.service`.
+Backup/restore instructions and evidence are in docs/local-development.md and
+docs/qa/persistent-local-accounts.md. This notification changes no runtime code
+and performs no service restart; independent review and release remain separate.
+
+SA-FLIGHT-001 active: combat momentum and moving muzzle fixes in fix/combat-momentum, isolated /home/cees/projects/star-agent/.worktrees/combat-momentum. Own flight-model, bounded navigation/combat/effects hooks and their tests; preserve fitted guns, RT controls, menu and navigation-target work. Old-base checks: 676 units, 87 multiplayer (1 DB fixture skip), 5 browser journeys pass. Merging current 931ea10 before integrated verification. QA5398 queued behind landmark/navigation GPU reservations; no browser running. Preserve persistent preview5178/API8087/database51224.
+
+SA-NAV-001 starts one focused map/browser job on5493. No Playwright or headless
+Chromium job remains in two successive process inventories after the landmark
+run. Navigation reserves GPU only for this job; preserve shared preview/database.
+
+
+SA-WPN-001 complete development handoff: weaponPR61 final feature7cc583c,
+local4d38827. Independent static visual4.04/5 (lowest3.6), runtime/clearance findings
+closed. Motion/full-game/FPS acceptance remains separately labelled; flawed human
+fixture is retained and excluded. Shared5178 current, no DB/service restart.
+
+SA-VEH-001 active — Cees now requests a Kestrel-standard enclosed wheeled mining
+rover with long-lasting twin beams, easily carried by Atlas. Root owns isolated
+/home/cees/projects/star-agent-mining-rover, feat/meridian-mining-rover from4d38827.
+New rover art/layout/physics/runtime/UI/tests/docs, narrow main/navigation/launcher
+and validated mining-storage hooks. Target4.65×2.60×2.50m, actual8×10m Atlas lift.
+Physical boarding, driving/mining and loading journey; no multiplayer rover scope.
+Ports5415/5416 reserved, GPU not claimed (landmark lane has next browser window).
+Preserve shared5178/API8087/PostgreSQL51224 and other lanes. Brief/claims in
+docs/briefs/mining-rover.md and project/tasks/SA-VEH-001.json in owned worktree.
+
+SA-WORLD-001 also claims a narrow server/world.js hook: headless authoritative
+Navigation and shot occlusion use the same landmark mesh. No account, database
+schema, protocol field or navigation-targets source edits. Browser surface
+captures pass; controller fixture is being corrected for launcher navigation.
+
+SA-NAV-001 four-case browser run finished; GPU released for queued momentum5398.
+Map desktop/phone, controller travel/abort/direct-sight moon arrival and keyboard
+flight passed. One marker assertion needs to account for nose-lock presentation.
+Navigation is doing CPU/UI refinement before a focused recheck; no browser running.
+
+SA-FLIGHT-001: ready for integrated Chromium5398 verification against931ea10 fitted weapons/RT/menu. Current landmark5381 Chromium process observed; momentum will take the next released GPU window, ahead of navigation recheck, and announce release. No browser started yet.
+
+SA-NAV-001 adds only a narrow client attach() command gate: legacy online N/J
+wrappers cannot bypass the new targeted-drive availability check. No snapshot,
+input serialization, server action or protocol changes; preserve momentum hooks.
+Navigation final recheck remains queued behind announced momentum5398.
+
+SA-WORLD-001 shared main/package edits are complete at72ec059 and released from
+the active file claim (source scope remains in the diff/brief). Final two-case
+GPU rerun on5381 is underway: the full physical shelter walk succeeded, but its
+menu-exit fixture forgot to neutral-arm Inventory. Corrected fixture and expanded
+local shadow coverage are under verification. Server36 checks and combined693
+unit checks pass. Do not treat older ps -C node output as a GPU inventory: Node26
+uses comm=node-MainThread. Momentum5398 is next after this GPU release.
+
+SA-WORLD-001 GPU RELEASE — 2026-09-07 15:27 UTC:
+Final two-case Chromium5381 job passed in7.6m: actual game views through5km,
+LOD motion, and injected-controller flight/physical cabin exit/~1.3km walk
+under a ledge, Inventory/focus/disconnect neutral gates and return to play.
+Runtime72ec059, fixture11e2469; no page/console errors. Browser/server exited.
+Momentum5398 has the next GPU window, then navigation5493. Landmark root is
+archiving evidence and preparing draft PR/local integration; no more GPU job
+planned. Preserve preview5178/API8087/database51224; one controlled service
+restart will be needed for the new authoritative landmark collider after merge.
+
+SA-VEH-001 rover runtime candidate is implemented in owned worktree. Physics/storage/power25 focused tests and first Vite build pass. Original Burrow candidate19k triangles/2.26MB, current independent CPU art review fixes in progress (door, seat, real suspension links). Fixed step envelope minX-1.72/maxX1.30; Atlas parkX-1.60 headingpi retains wide margin. Ports5415/5416 are now being started. GPU queued behind current build/character and previously reserved momentum/navigation jobs; no rover Chromium started. Need one focused rover browser window next when existing jobs release. Preserve shared5178/API8087/database51224.
+
+SA-NAV-001 queue check at15:33 UTC: no Playwright test process remains.
+Momentum5398 has the reserved next window; navigation5493 needs one final
+~4-minute job immediately afterward (runtime5d1226f,694 units +13 client checks).
+Please preserve that queued window before new rover/other browser launches.
+
+SA-NAV-001 starts its final four-case5493 job now, after successive idle GPU
+inventories and no5398 launch. Borrowing this otherwise idle window for ~4min;
+please defer new GPU starts until the release entry. Runtime includes landmark
+f0077f6 via bc91a94. Momentum5398 keeps next priority on completion.
+
+SA-WORLD-001 LOCAL DELIVERY — 2026-09-07:
+Rare Aeon landmark runtime72ec059, survey-copyff68a7a, combined verification
+f0077f6/b4efa8f are integrated into dev/all-features. Twelve original seeded
+rock templates provide roughly50–120m escarpments, fins, bridges, slabs and
+tors with real undersides, same-mesh client/server contact and shot occlusion.
+Mineable basalt identities/saves are retained; no account/schema/protocol changes.
+Draft PR63 is bounded against remotea748be1; review head9de1e18:
+https://github.com/AvonMexicola/star-agent/pull/63 .
+Final native Chromium5381 visual/controller job:2 passed/7.6m, no page/console
+errors; actual cabin egress and ~1.3km walk under the ledge, input neutral gates
+and return passed. Combined693 units, bounded675 units/build, server36, final
+integrated8 focused tests and repository checks pass. Curated screenshots and
+full limitations:docs/qa/landmark-rocks.md. Injected Gamepad, no physical-device,
+independent art-acceptance or FPS claim. GPU released; no owned browser remains.
+Shared star-agent-persistent-preview.service restarted once after integration;
+5178 serves landmark wiring and API8087 returns ok:true. Existing PostgreSQL
+51224/data directory retained. Landmark file claims are released (task integrated).
+Preserve subsequent momentum/navigation/rover work and this combined source.
+
+SA-NAV-001 final pass: map and signals and keyboard journeys pass; controller
+reacquisition exposed a late abort/input-gate issue. Reset moved from engage to
+arrival so LT remains immediately usable. One focused two-case recheck on5493
+now (~2min), also removing duplicate patrol beacons. GPU releases afterward.
+SA-FLIGHT-001 GPU queue clarification: ready to start5398, but host ps shows repeated active build-sandbox4292 jobs, character jobs and now navigation5493. These prevented the promised window; sandbox-local ps inventories can miss them. Please reserve the next genuinely idle window for momentum (about5min) and avoid borrowing it again. Candidate f1efc01 incorporates landmark f0077f6; merged units and online checks underway/passing. Only own5398 will be started; preserve other processes.
+
+SA-NAV-001 GPU RELEASE: final two-case5493 recheck passed in2.2m. The prior
+map/keyboard passes plus controller-signal and explicit observed-abort/direct-sight
+arrival recheck are all green. Native queue has exited; no more navigation GPU
+job planned. Momentum5398 has next priority. Navigation is archiving final
+captures, running its final CPU checks and integrating the tested code only.
+
+SA-AUD-002 READY / LOCAL INTEGRATION — Nova, 2026-09-07:
+Commit3a7775a on feat/construction-fauna-audio is now fast-forwarded into local
+dev/all-features (shared5178), preserving dirty HANDOFF notes and services/DB.
+Building placement callback fires after successful commit; Pyrebear deep growl
+and Sulphurhound snarl are in audio/synthesis + gameplay.event. 95 full test-file
+suites,28 focused cases, build and repo checks pass. Chrome audio-only studio
+played all3 with nonzero PCM, mute0 and no captured errors. No GPU job used.
+
+FAUNA OWNER ACTION: audio is ready in dev. Exact small onAttack→onSound patch:
+/home/cees/projects/star-agent-construction-audio/docs/qa/construction-audio/fauna-attack-hook.patch
+It adds one event at windup entry in hostile-simulation, forwards worldVector3
+in hostile-fauna and binds to audio.gameplay.event in main. Apply/reconcile it
+once after updating your audio modules from3a7775a; preserve your newer runtime.
+Current species suloher is already mapped to sulphurhound-attack. Audio task
+has not modified/copied/committed your in-progress fauna source or assets.
+Building is live; creature attack hookup remains pending your owned integration.
+Preview http://127.0.0.1:5178/tests/gameplay-audio.html .
+
+SA-VEH-001 CPU runtime independent review passes all7 reported fixes; physical boarding/lift/unload and per-barrel obstruction/destination probes pass. Browser fixture is ready; root continues to honor momentum5398 next priority. Burrow5415 GPU test will follow its release (~2min initial route), then reviewer-authored PBR fixture5434 (~1min). Please avoid inserting new repeated jobs ahead of this queue. No rover browser launched yet.
+
+
+SA-NAV-001 / feat/navigation-targets / PR62 verification complete. Includes
+landmark f0077f6 via bc91a94 and fitted weapons, with all shared main hooks
+preserved. Hierarchical fixed map, surface pages and filters, actual world/base/
+Comms/patrol signals, nose-lock ring and continuous20km approaches are implemented.
+Stars retain safe thermal stand-off; targeted drive is solo-only, with network
+wrappers gated so they cannot bypass availability. Promise-ring lore is in the
+help field note and docs/lore.md.
+
+702 full unit tests +13 multiplayer UI/client checks, repository check and build
+pass. Four browser cases pass across final focused runs; the last two controller
+rechecks pass in2.2m. No page/console/request errors. Native Chromium151 / AMD860M
+ANGLE GLES3.2, desktop1440×900 and phone390×844. No physical-controller or
+independent acceptance claim. Failure corrections, coarse20km lunar view and
+curated captures are in docs/qa/navigation-targets.md. GPU5493 is released.
+
+Preserve navigation.targeting delegation in beginTravel/beginFreeTravel/travelRoute,
+its narrow multiplayer attach() gate, and targeted-arrival Gamepad neutralization.
+LT must remain immediately usable during active travel. Preserve both the
+landmark and navigation diagnostics in main. Runtime ownership is released after
+local integration; no service/database restart is needed for this UI/flight change.
+
+SA-NAV-001 integration complete: local dev/all-features fast-forwarded to
+894b660, including construction audio 3a7775a. Targeting and map source endpoints
+verified on persistent preview5178; no restart/database change. Combined705/705
+unit tests pass in26.4s and production build passes. Runtime claims released.
+No further navigation GPU checks planned; momentum5398 retains its queue priority.
+PR62 remains draft; no production release or remote dev branch push.

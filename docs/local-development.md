@@ -28,18 +28,45 @@ A copied test URL includes its ship and start. This selector is gated by
 `VITE_DEV_TOOLS=1`, set by `dev:all`; ordinary production builds retain their entry.
 
 The Atlas Mark II link opens the separate 64 m studio with its latest committed
-geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold and
-no installed weapons. Multiplayer currently uses the server's Nomad flight model;
+geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold; its four mounts now carry S2 guns. Multiplayer currently uses the server's Nomad flight model;
 joining it reserves a server-assigned hangar and places the pilot on its deck beside
 the parked Nomad. It replaces the dev teleport, ship selection and test inventory.
 Hangar gravity follows the occupied bay, including EVA entry into another pilot's
 hangar; crossing an open deck edge returns to EVA. Local construction is not replicated.
 
-The runner starts Vite on 5178 and an isolated memory API on 8087. Optional local
-registration/login works through ACCOUNT; accounts reset when the runner stops.
+The runner starts Vite on 5178, the API on 8087 and native PostgreSQL on loopback
+51224. Optional registration/login works through ACCOUNT. Accounts, sessions and
+server inventory persist across runner restarts. Prisma uses the existing SQL
+tables and authentication contracts. The runner drains API save queues before
+stopping PostgreSQL. A database failure stops startup; it never falls back to RAM.
 Forgotten-password emails require SMTP and are unavailable in this local mode.
 Ports in use cause an explicit failure rather than killing another preview.
-Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned services.
+Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops the owned frontend,
+API and local database after queued saves finish.
+
+The default database directory on Linux is
+`~/.local/share/star-agent/postgres/star-agent-local/` (or under `XDG_DATA_HOME`).
+It contains `cluster/` and a private `credentials.json`; keep both outside Git and
+browser assets. Changing worktrees or reinstalling dependencies does not replace
+this directory. `DEV_DATABASE_NAME` selects a separate named database and
+`DEV_DATABASE_PORT` chooses its loopback port. `DEV_DATABASE_URL` explicitly selects
+an already running local PostgreSQL database. An inherited production
+`DATABASE_URL` is never used by `dev:all`. No root access or Docker is required;
+the pinned development dependency supplies native PostgreSQL 16.14 binaries.
+
+For a cold backup, stop the runner and copy the entire named database directory,
+including `credentials.json` and `cluster/`, to private storage. Restore the copy
+under a new `DEV_DATABASE_NAME` and start with that name; the restart/restore test
+verifies that its accounts, cookies and inventory still work. Keep the original
+until the restored instance is verified. PostgreSQL major-version changes require
+an explicit upgrade or dump/restore; the runner refuses mismatched clusters.
+Never delete the database directory as part of a routine restart.
+
+`npm run db:local` starts just this SQL service. `npm run prisma:generate` regenerates
+the server-only Prisma client; `npm ci` does this through `postinstall` too.
+`npm run db:migrate` requires an explicit `DATABASE_URL` and applies the existing
+transactional SQL migrations. Do not use `prisma db push` or `migrate reset` on this
+schema: its expression indexes/checks and deployed migration history are retained.
 
 ## Integration snapshot
 
@@ -49,12 +76,15 @@ Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned serv
 | Consolidated flight, grass/terrain loading, mining/EVA/inventory, station opening | `integrate/main-2026-09-06` through multiplayer ancestry |
 | Gear-limited flight, handling, drive, utilities, graphics, multiplayer | `feat/multiplayer-ten` at `f7a30ef` |
 | Server-assigned hangar spawns and local station gravity | `fix/multiplayer-hangar-gravity` at `b7eefc5` (PR #51) |
+| Persistent local accounts, sessions and inventory through PostgreSQL/Prisma | `fix/persistent-local-accounts` at `b100d8f` (PR #59) |
+| Fitted S1 Nomad / S2 Kestrel / S3 Atlas guns, barrel-origin fire | `feat/ship-weapon-fittings` runtime `2faa71c`, review `7cc583c`, combined in `5842404` |
 | Flyable Kestrel and shared Meridian identity | `feat/kestrel-flight` at `e4ec7df` |
 | Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `385c138` (asset/gameplay `9a363cb`) |
 | Construction, mainframes, recipes and polished building pieces | `feat/base-building` at `891c916` |
 | Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
 | Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
+| Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
 | Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
@@ -113,7 +143,7 @@ the frontend and API to be updated together; restart `dev:all` after integration
 The local integration includes the offline patrol loop from `feat/space-combat`.
 Choose **Nomad 02** or **Kestrel**, start in **Orbit**, then open **Patrol console**
 (on-screen button or controller Menu) and accept. Fly to the amber beacon, brake,
-and fight the Nomad/Kestrel pair. T / A fires; 1–3 / Menu selects weapons;
+and fight the Nomad/Kestrel pair. T / RT fires; 1–3 / Menu selects weapons;
 Tab / Menu selects the next hostile. The physical hangar cargo terminal also opens
 the console. File the combat report after both kills, or recover after ship loss.
 
@@ -121,7 +151,7 @@ Shields regenerate after six seconds without a hit; docking repairs hull damage.
 Progress resets on reload. This first slice is offline and does not add persistent
 contracts or credit rewards. See [combat controls and scope](space-combat.md) and
 [verification evidence](qa/space-combat.md). The asset studios remain inspection
-surfaces; shared gameplay energy weapons do not imply new fitted gun meshes.
+surfaces. The offline playable fleet now carries the fitted Meridian gun kit.
 
 ## Station exterior geometry preview
 
@@ -154,3 +184,80 @@ checked, up-to-date PRs and resolved discussions, with force-push/deletion disab
 The original Chromium guidance is retained. See [framework QA](qa/contributor-framework.md)
 for actual CI/hosted settings and their limits. This changes contribution routing,
 not the local account/save model or public release authority.
+
+### Controller trigger and layout update
+
+Ship fire is **RT / R2**, brake/drive cancellation is **LT / L2**, and vertical
+thrust is **A/B (✕/○)**, matching EVA. Open **Menu → Settings → Controller layout** or
+**Help → View controller layout** for the labeled controller diagram and the
+Flight, On foot, EVA and shortcut views. Menu A-confirm/B-back remains unchanged.
+Verification and retained captures: [controller layout QA](qa/controller-layout.md).
+
+
+### Gameplay terminal
+
+Escape, controller Menu, or the on-screen Menu button opens the fixed gameplay
+screen. Tabs: Comms, Map, Contracts, Inventory, Loadout, Ship, Settings, and Dev
+on the development build. LB/RB or bracket keys changes tabs; B/Escape resumes.
+Long lists have page controls instead of scrolling. Ship contains fleet, weapons,
+utilities, construction and recipes; Settings contains graphics, sound and controls.
+Dev has Test starts and the console list. Comms uses the existing live station
+roster, hangar request and account systems; no new text-chat transport is included.
+[Gameplay menu QA](qa/gameplay-menu.md) records the checks and limitations.
+
+
+### Fitted Meridian weapons
+
+All three energy families now have original S1/S2/S3 gun models. Nomad carries
+2S1, Kestrel4S2 and the flyable Atlas3S3; the separate MarkII studio also has3S3.
+Raise and fully retract landing gear before firing: G or Menu → Ship → Gear.
+Use1/2/3 or Menu → Ship → Ship weapon to select a family; T, RT/R2 or the touch
+trigger fires from the actual barrel tips. Larger sizes increase damage, range,
+impact scale and sound weight. Online combat authority is unchanged.
+
+The combined source preserves the current gameplay menu, controller mapping and
+persistent local accounts. 686unit checks, build and all three full RT controller
+patrol journeys pass. The weapon branch also passed the physical Kestrel ladder,
+launch and Selene landing/exit route and Atlas touch controls. The final visual
+and frame-time acceptance status is recorded in [weapon QA](qa/ship-weapons/production-record.md).
+No service/database restart or public deployment accompanies this integration.
+
+Navigation-target development adds a centred star/planet map, paged surface sites,
+filterable HUD bearings and a three-second nose-lock ring. M or Menu → Map opens
+it. Hold the nose on a visible destination, then N/J or both bumpers + D-pad up
+engages a continuous20km approach (stellar thermal stand-off remains500,000km).
+The menu and ring use existing RT weapon controls. Local base/Comms/patrol signals
+come from their live systems; targeted drive is currently solo-only. Lore lives
+in docs/lore.md and the in-game help field note. QA uses port5493 independently of
+the persistent preview5178/API8087/database51224; it never restarts that service.
+
+### Construction and creature audio
+
+Successful building placement now plays a settling/locking sound. The
+[sound studio](http://127.0.0.1:5178/tests/gameplay-audio.html) includes a deep
+Pyrebear growl and a sharper Sulphurhound snarl. Creature attack wiring is connected in the in-progress fauna worktree;
+that feature is not yet integrated here. The audio callback record is in
+[the handoff](qa/construction-audio/README.md). No new control bindings.
+
+Navigation SA-NAV-001 is locally integrated at 894b660 (PR62 draft). Refresh
+http://127.0.0.1:5178/ for the hierarchical map, signal filters, nose-lock ring
+and solo targeted drive. Source endpoints were verified after the fast-forward;
+705 combined unit tests and the build pass. No preview/database restart occurred.
+Final controller/browser evidence and limitations: docs/qa/navigation-targets.md.
+
+### Combat momentum checkpoint
+
+Fly-by-wire now uses finite thrust to correct drift and brake on release. V / R3
+unlocks coasting; rotate and fire while travelling backwards. Hold X / LT for full
+braking. Z or Menu → Ship → Combat / cruise selects speed independently of assist.
+Combat caps are Kestrel220, Nomad180, Atlas120 m/s; cruise, boost, overspeed and
+lowered landing gear lock weapons. Landing assist requires speed below10 m/s.
+All ships carry momentum through turns, with Atlas taking the longest to recover.
+At100 m/s in vacuum, full nose-axis braking to below1 m/s takes approximately
+58m/1.5s,97m/2.4s and251m/7.4s respectively. The HUD estimates stopping distance
+at the current attitude; it is not a collision-avoidance guarantee.
+
+Moving rifle pulses and ship lasers follow the actual muzzle. Ballistic shots
+inherit launch velocity; collision and lead prediction use that trajectory.
+[Momentum QA](qa/combat-momentum.md) records the exact checked source, failures,
+evidence and limits. This is a local development checkpoint, not release approval.

@@ -1,0 +1,25 @@
+{
+  "id": "SA-UI-002",
+  "title": "Unified gameplay screen with fixed tabs and pages",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex gameplay menu",
+  "status": "integrated",
+  "branch": "feat/gameplay-menu",
+  "base": "6eda47f75b71f1b71439a674dfc3f57f9eb6bd11",
+  "updated": "2026-09-07",
+  "areas": [
+    "interface"
+  ],
+  "claims": [
+    "src/gameplay-menu.js",
+    "src/gameplay-menu.css",
+    "src/main.js",
+    "src/controller-ui.js",
+    "src/combat/space-combat.js",
+    "scripts/gameplay-menu.config.js",
+    "scripts/gameplay-menu.spec.js",
+    "scripts/space-combat.spec.js"
+  ],
+  "brief": "docs/briefs/gameplay-menu.md"
+}

@@ -63,3 +63,36 @@ test('mixer gates pre-gesture voices, caps polyphony, attenuates distant shots a
   audio.setEnabled(true);audio.event({type:'shot',weapon:'pulse',point:new THREE.Vector3(1000,0,0)},{focused:true,position:new THREE.Vector3()});assert.equal(audio.state.shots,0);
   audio.dispose();assert.equal(audio.play('pulse'),false);assert.equal(audio.state.buffers,0);
 });
+
+test('sized ship shots lower pitch and increase the bounded gain without altering default personal shots',()=>{
+  const context=mockContext(),sources=[];const original=context.createBufferSource;
+  context.createBufferSource=()=>{const node=original();node.playbackRate={value:1};sources.push(node);return node;};
+  const audio=new GameplayAudio(context,context.createGain());audio.setEnabled(true);
+  const calls=[],play=audio.play.bind(audio);audio.play=(kind,options)=>{calls.push(options);return play(kind,options);};
+  const nav={focused:true,position:new THREE.Vector3()};
+  audio.event({type:'shot',weapon:'pulse'},nav);
+  audio.event({type:'shot',weapon:'pulse',size:3,pitch:.72},nav);
+  assert.equal(sources[0].playbackRate.value,1);assert.equal(sources[1].playbackRate.value,.72);
+  assert.ok(calls[1].gain>calls[0].gain);assert.ok(calls[1].gain<.2);audio.dispose();
+});
+
+
+test('creature attacks map species, spatialize once per event, and stop on interruption',()=>{
+ const audio=new GameplayAudio(mockContext(),{}),nav={focused:true,enabled:true,mode:'walk',position:new THREE.Vector3(),orientation:new THREE.Quaternion()};
+ const bear={type:'creature-attack',species:'pyrebear',point:new THREE.Vector3(3,0,-3)};
+ audio.event(bear,nav);assert.equal(audio.state.attacks,0);
+ audio.setEnabled(true);audio.event(bear,nav);assert.equal(audio.state.last,'pyrebear-attack');assert.equal(audio.state.attacks,1);
+ audio.event({...bear,species:'suloher'},nav);assert.equal(audio.state.last,'sulphurhound-attack');assert.equal(audio.state.attacks,2);
+ audio.event({...bear,species:'unknown'},nav);assert.equal(audio.state.attacks,2);
+ audio.event({...bear,point:new THREE.Vector3(301,0,0)},nav);assert.equal(audio.state.attacks,2);
+ audio.event(bear,{...nav,enabled:false});audio.event(bear,{...nav,focused:false});assert.equal(audio.state.attacks,2);
+ audio.suspend();assert.equal(audio.state.voices,0,'long growls stop on menu/focus interruption');
+ audio.event({type:'building-placement',point:new THREE.Vector3(2,0,0)},nav);assert.equal(audio.state.placements,1);assert.equal(audio.last,'building-placement');
+ audio.setEnabled(false);assert.equal(audio.state.voices,0);audio.dispose();
+});
+test('bear growl is longer and has more low-frequency weight than the hound snarl',()=>{
+ const bear=synthesize('pyrebear-attack',0,24000),hound=synthesize('sulphurhound-attack',0,24000);
+ const lowShare=samples=>{let low=0,energy=0,total=0;const a=1-Math.exp(-2*Math.PI*180/24000);for(const n of samples){low+=a*(n-low);energy+=low*low;total+=n*n;}return energy/total;};
+ assert.ok(bear.length>hound.length);assert.ok(lowShare(bear)>lowShare(hound)*1.15);
+ for(const kind of ['building-placement','pyrebear-attack','sulphurhound-attack']){const pcm=synthesize(kind,0,24000);assert.ok(Math.abs(pcm.at(-1))<.001,'no sharp ending');}
+});

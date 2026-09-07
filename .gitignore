@@ -11,3 +11,7 @@ assets/kestrel/kestrel-detail.glb
 assets/kestrel/kestrel-meshy-input.glb
 assets/kestrel/kestrel-meshy-clean.glb
 .vercel/
+server/generated/
+.env
+.env.*
+!.env.example

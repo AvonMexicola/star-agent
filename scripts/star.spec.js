@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {steer} from '../tests/browser/navigation-helpers.js';
 import {mkdir,writeFile} from 'node:fs/promises';
 const evidence='/tmp/star-agent-stellar';
 test('star renders at observation distance, damages the hull and permits explicit recovery',async({page,browser})=>{
@@ -43,7 +44,7 @@ test('the system drive continuously reaches the stellar observation point',async
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.goto('/?intro=0&debug&epoch=1788000000000');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.evaluate(()=>window.starAgent.setRenderScale(.4));
  await page.keyboard.press('m');await page.locator('[data-travel-target="star"]').click();await expect(page.locator('#map-engage')).toBeEnabled();
- const start=await page.evaluate(()=>window.starAgent.state.position);await page.locator('#map-engage').click();
+ const start=await page.evaluate(()=>window.starAgent.state.position);await page.locator('#map-engage').click();await steer(page,'star','keyboard');await page.keyboard.press('n');
  await page.waitForFunction(()=>window.starAgent.state.travel?.phase==='cruising',null,{timeout:90000});
  const during=await page.evaluate(()=>window.starAgent.state);expect(during.position).not.toEqual(start);expect(during.travel.progress).toBeGreaterThan(0);expect(during.travel.progress).toBeLessThan(1);
  await page.waitForFunction(()=>!window.starAgent.state.travel&&window.starAgent.state.body==='star',null,{timeout:240000});

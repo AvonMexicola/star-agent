@@ -102,7 +102,7 @@ async function shot(page, name) {
 async function stopWalking(page) {
   await pad(page, { axes: [0, 0, 0, 0] });
   // The real controller brake stops the avatar, never the moving cabin hull.
-  await tap(page, 1);await frames(page, 2);
+  await tap(page, 6);await frames(page, 2);
 }
 async function lookAtLocal(page, point) {
   await neutral(page);
@@ -293,7 +293,7 @@ test('parked controller journey rests, transfers cargo, exits and boards physica
   await page.waitForFunction(() => window.starAgent.state.mode === 'flight');
   expect((await state(page)).landingGear.target).toBe(true);
   await command(page, 'gear');await neutral(page);
-  await pad(page, { buttons: { 7: 1 } });
+  await pad(page, { buttons: { 0: 1 } });
   await page.waitForFunction(() => window.starAgent.state.mode === 'flight' && window.starAgent.state.landingGear.progress === 0);
   const launched = await state(page);expect(launched.doorProgress).toBe(0);expect(launched.insideShip).toBe(false);
   expect(launched.landingGear.visual).toBe(0);await neutral(page);
