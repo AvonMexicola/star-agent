@@ -16,7 +16,7 @@ export function websocketURL(locationObject = globalThis.location) {
 }
 
 export function navigationInput(nav, pad = {}, { mouseYaw = 0, mousePitch = 0, fire = false } = {}) {
-  const blocked = !nav?.enabled || !nav.focused || globalThis.document?.hidden || globalThis.document?.querySelector?.('dialog[open]');
+  const blocked = !nav?.enabled || !nav.focused || nav.openingActive || globalThis.document?.hidden || globalThis.document?.querySelector?.('dialog[open]');
   if (blocked) return cleanInput();
   const keys = nav.keys;
   const eva = nav.mode === 'eva';
