@@ -3,6 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { stationFinishPalette } from './station-finish-palette.js';
 import { createStationShopGraphics } from './station-shop-graphics.js';
+import { STATION_HUB_BOUNDS } from './station-hub-policy.js';
 
 /** Room architecture is baked into local-metre material batches. The authored
  * shop kit supplies the furniture, stock and human-scale storefronts. */
@@ -86,7 +87,7 @@ export function createConcourse({sign}) {
     light.shadow.camera.far=22;light.shadow.bias=-.001;light.shadow.normalBias=.04;
     group.add(light,light.target);lights.push(light);
   }
-  return {group,lights,staticBoxes:[],interiorBox:new THREE.Box3(new THREE.Vector3(-22,-8,-19),new THREE.Vector3(22,1.5,19))};
+  return {group,lights,staticBoxes:[],interiorBox:new THREE.Box3(new THREE.Vector3(...STATION_HUB_BOUNDS.min),new THREE.Vector3(...STATION_HUB_BOUNDS.max))};
 }
 
 export function assetCollisionBoxes(root,offset=new THREE.Vector3()){

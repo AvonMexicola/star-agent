@@ -120,7 +120,7 @@ try {
   }
   nav.onTakeControl=enterPlayerInterface;
   const station=new StationComplex(scene,{...(introEnabled?openingStationOptions():{}),
-    exteriorRefresh:new URLSearchParams(location.search).get('dev')==='1'&&new URLSearchParams(location.search).get('stationExterior')==='1'});nav.station=station;station.nav=nav;
+    exteriorRefresh:true});nav.station=station;station.nav=nav;
   const crashEffects=new CrashEffects(scene);
   const stationButton=$('station-destination');
   station.readyPromise.then(()=>{if(station.finishStatus!=='ready'){weatherShip(station.pods[0].model,planet.surfaceTexture);weatherShip(station.hub.group,planet.surfaceTexture);}stationButton.disabled=false;stationButton.querySelector('small').textContent='HANGAR · DOCK & EXPLORE';}).catch(()=>{stationButton.querySelector('small').textContent='STATION UNAVAILABLE';notify('Station unavailable. Planet flight is still available.');});
@@ -236,7 +236,7 @@ try {
     launch.innerHTML=`<img src="${MERIDIAN.emblemURL}" alt="Meridian Shipworks"><span>MERIDIAN SHIPWORKS / FLIGHT TRIAL</span><h2 id="kestrel-launch-title">Kestrel.</h2><p>One seat. Open sky.</p><dl><dt>B</dt><dd>Launch / land</dd><dt>W / S</dt><dd>Thrust / reverse</dd><dt>G</dt><dd>Landing gear</dd><dt>4</dt><dd>Exterior camera</dd><dt>F</dt><dd>Port ladder when landed</dd></dl><button id="kestrel-begin">Fly Kestrel ↗</button><small>Temporary flight · regular save unchanged<br>Four S2 mounts · energy array online</small>`;
     document.body.append(launch);launch.querySelector('button').addEventListener('click',capture);
   }):Promise.resolve();
-  createStationServices(nav,station,inventory);
+  createStationServices(nav,station,inventory,{loadout,online:()=>multiplayer.connected,request:fields=>multiplayer.request('stationHub',fields)});
   nav.onVoyage=event=>{if(event==='dock')station.parkedPod=station.activeIndex;if(fleet.record(event))notify('Atlas unlocked! Open Fleet (U) while seated at the station to board your freighter.');};
   let selectingShip=false;
   const fleetUI=createFleetUI(nav,fleet,async id=>{
@@ -285,7 +285,7 @@ try {
   const localItemGetter=Object.getOwnPropertyDescriptor(Object.getPrototypeOf(loadout),'item').get;
   const localAmmoFor=loadout.ammoFor.bind(loadout),localSpendRound=loadout.spendRound.bind(loadout),localMine=mining.onMine.bind(mining);
   let localSuitColor=-1,serverWeapon=null;
-  Object.defineProperty(loadout,'item',{configurable:true,get:()=>multiplayer.connected?serverWeapon:localItemGetter.call(loadout)});
+  Object.defineProperty(loadout,'item',{configurable:true,get:()=>!loadout.canSelect()?null:multiplayer.connected?serverWeapon:localItemGetter.call(loadout)});
   loadout.ammoFor=item=>{
     if(!multiplayer.connected)return localAmmoFor(item);
     const ammo=item==='rifle-laser'?'carbine-charge':item==='sidearm-pistol'?'sidearm-charge':null;

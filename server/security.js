@@ -34,7 +34,7 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
         // be read. The accepted shot still spends its ordinary charge/cooldown.
         return {accepted:false,damage:0,reason:'friendship-unavailable'};
       }
-    }
+    } else await Promise.resolve(); // admit simultaneous contacts before applying either hit
     // A delayed query cannot hit a respawn or a different victim life. Ordinary
     // movement is permitted: the original validated impact point owns the zone.
     if (attacker.nav !== attackerLife || victim.nav !== victimLife) return {accepted:false,damage:0};
@@ -53,7 +53,7 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
       if (pose) strike = {type:'event',event:'stationStrike',id:`${station.id}:${++sequence}`,stationId:station.id,
         attackerId:attacker.id,victimId:victim.id,cause,mountId:pose.mountId,barrel:pose.barrel,
         yaw:pose.yaw,pitch:pose.pitch,origin:pose.origin.toArray(),direction:pose.direction.toArray(),target:pose.target.toArray()};
-      onStrike(attacker,victim,strike);
+      await onStrike(attacker,victim,strike);
     }
     return {accepted:true,damage:applied,protected:Boolean(station),friend,strike};
   }
@@ -63,12 +63,17 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
     protectedAt:point => protectionAt(stations,point),
     pending:player => (tasks.get(player)?.size ?? 0) > 0,
     submit(attack,onResolved = () => {}) {
-      const player = attack.attacker;
-      let pending = tasks.get(player);
-      if (!pending) { pending = new Set(); tasks.set(player,pending); }
+      // Both accounts participate in this pending mutation. A victim's leave,
+      // reconnect or respawn must wait just as the attacker's does, otherwise a
+      // late callback could persist the old object over a newly joined account.
+      const participants = [...new Set([attack.attacker,attack.victim].filter(Boolean))];
       const task = resolve(attack).then(result => { onResolved(result); return result; }).catch(error => { onError(error); return {accepted:false,damage:0}; });
-      pending.add(task);
-      task.finally(() => { pending.delete(task); if (!pending.size) tasks.delete(player); });
+      for (const player of participants) {
+        let pending = tasks.get(player);
+        if (!pending) { pending = new Set(); tasks.set(player,pending); }
+        pending.add(task);
+        task.finally(() => { pending.delete(task); if (!pending.size) tasks.delete(player); });
+      }
       return task;
     },
     async settle(player) { await Promise.all([...(tasks.get(player) ?? [])]); },

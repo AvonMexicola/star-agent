@@ -34,17 +34,14 @@ export function defensePose(station, mount, target, barrel = 0) {
   const pivot = new THREE.Vector3().fromArray(layout.pitchPivot);
   const offset = new THREE.Vector3().fromArray(layout.muzzles[barrel % layout.muzzles.length].position);
   const relative = local.clone().sub(pivot);
-  let yaw = Math.atan2(-relative.x, -relative.z), pitch = Math.atan2(relative.y, Math.hypot(relative.x,relative.z));
-  const aim = new THREE.Quaternion();
-  // Account for the selected outboard barrel, rather than aiming its pivot and
-  // drawing a beam several metres away from the physical bore at close range.
-  for (let i = 0; i < 10; i++) {
-    aim.setFromAxisAngle(UP,yaw).multiply(new THREE.Quaternion().setFromAxisAngle(RIGHT,pitch));
-    const direction = relative.clone().sub(offset.clone().applyQuaternion(aim));
-    yaw = Math.atan2(-direction.x,-direction.z);
-    pitch = Math.atan2(direction.y,Math.hypot(direction.x,direction.z));
-  }
-  aim.setFromAxisAngle(UP,yaw).multiply(new THREE.Quaternion().setFromAxisAngle(RIGHT,pitch));
+  // Solve the actual outboard bore analytically. The target must lie beyond
+  // the muzzle, not inside the barrel's swept radius; nearby unreachable
+  // targets use another battery instead of a backward or converging fake ray.
+  const horizontal=Math.hypot(relative.x,relative.z),lengthSquared=relative.lengthSq()-offset.x*offset.x;
+  if(horizontal<=Math.abs(offset.x)||lengthSquared<=offset.z*offset.z)return null;
+  const pitch=Math.atan2(relative.y,Math.sqrt(horizontal*horizontal-offset.x*offset.x));
+  const yaw=Math.atan2(-relative.x,-relative.z)+Math.asin(offset.x/horizontal);
+  const aim=new THREE.Quaternion().setFromAxisAngle(UP,yaw).multiply(new THREE.Quaternion().setFromAxisAngle(RIGHT,pitch));
   const origin = offset.applyQuaternion(aim).add(pivot).applyQuaternion(rotation).add(root);
   return {mountId:mount.id,barrel,yaw,pitch,origin,direction:FORWARD.clone().applyQuaternion(aim).applyQuaternion(rotation).normalize(),
     target:target.clone(),root,rotation};
@@ -52,7 +49,8 @@ export function defensePose(station, mount, target, barrel = 0) {
 
 export function selectDefensePose(station, target, barrel = 0) {
   const mounts = station.mounts ?? STATION_DEFENSE_MOUNTS;
-  const poses = mounts.map(mount => defensePose(station,mount,target,barrel));
+  const poses = mounts.map(mount => defensePose(station,mount,target,barrel))
+    .filter(pose=>pose&&pose.pitch>=-.2&&pose.pitch<=Math.PI/2&&pose.direction.dot(target.clone().sub(pose.origin).normalize())>1-1e-8);
   // Prefer an outward-facing platform; all strikes remain authoritative hitscan.
   poses.sort((a,b) => Number(b.pitch >= 0) - Number(a.pitch >= 0) || a.origin.distanceToSquared(target) - b.origin.distanceToSquared(target));
   return poses[0] ?? null;

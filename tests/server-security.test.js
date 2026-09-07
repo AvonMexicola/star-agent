@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {createStationSecurity} from '../server/security.js';
 import {shoot} from '../server/combat.js';
 import {SHIP_LAYOUT} from '../src/boarding.js';
-import {AEON_STATION_ID,STATION_PROTECTION_RADIUS,STATION_DEFENSE_MOUNTS,protectionAt,securityStations,defensePose} from '../src/station-security-policy.js';
+import {AEON_STATION_ID,STATION_PROTECTION_RADIUS,STATION_DEFENSE_MOUNTS,protectionAt,securityStations,defensePose,selectDefensePose} from '../src/station-security-policy.js';
 
 const center=new THREE.Vector3(25_000_000_000,1_900_000,0);
 function player(id,offset=[0,0,0]) {
@@ -128,5 +128,14 @@ test('turret transforms stay accurate after station rotation and world-origin re
     assert.ok(pose.direction.angleTo(target.clone().sub(pose.origin).normalize())<1e-6);
     const localStation={...station,center:new THREE.Vector3()},local=defensePose(localStation,mount,target.clone().sub(center),barrel);
     assert.ok(local.origin.distanceTo(pose.origin.clone().sub(center))<1e-5);
+  }
+});
+
+test('targets inside a nearby barrel sweep use a feasible forward-facing battery within its pitch stops',()=>{
+  const station={center,orientation:new THREE.Quaternion(),mounts:STATION_DEFENSE_MOUNTS};
+  for(const offset of [[665,20,0],[665,30,-10],[665,5,-20],[655,10,-15],[-665,-95,0]])for(const barrel of [0,1]){
+    const target=center.clone().add(new THREE.Vector3(...offset)),pose=selectDefensePose(station,target,barrel);
+    assert.ok(pose);assert.ok(pose.pitch>=-.2&&pose.pitch<=Math.PI/2);
+    assert.ok(pose.direction.dot(target.clone().sub(pose.origin).normalize())>1-1e-8);
   }
 });

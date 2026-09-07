@@ -46,7 +46,9 @@
     "scripts/community-hub.config.js",
     "docs/briefs/aeon-community-hub.md",
     "docs/qa/community-hub/",
-    "docs/decisions/aeon-community-authority.md"
+    "docs/decisions/aeon-community-authority.md",
+    "tests/server-community-room.test.js",
+    "package.json"
   ],
   "brief": "docs/briefs/aeon-community-hub.md"
 }
