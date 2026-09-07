@@ -12,7 +12,7 @@ body.photo-mode #toast{display:none}
 #course-guidance{position:absolute;top:116px;left:50%;transform:translateX(-50%);max-width:90vw;padding:10px 14px;border:1px solid var(--line);background:#061119b3;color:var(--mint);font:10px var(--mono);text-align:center}
 
 /* Six destinations share a row on desktop and a readable 3x2 grid on phones. */
-.destinations{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.destinations{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .destination{gap:10px;padding:18px 12px}
 .destination-icon{flex:0 0 auto}
 .destination>span:nth-child(2){min-width:0}
@@ -33,6 +33,20 @@ body:has(#course-guidance:not([hidden])) #toast{top:190px}
 
 .flight-hints[hidden]{display:none}
 
-@media(min-width:1100px){.destinations{grid-template-columns:repeat(7,minmax(0,1fr))}.destination{gap:8px;padding-left:10px;padding-right:10px}.destination-number{display:none}.destination small{letter-spacing:.5px;font-size:6px}}
+@media(min-width:1100px){.destinations{grid-template-columns:repeat(9,minmax(0,1fr))}.destination{gap:8px;padding-left:10px;padding-right:10px}.destination-number{display:none}.destination small{letter-spacing:.5px;font-size:6px}}
 @media(min-width:861px) and (max-width:1099px){.destinations{grid-template-columns:repeat(4,minmax(0,1fr))}.flight-hints{bottom:240px}}
 @media(max-width:860px){.flight-hints{bottom:320px}}
+
+/* Hull temperature stub (Phase 4 adds damage); amber is the warning colour. */
+#heat-warning{position:absolute;left:50%;top:calc(50% + 58px);transform:translateX(-50%);font:9px var(--mono);letter-spacing:2px;color:#f0b35a;border:1px solid #f0b35a66;padding:5px 10px;border-radius:3px;background:#1a0d0480}#heat-warning[hidden]{display:none}#heat-warning.critical{color:#ff7a3c;border-color:#ff7a3c99;animation:pulse .6s infinite alternate}
+
+#pyre-survey{position:absolute;left:28px;bottom:126px;padding:12px 16px;background:#140f0ce6;border:1px solid #bd896442;font:10px var(--mono);color:#ddc3a9;max-width:calc(100vw - 56px)}#pyre-survey strong{font-size:9px;letter-spacing:1.4px;color:#bc916b}#pyre-survey p{margin:7px 0 0;line-height:1.6}#pyre-survey[hidden],.photo-mode #pyre-survey{display:none}@media(max-width:600px){#pyre-survey{left:12px;bottom:108px;max-width:calc(100vw - 24px);font-size:9px}}
+
+#stellar-shields{position:absolute;left:28px;bottom:115px;z-index:12;width:270px;padding:18px;background:#140c08df;border:1px solid #b875344f;border-left:2px solid #f1b55d;color:#e8c9a0;font:10px var(--mono);pointer-events:none}
+#stellar-shields strong{font-size:10px;letter-spacing:1.7px;color:#ffd197}#stellar-shields div{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px}#stellar-shields span{font-size:8px;letter-spacing:1px}#stellar-shields b{font-size:16px;font-weight:400}#stellar-shields small{display:block;font-size:8px;color:#bda98d;margin-top:17px;line-height:1.5}
+#stellar-shields progress{display:block;width:100%;height:3px;margin-top:10px;appearance:none;border:0;background:#5d3b2444}#stellar-shields progress::-webkit-progress-bar{background:#5d3b2444}#stellar-shields progress::-webkit-progress-value{background:#efb661}#stellar-shields.danger{border-left-color:#ff6846}#stellar-shields.danger strong{color:#ff9475}
+#stellar-loss{position:absolute;inset:0;z-index:90;display:grid;place-items:center;text-align:center;background:radial-gradient(ellipse,#1a07048c,#070202d9);backdrop-filter:blur(2px);color:#f3d5bd}#stellar-loss>div{width:min(480px,90vw);padding:32px}#stellar-loss span{font:10px var(--mono);letter-spacing:3px;color:#ef9571}#stellar-loss h2{font-size:46px;margin:16px 0}#stellar-loss p{font:13px var(--mono);color:#caa48e}#stellar-loss button{margin-top:25px;padding:16px 20px;border:1px solid #ecb38899;background:#27150dde;color:#ffe0c8;font:12px var(--mono);cursor:pointer}#stellar-loss small{display:block;margin-top:18px;font:9px var(--mono);color:#a27c65}
+#stellar-shields[hidden],#stellar-loss[hidden],.photo-mode #stellar-shields{display:none}.stellar-destroyed .flight-hints,.stellar-destroyed .crosshair,.stellar-destroyed #course-guidance{visibility:hidden}
+@media(max-width:600px){#stellar-shields{left:12px;bottom:100px;width:230px;padding:12px}}
+
+#toxic-warning{position:absolute;left:28px;top:150px;padding:10px 14px;border:1px solid #b6c96866;background:#182017dc;color:#dce797;font:10px var(--mono);letter-spacing:.08em}#toxic-warning[hidden],.photo-mode #toxic-warning{display:none}

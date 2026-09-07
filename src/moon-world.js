@@ -1,3 +1,4 @@
+import { rockFormationHeight } from './rock-formations.js';
 import { Vector3 } from 'three';
 
 // A quarter-scale lunar radius with a compressed, fixed orbit for this prototype.
@@ -7,7 +8,7 @@ export const MOON_DISTANCE = 24_000_000;
 export const MOON_POSITION = Object.freeze(new Vector3(-.1, 0, -1).normalize().multiplyScalar(MOON_DISTANCE).toArray());
 export const MOON_MAX_HEIGHT = 4_000;
 export const MOON_GRAVITY = 1.62;
-export const MOON_GENERATOR_VERSION = 2;
+export const MOON_GENERATOR_VERSION = 3;
 export const MOON_LANDING_DIRECTION = Object.freeze(new Vector3(.45,.22,.87).normalize().toArray());
 export const MOON_NAME = 'Selene';
 
@@ -45,7 +46,9 @@ export function moonSurface(x,y,z) {
     height+=bowl+rim;
     fresh+=Math.exp(-(((r-1.03)/.20)**2))*.055;
   }
-  return {height,albedo:Math.max(.065,Math.min(.27,.19-maria*.085+(detail-.5)*.04+fresh))};
+  const rocks=rockFormationHeight(x,y,z,MOON_RADIUS,0x53454c45);
+  height+=rocks;
+  return {height,rockRelief:rocks,albedo:Math.max(.065,Math.min(.27,.19-maria*.085+(detail-.5)*.04+fresh-smooth(.3,3,rocks)*.035))};
 }
 
 export function moonOffset(position) { return position.clone().sub(new Vector3(...MOON_POSITION)); }

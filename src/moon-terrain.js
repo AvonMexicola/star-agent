@@ -9,9 +9,11 @@ export function generateMoonPatch({face,level,ix,iy}) {
   const size=2/2**level,u0=-1+ix*size,v0=-1+iy*size;
   const d=cubeDirection(face,u0+size/2,v0+size/2),centerRadius=MOON_RADIUS+moonSurface(...d).height,center=d.map(v=>v*centerRadius);
   const count=(MOON_GRID+1)**2+4*(MOON_GRID+1),positions=new Float32Array(count*3),normals=new Float32Array(count*3),directions=new Float32Array(count*3),points=new Float32Array(count*3);
+  const rockReliefs=new Float32Array(count);
   const step=Math.max(.3,Math.min(120,size*MOON_RADIUS/MOON_GRID*.35)),epsilon=step/MOON_RADIUS;
   const write=(index,u,v,skirt=0)=>{
-    const d=cubeDirection(face,u,v),height=moonSurface(...d).height;
+    const d=cubeDirection(face,u,v),sample=moonSurface(...d),height=sample.height;
+    rockReliefs[index]=sample.rockRelief;
     let tangent=normalized(d[2],0,-d[0]);if(!Number.isFinite(tangent[0]))tangent=[1,0,0];
     const b=[d[1]*tangent[2]-d[2]*tangent[1],d[2]*tangent[0]-d[0]*tangent[2],d[0]*tangent[1]-d[1]*tangent[0]];
     const slope=axis=>{
@@ -31,7 +33,7 @@ export function generateMoonPatch({face,level,ix,iy}) {
   const edges=[Array.from({length:MOON_GRID+1},(_,i)=>i),Array.from({length:MOON_GRID+1},(_,i)=>i*(MOON_GRID+1)+MOON_GRID),Array.from({length:MOON_GRID+1},(_,i)=>MOON_GRID*(MOON_GRID+1)+MOON_GRID-i),Array.from({length:MOON_GRID+1},(_,i)=>(MOON_GRID-i)*(MOON_GRID+1))];
   let next=(MOON_GRID+1)**2;
   for(const edge of edges){const start=next;for(const index of edge)write(next++,u0+size*(index%(MOON_GRID+1))/MOON_GRID,v0+size*Math.floor(index/(MOON_GRID+1))/MOON_GRID,Math.max(.15,size*MOON_RADIUS*.04));for(let i=0;i<MOON_GRID;i++)indices.push(edge[i],start+i,edge[i+1],edge[i+1],start+i,start+i+1);}
-  return {center,positions,normals,directions,points,indices:new Uint16Array(indices)};
+  return {center,positions,normals,directions,points,rockReliefs,indices:new Uint16Array(indices)};
 }
 
 export class MoonTerrain {
@@ -50,6 +52,7 @@ export class MoonTerrain {
     if(node.mesh)return;
     const data=generateMoonPatch(node),geometry=new THREE.BufferGeometry();
     for(const [name,values] of [['position',data.positions],['normal',data.normals],['moonDirection',data.directions],['moonPoint',data.points]])geometry.setAttribute(name,new THREE.BufferAttribute(values,3));
+    geometry.setAttribute('rockRelief',new THREE.BufferAttribute(data.rockReliefs,1));
     geometry.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(data.positions.length/3*2),2));
     geometry.setIndex(new THREE.BufferAttribute(data.indices,1));geometry.computeBoundingSphere();
     node.center=new THREE.Vector3(...data.center);node.mesh=new THREE.Mesh(geometry,this.material);node.mesh.name=`Selene terrain ${node.key}`;

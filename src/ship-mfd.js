@@ -1,3 +1,4 @@
+import { STELLAR_THERMAL } from './stellar-thermal.js';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { CAPACITY } from './ship-inventory.js';
@@ -61,7 +62,7 @@ export function createShipMFDs() {
     accumulator += dt;if (accumulator < .2) return;accumulator = 0;
     const env = nav.flightEnvironment, n = nav.normal;
     const localVelocity = nav.velocity.clone().applyQuaternion(nav.orientation.clone().invert());
-    paint(screens[0], [['VELOCITY', `${nav.speed.toFixed(1)} m/s`], ['ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase()]], 'V ASSIST   X BRAKE   L LAND / LAUNCH', 0);
+    paint(screens[0], [['VELOCITY', `${nav.speed.toFixed(1)} m/s`], [nav.body.star?'PHOTOSPHERE CLEARANCE':'ALTITUDE AGL', distance(nav.altitude)], ['FLIGHT CONTROL', nav.mode === 'flight' ? nav.flightAssist ? 'ASSIST ON' : 'INERTIAL' : nav.mode.toUpperCase()]], 'V ASSIST   X BRAKE   L LAND / LAUNCH', 0);
     let bearing = 'NO COURSE';
     if (course) {
       const offset = course.point.clone().sub(nav.position).applyQuaternion(nav.orientation.clone().invert());
@@ -69,7 +70,10 @@ export function createShipMFDs() {
       bearing = `${Math.abs(angle).toFixed(0)} DEG ${angle < 0 ? 'LEFT' : 'RIGHT'}`;
     }
     paint(screens[1], [['COURSE', course ? course.name.toUpperCase() : 'FREE EXPLORATION'], ['BEARING', bearing], ['POSITION', `${(Math.asin(n.y) * 180 / Math.PI).toFixed(2)} / ${(Math.atan2(n.x, n.z) * 180 / Math.PI).toFixed(2)}`]], 'SHIFT + DESTINATION TO SET COURSE', 1);
-    paint(screens[2], [['ENVIRONMENT', env.regime], ['HATCH / RAMP', nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
+    if(nav.body.star){
+      const thermal=nav.stellarThermal;
+      paint(screens[2],[['SHIELD TEMPERATURE',`${Math.round(thermal.temperature-273.15)} C`],['HULL INTEGRITY',`${Math.ceil(thermal.hull)}%`],['RADIATION',thermal.temperature>=STELLAR_THERMAL.damage?'THERMAL DAMAGE':'SHIELDS HOLDING']],'SPACE + SHIFT: RETREAT FROM STAR',2);
+    }else paint(screens[2], [['ENVIRONMENT', nav.body.toxic&&env.atmosphereFraction>0?'TOXIC · SUIT SEALED':env.regime], ['HATCH / RAMP', nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
     paint(screens[3], [['SHIP STORAGE', `${inventory.mass('ship').toFixed(1)} / ${CAPACITY.ship} kg`], ['BACKPACK', `${inventory.mass('pack').toFixed(1)} / ${CAPACITY.pack} kg`], ['ACCESS', 'STARBOARD CABIN']], 'ON FOOT: F AT THE CARGO CONTAINER', 3);
   };
   group.snapshot = () => screens.map(screen => ({ title: screen.title, values: [...screen.values] }));
