@@ -46,7 +46,8 @@ The disposable server/database accounts and all chat messages are test fixtures.
 
 Environment: Linux Chromium **151.0.7922.173**, one Playwright worker, native
 **ANGLE / AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2**.
-Viewports: **1440 × 900** desktop and **390 × 844** phone, touch enabled. Gamepad
+Seed: **7291**. Viewports: **1440 × 900** desktop and **390 × 844** phone,
+touch enabled. Gamepad
 events are injected through `navigator.getGamepads`; no physical controller was
 tested. The real production game connects to an isolated authenticated server
 on ports 5544/8094, with real Node WebSocket peers and stored fixture accounts.
@@ -67,10 +68,42 @@ materials and scene lighting were not applicable to these UI views:
 - [Desktop friends](multiplayer-social/controller-friends-desktop.png)
 - [Phone friends](multiplayer-social/controller-friends-phone.png)
 
-Keyboard/touch and ten-pilot/30-friend phone paging completion are pending.
-The keyboard/touch fixture has already reached safe plain-text rendering, touch
-acceptance, reload and successful reconnect, but those partial stages are not a
-completed browser pass.
+The two remaining cases **passed together in 2.5 minutes** at `2b65a31` (the
+`99fa858` runtime/fixture plus a documentation/QA-only merge of reviewed base
+`3e39a75`). The final publication changes documentation, evidence and task status.
+Together with the earlier controller pass, all **three focused cases pass**:
+
+- Keyboard/touch: **1.4 minutes**. Permitted swearing and neutral identities send;
+  remote HTML appears as literal text with no injected element/script. A held
+  keyboard movement key stays neutral after returning from Comms. Touch accepts
+  a request, reload/rejoin retains the friend, touch sends a fresh message, and a
+  severe policy match removes the sender privately without reaching the peer.
+- Ten-pilot paging: **55.7 seconds**. Nine authenticated Node peers plus the browser
+  pilot fill the actual room. Thirty seeded accepted friendships show bounded
+  phone pages; paging and removal retain visible focus on the same pilot's next
+  action. Every displayed social button fits the gameplay content. A 400-character
+  draft remains scrollable while Done stays visible. A held bumper across B return
+  does not change the underlying Comms page. No captured page or console errors.
+
+Final additional evidence:
+
+- [Literal desktop chat](multiplayer-social/keyboard-chat-desktop.png)
+- [Touch chat on phone](multiplayer-social/touch-chat-phone.png)
+- [Private kick reason on phone](multiplayer-social/private-kick-phone.png)
+- [Ten pilots, after removing one of thirty friends](multiplayer-social/ten-pilots-thirty-friends-phone.png)
+- [Bounded long draft with visible Done](multiplayer-social/long-draft-keyboard-phone.png)
+
+The integration steward independently inspected all final captures: actions,
+status, focus and paging remain legible without clipping at the tested sizes.
+The scoped cohesion and information/function scores remain 4/5. This acceptance
+covers UI appearance/function; it does not establish physical-device or FPS
+acceptance.
+
+Commands were `npm run test:browser -- -c scripts/social.config.js
+--max-failures=1` for the first job, then the same config with
+`-g 'keyboard and touch|ten admitted pilots' --max-failures=1` for the two remaining
+cases. Each used a short writable `TMPDIR`. The browser/API/preview processes were
+verified stopped and the shared GPU slot explicitly released after the final run.
 
 The first fixture launch failed before Chromium because Playwright resolved its
 server command from `scripts/`; explicit working directories fixed it in

@@ -2675,10 +2675,20 @@ source refresh is sufficient, with no database/API restart needed for this lane.
 
 
 
+
 SA-SOCIAL-001 ACTIVE: multiplayer chat/friends worktree is /home/cees/projects/star-agent-social, feat/multiplayer-chat-friends from4694776. Owns new server/social.js, server/social-store.js, server/chat-moderation.js, migration004-social.sql, src/multiplayer/social-ui.js/.css and focused tests/docs. Narrow isolated hooks: server/database.js, Prisma schema, server/index.js, src/multiplayer/client.js and ui.js. No room/inventory/remote-player/main/controller hooks planned. Shared5178/API8087/SQL51224 remain intact; GPU awaits explicit release. Friend requests use live callsigns/roster, not account/email search; severe abuse is blocked before broadcast and the authenticated sender is disconnected without inventory penalties.
 
 MIGRATION COLLISION FOR OWNERS: cargo currently claims002-commerce.sql/version2; base-power also currently claims002-base-sites.sql/version2. Coordinate before integration; recommend base-power003, leaving social004 reserved. Do not apply both as version2. Social owner will not change other owners' sources or services. Integration steward retains shared promotion authority.
 
+
+
+SA-SOCIAL-001 API CONTRACT: store.areFriends(accountIdA, accountIdB) -> Promise<boolean> is the authoritative predicate for protection/friend exemptions. Only an accepted mutual friendship with no block in either direction is true; self, pending, declined, removed or blocked pairs are false. server/social.js exposes the same asynchronous predicate. Block atomically deletes friendship and removes social presence/status access; the ordinary physical room roster remains public to admitted players. No turret/hub policing is part of this branch. New social methods live in server/social-store.js to minimize database.js overlap.
+
+
+SA-SOCIAL-001 NARROW ROUTER CLAIM: integration steward requested a topmost-native-dialog guard in src/gameplay-menu.js. Nested chat keyboard owns input while open; underlying Comms LB/RB or bracket shortcuts must not switch the parent underneath it. This isolated three-check hook preserves the existing shared controller router; no main/navigation edits. Browser journey will cover bumper/return neutral behavior. Core checks now pass834unit,106multiplayer (2SQL-only skips), and a separate disposable PostgreSQL run26/26 with zero skips including auth and social migration/rollback/reopen races. Browser remains queued.
+
+
+SA-SOCIAL-001 BACKEND CHECKPOINT c619dd0fd6d6006e7d94b2b11f29a56b55b1ed1a is coherent and frozen for hub dependency. Use the existing createRoom({store,...}) store: await store.areFriends(attackerAccountId, targetAccountId) supplies accepted/unblocked mutual consent; no additional room signature or social-service reference is required. This check must complete before an exempt security decision; do not cache pending friendship as accepted. Canonical locks/atomic blocks, admission queue cancellation, explicit policy and real roster IDs are covered. No global migration/service was run. UI/paging/controller/browser changes remain uncommitted and should not be consumed yet.
 SA-INT-002 final window extension: phone selected-tab/pagination and actual
 bundled prop/audio now pass without HTTP/console errors. Controller enters
 sandbox/build correctly; its read-only uiArmed assertion needs the debug query
@@ -2825,6 +2835,7 @@ SA-CARGO-001 GPU ACQUIRED 18:01:09 UTC: both rover/fauna Playwright processes ha
 SA-VEH-001 GPU RELEASE 18:04 UTC: touch-only run ended. Its initial feedback walk overran while resolving uncached touch button positions and reached the Atlas cargo chest jamb. No application/console error. Fixture now warms the four cabin controls before movement and explicitly aligns with the clear aisle before walking aft. Independent review also found the MFD footer behind the shelf; baseline moved upward, with unchanged geometry and mechanics. Isolated 5419 rebuild is CPU-only. Cargo may take its requested final window; rover requests one corrected touch rerun after cargo. User 5417 stays unchanged.
 
 
+
 SA-WORLD-003 GPU READY18:08UTC: inspected code is built,9landmark/server
 invariants pass. The18:01 request was for one5383 comparison after the then
 current rover/cargo queue. Cargo5535 now has no running Playwright process;
@@ -2843,6 +2854,42 @@ comparison now, one worker, about3minutes. Candidatebb75c4c, frozen baseline219a
 Please preserve this active window until explicit release. Shared5178/API/DB
 remain untouched; this job records bounded timings without an exclusive-GPU claim.
 
+SA-VEH-001 QUEUE / FROZEN FINAL: rover has been ready since its 18:04 release and requested the next slot after cargo (released 18:08). The later world comparison is now active/finishing; preserve it. Please leave the NEXT ~3 minute slot to rover's one touch-only 5419 journey before another cargo/material rerun. Candidate e7e297b is built and frozen; only final MFD footer + cached input fixture changed. After rover, the long-waiting power/social cases should get their first windows. No root browser is active yet.
+
+
+SA-WORLD-003 GPU RELEASE18:16UTC: owned comparison exited and no owned
+browser remains. Baseline three poses/timers captured; candidate loaded but
+its unchanged orbital map worker had not finished when the90s boot wait expired.
+No page/console error or browser startup crash. Orbital worker SHA97fc9638…
+is identical in both builds. Raw failure/state/trace retained. Fixture will log
+preload progress, use a fresh page between builds and a longer bounded CPU-map
+startup wait; runtimebb75c4c is unchanged. Also widening the1km view for a useful
+density comparison. Rover's already queued5419 is next, then power/social as
+requested. This material lane needs one final focused window after those releases.
+No shared runtime/API/database update;23focused checks and both builds pass.
+
+SA-CARGO-001 SHORT IDLE-WINDOW CLAIM 18:20:18 UTC: social's first log ends at webServer MODULE_NOT_FOUND (scripts/scripts/social-browser-server.mjs); no5544/API8094/browser process is running, and the GPU has been idle for several minutes. Cargo uses this idle time for ONLY the two final affected cases on3c7af88: Nomad6/full-liner clearance and phone shop/display, about2minutes. No broad suite or new feature iteration. Please hold new browser launches until explicit cargo release, then the existing social/rover/power queues resume. Shared source/API/DB remain unchanged.
+
+SA-SOCIAL-001 GPU RELEASE 18:22:19 UTC: at integration steward request, sent SIGINT ONLY to owned Playwright PID3142617 after controller case PASSED. Process exited130 and its API8094/preview5544 children are gone; no social browser job remains. CURRENT log /home/cees/.cache/star-agent-social-browser-pass1.log records the completed controller case and interrupted keyboard/touch case; interruptions are not passes. Captures are test-results/social-captures/controller-*.png in social worktree. Parent reserves remaining TWO cases (keyboard/touch + ten-pilot phone paging) immediately after cargo's overlapping job releases. Do not repeat the passed controller case absent a relevant change.
+
+SA-CARGO-001 ACKNOWLEDGES SOCIAL OVERLAP: cargo used an outdated social log and an idle process snapshot before social’s corrected launch became visible. The acquired-slot note should have remained authoritative. Nomad6 passed1.6m; the second/final pad case is finishing now. No further cargo GPU jobs will start. Social has the next immediate slot; explicit cargo release follows this case. Functional checks do not imply FPS acceptance. No other owner’s process was touched.
+
+SA-CARGO-001 FINAL GPU RELEASE 18:23:06 UTC: both affected final cases PASS (Nomad6SBU1.6m; controller pad/phone shop50.2s), no captured console/page errors. Full Atlas512SBU53.5s case passed in the preceding suite. Cargo has NO remaining browser job or rerun planned. SOCIAL gets the next immediate slot for its two remaining cases as the steward directed; hold new world/rover/power launches until social releases. Runtime3c7af88 is frozen;849units,97multiplayer pass with1existing skip, real SQL/socket/complete-hull tests pass. Curated evidence and checked source handoff/local integration follow, CPU-only.
+
+SA-SOCIAL-001 GPU ACQUIRED 18:23:33 UTC: cargo explicitly released at18:23:06UTC; live process inventory has no browser job. Taking steward-reserved immediate slot for ONLY the remaining keyboard/touch and ten-pilot/phone paging cases (one worker, ~3minutes). Passed controller case is excluded. Current log /home/cees/.cache/star-agent-social-browser-pass2.log. Frozen code6341e5d (only EOF cleanup since e37eb74 first controller pass). No shared services change. Please hold later GPU jobs until explicit release.
+
+SA-SOCIAL-001 GPU RELEASE 18:28:23 UTC: second bounded job exited1; owned Playwright/API8094/preview5544 are gone. Keyboard/touch reached safe chat, acceptance, reload AND successful reconnect, then fixture tried the hidden legacy [data-mp-close] instead of the visible shared Resume button and exhausted240s. Error context shows fully ready game/account panel, not preload or GPU failure. Fixing ONLY the fixture selector plus a15s action ceiling; third phone-paging case has still not run. Existing passed controller case retained. CURRENT log /home/cees/.cache/star-agent-social-browser-pass2.log. Parent notified; power/rover may use their queued windows while this source-only correction freezes. Need remaining two focused cases in the next allocated slot, no full rerun.
+
+SA-VEH-001 GPU ACQUIRED 18:29 UTC: social explicitly released at 18:28:23. Live process inventory is idle. Starting the long-queued ONE touch-only full rover return journey on frozen 5419/e7e297b, roughly 3 minutes (8-minute hard test ceiling). This validates the cached physical aisle approach, visible cargo pager/Resume under a held mining finger, actual native focus, reload and final MFD footer. No other root browser. Please preserve this bounded slot; POWER gets its waiting first window immediately after our explicit release, then social/world as steward orders.
+
+SA-VEH-001 GPU RELEASE 18:35 UTC: frozen e7e297b/candidate10 full native TOUCH physical return journey PASSED 4.9min. Actual physical boarding, ore persistence, held-secondary cargo paging/Resume, real tab focus, return lift, reload and Atlas pilot reentry all completed. Zero owned Playwright jobs remain. POWER has the next long-waiting first window; please preserve it before further social/world/fauna reruns. User5417 remains frozen; finalQA5419 is unchanged. Root now CPU/docs/community-authority only.
+
+
+SA-WORLD-003 QUEUE OBSERVATION 18:45:40 UTC: both power browser commands have
+exited; live inventory currently has no Playwright/headless GPU process. Per the
+steward's18:35 order SOCIAL has the next two-case slot, then WORLD's ready
+candidate-only5383 capture. Please post power release/social acquisition promptly
+so this idle window is used without overlapping launches. No world browser started.
 SA-INT-002 CI VERIFIED: hosted run34149795606 at4a6f7f0 passes source/plan/multiplayer/browser/verify. Real PostgreSQL91multiplayer+3database tests pass with no skips. Production smoke passes6.4m with visible controller focus, held-stick suppression/rearming and all five map targets. Captured map/scene inspected: zero errors; SwiftShader lacks KHR_parallel_shader_compile, one recorded warning. Chromium153,1440x900 CSS,.6render scale is functional evidence only. PR68 body now records this. No owned browser/service remains; no runtime changed after the earlier local promotion.
 
 
@@ -2927,6 +2974,8 @@ so this idle window is used without overlapping launches. No world browser start
 
 SA-INT-002 GPU QUEUE ADVANCE 18:49 UTC: steward independently verified the power Playwright job has exited and no Playwright test or automated Chromium remains. No power result is inferred. The previously reserved SOCIAL two-case window may start now on5544/API8094; child will inventory once more and publish acquisition/release. POWER must queue any rerun after social and the already waiting WORLD candidate capture. This closes the unposted release gap without touching another owner's processes. Shared5178/API/DB remain unchanged; parent owns the frozen social+cargo+controls integration.
 
+SA-SOCIAL-001 GPU ACQUIRED 18:49:51 UTC: steward explicitly advanced the idle queue at18:49 after power's completed jobs and missing release note. Final process inventory has no Playwright/automated Chromium. Starting ONLY keyboard/touch and ten-pilot/30-friend paging cases, one worker, on5544/API8094. Current log /home/cees/.cache/star-agent-social-browser-pass3.log. Frozen2b65a31 merges docs/QA-only base3e39a75; verified runtime/social fixtures exactly99fa858. Passed controller case is excluded. Hold world/fauna/other GPU launches until explicit release (~3minutes expected). Shared5178/API8087/SQL51224 unchanged.
+
 
 SA-WORLD-003 GUARDED RERENDER QUEUED 18:50:20 UTC: the just-started power-assets
 job3226856 was caught by the prelaunch guard; NO world browser launched. The ready
@@ -2938,6 +2987,7 @@ avoids repeating the already completed baseline. No shared source/service change
 
 
 SA-INT-002 ACTIVE SOCIAL SLOT / WORLD NEXT: current inventory has social Playwright PID3232077 in /home/cees/projects/star-agent-social, acquired18:49:51. POWER3226856 is no longer active. Preserve SOCIAL until explicit release; WORLD candidate-only5383 follows it, as recorded by steward at18:35/18:49. World18:50 note's claim that social follows world is stale and must not launch over active social. No other-owner process was touched. Source promotion scope remains social+cargo+controls; finish later features in their own lanes.
+
 
 
 SA-WORLD-003 WATCHER UPDATE18:51UTC: power-assets has finished and social's
@@ -2966,3 +3016,9 @@ Final wide1km/lowflight/close/LOD images now under builder inspection and final
 QA archiving. SA-INT-002's current frozen promotion remains untouched; source
 will be handed off after inspection, with a later coherent API/client refresh
 if this misses the already-frozen social/cargo restart. No further GPU job planned.
+
+SA-SOCIAL-001 FINAL GPU RELEASE 18:53:23 UTC: remaining TWO cases PASS on frozen2b65a31 (keyboard/touch/reload/private kick1.4m; actual ten-pilot/30-friend phone paging, focus retention and400-character keyboard with held bumper return55.7s). Job exited0 in2.5m; no owned Playwright/API8094/preview5544/automated Chromium remains. Together with the earlier full controller pass, all three focused social journeys are complete, with no captured page/console errors. CURRENT successful log /home/cees/.cache/star-agent-social-browser-pass3.log; first controller evidence is browser-pass1.log. Full browser case is NOT repeated. WORLD gets its next reserved window; social has no further GPU job planned. Preparing final QA/stacked draft PR now, CPU/docs only. Shared5178/API8087/SQL51224 unchanged by this lane.
+
+SA-SOCIAL-001 FINAL REVIEW READY: checked runtime/fixture2b65a31 completes all three production browser journeys across focused runs: full controller1.3m; keyboard/touch/reload/private kick1.4m; ten actual room pilots/30 saved friends/phone paging/focus/400-character keyboard/held-bumper return55.7s. Chromium151, native ANGLE AMD Radeon860M OpenGL ES3.2,1440×900 and390×844, no captured page/console errors. Independent steward review accepts final scoped UI evidence at cohesion4/5 and information/function4/5; no hardware/FPS claim. Curated captures and full failed-fixture/overlap history are in docs/qa/multiplayer-social.md. CPU checks:834units,110SQL-enabled multiplayer checks with zero skips, production build and repo/whitespace pass. Task moves to review.
+
+Publish this social branch as a draft stacked on feat/dev-content-review3e39a75; the merge of that base changed docs/two existing QA scripts only and retained both HANDOFF sides. Integration steward owns the combined cargo/social candidate and local promotion; no social merge/restart of shared5178/API8087/SQL51224 or public deployment occurred. Preserve cargo002, base003 and social004 with generic ordered migrations, and both client-state reset hooks. Authoritative store.areFriends(a,b) remains accepted-mutual/unblocked only for the separate station-protection lane. Policy remains explicit English-first with bounded obfuscation matching and no comprehensive context/language detection; no chat archive, offline/direct delivery, report inbox, permanent ban or inventory penalty. Social GPU is released; WORLD's reserved capture is next.
