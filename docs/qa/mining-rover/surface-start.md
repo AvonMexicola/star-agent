@@ -38,10 +38,10 @@ or old task-status rewrite was consumed. Existing audio and gameplay hooks remai
 The consumed GLB is exactly **2,177,260 bytes**, SHA-256
 `88448d9dd48e0a0acdb2397465302e8ab41335b8ffaab6234050d136bf6cc78f`.
 The archived reviews establish only their original scopes. They do not establish
-this new surface start or compatibility with the concurrently integrated 64 m
-Atlas. The old cargo start remains available when a hull exposes the original
-compatible lift; a missing lift now gives explicit surface-start guidance and
-does not install a hidden platform or overwrite a new hull's elevator guard.
+this new surface start or compatibility with the 64 m Atlas. The subsequent
+[carrier adaptation](atlas-carrier.md) connects that hull's actual cargo deck
+and aft ramp, independently of this surface start. Legacy lift support remains
+conditional on an explicitly compatible platform; no hidden platform is added.
 
 ## Parent main hook
 
@@ -85,4 +85,4 @@ is occupied; that helper remains the effects owner's lane.
   The parent must verify the actual F2 selection, settled image, controller/touch
   driving and mining, collected ore, pause/neutral gates, exit and return before
   describing the new start as validated in the development build. Physical-device
-  testing and new Atlas cargo loading remain separate.
+  testing and the complete browser Atlas cargo journey remain separate.

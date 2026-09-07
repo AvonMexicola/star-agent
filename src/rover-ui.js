@@ -18,7 +18,7 @@ export function createRoverUI(rover){
     panel.querySelector('meter').value=s.charge;panel.querySelector('.rover-ore').textContent=`${s.mass.toFixed(2)} / 96 kg · ${Math.abs(s.speed).toFixed(1)} m/s`;
     panel.querySelector('.rover-telemetry').hidden=!s.occupied;panel.querySelector('.rover-bindings').hidden=!s.occupied;panel.querySelector('.rover-touch').hidden=!s.occupied;
     const entry=panel.querySelector('[data-rover-action="entry"]');entry.textContent=s.busy?(s.phase.endsWith('-in')?'Cancel entry':'Cabin access moving…'):s.occupied?'X / F · Leave cabin':'X / F · Board cabin';entry.disabled=s.busy&&!s.phase.endsWith('-in')||Math.abs(s.speed)>.2;
-    panel.querySelector('[data-rover-action="lift"]').hidden=!s.occupied||!s.aboard;
+    const carrier=panel.querySelector('[data-rover-action="lift"]');carrier.hidden=!s.occupied||!s.aboard;carrier.textContent='Y / G · '+s.carrierControl;
     panel.querySelector('[data-rover-action="cargo"]').hidden=!s.occupied&&!s.near;
   }};
 }

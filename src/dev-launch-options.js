@@ -2,7 +2,7 @@
 export const DEV_SHIPS = Object.freeze([
   {id:'nomad',name:'Nomad 02',detail:'Utility · walkable cabin, berth & cargo'},
   {id:'kestrel',name:'Kestrel',detail:'Interceptor · port ladder · energy weapons'},
-  {id:'atlas',name:'Atlas',detail:'30 m freighter · belly elevator & cargo lifts'},
+  {id:'atlas',name:'Atlas',detail:'64 m freighter · loading ramps & crew lift'},
 ]);
 export const DEV_LOCATIONS = Object.freeze([
   {id:'hangar',name:'Station hangar',detail:'Parked · boarding, cabins and departure'},

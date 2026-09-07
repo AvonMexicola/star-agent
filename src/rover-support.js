@@ -8,11 +8,13 @@ export const roverShipLocal=(point,frame)=>point.clone().sub(frame.position).app
 export function sampleRoverSupport(point,{freighter=null,frame=null}={}){
   if(freighter&&frame){
     const s=roverShipLocal(point,frame);
-    if(s.length()<30){
-      const y=freighter.floorAt(s.clone().addScaledVector(UP,1.75));
-      if(y!==null){
-        const platform=freighter.lifts.find(l=>inside(s,l)&&Math.abs(l.y-y)<.001);
-        return {point:new Vector3(s.x,y,s.z).applyQuaternion(frame.quaternion).add(frame.position),normal:UP.clone().applyQuaternion(frame.quaternion),source:platform?'atlas-lift:'+platform.id:'atlas-deck'};
+    // The 64 m hull's ramps extend beyond the retired 30 m broadphase.
+    if(s.length()<50){
+      const eye=s.clone().addScaledVector(UP,freighter.eyeHeight??1.75);
+      const surface=freighter.surfaceAt?.(eye),y=surface?.y??freighter.floorAt(eye);
+      if(Number.isFinite(y)){
+        const platform=freighter.lifts?.find(l=>inside(s,l)&&Math.abs(l.y-y)<.001);
+        return {point:new Vector3(s.x,y,s.z).applyQuaternion(frame.quaternion).add(frame.position),normal:(surface?.normal??UP).clone().applyQuaternion(frame.quaternion),source:surface?.source??(platform?'atlas-lift:'+platform.id:'atlas-deck')};
       }
     }
   }
