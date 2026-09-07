@@ -2,7 +2,7 @@
 
 Current disposition: all three recorded input journeys pass at their identified
 checkpoints; candidate 10 native static review is 4.04 and keyboard motion is 3.8.
-The mixed six-criterion mean is 4.00. Final MFD-footer visual closure, performance
+The mixed six-criterion mean is 4.00. The final MFD-footer visual check passes; performance
 and Cees's product/PR acceptance remain separate. See the current
 [production record](production-record.md).
 
@@ -189,3 +189,12 @@ warning. These are different source surfaces from the earlier 711/714 totals.
 Draft PR #66 remains Cees-gated; final source/docs pushing and integration belong
 to the steward. The user's 5417 preview remains frozen; 5419 is the separate QA
 candidate. No merge, deployment, physical device or FPS result is claimed.
+
+## Final desktop footer closure — 2026-09-07 19:24 UTC
+
+One settled 1440×900 production frame after physical Atlas-to-rover boarding
+on frozen e7e297b closes the raised footer check. Chromium151 / AMD860M native
+ANGLE OpenGL ES3.2 reports no errors or warnings. The complete “ATLAS CARGO /
+PARKING BRAKE” line clears the lower bezel. The [independent closure](review-footer-10.md)
+keeps all previous scores unchanged and grants no new full-journey or performance
+acceptance. Earlier clipped/obscured frames remain retained.

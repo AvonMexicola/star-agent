@@ -6,10 +6,10 @@ asset **4.04/5** and keyboard motion **3.8/5**; the explicitly mixed-evidence
 six-criterion mean is **4.00/5**. These are scoped results, not product or release
 approval. Cees gates draft [PR #66](https://github.com/AvonMexicola/star-agent/pull/66).
 
-The physical MFD footer still needs a fresh settled desktop image after its
-canvas adjustment. The final phone panel covers that instrument, so the passing
-touch route does not close its visual check. The cargo-ceiling chase-camera
-contraction and whole-scene triangle-budget caveat also remain open.
+The final [desktop footer review](review-footer-10.md) closes the instrument
+clipping finding: the full status line is visible above its bezel after physical
+boarding. The cargo-ceiling chase-camera contraction and whole-scene
+triangle-budget caveat remain recorded limitations.
 
 ## Player result
 
@@ -109,7 +109,8 @@ a different integration surface, not the final bounded PR count.
 ## Independent review and remaining limits
 
 The exact [native review](review-visual-10.md), [keyboard/motion review](review-game-10.md)
-and [final phone follow-up](review-touch-10.md) are archived unchanged.
+[final phone follow-up](review-touch-10.md) and [desktop footer closure](review-footer-10.md)
+are archived unchanged.
 The asset reviewer inspected producer-run captures and recorded motion; this is
 independent evidence review, not a second operation of the browser journey.
 The earlier runtime review closed seven findings, excluding physics/mining
@@ -121,9 +122,10 @@ giving `(20.2 + 3.8) / 6 = 4.00`, with no assessed item below 3. Native fixture
 lighting is not a whole-game or all-platform lighting verdict.
 
 - The old [settled keyboard cockpit](candidate-10/keyboard-cockpit-footer-before.png)
-  retains the partly buried MFD footer. Runtime e7e297b raises its baseline, but
-  the [final phone cockpit](candidate-10/touch-cockpit.png) obscures the instrument
-  behind the touch panel. A fresh settled desktop image is still required.
+  retains the partly buried MFD footer. Runtime e7e297b raises its baseline; the
+  [final desktop cockpit](candidate-10/desktop-cockpit-footer.png) closes the finding.
+  A single physical boarding/capture passed with no errors or warnings. The old
+  phone image still records how its panel obscures the physical instrument.
 - During lift ascent, the chase camera contracts abruptly under the cargo ceiling
   (keyboard video PTS 147.8–148.52 s). It retains the rover and deck attachment;
   the visible contraction is the reason motion remains 3.8.

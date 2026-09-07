@@ -11,8 +11,8 @@ retains geometry, UVs, hierarchy and mechanism layout; only rod/cap normals and
 the ORM payload change. Native static review is 4.04/5; keyboard motion is 3.8/5,
 with an explicitly mixed-evidence mean of 4.00/5. Recorded controller, keyboard
 and native touch journeys pass at the checkpoints in the production record.
-The adjusted physical MFD footer still needs a settled desktop visual check;
-the phone controls obscure it. Performance and Cees's final acceptance are not
+The adjusted physical MFD footer passes its separate settled desktop review.
+Performance and Cees's final acceptance are not
 implied by these scoped results. The manifest's generation-stage text is historical;
 the production record carries the current review/delivery status.
 
