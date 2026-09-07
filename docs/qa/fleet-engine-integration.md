@@ -1,8 +1,9 @@
 # Fleet, station and development content integration
 
-7 September 2026. SA-FX-001, `feat/fleet-engine-integration`.
-Browser acceptance and local delivery are in progress; this file does not yet
-claim that the new effects are served by shared development.
+8 September 2026. SA-FX-001, `feat/fleet-engine-integration`.
+Shared local development is delivered at `c99736f` (runtime `5f63893`). Cees has
+now explicitly authorized main/public and multiplayer release; those separate
+release owners are verifying their targets. Local delivery is established below.
 
 ## Source and behavior
 
@@ -165,5 +166,72 @@ remain open. Kestrel's ladder clips exist but are not yet connected to physical
 boarding. Burrow and build sites remain offline/solo features; base cloud saves
 are account-scoped, not authoritative shared multiplayer construction. Bastion
 mount placement passes, while ten of twelve diagnostic muzzle rays encounter
-station geometry; broad clear firing arcs are not certified. No public site is
-updated by this local integration.
+station geometry; broad clear firing arcs are not certified. Public deployment is tracked separately from this local checkpoint; Cees later
+explicitly authorized main/solo and multiplayer promotion, as recorded below.
+
+
+## Final combined journeys and local delivery, 8 September
+
+Runtime `2c11644` includes the checked ground-ramp union `81f0a8f` and passes
+**1,016/1,016 normal tests**, zero skips, in 34.66 seconds. Development build
+`main-a5nF2Oar.js` passes. The later narrow meadow preset `3bbd611`, integrated
+at `5f63893`, passes 35 owner and 16 parent focused checks; its development build
+is `main-Bhw5jbcj.js` (5.14 seconds). The ramp integration also independently
+passes 136 physical and 51 server checks plus the 300-frame authoritative snapshot
+probe. These do not replace the separately scoped 193-test SQL receipt above.
+
+Final development invocation 03 passes both complete controller journeys in
+5.5 minutes: Burrow in 2.1 minutes and Atlas in 3.3 minutes. Burrow now opens Menu
+while occupied and correctly suppresses held cutting input after return. Atlas
+physically crosses both decks, uses the crew lift and forward ramp, operates its
+exterior panel, reboards/reseats, and departs the actual enlarged bay with its
+full hull. Both report zero page/console errors. Captures are retained under
+`test-results/fleet-development-captures-03`; the first pilot image was taken
+while the preloader faded and is not a final cockpit art view. The departure
+image shows all four active displays. Final ground/ramp/departure images were inspected.
+
+The first normal-entry fixture reached registration/join but tried to close a
+hidden legacy account button. That failed receipt remains retained. Corrected
+invocation 02 uses the visible Resume button and passes in **48.9 seconds**:
+normal solo shoulder dolly/doors, real disposable account registration and join,
+server-owned multiplayer shoulder presentation, and physical control handover.
+Both final opening images were inspected. The test uses isolated memory API8106,
+not production or shared accounts. Chromium/backend/resolution match the earlier
+1440x900 record. All final errors arrays are empty.
+
+Cees explicitly reported that his hands-on loading and Atlas flight worked and
+that he made a video. The checked meadow launcher reproduces that setup with
+Atlas, Burrow beside it and seed7291. His manual test substitutes for the separate
+terrain-ramp browser run. Additional duplicate HUB/roof/tractor union tours were
+not run before the urgent release request; existing owner evidence remains tied
+to its exact sources. No new physical-device, whole-scene FPS or final art score
+is inferred from this release authorization.
+
+The local preview was gracefully stopped and resumed as one client/API pair,
+with its own regenerated Prisma client. Its transient systemd unit disappeared
+on stop, so it was recreated with the same runner, working directory and shutdown
+settings. API8087 is healthy, frontend5178 serves protocol5 and the named meadow
+modules, and eight served Atlas/Burrow/tool/shopkeeper GLBs match their exact
+repository SHA256 hashes. PostgreSQL cluster inode947632 is unchanged; every
+pre-existing table retained its row count. Only missing migration003 was applied,
+leaving migration versions1/2/3/4. No credentials or database rows were exported.
+
+GitHub rejected the initial direct development push because the branch requires
+a PR and `verify`. The proper development PR is
+[PR83](https://github.com/AvonMexicola/star-agent/pull/83); no protection was changed.
+Public/main and multiplayer release identities are recorded by their deployment
+owners and must not be inferred from a successful local merge.
+
+
+Curated, inspected integration captures:
+
+- [Actual Atlas boost](fleet-engine-integration/atlas-boost.png), engine comparison runtime c9416b0.
+- [Ground Burrow mining with the clear windscreen](fleet-engine-integration/burrow-mining.png), runtime2c11644.
+- [Authenticated shoulder opening](fleet-engine-integration/multiplayer-opening.png), normal-entry runtime2c11644.
+
+The local service is running at http://127.0.0.1:5178/ with API8087. On 8 September,
+HTTPS `play.staragent.site/release.json` independently reported solo source1475eb1;
+its release owner is finishing the separately requested homepage film replacement.
+This observation establishes the served release identifier, not its final subsequent
+media commit. Public multiplayer is updated by its own deployment owner with an
+isolated restore/migration check and a paired static/API switch.

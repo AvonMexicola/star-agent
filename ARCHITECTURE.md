@@ -64,8 +64,9 @@ streaming continuity or physical clearance. Those require runtime evidence.
 ## Offline and online boundaries
 
 Core exploration remains usable offline without accounts, keys or hosted services.
-Online play currently uses a 30 Hz authoritative room capped at ten players and
-the Nomad flight model. PostgreSQL with Prisma stores accounts and inventory;
+Local online play uses a 30 Hz authoritative room capped at ten players, with
+authoritative Nomad and full-size Atlas cargo hulls. The separately configured
+public multiplayer release retains its twenty-player cap. PostgreSQL with Prisma stores accounts and inventory;
 the shared preview starts a dedicated persistent local PostgreSQL instance.
 Memory storage is an explicit test option. Local building and the full offline
 fleet are not automatically replicated.
