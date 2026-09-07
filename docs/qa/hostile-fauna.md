@@ -39,8 +39,8 @@ safely downed for retry. Quick-slot medical items use the existing loadout rules
   SA-AUD-002 separately supplies species attack synthesis in local dev.
 - Independent integration review caught slope-normal versus radial dev transit,
   clone skeleton texture disposal, gait-speed mismatch, unobstructed HUD ray,
-  high-altitude unloading and failed-load cleanup. These are corrected; rerun
-  and final reviewer confirmation are pending.
+  high-altitude unloading and failed-load cleanup. These are corrected and independently rechecked; the final browser
+  route and full visual review remain pending.
 - First Chromium attempt reached a renderer crash during navigation, PID2788072,
   SIGTRAP at18:20:33CEST, and Playwright reported write errno-122. Unlike the
   previously diagnosed Crashpad startup crash, this had a renderer process and
@@ -75,9 +75,9 @@ AMD Radeon860M / ANGLE GLES3.2,1280×800; no page/console/shader errors. Screens
 are captured at40m and prove behavior, not close art acceptance. That run used
 the initial corpse export; corrected clips require their separate final capture.
 
-The corrected authoring exports are bear `30afc5a9459538fbab2954a38369f42df25ecfde032d7b819f60bf1e1f8639e6`
+The first corrected authoring checkpoint used bear `30afc5a9459538fbab2954a38369f42df25ecfde032d7b819f60bf1e1f8639e6`
 and dog `413335683e7f35484637622a4ae203613014f328f46dc7f32eda9071c5ef0f87`.
-Scoped independent pose review is4/5, with dense measured skin intersections
+At that checkpoint the first scoped pose review was4/5, with measured skin intersections
 25.65mm/12.60mm under an explicit30mm authoring tolerance. These are authored
 collapses, not physics ragdolls. Whole-scene visual acceptance remains pending.
 

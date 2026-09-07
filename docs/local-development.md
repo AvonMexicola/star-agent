@@ -220,3 +220,22 @@ patrol journeys pass. The weapon branch also passed the physical Kestrel ladder,
 launch and Selene landing/exit route and Atlas touch controls. The final visual
 and frame-time acceptance status is recorded in [weapon QA](qa/ship-weapons/production-record.md).
 No service/database restart or public deployment accompanies this integration.
+
+
+### Creature development candidates
+
+The fauna branch adds offline Pyrebear and Suloher encounters. With development
+tools enabled, use Test starts → Pyrebear habitat or Suloher habitat, land, exit
+the ship physically, and approach wildlife. Carbine/pistol rounds use the real
+loadout; Pyrebear has 240 HP and Suloher 90 HP. Both have authored walk/death clips.
+The Pyrebear controller journey passed; the corrected Suloher route and final
+actual-world motion review remain pending. These checkpoints are not a claim of
+complete gameplay acceptance. See [hostile fauna QA](qa/hostile-fauna.md).
+
+The supplied deer has a repaired, calmer walk and preserved skin/bind rig. On a
+Vite development server, open `/scripts/fixtures/creature-rig.html?model=deer`
+for an orbitable animation preview. This is an asset viewer; deer spawning is
+not implemented. The [deer repair record](qa/deer-rig.md) retains source, Blender
+file, exact export identity and before/after evidence. Reuse the
+[creature pipeline](development/creature-pipeline.md) for future animals.
+The integration steward owns shared local merges; public deployment is separate.

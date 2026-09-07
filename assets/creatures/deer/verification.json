@@ -1,0 +1,7 @@
+{
+  "runtimeSHA256": "83addc21751d295043c11f754dcd7e9a3ac7ebc77ec1f216b870be7a465e0f77",
+  "samples": 193,
+  "minimumInterpolatedSkinHeightMetres": 0.0016888845711946487,
+  "loopMaximumVertexDifferenceMetres": 0.0,
+  "scope": "CPU Blender reimport, flat ground, all skinned vertices; not terrain or browser evidence"
+}

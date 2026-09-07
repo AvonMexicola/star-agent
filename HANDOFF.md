@@ -2057,3 +2057,5 @@ https://github.com/AvonMexicola/star-agent/pull/64 .
 Local dev retained newer navigation integration; source verification/docs applied
 as6d3abb0. Shared5178 sound studio verified real Pyrebear output and mute0.
 No shared service/database restart or public deployment. Audio file claims released.
+
+SA-FAU-002 deer asset repair complete as a scoped review checkpoint: final GLB83addc,1.20MB/15,187tris, editable Blender/source and reproducible builder retained. New1.6s slow four-beat walk fixes source crossing/reach; no skin/bind surgery was needed.193-phase export deformation/contact/loop check passes. Actual Three viewer playback/scrub desktop/mobile passes9.8s (Chromium151/AMD860M ANGLE GLES3.2), root inspected captures. Independent Astra five scored dimensions4/5; full continuous-motion aesthetic score remains open. Deer remains asset-only, no biome/combat. Viewer5515 /scripts/fixtures/creature-rig.html?model=deer. Pipeline memory docs/development/creature-pipeline.md and full QA/source record retained. Shared integration remains steward-owned.
