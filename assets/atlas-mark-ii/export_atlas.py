@@ -16,7 +16,7 @@ def export_asset():
     for image in bpy.data.images:
         if image.source=='FILE':image.pack()
     # Mark the complete authoring collection; QA inspection can isolate its groups.
-    ship['assetVersion']=1;ship['lengthMetres']=64;ship['design']='original heavy logistics / Atlas Mark II';ship['status']='review-candidate'
+    ship['assetVersion']=2;ship['lengthMetres']=64;ship['design']='original heavy logistics / Meridian Atlas Mark II';ship['status']='silhouette-iteration'
     output=ROOT/'public/models/atlas-mark-ii';output.mkdir(exist_ok=True,parents=True)
     # Open the authoring file at a useful whole-ship scale.
     for screen in bpy.data.screens:
@@ -41,7 +41,8 @@ def export_asset():
             ev.to_mesh_clear()
         return {'triangles':triangles,'meshes':meshes,'bounds':{'min':lo,'max':hi}}
 
-    manifest={'version':1,'source':'assets/atlas-mark-ii/build_atlas.py','layout':'assets/atlas-mark-ii/layout.json','lods':[]}
+    quick='--atlas-quick' in sys.argv
+    manifest={'version':2,'stage':'silhouette-iteration','contactBake':not quick,'source':'assets/atlas-mark-ii/build_atlas.py','layout':'assets/atlas-mark-ii/layout.json','lods':[]}
     texture_nodes=[n for mat in bpy.data.materials if mat.use_nodes for n in mat.node_tree.nodes if n.type=='TEX_IMAGE' and n.image]
     full_images={n:n.image for n in texture_nodes}
     # The authoring scene multiplies ContactAO in its shader. glTF applies
@@ -64,7 +65,7 @@ def export_asset():
         mat.node_tree.links.remove(socket.links[0])
         if source.is_linked:mat.node_tree.links.new(source.links[0].from_socket,socket)
         else:socket.default_value=source.default_value
-    for level,ratio in [(0,1),(1,.32),(2,.10)]:
+    for level,ratio in ([(0,1)] if quick else [(0,1),(1,.55),(2,.25)]):
         if level:
             resized={}
             for node,source in full_images.items():
@@ -77,8 +78,10 @@ def export_asset():
                     mod=o.modifiers.get('Distance LOD') or o.modifiers.new('Distance LOD','DECIMATE');mod.ratio=ratio
         path=output/('atlas-mark-ii.glb' if not level else f'atlas-mark-ii-lod{level}.glb')
         print('ATLAS: exporting LOD',level,flush=True)
-        bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',export_vertex_color='NAME',export_vertex_color_name='ContactAO',export_yup=True,export_apply=True,export_extras=True,export_cameras=False,export_lights=False,export_animations=False)
-        manifest['lods'].append({'level':level,**stats(),'file':str(path.relative_to(ROOT)),'bytes':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+        bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',export_image_format='WEBP',export_image_quality=82,export_image_webp_fallback=False,export_vertex_color='NAME',export_vertex_color_name='ContactAO',export_yup=True,export_apply=True,export_extras=True,export_cameras=False,export_lights=False,export_animations=False)
+        from pack_geometry import pack_geometry
+        packing=pack_geometry(path)
+        manifest['lods'].append({'level':level,**stats(),'file':str(path.relative_to(ROOT)),'bytes':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'geometryPacking':packing})
     for mat,socket,output_socket,default in restore:
         socket.default_value=default
         mat.node_tree.links.new(output_socket,socket)

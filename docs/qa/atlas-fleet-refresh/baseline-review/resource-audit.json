@@ -1,0 +1,7663 @@
+{
+  "lods": [
+    {
+      "file": "public/models/atlas-mark-ii/atlas-mark-ii.glb",
+      "sha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+      "bytes": 38037892,
+      "jsonBytes": 172568,
+      "binBytes": 37865296,
+      "triangles": 412988,
+      "vertices": 635968,
+      "meshes": 168,
+      "drawPrimitives": 168,
+      "nodes": 200,
+      "materials": 13,
+      "images": [
+        {
+          "name": "steel-normal",
+          "mimeType": "image/png",
+          "bytes": 1001635,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "dc366d54e6949913769f9a9c291ed16edcc3175ebbe4d0522746471114685548"
+        },
+        {
+          "name": "steel-orm",
+          "mimeType": "image/png",
+          "bytes": 669161,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "0c5f4032ca6b2896bcc454314d73da252f7426d5610050066c346acb5791c6b4"
+        },
+        {
+          "name": "deck-normal",
+          "mimeType": "image/png",
+          "bytes": 1458655,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "a43dc19ad00c9f2733159625cabf23ce0e65b4ad130e8c23268ed34082628235"
+        },
+        {
+          "name": "deck-albedo",
+          "mimeType": "image/png",
+          "bytes": 1950328,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "7c07f090b104f55c05e79297d5ab735a43dfbd7f9b1cff6b043bb4b0ff668aec"
+        },
+        {
+          "name": "deck-orm",
+          "mimeType": "image/png",
+          "bytes": 634030,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "d45834ea08a6a82c4bc7bea58d9db40e1dff3896fd566997dea20ba9031387f5"
+        },
+        {
+          "name": "ceramic-normal",
+          "mimeType": "image/png",
+          "bytes": 796335,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "d67eba54f85bf97297a2e17cb615a0ae3bc4466b0072050b96d3ea97eafdd5c7"
+        },
+        {
+          "name": "ceramic-albedo",
+          "mimeType": "image/png",
+          "bytes": 1276994,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "d30d3290e89a96ada25237b298770866fab4cd4d83e04add0b8361afc5e995b1"
+        },
+        {
+          "name": "ceramic-orm",
+          "mimeType": "image/png",
+          "bytes": 634472,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "5dce1ea573f5755ff737d7079496da697b55a36e6d667823dd369cba883486f9"
+        },
+        {
+          "name": "cloth-normal",
+          "mimeType": "image/png",
+          "bytes": 1204842,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "6dc550632827ee34eb64ec659c56877772c5494026bbf952703c1d0bb960f01c"
+        },
+        {
+          "name": "cloth-orm",
+          "mimeType": "image/png",
+          "bytes": 327966,
+          "size": [
+            1024,
+            1024
+          ],
+          "sha256": "affdc7c2f0082a3cd54f9e4a18d70fb08c8417684f893e7f6d9877c28817dcb7"
+        }
+      ],
+      "totalImageBytes": 9954418,
+      "attributePayload": {
+        "POSITION": {
+          "accessors": 168,
+          "bytes": 7631616,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "NORMAL": {
+          "accessors": 168,
+          "bytes": 7631616,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "TEXCOORD_0": {
+          "accessors": 168,
+          "bytes": 5087744,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "COLOR_0": {
+          "accessors": 135,
+          "bytes": 4815248,
+          "componentTypes": [
+            5123
+          ]
+        },
+        "INDICES": {
+          "accessors": 138,
+          "bytes": 2744640,
+          "componentTypes": [
+            5123,
+            5125
+          ]
+        }
+      },
+      "materialTriangles": {
+        "Atlas / steel": 180520,
+        "Atlas / dark": 131280,
+        "Atlas / ivory": 26148,
+        "Atlas / petrol": 21688,
+        "Atlas / rubber": 18488,
+        "Atlas / warning": 11504,
+        "Atlas / mint": 7452,
+        "Atlas / amber": 5292,
+        "Atlas / deck": 4380,
+        "Atlas / glass": 2404,
+        "Atlas / display": 1512,
+        "Atlas / cloth": 1296,
+        "Atlas / engine": 1024
+      },
+      "groupTriangles": {
+        "ExteriorStructure": 207920,
+        "Interior": 143508,
+        "UpperHull": 34716,
+        "RampAft": 6192,
+        "RampFront": 6192,
+        "CrewElevator": 3236,
+        "Mount_S3_Aft": 3056,
+        "Mount_S3_DorsalPort": 3056,
+        "Mount_S3_DorsalStarboard": 3056,
+        "AtlasMarkII": 1336,
+        "LiftGateLower": 376,
+        "LiftGateUpper": 344
+      },
+      "meshCosts": [
+        {
+          "name": "ExteriorStructure batch.002",
+          "triangles": 54040,
+          "vertices": 70708,
+          "accessorPayloadBytes": 3476800,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch",
+          "triangles": 37596,
+          "vertices": 48151,
+          "accessorPayloadBytes": 2151616,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch",
+          "triangles": 37596,
+          "vertices": 48151,
+          "accessorPayloadBytes": 2151616,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.002",
+          "triangles": 32708,
+          "vertices": 53548,
+          "accessorPayloadBytes": 2338168,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch",
+          "triangles": 15228,
+          "vertices": 21424,
+          "accessorPayloadBytes": 948328,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.003",
+          "triangles": 12956,
+          "vertices": 16200,
+          "accessorPayloadBytes": 725736,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.003",
+          "triangles": 12956,
+          "vertices": 16200,
+          "accessorPayloadBytes": 725736,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.001",
+          "triangles": 10864,
+          "vertices": 16584,
+          "accessorPayloadBytes": 728544,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.004",
+          "triangles": 9396,
+          "vertices": 18792,
+          "accessorPayloadBytes": 808056,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.004",
+          "triangles": 8608,
+          "vertices": 12536,
+          "accessorPayloadBytes": 553088,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch",
+          "triangles": 7932,
+          "vertices": 15864,
+          "accessorPayloadBytes": 682152,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.001",
+          "triangles": 7376,
+          "vertices": 13402,
+          "accessorPayloadBytes": 580336,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.001",
+          "triangles": 7020,
+          "vertices": 14040,
+          "accessorPayloadBytes": 603720,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.001",
+          "triangles": 7000,
+          "vertices": 9528,
+          "accessorPayloadBytes": 423120,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.001",
+          "triangles": 6000,
+          "vertices": 8036,
+          "accessorPayloadBytes": 357440,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.003",
+          "triangles": 5944,
+          "vertices": 10483,
+          "accessorPayloadBytes": 454984,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.006",
+          "triangles": 4856,
+          "vertices": 8440,
+          "accessorPayloadBytes": 366736,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.003",
+          "triangles": 4672,
+          "vertices": 9288,
+          "accessorPayloadBytes": 399552,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.002",
+          "triangles": 4608,
+          "vertices": 6480,
+          "accessorPayloadBytes": 286848,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.005",
+          "triangles": 4464,
+          "vertices": 7296,
+          "accessorPayloadBytes": 318624,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch",
+          "triangles": 4276,
+          "vertices": 8281,
+          "accessorPayloadBytes": 356896,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.002",
+          "triangles": 3900,
+          "vertices": 4626,
+          "accessorPayloadBytes": 208440,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.002",
+          "triangles": 3900,
+          "vertices": 4626,
+          "accessorPayloadBytes": 208440,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.005",
+          "triangles": 3476,
+          "vertices": 6912,
+          "accessorPayloadBytes": 297336,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.004",
+          "triangles": 3072,
+          "vertices": 4320,
+          "accessorPayloadBytes": 191232,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.005",
+          "triangles": 3000,
+          "vertices": 4860,
+          "accessorPayloadBytes": 212400,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.003",
+          "triangles": 2912,
+          "vertices": 5812,
+          "accessorPayloadBytes": 249952,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.002",
+          "triangles": 2592,
+          "vertices": 5184,
+          "accessorPayloadBytes": 222912,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.004",
+          "triangles": 2592,
+          "vertices": 5184,
+          "accessorPayloadBytes": 181440,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.001",
+          "triangles": 2520,
+          "vertices": 4120,
+          "accessorPayloadBytes": 179920,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.001",
+          "triangles": 2520,
+          "vertices": 4120,
+          "accessorPayloadBytes": 179920,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.001",
+          "triangles": 2464,
+          "vertices": 4512,
+          "accessorPayloadBytes": 195264,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.004",
+          "triangles": 2376,
+          "vertices": 4752,
+          "accessorPayloadBytes": 204336,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.002",
+          "triangles": 2296,
+          "vertices": 2845,
+          "accessorPayloadBytes": 127576,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch",
+          "triangles": 2196,
+          "vertices": 4344,
+          "accessorPayloadBytes": 186936,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.002",
+          "triangles": 1956,
+          "vertices": 3888,
+          "accessorPayloadBytes": 167256,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.001",
+          "triangles": 1892,
+          "vertices": 2488,
+          "accessorPayloadBytes": 110872,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "CrewElevator batch",
+          "triangles": 1872,
+          "vertices": 2376,
+          "accessorPayloadBytes": 106272,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.002",
+          "triangles": 1836,
+          "vertices": 3672,
+          "accessorPayloadBytes": 157896,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.002",
+          "triangles": 1836,
+          "vertices": 3672,
+          "accessorPayloadBytes": 157896,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.001",
+          "triangles": 1728,
+          "vertices": 3456,
+          "accessorPayloadBytes": 148608,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.001",
+          "triangles": 1704,
+          "vertices": 2268,
+          "accessorPayloadBytes": 100944,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_Aft batch",
+          "triangles": 1692,
+          "vertices": 2032,
+          "accessorPayloadBytes": 91432,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_DorsalPort batch",
+          "triangles": 1692,
+          "vertices": 2032,
+          "accessorPayloadBytes": 91432,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_DorsalStarboard batch",
+          "triangles": 1692,
+          "vertices": 2032,
+          "accessorPayloadBytes": 91432,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.001",
+          "triangles": 1620,
+          "vertices": 3240,
+          "accessorPayloadBytes": 139320,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.001",
+          "triangles": 1620,
+          "vertices": 3240,
+          "accessorPayloadBytes": 139320,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch",
+          "triangles": 1620,
+          "vertices": 3240,
+          "accessorPayloadBytes": 139320,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.004",
+          "triangles": 1448,
+          "vertices": 1756,
+          "accessorPayloadBytes": 78928,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.002",
+          "triangles": 1404,
+          "vertices": 2808,
+          "accessorPayloadBytes": 120744,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch",
+          "triangles": 1332,
+          "vertices": 2658,
+          "accessorPayloadBytes": 114312,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch",
+          "triangles": 1332,
+          "vertices": 2658,
+          "accessorPayloadBytes": 114312,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.003",
+          "triangles": 1296,
+          "vertices": 2592,
+          "accessorPayloadBytes": 90720,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.003",
+          "triangles": 1296,
+          "vertices": 2592,
+          "accessorPayloadBytes": 90720,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "CrewElevator batch.001",
+          "triangles": 1148,
+          "vertices": 1383,
+          "accessorPayloadBytes": 62208,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch",
+          "triangles": 1088,
+          "vertices": 2160,
+          "accessorPayloadBytes": 92928,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.007",
+          "triangles": 1080,
+          "vertices": 2160,
+          "accessorPayloadBytes": 75600,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.006",
+          "triangles": 1080,
+          "vertices": 2160,
+          "accessorPayloadBytes": 75600,
+          "materials": [
+            "Atlas / display"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.004",
+          "triangles": 1080,
+          "vertices": 2160,
+          "accessorPayloadBytes": 92880,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.003",
+          "triangles": 1080,
+          "vertices": 2160,
+          "accessorPayloadBytes": 92880,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.002",
+          "triangles": 1080,
+          "vertices": 2160,
+          "accessorPayloadBytes": 92880,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch",
+          "triangles": 940,
+          "vertices": 1872,
+          "accessorPayloadBytes": 80520,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.005",
+          "triangles": 880,
+          "vertices": 1728,
+          "accessorPayloadBytes": 74400,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.015",
+          "triangles": 868,
+          "vertices": 1208,
+          "accessorPayloadBytes": 53528,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.003",
+          "triangles": 864,
+          "vertices": 1728,
+          "accessorPayloadBytes": 74304,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.003",
+          "triangles": 864,
+          "vertices": 1728,
+          "accessorPayloadBytes": 60480,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.005",
+          "triangles": 864,
+          "vertices": 1728,
+          "accessorPayloadBytes": 74304,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.007",
+          "triangles": 840,
+          "vertices": 1360,
+          "accessorPayloadBytes": 59440,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.007",
+          "triangles": 756,
+          "vertices": 1512,
+          "accessorPayloadBytes": 52920,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.003",
+          "triangles": 756,
+          "vertices": 1512,
+          "accessorPayloadBytes": 65016,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch.001",
+          "triangles": 688,
+          "vertices": 992,
+          "accessorPayloadBytes": 43808,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.006",
+          "triangles": 648,
+          "vertices": 1296,
+          "accessorPayloadBytes": 45360,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.003",
+          "triangles": 648,
+          "vertices": 1296,
+          "accessorPayloadBytes": 55728,
+          "materials": [
+            "Atlas / cloth"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.005",
+          "triangles": 648,
+          "vertices": 1296,
+          "accessorPayloadBytes": 45360,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.008",
+          "triangles": 648,
+          "vertices": 1296,
+          "accessorPayloadBytes": 45360,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.002",
+          "triangles": 648,
+          "vertices": 1296,
+          "accessorPayloadBytes": 55728,
+          "materials": [
+            "Atlas / cloth"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorLiftVestibule batch",
+          "triangles": 648,
+          "vertices": 1296,
+          "accessorPayloadBytes": 55728,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch",
+          "triangles": 596,
+          "vertices": 1188,
+          "accessorPayloadBytes": 51096,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.005",
+          "triangles": 512,
+          "vertices": 408,
+          "accessorPayloadBytes": 16128,
+          "materials": [
+            "Atlas / engine"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.017",
+          "triangles": 512,
+          "vertices": 408,
+          "accessorPayloadBytes": 16128,
+          "materials": [
+            "Atlas / engine"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.038",
+          "triangles": 512,
+          "vertices": 408,
+          "accessorPayloadBytes": 19392,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.036",
+          "triangles": 512,
+          "vertices": 408,
+          "accessorPayloadBytes": 19392,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.037",
+          "triangles": 512,
+          "vertices": 408,
+          "accessorPayloadBytes": 19392,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.008",
+          "triangles": 492,
+          "vertices": 972,
+          "accessorPayloadBytes": 41832,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Deep engine backplate.002",
+          "triangles": 476,
+          "vertices": 576,
+          "accessorPayloadBytes": 25896,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Deep engine backplate.003",
+          "triangles": 476,
+          "vertices": 576,
+          "accessorPayloadBytes": 25896,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch.002",
+          "triangles": 472,
+          "vertices": 604,
+          "accessorPayloadBytes": 26992,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.001",
+          "triangles": 456,
+          "vertices": 918,
+          "accessorPayloadBytes": 39456,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.001",
+          "triangles": 456,
+          "vertices": 918,
+          "accessorPayloadBytes": 39456,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.008",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 30240,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.004",
+          "triangles": 432,
+          "vertices": 828,
+          "accessorPayloadBytes": 29088,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.004",
+          "triangles": 432,
+          "vertices": 822,
+          "accessorPayloadBytes": 28896,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.006",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 30240,
+          "materials": [
+            "Atlas / display"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.004",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_01 batch",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_02 batch",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_03 batch",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_04 batch",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.006",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.007",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 30240,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.003",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 30240,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.001",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.003",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 30240,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.001",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.001",
+          "triangles": 432,
+          "vertices": 864,
+          "accessorPayloadBytes": 37152,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.003",
+          "triangles": 428,
+          "vertices": 864,
+          "accessorPayloadBytes": 37128,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.003",
+          "triangles": 428,
+          "vertices": 864,
+          "accessorPayloadBytes": 37128,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.005",
+          "triangles": 380,
+          "vertices": 464,
+          "accessorPayloadBytes": 20840,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.003",
+          "triangles": 380,
+          "vertices": 464,
+          "accessorPayloadBytes": 20840,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.004",
+          "triangles": 380,
+          "vertices": 464,
+          "accessorPayloadBytes": 20840,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.018",
+          "triangles": 352,
+          "vertices": 524,
+          "accessorPayloadBytes": 23072,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.005",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 22680,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.008",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 27864,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 27864,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorLiftVestibule batch.001",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 22680,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 27864,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 27864,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 27864,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 27864,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.005",
+          "triangles": 324,
+          "vertices": 648,
+          "accessorPayloadBytes": 22680,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch.001",
+          "triangles": 292,
+          "vertices": 584,
+          "accessorPayloadBytes": 25112,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.005",
+          "triangles": 284,
+          "vertices": 400,
+          "accessorPayloadBytes": 17704,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.003",
+          "triangles": 284,
+          "vertices": 400,
+          "accessorPayloadBytes": 17704,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.004",
+          "triangles": 284,
+          "vertices": 400,
+          "accessorPayloadBytes": 17704,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing interlocked safety bar.002",
+          "triangles": 268,
+          "vertices": 314,
+          "accessorPayloadBytes": 14168,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "LiftGateLower",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing interlocked safety bar.003",
+          "triangles": 236,
+          "vertices": 288,
+          "accessorPayloadBytes": 12936,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "LiftGateUpper",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch.002",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 15120,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.007",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 15120,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.009",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 15120,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.002",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 15120,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.004",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.002",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.004",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.002",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.004",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.002",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.004",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.002",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.003",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 18576,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.006",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 15120,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.007",
+          "triangles": 216,
+          "vertices": 432,
+          "accessorPayloadBytes": 15120,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.002",
+          "triangles": 188,
+          "vertices": 244,
+          "accessorPayloadBytes": 10888,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text",
+          "triangles": 188,
+          "vertices": 244,
+          "accessorPayloadBytes": 10888,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.001",
+          "triangles": 188,
+          "vertices": 244,
+          "accessorPayloadBytes": 10888,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift nonslip inset.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift rider control face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Loading approach illumination.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 0 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 0 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 1 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 1 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 2 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 2 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 3 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 3 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Crew desk display.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene basin cabinet.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene light diffuser 0.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene shower tray.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift vestibule ceiling spine.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift vestibule runner.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Upper central corridor runner.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing gate centre sign.002",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LiftGateLower",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing gate centre sign.003",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LiftGateUpper",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch",
+          "triangles": 72,
+          "vertices": 156,
+          "accessorPayloadBytes": 6672,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch",
+          "triangles": 60,
+          "vertices": 120,
+          "accessorPayloadBytes": 5160,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.003",
+          "triangles": 28,
+          "vertices": 60,
+          "accessorPayloadBytes": 2088,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        }
+      ],
+      "animationClips": [],
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
+      "estimatedImageRGBA8BytesWithMips": 55924053.33333333
+    },
+    {
+      "file": "public/models/atlas-mark-ii/atlas-mark-ii-lod1.glb",
+      "sha256": "cd32ac7041c346c07d1d9527bbb2d98662ea046e062bce51bfc9ef69fd65e50d",
+      "bytes": 13909084,
+      "jsonBytes": 173356,
+      "binBytes": 13735700,
+      "triangles": 133848,
+      "vertices": 251350,
+      "meshes": 168,
+      "drawPrimitives": 168,
+      "nodes": 200,
+      "materials": 13,
+      "images": [
+        {
+          "name": "steel-normal",
+          "mimeType": "image/png",
+          "bytes": 315122,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "f74df470e0fa4dd07ec6c944b343a697f1ce59f807db6c2138442a86cdcd3eea"
+        },
+        {
+          "name": "steel-orm",
+          "mimeType": "image/png",
+          "bytes": 234661,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "524f901a47d9bf97543e6743c04a18df8d1b04ec401bfa265fa1c7565bde83f1"
+        },
+        {
+          "name": "deck-normal",
+          "mimeType": "image/png",
+          "bytes": 399371,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "53c9ec6ebdb65fce1918a8e9959144b5ca986bfcc511453a9e4e47d753c45bab"
+        },
+        {
+          "name": "deck-albedo",
+          "mimeType": "image/png",
+          "bytes": 435091,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "11209d119b2e00594f4e262c56d1a587f5cd9b376f37c4e3772598f394fe560d"
+        },
+        {
+          "name": "deck-orm",
+          "mimeType": "image/png",
+          "bytes": 233383,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "a90b742f1191bae0943d8f065feab0f9439e0e10c799c3ab20ec4ae888909ea0"
+        },
+        {
+          "name": "ceramic-normal",
+          "mimeType": "image/png",
+          "bytes": 290606,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "80e05a48e3d4b19de2e0f4f1935c3b9c1c1ba1a6e93755ea8c3e0beb8b4aca29"
+        },
+        {
+          "name": "ceramic-albedo",
+          "mimeType": "image/png",
+          "bytes": 336193,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "272318249a2874d456f66b98ab790a94a7c4398fa678967da545e43625175a99"
+        },
+        {
+          "name": "ceramic-orm",
+          "mimeType": "image/png",
+          "bytes": 233326,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "8100035028caae25c98ac9070b756b562345e580566135c86e63816a573f33bb"
+        },
+        {
+          "name": "cloth-normal",
+          "mimeType": "image/png",
+          "bytes": 360965,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c9cc6439951fc2168b59b0a4fd8eb94060d28a4d6148fb72b5c66aef110fc66b"
+        },
+        {
+          "name": "cloth-orm",
+          "mimeType": "image/png",
+          "bytes": 169306,
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d8ccd2495e315490c53aa21c5c4c3b80f94a4e151a32d719dd301d93e507ec4f"
+        }
+      ],
+      "totalImageBytes": 3008024,
+      "attributePayload": {
+        "POSITION": {
+          "accessors": 168,
+          "bytes": 3016200,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "NORMAL": {
+          "accessors": 168,
+          "bytes": 3016200,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "TEXCOORD_0": {
+          "accessors": 168,
+          "bytes": 2010800,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "COLOR_0": {
+          "accessors": 135,
+          "bytes": 1894752,
+          "componentTypes": [
+            5123
+          ]
+        },
+        "INDICES": {
+          "accessors": 147,
+          "bytes": 789696,
+          "componentTypes": [
+            5123
+          ]
+        }
+      },
+      "materialTriangles": {
+        "Atlas / steel": 57746,
+        "Atlas / dark": 42498,
+        "Atlas / ivory": 8403,
+        "Atlas / petrol": 7420,
+        "Atlas / rubber": 6124,
+        "Atlas / warning": 3667,
+        "Atlas / mint": 2592,
+        "Atlas / amber": 1688,
+        "Atlas / deck": 1510,
+        "Atlas / glass": 982,
+        "Atlas / display": 482,
+        "Atlas / cloth": 412,
+        "Atlas / engine": 324
+      },
+      "groupTriangles": {
+        "ExteriorStructure": 66702,
+        "Interior": 47016,
+        "UpperHull": 11162,
+        "RampAft": 1972,
+        "RampFront": 1972,
+        "CrewElevator": 1180,
+        "Mount_S3_Aft": 1016,
+        "Mount_S3_DorsalPort": 1014,
+        "Mount_S3_DorsalStarboard": 1014,
+        "AtlasMarkII": 426,
+        "LiftGateLower": 192,
+        "LiftGateUpper": 182
+      },
+      "meshCosts": [
+        {
+          "name": "ExteriorStructure batch.002",
+          "triangles": 17292,
+          "vertices": 29371,
+          "accessorPayloadBytes": 1278592,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch",
+          "triangles": 12030,
+          "vertices": 17459,
+          "accessorPayloadBytes": 770540,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch",
+          "triangles": 12030,
+          "vertices": 17324,
+          "accessorPayloadBytes": 765140,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.002",
+          "triangles": 10466,
+          "vertices": 22874,
+          "accessorPayloadBytes": 977756,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch",
+          "triangles": 4872,
+          "vertices": 8678,
+          "accessorPayloadBytes": 376352,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.003",
+          "triangles": 4144,
+          "vertices": 6229,
+          "accessorPayloadBytes": 274024,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.003",
+          "triangles": 4144,
+          "vertices": 6248,
+          "accessorPayloadBytes": 274784,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.001",
+          "triangles": 3476,
+          "vertices": 7114,
+          "accessorPayloadBytes": 305416,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.004",
+          "triangles": 3006,
+          "vertices": 7488,
+          "accessorPayloadBytes": 317556,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.004",
+          "triangles": 2754,
+          "vertices": 5764,
+          "accessorPayloadBytes": 247084,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch",
+          "triangles": 2538,
+          "vertices": 5782,
+          "accessorPayloadBytes": 246508,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.001",
+          "triangles": 2360,
+          "vertices": 5607,
+          "accessorPayloadBytes": 238440,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.001",
+          "triangles": 2246,
+          "vertices": 4926,
+          "accessorPayloadBytes": 210516,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.001",
+          "triangles": 2240,
+          "vertices": 3925,
+          "accessorPayloadBytes": 170440,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.001",
+          "triangles": 1920,
+          "vertices": 3152,
+          "accessorPayloadBytes": 137600,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.003",
+          "triangles": 1901,
+          "vertices": 3246,
+          "accessorPayloadBytes": 141246,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.006",
+          "triangles": 1553,
+          "vertices": 3041,
+          "accessorPayloadBytes": 130958,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.003",
+          "triangles": 1494,
+          "vertices": 3496,
+          "accessorPayloadBytes": 148804,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.002",
+          "triangles": 1474,
+          "vertices": 2957,
+          "accessorPayloadBytes": 127124,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.005",
+          "triangles": 1428,
+          "vertices": 2684,
+          "accessorPayloadBytes": 115928,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch",
+          "triangles": 1367,
+          "vertices": 2894,
+          "accessorPayloadBytes": 123962,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.002",
+          "triangles": 1248,
+          "vertices": 1642,
+          "accessorPayloadBytes": 73168,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.002",
+          "triangles": 1248,
+          "vertices": 1641,
+          "accessorPayloadBytes": 73128,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.005",
+          "triangles": 1112,
+          "vertices": 2300,
+          "accessorPayloadBytes": 98672,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.004",
+          "triangles": 982,
+          "vertices": 1928,
+          "accessorPayloadBytes": 83012,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.005",
+          "triangles": 960,
+          "vertices": 1872,
+          "accessorPayloadBytes": 80640,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.003",
+          "triangles": 930,
+          "vertices": 2338,
+          "accessorPayloadBytes": 99100,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.002",
+          "triangles": 828,
+          "vertices": 2032,
+          "accessorPayloadBytes": 86248,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.004",
+          "triangles": 828,
+          "vertices": 2092,
+          "accessorPayloadBytes": 71912,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.001",
+          "triangles": 806,
+          "vertices": 1675,
+          "accessorPayloadBytes": 71836,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.001",
+          "triangles": 806,
+          "vertices": 1675,
+          "accessorPayloadBytes": 71836,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.001",
+          "triangles": 788,
+          "vertices": 1526,
+          "accessorPayloadBytes": 65768,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.004",
+          "triangles": 760,
+          "vertices": 1814,
+          "accessorPayloadBytes": 77120,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.002",
+          "triangles": 734,
+          "vertices": 1068,
+          "accessorPayloadBytes": 47124,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch",
+          "triangles": 702,
+          "vertices": 1554,
+          "accessorPayloadBytes": 66372,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.002",
+          "triangles": 624,
+          "vertices": 1368,
+          "accessorPayloadBytes": 58464,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.001",
+          "triangles": 604,
+          "vertices": 1020,
+          "accessorPayloadBytes": 44424,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "CrewElevator batch",
+          "triangles": 598,
+          "vertices": 924,
+          "accessorPayloadBytes": 40548,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.002",
+          "triangles": 586,
+          "vertices": 1442,
+          "accessorPayloadBytes": 61196,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.002",
+          "triangles": 586,
+          "vertices": 1436,
+          "accessorPayloadBytes": 60956,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.001",
+          "triangles": 552,
+          "vertices": 1346,
+          "accessorPayloadBytes": 57152,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.001",
+          "triangles": 544,
+          "vertices": 987,
+          "accessorPayloadBytes": 42744,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_Aft batch",
+          "triangles": 540,
+          "vertices": 720,
+          "accessorPayloadBytes": 32040,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_DorsalPort batch",
+          "triangles": 540,
+          "vertices": 720,
+          "accessorPayloadBytes": 32040,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_DorsalStarboard batch",
+          "triangles": 540,
+          "vertices": 720,
+          "accessorPayloadBytes": 32040,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.001",
+          "triangles": 518,
+          "vertices": 1262,
+          "accessorPayloadBytes": 53588,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.001",
+          "triangles": 518,
+          "vertices": 1266,
+          "accessorPayloadBytes": 53748,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch",
+          "triangles": 518,
+          "vertices": 1296,
+          "accessorPayloadBytes": 54948,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.004",
+          "triangles": 462,
+          "vertices": 676,
+          "accessorPayloadBytes": 29812,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.002",
+          "triangles": 448,
+          "vertices": 1144,
+          "accessorPayloadBytes": 48448,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch",
+          "triangles": 426,
+          "vertices": 1016,
+          "accessorPayloadBytes": 43196,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch",
+          "triangles": 426,
+          "vertices": 1018,
+          "accessorPayloadBytes": 43276,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.003",
+          "triangles": 414,
+          "vertices": 1036,
+          "accessorPayloadBytes": 35636,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.003",
+          "triangles": 414,
+          "vertices": 1034,
+          "accessorPayloadBytes": 35572,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "CrewElevator batch.001",
+          "triangles": 366,
+          "vertices": 502,
+          "accessorPayloadBytes": 22276,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch",
+          "triangles": 348,
+          "vertices": 770,
+          "accessorPayloadBytes": 32888,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.007",
+          "triangles": 344,
+          "vertices": 872,
+          "accessorPayloadBytes": 29968,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.006",
+          "triangles": 344,
+          "vertices": 878,
+          "accessorPayloadBytes": 30160,
+          "materials": [
+            "Atlas / display"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.004",
+          "triangles": 344,
+          "vertices": 830,
+          "accessorPayloadBytes": 35264,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.003",
+          "triangles": 344,
+          "vertices": 876,
+          "accessorPayloadBytes": 37104,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.002",
+          "triangles": 344,
+          "vertices": 912,
+          "accessorPayloadBytes": 38544,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch",
+          "triangles": 300,
+          "vertices": 708,
+          "accessorPayloadBytes": 30120,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.005",
+          "triangles": 280,
+          "vertices": 628,
+          "accessorPayloadBytes": 26800,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.015",
+          "triangles": 277,
+          "vertices": 326,
+          "accessorPayloadBytes": 14702,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.003",
+          "triangles": 276,
+          "vertices": 678,
+          "accessorPayloadBytes": 28776,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.003",
+          "triangles": 276,
+          "vertices": 690,
+          "accessorPayloadBytes": 23736,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.005",
+          "triangles": 276,
+          "vertices": 690,
+          "accessorPayloadBytes": 29256,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.007",
+          "triangles": 268,
+          "vertices": 546,
+          "accessorPayloadBytes": 23448,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.007",
+          "triangles": 240,
+          "vertices": 600,
+          "accessorPayloadBytes": 20640,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.003",
+          "triangles": 240,
+          "vertices": 594,
+          "accessorPayloadBytes": 25200,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch.001",
+          "triangles": 220,
+          "vertices": 418,
+          "accessorPayloadBytes": 18040,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.006",
+          "triangles": 206,
+          "vertices": 514,
+          "accessorPayloadBytes": 17684,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.003",
+          "triangles": 206,
+          "vertices": 518,
+          "accessorPayloadBytes": 21956,
+          "materials": [
+            "Atlas / cloth"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.005",
+          "triangles": 206,
+          "vertices": 538,
+          "accessorPayloadBytes": 18452,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.008",
+          "triangles": 206,
+          "vertices": 514,
+          "accessorPayloadBytes": 17684,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.002",
+          "triangles": 206,
+          "vertices": 522,
+          "accessorPayloadBytes": 22116,
+          "materials": [
+            "Atlas / cloth"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorLiftVestibule batch",
+          "triangles": 206,
+          "vertices": 506,
+          "accessorPayloadBytes": 21476,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.004",
+          "triangles": 202,
+          "vertices": 467,
+          "accessorPayloadBytes": 16156,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.004",
+          "triangles": 200,
+          "vertices": 471,
+          "accessorPayloadBytes": 16272,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch",
+          "triangles": 190,
+          "vertices": 440,
+          "accessorPayloadBytes": 18740,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.005",
+          "triangles": 162,
+          "vertices": 169,
+          "accessorPayloadBytes": 6380,
+          "materials": [
+            "Atlas / engine"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.017",
+          "triangles": 162,
+          "vertices": 169,
+          "accessorPayloadBytes": 6380,
+          "materials": [
+            "Atlas / engine"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.038",
+          "triangles": 162,
+          "vertices": 177,
+          "accessorPayloadBytes": 8052,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.036",
+          "triangles": 162,
+          "vertices": 177,
+          "accessorPayloadBytes": 8052,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.037",
+          "triangles": 162,
+          "vertices": 177,
+          "accessorPayloadBytes": 8052,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.008",
+          "triangles": 156,
+          "vertices": 348,
+          "accessorPayloadBytes": 14856,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Deep engine backplate.002",
+          "triangles": 152,
+          "vertices": 164,
+          "accessorPayloadBytes": 7472,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Deep engine backplate.003",
+          "triangles": 152,
+          "vertices": 164,
+          "accessorPayloadBytes": 7472,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch.002",
+          "triangles": 150,
+          "vertices": 227,
+          "accessorPayloadBytes": 9980,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.001",
+          "triangles": 144,
+          "vertices": 342,
+          "accessorPayloadBytes": 14544,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.001",
+          "triangles": 144,
+          "vertices": 336,
+          "accessorPayloadBytes": 14304,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch",
+          "triangles": 138,
+          "vertices": 346,
+          "accessorPayloadBytes": 14668,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.008",
+          "triangles": 138,
+          "vertices": 354,
+          "accessorPayloadBytes": 12156,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.006",
+          "triangles": 138,
+          "vertices": 342,
+          "accessorPayloadBytes": 11772,
+          "materials": [
+            "Atlas / display"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.004",
+          "triangles": 138,
+          "vertices": 336,
+          "accessorPayloadBytes": 14268,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_01 batch",
+          "triangles": 138,
+          "vertices": 350,
+          "accessorPayloadBytes": 14828,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_02 batch",
+          "triangles": 138,
+          "vertices": 350,
+          "accessorPayloadBytes": 14828,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_03 batch",
+          "triangles": 138,
+          "vertices": 350,
+          "accessorPayloadBytes": 14828,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_04 batch",
+          "triangles": 138,
+          "vertices": 350,
+          "accessorPayloadBytes": 14828,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.006",
+          "triangles": 138,
+          "vertices": 352,
+          "accessorPayloadBytes": 14908,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.007",
+          "triangles": 138,
+          "vertices": 346,
+          "accessorPayloadBytes": 11900,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.003",
+          "triangles": 138,
+          "vertices": 350,
+          "accessorPayloadBytes": 12028,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.001",
+          "triangles": 138,
+          "vertices": 348,
+          "accessorPayloadBytes": 14748,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.003",
+          "triangles": 138,
+          "vertices": 348,
+          "accessorPayloadBytes": 11964,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.001",
+          "triangles": 138,
+          "vertices": 350,
+          "accessorPayloadBytes": 14828,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.001",
+          "triangles": 138,
+          "vertices": 352,
+          "accessorPayloadBytes": 14908,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.003",
+          "triangles": 136,
+          "vertices": 320,
+          "accessorPayloadBytes": 13616,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.003",
+          "triangles": 136,
+          "vertices": 310,
+          "accessorPayloadBytes": 13216,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.005",
+          "triangles": 134,
+          "vertices": 158,
+          "accessorPayloadBytes": 7124,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.003",
+          "triangles": 132,
+          "vertices": 158,
+          "accessorPayloadBytes": 7112,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.004",
+          "triangles": 132,
+          "vertices": 155,
+          "accessorPayloadBytes": 6992,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.005",
+          "triangles": 120,
+          "vertices": 132,
+          "accessorPayloadBytes": 6000,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.003",
+          "triangles": 120,
+          "vertices": 136,
+          "accessorPayloadBytes": 6160,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.004",
+          "triangles": 120,
+          "vertices": 140,
+          "accessorPayloadBytes": 6320,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.018",
+          "triangles": 112,
+          "vertices": 144,
+          "accessorPayloadBytes": 6432,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift nonslip inset.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift rider control face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Loading approach illumination.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 0 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 0 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 1 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 1 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 2 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 2 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 3 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 3 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Crew desk display.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene basin cabinet.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene light diffuser 0.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene shower tray.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift vestibule ceiling spine.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift vestibule runner.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Upper central corridor runner.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing gate centre sign.002",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LiftGateLower",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing gate centre sign.003",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LiftGateUpper",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.005",
+          "triangles": 102,
+          "vertices": 260,
+          "accessorPayloadBytes": 8932,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.008",
+          "triangles": 102,
+          "vertices": 234,
+          "accessorPayloadBytes": 9972,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch",
+          "triangles": 102,
+          "vertices": 250,
+          "accessorPayloadBytes": 10612,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorLiftVestibule batch.001",
+          "triangles": 102,
+          "vertices": 250,
+          "accessorPayloadBytes": 8612,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch",
+          "triangles": 102,
+          "vertices": 254,
+          "accessorPayloadBytes": 10772,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch",
+          "triangles": 102,
+          "vertices": 254,
+          "accessorPayloadBytes": 10772,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch",
+          "triangles": 102,
+          "vertices": 254,
+          "accessorPayloadBytes": 10772,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch",
+          "triangles": 102,
+          "vertices": 256,
+          "accessorPayloadBytes": 10852,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.005",
+          "triangles": 102,
+          "vertices": 250,
+          "accessorPayloadBytes": 8612,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch.001",
+          "triangles": 92,
+          "vertices": 218,
+          "accessorPayloadBytes": 9272,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing interlocked safety bar.002",
+          "triangles": 84,
+          "vertices": 115,
+          "accessorPayloadBytes": 5104,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "LiftGateLower",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing interlocked safety bar.003",
+          "triangles": 74,
+          "vertices": 111,
+          "accessorPayloadBytes": 4884,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "LiftGateUpper",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch",
+          "triangles": 72,
+          "vertices": 156,
+          "accessorPayloadBytes": 6672,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch.002",
+          "triangles": 68,
+          "vertices": 174,
+          "accessorPayloadBytes": 5976,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.007",
+          "triangles": 68,
+          "vertices": 170,
+          "accessorPayloadBytes": 5848,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.009",
+          "triangles": 68,
+          "vertices": 180,
+          "accessorPayloadBytes": 6168,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.002",
+          "triangles": 68,
+          "vertices": 178,
+          "accessorPayloadBytes": 6104,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.004",
+          "triangles": 68,
+          "vertices": 176,
+          "accessorPayloadBytes": 7448,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.002",
+          "triangles": 68,
+          "vertices": 176,
+          "accessorPayloadBytes": 7448,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.004",
+          "triangles": 68,
+          "vertices": 168,
+          "accessorPayloadBytes": 7128,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.002",
+          "triangles": 68,
+          "vertices": 172,
+          "accessorPayloadBytes": 7288,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.004",
+          "triangles": 68,
+          "vertices": 172,
+          "accessorPayloadBytes": 7288,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.002",
+          "triangles": 68,
+          "vertices": 178,
+          "accessorPayloadBytes": 7528,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.004",
+          "triangles": 68,
+          "vertices": 172,
+          "accessorPayloadBytes": 7288,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.002",
+          "triangles": 68,
+          "vertices": 168,
+          "accessorPayloadBytes": 7128,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.003",
+          "triangles": 68,
+          "vertices": 164,
+          "accessorPayloadBytes": 6968,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.006",
+          "triangles": 68,
+          "vertices": 164,
+          "accessorPayloadBytes": 5656,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.007",
+          "triangles": 68,
+          "vertices": 172,
+          "accessorPayloadBytes": 5912,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch",
+          "triangles": 60,
+          "vertices": 120,
+          "accessorPayloadBytes": 5160,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.002",
+          "triangles": 60,
+          "vertices": 74,
+          "accessorPayloadBytes": 3320,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text",
+          "triangles": 60,
+          "vertices": 74,
+          "accessorPayloadBytes": 3320,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.001",
+          "triangles": 60,
+          "vertices": 74,
+          "accessorPayloadBytes": 3320,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.003",
+          "triangles": 28,
+          "vertices": 60,
+          "accessorPayloadBytes": 2088,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        }
+      ],
+      "animationClips": [],
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
+      "estimatedImageRGBA8BytesWithMips": 13981013.333333332
+    },
+    {
+      "file": "public/models/atlas-mark-ii/atlas-mark-ii-lod2.glb",
+      "sha256": "1d22c5ef0a86c29659f0ef224285358753fc8db51fe1fb71c10c83809e78dc39",
+      "bytes": 4216528,
+      "jsonBytes": 172020,
+      "binBytes": 4044480,
+      "triangles": 43340,
+      "vertices": 77191,
+      "meshes": 168,
+      "drawPrimitives": 168,
+      "nodes": 200,
+      "materials": 13,
+      "images": [
+        {
+          "name": "steel-normal",
+          "mimeType": "image/png",
+          "bytes": 83530,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "52bdb0fc3d20d5fb72aa067028e98e9c724024026416a8ad1c21ccd9fb9dac93"
+        },
+        {
+          "name": "steel-orm",
+          "mimeType": "image/png",
+          "bytes": 65743,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "a1422a96e749de7dbef71a27749b6e585a3a6be6817e820149073dc446f2bc8a"
+        },
+        {
+          "name": "deck-normal",
+          "mimeType": "image/png",
+          "bytes": 103111,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "ccc06615eb52e217dfd9491ec501a1b726e3759e0e51b799a472e6272941e4ed"
+        },
+        {
+          "name": "deck-albedo",
+          "mimeType": "image/png",
+          "bytes": 92812,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "4b9ac4fb21f17c32902b2265f51cbae85998e265899292c8a681384fa2c11881"
+        },
+        {
+          "name": "deck-orm",
+          "mimeType": "image/png",
+          "bytes": 65924,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "ee39646d0f9ccb130bba450286fa28106d85d2c7a8f08f74158652ae64b8c4a1"
+        },
+        {
+          "name": "ceramic-normal",
+          "mimeType": "image/png",
+          "bytes": 76506,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "515ecd1e2f9c3696ae0c3054105fb5a3aa8414b65242789cac6727f78357729a"
+        },
+        {
+          "name": "ceramic-albedo",
+          "mimeType": "image/png",
+          "bytes": 74763,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "9c812e0a3b4ae675a65d065b136b10ef81508aafc98ad7235980c2f668721e67"
+        },
+        {
+          "name": "ceramic-orm",
+          "mimeType": "image/png",
+          "bytes": 65516,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "13e947d93b55ba3899c982d5adb2f08835f9ee91087320175881aba47b47141b"
+        },
+        {
+          "name": "cloth-normal",
+          "mimeType": "image/png",
+          "bytes": 80091,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "456301b0ce8e5e3d11f23688e068487d6181d2d4cb5b141afbbdff8c73ca4324"
+        },
+        {
+          "name": "cloth-orm",
+          "mimeType": "image/png",
+          "bytes": 41961,
+          "size": [
+            256,
+            256
+          ],
+          "sha256": "81b556673d14e12dd87c5122c0b677bf0d5432a812c7305eee827cbaa58e4fc1"
+        }
+      ],
+      "totalImageBytes": 749957,
+      "attributePayload": {
+        "POSITION": {
+          "accessors": 168,
+          "bytes": 926292,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "NORMAL": {
+          "accessors": 168,
+          "bytes": 926292,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "TEXCOORD_0": {
+          "accessors": 168,
+          "bytes": 617528,
+          "componentTypes": [
+            5126
+          ]
+        },
+        "COLOR_0": {
+          "accessors": 135,
+          "bytes": 576344,
+          "componentTypes": [
+            5123
+          ]
+        },
+        "INDICES": {
+          "accessors": 145,
+          "bytes": 248052,
+          "componentTypes": [
+            5123
+          ]
+        }
+      },
+      "materialTriangles": {
+        "Atlas / steel": 18026,
+        "Atlas / dark": 13368,
+        "Atlas / petrol": 2944,
+        "Atlas / ivory": 2621,
+        "Atlas / rubber": 2130,
+        "Atlas / warning": 1077,
+        "Atlas / mint": 1022,
+        "Atlas / glass": 674,
+        "Atlas / deck": 582,
+        "Atlas / amber": 518,
+        "Atlas / display": 150,
+        "Atlas / cloth": 128,
+        "Atlas / engine": 100
+      },
+      "groupTriangles": {
+        "ExteriorStructure": 20820,
+        "Interior": 15650,
+        "UpperHull": 3524,
+        "RampAft": 608,
+        "RampFront": 608,
+        "CrewElevator": 516,
+        "Mount_S3_Aft": 408,
+        "Mount_S3_DorsalPort": 406,
+        "Mount_S3_DorsalStarboard": 406,
+        "LiftGateLower": 134,
+        "AtlasMarkII": 130,
+        "LiftGateUpper": 130
+      },
+      "meshCosts": [
+        {
+          "name": "ExteriorStructure batch.002",
+          "triangles": 5404,
+          "vertices": 8682,
+          "accessorPayloadBytes": 379704,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch",
+          "triangles": 3590,
+          "vertices": 5408,
+          "accessorPayloadBytes": 237860,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch",
+          "triangles": 3574,
+          "vertices": 5363,
+          "accessorPayloadBytes": 235964,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.002",
+          "triangles": 3270,
+          "vertices": 6011,
+          "accessorPayloadBytes": 260060,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch",
+          "triangles": 1522,
+          "vertices": 2656,
+          "accessorPayloadBytes": 115372,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.003",
+          "triangles": 1294,
+          "vertices": 1890,
+          "accessorPayloadBytes": 83364,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.003",
+          "triangles": 1294,
+          "vertices": 1894,
+          "accessorPayloadBytes": 83524,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.001",
+          "triangles": 1086,
+          "vertices": 2200,
+          "accessorPayloadBytes": 94516,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.004",
+          "triangles": 916,
+          "vertices": 1838,
+          "accessorPayloadBytes": 79016,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.004",
+          "triangles": 860,
+          "vertices": 1573,
+          "accessorPayloadBytes": 68080,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch",
+          "triangles": 768,
+          "vertices": 1726,
+          "accessorPayloadBytes": 73648,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.001",
+          "triangles": 736,
+          "vertices": 1458,
+          "accessorPayloadBytes": 62736,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.001",
+          "triangles": 702,
+          "vertices": 1638,
+          "accessorPayloadBytes": 69732,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.001",
+          "triangles": 700,
+          "vertices": 1263,
+          "accessorPayloadBytes": 54720,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.001",
+          "triangles": 594,
+          "vertices": 1112,
+          "accessorPayloadBytes": 48044,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.003",
+          "triangles": 554,
+          "vertices": 1052,
+          "accessorPayloadBytes": 45404,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.003",
+          "triangles": 466,
+          "vertices": 900,
+          "accessorPayloadBytes": 38796,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.002",
+          "triangles": 460,
+          "vertices": 749,
+          "accessorPayloadBytes": 32720,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.005",
+          "triangles": 446,
+          "vertices": 854,
+          "accessorPayloadBytes": 36836,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.006",
+          "triangles": 429,
+          "vertices": 579,
+          "accessorPayloadBytes": 25734,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch",
+          "triangles": 421,
+          "vertices": 801,
+          "accessorPayloadBytes": 34566,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.002",
+          "triangles": 390,
+          "vertices": 622,
+          "accessorPayloadBytes": 27220,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.002",
+          "triangles": 390,
+          "vertices": 624,
+          "accessorPayloadBytes": 27300,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.005",
+          "triangles": 336,
+          "vertices": 640,
+          "accessorPayloadBytes": 27616,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.004",
+          "triangles": 306,
+          "vertices": 498,
+          "accessorPayloadBytes": 21756,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.005",
+          "triangles": 296,
+          "vertices": 614,
+          "accessorPayloadBytes": 26336,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.003",
+          "triangles": 290,
+          "vertices": 638,
+          "accessorPayloadBytes": 27260,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.004",
+          "triangles": 252,
+          "vertices": 506,
+          "accessorPayloadBytes": 17704,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.001",
+          "triangles": 252,
+          "vertices": 469,
+          "accessorPayloadBytes": 20272,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.001",
+          "triangles": 252,
+          "vertices": 469,
+          "accessorPayloadBytes": 20272,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.002",
+          "triangles": 250,
+          "vertices": 502,
+          "accessorPayloadBytes": 21580,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.001",
+          "triangles": 246,
+          "vertices": 422,
+          "accessorPayloadBytes": 18356,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.004",
+          "triangles": 232,
+          "vertices": 468,
+          "accessorPayloadBytes": 20112,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.002",
+          "triangles": 228,
+          "vertices": 350,
+          "accessorPayloadBytes": 15368,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch",
+          "triangles": 216,
+          "vertices": 392,
+          "accessorPayloadBytes": 16976,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.004",
+          "triangles": 202,
+          "vertices": 467,
+          "accessorPayloadBytes": 16156,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.004",
+          "triangles": 200,
+          "vertices": 471,
+          "accessorPayloadBytes": 16272,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.002",
+          "triangles": 194,
+          "vertices": 374,
+          "accessorPayloadBytes": 16124,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.001",
+          "triangles": 188,
+          "vertices": 447,
+          "accessorPayloadBytes": 19008,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "CrewElevator batch",
+          "triangles": 186,
+          "vertices": 369,
+          "accessorPayloadBytes": 15876,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.002",
+          "triangles": 182,
+          "vertices": 394,
+          "accessorPayloadBytes": 16852,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.002",
+          "triangles": 182,
+          "vertices": 386,
+          "accessorPayloadBytes": 16532,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.001",
+          "triangles": 172,
+          "vertices": 364,
+          "accessorPayloadBytes": 15592,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.001",
+          "triangles": 170,
+          "vertices": 333,
+          "accessorPayloadBytes": 14340,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_Aft batch",
+          "triangles": 168,
+          "vertices": 277,
+          "accessorPayloadBytes": 12088,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_DorsalPort batch",
+          "triangles": 168,
+          "vertices": 268,
+          "accessorPayloadBytes": 11728,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Mount_S3_DorsalStarboard batch",
+          "triangles": 168,
+          "vertices": 268,
+          "accessorPayloadBytes": 11728,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortDrive batch.001",
+          "triangles": 162,
+          "vertices": 346,
+          "accessorPayloadBytes": 14812,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardDrive batch.001",
+          "triangles": 162,
+          "vertices": 346,
+          "accessorPayloadBytes": 14812,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch",
+          "triangles": 162,
+          "vertices": 342,
+          "accessorPayloadBytes": 14652,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.004",
+          "triangles": 144,
+          "vertices": 221,
+          "accessorPayloadBytes": 9704,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.002",
+          "triangles": 140,
+          "vertices": 296,
+          "accessorPayloadBytes": 12680,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.005",
+          "triangles": 134,
+          "vertices": 158,
+          "accessorPayloadBytes": 7124,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch",
+          "triangles": 132,
+          "vertices": 266,
+          "accessorPayloadBytes": 11432,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch",
+          "triangles": 132,
+          "vertices": 266,
+          "accessorPayloadBytes": 11432,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.003",
+          "triangles": 132,
+          "vertices": 158,
+          "accessorPayloadBytes": 7112,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Blanking cap.004",
+          "triangles": 132,
+          "vertices": 155,
+          "accessorPayloadBytes": 6992,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.003",
+          "triangles": 128,
+          "vertices": 272,
+          "accessorPayloadBytes": 9472,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.003",
+          "triangles": 128,
+          "vertices": 272,
+          "accessorPayloadBytes": 9472,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "CrewElevator batch.001",
+          "triangles": 114,
+          "vertices": 178,
+          "accessorPayloadBytes": 7804,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift nonslip inset.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift rider control face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "CrewElevator",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Loading approach illumination.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCargo batch.007",
+          "triangles": 108,
+          "vertices": 220,
+          "accessorPayloadBytes": 7688,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorCargo",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch",
+          "triangles": 108,
+          "vertices": 212,
+          "accessorPayloadBytes": 9128,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 0 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 0 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 1 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 1 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 2 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 2 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 3 chassis.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Pilot display 3 recessed face.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Crew desk display.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.006",
+          "triangles": 108,
+          "vertices": 222,
+          "accessorPayloadBytes": 7752,
+          "materials": [
+            "Atlas / display"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.004",
+          "triangles": 108,
+          "vertices": 220,
+          "accessorPayloadBytes": 9448,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene basin cabinet.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene light diffuser 0.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 7560,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Hygiene shower tray.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift vestibule ceiling spine.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Lift vestibule runner.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Upper central corridor runner.001",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing gate centre sign.002",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LiftGateLower",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing gate centre sign.003",
+          "triangles": 108,
+          "vertices": 216,
+          "accessorPayloadBytes": 9288,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LiftGateUpper",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.003",
+          "triangles": 108,
+          "vertices": 220,
+          "accessorPayloadBytes": 9448,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.002",
+          "triangles": 108,
+          "vertices": 220,
+          "accessorPayloadBytes": 9448,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch",
+          "triangles": 94,
+          "vertices": 202,
+          "accessorPayloadBytes": 8644,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.005",
+          "triangles": 88,
+          "vertices": 160,
+          "accessorPayloadBytes": 6928,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.003",
+          "triangles": 86,
+          "vertices": 178,
+          "accessorPayloadBytes": 7636,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.015",
+          "triangles": 86,
+          "vertices": 152,
+          "accessorPayloadBytes": 6596,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch.003",
+          "triangles": 86,
+          "vertices": 182,
+          "accessorPayloadBytes": 6340,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.005",
+          "triangles": 86,
+          "vertices": 182,
+          "accessorPayloadBytes": 7796,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.007",
+          "triangles": 84,
+          "vertices": 160,
+          "accessorPayloadBytes": 6904,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.007",
+          "triangles": 74,
+          "vertices": 152,
+          "accessorPayloadBytes": 5308,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.003",
+          "triangles": 74,
+          "vertices": 158,
+          "accessorPayloadBytes": 6764,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch",
+          "triangles": 72,
+          "vertices": 156,
+          "accessorPayloadBytes": 6672,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch.001",
+          "triangles": 68,
+          "vertices": 116,
+          "accessorPayloadBytes": 5048,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.006",
+          "triangles": 64,
+          "vertices": 136,
+          "accessorPayloadBytes": 4736,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.003",
+          "triangles": 64,
+          "vertices": 132,
+          "accessorPayloadBytes": 5664,
+          "materials": [
+            "Atlas / cloth"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.005",
+          "triangles": 64,
+          "vertices": 132,
+          "accessorPayloadBytes": 4608,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.008",
+          "triangles": 64,
+          "vertices": 136,
+          "accessorPayloadBytes": 4736,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.002",
+          "triangles": 64,
+          "vertices": 136,
+          "accessorPayloadBytes": 5824,
+          "materials": [
+            "Atlas / cloth"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorLiftVestibule batch",
+          "triangles": 64,
+          "vertices": 132,
+          "accessorPayloadBytes": 5664,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorUpper batch",
+          "triangles": 60,
+          "vertices": 120,
+          "accessorPayloadBytes": 5160,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch",
+          "triangles": 58,
+          "vertices": 122,
+          "accessorPayloadBytes": 5228,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.005",
+          "triangles": 50,
+          "vertices": 73,
+          "accessorPayloadBytes": 2636,
+          "materials": [
+            "Atlas / engine"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.017",
+          "triangles": 50,
+          "vertices": 73,
+          "accessorPayloadBytes": 2636,
+          "materials": [
+            "Atlas / engine"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.038",
+          "triangles": 50,
+          "vertices": 74,
+          "accessorPayloadBytes": 3260,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.036",
+          "triangles": 50,
+          "vertices": 74,
+          "accessorPayloadBytes": 3260,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Torus.037",
+          "triangles": 50,
+          "vertices": 74,
+          "accessorPayloadBytes": 3260,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.008",
+          "triangles": 48,
+          "vertices": 96,
+          "accessorPayloadBytes": 4128,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch.002",
+          "triangles": 46,
+          "vertices": 71,
+          "accessorPayloadBytes": 3116,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Deep engine backplate.002",
+          "triangles": 46,
+          "vertices": 58,
+          "accessorPayloadBytes": 2596,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "PortDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Deep engine backplate.003",
+          "triangles": 46,
+          "vertices": 58,
+          "accessorPayloadBytes": 2596,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "StarboardDrive",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.001",
+          "triangles": 44,
+          "vertices": 98,
+          "accessorPayloadBytes": 4184,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.001",
+          "triangles": 44,
+          "vertices": 98,
+          "accessorPayloadBytes": 4184,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch",
+          "triangles": 42,
+          "vertices": 86,
+          "accessorPayloadBytes": 3692,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "ExteriorStructure batch.008",
+          "triangles": 42,
+          "vertices": 90,
+          "accessorPayloadBytes": 3132,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PortBowCheek batch.003",
+          "triangles": 42,
+          "vertices": 94,
+          "accessorPayloadBytes": 4012,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "PortBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "StarboardBowCheek batch.003",
+          "triangles": 42,
+          "vertices": 94,
+          "accessorPayloadBytes": 4012,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "StarboardBowCheek",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.006",
+          "triangles": 42,
+          "vertices": 88,
+          "accessorPayloadBytes": 3068,
+          "materials": [
+            "Atlas / display"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_01 batch",
+          "triangles": 42,
+          "vertices": 88,
+          "accessorPayloadBytes": 3772,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_01",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_02 batch",
+          "triangles": 42,
+          "vertices": 88,
+          "accessorPayloadBytes": 3772,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_02",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_03 batch",
+          "triangles": 42,
+          "vertices": 88,
+          "accessorPayloadBytes": 3772,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_03",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PilotMFD_04 batch",
+          "triangles": 42,
+          "vertices": 88,
+          "accessorPayloadBytes": 3772,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "PilotMFD_04",
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorCrew batch.006",
+          "triangles": 42,
+          "vertices": 88,
+          "accessorPayloadBytes": 3772,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorCrew",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.007",
+          "triangles": 42,
+          "vertices": 90,
+          "accessorPayloadBytes": 3132,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.003",
+          "triangles": 42,
+          "vertices": 90,
+          "accessorPayloadBytes": 3132,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.001",
+          "triangles": 42,
+          "vertices": 90,
+          "accessorPayloadBytes": 3852,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.003",
+          "triangles": 42,
+          "vertices": 90,
+          "accessorPayloadBytes": 3132,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.001",
+          "triangles": 42,
+          "vertices": 90,
+          "accessorPayloadBytes": 3852,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.001",
+          "triangles": 42,
+          "vertices": 90,
+          "accessorPayloadBytes": 3852,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.004",
+          "triangles": 38,
+          "vertices": 86,
+          "accessorPayloadBytes": 3668,
+          "materials": [
+            "Atlas / petrol"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.005",
+          "triangles": 38,
+          "vertices": 55,
+          "accessorPayloadBytes": 2428,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.003",
+          "triangles": 38,
+          "vertices": 50,
+          "accessorPayloadBytes": 2228,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Machined mating flange.004",
+          "triangles": 38,
+          "vertices": 50,
+          "accessorPayloadBytes": 2228,
+          "materials": [
+            "Atlas / steel"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.018",
+          "triangles": 34,
+          "vertices": 60,
+          "accessorPayloadBytes": 2604,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.005",
+          "triangles": 32,
+          "vertices": 66,
+          "accessorPayloadBytes": 2304,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.008",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2912,
+          "materials": [
+            "Atlas / rubber"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2912,
+          "materials": [
+            "Atlas / ivory"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorLiftVestibule batch.001",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2368,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorLiftVestibule",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2912,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2912,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2912,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2912,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.005",
+          "triangles": 32,
+          "vertices": 68,
+          "accessorPayloadBytes": 2368,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "LoadingBow batch.001",
+          "triangles": 28,
+          "vertices": 60,
+          "accessorPayloadBytes": 2568,
+          "materials": [
+            "Atlas / dark"
+          ],
+          "parentChain": [
+            "LoadingBow",
+            "ExteriorStructure",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "PressureBridge batch.003",
+          "triangles": 28,
+          "vertices": 60,
+          "accessorPayloadBytes": 2088,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "PressureBridge",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing interlocked safety bar.002",
+          "triangles": 26,
+          "vertices": 38,
+          "accessorPayloadBytes": 1676,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "LiftGateLower",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Landing interlocked safety bar.003",
+          "triangles": 22,
+          "vertices": 34,
+          "accessorPayloadBytes": 1492,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "LiftGateUpper",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AtlasMarkII batch.002",
+          "triangles": 20,
+          "vertices": 42,
+          "accessorPayloadBytes": 1464,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorBridge batch.007",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1528,
+          "materials": [
+            "Atlas / amber"
+          ],
+          "parentChain": [
+            "InteriorBridge",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorGalley batch.009",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1528,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "InteriorGalley",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "InteriorHygiene batch.002",
+          "triangles": 20,
+          "vertices": 42,
+          "accessorPayloadBytes": 1464,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "InteriorHygiene",
+            "InteriorUpper",
+            "Interior",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.004",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAft batch.002",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.004",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampAftTip batch.002",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampAftTip",
+            "RampAft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.004",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFront batch.002",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.004",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / deck"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "RampFrontTip batch.002",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "RampFrontTip",
+            "RampFront",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "AftEngineering batch.003",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1880,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "AftEngineering",
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.006",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1528,
+          "materials": [
+            "Atlas / glass"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "UpperHull batch.007",
+          "triangles": 20,
+          "vertices": 44,
+          "accessorPayloadBytes": 1528,
+          "materials": [
+            "Atlas / mint"
+          ],
+          "parentChain": [
+            "UpperHull",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.002",
+          "triangles": 18,
+          "vertices": 40,
+          "accessorPayloadBytes": 1708,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_Aft",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text",
+          "triangles": 18,
+          "vertices": 40,
+          "accessorPayloadBytes": 1708,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalPort",
+            "AtlasMarkII"
+          ]
+        },
+        {
+          "name": "Text.001",
+          "triangles": 18,
+          "vertices": 40,
+          "accessorPayloadBytes": 1708,
+          "materials": [
+            "Atlas / warning"
+          ],
+          "parentChain": [
+            "Mount_S3_DorsalStarboard",
+            "AtlasMarkII"
+          ]
+        }
+      ],
+      "animationClips": [],
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
+      "estimatedImageRGBA8BytesWithMips": 3495253.333333333
+    }
+  ],
+  "totalLodPayloadBytes": 56163504,
+  "budget": {
+    "triangles": 60000,
+    "bytes": 4000000,
+    "textureEdge": 1024,
+    "runtimeFormat": "WebP"
+  },
+  "scope": "Actual binary accounting; encoded bytes and estimated decoded image storage are different quantities. No GPU memory/performance measurement."
+}

@@ -1,0 +1,133 @@
+{
+  "browser": "151.0.7922.173",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "assetSha256": "893ff3cfb88e4f7fde8477e7deb12ce33597d0bc5814300e7f9aa79547000555",
+  "bytes": 4844132,
+  "errors": [],
+  "captures": [
+    {
+      "name": "exterior",
+      "stats": {
+        "meshes": 177,
+        "triangles": 60145,
+        "materials": 13,
+        "textures": 10
+      },
+      "camera": {
+        "position": [
+          -53.99999999999999,
+          22.999999999999996,
+          -62.00000000000001
+        ],
+        "quaternion": [
+          0.03323681930763696,
+          0.9322882150187489,
+          0.08876644681583189,
+          -0.34907666192279097
+        ],
+        "fov": 43
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "bow",
+      "stats": {
+        "meshes": 177,
+        "triangles": 60145,
+        "materials": 13,
+        "textures": 10
+      },
+      "camera": {
+        "position": [
+          7.592810154713587e-15,
+          13.000000000000004,
+          -61.99999999999998
+        ],
+        "quaternion": [
+          -2.854746892460855e-18,
+          0.9989126241211642,
+          0.0466215547935689,
+          6.116575738789334e-17
+        ],
+        "fov": 43
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "side",
+      "stats": {
+        "meshes": 177,
+        "triangles": 60145,
+        "materials": 13,
+        "textures": 10
+      },
+      "camera": {
+        "position": [
+          -80.00000000000006,
+          15.000000000000002,
+          4.898587196589416e-15
+        ],
+        "quaternion": [
+          -0.03434931931222697,
+          -0.7062719902861692,
+          -0.03434931931222697,
+          0.7062719902861693
+        ],
+        "fov": 43
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "plan",
+      "stats": {
+        "meshes": 177,
+        "triangles": 60145,
+        "materials": 13,
+        "textures": 10
+      },
+      "camera": {
+        "position": [
+          0,
+          110,
+          0.0010000013548074726
+        ],
+        "quaternion": [
+          -0.7071033419382071,
+          0,
+          0,
+          0.7071102204181601
+        ],
+        "fov": 43
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "aft",
+      "stats": {
+        "meshes": 177,
+        "triangles": 60145,
+        "materials": 13,
+        "textures": 10
+      },
+      "camera": {
+        "position": [
+          45,
+          22.000000000000004,
+          60
+        ],
+        "quaternion": [
+          -0.09226995597779099,
+          0.31472849943754105,
+          0.030756651992597,
+          0.9441854983126231
+        ],
+        "fov": 43
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    }
+  ],
+  "scope": "Builder silhouette iteration in the actual renderer. No art-score, physical-journey or performance acceptance is inferred."
+}

@@ -1,0 +1,29 @@
+{
+  "baselineHeroAlsoVerifiedAgainstCommit": "7b97f5a",
+  "sources": [
+    {
+      "path": "public/models/atlas-mark-ii/atlas-mark-ii.glb",
+      "sha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa"
+    },
+    {
+      "path": "src/atlas-mark-ii-systems.js",
+      "sha256": "9608ad830255483c68682f69435c7faa5be2514c0ab38cdcff1c1379a87b281d"
+    },
+    {
+      "path": "src/weapon-mounts.js",
+      "sha256": "a80b2c7e1e4b5a90b021200096b940dc2d8987165505ba12158b31d0f0f65260"
+    },
+    {
+      "path": "assets/atlas-mark-ii/layout.json",
+      "sha256": "73d760ef2d1100d4958e6708f73d8dba07fae0d0eba86509d91e896d58aa2c5a"
+    },
+    {
+      "path": "assets/atlas-mark-ii/interior-colliders.json",
+      "sha256": "c49499f2d54e7ba3503a897b0745e58f0eb36d8283a021cc01d22eaabb06bbd4"
+    },
+    {
+      "path": "assets/atlas-mark-ii/mount-standard.json",
+      "sha256": "86f45f3ab831da32812c703d2de2b156f0b91bf81f2096f92bce222b96504f81"
+    }
+  ]
+}

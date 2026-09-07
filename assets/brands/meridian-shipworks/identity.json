@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "id": "meridian-shipworks",
+  "name": "Meridian Shipworks",
+  "wordmark": ["MERIDIAN", "SHIPWORKS"],
+  "emblem": "assets/brands/meridian-shipworks/emblem.svg",
+  "decal": "assets/brands/meridian-shipworks/emblem.webp",
+  "colour": "#b6efd1",
+  "ships": ["nomad", "kestrel", "atlas"]
+}

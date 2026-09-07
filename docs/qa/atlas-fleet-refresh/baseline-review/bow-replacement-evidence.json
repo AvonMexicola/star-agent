@@ -1,0 +1,95 @@
+{
+  "browser": "151.0.7922.173",
+  "console": [],
+  "replaces": "desktop-bow.png",
+  "reason": "Original reviewer camera at z=-105 was behind the studio backdrop. It is invalid shape evidence and remains preserved.",
+  "scope": "One fresh desktop bow fixture; no runtime/source changes.",
+  "servedSha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+  "servedBytes": 38037892,
+  "state": {
+    "stats": {
+      "meshes": 168,
+      "triangles": 412988,
+      "materials": 13,
+      "textures": 10
+    },
+    "camera": {
+      "position": [
+        8.817456953860943e-15,
+        12,
+        -72
+      ],
+      "quaternion": [
+        -2.037685933725581e-18,
+        0.9994461360815322,
+        0.03327793671031186,
+        6.119842557362192e-17
+      ],
+      "fov": 43
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "systems": {
+      "ramps": [
+        {
+          "id": "front",
+          "node": "RampFront",
+          "pivot": [
+            0,
+            2.6,
+            -24
+          ],
+          "angle": 1.5707963267948966,
+          "target": 1.5707963267948966,
+          "progress": 0,
+          "moving": false,
+          "tipAngle": 3.141592653589793
+        },
+        {
+          "id": "aft",
+          "node": "RampAft",
+          "pivot": [
+            0,
+            2.6,
+            24
+          ],
+          "angle": -1.5707963267948966,
+          "target": -1.5707963267948966,
+          "progress": 0,
+          "moving": false,
+          "tipAngle": 3.141592653589793
+        }
+      ],
+      "elevator": {
+        "id": "crew",
+        "node": "CrewElevator",
+        "centre": [
+          5.5,
+          -4
+        ],
+        "y": 2.6,
+        "target": 2.6,
+        "moving": false,
+        "gates": [
+          {
+            "node": "LiftGateLower",
+            "deck": 2.6,
+            "z": -2.25,
+            "target": -2.25,
+            "moving": false
+          },
+          {
+            "node": "LiftGateUpper",
+            "deck": 9.5,
+            "z": -4,
+            "target": -4,
+            "moving": false
+          }
+        ]
+      }
+    }
+  }
+}

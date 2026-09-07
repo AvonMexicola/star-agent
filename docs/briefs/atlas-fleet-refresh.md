@@ -12,17 +12,26 @@ and independent-review workflow. The existing cargo layout is the foundation.
   consolidated PR #34 baseline declared as a dependency.
 - Existing Atlas development PR #30 is draft at `7b97f5a`; that commit is already
   an ancestor of this integration baseline. Preserve its source and physical work.
-- Root owns this brief and the refresh lane. Nomad remains the active production
-  priority; this document prepares Atlas's next production pass.
+- Root owns the Atlas production source and refresh lane. Work became active on
+  2026-09-07 after the Nomad functional/controller checkpoint. Mendel owns only
+  the independent Atlas review evidence; Nomad retains its separate finish lane.
 - Scope: `assets/atlas-mark-ii/`, its runtime GLBs, Atlas studio/systems/controls,
   focused tests and review evidence. Shared gameplay changes require a deliberate
   integration scope; do not replace the legacy flight-ready Atlas by file swap.
 
-The current hero is 412,988 triangles and 38,037,892 bytes, SHA-256
+The frozen baseline hero is 412,988 triangles and 38,037,892 bytes, SHA-256
 `a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa`.
 It has 168 static batches, 13 materials and 10 textures. The studio adds four MFD
 surfaces. Its previous independent 2.4/5 review concerns the initial model; later
 fixes have no independent art approval. This is a measured starting point.
+
+The first active geometry checkpoint is 59,443 triangles and 3,859,404 bytes,
+SHA-256 `f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e`.
+It preserves the occupied layout, adds six named folding gear assemblies,
+corrects the ramp toe/portal/overhead clearance and fits a new exterior shell.
+See [the production checkpoint](../qa/atlas-fleet-refresh/iteration-01/review.md)
+for validation and open work. This is a geometry iteration, not the finished
+Meridian texture pass or a flight-ready Atlas replacement.
 
 ## Player experience and physical contract
 
@@ -47,10 +56,10 @@ metal mechanisms, mint status light and amber access/warning marks. Use fitted
 panel returns, recessed glazing, exposed load paths and deliberate service
 access; scale the construction family to a ship carrying large cargo.
 
-The proposed manufacturer is **Meridian Shipworks**. It is a working name pending
-Cees's preference, not an approved decal or established lore. Keep identity data
-centralized; finish the mechanics and construction without baking a provisional
-manufacturer into every texture. The ship names remain Nomad, Kestrel and Atlas.
+Cees approved **Meridian Shipworks** for Nomad, Kestrel and Atlas on 2026-09-07.
+Use the shared identity and emblem in `assets/brands/meridian-shipworks/` from
+the Kestrel flight branch. Keep manufacturer data centralized. Ship names remain
+Nomad, Kestrel and Atlas.
 
 The original C2 cargo-flow and Caterpillar industrial references remain in
 `docs/design/atlas-mark-ii.md`. They guide role and construction; retain original
@@ -90,5 +99,6 @@ baseline of exterior, bow, stern, side, plan, hold, boarding, crew and seated vi
 Use `docs/asset-production-standard.md`, `SHIP-PIPELINE-MEMORY.md`, the existing
 Atlas design/control records and the current Kestrel production record together.
 Where old Atlas notes require an Opus session, Cees's later Astra/Codex reviewer
-workflow takes precedence. This brief starts work; it claims no new render,
-optimization, material generation, successful check or visual approval.
+workflow takes precedence. Record completed work and current failures in the
+linked checkpoint. Silhouette, final materials, full controller/touch acceptance,
+performance and final independent art approval remain explicit gates.

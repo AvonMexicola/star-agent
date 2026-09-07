@@ -12,6 +12,8 @@ def bake_contact():
     print('ATLAS: preparing contact bake',flush=True)
     meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']
     moving={'RampFront','RampFrontTip','RampAft','RampAftTip','CrewElevator','LiftGateLower','LiftGateUpper'}
+    moving.update(o.name for o in bpy.context.scene.objects if o.get('role') in
+                  {'landing-gear-leg','counter-levelled-landing-pad','landing-gear-door','ramp-header-seal'})
     def group(obj):
         while obj:
             if obj.name in moving:return obj.name

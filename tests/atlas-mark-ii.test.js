@@ -122,7 +122,7 @@ function pressureRayHit(scene, { label, origin, direction, range, ancestor }) {
 }
 const settle = (systems, rider = null) => {
   for (let i = 0; i < 1000 && (systems.elevator.moving || systems.ramps.some(ramp => ramp.moving)
-    || systems.gates.some(gate => gate.moving)); i++) {
+    || systems.gates.some(gate => gate.moving) || systems.gear.moving); i++) {
     const carry = systems.update(1 / 60, rider);
     if (rider) rider.y += carry;
   }
@@ -137,8 +137,8 @@ test('physical control verbs follow lift/ramp interlocks and support the shared 
   assert.equal(describeAtlasControl(systems, rider).action, 'Securing gates');
   settle(systems, rider);
   assert.equal(describeAtlasControl(systems, rider).action, 'Go down');
-  assert.equal(describeAtlasControl(systems, point(3.5, 4.35, -4)).action, 'Call lift');
-  assert.equal(describeAtlasControl(systems, point(3.5, 11.25, -4)).enabled, false);
+  assert.equal(describeAtlasControl(systems, point(3.5, 4.35, -6.3)).action, 'Call lift');
+  assert.equal(describeAtlasControl(systems, point(3.5, 11.25, -6.3)).enabled, false);
   assert.equal(describeAtlasControl(systems, point(-4.5, 4.35, -21.5)).action, 'Open ramp');
   systems.toggleRamp('front');
   assert.equal(describeAtlasControl(systems, point(-4.5, 4.35, -21.5)).enabled, false);
@@ -147,6 +147,44 @@ test('physical control verbs follow lift/ramp interlocks and support the shared 
   assert.equal(controlAction('hangar', 'closed').action, 'Open hangar');
   assert.equal(controlAction('hangar', 'opening').enabled, false);
   assert.throws(() => controlAction('hangar', 'unknown'), /Unknown physical control state/);
+});
+
+test('exported gear counter-rotates at its real foot pin and closes doors after stowage', async () => {
+  const bytes = await readFile(new URL('../public/models/atlas-mark-ii/atlas-mark-ii.glb', import.meta.url));
+  const { scene } = await new GLTFLoader().parseAsync(withoutMaterials(bytes), '');
+  const systems = new AtlasMarkIISystems().bind(scene);
+  assert.equal(systems.gear.legs.length, 6);
+  assert.equal(systems.toggleGear({ occupied: true }), false);
+  for (const progress of [1, .65, .18, .09, 0]) {
+    systems.gear.progress = progress;systems.applyTransforms();
+    for (const leg of systems.gear.legs) {
+      nearVector(leg.nodeObject.getWorldPosition(new THREE.Vector3()), point(...leg.pivot), 1e-5);
+      const localPin = point(0, leg.padPivotY - leg.pivot[1], 0);
+      nearVector(leg.footObject.position, localPin, 1e-5);
+      nearVector(leg.footObject.getWorldPosition(new THREE.Vector3()),
+        localPin.clone().applyMatrix4(leg.nodeObject.matrixWorld), 1e-5);
+      const up = point(0, 1, 0).applyQuaternion(leg.footObject.getWorldQuaternion(new THREE.Quaternion()));
+      nearVector(up, point(0, 1, 0), 1e-5);
+      const pad = new THREE.Box3().setFromObject(leg.footObject);
+      assert.ok(pad.min.y >= -.001, `${leg.id} sole stays above the landing plane`);
+      assert.ok(Math.min(Math.abs(pad.min.x), Math.abs(pad.max.x)) > 8.2,
+        `${leg.id} pad stays outside the pressure bed and cargo lane`);
+      if (progress <= .18) assert.ok(Math.abs(Math.abs(leg.nodeObject.rotation.x) - Math.PI / 2) < 1e-8);
+      if (progress >= .18) for (const door of leg.doors) {
+        assert.ok(Math.abs(door.nodeObject.rotation.z - door.openAngle) < 1e-8,
+          `${door.node} stays fully open while its load leg moves`);
+      }
+    }
+  }
+  systems.gear.progress = 1;systems.applyTransforms();
+  assert.equal(systems.toggleGear(), true);
+  assert.equal(systems.toggleGear(), false);
+  settle(systems);
+  assert.deepEqual(systems.snapshot.gear, { progress: 0, target: 0, moving: false });
+  assert.equal(systems.toggleGear(), true);settle(systems);
+  assert.deepEqual(systems.snapshot.gear, { progress: 1, target: 1, moving: false });
+  scene.getObjectByName(layout.landingGear.legs[0].footNode).removeFromParent();
+  assert.throws(() => new AtlasMarkIISystems().bind(scene), /GearPortForwardPad/);
 });
 
 test('projected labels hide behind the camera and opaque structure, but allow glazing', () => {
@@ -269,6 +307,12 @@ test('ramp states bind to asset nodes, animate to exact layout angles and expose
   for (const definition of layout.ramps) {
     const ramp = new THREE.Object3D();ramp.name = definition.node;root.add(ramp);
     const tip = new THREE.Object3D();tip.name = definition.tipNode;ramp.add(tip);
+    const seal = new THREE.Object3D();seal.name = definition.headerSeal.node;root.add(seal);
+  }
+  for (const leg of layout.landingGear.legs) {
+    for (const name of [leg.node, leg.footNode, ...leg.doors.map(door => door.node)]) {
+      const node = new THREE.Object3D();node.name = name;root.add(node);
+    }
   }
   const systems = new AtlasMarkIISystems().bind(root);
   assert.deepEqual(systems.snapshot.ramps.map(ramp => ramp.angle), layout.ramps.map(ramp => ramp.closedAngle));
@@ -289,6 +333,7 @@ test('ramp states bind to asset nodes, animate to exact layout angles and expose
     assert.equal(state.nodeObject.rotation.x, definition.openAngle);
     assert.equal(state.tipAngle, 0);
     assert.equal(state.tipNodeObject.rotation.x, 0);
+    assert.equal(state.sealNodeObject.position.y, definition.headerSeal.openY);
   }
   assert.deepEqual(systems.snapshot.ramps.map(ramp => ramp.progress), [1, 1]);
   for (const name of [...layout.elevator.gateNodes, ...layout.ramps.map(ramp => ramp.tipNode)]) {
@@ -391,9 +436,11 @@ test('empty-shaft gates block both decks, call panels summon the lift and leave 
   const upperOutside = point(3.5, layout.upper.floor + layout.eyeHeight, z);
   const upperShaft = point(x, upperOutside.y, z);
   assert.deepEqual(systems.constrain(upperOutside, upperShaft), upperShaft);
-  assert.equal(systems.interactionAt(lowerOutside), 'elevator:crew');
+  const callApproach = point(3.5, lowerOutside.y, -6.3);
+  assert.equal(systems.interactionAt(lowerOutside), null, 'no invisible call button at the old anchor');
+  assert.equal(systems.interactionAt(callApproach), 'elevator:crew');
   assert.equal(systems.toggleElevator(point(3.9, lowerOutside.y, z)), false);
-  assert.equal(systems.toggleElevator(lowerOutside), true);settle(systems);
+  assert.equal(systems.toggleElevator(callApproach), true);settle(systems);
   assert.equal(systems.elevator.y, layout.elevator.low);
   assert.deepEqual(systems.constrain(upperOutside, upperShaft), upperOutside);
 
