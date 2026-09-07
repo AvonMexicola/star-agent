@@ -30,6 +30,7 @@ export class FreighterSystems {
   toggle(id, rider) {
     const lift = this.lifts.find(l => l.id === id);
     if (!lift || Math.abs(lift.y - lift.target) > .001) return false;
+    if (this.canMove && !this.canMove(lift, rider)) return false;
     // A player straddling the platform edge must step fully on or off first.
     if (rider && inside(rider, lift, -.25) && !inside(rider, lift, .3)) return false;
     lift.target = lift.y === lift.low ? lift.high : lift.low;

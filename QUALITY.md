@@ -76,6 +76,11 @@ commit and reviewer. A new asset or changed camera/lighting may invalidate an ol
 Use [the review template](docs/templates/review.md). A different human or agent
 session reviews; the builder's own summary or generated reference image is not independent evidence.
 
+Character exception, 2026-09-07: Cees explicitly requested a higher polygon and
+higher texture Meshy player. `player-expedition` may use ≤ 65 k triangles,
+≤ 9 MB and two 2048² WebP textures. The per-entry manifest budget drives the props
+reviewer. This exception does not waive scene performance or independent review.
+
 ## 4. Shared viewpoints
 
 Six reference views, seed 7291: orbit, coast at 95 m facing sea, forest at 95 m,

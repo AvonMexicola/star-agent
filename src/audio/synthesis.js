@@ -3,7 +3,7 @@
 export const SOUND_KINDS=['rock','grass','snow','water','sand','metal','carbine','sidearm','pulse','laser','void','impact','collect','overheat','building-placement','pyrebear-attack','sulphurhound-attack'];
 export function synthesize(kind,variant=0,rate=48000){
   if(!SOUND_KINDS.includes(kind))throw new Error(`Unknown sound: ${kind}`);
-  const duration={rock:.26,grass:.34,snow:.4,water:.48,sand:.3,metal:.36,carbine:.3,sidearm:.23,pulse:.36,laser:.55,void:.9,impact:.32,collect:.34,overheat:.5,'building-placement':.65,'pyrebear-attack':1.55,'sulphurhound-attack':1.05}[kind];
+  const duration={rock:.26,grass:.34,snow:.4,water:.48,sand:.3,metal:.28,carbine:.3,sidearm:.23,pulse:.36,laser:.55,void:.9,impact:.32,collect:.34,overheat:.5,'building-placement':.65,'pyrebear-attack':1.55,'sulphurhound-attack':1.05}[kind];
   const data=new Float32Array(Math.ceil(rate*duration));
   let seed=(12345+variant*701+SOUND_KINDS.indexOf(kind)*92821)>>>0,low=0,mid=0,phase=0;
   const detune=1+(variant-1.5)*.018,pi=Math.PI*2;
@@ -19,7 +19,7 @@ export function synthesize(kind,variant=0,rate=48000){
       case 'snow':s=.55*air*(heel+.8*toe)*(.2+.8*Math.abs(Math.sin(pi*47*t)))+.5*low*toe+.12*Math.sin(pi*(370*t+120*t*t))*Math.exp(-t*10);break;
       case 'water':s=.7*grit*(heel+.7*toe)+.45*low*Math.exp(-t*7);for(let j=0;j<4;j++){const u=t-j*.055;if(u>0)s+=.12*Math.sin(pi*(420+j*150)*u/(1+u*4))*Math.exp(-u*22);}break;
       case 'sand':s=.6*grit*(heel+.65*toe)+.22*air*toe+.1*Math.sin(pi*80*t)*heel;break;
-      case 'metal':s=.18*grit*heel;for(const [f,a,d] of [[125,.3,25],[390,.17,17],[830,.08,14],[1417,.035,18]])s+=a*Math.sin(pi*f*detune*t)*Math.exp(-t*d);break;
+      case 'metal':s=.12*low*heel;for(const [f,a,d] of [[92,.36,32],[215,.085,35],[430,.012,48]])s+=a*Math.sin(pi*f*detune*t)*Math.exp(-t*d);break;
       case 'carbine':phase+=pi*(160+1800*Math.exp(-t*35))*detune/rate;s=(.48*Math.sin(phase)+.12*Math.sin(phase*2.01))*Math.exp(-t*17)+.32*air*Math.exp(-t*65);break;
       case 'sidearm':phase+=pi*(280+2500*Math.exp(-t*48))*detune/rate;s=.44*Math.sin(phase)*Math.exp(-t*22)+.3*grit*Math.exp(-t*45);break;
       case 'pulse':phase+=pi*(115+900*Math.exp(-t*23))*detune/rate;s=(.5*Math.sin(phase)+.18*Math.sin(phase*1.99))*Math.exp(-t*12)+.18*grit*heel;break;
@@ -50,9 +50,9 @@ export function synthesize(kind,variant=0,rate=48000){
       }
       case 'overheat':s=.17*Math.sin(pi*(620*t-280*t*t))*(.5+.5*Math.sin(pi*12*t))*Math.exp(-t*5)+.2*air*Math.exp(-t*8);break;
     }
-    const edge=Math.min(1,t/.003,(duration-t)/.025);data[i]=s*Math.max(0,edge);peak=Math.max(peak,Math.abs(data[i]));
+    const edge=Math.min(1,t/(kind==='metal'?.012:.003),(duration-t)/.025);data[i]=s*Math.max(0,edge);peak=Math.max(peak,Math.abs(data[i]));
   }
-  const scale=.72/Math.max(.001,peak);
+  const scale=(kind==='metal'?.44:.72)/Math.max(.001,peak);
   for(let i=0;i<data.length;i++)data[i]*=scale;
   return data;
 }

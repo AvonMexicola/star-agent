@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+const evidencePath = path => process.env.CHARACTER_EVIDENCE ? path.replace('/tmp', process.env.CHARACTER_EVIDENCE) : path;
 
 for(const controller of [false,true])test(`${controller?'controller':'keyboard'} hangar reveal hands movement to physical boarding and launch`,async({page})=>{
   if(controller)await page.addInitScript(()=>{
@@ -29,11 +30,13 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   expect(initial.camera.fov).toBe(45);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   const shot=async name=>{
-    await page.evaluate(()=>{window.starAgent.navigation.enabled=false;window.starAgent.setRenderScale(1);});
+    await page.evaluate(()=>window.starAgent.setRenderScale(1));
     await page.waitForFunction(()=>document.getElementById('viewport').width===innerWidth);
-    await page.screenshot({path:name});
-    await page.evaluate(()=>{window.starAgent.setRenderScale(.55);window.starAgent.navigation.enabled=true;});
+    await page.screenshot({path:evidencePath(name)});
+    await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   };
+  await expect(page.locator('#mining-panel')).toBeHidden();
+  expect(await page.evaluate(()=>window.starAgent.state.mining.tool.active)).toBe(false);
   await shot('/tmp/star-agent-opening-0.png');
   await page.waitForFunction(()=>window.starAgent.state.opening.elapsed>=5);
   const restingHands=await page.evaluate(()=>{
@@ -43,8 +46,9 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
     return ['LeftHand','RightHand'].map(name=>c.model.getObjectByName(name)
       .getWorldPosition(c.worldPosition.clone()).sub(hips).dot(c.up));
   });
-  // Wrist joints rest at the pelvis line; fingers extend down beside the thighs.
-  for(const height of restingHands)expect(height).toBeLessThan(.03);
+  // The expedition rig places Hips lower in the pelvis than the previous pilot.
+  // Relaxed wrists sit just above that joint; the 20 cm gloves reach the thighs.
+  for(const height of restingHands)expect(height).toBeLessThan(.14);
   await shot('/tmp/star-agent-opening-5.png');
   await page.waitForFunction(()=>window.starAgent.state.opening.elapsed>=10);
   await shot('/tmp/star-agent-opening-10.png');
@@ -58,7 +62,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   await controls.up('w');
   await controls.press('x');
   expect(await page.evaluate(()=>window.starAgent.state.position)).not.toEqual(before);
-  await page.screenshot({path:'/tmp/star-agent-opening-walk.png'});
+  await page.screenshot({path:evidencePath('/tmp/star-agent-opening-walk.png')});
   if(controller){
     const padFrames=()=>page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
     const padButton=async(index,down)=>{await page.evaluate(({index,down})=>{window.departurePad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await padFrames();};
@@ -75,10 +79,28 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
     const ammo=await page.evaluate(()=>window.starAgent.state.mining.tool.ammo);
     await page.waitForFunction(()=>window.starAgent.state.controller.armed);await padButton(7,true);
     await page.waitForFunction(before=>window.starAgent.state.mining.tool.ammo<before,ammo);
-    await page.screenshot({path:'/tmp/star-agent-controller-held-rifle.png'});await padButton(7,false);
+    await page.screenshot({path:evidencePath('/tmp/star-agent-controller-held-rifle.png')});await padButton(7,false);
+    await chord(15);await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='first-person');
+    expect(await page.evaluate(()=>window.starAgent.state.character.visible)).toBe(false);
+    await page.screenshot({path:evidencePath('/tmp/star-agent-character-first-person.png')});
+    await chord(15);await page.waitForFunction(()=>window.starAgent.state.character.visible);
     await chord(14);await page.waitForFunction(()=>window.starAgent.state.utilities.suit);
     expect(await page.evaluate(()=>window.starAgent.state.mining.tool.item)).toBe('rifle-laser');
-    await page.screenshot({path:'/tmp/star-agent-controller-flashlight.png'});
+    await page.screenshot({path:evidencePath('/tmp/star-agent-controller-flashlight.png')});
+    await tap(9);await expect(page.locator('#controller-menu')).toBeVisible();
+    for(let i=0;i<50;i++){
+      if(await page.evaluate(()=>document.activeElement?.dataset.controllerKey==='wave'))break;
+      await tap(13);
+    }
+    await expect(page.locator('[data-controller-key="wave"]')).toBeFocused();
+    const beforeWave=await page.evaluate(()=>window.starAgent.state.mining.tool.ammo);
+    await padButton(7,true);await tap(0);
+    await page.waitForFunction(()=>window.starAgent.state.character.state==='wave');
+    await page.screenshot({path:evidencePath('/tmp/star-agent-character-controller-wave.png')});
+    await page.waitForFunction(()=>window.starAgent.state.character.state==='aim-rifle');
+    expect(await page.evaluate(()=>window.starAgent.state.mining.tool.ammo)).toBe(beforeWave);
+    expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+    await padButton(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
   }
   // Walk along the starboard side to the aft hatch, then centre on the ramp.
   await controls.down('s');
@@ -97,7 +119,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   if(controller)await page.waitForFunction(()=>window.starAgent.state.character.state==='idle');
   await controls.press('f');
   await page.waitForFunction(()=>window.starAgent.state.mode==='landed');
-  await page.screenshot({path:'/tmp/star-agent-opening-cockpit.png'});
+  await page.screenshot({path:evidencePath('/tmp/star-agent-opening-cockpit.png')});
   await controls.press('b');
   await page.waitForFunction(()=>window.starAgent.state.mode==='flight'&&!window.starAgent.state.station.lifting);
   const hover=await page.evaluate(()=>window.starAgent.state.station.deckClearance);
@@ -108,7 +130,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   await page.waitForFunction(()=>window.starAgent.state.station.local[2]<-100);
   expect(await page.evaluate(()=>window.starAgent.state.station.deckClearance)).toBeCloseTo(hover,3);
   expect(await page.evaluate(()=>window.starAgent.state.speed)).toBeLessThanOrEqual(35.001);
-  await page.screenshot({path:`/tmp/star-agent-gear-down-${controller?'controller':'keyboard'}.png`});
+  await page.screenshot({path:evidencePath(`/tmp/star-agent-gear-down-${controller?'controller':'keyboard'}.png`)});
   if(controller){
     const set=async(index,down)=>{await page.evaluate(({index,down})=>{window.departurePad.buttons[index]={pressed:down,value:Number(down)};},{index,down});await page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});};
     await set(4,true);await set(5,true);await set(13,true);await set(13,false);await set(4,false);await set(5,false);
@@ -121,7 +143,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   expect(await page.evaluate(()=>window.starAgent.state.effects.slipstream)).toBe(0);
   expect(await page.evaluate(()=>window.starAgent.state.tunnel.visible)).toBe(false);
   await controls.up('w');await controls.press('x');
-  await page.screenshot({path:`/tmp/star-agent-opening-launch-${controller?'controller':'keyboard'}.png`});
+  await page.screenshot({path:evidencePath(`/tmp/star-agent-opening-launch-${controller?'controller':'keyboard'}.png`)});
   expect(errors).toEqual([]);
 });
 
@@ -185,7 +207,7 @@ test('hangar floor remains clear while the camera origin moves at eye height',as
         return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
       });
       expect(await page.evaluate(()=>window.starAgent.state.station.deckClearance)).toBeCloseTo(1.75,5);
-      if(step===0||step===7)await page.screenshot({path:`/tmp/star-agent-floor-fixed-${scale}-${step}.png`});
+      if(step===0||step===7)await page.screenshot({path:evidencePath(`/tmp/star-agent-floor-fixed-${scale}-${step}.png`)});
     }
   }
   expect(errors).toEqual([]);

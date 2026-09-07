@@ -1,0 +1,337 @@
+{
+  "id": "meridian-mining-rover",
+  "manufacturer": "Meridian Shipworks",
+  "units": "metres",
+  "up": "+Y",
+  "forward": "-Z",
+  "bounds": {
+    "min": [
+      -1.72,
+      0,
+      -2.55
+    ],
+    "max": [
+      1.3,
+      2.5,
+      2.1
+    ]
+  },
+  "wheelRadius": 0.52,
+  "wheelWidth": 0.4,
+  "wheelbase": 2.7,
+  "track": 2.16,
+  "wheels": [
+    {
+      "id": "front-port",
+      "node": "Wheel_FrontPort",
+      "steer": "Steer_FrontPort",
+      "position": [
+        -1.08,
+        0.52,
+        -1.35
+      ],
+      "front": true
+    },
+    {
+      "id": "front-starboard",
+      "node": "Wheel_FrontStarboard",
+      "steer": "Steer_FrontStarboard",
+      "position": [
+        1.08,
+        0.52,
+        -1.35
+      ],
+      "front": true
+    },
+    {
+      "id": "rear-port",
+      "node": "Wheel_RearPort",
+      "steer": null,
+      "position": [
+        -1.08,
+        0.52,
+        1.35
+      ],
+      "front": false
+    },
+    {
+      "id": "rear-starboard",
+      "node": "Wheel_RearStarboard",
+      "steer": null,
+      "position": [
+        1.08,
+        0.52,
+        1.35
+      ],
+      "front": false
+    }
+  ],
+  "cabin": {
+    "floor": 0.46,
+    "interior": {
+      "min": [
+        -0.8,
+        0.46,
+        -0.72
+      ],
+      "max": [
+        0.8,
+        2.38,
+        0.65
+      ]
+    },
+    "pilotEye": [
+      0,
+      1.78,
+      -0.82
+    ],
+    "standEye": [
+      -0.5,
+      2.21,
+      -0.1
+    ],
+    "doorHinge": [
+      -0.98,
+      0.46,
+      0.46
+    ],
+    "doorClearWidth": 1.04,
+    "doorClearHeight": 1.92,
+    "entryGround": [
+      -2.4,
+      1.75,
+      -0.1
+    ],
+    "entryRoute": [
+      [
+        -1.6,
+        1.93,
+        -0.1
+      ],
+      [
+        -1.26,
+        2.11,
+        -0.1
+      ],
+      [
+        -0.62,
+        2.21,
+        -0.1
+      ],
+      [
+        -0.55,
+        2.12,
+        -0.65
+      ],
+      [
+        0,
+        1.78,
+        -0.82
+      ]
+    ],
+    "lowerFootwell": {
+      "min": [
+        -0.55,
+        0.46,
+        -1.58
+      ],
+      "max": [
+        0.55,
+        1.3,
+        -0.72
+      ]
+    }
+  },
+  "cutters": [
+    {
+      "id": "port",
+      "pivot": "Cutter_Port",
+      "muzzle": "Muzzle_Mining_Port",
+      "position": [
+        -0.62,
+        1.22,
+        -1.75
+      ],
+      "tip": [
+        0,
+        0,
+        -0.8
+      ]
+    },
+    {
+      "id": "starboard",
+      "pivot": "Cutter_Starboard",
+      "muzzle": "Muzzle_Mining_Starboard",
+      "position": [
+        0.62,
+        1.22,
+        -1.75
+      ],
+      "tip": [
+        0,
+        0,
+        -0.8
+      ]
+    }
+  ],
+  "mining": {
+    "range": 30,
+    "continuousSeconds": 120,
+    "rechargeSeconds": 30,
+    "cutRatePerBeam": 0.22,
+    "yawLimit": 0.4,
+    "pitchMin": -0.48,
+    "pitchMax": 0.18
+  },
+  "driving": {
+    "forwardSpeed": 12,
+    "reverseSpeed": 4,
+    "acceleration": 3,
+    "braking": 8,
+    "wheelSteerLimit": 0.52,
+    "maxStep": 0.26,
+    "maxSlope": 0.52,
+    "suspensionTravel": 0.22,
+    "suspensionConvention": "plus/minus travel from rest"
+  },
+  "atlas": {
+    "lift": "main",
+    "park": [
+      -1.6,
+      4,
+      5
+    ],
+    "clearanceMargin": 0.35,
+    "heading": 3.141592653589793
+  },
+  "cargo": {
+    "id": "meridian-rover-bin",
+    "name": "Rover mineral bin",
+    "boxes": 2,
+    "capacityKg": 96
+  },
+  "name": "Burrow M-04",
+  "boundsState": "closed cabin, fixed boarding steps, straight wheels",
+  "links": [
+    {
+      "node": "Arm_front-port",
+      "wheel": "front-port",
+      "anchor": [
+        -0.46,
+        0.41,
+        -1.2200000000000002
+      ],
+      "wheelOffset": [
+        0.32,
+        0,
+        0
+      ],
+      "damper": false
+    },
+    {
+      "node": "Damper_front-port",
+      "wheel": "front-port",
+      "anchor": [
+        -0.53,
+        0.88,
+        -1.1400000000000001
+      ],
+      "wheelOffset": [
+        0.32,
+        0,
+        0
+      ],
+      "damper": true
+    },
+    {
+      "node": "Arm_front-starboard",
+      "wheel": "front-starboard",
+      "anchor": [
+        0.46,
+        0.41,
+        -1.2200000000000002
+      ],
+      "wheelOffset": [
+        -0.32,
+        0,
+        0
+      ],
+      "damper": false
+    },
+    {
+      "node": "Damper_front-starboard",
+      "wheel": "front-starboard",
+      "anchor": [
+        0.53,
+        0.88,
+        -1.1400000000000001
+      ],
+      "wheelOffset": [
+        -0.32,
+        0,
+        0
+      ],
+      "damper": true
+    },
+    {
+      "node": "Arm_rear-port",
+      "wheel": "rear-port",
+      "anchor": [
+        -0.74,
+        0.43,
+        1.67
+      ],
+      "wheelOffset": [
+        0.32,
+        0,
+        0
+      ],
+      "damper": false
+    },
+    {
+      "node": "Damper_rear-port",
+      "wheel": "rear-port",
+      "anchor": [
+        -0.74,
+        0.8,
+        1.7
+      ],
+      "wheelOffset": [
+        0.32,
+        0,
+        0
+      ],
+      "damper": true
+    },
+    {
+      "node": "Arm_rear-starboard",
+      "wheel": "rear-starboard",
+      "anchor": [
+        0.74,
+        0.43,
+        1.67
+      ],
+      "wheelOffset": [
+        -0.32,
+        0,
+        0
+      ],
+      "damper": false
+    },
+    {
+      "node": "Damper_rear-starboard",
+      "wheel": "rear-starboard",
+      "anchor": [
+        0.74,
+        0.8,
+        1.7
+      ],
+      "wheelOffset": [
+        -0.32,
+        0,
+        0
+      ],
+      "damper": true
+    }
+  ]
+}

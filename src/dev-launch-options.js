@@ -16,6 +16,8 @@ export const DEV_LOCATIONS = Object.freeze([
   {id:'ring',name:'Selene · rings',detail:'EVA · asteroids and ice mining'},
   {id:'pyre',name:'Pyre · twilight orbit',detail:'Atmosphere and volcanic world'},
   {id:'pyre-surface',name:'Pyre · surface',detail:'180 m · volcanic terrain and lava'},
+  {id:'pyrebear-habitat',name:'Pyre · Pyrebear habitat',detail:'35 m · land and explore twilight basalt plains'},
+  {id:'suloher-habitat',name:'Miasma · Suloher habitat',detail:'35 m · land and explore sulphur uplands'},
   {id:'miasma',name:'Miasma · approach',detail:'Sulphur clouds and toxic atmosphere'},
   {id:'miasma-surface',name:'Miasma · surface',detail:'180 m · mineral basins and regolith'},
   {id:'star',name:'Our star · observation',detail:'Stellar rendering and thermal shields'},
@@ -31,5 +33,7 @@ export function devLaunchURL(href,{ship,location}){
   if(!DEV_SHIPS.some(s=>s.id===ship)||!DEV_LOCATIONS.some(s=>s.id===location))throw new Error('Choose a test ship and location.');
   const url=new URL(href);url.searchParams.set('dev','1');url.searchParams.set('intro','0');url.searchParams.set('ship',ship);url.searchParams.set('start',location);
   url.searchParams.delete('exteriorView'); // The overview is a one-shot inspection start.
+  url.searchParams.delete('sandbox');
+  url.searchParams.delete('rover');
   return url.href;
 }

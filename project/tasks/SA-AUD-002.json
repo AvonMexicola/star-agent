@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Nova audio implementation",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/construction-fauna-audio",
   "base": "7c173f55cc98f368d233cbce9670055bc80c9cae",
   "updated": "2026-09-07",

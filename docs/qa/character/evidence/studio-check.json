@@ -1,0 +1,485 @@
+{
+  "environment": {
+    "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "size": [
+      1440,
+      900
+    ]
+  },
+  "errors": [],
+  "warnings": [],
+  "views": [
+    {
+      "name": "01-expedition-idle",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "idle",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "idle": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "01-expedition-idle-phone",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "idle",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "idle": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "motion-walk",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "walk",
+        "characterState": "walk",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "walk": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "motion-run",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "run": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "motion-crouch",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "crouch",
+        "characterState": "crouch",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "idle": 0.2499999999999999,
+          "crouch-walk": 0.7500000000000001
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "motion-sit",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "sit",
+        "characterState": "sit",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "sit-idle": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "motion-climb",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "climb",
+        "characterState": "climb",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "climb-ladder": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "motion-rest",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "rest",
+        "characterState": "rest",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "rest-pose": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "gesture-wave",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "wave",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "wave": 1
+        },
+        "calls": 2,
+        "triangles": 62273
+      }
+    },
+    {
+      "name": "rifle-laser-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707
+      }
+    },
+    {
+      "name": "rifle-laser-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707
+      }
+    },
+    {
+      "name": "rifle-laser-back",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707
+      }
+    },
+    {
+      "name": "rifle-laser-running",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "run-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707
+      }
+    },
+    {
+      "name": "sidearm-pistol-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369
+      }
+    },
+    {
+      "name": "sidearm-pistol-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369
+      }
+    },
+    {
+      "name": "sidearm-pistol-back",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369
+      }
+    },
+    {
+      "name": "sidearm-pistol-running",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "run-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369
+      }
+    },
+    {
+      "name": "mining-laser-tool-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585
+      }
+    },
+    {
+      "name": "mining-laser-tool-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585
+      }
+    },
+    {
+      "name": "mining-laser-tool-back",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585
+      }
+    },
+    {
+      "name": "mining-laser-tool-running",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "run-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585
+      }
+    },
+    {
+      "name": "phone-equipment",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707
+      }
+    },
+    {
+      "name": "00-previous-suit-phone",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-male",
+        "motion": "idle",
+        "characterState": "idle",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [
+          "rest-pose",
+          "climb-ladder",
+          "climb-idle",
+          "wave",
+          "take-damage",
+          "reload-rifle",
+          "reload-pistol",
+          "interact",
+          "climb-mount",
+          "climb-finish",
+          "aim-pistol",
+          "use-tool"
+        ],
+        "weights": {
+          "idle": 1
+        },
+        "calls": 2,
+        "triangles": 10475
+      }
+    },
+    {
+      "name": "00-previous-suit",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-male",
+        "motion": "idle",
+        "characterState": "idle",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [
+          "rest-pose",
+          "climb-ladder",
+          "climb-idle",
+          "wave",
+          "take-damage",
+          "reload-rifle",
+          "reload-pistol",
+          "interact",
+          "climb-mount",
+          "climb-finish",
+          "aim-pistol",
+          "use-tool"
+        ],
+        "weights": {
+          "idle": 1
+        },
+        "calls": 2,
+        "triangles": 10475
+      }
+    }
+  ]
+}

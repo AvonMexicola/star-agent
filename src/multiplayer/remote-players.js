@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { Character } from '../character.js';
+import { PLAYER_AVATAR } from '../player-avatar.js';
 import { Equipment, HELD_ITEMS } from '../equipment.js';
 import { SHIP_LAYOUT } from '../boarding.js';
 import { FREIGHTER_LAYOUT } from '../freighter-layout.js';
@@ -11,7 +12,6 @@ import { BODIES } from '../celestial.js';
 import { SUIT_COLORS } from './protocol.js';
 
 export const PLAYER_COLORS = SUIT_COLORS;
-const CHARACTER_URL = '/models/props/player-male.glb';
 const SHIP_URLS = { nomad: '/models/nomad.glb', atlas: '/models/atlas.glb' };
 const FORWARD = new THREE.Vector3(0, 0, -1);
 const UP = new THREE.Vector3(0, 1, 0);
@@ -28,7 +28,9 @@ export function cloneCharacterGLTF(gltf) {
     };
     node.material = Array.isArray(node.material) ? node.material.map(own) : own(node.material);
   });
-  return { scene, animations: gltf.animations || [] };
+  // Required clips and optional shadow indices belong to the parsed template.
+  // Keep their metadata/loader while skeletons and suit materials stay private.
+  return { scene, scenes: [scene], animations: gltf.animations || [], asset: gltf.asset, parser: gltf.parser };
 }
 
 /** The current pilot is a single textured mesh. A skin-weight mask leaves the
@@ -107,6 +109,9 @@ export function applySuitColor(character, color) {
  * Only arm rotations change; bone lengths and the calibrated hand socket stay. */
 export function poseHeldEquipment(character, equipment, direction, origin) {
   equipment.aimHeld(direction);
+  // Expedition calibration already solves both palms and the reachable grip.
+  // The old wrist-only correction would move its glove past the foregrip.
+  if (equipment.rig === PLAYER_AVATAR.rig) return;
   if (!equipment.leftHandTargetLocal || !character.skeleton) return;
   const right = character.skeleton.bones.find(b => /RightHand$/i.test(b.name));
   const left = character.skeleton.bones.find(b => /LeftHand$/i.test(b.name));
@@ -221,7 +226,7 @@ export class RemotePlayers {
       firePulse: false, disposed: false,
     };
     entry.character = new Character(this.scene, {
-      url: CHARACTER_URL, modelYaw: Math.PI, eyeHeight: this.eyeHeight,
+      url: PLAYER_AVATAR.url, modelYaw: PLAYER_AVATAR.modelYaw, eyeHeight: this.eyeHeight,
       loader: { load: (url, ready, progress, error) => this._asset(url).then(gltf => {
         if (this.disposed || entry.disposed) return;
         ready(cloneCharacterGLTF(gltf));
@@ -230,7 +235,7 @@ export class RemotePlayers {
     });
     entry.character.object.name = `remote-player-${peer.id}`;
     entry.character.object.userData.playerId = peer.id;
-    entry.equipment = new Equipment(entry.character, this.scene, { rig: 'player-male', sockets: this.sockets, loader: this.loader });
+    entry.equipment = new Equipment(entry.character, this.scene, { rig: PLAYER_AVATAR.rig, sockets: this.sockets, loader: this.loader });
     entry.equipment.vfx.visible = false;
     entry.ship.name = `remote-ship-${peer.id}`;
     this.scene.add(entry.ship);
@@ -351,7 +356,7 @@ export class RemotePlayers {
       equipment.update(step, { firing: false });
       const speed = Math.hypot(...(peer.velocity || [0, 0, 0]));
       character.update(step, {
-        speed, grounded: peer.mode !== 'eva', health: peer.health / 100,
+        speed: peer.mode === 'eva' ? 0 : speed, grounded: true, health: peer.health / 100,
         dead: peer.mode === 'dead', aiming: equipment.aimingInput(), firing: entry.firePulse,
       });
       entry.firePulse = false;

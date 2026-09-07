@@ -51,7 +51,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     const planned=route(current);if(!planned.ok){reset();nav.notify(planned.reason);return false;}
     activeTarget=current;selectedId=current.id;nav.travelTarget=current.id;
     nav.travel={plan:planned.plan,elapsed:planned.plan.spoolSeconds,targetId:current.id,targetName:current.name,targeted:true};
-    nav.keys.clear();nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.boost=false;nav.flightAssist=true;reset();
+    nav.keys.clear();nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.boost=false;nav.flightAssist=true;nav.combatMode=false;reset();
     nav.notify(`Relativistic drive engaged · ${current.name}. Automatic arrival braking; LT / X aborts.`);return true;
   }
   engageButton.addEventListener('click',engage);

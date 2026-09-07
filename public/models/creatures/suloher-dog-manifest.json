@@ -1,0 +1,417 @@
+{
+  "id": "suloher-dog",
+  "status": "development-candidate; independent/game review pending",
+  "source": {
+    "path": "assets/creatures/suloher-dog/source/suloher-dog-walking.glb",
+    "bytes": 7852484,
+    "sha256": "ef480bbc3142bc9dbb7b620ecfc4bf109a81f56d1dcfb99edabf22ea4592cc0d"
+  },
+  "runtime": {
+    "path": "public/models/creatures/suloher-dog.glb",
+    "bytes": 1101672,
+    "sha256": "58e0ea69a08c5f49adc76fa546dae794ab7b797c44c223591d4b2a3dbf0f3928"
+  },
+  "builder": "blender/finish_pyrebear.py",
+  "coordinates": "glTF Y-up, metres, front -Z; base-centre across the sampled walk envelope",
+  "triangles": 14806,
+  "vertices": 10947,
+  "materials": 1,
+  "drawPrimitives": 1,
+  "joints": 27,
+  "texture": {
+    "file": "/models/creatures/suloher-dog.glb (embedded)",
+    "format": "WebP",
+    "maxEdge": 1024,
+    "maps": [
+      "authored baseColor only"
+    ],
+    "roughness": 0.85,
+    "metalness": 0,
+    "emissive": 0
+  },
+  "shoulderHeightMetres": 0.85,
+  "shoulderMeasurement": "Phase-0 dorsal skin maximum within 20% total width and 7.5% depth of chest joint, relative to grounded phase-0 skin minimum; root base uses full61-sample envelope with per-phase grounding",
+  "boundsMetres": {
+    "min": [
+      -0.5299699902534485,
+      -1.2212379374432203e-07,
+      -0.9409106373786926
+    ],
+    "max": [
+      0.5299700498580933,
+      1.0939948558807373,
+      0.9409106373786926
+    ]
+  },
+  "sizeMetres": [
+    1.0599400401115417,
+    1.093994978004531,
+    1.8818212747573853
+  ],
+  "dimensions": {
+    "width": 1.0599400401115417,
+    "height": 1.093994978004531,
+    "length": 1.8818212747573853
+  },
+  "gaitSpeed": 1.0,
+  "deathDuration": 1.2,
+  "collision": {
+    "halfWidth": 0.5299700498580933,
+    "halfLength": 0.9409106373786926,
+    "height": 1.0939948558807373
+  },
+  "animation": {
+    "name": "walk",
+    "sourceName": "Armature|Unreal Take|baselayer",
+    "durationSeconds": 1.0,
+    "channels": 82,
+    "sourceJointChannels": 81,
+    "inPlace": true,
+    "horizontalRootSpanMetres": [
+      3.725290298461914e-09,
+      2.2351741790771484e-07
+    ],
+    "verticalRootBobMetres": 0.2254238724708557,
+    "rootMotionEdit": "Source is horizontally in-place. One new wrapper translation track grounds each sampled pose; all81 source joint channels/samplers and non-image buffer data remain intact.",
+    "estimatedWalkSpeedMetresPerSecond": 0.9536808729171914,
+    "recommendedWalkSpeedMetresPerSecond": 1.0,
+    "speedMethod": "Median positive backward sole-centre speed across samples in the lowest35% of each weighted foot region height range",
+    "footMinYRange": [
+      -1.2212379374432203e-07,
+      1.6727932461435557e-07
+    ],
+    "sampleCount": 241,
+    "denseSampleCount": 481,
+    "denseGroundMinimumMetres": -0.0009784470312297344,
+    "denseGroundMaximumMetres": 0.0033142040483653545
+  },
+  "normalization": {
+    "uniformScale": 309.1699643922339,
+    "sourceBaseBlender": [
+      0.00010744371684268117,
+      -0.000528380274772644,
+      -0.0005379971116781235
+    ],
+    "sourceShoulderTopBlenderZ": 0.0027193978894501925,
+    "wrapperNode": {
+      "name": "suloher-dogRoot",
+      "children": [
+        28
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "scale": [
+        309.1699643922339,
+        309.1699643922339,
+        309.1699643922339
+      ],
+      "translation": [
+        0.033218370110421,
+        0.16633254786065013,
+        0.16335931073701712
+      ],
+      "extras": {
+        "origin": "base-centre over full sampled walk",
+        "front": "-Z",
+        "units": "metres",
+        "assetStatus": "development-candidate"
+      }
+    },
+    "sourceObjectTransforms": [
+      {
+        "name": "Armature",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "name": "char1",
+        "matrixWorldBlender": [
+          [
+            0.009999999776482582,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.3435885737322906e-09,
+            -0.010000000707805157,
+            0.0
+          ],
+          [
+            0.0,
+            0.010000000707805157,
+            -1.3435885737322906e-09,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "allNonImageBufferViewsPreservedSha256": {
+      "0": "326f220cbbbd4d2e53c8effa33eb576dea7fe1b222ca10e50048ebe3c4e40dad",
+      "1": "609f31fa89e8c0d012450ed30c601cc9080fb0c531a0eb53c2f670326449c1d2",
+      "2": "cac00419ac65749796a800cf1ad7dae99e8682e52d4e073bf6b4617ed9c40a3c",
+      "3": "14e92585f51dc11d19ddcf1118997d77fde1f6ab7c5a0fa2eb3963924e6fb3f5",
+      "4": "246379eb4d56af9aeaa2dc87aa93069d49212e23db6b49ffd626b593968b0a2f",
+      "5": "7e590880bfb5bf3b787eb5bcc75e25891aee7ff8f0fdc47f36ed49c2f5537684",
+      "7": "52472990a68a3d4586028b4cdc9889eef6b82d259e71bdc6c6f1975f7e3e1f60",
+      "8": "ad1bd086a0eb3d329064d763c58b134bdebf8e6036407109f9475b3f6e1b8b67",
+      "9": "e595e6bf2e1141b1597e07bfe228b90dbcc55782685f4944cb68cc5ff7e58d3e",
+      "10": "c5f0642e48126f5c2d2d8100de2f3451f756c6fca01e36abb1ad1b41e3a0ca88",
+      "11": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+      "12": "03f42752d70da683753f419989c88c5f792389f8d094cf950e504fe6cf5b41de",
+      "13": "fef0210956372f5f23d44894addba54ea07ab47e53d66f6195a1c20e6b49b4dc",
+      "14": "cbbb29fb2dc987138bd26e75b2af418753945af290bc26d20d936e73ae98725d",
+      "15": "ab185d011e8281d056a0efc0fc40d995c47fba0c4545f13c084a3be2cf16e70e",
+      "16": "9e124a0b8c65cd9a207f67119996d21f0cfafe035ebc67472445ae9ea4d464cd",
+      "17": "23e78c1fcce8fb21815fa1b49fc341aa2af1dfc67da963a99b48dc1d809acb59",
+      "18": "9cf0cba26b88c1a8010339c4c36bedbfce79353bd529098493816ed911b2b1ca",
+      "19": "a77b57d3b3eadfcf903828e30a5d9fc86dd6a3d5377c35548b219f3e061090aa",
+      "20": "40b680f346619767dbc32be18896abc8b3f90c33459926132f74ae95ba4cb897",
+      "21": "0e51c010eef1ffe41e9b71ba8f14e71debe697bca9f737ef8463eaa1d4669cd6",
+      "22": "754909c3fa393b0b61573c8e3f3574145f6fa92b3aa3db853283f04d44125c13",
+      "23": "3fb3bda341c1930650ed3b93b3837cfbdd80da9db71a0d2f4f24820168a6dd07",
+      "24": "3d2d816b625f76bdd1e4c029d637b0c2b9f09979a5725d08b132c92e17a6081c",
+      "25": "4e568749a55d7d740539f12dc8ba423b18bc3cc78c7d2ff6479a1057cf138667",
+      "26": "e76e7f07d014fb66d593ad0c8da2ae65921f00c1b9aa2db3bfc661523f1578fd",
+      "27": "0513100b541fc85276393732e34201bba1ba237006ddc339f74a9e0d3029d38b",
+      "28": "3f015b7fed32e73cfeca820a36240bc28f00f3372d2647b5e207b50c49d6e793",
+      "29": "43218fa5988b30f699983f4acf08aa8123f901bc806a6f7a2de38481a5d825e6",
+      "30": "1e559000eaa81e6e722b0aef0f1b5d05975c2a235f5ed8732b8c4b50e33b4f36",
+      "31": "53c1815338c7242507577a2f97ef2a7862b5aa23e217be049482f73bd4676db3",
+      "32": "952f8e41df748b4dd2b216855123e2169987611d647ec10ce2c0282ce50180af",
+      "33": "fc4d973a5413634cfeac4d62d5e9a712cd7762cae84c576d5a1c4f73513923e4",
+      "34": "5bb9f44dc382d568dc068eba3c625f968f21aa025e83df1de9059e4e10910a83",
+      "35": "2cb114ba7046dc90c953de086622e53631f53382cfae2e2ae19efd0b9840139a",
+      "36": "ea71e133f0db550bc2d0f3a377b46924488493737e4992ae47ee53a06264343f",
+      "37": "aab0e43f5dae8663c65e37deb37b16942f2bb25ffbdff8da16d22b7e69f55a6d",
+      "38": "9ce1734139de37d103796784e24fc0ba7972a5f5b317804a73ce66d566a5ad53",
+      "39": "4f8e30cf8dd2704499d53c4a94a5e7bf45b89c7b1eef978083ec6bb7c8adfa14",
+      "40": "0de113cf9bf98360e7582e9621decd0d163a939d618d3f5395a67af93edda75c",
+      "41": "82b93eb094ab635f8d2740fa9d93c8d24f06f3fc0c45f412e1c45ad9f3d9ee18",
+      "42": "57a329d9011700a2105f3467b26422ed66d55b3230413318c95f7701e45f4338",
+      "43": "059138b2e219787bacfb8c98c80b5c41326aa1ccfb7f199761f4feaaccfc85f7",
+      "44": "e9195e3b0a121069351ffa39fc4e3b6239ac71ebafff5ec294c80b1e2a3b4b0b",
+      "45": "7230f7a27ef51eff55a0132104643ec62fc775b252b8ec34349274c1773c5610",
+      "46": "87e447657e9914d43f7d1c3565d87c516e9b9e37cd0dfe4253cfcb86bfff528c",
+      "47": "b7d273eec32a9e9e66ef9b07f235f06270d8e98df839e115ef3da6ae5d01c93d",
+      "48": "a15583f573a97e615f33f5c0870911dc07bf0a6d936905c419bf144e2ec0de22",
+      "49": "cbbd58284a525feb97eec676511454266db6f5e2010c54fc5a3e1ed8db3ada05",
+      "50": "045c8f1c3f16ce18a76f05972bd78c8bb49d19f12d91d4a3f374e961a7f0cf3e",
+      "51": "7430c053eb8e301319c01e6bae121f244aa346507bf631338fc5f7cc56e926bd",
+      "52": "f65d3653a0a4a49d60eed265ee4f7fdb1bfaaba58aa32b1761736633458e6244",
+      "53": "c19c572384e7babe8d49f6e3b0cdaf7faaece10b3bbe471d51b2d2f8f3c47511",
+      "54": "7d12022032463306540218b82ab12d430a697ef02c368cf43b99aef74a22bd7e",
+      "55": "793f72ae0546757491ed5775bc7fcff13da51d3b821b50ab8962690aad9c61dd",
+      "56": "0656a1e3f5250c889378b83fd04255c08e7cf1563ef82402eabfb1e9deb0b034",
+      "57": "68f249e86e4cf39242d8966c669deffd8bac8261c7d294e425ee68562b96609e",
+      "58": "df2c2b31d1edf1a4cf8c41d5313dfb46cfea585c8ab244e65687456ccbf2e300",
+      "59": "3f79488767bf54aefb646e00e62f58447db10eefaa5d2dfcf470f55af4e3f785",
+      "60": "637cbe8380deee73054ddea99c364dc5388ba6290cb7afa2e6f954f4bcfcce5e",
+      "61": "1a7fa2fd551fd78d59cc5bb440ff024d5a67b911892a2807fa0a0171a96a8b59",
+      "62": "a2f44257602032b9447beae512a253908744b0584ed92db726c53cd2725bf771",
+      "63": "446ff3a575de27a34154e3f69309565d4b488bc9b2763438fecfff40d21b8553",
+      "64": "50072c93438c07190846e2181ae28017ce6606615ec1a782a4f14145c05baf89",
+      "65": "fdee8628a4405713584b607a820e6016f32f0fe7c0991b081944afb87f2d8a23",
+      "66": "44ffcec9ba2e161292ee1c45317f4daa1a2bbab347d0e2693e731ff6253622a8",
+      "67": "3eea59b2eb976b0df4a0a326d7659c96640e4722eb9b396658a50ac323563c02",
+      "68": "5e6370b81a73853749788d3364be1577ff41d1a6e600c964aaff9509513774ee",
+      "69": "f89882f85e384377c249f0617307f1612960862c01f395db0daad42a76e7cebf",
+      "70": "a30cef199c75b1150a813a74694bd115fb70188de53f3620bca9240c847951b0",
+      "71": "78aaf3aa71bb80d5955041bbf45057fa61c6d60375f36e708849cd90d443cf63",
+      "72": "d6d67a67ccc225b45d995f8e31f3854f24ee47dafd9eb743160083daab71d35d",
+      "73": "61e7e82a54e47ab4a1b6c9bb2a2cd38a04f56da9984199857ebc556be3afd9dc",
+      "74": "4362b5cc48eaa7d51498317ae6721b9d58532c79742729673ddc9c90a267f09f",
+      "75": "517e3a08570de0ac99155cf4b67b191f13bed858cd86dae6eebdab4d729de76a",
+      "76": "90742fb1c4557d2d71d5f57ea1d7d3869e5e09555c091b531a6ce6bee17bc83b",
+      "77": "de361c985a27e385942ebe4239e1a9ece92ed8bec1b18085ac573b374734fd74",
+      "78": "d5e9b50408c114b21dfdf8f5ab47b603fb3a08ab096d8f3f57199ccb7f1d7c88",
+      "79": "49091aac4ac80b98716ff1ab1b5ce058b1c5fc225bc52aca2d466df0b087f1c6",
+      "80": "2f59b2d50eaf9f113f8dbc229206a2c1ebf6f9e99b1728861d0f77854faf4f88",
+      "81": "0b48d16fa0abb0e39b447f4a95de667e5148af5656b982f30fd56c7e9e4f6e85",
+      "82": "9705795b6539b0df3ec8e18cf452c4a7855ac54a5fe9158bb9b34481979f6f05",
+      "83": "1982258d8f85d3a9e0995e83ce7843da0494cddb6e1cb918094659747d84325c",
+      "84": "39f4c153dcb8573c748d6bc90af5dfbb9d7352c8f27025ae16bc9ca7f19f8eba",
+      "85": "95b9c78e4be73eafe3e388ed7195efd39a24f95347efeeb4e6fc8242c607b719",
+      "86": "64ecfe52c27137bcc2aac88999b1037d5e631b55fb5fb26d9097d5d3ed17f152",
+      "87": "98016afd406f526dd71aa1c27bee0330da47262dfde3c7462203d0a883fade8c",
+      "88": "8a8ade3f4e37c24bc87875ebb9647111228597b40ad8f08ecfe18050b41606d7",
+      "89": "2ebbfdd1cbb104f0ccacdec27749fce071fea72425a355260c7d1a8a84ba1e22",
+      "90": "4081dcaac6c519b4afc113038aecc063b0ba87a4a0bcc11a93cc476f4c8e924a"
+    },
+    "allSourceSkinsAccessorsMeshJointChannelsSamplersUnchanged": true,
+    "blenderRuntimeReimportMaxBoundsErrorMetres": 4.76837158203125e-07,
+    "helperExcludedFromBounds": [
+      "Icosphere"
+    ],
+    "actualSampleReport": "assets/creatures/suloher-dog/deformation-samples.json"
+  },
+  "limitations": [
+    "One supplied walk and one Blender-authored death; no attack/idle animation authored.",
+    "Studio renders do not establish browser shading, gameplay, performance or independent visual acceptance.",
+    "Gait ground clearance is sampled, not continuously proven; terrain placement belongs to runtime."
+  ],
+  "death": {
+    "name": "death",
+    "durationSeconds": 1.2,
+    "loop": false,
+    "holdFinalPose": true,
+    "authoring": "Blender forward-kneel/belly collapse, 12-degree lean, folded joint-length-constrained limbs, lowered chest/head/pelvis and relaxed tail; broad torso support with small measured local contact intersections; head rests sideways, forepaws relax asymmetrically and distal tail settles toward the flank",
+    "boundsMetres": {
+      "min": [
+        -0.5521885752677917,
+        -0.02537231147289276,
+        -0.93498694896698
+      ],
+      "max": [
+        0.720554530620575,
+        0.9224438071250916,
+        1.2048935890197754
+      ]
+    },
+    "finalBoundsMetres": {
+      "min": [
+        -0.544072151184082,
+        -0.02537231147289276,
+        -0.9048654437065125
+      ],
+      "max": [
+        0.720554530620575,
+        0.6716566681861877,
+        1.2048935890197754
+      ]
+    },
+    "groundMinimumMetres": -0.02537231147289276,
+    "reimportBoundsErrorMetres": 3.874301910400391e-06,
+    "denseSampleCount": 121,
+    "denseGroundMinimumMetres": -0.02537231147289276
+  },
+  "studio": {
+    "renderer": "Blender 5.2.0 LTS Cycles CPU",
+    "samples": 12,
+    "threads": 4,
+    "resolution": [
+      800,
+      600
+    ],
+    "views": [
+      {
+        "path": "assets/creatures/suloher-dog/review/front.webp",
+        "phase": 0,
+        "cameraBlender": [
+          0.0,
+          6.0,
+          2.0
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/side.webp",
+        "phase": 0,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          1.7999999523162842
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/walk-000.webp",
+        "phase": 0,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0999999046325684
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/walk-025.webp",
+        "phase": 0.25,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0999999046325684
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/walk-050.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0999999046325684
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/walk-075.webp",
+        "phase": 0.75,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0999999046325684
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/death-mid.webp",
+        "phase": 0.5,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0999999046325684
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/death-final.webp",
+        "phase": 1,
+        "cameraBlender": [
+          4.0,
+          5.0,
+          3.0999999046325684
+        ]
+      },
+      {
+        "path": "assets/creatures/suloher-dog/review/death-side.webp",
+        "phase": 1,
+        "cameraBlender": [
+          6.0,
+          0.0,
+          1.7999999523162842
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,476 @@
+{
+  "browser": "151.0.7922.173",
+  "captures": [
+    {
+      "name": "sit-0",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "sit",
+        "characterState": "sit",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "sit-idle": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "sit-idle",
+        "mixerTime": 5.540999999994058
+      }
+    },
+    {
+      "name": "sit-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "sit",
+        "characterState": "sit",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "sit-idle": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "sit-idle",
+        "mixerTime": 6.240899999994064
+      }
+    },
+    {
+      "name": "climb-0",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "climb",
+        "characterState": "climb",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "climb-ladder": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "climb-ladder",
+        "mixerTime": 13.640699999994014
+      }
+    },
+    {
+      "name": "climb-1",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "climb",
+        "characterState": "climb",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "climb-ladder": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "climb-ladder",
+        "mixerTime": 14.007499999994012
+      }
+    },
+    {
+      "name": "climb-2",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "climb",
+        "characterState": "climb",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "climb-ladder": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "climb-ladder",
+        "mixerTime": 14.340799999994005
+      }
+    },
+    {
+      "name": "climb-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "climb",
+        "characterState": "climb",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "climb-ladder": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "climb-ladder",
+        "mixerTime": 15.174099999993995
+      }
+    },
+    {
+      "name": "walk-0",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "walk",
+        "characterState": "walk",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "walk": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "walk",
+        "mixerTime": 16.490599999993986
+      }
+    },
+    {
+      "name": "walk-1",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "walk",
+        "characterState": "walk",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "walk": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "walk",
+        "mixerTime": 16.87399999999398
+      }
+    },
+    {
+      "name": "walk-2",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "walk",
+        "characterState": "walk",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "walk": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "walk",
+        "mixerTime": 17.27399999999398
+      }
+    },
+    {
+      "name": "walk-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "walk",
+        "characterState": "walk",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "walk": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "walk",
+        "mixerTime": 18.207099999993986
+      }
+    },
+    {
+      "name": "run-0",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "run": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "run",
+        "mixerTime": 19.54039999999398
+      }
+    },
+    {
+      "name": "run-1",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "run": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "run",
+        "mixerTime": 19.85699999999397
+      }
+    },
+    {
+      "name": "run-2",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "run": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "run",
+        "mixerTime": 20.19029999999396
+      }
+    },
+    {
+      "name": "run-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "run",
+        "characterState": "run",
+        "transition": null,
+        "equipment": null,
+        "missingClips": [],
+        "weights": {
+          "run": 1
+        },
+        "calls": 2,
+        "triangles": 62273,
+        "clip": "run",
+        "mixerTime": 21.04019999999394
+      }
+    },
+    {
+      "name": "rifle-laser-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707,
+        "clip": "idle-lower",
+        "mixerTime": 22.67339999999394
+      }
+    },
+    {
+      "name": "rifle-laser-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707,
+        "clip": "idle-lower",
+        "mixerTime": 23.739999999993916
+      }
+    },
+    {
+      "name": "rifle-laser-palms",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-rifle",
+        "transition": null,
+        "equipment": "rifle-laser",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim": 1
+        },
+        "calls": 8,
+        "triangles": 71707,
+        "clip": "idle-lower",
+        "mixerTime": 24.889999999993886
+      }
+    },
+    {
+      "name": "sidearm-pistol-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369,
+        "clip": "idle-lower",
+        "mixerTime": 26.089999999993882
+      }
+    },
+    {
+      "name": "sidearm-pistol-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369,
+        "clip": "idle-lower",
+        "mixerTime": 27.139599999993884
+      }
+    },
+    {
+      "name": "sidearm-pistol-palms",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "aim-pistol",
+        "transition": null,
+        "equipment": "sidearm-pistol",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "aim-pistol": 1
+        },
+        "calls": 7,
+        "triangles": 64369,
+        "clip": "idle-lower",
+        "mixerTime": 28.322799999993865
+      }
+    },
+    {
+      "name": "mining-laser-tool-hands",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585,
+        "clip": "idle-lower",
+        "mixerTime": 29.406099999993863
+      }
+    },
+    {
+      "name": "mining-laser-tool-side",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585,
+        "clip": "idle-lower",
+        "mixerTime": 30.589299999993877
+      }
+    },
+    {
+      "name": "mining-laser-tool-palms",
+      "state": {
+        "ready": true,
+        "error": null,
+        "rig": "player-expedition",
+        "motion": "idle",
+        "characterState": "use-tool",
+        "transition": null,
+        "equipment": "mining-laser-tool",
+        "missingClips": [],
+        "weights": {
+          "idle-lower": 1,
+          "tool": 1
+        },
+        "calls": 9,
+        "triangles": 69585,
+        "clip": "idle-lower",
+        "mixerTime": 31.755599999993866
+      }
+    }
+  ],
+  "errors": [],
+  "note": "Continuous live playback sampled at frame intervals. No animation time or bone transforms were set by the harness."
+}

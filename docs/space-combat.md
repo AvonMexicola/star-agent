@@ -22,10 +22,17 @@ and controller dialog/input router. No new external services or assets are neede
 | Open mission / combat report | Patrol console button; hangar cargo terminal | Menu → Contracts |
 | Aim / fly | Existing flight controls | Right / left stick |
 | Fire | Hold T or the ship's Hold to fire button | Hold RT / R2 |
+| Combat / cruise | Z or mode button | Menu → Ship → Combat / cruise |
+| Fly-by-wire / unlocked | V | R3 |
+| Full braking | Hold X | Hold LT / L2 |
 | Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship → Ship weapon |
 | Next hostile | Tab or Next target button | Menu → Ship → Next hostile target |
 | Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Contracts → Recover |
 | Abandon | Console → Abandon patrol | Same console action |
+
+Fly-by-wire is on by default and corrects drift with finite thruster force. Releasing thrust brakes gradually; turning the nose does not instantly redirect travel. V / R3 unlocks thrust-off coasting and lets you turn around while retreating and firing. Hold X / LT to brake, and allow substantially more stopping room in Atlas.
+
+Combat speed caps are Kestrel220, Nomad180 and Atlas120 m/s. Z switches to faster cruise and locks weapons. Switching back brakes gradually; fire stays locked until actual speed is within the combat limit, boost is off and gear is retracted. This applies in either assist mode. Landing assist requires speed below10 m/s.
 
 A/B rises/descends and LT brakes (matching EVA). Menu → Settings → Controller layout
 shows the complete diagram, also available through Help. The selected
@@ -39,7 +46,7 @@ Nomad has 180 shield / 240 hull; Kestrel 140 / 160; Atlas 360 / 600. Shield abso
 first, overflow damages hull, and shield recharges after six seconds without a
 hit. Hull does not regenerate; docking repairs it. Zero hull fails the patrol and
 requires explicit recovery. Projectiles sweep moving spherical ship envelopes;
-laser queries are immediate. Existing ground crash and stellar thermal models
+laser queries are immediate. Projectiles inherit the firing ship’s velocity and the lead ring uses relative velocity. Visible laser pulses follow the moving fitted barrel while retaining their original impact point; damage is still resolved once per shot. Existing ground crash and stellar thermal models
 remain separate from these combat hitpoints.
 
 Player and NPC hulls carry the [sized Meridian guns](ship-weapons.md). NPC

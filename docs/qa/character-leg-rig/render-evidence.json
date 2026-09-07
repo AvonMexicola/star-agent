@@ -1,0 +1,86 @@
+{
+  "browser": "151.0.7922.173",
+  "environment": {
+    "viewport": [
+      1440,
+      1100
+    ],
+    "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+  },
+  "errors": [],
+  "warnings": [],
+  "renders": [
+    {
+      "name": "rest-0-front",
+      "rig": "player-expedition",
+      "state": "rest",
+      "missingClips": []
+    },
+    {
+      "name": "rest-0-side",
+      "rig": "player-expedition",
+      "state": "rest",
+      "missingClips": []
+    },
+    {
+      "name": "crouch-0.75-front",
+      "rig": "player-expedition",
+      "state": "crouch",
+      "missingClips": []
+    },
+    {
+      "name": "crouch-0.75-side",
+      "rig": "player-expedition",
+      "state": "crouch",
+      "missingClips": []
+    },
+    {
+      "name": "jump-0.333333-front",
+      "rig": "player-expedition",
+      "state": "jump",
+      "missingClips": []
+    },
+    {
+      "name": "jump-0.333333-side",
+      "rig": "player-expedition",
+      "state": "jump",
+      "missingClips": []
+    },
+    {
+      "name": "jump-0.666667-front",
+      "rig": "player-expedition",
+      "state": "jump",
+      "missingClips": []
+    },
+    {
+      "name": "jump-0.666667-side",
+      "rig": "player-expedition",
+      "state": "jump",
+      "missingClips": []
+    },
+    {
+      "name": "jump-1.1-front",
+      "rig": "player-expedition",
+      "state": "jump",
+      "missingClips": []
+    },
+    {
+      "name": "jump-1.1-side",
+      "rig": "player-expedition",
+      "state": "jump",
+      "missingClips": []
+    },
+    {
+      "name": "sit-0.5-front",
+      "rig": "player-expedition",
+      "state": "sit",
+      "missingClips": []
+    },
+    {
+      "name": "sit-0.5-side",
+      "rig": "player-expedition",
+      "state": "sit",
+      "missingClips": []
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import kestrelURL from '../../assets/kestrel/kestrel.glb?url';
+import {shipWeaponStatus} from './flight-policy.js';
 import {SHIP_LAYOUT} from '../boarding.js';
 import {CombatSimulation,interceptPoint,projectileSpan} from './simulation.js';
 import {shipWeaponProfile,SHIP_WEAPON_SIZES} from '../ship-weapon-profiles.js';
@@ -23,7 +24,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
   const bolts=Array.from({length:128},()=>{const mesh=new THREE.Mesh(boltGeometry,boltMaterials.get('pulse:1'));mesh.visible=false;group.add(mesh);return mesh;});
   const sim=new CombatSimulation({obstruction:(start,direction,range)=>target(start,direction,currentOrigin,range),onShot:shot=>{
     const profile=shot.profile;
-    if(shot.weapon==='laser')effects.fire(shot.position,shot.direction,{weapon:'laser',range:shot.remaining,muzzle:false,size:profile.size,pitch:profile.soundPitch,power:profile.power,speed:profile.speed,color:profile.color});
+    if(shot.weapon==='laser')effects.fire(shot.position,shot.direction,{weapon:'laser',range:shot.remaining,muzzle:false,muzzlePosition:shot.muzzlePosition,size:profile.size,pitch:profile.soundPitch,power:profile.power,speed:profile.speed,color:profile.color});
     else effects.onSound?.({type:'shot',weapon:shot.weapon,sound:shot.weapon,point:shot.position.clone(),size:profile.size,pitch:profile.soundPitch,power:profile.power});
   },onHit:({point,normal,shield,destroyed,entity,weapon,profile})=>{
     effects.impact(point,normal??new THREE.Vector3(0,1,0),(destroyed?9:shield?2:1.5)*(profile?.effectScale??1),{color:shield?0x80d9ff:profile?.color??0xff9a60,kind:weapon});
@@ -146,7 +147,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
       const scale=shot.profile.effectScale??1,isVoid=shot.weapon==='void';
       const span=projectileSpan(shot,(isVoid?1.4:8)*scale);
       mesh.visible=span.length>0;
-      mesh.position.copy(span.position).sub(origin);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),shot.direction);
+      mesh.position.copy(span.position).sub(origin);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),shot.velocity.clone().normalize());
       mesh.geometry=isVoid?voidGeometry:boltGeometry;
       mesh.scale.set((isVoid?.6:.16)*scale,(isVoid?.6:.16)*scale,span.length/(isVoid?2:1));
       mesh.material=boltMaterials.get(`${isVoid?'void':'pulse'}:${shot.profile.size??1}`)??boltMaterials.get('pulse:1');
@@ -167,7 +168,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     if(sim.phase==='transit')marker(markerNodes[i++],sim.point,'PATROL SIGNAL',{waypoint:true},origin);
     for(const e of visibleEnemies)marker(markerNodes[i++],e.position,e.ship.toUpperCase(),{selected:e.id===sim.targetId},origin);
     const profile=shipWeaponProfile(weapon,SHIP_WEAPON_SIZES[nav.shipId]??1);
-    if(t&&i<4&&Number.isFinite(profile.speed)){const point=interceptPoint(nav.position,t.position,t.velocity,profile.speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
+    if(t&&i<4&&Number.isFinite(profile.speed)){const point=interceptPoint(nav.position,t.position,t.velocity.clone().sub(nav.velocity),profile.speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
   }
-  return {open,permitted,recover,cycle:()=>sim.cycle(),update,fire:(...args)=>sim.fire(...args),get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
+  return {open,permitted,recover,cycle:()=>sim.cycle(),update,fire:(...args)=>{if(shipWeaponStatus(nav)==='WEAPONS READY')sim.fire(...args);},get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
 }

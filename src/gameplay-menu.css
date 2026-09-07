@@ -73,8 +73,8 @@ dialog.gameplay-screen[open]{display:flex!important;flex-direction:column!import
 #dev-launcher.gameplay-screen .dev-locations button{padding:10px;min-height:66px}
 #dev-launcher.gameplay-screen .gameplay-content>footer{margin:0;padding:12px 0 0;flex:none}
 #dev-launcher.gameplay-screen .dev-footer{margin:0;justify-content:flex-start}
-#dev-launcher.gameplay-screen .dev-console-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-#dev-launcher.gameplay-screen .dev-console-list button{min-height:76px;padding:16px}
+#dev-launcher.gameplay-screen :is(.dev-console-list,.dev-review-list){display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+#dev-launcher.gameplay-screen :is(.dev-console-list button,.dev-review-list a){min-height:76px;padding:16px}
 #graphics-settings.gameplay-screen .gameplay-content{width:min(800px,100%);align-self:center;padding-top:32px}
 #graphics-settings.gameplay-screen .graphics-options{gap:14px}.gameplay-screen .graphics-options button{min-height:60px}
 #controller-layout.gameplay-screen .gameplay-content>header,#controller-layout.gameplay-screen .gameplay-content>footer{display:none}
@@ -152,3 +152,10 @@ dialog.gameplay-screen[open]{display:flex!important;flex-direction:column!import
 }
 /* Tab changes keep the terminal frame stationary. */
 dialog.gameplay-screen{animation:none!important}
+#dev-launcher.gameplay-screen .dev-review-list a{display:flex;align-items:center;line-height:1.45;text-align:left}
+@media(max-width:749px),(max-height:719px){
+ #dev-launcher.gameplay-screen .dev-screen-tabs button{padding:9px 10px;font-size:12px;flex:1}
+ #dev-launcher.gameplay-screen .dev-review-list{grid-template-columns:1fr;gap:8px}
+ #dev-launcher.gameplay-screen .dev-review-list a{min-height:52px;padding:12px;font-size:12px}
+ #dev-launcher.gameplay-screen .dev-review-list .gameplay-pagination{grid-column:1/-1}
+}

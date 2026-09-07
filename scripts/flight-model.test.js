@@ -81,7 +81,7 @@ test('integration is stable across simulation rates and assist brakes explicitly
   };
   near(simulate(1/30).velocity.distanceTo(simulate(1/120).velocity),0,1e-6);
   const initial=state();initial.velocity.set(100,0,0);
-  near(step(initial,{assist:true},vacuum,1).velocity.x,100*Math.exp(-3.5));
+  near(step(initial,{assist:true},vacuum,1).velocity.x,82);
 });
 
 test('V toggles inertial navigation, preserves coasting and gates changes while landed', t => {
@@ -91,22 +91,23 @@ test('V toggles inertial navigation, preserves coasting and gates changes while 
   t.after(()=>{globalThis.document=oldDocument;globalThis.window=oldWindow;});
   const nav=new Navigation({addEventListener(){}},()=>{});
   const press=code=>{listeners.keydown({code,preventDefault(){}});listeners.keyup({code});};
-  nav.position.set(0,RADIUS+100000,0);nav.orientation.identity();nav.velocity.set(120,0,-300);
+  nav.combatMode=false;nav.position.set(0,RADIUS+100000,0);nav.orientation.identity();nav.velocity.set(120,0,-300);
   press('KeyV');assert.equal(nav.flightAssist,false);
   const before=nav.position.clone();nav.update(1/60);
   near(nav.velocity.x,120);near(nav.velocity.z,-300);assert.ok(nav.velocity.y<0);
   assert.ok(nav.position.distanceTo(before)>0);near(nav.orientation.angleTo(new Quaternion()),0);
   nav.keys.add('ArrowLeft');nav.update(1/60);nav.keys.clear();
   assert.ok(nav.angularVelocity.y>0);
-  press('KeyX');near(nav.speed,0);near(nav.angularVelocity.length(),0);
+  const speedBeforeBrake=nav.speed;press('KeyX');near(nav.speed,speedBeforeBrake);
+  nav.keys.add('KeyX');nav.update(1/60);assert.ok(nav.speed<speedBeforeBrake&&nav.speed>speedBeforeBrake-1);nav.keys.clear();near(nav.angularVelocity.length(),0);
   nav.velocity.set(120,0,0);press('KeyV');nav.update(1/60);assert.ok(nav.velocity.x<120);
   nav.mode='landed';press('KeyV');assert.equal(nav.flightAssist,true);
   // Landing automation must stop rotation, not hide it until L is cancelled.
-  nav.mode='flight';nav.flightAssist=false;nav.position.set(0,RADIUS+5000,0);nav.angularVelocity.set(0,1,0);
+  nav.mode='flight';nav.flightAssist=false;nav.velocity.set(0,0,0);nav.position.set(0,RADIUS+5000,0);nav.angularVelocity.set(0,1,0);
   press('KeyB');assert.equal(nav.autoland,true);near(nav.angularVelocity.length(),0);
   nav.update(1/60);press('KeyB');assert.equal(nav.autoland,false);
   const attitude=nav.orientation.clone();nav.update(1/60);near(nav.orientation.angleTo(attitude),0);
-  nav.station={ready:true,worldPosition:nav.position.clone(),canDock:()=>true};nav.angularVelocity.set(0,1,0);
+  nav.velocity.set(0,0,0);nav.station={ready:true,worldPosition:nav.position.clone(),canDock:()=>true};nav.angularVelocity.set(0,1,0);
   press('KeyB');assert.equal(nav.autoland,true);near(nav.angularVelocity.length(),0);
   nav.station=null;nav.autoland=false;
   // The new force path must cross the atmosphere without a transit or state reset.
