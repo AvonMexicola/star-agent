@@ -40,8 +40,8 @@ test('twenty real authenticated sockets share live simulation, unique hangars an
   assert.equal(room.players.size,20);assert.deepEqual(errors,[]);
   // The twenty-first authenticated peer must be refused without evicting anyone.
   const extra=new WebSocket(url.replace('http:','ws:')+'/ws',{headers:{Origin:origin,Cookie:cookies[20]}});sockets.push(extra);
-  let rejected=false;extra.on('error',()=>{});extra.on('close',code=>{rejected=code===1013;});
-  await until(()=>rejected);assert.equal(room.players.size,20);
+  let rejected=false,fullMessage;extra.on('message',raw=>{const m=JSON.parse(raw);if(m.code==='ROOM_FULL')fullMessage=m.message;});extra.on('error',()=>{});extra.on('close',code=>{rejected=code===1013;});
+  await until(()=>rejected);assert.match(fullMessage,/20 player slots/);assert.equal(room.players.size,20);
   peers[0].ws.close();await until(()=>room.players.size===19&&room.leases.size===19);
   const replacement=new WebSocket(url.replace('http:','ws:')+'/ws',{headers:{Origin:origin,Cookie:cookies[20]}});sockets.push(replacement);
   let welcome;replacement.on('message',raw=>{const m=JSON.parse(raw);if(m.type==='welcome')welcome=m;});replacement.on('error',error=>errors.push(error.message));
