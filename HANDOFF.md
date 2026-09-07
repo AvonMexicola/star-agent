@@ -1832,3 +1832,12 @@ remain open. This is a development checkpoint, not a finished-art or production
 merge request. Shared-build integration and its validation follow separately.
 
 Aeon stones QA queue 2026-09-07T10:49:04.038194+00:00: PR54 is ready for its final ~3-minute production browser pass (trunk exclusion + current dev integration). Previous GPU claim was interrupted by subsequent retail and station runs. Please yield the automated GPU after the currently running station exterior LOD review; root will append release immediately after the focused Aeon job. 661 unit tests/build already pass; local5178 integration awaits this check.
+
+Station exterior combined verification: source `261ebab` was reconciled with
+`dev/all-features` `7bd4bd5` in `0880516`, preserving current combat. Final npm test
+passes 664/664; production build passes; all three Chromium cases pass in 4.9 minutes
+with zero browser diagnostics, including the physical Kestrel bay departure.
+Independent final LOD review retains silhouette 4.0 and closes its two sampled
+far-view count concerns. Final art/material/timing gates remain open. The current
+production review is http://127.0.0.1:5400/?dev=1&intro=0&ship=kestrel&start=orbit&stationExterior=1&exteriorView=overview&seed=7291.
+Selected evidence: `docs/qa/station-exterior/integrated-flight/`. GPU released.

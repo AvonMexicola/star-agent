@@ -212,3 +212,14 @@ verify actual LOD draw callbacks and the exact served assets. Quarter: 126 draws
 counts, so only the exact kit reduction is attributed to the new LOD. Both images
 preserve the silhouette. No hardware timing or transition-motion approval follows
 from two fixed screenshots.
+
+Final combined Chromium verification: **3/3 cases pass in 4.9 minutes**, zero
+browser console errors/warnings or page errors. In addition to the seven rendered
+views and injected-controller/touch entry, a Kestrel physically climbs out to the
+bay, reboards and secures, launches, retracts its gear and flies clear. Only its
+initial hangar start is a developer preset; the subsequent journey uses keyboard
+input. [Selected integrated evidence](integrated-flight/README.md) retains the
+current overview, input frames, ladder/departure images and receipts. All seven
+scene counts match the earlier final-kit table. The phone HUD remains crowded by
+inherited combat panels and the temporary start toast; entry success is not full
+UI art approval. The GPU was released to the queued Aeon-stones QA owner afterward.

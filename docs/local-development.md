@@ -130,5 +130,6 @@ This is a first geometry pass: final painting, close surface/detail refinement,
 complete art approval and frame timing remain open. See the
 [production and review record](qa/station-exterior/production-record.md) for
 exact source hashes, independent clearance checks and actual browser evidence.
-The merged source passes all 664 unit tests and a production build; the latest
-browser integration result is appended to that record when complete.
+The merged source passes all 664 unit tests, a production build and all three
+Chromium cases: actual rendering/ring motion, controller/touch entry and a physical
+Kestrel ladder, reboarding and departure. See the linked record for remaining gates.
