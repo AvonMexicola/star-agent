@@ -1,5 +1,7 @@
 # Aeon landmark surface refinement
 
+[Latest density and restrained-material follow-up](../landmark-restraint/README.md) records the subsequent reduction requested by Cees.
+
 7 September 2026. Material-only development checkpoint following Cees's feedback:
 the large shapes are good, but need more texture detail and variation. Builder
 inspection is recorded below; independent visual acceptance remains pending.

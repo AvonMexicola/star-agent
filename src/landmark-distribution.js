@@ -3,6 +3,10 @@ import {RADIUS,SEED,hash,terrainSample,biomeAt,findDestinations} from './world.j
 import {LANDMARK_FAMILIES,LANDMARK_VARIANTS,landmarkOccupies} from './landmark-geometry.js';
 
 export const LANDMARK_GENERATOR_VERSION=1;
+// Population revision 2 thins the v1 field without relocating retained rocks.
+// Renderer, vegetation workers and authoritative collision use this same gate.
+export const LANDMARK_POPULATION_REVISION=2;
+export const LANDMARK_CELL_CHANCE=.026;
 export const LANDMARK_SPACING=320,LANDMARK_RANGE=10000,LANDMARK_BOUND=150;
 export const LANDMARK_ROWS=Math.round(Math.PI*RADIUS/LANDMARK_SPACING);
 const TAU=Math.PI*2,step=Math.PI/LANDMARK_ROWS,up=new Vector3(0,1,0),cache=new Map();let cachedSeed,arrivals=[];
@@ -10,7 +14,7 @@ const latitude=row=>-Math.PI/2+(row+.5)*step;
 export const landmarkColumns=row=>Math.max(3,Math.round(TAU*RADIUS*Math.cos(latitude(row))/LANDMARK_SPACING));
 const wrap=(n,period)=>(n%period+period)%period;
 
-/** One quarter of one percent of loose-stone density before terrain rejection.
+/** Rare bedrock: 80% fewer candidates than the original .13 cell gate.
  * IDs and frame are invariant under camera movement, query order and LOD. */
 export function landmarkDescriptor(row,column){
   if(!Number.isInteger(row)||row<0||row>=LANDMARK_ROWS||!Number.isInteger(column))return null;
@@ -18,7 +22,7 @@ export function landmarkDescriptor(row,column){
   const columns=landmarkColumns(row);column=wrap(column,columns);const key=`${row}/${column}`;
   if(cache.has(key))return cache.get(key);
   let descriptor=null;
-  if(hash(column,row,70311)<.13){
+  if(hash(column,row,70311)<LANDMARK_CELL_CHANCE){
     const lat=-Math.PI/2+(row+.3+hash(column,row,70312)*.4)*step,lon=(column+.3+hash(column,row,70313)*.4)/columns*TAU;
     const direction=new Vector3(Math.cos(lat)*Math.cos(lon),Math.sin(lat),Math.cos(lat)*Math.sin(lon));
     // Standard biome arrivals must remain clear for every supported world seed.

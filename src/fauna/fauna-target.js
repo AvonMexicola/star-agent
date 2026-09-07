@@ -1,5 +1,13 @@
 import * as THREE from 'three';
 
+/** Conservative footprint for movement; attack rays remain unexpanded. */
+export function faunaMovementBounds(entity,size,eyeHeight=.65){
+  return {radius:Math.hypot(size.width/2,size.length/2),envelope:{
+    min:[-size.width/2,-eyeHeight,-size.length/2],
+    max:[size.width/2,size.height-eyeHeight,size.length/2],orientation:faunaOrientation(entity),
+  }};
+}
+
 /** Metre-scale math is performed after subtracting the double-precision anchor. */
 export function faunaOrientation(entity){
   const up=new THREE.Vector3(...entity.normal).normalize();

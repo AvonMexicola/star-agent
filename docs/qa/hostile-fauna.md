@@ -1,7 +1,8 @@
 # Hostile fauna integration record
 
-Development candidate on `feat/pyrebear`; local integration, Suloher controller
-journey and final visual acceptance remain pending. The complete Pyrebear route
+Development candidate on `feat/pyrebear`; checkpoint5a3cf0b is included in local
+`dev/all-features` promotion2f3249f. The complete Suloher controller journey now passes; final actual-world visual
+acceptance remains pending. The complete Pyrebear route
 has passed against a frozen production build. This record is updated as
 checks finish; the asset receipt is in [pyrebear-asset.md](pyrebear-asset.md).
 
@@ -39,8 +40,8 @@ safely downed for retry. Quick-slot medical items use the existing loadout rules
   SA-AUD-002 separately supplies species attack synthesis in local dev.
 - Independent integration review caught slope-normal versus radial dev transit,
   clone skeleton texture disposal, gait-speed mismatch, unobstructed HUD ray,
-  high-altitude unloading and failed-load cleanup. These are corrected; rerun
-  and final reviewer confirmation are pending.
+  high-altitude unloading and failed-load cleanup. These are corrected and independently rechecked; the final browser
+  route and full visual review remain pending.
 - First Chromium attempt reached a renderer crash during navigation, PID2788072,
   SIGTRAP at18:20:33CEST, and Playwright reported write errno-122. Unlike the
   previously diagnosed Crashpad startup crash, this had a renderer process and
@@ -75,9 +76,9 @@ AMD Radeon860M / ANGLE GLES3.2,1280×800; no page/console/shader errors. Screens
 are captured at40m and prove behavior, not close art acceptance. That run used
 the initial corpse export; corrected clips require their separate final capture.
 
-The corrected authoring exports are bear `30afc5a9459538fbab2954a38369f42df25ecfde032d7b819f60bf1e1f8639e6`
+The first corrected authoring checkpoint used bear `30afc5a9459538fbab2954a38369f42df25ecfde032d7b819f60bf1e1f8639e6`
 and dog `413335683e7f35484637622a4ae203613014f328f46dc7f32eda9071c5ef0f87`.
-Scoped independent pose review is4/5, with dense measured skin intersections
+At that checkpoint the first scoped pose review was4/5, with measured skin intersections
 25.65mm/12.60mm under an explicit30mm authoring tolerance. These are authored
 collapses, not physics ragdolls. Whole-scene visual acceptance remains pending.
 
@@ -106,3 +107,46 @@ run separately reports30 passing individual cases. Final dog-only pose export
 is `58e0ea69a08c5f49adc76fa546dae794ab7b797c44c223591d4b2a3dbf0f3928`,
 with unchanged original walk/skin/materials and scoped corpse score4/5.
 The full independent report retains the earlier3/5 dog rejection.
+
+## Corrected controller rerun
+
+The first post-footing Suloher rerun physically landed, exited and approached
+the same deterministic creature. It advanced at4m/s and successfully bit the
+player, confirming the earlier5.698m stop was fixed in actual gameplay. The
+2.5-minute trial then failed a fixture assertion: after consuming a bandage,
+a later bite reduced health back to92 before the final snapshot. The existing
+bandage transaction heals15 and stops bleeding; the fixture now observes that
+state and quantity decrement while the controller action executes, rather than
+requiring health to remain elevated through a subsequent hostile attack.
+`failure-bandage-race.json` retains the failing trial in ignored evidence.
+No runtime or asset modification accompanied this test correction.
+
+The corrected Suloher route passed in3.4minutes with injected standard Gamepad:
+physical landing/seat exit/hatch/ramp and terrain approach, real bite, quick-slot
+bandage healing/bleeding clear, right-stick aim, three carbine hits, held death,
+close corpse, Menu/held-RT suppression, physical approach to a second creature,
+downing, B cannot escape medical lock, A evacuates to Aeon orbit with100health
+and identical inventory. Chromium151.0.7922.173, AMD860M ANGLE GLES3.2,1280×800;
+no page/console/shader errors. This tested the final58e dog asset and5a3cf0b
+runtime. Root inspected the close corpse image; its steep top-down framing is
+gameplay evidence, not the final art composition. Physical hardware remains
+untested. Final close-world art/motion capture is a separate pending check.
+
+
+## Settled Pyrebear contact follow-up
+
+The previous actual-world Pyrebear capture showed broad burial while terrain
+was still streaming. CPU skin replay found only millimetre-scale intersections
+against canonical terrain; the agent retained that failed evidence rather than
+raising the model. The corrected fixture pauses the encounter until Pyre is
+ready. A settled but unlit capture was too dark to judge, so the final bounded
+repeat used the real suit flashlight via L.
+
+That final bear-only case passed in 1.4 minutes on the unchanged 5a3cf0b build
+and 30afc5a9 asset: LOD17, ready=true, zero pending/morphing patches and zero
+browser errors. Root and the independent reviewer personally inspected the
+full head and forelimbs visibly above the settled surface. The earlier severe
+burial finding is resolved for this scoped view; continuous animation and
+complete night-lighting/art acceptance remain separate. See the
+[independent review](hostile-fauna-independent-review.md) and
+[browser ledger](aeon-fauna-browser.md) for retained failures and exact evidence.

@@ -1,6 +1,8 @@
 # Hostile fauna — independent asset review
 
-**Latest scoped update:** the published dog pose revision below resolves the earlier corpse-readability finding to **4/5**. Full game and motion acceptance remains open. The original review and its 3/5 score are retained as historical evidence.
+**Latest runtime follow-up:** settled-terrain capture with the actual player flashlight resolves the earlier severe Pyrebear corpse burial in the inspected frame. Earlier failed/dark receipts remain below; continuous motion and broader lighting acceptance are not implied.
+
+**Earlier scoped update:** the published dog pose revision below resolves the earlier corpse-readability finding to **4/5**. Full game and motion acceptance remains open. The original review and its 3/5 score are retained as historical evidence.
 
 ## Original export review (superseded dog pose)
 
@@ -79,3 +81,39 @@ I first inspected the isolated candidate's side and oblique PNGs, comparing them
 These are author-captured Blender 5.2 Cycles CPU studio renders, 800×600, 12 samples and four threads, not my own captures or game evidence. I used no browser/GPU. The current manifest reports a 121-sample death minimum of **−25.372mm**, within the authored 30mm tolerance, and the motion validation ledger reports continuity and limb-length checks. I read those results but did not independently rerun deformation sampling. This is neither perfect ground contact nor a ragdoll claim.
 
 **Disposition:** accept this bounded final-pose correction. The old corpse-readability finding is resolved for these stills. No complete six-criterion mean is awarded: actual planetary lighting, terrain contact, gait at chase speed, arbitrary-phase death blending and continuous final-export motion remain applicable and unverified. The earlier partial studio scores cannot substitute for that full acceptance gate. No assets or runtime files were changed by this follow-up.
+
+
+## Actual-terrain corpse follow-up — rejected Pyrebear capture
+
+I personally inspected both species' `motion-start`, `motion-1` and `motion-3.2` PNGs in `test-results/fauna-evidence`, and read their `*-art.json` state receipts. These are root-captured actual-game frames, not my captures. Final GLB hashes independently rechecked: bear `30afc5a9459538fbab2954a38369f42df25ecfde032d7b819f60bf1e1f8639e6`; dog `58e0ea69a08c5f49adc76fa546dae794ab7b797c44c223591d4b2a3dbf0f3928`. The inspected final PNG hashes are bear `ba214d85eb3216a74db11325242426378c10aded8c69be929adcc3f79e70a02d` and dog `58ba840f5d41b3b15c72c28a4807a1d1b8503556e23c661acacf9648ca4c55b6`.
+
+**Blocking finding: the bear corpse is visibly buried through much of its body in the captured Pyre surface.** Its back/plates and parts of the limbs protrude while the terrain hides its low head and underside. Actual lighting/integration for this captured result scores **2/5**, below the acceptance floor. The previous 4/5 studio pose score is retained historically and cannot approve this game result. Dog's settled corpse remains visibly identifiable, with its lowered head and splayed limbs readable against Miasma; scoped corpse integration is **4/5** in this view. Neither sequence of sparse frames earns a complete continuous-motion score.
+
+I wrote and ran an isolated Node CPU diagnostic, `test-results/fauna-ground-diagnostic.mjs` (results: `fauna-ground-diagnostic.jsonl`). It parses the exact runtime GLBs with Three.js GLTFLoader, replaces materials only to avoid browser image decoding, evaluates the final death animation, updates skeleton matrices and transforms every skinned vertex with the runtime `faunaOrientation` and recorded entity world position. Canonical clearance is radial world distance minus body radius minus `pyreSurfaceBody(toPyreBody(direction))` or `miasmaSurface(direction)`. Positions remain JavaScript doubles. This is an independent replay of final-pose grounding, not a claim that I independently authored or reviewed my own habitat implementation.
+
+| CPU result | Pyrebear | Suloher |
+| --- | ---: | ---: |
+| Evaluated skinned vertices | 9,853 | 10,947 |
+| Final local minimum Y | −25.638mm | −25.373mm |
+| Recorded origin clearance above canonical terrain | −0.00068mm | −0.00136mm |
+| Worst skinned-vertex canonical clearance | −19.725mm | −25.395mm |
+| Vertices below canonical terrain | 6 | 97 |
+| Vertices more than 30mm below canonical terrain | 0 | 0 |
+| Median canonical clearance | 310.402mm | 173.801mm |
+
+**The replay rules out substantial final-pose burial against the canonical terrain at these recorded anchors.** It does not justify lifting the asset or inventing another floor. The source pose's small measured contact intersections agree with the earlier authored tolerance; they cannot explain the broad visible occlusion.
+
+A concrete distinguishing state is terrain convergence: Pyre's receipt reports `ready=false`, LOD13, 63 pending patches and 28 morphing patches. Miasma reports `ready=true`, LOD17, zero pending and zero morphing. A mismatch between the rendered coarse/morphing Pyre surface and canonical terrain is therefore the leading explanation. This remains an inference: the recorded data do not contain the exact drawn triangle beneath each vertex, and I did not independently capture or raycast that rendered surface.
+
+**Required bounded follow-up:** preserve this failed art receipt, let terrain settle at the staged camera/target before killing and capturing, then repeat the actual-terrain view. If visible burial persists after convergence, compare the rendered triangle surface with canonical terrain directly. Do not add an arbitrary model offset to conceal the failed render. A passing scripted kill test is functional evidence, not art acceptance. This reviewer ran no browser, GPU or Blender job and changed no runtime/asset/helper files for this diagnosis.
+
+
+## Independent settled-terrain and flashlight resolution
+
+I operated the final two bounded bear recaptures against the restored exact older5516 preview, without changing terrain, asset or placement code. The first settled capture passed its functional script in1.3minutes, with LOD17/ready=true/zero pending/zero morphing, but was too dark to judge ground contact confidently. That dark receipt remains in `test-results/fauna-evidence/settled2-c8162`. An earlier unavailable-preview attempt failed before application load and is separately retained; it was not an art failure.
+
+The final capture passed in1.4minutes using the actual **L-key player flashlight**. The fixture asserts `navigation.flashlightOn===true`; its JSON records flashlightOn=true and errors[]. Pre-action and final Pyre receipts both show ready=true,LOD17,pending0,morphing0. Browser Chromium151.0.7922.173; AMD Radeon860M / ANGLE OpenGL ES3.2; final1280×800 viewport/drawing buffer at renderScale1. UI checks additionally capture1440×900 and390×844; these are different viewport captures, not a1440×900 performance baseline.
+
+I personally inspected `test-results/fauna-evidence/settled-flashlight/pyrebear-motion-3.2.png`, SHA256 **`908e4e9739f6fa759f5df0c2b34b33c533d216bddd2d82763e1af2412713db06`**. The lowered head, forelimbs and claws are now visibly above the settled terrain; the previous broad clipping through the head/body is absent. **Scoped corpse integration/contact in this flashlight-lit frame:4/5**, resolving the earlier severe-burial finding for this bounded result. No arbitrary ground offset or asset deformation was needed. This agrees with the earlier CPU result that the exact final corpse was already within small authored contact tolerance against canonical terrain.
+
+The earlier coarse/morphing screenshot remains a real failed visual receipt; it is not retrospectively relabeled a pass. The new evidence supports waiting for terrain convergence in this art fixture, not a claim that moving/streaming terrain can never occlude animals. The surrounding night terrain remains very dark and the weapon is brightly lit; broader exposure/lighting behavior is not approved by this contact score. No continuous-video judgment, perfect terrain adaptation, ragdoll physics or six-criterion whole-feature mean is claimed. See [browser verification ledger](aeon-fauna-browser.md) for exact trials, identities and GPU release.

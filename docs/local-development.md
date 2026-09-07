@@ -149,12 +149,13 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
 | Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Layered landmark grain, relief and seeded weathering/mineral variation | `art/landmark-weathering` runtime `4f9d472`, reviewed images `f88c497` |
+| Sparser giant landmarks with quieter, cheaper stone shading (supersedes the first weathering pass) | `art/landmark-restraint` runtime `bb75c4c`, checked source `92dadad`, locally combined at `6e548ad`; [images and measured limits](qa/landmark-restraint/README.md) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Footsteps, weapons, mining, thrust-responsive engines and spatial flybys | `feat/gameplay-audio` at `5a128f3`, construction/fauna audio through `6d3abb0` |
 | Expedition character, corrected hips, hands, animations and studio | Preserved owner checkpoint `0bb6a6a`; combined local/remote binding in `3bd7d61` |
 | Burrow twin-cutter rover aboard Atlas, offline development start | `feat/meridian-mining-rover` through `643a7d3` |
 | Finite ship momentum, combat/cruise mode and moving muzzle effects | `fix/combat-momentum` through `6f8b195`; controls explanation `f5c6933` |
-| Hostile Pyrebear and Sulphurhound habitats, shots, bites and medical recovery | `feat/pyrebear` through `5a3cf0b` |
+| Pyrebear/Sulphurhound habitats and medical recovery; Aeon Tidebacks/Mallow; repaired deer studio asset | `feat/pyrebear` reviewed `e904192`, combined wildlife `c160ece`, local runtime `c4f6b5b`; [combined wildlife QA](qa/wildlife-integration.md) |
 | Atlas Mark II geometry/gear checkpoint and review, studio only | `feat/atlas-fleet-refresh` at `0b2d852` |
 | Aeon exterior geometry preview and review, opt-in | `feat/station-exterior` at `9d0728f` (draft PR #55) |
 
@@ -163,7 +164,7 @@ materials, character performance, rover art/keyboard/touch and fauna
 full motion/touch acceptance remain open. The rover's complete injected-controller
 mining/return/flight-carriage journey passed on its source checkpoint. Rover, construction and wildlife use offline
 state; they are not new multiplayer replication features. The unprovided shop
-jacket and the separately started deer repair are not installed content. See the
+jacket is not installed content. The deer is available in the rig viewer only. See the
 [combined review record](qa/dev-content-review.md) for exact validation and limits.
 Read shared HANDOFF.md and feature heads before updating this table.
 
@@ -334,3 +335,40 @@ Moving rifle pulses and ship lasers follow the actual muzzle. Ballistic shots
 inherit launch velocity; collision and lead prediction use that trajectory.
 [Momentum QA](qa/combat-momentum.md) records the exact checked source, failures,
 evidence and limits. This is a local development checkpoint, not release approval.
+
+
+### Integrated creature development checkpoints
+
+The development build includes offline Pyrebear and Suloher encounters. With development
+tools enabled, use Test starts → Pyrebear habitat or Suloher habitat, land, exit
+the ship physically, and approach wildlife. Carbine/pistol rounds use the real
+loadout; Pyrebear has 240 HP and Suloher 90 HP. Both have authored walk/death clips.
+Both Pyrebear and corrected Suloher controller journeys passed. The Suloher
+route includes biting, bandage use and inventory-preserving medical evacuation.
+Final actual-world motion/art review remains pending. These checkpoints are not a claim of
+complete gameplay acceptance. See [hostile fauna QA](qa/hostile-fauna.md).
+
+The supplied deer has a repaired, calmer walk and preserved skin/bind rig. On a
+Vite development server, open `/scripts/fixtures/creature-rig.html?model=deer`
+for an orbitable animation preview. This is an asset viewer; deer spawning is
+not implemented. The [deer repair record](qa/deer-rig.md) retains source, Blender
+file, exact export identity and before/after evidence. Reuse the
+[creature pipeline](development/creature-pipeline.md) for future animals.
+Hostile checkpoint `5a3cf0b` was included in local promotion `2f3249f`. Deer
+checkpoint `b3eedc0` and the later reviewed wildlife source `e904192` are now
+integrated at local runtime `c4f6b5b`.
+
+
+The development launcher includes **Aeon · Tideback beach** and
+**Aeon · Mallow grassland** to Test starts. Tidebacks inhabit dry low coastland
+and retaliate after injury; the large Mallow grazers inhabit grassland and flee
+instead of attacking. Both use the existing ammunition, health and animation
+systems. These are offline, session-local encounters. See the
+[Aeon wildlife record](qa/aeon-wildlife.md) for exact habitat and validation scope.
+Refresh http://localhost:5178/ and press **F2** to open the ship/location launcher.
+Select Nomad and either named Aeon habitat, then launch, land and walk out of the
+ship. Both combined physical controller encounters pass, including the grazer
+terrain-edge retreat fix. The repaired deer viewer is also served by this local
+build. See [integration evidence and captures](qa/wildlife-integration.md).
+Animals remain offline and session-local; public hosting was not updated by this
+integration.
