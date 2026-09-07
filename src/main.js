@@ -563,7 +563,11 @@ try {
     if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
     if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
-    if(rover?.occupied&&!pad.shortcuts?.size){if(pad.pressed.has(8))rover.openCargo();return;}
+    if(rover?.occupied&&!pad.shortcuts?.size){
+      if(pad.pressed.has(9))gameplayMenu.open();
+      else if(pad.pressed.has(8))rover.openCargo();
+      return;
+    }
     trading.tractor.controller(pad);controllerUI.update(pad,dt);flightEffects.controller(pad);
   };
   const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();gameplayMenu.open('ship');});document.querySelector('.menu-actions').append(systemsHelp);

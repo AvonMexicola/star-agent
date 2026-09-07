@@ -55,7 +55,9 @@ test('burrow: choose the surface start, mine, drive, inspect ore and physically 
   await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed,null,{timeout:120000});
   await tap(page,9);await choose(page,'tab-dev');await choose(page,'dev-location-rover-surface');
   await focus(page,'dev-launch');
-  await held(page,0,true);await page.waitForURL(/start=rover-surface/);
+  // Confirm causes a real navigation; do not wait for frames in the old page.
+  await page.evaluate(()=>window.reviewPad.buttons[0]={pressed:true,value:1});
+  await page.waitForURL(/start=rover-surface/);
   await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.rover?.occupied&&window.starAgent.state.controller.armed,null,{timeout:120000});
   const start=await state(page);expect(start.body).toBe('selene');expect(start.rover.aboard).toBe(false);
   expect(start.rover.wheels.every(w=>w.source==='terrain')).toBe(true);
@@ -74,6 +76,7 @@ test('burrow: choose the surface start, mine, drive, inspect ore and physically 
   await capture(page,'burrow-ground-exit');await neutral(page);await tap(page,2);
   await page.waitForFunction(()=>window.starAgent.state.rover.occupied&&!window.starAgent.state.rover.busy,null,{timeout:20000});
   await neutral(page);await tap(page,9);
+  await expect(page.locator('dialog[open]')).toHaveCount(1);
   await held(page,7,true);await tap(page,1);await frames(page,12);
   expect((await state(page)).controller.armed).toBe(false);expect((await state(page)).rover.beaming).toBe(0);
   await held(page,7,false);await neutral(page);
