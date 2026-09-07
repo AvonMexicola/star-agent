@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { DistantMeadow } from './distant-meadow.js';
 import { Meadow } from './meadow.js';
-import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createBranchGeometry, createNeedleTexture, addFoliageWind, createTreeImpostor } from './foliage.js';
 import { createSurfaceTexture } from './surface-materials.js';
 import { RADIUS, terrainHeight, biomeAt, hash } from './world.js';
@@ -14,7 +13,6 @@ const TAU = Math.PI * 2;
 const UP = new THREE.Vector3(0, 1, 0);
 const TREE_LIMIT = TREE_LODS[0].capacity;
 const GRASS_LIMIT = 6000;
-const ROCK_LIMIT = 600;
 
 export function treeVariant(col,row,latitude,height) {
   const choice=hash(col,row,1259),cold=Math.abs(latitude)>.57||height>1400;
@@ -103,28 +101,14 @@ export class Vegetation {
     });
     this.treeMeshes=[0,1,2].map(level=>this.treeSets.flatMap(set=>set.meshes[level]));
     this.grass = this.makeMesh(grassGeometry(), { color: 0xffffff, roughness: 1, side: THREE.DoubleSide }, GRASS_LIMIT);
-    const rockSource = new THREE.IcosahedronGeometry(.5, 2);
-    rockSource.deleteAttribute('normal');
-    const rock = mergeVertices(rockSource);
-    rockSource.dispose();
-    const points = rock.getAttribute('position');
-    for (let i = 0; i < points.count; i++) {
-      const x = points.getX(i), y = points.getY(i), z = points.getZ(i);
-      const displacement = 1 + .13 * Math.sin(x*17+y*11) * Math.cos(z*13-x*9);
-      points.setXYZ(i,x*displacement,y*displacement,z*displacement);
-    }
-    rock.computeVertexNormals();
-    rock.translate(0, .24, 0);
     this.meadow = new Meadow(scene, this);this.distantMeadow=new DistantMeadow(scene,this);
-    this.rocks = this.makeMesh(rock, { color: 0xffffff, roughness: .9, bumpMap: this.surfaceTexture, bumpScale: .055 }, ROCK_LIMIT);
+    // Loose stones are rendered and persisted by MiningField.
     for(const mesh of this.treeMeshes.flat()) {
       addVegetationFade(mesh.material,this.lodCamera,this.windTime);
       if(mesh.customDepthMaterial)addVegetationFade(mesh.customDepthMaterial,this.lodCamera,this.windTime);
     }
     addVegetationFade(this.grass.material,this.lodCamera,this.windTime,[90,110]);
-    addVegetationFade(this.rocks.material,this.lodCamera,this.windTime,[240,280]);
-    this.rocks.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking});
-    addVegetationFade(this.rocks.customDepthMaterial,this.lodCamera,this.windTime,[240,280]);
+
   }
 
   makeMesh(geometry, materialOptions, capacity) {
@@ -196,7 +180,7 @@ export class Vegetation {
     }
     if(altitude<320&&(this.exclusionDirty||worldPosition.distanceToSquared(this.lastDetails)>20**2)){
       this.lastDetails.copy(worldPosition);this.rebuildDetails(worldPosition.clone().normalize());
-    } else if(altitude>=320){this.grass.count=this.rocks.count=0;this.stats.grassTufts=this.stats.rocks=0;this.lastDetails.set(Infinity,Infinity,Infinity);}
+    } else if(altitude>=320){this.grass.count=0;this.stats.grassTufts=this.stats.rocks=0;this.lastDetails.set(Infinity,Infinity,Infinity);}
     this.exclusionDirty=false;
     this.lodCamera.value.copy(worldPosition).sub(this.origin);
     this.group.position.copy(this.origin).sub(renderOrigin);
@@ -287,36 +271,15 @@ export class Vegetation {
   }
 
   rebuildDetails(direction) {
-    const center=direction.clone(),nextCache=new Map();let grassTufts=0,rocks=0;
-    const sample=(key,x,y,z)=>{
-      let record=this.detailCache.get(key);
-      if(!record)record={h:terrainHeight(x,y,z),born:this.windTime.value};
-      nextCache.set(key,record);return record;
-    };
-    this.scatter(center, 300, 25, 3011, (x, y, z, col, row, a, b) => {
-      if (rocks >= ROCK_LIMIT || a > .45 || this.isExcluded(x, y, z)) return;
-      const record=sample(`rock/${col}/${row}`,x,y,z),h=record.h;
-      if (h < .5) return;
-      const biome = biomeAt(x, y, z, h);
-      if (biome === 'POLAR ICE') return;
-      const size = .5 + b * b * 3.5;
-      this.place(this.rocks, rocks, x, y, z, h - .07, size, size * (.5 + a), size * (.65 + b * .5), a * TAU);
-      const shade = .23 + b * .17;
-      this.color.setRGB(shade, shade * 1.025, shade * .96);
-      this.rocks.geometry.attributes.instanceBirth.setX(rocks,record.born+a*.2);
-      this.rocks.setColorAt(rocks++, this.color);
-    });
-
-    this.grass.count=grassTufts;this.rocks.count=rocks;this.detailCache=nextCache;
-    this.upload(this.grass);this.upload(this.rocks);
-    Object.assign(this.stats,{grassTufts,rocks});
+    this.grass.count=0;
+    this.upload(this.grass);
+    Object.assign(this.stats,{grassTufts:0,rocks:0});
   }
 
   dispose() {
     this.stream.dispose();
-    this.rocks.customDepthMaterial.dispose();
     this.meadow.dispose();this.distantMeadow.dispose();
-    for (const mesh of [...this.treeMeshes.flat(), this.grass, this.rocks]) {
+    for (const mesh of [...this.treeMeshes.flat(), this.grass]) {
       mesh.geometry.dispose();
       mesh.material.dispose();
       mesh.dispose();

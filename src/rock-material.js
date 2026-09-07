@@ -5,7 +5,7 @@ let shared = null;
 export function rockTextureState() {
   return { ready: shared?.ready.value === 1, error: shared?.error ?? null };
 }
-function acquireTextures() {
+export function acquireRockTextures() {
   if (shared) { shared.users++; return shared; }
   const placeholder = (data, space = THREE.NoColorSpace) => {
     const texture = new THREE.DataTexture(new Uint8Array(data), 1, 1);
@@ -42,7 +42,7 @@ function acquireTextures() {
   }
   return state;
 }
-function releaseTextures(state) {
+export function releaseRockTextures(state) {
   if (--state.users > 0) return;
   state.disposed = true;
   for (const channel of ['albedo', 'normal', 'roughness']) state[channel].value.dispose();
@@ -71,7 +71,7 @@ const fragment = `
 /** Overlay only canonical rock relief, including flat caps. Texture coordinates
  * are the existing CPU-rebased 256 m phase; 2/8/64 m periods divide it exactly. */
 export function attachRockMaterial(material, { pointAttribute, tint = [1, 1, 1] }) {
-  const maps = acquireTextures(), previous = material.onBeforeCompile, cacheKey = material.customProgramCacheKey();
+  const maps = acquireRockTextures(), previous = material.onBeforeCompile, cacheKey = material.customProgramCacheKey();
   material.onBeforeCompile = (shader, renderer) => {
     previous.call(material, shader, renderer);
     Object.assign(shader.uniforms, { rockAlbedoMap: maps.albedo, rockNormalMap: maps.normal,
@@ -114,5 +114,5 @@ export function attachRockMaterial(material, { pointAttribute, tint = [1, 1, 1] 
   };
   material.customProgramCacheKey = () => `${cacheKey}-outcrop-pbr-v1`;
   let disposed = false;
-  return () => { if (!disposed) { disposed = true; releaseTextures(maps); } };
+  return () => { if (!disposed) { disposed = true; releaseRockTextures(maps); } };
 }
