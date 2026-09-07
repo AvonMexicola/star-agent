@@ -32,3 +32,7 @@ test('seated and cabin access works without a parked origin, crashed access neve
   assert.equal(shipCargoAccess({mode:'crashed',insideShip:true}).available,false);
   assert.equal(shipCargoAccess({mode:'unknown',position:point(),shipPosition:point()}).available,false);
 });
+test('a hull without a hold and a stellar-destroyed hull cannot expose cargo',()=>{
+ for(const mode of ['flight','landed','walk','eva'])assert.equal(shipCargoAccess({shipId:'kestrel',mode,insideShip:true,position:point(),shipPosition:point()}).available,false);
+ assert.equal(shipCargoAccess({mode:'destroyed',insideShip:true}).available,false);
+});

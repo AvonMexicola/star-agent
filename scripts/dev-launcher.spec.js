@@ -47,7 +47,7 @@ test('controller selects ship and destination, launches, reopens and suppresses 
  const focus=async key=>{for(let i=0;i<80;i++){if(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)===key)return;await press(13);}throw Error('Controller did not reach '+key);};
  await page.goto('/?seed=7291');await ready(page);await frames(page);
  await focus('dev-ship-kestrel');await press(0);await focus('dev-location-orbit');await press(0);await focus('dev-launch');
- await button(0,true);await page.waitForURL(/dev=1/);await ready(page);await frames(page);
+ await Promise.all([page.waitForURL(/dev=1/,{waitUntil:'domcontentloaded'}),page.evaluate(()=>window.devPad.buttons[0]={pressed:true,value:1})]);await ready(page);await frames(page);
  expect((await state(page)).shipId).toBe('kestrel');expect((await state(page)).body).toBe('aeon');
  await page.waitForFunction(()=>window.starAgent.state.controller.armed);await press(9);await expect(page.locator('#controller-menu')).toBeVisible();
  await focus('dev-launcher');await press(0);await expect(page.locator('#dev-launcher')).toBeVisible();await page.screenshot({path:out+'/launcher-controller.png'});
@@ -57,9 +57,36 @@ test('controller selects ship and destination, launches, reopens and suppresses 
  await page.evaluate(()=>window.devPad.axes[1]=-1);await page.waitForFunction(()=>window.starAgent.state.speed>1);await page.evaluate(()=>window.devPad.axes[1]=0);expect(errors).toEqual([]);
 });
 
-test('phone launcher remains readable and launches by touch',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/?seed=7291');await ready(page);
+test.describe('phone',()=>{
+test.use({hasTouch:true,viewport:{width:390,height:844}});
+test('launcher remains readable and launches by touch',async({page})=>{
+ const errors=errorsFor(page);await page.goto('/?seed=7291');await ready(page);
  await page.screenshot({path:out+'/launcher-phone.png'});
  expect(await page.locator('#dev-launcher').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
- await choose(page,'nomad','hangar');await expect(page.locator('#dev-launch-button')).toBeVisible();await page.locator('#dev-launch-button').click();await expect(page.locator('#dev-launcher')).toBeVisible();
+ await page.locator('[data-controller-key="dev-ship-nomad"]').tap();await page.locator('[data-controller-key="dev-location-hangar"]').tap();
+ await page.locator('[data-controller-key="dev-launch"]').tap();await ready(page);await expect(page.locator('#loading')).toHaveCSS('opacity','0');
+ expect((await state(page)).shipId).toBe('nomad');expect((await state(page)).dev.open).toBe(false);
+ await expect(page.locator('#dev-launch-button')).toBeVisible();await page.locator('#dev-launch-button').tap();await expect(page.locator('#dev-launcher')).toBeVisible();expect(errors).toEqual([]);
+});
+});
+
+test('Kestrel has no hidden construction cargo; map labels, soundtrack and refreshed Atlas studio are usable',async({page})=>{
+ const errors=errorsFor(page);await mkdir(out,{recursive:true});
+ await page.goto('/?dev=1&ship=kestrel&start=hangar&intro=0&seed=7291');await ready(page);await expect(page.locator('#loading')).toHaveCSS('opacity','0');
+ const s=await state(page);expect(s.shipId).toBe('kestrel');
+ expect(Object.values(s.containers.containers.find(c=>c.id==='ship').items).every(q=>q===0)).toBe(true);
+ expect(s.containers.shipAccess.available).toBe(false);expect(s.audio.created).toBe(false);
+ await page.keyboard.press('M');await expect(page.locator('#system-map')).toHaveCSS('opacity','1');await frames(page);
+ await expect(page.locator('[data-travel-target="star"] small')).toHaveText('STAR');await expect(page.locator('[data-travel-target="miasma"] small')).toHaveText('MOON');
+ for(const [id,name] of [['aeon','Aeon'],['selene','Selene'],['pyre','Pyre'],['star','Our star'],['miasma','Miasma']]){
+   await page.locator('[data-travel-target="'+id+'"]').click();await expect(page.locator('#map-target-name')).toContainText(name);
+ }
+ expect(errors).toEqual([]);
+ await page.screenshot({path:out+'/system-map-final.png'});await page.keyboard.press('M');await page.keyboard.press('H');
+ await page.locator('#sound-button').click();await page.waitForFunction(()=>window.starAgent.state.audio.music?.time>0,null,{timeout:20000});
+ expect((await state(page)).audio.music.failed).toEqual([]);await page.locator('#sound-button').click();expect((await state(page)).audio.enabled).toBe(false);await page.locator('#close-help').click();
+ await page.keyboard.press('F2');await page.getByRole('link',{name:'Atlas Mark II studio'}).click();await expect(page.locator('#asset-state')).toHaveText('READY',{timeout:30000});
+ await frames(page);await page.screenshot({path:out+'/atlas-refresh-studio.png'});
+ expect(await page.evaluate(()=>window.atlasMarkIIStudio.model.getObjectByName('AtlasLandingGear')!==undefined||window.atlasMarkIIStudio.stats.triangles>0)).toBe(true);
+ await writeFile(out+'/integration-followup.json',JSON.stringify({errors,atlas:await page.evaluate(()=>window.atlasMarkIIStudio.stats)},null,2));expect(errors).toEqual([]);
 });
