@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex community station integration",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/station-hub-union",
   "base": "43fadf14b13498981082ff5052d323f573329621",
   "updated": "2026-09-08",

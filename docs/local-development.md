@@ -5,20 +5,22 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-This guide describes the fleet integration candidate through **`cee70b7`**:
-the playable 64 m Atlas, enlarged default station bays and authored exterior,
-ground-ready Burrow start, fleet particles/audio/music, roof and power systems,
-animated shopkeepers and current weapon/tool art. Combined browser acceptance,
-the community-hub union and promotion to the shared preview are still pending.
-See the [integration brief](briefs/fleet-engine-integration.md) and
-[dated QA record](qa/fleet-engine-integration.md); older receipts do not certify
-this combined candidate. Client and API must move together to **protocol 5**.
+The shared local preview at **http://127.0.0.1:5178/** is integrated at
+**`c99736f`**, with runtime **`5f63893`**: playable 64 m Atlas, enlarged default
+station and community hub, ground Burrow and Atlas/Burrow meadow starts, fleet
+particles/audio/music, roofs/lights/base power, animated shopkeepers and current
+weapon/tool art. The client and API run **protocol 5** together. The paired local
+refresh preserved the persistent PostgreSQL cluster and every existing table's
+row count, applying only the missing additive base-site migration 003.
 
-The preceding delivery recorded here was `638a5e4`, with the physical tractor
-and handheld pass on protocol 4, preserving social tools, wildlife and player
-optimisation. Its paired frontend/API refresh retained the persistent database.
-That [historical delivery evidence](qa/handheld-tools.md) remains valid for its
-own exports and journeys; this guide does not announce another shared restart.
+The complete normal suite passes 1,016 tests before the narrow meadow preset;
+its owner passes 35 focused checks and the parent passes 16. All three engine/audio
+journeys, the complete Burrow ground controller route, actual Atlas station
+boarding/departure, and normal solo/authenticated opening pass. Cees also personally
+tested loading Burrow and flying Atlas and recorded video. See the
+[dated integration evidence](qa/fleet-engine-integration.md) for exact source,
+input and acceptance limits. Public/main and multiplayer release are separately
+tracked; a local merge does not identify what a public URL serves.
 
 ## Multiplayer chat and friends
 
@@ -76,8 +78,8 @@ starts or its direct Dev link. Burrow starts seated on its four wheels beside th
 canonical Crescent outcrop; the selected ship stays parked at the station.
 WASD / left stick drives, T / RT mines, I / View opens ore bins, and F / X follows
 the real door/step exit and re-entry. This is an offline temporary test session.
-Its [CPU placement record](qa/mining-rover/surface-start.md) is separate from
-pending combined rendered acceptance. The **Atlas + Burrow mining rover · Selene**
+Its [CPU placement record](qa/mining-rover/surface-start.md) is complemented by
+the passing combined ground mining, driving and physical exit/reboard journey. The **Atlas + Burrow mining rover · Selene**
 link remains a carrier test, with Burrow on the new cargo deck and the actual
 aft loading ramp. G / Y operates that ramp while aboard; no belly lift is used.
 
@@ -102,7 +104,7 @@ retains its bases and remaining stock. The ordinary save is separate. B near an
 owned mainframe opens its wheel; LB/RB changes piece categories, A selects/places,
 LT/RT rotates, LB cycles snap and RB jumps during placement. The original kit
 includes structural shapes, storage facilities, hangar doors, ramps and S/M/L
-pads. The current candidate adds the reviewed roof skins, ceiling lights and
+pads. The current build adds the reviewed roof skins, ceiling lights and
 power kit described below; the original 21-piece count is historical.
 
 Flight now preserves momentum under finite thruster authority. V / R3 selects
