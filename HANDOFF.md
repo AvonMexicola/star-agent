@@ -2635,6 +2635,7 @@ including that narrow committed material checkpoint before the final bundle.
 Please preserve this window through explicit release. No new feature lanes or
 dirty source are being added. Shared5178 promotion follows the checked result.
 
+<<<<<<< HEAD
 SA-WORLD-002 CHECKED SOURCE READY for SA-INT-002: art/landmark-weathering
 4f9d472 (80f83b8 +4f9d472) from dev6d3abb0 is ready to consume. Runtime diff
 is ONLY src/landmark-material.js; no main/navigation/geometry/lighting/server
@@ -2659,11 +2660,14 @@ No source edits remain, independent art scoring is not claimed. On promotion,
 add a docs/local-development.md row and mark SA-WORLD-002 integrated; a shader
 source refresh is sufficient, with no database/API restart needed for this lane.
 
+=======
+>>>>>>> 801a11b
 
 SA-SOCIAL-001 ACTIVE: multiplayer chat/friends worktree is /home/cees/projects/star-agent-social, feat/multiplayer-chat-friends from4694776. Owns new server/social.js, server/social-store.js, server/chat-moderation.js, migration004-social.sql, src/multiplayer/social-ui.js/.css and focused tests/docs. Narrow isolated hooks: server/database.js, Prisma schema, server/index.js, src/multiplayer/client.js and ui.js. No room/inventory/remote-player/main/controller hooks planned. Shared5178/API8087/SQL51224 remain intact; GPU awaits explicit release. Friend requests use live callsigns/roster, not account/email search; severe abuse is blocked before broadcast and the authenticated sender is disconnected without inventory penalties.
 
 MIGRATION COLLISION FOR OWNERS: cargo currently claims002-commerce.sql/version2; base-power also currently claims002-base-sites.sql/version2. Coordinate before integration; recommend base-power003, leaving social004 reserved. Do not apply both as version2. Social owner will not change other owners' sources or services. Integration steward retains shared promotion authority.
 
+<<<<<<< HEAD
 SA-INT-002 final window extension: phone selected-tab/pagination and actual
 bundled prop/audio now pass without HTTP/console errors. Controller enters
 sandbox/build correctly; its read-only uiArmed assertion needs the debug query
@@ -2749,6 +2753,16 @@ At18:00 the fauna-art and rover-touch browser jobs were both rendering alongside
 desktop Chromium while Cees reported low FPS. Please serialize GPU jobs; our lane
 will request one focused before/after 5383 window after current rover/cargo queues.
 No browser started, no shared runtime source or processes changed by this lane.
+=======
+
+SA-SOCIAL-001 API CONTRACT: store.areFriends(accountIdA, accountIdB) -> Promise<boolean> is the authoritative predicate for protection/friend exemptions. Only an accepted mutual friendship with no block in either direction is true; self, pending, declined, removed or blocked pairs are false. server/social.js exposes the same asynchronous predicate. Block atomically deletes friendship and removes social presence/status access; the ordinary physical room roster remains public to admitted players. No turret/hub policing is part of this branch. New social methods live in server/social-store.js to minimize database.js overlap.
+
+
+SA-SOCIAL-001 NARROW ROUTER CLAIM: integration steward requested a topmost-native-dialog guard in src/gameplay-menu.js. Nested chat keyboard owns input while open; underlying Comms LB/RB or bracket shortcuts must not switch the parent underneath it. This isolated three-check hook preserves the existing shared controller router; no main/navigation edits. Browser journey will cover bumper/return neutral behavior. Core checks now pass834unit,106multiplayer (2SQL-only skips), and a separate disposable PostgreSQL run26/26 with zero skips including auth and social migration/rollback/reopen races. Browser remains queued.
+
+
+SA-SOCIAL-001 BACKEND CHECKPOINT c619dd0fd6d6006e7d94b2b11f29a56b55b1ed1a is coherent and frozen for hub dependency. Use the existing createRoom({store,...}) store: await store.areFriends(attackerAccountId, targetAccountId) supplies accepted/unblocked mutual consent; no additional room signature or social-service reference is required. This check must complete before an exempt security decision; do not cache pending friendship as accepted. Canonical locks/atomic blocks, admission queue cancellation, explicit policy and real roster IDs are covered. No global migration/service was run. UI/paging/controller/browser changes remain uncommitted and should not be consumed yet.
+>>>>>>> 801a11b
 
 
 SA-WORLD-003 GPU READY18:08UTC: inspected code is built,9landmark/server
@@ -2765,5 +2779,8 @@ Playwright job is active. Starting the reserved5383/5384 single-page before/afte
 comparison now, one worker, about3minutes. Candidatebb75c4c, frozen baseline219a584.
 Please preserve this active window until explicit release. Shared5178/API/DB
 remain untouched; this job records bounded timings without an exclusive-GPU claim.
+<<<<<<< HEAD
 
 SA-INT-002 CI VERIFIED: hosted run34149795606 at4a6f7f0 passes source/plan/multiplayer/browser/verify. Real PostgreSQL91multiplayer+3database tests pass with no skips. Production smoke passes6.4m with visible controller focus, held-stick suppression/rearming and all five map targets. Captured map/scene inspected: zero errors; SwiftShader lacks KHR_parallel_shader_compile, one recorded warning. Chromium153,1440x900 CSS,.6render scale is functional evidence only. PR68 body now records this. No owned browser/service remains; no runtime changed after the earlier local promotion.
+=======
+>>>>>>> 801a11b
