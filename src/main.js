@@ -701,7 +701,6 @@ try {
     document.body.classList.toggle('camera-engaged',shipCamera.engaged&&nav.mode==='flight');
     origin.copy(shipCamera.position);camera.position.set(0,0,0);camera.quaternion.copy(shipCamera.orientation);
     character.placeCameraRelative(origin);
-    remotePlayers.update(dt,origin);
     const fighterCockpit=nav.shipId==='kestrel'&&!shipCamera.active&&['flight','landed'].includes(nav.mode);
     const viewFov=nav.roverOccupied?76:fighterCockpit?76:52;
     if(!opening?.placeCamera(camera,origin)){
@@ -710,6 +709,7 @@ try {
       // physical PilotEye or changing ship attitude / flight direction.
       if(fighterCockpit)camera.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-.14));
     }
+    remotePlayers.update(dt,origin);
     $('reticle').style.top=fighterCockpit?`${50-50*Math.tan(.14)/Math.tan(THREE.MathUtils.degToRad(viewFov/2))}%`:'50%';
     station.update(nav.position,origin,nav.sunDirection,dt);
     travelEffects.update(nav.enabled?dt:0,nav,camera);

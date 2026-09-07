@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { authRequest, consumeResetToken, inventoryCommand, inventoryRows, normalizeMultiplayerState, signOutSession, validateAuth } from '../src/multiplayer/ui.js';
 import { FreighterSystems } from '../src/freighter-layout.js';
 import { createShipMFDs } from '../src/ship-mfd.js';
-import { applyAuthoritativePeer, MultiplayerClient, reviveTravel, websocketURL } from '../src/multiplayer/client.js';
+import { applyAuthoritativePeer, MultiplayerClient, reviveTravel, websocketURL, navigationInput } from '../src/multiplayer/client.js';
 
 test('auth validation enforces callsigns and 12–128 Unicode-character passwords without real-name fields', () => {
   assert.match(validateAuth('register', { email: 'pilot@example.test', callsign: 'bad space', password: 'twelve-chars!' }), /Callsign/);
@@ -257,4 +257,14 @@ test('authoritative Atlas reconciliation carries real ramp, crew lift and gear s
   assert.equal(nav.freighter.elevator.id,'crew');
   applyAuthoritativePeer(nav,{freighter:[{id:'main',y:0,target:0}]});
   assert.deepEqual(nav.freighter.snapshot,snapshot,'retired elevator arrays cannot reintroduce a platform');
+});
+
+
+test('the multiplayer shoulder opening holds server intent until the player takes control',()=>{
+  const nav={enabled:true,focused:true,openingActive:true,mode:'walk',keys:new Set(['KeyW','Space','KeyT'])};
+  const pad={forward:1,strafe:.5,yaw:.4,mine:1,jump:true};
+  const input=navigationInput(nav,pad,{mouseYaw:.2,fire:true});
+  assert.ok(Object.values(input).every(v=>v===0||v===false));
+  nav.openingActive=false;
+  assert.equal(navigationInput(nav,pad).forward,1);
 });
