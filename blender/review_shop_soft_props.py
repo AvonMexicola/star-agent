@@ -1,6 +1,6 @@
 """Read-only GLB inspection with three labelled Blender studio renders.
 
-blender -b --python blender/review_shop_soft_props.py -- \
+env ALSOFT_DRIVERS=null blender -b --python-exit-code 1 --python blender/review_shop_soft_props.py -- \
     --source assets/path/source.glb --out /tmp/soft-prop-studio
 
 The source is never exported or saved. Import orientation, geometry and PBR maps

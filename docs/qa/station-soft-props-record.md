@@ -1,7 +1,6 @@
 # Meshy shop soft props — production record
 
-**Uploads fixed; two native GLB exports explicitly approved and attempted, but Chromium blocked both downloads. Candidates remain unaccepted pending local review. No downloaded model, runtime integration, measured asset budget or
-new visual acceptance is claimed.** The existing reviewed shops are unchanged.
+**User-selected KESTREL downloaded, inspected and optimized; isolated runtime candidate under review. Jacket not downloaded. No new merge or deployment claimed.** The existing reviewed shops are unchanged.
 Work is isolated in `/tmp/star-agent-retail-props`, `feat/retail-soft-props`, based
 on the reviewed shop proceedings46b978f. The saved [brief](../../assets/station-shop/soft-props/brief.json)
 contains exact original prompts, counter support heights and dimensions.
@@ -320,3 +319,28 @@ audio warnings, then lingered after writing its completed report; root terminate
 only this smoke process. A clean Blender process exit is not claimed. Python
 syntax, all prop-receipt JSON and git whitespace checks pass; no new game build
 or browser/performance test was warranted for this utility-and-record change.
+
+## Manual KESTREL delivery and measured runtime candidate — 2026-09-07
+
+Cees downloaded the versions they judged acceptable. The new KESTREL filename
+matched the intended native export; exact header, length, SHA and mesh/material
+counts were verified. Only that current file was copied from Downloads. An older
+kestrel_meshy_clean GLB measured34,768 triangles and was not substituted. The
+requested jacket was not found; clarification was requested while roll work
+continued. Historical browser failures remain in their original receipts.
+
+`manual-import-receipt.json` records source 5,253,528 bytes / 4,145 triangles and
+runtime 268,872 bytes / 4,000 triangles, one material and all three WebP PBR maps.
+Blender source and processed views were inspected from front, rear and underside.
+The source is coherent, with complete underside and continuous straps. Minimal
+cleanup preserves the folds and buckles; runtime 1024px weave is less detailed
+than source 2048px textures. Uniform dimensions are .279×.130×.291m. This is
+small decorative counter stock, not a new purchasable/inventory item.
+
+The optional resource loader now enables KESTREL alone, attaches once under
+hub.group and preserves authored maps/contact shadows. Geometry/material resources
+are shared; no floor collider, berth copy or speculative jacket request is added.
+Focused tests cover successful and failed optional attachment plus collision-tree
+identity. Full npm test: 186 passed. Production build passed with its chunk-size
+warning. Candidate servers: 5262 dev / 5263 production; accepted 5260 unchanged.
+Independent actual-game review and physical shop browser checks follow below.

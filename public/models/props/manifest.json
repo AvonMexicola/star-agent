@@ -484,5 +484,24 @@
     "concept": "raw/rock-arch-concept.png",
     "file_mb": 0.557,
     "notes": "Natural wind-eroded sandstone arch; span reads across X."
+  },
+  {
+    "name": "kestrel-maintenance-roll",
+    "file": "kestrel-maintenance-roll.glb",
+    "category": "shop",
+    "tris": 4000,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "height_m": 0.12999999523162842,
+    "footprint_m": [
+      0.2787342667579651,
+      0.29069778323173523
+    ],
+    "credits": 15,
+    "concept": "assets/station-shop/soft-props/image-to-3d-v2/roll-reference-v1.png",
+    "file_mb": 0.268872,
+    "origin": "base-centre",
+    "notes": "GPT image -> Meshy T2 original selected by Cees -> Blender minimal overshoot reduction and 1024px WebP PBR. Counter dressing only; source and full iteration costs in docs/qa/station-soft-props-record.md. Local candidate pending actual-game review."
   }
 ]

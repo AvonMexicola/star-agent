@@ -1,6 +1,6 @@
 """Normalise a Meshy textile export using the shared Blender asset cleaner.
 
-blender -b --python blender/finish_shop_soft_prop.py -- --id ID --source FILE.glb
+env ALSOFT_DRIVERS=null blender -b --python-exit-code 1 --python blender/finish_shop_soft_prop.py -- --id ID --source FILE.glb
 Writes a processed GLB, editable blend and measured intake receipt outside public.
 Source is retained unchanged. Visual acceptance remains a separate game review.
 """
@@ -72,8 +72,8 @@ factor = min(limits[0] / size.x, limits[2] / size.y, limits[1] / size.z)
 mesh.scale *= factor
 bpy.context.view_layer.update()
 clean.apply_transforms(meshes)
-# Prefer the Meshy remeshed version. Preserve its topology when it already
-# meets the cap. Trim provider overshoot to the cap rather than applying the
+# Preserve the selected source topology when it already meets the cap.
+# Trim small provider overshoot to the cap rather than applying the
 # original aspirational target again and discarding already reviewed folds.
 source_triangles = clean.count_tris(meshes)
 if source_triangles > spec['maxTriangles'] * 1.1:

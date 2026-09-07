@@ -8,15 +8,21 @@ const PROPS = [
   { id: 'kestrel-maintenance-roll', position: [12.04, -6.908, -.25] },
   { id: 'watchkeep-folded-protective-jacket', position: [-12.04, -6.908, -.25] },
 ];
+// Enable a model only when its reviewed local export ships with this build.
+// The jacket remains in the placement contract, but has no downloadable source
+// available for intake yet and must not generate a speculative HTTP request.
+const SHIPPED_PROP_IDS = ['kestrel-maintenance-roll'];
 
 /** Make an isolated cache when a different loader is needed (including tests).
  * A failed or empty model is optional dressing, never a station-finish failure.
  * The returned function shares its promise, including unavailable results. */
-export function createStationShopPropLoader({ loader = new GLTFLoader() } = {}) {
+export function createStationShopPropLoader({ loader = new GLTFLoader(), propIds = SHIPPED_PROP_IDS } = {}) {
+  if (propIds.some(id => !PROPS.some(prop => prop.id === id))) throw new Error('Unknown shop prop ID');
+  const props = PROPS.filter(prop => propIds.includes(prop.id));
   let sharedPromise;
   return function load() {
     if (!sharedPromise) sharedPromise = (async () => {
-      const results = await Promise.allSettled(PROPS.map(async ({ id }) => {
+      const results = await Promise.allSettled(props.map(async ({ id }) => {
         const asset = await loader.loadAsync(`/models/props/${id}.glb`);
         if (!asset?.scene?.isObject3D) throw new Error(`Missing prop scene: ${id}`);
         let meshes = 0;
@@ -33,7 +39,7 @@ export function createStationShopPropLoader({ loader = new GLTFLoader() } = {}) 
       }));
       const scenes = {}, status = {};
       results.forEach((result, index) => {
-        const { id } = PROPS[index];
+        const { id } = props[index];
         status[id] = result.status === 'fulfilled' ? 'ready' : 'unavailable';
         if (result.status === 'fulfilled') scenes[id] = result.value;
       });

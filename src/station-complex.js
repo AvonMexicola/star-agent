@@ -8,6 +8,7 @@ import { createStationFinishGraphics } from './station-finish-graphics.js';
 import { createStationFinishLighting, prepareStationFinishShadows } from './station-finish-lighting.js';
 import { attachConcourse } from './station-concourse.js';
 import { loadStationShopGraphics } from './station-shop-graphics.js';
+import { createStationShopProps, loadStationShopProps } from './station-shop-props.js';
 import { attachPressureElevator } from './station-elevator.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
@@ -77,12 +78,12 @@ export class StationComplex {
   }
   async loadFinish(loader){
     try{
-      const [materials,props,concourse,elevator,shopGraphics]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics()]);
+      const [materials,props,concourse,elevator,shopGraphics,shopProps]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics(),loadStationShopProps()]);
       const graphics=createStationFinishGraphics();
       await graphics.readyPromise;
       const rig=createStationFinishLighting();
       this.finishMaterials=materials;this.finishRig=rig;this.finishStatus='ready';
-      return {materials,props,graphics,concourse,elevator,shopGraphics};
+      return {materials,props,graphics,concourse,elevator,shopGraphics,shopProps};
     }catch(error){this.finishStatus='unavailable';this.finishError=error.message;return null;}
   }
   async load(options){
@@ -92,6 +93,8 @@ export class StationComplex {
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       if(finish){
         attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials,shopGraphics:finish.shopGraphics});
+        this.hub.shopProps=createStationShopProps(finish.shopProps);
+        this.hub.group.add(this.hub.shopProps);
         // Collision for the batched furniture comes from authored assembly boxes.
         // Keep the room BVH built before these optional props and moving leaves.
         finish.materials.apply(this.hub.group);

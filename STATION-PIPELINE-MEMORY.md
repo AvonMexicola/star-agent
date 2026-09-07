@@ -468,3 +468,29 @@ Once native GLBs are local, use blender/review_shop_soft_props.py for three
 labelled studio views and mesh/UV/material/bounds metadata, then the existing
 finish_shop_soft_prop.py intake. A prepared inspector or studio render is not
 proof of actual Meshy source quality, game scale, performance or art acceptance.
+
+
+## Manual selected GLB intake and conservative cleanup — 2026-09-07
+
+Cees manually downloaded the acceptable KESTREL GPT-image T2 original. Its
+4,145-triangle count matched the intended candidate; file hash and native contents
+were checked before copying into versioned raw/. Do not substitute a similarly
+named older download: the earlier kestrel_meshy_clean file has 34,768 triangles.
+Only KESTREL is currently located; jacket availability remains separate.
+
+Source: one material, finite UVs, 2048px base-color/metallic-roughness/normal maps.
+Inspect three studio angles before reduction: an attractive top alone can hide
+a hollow bottom or collapsed folded end. This original has a complete underside
+and coherent strap/fold geometry. The prepared Blender intake trimmed just 145
+triangles to 4,000, uniformly fit dimensions to about .279×.130×.291m, set a
+base-centre origin and exported three 1024px WebP maps in a 268,872-byte GLB.
+The source remains intact. Studio reimport checks orientation, retained detail,
+UVs and textures; actual game placement/shadows/materials and review remain the
+next gate, never inferred from a successful export.
+
+For this installed Blender build, use `env ALSOFT_DRIVERS=null` for headless
+CPU inspection/cleanup. `-noaudio` alone still let OpenAL/PipeWire hang during
+shutdown. This is a process-local audio selection; it does not change desktop
+settings. Both cleanup and cleaned studio render exited 0 with that setting.
+Installed-addon cattrs/registration warnings are separate and were not repaired
+as part of the prop work.
