@@ -13,6 +13,7 @@ export const ATLAS_RAMP_CALLS = Object.freeze(source.ramps.map(ramp => Object.fr
   id: ramp.id, anchor: [6.65, 1.25, ramp.pivot[2] + ramp.outward * .32],
   approach: [6.65, source.eyeHeight, ramp.pivot[2] + ramp.outward * 1.3],
 })));
+const EXTERIOR_RAMP_REACH = 1.75;
 export const ATLAS_STORAGE = Object.freeze({ anchor: [-4.31, 3.7, -15], approach: [-3.25, 4.35, -15] });
 const elevator = source.elevator, [liftX, liftZ] = elevator.centre;
 export const ATLAS_LIFTS = Object.freeze([Object.freeze({ ...elevator, name: 'Crew lift',
@@ -78,12 +79,22 @@ export class AtlasGameplaySystems extends AtlasMarkIISystems {
   contains(point) {
     return Boolean(point && this.floorAt(point) !== null && (inside(point, this.layout.cargo) || inside(point, this.layout.upper)));
   }
+  exteriorRampCallAt(point) {
+    if (!point || !Number.isFinite(point.x) || !Number.isFinite(point.y) || !Number.isFinite(point.z)) return null;
+    for (const call of ATLAS_RAMP_CALLS) {
+      const ramp = this.ramps.find(item => item.id === call.id), [x, y, z] = call.anchor;
+      // The terrain beside a landed hull need not share its gear-contact plane.
+      // Reach the visible panel in 3D, from its exterior face, rather than
+      // requiring the player's boots to sit at an invented ship-local floor.
+      if ((point.z - z) * ramp.outward >= 0
+        && Math.hypot(point.x - x, point.y - y, point.z - z) < EXTERIOR_RAMP_REACH) return call;
+    }
+    return null;
+  }
   interactionAt(point) {
     if (!point) return null;
     const authored = super.interactionAt(point);if (authored) return authored;
-    if (close(point.y - this.eyeHeight, 0, .45)) {
-      for (const call of ATLAS_RAMP_CALLS) if (Math.hypot(point.x - call.approach[0], point.z - call.approach[2]) < 1.45) return `ramp:${call.id}`;
-    }
+    const exterior = this.exteriorRampCallAt(point);if (exterior) return `ramp:${exterior.id}`;
     if (close(point.y, ATLAS_STORAGE.approach[1], .45)
       && Math.hypot(point.x - ATLAS_STORAGE.approach[0], point.z - ATLAS_STORAGE.approach[2]) < 1.3) return 'storage';
     return null;
@@ -130,8 +141,8 @@ export class AtlasGameplaySystems extends AtlasMarkIISystems {
   canAttachRamp(point, speed) { return speed <= 4 && Boolean(this.openRampAt(point)) && this.floorAt(point) !== null; }
   surfaceAt(point) {
     const y = this.floorAt(point);if (y === null) return null;
-    const ramp = this.openRampAt(point), normal = new THREE.Vector3(0, 1, ramp ? Math.tan(ramp.openAngle) : 0).normalize();
-    return { y, normal, source: ramp ? `atlas-ramp:${ramp.id}` : inside(point, this.elevatorBounds) ? 'atlas-lift:crew' : 'atlas-deck' };
+    const ramp = this.rampSurfaceAt(point);if (ramp) return ramp;
+    return { y, normal: new THREE.Vector3(0, 1, 0), source: inside(point, this.elevatorBounds) ? 'atlas-lift:crew' : 'atlas-deck' };
   }
   get evaParts() {
     const cargo = this.layout.cargo, upper = this.layout.upper, lift = this.elevatorBounds, parts = [...this.colliders];
@@ -169,6 +180,9 @@ export class AtlasGameplaySystems extends AtlasMarkIISystems {
     for (const ramp of this.ramps) {
       const value = state.ramps?.find(item => item.id === ramp.id);
       if (!value || !Number.isFinite(value.angle) || !Number.isFinite(value.target)) continue;
+      if (Number.isFinite(value.openAngle)) {
+        this.setRampOpenAngle(ramp.id, ramp.outward * THREE.MathUtils.clamp(ramp.outward * value.openAngle, -Math.PI / 18, 55 * Math.PI / 180));
+      }
       ramp.angle = THREE.MathUtils.clamp(value.angle, Math.min(ramp.closedAngle, ramp.openAngle), Math.max(ramp.closedAngle, ramp.openAngle));
       ramp.target = close(value.target, ramp.openAngle) ? ramp.openAngle : ramp.closedAngle;ramp.moving = !close(ramp.angle, ramp.target, 1e-9);
       ramp.tipAngle = Math.PI * (1 - (ramp.angle - ramp.closedAngle) / (ramp.openAngle - ramp.closedAngle));

@@ -52,6 +52,8 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   const oldWalker=nav.cargoWalk;nav.cargoWalk=(a,b)=>{const previous=oldWalker?.(a,b)??{point:b,hit:false};const peers=snapshot().ships.filter(s=>s.owner!==snapshot().owner&&pose(s)).map(s=>({...s,pose:pose(s),open:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:peerLifts.get(s.owner)}));const foreign=walkForeignShips(a,previous.point,peers);const result=pads.constrain(a,foreign.point,nav.layout.eyeHeight);return {...result,grounded:result.grounded||foreign.grounded,hit:result.hit||previous.hit||result.grounded||foreign.hit};};
   nav.tradeBeacons=()=>snapshot().terminals.map(t=>({id:`trade-${t.id}`,name:t.name,kind:'Player trading pad',category:'bases',parent:t.body,body:t.body,surface:true,center:t.origin,radius:0}));
   nav.cargoLandingSurface=p=>pads.floorAt(p);
+  // Pad poses are immutable after deployment; commerce/stock changes do not move them.
+  nav.cargoLandingRevision=()=>multiplayer.connected?`online:${multiplayer.state.commerce?.terminals?.length??0}`:`offline:${Object.keys(local.state.terminals).length}`;
   const eva=nav.cargoEVA,walk=nav.cargoWalk,constrain=nav.cargoConstrain;
   nav.cargoEVA=(a,b)=>{const result=eva(a,b),point=constrainLooseCargo(a,result.point,snapshot().loose,{eva:true});return {...result,point,hit:result.hit||!point.equals(result.point)};};
   nav.cargoWalk=(a,b)=>{const result=walk(a,b),point=constrainLooseCargo(a,result.point,snapshot().loose);return {...result,point,hit:result.hit||!point.equals(result.point)};};
