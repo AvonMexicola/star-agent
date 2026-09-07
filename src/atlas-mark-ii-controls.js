@@ -28,7 +28,8 @@ export function describeAtlasControl(systems, position, seated = false) {
   return {
     id, target: onLift ? 'Crew lift' : floor < (lift.low + lift.high) / 2 ? 'Cargo deck lift' : 'Upper deck lift',
     anchor: onLift ? [lift.centre[0], lift.y + 1.13, lift.centre[1] - 1.39]
-      : [3.5, floor + 1.33, lift.centre[1] - .975],
+      : [lift.callPanel.centre[0], floor + lift.callPanel.touchHeight,
+        lift.callPanel.centre[1] + lift.callPanel.touchOffsetZ + .025],
     ...controlAction('lift', state),
   };
 }

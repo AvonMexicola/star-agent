@@ -4,11 +4,22 @@ from mathutils import Vector
 
 
 def build_bow_cheek(g,m,parent,side):
-    top=[(6.35,5.0,-30.8),(8.4,4.8,-30.2),(11.4,6.2,-25),(13.3,7.65,-20.2),(12.5,7.65,-13),(9.3,7.65,-12),(6.6,7.2,-23.7)]
+    top=[(6.35,5.4,-30.8),(8.4,5.3,-30.2),(10.7,7.4,-25),(12.05,7.9,-20.2),(13.8,8.6,-13),(8.9,8.6,-12),(6.6,8.7,-23.7)]
+    # Insert the real lower-envelope transition, so the aft underside is planar
+    # above the gear pocket rather than a fan dipping toward the low bow point.
+    split=-23.7;expanded=[]
+    for i,a in enumerate(top):
+        b=top[(i+1)%len(top)];expanded.append(a)
+        if (a[2]-split)*(b[2]-split)<0:
+            t=(split-a[2])/(b[2]-a[2])
+            expanded.append(tuple(a[k]+(b[k]-a[k])*t for k in range(3)))
+    top=expanded
     top=[(side*x,y,z) for x,y,z in top]
-    low=[(x-side*.45,3.2,z+.18) for x,y,z in top]
+    low=[(x-side*.45,3.2+1.9*min(1,max(0,(z+30.8)/7.1)),z+.18) for x,y,z in top]
     root=g.empty('PortBowCheek' if side<0 else 'StarboardBowCheek',parent=parent)
-    g.panel('Bow cheek underside',low,m['dark'],.18,.035,root)
+    for part in ([p for p in low if p[2]<=split+.18001],
+                 [p for p in low if p[2]>=split+.17999]):
+        g.panel('Bow cheek planar underside',part,m['dark'],.16,0,root)
     # The top follows a descending sweep toward the tip instead of a flat lid.
     centre=tuple(sum((Vector(p) for p in top),Vector())/len(top))
     for i in range(len(top)):
@@ -26,7 +37,8 @@ def build_bow_cheek(g,m,parent,side):
         g.rod('Bow chine machined edge',low[i],low[j],.075,m['steel'],10,root)
     # Seat the sensor array on the actual sloped forward facet. Independent
     # world-X boxes floated above this hull after the bow redesign.
-    a,b,c,d=[Vector(p) for p in (low[2],low[3],top[3],top[2])]
+    # The sensor bank follows the aft half of this fitted side plate.
+    a,b,c,d=[Vector(p) for p in (low[3],low[4],top[4],top[3])]
     tangent=(b-a).normalized()
     normal=tangent.cross(d-a).normalized()
     if normal.x*side<0: normal=-normal

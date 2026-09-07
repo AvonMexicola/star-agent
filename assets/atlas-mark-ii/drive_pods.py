@@ -15,7 +15,7 @@ def build_drive_pod(g,m,parent,side):
             j=(i+1)%8
             quad=[Vector(p) for p in [a[i],a[j],b[j],b[i]]]
             centre=sum(quad,Vector())/4
-            g.panel('Octagonal drive load shell',[tuple(p) for p in quad],m['dark'],.18,.035,root)
+            g.panel('Octagonal drive load shell',[tuple(p) for p in quad],m['dark'],.18,0,root)
             # Recesses around individual armour plates reveal a continuous chassis.
             normal=(quad[1]-quad[0]).cross(quad[2]-quad[0]).normalized()
             outward=Vector((centre.x-cx,centre.y-7.9,0))
@@ -23,9 +23,8 @@ def build_drive_pod(g,m,parent,side):
             armour=[centre+(p-centre)*.86+normal*.12 for p in quad]
             mat=m['ivory'] if i in [0,3,4,5,6] else m['petrol']
             g.panel('Drive replaceable facet',[tuple(p) for p in armour],mat,.12,.035,root)
-            for p in armour:
-                bolt=centre+(p-centre)*.88
-                g.rod('Drive recessed socket fixing',bolt+normal*.065,bolt+normal*.095,.043,m['dark'],6,root)
+            # Fine recessed fixings belong in the final surface maps. Their
+            # cylindrical stock was invisible at the normal exterior distance.
             if k==1 and i in [3,7]:
                 for t in [.2,.35,.5,.65,.8]:
                     start=quad[0].lerp(quad[3],t).lerp(centre,.2)+normal*.23
@@ -38,15 +37,16 @@ def build_drive_pod(g,m,parent,side):
     g.rod('Deep engine backplate',(cx,cy,27.2),(cx,cy,27.35),1.42,m['rubber'],40,root)
     g.ring('Idle plasma annulus',(cx,cy,27.5),1.12,.075,m['engine'],'z',root)
     g.rod('Exhaust centre plug',(cx,cy,27.4),(cx,cy,28.15),.48,m['steel'],24,root)
-    for i in range(24):
-        a=2*math.pi*i/24;d=.115
+    for i in range(16):
+        a=2*math.pi*i/16;d=math.pi/16*.88
         def p(angle,r,z):return (cx+math.cos(angle)*r,cy+math.sin(angle)*r,z)
         # Dark inner throat behind bright metal petal lips provides visible depth.
-        g.panel('Divergent exhaust throat',[p(a-d,1.28,27.6),p(a+d,1.28,27.6),p(a+d,2.08,30.5),p(a-d,2.08,30.5)],m['dark'],.045,.008,root)
-        g.panel('Variable exhaust overlapping petal',[p(a-d,2.35,29.0),p(a+d,2.35,29.0),p(a+d*.72,2.15,30.9),p(a-d*.72,2.15,30.9)],m['steel'] if i%3 else m['petrol'],.075,.018,root)
-        g.rod('Nozzle actuator sleeve',p(a,2.46,28.1),p(a,2.40,29.65),.065,m['dark'],10,root)
-        g.rod('Nozzle polished actuator',p(a,2.40,29.4),p(a,2.24,30.35),.03,m['steel'],10,root)
-        g.rod('Exhaust flow straightener',p(a,.5,27.9),p(a,1.14,27.6),.04,m['dark'],8,root)
+        g.panel('Divergent exhaust throat',[p(a-d,1.28,27.6),p(a+d,1.28,27.6),p(a+d,2.08,30.5),p(a-d,2.08,30.5)],m['dark'],.045,0,root)
+        g.panel('Variable exhaust overlapping petal',[p(a-d,2.35,29.0),p(a+d,2.35,29.0),p(a+d*.72,2.15,30.9),p(a-d*.72,2.15,30.9)],m['steel'] if i%3 else m['petrol'],.075,0,root)
+        if i%2==0:
+            g.rod('Nozzle actuator sleeve',p(a,2.46,28.1),p(a,2.40,29.65),.065,m['dark'],8,root)
+            g.rod('Nozzle polished actuator',p(a,2.40,29.4),p(a,2.24,30.35),.03,m['steel'],6,root)
+            g.rod('Exhaust flow straightener',p(a,.5,27.9),p(a,1.14,27.6),.04,m['dark'],6,root)
     # Separate feed systems sit against the inboard aft shoulder.
     for dy in [-.5,.5]:
         g.rod('Drive coolant feed',(cx-side*2.9,7.9+dy,18.5),(cx-side*2.8,7.9+dy,25.6),.13,m['steel'],12,root)
