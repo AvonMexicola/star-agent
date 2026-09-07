@@ -1,4 +1,5 @@
 import { SBU_SIZES, capacitySBU, placeCrate, validGrid, canRemoveCrate } from '../cargo/grid.js';
+import { tractorCommand,validLooseCargo } from '../cargo/tractor-ledger.js';
 export const TRADE_RESOURCES=Object.freeze([
   {id:'basalt',name:'Basalt concentrate',kgPerSBU:16,buy:20,sell:12,color:0x9aa4ac},
   {id:'copper',name:'Copper ore',kgPerSBU:16,buy:48,sell:30,color:0xc58c60},
@@ -29,6 +30,7 @@ export function validCommerce(s){
     const crate=c=>{check(c&&safe(c.id)&&!ids.has(c.id)&&SBU_SIZES.includes(c.sbu)&&resourceById(c.resource),'crate');ids.add(c.id);};
     for(const [id,a] of Object.entries(s.accounts)){check(safe(id)&&int(a.credits)&&Object.entries(a.resources??{}).every(([r,n])=>resourceById(r)&&Number.isFinite(n)&&n>=0&&n<=48),'account');if(a.carried){crate(a.carried);check(a.carried.sbu===1,'carry');}}
     for(const [id,h] of Object.entries(s.ships)){check(id===shipKey(h.owner,h.hull)&&s.accounts[h.owner]&&capacitySBU(h.hull)>0&&validGrid(h.hull,h.crates),'ship');h.crates.forEach(crate);}
+    check(validLooseCargo(s.loose??{}),'loose cargo');for(const c of Object.values(s.loose??{}))crate(c);
     for(const [id,t] of Object.entries(s.terminals)){
       check(safe(id)&&s.accounts[t.owner]&&Array.isArray(t.position)&&t.position.length===3&&t.position.every(Number.isFinite)&&t.stock&&t.prices,'terminal');
       for(const r of TRADE_RESOURCES)check(int(t.stock[r.id]??0,100000)&&int(t.prices[r.id]??r.buy,10000)&&((t.prices[r.id]??r.buy)>0),'stock');
@@ -57,7 +59,9 @@ export function commerceCommand(source,owner,m,ctx){
     atTerminal();docked();check(r,'Choose a resource.');
     check(SBU_SIZES.includes(m.sbu),'Choose a crate size.');
   }
-  if(m.op==='buy'){
+  if(m.op.startsWith('tractor-')){
+    message=tractorCommand(s,owner,m,ctx);
+  }else if(m.op==='buy'){
     const price=(terminal?.prices[r.id]??r.buy)*m.sbu;
     check(a.credits>=price,'Insufficient credits.');
     if(terminal){check((terminal.stock[r.id]??0)>=m.sbu,'Seller does not have that much stock.');check(terminal.owner!==owner,'Use Withdraw stock for your own terminal.');}
@@ -84,18 +88,14 @@ export function commerceCommand(source,owner,m,ctx){
   }else if(m.op==='price'){
     atTerminal();check(terminal?.owner===owner&&r&&int(m.price,10000)&&m.price>0,'Choose a price from 1 to 10,000 credits.');terminal.prices[r.id]=m.price;message='Price saved.';
   }else if(m.op==='take'){
+    check(!Object.values(s.loose??{}).some(c=>c.holder===owner&&c.until>(ctx.now?.()??Date.now())),'Release your tractor crate before hand carrying.');
     const c=selected();check(ctx.crate?.(ship,c),'Walk within reach of the crate through an open hatch.');
     check(ship.owner===owner||ctx.loot?.(ship,c),'Board the ship or disable it before taking cargo.');
     check(c.sbu===1,'Only a 1 SBU crate can be carried by hand.');check(!a.carried,'Your hands are already full.');remove(c);a.carried={id:c.id,resource:c.resource,sbu:c.sbu};message='Carrying 1 SBU. Walk to a cargo grid to stow it.';
   }else if(m.op==='stow'){
     ownedShip();check(a.carried,'You are not carrying a crate.');check(ctx.grid?.(ship),'Walk within reach of the cargo grid.');add(a.carried);a.carried=null;message='Crate secured on the cargo grid.';
   }else if(m.op==='haul'){
-    // Larger salvage needs two nearby parked ships and mechanical cargo handling.
-    check(!a.carried,'Stow your carried crate before operating the cargo handler.');
-    const c=selected(),to=s.ships[m.destination];
-    check(to?.owner===owner&&to.id!==ship.id,'Choose your receiving ship.');
-    check(ctx.haul?.(ship,to,c)&&ctx.loot?.(ship,c),'Bring your parked ship within cargo-handling reach of the disabled or boarded ship.');
-    const placed=placeCrate(to.hull,to.crates,c);check(placed,'Receiving cargo grid has no space.');remove(c);to.crates.push(placed);message='Salvaged crate loaded aboard.';
+    throw new Error('Equip the tractor beam to move larger crates physically.');
   }else throw new Error('Unknown cargo command.');
   check(int(a.credits)&&(!terminal||int(s.accounts[terminal.owner].credits)),'Credit limit exceeded.');
   s.revision++;const receipt={message,resourceDelta,resource:m.resource};s.receipts[receiptKey]=receipt;

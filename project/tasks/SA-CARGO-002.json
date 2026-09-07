@@ -1,0 +1,14 @@
+{
+  "id": "SA-CARGO-002",
+  "title": "Physical tractor beam for SBU crates",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex cargo",
+  "status": "active",
+  "branch": "feat/cargo-tractor",
+  "base": "25460fa47bf594c2ca1a3d36e31cec5d496d40c6",
+  "updated": "2026-09-07",
+  "areas": ["industry", "multiplayer", "interface"],
+  "claims": ["src/cargo", "src/trading", "server/trading.js", "src/mining/tool.js", "src/controller-hints.js"],
+  "brief": "docs/briefs/cargo-tractor.md"
+}

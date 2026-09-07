@@ -23,8 +23,8 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   panel.innerHTML='<div class="mining-eyebrow">SELENE / FIELD SURVEY</div><strong class="mining-target"></strong><div class="field-equipment"><button data-field-item="rifle-laser">1 · Carbine</button><button data-field-item="sidearm-pistol">2 · Sidearm</button><button data-field-item="mining-laser-tool">3 · Cutter</button></div><p class="mining-guide"></p><div class="mining-heat"><span>LASER HEAT</span><meter min="0" max="1" value="0" aria-label="Mining laser heat"></meter></div><p class="mining-resources"></p><button type="button" class="mining-trigger">HOLD TO MINE</button><small class="mining-feedback" role="status"></small>';
   document.body.append(panel);const $=s=>panel.querySelector(s),button=$('.mining-trigger');
   const clear=()=>{held=false;keyHeld=false;recoil=0;if(!nav.roverOccupied)rock.budget=0;if(effects)effects.miningInput=null;};
-  function select(slot){clear();nav.gamepad.suspend();if(loadout){const result=loadout.select(slot);if(!result.ok)nav.notify(result.message);}else selected=slot!==null;}
-  function cycle(){clear();nav.gamepad.suspend();if(loadout)loadout.cycle();}
+  function select(slot){nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(loadout){const result=loadout.select(slot);if(!result.ok)nav.notify(result.message);}else selected=slot!==null;}
+  function cycle(){nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(loadout)loadout.cycle();}
   canvas.addEventListener('pointerdown',e=>{if(e.button===0&&active&&nav.locked)held=true;});
   window.addEventListener('pointerup',()=>{held=false;});
   window.addEventListener('blur',clear);document.addEventListener('visibilitychange',clear);document.addEventListener('pointerlockchange',clear);
@@ -39,11 +39,11 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
     get pose(){const held=!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.querySelector('dialog[open]');return {aiming:held?equipment.aimingInput():'none',firing:held&&equipment.firingInput()};},
     toggle(){select(loadout?(loadout.active==='tool'?null:'tool'):(selected?null:'tool'));},
     update(dt,origin){
-      if(loadout){selected=Boolean(loadout.item);if(equipment.equipped!==loadout.item){clear();if(loadout.item)equipment.equip(loadout.item);else equipment.unequip();}}
+      if(loadout){const item=nav.tractorActive?'mining-laser-tool':loadout.item;selected=Boolean(item);if(equipment.equipped!==item){clear();if(item)equipment.equip(item);else equipment.unequip();}}
       const isMining=equipment.equipped==='mining-laser-tool';
       const distance=nav.position.distanceTo(rock.position);
-      active=!nav.carryingCargo&&!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
-      panel.hidden=!active;
+      active=(!nav.carryingCargo||nav.tractorActive)&&!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
+      panel.hidden=!active||nav.tractorActive;
       external=thirdPerson();
       attached=Boolean(external&&character?.ready&&rigSockets);
       equipment.bindCharacter(attached?character:viewRig,attached?PLAYER_AVATAR.rig:'mannequin',attached?rigSockets:sockets);
@@ -74,7 +74,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       const muzzle=equipment.muzzleWorldPosition();
       if(hit&&muzzle){const obstruction=nav.buildingRaycast?.(muzzle,hit.point.clone().sub(muzzle).normalize(),muzzle.distanceTo(hit.point));if(obstruction)hit=null;}
       if(hit&&muzzle){const to=hit.point.clone().sub(muzzle),length=to.length(),muzzleHit=rock.raycast(muzzle,to.normalize(),length+.1);if(muzzleHit&&muzzleHit.point.distanceTo(hit.point)>.22)hit=null;}
-      const firing=active&&selected&&!gesture&&Boolean(held||keyHeld||(nav.gamepad.armed&&nav.toolTrigger>.1))&&!rock.store.blocked&&(isMining?rock.store.free>.001&&!rock.error:loadout?.ammoFor()>0);
+      const firing=!nav.tractorActive&&active&&selected&&!gesture&&Boolean(held||keyHeld||(nav.gamepad.armed&&nav.toolTrigger>.1))&&!rock.store.blocked&&(isMining?rock.store.free>.001&&!rock.error:loadout?.ammoFor()>0);
       equipment.update(dt,{firing,authorizeFire:item=>loadout?.spendRound(item)??false,hasHit:Boolean(hit),targetWorldPoint:hit?.point??(inspected?.point?.distanceTo(nav.position)<=8?inspected.point:null)??aimOrigin.clone().addScaledVector(direction,rayRange)});
       if(effects&&!isMining&&equipment.firingInput()){
         const start=equipment.muzzleWorldPosition(),range=weaponRange;
