@@ -7,7 +7,11 @@ import { MAX_PLAYERS, MULTIPLAYER_VERSION, WORLD_SEED, cleanInput, WEAPON_RULES 
 import { itemMass, validItems } from '../src/inventory/containers.js';
 import { TRAVEL_TARGETS } from '../src/travel-model.js';
 import { CAPACITY, initialInventory, restoreInventory, transferInventory, quantity } from './inventory.js';
-import { shoot } from './combat.js';
+import { shoot,shipPose } from './combat.js';
+import {createStationHub} from './station-hub.js';
+import {HANDS_FREE_REASON} from '../src/station-hub-policy.js';
+import {createStationSecurity} from './security.js';
+import {capturePeerMotion,createRammingResolver} from './ramming.js';
 
 const STEP=1/30, LEASE_MS=180000, DROP_MS=300000;
 const VECTOR_KEYS=['position','velocity','shipVelocity','angularVelocity','shipAngularVelocity'];
@@ -35,7 +39,19 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   const doors=Object.fromEntries(world.pods.map(p=>[p.id,0]));
   const send=(p,data)=>{try{p.send(data);}catch{}};
   const broadcast=data=>{for(const p of players.values())send(p,data);};
-  const state=p=>({type:'state',stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:[...players.values()].map(playerSnapshot),doors:{...doors},hangar:hangar(p),inventory:p.inventory,commerce:trading.snapshot(p),health:p.health,drops:[...drops.values()].filter(d=>p.nav.position.distanceTo(new THREE.Vector3(...d.position))<500).map(d=>({...d}))});
+  const hub=createStationHub({world,players,send}),ramming=createRammingResolver();
+  const security=createStationSecurity({world,areFriends:(a,b)=>typeof store.areFriends==='function'?store.areFriends(a,b):Promise.resolve(false),onError,
+    onStrike:async(attacker,victim,event)=>{
+      attacker.input=cleanInput();attacker.lookYaw=attacker.lookPitch=0;
+      if(event){world.defense?.strike(event);broadcast(event);}
+      send(attacker,{type:'event',event:'notice',message:'Aeon station defense: lethal response to aggression against a protected pilot.'});
+      // A currently saving transfer/equip must publish its inventory first.
+      // Taking a checkpoint before that publication can roll back its revision
+      // even though each individual storage write is correctly serialized.
+      await Promise.all([attacker.publication,victim.publication]);
+      await Promise.all([persist(attacker).catch(onError),persist(victim).catch(onError)]);
+    }});
+  const state=p=>({type:'state',stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:[...players.values()].map(playerSnapshot),doors:{...doors},hangar:hangar(p),hub:hub.snapshot(p),defense:world.defense?.snapshot??[],inventory:p.inventory,commerce:trading.snapshot(p),health:p.health,drops:[...drops.values()].filter(d=>p.nav.position.distanceTo(new THREE.Vector3(...d.position))<500).map(d=>({...d}))});
   function hangar(p){const l=leases.get(p.hangarId);if(!l)return null;const pod=world.pods[l.id-1];return {id:l.id,status:l.status,pad:pod.padWorldPosition.toArray(),approach:pod.approachWorldPosition.toArray(),expiresAt:l.expiresAt};}
   function persistent(p,inventory=p.inventory){return {version:1,inventory,health:p.health,shipHealth:p.shipHealth,weapon:p.weapon,hull:p.nav.shipId};}
   function persist(p,inventory=p.inventory,overrides={}){
@@ -70,12 +86,19 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   async function request(p,m){
     if(!players.has(p.id))return;
     p.busy=true;
+    let published;
+    // Respawn itself waits for defense; it must never enter this dependency.
+    if(m.action!=='respawn')p.publication=new Promise(resolve=>{published=resolve;});
     try{
-      if(m.action==='cargo'){const message=await trading.request(p,m);send(p,{type:'event',event:'notice',message});}
+      if(m.action==='stationHub')hub.request(p,m);
+      else if(m.action==='cargo'){const message=await trading.request(p,m);send(p,{type:'event',event:'notice',message});}
       else if(m.action==='cargoHull'){
+        if(p.health<=0||p.shipHealth<=0||security.pending(p))throw new Error('Cargo ship changes are unavailable during a defense response.');
         if(!['nomad','atlas'].includes(m.hull)||!p.nav.dockedAtStation||p.nav.mode!=='walk'||p.nav.insideShip||!p.hangarId||trading.state.accounts[p.id]?.carried)throw new Error('Return to your berth on foot with empty hands to change cargo ships.');
         const pod=world.pods[p.hangarId-1];if(p.nav.position.distanceTo(pod.padWorldPosition)>80)throw new Error('Return to your berth.');
-        await persist(p,p.inventory,{hull:m.hull});setHull(p,m.hull);
+        await persist(p,p.inventory,{hull:m.hull});
+        if(p.health<=0||p.shipHealth<=0||security.pending(p)){await persist(p);throw new Error('Cargo ship changes are unavailable during a defense response.');}
+        setHull(p,m.hull);
       }
       else if(m.action==='hangar')requestHangar(p);
       else if(m.action==='cancelHangar'){
@@ -103,21 +126,28 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(!validItems(next.containers.pack)||itemMass(next.containers.pack)>CAPACITY.pack+1e-7)throw new Error('Your pack is full.');
         await persist(p,next);p.inventory=next;drops.delete(d.id);
       }else if(m.action==='equip'){
+        if(m.weapon!==null&&(p.health<=0||p.shipHealth<=0))throw new Error('Respawn before equipping tools or weapons.');
+        if(m.weapon!==null&&hub.isHandsFree(p.nav))throw new Error(HANDS_FREE_REASON);
         if(m.weapon!==null&&(typeof m.weapon!=='string'||!Object.hasOwn(WEAPON_RULES,m.weapon)&&m.weapon!=='mining-laser-tool'||!p.inventory.containers.pack[m.weapon]))throw new Error('That item is not in your pack.');
-        await persist(p,p.inventory,{weapon:m.weapon});p.weapon=m.weapon;
+        await persist(p,p.inventory,{weapon:m.weapon});
+        if(m.weapon!==null&&(p.health<=0||p.shipHealth<=0||hub.isHandsFree(p.nav))){
+          p.weapon=null;await persist(p);throw new Error(p.health<=0||p.shipHealth<=0?'Respawn before equipping tools or weapons.':HANDS_FREE_REASON);
+        }
+        p.weapon=m.weapon;
       }else if(m.action==='respawn'){
+        await security.settle(p);
         if(p.health>0&&p.shipHealth>0&&!['crashed','destroyed'].includes(p.nav.mode))throw new Error('Your character is still alive.');
         const oldId=p.hangarId,oldLease=leases.get(oldId);
         try{
           const slot=reserveSpawn(p),nav=world.createNavigation(slot,msg=>send(p,{type:'event',event:'notice',message:msg}));
           await persist(p,p.inventory,{health:100,shipHealth:100});
           if(!players.has(p.id)){release(p);return;}
-          p.health=100;p.shipHealth=100;p.nav=nav;p.spawnPod=p.hangarId;p.input=cleanInput();p.lookYaw=p.lookPitch=0;attach(p);
+          hub.leave(p,{preserveGate:true});p.health=100;p.shipHealth=100;p.nav=nav;p.spawnPod=p.hangarId;p.input=cleanInput();p.lookYaw=p.lookPitch=0;attach(p);
         }catch(error){release(p);if(players.has(p.id)){p.hangarId=oldId;if(oldLease)leases.set(oldId,oldLease);}throw error;}
       }else throw new Error('Unknown request.');
       send(p,state(p));send(p,{type:'ack',requestId:m.requestId,ok:true});
     }catch(error){send(p,{type:'ack',requestId:m.requestId,ok:false,error:error.code==='ECONNREFUSED'?'Storage unavailable. Try again.':error.message});}
-    finally{p.busy=false;}
+    finally{p.busy=false;if(published){p.publication=null;published();}}
   }
   function setHull(p,hull){const n=p.nav,pod=world.pods[p.hangarId-1];n.shipId=hull;n.layout=hull==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;n.freighter=hull==='atlas'?new FreighterSystems():null;n.shipPosition=pod.padWorldPosition.clone();n.shipOrientation.copy(pod.padQuaternion);n.insideShip=false;n.doorOpen=false;n.doorProgress=0;}
   function attach(p){
@@ -125,13 +155,24 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     p.nav.station=world.adapter(p);p.nav.gamepad.poll=()=>({...p.input,mouseYaw:0,mousePitch:0,evaVertical:p.input.vertical,evaBrake:p.input.brake,mine:0,speed:0,scroll:0,shortcutModifier:false,used:true,ui:false,pressed:new Set()});
   }
   function action(p,m){
-    if(p.busy||p.health<=0||p.shipHealth<=0)return;
+    if(p.busy||p.health<=0||p.shipHealth<=0||p.nav.stationHubTransit||security.pending(p))return;
     const n=p.nav;
     if(trading.state.accounts[p.id]?.carried&&['interact','land','travel','target'].includes(m.action))return;
+    if(m.action==='interact'&&hub.action(p))return;
     const actions={gear:'toggleGear',lights:'toggleLights',power:'togglePower',assist:'toggleFlightAssist',combat:'toggleCombatMode',land:'landOrLaunch',interact:'embark',eva:'toggleEVA',brake:'brake',cancelTravel:'cancelTravel'};
     if(Object.hasOwn(actions,m.action))n[actions[m.action]]();
     else if(m.action==='travel')n.travel?n.cancelTravel():n.beginFreeTravel();
     else if(m.action==='target'&&TRAVEL_TARGETS.some(t=>t.id===m.target)){n.travelTarget=m.target;n.beginTravel();}
+  }
+  function impact(attack,fireEvent=null){
+    security.submit(attack,result=>{
+      if(fireEvent)broadcast({...fireEvent,damage:result.damage});
+      if(result.accepted&&result.damage>0){
+        const victim=attack.victim;
+        if(victim.health<=0||victim.shipHealth<=0){victim.nav.mode='crashed';victim.nav.velocity.set(0,0,0);victim.input=cleanInput();}
+        broadcast({type:'event',event:'hit',targetId:victim.id,attackerId:attack.attacker.id,kind:attack.kind,cause:attack.cause,damage:result.damage});
+      }else if(result.reason==='friendship-unavailable')send(attack.attacker,{type:'event',event:'notice',message:'Station protection could not verify friendship. This attack caused no damage.'});
+    });
   }
   function tick(dt=STEP){
     if(closed)return;
@@ -167,25 +208,36 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       doors[pod.id]=Math.max(0,Math.min(1,doors[pod.id]+(leases.has(pod.id)||occupied?1:-1)*dt/3));
     }
     world.doors(doors,dt);
+    hub.tick(dt);
+    const before=capturePeerMotion(players);
     for(const p of players.values()){
       if(t-p.lastInput>500)p.input=cleanInput();
       if(p.health<=0||p.shipHealth<=0){p.nav.velocity.set(0,0,0);p.nav.mode='crashed';p.input=cleanInput();continue;}
+      if(security.pending(p)){p.lookYaw=p.lookPitch=0;continue;}
       try{
-        p.nav.look(p.lookYaw,p.lookPitch);p.lookYaw=p.lookPitch=0;p.nav.beginFrame(dt);p.nav.update(dt);
+        if(!hub.update(p,dt)){p.nav.look(p.lookYaw,p.lookPitch);p.nav.beginFrame(dt);p.nav.update(dt);}
+        p.lookYaw=p.lookPitch=0;
         if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
-        if(p.input.fire&&!p.busy&&!trading.state.accounts[p.id]?.carried){
-          const event=shoot({shooter:p,players:[...players.values()],world,now:t});
-          if(event)broadcast({type:'event',event:'fire',peerId:p.id,...event});
+        const fireAllowed=hub.canFire(p);
+        if(p.input.fire&&!p.busy&&fireAllowed&&!trading.state.accounts[p.id]?.carried){
+          const event=shoot({shooter:p,players:[...players.values()],world,now:t,deferDamage:true});
+          if(event){
+            const packet={type:'event',event:'fire',peerId:p.id,...event},victim=players.get(event.targetId);
+            if(victim&&event.damage>0)impact({id:`shot:${p.inventory.revision}`,attacker:p,victim,kind:event.kind,cause:'shot',damage:event.damage,
+              point:event.kind==='ship'?(shipPose(victim)?.position??victim.nav.position).clone():victim.nav.position.clone()},packet);
+            else broadcast(packet);
+          }
         }
       }catch(error){p.input=cleanInput();onError(error);}
     }
+    ramming.step(players,before,dt,impact);
     tickCount++;
     if(tickCount%2===0)for(const p of players.values())send(p,state(p));
     if(t-lastSave>10000){lastSave=t;for(const p of players.values())if(!p.busy)persist(p).catch(onError);}
   }
   const timer=autoStart?setInterval(()=>{const t=now();accumulator+=Math.min(.25,(t-lastTime)/1000);lastTime=t;while(accumulator>=STEP){tick();accumulator-=STEP;}},10):null;
   timer?.unref();
-  return {players,leases,drops,doors,tick,state,trading,
+  return {players,leases,drops,doors,tick,state,hub,security,trading,
     async join(account,sendFn){
       if(closed)throw failure('Server restarting.','ROOM_CLOSED');
       if(players.has(account.id)||joining.has(account.id))throw failure('This account is already connected.','ACCOUNT_CONNECTED');
@@ -217,20 +269,20 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       if(++p.messages>90)return;
       if(m.type==='input'){
         if(!Number.isSafeInteger(m.sequence)||m.sequence<=p.sequence)return;
-        p.sequence=m.sequence;p.input=cleanInput(m.input);p.lastInput=now();
+        p.sequence=m.sequence;p.input=cleanInput(m.input);p.lastInput=now();hub.input(p);
         p.lookYaw=Math.max(-.25,Math.min(.25,p.lookYaw+p.input.mouseYaw));p.lookPitch=Math.max(-.25,Math.min(.25,p.lookPitch+p.input.mousePitch));
       }else if(m.type==='action')action(p,m);
       else if(m.type==='request'&&typeof m.requestId==='string'&&m.requestId.length<=64){queue=queue.then(()=>request(p,m)).catch(onError);return queue;}
     },
     leave(id){
       const p=players.get(id);if(!p)return departing.get(id)??Promise.resolve();
-      players.delete(id);release(p);
-      const task=(async()=>{await queue;try{await persist(p);}catch(error){failedDepartures.set(p.account.id,p);throw error;}})();
+      players.delete(id);release(p);hub.leave(p);
+      const task=(async()=>{await queue;await security.settle(p);try{await persist(p);}catch(error){failedDepartures.set(p.account.id,p);throw error;}})();
       departing.set(p.account.id,task);
       task.finally(()=>{if(departing.get(p.account.id)===task)departing.delete(p.account.id);}).catch(onError);
       return task;
     },
     async revoke(accountId){const p=players.get(accountId);if(p){send(p,{type:'revoked'});await this.leave(p.id);}},
-    async close(){if(closed)return;closed=true;clearInterval(timer);await queue;await Promise.allSettled([...departing.values()]);for(const p of players.values())await persist(p).catch(onError);await Promise.allSettled([...writes.values()]);players.clear();leases.clear();drops.clear();},
+    async close(){if(closed)return;closed=true;clearInterval(timer);await queue;await security.close();await Promise.allSettled([...departing.values()]);for(const p of players.values())await persist(p).catch(onError);await Promise.allSettled([...writes.values()]);players.clear();leases.clear();drops.clear();},
   };
 }

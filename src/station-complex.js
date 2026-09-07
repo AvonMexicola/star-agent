@@ -14,6 +14,8 @@ import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
 import { createAuthoredExterior, attachExteriorLod, STATION_EXTERIOR_URL, STATION_EXTERIOR_LOD_URL } from './station-exterior.js';
+import {STATION_HUB_FRAME} from './station-hub-policy.js';
+import {stationPhysicsAt} from './station-physics.js';
 
 /** Bake only cloned LOD geometry into the station frame, then merge compatible
  * material/attribute sets. Each moving door stays separate from static parts
@@ -63,6 +65,7 @@ export class StationComplex {
     this.lodGroup=new THREE.Group();this.lodGroup.name='Instanced distant berths';scene.add(this.lodGroup);this.lodBatches=[];
     this.hub=createHub();scene.add(this.hub.group);
     this.hub.quaternion=this.baseQuaternion.clone();this.hub.inverseQuaternion=this.baseQuaternion.clone().invert();this.hub.worldPosition=this.centre.clone();this.hub.ready=true;
+    Object.defineProperty(this.hub,'up',{get:()=>this.up});
     for(const name of ['toWorld','toLocal','deckPoint','deckHeightAt','isInsideHangar'])this.hub[name]=Station.prototype[name];
     this.hub.colliders=buildStationColliders(this.hub.group);
     this.hub.lift=createElevator(this.hub.group,14.3);
@@ -194,8 +197,11 @@ export class StationComplex {
   }
   setMultiplayerState(state){
     this.multiplayerState=state;
-    if(!state){for(const pod of this.pods)if(pod.openingControlled)pod.endOpening();return;}
-    this._openingIndex=null;this.location='hangar';
+    if(!state){this._defenseState=null;this.defense?.resetSession();for(const pod of this.pods)if(pod.openingControlled)pod.endOpening();return;}
+    this._openingIndex=null;
+    if(state.defense!==this._defenseState){this._defenseState=state.defense;this.defense?.setState(state.defense);}
+    const occupiedFrame=state.hub?.frame??state.physicsFrame;
+    this.location=occupiedFrame===STATION_HUB_FRAME?'hub':'hangar';
     const frame=state.frame;
     if(frame?.direction?.length===3&&frame?.orientation?.length===4&&Number.isFinite(frame.altitude)){
       const key=JSON.stringify(frame);
@@ -207,12 +213,18 @@ export class StationComplex {
       }
     }
     if(state.hangar){this.activeIndex=state.hangar.id-1;this.parkedPod=this.activeIndex;}
-    const occupied=/^hangar:(\d+)$/.exec(state.physicsFrame??'');
+    const occupied=/^hangar:(\d+)$/.exec(occupiedFrame??'');
     if(occupied&&this.pods[Number(occupied[1])-1])this.activeIndex=Number(occupied[1])-1;
     for(let i=0;i<this.pods.length;i++){
       const pod=this.pods[i];
       if(!pod.openingControlled)pod.beginOpening();
       pod.setOpeningProgress(state.doors?.[i+1]??0);
+    }
+    for(const pose of state.hub?.elevators??[]){
+      const match=/^hangar:(\d+)$/.exec(pose.frame??'');
+      const frame=pose.frame===STATION_HUB_FRAME?this.hub:match?this.pods[Number(match[1])-1]:null;
+      if(!frame||typeof pose.open!=='boolean'||!Number.isFinite(pose.progress))continue;
+      frame.lift.open=pose.open;frame.lift.progress=THREE.MathUtils.clamp(pose.progress,0,1);updateElevator(frame.lift,0);
     }
   }
   update(position,origin,sun,dt){
@@ -225,7 +237,7 @@ export class StationComplex {
     for(const pod of this.pods){
       // Navigation chooses the occupied berth; the final cinematic/first-person
       // camera origin controls visibility and floating-origin render transforms.
-      pod.update(origin,origin,sun,dt);updateElevator(pod.lift,dt);
+      pod.update(origin,origin,sun,dt);updateElevator(pod.lift,this.multiplayerState?.hub?0:dt);
       pod.lift.group.visible=pod.services.visible=pod.cameraDistance<230;
       if(pod.lodModel)pod.lodModel.visible=false;
     }
@@ -263,7 +275,7 @@ export class StationComplex {
     // group visible at planetary orbit costs 93 draws for a subpixel station.
     this.lodGroup.visible=this.exterior.group.visible=cameraDistance<600000;
     this.finishRig?.update(this,position);
-    updateElevator(this.hub.lift,dt);
+    updateElevator(this.hub.lift,this.multiplayerState?.hub?0:dt);
     this.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));
     this.hub.group.visible=cameraDistance<140;
     this.exterior.hubShell.visible=!this.hub.group.visible;
@@ -279,6 +291,7 @@ export class StationComplex {
     if(!this.ready)return {point:proposed.clone(),hit:false};
     let closest={point:proposed.clone(),hit:false};
     const keep=result=>{if(result.hit&&(!closest.hit||result.point.distanceToSquared(previous)<closest.point.distanceToSquared(previous)))closest=result;};
+    if(this.defense)keep(this.defense.constrainStep(previous,proposed,orientation,walking,layout));
     if(walking){
       // A suit can enter any berth, including one different from its ship's
       // assigned hangar. Test those physical frames before selecting a deck.
@@ -307,7 +320,7 @@ export class StationComplex {
     return closest;
   }
   interaction(nav){
-    if(!this.ready||!nav.dockedAtStation||nav.mode!=='walk'||nav.insideShip)return null;
+    if(!this.ready||nav.mode!=='walk'||nav.insideShip||!stationPhysicsAt(this,nav.position))return null;
     const p=this.toLocal(nav.position,new THREE.Vector3()),floor=this.interiorBox.min.y;
     if(Math.abs(p.y-floor-nav.layout.eyeHeight)>1)return null;
     if(this.location==='hangar'&&p.distanceTo(new THREE.Vector3(-12,floor+nav.layout.eyeHeight,20.7))<2.3){

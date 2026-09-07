@@ -24,16 +24,19 @@ export function createNomadCabinControls(nav) {
   window.addEventListener('blur', cancel);
   document.addEventListener('visibilitychange', cancel);
   function update() {
-    const usable = (Boolean(nav.layout.berth)||nav.shipId==='atlas') && !nav.roverOccupied && ['flight', 'landed', 'walk'].includes(nav.mode) && available();
+    const usable = (Boolean(nav.layout.berth)||nav.shipId==='atlas'||nav.mode==='walk'&&nav.stationPhysics) && !nav.roverOccupied && ['flight', 'landed', 'walk'].includes(nav.mode) && available();
     const next = `${nav.mode}:${nav.berthRest}:${Boolean(nav.berthTransition)}:${usable}`;
     if (next !== context) { cancel();context = next; }
-    root.hidden = !usable;root.setAttribute('aria-label',nav.shipId==='atlas'?'Atlas cabin controls':'Nomad cabin controls');
+    root.hidden = !usable;root.setAttribute('aria-label',nav.mode==='walk'&&nav.stationPhysics&&!nav.insideShip?'Station walking controls':nav.shipId==='atlas'?'Atlas cabin controls':'Nomad cabin controls');
     const walking = nav.mode === 'walk';pad.hidden = !walking || nav.berthRest || Boolean(nav.berthTransition);
-    const hit = walking && nav.vehicle?.interaction?'rover':walking && nav.shipPosition ? nav.shipInteraction(nav.toShipLocal()) : null;
+    const cargo=walking?nav.cargoInteraction?.():'',stationControl=walking?nav.station?.interaction?.(nav):null;
+    const hit = cargo?'cargo-terminal':stationControl?'station-control':walking && nav.vehicle?.interaction?'rover':walking && nav.shipPosition ? nav.shipInteraction(nav.toShipLocal()) : null;
     const secured = hit === 'door' && nav.cabinFlight && !nav.spaceParked;
     action.disabled = Boolean(nav.berthTransition) || secured || (walking && !nav.berthRest && !hit);
     action.textContent = nav.berthTransition ? (nav.berthRest ? 'Settling into berth' : 'Standing up')
       : nav.berthRest ? 'Leave berth' : !walking ? 'Leave pilot seat' : hit === 'berth' ? 'Rest in berth'
+        : hit === 'cargo-terminal' ? (/Trade terminal/i.test(cargo)?'Open trade':'Open cargo')
+          : hit === 'station-control' ? ({door:'Passenger elevator',travel:'Choose destination',cargo:'Open cargo',shop:'Open retailer'}[stationControl.kind]??'Station information')
         : hit === 'rover' ? 'Board Burrow' : hit?.startsWith('lift:') ? 'Use cargo lift' : hit === 'storage' ? 'Open cargo' : secured ? 'Hatch secured in flight' : hit === 'door' ? (nav.doorOpen ? 'Close hatch' : 'Open hatch')
           : hit === 'seat' ? 'Sit at controls' : 'Approach a control';
   }

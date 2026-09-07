@@ -1,4 +1,5 @@
 import {itemById, itemMass} from './containers.js';
+import {HANDS_FREE_REASON} from '../station-hub-policy.js';
 
 export const EQUIPMENT_SLOTS=Object.freeze([
   {id:'weapon1',name:'Weapon 1',kind:'weapon',key:'1'},
@@ -28,10 +29,10 @@ export function validLoadout(l){
 /** Gear and cargo share the MiningStore transaction, including migration and failure rollback.
  * UI owns physical container access. Slot methods never create or duplicate items. */
 export class Loadout {
-  constructor(store){this.store=store;}
+  constructor(store,{canSelect=()=>true}={}){this.store=store;this.canSelect=canSelect;}
   get state(){return this.store.state.loadout;}
   get active(){return this.state.active;}
-  get item(){return this.state.slots[this.active]?.item??null;}
+  get item(){return this.canSelect()?this.state.slots[this.active]?.item??null:null;}
   get mass(){return itemMass(Object.values(this.state.slots).filter(Boolean).reduce((items,s)=>({...items,[s.item]:(items[s.item]??0)+s.quantity}),{}));}
   result(next,message){
     if(!validLoadout(next.loadout)||!this.store.validContainers(next))return {ok:false,message:'Not enough storage space. Empty the backpack or free a stack slot first.'};
@@ -39,6 +40,7 @@ export class Loadout {
   }
   save(loadout,message){return this.result({...this.store.state,loadout},message);}
   select(id){
+    if(id!==null&&!this.canSelect())return {ok:false,message:HANDS_FREE_REASON};
     if(id!==null&&(!HELD_SLOTS.includes(id)||!this.state.slots[id]))return {ok:false,message:'That equipment slot is empty.'};
     if(this.active===id)return {ok:true,message:'Already selected.'};
     return this.save({...this.state,active:id},id?`${itemById(this.state.slots[id].item).name} selected.`:'Hands free.');
@@ -46,6 +48,7 @@ export class Loadout {
   cycle(){const available=HELD_SLOTS.filter(id=>this.state.slots[id]);return available.length?this.select(available[(available.indexOf(this.active)+1)%available.length]):this.select(null);}
   toggleTool(){return this.select(this.active==='tool'?null:'tool');}
   assign(id,item,from='pack'){
+    if(HELD_SLOTS.includes(id)&&!this.canSelect())return {ok:false,message:HANDS_FREE_REASON};
     if(!slotAccepts(id,item))return {ok:false,message:'That item does not fit this slot.'};
     const source=this.store.container(from);if(!source)return {ok:false,message:'Choose an available container.'};
     const spec=itemById(item),current=this.state.slots[id],same=current?.item===item;

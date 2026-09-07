@@ -1,0 +1,14 @@
+{
+  "id": "SA-MARKET-001",
+  "title": "Finite Aeon commodity stock and dynamic quotes",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex station market",
+  "status": "review",
+  "branch": "feat/aeon-station-market",
+  "base": "17769ed26d41dbab52fbc995346da7ab54592c0b",
+  "updated": "2026-09-07",
+  "areas": ["industry", "multiplayer", "interface"],
+  "claims": ["src/trading/market.js", "src/trading/station-terminals.js", "tests/station-market.test.js", "tests/server-station-market.test.js", "tests/browser/station-market-route.js"],
+  "brief": "docs/briefs/aeon-station-market.md"
+}

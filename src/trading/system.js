@@ -11,28 +11,32 @@ import { crateBounds } from '../cargo/grid.js';
 import { constrainShipAttachments } from '../ship-attachment-collision.js';
 import { createTradingPads } from './pads.js';
 import { onTradePad } from './sites.js';
-export function createTradingSystem({scene,nav,station,store,multiplayer,getShip,build,mining,remotePlayers}){
+import { marketIdForTerminal } from './market.js';
+import { AEON_STATION_TERMINALS,stationTerminalPoint,stationedForTrade,STATION_TERMINAL_REACH } from './station-terminals.js';
+export function createTradingSystem({scene,nav,station,store,multiplayer,getShip,build,mining,remotePlayers,stationMarket=marketIdForTerminal}){
   const miningClient=bindCargoMining({multiplayer,mining,nav});
   const local=new LocalTrading(store),visuals=new Map(),accessModels=new Map(),peerLifts=new Map(),carry=new THREE.Group();carry.name='Carried 1 SBU';scene.add(carry);let lastRevision=-1,serial=0;
   cargoAsset(1).then(m=>carry.add(m)).catch(e=>{carry.userData.error=e.message;});
-  const snapshot=()=>{if(multiplayer.connected){const s=multiplayer.state.commerce;return {...s,owner:multiplayer.state.ownId,online:true,ships:s?.ships??[],terminals:s?.terminals??[]};}const s=local.state;return {...s,ships:Object.values(s.ships),terminals:Object.values(s.terminals),account:{...s.accounts[LOCAL_TRADER],credits:store.state.economy.credits},owner:LOCAL_TRADER,online:false};};
+  const snapshot=()=>{if(multiplayer.connected){const s=multiplayer.state.commerce;return {...s,owner:multiplayer.state.ownId,online:true,ships:s?.ships??[],terminals:s?.terminals??[]};}const s=local.state;return {...s,ships:Object.values(s.ships),terminals:Object.values(s.terminals),marketTerminals:Object.fromEntries(AEON_STATION_TERMINALS.map(t=>[t.id,stationMarket(t.id)])),account:{...s.accounts[LOCAL_TRADER],credits:store.state.economy.credits},owner:LOCAL_TRADER,online:false,error:local.error};};
   const pose=s=>{if(s.owner===snapshot().owner)return s.hull===nav.shipId?shipPose(nav):null;const p=multiplayer.state.players.find(p=>p.id===s.owner&&p.shipId===s.hull);return p?.shipPosition?{position:new THREE.Vector3(...p.shipPosition),quaternion:new THREE.Quaternion(...p.shipOrientation)}:null;};
   function terminalPosition(id){
-    if(id?.startsWith('station:')){const pod=station.pods.find(p=>`station:${p.id}`===id);return pod?.toWorld(new THREE.Vector3(-12,pod.interiorBox.min.y+1.75,20.7),new THREE.Vector3());}
+    if(id?.startsWith('station:'))return stationTerminalPoint(station,id);
     const t=snapshot().terminals.find(t=>t.id===id);return t?new THREE.Vector3(...t.position).add(new THREE.Vector3(0,1.3,0).applyQuaternion(new THREE.Quaternion(...t.quaternion))):null;
   }
-  const atTerminal=id=>{const p=terminalPosition(id);return p&&nav.mode==='walk'&&!nav.insideShip&&nav.position.distanceTo(p)<2.8;};
-  const nearestTerminal=()=>[...station.pods.map(p=>`station:${p.id}`),...snapshot().terminals.map(t=>t.id)].filter(atTerminal).sort((a,b)=>terminalPosition(a).distanceToSquared(nav.position)-terminalPosition(b).distanceToSquared(nav.position))[0]??null;
-  const docked=(s,id)=>s.owner===snapshot().owner&&s.hull===nav.shipId&&nav.shipSpeed<1&&!nav.travel&&(id?.startsWith('station:')?nav.dockedAtStation&&Number(id.split(':')[1])===(multiplayer.connected?multiplayer.state.hangar?.id:station.parkedPod+1):onTradePad(pose(s)?.position,snapshot().terminals.find(t=>t.id===id)));
+  const atTerminal=id=>{const p=terminalPosition(id);return p&&nav.mode==='walk'&&!nav.insideShip&&nav.position.distanceTo(p)<STATION_TERMINAL_REACH;};
+  const nearestTerminal=()=>[...AEON_STATION_TERMINALS.map(t=>t.id),...snapshot().terminals.map(t=>t.id)].filter(atTerminal).sort((a,b)=>terminalPosition(a).distanceToSquared(nav.position)-terminalPosition(b).distanceToSquared(nav.position))[0]??null;
+  const docked=(s,id)=>s.owner===snapshot().owner&&s.hull===nav.shipId&&!nav.cabinFlight&&nav.shipVelocity.length()<1&&!nav.travel&&(id?.startsWith('station:')?stationedForTrade({nav,hangarId:multiplayer.connected?multiplayer.state.hangar?.id:station.parkedPod+1,station},id):nav.shipSpeed<1&&onTradePad(pose(s)?.position,snapshot().terminals.find(t=>t.id===id)));
   const canTake=(s,c)=>{const p=pose(s);return p&&['walk','eva'].includes(nav.mode)&&aboard(nav.position,p,s.hull)&&nearCrate(nav.position,p,s.hull,c);};
   const canStow=s=>{const p=pose(s);return s.owner===snapshot().owner&&p&&nav.mode==='walk'&&aboard(nav.position,p,s.hull)&&nearGrid(nav.position,p,s.hull);};
   const sources=()=>{const a=[{id:'pack',name:'Backpack'}];if(!multiplayer.connected){if(nav.insideShip||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50)a.push({id:'ship',name:'Ship sample lockers'});for(const c of build.claims)if(new THREE.Vector3(...c.origin).distanceTo(nav.position)<20)for(const [id,v]of Object.entries(store.state.remote))if(id.includes(c.id))a.push({id,name:v.name});}return a;};
   const api={callShip:hull=>multiplayer.request('cargoHull',{hull}),snapshot,atTerminal,nearestTerminal,docked,canTake,canStow,sources,
     loose:(source,id)=>multiplayer.connected?((multiplayer.state.inventory?.containers.pack[id]??0)+(snapshot().account?.resources?.[id]??0)):(sources().some(s=>s.id===source)?store.container(source)?.items[id]??0:0),
     async command(m){
-      const fields={...m,commandId:`cargo-${Date.now()}-${++serial}`,revision:snapshot().revision};
+      // A priced action submits the revision shown with its quote. Do not replace
+      // it with a newer snapshot between drawing the button and activation.
+      const fields={...m,commandId:`cargo-${Date.now()}-${++serial}`,revision:m.revision??snapshot().revision};
       if(multiplayer.connected){await multiplayer.request('cargo',fields);return {message:'Cargo transaction saved on the server.'};}
-      return local.command(fields,{terminal:atTerminal,docked,resources:id=>api.loose(m.source,id),crate:canTake,grid:canStow,loot:()=>false});
+      return local.command(fields,{terminal:atTerminal,docked,stationMarket,resources:id=>api.loose(m.source,id),crate:canTake,grid:canStow,loot:()=>false});
     },
     async deploy(){if(multiplayer.connected){await multiplayer.request('cargo',{op:'deploy',revision:snapshot().revision,commandId:`cargo-${Date.now()}-${++serial}`});return {message:'Shared trading pad built.'};}return local.deploy(nav);},
   };

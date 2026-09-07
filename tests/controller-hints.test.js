@@ -7,3 +7,7 @@ test('controller hints distinguish owned site, outside claim, cabin, flight and 
  assert.equal(hints({mode:'flight'}).LT,'BRAKE');assert.equal(hints({mode:'flight'}).RT,'FIRE');assert.equal(hints({mode:'flight'})['A / B'],'UP / DOWN');
  assert.equal(hints({mode:'eva'})['A / B'],'RISE / LOWER');assert.equal(hints({mode:'landed'}).Y,'LAUNCH');
 });
+test('hands-free concourse hints retain walking, interaction and inventory without fire or draw bindings',()=>{
+ const h=hints({mode:'walk',handsFree:true,tool:'rifle-laser'});
+ assert.equal(h.X,'INTERACT');assert.equal(h.VIEW,'BACKPACK');assert.equal(h.RT,undefined);assert.equal(h['D-PAD ← / →'],undefined);assert.equal(h.B,undefined);
+});
