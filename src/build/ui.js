@@ -23,8 +23,10 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
   hud.innerHTML = '<span class="build-eyebrow">CONSTRUCTION MODE</span><strong class="build-selected"></strong><p class="build-placement" role="status"></p><p class="build-cost"></p><p class="build-ship-link"></p><p class="build-hints">A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap &nbsp; ↑ ↓ · Height<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump</p><div class="build-touch"></div>';
   const shortcut = button(sandbox?'Sandbox · Build / B':'Build · B', 'build-open', () => open()); shortcut.id = 'build-shortcut'; shortcut.hidden = true;
   document.body.append(dialog, hud, shortcut);
+  const wheels={pieces:undefined,shapes:['foundation-triangle','wall-quarter','window-quarter','foundation-quarter','floor-quarter','floor-triangle','wall','floor'],facilities:['rack','terminal','hangar-door','foundation-ramp','foundation-pad-small','foundation-pad-medium','foundation-pad-large','mainframe']};
   let radial=null;
-  dialog.controllerNavigation=ui=>tab==='pieces'?radial?.navigate(ui):null;
+  dialog.controllerNavigation=ui=>radial?.navigate(ui);
+  dialog.controllerAction=ui=>{const direction=Number(ui.pressed.has(5))-Number(ui.pressed.has(4));if(!direction)return null;const available=[...tabs.children].filter(b=>!b.hidden),i=available.findIndex(b=>b.dataset.controllerKey===`build-tab-${tab}`),target=available[(i+direction+available.length)%available.length];target.click();nav.gamepad.suspend();return target;};
   let tab = 'pieces', batch = 1, claim = null, lastPreview = '', lastMaterials = '';
   function report(result) { const message = result?.message || result?.reason; if (message) { feedback.dataset.ok=String(result?.ok===true); feedback.textContent = message; onMessage(message); } return result; }
   function suspend() { nav.keys.clear(); nav.toolTrigger = 0; nav.gamepad.suspend(); }
@@ -36,16 +38,16 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
     dialog.close(); suspend(); update();
   }
   function render() {
-    content.replaceChildren(); feedback.textContent = '';radial=null;dialog.classList.toggle('is-radial',tab==='pieces');
+    content.replaceChildren(); feedback.textContent = '';radial=null;dialog.classList.toggle('is-radial',Object.hasOwn(wheels,tab));
     for (const el of dialog.querySelector('.build-tabs').children) el.setAttribute('aria-pressed', String(el.dataset.controllerKey === `build-tab-${tab}`));
     if (tab === 'sandbox' && sandbox) {
       description.textContent='BUILD SANDBOX · Separate saved world. Materials are drawn directly from this bank anywhere you build. Refill whenever you need more; your bases stay saved. 64 pieces per site.';
       const totals=document.createElement('dl');totals.className='build-overview';
       for(const [id,quantity]of Object.entries(sandbox.totals())){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=name(id);dd.textContent=`${quantity.toLocaleString()} kg`;totals.append(dt,dd);}
       content.append(totals,button('Refill bank · 4,608 kg','sandbox-refill',()=>{const result=sandbox.refill();render();report(result);}));
-    } else if (tab === 'pieces') {
-      description.textContent = 'Left stick · Point   A · Choose   B · Close. D-pad browses pieces and tabs.';
-      radial=createBuildRadial({selected:build.pieceId??build.state?.pieceId??'mainframe',onChoose:choose,formatCost:amounts});
+    } else if (Object.hasOwn(wheels,tab)) {
+      description.textContent = 'LB / RB · Switch tabs   Left stick · Point   A · Choose   B · Close.';
+      radial=createBuildRadial({order:wheels[tab],selected:build.pieceId??build.state?.pieceId??'mainframe',onChoose:choose,formatCost:amounts});
       content.append(radial.element);
       const note=document.createElement('p');note.className='build-wheel-note';note.textContent=sandbox?'Sandbox supply bank · Refill from Sandbox supplies.':'Start with a mainframe. Supplies: backpack, mainframe buffer, or ship within 50 m.';content.append(note);
       if(!sandbox&&onSandbox)content.append(button('Open supplied build sandbox','sandbox-enter',onSandbox));
@@ -79,6 +81,15 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
         const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = label; dd.textContent = String(value); info.append(dt,dd);
       }
       content.append(info);
+      if(claim?.terminal){
+        description.textContent='Inventory terminal · Access every storage container on this site while standing at the terminal.';
+        for(const container of claim.containers??[])content.append(button(container.name,`terminal-${container.id}`,()=>{dialog.addEventListener('close',()=>onOpenStorage(container.id),{once:true});dialog.close();}));
+      }
+      if(claim?.pad){
+        description.textContent=`Landing pad ${claim.pad.size} · Painted size markings and approach guides. Manual landing; keep the surface clear.`;
+        content.append(button(claim.pad.enabled?'Remove landing-pad designation':'Mark as landing pad', 'pad-designate',()=>{const result=build.setLandingPad(claim.id,claim.pad.id,!claim.pad.enabled);if(result.ok)claim={...claim,pad:{...claim.pad,enabled:!claim.pad.enabled}};render();report(result);}));
+      }
+
       if (claim?.bufferId) {
         const supplies = document.createElement('p'), contents = amounts(store.container(claim.bufferId)?.items); supplies.textContent = `Supply buffer: ${contents === 'None' ? 'Empty' : contents}`; content.append(supplies);
         if (build.setBufferEnabled) content.append(button(claim.useBuffer ? 'Disable construction supply buffer' : 'Enable construction supply buffer', 'build-buffer-toggle', () => {
@@ -95,11 +106,12 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
     if (document.querySelector('dialog[open]') && !dialog.open) return;
     if (nav.multiplayer?.connected) { onMessage('Construction and field recipes are available in offline testing.'); return; }
     if (view === 'pieces' && (nav.mode !== 'walk' || nav.insideShip)) { onMessage('Land and leave the ship to build.'); return; }
-    tab = view; suspend(); nav.enabled = false; if (document.pointerLockElement) document.exitPointerLock();
+    tab = view==='pieces'?Object.entries(wheels).find(([key,order])=>build.pieceId!=='mainframe'&&order?.includes(build.pieceId))?.[0]??'pieces':view; suspend(); nav.enabled = false; if (document.pointerLockElement) document.exitPointerLock();
     render(); if (!dialog.open) dialog.showModal(); update();
   }
   const tabs = dialog.querySelector('.build-tabs');
-  for (const [id,label] of [['pieces','Pieces'],['recipes','Recipes']]) tabs.append(button(label,`build-tab-${id}`,()=>{tab=id;render();}));
+  tabs.title='LB / RB · Switch tabs';
+  for (const [id,label] of [['pieces','Blocks'],['shapes','Shapes'],['facilities','Facilities'],['recipes','Resources']]) tabs.append(button(label,`build-tab-${id}`,()=>{tab=id;render();}));
   if(sandbox)tabs.append(button('Sandbox supplies','build-tab-sandbox',()=>{tab='sandbox';render();}));
   const mainframeTab = button('Mainframe','build-tab-mainframe',()=>{tab='mainframe';render();}); mainframeTab.hidden = true; tabs.append(mainframeTab);
   dialog.addEventListener('close', () => { suspend(); nav.enabled = !document.querySelector('dialog[open]'); update(); });

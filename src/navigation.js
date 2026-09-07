@@ -435,8 +435,9 @@ export class Navigation {
     if(!this.dryGround())return;
     this.gearProgress=1;this.gearDeployed=true;this.gearContactHold=false;
     const body=this.body,radial=this.normal;
-    const n=body.water?radial:bodySurfaceNormal(this.position,body);
-    const surface=bodySurfacePoint(radial,body);
+    const pad=this.baseLandingSurface?.();
+    const n=pad?.normal??(body.water?radial:bodySurfaceNormal(this.position,body));
+    const surface=pad?.point??bodySurfacePoint(radial,body);
     this.position.copy(surface).addScaledVector(n,3.2);
     this.gearDeployed=true;this.gearProgress=1;this.mode='landed';this.autoland=false;this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
     this.shipPosition=surface;
@@ -603,7 +604,7 @@ export class Navigation {
     const oldNormal=this.normal;
     const forward=FORWARD.clone().applyQuaternion(this.orientation),right=RIGHT.clone().applyQuaternion(this.orientation);
     const input=forward.clone().multiplyScalar(moveForward).addScaledVector(right,strafe);
-      const altitude=this.altitude;
+      const altitude=this.baseLandingSurface?.()?.clearance??this.altitude;
       if(this.autoland||this.stationLift)this.engineAcceleration.copy(this.flightEnvironment.gravity).negate();
       if(this.brakeFlight&&this.powered){
         const flight=stepFlight(this,{shipId:this.shipId,assist:true,brake:true},this.flightEnvironment,dt);

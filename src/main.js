@@ -193,6 +193,7 @@ try {
   landmarks.useClearings=()=>!nav.multiplayer?.connected;
   nav.surfaceObstacles=createLandmarkObstacles(createBuildObstacles(mining,build),landmarks,nav);
   nav.baseAction=()=>build.interact();nav.baseInteraction=()=>build.interaction;
+  nav.baseLandingSurface=()=>build.landingSurface();
   nav.buildingRaycast=(start,direction,range,envelope)=>build.raycast(start,direction,range,envelope);
   const rover=devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1'?createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected&&nav.shipId==='atlas'}):null;
   nav.vehicle=rover;
