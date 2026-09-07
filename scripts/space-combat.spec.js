@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 const output=process.env.COMBAT_EVIDENCE||'/tmp/star-agent-combat-evidence';
 for(const ship of ['nomad','kestrel'])test(`${ship}: controller patrol console, physical flight, targeting, engagement and combat report`,async({page,browser})=>{
- const evidence=`${output}/${ship}`;await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ const evidence=`${output}/${ship}`;await mkdir(evidence,{recursive:true});const errors=[];page.on('requestfailed',r=>console.log('Failed request',r.url(),r.failure()?.errorText));page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>{
   window.combatPad={id:'Combat test standard controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>[window.combatPad]});
@@ -91,10 +91,10 @@ for(const ship of ['nomad','kestrel'])test(`${ship}: controller patrol console, 
 
 test('keyboard and pointer fire, authored NPC close-ups, loss and recovery',async({page})=>{
  await page.addInitScript(()=>Object.defineProperty(navigator,'getGamepads',{value:()=>[]}));
- await mkdir(`${output}/inspection`,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await mkdir(`${output}/inspection`,{recursive:true});const errors=[];page.on('requestfailed',r=>console.log('Failed request',r.url(),r.failure()?.errorText));page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/api/auth/session',route=>route.fulfill({json:{account:null}}));
  await page.goto('/?dev=1&ship=kestrel&start=orbit&intro=0&debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&window.starAgent.state.mode==='flight'&&!window.starAgent.state.transiting,{},{timeout:90000});
- await page.locator('#patrol-console-button').click();await page.getByRole('button',{name:'Accept patrol',exact:true}).click();await page.waitForFunction(()=>window.starAgent.state.combat.phase==='transit');await page.getByRole('button',{name:'Close patrol console',exact:true}).click();
+ await page.locator('#patrol-console-button').click();await page.getByRole('button',{name:'Accept patrol',exact:true}).click();await page.waitForFunction(()=>window.starAgent.state.combat.phase==='transit');await page.locator('#patrol-console .gameplay-resume, #patrol-console:not(.gameplay-screen) [aria-label="Close patrol console"]').click();
  await page.waitForFunction(()=>window.starAgent.state.enabled&&document.activeElement?.id==='viewport');
  await page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
  await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.combat.phase==='engage',{},{timeout:45000}).catch(async e=>{console.log('Arrival state',await page.evaluate(()=>({combat:window.starAgent.state.combat,position:window.starAgent.state.position,speed:window.starAgent.state.speed,enabled:window.starAgent.state.enabled,controller:window.starAgent.state.controller,mode:window.starAgent.state.mode,keys:[...window.starAgent.navigation.keys],focused:window.starAgent.state.focused,transiting:window.starAgent.state.transiting})));throw e;});await page.keyboard.up('w');await page.keyboard.press('x');
@@ -124,11 +124,11 @@ test('keyboard and pointer fire, authored NPC close-ups, loss and recovery',asyn
  await page.keyboard.press('Escape');await page.waitForFunction(()=>window.starAgent.state.enabled);
  await page.locator('#patrol-console-button').click();await page.screenshot({path:`${output}/inspection/phone-console.png`});
  expect(await page.locator('#patrol-console').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
- await page.getByRole('button',{name:'Close patrol console',exact:true}).click();expect(errors).toEqual([]);
+ await page.locator('#patrol-console .gameplay-resume, #patrol-console:not(.gameplay-screen) [aria-label="Close patrol console"]').click();expect(errors).toEqual([]);
 });
 
 test('controller layout fits desktop and phone, scrolls and returns safely to play',async({page,browser})=>{
- const dir=`${output}/layout`;await mkdir(dir,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ const dir=`${output}/layout`;await mkdir(dir,{recursive:true});const errors=[];page.on('requestfailed',r=>console.log('Failed request',r.url(),r.failure()?.errorText));page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>{
   window.layoutPad={id:'Standard layout test',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>[window.layoutPad]});

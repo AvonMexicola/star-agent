@@ -1933,7 +1933,7 @@ was restarted on5178/API8087 and serves the updated controller module. Final
 records release the claim; this remains a development checkpoint with injected
 controller evidence, not hardware acceptance or production deployment.
 
-## Active gameplay menu — 2026-09-07
+## Gameplay menu — verified development checkpoint — 2026-09-07
 
 Cees requests a fixed in-game menu with Comms, Map, Contracts, Inventory, Loadout,
 Ship and Settings tabs, plus a development-only Dev console list. Codex owns
@@ -1980,3 +1980,22 @@ test-server teardown. All PR59 hosted checks, including verify, are green. Detai
 docs/qa/persistent-local-accounts.md and ADR0002. Independent review and public
 release remain separate. Browser QA is released. Preserve the running shared
 preview's database51224; database51254 was an isolated synthetic SQL QA target.
+
+
+Gameplay menu verification complete: feature9d08154 was reconciled with the
+persistent-account integration d1db78d in dc570a3. New terminal tabs retain the
+actual native screen handlers, use explicit pages, and require no scrolling at
+1440×900 or390×844, including inventory, loadout, Dev, recipes, fleet and account
+keyboard. Escape/Menu opens; LB/RB or brackets changes tabs; B/Escape resumes.
+Dev is gated by the existing development launcher and contains Test starts plus
+the console list. Station comms remains roster/hangar/account functionality; no
+new text-chat protocol is claimed. Settings includes graphics, sound and controls.
+
+Combined669 unit checks, repository checks and build pass. Six focused browser
+cases pass: menu layout matrix, controller transfers/loadout/Dev/input safety,
+both full Nomad/Kestrel patrols, keyboard/pointer recovery and controller diagram.
+Old-fixture corrections and the pre-existing external Google Fonts outage are
+recorded honestly in docs/qa/gameplay-menu.md alongside final captures. Chromium151
+/ AMD860M ANGLE GLES3.2; no physical-controller or independent visual-acceptance
+claim. Browser QA5491/5397 is released. Preserve the running persistent preview
+service and database; integrate by fast-forwarding the checked feature tree.
