@@ -33,7 +33,7 @@ async function pulse(page, index) {
   await page.waitForTimeout(95);
 }
 async function choose(page, key, activate = true) {
-  const target = page.locator(`[data-controller-key="${key}"]`); await expect(target).toBeVisible(); await expect(target).toBeEnabled();
+  const target = page.locator('dialog[open]').last().locator(`[data-controller-key="${key}"]`); await expect(target).toBeVisible(); await expect(target).toBeEnabled();
   for (let i = 0; i < 100; i++) {
     const route = await target.evaluate(target => {
       const dialog = [...document.querySelectorAll('dialog[open]')].at(-1);
