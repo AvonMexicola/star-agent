@@ -2715,3 +2715,20 @@ the included momentum authority changes. Existing PostgreSQL data is preserved.
 
 
 SA-SOCIAL-001 API CONTRACT: store.areFriends(accountIdA, accountIdB) -> Promise<boolean> is the authoritative predicate for protection/friend exemptions. Only an accepted mutual friendship with no block in either direction is true; self, pending, declined, removed or blocked pairs are false. server/social.js exposes the same asynchronous predicate. Block atomically deletes friendship and removes social presence/status access; the ordinary physical room roster remains public to admitted players. No turret/hub policing is part of this branch. New social methods live in server/social-store.js to minimize database.js overlap.
+
+SA-INT-002 LOCAL PROMOTION COMPLETE: dev/all-features2f3249f now serves the
+combined review on http://127.0.0.1:5178/. F2 / Menu → Dev → Content review
+opens the seven review entries. Expedition is the default local/remote suit;
+4 / LB+RB+D-pad-right changes view. Coherent source includes rover643a7d3,
+fauna5a3cf0b, construction33b33f2, momentum6f8b195+386483e and landmark
+material4f9d472+f88c497, plus character0bb6a6a/audio/props/station/Atlas records.
+All6 combined browser cases pass across focused runs;834units,90multiplayer
+(1explicit SQLfixture skip),8landmark invariants,12framework checks/build/repo
+pass. Curated evidence: docs/qa/dev-content-review.md. Draft PR68 remains open.
+Persistent service restarted once;5178proxy/APIhealth200,SQL51224listening,
+existing cluster inode947632 unchanged. Served expedition SHA04f849bafe…
+matches the checked asset. Main/public sites were not deployed. GPU and shared
+runtime integration locks are released; preserve current source when integrating
+the separately pending cargo/base-power/deer/social/rover-polish branches.
+64mAtlas remains studio-only; offline features and pending art/input/performance
+limits are recorded. No owner dirty source was copied after the frozen checkpoints.

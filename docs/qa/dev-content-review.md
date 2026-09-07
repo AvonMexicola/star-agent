@@ -114,3 +114,17 @@ phone390×844 CSS pixels. These are render/input checks, not FPS acceptance.
 Raw diagnostics remain in the local cache, outside Git. The three weapons were
 visually checked in hand; the gameplay journey fired the rifle and tested that
 holding fire through a menu did not spend ammunition after it closed.
+
+## Local delivery
+
+Shared `dev/all-features` was promoted at `2f3249f` on2026-09-07. The existing
+persistent preview service was restarted once to pair the frontend and updated
+multiplayer authority. Local5178 and its API health proxy return200; PostgreSQL
+still listens on51224 using the same cluster directory. The live expedition GLB
+hash matches `04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa`.
+The character/studio/review routes and refined landmark shader source were
+verified over HTTP after restart. Browser QA used the identical runtime from the
+isolated production preview; the promotion merge changed only handoff notes.
+
+[Draft PR68](https://github.com/AvonMexicola/star-agent/pull/68) retains the review
+branch. Main and public hosting were not deployed by this integration.
