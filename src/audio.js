@@ -80,10 +80,13 @@ export class FlightAudio {
     return true;
   }
 
-  resumeContext() {
+  resumeContext({ gesture = false } = {}) {
     if (!this.context || this.disposed) return Promise.resolve(false);
     if (this.context.state === 'running') return Promise.resolve(true);
-    if (this.resumePending) return this.resumePending;
+    // A browser may leave a pre-activation resume promise pending indefinitely.
+    // A new input gesture must reach resume() again while activation is present;
+    // ordinary focus recovery still shares the existing request.
+    if (this.resumePending && !gesture) return this.resumePending;
     const context = this.context;
     let result;
     try { result = context.resume(); } catch { return Promise.resolve(false); }
@@ -105,7 +108,7 @@ export class FlightAudio {
     try {
       if (!this.context && !this.create()) return false;
       this.enabled = true;
-      const resumed = this.resumeContext();
+      const resumed = this.resumeContext({ gesture: true });
       // Start/retry HTML media synchronously while this call still belongs to
       // the gesture, before the AudioContext resume promise consumes activation.
       this.applyAvailability({ gesture: true });

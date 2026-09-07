@@ -229,6 +229,31 @@ test('a delayed context resume cannot restore a mute or disposed mixer',async()=
   audio.dispose();assert.equal(await audio.unlock(),false);assert.equal(audio.state.audible,false);
 });
 
+test('a fresh gesture retries a browser-blocked resume without reviving a later mute or disposal',async t=>{
+  for(const ending of ['mute','dispose']){
+    let finishFirst,resumes=0;
+    const f=flightFixture({resume:c=>{
+      resumes++;
+      if(resumes===1)return new Promise(done=>{finishFirst=done;});
+      c.changeState('running');return Promise.resolve();
+    }}),{audio,context,media}=f;
+    t.after(()=>audio.dispose());context.state='suspended';
+    const first=audio.unlock({shipId:'nomad',throttle:1});
+    assert.equal(resumes,1);assert.equal(audio.enabled,true);assert.equal(audio.state.audible,false);
+    for(let i=0;i<10;i++){audio.setSuspended(false);audio.update(audio.lastState);}
+    assert.equal(resumes,1,'render/focus checks never retry a pending gesture request');
+    const accepted=audio.unlock({shipId:'nomad',throttle:.5});
+    assert.equal(resumes,2,'a later trusted input must invoke resume again before awaiting');
+    assert.equal(await accepted,true);assert.equal(f.created,1);assert.equal(audio.state.audible,true);
+    assert.equal(audio.engineAudio.state.load,.5);
+    if(ending==='mute')await audio.toggle();else audio.dispose();
+    finishFirst();assert.equal(await first,false);
+    assert.equal(audio.enabled,false);assert.equal(audio.state.audible,false);
+    assert.equal(audio.master.gain.value,0);assert.ok(media.every(item=>item.paused));
+    audio.dispose();
+  }
+});
+
 test('legacy station hum remains silent during powered cruise drift and power loss',async()=>{
   const {audio}=flightFixture();
   await audio.unlock({shipId:'kestrel',speed:40000,throttle:0,boost:true,airless:true});

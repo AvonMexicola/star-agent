@@ -63,3 +63,19 @@ diagnostic access match this API. No parent source, shared service or GPU job wa
 changed here. Browser listening, actual mixer sample output, controller journeys,
 touch, integration and deployment remain parent-owned and are not established by
 numerical tests or the build. No physical controller or audio-device test was run.
+
+Pre-browser follow-up: the parent identified a real pending-activation edge. If
+the first Gamepad-triggered `AudioContext.resume()` never settles, reusing its
+promise prevented a later native gesture from reaching `resume()` again. The
+new regression failed with one resume invocation instead of two before the fix.
+`unlock()` now retries the browser call synchronously for each caller-declared
+fresh gesture; ordinary suspension/focus recovery still shares pending requests.
+The public `unlock(state?)` signature is unchanged. It creates one graph, allows
+the second accepted resume to complete independently, and suppresses the stale
+first continuation after mute or disposal. Requested `enabled` is available
+synchronously, so parent controls need not wait for an autoplay-blocked promise
+to display the player's choice.
+
+After this narrow fix, the gameplay-audio/music command passes **31/31** and the
+build passes again with the same existing chunk warning. No browser or GPU job
+was run by this lane; the parent owns Gamepad-first/native-touch recovery evidence.
