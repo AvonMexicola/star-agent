@@ -5,7 +5,7 @@ import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {GANNET_LAYOUT as L, GANNET_LIFT as P, gannetMechanismPose} from '../src/gannet-layout.js';
+import {GANNET_LAYOUT as L, GANNET_LIFT as P, gannetMechanismPose, gannetCollisionParts} from '../src/gannet-layout.js';
 import {GannetSystems} from '../src/gannet-systems.js';
 import {roverSweptBounds, roverFitsPlatform} from '../src/rover-physics.js';
 import {GEAR_FLIGHT} from '../src/gear-flight.js';
@@ -31,6 +31,17 @@ async function geometry(path){
   const rebuilt=Buffer.concat([header,padded,binHeader,binary]);
   const gltf=await new GLTFLoader().parseAsync(rebuilt.buffer.slice(rebuilt.byteOffset,rebuilt.byteOffset+rebuilt.byteLength),'');
   gltf.scene.updateMatrixWorld(true);return {scene:gltf.scene,sha256:hash(bytes),doc};
+}
+/** Preserve actual glTF material sides/opacity for first-visible-hit checks.
+ * Only image decoding is replaced; this does not compile shaders or render. */
+async function materialGeometry(path){
+  const bytes=await readFile(path),loader=new GLTFLoader();
+  loader.register(parser=>{
+    parser.loadTextureImage=async index=>{const texture=new THREE.Texture();parser.associations.set(texture,{textures:index});return texture;};
+    return {name:'CpuGeometryWithAuthoredMaterialSides'};
+  });
+  const gltf=await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
+  gltf.scene.updateMatrixWorld(true);return gltf.scene;
 }
 let assetPromise;
 const asset=()=>assetPromise??=geometry(resolve(root,'public/models/gannet.glb'));
@@ -229,4 +240,70 @@ test('canonical pilot forward rays cross retained pressure glass without an opaq
     if(Number.isFinite(obstacle))failures.push(`opaque obstacle ${obstacle.toFixed(6)} m ahead at yaw ${yaw}, pitch ${pitch}`);
   }
   assert.deepEqual(failures,[],'the main pilot sightline must remain free of central structure');
+});
+
+test('all four actual MFD faces are first visible from the canonical pilot eye with authored material sides',async()=>{
+  const scene=await materialGeometry(resolve(root,'public/models/gannet.glb')),eye=point(L.seatEye),meshes=[];
+  scene.traverse(n=>{if(n.isMesh)meshes.push(n);});
+  const failures=[];let samples=0;
+  for(const {node:name} of L.mfdMounts){
+    const target=scene.getObjectByName(name),surfaces=[];target.traverse(n=>{if(n.isMesh)surfaces.push(n);});
+    assert.equal(surfaces.length,1,`${name} actual surface`);
+    const surface=surfaces[0],{position,uv}=surface.geometry.attributes,index=surface.geometry.index;
+    function onFace(u,v){
+      for(let k=0;k<index.count;k+=3){
+        const ids=[index.getX(k),index.getX(k+1),index.getX(k+2)],t=ids.map(i=>new THREE.Vector2().fromBufferAttribute(uv,i));
+        const divisor=(t[1].y-t[2].y)*(t[0].x-t[2].x)+(t[2].x-t[1].x)*(t[0].y-t[2].y);
+        const a=((t[1].y-t[2].y)*(u-t[2].x)+(t[2].x-t[1].x)*(v-t[2].y))/divisor;
+        const b=((t[2].y-t[0].y)*(u-t[2].x)+(t[0].x-t[2].x)*(v-t[2].y))/divisor,c=1-a-b;
+        if(Math.min(a,b,c)<-1e-6)continue;
+        return ids.reduce((p,i,j)=>p.addScaledVector(new THREE.Vector3().fromBufferAttribute(position,i),[a,b,c][j]),new THREE.Vector3()).applyMatrix4(surface.matrixWorld);
+      }
+      assert.fail(`${name} is missing screen area at UV ${u},${v}`);
+    }
+    for(const u of [.08,.5,.92])for(const v of [.08,.5,.92]){
+      const point=onFace(u,v),direction=point.clone().sub(eye);
+      const ray=new THREE.Raycaster(eye,direction.clone().normalize(),.01,direction.length()+.01);
+      const first=ray.intersectObjects(meshes,false).find(hit=>{
+        const material=Array.isArray(hit.object.material)?hit.object.material[hit.face.materialIndex]:hit.object.material;
+        return !material.transparent;
+      });
+      if(first?.object!==surface)failures.push(`${name} UV ${u},${v}: first opaque hit ${first?.object.name??'none'}`);
+      samples++;
+    }
+  }
+  assert.equal(samples,36);
+  assert.deepEqual(failures,[],'a bezel or other opaque part obscures an actual display face');
+});
+
+test('actual display backings join their shelf and hull support while remaining clear of the pressure glass',async t=>{
+  const {scene}=await asset(),triangles=soup(scene),parts=gannetCollisionParts();
+  const shelf=parts.find(p=>p.name==='Instrument support shelf');assert.ok(shelf);
+  const shelfBox=new THREE.Box3(point(shelf.min),point(shelf.max));
+  const glass=triangles.filter(p=>/pressure.glazing/i.test(p.name));assert.ok(glass.length);
+  clear(glass,shelfBox.clone().expandByScalar(.001),'complete support shelf and 1 mm packing margin');
+  const cabin=triangles.filter(p=>/^Cabin.*original_Meridian_PBR/.test(p.name));
+  const hull=triangles.filter(p=>/^OuterHull.*original_Meridian_PBR/.test(p.name));
+  function crossings(origin,geometry){
+    const direction=point([0,0,-1]),ray=new THREE.Ray(point(origin),direction),hits=[],hit=new THREE.Vector3();
+    for(const {triangle:p} of geometry)if(ray.intersectTriangle(p.a,p.b,p.c,false,hit)){
+      const d=hit.distanceTo(ray.origin),dot=p.getNormal(new THREE.Vector3()).dot(direction);
+      if(d>0&&d<1.5&&Math.abs(dot)>.01)hits.push({d,enter:dot<0,point:hit.clone()});
+    }
+    return hits.sort((a,b)=>a.d-b.d).filter((p,i,all)=>i===0||Math.abs(p.d-all[i-1].d)>1e-5||p.enter!==all[i-1].enter);
+  }
+  let overlap=Infinity;
+  for(const [i,mount] of L.mfdMounts.entries()){
+    const backing=parts.find(p=>p.name===`MFD bezel${i?'.'+String(i).padStart(3,'0'):''}`);assert.ok(backing);
+    const backingBox=new THREE.Box3(point(backing.min),point(backing.max)).expandByScalar(.001);
+    const hits=crossings([mount.position[0],2.36,-9.7],cabin);
+    assert.deepEqual(hits.map(h=>h.enter),[true,true,false,false],`${mount.node} backing and shelf must overlap as two actual closed solids`);
+    assert.ok(backingBox.containsPoint(hits[0].point));assert.ok(shelfBox.clone().expandByScalar(.001).containsPoint(hits[1].point));
+    overlap=Math.min(overlap,hits[2].d-hits[1].d);
+  }
+  assert.ok(overlap>.001,`mount/shelf penetration is only ${overlap} m`);
+  const shelfHits=crossings([0,2.28,-9.7],cabin),hullHits=crossings([0,2.28,-9.7],hull);
+  const shelfEnd=shelfHits.find(h=>!h.enter),hullStart=hullHits.find(h=>h.enter);assert.ok(shelfEnd&&hullStart);
+  const gap=Math.abs(shelfEnd.d-hullStart.d);assert.ok(gap<.001,`support shelf is separated from its hull mounting face by ${gap} m`);
+  t.diagnostic(`Minimum actual backing/shelf overlap: ${(overlap*1000).toFixed(2)} mm; shelf/hull fitted-face gap: ${(gap*1000).toFixed(3)} mm`);
 });

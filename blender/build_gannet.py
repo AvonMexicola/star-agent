@@ -244,14 +244,19 @@ for side in (-1,1):
     for z in (-.06,1.02):
         box('Locker petrol front',(side*1.33,2.52,z),(.03,1.56,.85),4,.015,cabin)
         rod('Locker recessed handle',(side*1.30,2.26,z-.21),(side*1.30,2.53,z-.21),.018,2,cabin)
-box('Instrument support shelf',(0,2.32,-10.08),(2.83,.16,.46),1,.025,cabin)
+box('Instrument support shelf',(0,2.32,-10.27),(2.83,.16,.46),1,.025,cabin)
 for definition in L['mfdMounts']:
     pos=Vector(definition['position']);anchor=g.empty(definition['anchor'],pos,cabin);anchor.rotation_euler.x=definition['rotation'][0]
     # Rotation is expressed in game coordinates, transformed once into Blender.
     rot=Matrix.Rotation(definition['rotation'][0],4,'X')
     def q(x,y,z):return tuple(pos+rot@Vector((x,y,z)))
     w,h=definition['width']/2,definition['height']/2
-    bezel=panel('MFD bezel',[q(-w-.025,-h-.025,-.035),q(w+.025,-h-.025,-.035),q(w+.025,h+.025,-.035),q(-w-.025,h+.025,-.035)],1,.05,cabin)
+    # This open face has an authored pilot-facing normal. Recalculating normals
+    # on an isolated polygon can flip the solidify direction across the screen.
+    bezel=remember(g.mesh('MFD bezel',[q(-w-.025,-h-.025,-.035),q(w+.025,-h-.025,-.035),q(w+.025,h+.025,-.035),q(-w-.025,h+.025,-.035)],[(0,1,2,3)],surface,0,cabin,recalc=False),1)
+    stock=bezel.modifiers.new('Panel stock','SOLIDIFY');stock.thickness=.05;stock.offset=-1
+    edge=bezel.modifiers.new('Panel edge','BEVEL');edge.width=.012;edge.segments=2
+    bezel.modifiers.new('Panel normals','WEIGHTED_NORMAL')
     screen=remember(g.mesh(definition['node'],[q(-w,-h,0),q(w,-h,0),q(w,h,0),q(-w,h,0)],[(0,1,2,3)],screenmat,0,cabin,recalc=False),0,False,True)
     uv=screen.data.uv_layers.new(name='UVMap')
     for loop,coord in zip(screen.data.loops,[(0,0),(1,0),(1,1),(0,1)]):uv.data[loop.index].uv=coord
