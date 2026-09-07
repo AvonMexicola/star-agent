@@ -1,5 +1,7 @@
 # Rare Aeon landmark rocks — development evidence
 
+[Latest density and restrained-material follow-up](landmark-restraint/README.md) records the subsequent reduction requested by Cees.
+
 The subsequent [surface refinement and current material screenshots](landmark-weathering/README.md)
 address Cees's texture-detail feedback while retaining these shapes and collision.
 The original captures below remain the geometry checkpoint's historical evidence.

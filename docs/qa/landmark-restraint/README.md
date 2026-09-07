@@ -3,7 +3,7 @@
 7 September 2026. Cees liked the silhouettes but found the formations too common
 from 1 km, their shader too strong and frame rate low. This supersedes the
 [first weathering pass](../landmark-weathering/README.md) as the current direction.
-Builder visual verification is pending the final capture; independent acceptance
+Builder inspection of the final game images is complete. Independent acceptance
 and exclusive-hardware performance acceptance are not claimed.
 
 Runtime `bb75c4c`, branch `art/landmark-restraint`, based on local dev
@@ -63,7 +63,8 @@ gzip bytes, down from 8,846 / 2,978. The same accepted physical openings remain.
   All 23 focused checks also pass on the bounded PR branch. Repository/whitespace
   checks pass; the task's abbreviated base SHA and previous task-status overlap
   were corrected during those checks.
-- Final actual-game capture: pending. No new input or playable route is added;
+- Final actual-game capture: **1 passed in 1.8 minutes**, with no page/console
+  errors, on runtime `bb75c4c` and fixture `2a40fed`. No new input or playable route is added;
   prior physical/controller geometry evidence remains in the original
   [landmark record](../landmark-rocks.md), with its exact historical source.
 
@@ -113,3 +114,74 @@ landmarks and was a poor illustration of regional density. Raw failed baseline
 images, timeout screenshot, trace and JSON are retained under
 `~/.cache/star-agent-rock-restraint/captures/`; final evidence uses a separate
 directory so the failed attempt cannot be mistaken for a pass.
+
+
+## Final actual-game evidence
+
+The candidate-only rerender started at **18:52:22 UTC** with no other Playwright
+or headless GPU process active, after the queued social process exited. Its cold
+boot completed in **40.01 seconds**, including full orbital maps; no application
+source change or skipped startup stage was needed. The initial timeout remains
+unexplained rather than being retrospectively called a shader fix.
+
+The completed baseline low-flight and close captures from the first run were
+reused. The fixture asserts identical eye and target coordinates for the paired
+low-flight view; both close poses also use the same recorded fixture/coordinates.
+The new 1 km view looks toward the horizon and has no matching before image.
+Do not compare it to the earlier steep view as though only population changed.
+To reproduce this candidate-only path, set `RESTRAINT_BASELINE_RECORD` to the
+first run's retained `restraint.json`; omit it for a fresh full comparison.
+
+Browser **Chromium 151.0.7922.173**, **AMD Radeon 860M** / ANGLE GL, OpenGL ES 3.2
+(radeonsi krackan1 ACO), **1440×900**, DPR 1 and render scale 1. Each final pose has
+92 valid GPU samples after warmup. Reported GPU times cover the whole scene,
+including effects/shadows, rather than the landmark material in isolation.
+
+| Pose | Visible landmarks | Landmark draws | Landmark triangles | Scene draws | Scene triangles | GPU median / p95 ms | CPU median / p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| before-low-flight | 57 | 14 | 36,672 | 632 | 1,096,406 | 21.65 / 24.01 | 19.85 / 25.10 |
+| before-close-face | 60 | 14 | 38,304 | 715 | 1,229,054 | 30.28 / 33.71 | 23.65 / 28.00 |
+| after-approach-1000m | 11 | 6 | 5,536 | 274 | 562,582 | 11.07 / 12.01 | 14.95 / 17.90 |
+| after-low-flight | 14 | 8 | 12,512 | 626 | 1,072,246 | 21.61 / 23.35 | 18.90 / 23.00 |
+| after-close-face | 16 | 8 | 13,632 | 709 | 1,204,382 | 27.96 / 30.12 | 21.60 / 26.50 |
+
+The two paired scene-count differences equal their landmark-count differences:
+other drawn geometry is consistent in those views. Low-flight landmark instances
+fall **57→14** and batches **14→8**, but full-scene GPU time is essentially unchanged
+(**21.65→21.61 ms**). The close sample improves modestly (**30.28→27.96 ms**).
+These observations do **not** establish a large FPS gain or isolate the user's
+background-contention effect. Overall frame time still needs further profiling;
+the surface frame-time target is not accepted. Geometry counts meet the current
+900-draw / 1.8M-triangle surface limits. No extra geometry or textures were added.
+
+Six successive camera poses sample the relief fade and both existing LOD ranges
+at 130, 300, 500, 650, 1,750 and 2,100 m: all report visible landmarks and zero
+pending landmark work. The 500 m still shows the existing dither; the featured
+rock is occluded by foreground terrain at the 1,750 m pose. Neither those sampled
+poses nor this builder inspection establishes a scored continuous-motion review.
+Raw transition stills and sample arrays remain in the final cache directory.
+
+Builder inspection: the retained overhang has quieter, lighter mineral colouring
+and less exaggerated relief, while scanned stone detail remains readable nearby.
+The wide view has occasional distinct giant formations. The older medium rock
+field and distant forest/terrain rendering remain busy and are outside this
+large-landmark adjustment. All five images below and the two transition stills
+were inspected; no new shader artifacts or shape changes were found.
+
+Same low-flight pose:
+
+![Previous dense and strongly weathered landmark scene](before-low-flight.png)
+![Rarer landmarks and quieter stone in the same scene](after-low-flight.png)
+
+Same close pose:
+
+![Previous close material](before-close-face.png)
+![Restrained detail under the accepted overhang](after-close-face.png)
+
+Additional current 1 km view (not a before/after pair):
+
+![Occasional giant landmarks from one kilometre up](after-approach-1000m.png)
+
+This is a checked development checkpoint. Independent visual scoring,
+physical-device testing and a broader frame-time/cold/traversal benchmark remain
+pending. All owned capture browsers, previews and the queue watcher have exited.
