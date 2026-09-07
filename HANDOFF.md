@@ -1705,7 +1705,7 @@ combat report. Kestrel now uses the shared energy weapon inputs.
 
 The existing unit suite and production build pass. Both actual controller-only
 Nomad/Kestrel mission journeys pass; keyboard/pointer, close-up and recovery checks
-are recorded in `docs/qa/space-combat.md` after the final run. Independent visual
+also pass and are recorded with captures in `docs/qa/space-combat.md`. Independent visual
 review and physical-controller testing are not claimed. This is an offline,
 session-only first slice: no reward ledger, persistent mission, physical weapon
 fittings, ship collision damage, component damage, or multiplayer NPC authority.

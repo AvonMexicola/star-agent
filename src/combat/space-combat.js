@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import kestrelURL from '../../assets/kestrel/kestrel.glb?url';
+import {SHIP_LAYOUT} from '../boarding.js';
 import {CombatSimulation,GUNS,interceptPoint} from './simulation.js';
 import {markerDistance,projectShipMarker} from '../ship-marker-projection.js';
 import './space-combat.css';
@@ -50,7 +51,13 @@ export function createSpaceCombat({scene,nav,camera,effects}){
       const gltf=await loader.loadAsync(url),asset=gltf.scene;
       const mixer=new THREE.AnimationMixer(asset);
       for(const clip of gltf.animations){const action=mixer.clipAction(clip);action.play();action.paused=true;action.time=0;}
-      mixer.update(0);templates.set(id,asset);
+      mixer.update(0);
+      // Nomad's gear uses the canonical authored pivots, not animation clips.
+      if(id==='nomad')for(const spec of SHIP_LAYOUT.gear.legs){
+        const leg=asset.getObjectByName(spec.name);if(!leg)throw new Error(`Nomad missing ${spec.name}`);
+        leg.position.fromArray(spec.pivot).add(new THREE.Vector3(...spec.retractOffset));leg.rotation.z=spec.retractAngle;
+      }
+      templates.set(id,asset);
     })).catch(error=>{assetsPromise=null;throw error;});
     return assetsPromise;
   }

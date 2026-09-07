@@ -21,7 +21,7 @@ for(const ship of ['nomad','kestrel'])test(`${ship}: controller patrol console, 
  await page.screenshot({path:`${evidence}/console.png`});
  await tap(1);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
  // Navigate the accepted waypoint only by the flight stick; no pose/teleport calls.
- await page.evaluate(()=>{window.combatPad.axes[1]=-.65;});await page.waitForFunction(()=>window.starAgent.state.combat.phase==='engage',{},{timeout:45000}).catch(async e=>{console.log('Arrival state',await page.evaluate(()=>({combat:window.starAgent.state.combat,position:window.starAgent.state.position,speed:window.starAgent.state.speed,enabled:window.starAgent.state.enabled,controller:window.starAgent.state.controller,mode:window.starAgent.state.mode,transiting:window.starAgent.state.transiting})));throw e;});
+ await page.evaluate(()=>{window.combatPad.axes[1]=-.65;});await page.waitForFunction(()=>window.starAgent.state.combat.phase==='engage',{},{timeout:45000}).catch(async e=>{console.log('Arrival state',await page.evaluate(()=>({combat:window.starAgent.state.combat,position:window.starAgent.state.position,speed:window.starAgent.state.speed,enabled:window.starAgent.state.enabled,controller:window.starAgent.state.controller,mode:window.starAgent.state.mode,keys:[...window.starAgent.navigation.keys],focused:window.starAgent.state.focused,transiting:window.starAgent.state.transiting})));throw e;});
  await page.evaluate(()=>{window.combatPad.axes[1]=0;});await button(1,true);await button(1,false);
  await page.waitForFunction(()=>window.starAgent.state.combat.models===2);
  await page.screenshot({path:`${evidence}/arrival.png`});
@@ -53,10 +53,10 @@ for(const ship of ['nomad','kestrel'])test(`${ship}: controller patrol console, 
    const fire=Math.abs(yaw)<.045&&Math.abs(pitch)<.045;pad.buttons[0]={pressed:fire,value:+fire};
   },35);
  });
- await page.waitForFunction(()=>window.starAgent.state.combat.hits>0,{timeout:60000});
+ await page.waitForFunction(()=>window.starAgent.state.combat.hits>0,undefined,{timeout:60000});
  await page.screenshot({path:`${evidence}/engagement.png`});
  await writeFile(`${evidence}/engagement.json`,JSON.stringify(await page.evaluate(()=>{const s=window.starAgent.state;return {combat:s.combat,drawCalls:s.drawCalls,triangles:s.triangles,fps:s.fps,renderResolution:s.renderResolution};}),null,2));
- await page.waitForFunction(()=>['complete','failed'].includes(window.starAgent.state.combat.phase),{timeout:120000});
+ await page.waitForFunction(()=>['complete','failed'].includes(window.starAgent.state.combat.phase),undefined,{timeout:120000});
  await page.evaluate(()=>{clearInterval(window.combatPilot);window.combatPad.axes=[0,0,0,0];window.combatPad.buttons[0]={pressed:false,value:0};});await frames();
  expect(await page.evaluate(()=>window.starAgent.state.combat.phase)).toBe('complete');
  await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(9);await choose('patrol-console');await choose('patrol-debrief');
@@ -73,7 +73,9 @@ test('keyboard and pointer fire, authored NPC close-ups, loss and recovery',asyn
  await page.route('**/api/auth/session',route=>route.fulfill({json:{account:null}}));
  await page.goto('/?dev=1&ship=kestrel&start=orbit&intro=0&debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&window.starAgent.state.mode==='flight'&&!window.starAgent.state.transiting,{},{timeout:90000});
  await page.locator('#patrol-console-button').click();await page.getByRole('button',{name:'Accept patrol',exact:true}).click();await page.waitForFunction(()=>window.starAgent.state.combat.phase==='transit');await page.getByRole('button',{name:'Close patrol console',exact:true}).click();
- await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.combat.phase==='engage',{},{timeout:45000}).catch(async e=>{console.log('Arrival state',await page.evaluate(()=>({combat:window.starAgent.state.combat,position:window.starAgent.state.position,speed:window.starAgent.state.speed,enabled:window.starAgent.state.enabled,controller:window.starAgent.state.controller,mode:window.starAgent.state.mode,transiting:window.starAgent.state.transiting})));throw e;});await page.keyboard.up('w');await page.keyboard.press('x');
+ await page.waitForFunction(()=>window.starAgent.state.enabled&&document.activeElement?.id==='viewport');
+ await page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(r=>requestAnimationFrame(r));});
+ await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.combat.phase==='engage',{},{timeout:45000}).catch(async e=>{console.log('Arrival state',await page.evaluate(()=>({combat:window.starAgent.state.combat,position:window.starAgent.state.position,speed:window.starAgent.state.speed,enabled:window.starAgent.state.enabled,controller:window.starAgent.state.controller,mode:window.starAgent.state.mode,keys:[...window.starAgent.navigation.keys],focused:window.starAgent.state.focused,transiting:window.starAgent.state.transiting})));throw e;});await page.keyboard.up('w');await page.keyboard.press('x');
  await page.keyboard.down('t');await page.waitForFunction(()=>window.starAgent.state.combat.shots>1);await page.keyboard.up('t');
  const shots=await page.evaluate(()=>window.starAgent.state.combat.shots);
  await page.locator('.ship-trigger').hover();await page.mouse.down();await page.waitForFunction(shots=>window.starAgent.state.combat.shots>shots,shots);await page.mouse.up();
@@ -83,12 +85,12 @@ test('keyboard and pointer fire, authored NPC close-ups, loss and recovery',asyn
   await page.evaluate(ship=>{
    const n=window.starAgent.navigation,e=window.starAgent.state.combat.enemies.find(e=>e.ship===ship);
    const target=n.position.clone().fromArray(e.position),q=n.orientation.clone().fromArray(e.orientation);
-   n.position.copy(target).add(n.velocity.clone().set(35,14,-55).applyQuaternion(q));n.velocity.set(0,0,0);n.angularVelocity.set(0,0,0);n.orientToward(target,n.normal);n.enabled=false;
+   n.position.copy(target).add(n.velocity.clone().set(20,12,-27).applyQuaternion(q));n.velocity.set(0,0,0);n.angularVelocity.set(0,0,0);n.orientToward(target,n.normal.clone().set(0,1,0).applyQuaternion(q));n.enabled=false;
   },ship);
   await page.waitForTimeout(300);await page.screenshot({path:`${output}/inspection/${ship}-npc.png`});
  }
  await page.evaluate(()=>{window.starAgent.navigation.enabled=true;});
- await page.waitForFunction(()=>window.starAgent.state.combat.phase==='failed',{timeout:120000});
+ await page.waitForFunction(()=>window.starAgent.state.combat.phase==='failed',undefined,{timeout:120000});
  expect(await page.evaluate(()=>window.starAgent.state.combat.player.hull)).toBe(0);await page.screenshot({path:`${output}/inspection/loss.png`});
  await page.keyboard.press('Enter');await page.waitForFunction(()=>window.starAgent.state.mode==='flight'&&window.starAgent.state.combat.player.hull>0);
  expect(await page.evaluate(()=>window.starAgent.state.combat.enemies.length)).toBe(0);expect(await page.evaluate(()=>window.starAgent.state.combat.phase)).toBe('idle');

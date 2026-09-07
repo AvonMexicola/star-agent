@@ -16,7 +16,9 @@ textures or GLBs were changed. Both render as NPCs in the main flight renderer.
   injected axes; no navigation mutations or gameplay shortcut calls are used.
 - Held A suppression: modal close, blur/focus, disconnect/reconnect, replacement
   and unsupported mappings pass in both ship journeys.
-- Keyboard/pointer, controlled close-ups and recovery: final result recorded below.
+- Keyboard/pointer, controlled close-ups, NPC-caused ship loss, Enter recovery and
+  phone console layout: pass. Combined with the two controller runs, all three
+  feature browser cases pass (the focused keyboard rerun takes 1.9 minutes).
 
 The account-session request is a signed-out fixture (`{account:null}`), keeping
 this offline feature's test independent of the unrelated account server. No other
@@ -43,7 +45,9 @@ page so hardware input cannot mix with the injected keyboard route.
 6. The keyboard-only test initially mixed in a connected host Gamepad and flew off
    course. Its browser page now returns an empty Gamepad list. No system controller
    configuration or physical-device state was changed.
-7. Recovery now clears the failed patrol display and returns dispatch to idle.
+7. The keyboard fixture must wait for the native dialog close event and canvas
+   focus before pressing W; inputs during close cleanup are intentionally cleared.
+8. Recovery now clears the failed patrol display and returns dispatch to idle.
 
 ## Environment and scope
 
@@ -61,3 +65,10 @@ approval remain pending. This local functional slice does not certify the entire
 inherited scene or ship artwork. Session resets, separate ground/star damage,
 absent rewards, weapon fitting and multiplayer NPC authority are described in
 [the combat scope](../space-combat.md).
+
+## Captures
+
+- [Nomad engagement](space-combat/nomad-engagement.png) and [Kestrel engagement](space-combat/kestrel-engagement.png).
+- [Combat report](space-combat/report.png) and [ship loss](space-combat/loss.png).
+- [Nomad NPC](space-combat/nomad-npc.png) and [Kestrel NPC](space-combat/kestrel-npc.png), controlled viewpoints.
+- [Phone console](space-combat/phone-console.png), 390×844.
