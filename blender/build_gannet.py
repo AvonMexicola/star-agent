@@ -130,9 +130,12 @@ for side in (-1,1):
     box('Vestibule side wall',(side*2.975,3.0,3.95),(.15,3.2,1.10),1,.01,cabin)
 box('Cabin portal lintel',(0,3.88,3.40),(1.8,.16,.13),2,.01,cabin)
 box('Vestibule roof',(0,4.66,3.94),(5.92,.12,1.14),0,.015,hull)
+# A fitted pressure transom bridges the cabin crown and the higher vestibule
+# roof. Its underside preserves the canonical 3.8 m portal clearance.
+box('Cabin roof transition transom',(0,4.21,3.39),(5.92,.82,.16),0,.008,hull)
 
 # Rear carrier box is hollow: roof and side cargo banks are outside the NET bay.
-box('Vehicle bay roof',(0,4.70,7.41),(8.48,.20,5.83),0,.02,hull)
+box('Vehicle bay roof',(0,4.70,7.4975),(8.48,.20,6.005),0,.02,hull)
 for side in (-1,1):
     for z in (4.78,7.1,9.7):
         box('Overhead bay reinforcement',(0,4.645,z),(5.78,.07,.17),2,.008,cabin)
@@ -161,7 +164,7 @@ for side in (-1,1):
         box('Flush deck tie-down',(side*2.45,1.399,z),(.13,.002,.18),2,.008,lift,collision=False)
     box('Vehicle guide paint',(side*1.93,1.4005,7.70),(.05,.001,5.60),5,0,lift,collision=False)
 box('Rear threshold hazard stripe',(0,1.4005,10.82),(5.45,.001,.11),5,0,lift,collision=False)
-for x in (-2.75,2.75):box('Lift edge amber marker',(x,1.40,10.96),(.16,.024,.04),parent=lift,mat=amber,collision=False)
+for x in (-2.75,2.75):box('Lift edge amber marker',(x,1.4005,10.96),(.16,.001,.04),bevel=0,parent=lift,mat=amber,collision=False)
 
 # Two fixed real call panels: upper approach on the vestibule wall, lower
 # approach beside the rear portal. Neither consumes the 5.8 m bay or cargo cells.
@@ -184,9 +187,13 @@ for i in range(h['slats']):
     slat=g.empty('HatchSlat_'+str(i+1),(0,y,h['closedZ']),hatch)
     box('Hatch armored slat',(0,y,h['closedZ']),(5.80,h['slatHeight']-.008,h['slatDepth']),0,.012,slat)
     box('Hatch recessed slat seam',(0,y-h['slatHeight']/2+.015,h['closedZ']+.032),(5.61,.014,.005),1,.001,slat,collision=False)
-box('Rear hatch cassette',(0,5.20,10.68),(6.16,.12,.64),1,.018)
+# The leaves run in separate depth tracks inside a closed fixed cassette. The
+# top skin leaves over 20 mm above the actual fully retracted leaf geometry.
+box('Rear hatch cassette',(0,5.235,10.68),(6.16,.12,.64),1,.018)
+box('Hatch cassette front pressure skin',(0,4.94,10.49),(5.92,.68,.04),1,.004)
+box('Hatch cassette rear pressure skin',(0,4.94,10.990),(5.92,.68,.014),4,.003)
 box('Rear cassette upper fairing',(0,5.33,10.30),(6.40,.16,1.38),0,.025)
-for x in (-3.02,3.02):box('Hatch cassette track cover',(x,4.92,10.65),(.14,.50,.67),4,.012)
+for x in (-3.02,3.02):box('Hatch cassette track cover',(x,4.94,10.65),(.14,.68,.67),4,.012)
 box('Aft registration backing',(0,5.45,10.66),(6.16,.30,.65),0,.018)
 text('Gannet aft registration','GANNET  /  T-06',(0,5.445,10.99),.20)
 mark=remember(g.mesh('Approved Meridian badge',[(-2.825,5.315,10.992),(-2.575,5.315,10.992),(-2.575,5.565,10.992),(-2.825,5.565,10.992)],[(0,1,2,3)],badge,0,hull,recalc=False),0,False)

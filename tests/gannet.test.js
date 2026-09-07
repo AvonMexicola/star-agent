@@ -107,6 +107,57 @@ test('exported open bay and both full 64 SBU banks retain their actual clear vol
   assert.equal(L.cargo.grids.reduce((sum,g)=>sum+g.cells.reduce((a,b)=>a*b,1),0),128);
 });
 
+test('actual pressure skins close the stepped cabin roof and all fixed hatch-cassette faces',async()=>{
+  const {scene}=await asset();pose(scene,{gearProgress:1,hatchProgress:1,liftY:P.high});
+  const moving=new Set(Array.from({length:L.hatch.slats},(_,i)=>`HatchSlat_${i+1}`));
+  const triangles=soup(scene,moving),misses=[];
+  function skin(origin,direction,maximum,label){
+    const ray=new THREE.Ray(point(origin),point(direction)),hit=new THREE.Vector3();
+    const found=triangles.some(({triangle:t})=>ray.intersectTriangle(t.a,t.b,t.c,false,hit)&&hit.distanceTo(ray.origin)<=maximum);
+    if(!found)misses.push(label);
+  }
+  // Short rays cross the expected pressure boundary, so a distant outer panel
+  // or a moving hatch leaf cannot hide a hole in the actual local skin.
+  for(const x of [-2.7,-1.8,0,1.8,2.7]){
+    for(const y of [3.86,4.535,4.56,4.585])skin([x,y,3.15],[0,0,1],.45,`roof step x=${x}, y=${y}`);
+    for(const z of [9.7,10.1,10.34,10.47])skin([x,4.3,z],[0,1,0],.53,`bay ceiling x=${x}, z=${z}`);
+    for(const y of [4.65,4.85,5.02,5.12]){
+      skin([x,y,10.72],[0,0,-1],.32,`cassette front x=${x}, y=${y}`);
+      skin([x,y,10.72],[0,0,1],.32,`cassette rear x=${x}, y=${y}`);
+    }
+    for(const z of [10.4,10.55,10.9])skin([x,5.154,z],[0,1,0],.15,`cassette cap x=${x}, z=${z}`);
+  }
+  for(const side of [-1,1])for(const y of [4.66,4.9,5.12])for(const z of [10.38,10.7,10.91])skin([side*2.7,y,z],[side,0,0],.4,`cassette side ${side}, y=${y}, z=${z}`);
+  assert.deepEqual(misses,[],'local pressure-skin rays escaped through authored enclosure');
+});
+
+test('actual hatch leaves clear all fixed geometry and each other throughout the full cycle',async t=>{
+  const {scene}=await asset();
+  const names=Array.from({length:L.hatch.slats},(_,i)=>`HatchSlat_${i+1}`);
+  pose(scene,{gearProgress:1,hatchProgress:0,liftY:P.high});
+  const fixed=soup(scene,new Set(names)),failures=[];
+  for(let step=0;step<=100;step++){
+    pose(scene,{gearProgress:1,hatchProgress:step/100,liftY:P.high});
+    const leaves=names.map(name=>({name,box:new THREE.Box3().setFromObject(scene.getObjectByName(name))}));
+    for(let i=0;i<leaves.length;i++){
+      const leaf=leaves[i],hit=intersects(fixed,leaf.box);
+      if(hit)failures.push(`${step}/100 ${leaf.name} intersects fixed ${hit.name}`);
+      for(let j=i+1;j<leaves.length;j++)if(leaf.box.intersectsBox(leaves[j].box))failures.push(`${step}/100 ${leaf.name} intersects ${leaves[j].name}`);
+    }
+  }
+  assert.deepEqual(failures,[],'actual exported hatch motion has self-collision');
+  let overhead=Infinity;
+  for(const name of names){
+    const box=new THREE.Box3().setFromObject(scene.getObjectByName(name));
+    const origin=point([0,box.max.y,(box.min.z+box.max.z)/2]),ray=new THREE.Ray(origin,up),hit=new THREE.Vector3();
+    const distances=fixed.flatMap(({triangle:p})=>ray.intersectTriangle(p.a,p.b,p.c,false,hit)?[hit.distanceTo(origin)]:[]);
+    assert.ok(distances.length,`${name} has no real cassette cap overhead`);
+    overhead=Math.min(overhead,...distances);
+  }
+  assert.ok(overhead>=.020,`fully open leaves have only ${overhead} m below the actual cap`);
+  t.diagnostic(`Minimum exported open-leaf/cap clearance: ${(overhead*1000).toFixed(2)} mm`);
+});
+
 test('current Burrow full steering/suspension and actual door sweep clear new hull through all lift heights',async()=>{
   const {scene}=await asset();
   const roverLayout=JSON.parse(await readFile(resolve(roverRoot,'assets/mining-rover/layout.json')));
