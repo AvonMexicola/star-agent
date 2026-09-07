@@ -27,11 +27,13 @@ use `?seed=42` or the ordinary controls panel to choose a different world.
 A copied test URL includes its ship and start. This selector is gated by
 `VITE_DEV_TOOLS=1`, set by `dev:all`; ordinary production builds retain their entry.
 
-The Atlas Mark II link opens the separate 64 m studio. That asset and its pending
-refresh are not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold and
+The Atlas Mark II link opens the separate 64 m studio with its latest committed
+geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold and
 no installed weapons. Multiplayer currently uses the server's Nomad flight model;
-joining it returns to the authoritative station spawn instead of keeping a dev
-teleport, ship selection or test inventory. Local construction is not replicated.
+joining it reserves a server-assigned hangar and places the pilot on its deck beside
+the parked Nomad. It replaces the dev teleport, ship selection and test inventory.
+Hangar gravity follows the occupied bay, including EVA entry into another pilot's
+hangar; crossing an open deck edge returns to EVA. Local construction is not replicated.
 
 The runner starts Vite on 5178 and an isolated memory API on 8087. Optional local
 registration/login works through ACCOUNT; accounts reset when the runner stops.
@@ -46,15 +48,19 @@ Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned serv
 | Main world chain: Pyre, star, Miasma, seeded rocks | `origin/main` at `48a8468` |
 | Consolidated flight, grass/terrain loading, mining/EVA/inventory, station opening | `integrate/main-2026-09-06` through multiplayer ancestry |
 | Gear-limited flight, handling, drive, utilities, graphics, multiplayer | `feat/multiplayer-ten` at `f7a30ef` |
+| Server-assigned hangar spawns and local station gravity | `fix/multiplayer-hangar-gravity` at `b7eefc5` (PR #51) |
 | Flyable Kestrel and shared Meridian identity | `feat/kestrel-flight` at `e4ec7df` |
-| Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `be68a64` (asset/gameplay `9a363cb`) |
+| Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `385c138` (asset/gameplay `9a363cb`) |
 | Construction, mainframes, recipes and polished building pieces | `feat/base-building` at `891c916` |
 | Current station concourse/shop finishes and prop production records | `feat/retail-soft-props` at `9f02d24` |
 | Surface mist, volcanic ash, toxic wisps and shallow lunar dust | `feat/world-atmospherics` at `8bcdcc3` |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
+| Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
+| Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
 
-Atlas exterior refresh and further character production remain in owner worktrees
-without coherent new feature commits at this snapshot. Pending
+Atlas now includes its first committed geometry/gear refresh in the studio. Final
+materials, review and flight integration remain open. Further character production
+is still in its owner worktree without a new feature commit at this snapshot. Pending
 Meshy retail soft-prop candidates are production records, not installed props.
 Check shared HANDOFF.md and feature heads before updating this table.
 
@@ -82,6 +88,15 @@ starts teleport.
 See `docs/qa/local-development.md` for exact checks and limitations. Do not infer
 whole-scene visual approval, physical controller testing or public deployment from
 the presence of a feature branch in this test build.
+
+The hangar-gravity integration also passed seven focused test files covering server
+rooms, opening navigation, Kestrel flight, Nomad utilities, camera orientation and
+station collisions, plus a production build and the production two-pilot browser
+journey. That journey exercises assigned deck spawns, COMMS/transfers, controller
+jump, physical EVA exit/return and held-input suppression across menu, focus and
+controller reconnection. No browser errors were recorded. Feature-wide checks and
+captures are in `docs/qa/multiplayer-hangar-physics.md`. Protocol version 2 requires
+the frontend and API to be updated together; restart `dev:all` after integration.
 
 ## Space patrol combat
 

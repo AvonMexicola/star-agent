@@ -45,3 +45,12 @@ test('malformed receipts block mutation and preserve the original save',()=>{
   assert.equal(reload.blocked,true);assert.equal(reload.claimStarterConstruction().ok,false);assert.equal(disk.getItem(MINING_KEY),raw);
  }
 });
+
+test('a zero-capacity hold cannot receive the starter construction kit',()=>{
+ const disk=storage(),store=new MiningStore(disk);
+ store.state=store.withItems(store.state,'ship',{});
+ store.bindManifest({capacity:{ship:0}});
+ const before=structuredClone(store.state);
+ assert.equal(store.claimStarterConstruction().ok,false);
+ assert.deepEqual(store.state,before);
+});

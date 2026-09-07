@@ -84,6 +84,7 @@ test('failed respawn persistence leaves death and navigation state intact', asyn
   const p = room.players.get(accounts[0].id);
   p.health = 0; p.shipHealth = 0; p.nav.mode = 'crashed';
   const previousNav = p.nav, save = store.savePlayerState;
+  const previousHangar=p.hangarId,previousLease=structuredClone(room.leases.get(previousHangar));
   store.savePlayerState = async () => { throw new Error('storage unavailable'); };
   const ack = await request(p.id, { action: 'respawn' });
   store.savePlayerState = save;
@@ -91,6 +92,7 @@ test('failed respawn persistence leaves death and navigation state intact', asyn
   assert.equal(p.health, 0, 'a rejected respawn must not grant live health');
   assert.equal(p.shipHealth, 0);
   assert.equal(p.nav, previousNav);
+  assert.equal(p.hangarId,previousHangar);assert.deepEqual(room.leases.get(previousHangar),previousLease);
 });
 
 test('transfer cannot create a manifest that restoreInventory later discards', () => {
@@ -107,6 +109,7 @@ test('transfer cannot create a manifest that restoreInventory later discards', (
 test('departing Atlas hull holds an unleased door open after its pilot clears the threshold', async t => {
   const { room, world, accounts } = await setup(t, 1);
   const p = room.players.get(accounts[0].id), pod = world.pods[0];
+  room.leases.delete(p.hangarId);p.hangarId=null;
   p.nav.shipId = 'atlas'; p.nav.layout = FREIGHTER_LAYOUT;
   p.nav.orientation.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
   p.nav.position.copy(pod.padWorldPosition).add(new THREE.Vector3(0, 5.55, 23));
@@ -170,4 +173,42 @@ test('fractional resource capacity tolerance matches the persistence restore inv
   try { next = transferInventory(before, action); } catch { return; }
   assert.deepEqual(restoreInventory(next), next,
     'a transfer accepted within weight epsilon must not erase the manifest on reconnect');
+});
+
+test('failed admission releases its reserved hangar before another account joins',async t=>{
+  const {room,store}=await setup(t,0),save=store.savePlayerState;
+  const a=await store.createAccount({email:'failed@example.test',callsign:'Failed',passwordHash:'fixture'});
+  store.savePlayerState=async()=>{throw new Error('storage unavailable');};
+  await assert.rejects(room.join(a,()=>{}));
+  assert.equal(room.leases.size,0);assert.equal(room.players.size,0);
+  store.savePlayerState=save;
+  await room.join(a,()=>{});
+  assert.equal(room.leases.size,1);assert.equal(room.players.get(a.id).hangarId,1);
+});
+
+test('new admission does not equate a reused suit colour with another pilot occupied hangar',async t=>{
+  const {room,store,accounts}=await setup(t,2);
+  const a=room.players.get(accounts[0].id),b=room.players.get(accounts[1].id);
+  await room.leave(a.id);
+  room.leases.delete(b.hangarId);b.hangarId=1;
+  room.leases.set(1,{id:1,owner:b.id,status:'occupied',expiresAt:200000});
+  const c=await store.createAccount({email:'replacement@example.test',callsign:'Replacement',passwordHash:'fixture'});
+  await room.join(c,()=>{});
+  assert.equal(room.players.get(c.id).colorIndex,0);
+  assert.equal(room.players.get(c.id).hangarId,2);
+  assert.equal(room.leases.get(1).owner,b.id);
+});
+
+test('disconnect during a failed respawn does not resurrect an orphaned hangar lease',async t=>{
+  const {room,store,accounts,request}=await setup(t,1),p=room.players.get(accounts[0].id);
+  p.health=0;p.shipHealth=0;p.nav.mode='crashed';
+  const save=store.savePlayerState,gate=deferred(),entered=deferred();let first=true;
+  store.savePlayerState=async(...args)=>{
+    if(first){first=false;entered.resolve();await gate.promise;throw new Error('write failed');}
+    return save(...args);
+  };
+  const respawning=request(p.id,{action:'respawn'});await entered.promise;
+  const leaving=room.leave(p.id);gate.resolve();
+  assert.equal((await respawning).ok,false);await leaving;
+  assert.equal(room.players.size,0);assert.equal(room.leases.size,0);
 });

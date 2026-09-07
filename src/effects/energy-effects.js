@@ -49,9 +49,10 @@ class Plasma {
   dispose(){this.mesh.removeFromParent();this.mesh.geometry.dispose();this.material.dispose();}
 }
 
-/** Visual effects only. Damage and inventory remain owned by gameplay modules. */
+/** Presentation effects and optional sound events. Gameplay owns damage and inventory. */
 export class EnergyEffects {
-  constructor(scene,{capacity=2048,reducedMotion=false,seed=7291}={}){
+  constructor(scene,{capacity=2048,reducedMotion=false,seed=7291,onSound=null}={}){
+    this.onSound=onSound;
     this.particles=new ParticlePool(scene,capacity);this.time=0;this.seed=seed;this.reducedMotion=reducedMotion;
     this.slipstream=new Slipstream(scene);
     this.lances=Array.from({length:6},()=>({shell:new Plasma(scene),core:new Plasma(scene),active:false}));
@@ -75,11 +76,11 @@ export class EnergyEffects {
   /** Called only after a successful save/mesh commit, never for an attempted cut. */
   collect(point,yields,normal=Z){
     if(!yields?.some(n=>n>0))return;
-    this.collectedBursts++;
+    this.collectedBursts++;this.onSound?.({type:'collect',point});
     yields.forEach((amount,i)=>{if(amount>0)this.spray(point,normal,Math.min(18,Math.max(2,Math.ceil(amount*1100))),{color:ORE[i],speed:1.7,size:.065,life:1.5,kind:3,attract:true});});
   }
   impact(point,normal=Z,power=1,{color=0x6dcfff,kind='pulse'}={}){
-    this.weaponImpacts++;
+    this.weaponImpacts++;this.onSound?.({type:'impact',point});
     this.spray(point,normal,Math.round(38*power),{speed:kind==='void'?14:9*Math.min(1,Math.sqrt(power)),color,size:.1*Math.min(1,Math.sqrt(power)),gain:2});
     this.spray(point,normal,Math.round(16*power),{speed:5,color:kind==='void'?0x64ffee:0xffa34e,size:.065,gain:2});
     this.particles.emit(point,ZERO,{color:kind==='pulse'&&color===0x6dcfff?CYAN:color,life:kind==='void'?.7:.32,size:1.5*power,kind:2,stretch:0,gain:kind==='pulse'?1:2});
@@ -89,13 +90,13 @@ export class EnergyEffects {
       this.spray(point,normal,25,{speed:2,color,life:.8,size:.4,kind:0,gain:1.4});
     }
   }
-  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color}={}){
+  fire(start,direction,{hit=null,speed,range=1600,power,velocity=ZERO,weapon='pulse',color,sound=weapon}={}){
     const profile=weaponProfile(weapon),kind=profile.kind;
     if(hit&&start.distanceTo(hit.point)>range)hit=null;
     speed??=profile.speed;power??=profile.power;
     const tint=color===undefined?(kind==='pulse'?CYAN.clone():new THREE.Color(profile.color).multiplyScalar(2)):new THREE.Color(color).multiplyScalar(2);
     if(this.bolts.length>=32)return;
-    this.weaponShots++;this.lastWeapon=kind;
+    this.weaponShots++;this.lastWeapon=kind;this.onSound?.({type:'shot',weapon,sound,point:start});
     const end=hit?.point.clone()??start.clone().addScaledVector(direction,range);
     if(kind==='laser'){
       const lance=this.lances.find(l=>!l.active)??this.lances[0];

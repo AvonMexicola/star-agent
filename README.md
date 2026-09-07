@@ -172,6 +172,7 @@ Run `npm run test:browser -- -c scripts/expedition.config.js` for the integrated
 Original mining slice: [mining guide](docs/selene-mining.md).
 
 
+## Local soundtrack
 
 The opening's first movement gesture enables sound, or press **H** and use **SOUND ON** in the
 flight menu after the opening. Blue Horizon accompanies orbit, landing and quiet
@@ -183,3 +184,21 @@ and resumes at its previous position. Crash/destruction silences the score.
 No audio is requested before a gesture. The six MP3s total 21.7 MB; only the
 current track and incoming fade partner load. Engine, wind and hangar sounds
 remain procedural. Credits and source provenance: [soundtrack notes](public/audio/music/README.md).
+
+## Footsteps and equipment audio
+
+Sound also enables material footsteps: rock, grass, snow, wet shoreline, sand
+and metal decks. Steps follow distance actually walked, alternate feet and vary
+slightly, stopping in menus, airborne movement and EVA. Ship-local positions
+keep cabin footsteps independent of the ship's flight speed.
+
+The carbine, sidearm, Cobalt pulse, Solar lance and Singularity have different
+reports; impacts attenuate with distance and pan toward their source. The mining
+cutter has a continuous motor, contact rasp, heat pitch and overheat cue;
+confirmed ore collection has a short chime. Sounds are synthesized locally
+after the existing audio gesture, with cached variants and bounded voices.
+
+Development listening studio: `/tests/gameplay-audio.html`. The optional
+`?audioDebug` dev view shows emitted sounds and provides short movement/fire
+inputs for integration checks. These controls are absent from production builds.
+Water footsteps represent the existing wet shoreline, not new wading/swimming.

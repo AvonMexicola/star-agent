@@ -180,6 +180,8 @@ export class StationComplex {
       }
     }
     if(state.hangar){this.activeIndex=state.hangar.id-1;this.parkedPod=this.activeIndex;}
+    const occupied=/^hangar:(\d+)$/.exec(state.physicsFrame??'');
+    if(occupied&&this.pods[Number(occupied[1])-1])this.activeIndex=Number(occupied[1])-1;
     for(let i=0;i<this.pods.length;i++){
       const pod=this.pods[i];
       if(!pod.openingControlled)pod.beginOpening();
@@ -250,11 +252,15 @@ export class StationComplex {
     let closest={point:proposed.clone(),hit:false};
     const keep=result=>{if(result.hit&&(!closest.hit||result.point.distanceToSquared(previous)<closest.point.distanceToSquared(previous)))closest=result;};
     if(walking){
-      const frame=this.frame,start=frame.toLocal(previous,new THREE.Vector3()),end=frame.toLocal(proposed,new THREE.Vector3());
-      const doors=[...elevatorBoxes(this.lift),...this.lift.staticBoxes,...(frame.staticBoxes??[])];
-      if(this.location==='hangar')doors.push(...this.active.doorBoxes);
-      const result=constrainStationSweep(frame.colliders,doors,start,end,new THREE.Vector3(-.25,-layout.eyeHeight,-.25),new THREE.Vector3(.25,.15,.25));
-      frame.toWorld(result.point,result.point);return result;
+      // A suit can enter any berth, including one different from its ship's
+      // assigned hangar. Test those physical frames before selecting a deck.
+      for(const frame of [...this.pods,this.hub]){
+        const start=frame.toLocal(previous,new THREE.Vector3()),end=frame.toLocal(proposed,new THREE.Vector3());
+        const doors=[...elevatorBoxes(frame.lift),...frame.lift.staticBoxes,...(frame.staticBoxes??[]),...(frame.doorBoxes??[])];
+        const result=constrainStationSweep(frame.colliders,doors,start,end,new THREE.Vector3(-.25,-layout.eyeHeight,-.25),new THREE.Vector3(.25,.15,.25));
+        frame.toWorld(result.point,result.point);keep(result);
+      }
+      return closest;
     }
     // All berths participate in swept flight collision; LOD affects only rendering.
     for(const pod of this.pods)keep(pod.constrainStep(previous,proposed,orientation,false,layout));

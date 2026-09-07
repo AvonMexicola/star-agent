@@ -227,3 +227,17 @@ test('looking up does not tilt remote boots off the canonical planetary floor', 
   assert.ok(entry.equipment.muzzleWorldDirection().dot(aim) > .9999);
   manager.dispose();
 });
+
+test('remote boots follow the server hangar gravity away from their parked ship',async()=>{
+  clearEquipmentCache();
+  const manager=new RemotePlayers(new THREE.Scene(),{loader,sockets});
+  const up=new THREE.Vector3(1,1,0).normalize(),eye=new THREE.Vector3(0,1_692_751.75,0);
+  const attitude=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),up);
+  manager.sync([peer('1',{body:'aeon',position:eye.toArray(),orientation:attitude.toArray(),shipPosition:null,physicsFrame:'hangar:2',physicsUp:up.toArray()})],'self');
+  await ready(manager);
+  for(let i=0;i<25;i++)manager.update(1/60,eye);
+  const entry=manager.peers.get('1');
+  assert.ok(entry.character.up.dot(up)>.9999);
+  assert.ok(entry.character.object.position.distanceTo(up.clone().multiplyScalar(-1.75))<1e-6);
+  manager.dispose();
+});

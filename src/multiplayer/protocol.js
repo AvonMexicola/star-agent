@@ -1,4 +1,4 @@
-export const MULTIPLAYER_VERSION=1;
+export const MULTIPLAYER_VERSION=2;
 export const WORLD_SEED=7291;
 export const MAX_PLAYERS=10;
 export const SUIT_COLORS=Object.freeze(['#ff724f','#52d6ff','#ffd45b','#8ce06c','#bd8cff','#ff80bd','#45dcc6','#eee9dd','#688bff','#c99d69']);
