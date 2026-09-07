@@ -162,3 +162,20 @@ Some valid bore directions are obstructed by other station structures. Admitted
 impact retaliation deliberately uses unconditional hitscan, so those obstructions
 do not create an immunity exploit. The legacy fallback exterior does not share
 these support planes and is excluded from placement acceptance.
+
+The complete controller07 journey passed in2.3min on `cc529d4` with candidate07
+`6a0bfd85…`: stock1024→1022→1024, wallet1500→1459→1483, original berth/ship
+retained, four native-focus/device interruption cases and zero page/console
+diagnostics. The subsequent keyboard case reused berth1 after that passenger
+left its elevator open. Its unconditional F press closed the shared door, so the
+open-door assertion failed. The fixture now reads the actual initial door state,
+calls only a closed door, and always waits for full opening before walking in.
+Touch was not launched because maxFailures1 stopped the invocation. Its reporter
+also emitted one unscoped error without another printed stack; the outer process
+exit143 is retained. Neither remaining input route is counted as passed.
+
+Candidate07 exported898780B/9177tri, passed all13strict06-to-07checks including
+unchanged normals and188/188actualmotionposes. Its five native images rendered
+without diagnostics, but [independent review](reviews/bastion-native-07.md)
+remains3.90: broad white surfaces still need a readable manufactured treatment.
+Candidate08 authoring is isolated; this is not final art acceptance.

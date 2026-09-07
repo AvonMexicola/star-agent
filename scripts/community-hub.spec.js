@@ -95,7 +95,9 @@ for(const mode of ['controller','keyboard','touch'])test(`${mode}: physical bert
  try{
   diagnostics=await setup(page,context,mode,'Hub_'+mode+'_'+Date.now().toString().slice(-6),diagnostics);const initial=await state(page),berth=initial.multiplayer.hangar.id,ship=initial.shipPosition;
   const walk=await walker(page,context,mode);await walk.walk(8,-5.32);await walk.walk(8,20.4);await walk.walk(0,20.4);
-  await interact(page,mode);await expect.poll(()=>page.evaluate(()=>starAgent.navigation.station.frame.lift.progress)).toBe(1);
+  record.initialElevator=await page.evaluate(()=>{const l=starAgent.navigation.station.frame.lift;return {open:l.open,progress:l.progress};});
+  // A prior passenger may leave this shared cabin open. Only call a closed door.
+  if(!record.initialElevator.open)await interact(page,mode);await expect.poll(()=>page.evaluate(()=>starAgent.navigation.station.frame.lift.progress)).toBe(1);
   await walk.walk(0,24);await interact(page,mode);await expect(page.locator('#station-elevator-dialog')).toBeVisible();
   await page.screenshot({path:folder+'/01-elevator-destinations.png'});await activate(page,mode,'elevator-hub');
   await expect.poll(async()=>(await state(page)).multiplayer.hub?.frame,{timeout:15000}).toBe('station:hub');
