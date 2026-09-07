@@ -9,7 +9,7 @@ schema, account data or production deployment changes.
 
 3dfd963 implements the hierarchical map, paged filters/locations, real navigation
 signals, nose-lock charge, continuous20km approaches and the promise-ring lore.
-38e5bfe reconciles it with fitted weapons through shared931ea10; the package test
+38e5bfe reconciles it with fitted weapons through shared4d38827 (including runtime931ea10); the package test
 list conflict was resolved by retaining both owners' suites. RT fire and server
 authority are preserved. Further inspection refinements are recorded below.
 
@@ -71,7 +71,7 @@ highest-peak test. All intervening bodies/stations still validate the full segme
 non-radial surface-site routes keep their conservative terrain bounds.
 
 The immediate20km lunar arrival capture showed streaming terrain before its
-higher detail settled. The final visual fixture waits for streamed lunar LOD12
+higher detail settled. The final visual fixture waits for the lunar queue to settle at the expected20km LOD7
 and additional rendered frames. Flight/arrival assertions use actual completed
 travel, independent of that visual wait. No renderer performance acceptance is
 claimed from these functional tests.
