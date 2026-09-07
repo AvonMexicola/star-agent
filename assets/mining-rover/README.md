@@ -4,6 +4,18 @@ Original compact enclosed four-wheel mining vehicle. This is a development
 candidate; see the current [production record](../../docs/qa/mining-rover/production-record.md)
 for validation and independent review status.
 
+Current export is candidate 10: **21,570 triangles / 2,177,260 bytes**, SHA-256
+`88448d9dd48e0a0acdb2397465302e8ab41335b8ffaab6234050d136bf6cc78f`.
+The [strict 09→10 delta](../../docs/qa/mining-rover/review-candidate-10-delta.md)
+retains geometry, UVs, hierarchy and mechanism layout; only rod/cap normals and
+the ORM payload change. Native static review is 4.04/5; keyboard motion is 3.8/5,
+with an explicitly mixed-evidence mean of 4.00/5. Recorded controller, keyboard
+and native touch journeys pass at the checkpoints in the production record.
+The adjusted physical MFD footer still needs a settled desktop visual check;
+the phone controls obscure it. Performance and Cees's final acceptance are not
+implied by these scoped results. The manifest's generation-stage text is historical;
+the production record carries the current review/delivery status.
+
 The asset uses the Kestrel/Meridian manufacturing language: ivory ceramic panels,
 graphite polymer, steel, petrol cassette housings and mint work lights. Geometry
 and seeded PBR swatches are authored in this repository. No external model,
