@@ -94,10 +94,42 @@ async function reachMineral(page,input){
   // may select a different nearest field while the vehicle changes position.
   const target=(await state(page)).mining.activePosition;
   expect(target?.length,'Actual field must expose its existing target').toBe(3);
-  await driveTo(page,input,await shipPoint(page,[-1.6,0,36]),1);
-  await driveTo(page,input,await shipPoint(page,[-10.8,0,35]),.8);
+  await driveTo(page,input,await shipPoint(page,[-1.6,0,31]),1);
+  await driveTo(page,input,await shipPoint(page,[-10.8,0,30]),.8);
+  await settleMineralHeading(page,input,target);
   return target;
 }
+
+async function settleMineralHeading(page,input,target){
+  let blocked=0;
+  for(let i=0;i<200;i++){
+    const c=await vehicleTarget(page,target);
+    if(Math.abs(c.angle)<=.18){await stop(page,input);return;}
+    // Slow forward/right or forward/left real inputs, chosen from target bearing.
+    await input.hold(drivingControls(c,Math.sign(c.angle),.8));
+    await page.waitForTimeout(50);
+    blocked=c.blocked?blocked+1:0;
+    if(blocked>12)throw Error('Heading correction blocked: '+JSON.stringify(c));
+  }
+  throw Error('Heading correction did not put the mineral inside the cutter margin.');
+}
+
+async function reverseToReturnStaging(page,input){
+  // Five 50 ms brake samples in the CPU probe remove residual steering. A single
+  // real 250 ms brake hold does the same through the normal production substeps.
+  await input.hold(['brake']);await page.waitForTimeout(250);
+  let blocked=0;
+  for(let i=0;i<600;i++){
+    const r=(await state(page)).rover;
+    if(r.local[2]>=34){await stop(page,input);return;}
+    await input.hold(r.speed>-.9?['reverse']:r.speed<-1.2?['brake']:[]);
+    await page.waitForTimeout(50);
+    blocked=r.blocked?blocked+1:0;
+    if(blocked>12)throw Error('Reverse staging blocked: '+JSON.stringify(r));
+  }
+  throw Error('Reverse staging did not reach ship-local Z34.');
+}
+
 
 async function aim(page,input,target){
   for(let i=0;i<180;i++){
@@ -111,6 +143,7 @@ async function aim(page,input,target){
 /** Optional complete return route shared with root's controller plan. A smooth
  * lane change avoids asking a car-like rover to spin toward a point behind it. */
 async function returnToAtlas(page,input){
+  await reverseToReturnStaging(page,input);
   const local=(await state(page)).rover.local,path=[];
   for(let i=0;i<=60;i++){const t=i/60;path.push([local[0]+(-1.6-local[0])*(3*t*t-2*t*t*t),0,local[2]-15*t]);}
   for(let z=path.at(-1)[2]-.5;z>5;z-=.5)path.push([-1.6,0,z]);path.push([-1.6,0,5]);
@@ -170,7 +203,7 @@ test('Atlas pilot → physical rover → twin mining → ore bins → resumed pl
     // after closing, including a repeated keyboard-down or an existing finger.
     await input.hold(['mine']);await wait(page,()=>starAgent.state.rover.beaming===2);
     await input.tap('cargo');await expect(page.locator('#cargo-dialog')).toBeVisible();await expect(page.locator('#cargo-dialog')).toContainText('Rover mineral bin');
-    expect((await state(page)).containers.target).toBe(BIN);await wait(page,()=>starAgent.state.rover.beaming===0);await shot('05-ore-bin-dialog');
+    await expect(page.getByRole('button',{name:'Atlas cargo',exact:true})).toBeVisible();expect((await state(page)).containers.target).toBe(BIN);await wait(page,()=>starAgent.state.rover.beaming===0);await shot('05-ore-bin-dialog');
     await expect(page.locator(`[data-from="${BIN}"][data-item]`).first()).toBeVisible();
     await input.tap('close');await expect(page.locator('#cargo-dialog')).not.toBeVisible();await input.repeatMine();await page.waitForTimeout(400);expect((await state(page)).rover.beaming).toBe(0);
     await input.reset();await input.hold(['mine']);await wait(page,()=>starAgent.state.rover.beaming===2);await note('Fresh press required after cargo');

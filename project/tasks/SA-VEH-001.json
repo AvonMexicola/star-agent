@@ -48,7 +48,8 @@
     "src/controller-layout.js",
     "src/nomad-cabin-controls.js",
     "scripts/mining-rover-inputs.spec.js",
-    "scripts/mining-rover-inputs.config.js"
+    "scripts/mining-rover-inputs.config.js",
+    "src/ship-inventory-ui.js"
   ],
   "brief": "docs/briefs/mining-rover.md"
 }
