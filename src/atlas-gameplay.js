@@ -27,7 +27,10 @@ export const ATLAS_LAYOUT = Object.freeze({
   ...source, id: 'atlas', flightBounds: source.hull,
   flightParts: [
     box([-7.8, 1.45, -31.9], [7.8, 14.95, 27.6]),
-    ...[-1, 1].map(side => box([side < 0 ? -17.9 : 7.8, 1.45, -31.9], [side < 0 ? -7.8 : 17.9, 14.95, 30.92])),
+    ...[-1, 1].map(side => box([side < 0 ? -17.9 : 7.8, 3.65, -31.9], [side < 0 ? -7.8 : 17.9, 14.95, 30.92])),
+    // Low chassis/pocket parts stop inboard of the raised outer nacelles.
+    // Extending those nacelles to the floor falsely catches bay service rails.
+    ...[-1, 1].map(side => box([side < 0 ? -13 : 7.8, 1.45, -31.9], [side < 0 ? -7.8 : 13, 3.65, 30.92])),
     ...source.landingGear.legs.map(leg => box([leg.pivot[0] - 1.4, 0, leg.pivot[2] - 5.5],
       [leg.pivot[0] + 1.4, 4.9, leg.pivot[2] + 5.5])),
   ],
