@@ -6,6 +6,8 @@ import { SOUND_KINDS, synthesize } from '../src/audio/synthesis.js';
 import { GameplayAudio, weaponSound } from '../src/audio/gameplay.js';
 import { walkingAudioState } from '../src/audio/ground-state.js';
 import { EnergyEffects } from '../src/effects/energy-effects.js';
+import { FlightAudio } from '../src/audio.js';
+import { EngineAudio, engineMix } from '../src/audio/engine.js';
 
 test('surface selection respects metal support, airless rock, polar snow, slope and wet shoreline',()=>{
   assert.equal(footstepSurface({metal:true,body:'selene'}),'metal');
@@ -110,6 +112,132 @@ test('engine spools with actual thrust and boost, idles seated, and stops when p
   engine.update({throttle:1});assert.ok(engine.exhaustGain.gain.value>idle.exhaust);
   engine.update({powered:false});assert.equal(engine.exhaustGain.gain.value,0);
   engine.dispose();engine.update({throttle:1});assert.equal(engine.exhaustGain.gain.value,0);
+});
+
+test('Atlas, Kestrel and Nomad have distinct bounded voices and no speed-driven thrust',()=>{
+  const voices = ['atlas','nomad','kestrel'].map(shipId=>engineMix({shipId,throttle:1}));
+  assert.ok(voices[0].pitch<voices[1].pitch&&voices[1].pitch<voices[2].pitch);
+  assert.ok(voices[0].spool>voices[1].spool&&voices[1].spool>voices[2].spool);
+  for(const shipId of ['atlas','kestrel','nomad']){
+    const idle=engineMix({shipId}),drift=engineMix({shipId,speed:40000,throttle:0,boost:true});
+    assert.deepEqual(drift,idle,'velocity and a held boost button do not produce thrust');
+    const boost=engineMix({shipId,throttle:1,boost:true});
+    assert.ok(boost.tone+boost.turbine+boost.exhaust<.55,'bounded sum of peak input gains');
+    assert.equal(engineMix({shipId,throttle:1,forwardThrottle:0,boost:true}).boost,false,'braking cannot light an afterburner');
+    assert.equal(engineMix({shipId,throttle:1,active:false}).exhaust,0);
+  }
+  assert.equal(engineMix({shipId:'unknown'}).shipId,'nomad');
+});
+
+test('powered cabin sound is filtered and quiet; outside and lost ships are silent',()=>{
+  for(const shipId of ['atlas','kestrel','nomad']){
+    const seated=engineMix({shipId}),cabin=engineMix({shipId,mode:'walk',insideShip:true});
+    assert.ok(cabin.active&&cabin.cabin&&cabin.tone>0&&cabin.tone<seated.tone);
+    assert.ok(cabin.cutoff<seated.cutoff);
+    const drifting=engineMix({shipId,mode:'walk',insideShip:true,cabinFlight:true,throttle:0,boost:true});
+    assert.equal(drifting.boost,false);assert.equal(drifting.load,0);
+    const maneuvering=engineMix({shipId,mode:'walk',insideShip:true,cabinFlight:true,throttle:.5});
+    assert.equal(maneuvering.load,.5);
+    for(const state of [{powered:false},{insideShip:false},{mode:'eva'},{mode:'crashed'},{mode:'destroyed'}]){
+      assert.equal(engineMix({shipId,mode:'walk',insideShip:true,cabinFlight:true,throttle:1,...state}).tone,0);
+    }
+  }
+});
+
+test('switching hulls retunes one graph and suspend clears its previous thrust',()=>{
+  const c=mockContext(),engine=new EngineAudio(c,{},c.createBufferSource()),tone=engine.tone;
+  for(const shipId of ['atlas','kestrel','nomad','atlas']){
+    engine.update({shipId,throttle:1,boost:true});
+    assert.equal(engine.tone,tone);assert.equal(engine.state.shipId,shipId);
+    assert.equal(engine.tone.frequency.value,engine.state.pitch);
+    assert.equal(engine.turbine.frequency.value,engine.state.turbinePitch);
+  }
+  engine.suspend();assert.equal(engine.state.active,false);assert.equal(engine.state.load,0);
+  assert.equal(engine.exhaustGain.gain.value,0);engine.dispose();
+});
+
+function flightFixture({resume}={}){
+  let created=0;
+  const media=[],listeners=new Set(),context=mockContext();
+  const gain=context.createGain;
+  context.createGain=()=>{const node=gain();node.gain.cancelScheduledValues=()=>{};return node;};
+  context.createBuffer=(_channels,size)=>({copyToChannel(){},getChannelData:()=>new Float32Array(size)});
+  context.createMediaElementSource=()=>({connect(){},disconnect(){}});
+  context.addEventListener=(_name,callback)=>listeners.add(callback);
+  context.removeEventListener=(_name,callback)=>listeners.delete(callback);
+  context.changeState=state=>{context.state=state;for(const callback of listeners)callback();};
+  context.resume=resume?()=>resume(context):async()=>{context.changeState('running');};
+  context.close=async()=>context.changeState('closed');
+  const audio=new FlightAudio({contextFactory:()=>{created++;return context;},musicOptions:{mediaFactory:()=>{
+    const item={src:'',currentTime:0,duration:210,paused:true,plays:0,
+      play(){this.plays++;this.paused=false;return Promise.resolve();},pause(){this.paused=true;},
+      removeAttribute(){this.src='';},load(){this.currentTime=0;}};
+    media.push(item);return item;
+  }}});
+  return {audio,context,media,get created(){return created;}};
+}
+
+test('flight activation starts cached score in the gesture and preserves explicit mute',async()=>{
+  const f=flightFixture(),{audio,context,media}=f;
+  audio.update({shipId:'atlas',altitude:5000000,throttle:1});
+  audio.setSuspended(false);assert.equal(f.created,0);assert.equal(media.length,0);
+  const unlocked=audio.unlock();
+  assert.equal(media.reduce((n,item)=>n+item.plays,0),1,'play is called synchronously before awaiting context resume');
+  assert.equal(media[0].src.endsWith('between-worlds-1.mp3'),true,'the first gesture uses the latest navigation scene');
+  assert.equal(await unlocked,true);assert.equal(audio.state.unlocked,true);assert.equal(audio.state.audible,true);
+  assert.equal(audio.engineAudio.state.shipId,'atlas');assert.equal(audio.engineAudio.state.load,1);
+  await audio.unlock();assert.equal(f.created,1);assert.equal(media.reduce((n,item)=>n+item.plays,0),1);
+  assert.equal(await audio.toggle(),false);assert.equal(audio.state.userMuted,true);
+  await audio.unlock();audio.setSuspended(true);audio.setSuspended(false);
+  context.changeState('interrupted');context.changeState('running');
+  audio.update({shipId:'kestrel',throttle:1});
+  assert.equal(audio.enabled,false);assert.equal(audio.master.gain.value,0);assert.ok(media.every(item=>item.paused));
+  assert.equal(audio.engineAudio.state.active,false);
+  assert.equal(await audio.toggle(),true);assert.equal(audio.engineAudio.state.shipId,'kestrel');
+  audio.dispose();
+});
+
+test('pause and browser interruption silence every bus and retain the selected soundtrack',async()=>{
+  const {audio,context,media}=flightFixture();
+  await audio.unlock({shipId:'nomad',mode:'flight',throttle:1,airless:true});
+  audio.gameplay.play('rock');audio.gameplay.setMining(true,true,.5);
+  audio.music.active.media.currentTime=35;
+  const file=audio.music.state.file;
+  audio.setSuspended(true);
+  assert.equal(audio.master.gain.value,0);assert.equal(audio.engineAudio.state.active,false);
+  assert.equal(audio.gameplay.state.voices,0);assert.equal(audio.gameplay.state.mining,false);
+  assert.equal(audio.flyby.enabled,false);assert.ok(media.every(item=>item.paused));
+  audio.update({shipId:'atlas',mode:'walk',insideShip:true,throttle:0,airless:true});
+  context.currentTime=30;audio.setSuspended(false);await Promise.resolve();
+  assert.equal(audio.music.state.file,file);assert.equal(audio.music.state.time,35);
+  audio.update(audio.lastState);assert.equal(audio.engineAudio.state.shipId,'atlas');assert.equal(audio.engineAudio.state.cabin,true);
+  context.changeState('interrupted');
+  assert.equal(audio.state.audible,false);assert.equal(audio.music.state.enabled,false);
+  assert.equal(audio.master.gain.value,0);assert.equal(audio.engineAudio.state.active,false);
+  await audio.unlock();assert.equal(audio.state.contextState,'running');assert.equal(audio.state.audible,true);
+  assert.equal(audio.music.state.file,file);audio.dispose();
+});
+
+test('a delayed context resume cannot restore a mute or disposed mixer',async()=>{
+  let finish;
+  const {audio,context,media}=flightFixture({resume:c=>new Promise(done=>{finish=()=>{c.changeState('running');done();};})});
+  context.state='suspended';
+  const unlocking=audio.unlock({shipId:'atlas',throttle:1});
+  assert.equal(audio.state.audible,false);await audio.toggle();
+  finish();assert.equal(await unlocking,false);assert.equal(audio.enabled,false);
+  assert.equal(audio.master.gain.value,0);assert.ok(media.every(item=>item.paused));
+  audio.dispose();assert.equal(await audio.unlock(),false);assert.equal(audio.state.audible,false);
+});
+
+test('legacy station hum remains silent during powered cruise drift and power loss',async()=>{
+  const {audio}=flightFixture();
+  await audio.unlock({shipId:'kestrel',speed:40000,throttle:0,boost:true,airless:true});
+  assert.equal(audio.hum.gain.value,0);assert.equal(audio.overtoneGain.gain.value,0);
+  assert.equal(audio.engineAudio.state.load,0);assert.equal(audio.engineAudio.state.boost,false);
+  audio.update({speed:40000,powered:false,throttle:1,boost:true,airless:true});
+  assert.equal(audio.engineAudio.state.tone,0);assert.equal(audio.wind.gain.value,0);
+  audio.update({mode:'walk',inHangar:true,doorMotion:1});
+  assert.ok(audio.hum.gain.value>0,'station machinery retains its separate sound');audio.dispose();
 });
 
 
