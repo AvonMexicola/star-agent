@@ -2287,3 +2287,14 @@ https://github.com/AvonMexicola/star-agent/pull/55, targeting remote dev/all-fea
 The feature branch is pushed; the local dev fast-forward was not pushed and no
 GitHub merge, main merge or deployment was performed. Final documentation commits
 only update the receipt; runtime and asset identities remain as tested above.
+
+SA-WORLD-002 ACTIVE — landmark surface refinement, 2026-09-07:
+Cees likes the large shapes and asks for more texture detail/variation. Codex
+owns art/landmark-weathering in /home/cees/projects/star-agent-rock-weathering
+from dev6d3abb0. Material-only scope: src/landmark-material.js, optional new
+landmark-surface shader helper, focused material browser fixtures and QA/docs.
+Geometry, seeded placement, contact, lighting and shared main/navigation hooks
+remain unchanged. Reuse local CC0 Rock030; no new runtime texture dependency.
+QA5383 reserved but GPU not acquired; current fauna5515, rover and combined
+5522 queue take precedence. SA-INT-002 retains serialized shared integration;
+this lane will publish a checked, narrow checkpoint for the steward.
