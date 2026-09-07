@@ -1,0 +1,25 @@
+{
+  "id": "SA-NAV-001",
+  "title": "Hierarchical navigation and aimed relativistic travel",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex navigation",
+  "status": "active",
+  "branch": "feat/navigation-targets",
+  "base": "f8e48d916c849111cc8d557fdb6a88b4d2c7b521",
+  "updated": "2026-09-07",
+  "areas": [
+    "flight",
+    "interface"
+  ],
+  "claims": [
+    "src/system-map.js",
+    "src/system-map.css",
+    "src/navigation-targets.js",
+    "src/navigation-targeting.js",
+    "src/navigation-targeting.css",
+    "src/navigation.js",
+    "src/main.js"
+  ],
+  "brief": "docs/briefs/navigation-targets.md"
+}

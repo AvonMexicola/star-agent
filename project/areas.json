@@ -187,7 +187,9 @@
         "src/mfd/**",
         "src/dev-launcher*",
         "index.html",
-        "src/gameplay-menu.js"
+        "src/gameplay-menu.js",
+        "src/navigation-targets.js",
+        "src/navigation-targeting.js"
       ],
       "contracts": [
         "docs/controller-contract.md",

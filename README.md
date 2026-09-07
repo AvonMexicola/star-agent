@@ -210,3 +210,5 @@ Development listening studio: `/tests/gameplay-audio.html`. The optional
 `?audioDebug` dev view shows emitted sounds and provides short movement/fire
 inputs for integration checks. These controls are absent from production builds.
 Water footsteps represent the existing wet shoreline, not new wading/swimming.
+
+Read the [Aeon field notes](docs/lore.md) for the relativistic drive’s “promise ring.”

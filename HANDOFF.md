@@ -2004,3 +2004,10 @@ Gameplay menu integrated locally by fast-forward to adbd806 on dev/all-features.
 The persistent shared preview on5178 serves src/gameplay-menu.js with the new
 Pilot interface and tab frame. No service/database restart or production deployment
 was performed. SA-UI-002 is integrated; independent review remains pending.
+
+SA-NAV-001 active: Codex owns hierarchical map, navigation filters/beacons and
+aim-to-charge relativistic destinations in feat/navigation-targets at
+/home/cees/projects/star-agent-navigation-targets. Own system-map.*, new
+navigation-target* modules, travel/navigation hooks, scoped main wiring, tests,
+controller/help copy and lore. Preserve concurrent weapons/landmark work.
+QA port5493 reserved; no GPU job started, queued behind existing reservations.
