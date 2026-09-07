@@ -45,6 +45,19 @@ After consuming the steward's checked fixture follow-ups79bf96e/fb472725, all
 **1,013/1,013** (44.360 seconds, zero skips); the original failure is retained. An earlier three-failure SBU run also reproduced on43fadf1; after
 consuming the owner's f3312c correction, all31 SBU/station/medium cases pass.
 
+The checked fleet successor **5f63893** is merged at **eb4a396**, including
+protocol5, finite station markets/security and hands-free hub, Atlas ground ramps
+and the named meadow start. Semantic conflicts preserve medium storage/input,
+Stratum fire routing, rover Menu9, mechanism power and both station/ship touch
+controls. On that union, **1,057/1,057 normal tests pass** in35.615 seconds;
+multiplayer reports **187 passed, two PostgreSQL-dependent tests skipped**, zero
+failures in7.080 seconds. Repository checks pass. These are local CPU checks;
+no database migration or service promotion was performed by this lane.
+
+The final eight medium invariant cases also exercise actual whole-hull departure
+and return/docking across all20 tilted station bays, with closed-door rejection.
+The 40 successful finite journeys establish those paths, not arbitrary docking.
+
 ## Findings retained and corrected
 
 - First Gannet lift descent hit its own supporting platform with a rover body
@@ -74,6 +87,22 @@ consuming the owner's f3312c correction, all31 SBU/station/medium cases pass.
   matching the steward's checked cfe69b7 fix. Ship mining also publishes its stopped
   state immediately on focus loss, when the animation loop may be suspended.
 
+- First Gannet controller gameplay reached physical cabin/rover boarding, hatch
+  opening, lift lowering and four-wheel terrain exit, then failed after its turn:
+  the observed mineral required yaw−0.4403 beyond the real cutter limit±0.4.
+  The fixture now extends the physical5m-radius arc toward the observed mineral;
+  all eight50–150ms CPU route planners pass, including reverse loading. The
+  failed native receipt remains; actual mining/return/flight was not reached.
+- The same native view showed the unanchored rover chase camera clipping into
+  the carrier. Its existing collision clip now applies whenever a ship clipper
+  is present. The captured-pose actual-GLB probe shortens the obstructed boom by
+  2.022m; actual native rerun remains pending. Gannet pilot FOV changes52→60 at
+  the unchanged seated eye to include the outer flight MFD text.
+- Independent input review passes15 source-extracted event cases, including
+  stationary held-drag cancellation through the actual dialog observer, plus10
+  actual mining safety cases. See [the bounded review](input-review-01.md);
+  this does not replace native keyboard/touch gameplay.
+
 Read-only review receipts, original failures and source hashes are retained in
 `/tmp/star-agent-medium-review`. Build/unit/dependency receipts use
 `/tmp/star-agent-medium-*.log`. Asset records retain their own earlier failures.
@@ -94,10 +123,22 @@ The isolated HTML now uses an inline favicon and failed-response logging include
 URLs; the corrected native rerun is pending. The independent static image
 [review](stratum-native-review-01.md) fails: mean3.26, silhouette3.4 against the
 brief's4.5 target, materials2.6. An authored hull/material refinement is active.
-Motion, portrait and actual gameplay remain pending. Gannet's first native
-studio and real controller journey are prepared but have not run.
+Motion, portrait and actual gameplay remain pending for Stratum. Gannet's
+geometry09 native studio passes1/1 in26.3seconds, yielding13 native desktop and
+portrait screenshots with zero diagnostics. Portrait was a resized desktop
+pointer context, not native touch. Its [independent image review](gannet-native-review-09.md)
+fails: partial static mean3.08, silhouette3.2, materials2.4. A later source audit
+found an actual exported UV atlas-row inversion behind the unexpected gold floor
+and trim; a corrected mapping/form revision and physical bay diffusers are being
+authored. The first controller attempt's legitimate aiming-route failure and
+runtime camera/lighting findings above remain recorded. No full gameplay pass
+or final art approval is claimed.
 
-The development build03 passes in6.01 seconds (`main-Dw8Hai8Z.js`), including
+Historical development build03 passes in6.01 seconds (`main-Dw8Hai8Z.js`), including
 the final drag observer added after the full unit run. Existing chunk-size
 advisories remain recorded. Its isolated preview5582 uses a disposable in-memory
 test API8582; shared services, databases and the user's5596 tab are untouched.
+
+Build03 predates the wider pilot FOV, camera fix and checked fleet merge. The
+final authored revisions and attached powered cabin lighting require a new build
+and actual native gameplay acceptance.
