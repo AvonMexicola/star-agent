@@ -1870,3 +1870,32 @@ The launcher intentionally resets its temporary inventory/cuts on reload; ordina
 offline saves persist. GPU QA is now released; all this lane's browser jobs exited.
 Remote dev concurrently acquired the governance PR52 commits; those unrelated
 policy updates were not overwritten or force-pushed during local integration.
+
+
+## Contributor framework — integrated and verified — 2026-09-07
+
+Governance PR52 is merged at remote dev `d5622e9`, with all hosted checks green at
+28f1ff1:657 gameplay,12 contributor-helper and88 real-PostgreSQL multiplayer tests,
+production build, repository/actionlint checks and the real production browser
+journey1/1. Successful map/scene captures and failures/corrections are retained in
+docs/qa/contributor-framework.md. Chromium153/ANGLE Vulkan SwiftShader,1440x900 UI,
+scale0.6; no errors/fallback assets, no hardware FPS or art-acceptance claim.
+
+Cees retains product/release authority. Codex is the transferable integration
+steward during assigned sessions, with Cees fallback; domain maintainers are open.
+Read GOVERNANCE.md, CONTRIBUTING.md and docs/development/README.md. The roadmap
+now spans eight staged milestones through crewed ships, rich planets, settlements,
+economy/missions, measured population growth and creator/agent tooling.
+
+GitHub default is dev/all-features, still private. Main/dev require GitHub Actions
+verify, current PR bases and resolved conversations; force/deletion is disabled
+including administrators. Approval count stays0 until another eligible human is
+appointed. Local merge preparation remains authorized; shared publication uses a
+checked PR. No main deployment, invitations, spending or old-branch deletion.
+
+Final reconciliation retains local station/Aeon source through7ba1fbd alongside
+remote governance, using an isolated worktree. The original AGENTS crash guidance
+is preserved verbatim. No other owner's merge/index/source was taken over when
+an initial fast-forward guard discovered concurrent integration. Current work and
+art limitations remain in their own handoffs. This closes the framework task's
+claims; the broader M0 newcomer/restore milestone is not declared complete.

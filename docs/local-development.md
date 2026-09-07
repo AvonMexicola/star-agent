@@ -142,3 +142,15 @@ exact source hashes, independent clearance checks and actual browser evidence.
 The merged source passes all 664 unit tests, a production build and all three
 Chromium cases: actual rendering/ring motion, controller/touch entry and a physical
 Kestrel ladder, reboarding and departure. See the linked record for remaining gates.
+
+
+## Contributor framework
+
+PR52 introduced the [contributor handbook](development/README.md), expanded
+[roadmap](../ROADMAP.md), [branch stewardship](development/branches.md), templates,
+11-area/task registry and executable `check:repo`, `plan:checks`, `branches` and
+`test:development` helpers. GitHub defaults to dev/all-features; main/dev require
+checked, up-to-date PRs and resolved discussions, with force-push/deletion disabled.
+The original Chromium guidance is retained. See [framework QA](qa/contributor-framework.md)
+for actual CI/hosted settings and their limits. This changes contribution routing,
+not the local account/save model or public release authority.
