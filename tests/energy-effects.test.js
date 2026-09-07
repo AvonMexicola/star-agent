@@ -116,3 +116,14 @@ test('ballistic effects carry shooter velocity and hit along the actual trajecto
  assert.ok(fx.bolts[0].p.distanceTo(start.clone().add(v(5,0,-32.5)))<1e-5);assert.equal(impacts,0);
  fx.update(.05,{origin:start});assert.equal(impacts,1);assert.equal(fx.state.bolts,0);fx.dispose();
 });
+
+test('a moving weapon flash follows its barrel and sparks inherit launch velocity',()=>{
+ const fx=new EnergyEffects(new THREE.Scene()),muzzle=v(25e9,0,0),velocity=v(100,20,0);
+ fx.fire(muzzle,v(0,0,-1),{weapon:'pulse',velocity,muzzlePosition:()=>muzzle.clone()});
+ const flash=fx.particles.slots.find(p=>p.alive&&p.anchor);
+ assert.ok(flash);assert.ok(fx.particles.slots.filter(p=>p.alive&&!p.anchor).every(p=>p.v.x>90));
+ fx.update(.016,{origin:muzzle,velocity});muzzle.add(v(2,1,-3));fx.update(.016,{origin:muzzle,velocity});
+ assert.deepEqual(flash.p,muzzle);
+ // Pool reuse must not retain a prior weapon's anchor.
+ fx.particles.cursor=fx.particles.slots.indexOf(flash);fx.particles.emit(v(),v(1,0,0));assert.equal(flash.anchor,null);fx.dispose();
+});

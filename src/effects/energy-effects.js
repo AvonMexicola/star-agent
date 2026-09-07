@@ -65,11 +65,12 @@ export class EnergyEffects {
   }
   random(){this.seed=(Math.imul(this.seed,1664525)+1013904223)>>>0;return this.seed/4294967296;}
   budget(key,rate,dt){const amount=(this.carries[key]??0)+rate*dt,n=Math.floor(amount);this.carries[key]=amount-n;return Math.min(n,120);}
-  spray(point,normal,count,{color=0xffb45c,speed=4,size=.07,life=.65,kind=1,attract=false,gain=1}={}){
+  spray(point,normal,count,{color=0xffb45c,speed=4,size=.07,life=.65,kind=1,attract=false,gain=1,velocity=ZERO}={}){
     for(let i=0;i<count;i++){
       this._v.set(this.random()-.5,this.random()-.5,this.random()-.5).normalize();
       if(this._v.dot(normal)<0)this._v.negate();
       this._v.addScaledVector(normal,.4).multiplyScalar(speed*(.25+this.random()));
+      this._v.add(velocity);
       this.particles.emit(point,this._v,{color,life:life*(.7+this.random()*.6),size:size*(.5+this.random()),kind,stretch:kind===1?.035:0,drag:attract?0:1.3,attract,gain});
     }
   }
@@ -108,8 +109,8 @@ export class EnergyEffects {
       for(let i=0;i<16;i++){const p=start.clone().addScaledVector(direction,length*i/16);this.spray(p,direction,1,{color:tint,speed:2,life:.28,size:.06});}
     }else this.bolts.push({start:start.clone(),p:start.clone(),direction:direction.clone().normalize(),velocity:velocity.clone(),age:0,speed,range,power,tint,kind,hit:hit?{point:hit.point.clone(),normal:hit.normal?.clone()??direction.clone().negate()}:null,travelled:0});
     if(muzzle){
-      this.particles.emit(start,ZERO,{color:kind==='pulse'&&color===undefined?0xbceaff:tint,life:.12,size:.6*power,stretch:0,gain:4});
-      this.spray(start,direction,6,{color:tint,speed:3,size:.07,life:.2});
+      this.particles.emit(start,velocity,{anchor:muzzlePosition,color:kind==='pulse'&&color===undefined?0xbceaff:tint,life:.12,size:.6*power,stretch:0,gain:4});
+      this.spray(start,direction,6,{color:tint,speed:3,size:.07,life:.2,velocity});
     }
   }
   reset(){
