@@ -3302,3 +3302,6 @@ SA-ART-001 SHORT GPU RELEASE: material fixture reached renderer successfully but
 
 
 SA-PERF-001 REVIEW RECEIPT: draft PR77 https://github.com/AvonMexicola/star-agent/pull/77 is published at branch fix/player-multiplayer-performance /12a064c, stacked on PR75. Shared runtimeaf419c7/delivery8552d44 remains healthy at5178/API8087 with all performance source verified. Public deployment unchanged; hosted checks are newly pending, not claimed passed. No owned process, source promotion or GPU work remains.
+
+
+SA-SHIP-001/002 ACTIVE: read docs/briefs/meridian-medium-ships.md and docs/design/medium-ships-intake.md. Root owns shared integration; separate asset authors own the named new paths only. Gannet net clear bay widened to5.8m for real rover/player access, freight banks moved outward. Base0a18574, preview5580/5581/5582 reserved, no GPU job or shared service change. Station delivery remains root immediate priority.
