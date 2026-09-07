@@ -42,12 +42,20 @@ invalidating another worktree's optimized dependencies when sharing node_modules
   skipped without its disposable-database setting. No schema migration was added.
 - Production build with `VITE_DEV_TOOLS=1` passes; existing large-chunk advisory
   remains. The API and PostgreSQL data were not used as disposable test fixtures.
-- Initial combined Chromium review: four cases pass (character studio, physical
-  Nomad controller route, phone review pages and remote rig/colors). Two cases
-  require a narrow rerun: the controller test awaited animation frames after
-  triggering its intended page navigation, and the studios reported two HTTP404s.
-  The navigation wait now follows the destination; HTTP errors retain their URL
-  and the sound studio declares its existing favicon explicitly.
+- **Six combined Chromium cases pass across focused runs.** Character studio
+  (desktop/phone), physical Nomad controller exit/jump/rifle fire/three held
+  weapons/return, controller review navigation/build categories/sandbox reload,
+  touch review pagination, actual prop/audio studios and remote suit shaders/colors.
+  Final review-menu case passed in2.2min; no captured HTTP/page/console errors.
+- Initial integration browser failures are retained in local cache: the test
+  awaited animation frames after navigating; the sound studio lacked an explicit
+  favicon; and the build-menu inspector omitted the debug query that exposes its
+  read-only navigation handle. Destination-aware waits, the favicon declaration
+  and explicit test debug flag resolved them. No game simulation was mutated to
+  get these physical/input checks to pass.
+- Full-range repository checks and12 contributor-framework tests pass. Eight
+  landmark/server invariants also pass after material4f9d472. The final bundle
+  passes its production build; later merges contain QA/docs only.
 - Source task ledgers are marked integrated in this combined branch, releasing
   overlapping claims here. Feature owners retain separate ongoing work; this
   status does not declare final asset/gameplay acceptance.
@@ -84,8 +92,12 @@ injected standard Gamepads, not physical hardware.
 - Construction expansion has owner controller workshop/rack/pad/ramp routes.
   Expanded-kit independent art review, hardware timing and pebble exclusion above
   low decks remain open. The earlier Opus score covers the original kit only.
-- New deer repair and further landmark material refinement started separately;
-  no unfinished source or absent jacket asset was copied into this checkpoint.
+- Landmark material `4f9d472` is integrated after its actual-game shader tour,
+  refined fissure rerender and builder image inspection. Eight landmark/server
+  invariants pass in the combined branch; geometry, contact and seeds are unchanged.
+  Comparison and art/performance limits are in [its record](landmark-weathering/README.md).
+- New deer repair, cargo/trading, base power and multiplayer social work continue
+  separately. No unfinished source or absent jacket asset was copied here.
 
 ## Combined visual evidence
 
@@ -95,8 +107,41 @@ phone390×844 CSS pixels. These are render/input checks, not FPS acceptance.
 - [New character in the hangar with rifle](dev-content-review/character-rifle.png).
 - [Jump pose during the physical controller journey](dev-content-review/character-jump.png).
 - [Remote suits with three assigned colors and weapon grips](dev-content-review/remote-suits.png).
+- [Desktop content-review menu](dev-content-review/review-desktop.png).
 - [Touch content-review menu](dev-content-review/review-phone.png).
+- [Construction facilities stay within the build screen](dev-content-review/construction-facilities.png).
 
 Raw diagnostics remain in the local cache, outside Git. The three weapons were
 visually checked in hand; the gameplay journey fired the rifle and tested that
 holding fire through a menu did not spend ammunition after it closed.
+
+## Local delivery
+
+Shared `dev/all-features` was promoted at `2f3249f` on2026-09-07. The existing
+persistent preview service was restarted once to pair the frontend and updated
+multiplayer authority. Local5178 and its API health proxy return200; PostgreSQL
+still listens on51224 using the same cluster directory. The live expedition GLB
+hash matches `04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa`.
+The character/studio/review routes and refined landmark shader source were
+verified over HTTP after restart. Browser QA used the identical runtime from the
+isolated production preview; the promotion merge changed only handoff notes.
+
+[Draft PR68](https://github.com/AvonMexicola/star-agent/pull/68) retains the review
+branch. Main and public hosting were not deployed by this integration.
+
+## Hosted CI follow-up
+
+PR68 run `34148686704` passed source and multiplayer checks. Its browser reached
+the rendered game but failed an obsolete assertion: Menu was expected to open the
+old Ship command grid instead of the current default Contracts screen. The smoke
+test now checks the open gameplay screen, its selected tab and visible controller
+focus. Held-stick suppression, neutral rearming and all five map selections remain
+required. Syntax, test discovery and repository checks pass. Hosted run
+`34149795606` at `4a6f7f0` passes all five jobs: source, plan, multiplayer,
+browser and verification. Its disposable PostgreSQL checks pass all91 multiplayer
+and3 database tests, with no skips. The production browser case passes in6.4min
+on Chromium153.0.8010.12, SwiftShader,1440×900 CSS pixels at0.6 render scale.
+Downloaded map/scene captures were inspected; diagnostics contain no errors and
+one unsupported parallel-shader-compile extension warning. This is functional
+evidence, not hardware performance acceptance. The test-only correction does not
+require a local service restart.
