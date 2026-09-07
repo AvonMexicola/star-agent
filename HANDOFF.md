@@ -1692,3 +1692,20 @@ SwiftShader, 1280×800; no hardware FPS claim. One particle draw, no extra terra
 triangles. Existing Miasma scene cost remains above the project target. This
 follow-up is not merged or deployed, and no independent rubric score is claimed.
 The shared dirty checkout and unrelated agents' work remain untouched.
+
+## Offline space patrol combat — 2026-09-07
+
+READY FOR REVIEW: `src/combat/`, `src/effects/flight-effects.js`, main/MFD/cargo
+console integration, `scripts/space-combat.*`, `tests/space-combat.test.js`.
+Feature branch `feat/space-combat`, isolated worktree
+`/home/cees/projects/star-agent-space-combat`. Adds console acceptance, continuous
+flight to a patrol beacon, current Nomad 02/Kestrel NPCs with attack/break/return
+strategies, tracking/lead markers, live shield/hull damage, failure/recovery and
+combat report. Kestrel now uses the shared energy weapon inputs.
+
+The existing unit suite and production build pass. Both actual controller-only
+Nomad/Kestrel mission journeys pass; keyboard/pointer, close-up and recovery checks
+are recorded in `docs/qa/space-combat.md` after the final run. Independent visual
+review and physical-controller testing are not claimed. This is an offline,
+session-only first slice: no reward ledger, persistent mission, physical weapon
+fittings, ship collision damage, component damage, or multiplayer NPC authority.

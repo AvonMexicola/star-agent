@@ -1,7 +1,7 @@
 /** Explicit local test starts. Normal/public entry ignores these parameters. */
 export const DEV_SHIPS = Object.freeze([
   {id:'nomad',name:'Nomad 02',detail:'Utility · walkable cabin, berth & cargo'},
-  {id:'kestrel',name:'Kestrel',detail:'Interceptor · port ladder · four empty S2 mounts'},
+  {id:'kestrel',name:'Kestrel',detail:'Interceptor · port ladder · energy weapons'},
   {id:'atlas',name:'Atlas',detail:'30 m freighter · belly elevator & cargo lifts'},
 ]);
 export const DEV_LOCATIONS = Object.freeze([

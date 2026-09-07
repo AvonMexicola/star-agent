@@ -83,9 +83,13 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     const serverInventory = multiplayer?.connected ? multiplayer.inventory : null;
     const cargoMass = id => serverInventory?.containers?.[id] ? itemMass(serverInventory.containers[id]) : inventory.mass(id);
     const cargoCapacity = id => serverInventory?.capacity?.[id] ?? inventory.capacity?.[id] ?? CAPACITY[id];
-    screens[2].title = multiplayer ? 'COMMS' : 'SYSTEMS';
+    const combat=nav.combat&&!multiplayer?.connected?nav.combat:null;
+    screens[2].title = combat&&['transit','engage','complete','failed'].includes(combat.phase) ? 'COMBAT' : multiplayer ? 'COMMS' : 'SYSTEMS';
+    if(combat?.phase==='transit')course={name:'Patrol signal',point:combat.point};
     screens[2].mesh.name = `MFD 3 / ${screens[2].title}`;
-    if (multiplayer) {
+    if(combat&&screens[2].title==='COMBAT'){
+      screens[2].mesh.userData.actionId='patrol';screens[2].mesh.userData.action=()=>nav.openPatrolConsole?.();
+    } else if (multiplayer) {
       screens[2].mesh.userData.actionId = 'comms';
       screens[2].mesh.userData.action = () => nav.openComms?.();
     } else {
@@ -144,10 +148,13 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
       const a=nav.kestrelAccess;
       const mechanism=(value,closed,open)=>value<.001?closed:value>.999?open:'MOVING';
       paint(screens[2],[['CANOPY',mechanism(a?.canopy??0,'SEALED','OPEN')],['LADDER',mechanism(a?.ladder??0,'STOWED','DEPLOYED')],['LANDING GEAR',mechanism(nav.gearProgress,'RETRACTED','DOWN')]],nav.controllerActive?'MENU / LANDING GEAR':'G GEAR   F DISEMBARK WHEN LANDED',2);
-      paint(screens[3],[['BUILDER','MERIDIAN SHIPWORKS'],['WEAPON MOUNTS','4 × S2 / EMPTY'],['CARGO HOLD','NONE / PILOT BACKPACK']],'KESTREL  /  SINGLE-SEAT INTERCEPTOR',3);
+      if(combat&&screens[2].title==='COMBAT')paint(screens[2],[['SHIELDS',`${Math.ceil(combat.player.shield)} / ${combat.player.maxShield}`],['HULL',`${Math.ceil(combat.player.hull)} / ${combat.player.maxHull}`],['TARGET',combat.target?.label??combat.phase.toUpperCase()]],'T / A FIRE   TAB / MENU TARGET',2);
+      paint(screens[3],[['BUILDER','MERIDIAN SHIPWORKS'],['WEAPON ARRAY','ENERGY / ONLINE'],['CARGO HOLD','NONE / PILOT BACKPACK']],'KESTREL  /  SINGLE-SEAT INTERCEPTOR',3);
       return;
     }
-    if (multiplayer) {
+    if(combat&&screens[2].title==='COMBAT'){
+      paint(screens[2],[['SHIELDS',`${Math.ceil(combat.player.shield)} / ${combat.player.maxShield}`],['HULL',`${Math.ceil(combat.player.hull)} / ${combat.player.maxHull}`],['TARGET',combat.target?.label??combat.phase.toUpperCase()]],'T / A FIRE   TAB / MENU TARGET',2);
+    } else if (multiplayer) {
       const players = Array.isArray(multiplayer.players) ? multiplayer.players.length : 0;
       const capacity = Number.isFinite(multiplayer.maxPlayers) ? ` / ${multiplayer.maxPlayers}` : '';
       const hangar = multiplayer.hangar;

@@ -4,7 +4,7 @@ import { createWeaponTarget } from './weapon-target.js';
 import { WEAPONS, weaponProfile } from './weapons.js';
 
 /** Input/pose adapter. A fires in flight; RT retains flight ascent and suit fire. */
-export function createFlightEffects({effects,nav,mining,camera}){
+export function createFlightEffects({effects,nav,mining,camera,onFire}){
   let cooldown=0,side=1,weapon='pulse',keyHeld=false,pointerHeld=false,controllerFire=false,controllerArmed=false;
   const position=new THREE.Vector3(),forward=new THREE.Vector3(),collector=new THREE.Vector3();
   const target=createWeaponTarget({nav,mining});
@@ -18,7 +18,7 @@ export function createFlightEffects({effects,nav,mining,camera}){
     const button=document.createElement('button');button.type='button';button.textContent=`${Number(i)+1} · ${profile.label}`;button.dataset.shipWeapon=id;button.onclick=()=>select(id);panel.querySelector('.ship-weapon-options').append(button);
   }
   document.addEventListener('keydown',e=>{
-    if(!ready()||nav.shipId==='kestrel'||e.repeat||e.target.closest('input,dialog'))return;
+    if(!ready()||e.repeat||e.target.closest('input,dialog'))return;
     const id={Digit1:'pulse',Digit2:'laser',Digit3:'void'}[e.code];if(id)select(id);
     if(e.code==='KeyT')keyHeld=true;
   });
@@ -34,7 +34,7 @@ export function createFlightEffects({effects,nav,mining,camera}){
     get state(){return {weapon,controllerFire};},
     update(dt,origin,{suspended=false}={}){
       const active=ready()&&!suspended;
-      panel.hidden=nav.shipId==='kestrel'||Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
+      panel.hidden=Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
       if(!active)clear();
       else if(!controllerFire)controllerArmed=true;
       for(const b of panel.querySelectorAll('[data-ship-weapon]'))b.setAttribute('aria-pressed',String(b.dataset.shipWeapon===weapon));
@@ -42,10 +42,11 @@ export function createFlightEffects({effects,nav,mining,camera}){
       position.set(...(nav.layout??SHIP_LAYOUT).seatEye).applyQuaternion(nav.orientation).negate().add(nav.position);
       forward.set(0,0,-1).applyQuaternion(nav.orientation);
       cooldown=Math.max(0,cooldown-dt);
-      if(active&&nav.shipId!=='kestrel'&&!nav.multiplayer?.connected&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
+      if(active&&!nav.multiplayer?.connected&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
         const start=new THREE.Vector3(side*2.35,1.55,-3.3).applyQuaternion(nav.orientation).add(position);
         const direction=nav.position.clone().addScaledVector(forward,400).sub(start).normalize();
-        effects.fire(start,direction,{hit:target(start,direction,origin),weapon});side*=-1;cooldown=weaponProfile(weapon).interval;
+        const hit=target(start,direction,origin);
+        if(!onFire?.(start,direction,weapon,hit))effects.fire(start,direction,{hit,weapon});side*=-1;cooldown=weaponProfile(weapon).interval;
       }
       collector.set(.2,-.35,-.15).applyQuaternion(nav.orientation).add(nav.position);
       const throttle=active?Math.max(nav.keys.has('KeyW')?1:0,Math.min(1,Math.abs(nav.velocity.dot(forward))/200)):0;
