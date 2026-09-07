@@ -13,6 +13,10 @@ const {createExterior,createHub,POD_LAYOUT}=await mod('src/station-architecture.
 const {STATION_DEFENSE_MOUNTS}=await mod('src/station-security-policy.js');
 const {buildStationColliders}=await mod('src/station-collision.js');
 const {assetCollisionBoxes}=await mod('src/station-concourse.js');
+const {fleetHangarAsset,FLEET_HANGAR}=await mod('src/station-fleet-hangar.js');
+const {createPressureElevator,attachPressureElevator}=await mod('src/station-elevator.js');
+const {updateElevator}=await mod('src/station-architecture.js');
+const {createStationShopProps}=await mod('src/station-shop-props.js');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const identities={};
 async function readCommit(){
@@ -34,11 +38,16 @@ async function load(name){
   const asset=await loader.parseAsync(raw.buffer.slice(raw.byteOffset,raw.byteOffset+raw.byteLength),'');
   asset.scene.updateMatrixWorld(true);return asset;
 }
-const [defenseAsset,exteriorAsset,bayAsset,propsAsset,concourseAsset,elevatorAsset]=await Promise.all(
-  ['station-defense','station-exterior','station','station-props','station-concourse','station-elevator'].map(load));
+const [defenseAsset,exteriorAsset,sourceBay,propsAsset,concourseAsset,elevatorAsset,counterAsset]=await Promise.all(
+  ['station-defense','station-exterior','station','station-props','station-concourse','station-elevator','props/kestrel-maintenance-roll'].map(load));
+const bayAsset=fleetHangarAsset(sourceBay);
+bayAsset.scene.updateMatrixWorld(true);
 if(identities['public/models/station-defense.glb'].sha256!=='8d0dcbb6395479ad083cd609217833b97c74008acdd15b72ed9182ced46b64ae')throw Error('Frozen candidate08 identity changed');
+if(identities['public/models/station-exterior.glb'].sha256!=='5b39b183030d529a710de0b2dad308a36a8e597b067d3061d82f01bb721b76e6')throw Error('Checked authored exterior identity changed');
 for(const relative of ['src/station-security-policy.js','src/station-security.js','src/station-complex.js','src/station-collision.js',
-  'src/station-exterior.js','src/station-architecture.js','src/station-concourse.js','src/main.js','server/world.js','assets/station-defense/layout.json']){
+  'src/station-exterior.js','src/station-architecture.js','src/station-concourse.js','src/station-fleet-hangar.js','src/station-elevator.js',
+  'src/station-shop-props.js','src/station-shopkeeper.js','src/atlas-gameplay.js','src/main.js','server/world.js','assets/station-defense/layout.json',
+  'assets/station-defense/check_placement.mjs']){
   const bytes=await fs.readFile(path.join(ROOT,relative));identities[relative]={sha256:hash(bytes),bytes:bytes.length};
 }
 function collect(root){
@@ -58,6 +67,32 @@ function bounds(rows){const min=[Infinity,Infinity,Infinity],max=[-Infinity,-Inf
   for(const row of rows)for(const p of row.tri)for(let i=0;i<3;i++){min[i]=Math.min(min[i],p[i]);max[i]=Math.max(max[i],p[i]);}
   return {min,max};
 }
+function unionBounds(...boxes){return {min:[0,1,2].map(i=>Math.min(...boxes.map(b=>b.min[i]))),max:[0,1,2].map(i=>Math.max(...boxes.map(b=>b.max[i])))};}
+// Both authored door tracks are piecewise-linear translation. Their complete
+// keyframe bounds enclose every intermediate pose, not just sampled open/closed.
+const doorMotion={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]},doorTracks=[];
+const clip=THREE.AnimationClip.findByName(bayAsset.animations,'DoorsOpen');
+if(clip?.tracks.length!==2)throw Error('Expected the two authored hangar door tracks');
+for(const track of clip.tracks){
+  if(!/^HangarDoor_[LR]\.position$/.test(track.name)||track.getInterpolation()!==THREE.InterpolateLinear||track.getValueSize()!==3)throw Error('Door motion is not bounded linear translation');
+  const node=bayAsset.scene.getObjectByName(track.name.split('.')[0]),original=node.position.clone();
+  const all=new THREE.Box3();all.union(new THREE.Box3().setFromObject(node));
+  for(let i=0;i<track.times.length;i++){
+    node.position.fromArray(track.values,i*3);bayAsset.scene.updateMatrixWorld(true);all.union(new THREE.Box3().setFromObject(node));
+  }
+  node.position.copy(original);bayAsset.scene.updateMatrixWorld(true);
+  const box={min:all.min.toArray(),max:all.max.toArray()};Object.assign(doorMotion,unionBounds(doorMotion,box));
+  doorTracks.push({name:track.name,keyframes:track.times.length,bounds:box});
+}
+function passengerBounds(z){
+  const parent=new THREE.Group(),lift=createPressureElevator(parent,z,-8);
+  attachPressureElevator(lift,elevatorAsset,{sign(){}});
+  const all=new THREE.Box3();
+  for(const progress of [0,1]){lift.progress=progress;updateElevator(lift,0);parent.updateMatrixWorld(true);all.union(new THREE.Box3().setFromObject(parent));}
+  return {min:all.min.toArray(),max:all.max.toArray()};
+}
+const berthPassengerBounds=passengerBounds(22.3),hubPassengerBounds=passengerBounds(14.3);
+const counterProps=collect(createStationShopProps({scenes:{'kestrel-maintenance-roll':counterAsset.scene},status:{'kestrel-maintenance-roll':'ready'}}));
 const exterior=createAuthoredExterior(exteriorAsset,null),rings=exterior.rings;
 for(const ring of rings)ring.removeFromParent();
 const fixed=collect(exterior.group),legacy=createExterior();for(const ring of legacy.rings)ring.removeFromParent();
@@ -149,11 +184,13 @@ function inspectStation(rows,mount){
 const fixedTree=buildStationColliders(exterior.group);
 function countTree(n){return n.boxes?n.boxes.length:countTree(n.left)+countTree(n.right);}
 if(countTree(fixedTree)!==fixed.filter(r=>r.collider).length)throw Error('Runtime collider inclusion mismatch');
-const rawBayBounds=bounds([...bay,...props]),hubBounds=bounds([...hub,...concourse]),elevatorBounds=bounds(elevator);
+const rawBayBounds=unionBounds(bounds([...bay,...props]),doorMotion,berthPassengerBounds);
+const hubBounds=unionBounds(bounds([...hub,...concourse,...counterProps]),hubPassengerBounds),elevatorBounds=bounds(elevator);
 const p=new THREE.Vector3();
 function transformedBounds(b,matrix){const out=new THREE.Box3();for(let i=0;i<8;i++)out.expandByPoint(p.set(...[0,1,2].map(k=>b[(i&(1<<k))?'max':'min'][k])).applyMatrix4(matrix));return {min:out.min.toArray(),max:out.max.toArray()};}
 function boxDistance(a,b){return Math.hypot(...[0,1,2].map(i=>Math.max(0,a.min[i]-b.max[i],b.min[i]-a.max[i])));}
 const deck=bounds(collect(bayAsset.scene.getObjectByName('LandingDeck'))),door=bounds(collect(bayAsset.scene.getObjectByName('HangarDoor_L')));
+if(Math.abs(deck.max[1]-FLEET_HANGAR.deckMin[1])>EPS||Math.abs(deck.min[2]-FLEET_HANGAR.deckMin[2])>EPS||Math.abs(deck.max[2]-FLEET_HANGAR.deckMax[2])>EPS)throw Error('Audited bay does not match the playable fleet deck');
 const approach=bayAsset.scene.getObjectByName('ApproachPoint').getWorldPosition(new THREE.Vector3()).toArray();
 const podBounds=POD_LAYOUT.map(spec=>{
   const matrix=new THREE.Matrix4().compose(new THREE.Vector3(...spec.offset),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),spec.yaw),new THREE.Vector3(1,1,1));
@@ -200,18 +237,23 @@ const report={role:'Bastion author-side read-only CPU station-placement audit; n
   envelope:{radius:R,minY:0,maxY:H,pitch:[-.2,Math.PI/2],recoil:[0,.6],yaw:'all',minimumNonFoundationY,minimumNonFoundationWitness,
     provenance:'candidate08 check_additive_delta.py analytic extrema of all19001 actual vertices, pitch endpoints/stationary points and recoil endpoints; maxR29.574313216244338, Y0..38.04410439446006; cylinder overapproximates occupied space'},
   counts:{defenseTriangles:defense.length,fixedVisualTriangles:fixed.length,fixedRuntimeColliderTriangles:countTree(fixedTree),
-    hubAndConcourseTriangles:hub.length+concourse.length,bayAndPropsTriangles:bay.length+props.length,elevatorTriangles:elevator.length},
-  bounds:{rawBayWithProps:rawBayBounds,hubWithConcourse:hubBounds,elevator:elevatorBounds,landingDeck:deck,doorLeft:door},
+    hubAndConcourseTriangles:hub.length+concourse.length,shippedCounterPropTriangles:counterProps.length,bayAndPropsTriangles:bay.length+props.length,elevatorTriangles:elevator.length},
+  fleetHangar:FLEET_HANGAR,doorMotion:{bounds:doorMotion,tracks:doorTracks,coverage:'Every linear position keyframe; convex union encloses the complete continuous translation'},
+  bounds:{rawBayWithProps:rawBayBounds,hubWithConcourse:hubBounds,elevator:elevatorBounds,berthPassenger:berthPassengerBounds,hubPassenger:hubPassengerBounds,landingDeck:deck,doorLeft:door},
   mountPlaneToleranceMetres:EPS,predicateControls,foundation:floor.map(({poly,...r})=>({...r,area:area(poly)})),ringBounds,podBounds,mounts,firingRays,
   limitations:['No GPU, material, native-image, animation-quality, FPS or independent acceptance claim',
     'The all-motion cylinder may flag false positives; an empty result certifies separation for geometry inside that bound, within numerical tolerance',
     'Foundation support uses actual projected triangle clipping with a separate pairwise overlap-area guard; no station surface is excluded outside the measured support plane',
     'All phases of ring rotation are covered only by invariant axial separation; no ring-pose sampling was needed',
-    'All 20 bay hull/prop bounds and outward mouth corridors were compared. The corridor is a measured mouth cross-section extended outward, not a guarantee for arbitrary ship trajectories or approach yaw',
-    'Bay door animation, optional furniture and elevator poses are not swept individually; their distant bay/hub placement is reported separately',
+    'All 20 enlarged bay shell, unscaled prop, full hangar-door translation and passenger cabin/door bounds and outward mouth corridors were compared. The corridor is a measured mouth cross-section extended outward, not a guarantee for arbitrary ship trajectories or approach yaw',
+    'Passenger leaves translate linearly between measured endpoints. Small shipped counter dressing is included; shopkeeper skeletal animation, signs, arbitrary user objects and ship movement are not certified by this station assembly audit',
     'Twelve diagnostic muzzle rays use exact authored fixed triangles at three poses per upper/lower mount on one spine. This does not cover all targets, all station assemblies, selection or authoritative strike policy',
     'Legacy fallback is deliberately audited separately and must not inherit authored-exterior support claims']};
+report.pass=mounts.every(m=>m.authoredFixed.openCylinderPotentialTriangleCount===0&&m.authoredFixed.foundationContact.everyBaseTriangleAreaCovered&&
+  m.authoredFixed.radialSeparationFromKeepout>0&&m.authoredFixed.colliderAabbSeparation>0&&m.hubSeparation>0&&
+  m.ringAxialSeparation.every(gap=>gap>0)&&m.berthSeparation.every(b=>b.visibleBoundsSeparation>0&&b.outwardMouthCorridorSeparation>0));
 await fs.mkdir(OUT,{recursive:true});await fs.writeFile(path.join(OUT,'audit.json'),JSON.stringify(report,null,2)+'\n');
+if(!report.pass)throw Error('Actual refit station fails Bastion placement; inspect audit.json before changing geometry');
 console.log(JSON.stringify({asset:identities['public/models/station-defense.glb'],counts:report.counts,mounts:mounts.map(m=>({id:m.id,
   authoredPotential:m.authoredFixed.openCylinderPotentialTriangleCount,authoredRadialGap:m.authoredFixed.radialSeparationFromKeepout,
   colliderGap:m.authoredFixed.colliderAabbSeparation,support:m.authoredFixed.foundationContact.everyBaseTriangleAreaCovered,

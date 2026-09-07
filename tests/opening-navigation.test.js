@@ -9,6 +9,8 @@ import { RADIUS } from '../src/world.js';
 import { Station, stationQuaternion } from '../src/station.js';
 import { Fleet, FLEET_KEY } from '../src/fleet.js';
 import { FREIGHTER_LAYOUT, FreighterSystems } from '../src/freighter-layout.js';
+import { fleetHangarAsset } from '../src/station-fleet-hangar.js';
+import { ATLAS_RAMP_CALLS } from '../src/atlas-gameplay.js';
 
 if (!globalThis.ProgressEvent) {
   globalThis.ProgressEvent = class ProgressEvent {
@@ -54,14 +56,15 @@ async function loadStationGltf() {
   return new GLTFLoader().parseAsync(buffer, '');
 }
 
-async function setupOpening(t) {
+async function setupOpening(t, { fleet = false } = {}) {
   const document = installDom(t);
   const radial = stationQuaternion(STATION_DIRECTION, new THREE.Quaternion());
   const orientation = radial.multiply(
     new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), THREE.MathUtils.degToRad(20)),
   ).normalize();
+  const gltf = await loadStationGltf();
   const station = new Station(new THREE.Scene(), {
-    gltf: await loadStationGltf(), lodUrl: null, direction: STATION_DIRECTION, orientation,
+    gltf: fleet ? fleetHangarAsset(gltf) : gltf, lodUrl: null, direction: STATION_DIRECTION, orientation,
   });
   await station.readyPromise;
   t.after(() => station.dispose());
@@ -112,8 +115,8 @@ test('normal Navigation construction retains the existing orbital start', t => {
   assert.equal(Boolean(navigation.openingActive), false);
 });
 
-test('saved Atlas selection starts outside its hull and physically boards using its belly elevator', async t => {
-  const { navigation, station, press, advance, moveUntil } = await setupOpening(t);
+test('saved Atlas selection starts on the large bay deck and boards through its loading ramp and crew lift', async t => {
+  const { navigation, station, press, advance, moveUntil } = await setupOpening(t, { fleet: true });
   const saved=JSON.stringify({version:1,surfaceVisited:true,unlocked:true,active:'atlas'});
   const fleet=new Fleet({getItem:key=>key===FLEET_KEY?saved:null});
   navigation.shipId=fleet.active;navigation.layout=FREIGHTER_LAYOUT;navigation.freighter=new FreighterSystems();
@@ -129,16 +132,24 @@ test('saved Atlas selection starts outside its hull and physically boards using 
   near(local.y,FREIGHTER_LAYOUT.eyeHeight);
   near(navigation.deckClearance,FREIGHTER_LAYOUT.eyeHeight);
   assert.equal(navigation.freighter.floorAt(local),null);
-  moveUntil('KeyD',()=>navigation.toShipLocal().x>9.9,3,'walk clears the Atlas side');
-  moveUntil('KeyS',()=>navigation.toShipLocal().z>14.5,10,'walk physically around the Atlas hull');
-  moveUntil('KeyA',()=>navigation.toShipLocal().x<.2,4,'walk to the aft elevator centreline');
-  moveUntil('KeyW',()=>navigation.toShipLocal().z<11.4,2,'approach the fixed belly elevator call station');
-  assert.match(navigation.interaction,/BELLY ELEVATOR/);press('KeyF');advance(6);
-  near(navigation.freighter.lifts[0].y,0);
-  moveUntil('KeyW',()=>navigation.toShipLocal().z<1.7,4,'walk onto the lowered platform and reach its controls');
-  press('KeyF');advance(6);
-  near(navigation.toShipLocal().y,FREIGHTER_LAYOUT.floorY+FREIGHTER_LAYOUT.eyeHeight,1e-5);
-  moveUntil('KeyW',()=>navigation.toShipLocal().z<-9,6,'walk from the elevator to the Atlas pilot chair');
+  const call=ATLAS_RAMP_CALLS.find(c=>c.id==='front'),ramp=navigation.freighter.ramps.find(r=>r.id==='front'),lift=navigation.freighter.elevator;
+  moveUntil('KeyD',()=>navigation.toShipLocal().x>call.approach[0],3,'walk around the loading ramp toe');
+  moveUntil('KeyS',()=>navigation.toShipLocal().z>call.approach[2],4,'reach the visible ground call panel');
+  assert.equal(navigation.shipInteraction(navigation.toShipLocal()),'ramp:front');press('KeyF');advance(4);
+  near(ramp.angle,ramp.openAngle);
+  moveUntil('KeyW',()=>navigation.toShipLocal().z<-33,4,'walk outside the complete open ramp');
+  moveUntil('KeyA',()=>navigation.toShipLocal().x<0,4,'return to the loading centreline');
+  moveUntil('KeyS',()=>navigation.toShipLocal().z>-20,7,'physically climb the authored loading ramp');
+  assert.equal(navigation.insideShip,true);near(navigation.toShipLocal().y,FREIGHTER_LAYOUT.floorY+FREIGHTER_LAYOUT.eyeHeight,1e-5);
+  moveUntil('KeyS',()=>navigation.toShipLocal().z>-4,8,'walk down the cargo deck to the crew lift');
+  moveUntil('KeyD',()=>navigation.toShipLocal().x>5.5,4,'enter the open crew lift gate');
+  assert.equal(navigation.shipInteraction(navigation.toShipLocal()),'elevator:crew');press('KeyF');advance(8);
+  near(navigation.toShipLocal().y,lift.high+FREIGHTER_LAYOUT.eyeHeight,1e-5);
+  moveUntil('KeyA',()=>navigation.toShipLocal().x<0,4,'leave the upper crew lift gate');
+  moveUntil('KeyW',()=>navigation.toShipLocal().z<-19,8,'walk along the upper deck');
+  moveUntil('KeyA',()=>navigation.toShipLocal().x<-2.1,2,'reach the pilot lane');
+  moveUntil('KeyW',()=>navigation.toShipLocal().z<-20.5,2,'approach the Atlas pilot chair');
+  assert.equal(navigation.shipInteraction(navigation.toShipLocal()),'seat');
   press('KeyF');assert.equal(navigation.mode,'landed');
   nearVector(navigation.toShipLocal(),new THREE.Vector3(...FREIGHTER_LAYOUT.seatEye));
   nearVector(navigation.shipPosition,shipPosition);
