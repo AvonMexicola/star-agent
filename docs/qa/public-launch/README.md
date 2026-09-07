@@ -14,16 +14,64 @@ anonymous game canvas, with no desktop, account information or private messages.
 | Public file | Source |
 | --- | --- |
 | `site/media/orbit.webp` | `docs/qa/nomad-02/world/01-orbit.png`, existing 1600×900 production-world capture; its adjacent README records the original environment |
-| `site/media/coast.webp` | `docs/qa/main-integration/shore.png`, existing 1440×900 world capture |
-| `site/media/selene.webp` | `docs/qa/moon-stones/landing-shelf.webp`, existing 960×600 lunar capture |
+| `site/media/coast.webp` (original release) | `docs/qa/main-integration/shore.png`, existing 1440×900 world capture |
+| `site/media/selene.webp` (original release) | `docs/qa/moon-stones/landing-shelf.webp`, existing 960×600 lunar capture |
 | `site/media/flight.mp4` and poster | This release's Kestrel test start above Aeon, seed 7291, external camera, eight-second canvas capture |
 | `site/media/hangar.mp4` and poster | This release's Nomad hangar test start, seed 7291, eight-second canvas capture |
-| `site/media/field-notes.mp4` | Flight and hangar clips joined, H.264, 1280×800, no audio |
+| `site/media/field-notes.mp4` (original release) | Flight and hangar clips joined, H.264, 1280×800, no audio |
 
-These are explicit development test starts. Editing two scenes together is not
-proof of a continuous whole-system journey. The homepage labels both current alpha
-limits and the broader seamless-universe ambition. Media is encoded from the
-captured canvas; public screenshots are WebP conversions of the stated sources.
+The original flight/hangar films use explicit development test starts. Their
+joined edit does not prove a continuous journey. The homepage labels both current
+alpha limits and the broader seamless-universe ambition.
+
+### Supplied expedition screenshots and continuous arrival
+
+The gallery now uses the user's two original PNGs without image alterations:
+
+| Public file | Content and source checksum |
+| --- | --- |
+| `aeon-expedition.png` | Kestrel in Aeon grassland, 2560×1508; SHA-256 `d8205ec52e8eb2ed3c2f4cb21e855fe55d88e138be6572539a34112e6fa287ed` |
+| `selene-expedition.png` | Nomad on Selene, 2560×1600; SHA-256 `95f89e874e06f42bc8e6250eccfb92ab623dda0a48fc26820fc3c258b92b02c0` |
+
+The new `nomad-aeon-arrival.mp4` replaces the joined reel with one
+continuous canvas recording: targeted relativistic drive, 20 km arrival, ordinary
+boosted descent, braking, keyboard pitch-up, landing assist and touchdown. Seed
+7291; a 60,000 km development start is placed off camera, west of the coastal
+station ground track by 0.01 rad, then 60 m west and 180 m south to a
+gentler 80×80 m footprint sampled from the canonical terrain. Nothing writes the ship pose, travel elapsed time
+or simulation clock after recording starts. The initial direct coast approach was
+correctly blocked by Aeon Orbital, so the fixture uses a clear approach to nearby
+dry grassland. No game source or safety gate is changed for the recording.
+
+The reproducible encoder compresses descent to 6×, approach to 4× and landing to
+3×, retaining drive arrival and touchdown at 1×. Every frame belongs to the same
+take; speed labels appear in the film. Output is H.264, 1280×800, with no audio.
+The accepted take is **94.72 seconds**, edited to **30.97 seconds**. Chromium
+151.0.7922.173 / AMD Radeon 860M / ANGLE OpenGL ES 3.2, viewport 1440×900,
+DPR 1, fixed render scale 1. The browser case passes in 2.5 minutes; 908 trajectory
+samples include acceleration, arrival braking and landed mode, with no quick
+transit, crash, graphics-context loss, HTTP/page/console error or API/WebSocket.
+An earlier completed take was replaced because its touchdown framing crowded a
+nearby outcrop. No physics or collision code was modified to get the final image.
+
+`burrow-atlas.mp4` preserves the user's complete **2 min 55 sec** sequence from
+`miningcar in atlas.mp4`: field mining, driving into the Atlas, boarding the bridge
+and takeoff. Source SHA-256
+`0ffe8edff89e4e34d012ca8166f8052d89d8ba228647ba92be67398eb6aaef08`;
+source 2560×1600 at 60 fps. The public copy is H.264, 1280×800 at 30 fps, CRF 24,
+35,692,967 bytes, fast-start MP4, with audio and metadata removed. Its poster is
+an actual frame at 124.5 seconds. No scenes are reordered or accelerated.
+Sampled views across the full recording show only game content. This is explicitly
+labelled **local development footage**: its new Atlas/rover scene does not change
+or promise the exact feature set of the frozen public solo snapshot.
+
+Both films require user playback; neither downloads automatically with the page.
+The responsive film grid stacks on smaller screens. Homepage QA checks playback
+of both films, the original screenshot links, ambient motion controls, reduced
+motion, keyboard focus and layouts at 1440×900 and 390×844. The updated
+homepage case passes in 3.0 seconds, with zero page or HTTP errors; all 16 page
+dependencies and 40 existing viewer references pass static validation. The desktop
+and phone evidence links below show this latest two-film layout.
 
 ## Multiplayer validation
 
@@ -72,7 +120,7 @@ excluded. This is useful headroom/traffic evidence, not full-load certification.
 The reproducible script and complete limits are in PR #78. Bandwidth deserves
 attention before increasing the room limit again.
 
-## Final solo/homepage acceptance
+## Original solo/homepage acceptance (2026-09-07)
 
 `npm run test:browser -- -c scripts/public-launch.config.js`: **both cases pass**,
 completed 2026-09-07 21:26:57 UTC. Chromium 151.0.7922.173, AMD Radeon 860M,

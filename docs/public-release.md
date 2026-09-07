@@ -1,7 +1,7 @@
 # Public entry points and frozen releases
 
 `staragent.site` and `www.staragent.site` serve `site/`: the project introduction,
-real game screenshots, two short ambient captures and a user-operated film, plus
+real game screenshots, two short ambient captures and two user-operated films, plus
 links to solo, multiplayer, source and contribution guides. Motion is optional,
 pauses offscreen/in the background, and defaults off for reduced-motion/data-saving
 preferences. The landing page does not load the game engine or contact an API.
@@ -93,3 +93,17 @@ separate run on an SSD-backed temporary directory loaded both scenes cleanly; th
 quota was subsequently raised by the machine owner. For large capture jobs use a
 short `TMPDIR` path on disk and set `PWTEST_CACHE_DIR` alongside it. Do not interpret
 a browser startup/storage failure as a game pass or change rendering code to hide it.
+
+The current gallery preserves the two user-supplied Aeon/Selene PNGs. To record the
+continuous Nomad arrival reel on the frozen solo build, reserve the shared GPU and
+run `npm run test:browser -- -c scripts/public-arrival.config.js`, then
+`node scripts/encode-public-arrival.mjs`. The script performs initial development
+placement before capture and records only real drive/flight/landing controls.
+Speed changes are an explicit video edit, not altered simulation time. Recheck the
+homepage with `npm run test:browser -- -c scripts/public-launch.config.js --grep 'homepage links'`; the other case recreates the original ambient clips. See the
+QA record for provenance, actual acceptance and limits.
+
+The second film, `burrow-atlas.mp4`, is the full user-supplied local development
+recording, resized to 1280×800/30fps with H.264 CRF24 and fast-start metadata. Audio
+and source metadata are omitted from the public copy. Its newer Atlas/rover scene
+is labelled local development, independently of the frozen public game version.

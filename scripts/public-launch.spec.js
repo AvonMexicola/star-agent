@@ -65,7 +65,7 @@ test('homepage links, media, keyboard, reduced motion and phone layout',async({p
   await page.screenshot({path:`${out}/homepage-desktop.png`,fullPage:true});
   await page.locator('#choose').scrollIntoViewIfNeeded();await page.waitForFunction(()=>[...document.querySelectorAll('video[data-loop]')].every(v=>v.readyState>=2&&!v.paused));
   await page.getByRole('button',{name:'Pause motion'}).click();await expect.poll(()=>page.evaluate(()=>[...document.querySelectorAll('video[data-loop]')].every(v=>v.paused))).toBe(true);
-  const reel=page.locator('.reel video');await reel.scrollIntoViewIfNeeded();await reel.evaluate(v=>v.play());await expect.poll(()=>reel.evaluate(v=>v.currentTime)).toBeGreaterThan(.1);await reel.evaluate(v=>v.pause());
+  for(const reel of await page.locator('.reel video').all()){await reel.scrollIntoViewIfNeeded();await reel.evaluate(v=>v.play());await expect.poll(()=>reel.evaluate(v=>v.currentTime)).toBeGreaterThan(.1);await reel.evaluate(v=>v.pause());}
   await page.setViewportSize({width:390,height:844});await page.goto('http://127.0.0.1:5568/');await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(i=>{i.loading='eager';return i.decode();}));});await page.screenshot({path:`${out}/homepage-phone.png`,fullPage:true});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.emulateMedia({reducedMotion:'reduce'});await page.reload();await page.locator('#choose').scrollIntoViewIfNeeded();
