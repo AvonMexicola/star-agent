@@ -1906,3 +1906,101 @@ combines the checked local7ba1fbd history with remote governance. Candidate91f00
 passes668 unit tests,12 helper checks and build locally; runtime/assets are exactly
 those already checked at7ba1fbd. Its protected CI/merge record is the current
 publication source; do not infer a public release or completed art review.
+
+## Controller fire/layout — ready for local integration — 2026-09-07
+
+Cees's RT-fire request is implemented in `fix/controller-fire-layout`, isolated
+`/home/cees/projects/star-agent-controller-layout`, based on a748be1. RT/R2 fires,
+LT/L2 brakes/cancels drive, A/B rises/descends. Menu → Controller layout and
+Help → View controller layout show a responsive standard-controller diagram with
+Flight, On foot, EVA and shortcut contexts. Shared native dialog routing and
+neutral arming remain in force. Scoped hooks: gamepad, flight-effects, main/help,
+combat/MFD/map hints, new controller-layout module/CSS and affected tests/docs.
+No dependencies, assets, save schema or server changes.
+
+669 unit tests and production build pass. Three production combat journeys pass
+in4.2m; the final corrected layout case passes1/1 in45.9s. Both Nomad/Kestrel
+complete RT combat/report, with A/B thrust, LT brakes and held-input safety.
+Keyboard/pointer/recovery, desktop1440×900 and phone390×844 pass. Chromium151,
+AMD860M / ANGLE GLES3.2. Physical-controller and independent review remain open.
+Failed width iteration, fixture corrections and final images are retained in
+`docs/qa/controller-layout.md`. Browser QA port5397 is now released. Integrate this
+checked development checkpoint locally; no production deployment is requested.
+
+Controller integration completed: local `dev/all-features` fast-forwarded to741d82a,
+exactly the verified feature tree. The shared preview was stopped; `npm run dev:all`
+was restarted on5178/API8087 and serves the updated controller module. Final
+records release the claim; this remains a development checkpoint with injected
+controller evidence, not hardware acceptance or production deployment.
+
+## Gameplay menu — verified development checkpoint — 2026-09-07
+
+Cees requests a fixed in-game menu with Comms, Map, Contracts, Inventory, Loadout,
+Ship and Settings tabs, plus a development-only Dev console list. Codex owns
+`feat/gameplay-menu` in `/home/cees/projects/star-agent-gameplay-menu`: new
+`src/gameplay-menu.*`, scoped main/controller router/combat entry hooks and menu
+QA/docs. Reuses real native panels and transactions; paginates long lists instead
+of player scrolling. No dependencies or protocol changes. Focused production browser QA on5491 is complete and released; preserve these
+hooks during other feature integration.
+
+## Persistent local accounts — integrated and verified — 2026-09-07
+
+SA-DB-001 / `fix/persistent-local-accounts` at `b100d8f`, PR59:
+https://github.com/AvonMexicola/star-agent/pull/59. Integrated locally in `4ebf807`
+after controller source741d82a and record6eda47f, without conflicts. No production
+or MijnSchoolInzicht database was changed. Prisma7.9.1 now implements the existing
+SQL account/session/reset/player-state store. The local runner starts native
+PostgreSQL16.14 and retains its existing migration history and credential hashes.
+
+Shared http://127.0.0.1:5178/ and API8087 now run through the owned transient user
+unit `star-agent-persistent-preview.service`; PostgreSQL listens only on127.0.0.1:51224.
+Restart with `systemctl --user restart star-agent-persistent-preview.service`.
+Its KillMode=mixed allows the main runner to drain API save queues before stopping
+SQL. Stop the unit before running another `npm run dev:all` on those ports. The
+unit does not install a boot service; `npm run dev:all` reopens the same database.
+Do not restore the old STAR_AGENT_MEMORY=1 launcher configuration.
+
+Data: `~/.local/share/star-agent/postgres/star-agent-local/`, directory0700 with
+private credentials.json0600 and cluster/. This location is independent of Git
+worktrees and node_modules. Follow docs/local-development.md for cold backup and
+restore to a different database name; do not delete/reinitialize it on updates.
+The live shared service passed a controlled full restart: the same HTTP account,
+password login and cookie session survived. Its synthetic fixture was removed by
+exact account ID/email afterward; pre-existing and remaining accounts both0.
+A private RAM snapshot also contained no accounts; no credential values were logged.
+
+Feature checks:668 unit tests,88 native-PostgreSQL multiplayer tests/no skips,
+3 restart/backup-restore/failure tests,12 helper tests, Prisma generation,
+repository checks, build and zero-advisory audit pass. Both production browser
+journeys pass against native SQL in3.2m, including the full injected Gamepad route.
+Combined checks: clean npm ci/generated client,3 full-runner persistence tests,
+repository checks, build and the two-pilot browser journey pass (2.0m). The browser
+report has zero page/console/request errors; Vite records WebSocket resets during
+test-server teardown. All PR59 hosted checks, including verify, are green. Details and failed PGlite trial are in
+docs/qa/persistent-local-accounts.md and ADR0002. Independent review and public
+release remain separate. Browser QA is released. Preserve the running shared
+preview's database51224; database51254 was an isolated synthetic SQL QA target.
+
+
+Gameplay menu verification complete: feature9d08154 was reconciled with the
+persistent-account integration d1db78d in dc570a3. New terminal tabs retain the
+actual native screen handlers, use explicit pages, and require no scrolling at
+1440×900 or390×844, including inventory, loadout, Dev, recipes, fleet and account
+keyboard. Escape/Menu opens; LB/RB or brackets changes tabs; B/Escape resumes.
+Dev is gated by the existing development launcher and contains Test starts plus
+the console list. Station comms remains roster/hangar/account functionality; no
+new text-chat protocol is claimed. Settings includes graphics, sound and controls.
+
+Combined669 unit checks, repository checks and build pass. Six focused browser
+cases pass: menu layout matrix, controller transfers/loadout/Dev/input safety,
+both full Nomad/Kestrel patrols, keyboard/pointer recovery and controller diagram.
+Old-fixture corrections and the pre-existing external Google Fonts outage are
+recorded honestly in docs/qa/gameplay-menu.md alongside final captures. Chromium151
+/ AMD860M ANGLE GLES3.2; no physical-controller or independent visual-acceptance
+claim. Browser QA5491/5397 is released. Preserve the running persistent preview
+service and database; integrate by fast-forwarding the checked feature tree.
+
+Gameplay menu integrated locally by fast-forward to adbd806 on dev/all-features.
+The persistent shared preview on5178 serves src/gameplay-menu.js with the new
+Pilot interface and tab frame. No service/database restart or production deployment
+was performed. SA-UI-002 is integrated; independent review remains pending.

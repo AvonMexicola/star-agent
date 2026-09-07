@@ -95,7 +95,7 @@ test('weapon obstruction follows visible station-complex roots at a large render
  const origin=v(1e9,2e9,3e9),group=new THREE.Group();
  const wall=new THREE.Mesh(new THREE.BoxGeometry(4,4,1),new THREE.MeshBasicMaterial());wall.position.z=-4;group.add(wall);
  const hidden=new THREE.Group();hidden.visible=false;const decoy=wall.clone();decoy.position.z=-1;hidden.add(decoy);group.add(hidden);group.updateMatrixWorld(true);
- const nav={station:{pods:[{group}],hub:{group:new THREE.Group()}},stationDistance:20,body:AEON,normal:v(0,1,0)};
+ const nav={station:{pods:[{group}],hub:{group:new THREE.Group()}},stationDistance:90000,body:AEON,normal:v(0,1,0)};
  const target=createWeaponTarget({nav,mining:{raycast:()=>null}});
  const hit=target(origin,v(0,0,-1),origin,20);
  assert.ok(hit);assert.ok(Math.abs(hit.distance-3.5)<1e-8);assert.ok(hit.point.distanceTo(origin.clone().add(v(0,0,-3.5)))<1e-6);
@@ -105,7 +105,7 @@ test('weapon obstruction follows visible station-complex roots at a large render
 
  test('moving muzzle remains attached to a visible laser while its hit endpoint stays fixed',()=>{
  const fx=new EnergyEffects(new THREE.Scene()),muzzle=v(25e9,0,0),end=muzzle.clone().add(v(0,0,-100));let impacts=0;fx.impact=()=>impacts++;
- fx.fire(muzzle,v(0,0,-1),{weapon:'laser',muzzle:()=>muzzle.clone(),hit:{point:end}});
+ fx.fire(muzzle,v(0,0,-1),{weapon:'laser',muzzlePosition:()=>muzzle.clone(),hit:{point:end}});
  muzzle.add(v(2,1,-3));fx.update(.016,{origin:muzzle});
  const lance=fx.lances.find(l=>l.active);assert.deepEqual(lance.start,muzzle);assert.deepEqual(lance.end,end);assert.equal(impacts,1);
  fx.update(.1,{origin:muzzle});assert.equal(fx.state.lances,0);fx.dispose();

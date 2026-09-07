@@ -12,10 +12,23 @@ async function setup(page,ship='nomad'){
 const frames=page=>page.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise(requestAnimationFrame);});
 async function button(page,i,down){await page.evaluate(({i,down})=>window.testPad.buttons[i]={pressed:down,value:+down},{i,down});await frames(page);}
 async function tap(page,i){await button(page,i,true);await button(page,i,false);}
-async function command(page,key){
- await tap(page,9);await expect(page.locator('#controller-menu')).toBeVisible();
- for(let i=0;i<90;i++){if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key)){await tap(page,0);await page.waitForFunction(()=>window.starAgent.state.enabled&&window.starAgent.state.controller.armed&&!document.querySelector('dialog[open]'));return;}await tap(page,13);}
+async function choose(page,key){
+ for(let i=0;i<100;i++){
+  const focused=await page.evaluate(()=>document.activeElement?.dataset.controllerKey);
+  if(focused===key){await tap(page,0);return;}
+  if(focused?.startsWith('page-')&&focused.endsWith('-next')&&!await page.locator(`[data-controller-key="${key}"]`).isVisible())await tap(page,0);
+  else await tap(page,13);
+ }
  throw Error(`Missing command ${key}`);
+}
+async function openTab(page,tab){
+ await tap(page,9);await expect(page.locator('dialog[open].gameplay-screen')).toBeVisible();
+ for(let i=0;i<8&&await page.locator('dialog[open]').getAttribute('data-gameplay-tab')!==tab;i++)await tap(page,5);
+ await expect(page.locator('dialog[open]')).toHaveAttribute('data-gameplay-tab',tab);
+}
+async function command(page,key){
+ await openTab(page,'ship');await choose(page,key);
+ await page.waitForFunction(()=>window.starAgent.state.enabled&&window.starAgent.state.controller.armed&&!document.querySelector('dialog[open]'));
 }
 const axes=(page,a)=>page.evaluate(a=>window.testPad.axes=a,a);
 
@@ -23,15 +36,20 @@ test('controller mode selection, finite braking, and moving ship/on-foot muzzle 
  const errors=await setup(page);
  expect(await page.evaluate(()=>window.starAgent.state.effects.combatMode)).toBe(true);
  await command(page,'combat-mode');expect(await page.evaluate(()=>window.starAgent.state.effects.weaponStatus)).toContain('LOCKED');
- const locked=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await button(page,0,true);await frames(page);await button(page,0,false);expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(locked);
- await command(page,'combat-mode');await command(page,'weapon-laser');
+ const locked=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await button(page,7,true);await frames(page);await button(page,7,false);expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(locked);
+ await command(page,'combat-mode');await command(page,'weapon-laser');await command(page,'camera-view');
  await axes(page,[0,-1,0,0]);await page.waitForFunction(()=>window.starAgent.state.speed>70);
- await button(page,0,true);await page.waitForFunction(()=>window.starAgent.state.effects.lances>0);await page.screenshot({path:`${out}/ship-moving-laser.png`});await button(page,0,false);
+ await button(page,7,true);await page.waitForFunction(()=>window.starAgent.state.effects.lances>0);await page.screenshot({path:`${out}/ship-moving-laser.png`});
+ const frame=await page.evaluate(async()=>{for(let i=0;i<120;i++){await new Promise(requestAnimationFrame);if(window.starAgent.state.effects.lances>0)return document.querySelector('#viewport').toDataURL('image/png');}throw Error('No visible laser frame');});
+ await writeFile(`${out}/ship-moving-laser-frame.png`,Buffer.from(frame.split(',')[1],'base64'));await button(page,7,false);
  await axes(page,[0,0,0,0]);await tap(page,11);expect(await page.evaluate(()=>window.starAgent.state.flightAssist)).toBe(false);
  const coast=await page.evaluate(()=>window.starAgent.state.velocity);await page.waitForTimeout(500);const after=await page.evaluate(()=>window.starAgent.state.velocity);expect(Math.hypot(...after.map((v,i)=>v-coast[i]))).toBeLessThan(2);
- await tap(page,11);await button(page,1,true);await page.waitForFunction(()=>window.starAgent.state.speed<1);await button(page,1,false);
- // Reach the ground equipment by the actual menu, landing, cabin and ramp route.
- await command(page,'destination-moon');await page.waitForFunction(()=>window.starAgent.state.body==='selene'&&!window.starAgent.state.transiting);
+ await tap(page,11);await button(page,6,true);await page.waitForFunction(()=>window.starAgent.state.speed<1);await button(page,6,false);
+ await command(page,'camera-view');
+ // Select a separate ground test start through the real controller launcher;
+ // landing, leaving the cabin, using equipment and returning to play are physical.
+ await openTab(page,'dev');await choose(page,'dev-location-moon');await choose(page,'dev-launch');
+ await page.waitForFunction(()=>window.starAgent?.state.body==='selene'&&!window.starAgent.state.transiting&&window.starAgent.state.ready&&window.starAgent.state.controller.armed,undefined,{timeout:90000});
  await tap(page,3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',undefined,{timeout:45000});await tap(page,2);
  await axes(page,[0,-1,0,0]);await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>2.3);await axes(page,[0,0,0,0]);await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
  await axes(page,[0,-1,0,0]);await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>12);await axes(page,[0,0,0,0]);

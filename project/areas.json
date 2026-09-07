@@ -186,7 +186,8 @@
         "src/system-map.js",
         "src/mfd/**",
         "src/dev-launcher*",
-        "index.html"
+        "index.html",
+        "src/gameplay-menu.js"
       ],
       "contracts": [
         "docs/controller-contract.md",

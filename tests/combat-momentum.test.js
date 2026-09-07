@@ -42,7 +42,7 @@ test('combat/cruise, boost, automation and overspeed lock firing in both assist 
 });
 test('combat projectiles inherit forward, lateral and retreating shooter velocity',()=>{
  for(const velocity of [new Vector3(0,0,-180),new Vector3(180,0,0),new Vector3(0,0,180)]){
-  const sim=new CombatSimulation();sim.fire(new Vector3(25e9,0,0),new Vector3(0,0,-1),'pulse',null,velocity);
+  const sim=new CombatSimulation();sim.fire(new Vector3(25e9,0,0),new Vector3(0,0,-1),'pulse',null,null,velocity);
   assert.deepEqual(sim.projectiles[0].velocity,new Vector3(0,0,-450).add(velocity));
  }
 });

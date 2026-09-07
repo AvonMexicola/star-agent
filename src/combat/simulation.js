@@ -1,13 +1,15 @@
 import {Vector3,Quaternion} from 'three';
 import {step as stepFlight} from '../flight-model.js';
+import {shipWeaponProfile,SHIP_WEAPON_SIZES} from '../ship-weapon-profiles.js';
 
 export const SHIP_STATS=Object.freeze({
   nomad:{hull:240,shield:180,radius:9,speed:65,turn:.65,recharge:16},
   kestrel:{hull:160,shield:140,radius:7,speed:105,turn:1.15,recharge:20},
   atlas:{hull:600,shield:360,radius:25,speed:45,turn:.35,recharge:24},
 });
-export const GUNS=Object.freeze({pulse:{damage:24,speed:450,range:1600},laser:{damage:48,speed:Infinity,range:1600},void:{damage:100,speed:110,range:1600}});
+export const GUNS=Object.freeze(Object.fromEntries(['pulse','laser','void'].map(type=>[type,shipWeaponProfile(type,1)])));
 const FORWARD=new Vector3(0,0,-1);
+const NPC_DAMAGE_PER_SECOND={nomad:16,kestrel:24};
 export function integrity(ship='nomad'){
   const stats=SHIP_STATS[ship]??SHIP_STATS.nomad;
   return {hull:stats.hull,shield:stats.shield,maxHull:stats.hull,maxShield:stats.shield,hitAge:99,recharge:stats.recharge};
@@ -37,9 +39,15 @@ export function interceptPoint(start,target,velocity,speed){
   else{const disc=b*b-4*a*c;if(disc>=0){const roots=[(-b-Math.sqrt(disc))/(2*a),(-b+Math.sqrt(disc))/(2*a)].filter(v=>v>0);if(roots.length)t=Math.min(...roots);}}
   return target.clone().addScaledVector(velocity,Math.min(t,8));
 }
+/** A projectile's visible segment ends at its physical tip and cannot reach
+ * behind the named muzzle before it has travelled its full visual length. */
+export function projectileSpan(shot,maximum=8*(shot.profile?.effectScale??1)){
+  const length=Math.max(0,Math.min(maximum,shot.travelled??0));
+  return {length,position:shot.position.clone().addScaledVector((shot.velocity??shot.direction).clone().normalize(),-length*.5)};
+}
 export class CombatSimulation{
-  constructor({onShot=()=>{},onHit=()=>{}}={}){
-    this.onShot=onShot;this.onHit=onHit;this.enemies=[];this.projectiles=[];this.player=integrity();this.shipId='nomad';this.phase='idle';this.targetId=null;this.serial=0;this.time=0;this.shots=0;this.hits=0;this.incomingHits=0;this.completed=0;
+  constructor({onShot=()=>{},onHit=()=>{},obstruction=()=>null}={}){
+    this.onShot=onShot;this.onHit=onHit;this.obstruction=obstruction;this.enemies=[];this.projectiles=[];this.player=integrity();this.shipId='nomad';this.phase='idle';this.targetId=null;this.serial=0;this.time=0;this.shots=0;this.hits=0;this.incomingHits=0;this.completed=0;
   }
   setShip(id){if(id!==this.shipId){this.shipId=id;this.player=integrity(id);}}
   accept(point,orientation){
@@ -56,22 +64,40 @@ export class CombatSimulation{
   get living(){return this.enemies.filter(e=>e.integrity.hull>0);}
   get target(){return this.living.find(e=>e.id===this.targetId)??null;}
   cycle(){const living=this.living;if(living.length)this.targetId=living[(living.findIndex(e=>e.id===this.targetId)+1)%living.length].id;}
-  fire(start,direction,weapon='pulse',wall=null,velocity=new Vector3(),muzzle=null){
+  fire(start,direction,weapon='pulse',wall=null,profile=null,velocity=new Vector3(),muzzlePosition=null){
     if(this.player.hull<=0)return;
-    this.shots++;this.launch(start,direction,GUNS[weapon]??GUNS.pulse,'player',weapon,wall,velocity,muzzle);
+    const gun=profile??shipWeaponProfile(weapon,SHIP_WEAPON_SIZES[this.shipId]??1);
+    const shot=this.launch(start,direction,gun,'player',gun.kind??weapon,wall,velocity,muzzlePosition);
+    if(shot)this.shots++;
+    return shot;
   }
-  launch(start,direction,gun,owner,weapon,wall=null,velocity=new Vector3(),muzzle=null){
-    const range=Math.min(gun.range,wall?.distance??Infinity),shot={id:++this.serial,position:start.clone(),direction:direction.clone().normalize(),speed:gun.speed,damage:gun.damage,remaining:range,owner,weapon,wall,muzzle,velocity:direction.clone().normalize().multiplyScalar(Number.isFinite(gun.speed)?gun.speed:0).add(velocity)};
-    if(!Number.isFinite(gun.speed)){this.trace(shot,start.clone().addScaledVector(shot.direction,range),false);}
-    else if(this.projectiles.length<128)this.projectiles.push(shot);
+  launch(start,direction,gun,owner,weapon,wall=null,velocity=new Vector3(),muzzlePosition=null){
+    if(direction.lengthSq()<1e-12||(!Number.isFinite(gun.speed)&&gun.speed!==Infinity))return null;
+    if(Number.isFinite(gun.speed)&&this.projectiles.length>=128)return null;
+    if(!Number.isFinite(wall?.distance)||wall.distance>gun.range)wall=null;
+    const range=Math.max(0,Math.min(gun.range,wall?.distance??Infinity));
+    const shot={id:++this.serial,start:start.clone(),position:start.clone(),direction:direction.clone().normalize(),speed:gun.speed,damage:gun.damage,remaining:range,travelled:0,owner,weapon,wall,profile:gun,muzzlePosition,velocity:direction.clone().normalize().multiplyScalar(Number.isFinite(gun.speed)?gun.speed:0).add(velocity)};
+    if(!Number.isFinite(gun.speed)){
+      if(!this.trace(shot,start.clone().addScaledVector(shot.direction,range),false))this.impactWall(shot);
+    }else if(range>0)this.projectiles.push(shot);
+    else this.impactWall(shot);
     this.onShot(shot);
+    return shot;
+  }
+  impactWall(shot){
+    if(!shot.wall)return;
+    const point=shot.wall.point?.clone()??shot.start.clone().addScaledVector(shot.direction,Math.max(0,shot.wall.distance));
+    this.onHit({point,normal:shot.wall.normal?.clone()??shot.direction.clone().negate(),shield:false,destroyed:false,entity:null,weapon:shot.weapon,profile:shot.profile});
   }
   hit(entity,shot,point){
     const state=entity==='player'?this.player:entity.integrity;
     const shield=state.shield>0,applied=damage(state,shot.damage);
-    if(applied){if(entity==='player')this.incomingHits++;else this.hits++;this.onHit({point,shield,destroyed:state.hull===0,entity});}
+    const centre=entity==='player'?this.playerPosition:entity.position;
+    const normal=centre?point.clone().sub(centre).normalize():shot.direction.clone().negate();
+    if(applied){if(entity==='player')this.incomingHits++;else this.hits++;this.onHit({point,normal,shield,destroyed:state.hull===0,entity,weapon:shot.weapon,profile:shot.profile});}
   }
   trace(shot,end,moving=true){
+    if(shot.wall&&shot.remaining<=0)return false;
     let first=null,fraction=Infinity;
     const candidates=shot.owner==='player'?this.living:[{id:'player',position:this.playerPosition,previous:this.previousPlayer,integrity:this.player,ship:this.shipId}];
     for(const e of candidates){
@@ -101,7 +127,8 @@ export class CombatSimulation{
         if(distance<180&&e.breakTime<=0)e.breakTime=3.5;
         e.strategy=e.breakTime>0?'break':distance<1000?'attack':'intercept';e.breakTime=Math.max(0,e.breakTime-dt);
       }
-      const aim=interceptPoint(e.position,position,velocity.clone().sub(e.velocity),450);
+      const gun=shipWeaponProfile('pulse',SHIP_WEAPON_SIZES[e.ship]??1);
+      const aim=interceptPoint(e.position,position,velocity.clone().sub(e.velocity),gun.speed);
       let desired=aim.clone().sub(e.position);
       if(e.strategy==='return')desired=this.point.clone().sub(e.position);
       if(e.strategy==='break')desired=e.position.clone().sub(position).add(new Vector3((e.slot?1:-1)*220,100,0).applyQuaternion(orientation));
@@ -110,13 +137,32 @@ export class CombatSimulation{
       const speed=stats.speed*(e.strategy==='break'?1.35:e.strategy==='attack'?.7:1);
       e.velocity.copy(stepFlight(e,{shipId:e.ship,assist:true,targetVelocity:forward.clone().multiplyScalar(speed)},{density:0,gravity:new Vector3()},dt).velocity);e.position.addScaledVector(e.velocity,dt);
       e.cooldown-=dt;
-      if(e.strategy==='attack'&&distance<1250&&forward.dot(aim.sub(e.position).normalize())>.994&&e.cooldown<=0){
-        this.launch(e.position.clone().addScaledVector(forward,stats.radius+2),forward,{damage:12,speed:450,range:1400},e.id,'pulse',null,e.velocity);e.cooldown=e.ship==='kestrel'?.75:1.1;
+      if(e.strategy==='attack'&&distance<1250&&forward.dot(aim.clone().sub(e.position).normalize())>.994&&e.cooldown<=0){
+        // Model transforms still contain the previous render frame here. Ask
+        // for the real barrel in ship-local space, then use this tick's pose.
+        const pose=e.armament?.nextMuzzle?.({local:true});
+        if(!pose?.position||!pose.direction||!pose.profile||pose.direction.lengthSq()<1e-12)continue;
+        const start=pose.position.clone().applyQuaternion(e.orientation).add(e.position);
+        const direction=pose.direction.clone().applyQuaternion(e.orientation).normalize();
+        const lead=interceptPoint(start,position,velocity.clone().sub(e.velocity),pose.profile.speed).sub(start).normalize();
+        // Fixed guns cannot bend their bores toward a selected target.
+        if(direction.dot(lead)<=.994)continue;
+        const trajectory=Number.isFinite(pose.profile.speed)?direction.clone().multiplyScalar(pose.profile.speed).add(e.velocity).normalize():direction;
+        const wall=this.obstruction(start,trajectory,pose.profile.range,e);
+        const shot=this.launch(start,direction,pose.profile,e.id,pose.type??pose.profile.kind??'pulse',wall,e.velocity);
+        if(shot){
+          e.armament.fired(pose);
+          // Sized hits use the common damage profile. Pulse spacing is 1.5 s
+          // for Nomad and 1.75 s for Kestrel, well below the player's fire rate
+          // while still applying pressure across the pilots' attack/break passes.
+          e.cooldown=Math.max(pose.profile.interval,pose.profile.damage/(NPC_DAMAGE_PER_SECOND[e.ship]??NPC_DAMAGE_PER_SECOND.nomad));
+        }
       }
     }
     this.projectiles=this.projectiles.filter(shot=>{
       const speed=shot.velocity.length(),step=Math.min(shot.remaining,speed*dt),end=shot.position.clone().addScaledVector(shot.velocity,speed>0?step/speed:0);
-      if(this.trace(shot,end))return false;shot.position.copy(end);shot.remaining-=step;
+      if(this.trace(shot,end))return false;shot.position.copy(end);shot.remaining-=step;shot.travelled+=step;
+      if(shot.remaining<=0)this.impactWall(shot);
       return shot.remaining>0;
     });
     if(!this.target)this.targetId=this.living[0]?.id??null;

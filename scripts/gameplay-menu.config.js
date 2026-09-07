@@ -1,0 +1,3 @@
+import {defineConfig} from '@playwright/test';
+if(process.env.MENU_TMPDIR)process.env.TMPDIR=process.env.MENU_TMPDIR;
+export default defineConfig({testDir:'.',testMatch:'gameplay-menu.spec.js',timeout:180000,workers:1,reporter:'list',outputDir:process.env.MENU_RESULTS||'/tmp/star-agent-menu-results',use:{baseURL:'http://127.0.0.1:5491',viewport:{width:1440,height:900},actionTimeout:12000,launchOptions:{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']}},webServer:{command:'npm run preview -- --port 5491 --strictPort',url:'http://127.0.0.1:5491',reuseExistingServer:true}});

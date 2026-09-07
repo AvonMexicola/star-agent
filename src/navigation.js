@@ -1,3 +1,4 @@
+import {constrainShipAttachments} from './ship-attachment-collision.js';
 import { MIASMA_ARRIVAL_ALTITUDE, miasmaArrivalDirection, constrainMiasmaStep } from './miasma-world.js';
 import * as THREE from 'three';
 import { SUN_POSITION, SUN_AXIS, sunStandoffPoint } from './stellar-world.js';
@@ -84,7 +85,7 @@ export class Navigation {
   }
   brake(){
     if(this.mode==='flight'&&!this.powered){this.notify('Main power off. Power on with P to use ship brakes.');return;}
-    if(this.mode==='flight'){this.autoland=false;this.notify('Hold X / controller B for full braking thrust.');return;}
+    if(this.mode==='flight'){this.autoland=false;this.notify('Hold X / controller LT for full braking thrust.');return;}
     this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.autoland=false;this.resetSteering();
     this.notify(this.cabinFlight?'Stopped walking. Ship remains on course.':'Brakes engaged.');
   }
@@ -110,7 +111,7 @@ export class Navigation {
     if(!this.powered){this.notify('Power on with P to enable flight control.');return;}
     if(this.travel||this.mode!=='flight'||this.autoland||this.stationLift){this.notify('Change flight assist while freely flying.');return;}
     this.flightAssist=!this.flightAssist;this.resetSteering();this.angularVelocity.set(0,0,0);
-    this.notify(this.flightAssist?'Fly-by-wire. Thrusters correct drift and brake on release; allow stopping distance.':'Unlocked. Thrust off to coast; turn and fire while drifting. Hold X / B to brake; V / R3 restores fly-by-wire.');
+    this.notify(this.flightAssist?'Fly-by-wire. Thrusters correct drift and brake on release; allow stopping distance.':'Unlocked. Thrust off to coast; turn and fire while drifting. Hold X / LT to brake; V / R3 restores fly-by-wire.');
   }
   get flightEnvironment(){
     const body=this.body;
@@ -176,7 +177,7 @@ export class Navigation {
     if(!this.enabled||this.travel)return false;
     const route=this.travelRoute();
     if(!route.ok){this.notify(route.reason);return false;}
-    this.travel={plan:route.plan,elapsed:0,targetId:this.travelTarget};
+    this.travel={plan:route.plan,elapsed:0,targetId:this.travelTarget};this.combatMode=false;
     this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.boost=false;this.flightAssist=true;
     this.notify('Drive spooling. Automatic alignment · X aborts.');
     return true;
@@ -411,7 +412,7 @@ export class Navigation {
       this.mode='flight';this.doorOpen=false;this.doorProgress=0;this.insideShip=false;this.position.addScaledVector(this.normal,12);this.velocity.copy(this.normal).multiplyScalar(12);this.shipPosition=null;this.notify('Hatch secured. Liftoff. Space ascends; Shift boosts.');return;
     }
     if(this.autoland){this.autoland=false;this.notify('Landing assist disengaged.');return;}
-    if(this.speed>10){this.notify('Slow below 10 m/s before landing assist. Hold X / B to brake.');return;}
+    if(this.speed>10){this.notify('Slow below 10 m/s before landing assist. Hold X / LT to brake.');return;}
     if(this.stationDistance<500){
       if(!this.canDock){this.notify('Fly through the open doors and over the central landing pad, then press B.');return;}
       this.gearDeployed=true;this.autoland=true;this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.notify('Docking assist. Settling onto the hangar deck.');return;
@@ -734,6 +735,8 @@ export class Navigation {
       if(this.shipPosition){
         const hit=this.kestrelAccess?{point:constrainKestrelEVA(this.toShipLocal(previous),this.toShipLocal(proposed))}:constrainEVAShip(this.toShipLocal(previous),this.toShipLocal(proposed),this.doorProgress>.98);
         if(this.kestrelAccess)hit.hit=!hit.point.equals(this.toShipLocal(proposed));
+        const fitted=constrainShipAttachments(this.toShipLocal(previous),hit.point,this.layout?.weaponParts,{eva:true});
+        hit.hit||=!fitted.equals(hit.point);hit.point=fitted;
         if(hit.hit){proposed=this.fromShipLocal(hit.point);this.velocity.set(0,0,0);}
       }
       const obstacle=this.surfaceObstacles?.constrainEVA?.(previous,proposed);
@@ -766,6 +769,7 @@ export class Navigation {
       let local=null,floor=null;
       if(localBefore&&localBefore.length()<55){
         local=this.kestrelAccess?constrainKestrelStep(localBefore,this.toShipLocal(proposed)):this.freighter?this.freighter.constrain(localBefore,this.toShipLocal(proposed)):constrainShipStep(localBefore,this.toShipLocal(proposed),this.doorProgress>.98);
+        local=constrainShipAttachments(localBefore,local,this.layout?.weaponParts,{eyeHeight:this.layout?.eyeHeight??1.75});
         proposed=this.fromShipLocal(local);floor=this.kestrelAccess?null:this.freighter?this.freighter.floorAt(local):shipFloorAt(local.x,local.z,this.doorProgress>.98);
       }
       if(this.cabinFlight&&!this.spaceParked&&floor===null&&!stationGrid){

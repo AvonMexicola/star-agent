@@ -61,7 +61,7 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
         }
         return;
       }
-      if (pad.pressed.has(9)) open();
+      if (pad.pressed.has(9)) (nav.openGameplayMenu??open)();
       else if (pad.pressed.has(8)) openBackpack();
       else if (buildActive()) handleBuild(pad);
       else if (nav.mode === 'walk' || nav.mode === 'eva') {

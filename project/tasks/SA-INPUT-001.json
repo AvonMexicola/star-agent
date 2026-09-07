@@ -1,0 +1,28 @@
+{
+  "id": "SA-INPUT-001",
+  "title": "Right-trigger ship fire and controller diagram",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex controller follow-up",
+  "status": "integrated",
+  "branch": "fix/controller-fire-layout",
+  "base": "a748be101aad4ea672a157481044ce9ed6b03e35",
+  "updated": "2026-09-07",
+  "areas": [
+    "interface",
+    "combat"
+  ],
+  "claims": [
+    "src/gamepad.js",
+    "src/controller-layout.js",
+    "src/controller-layout.css",
+    "src/effects/flight-effects.js",
+    "src/main.js",
+    "src/ship-mfd.js",
+    "src/system-map.js",
+    "index.html",
+    "scripts/space-combat.spec.js",
+    "tests/gamepad.test.js"
+  ],
+  "brief": "docs/briefs/controller-layout.md"
+}

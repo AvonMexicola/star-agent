@@ -10,17 +10,17 @@ mapping, not operating-system Bluetooth status.
 
 | Context | Binding | Action |
 | --- | --- | --- |
-| Everywhere in gameplay | Menu | Command menu: destinations, backpack, tool, help |
+| Everywhere in gameplay | Menu | Gameplay menu: Comms, Map, Contracts, Inventory, Loadout, Ship, Settings |
 | Everywhere in gameplay | View | Backpack |
 | Dialog | D-pad / left stick | Move visible focus between available controls |
 | Dialog | A / B | Activate / close and return |
 | Dialog | Right stick | Scroll |
 | Flight / walking | Left / right stick | Move / aim |
-| Flight | RT / LT | Rise / descend |
-| Flight | A / ✕ | Fire selected ship weapon (pulse / solar lance / singularity) |
+| Flight | A / B | Rise / descend |
+| Flight | RT / R2 | Fire selected ship weapon (pulse / solar lance / singularity) |
 | Flight | LB / RB | Roll |
 | Flight | Y / X | Land or launch / interact |
-| Flight | B / right-stick click | Brake / flight assist |
+| Flight | LT / right-stick click | Brake / flight assist |
 | Walking | A / X | Jump / interact, including hatch and cargo |
 | Walking / EVA | D-pad right | Equip or holster mining tool |
 | Walking / EVA | RT | Fire equipped weapon or mining tool |
@@ -258,11 +258,35 @@ It includes input interruption gates, both kills, the report and return to fligh
 The separate close-up/keyboard fixture uses controlled poses for visual inspection;
 that is not controller-only journey evidence. Physical-device validation is separate.
 
-## Combat momentum
 
-Flight defaults to fly-by-wire and combat speed. R3 / V toggles unlocked flight,
-which retains momentum while turning. Menu → Combat / cruise mode (keyboard Z;
-on-screen Combat button) selects the speed envelope independently. Cruise, boost,
-overspeed and automatic manoeuvres lock ship weapons. Hold B / X for finite
-braking thrust; the HUD estimates fixed-attitude stopping distance. Autoland
-requires less than 10 m/s. All hulls need room to recover, including Kestrel.
+## Controller layout and trigger revision — 2026-09-07
+
+Supersedes earlier A-fire / RT-ascent descriptions in this historical record.
+RT / R2 fires ship weapons; A/B provides vertical thrust; LT brakes and cancels
+drive. EVA and on-foot fire remain RT; A still confirms dialogs and recovers
+a destroyed ship. Menu → Settings → Controller layout or Help → View controller layout
+opens a responsive diagram with Flight, On foot, EVA and Shortcuts & menus views.
+The shared dialog router and neutral-input gate apply to the entire route.
+
+
+## Fixed gameplay terminal — 2026-09-07
+
+Menu / Options and Escape open the last gameplay tab. LB/RB or bracket keys
+changes tabs; D-pad/LS moves visible focus; A confirms; B/Escape/Resume closes.
+Inventory, loadout, recipes, fleet and development lists use explicit pages.
+Page arrows remain focusable at boundaries and do not perform out-of-range actions.
+Tab switches await native close cleanup and require neutral input again.
+Dev → Console list opens the actual console; Dev is present only with the enabled
+development launcher. Settings includes graphics, sound and the controller diagram.
+
+## Combat momentum — 2026-09-07
+
+Flight defaults to fly-by-wire with finite thrust and drift correction. R3 / V
+selects unlocked flight; releasing thrust coasts while the ship turns independently.
+Hold LT / L2 (keyboard X) for maximum braking, allowing stopping distance.
+Menu → Ship → Combat / cruise (keyboard Z) selects the speed regime independently:
+Kestrel 220, Nomad 180, Atlas 120 m/s. RT fires only in combat mode, within its
+speed limit, with boost off and landing gear retracted. Cruise locks weapons.
+Landing assist requires speed below 10 m/s. All hulls retain momentum; Atlas
+has the slowest correction. Injected Gamepad evidence is documented separately
+from physical controller testing.
