@@ -14,6 +14,7 @@ import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
 import { createAuthoredExterior, attachExteriorLod, STATION_EXTERIOR_URL, STATION_EXTERIOR_LOD_URL } from './station-exterior.js';
+import { fleetHangarAsset } from './station-fleet-hangar.js';
 
 /** Bake only cloned LOD geometry into the station frame, then merge compatible
  * material/attribute sets. Each moving door stays separate from static parts
@@ -53,6 +54,7 @@ function stationLodParts(root){
 export class StationComplex {
   constructor(scene,options={}){
     this.scene=scene;this.pods=[];this.activeIndex=0;this.parkedPod=0;this.location='hangar';this.ready=false;this.error=null;
+    this.largeHangars=options.largeHangars===true;
     this.direction=(options.direction?.clone()??defaultStationDirection()).normalize();
     this.altitude=options.altitude??STATION_ALTITUDE;
     this.baseQuaternion=options.orientation?.clone().normalize()??stationQuaternion(this.direction,new THREE.Quaternion());
@@ -99,7 +101,9 @@ export class StationComplex {
       const loader=new GLTFLoader();
       const exterior=options.exteriorGltf??(options.exteriorRefresh?loader.loadAsync(STATION_EXTERIOR_URL).catch(error=>{this.exteriorError=error.message;return null;}):null);
       const exteriorLod=options.exteriorLodGltf??(options.exteriorRefresh?loader.loadAsync(STATION_EXTERIOR_LOD_URL).catch(error=>{this.exteriorLodError=error.message;return null;}):null);
-      const [gltf,lod,finish,authoredExterior,authoredLod]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null,exterior,exteriorLod]);
+      const [source,sourceLod,finish,authoredExterior,authoredLod]=await Promise.all([options.gltf??loader.loadAsync(STATION_MODEL_URL),options.lod??loader.loadAsync(STATION_LOD_URL).catch(()=>null),(options.finish??!options.gltf)?this.loadFinish(loader):null,exterior,exteriorLod]);
+      const gltf=this.largeHangars?fleetHangarAsset(source):source;
+      const lod=this.largeHangars&&sourceLod?fleetHangarAsset(sourceLod):sourceLod;
       if(authoredExterior){
         // Construct and validate the replacement before removing the fallback.
         // Readiness remains false until its actual collision is built as well.

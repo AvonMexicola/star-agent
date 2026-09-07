@@ -48,6 +48,7 @@ import { MOON_RADIUS, MOON_POSITION, MOON_LANDING_DIRECTION, moonRegion, moonRes
 import { EnergyEffects } from './effects/energy-effects.js';
 import { Atmosphere } from './atmosphere.js';
 import { StationComplex } from './station-complex.js';
+import { PLAYABLE_STATION_OPTIONS } from './station-fleet-hangar.js';
 import { placeStationExteriorPreview } from './station-exterior.js';
 import { createStationServices } from './station-services.js';
 import { SELENE, PYRE, MIASMA, bodySurfacePoint, bodyAltitude } from './celestial.js';
@@ -123,8 +124,7 @@ try {
     for(const element of document.querySelectorAll('.topbar,.mission-panel,.statusbar'))element.inert=true;
   }
   nav.onTakeControl=enterPlayerInterface;
-  const station=new StationComplex(scene,{...(introEnabled?openingStationOptions():{}),
-    exteriorRefresh:new URLSearchParams(location.search).get('dev')==='1'&&new URLSearchParams(location.search).get('stationExterior')==='1'});nav.station=station;station.nav=nav;
+  const station=new StationComplex(scene,{...(introEnabled?openingStationOptions():{}),...PLAYABLE_STATION_OPTIONS});nav.station=station;station.nav=nav;
   const crashEffects=new CrashEffects(scene);
   const stationButton=$('station-destination');
   station.readyPromise.then(()=>{if(station.finishStatus!=='ready'){weatherShip(station.pods[0].model,planet.surfaceTexture);weatherShip(station.hub.group,planet.surfaceTexture);}stationButton.disabled=false;stationButton.querySelector('small').textContent='HANGAR · DOCK & EXPLORE';}).catch(()=>{stationButton.querySelector('small').textContent='STATION UNAVAILABLE';notify('Station unavailable. Planet flight is still available.');});
