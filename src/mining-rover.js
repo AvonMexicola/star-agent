@@ -165,7 +165,9 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       if(phase!=='idle'){updateAccess(dt);return true;}
       const l=lift(),moving=anchor&&l&&Math.abs(l.y-l.target)>.001;
       const axis=(a,b,n=0)=>clamp(Number(nav.keys.has(a))-Number(nav.keys.has(b))+n,-1,1);
-      const throttle=axis('KeyW','KeyS',pad.forward+Number(touch.has('forward'))-Number(touch.has('reverse'))),steer=axis('KeyD','KeyA',pad.strafe+Number(touch.has('right'))-Number(touch.has('left')));
+      // The shared stick is radially normalized. Full diagonal input should
+      // still reach the wheel's steering stop while supplying forward drive.
+      const throttle=axis('KeyW','KeyS',pad.forward+Number(touch.has('forward'))-Number(touch.has('reverse'))),steer=axis('KeyD','KeyA',pad.strafe*1.5+Number(touch.has('right'))-Number(touch.has('left')));
       api.look((axis('ArrowLeft','ArrowRight',pad.yaw)+Number(touch.has('aimLeft'))-Number(touch.has('aimRight')))*dt*.6,(axis('ArrowUp','ArrowDown',pad.pitch)+Number(touch.has('up'))-Number(touch.has('down')))*dt*.6);
       physics.step(dt,{throttle:moving?0:throttle,steer:moving?0:steer,brake:moving||pad.brake||nav.keys.has('KeyX')||touch.has('brake')?1:0});saveAnchor();posePilot();
       trigger=Boolean(held||keyHeld||touch.has('mine')||nav.gamepad.armed&&pad.mine>.1);

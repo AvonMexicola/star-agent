@@ -7,7 +7,7 @@ test('controller Atlas boarding, physical rover access, lift, twin mining, ore b
   const frames=()=>page.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise(r=>requestAnimationFrame(r));});
   const state=()=>page.evaluate(()=>starAgent.state);
   const axes=values=>page.evaluate(values=>roverPad.axes=values,values);
-  const driveAxes=(x,y)=>{const length=Math.hypot(x,y),scale=length?(.16+.84*Math.min(1,length))/length:0;return axes([x*scale,y*scale,0,0]);};
+  const driveAxes=(x,y)=>{x/=1.5;const length=Math.hypot(x,y),scale=length?(.16+.84*Math.min(1,length))/length:0;return axes([x*scale,y*scale,0,0]);};
   const button=async(i,down)=>{await page.evaluate(({i,down})=>roverPad.buttons[i]={pressed:down,value:+down},{i,down});await frames();};
   const tap=async i=>{await button(i,true);await button(i,false);};
   const stop=async()=>{await axes([0,0,0,0]);await button(6,true);await page.waitForTimeout(250);await button(6,false);};
@@ -20,14 +20,17 @@ test('controller Atlas boarding, physical rover access, lift, twin mining, ore b
     throw Error('Walking did not reach '+local+'; '+JSON.stringify((await state()).shipLocal));
   }
   async function drive(target,reach=1.2){
+    let blocked=0;
     for(let i=0;i<500;i++){
       const control=await page.evaluate(({target,reach})=>{const n=starAgent.navigation,r=n.vehicle.physics.state,d=n.position.clone().fromArray(target).sub(r.position).applyQuaternion(r.quaternion.clone().invert()),distance=Math.hypot(d.x,d.z),angle=Math.atan2(d.x,-d.z);return {distance,angle,axes:distance<reach?[0,0,0,0]:[Math.max(-1,Math.min(1,angle*2)), -Math.min(.52,Math.max(.07,(distance-reach)*.14)),0,0],blocked:r.blocked,reason:r.reason};},{target,reach});
       await driveAxes(control.axes[0],control.axes[1]);if(control.distance<reach){await stop();return;}await page.waitForTimeout(100);
+      blocked=control.blocked?blocked+1:0;if(blocked>25)throw Error('Drive blocked: '+JSON.stringify(control));
       if(i%80===79)console.log('Drive feedback',control,(await state()).rover.local);
     }
     throw Error('Drive did not reach target: '+JSON.stringify((await state()).rover));
   }
   async function parkInAtlas(){
+    await driveAxes(0,.4);await page.waitForFunction(()=>starAgent.state.rover.local[2]>34,null,{timeout:15000});await stop();
     const local=(await state()).rover.local,route=[];
     for(let i=0;i<=60;i++){const t=i/60;route.push(await shipPoint([local[0]+(-1.6-local[0])*(3*t*t-2*t*t*t),0,local[2]-15*t]));}
     for(let z=local[2]-15-.5;z>5;z-=.5)route.push(await shipPoint([-1.6,0,z]));route.push(await shipPoint([-1.6,0,5]));
@@ -72,7 +75,7 @@ test('controller Atlas boarding, physical rover access, lift, twin mining, ore b
     await button(4,true);await button(5,true);await tap(15);await button(5,false);await button(4,false);await frames();
     await page.screenshot({path:out+'/03-unloaded-selene.png'});
     if(process.env.ROVER_SMOKE==='1'){expect(errors).toEqual([]);return;}
-    await drive(await shipPoint([-1.6,0,36]),1);await drive(await shipPoint([-10.8,0,35]),.8);
+    await drive(await shipPoint([-1.6,0,31]),1);await drive(await shipPoint([-10.8,0,30]),.8);
     const target=(await state()).mining.activePosition;await aim(target);
     const before=(await state()).rover;await button(7,true);
     await page.waitForFunction(()=>starAgent.state.rover.beaming===2&&starAgent.state.rover.mass>0,null,{timeout:20000});

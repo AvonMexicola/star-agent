@@ -9,7 +9,7 @@ export default defineConfig({
     launchOptions:{executablePath:process.env.CHROMIUM_PATH??'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']},
   },
   projects:[
-    {name:'keyboard',use:{viewport:{width:1440,height:900}}},
-    {name:'touch',use:{viewport:{width:390,height:844},hasTouch:true,isMobile:true}},
+    {name:'keyboard',use:{viewport:{width:1440,height:900},video:{mode:'on',size:{width:1440,height:900}}}},
+    {name:'touch',use:{viewport:{width:390,height:844},hasTouch:true,isMobile:true,video:{mode:'on',size:{width:390,height:844}}}},
   ],
 });

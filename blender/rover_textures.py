@@ -18,8 +18,8 @@ EDGE = 1024
 # Ivory ceramic, graphite housing, steel, recessed rubber, petrol, ochre.
 PALETTE = [(209, 218, 207), (43, 54, 57), (134, 148, 150),
            (20, 27, 30), (54, 86, 89), (184, 137, 56), (159, 169, 162), (80, 88, 88)]
-ROUGH = [.64, .57, .32, .9, .58, .65, .46, .74]
-METAL = [.13, .45, .9, .02, .25, .16, .72, .5]
+ROUGH = [.48, .81, .32, .9, .58, .65, .46, .74]
+METAL = [.08, .08, .9, .02, .16, .16, .72, .5]
 rng = random.Random(7291)
 base = Image.new('RGB', (EDGE, EDGE))
 orm = Image.new('RGB', (EDGE, EDGE))
