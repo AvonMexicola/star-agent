@@ -1,97 +1,127 @@
-# Burrow M-04 production record
+# Meridian Burrow M-04 production record
 
-Status: implemented development candidate; actual browser journey and final
-visual review are pending. Not integrated or released.
+Burrow is a playable development candidate: an enclosed four-wheel mining rover
+carried by the current flyable 30 m Atlas. The complete production controller
+journey passes. Keyboard/touch journeys and final visual acceptance remain in
+progress; this is not a release approval.
 
-Scope: original enclosed four-wheel Meridian vehicle carried by the flyable30m
-Atlas. Twin continuous mining heads use actual named muzzle transforms, a120s
-full charge,30s recharge and a real96kg ore container. Shared controls provide
-physical cabin access, lift operation, surface driving, mining and cargo access.
-The developer launcher has an Atlas + Burrow / Selene start.
+## Player result
 
-## Current evidence
+Use the development launcher's **Atlas + Burrow / Selene** entry, or open a build
+with development tools enabled at `/?dev=1&intro=0&ship=atlas&start=moon&rover=1`.
+Leave Atlas's pilot seat, walk aft on the starboard aisle and approach the rover's
+port door. Board, lower the lift, drive out and aim at an existing mineral deposit.
+Collected ore goes into the rover's persistent 96 kg mineral bin.
 
-- Initial complete unit checkpoint:711/711 passed.
-- Added support/lift/240Hz carry regressions:23 focused tests passed.
-- Original independent runtime review: seven concrete findings closed;28 focused
-  tests plus CPU boarding/lift/unload and individual barrel obstruction/destination
-  probes passed. Its exact hashes and complete scripts remain under
-  `/tmp/star-agent-rover-runtime-review` pending curated archival.
-- First Vite build and repository checks passed. The inherited large-chunk build
-  warning remains; this is not a graphics or performance acceptance result.
-- Asset source and exported candidates were reviewed with actual triangle tests,
-  not only their boxes. First two failing candidate reports are preserved under
-  `/tmp/star-agent-rover-review`. Revisions addressed doorway/step collisions,
-  door hinge placement, front glazing gaps, cutter-light overlap, seat location,
-  moving suspension and suited-pilot back clearance. Final closure is pending.
+| Action | Keyboard | Standard controller | Touch |
+| --- | --- | --- | --- |
+| Board / exit | F | X | Cabin |
+| Drive / steer | W/S, A/D | Left stick | Drive pad |
+| Aim cutters | Arrow keys | Right stick | Aim pad |
+| Sustain both beams | T | RT | Mine |
+| Brake | X | LT | Brake |
+| Atlas lift | G | Y | Lift |
+| Ore bins | I | View | Cargo |
 
-No browser, physical controller, audio listening, FPS, motion or art score is
-claimed here. The scripted controller journey and reviewer-authored PBR fixture
-are ready and queued behind other shared-machine GPU work.
+The twin cutters provide 120 seconds of continuous charge and recharge in 30
+seconds after release. Both follow the actual named emitter tips, ray-test the
+world individually, and use the existing atomic rock-and-inventory transaction.
+Each beam can be obstructed independently. Full bins or failed persistence stop
+extraction without granting ore or publishing an unsaved cut.
 
-## Reproduction and ownership
+## Measured contract
 
-Owned worktree `/home/cees/projects/star-agent-mining-rover`, branch
-`feat/meridian-mining-rover`, from local development checkpoint4d38827. It depends
-on the local menu/RT controls, persistent-account and fitted-weapon integrations;
-the eventual PR must identify the relevant unmerged dependencies.
+Metres, +Y up, −Z forward; world poses stay in JavaScript doubles and rendered
+geometry is relative to the camera. The source of dimensions is
+[layout.json](../../../assets/mining-rover/layout.json).
 
-Preview5415 and disposable in-memory API5416 are owned by this lane. Shared
-preview5178, API8087 and PostgreSQL51224 are preserved. One GPU test at a time;
-read the latest HANDOFF before running the fixture.
+| Measurement | Export / runtime contract |
+| --- | --- |
+| Closed, straight wheels | 4.65 m long × 3.02 m wide including fixed steps × 2.50 m high |
+| Steering sweep | 3.232 m conservative width; ±0.52 rad front steering |
+| Wheels | Four, 0.52 m radius, 2.16 m track, 2.70 m wheelbase; ±0.22 m suspension |
+| Atlas main lift | 8 × 10 m, floor Y 0–4 m, cargo ceiling Y 9.2 m |
+| Initial parking | Atlas local [−1.6, 4, 5], facing aft to unload forward |
+| Asset candidate 09 | 21,570 triangles; 2,178,492 bytes; four embedded textures |
+| GLB SHA-256 | `0ce536332a9e1b29d89d29981e510739c975cd739514cfe1e9e0b810120617fb` |
+
+The finite independent geometry probes find all 762 sampled closed-cabin side
+rays hit the shell. Sampled wheel/link poses, cutter rays, lamp supports and
+boarding-eye clearance pass. This is not a proof of global watertightness or a
+continuous full-body collision sweep. The cabin has no pressure/life-support
+simulation; seated hand IK and multiplayer vehicle replication are outside scope.
+
+## Validation
+
+The production controller test passed in 2.5 minutes on Chromium 151.0.7922.173,
+AMD Radeon 860M through ANGLE GLES 3.2, 1440×900, DPR 1, seed 7291. It uses injected
+Gamepad input and read-only state feedback, with no movement or action setters.
+The journey walks from Atlas's pilot seat, physically boards the rover, lowers the
+lift, unloads onto four canonical terrain contacts, turns toward the existing
+mineral deposit, mines with both beams, transfers ore through the inventory,
+returns to the lift, raises it, walks back to Atlas's pilot seat and launches.
+The rover remains carried within 0.02 m of its parked local pose in flight.
+
+The same run checks held-trigger recovery after cargo, focus, disconnect,
+controller replacement and unsupported mapping. No page/console errors or
+warnings occurred. It recorded 11.4163 cumulative cutter seconds and 0.693861 kg
+remaining after the test's ore transfer. The 120-second duty cycle and 30-second
+recharge are separate simulated-time unit checks, not a two-minute browser hold.
+
+Initial complete unit runs passed 711, then 714 tests after regression additions.
+The Vite production build passes with the inherited large-chunk warning. Latest complete source run passed **714/714** in 41.94 s; the production
+build passed in 21.52 s after the current cargo-label fix. No physical gamepad, physical phone or listening test is claimed.
+
+The controller's last instantaneous scene count was 335 draws / 885,874 triangles;
+this is context, not a hardware frame-time or sustained performance pass. Shared
+GPU contention prevents treating incidental FPS samples as acceptance evidence.
+The asset is under its 30k-triangle / 4 MB brief budget.
+
+## Reproduce
+
+See the [asset README](../../../assets/mining-rover/README.md) for deterministic
+Blender/texture rebuilding. Dependencies are unchanged. No save version, database
+schema or multiplayer protocol changed. Only ore uses the existing saved
+transaction; rover position and charge reset with the development session.
 
 ```sh
-# Serve this worktree with VITE_DEV_TOOLS=1 (or npm run dev:all).
-TMPDIR=/path/on/disk npm run test:browser -- -c scripts/mining-rover.config.js
+npm ci
+VITE_DEV_TOOLS=1 npm run build
+npm run preview -- --port 5417 --strictPort
+# In another terminal; use a short, writable directory for Chromium sockets.
+TMPDIR=/path/short ROVER_URL=http://127.0.0.1:5417 ROVER_OUTPUT=/path/qa/controller npm run test:browser -- -c scripts/mining-rover.config.js
+TMPDIR=/path/short ROVER_URL=http://127.0.0.1:5417 ROVER_INPUT_OUTPUT=/path/qa/inputs ROVER_INPUT_RETURN=1 npm run test:browser -- -c scripts/mining-rover-inputs.config.js
 ```
 
-The optional `ROVER_SMOKE=1` ends after physical unloading; it does not establish
-mining, storage, return or carriage acceptance. Full validation must run without
-that flag. Browser temporary files and uncurated reports remain outside the repo.
+`ROVER_SMOKE=1` intentionally stops the controller test after unloading. It does
+not establish mining or return. Keyboard/touch tests record original videos and
+source hashes; full routes require `ROVER_INPUT_RETURN=1`.
 
-First browser attempt: Chromium151 / AMD860M ANGLE GLES3.2 launched and rendered with zero page/console errors or warnings, but the owned Vite server lacked VITE_DEV_TOOLS=1. The feature was therefore correctly absent; startup assertion timed out. Saved state and log are retained in the smoke-01 evidence directory. This is not a rover journey pass. The server flag was corrected; no runtime feature code was changed to mask the fixture error.
+## Evidence and review
 
+- [Twin beams in the actual game](04-twin-cutters.png)
+- [Saved ore and tested transfer](05-ore-bins.png) — historical capture still shows the inherited “Nomad cargo” carrier label; presentation fix is awaiting the next run.
+- [Physical return on Atlas's lift](06-reloaded-atlas.png)
+- [Rover carried in flight](07-carried-in-flight.png)
+- [Iteration history](iteration-history.md) retains failures and their corrections.
+- Independent runtime reviewer `/root/nomad_cutter`: seven runtime findings closed. Physics/mining modules authored by that reviewer are excluded from the claimed independent scope.
+- Independent asset reviewer `/root/kestrel_reviewer`: finite mechanism probes and actual native PBR captures. Candidate 04 scored 3.42 and candidate 07 scored 3.68; neither is accepted art. Candidate 09's final disposition is pending.
 
-## 2026-09-07 development checks
+The isolated PBR fixture and actual gameplay are distinct evidence. Its original
+shadow-off control was invalid because cached material programs still received
+shadows; the corrected control disables shadows before first draw. Do not infer
+a texture cause from the invalid comparison. The stale pre-render mannequin
+bounds in the first fixture are corrected in the retained [erratum](erratum-candidate-04.md).
 
-The corrected native smoke passed in1.2m: injected Gamepad walking from Atlas's
-pilot seat, physical rover access (largest sampled eye displacement42.6mm),
-cargo lift descent and forward unloading onto four canonical Selene contacts.
-Chromium151.0.7922.173, AMD860M through ANGLE GLES3.2,1440×900, seed7291;
-no page/console errors or warnings. The smoke intentionally stopped before mining
-and return, so those remain pending.
+## Delivery boundary
 
-The first native PBR launch aborted before opening a page because the fixture's
-temporary Unix socket path exceeded Chromium's limit. Shortening only the owned
-temporary directory fixed that diagnosed setup error; the subsequent seven-view
-capture completed without diagnostics. No GPU flags or security settings changed.
+Implementation: `feat/meridian-mining-rover`, base `4d38827`; first coherent source
+checkpoint `44eb3a2`. The integration steward has that explicitly unfinished
+checkpoint in its isolated content-review candidate. The shared persistent
+preview 5178 / API 8087 / PostgreSQL 51224 are steward-owned and preserved.
 
-Independent candidate04 static review scored3.42/5, below the visual bar. It found
-unsupported lower treads, inverted front lettering, repeated diagonal surface
-grain/tyre atlas bleed, and insufficiently developed body construction. These
-findings prompted a revised asset; the failed review and two before captures are
-retained here. Its original fixture's pre-render skinned bounds were stale; the
-review explicitly excludes those numbers and corrects skin-matrix updates for
-future captures. CPU mechanism checks are a separate scope.
-
-Candidate05's revised body/material export is21,012triangles and2,132,436bytes;
-its review is in progress. It exposed compression overlap at the new fender
-returns and an inherited final boarding-eye clearance issue after moving the
-head-rest. Both are being corrected before final visual/gameplay review.
-
-Latest complete unit checkpoint passes714/714 in37.1s. The production build with
-VITE_DEV_TOOLS=1 passes; repository checks pass. The usual Vite large-chunk warning
-remains. These checks include the composed terrain-obstacle grid and Atlas phone
-walking controls; they do not substitute for the pending full input journeys.
-
-Candidate07 is the source checkpoint: SHA67b5c6947b06bb020096696d6ece5116c746d4bf6a7ac53f9acd1e9a92ec89f3,
-21,206 triangles,2,181,360 bytes. Stepped stringers now support all three treads
-without protruding through them; attached panels/fasteners and wheel compression
-clearance pass independent exported-triangle checks. The extra forward boarding
-waypoint restores the sampled0.12m eye-sphere clearance. Front text basis is
-verified and the approved Meridian emblem retains its alpha channel.
-
-The current review still records inherited header rubber contact with the roof
-during initial door opening; final disposition is pending. The complete production
-controller journey is running against frozen07. Final static review, keyboard/
-touch routes, loading return and integration are not yet claimed.
+The bounded review branch is `review/meridian-burrow`, stacked on the gameplay
+menu PR #60 (`f8e48d9`). Rover does not depend on the fitted ship-weapon modules;
+those unrelated local integrations are excluded from this PR. Cees gates the
+PR and release. Final input, visual, performance and combined integration status
+remain separate; no public merge or deployment is claimed.

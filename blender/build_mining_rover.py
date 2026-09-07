@@ -51,7 +51,22 @@ def ring(name,center,profile,tile=3,axis='X',parent=root,mat=None,segments=32):
             q=(axial,r*math.cos(a),r*math.sin(a)) if axis=='X' else (r*math.cos(a),r*math.sin(a),axial)
             pts.append(tuple(center[j]+q[j] for j in range(3)))
     faces=[(k*segments+i,k*segments+(i+1)%segments,(k+1)*segments+(i+1)%segments,(k+1)*segments+i) for k in range(len(profile)-1) for i in range(segments)]
-    return remember(g.mesh(name,pts,faces,mat or surface,0,parent,False),tile)
+    o=g.mesh(name,pts,faces,mat or surface,0,parent,True)
+    # Smooth around each ring, retaining the actual hard profile breaks.
+    # Explicit corner normals avoid broad faceted highlights on round sleeves.
+    normals=[];axis_vector=Vector((1,0,0) if axis=='X' else (0,0,1));ring_center=Vector(center)
+    for face in o.data.polygons:
+        fn=Vector((face.normal.x,face.normal.z,-face.normal.y))
+        face_center=Vector((face.center.x,face.center.z,-face.center.y))-ring_center
+        radial=face_center-axis_vector*face_center.dot(axis_vector);radial.normalize()
+        nr,na=fn.dot(radial),fn.dot(axis_vector)
+        for li in face.loop_indices:
+            p=o.data.vertices[o.data.loops[li].vertex_index].co
+            p=Vector((p.x,p.z,-p.y))-ring_center
+            r=p-axis_vector*p.dot(axis_vector);r.normalize()
+            n=r*nr+axis_vector*na;n.normalize();normals.append(Vector(g.xyz(n)))
+    o.data.normals_split_custom_set(normals)
+    return remember(o,tile)
 def text(name,body,pos,size,rotation=(-math.pi/2,0,0),parent=root,mat=ink):
     c=bpy.data.curves.new(name,'FONT');c.body=body;c.size=size;c.extrude=.0004;c.resolution_u=2;c.align_x='CENTER';c.align_y='CENTER'
     o=bpy.data.objects.new(name,c);bpy.context.collection.objects.link(o);o.location=g.xyz(pos);o.rotation_euler=rotation;c.materials.append(mat);g.parent(o,parent)
@@ -130,18 +145,25 @@ panel('Main windscreen',[(-.80,1.36,-1.66),(.80,1.36,-1.66),(.755,2.325,-1.17),(
 rod('Front glass lower gasket',(-.84,1.33,-1.66),(.84,1.33,-1.66),.032,3)
 rod('Windscreen center mullion',(0,1.34,-1.664),(0,2.355,-1.155),.026,1)
 # Starboard fixed side, port hinged opening between the axles.
-panel('Starboard lower pressure skin',[(.86,.47,-.65),(.86,1.31,-.65),(.86,1.31,.64),(.86,.47,.64)],0)
+panel('Starboard lower pressure skin',[(.86,.47,-.65),(.86,1.31,-.65),(.86,1.31,.67),(.86,.47,.67)],0)
 panel('Starboard side glazing',[(.86,1.36,-.64),(.82,2.345,-.64),(.82,2.345,.63),(.86,1.36,.63)],mat=glass,thick=.01)
 for z in (-.68,.44):box('Door jamb',(-.875,1.43,z),(.09,1.94,.055),2)
 door=g.empty('CabinDoor',L['cabin']['doorHinge'],root)
 box('Door lower armor',(-.872,.895,-.12),(.064,.82,1.00),0,parent=door)
 panel('Door upper glazing',[(-.876,1.335,-.62),(-.827,2.345,-.62),(-.827,2.345,.38),(-.876,1.335,.38)],mat=glass,thick=.01,parent=door)
-for z in (-.635,.395):rod('Door edge seal',(-.87,.475,z),(-.828,2.37,z),.022,3,door)
-rod('Door top seal',(-.828,2.37,-.635),(-.828,2.37,.395),.022,3,door)
+for z in (-.635,.395):rod('Door edge seal',(-.87,.475,z),(-.828,2.332,z),.022,3,door)
+box('Door top seal',(-.828,2.344,-.12),(.034,.032,1.074),3,.001,parent=door)
 rod('Door window sill',(-.879,1.315,-.63),(-.879,1.315,.39),.026,2,door)
 box('Door latch socket',(-.913,1.12,-.44),(.034,.17,.14),1,parent=door)
 rod('Door handle',(-.955,1.10,-.485),(-.955,1.10,-.395),.022,2,door)
 for y in (.66,1.92):rod('Pressure door hinge',(-.98,y-.065,.46),(-.98,y+.065,.46),.042,2)
+# Continuous fixed pressure frame around the moving port door and side windows.
+rod('Starboard window divider',(.85,1.32,-.665),(.85,2.385,-.665),.038,2)
+for s in (-1,1):rod('Rear window closure',(s*.838,1.32,.645),(s*.838,2.39,.645),.025,2)
+panel('Port aft fixed glazing',[(-.86,1.36,.457),(-.82,2.36,.457),(-.82,2.36,.67),(-.86,1.36,.67)],mat=glass,thick=.01)
+panel('Port aft pressure skin',[(-.86,.47,.47),(-.86,1.32,.47),(-.86,1.32,.67),(-.86,.47,.67)],0)
+rod('Port aft window sill',(-.86,1.333,.47),(-.86,1.333,.69),.029,2)
+box('Starboard header seal',(.827,2.348,.005),(.07,.026,1.30),3,.002)
 steps=g.empty('BoardingSteps',(-.87,.46,-.1),root)
 for x,y in ((-1.55,.16),(-1.19,.34),(-.94,.44)):
     box('Port boarding tread',(x,y,-.1),(.34,.045,.58),2,parent=steps)
@@ -172,7 +194,9 @@ bt.image=bpy.data.images.load(str(SOURCE/'textures/manufacturer.png'))
 badge.node_tree.links.new(bt.outputs['Color'],bp.inputs['Base Color']);badge.node_tree.links.new(bt.outputs['Alpha'],bp.inputs['Alpha']);bp.inputs['Roughness'].default_value=.75
 mark=g.mesh('Meridian manufacturer badge',[(.14,.74,-1.658),(-.14,.74,-1.658),(-.14,1.02,-1.658),(.14,1.02,-1.658)],[(0,1,2,3)],badge,0,root)
 uv=mark.data.uv_layers.new(name='UVMap')
-for i,pair in enumerate(((0,0),(1,0),(1,1),(0,1))):uv.data[i].uv=pair
+for loop in mark.data.loops:
+    p=mark.data.vertices[loop.vertex_index].co
+    uv.data[loop.index].uv=((.14-p.x)/.28,(p.z-.74)/.28)
 parts.append(mark)
 
 # Seat, footwell, yoke and consoles occupy measured space, never the entry aisle.
@@ -242,6 +266,7 @@ text('Roof identity','M-04',(0,2.497,-.30),.29,(0,0,0))
 for s in (-1,1):
     rod('Meridian rising mark',(s*.20,2.403,-1.195),(s*.06,2.466,-1.155),.011,4)
     box('Forward work lamp',(s*.72,1.50,-1.69),(.20,.045,.022),mat=light)
+    rod('Work lamp bracket',(s*.78,1.34,-1.646),(s*.72,1.481,-1.689),.016,2,n=8)
     box('Rear marker',(s*.77,.63,2.09),(.11,.036,.011),mat=amber)
 
 # Apply actual bevels, deliberate local face projection into the shared atlas.
