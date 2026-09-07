@@ -2788,6 +2788,8 @@ SA-SOCIAL-001 BACKEND CHECKPOINT c619dd0fd6d6006e7d94b2b11f29a56b55b1ed1a is coh
 
 
 
+SA-FAU-002 deer asset repair complete as a scoped review checkpoint: final GLB83addc,1.20MB/15,187tris, editable Blender/source and reproducible builder retained. New1.6s slow four-beat walk fixes source crossing/reach; no skin/bind surgery was needed.193-phase export deformation/contact/loop check passes. Actual Three viewer playback/scrub desktop/mobile passes9.8s (Chromium151/AMD860M ANGLE GLES3.2), root inspected captures. Independent Astra five scored dimensions4/5; full continuous-motion aesthetic score remains open. Deer remains asset-only, no biome/combat. Viewer5515 /scripts/fixtures/creature-rig.html?model=deer. Pipeline memory docs/development/creature-pipeline.md and full QA/source record retained. Shared integration remains steward-owned.
+
 SA-CARGO-001 GPU NEXT / INTEGRATION UPDATE17:45UTC: combined2f3249f has been
 merged into the isolated cargo branch (17769ed), preserving rover/fauna/character,
 base-pad landing and combat controls. Final combined build/CPU checks running.
@@ -3138,3 +3140,8 @@ SA-INT-002 SOCIAL / SBU CARGO / CONTROLS LIVE: dev/all-features runtimef861f8f i
 Shared HANDOFF notes were committed before merge; the persistent preview was restarted ONCE after local Prisma generation. Frontend/direct API health pass. Live cargo/protocol modules match source exactly; social/help/rover launcher match after Vite import normalization. PostgreSQL migrations are now1/2/4; same cluster inode947632, retained account/player-state row counts, no shared test accounts/chat. Private pre-promotion dump is outside Git. Refresh the client for protocol3. Cees's latest request to put SBU cargo on the dev server is handled. SA-SOCIAL-001 and SA-CARGO-001 are integrated in the shared registry. Public hosting/main were not changed.
 
 The frozen promotion is COMPLETE and this shared merge/restart claim is released. Parent needs no GPU window and leaves the persistent user preview running. New power/rover/fauna/WORLD/hub work remains separately owned and is not in this receipt. Coordinate the next coherent update against f861f8f; do not replace its social UI, final immediate kick cleanup, generic ordered migrations or either client state-reset hook with older backend-onlyc619dd0. Full delivery evidence: docs/qa/social-cargo-integration.md; player entry: Menu→Comms for chat/friends, station Cargo & Trade for SBU crates.
+
+SA-CARGO-001 GPU ACQUIRED 18:01:09 UTC: both rover/fauna Playwright processes have exited; inventory is idle. Starting the previously reserved final5535 three-case check on fdf106d, one worker, roughly3minutes. No FPS claim while the user may be playing. Please hold ALL further automated graphics jobs until this cargo window explicitly releases. No shared service/database/source change yet.
+
+
+SA-INT-002 WILDLIFE COMBINED CANDIDATE: isolated feat/dev-wildlife-review merges reviewed e904192 into live4706d62. Runtime overlap at main's building-raycast hook already contains the wildlife envelope on current dev; preserve that current block together with base-pad support and Burrow binding. Keep the full current test command and append both new habitat suites. Preserve both documentation/journal append sides. No server/database/protocol source is changed by this delta. Combined CPU/build checks and the two existing physical Aeon controller journeys will validate this exact source before shared promotion; no new animal/input/runtime redesign. Shared promotion remains steward-owned.

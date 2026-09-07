@@ -335,3 +335,35 @@ Moving rifle pulses and ship lasers follow the actual muzzle. Ballistic shots
 inherit launch velocity; collision and lead prediction use that trajectory.
 [Momentum QA](qa/combat-momentum.md) records the exact checked source, failures,
 evidence and limits. This is a local development checkpoint, not release approval.
+
+
+### Creature development candidates
+
+The fauna branch adds offline Pyrebear and Suloher encounters. With development
+tools enabled, use Test starts → Pyrebear habitat or Suloher habitat, land, exit
+the ship physically, and approach wildlife. Carbine/pistol rounds use the real
+loadout; Pyrebear has 240 HP and Suloher 90 HP. Both have authored walk/death clips.
+Both Pyrebear and corrected Suloher controller journeys passed. The Suloher
+route includes biting, bandage use and inventory-preserving medical evacuation.
+Final actual-world motion/art review remains pending. These checkpoints are not a claim of
+complete gameplay acceptance. See [hostile fauna QA](qa/hostile-fauna.md).
+
+The supplied deer has a repaired, calmer walk and preserved skin/bind rig. On a
+Vite development server, open `/scripts/fixtures/creature-rig.html?model=deer`
+for an orbitable animation preview. This is an asset viewer; deer spawning is
+not implemented. The [deer repair record](qa/deer-rig.md) retains source, Blender
+file, exact export identity and before/after evidence. Reuse the
+[creature pipeline](development/creature-pipeline.md) for future animals.
+Hostile checkpoint5a3cf0b was included in local promotion2f3249f. Deer checkpoint
+b3eedc0 remains queued for the integration steward; public deployment is separate.
+
+
+The Aeon wildlife candidate adds **Aeon · Tideback beach** and
+**Aeon · Mallow grassland** to Test starts. Tidebacks inhabit dry low coastland
+and retaliate after injury; the large Mallow grazers inhabit grassland and flee
+instead of attacking. Both use the existing ammunition, health and animation
+systems. These are offline, session-local encounters. See the
+[Aeon wildlife record](qa/aeon-wildlife.md) for exact habitat and validation scope.
+The isolated candidate preview is port 5517. Both model-viewer and physical
+controller encounters pass; the grazer includes a verified terrain-edge retreat
+fix. Shared-preview integration and public deployment remain separate.
