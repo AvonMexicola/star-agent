@@ -427,11 +427,25 @@ try {
   }
   function capture(event){if(activateMFD(event)||transiting||!nav.enabled||opening?.active)return;enterPlayerInterface();nav.capture();}
   canvas.addEventListener('click',capture);$('begin-button').addEventListener('click',capture);
-  // Drag fallback also works when browser pointer-lock is unavailable.
-  let dragging=false;
-  canvas.addEventListener('pointerdown',e=>{if(!nav.locked){dragging=true;canvas.setPointerCapture(e.pointerId);}});
-  canvas.addEventListener('pointerup',()=>dragging=false);
-  canvas.addEventListener('pointermove',e=>{if(dragging&&!nav.locked){const yaw=-e.movementX*.002,pitch=-e.movementY*.002;multiplayer.captureLook(yaw,pitch);nav.look(yaw,pitch);}});
+  // Touch and pointer-lock fallback share the same look path. The canvas owns
+  // this gesture; cancelling it must not leave a drag alive behind a dialog.
+  let drag = null;
+  const canDrag = () => nav.enabled && nav.focused && !document.hidden && !nav.locked && !opening?.active && !document.querySelector('dialog[open]');
+  const stopDrag = () => { drag = null; };
+  canvas.addEventListener('pointerdown',e=>{
+    if(e.button!==0 || drag || !canDrag())return;
+    nav.onTakeControl?.();nav.controllerActive=false;
+    drag={id:e.pointerId,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);
+  });
+  for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,e=>{if(drag?.id===e.pointerId)stopDrag();});
+  window.addEventListener('blur',stopDrag);document.addEventListener('visibilitychange',stopDrag);document.addEventListener('pointerlockchange',stopDrag);
+  new MutationObserver(records=>{if(records.some(record=>record.target.localName==='dialog'))stopDrag();}).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+  canvas.addEventListener('pointermove',e=>{
+    if(drag?.id!==e.pointerId)return;
+    if(!canDrag()){stopDrag();return;}
+    const yaw=-(e.clientX-drag.x)*.002,pitch=-(e.clientY-drag.y)*.002;
+    drag.x=e.clientX;drag.y=e.clientY;multiplayer.captureLook(yaw,pitch);nav.look(yaw,pitch);
+  });
   const help=$('help-dialog');
   function openHelp(){if(!nav.enabled||nav.mode==='destroyed'||transiting||opening?.active||inventoryUI.open||fleetUI.open||document.querySelector("#station-cargo-dialog[open],#station-elevator-dialog[open],#station-shop-dialog[open]")||systemMap.open)return;if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.enabled=false;shipPowerUI.update();help.showModal();}
   function closeHelp(){help.close();nav.enabled=!transiting;}
@@ -569,7 +583,7 @@ try {
     if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
     if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
-    if(rover?.occupied&&!pad.shortcuts?.size){if(pad.pressed.has(8))rover.openCargo();return;}
+    if(rover?.occupied&&!pad.shortcuts?.size){if(pad.pressed.has(9))gameplayMenu.open();else if(pad.pressed.has(8))rover.openCargo();return;}
     trading.tractor.controller(pad);controllerUI.update(pad,dt);flightEffects.controller(nav.shipId==='stratum'?{...pad,fire:0}:pad);
   };
   const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();gameplayMenu.open('ship');});document.querySelector('.menu-actions').append(systemsHelp);

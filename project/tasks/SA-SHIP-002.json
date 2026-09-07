@@ -7,7 +7,7 @@
   "status": "active",
   "branch": "feat/meridian-gannet",
   "base": "0a18574f308ba343c86e7a96ccf9ed6ad4344793",
-  "updated": "2026-09-07",
+  "updated": "2026-09-08",
   "areas": [
     "assets",
     "flight",
@@ -28,7 +28,13 @@
     "tests/gannet.test.js",
     "scripts/gannet.spec.js",
     "scripts/gannet.config.js",
-    "docs/qa/gannet/"
+    "docs/qa/gannet/",
+    "scripts/gannet-vite.config.js",
+    "scripts/gannet-gameplay.spec.js",
+    "scripts/gannet-gameplay.config.js",
+    "scripts/gannet-primary-inputs.spec.js",
+    "scripts/gannet-primary-inputs.config.js",
+    "scripts/gannet-primary-inputs.js"
   ],
   "brief": "docs/briefs/meridian-medium-ships.md"
 }

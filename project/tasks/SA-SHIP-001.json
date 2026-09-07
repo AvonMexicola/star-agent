@@ -7,7 +7,7 @@
   "status": "active",
   "branch": "feat/meridian-stratum",
   "base": "0a18574f308ba343c86e7a96ccf9ed6ad4344793",
-  "updated": "2026-09-07",
+  "updated": "2026-09-08",
   "areas": [
     "assets",
     "flight",
@@ -26,9 +26,15 @@
     "src/stratum-studio.css",
     "public/dev/stratum.html",
     "tests/stratum.test.js",
-    "scripts/stratum.spec.js",
-    "scripts/stratum.config.js",
-    "docs/qa/stratum/"
+    "docs/qa/stratum/",
+    "scripts/stratum-studio.spec.js",
+    "scripts/stratum-studio.config.js",
+    "scripts/stratum-vite.config.js",
+    "scripts/stratum-gameplay.spec.js",
+    "scripts/stratum-gameplay.config.js",
+    "scripts/stratum-primary-inputs.spec.js",
+    "scripts/stratum-primary-inputs.config.js",
+    "scripts/stratum-primary-inputs.js"
   ],
   "brief": "docs/briefs/meridian-medium-ships.md"
 }

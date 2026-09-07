@@ -323,6 +323,14 @@ test('controller Gannet → physical Burrow → elevator → real ore → revers
     expect(Math.hypot(...s.rover.local.map((n, i) => n - parked[i]))).toBeLessThan(.035); expect(s.lifts.secured).toBe(true);
     if (s.camera.mode !== 'external') await chord(15);
     await note('Controller launch carries the same loaded rover'); await shot('08-carried-in-flight');
+    phase = 'loaded-gear-and-landing'; await chord(13);
+    await wait(() => starAgent.state.landingGear.progress === 0);
+    await readyInput(); await tap(3);
+    await wait(() => starAgent.state.mode === 'landed' && !starAgent.state.autoland, null, 45000);
+    s = await state(); expect(s.landingGear.progress).toBe(1); expect(s.rover.aboard).toBe(true);
+    expect(Math.hypot(...s.rover.local.map((n, i) => n - parked[i]))).toBeLessThan(.035);
+    expect(s.lifts.secured).toBe(true);
+    await note('Loaded transport lowers its real gear and lands with the same rover'); await shot('09-loaded-touchdown');
     expect(errors).toEqual([]); expect(warnings).toEqual([]); expect(requests).toEqual([]); complete = true;
   } catch (error) {
     failed = {phase, message: error.message};

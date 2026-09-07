@@ -6,6 +6,8 @@
   #nomad-cabin-controls button:disabled{color:var(--muted);border-color:var(--line)}
   #nomad-cabin-controls small{font:9px var(--mono);color:var(--muted);text-align:right;text-shadow:0 1px 3px var(--dialog-solid)}
   .nomad-walk-pad:not([hidden]){display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+  .medium-flight-pad:not([hidden]){display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+  .medium-flight-pad button{padding:4px;font-size:9px!important}
   .nomad-walk-pad button{font-size:20px!important}
   .nomad-walk-pad button:first-child{grid-column:2}
   .nomad-walk-pad button:nth-child(2){grid-column:1;grid-row:2}

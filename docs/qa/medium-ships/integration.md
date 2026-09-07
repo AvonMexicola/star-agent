@@ -23,8 +23,11 @@ The integration began on development0a18574, consumed committed tractor638a5e4
 and fleet43fadf1, and preserves the new 64 m Atlas/carrier contracts. Stratum
 asset d77a015 and Gannet8b5ef41 were copied only from verified frozen allowlists.
 Gannet geometry07/98a9eea fixes actual roof/cassette gaps and hatch self-collision;
-all nine current asset tests pass. Stratum's ten asset checks pass. Both studio
-builds pass; that establishes bundling, not image or shader correctness.
+geometry08 removes its centre mullion and geometry09/12d8152 clears the inner MFD
+faces and joins their backing supports. All twelve current Gannet asset tests
+pass. Stratum clear-windscreen08aa2b1 removes only its 36-triangle centre mullion;
+all ten asset checks pass. Both studio builds pass; this alone establishes
+bundling, not image or shader correctness.
 
 Seventeen focused integration/mining cases pass, including actual GLB barrel
 transforms, large-coordinate cuts, self-occlusion, twenty-one input/safety gates,
@@ -37,9 +40,9 @@ threshold, dependency or warning limit was weakened.
 The first full configured unit run reports **1,005/1,010 passed**, with five
 failures in older Atlas pad/opening/station fixtures. Four reproduce on pristine
 fleet43fadf1; the saved-Atlas opening file is unchanged from that dependency.
-The steward has supplied checked fixture follow-ups79bf96e/fb472725 for separate
-consumption. This is an unresolved full-suite result at this checkpoint, not a
-passing suite. An earlier three-failure SBU run also reproduced on43fadf1; after
+After consuming the steward's checked fixture follow-ups79bf96e/fb472725, all
+22 adjacent fixture checks pass. The next complete configured run passes
+**1,013/1,013** (44.360 seconds, zero skips); the original failure is retained. An earlier three-failure SBU run also reproduced on43fadf1; after
 consuming the owner's f3312c correction, all31 SBU/station/medium cases pass.
 
 ## Findings retained and corrected
@@ -57,10 +60,19 @@ consuming the owner's f3312c correction, all31 SBU/station/medium cases pass.
   113/113 EVA steps,326/326 Gannet walking steps and199/199 Stratum steps, while
   the actual drive obstacles still block. The actual Navigation vehicle branch
   synchronizes mechanism power before its early return on191 sampled ticks.
-- Cees prohibited central cockpit struts. Both first asset candidates contained
-  them; authors are removing only those mullions before native inspection.
-  Burrow's corresponding exact44-triangle removal is committed in d2f7eb0 and
-  already consumed here. No preview deployment is implied.
+- Cees prohibited central cockpit struts. Both new assets now omit their centre
+  mullions and retain their glazing and functional layout. Burrow's exact
+  44-triangle removal is committed in d2f7eb0 and consumed here. Its paired native
+  comparison passes at the same seated eye; the existing PR66 contains the
+  [before/after evidence](../mining-rover/windscreen-open/README.md).
+- Full medium flight touch controls add translation, brake and launch/landing.
+  Native canvas drag uses tracked pointer coordinates, owns its gesture, and
+  cancels on pointer loss, focus loss and actual dialog transitions. Review found
+  that an unmoved held pointer could survive a menu round trip; the final dialog
+  observer closes that path and requires a fresh press.
+- Occupied Burrow now routes controller Menu9 before its vehicle early return,
+  matching the steward's checked cfe69b7 fix. Ship mining also publishes its stopped
+  state immediately on focus loss, when the animation loop may be suspended.
 
 Read-only review receipts, original failures and source hashes are retained in
 `/tmp/star-agent-medium-review`. Build/unit/dependency receipts use
@@ -76,5 +88,16 @@ must cover landing/flight, boarding, real extraction and saved ore, and physical
 rover unload/reload/carry/landing. Check full cargo and actual station fit,
 held-input suppression, source stability and console diagnostics. Independent
 art review and the contributor checks precede a review PR and steward handoff.
-The one shared GPU queue is coordinated in HANDOFF; no medium browser has run
-at this checkpoint.
+The one shared GPU queue is coordinated in HANDOFF. Stratum's first desktop
+studio run captured twelve views but failed on one HTTP404; phone was not run.
+The isolated HTML now uses an inline favicon and failed-response logging includes
+URLs; the corrected native rerun is pending. The independent static image
+[review](stratum-native-review-01.md) fails: mean3.26, silhouette3.4 against the
+brief's4.5 target, materials2.6. An authored hull/material refinement is active.
+Motion, portrait and actual gameplay remain pending. Gannet's first native
+studio and real controller journey are prepared but have not run.
+
+The development build03 passes in6.01 seconds (`main-Dw8Hai8Z.js`), including
+the final drag observer added after the full unit run. Existing chunk-size
+advisories remain recorded. Its isolated preview5582 uses a disposable in-memory
+test API8582; shared services, databases and the user's5596 tab are untouched.

@@ -19,7 +19,12 @@ export function createShipMiningInput({nav, canvas, mining, cutter, inventoryUI}
   panel.innerHTML = '<span>STRATUM / TWIN CUTTERS</span><label>CHARGE <meter min="0" max="1" value="1" aria-label="Ship cutter charge"></meter></label><strong class="ship-ore"></strong><p class="ship-mining-status" role="status"></p><button type="button" data-ship-mine>HOLD TO MINE</button><button type="button" data-ship-ore>Open ore bin</button><small>RT / T · Cutters · Aim with ship flight controls</small>';
   document.body.append(panel);
   const trigger = panel.querySelector('[data-ship-mine]');
-  const clear = () => { key = pointer = touch = false; pad = null; cutter.clear(); };
+  const clear = () => {
+    key = pointer = touch = false; pad = null; cutter.clear();
+    // Blur can suspend the animation loop. Publish the actual stopped cutter
+    // state immediately, preserving the inventory mass in the display snapshot.
+    if (nav.shipMiningState) Object.assign(nav.shipMiningState,{...cutter.state,beaming:0,reason:labels['release-required']});
+  };
   const canInput = () => cutter.available && !document.querySelector('dialog[open]');
   const keydown = e => {
     if (e.code === 'KeyT' && !e.repeat && !e.target.closest('input,textarea,select,dialog') && canInput()) key = true;
