@@ -1,0 +1,29 @@
+{
+  "id": "SA-NPC-001",
+  "title": "Add relaxed animated shopkeepers to Watchkeep and Kestrel",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex Astra shopkeeper team",
+  "status": "review",
+  "branch": "feat/station-shopkeeper",
+  "base": "4706d62e92c002ce5a326c53cd8ee9ac07543645",
+  "updated": "2026-09-07",
+  "areas": [
+    "assets",
+    "interface"
+  ],
+  "claims": [
+    "src/station-shopkeeper.js",
+    "src/station-complex.js",
+    "assets/characters/watchkeep-shopkeeper/",
+    "blender/finish_watchkeep_shopkeeper.py",
+    "public/models/characters/watchkeep-shopkeeper.glb",
+    "public/models/characters/watchkeep-shopkeeper-manifest.json",
+    "assets/characters/kestrel-shopkeeper/",
+    "blender/finish_kestrel_shopkeeper.py",
+    "public/models/characters/kestrel-shopkeeper.glb",
+    "public/models/characters/kestrel-shopkeeper-manifest.json"
+  ],
+  "brief": "docs/briefs/station-shopkeeper.md",
+  "review": "docs/qa/station-shopkeeper-browser.md"
+}

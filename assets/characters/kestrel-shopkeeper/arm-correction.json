@@ -1,0 +1,88 @@
+{
+  "method": "Directional shoulder/upperarm/forearm retarget, 30 Hz, original bind/node transforms preserved; source high gestures retain original rotations as correction fades between hand-relative heights -0.28 and -0.08 m.",
+  "sourceForward": "+Z",
+  "restForearmAxialRoll": "Per-frame signed axial palm alignment toward thighs; calibrated dorsal vector from corrected idle02 start, retains gesture fade",
+  "targetDirectionsChestSpace": {
+    "shoulder": [
+      "side",
+      -0.075,
+      0.16
+    ],
+    "upperArm": [
+      "side*0.12",
+      -1,
+      0.075
+    ],
+    "forearm": [
+      "side*0.045",
+      -1,
+      0.29
+    ]
+  },
+  "clips": [
+    {
+      "name": "idle-02",
+      "correctedRotationNodes": [
+        "LeftShoulder",
+        "LeftArm",
+        "LeftForeArm",
+        "RightShoulder",
+        "RightArm",
+        "RightForeArm"
+      ],
+      "samples": 72,
+      "restCorrectionStrengthRange": [
+        0.9439034842652375,
+        1
+      ]
+    },
+    {
+      "name": "idle-03",
+      "correctedRotationNodes": [
+        "LeftShoulder",
+        "LeftArm",
+        "LeftForeArm",
+        "RightShoulder",
+        "RightArm",
+        "RightForeArm"
+      ],
+      "samples": 163,
+      "restCorrectionStrengthRange": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "idle-11",
+      "correctedRotationNodes": [
+        "LeftShoulder",
+        "LeftArm",
+        "LeftForeArm",
+        "RightShoulder",
+        "RightArm",
+        "RightForeArm"
+      ],
+      "samples": 59,
+      "restCorrectionStrengthRange": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "idle-12",
+      "correctedRotationNodes": [
+        "LeftShoulder",
+        "LeftArm",
+        "LeftForeArm",
+        "RightShoulder",
+        "RightArm",
+        "RightForeArm"
+      ],
+      "samples": 182,
+      "restCorrectionStrengthRange": [
+        1,
+        1
+      ]
+    }
+  ]
+}
