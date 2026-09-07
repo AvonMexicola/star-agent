@@ -1775,3 +1775,28 @@ exhaustion (write errno122). Test-specific temporary files/evidence on the home
 disk allowed validation to complete without system configuration changes.
 Curated captures and details: docs/qa/multiplayer-hangar-physics.md. Preserve the
 unrelated unstaged AGENTS.md edit owned by the shared development lane.
+
+## Offline space patrol combat — 2026-09-07
+
+READY FOR REVIEW: `src/combat/`, `src/effects/flight-effects.js`, main/MFD/cargo
+console integration, `scripts/space-combat.*`, `tests/space-combat.test.js`.
+Feature branch `feat/space-combat`, isolated worktree
+`/home/cees/projects/star-agent-space-combat`. Adds console acceptance, continuous
+flight to a patrol beacon, current Nomad 02/Kestrel NPCs with attack/break/return
+strategies, tracking/lead markers, live shield/hull damage, failure/recovery and
+combat report. Kestrel now uses the shared energy weapon inputs.
+
+The existing unit suite and production build pass. Both actual controller-only
+Nomad/Kestrel mission journeys pass; keyboard/pointer, close-up and recovery checks
+also pass and are recorded with captures in `docs/qa/space-combat.md`. Independent visual
+review and physical-controller testing are not claimed. This is an offline,
+session-only first slice: no reward ledger, persistent mission, physical weapon
+fittings, ship collision damage, component damage, or multiplayer NPC authority.
+
+Patrol integration: `b3f1a87` is on `dev/all-features`; the live 5178 preview serves
+the combat module. Shared gameplay/audio build and all 91 test entries pass.
+Draft review: https://github.com/AvonMexicola/star-agent/pull/53. The unrelated
+shared `AGENTS.md` edit remains unstaged and untouched.
+Final combined patrol browser regression: all three cases pass in 4.4 minutes
+at `b3f1a87`, including keyboard/pointer fire, NPC-caused loss, recovery and phone
+console layout. Refreshed captures are in `docs/qa/space-combat/`.

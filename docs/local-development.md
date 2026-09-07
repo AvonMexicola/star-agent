@@ -97,3 +97,18 @@ jump, physical EVA exit/return and held-input suppression across menu, focus and
 controller reconnection. No browser errors were recorded. Feature-wide checks and
 captures are in `docs/qa/multiplayer-hangar-physics.md`. Protocol version 2 requires
 the frontend and API to be updated together; restart `dev:all` after integration.
+
+## Space patrol combat
+
+The local integration includes the offline patrol loop from `feat/space-combat`.
+Choose **Nomad 02** or **Kestrel**, start in **Orbit**, then open **Patrol console**
+(on-screen button or controller Menu) and accept. Fly to the amber beacon, brake,
+and fight the Nomad/Kestrel pair. T / A fires; 1–3 / Menu selects weapons;
+Tab / Menu selects the next hostile. The physical hangar cargo terminal also opens
+the console. File the combat report after both kills, or recover after ship loss.
+
+Shields regenerate after six seconds without a hit; docking repairs hull damage.
+Progress resets on reload. This first slice is offline and does not add persistent
+contracts or credit rewards. See [combat controls and scope](space-combat.md) and
+[verification evidence](qa/space-combat.md). The asset studios remain inspection
+surfaces; shared gameplay energy weapons do not imply new fitted gun meshes.
