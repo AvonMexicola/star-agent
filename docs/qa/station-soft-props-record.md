@@ -1,6 +1,6 @@
 # Meshy shop soft props — production record
 
-**Uploads fixed; image-to-3D candidates generated but unaccepted, awaiting export approval and local review. No downloaded model, runtime integration, measured asset budget or
+**Uploads fixed; two native GLB exports explicitly approved and attempted, but Chromium blocked both downloads. Candidates remain unaccepted pending local review. No downloaded model, runtime integration, measured asset budget or
 new visual acceptance is claimed.** The existing reviewed shops are unchanged.
 Work is isolated in `/tmp/star-agent-retail-props`, `feat/retail-soft-props`, based
 on the reviewed shop proceedings46b978f. The saved [brief](../../assets/station-shop/soft-props/brief.json)
@@ -275,7 +275,48 @@ and git diff whitespace checks pass. No new game build, shader render, FPS,
 physical interaction test, exported triangle/material/byte budget or independent
 Astra review was run. No runtime import, merge or deployment occurred.
 
-Next: obtain approval for the two new GLB downloads, then inspect native models
-in Blender and the game renderer. Reconcile the jacket budget before automated
+At this historical checkpoint, export approval was pending; the explicit approval
+and fresh browser export outcome are recorded below. Reconcile the jacket budget before automated
 cleanup; apply only minimal overshoot correction to a viable roll. Retain all
 failed variants and budget/appearance issues until actual validation resolves them.
+
+## Explicit download approval; fresh export blocker — 2026-09-07
+
+Cees answered “yes you can” to downloading these two retained originals. That
+approval supersedes the historical refusal for these files. The GPT browser
+operator attempted each normal visible GLB download once, after checking the
+exact original's Triangle/Faces/Vertices counts and four PBR controls. No new
+provider work, credit spending or settings changes were requested.
+
+Both attempts disabled the download controls while processing, timed out waiting
+20 seconds for the documented download event, then displayed `assets.meshy.ai
+is blocked`, `This page has been blocked by Chromium`, `ERR_BLOCKED_BY_CLIENT`.
+No new automatic approval denial was returned. The visible browser error alone
+does not establish which component caused the block. No signed URL fetch, hidden
+API, alternate browser channel or security-setting bypass was attempted.
+
+`assets/station-shop/soft-props/image-to-3d-v2/export-receipt.json` records both
+selections, visible export settings, attempted download method and absent local
+paths. Native GLB resolution/content, size, hashes and headers remain unmeasured
+because no file was obtained. Signed destinations and account details are omitted.
+
+Prepared `blender/review_shop_soft_props.py` imports a source without changing it,
+records evaluated meshes/UVs/materials/images/bounds/transforms, and renders front,
+opposite and underside studio views with a CPU renderer. Images are explicitly
+labelled Blender studio evidence, not game-renderer acceptance. Actual Meshy
+inspection and all game integration remain blocked on local source files.
+
+Read-only static inspection of the installed ChatGPT extension found header-only
+DNR session rules and no explicit Meshy host/download blocking rule. The cause
+therefore remains unattributed; no browser configuration was changed.
+
+Inspector smoke run used the existing helmet-standalone.glb, Blender 5.2.0,
+Cycles CPU / 4 threads, 320×320, 4 samples. All three PNGs rendered, their hashes
+and report were verified, and root inspected all three images. Metadata measured
+7,300 triangles / 7 materials; input SHA remained unchanged. Evidence is in
+/tmp/star-agent-studio-inspector-smoke. This verifies the inspection utility on
+an existing asset only. Blender emitted installed-addon cattrs/registration and
+audio warnings, then lingered after writing its completed report; root terminated
+only this smoke process. A clean Blender process exit is not claimed. Python
+syntax, all prop-receipt JSON and git whitespace checks pass; no new game build
+or browser/performance test was warranted for this utility-and-record change.

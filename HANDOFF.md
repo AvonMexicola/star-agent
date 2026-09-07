@@ -797,3 +797,22 @@ retried. Next: approve exporting these new originals for local review, then fit,
 validate and reconcile with current integration work. Accepted shop preview at
 port 5260 and other active lanes remain unaffected. HANDOFF is the manager
 notification, not a read receipt or READY FOR REVIEW claim.
+
+
+## MESHY EXPORT APPROVED; CHROMIUM BLOCKED BOTH DOWNLOADS — 2026-09-07
+
+Cees explicitly approved the two retained GPT-image/T2 native GLB downloads.
+The GPT operator attempted both exact originals, verifying jacket 4,330 faces /
+5,212 vertices and roll 4,145 / 3,859 plus the four PBR controls. Both downloads
+failed with Chromium ERR_BLOCKED_BY_CLIENT at assets.meshy.ai; download events
+timed out, and neither local file exists. This is a fresh browser block; the
+historical refusal is superseded and no new approval-review denial occurred.
+No bypass or billable provider work was attempted.
+
+Export evidence: /tmp/star-agent-retail-props/assets/station-shop/soft-props/
+image-to-3d-v2/export-receipt.json. Root owns export/intake/runtime integration;
+the prop agent prepared blender/review_shop_soft_props.py for three labelled
+CPU studio views and source metadata. Actual Meshy inspection, asset budgets,
+game import and independent review remain pending local GLBs. Accepted preview
+5260 is unchanged. This HANDOFF records the integration-manager notification;
+no read receipt, new art acceptance, merge or deployment is claimed.

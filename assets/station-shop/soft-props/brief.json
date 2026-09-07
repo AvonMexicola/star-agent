@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "image-to-3d-candidates-unaccepted-export-approval-pending",
+  "status": "image-to-3d-candidates-unaccepted-approved-export-browser-blocked",
   "basisCommit": "46b978ff112feb358c5daf1310809b4257bcdfaa",
   "authorization": "Cees: feel free to use meshy to make more props",
   "provider": "Meshy",
@@ -72,5 +72,6 @@
   "generationReceipt": "generation-receipt.json",
   "postprocessReceipt": "postprocess-receipt.json",
   "imageTo3dReplacement": "image-to-3d-v2/prompts.json",
-  "imageTo3dReplacementReceipt": "image-to-3d-v2/meshy-recovery-receipt.json"
+  "imageTo3dReplacementReceipt": "image-to-3d-v2/meshy-recovery-receipt.json",
+  "exportReceipt": "image-to-3d-v2/export-receipt.json"
 }

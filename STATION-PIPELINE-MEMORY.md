@@ -452,3 +452,19 @@ export overshoot, the prepared Blender intake trims to the maximum cap, not the
 lower aspirational target. A much larger budget difference (this jacket) needs
 an explicit author/reviewer decision before cleanup. Actual local GLB fitting,
 PBR-file validation and game review remain pending in the production record.
+
+
+## Approved export is separate from browser download capability — 2026-09-07
+
+Cees explicitly approved downloading the two retained GPT-image/T2 originals.
+Both normal UI exports were then attempted and failed with Chromium
+ERR_BLOCKED_BY_CLIENT at assets.meshy.ai; no files arrived. This is a new observed
+browser block, not a continuation of the historical user refusal. Preserve
+export-receipt.json; do not ask for the same approval again merely because an
+older receipt says downloads were denied. Do not infer the responsible blocker
+from the generic error or bypass browser security. Upload access already works.
+
+Once native GLBs are local, use blender/review_shop_soft_props.py for three
+labelled studio views and mesh/UV/material/bounds metadata, then the existing
+finish_shop_soft_prop.py intake. A prepared inspector or studio render is not
+proof of actual Meshy source quality, game scale, performance or art acceptance.

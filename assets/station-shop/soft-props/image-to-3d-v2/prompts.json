@@ -1,5 +1,5 @@
 {
-  "status": "provider-candidates-generated-unaccepted",
+  "status": "provider-candidates-unaccepted-approved-export-browser-blocked",
   "method": "Built-in GPT image generation -> visual inspection -> Meshy Image to 3D -> topology/PBR finishing -> local intake and actual game review",
   "userDirection": "Isometric item on a white background with no shadows, then import that image into Meshy.",
   "prompts": {
@@ -33,5 +33,6 @@
   ],
   "meshyReceipt": "meshy-recovery-receipt.json",
   "priorBlockedMeshyReceipt": "meshy-receipt.json",
-  "firstPostPermissionReceipt": "meshy-after-file-permission-receipt.json"
+  "firstPostPermissionReceipt": "meshy-after-file-permission-receipt.json",
+  "exportReceipt": "export-receipt.json"
 }
