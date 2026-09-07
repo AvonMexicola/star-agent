@@ -41,7 +41,7 @@ export class ShipInventory {
           throw Error('Invalid cargo manifest');
         }
         if (data.version === 3) {
-          if (!Number.isSafeInteger(data.credits) || data.credits < 0 || data.credits > STARTER_CREDITS
+          if (!Number.isSafeInteger(data.credits) || data.credits < 0 || data.credits > 1_000_000_000
             || !Object.entries(STATION_SHOPS).every(([id, shop]) => shop.offers.every(offer =>
               Number.isSafeInteger(data.shopStock?.[id]?.[offer.itemId])
               && data.shopStock[id][offer.itemId] >= 0 && data.shopStock[id][offer.itemId] <= offer.stock))) {

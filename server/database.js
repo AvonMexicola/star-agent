@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
+import { createMemorySocialStore, createPostgresSocialStore } from './social-store.js';
 
 const clone = (value) => value == null ? value : structuredClone(value);
 const conflict = () => Object.assign(new Error('Account details unavailable.'), { code: 'ACCOUNT_CONFLICT' });
@@ -14,9 +15,11 @@ const accountFields = { id: true, email: true, callsign: true, passwordHash: tru
 
 /** Explicit test/development adapter. Never selected automatically in production. */
 export function createMemoryStore() {
+  let commerce=null, commerceQueue=Promise.resolve();
   const accounts = new Map(), sessions = new Map(), resets = new Map(), states = new Map();
   return {
     persistent: false,
+    ...createMemorySocialStore(accounts),
     async migrate() {}, async close() {},
     async createAccount({ email, callsign, passwordHash }) {
       for (const a of accounts.values()) if (a.email.toLowerCase() === email.toLowerCase() || a.callsign.toLowerCase() === callsign.toLowerCase()) throw conflict();
@@ -48,6 +51,18 @@ export function createMemoryStore() {
       for (const [hash, value] of resets) if (value.accountId === account.id) resets.delete(hash);
       for (const [hash, value] of sessions) if (value.accountId === account.id) sessions.delete(hash);
       return clone(account);
+    },
+    async loadCommerce() { return clone(commerce); },
+    transactCommerce(fn) {
+      const task=commerceQueue.catch(()=>{}).then(async()=>{
+        const result=await fn(clone(commerce));
+        for(const [id,state] of Object.entries(result.players??{})) {
+          if(!accounts.has(id))throw new Error('Unknown account.'); stateJSON(state);
+        }
+        const value=JSON.parse(JSON.stringify(result.state));
+        for(const [id,state] of Object.entries(result.players??{}))states.set(id,clone(state));
+        commerce=value;return clone(result);
+      }); commerceQueue=task;return task;
     },
     async loadPlayerState(accountId) { return clone(states.get(accountId) ?? null); },
     async savePlayerState(accountId, state) {
@@ -85,13 +100,21 @@ export async function createPostgresStore({ connectionString, pool: suppliedPool
   }
   return {
     persistent: true,
+    ...createPostgresSocialStore(prisma),
     async migrate() {
-      const sql = await readFile(new URL('./migrations/001-accounts.sql', import.meta.url), 'utf8');
+      const files = (await readdir(new URL('./migrations/', import.meta.url))).filter(file => /^\d{3}-[a-z0-9-]+\.sql$/.test(file)).sort();
+      if (new Set(files.map(file => Number(file.slice(0, 3)))).size !== files.length) throw new Error('Migration versions must be unique.');
       await transaction(async client => {
         await client.query('SELECT pg_advisory_xact_lock(7291, 1)');
         await client.query('CREATE TABLE IF NOT EXISTS schema_migrations (version integer PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())');
-        const result = await client.query('SELECT version FROM schema_migrations WHERE version = $1', [1]);
-        if (!result.rowCount) { await client.query(sql); await client.query('INSERT INTO schema_migrations (version) VALUES ($1)', [1]); }
+        for (const file of files) {
+          const version = Number(file.slice(0, 3));
+          const result = await client.query('SELECT version FROM schema_migrations WHERE version = $1', [version]);
+          if (!result.rowCount) {
+            await client.query(await readFile(new URL(`./migrations/${file}`, import.meta.url), 'utf8'));
+            await client.query('INSERT INTO schema_migrations (version) VALUES ($1)', [version]);
+          }
+        }
       });
     },
     async close() { try { await prisma.$disconnect(); } finally { if (!suppliedPool) await pool.end(); } },
@@ -137,6 +160,17 @@ export async function createPostgresStore({ connectionString, pool: suppliedPool
         const account = await client.account.update({ where: { id: accountId }, data: { passwordHash }, select: accountFields });
         await client.session.deleteMany({ where: { accountId } });
         return account;
+      });
+    },
+    async loadCommerce() { return (await pool.query("SELECT state FROM commerce_state WHERE id='world-7291'")).rows[0]?.state??null; },
+    async transactCommerce(fn) {
+      return transaction(async client=>{
+        await client.query('SELECT pg_advisory_xact_lock(7291, 2)');
+        const current=(await client.query("SELECT state FROM commerce_state WHERE id='world-7291' FOR UPDATE")).rows[0]?.state??null;
+        const result=await fn(current);
+        await client.query("INSERT INTO commerce_state(id,state) VALUES('world-7291',$1::jsonb) ON CONFLICT(id) DO UPDATE SET state=EXCLUDED.state,updated_at=now()",[JSON.stringify(result.state)]);
+        for(const [id,state] of Object.entries(result.players??{}))await client.query('INSERT INTO player_state(account_id,state) VALUES($1,$2::jsonb) ON CONFLICT(account_id) DO UPDATE SET state=EXCLUDED.state,updated_at=now()',[id,stateJSON(state)]);
+        return result;
       });
     },
     async loadPlayerState(accountId) { return (await prisma.playerState.findUnique({ where: { accountId }, select: { state: true } }))?.state ?? null; },
