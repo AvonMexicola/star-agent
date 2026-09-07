@@ -38,6 +38,20 @@ for(const ship of ['nomad','kestrel','atlas'])test(`${ship}: controller patrol c
   await button(i,false);await button(6,true);await page.waitForFunction(()=>window.starAgent.state.speed<.05);await button(6,false);
  }
  await button(7,true);await frames();expect(await page.evaluate(()=>window.starAgent.state.speed)).toBeLessThan(.1);await button(7,false);
+ // Check interruptions before enemies arrive; the actual fight remains live throughout.
+ await tap(9);await choose('weapon-laser');await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ // Hold fire through modal close and all input interruptions. No stale shot may replay.
+ await tap(9);await button(7,true);await button(1,true);await button(1,false);await frames();
+ let shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await frames();expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);
+ await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ for(const kind of ['focus','disconnect','replacement','unsupported']){
+  await button(7,true);
+  await page.evaluate(kind=>{const p=window.combatPad;if(kind==='focus')window.dispatchEvent(new Event('blur'));if(kind==='disconnect')p.connected=false;if(kind==='replacement')p.id+=' replacement';if(kind==='unsupported')p.mapping='';},kind);await frames();
+  shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);
+  await page.evaluate(()=>{window.combatPad.connected=true;window.combatPad.mapping='standard';window.dispatchEvent(new Event('focus'));});await frames();await frames();
+  expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);
+  await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ }
  await tap(9);await choose('patrol-console');await expect(page.locator('#patrol-console')).toBeVisible();await frames();await tap(0);
  await page.waitForFunction(()=>window.starAgent.state.combat.phase==='transit');
  await page.screenshot({path:`${evidence}/console.png`});
@@ -51,18 +65,6 @@ for(const ship of ['nomad','kestrel','atlas'])test(`${ship}: controller patrol c
  const first=await page.evaluate(()=>window.starAgent.state.combat.targetId);
  await tap(9);await choose('combat-target');expect(await page.evaluate(()=>window.starAgent.state.combat.targetId)).not.toBe(first);
  await page.waitForFunction(()=>window.starAgent.state.controller.armed);await tap(9);await choose('weapon-laser');await page.waitForFunction(()=>window.starAgent.state.controller.armed);
- // Hold fire through modal close and all input interruptions. No stale shot may replay.
- await tap(9);await button(7,true);await button(1,true);await button(1,false);await frames();
- let shots=await page.evaluate(()=>window.starAgent.state.combat.shots);await frames();expect(await page.evaluate(()=>window.starAgent.state.combat.shots)).toBe(shots);
- await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
- for(const kind of ['focus','disconnect','replacement','unsupported']){
-  await button(7,true);
-  await page.evaluate(kind=>{const p=window.combatPad;if(kind==='focus')window.dispatchEvent(new Event('blur'));if(kind==='disconnect')p.connected=false;if(kind==='replacement')p.id+=' replacement';if(kind==='unsupported')p.mapping='';},kind);await frames();
-  shots=await page.evaluate(()=>window.starAgent.state.combat.shots);
-  await page.evaluate(()=>{window.combatPad.connected=true;window.combatPad.mapping='standard';window.dispatchEvent(new Event('focus'));});await frames();await frames();
-  expect(await page.evaluate(()=>window.starAgent.state.combat.shots)).toBe(shots);
-  await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
- }
  // Read-only pose feedback steers injected right-stick axes; RT is the sole firing route.
  await page.evaluate(()=>{
   window.combatPilot=setInterval(()=>{
@@ -71,6 +73,7 @@ for(const ship of ['nomad','kestrel','atlas'])test(`${ship}: controller patrol c
    const local=n.position.clone().fromArray(t.position).sub(n.position).applyQuaternion(n.orientation.clone().invert());
    const yaw=Math.atan2(local.x,-local.z),pitch=Math.atan2(local.y,Math.hypot(local.x,local.z));
    const command=value=>Math.abs(value)<.003?0:Math.sign(value)*Math.min(1,.18+Math.abs(value)*2.5);
+   pad.axes[0]=Math.sin(performance.now()/1800)*.55;pad.axes[1]=.2;
    pad.axes[2]=command(yaw);pad.axes[3]=command(-pitch);
    const fire=Math.abs(yaw)<.045&&Math.abs(pitch)<.045;pad.buttons[7]={pressed:fire,value:+fire};
   },35);
