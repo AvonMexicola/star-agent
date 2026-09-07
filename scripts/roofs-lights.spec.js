@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {MINING_KEY} from '../src/mining/store.js';
 import {SANDBOX_PREFIX} from '../src/build/sandbox.js';
-const out='/home/cees/.cache/star-agent-roofs-lights-evidence';
+const out=process.env.ROOFS_LIGHTS_OUT||'/home/cees/.cache/star-agent-roofs-lights-evidence';
 async function tap(page,i){await page.evaluate(i=>window.testPad.buttons[i]={pressed:true,value:1},i);await page.waitForFunction(i=>window.starAgent.navigation.gamepad.previous[i],i);await page.evaluate(i=>window.testPad.buttons[i]={pressed:false,value:0},i);await page.waitForFunction(i=>!window.starAgent.navigation.gamepad.previous[i],i);}
 async function choose(page,key,navigates=false){const el=page.locator(`[data-controller-key="${key}"]`);for(let i=0;i<100;i++){if(await el.evaluate(e=>e===document.activeElement))break;await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await tap(page,13);}await expect(el).toBeFocused();if(navigates)await page.evaluate(()=>window.testPad.buttons[0]={pressed:true,value:1});else await tap(page,0);}
 const ready=page=>page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed,null,{timeout:90000});
@@ -17,6 +17,9 @@ async function walkTo(page,point){await aimAt(page,point);await page.evaluate(()
 
 test('controller builds a separate rounded roof and ceiling lamp, switches illumination and reloads',async({page})=>{
  test.setTimeout(300000);await mkdir(out,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ // This route checks offline sandbox placement and saved light state; isolate
+ // optional account discovery so it never consumes another preview's account.
+ await page.route('**/api/auth/session',route=>route.fulfill({json:{account:null}}));
  await page.addInitScript(()=>{window.testPad={id:'Ceiling and roof controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.testPad];});
  await page.goto('/?sandbox=build&intro=0&debug&seed=7291');await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);
  await buildPiece(page,'wall','pieces',[2,.3,0]);await buildPiece(page,'floor','pieces',[0,3.3,0]);await buildPiece(page,'floor','pieces',[-4,3.3,0]);
