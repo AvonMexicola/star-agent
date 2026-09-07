@@ -1,3 +1,4 @@
+import {constrainShipAttachments} from './ship-attachment-collision.js';
 import { MIASMA_ARRIVAL_ALTITUDE, miasmaArrivalDirection, constrainMiasmaStep } from './miasma-world.js';
 import * as THREE from 'three';
 import { SUN_POSITION, SUN_AXIS, sunStandoffPoint } from './stellar-world.js';
@@ -717,6 +718,8 @@ export class Navigation {
       if(this.shipPosition){
         const hit=this.kestrelAccess?{point:constrainKestrelEVA(this.toShipLocal(previous),this.toShipLocal(proposed))}:constrainEVAShip(this.toShipLocal(previous),this.toShipLocal(proposed),this.doorProgress>.98);
         if(this.kestrelAccess)hit.hit=!hit.point.equals(this.toShipLocal(proposed));
+        const fitted=constrainShipAttachments(this.toShipLocal(previous),hit.point,this.layout?.weaponParts,{eva:true});
+        hit.hit||=!fitted.equals(hit.point);hit.point=fitted;
         if(hit.hit){proposed=this.fromShipLocal(hit.point);this.velocity.set(0,0,0);}
       }
       const obstacle=this.surfaceObstacles?.constrainEVA?.(previous,proposed);
@@ -749,6 +752,7 @@ export class Navigation {
       let local=null,floor=null;
       if(localBefore&&localBefore.length()<55){
         local=this.kestrelAccess?constrainKestrelStep(localBefore,this.toShipLocal(proposed)):this.freighter?this.freighter.constrain(localBefore,this.toShipLocal(proposed)):constrainShipStep(localBefore,this.toShipLocal(proposed),this.doorProgress>.98);
+        local=constrainShipAttachments(localBefore,local,this.layout?.weaponParts,{eyeHeight:this.layout?.eyeHeight??1.75});
         proposed=this.fromShipLocal(local);floor=this.kestrelAccess?null:this.freighter?this.freighter.floorAt(local):shipFloorAt(local.x,local.z,this.doorProgress>.98);
       }
       if(this.cabinFlight&&!this.spaceParked&&floor===null&&!stationGrid){

@@ -14,6 +14,7 @@ import { flightDownwash } from './meadow.js';
 import * as THREE from 'three';
 import { WEAPONS } from './effects/weapons.js';
 import { createFlightEffects } from './effects/flight-effects.js';
+import { equipShipWeapons, armedShipLayout } from './ship-weapons.js';
 import './style.css';
 import './player-interface.css';
 import { OpeningSequence, openingStationOptions } from './opening-sequence.js';
@@ -127,7 +128,7 @@ try {
   if(devOptions){fleet.active=devOptions.ship;fleet.unlocked=true;fleet.surfaceVisited=true;}
   else if(testFlight)fleet.active='kestrel';
   nav.testFlight=testFlight;
-  const layoutFor=id=>id==='kestrel'?KESTREL_LAYOUT:id==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;
+  const layoutFor=id=>armedShipLayout(id==='kestrel'?KESTREL_LAYOUT:id==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT,shipModels.get(id)?.armament);
   function configureShip(id){
     nav.shipId=id;nav.layout=layoutFor(id);nav.freighter=id==='atlas'?freighterSystems:null;
     nav.kestrelAccess=id==='kestrel'?new KestrelAccess():null;
@@ -137,6 +138,8 @@ try {
   function modelFor(id){
     if(!shipModels.has(id)){
       const model=id==='kestrel'?createKestrel({url:kestrelURL,flight:true}):id==='atlas'?createFreighter(freighterSystems):createWalkableShip();
+      equipShipWeapons(model,id);
+      model.readyPromise.then(()=>{if(nav.shipId===id)nav.layout=layoutFor(id);},()=>{});
       if(!model.updateGear)installLandingGear(model);model.visible=false;scene.add(model);
       if(id!=='kestrel'){weatherShip(model,planet.surfaceTexture);model.readyPromise.then(asset=>{if(asset)weatherShip(asset,planet.surfaceTexture);});}
       const heating=new ReentryHeating(model);model.userData.reentryHeating=heating;
@@ -177,9 +180,9 @@ try {
   const useQuick=index=>{const result=loadout.useQuick(index);nav.notify(result.message);};
   const loadoutBar=createLoadoutBar({loadout,nav,onSelect:id=>{if(build.active)build.cancel();miningTool.select(id);},onUse:useQuick,open:()=>inventoryUI.openEquipment()});
   document.addEventListener('keydown',e=>{if(e.repeat||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||document.querySelector('dialog[open]'))return;if(e.code==='KeyK'){e.preventDefault();inventoryUI.openEquipment();}else if(!build.active&&nav.enabled&&nav.focused&&['walk','eva'].includes(nav.mode)&&/^Digit[5-8]$/.test(e.code))useQuick(Number(e.code.slice(5))-5);});
-  const combat=createSpaceCombat({scene,nav,camera,effects});
+  const combat=createSpaceCombat({scene,nav,camera,effects,mining});
   nav.openPatrolConsole=()=>combat.open();
-  const flightEffects=createFlightEffects({effects,nav,mining,camera,onFire:(...args)=>{if(combat.state.phase!=='engage')return false;combat.fire(...args);return true;}});
+  const flightEffects=createFlightEffects({effects,nav,mining,camera,getShip:()=>ship,onFire:(...args)=>{if(combat.state.phase!=='engage')return false;combat.fire(...args);return true;}});
   inventoryUI.registerContainer?.({id:'crescent-cache',name:'Crescent field cache',kind:'base',boxes:2,available:()=>nav.mode==='walk'&&!nav.insideShip&&nav.position.distanceTo(mining.fieldCache.position)<4});
   bindStationLedger(inventory,mining.store);
   if(testFlight&&fleet.active==='kestrel')inventory.transferAll('ship','station');

@@ -6,7 +6,7 @@ and controller dialog/input router. No new external services or assets are neede
 
 ## Play
 
-1. Start in orbit with Nomad or Kestrel in the local ship/location launcher.
+1. Start in orbit with Nomad, Kestrel or Atlas in the local ship/location launcher.
 2. Open **Patrol console** on screen or **Menu → Patrol console**. The physical
    hangar cargo terminal also has a Security contracts button. Accept the patrol.
 3. Follow the amber signal marker. From open space it is 3 km ahead; at the station
@@ -41,10 +41,11 @@ requires explicit recovery. Projectiles sweep moving spherical ship envelopes;
 laser queries are immediate. Existing ground crash and stellar thermal models
 remain separate from these combat hitpoints.
 
-NPCs use the current authored hulls with mechanisms stowed. This prototype enables
-the shared energy array on Kestrel; fitted gun meshes, hardpoint equipment,
-missiles, squad coordination, component damage, wreck salvage, player/NPC ship
-collisions, mission rewards and persistence are not implemented. Combat is offline;
+Player and NPC hulls carry the [sized Meridian guns](ship-weapons.md). NPC
+mechanisms are stowed; actual barrel poses drive their fixed-bore shots. Raise
+landing gear before player fire. Missiles, squad coordination, component damage,
+wreck salvage, player/NPC ship collisions, mission rewards and persistence are
+not implemented. Combat is offline;
 multiplayer keeps server authority and does not run this NPC simulation. Contracts,
 reports and combat integrity reset on reload. Opening a dialog or losing focus
 pauses combat. Leaving the engagement, boarding or engaging travel abandons it.

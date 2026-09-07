@@ -2,24 +2,33 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import kestrelURL from '../../assets/kestrel/kestrel.glb?url';
 import {SHIP_LAYOUT} from '../boarding.js';
-import {CombatSimulation,GUNS,interceptPoint} from './simulation.js';
+import {CombatSimulation,interceptPoint,projectileSpan} from './simulation.js';
+import {shipWeaponProfile,SHIP_WEAPON_SIZES} from '../ship-weapon-profiles.js';
+import {loadShipWeaponKit,attachShipWeapons} from '../ship-weapons.js';
+import {createWeaponTarget} from '../effects/weapon-target.js';
 import {markerDistance,projectShipMarker} from '../ship-marker-projection.js';
 import './space-combat.css';
 
 /** Session patrols. Shared input owns arming and the existing native dialog router. */
-export function createSpaceCombat({scene,nav,camera,effects}){
-  const models=new Map(),templates=new Map(),loader=new GLTFLoader();let assetsPromise,assetError='',loading=false,lastPhase='idle',lastDock=false;
+export function createSpaceCombat({scene,nav,camera,effects,mining}){
+  const models=new Map(),templates=new Map(),loader=new GLTFLoader();let assetsPromise,weaponKit,assetError='',loading=false,lastPhase='idle',lastDock=false;
+  const target=createWeaponTarget({nav,mining}),currentOrigin=new THREE.Vector3();
   const group=new THREE.Group();group.name='Patrol contacts';scene.add(group);
-  const boltGeometry=new THREE.CylinderGeometry(.16,.16,8,6);boltGeometry.rotateX(Math.PI/2);
-  const boltMaterials=[new THREE.MeshBasicMaterial({color:0x8bdeff,toneMapped:false}),new THREE.MeshBasicMaterial({color:0xff745e,toneMapped:false})];
-  const bolts=Array.from({length:128},()=>{const mesh=new THREE.Mesh(boltGeometry,boltMaterials[0]);mesh.visible=false;group.add(mesh);return mesh;});
-  const sim=new CombatSimulation({onShot:shot=>{
-    if(shot.weapon==='laser')effects.fire(shot.position,shot.direction,{weapon:'laser',range:shot.remaining});
-    else effects.onSound?.({type:'shot',weapon:shot.weapon,sound:shot.weapon,point:shot.position});
-  },onHit:({point,shield,destroyed,entity})=>{
-    effects.impact(point,new THREE.Vector3(0,1,0),destroyed?9:shield?2:1.5,{color:shield?0x80d9ff:0xff9a60});
+  const boltGeometry=new THREE.CylinderGeometry(1,1,1,6);boltGeometry.rotateX(Math.PI/2);
+  const voidGeometry=new THREE.SphereGeometry(1,12,8),boltMaterials=new Map();
+  for(const type of ['pulse','void'])for(const size of [1,2,3]){
+    const profile=shipWeaponProfile(type,size);
+    boltMaterials.set(`${type}:${size}`,new THREE.MeshBasicMaterial({color:profile.color,toneMapped:false}));
+  }
+  const bolts=Array.from({length:128},()=>{const mesh=new THREE.Mesh(boltGeometry,boltMaterials.get('pulse:1'));mesh.visible=false;group.add(mesh);return mesh;});
+  const sim=new CombatSimulation({obstruction:(start,direction,range)=>target(start,direction,currentOrigin,range),onShot:shot=>{
+    const profile=shot.profile;
+    if(shot.weapon==='laser')effects.fire(shot.position,shot.direction,{weapon:'laser',range:shot.remaining,muzzle:false,size:profile.size,pitch:profile.soundPitch,power:profile.power,speed:profile.speed,color:profile.color});
+    else effects.onSound?.({type:'shot',weapon:shot.weapon,sound:shot.weapon,point:shot.position.clone(),size:profile.size,pitch:profile.soundPitch,power:profile.power});
+  },onHit:({point,normal,shield,destroyed,entity,weapon,profile})=>{
+    effects.impact(point,normal??new THREE.Vector3(0,1,0),(destroyed?9:shield?2:1.5)*(profile?.effectScale??1),{color:shield?0x80d9ff:profile?.color??0xff9a60,kind:weapon});
     if(entity==='player'){hud.classList.remove('combat-hit');void hud.offsetWidth;hud.classList.add('combat-hit');}
-    if(destroyed&&entity!=='player')nav.notify(`${entity.label} destroyed.`);
+    if(destroyed&&entity&&entity!=='player')nav.notify(`${entity.label} destroyed.`);
   }});
   const dialog=document.createElement('dialog');dialog.id='patrol-console';dialog.setAttribute('aria-labelledby','patrol-title');
   dialog.innerHTML='<button class="station-close" aria-label="Close patrol console">×</button><p class="eyebrow">AEON ORBITAL / SECURITY DISPATCH</p><h2 id="patrol-title">Outer perimeter patrol</h2><p class="patrol-brief">Investigate a hostile signal outside the shipping lanes. Expect a Nomad 02 raider with a Kestrel escort. Fly to the beacon, identify both contacts and clear the patrol area.</p><dl><dt>CONTACTS</dt><dd>02 / MIXED FLIGHT</dd><dt>OBJECTIVE</dt><dd>Eliminate both hostiles</dd><dt>SHIP SYSTEMS</dt><dd>Shields recharge after 6 seconds without a hit. Hull repairs at the dock.</dd></dl><p class="patrol-status" role="status"></p><div class="patrol-actions"><button data-controller-key="patrol-accept" data-controller-focus>Accept patrol</button><button data-controller-key="patrol-debrief">File combat report</button><button data-controller-key="patrol-abort">Abandon patrol</button><button data-controller-key="patrol-recover">Recover in orbit</button></div><p class="patrol-log"></p><small>Session patrol · T / A fires · Tab / Menu selects target · Aim at the lead circle. Patrol progress resets when you reload.</small>';
@@ -47,7 +56,7 @@ export function createSpaceCombat({scene,nav,camera,effects}){
   dialog.querySelector('.station-close').onclick=()=>dialog.close();
   dialog.addEventListener('close',()=>{nav.keys.clear();nav.gamepad.suspend();nav.enabled=true;nav.canvas.focus();});
   async function prepare(){
-    if(!assetsPromise)assetsPromise=Promise.all([['nomad',`${import.meta.env.BASE_URL}models/nomad.glb`],['kestrel',kestrelURL]].map(async([id,url])=>{
+    if(!assetsPromise)assetsPromise=Promise.all([loadShipWeaponKit(),...([['nomad',`${import.meta.env.BASE_URL}models/nomad.glb`],['kestrel',kestrelURL]].map(async([id,url])=>{
       const gltf=await loader.loadAsync(url),asset=gltf.scene;
       const mixer=new THREE.AnimationMixer(asset);
       for(const clip of gltf.animations){const action=mixer.clipAction(clip);action.play();action.paused=true;action.time=0;}
@@ -58,7 +67,7 @@ export function createSpaceCombat({scene,nav,camera,effects}){
         leg.position.fromArray(spec.pivot).add(new THREE.Vector3(...spec.retractOffset));leg.rotation.z=spec.retractAngle;
       }
       templates.set(id,asset);
-    })).catch(error=>{assetsPromise=null;throw error;});
+    }))]).then(([kit])=>{if(!kit)throw new Error('Ship weapon kit unavailable');weaponKit=kit;}).catch(error=>{assetsPromise=null;throw error;});
     return assetsPromise;
   }
   function waypoint(){
@@ -90,9 +99,14 @@ export function createSpaceCombat({scene,nav,camera,effects}){
   }
   function tSnapshot(){const t=sim.target;return t?{label:t.label,shield:t.integrity.shield,hull:t.integrity.hull}:null;}
   function update(dt,origin,{weapon='pulse',suspended=false}={}){
+    currentOrigin.copy(origin);
     sim.setShip(nav.shipId);
     const dock=nav.dockedAtStation&&nav.mode==='landed';if(dock&&!lastDock){sim.repair();nav.notify('Dock service complete · hull and shields restored.');}lastDock=dock;
     const active=!suspended&&nav.enabled&&nav.focused&&!document.hidden&&!nav.travel&&!nav.multiplayer?.connected&&nav.mode==='flight';
+    for(const {armament} of models.values()){
+      if(!active)armament.stop();
+      else armament.update(Math.min(.2,Math.max(0,Number.isFinite(dt)?dt:0)));
+    }
     sim.update(dt,{position:nav.position,velocity:nav.velocity,orientation:nav.orientation,active});
     if(sim.phase!==lastPhase){
       lastPhase=sim.phase;nav.notify(statuses[sim.phase]);
@@ -107,13 +121,34 @@ export function createSpaceCombat({scene,nav,camera,effects}){
     if(sim.phase==='engage'&&(nav.mode!=='flight'||nav.travel||nav.position.distanceTo(sim.point)>9000)){sim.abort();nav.notify('Patrol abandoned: you left the engagement.');}
     const visibleEnemies=sim.phase==='engage'?sim.living:[];
     const ids=new Set(visibleEnemies.map(e=>e.id));
-    for(const [id,model] of models)if(!ids.has(id)){model.removeFromParent();models.delete(id);}
+    for(const [id,{model,armament}] of models)if(!ids.has(id)){armament.dispose();model.removeFromParent();models.delete(id);}
     for(const e of visibleEnemies){
-      if(!models.has(e.id)&&templates.has(e.ship)){const model=templates.get(e.ship).clone(true);model.name=e.label;group.add(model);models.set(e.id,model);}
-      const model=models.get(e.id);if(model){model.position.copy(e.position).sub(origin);model.quaternion.copy(e.orientation);}
+      if(!models.has(e.id)&&templates.has(e.ship)&&weaponKit){
+        const model=templates.get(e.ship).clone(true);model.name=e.label;
+        try{
+          const armament=attachShipWeapons(model,e.ship,weaponKit);
+          if(!armament)throw new Error(`${e.ship} has no fitted weapon armament`);
+          e.armament=armament;group.add(model);models.set(e.id,{model,armament});
+        }catch(error){
+          assetError=`Patrol unavailable: ${error.message}`;sim.abort();
+          for(const record of models.values()){record.armament.dispose();record.model.removeFromParent();}
+          models.clear();nav.notify(assetError);break;
+        }
+      }
+      const model=models.get(e.id)?.model;if(model){model.position.copy(e.position).sub(origin);model.quaternion.copy(e.orientation);}
     }
     group.visible=!nav.multiplayer?.connected;
-    bolts.forEach((mesh,i)=>{const shot=sim.projectiles[i];mesh.visible=Boolean(shot);if(shot){mesh.position.copy(shot.position).sub(origin);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),shot.direction);mesh.material=boltMaterials[shot.owner==='player'?0:1];}});
+    bolts.forEach((mesh,i)=>{
+      const shot=sim.projectiles[i];mesh.visible=Boolean(shot);
+      if(!shot)return;
+      const scale=shot.profile.effectScale??1,isVoid=shot.weapon==='void';
+      const span=projectileSpan(shot,(isVoid?1.4:8)*scale);
+      mesh.visible=span.length>0;
+      mesh.position.copy(span.position).sub(origin);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),shot.direction);
+      mesh.geometry=isVoid?voidGeometry:boltGeometry;
+      mesh.scale.set((isVoid?.6:.16)*scale,(isVoid?.6:.16)*scale,span.length/(isVoid?2:1));
+      mesh.material=boltMaterials.get(`${isVoid?'void':'pulse'}:${shot.profile.size??1}`)??boltMaterials.get('pulse:1');
+    });
     const modal=Boolean(document.querySelector('dialog[open]'));
     button.hidden=!permitted()||modal||!nav.enabled;
     hud.hidden=!nav.enabled||!document.body.classList.contains('player-active')||nav.multiplayer?.connected||!['flight','landed','destroyed'].includes(nav.mode)||modal;
@@ -129,7 +164,8 @@ export function createSpaceCombat({scene,nav,camera,effects}){
     markerNodes.forEach(el=>el.hidden=true);let i=0;
     if(sim.phase==='transit')marker(markerNodes[i++],sim.point,'PATROL SIGNAL',{waypoint:true},origin);
     for(const e of visibleEnemies)marker(markerNodes[i++],e.position,e.ship.toUpperCase(),{selected:e.id===sim.targetId},origin);
-    if(t&&i<4&&Number.isFinite(GUNS[weapon].speed)){const point=interceptPoint(nav.position,t.position,t.velocity,GUNS[weapon].speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
+    const profile=shipWeaponProfile(weapon,SHIP_WEAPON_SIZES[nav.shipId]??1);
+    if(t&&i<4&&Number.isFinite(profile.speed)){const point=interceptPoint(nav.position,t.position,t.velocity,profile.speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
   }
   return {open,permitted,recover,cycle:()=>sim.cycle(),update,fire:(...args)=>sim.fire(...args),get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
 }
