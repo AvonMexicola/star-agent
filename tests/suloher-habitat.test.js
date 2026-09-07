@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { MIASMA_POSITION, MIASMA_RADIUS, MIASMA_SITES, miasmaSurface } from '../src/miasma-world.js';
 import { PYRE_POSITION } from '../src/pyre-world.js';
-import { SULOHER_HABITAT, SULOHER_HABITAT_VERSION, sampleSuloherHabitat, enumerateSuloherSpawns } from '../src/fauna/suloher-habitat.js';
+import { SULOHER_HABITAT, SULOHER_HABITAT_VERSION, sampleSuloherHabitat, sampleSuloherFooting, enumerateSuloherSpawns } from '../src/fauna/suloher-habitat.js';
+import { createHostileSimulation } from '../src/fauna/hostile-simulation.js';
 
 const normalize = a => { const length = Math.hypot(...a); return a.map(v => v / length); };
 const position = (d, clearance = 0) => d.map((v, i) => MIASMA_POSITION[i] + v * (MIASMA_RADIUS + miasmaSurface(...d).height + clearance));
@@ -87,4 +88,46 @@ test('other planets, high flight and malformed queries cannot activate dogs', ()
   for (const radius of [0, -1, 501, Infinity, NaN]) assert.throws(() => enumerateSuloherSpawns(position([1, 0, 0]), { radius }), RangeError);
   assert.equal(sampleSuloherHabitat([0, 0, 0]), null);
   assert.throws(() => enumerateSuloherSpawns([Infinity, 0, 0]), TypeError);
+});
+
+test('saved controller failure: body-sized footing crosses safe ground rejected by broad spawn clearance', () => {
+  // Actual failure.json from the injected-controller Miasma route,2026-09-07.
+  // The dog stopped5.69817m away at60Hz before canMove was ever evaluated.
+  const saved = {
+    id: 'suloher-v1:7291:2833,-2,-1',
+    position: [18213298202.002514, 7555869155.985128, 11680089167.175568],
+    normal: [.9982160255210091, .02048686299224457, .05608078849104309],
+    home: [18213298203.030884, 7555869142.172175, 11680089154.546507],
+    phase: .4102632491849363, heading: .44704461776543925,
+  };
+  const player = { position: [18213298203.520435, 7555869160.909151, 11680089169.608473], active: true, health: 100 };
+  const replay = sample => {
+    let rejectedGround = 0, obstacleCalls = 0, bites = 0;
+    const sim = createHostileSimulation({
+      sampleGround: (_species, p) => {
+        const h = sample(normalize(p.map((v, i) => v-MIASMA_POSITION[i])));
+        if (!h) rejectedGround++;
+        return h;
+      },
+      canMove: () => { obstacleCalls++; return true; }, lineOfSight: () => true, onBite: () => bites++,
+    });
+    // First register beyond no-pop radius, then restore the recorded chase pose.
+    sim.reconcile([saved], 'suloher', saved.position.map((v, i) => v+(i===1?100:0)));
+    Object.assign(sim.entities[0], structuredClone(saved), { state: 'chase' });
+    for (let frame = 0; frame < 180; frame++) sim.update(1/60, player);
+    return { rejectedGround, obstacleCalls, bites, entity: sim.entities[0] };
+  };
+  const old = replay(sampleSuloherHabitat);
+  assert.equal(old.rejectedGround, 180);
+  assert.equal(old.obstacleCalls, 0); // Neither discontinuity nor world blockers caused the stop.
+  assert.equal(old.bites, 0);
+  assert.deepEqual(old.entity.position, saved.position);
+  const corrected = replay(sampleSuloherFooting);
+  assert.equal(corrected.rejectedGround, 0);
+  assert.ok(corrected.obstacleCalls > 0);
+  assert.equal(corrected.bites, 1);
+  assert.ok(distance(corrected.entity.position, saved.position) > 3);
+  const d = normalize(corrected.entity.position.map((v, i) => v-MIASMA_POSITION[i]));
+  assert.ok(Math.abs(distance(corrected.entity.position, MIASMA_POSITION)-MIASMA_RADIUS-miasmaSurface(...d).height) < 1e-5);
+  for (const site of MIASMA_SITES) assert.equal(sampleSuloherFooting(site.direction), null);
 });

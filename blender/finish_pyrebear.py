@@ -378,6 +378,8 @@ def main():
     dense_death = sample_walk(arm, mesh, count=121)
     assert min(s['bounds']['min'][1] for s in dense_death) >= -.03, 'Death contact exceeds documented30mm tolerance'
     manifest['death'] = {'name':'death', 'durationSeconds':death['duration'], 'loop':False, 'holdFinalPose':True, 'authoring':'Blender forward-kneel/belly collapse, 12-degree lean, folded joint-length-constrained limbs, lowered chest/head/pelvis and relaxed tail; broad torso support with small measured local contact intersections', 'boundsMetres':union_bounds(death_samples), 'finalBoundsMetres':death_samples[-1]['bounds'], 'groundMinimumMetres':min(s['bounds']['min'][1] for s in death_samples), 'reimportBoundsErrorMetres':death_error, 'denseSampleCount':len(dense_death), 'denseGroundMinimumMetres':min(s['bounds']['min'][1] for s in dense_death)}
+    if SPECIES == 'suloher-dog':
+        manifest['death']['authoring'] += '; head rests sideways, forepaws relax asymmetrically and distal tail settles toward the flank'
     set_clip('walk')
     bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=str(PACK/(SPECIES+'.blend')))

@@ -141,7 +141,7 @@ must not derive its floor from these studio fixtures.
 | Creature | Runtime bytes / triangles | Width × height × length (m) | Walk speed / death duration | Runtime SHA-256 |
 | --- | --- | --- | --- | --- |
 | pyrebear | 1,044,532 / 14,331 | 2.176 × 1.835 × 3.211 | 1.5 m/s / 1.8 s | `30afc5a9459538fbab2954a38369f42df25ecfde032d7b819f60bf1e1f8639e6` |
-| suloher-dog | 1,101,672 / 14,806 | 1.060 × 1.094 × 1.882 | 1.0 m/s / 1.2 s | `413335683e7f35484637622a4ae203613014f328f46dc7f32eda9071c5ef0f87` |
+| suloher-dog | 1,101,672 / 14,806 | 1.060 × 1.094 × 1.882 | 1.0 m/s / 1.2 s | `58e0ea69a08c5f49adc76fa546dae794ab7b797c44c223591d4b2a3dbf0f3928` |
 
 Both emitted GLBs reimport successfully with one material, 27 joints and 82
 unique node/property channels in each clip. The actual original joint buffers
@@ -150,13 +150,13 @@ agree with the normalized, grounded source within 0.000001 m; death bounds agree
 with the Blender-authored poses within 0.000009 m.
 
 - **pyrebear:** 481-phase walk sole clearance ranges -0.817 to 3.907 mm. The 121-phase death minimum is -25.647 mm.
-- **suloher-dog:** 481-phase walk sole clearance ranges -0.978 to 3.314 mm. The 121-phase death minimum is -12.599 mm.
+- **suloher-dog:** 481-phase walk sole clearance ranges -0.978 to 3.314 mm. The 121-phase death minimum is -25.373 mm.
 
 The sub-millimetre walk penetration and up-to-four-millimetre positive clearance
 are measured interpolation residuals, not claimed perfect continuous contact.
 Death deliberately tolerates slight local intersections to keep broad body
 support: up to 25.7 mm on the bear's lower-side forelimb and approximately 21.8 mm
-under mixed pelvis skin, and 12.6 mm at the dog's jaw/tail contact. These include
+under mixed pelvis skin, and 25.4 mm at the dog's relaxed front claws (jaw/tail contact remains within 12.6 mm). These include
 skin, not only hard armor tips; they are not zero-penetration claims. The builder
 rejects any sampled death intersection deeper than 30 mm. This tolerance does
 not establish a physically simulated ragdoll or slopes/obstacles behavior.
@@ -168,5 +168,23 @@ phases and writes each pack's `motion-validation.json`. Run it with the same
 headless Blender flags as intake. Limb joint-to-joint distances vary by less
 than 0.01 mm; walk-zero to death-zero skin displacement is at most 0.011 mm.
 Largest adjacent sampled vertex movement is 42.8 mm per 15 ms for the bear and
-74.5 mm per 10 ms for the dog. These are recorded bounds on the sampled motion,
+43.3 mm per 10 ms for the dog. These are recorded bounds on the sampled motion,
 not a claim of physically simulated motion or a full animation playthrough.
+
+## Dog corpse-readability polish after checkpoint 91a2ac0
+
+A second independent still review rated the checkpoint dog's final silhouette
+3/5 for physical readability: it resembled a low aggressive crouch with a raised
+tail and braced forepaws. A dog-only correction adds a 35-degree sideways head
+rest, asymmetric forelimb placement, relaxed distal paw rotation and additional
+distal-tail lowering/lateral relaxation. The belly placement and original source
+walk, skin, texture and all bear assets remain unchanged.
+
+The candidate was built in an isolated workspace and reviewed before replacing
+the public GLB. Astra compared both new side/oblique views with the checkpoint
+stills and scored the correction 4/5: the dropped sideways head and asymmetry
+read as collapse, and the side-view tail no longer stands vertically. Some bent
+foreleg and curved-tail tension remains; the review found no blocking defect in
+those two stills. This is a scoped pose review, not an independent continuous
+animation or game integration pass. Runtime motion/contact sampling was repeated
+on the emitted candidate; its exact final identity appears in the receipt above.

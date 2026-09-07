@@ -1,12 +1,16 @@
 """Read-only runtime skin/limb sampling; writes source-pack validation receipts.
 Run headless from the repository with ALSOFT_DRIVERS=null and python-exit-code1.
 """
-import bpy,sys,json
+import argparse,bpy,sys,json
 from pathlib import Path
 sys.path.insert(0,str(Path.cwd()/'blender'))
 from finish_pyrebear import load_scene,skin_points
 from creature_motion import set_clip
+parser=argparse.ArgumentParser()
+parser.add_argument('--species', choices=['pyrebear','suloher-dog'])
+args=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
 for species,duration in [('pyrebear',1.8),('suloher-dog',1.2)]:
+ if args.species and species != args.species: continue
  arm,mesh,_=load_scene(Path.cwd()/f'public/models/creatures/{species}.glb')
  set_clip('walk');walk0=skin_points(mesh)
  chains=[[p+x for x in ['', '0','1','2']]for p in ['frontleg','R_frontleg','backleg','R_backleg']]

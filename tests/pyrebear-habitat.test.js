@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PYRE_POSITION, PYRE_RADIUS, pyreLatLon, pyreSurfaceBody, fromPyreBody, toPyreBody, VOLCANOES, LAVA_FIELDS } from '../src/pyre-world.js';
-import { PYREBEAR_HABITAT, PYREBEAR_HABITAT_VERSION, samplePyrebearHabitat, enumeratePyrebearSpawns } from '../src/fauna/pyrebear-habitat.js';
+import { PYREBEAR_HABITAT, PYREBEAR_HABITAT_VERSION, samplePyrebearHabitat, samplePyrebearFooting, enumeratePyrebearSpawns } from '../src/fauna/pyrebear-habitat.js';
 
 const qaDirection = pyreLatLon(5, 90);
 const surfacePosition = (d, clearance = 0) => fromPyreBody(...d.map(v => v * (PYRE_RADIUS + pyreSurfaceBody(...d).height + clearance))).map((v, i) => v + PYRE_POSITION[i]);
@@ -110,4 +110,17 @@ test('non-Pyre, deep interior and high-flight positions activate no population',
   assert.throws(() => enumeratePyrebearSpawns([1, 2]), TypeError);
   assert.throws(() => enumeratePyrebearSpawns([0, NaN, 0]), TypeError);
   assert.throws(() => enumeratePyrebearSpawns(surfacePosition(qaDirection), { seed: 1.5 }), TypeError);
+});
+
+test('bear locomotion uses canonical body-sized footing without changing spawning or lava exclusions', () => {
+  const spawn = samplePyrebearHabitat(qaDirection), footing = samplePyrebearFooting(qaDirection);
+  assert.ok(footing);
+  assert.deepEqual(footing.position, spawn.position);
+  assert.equal(footing.height, spawn.height);
+  assert.ok(footing.slope <= PYREBEAR_HABITAT.maxSlope);
+  assert.deepEqual(PYREBEAR_HABITAT.footprintRadii, [2, 5]);
+  assert.deepEqual(PYREBEAR_HABITAT.footingRadii, [.75, 1.6]);
+  for (const landmark of [...VOLCANOES, ...LAVA_FIELDS]) assert.equal(samplePyrebearFooting(landmark.direction), null);
+  assert.equal(samplePyrebearFooting([0, 0, 1]), null);
+  assert.equal(samplePyrebearFooting([0, 0, -1]), null);
 });

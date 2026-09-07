@@ -3,8 +3,8 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {createHostileSimulation,FAUNA_SPECIES} from './hostile-simulation.js';
 import {createPyrebearMedical} from './pyrebear-medical.js';
-import {enumeratePyrebearSpawns,samplePyrebearHabitat} from './pyrebear-habitat.js';
-import {enumerateSuloherSpawns,sampleSuloherHabitat} from './suloher-habitat.js';
+import {enumeratePyrebearSpawns,samplePyrebearFooting} from './pyrebear-habitat.js';
+import {enumerateSuloherSpawns,sampleSuloherFooting} from './suloher-habitat.js';
 import {PYRE_POSITION,toPyreBody} from '../pyre-world.js';
 import {MIASMA_POSITION} from '../miasma-world.js';
 import {bodyAltitude} from '../celestial.js';
@@ -25,7 +25,7 @@ export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false
   const label=status.querySelector('strong'),meter=status.querySelector('meter'),detail=status.querySelector('span');
   function sampleGround(species,position){
     const center=species==='pyrebear'?PYRE_POSITION:MIASMA_POSITION,d=v(position).sub(v(center)).normalize();
-    return species==='pyrebear'?samplePyrebearHabitat(toPyreBody(...d.toArray())):sampleSuloherHabitat(d.toArray());
+    return species==='pyrebear'?samplePyrebearFooting(toPyreBody(...d.toArray())):sampleSuloherFooting(d.toArray());
   }
   function blocked(from,to,padding=0){
     const start=v(from),end=v(to),ray=end.clone().sub(start),range=ray.length();if(range<.001)return false;ray.divideScalar(range);
