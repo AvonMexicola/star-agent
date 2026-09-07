@@ -191,3 +191,62 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
         if(p.input.fire&&!p.busy&&!p.nav.carryingCargo){
           const event=shoot({shooter:p,players,world,now:t});
+          if(event)broadcast({type:'event',event:'fire',peerId:p.id,...event});
+        }
+      }catch(error){p.input=cleanInput();onError(error);}
+    }
+    tickCount++;
+    if(tickCount%2===0&&players.size){const shared=publicState();for(const p of players.values())send(p,state(p,shared));}
+    if(t-lastSave>10000){lastSave=t;for(const p of players.values())if(!p.busy)persist(p).catch(onError);}
+  }
+  const timer=autoStart?setInterval(()=>{const t=now();accumulator+=Math.min(.25,(t-lastTime)/1000);lastTime=t;while(accumulator>=STEP){tick();accumulator-=STEP;}},10):null;
+  timer?.unref();
+  return {players,leases,drops,doors,tick,state,trading,
+    async join(account,sendFn){
+      if(closed)throw failure('Server restarting.','ROOM_CLOSED');
+      if(players.has(account.id)||joining.has(account.id))throw failure('This account is already connected.','ACCOUNT_CONNECTED');
+      if(players.size+joining.size>=MAX_PLAYERS)throw failure('All ten player slots are occupied.','ROOM_FULL');
+      joining.add(account.id);
+      let pendingPlayer;
+      try{
+        await departing.get(account.id);
+        if(failedDepartures.has(account.id)){await persist(failedDepartures.get(account.id));failedDepartures.delete(account.id);}
+        await writes.get(account.id);
+        const saved=await store.loadPlayerState(account.id);
+        if(closed)throw failure('Server restarting.','ROOM_CLOSED');
+        const used=new Set([...players.values()].map(p=>p.colorIndex).concat([...reservedColors.values()]));let slot=0;while(used.has(slot))slot++;reservedColors.set(account.id,slot);
+        const p={id:account.id,account:{id:account.id,callsign:account.callsign},send:sendFn,colorIndex:slot,spawnPod:slot+1,hangarId:null,inventory:saved?restoreInventory(saved.inventory):initialInventory(),health:100,shipHealth:100,weapon:saved?.weapon??'rifle-laser',sequence:0,input:cleanInput(),lastInput:now(),lookYaw:0,lookPitch:0,lastShotAt:-Infinity,busy:false,messages:0,rateStart:now()};
+        pendingPlayer=p;
+        if(saved){p.health=Math.max(0,Math.min(100,Number.isFinite(saved.health)?saved.health:100));p.shipHealth=Math.max(0,Math.min(100,Number.isFinite(saved.shipHealth)?saved.shipHealth:100));}
+        if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&p.weapon!=='mining-laser-tool')p.weapon=null;
+        const spawnSlot=reserveSpawn(p);p.spawnPod=p.hangarId;
+        p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));if(saved?.hull==='atlas')setHull(p,'atlas');attach(p);await persist(p);await trading.join(p);
+        if(closed)throw failure('Server restarting.','ROOM_CLOSED');
+        players.set(p.id,p);
+        send(p,{...state(p),type:'welcome',id:p.id,seed:WORLD_SEED,version:MULTIPLAYER_VERSION,maxPlayers:MAX_PLAYERS,colorIndex:slot});return p.id;
+      }catch(error){if(pendingPlayer)release(pendingPlayer);throw error;}
+      finally{joining.delete(account.id);reservedColors.delete(account.id);}
+    },
+    receive(id,m){
+      const p=players.get(id);if(!p||!m||typeof m!=='object'||Array.isArray(m))return;
+      if(now()-p.rateStart>=1000){p.rateStart=now();p.messages=0;}
+      if(++p.messages>90)return;
+      if(m.type==='input'){
+        if(!Number.isSafeInteger(m.sequence)||m.sequence<=p.sequence)return;
+        p.sequence=m.sequence;p.input=cleanInput(m.input);p.lastInput=now();
+        p.lookYaw=Math.max(-.25,Math.min(.25,p.lookYaw+p.input.mouseYaw));p.lookPitch=Math.max(-.25,Math.min(.25,p.lookPitch+p.input.mousePitch));
+      }else if(m.type==='action')action(p,m);
+      else if(m.type==='request'&&typeof m.requestId==='string'&&m.requestId.length<=64){queue=queue.then(()=>request(p,m)).catch(onError);return queue;}
+    },
+    leave(id){
+      const p=players.get(id);if(!p)return departing.get(id)??Promise.resolve();
+      players.delete(id);release(p);
+      const task=(async()=>{await queue;try{await persist(p);}catch(error){failedDepartures.set(p.account.id,p);throw error;}})();
+      departing.set(p.account.id,task);
+      task.finally(()=>{if(departing.get(p.account.id)===task)departing.delete(p.account.id);}).catch(onError);
+      return task;
+    },
+    async revoke(accountId){const p=players.get(accountId);if(p){send(p,{type:'revoked'});await this.leave(p.id);}},
+    async close(){if(closed)return;closed=true;clearInterval(timer);await queue;await Promise.allSettled([...departing.values()]);for(const p of players.values())await persist(p).catch(onError);await Promise.allSettled([...writes.values()]);players.clear();leases.clear();drops.clear();},
+  };
+}

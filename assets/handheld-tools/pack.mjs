@@ -31,6 +31,25 @@ for(const [name,entry] of Object.entries(manifest)){
     delete tex.source;
   }
   for(const key of ['extensionsUsed','extensionsRequired'])glb.json[key]=[...new Set([...(glb.json[key]||[]),'EXT_texture_webp'])];
+  // Boolean bevels can tessellate a collinear polygon corner into zero-area
+  // triangles. Drop only sub-microscopic faces; align the rare reversed export
+  // triangle with its authored outward corner normals. No silhouette decimation.
+  let removed=0,rewound=0;
+  for(const mesh of glb.json.meshes)for(const p of mesh.primitives){
+    const positions=glb.rows(p.attributes.POSITION),normals=glb.rows(p.attributes.NORMAL),indices=glb.rows(p.indices).flat(),clean=[];
+    for(let i=0;i<indices.length;i+=3){
+      const ids=indices.slice(i,i+3),[a,b,c]=ids.map(i=>positions[i]);
+      const u=b.map((x,j)=>x-a[j]),v=c.map((x,j)=>x-a[j]);
+      const cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
+      if(Math.hypot(...cross)/2<=1e-10){removed++;continue;}
+      const normal=[0,1,2].map(j=>ids.reduce((s,k)=>s+normals[k][j],0));
+      if(normal.reduce((s,x,j)=>s+x*cross[j],0)<-1e-10){[ids[1],ids[2]]=[ids[2],ids[1]];rewound++;}
+      clean.push(...ids.map(i=>[i]));
+    }
+    p.indices=glb.addRows(clean,'SCALAR',glb.json.accessors[p.indices].componentType);
+  }
+  entry.cleanup={zeroAreaTrianglesRemoved:(entry.cleanup?.zeroAreaTrianglesRemoved||0)+removed,
+    outwardWindingRepaired:(entry.cleanup?.outwardWindingRepaired||0)+rewound,areaThreshold:1e-10};
   glb.json.asset.extras={...glb.json.asset.extras,handheldFinish:1,units:'metres',barrel:'-X',up:'+Y'};
   glb.compact().save(path);
   const bytes=readFileSync(path);

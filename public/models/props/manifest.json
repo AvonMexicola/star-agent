@@ -457,7 +457,7 @@
     "name": "mining-laser-tool",
     "file": "mining-laser-tool.glb",
     "category": "gear",
-    "tris": 7916,
+    "tris": 7868,
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
@@ -468,17 +468,17 @@
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.779732,
+    "file_mb": 0.779472,
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
     "source": "blender/build_gear.py",
     "origin": "rear pistol-grip palm point; emitter axis -X at y=0.14; muzzle (-0.60, 0.14, 0); leftGrip (-0.30, 0.01, 0)",
-    "sha256": "c268a338e0f944c6199f4c2a42337924cad8dfee870989e76b78c6e3146bb141"
+    "sha256": "1a219f3f6d7dd2240e8a70e38e35c6a53f9689f362fe71d0273468c1c10278ab"
   },
   {
     "name": "rifle-laser",
     "file": "rifle-laser.glb",
     "category": "gear",
-    "tris": 9654,
+    "tris": 9611,
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
@@ -489,11 +489,11 @@
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.924784,
+    "file_mb": 0.924552,
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
     "source": "blender/build_gear.py + blender/fit-rifle-stock.mjs",
     "origin": "pistol-grip palm point; barrel -X, bore at y=0.115; muzzle (-0.55, 0.115, 0); leftGrip (-0.29, 0.012, 0)",
-    "sha256": "bacf3c41f30fac56edb415ddf4642fbe318ddcc17017039386140da83b9f4e6c"
+    "sha256": "d006305011c4a984eb3c696ba1dfe565825bfab0e3f656be7f32635eba7a22fc"
   },
   {
     "name": "sidearm-pistol",
@@ -510,11 +510,11 @@
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.322944,
+    "file_mb": 0.322964,
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
     "source": "blender/build_gear.py",
     "origin": "grip palm point; barrel -X, bore at y=0.055; muzzle (-0.15, 0.055, 0)",
-    "sha256": "0f1e1cf4d372b660f29359d67f8a0932ed3f88e8b4f81fb2b2491239bf79bdbd"
+    "sha256": "070c448bcc0e733dfbb67db9e2188056d815d35631872a19434719dd0353271b"
   },
   {
     "name": "boulder-cracked",
@@ -653,8 +653,8 @@
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "file_mb": 0.55324,
-    "sha256": "e58859b278710e83ff4e0680f75b46a8689589b7ee896570b74427b9e6a9e508",
+    "file_mb": 0.55326,
+    "sha256": "40339e5f8e15dfe5a1e5568d54b2979bfcbf72675059bf5f1acf2fb02000c73d",
     "height_m": 0.3507,
     "footprint_m": [
       0.802,

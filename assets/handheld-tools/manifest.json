@@ -1,6 +1,6 @@
 {
   "rifle-laser": {
-    "triangles": 9654,
+    "triangles": 9611,
     "drawPrimitives": 3,
     "bounds": {
       "min": [
@@ -26,8 +26,8 @@
     ],
     "source": "assets/handheld-tools/rifle-laser.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 924784,
-    "sha256": "bacf3c41f30fac56edb415ddf4642fbe318ddcc17017039386140da83b9f4e6c",
+    "bytes": 924552,
+    "sha256": "d006305011c4a984eb3c696ba1dfe565825bfab0e3f656be7f32635eba7a22fc",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -38,7 +38,12 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 43,
+      "outwardWindingRepaired": 1,
+      "areaThreshold": 1e-10
+    }
   },
   "sidearm-pistol": {
     "triangles": 2404,
@@ -63,8 +68,8 @@
     "leftGrip": null,
     "source": "assets/handheld-tools/sidearm-pistol.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 322944,
-    "sha256": "0f1e1cf4d372b660f29359d67f8a0932ed3f88e8b4f81fb2b2491239bf79bdbd",
+    "bytes": 322964,
+    "sha256": "070c448bcc0e733dfbb67db9e2188056d815d35631872a19434719dd0353271b",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -75,10 +80,15 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 0,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    }
   },
   "mining-laser-tool": {
-    "triangles": 7916,
+    "triangles": 7868,
     "drawPrimitives": 4,
     "bounds": {
       "min": [
@@ -104,8 +114,8 @@
     ],
     "source": "assets/handheld-tools/mining-laser-tool.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 779732,
-    "sha256": "c268a338e0f944c6199f4c2a42337924cad8dfee870989e76b78c6e3146bb141",
+    "bytes": 779472,
+    "sha256": "1a219f3f6d7dd2240e8a70e38e35c6a53f9689f362fe71d0273468c1c10278ab",
     "materials": [
       "Amber",
       "Glass",
@@ -117,7 +127,12 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 48,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    }
   },
   "tractor-beam-tool": {
     "triangles": 5164,
@@ -146,8 +161,8 @@
     ],
     "source": "assets/handheld-tools/tractor-beam-tool.blend",
     "builder": "assets/handheld-tools/build.py",
-    "bytes": 553240,
-    "sha256": "e58859b278710e83ff4e0680f75b46a8689589b7ee896570b74427b9e6a9e508",
+    "bytes": 553260,
+    "sha256": "40339e5f8e15dfe5a1e5568d54b2979bfcbf72675059bf5f1acf2fb02000c73d",
     "materials": [
       "Glass",
       "HandheldFinish",
@@ -158,6 +173,11 @@
     "textureFormat": "WebP",
     "textureResidencyMiB": 16,
     "textureSharing": "Three atlases shared across all four handhelds by equipment loader, ~16 MiB including mipmaps",
-    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4."
+    "lod": "Held hero asset; no new distant LOD. Material batches reduced from 5–7 to 3–4.",
+    "cleanup": {
+      "zeroAreaTrianglesRemoved": 0,
+      "outwardWindingRepaired": 0,
+      "areaThreshold": 1e-10
+    }
   }
 }
