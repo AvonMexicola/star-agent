@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex ship weapon implementation",
-  "status": "active",
+  "status": "review",
   "branch": "feat/ship-weapon-fittings",
   "base": "a748be101aad4ea672a157481044ce9ed6b03e35",
   "updated": "2026-09-07",
@@ -52,7 +52,8 @@
     "scripts/ship-weapons-patrol.config.js",
     "docs/space-combat.md",
     "scripts/space-combat.spec.js",
-    "scripts/kestrel-flight.spec.js"
+    "scripts/kestrel-flight.spec.js",
+    "scripts/ship-weapon-review.mjs"
   ],
   "brief": "docs/briefs/ship-weapons.md"
 }
