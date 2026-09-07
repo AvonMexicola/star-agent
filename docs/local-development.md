@@ -28,8 +28,7 @@ A copied test URL includes its ship and start. This selector is gated by
 `VITE_DEV_TOOLS=1`, set by `dev:all`; ordinary production builds retain their entry.
 
 The Atlas Mark II link opens the separate 64 m studio with its latest committed
-geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold and
-no installed weapons. Multiplayer currently uses the server's Nomad flight model;
+geometry refresh. It is not the flyable 30 m fleet Atlas. Offline Kestrel has no cargo hold; its four mounts now carry S2 guns. Multiplayer currently uses the server's Nomad flight model;
 joining it reserves a server-assigned hangar and places the pilot on its deck beside
 the parked Nomad. It replaces the dev teleport, ship selection and test inventory.
 Hangar gravity follows the occupied bay, including EVA entry into another pilot's
@@ -78,6 +77,7 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Gear-limited flight, handling, drive, utilities, graphics, multiplayer | `feat/multiplayer-ten` at `f7a30ef` |
 | Server-assigned hangar spawns and local station gravity | `fix/multiplayer-hangar-gravity` at `b7eefc5` (PR #51) |
 | Persistent local accounts, sessions and inventory through PostgreSQL/Prisma | `fix/persistent-local-accounts` at `b100d8f` (PR #59) |
+| Fitted S1 Nomad / S2 Kestrel / S3 Atlas guns, barrel-origin fire | `feat/ship-weapon-fittings` runtime `2faa71c`, combined in `5842404` |
 | Flyable Kestrel and shared Meridian identity | `feat/kestrel-flight` at `e4ec7df` |
 | Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `385c138` (asset/gameplay `9a363cb`) |
 | Construction, mainframes, recipes and polished building pieces | `feat/base-building` at `891c916` |
@@ -150,7 +150,7 @@ Shields regenerate after six seconds without a hit; docking repairs hull damage.
 Progress resets on reload. This first slice is offline and does not add persistent
 contracts or credit rewards. See [combat controls and scope](space-combat.md) and
 [verification evidence](qa/space-combat.md). The asset studios remain inspection
-surfaces; shared gameplay energy weapons do not imply new fitted gun meshes.
+surfaces. The offline playable fleet now carries the fitted Meridian gun kit.
 
 ## Station exterior geometry preview
 
@@ -203,3 +203,20 @@ utilities, construction and recipes; Settings contains graphics, sound and contr
 Dev has Test starts and the console list. Comms uses the existing live station
 roster, hangar request and account systems; no new text-chat transport is included.
 [Gameplay menu QA](qa/gameplay-menu.md) records the checks and limitations.
+
+
+### Fitted Meridian weapons
+
+All three energy families now have original S1/S2/S3 gun models. Nomad carries
+2S1, Kestrel4S2 and the flyable Atlas3S3; the separate MarkII studio also has3S3.
+Raise and fully retract landing gear before firing: G or Menu → Ship → Gear.
+Use1/2/3 or Menu → Ship → Ship weapon to select a family; T, RT/R2 or the touch
+trigger fires from the actual barrel tips. Larger sizes increase damage, range,
+impact scale and sound weight. Online combat authority is unchanged.
+
+The combined source preserves the current gameplay menu, controller mapping and
+persistent local accounts. 686unit checks, build and all three full RT controller
+patrol journeys pass. The weapon branch also passed the physical Kestrel ladder,
+launch and Selene landing/exit route and Atlas touch controls. The final visual
+and frame-time acceptance status is recorded in [weapon QA](qa/ship-weapons/production-record.md).
+No service/database restart or public deployment accompanies this integration.
