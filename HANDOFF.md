@@ -2277,3 +2277,13 @@ mergeability UNKNOWN at final read; no merge or deployment attempted. Production
 preview5263 still matches the independently reviewed bundle SHA. Full pipeline
 record and source assets are on feat/retail-soft-props. The integration manager
 is notified through this shared handoff; no manager acknowledgement is claimed.
+
+Local integration delivery: `dev/all-features` advanced from `7bd4bd5` to verified
+feature head `eb5184d` by fast-forward. Its unrelated unstaged AGENTS.md edit is
+preserved. The existing `npm run dev:all` service remains healthy on5178/8087;
+HTTP checks confirm the new launcher link and the exact hero/distant hashes.
+No API restart was needed. Draft PR55:
+https://github.com/AvonMexicola/star-agent/pull/55, targeting remote dev/all-features.
+The feature branch is pushed; the local dev fast-forward was not pushed and no
+GitHub merge, main merge or deployment was performed. Final documentation commits
+only update the receipt; runtime and asset identities remain as tested above.

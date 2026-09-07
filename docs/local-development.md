@@ -88,7 +88,7 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Material footsteps, distinct weapons and mining sounds | `feat/gameplay-audio` at `5e1a21f` |
 | Atlas Mark II geometry/gear checkpoint, studio only | `feat/atlas-fleet-refresh` at `d875a49` |
-| Aeon exterior geometry preview, opt-in | `feat/station-exterior` geometry `261ebab`, reconciled with the current combat base in `0880516` |
+| Aeon exterior geometry preview, opt-in | `feat/station-exterior` at `eb5184d` (geometry `261ebab`, combined runtime `0880516`, draft PR #55) |
 
 Atlas now includes its first committed geometry/gear refresh in the studio. Final
 materials, review and flight integration remain open. Further character production
