@@ -12,6 +12,14 @@ Shipworks identity. This lane implements that bounded ship upgrade in an isolate
 base `6f80fc0` for the existing inventory, controller and moving-cabin contracts;
 the review PR targets `main` under the current project policy.
 
+GitHub currently reports a conflict against `main` at `48a8468` (the merged
+world/rocks release), with no scheduled CI check. Git's merge analysis reports
+the same 19 conflicting paths for this draft and the untouched `6f80fc0` base,
+including terrain, moons, atmosphere, navigation and the system map. This is a
+consolidation dependency to reconcile before final integration; the Nomad lane
+has not merged or replaced those world systems. The local checks below remain
+separate from GitHub CI.
+
 [Official 2022 Drake Cutter brochure](https://media.robertsspaceindustries.com/t6b4ip5ypoot8/source.pdf)
 was used to establish the historical solo starter/utility role. It is inspiration
 for playable access and modest onboard utility, not a source of Nomad artwork,
