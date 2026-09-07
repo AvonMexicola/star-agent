@@ -151,6 +151,7 @@ export class Navigation {
   toggleGear(){
     if(this.kestrelAccess&&!this.kestrelAccess.secured){this.notify('Secure the canopy and ladder before changing landing gear.');return false;}
     if(this.mode!=='flight'||this.autoland||this.stationLift||this.travel||!this.powered){this.notify('Change landing gear during powered manual flight.');return false;}
+    if(this.freighter&&!this.freighter.secured){this.notify('Close both loading ramps and stop the crew lift before changing landing gear.');return false;}
     this.gearDeployed=!this.gearDeployed;this.notify(`Landing gear ${this.gearDeployed?'deploying':'retracting'}.`);return true;
   }
   freeTravelRoute(){
@@ -222,6 +223,7 @@ export class Navigation {
     if('location' in this.station)this.station.location='hangar';
     if(Number.isInteger(this.station.activeIndex))this.station.parkedPod=this.station.activeIndex;
     this.gearDeployed=true;this.gearProgress=1;
+    this.freighter?.reset();
     this.resetCabinFlight();this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
     this.gearProgress=1;this.gearDeployed=true;
     this.mode='walk';this.autoland=false;this.flightAssist=true;this.dockedAtStation=true;this.stationLift=false;
@@ -240,6 +242,7 @@ export class Navigation {
     if(this.mode==='destroyed'&&this.stellarThermal?.destroyed)return;
     this.kestrelAccess?.reset();
     this.crash=null;
+    this.freighter?.reset({gearProgress:0});
     this.gearDeployed=false;this.gearProgress=0;
     this.spaceParked=false;
     this.resetCabinFlight();
@@ -334,8 +337,7 @@ export class Navigation {
     const service=!this.cabinFlight&&this.station?.interaction?.(this);if(service)return service.label;
     const hit=this.shipInteraction(this.toShipLocal());
     if(hit==='ladder')return 'F · CLIMB LADDER & BOARD KESTREL';
-    if(hit==='lift:main'&&this.cabinFlight)return 'BELLY ELEVATOR · SECURED IN FLIGHT';
-    if(hit?.startsWith('lift:')){const lift=this.freighter.lifts.find(l=>l.id===hit.slice(5));return `F · ${lift.name.toUpperCase()} · ${Math.abs(lift.y-lift.target)>.001?'MOVING':lift.y===lift.low?'RAISE':'LOWER'}`;}
+    if(this.freighter&&(hit?.startsWith('ramp:')||hit==='elevator:crew'))return this.freighter.controlPrompt(hit,{powered:this.powered,inFlight:this.cabinFlight,controller:this.controllerActive});
     if(hit==='seat')return 'F · SIT IN PILOT CHAIR';
     if(hit==='storage')return 'F · OPEN CARGO STORAGE';
     if(hit==='berth')return 'F · REST IN BERTH';
@@ -343,11 +345,12 @@ export class Navigation {
     if(this.cabinFlight)return 'IN-FLIGHT CABIN · RETURN TO CHAIR TO PILOT';
     if(this.dockedAtStation&&!this.insideShip)return this.station?.location==='hub'?'CENTRAL CONCOURSE · ELEVATORS AT REAR':'CARGO TERMINAL & CENTRAL HUB · AFT WALL';
     if(this.kestrelAccess)return 'APPROACH THE PORT LADDER TO BOARD KESTREL';
-    if(this.freighter)return this.insideShip?'F AT LIFT CONTROLS · U FLEET':'APPROACH THE REAR ELEVATOR · F TO CALL';
+    if(this.freighter)return this.insideShip?'CREW LIFT CONNECTS CARGO DECK & BRIDGE · U FLEET':'RAMP CALL PANELS BESIDE THE FORWARD & AFT DOORS';
     return this.insideShip?'WALK AFT TO THE HATCH':'APPROACH THE REAR HATCH TO BOARD';
   }
   transit(direction,altitude=100){
     this.kestrelAccess?.reset();
+    this.freighter?.reset({gearProgress:this.gearProgress});
     this.spaceParked=false;
     this.resetCabinFlight();
     this.travel=null;this.keys.clear();
@@ -407,7 +410,7 @@ export class Navigation {
     this.position.copy(eye);this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);this.gearDeployed=true;this.gearProgress=1;this.mode='landed';this.autoland=false;
     this.dockedAtStation=true;this.stationLift=false;this.doorOpen=false;this.doorProgress=0;this.gearContactHold=false;
     this.kestrelAccess?.reset();
-    this.notify(this.kestrelAccess?'Docked. F opens the canopy and descends the port ladder.':this.freighter?'Docked. F to stand; walk aft to the belly elevator controls.':'Docked. F to stand; walk aft and open the hatch to explore the hangar.');
+    this.notify(this.kestrelAccess?'Docked. F opens the canopy and descends the port ladder.':this.freighter?'Docked. F to stand; crew lift leads to the cargo deck and loading ramps.':'Docked. F to stand; walk aft and open the hatch to explore the hangar.');
     this.onVoyage?.('dock');
   }
   dryGround(){if(!this.body.water)return true;const n=this.normal;return terrainHeight(n.x,n.y,n.z)>=0||Math.abs(n.y)>.86;}
@@ -421,7 +424,7 @@ export class Navigation {
     if(this.mode==='walk'){this.notify('Walk to the cockpit and sit in the pilot chair with F before launch.');return;}
     if(!this.powered){this.notify('Power on with P before using launch or landing assist.');return;}
     if(this.mode==='landed'){
-      if(this.freighter&&!this.freighter.secured){this.notify('Stow the belly elevator and lower both cargo lifts before launch.');return;}
+      if(this.freighter&&!this.freighter.secured){this.notify('Close both loading ramps and stop the crew lift before launch.');return;}
       if(this.dockedAtStation){
         this.mode='flight';this.dockedAtStation=false;this.stationLift=true;this.autoland=false;
         this.station.openDoors();
@@ -458,7 +461,7 @@ export class Navigation {
     this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.seatEye)));this.doorOpen=false;this.doorProgress=0;
     this.onVoyage?.('surface');
     this.kestrelAccess?.reset();
-    this.notify(this.kestrelAccess?'Touchdown. F opens the canopy and descends the port ladder.':this.freighter?'Touchdown. F leaves the pilot chair; walk aft to lower the belly elevator.':'Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
+    this.notify(this.kestrelAccess?'Touchdown. F opens the canopy and descends the port ladder.':this.freighter?'Touchdown. F leaves the pilot chair; use the crew lift to reach the loading ramps.':'Touchdown. F leaves the pilot chair; walk aft to open the hatch.');
   }
   get gearReady(){return this.gearProgress>=1;}
   updateLandingGear(dt){
@@ -468,7 +471,8 @@ export class Navigation {
     if(!this.autoland)this.gearContactHold=false;
     // Soft contact has emergency lowering power. Ordinary unpowered flight
     // still pauses a selected transition; a held contact must never deadlock.
-    if(this.powered||this.gearContactHold)this.gearProgress=gearStep(this.gearProgress,this.gearDeployed,dt);
+    if(this.powered||this.gearContactHold)this.gearProgress=gearStep(this.gearProgress,this.gearDeployed,dt*GEAR_FLIGHT.seconds/(this.layout.gearSeconds??GEAR_FLIGHT.seconds));
+    this.freighter?.setGear(this.gearProgress,this.gearDeployed);
   }
   holdForLandingGear(){
     // Hold the existing conservative contact clearance until the real feet are
@@ -527,15 +531,13 @@ export class Navigation {
       this.mode='walk';this.insideShip=true;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
       this.orientation.copy(this.shipOrientation).multiply(new THREE.Quaternion().setFromAxisAngle(UP,Math.PI));
       this.keys.clear();this.boost=false;
-      this.notify(this.cabinFlight?'Standing in the cabin. Ship continues flying; return to the chair with F.':this.freighter?'Standing on the cargo deck. Walk aft to the elevator pedestal; F lowers it.':'Standing in the cabin. Walk aft; F opens the hatch and lowers the ramp.');
+      this.notify(this.cabinFlight?'Standing in the cabin. Ship continues flying; return to the chair with F.':this.freighter?'Standing on the upper deck. Walk aft to the starboard crew lift for the cargo deck and ramps.':'Standing in the cabin. Walk aft; F opens the hatch and lowers the ramp.');
     }else{
       if(!this.shipPosition)return;
       const local=this.toShipLocal(),hit=this.shipInteraction(local);
-      if(hit?.startsWith('lift:')){
-        if(this.cabinFlight&&hit==='lift:main'){this.notify('Belly elevator secured in flight. Land or dock to lower it.');return;}
-        if(!this.powered){this.notify('Main power is required to operate cargo lifts.');return;}
-        const moved=this.freighter.toggle(hit.slice(5),local);this.velocity.set(0,0,0);
-        this.notify(moved?'Lift moving. Stay inside the guard rails.':'Lift busy, or you are standing on its edge. Step fully on or off.');
+      if(this.freighter&&(hit?.startsWith('ramp:')||hit==='elevator:crew')){
+        const result=this.freighter.operate(hit,local,{powered:this.powered,inFlight:this.cabinFlight});
+        this.velocity.set(0,0,0);this.notify(result.reason);
       }else if(hit==='door'){
         if(this.cabinFlight&&!this.spaceParked){this.notify('Hatch secured in flight. Land or dock to open it.');return;}
         if(this.doorOpen&&Math.abs(local.x)<1.2&&local.z>3.3&&local.z<7.5){this.notify('Step clear of the ramp before closing it.');return;}
@@ -759,7 +761,7 @@ export class Navigation {
       const result=stepEVA(this.velocity,this.orientation,new THREE.Vector3(strafe,vertical,-moveForward),dt,{boost:this.boost,brake:this.evaBraking});
       const previous=this.position.clone();let proposed=previous.clone().add(result.displacement);this.velocity.copy(result.velocity);
       if(this.shipPosition){
-        const hit=this.kestrelAccess?{point:constrainKestrelEVA(this.toShipLocal(previous),this.toShipLocal(proposed))}:constrainEVAShip(this.toShipLocal(previous),this.toShipLocal(proposed),this.doorProgress>.98);
+        const hit=this.kestrelAccess?{point:constrainKestrelEVA(this.toShipLocal(previous),this.toShipLocal(proposed))}:this.freighter?this.freighter.constrainEVA(this.toShipLocal(previous),this.toShipLocal(proposed)):constrainEVAShip(this.toShipLocal(previous),this.toShipLocal(proposed),this.doorProgress>.98);
         if(this.kestrelAccess)hit.hit=!hit.point.equals(this.toShipLocal(proposed));
         const fitted=constrainShipAttachments(this.toShipLocal(previous),hit.point,this.layout?.weaponParts,{eva:true});
         hit.hit||=!fitted.equals(hit.point);hit.point=fitted;
@@ -774,8 +776,8 @@ export class Navigation {
       this.position.copy(proposed);this.insideShip=false;
       const enteredGrid=this.stationPhysics;
       if(enteredGrid)this.enterStationGravity(enteredGrid);
-      else if(!this.kestrelAccess&&this.shipPosition&&canAttachRamp(this.toShipLocal(),this.doorProgress>.98,this.speed)){
-        const local=this.toShipLocal();local.y=shipFloorAt(local.x,local.z,true)+SHIP_LAYOUT.eyeHeight;
+      else if(!this.kestrelAccess&&this.shipPosition&&(this.freighter?this.freighter.canAttachRamp(this.toShipLocal(),this.speed):canAttachRamp(this.toShipLocal(),this.doorProgress>.98,this.speed))){
+        const local=this.toShipLocal();local.y=(this.freighter?this.freighter.floorAt(local):shipFloorAt(local.x,local.z,true))+this.layout.eyeHeight;
         this.position.copy(this.fromShipLocal(local));this.mode='walk';this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
         // Magnetic boots align the suit with the deck without moving to the chair.
         const direction=FORWARD.clone().applyQuaternion(this.orientation),up=UP.clone().applyQuaternion(this.shipOrientation);
@@ -813,7 +815,7 @@ export class Navigation {
       const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.water?terrainHeight(dir.x,dir.y,dir.z):0;
       if(floor!==null||stationGrid||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
-      this.insideShip=floor!==null&&(this.freighter?local.z<=10:local.z<=4);
+      this.insideShip=floor!==null&&(this.freighter?this.freighter.contains(local):local.z<=4);
       if((stationGrid||!this.spaceParked)&&(this.keys.has('Space')||pad.jump)&&(this.jumpHeight===0||this.surfaceObstacles?.grounded)&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=Math.max(.001,this.jumpHeight);}
       this.jumpVelocity-=(stationGrid?.gravity??this.body.gravity)*dt;this.jumpHeight=Math.max(0,this.jumpHeight+this.jumpVelocity*dt);if(this.jumpHeight===0)this.jumpVelocity=0;
       if(floor!==null){local.y=floor+this.layout.eyeHeight+this.jumpHeight;this.position.copy(this.fromShipLocal(local));}

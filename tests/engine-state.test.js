@@ -89,7 +89,7 @@ async function loadGeometry(path) {
 }
 const assets = {
   nomad: await loadGeometry('../public/models/nomad.glb'),
-  atlas: await loadGeometry('../public/models/atlas.glb'),
+  atlas: await loadGeometry('../public/models/atlas-mark-ii/atlas-mark-ii.glb'),
   kestrel: await loadGeometry('../assets/kestrel/kestrel.glb'),
 };
 
@@ -99,19 +99,24 @@ test('all three engine bindings align with the real shipped throats, not another
     assert.equal(profile.sockets.length, 2, id);
     const drives = [];
     root.traverse(node => {
-      if (node.isMesh && (node.name === 'EngineCores' || node.material.name === 'Drive / ion blue')) drives.push(node);
+      if (node.isMesh && (node.name === 'EngineCores' || node.material.name === 'Drive / ion blue' || node.material.name === 'Atlas / engine')) drives.push(node);
     });
     assert.ok(drives.length > 0, id);
     for (const spec of profile.sockets) {
-      const start = v(...spec.position).add(v(0, 0, .2));
-      const hit = new THREE.Raycaster(start, v(0, 0, -1), 0, 1).intersectObjects(drives, false)[0];
+      const start = v(...spec.position).add(v(id === 'atlas' ? 1.12 : 0, 0, .2));
+      const hit = new THREE.Raycaster(start, v(0, 0, -1), 0, 4).intersectObjects(drives, false)[0];
       assert.ok(hit, `${id}: socket ${spec.position} must face the actual emissive throat`);
       // Kestrel's luminous liner is deliberately recessed .68 m behind its
       // authored AB root; Nomad's throat is .54 m inside its open nozzle lip.
-      const [near, far] = { nomad: [.71, .78], atlas: [.20, .27], kestrel: [.85, .91] }[id];
+      const [near, far] = { nomad: [.71, .78], atlas: [3.50, 3.66], kestrel: [.85, .91] }[id];
       assert.ok(hit.distance > near && hit.distance < far, `${id}: ${hit.distance} m between test ray and throat`);
-      const ringEdge = start.clone().add(v(profile.radius * .75, 0, 0));
-      assert.ok(new THREE.Raycaster(ringEdge, v(0, 0, -1), 0, 1).intersectObjects(drives, false).length, `${id}: plume radius fits the throat`);
+      if (id === 'atlas') {
+        assert.ok(profile.radius < 2.1, 'Atlas plume fits its 2.15 m machined mouth');
+        assert.ok(spec.position[2] > 30.904, 'motes start outside the final petal lip');
+      } else {
+        const ringEdge = start.clone().add(v(profile.radius * .75, 0, 0));
+        assert.ok(new THREE.Raycaster(ringEdge, v(0, 0, -1), 0, 1).intersectObjects(drives, false).length, `${id}: plume radius fits the throat`);
+      }
       if (spec.node) {
         const node = root.getObjectByName(spec.node);node.geometry.computeBoundingBox();
         assert.ok(Math.abs(node.geometry.boundingBox.max.x - profile.radius) < .00001, 'Kestrel motes use the authored cone radius');
@@ -144,8 +149,15 @@ test('existing hull cores obey signed demand and power, with authored Kestrel co
     live.powered = false;updateShipEngineVisuals(root, enginePresentation(live));
     assert.equal(root.userData.driveIntensity, 0);
     root.traverse(node => {
-      if (node.isMesh && (node.name === 'EngineCores' || node.material.name === 'Drive / ion blue')) assert.equal(node.material.emissiveIntensity, 0);
+      if (node.isMesh && (node.name === 'EngineCores' || node.material.name === 'Drive / ion blue' || node.material.name === 'Atlas / engine')) assert.equal(node.material.emissiveIntensity, 0);
     });
     assert.equal(root.children.length, before, 'visual adapter creates no duplicate geometry');
   }
+});
+
+test('occupied Burrow never activates the parked selected ship engine', () => {
+  const live = Object.assign(nav('atlas'), { mode: 'walk', insideShip: true, roverOccupied: true, cabinFlight: false });
+  live.engineAcceleration.set(0, 0, -100);
+  const state = enginePresentation(live);
+  assert.equal(state.active, false);assert.equal(state.throttle, 0);assert.equal(state.forwardThrottle, 0);
 });

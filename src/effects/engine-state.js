@@ -6,12 +6,11 @@ const ZERO = new THREE.Vector3(), IDENTITY = new THREE.Quaternion();
 const clamp = THREE.MathUtils.clamp;
 const socket = (position, node = null) => Object.freeze({ position: Object.freeze([...position]), node });
 
-// These are the three playable assets, not the Atlas Mark II studio assembly.
-// Nomad's nozzle lips are shared with boarding.js. Atlas's last machined collar
-// ends at z=13.33 (assets/ship/build_freighter.py); Kestrel has authored AB sockets.
+// Playable hull mouths in metres. The full-scale Atlas drive lips end at
+// z=30.904; its authored annuli sit deeper at z=27.5. Kestrel has AB sockets.
 export const ENGINE_EXHAUST = Object.freeze({
   nomad: Object.freeze({ sockets: Object.freeze(SHIP_LAYOUT.nozzles.map(p => socket(p))), radius: .48, length: 4.3, boostLength: 7, authoredCones: false }),
-  atlas: Object.freeze({ sockets: Object.freeze([-1, 1].map(s => socket([s * 7.9, 5.3, 13.34]))), radius: .87, length: 6.5, boostLength: 9, authoredCones: false }),
+  atlas: Object.freeze({ sockets: Object.freeze([-1, 1].map(s => socket([s * 13.1, 7.9, 30.92]))), radius: 1.65, length: 11, boostLength: 15, authoredCones: false }),
   kestrel: Object.freeze({ sockets: Object.freeze([-1, 1].map(s => socket([s * 1.26, 1.62, 6.68], s < 0 ? 'AB_L' : 'AB_R'))), radius: .39, length: 1.62, boostLength: 1.2, authoredCones: true }),
 });
 
@@ -24,7 +23,7 @@ export function enginePresentation(nav, { suspended = false } = {}) {
   const shipId = nav.shipId ?? 'nomad', mode = nav.mode;
   const cabinFlight = Boolean(nav.cabinFlight), flying = mode === 'flight' || cabinFlight;
   const powered = nav.powered !== false && mode !== 'crashed' && mode !== 'destroyed';
-  const travel = Boolean(nav.travel), active = powered && !suspended && !travel;
+  const travel = Boolean(nav.travel), active = powered && !suspended && !travel && !nav.roverOccupied;
   const parked = mode !== 'flight' && Boolean(nav.shipPosition);
   const shipQuaternion = (parked ? nav.shipOrientation : nav.orientation) ?? IDENTITY;
   const velocity = (parked ? nav.shipVelocity : nav.velocity) ?? ZERO;
@@ -85,7 +84,7 @@ export function updateShipEngineVisuals(ship, engine) {
     const materials = new Set(), cones = [], core = ship.getObjectByName('EngineCores');
     ship.traverse(node => {
       if (node.isMesh) for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
-        if (material.name === 'Drive / ion blue') materials.add(material);
+        if (material.name === 'Drive / ion blue' || material.name === 'Atlas / engine') materials.add(material);
       }
       if (node.name === 'AB_L' || node.name === 'AB_R') cones.push(node);
     });

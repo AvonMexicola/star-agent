@@ -152,7 +152,7 @@ test('all fleet nozzles emit at their own rotated hull pose while Kestrel adds n
   fx.jets.forEach((jet,i)=>{
    const socket=v(...ENGINE_EXHAUST[shipId].sockets[i].position).applyQuaternion(nav.orientation).add(hull).sub(origin);
    assert.ok(jet.mesh.position.distanceTo(socket)<.00001,shipId);
-   assert.ok(jet.mesh.position.length()<35,'GPU jet coordinates stay local');
+   assert.ok(jet.mesh.position.length()<80,'GPU jet coordinates stay within one full-scale hull, not the billion-metre world origin');
    assert.ok(v(0,0,1).applyQuaternion(jet.mesh.quaternion).distanceTo(v(0,0,1).applyQuaternion(nav.orientation))<.00001);
   });
   nav.boost=true;

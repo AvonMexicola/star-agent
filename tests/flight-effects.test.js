@@ -35,7 +35,7 @@ test('flight adapter keeps unseated propulsion independent of weapon readiness a
   for (let i = 0; i < 10; i++) adapter.update(.05, live.position);
   assert.equal(effects.state.engine.shipId, 'atlas');assert.equal(effects.state.engine.activeJets, 2);
   assert.ok(effects.state.engine.particles > 0);assert.equal(effects.state.weaponShots, 0, 'unseated RT cannot fire ship weapons');
-  const expected = v(-7.9, 5.3, 13.34).applyQuaternion(live.shipOrientation).add(live.shipPosition).sub(live.position);
+  const expected = v(-13.1, 7.9, 30.92).applyQuaternion(live.shipOrientation).add(live.shipPosition).sub(live.position);
   assert.ok(effects.jets[0].mesh.position.distanceTo(expected) < .00001, 'pose follows the hull, not the walking pilot');
   document.dialog = true;adapter.update(.05, live.position);
   assert.equal(effects.state.engine.activeJets, 0);assert.equal(effects.state.engine.particles, 0);
