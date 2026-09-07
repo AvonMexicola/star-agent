@@ -1692,3 +1692,53 @@ SwiftShader, 1280×800; no hardware FPS claim. One particle draw, no extra terra
 triangles. Existing Miasma scene cost remains above the project target. This
 follow-up is not merged or deployed, and no independent rubric score is claimed.
 The shared dirty checkout and unrelated agents' work remain untouched.
+
+
+## ALL-FEATURES LOCAL PREVIEW — READY FOR REVIEW — 2026-09-07
+
+Cees's shared test target is now running at **http://127.0.0.1:5178/** from
+`/home/cees/projects/star-agent-dev`, branch **dev/all-features**. Restart there
+with `npm run dev:all`; it owns Vite 5178 and an isolated memory API 8087.
+READY FOR REVIEW: `src/dev-launcher*`, `src/dev-launch-options.js`,
+`scripts/dev-all.mjs`, integrated runtime modules, `scripts/dev-launcher.spec.js`,
+`docs/local-development.md` and `docs/qa/local-development.md`.
+
+After preload, select Nomad 02, Kestrel or flyable 30 m Atlas and one of 14 starts.
+F2, the persistent DEV button or controller Menu -> DEV Ship & location reopens
+it. Keyboard, shared controller and touch use the same semantic controls. URLs
+retain the world seed. Each launch uses a fresh temporary fleet/inventory; normal
+saves remain separate. No unlock or account is required. Local accounts reset
+when the runner stops; SMTP and durable PostgreSQL are intentionally absent.
+
+Runtime through f6844ae integrates main48a8468, multiplayerf7a30ef/PR34 ancestry,
+Kestrele4ec7df, Nomad385c138, construction891c916, retail9f02d24, weather8bcdcc3,
+musicf29c30d, gameplay audio5e1a21f and Atlasd875a49. The source-head table in
+`docs/local-development.md` is the readable inventory. Atlas's 64 m geometry/gear
+refresh is studio-only, linked in the launcher, with 59,443 real GLB triangles;
+final finish and flight integration remain pending. Do not fit it silently into
+the old 30 m physics shell. Uncommitted character/retail candidates remain owned
+by their production lanes; no dirty worktree assets were copied.
+
+Integration keeps canonical rock relief, terrain parent morphs/skirts, native
+gear with shared speed policy, moving cabins, physical cargo access, build
+occlusion and attached weapons. Kestrel cannot receive hidden construction cargo.
+Multiplayer joins restore the authoritative Nomad station spawn and exclude local
+construction; the dev ship or teleport is not uploaded as server truth. The map
+now positions and selects all five destinations and labels the star/moons correctly.
+
+Validation: 650/650 unit tests, 79 multiplayer tests plus one PostgreSQL-only skip,
+and normal production build pass. Actual browser journeys pass for all three
+hulls and five world renders, controller-only launch/menu/held-input suppression,
+390x844 touch taps, five map targets, music playback/mute, real Atlas asset load,
+and physical Nomad seat/hatch/ramp exit with footsteps, carbine ammo consumption,
+cutter sound and modal suspension. Final journeys recorded zero page/console
+errors. Chromium151 / AMD860M ANGLE GLES3.2, 1440x900 and390x844, scale1;
+no physical-device, whole-scene art acceptance, recording-quality or FPS claim.
+Failed fixtures, resource-allocation diagnosis and curated captures are recorded
+in `docs/qa/local-development.md`. Tests ran in focused invocations.
+
+Standing instruction: merge each new coherent feature commit directly into this
+local integration branch after resolving overlap and running appropriate checks;
+do not wait for its production PR to merge. Refresh the running preview, keep the
+source table current, and append the result here. Preserve other owners' dirty
+worktrees. This preview and draft review branch do not deploy or merge to main.

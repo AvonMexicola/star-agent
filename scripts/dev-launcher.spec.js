@@ -85,8 +85,29 @@ test('Kestrel has no hidden construction cargo; map labels, soundtrack and refre
  await page.screenshot({path:out+'/system-map-final.png'});await page.keyboard.press('M');await page.keyboard.press('H');
  await page.locator('#sound-button').click();await page.waitForFunction(()=>window.starAgent.state.audio.music?.time>0,null,{timeout:20000});
  expect((await state(page)).audio.music.failed).toEqual([]);await page.locator('#sound-button').click();expect((await state(page)).audio.enabled).toBe(false);await page.locator('#close-help').click();
- await page.keyboard.press('F2');await page.getByRole('link',{name:'Atlas Mark II studio'}).click();await expect(page.locator('#asset-state')).toHaveText('READY',{timeout:30000});
+ await page.keyboard.press('F2');await page.getByRole('link',{name:'Atlas Mark II studio'}).click();await expect(page.locator('#asset-state')).toHaveText('READY',{timeout:30000});await expect(page.locator('#loading')).toHaveCSS('opacity','0');
  await frames(page);await page.screenshot({path:out+'/atlas-refresh-studio.png'});
  expect(await page.evaluate(()=>window.atlasMarkIIStudio.model.getObjectByName('AtlasLandingGear')!==undefined||window.atlasMarkIIStudio.stats.triangles>0)).toBe(true);
  await writeFile(out+'/integration-followup.json',JSON.stringify({errors,atlas:await page.evaluate(()=>window.atlasMarkIIStudio.stats)},null,2));expect(errors).toEqual([]);
+});
+
+test('combined audio follows physical cabin exit, weapon fire and cutter suspension',async({page})=>{
+ const errors=errorsFor(page);await mkdir(out,{recursive:true});
+ await page.goto('/?dev=1&ship=nomad&start=hangar&intro=0&seed=7291');await ready(page);await expect(page.locator('#loading')).toHaveCSS('opacity','0');
+ expect((await state(page)).audio.created).toBe(false);
+ await page.keyboard.press('H');await page.locator('#sound-button').click();await page.locator('#close-help').click();
+ await page.keyboard.press('F');await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
+ await page.keyboard.down('W');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>2.5);await page.keyboard.up('W');
+ expect((await state(page)).audio.effects.steps).toBeGreaterThan(0);expect((await state(page)).audio.effects.last).toBe('metal');
+ await page.keyboard.press('F');await page.waitForFunction(()=>window.starAgent.state.doorProgress>.98);
+ await page.keyboard.down('W');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>8.5);await page.keyboard.up('W');
+ expect((await state(page)).insideShip).toBe(false);
+ await page.keyboard.press('1');await page.waitForFunction(()=>window.starAgent.state.mining.tool.item==='rifle-laser');
+ await page.keyboard.down('T');await page.waitForFunction(()=>window.starAgent.state.audio.effects.shots>0);await page.keyboard.up('T');
+ expect((await state(page)).loadout.slots.ammo1.quantity).toBeLessThan(60);
+ await page.keyboard.press('3');await page.waitForFunction(()=>window.starAgent.state.mining.tool.item==='mining-laser-tool');
+ await page.keyboard.down('T');await page.waitForFunction(()=>window.starAgent.state.audio.effects.mining);
+ await page.keyboard.press('M');await page.waitForFunction(()=>window.starAgent.state.audio.effects.mining===false);await page.keyboard.up('T');await page.keyboard.press('M');
+ await page.keyboard.press('H');await page.locator('#sound-button').click();expect((await state(page)).audio.enabled).toBe(false);expect((await state(page)).audio.effects.voices).toBe(0);
+ await writeFile(out+'/gameplay-audio.json',JSON.stringify({errors,audio:(await state(page)).audio},null,2));expect(errors).toEqual([]);
 });
