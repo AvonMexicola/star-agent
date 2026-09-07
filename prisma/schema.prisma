@@ -82,3 +82,10 @@ model PlayerState {
 
   @@map("player_state")
 }
+
+model CommerceState {
+  id String @id
+  state Json @db.JsonB
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  @@map("commerce_state")
+}

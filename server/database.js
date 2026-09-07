@@ -15,6 +15,7 @@ const accountFields = { id: true, email: true, callsign: true, passwordHash: tru
 
 /** Explicit test/development adapter. Never selected automatically in production. */
 export function createMemoryStore() {
+  let commerce=null, commerceQueue=Promise.resolve();
   const accounts = new Map(), sessions = new Map(), resets = new Map(), states = new Map();
   return {
     persistent: false,
@@ -50,6 +51,18 @@ export function createMemoryStore() {
       for (const [hash, value] of resets) if (value.accountId === account.id) resets.delete(hash);
       for (const [hash, value] of sessions) if (value.accountId === account.id) sessions.delete(hash);
       return clone(account);
+    },
+    async loadCommerce() { return clone(commerce); },
+    transactCommerce(fn) {
+      const task=commerceQueue.catch(()=>{}).then(async()=>{
+        const result=await fn(clone(commerce));
+        for(const [id,state] of Object.entries(result.players??{})) {
+          if(!accounts.has(id))throw new Error('Unknown account.'); stateJSON(state);
+        }
+        const value=JSON.parse(JSON.stringify(result.state));
+        for(const [id,state] of Object.entries(result.players??{}))states.set(id,clone(state));
+        commerce=value;return clone(result);
+      }); commerceQueue=task;return task;
     },
     async loadPlayerState(accountId) { return clone(states.get(accountId) ?? null); },
     async savePlayerState(accountId, state) {
@@ -147,6 +160,17 @@ export async function createPostgresStore({ connectionString, pool: suppliedPool
         const account = await client.account.update({ where: { id: accountId }, data: { passwordHash }, select: accountFields });
         await client.session.deleteMany({ where: { accountId } });
         return account;
+      });
+    },
+    async loadCommerce() { return (await pool.query("SELECT state FROM commerce_state WHERE id='world-7291'")).rows[0]?.state??null; },
+    async transactCommerce(fn) {
+      return transaction(async client=>{
+        await client.query('SELECT pg_advisory_xact_lock(7291, 2)');
+        const current=(await client.query("SELECT state FROM commerce_state WHERE id='world-7291' FOR UPDATE")).rows[0]?.state??null;
+        const result=await fn(current);
+        await client.query("INSERT INTO commerce_state(id,state) VALUES('world-7291',$1::jsonb) ON CONFLICT(id) DO UPDATE SET state=EXCLUDED.state,updated_at=now()",[JSON.stringify(result.state)]);
+        for(const [id,state] of Object.entries(result.players??{}))await client.query('INSERT INTO player_state(account_id,state) VALUES($1,$2::jsonb) ON CONFLICT(account_id) DO UPDATE SET state=EXCLUDED.state,updated_at=now()',[id,stateJSON(state)]);
+        return result;
       });
     },
     async loadPlayerState(accountId) { return (await prisma.playerState.findUnique({ where: { accountId }, select: { state: true } }))?.state ?? null; },

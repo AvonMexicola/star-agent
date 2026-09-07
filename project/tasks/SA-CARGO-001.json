@@ -1,0 +1,18 @@
+{
+  "id": "SA-CARGO-001",
+  "title": "Physical SBU cargo and player trading",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex cargo",
+  "status": "review",
+  "branch": "feat/sbu-cargo-trading",
+  "base": "6d3abb04ebee4af5cd8d4b96ec4d440b81774bf5",
+  "updated": "2026-09-07",
+  "areas": [
+    "industry",
+    "multiplayer",
+    "interface"
+  ],
+  "claims": [],
+  "brief": "docs/briefs/sbu-cargo-trading.md"
+}

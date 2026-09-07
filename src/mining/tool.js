@@ -19,7 +19,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   const viewRig={skeleton:{bones:[hand,back]}};let rigSockets=null,external=false,attached=false;
   const aimOrigin=new THREE.Vector3(),handAim=new THREE.Vector3();
   loadSocketCalibration().then(value=>{rigSockets=value;});
-  const equipment=new Equipment(viewRig,scene,{camera,sockets,onMine:data=>{if(hit&&active)rock.onMine({...data,point:hit.point.clone(),normal:hit.normal?.clone(),target:hit.rock},direction);}});
+  const equipment=new Equipment(viewRig,scene,{camera,sockets,onMine:data=>{if(hit&&active){const contact={...data,point:hit.point.clone(),normal:hit.normal?.clone(),target:hit.rock};if(!nav.mineCargo?.(contact))rock.onMine(contact,direction);}}});
   equipment.equip(loadout?.item??'mining-laser-tool');
   const weaponTarget=createWeaponTarget({nav,mining:rock});
   const panel=document.createElement('aside');panel.id='mining-panel';panel.hidden=true;
@@ -55,7 +55,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       if(loadout){selected=Boolean(loadout.item);if(equipment.equipped!==loadout.item){clear();if(loadout.item)equipment.equip(loadout.item);else equipment.unequip();}}
       const isMining=equipment.equipped==='mining-laser-tool';
       const distance=nav.position.distanceTo(rock.position);
-      active=!restricted&&!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
+      active=!restricted&&!nav.carryingCargo&&!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&!nav.insideShip&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
       panel.hidden=!active;
       external=thirdPerson();
       attached=Boolean(external&&character?.ready&&rigSockets);
