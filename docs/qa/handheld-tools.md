@@ -1,8 +1,8 @@
 # Handheld Blender and material pass
 
-Candidate in `art/handheld-tool-pass`, based on checked tractor `b1ed035`, wildlife `20e9f1b` and player-performance
+Integrated development pass from `art/handheld-tool-pass`, based on checked tractor `b1ed035`, wildlife `20e9f1b` and player-performance
 `8552d44`. Final browser-checked runtime/export is `a50c060`. This is a builder's quality check and
-development candidate, not independent visual acceptance or public deployment.
+local development checkpoint, not independent visual acceptance or public deployment.
 
 ## Measured exports
 
@@ -120,3 +120,26 @@ Builder self-inspection only. Independent visual rubric/release acceptance,
 physical controller hardware, a new native-touch firing journey and performance
 frame budget are not claimed. Existing native two-finger tractor QA remains
 at its original source in the preceding cargo feature record.
+
+## Local delivery
+
+Merged into `dev/all-features` as `638a5e4` on 2026-09-07. Its `src`, `server`,
+`public/models` and `assets/handheld-tools` trees are identical to final
+browser-tested `a50c060`; the merge preserves current wildlife/player-performance
+source and incoming shared handoffs. Production build passes in5.16s, and
+repository/whitespace checks pass. Review: [draft PR79](https://github.com/AvonMexicola/star-agent/pull/79),
+stacked on the checked tractor PR74 and reconciled with performance PR77.
+
+One graceful persistent-preview restart completed at21:09:42UTC, MainPID3640890.
+Frontend5178 and API8087 are healthy; the client and restarted API use protocol4.
+No schema migration, account reset or import was performed. The existing database
+cluster inode947632 remains. At21:11:11UTC, all four served GLBs matched exact
+reviewed SHA/bytes and eight key served source modules matched after normalizing
+Vite import paths, injected environment and source-map comments. The first
+verification helper incorrectly consumed a same-line import with Vite's injected
+environment assignment; narrowing that normalization passed without application
+changes. Raw receipt: `/home/cees/.cache/star-agent-tool-art/live-verification.json`.
+
+Refresh http://localhost:5178/ to test. This local promotion does not incorporate
+the separately owned future Atlas/station refit, change public deployment, or
+establish independent asset acceptance.

@@ -83,9 +83,17 @@ Do not replace these states with a single green tick. A local integration or an
 independent art score is not evidence of durable server behavior or public deployment.
 
 
-Tractor follow-up (SA-CARGO-002): runtime70fcaad is checked on
-`feat/cargo-tractor`, pending shared local promotion. Physical1–64SBU tractor
+Tractor follow-up (SA-CARGO-002): checked runtime70fcaad is now integrated with
+the handheld Blender pass in local runtime `638a5e4`. Physical1–64SBU tractor
 movement, persisted detached crates/leases and compatible grid securing replace
 the instant handler. Complete Nomad controller and Atlas keyboard/native-touch
 journeys pass; see [tractor QA](../qa/cargo-tractor.md). No physical-device or
 independent final art acceptance is claimed.
+
+Handheld pass (SA-ART-001) is also integrated in `638a5e4`, preserving the live
+wildlife/player-performance source. The tractor has a separate authored model;
+all four tools have UV/PBR textures, contact shading and retained grip/muzzle
+calibration. Four final Chromium cases pass on equivalent runtime `a50c060`.
+The refreshed local client/API use protocol4 and the same persistent database,
+with no schema migration. [Builder QA and comparison](../qa/handheld-tools.md)
+record asset budgets, failed checks/corrections and acceptance limits.

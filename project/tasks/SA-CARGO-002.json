@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex cargo",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/cargo-tractor",
   "base": "25460fa47bf594c2ca1a3d36e31cec5d496d40c6",
   "updated": "2026-09-07",
