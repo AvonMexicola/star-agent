@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { CAPACITY } from './ship-inventory.js';
+import { itemMass } from './inventory/containers.js';
 
 const mint = '#9ee7d1', dim = '#5d939c', white = '#e0efed', amber = '#f3b16d';
 const titles = ['FLIGHT', 'NAVIGATION', 'SYSTEMS', 'CARGO'];
@@ -33,7 +34,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
       }
     }
     group.add(mount);
-    return { ctx, texture, title, values: [] };
+    return { ctx, texture, title, mesh: screen, values: [] };
   });
   // All rigid bezels and side keys share one draw, plus one draw per screen.
   group.updateMatrixWorld(true);
@@ -74,6 +75,20 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     pages.forEach((page, index) => paint(screens[index], page.rows, page.footer, index));
   };
   group.update = (dt, nav, inventory, course) => {
+    const multiplayer = nav.multiplayer?.state && !Object.hasOwn(nav.multiplayer, 'connected')
+      ? nav.multiplayer.state : nav.multiplayer;
+    const serverInventory = multiplayer?.connected ? multiplayer.inventory : null;
+    const cargoMass = id => serverInventory?.containers?.[id] ? itemMass(serverInventory.containers[id]) : inventory.mass(id);
+    const cargoCapacity = id => serverInventory?.capacity?.[id] ?? inventory.capacity?.[id] ?? CAPACITY[id];
+    screens[2].title = multiplayer ? 'COMMS' : 'SYSTEMS';
+    screens[2].mesh.name = `MFD 3 / ${screens[2].title}`;
+    if (multiplayer) {
+      screens[2].mesh.userData.actionId = 'comms';
+      screens[2].mesh.userData.action = () => nav.openComms?.();
+    } else {
+      delete screens[2].mesh.userData.actionId;
+      delete screens[2].mesh.userData.action;
+    }
     const powered = nav.powered !== false;
     accumulator += Number.isFinite(dt) ? Math.max(0, dt) : 0;
     // Keep the normal 5 Hz canvas budget, but show power transitions on the
@@ -109,8 +124,19 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
       bearing = `${Math.abs(angle).toFixed(0)} DEG ${angle < 0 ? 'LEFT' : 'RIGHT'}`;
     }
     paint(screens[1], [['COURSE', course ? course.name.toUpperCase() : 'FREE EXPLORATION'], ['BEARING', bearing], ['POSITION', `${(Math.asin(n.y) * 180 / Math.PI).toFixed(2)} / ${(Math.atan2(n.x, n.z) * 180 / Math.PI).toFixed(2)}`]], 'SHIFT + DESTINATION TO SET COURSE', 1);
-    paint(screens[2], [['ENVIRONMENT', env.regime], [nav.freighter?'CARGO LIFTS':'HATCH / RAMP', nav.freighter?(nav.freighter.secured?'SECURED':'DEPLOYED'):nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${!nav.cabinFlight && nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
-    paint(screens[3], [['SHIP STORAGE', `${inventory.mass('ship').toFixed(1)} / ${(inventory.capacity?.ship ?? CAPACITY.ship)} kg`], ['BACKPACK', `${inventory.mass('pack').toFixed(1)} / ${(inventory.capacity?.pack ?? CAPACITY.pack)} kg`], ['ACCESS', 'STARBOARD CABIN']], 'ON FOOT: F AT THE CARGO CONTAINER', 3);
+    if (multiplayer) {
+      const players = Array.isArray(multiplayer.players) ? multiplayer.players.length : 0;
+      const capacity = Number.isFinite(multiplayer.maxPlayers) ? ` / ${multiplayer.maxPlayers}` : '';
+      const hangar = multiplayer.hangar;
+      const hangarStatus = hangar ? `${hangar.id ?? 'ASSIGNED'} / ${String(hangar.status ?? 'ASSIGNED').toUpperCase()}` : 'NO ASSIGNMENT';
+      const footer = !multiplayer.account ? 'OPEN ACCOUNT TO SIGN IN'
+        : !multiplayer.connected ? 'OPEN COMMS TO JOIN MULTIPLAYER'
+          : hangar ? 'OPEN COMMS TO REVIEW / CANCEL HANGAR' : 'OPEN COMMS TO REQUEST HANGAR';
+      paint(screens[2], [['LINK', multiplayer.connected ? 'CONNECTED' : 'OFFLINE'], ['PILOTS', `${players}${capacity}`], ['HANGAR', hangarStatus]], footer, 2);
+    } else {
+      paint(screens[2], [['ENVIRONMENT', env.regime], [nav.freighter?'CARGO LIFTS':'HATCH / RAMP', nav.freighter?(nav.freighter.secured?'SECURED':'DEPLOYED'):nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${!nav.cabinFlight && nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
+    }
+    paint(screens[3], [['SHIP STORAGE', `${cargoMass('ship').toFixed(1)} / ${cargoCapacity('ship')} kg`], ['BACKPACK', `${cargoMass('pack').toFixed(1)} / ${cargoCapacity('pack')} kg`], ['ACCESS', serverInventory?'SERVER AUTHORITY':'STARBOARD CABIN']], serverInventory?'OPEN SERVER INVENTORY TO TRANSFER':'ON FOOT: F AT THE CARGO CONTAINER', 3);
   };
   group.snapshot = () => screens.map(screen => ({ title: screen.title, values: [...screen.values] }));
   return group;

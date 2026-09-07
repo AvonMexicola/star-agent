@@ -1293,3 +1293,40 @@ PR34 remains DRAFT: request23 full-scene visual blockers remain open. This is no
 READY FOR MERGE for the whole consolidation. main/default/site unchanged. New
 retail435f116/PR20 handoff acknowledged, not merged over this lane; SunPR35 remains
 separate. Updated TOKEN POLICY v2 reviewer ownership acknowledged.
+
+## TEN-PLAYER MULTIPLAYER PREVIEW — 2026-09-07
+
+READY FOR REVIEW: server/, src/multiplayer/, main/MFD/station integration,
+multiplayer tests and deployment templates in feat/multiplayer-ten at
+/tmp/star-agent-multiplayer. Base3e0f3b9 depends on PR38 flight options and PR34
+consolidation; keep the new PR draft against main until those and review gates pass.
+Public isolated preview: https://multiplayer.staragent.site/?intro=0&seed=7291.
+
+Accounts collect callsign/email/password only; PostgreSQL persistence, cookie
+sessions and single-use reset tokens. SMTP adapter is implemented but no delivery
+service configured. Authoritative Navigation30Hz/room snapshots15Hz, ten unique
+assigned suit colours, same seed7291, physical comms-assigned hangars and marker,
+server inventories/transfers/drop expiry, capsule/hull/terrain/station hits with
+ammo/cooldown checks. Remote real meshes use calibrated hand sockets/support IK
+and skin-weight suit masking. Shared fleet starts with Nomad. World frame from
+server overrides cinematic station frame on join. No client position/damage claims.
+
+Checks: npmtest496/496; multiplayer80/80 on Node22 with real dedicated PostgreSQL;
+public HTTPS register/cookie/WSS/hangar probe passed and fixture removed; production
+page ready with zero errors. Two-peer browser1/1 in1.5m, Chromium151/AMD860M ANGLE,
+controller join/comms/request/physical approach/dock/ship+station transfer and
+return, other pilot movement, desktop1440x900/phone390x844. See QA report for exact
+limits. Independent review fixed reconnect/save races, malformed equip IDs,
+restore-capacity invariants, and hull-safe door/lease handling. Post-browser logout
+ordering and destroyed-hull recovery checked in focused tests. Build passes with
+large-chunk warning. Source/palette shader bench passes and screenshots inspected.
+
+Deployment: /opt/staragent/multiplayer-candidate, service staragent-multiplayer,
+loopback8084; separate staragent_multiplayer DB/role, secret env remains server-only
+/etc/staragent/multiplayer.env0600. Existing play/next/current and original DB remain
+untouched. Caddy backup /etc/caddy/Caddyfile.before-multiplayer-20260907. No Vercel.
+Shared mining/building, ship weapons, station shops/concourse, other-player cabins,
+rigidbody ship collisions and lag compensation remain follow-ups. Loose stacks
+are an inventory-list interaction and expire5min/restart; combat checkpoints10sec.
+Physical-controller/full controller text-entry, direct MFD pointer journey, Opus
+visual review and full quality/performance tour remain pending. Do not mark merged.

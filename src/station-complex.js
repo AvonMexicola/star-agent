@@ -144,11 +144,11 @@ export class StationComplex {
   toLocal(p,target){return this.frame.toLocal(p,target);}
   deckPoint(p,height){return this.frame?.deckPoint(p,height)??null;}
   deckHeightAt(p){return this.frame?.deckHeightAt(p)??null;}
-  canDock(...args){return this.location==='hangar'&&Boolean(this.active?.canDock(...args));}
+  canDock(...args){return (!this.multiplayerState||Boolean(this.multiplayerState.hangar&&this.activeIndex===this.multiplayerState.hangar.id-1&&this.doorsOpen>.98))&&this.location==='hangar'&&Boolean(this.active?.canDock(...args));}
   isInsideHangar(p){return Boolean(this.frame?.isInsideHangar(p));}
   transitParams(...args){this.location='hangar';return this.active.transitParams(...args);}
-  openDoors(){this.active?.openDoors();}
-  closeDoors(){this.active?.closeDoors();}
+  openDoors(){if(!this.multiplayerState)this.active?.openDoors();}
+  closeDoors(){if(!this.multiplayerState)this.active?.closeDoors();}
   get openingControlled(){return this._openingIndex!==null;}
   get openingProgress(){return this._openingProgress;}
   beginOpening(){
@@ -164,9 +164,31 @@ export class StationComplex {
     if(this.openingControlled)this.activeIndex=this._openingIndex;
     const openness=this.active?.endOpening()??0;this._openingIndex=null;return openness;
   }
+  setMultiplayerState(state){
+    this.multiplayerState=state;
+    if(!state){for(const pod of this.pods)if(pod.openingControlled)pod.endOpening();return;}
+    this._openingIndex=null;this.location='hangar';
+    const frame=state.frame;
+    if(frame?.direction?.length===3&&frame?.orientation?.length===4&&Number.isFinite(frame.altitude)){
+      const key=JSON.stringify(frame);
+      if(this._multiplayerFrame!==key){
+        this._multiplayerFrame=key;this.direction.fromArray(frame.direction).normalize();this.baseQuaternion.fromArray(frame.orientation).normalize();this.altitude=frame.altitude;
+        this._up.set(0,1,0).applyQuaternion(this.baseQuaternion);this.centre.copy(this.direction).multiplyScalar(RADIUS+this.altitude);
+        this.hub.worldPosition.copy(this.centre);this.hub.quaternion.copy(this.baseQuaternion);this.hub.inverseQuaternion.copy(this.baseQuaternion).invert();
+        for(const pod of this.pods){pod.direction.copy(this.direction);pod.direction0.copy(this.direction);pod.altitude=this.altitude;pod.orientationOverride.copy(this.baseQuaternion);pod.updateFrame();}
+      }
+    }
+    if(state.hangar){this.activeIndex=state.hangar.id-1;this.parkedPod=this.activeIndex;}
+    for(let i=0;i<this.pods.length;i++){
+      const pod=this.pods[i];
+      if(!pod.openingControlled)pod.beginOpening();
+      pod.setOpeningProgress(state.doors?.[i+1]??0);
+    }
+  }
   update(position,origin,sun,dt){
+    if(this.multiplayerState)this.setMultiplayerState(this.multiplayerState);
     if(this.openingControlled){this.activeIndex=this._openingIndex;this.location='hangar';}
-    if(this.ready && this.nav?.mode==='flight'&&!this.openingControlled&&!this.nav.openingActive){
+    if(this.ready && this.nav?.mode==='flight'&&!this.openingControlled&&!this.nav.openingActive&&!this.multiplayerState?.hangar){
       this.location='hangar';let nearest=Infinity;
       this.pods.forEach((pod,i)=>{const distance=position.distanceToSquared(pod.worldPosition);if(distance<nearest){nearest=distance;this.activeIndex=i;}});
     }

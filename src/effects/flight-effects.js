@@ -34,7 +34,7 @@ export function createFlightEffects({effects,nav,mining,camera}){
     get state(){return {weapon,controllerFire};},
     update(dt,origin,{suspended=false}={}){
       const active=ready()&&!suspended;
-      panel.hidden=nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
+      panel.hidden=Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
       if(!active)clear();
       else if(!controllerFire)controllerArmed=true;
       for(const b of panel.querySelectorAll('[data-ship-weapon]'))b.setAttribute('aria-pressed',String(b.dataset.shipWeapon===weapon));
@@ -42,7 +42,7 @@ export function createFlightEffects({effects,nav,mining,camera}){
       position.set(...(nav.layout??SHIP_LAYOUT).seatEye).applyQuaternion(nav.orientation).negate().add(nav.position);
       forward.set(0,0,-1).applyQuaternion(nav.orientation);
       cooldown=Math.max(0,cooldown-dt);
-      if(active&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
+      if(active&&!nav.multiplayer?.connected&&(keyHeld||pointerHeld||(controllerArmed&&controllerFire))&&cooldown===0){
         const start=new THREE.Vector3(side*2.35,1.55,-3.3).applyQuaternion(nav.orientation).add(position);
         const direction=nav.position.clone().addScaledVector(forward,400).sub(start).normalize();
         effects.fire(start,direction,{hit:target(start,direction,origin),weapon});side*=-1;cooldown=weaponProfile(weapon).interval;

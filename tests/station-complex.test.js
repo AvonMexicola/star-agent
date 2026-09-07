@@ -193,3 +193,19 @@ test('LOD material batching retains transformed triangles and attributes without
     }
   }
 });
+
+test('server station frame replaces a cinematic frame for every berth, hub and collision anchor',async()=>{
+  const station=await create(),oldPad=station.pods[2].padWorldPosition.clone();
+  const direction=new THREE.Vector3(-1,.1,.2).normalize(),orientation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),.4);
+  const frame={direction:direction.toArray(),orientation:orientation.toArray(),altitude:100000};
+  station.setMultiplayerState({frame,doors:{3:1},hangar:{id:3}});
+  const centre=direction.clone().multiplyScalar(1592750+100000);
+  assert.ok(station.centre.distanceTo(centre)<1e-8);assert.ok(station.hub.worldPosition.distanceTo(centre)<1e-8);
+  assert.equal(station.activeIndex,2);assert.equal(station.doorsOpen,1);assert.ok(oldPad.distanceTo(station.padWorldPosition)>100000);
+  for(const pod of station.pods){
+    assert.ok(pod.direction.distanceTo(direction)<1e-10);
+    const expected=centre.clone().add(pod.offset.clone().applyQuaternion(orientation));
+    assert.ok(pod.worldPosition.distanceTo(expected)<1e-8);
+    assert.ok(pod.toLocal(pod.padWorldPosition,new THREE.Vector3()).distanceTo(pod.padLocal)<1e-8);
+  }
+});

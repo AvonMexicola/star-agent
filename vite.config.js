@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 
 const STUDIO_SCRIPT = '/assets/atlas-mark-ii-studio.js';
 const STUDIO_STYLE = '/assets/atlas-mark-ii-studio.css';
+const multiplayerTarget = process.env.MULTIPLAYER_SERVER ?? 'http://127.0.0.1:8084';
 
 /** Keep the standalone studio's URLs identical in source and production builds. */
 function atlasMarkIIStudioDevEntries() {
@@ -21,6 +22,12 @@ function atlasMarkIIStudioDevEntries() {
 export default defineConfig({
   base: './',
   plugins: [atlasMarkIIStudioDevEntries()],
+  server: {
+    proxy: {
+      '/api': { target: multiplayerTarget, changeOrigin: true },
+      '/ws': { target: multiplayerTarget.replace(/^http/, 'ws'), ws: true },
+    },
+  },
   build: {
     rollupOptions: {
       input: {

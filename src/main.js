@@ -51,6 +51,10 @@ import { createLighting } from './lighting.js';
 import { updateStationFinishSun } from './station-finish-lighting.js';
 import { weatherShip } from './surface-materials.js';
 import { SEED, GENERATOR_VERSION } from './generation.js';
+import { MultiplayerClient } from './multiplayer/client.js';
+import { createMultiplayerUI } from './multiplayer/ui.js';
+import { RemotePlayers, applySuitColor } from './multiplayer/remote-players.js';
+import { SUIT_COLORS, WORLD_SEED } from './multiplayer/protocol.js';
 
 const $=id=>document.getElementById(id);
 let toastTimeout;
@@ -87,6 +91,8 @@ try {
   const lighting=createLighting(renderer,scene);const utilityLights=createUtilityLights(scene);
   const character=new Character(scene,{url:'/models/props/player-male.glb',modelYaw:Math.PI,eyeHeight:SHIP_LAYOUT.eyeHeight});
   character.setVisible(false);
+  const remotePlayers=new RemotePlayers(scene),multiplayer=new MultiplayerClient();
+  multiplayer.attach({nav,station,remotePlayers});
   let localInventoryStorage;try{localInventoryStorage=window.localStorage;}catch{}
   const fleet=new Fleet(localInventoryStorage),freighterSystems=new FreighterSystems();
   const shipModels=new Map();
@@ -155,6 +161,61 @@ try {
       return `${SHIPS[id].name} ready. Close Fleet, then F to stand and explore.`;
     }finally{selectingShip=false;}
   });
+  const multiplayerUI=createMultiplayerUI({nav,client:multiplayer,onJoin:async account=>{
+    if(SEED!==WORLD_SEED){const url=new URL(location.href);url.searchParams.set('seed',String(WORLD_SEED));location.replace(url);throw new Error('Reloading the shared world seed. Join again after reload.');}
+    await Promise.all([station.readyPromise,character.readyPromise,opening?.character?.readyPromise]);opening?.leave();
+    const nomad=modelFor('nomad');await nomad.readyPromise;
+    if(ship!==nomad){ship.visible=false;ship=nomad;nav.layout=SHIP_LAYOUT;nav.freighter=null;nav.shipId='nomad';}
+    const state=await multiplayer.connect(account),self=state.players.find(player=>player.id===state.ownId);
+    if(self)await applySuitColor(character,SUIT_COLORS[self.colorIndex]??SUIT_COLORS[0]);
+    enterPlayerInterface();return state;
+  },onLeave:async()=>{multiplayer.disconnect();location.reload();}});
+  nav.openComms=multiplayerUI.openComms;
+  const localOpenPack=()=>inventoryUI.openPack(),localOpenEquipment=()=>inventoryUI.openEquipment();
+  nav.openInventory=()=>multiplayer.connected?multiplayerUI.openInventory():inventoryUI.openContainer?.('ship');
+  const localItemGetter=Object.getOwnPropertyDescriptor(Object.getPrototypeOf(loadout),'item').get;
+  const localAmmoFor=loadout.ammoFor.bind(loadout),localSpendRound=loadout.spendRound.bind(loadout),localMine=mining.onMine.bind(mining);
+  let localSuitColor=-1,serverWeapon=null;
+  Object.defineProperty(loadout,'item',{configurable:true,get:()=>multiplayer.connected?serverWeapon:localItemGetter.call(loadout)});
+  loadout.ammoFor=item=>{
+    if(!multiplayer.connected)return localAmmoFor(item);
+    const ammo=item==='rifle-laser'?'carbine-charge':item==='sidearm-pistol'?'sidearm-charge':null;
+    return ammo?Number(multiplayer.state.inventory?.containers?.pack?.[ammo]??0):0;
+  };
+  loadout.spendRound=item=>multiplayer.connected?false:localSpendRound(item);
+  mining.onMine=(...args)=>multiplayer.connected?null:localMine(...args);
+  multiplayer.subscribe(state=>{
+    const online=state.connected;
+    document.body.classList.toggle('multiplayer-online',online);
+    const fleetButton=$('fleet-button');if(fleetButton)fleetButton.disabled=online;
+    const backpackButton=$('backpack-button'),loadoutNode=$('loadout-bar');if(backpackButton)backpackButton.hidden=online;if(loadoutNode)loadoutNode.hidden=online;
+    for(const button of document.querySelectorAll('#quick-transit-menu [data-destination]'))button.disabled=online||button.id==='station-destination'&&!station.ready;
+    const self=state.players.find(player=>player.id===state.ownId);
+    serverWeapon=self?.weapon??null;
+    if(self&&self.colorIndex!==localSuitColor){localSuitColor=self.colorIndex;void applySuitColor(character,SUIT_COLORS[self.colorIndex]??SUIT_COLORS[0]);}
+  });
+  document.addEventListener('keydown',event=>{
+    if(!multiplayer.connected||event.repeat||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName)||document.querySelector('dialog[open]'))return;
+    if(['KeyI','KeyK','KeyU','Digit5','Digit6','Digit7','Digit8'].includes(event.code)){
+      event.preventDefault();event.stopImmediatePropagation();
+      if(event.code==='KeyU')notify('Fleet selection is managed by the shared server.');else multiplayerUI.openInventory();
+    }
+  },true);
+  $('backpack-button')?.addEventListener('click',event=>{if(multiplayer.connected){event.preventDefault();event.stopImmediatePropagation();multiplayerUI.openInventory();}},true);
+  multiplayer.onEvent(event=>{
+    if(event.event==='disconnect'){notify(event.message||'Multiplayer connection lost.');multiplayerUI.openComms();return;}
+    if(event.event==='notice'&&event.message)notify(event.message);
+    if(event.event==='hit'&&event.targetId===multiplayer.state.ownId)notify('Suit impact registered by server.');
+    if(event.event==='fire'){
+      remotePlayers.fire(event.peerId);
+      if(event.targetId===multiplayer.state.ownId&&Number.isFinite(event.damage))notify(`Suit hit · ${event.damage} damage registered by server.`);
+      if(Array.isArray(event.origin)&&Array.isArray(event.direction)){
+        const start=new THREE.Vector3().fromArray(event.origin),direction=new THREE.Vector3().fromArray(event.direction).normalize();
+        const hit=event.kind&&Number.isFinite(event.distance)?{point:start.clone().addScaledVector(direction,event.distance),normal:direction.clone().negate()}:null;
+        effects.fire(start,direction,{weapon:event.weapon,range:Number.isFinite(event.distance)?event.distance:undefined,hit});
+      }
+    }
+  });
   $('planet-seed').textContent=`Terrestrial · Seed ${SEED.toLocaleString('en-US')}`;
   $('seed-input').value=SEED;
   $('seed-form').addEventListener('submit',event=>{event.preventDefault();const url=new URL(location.href);url.searchParams.set('seed',String($('seed-input').valueAsNumber));location.assign(url);});
@@ -210,13 +271,21 @@ try {
   window.addEventListener('resize',viewportChanged);document.addEventListener('fullscreenchange',viewportChanged);
   document.addEventListener('visibilitychange',()=>resolution.resetMeasurements());
   viewportChanged();resize();resizePending=false;
-  function capture(){if(transiting||!nav.enabled||opening?.active)return;enterPlayerInterface();nav.capture();}
+  const mfdRaycaster=new THREE.Raycaster(),mfdPointer=new THREE.Vector2();
+  function activateMFD(event){
+    if(!nav.powered||!['flight','landed'].includes(nav.mode)||document.querySelector('dialog[open]'))return false;
+    const bounds=canvas.getBoundingClientRect();mfdPointer.set((event.clientX-bounds.left)/bounds.width*2-1,-(event.clientY-bounds.top)/bounds.height*2+1);
+    scene.updateMatrixWorld(true);mfdRaycaster.setFromCamera(mfdPointer,camera);
+    for(const hit of mfdRaycaster.intersectObject(ship,true)){let target=hit.object;while(target&&target!==ship&&!target.userData.action)target=target.parent;if(target?.userData.action){target.userData.action();return true;}}
+    return false;
+  }
+  function capture(event){if(activateMFD(event)||transiting||!nav.enabled||opening?.active)return;enterPlayerInterface();nav.capture();}
   canvas.addEventListener('click',capture);$('begin-button').addEventListener('click',capture);
   // Drag fallback also works when browser pointer-lock is unavailable.
   let dragging=false;
   canvas.addEventListener('pointerdown',e=>{if(!nav.locked){dragging=true;canvas.setPointerCapture(e.pointerId);}});
   canvas.addEventListener('pointerup',()=>dragging=false);
-  canvas.addEventListener('pointermove',e=>{if(dragging&&!nav.locked)nav.look(-e.movementX*.002,-e.movementY*.002);});
+  canvas.addEventListener('pointermove',e=>{if(dragging&&!nav.locked){const yaw=-e.movementX*.002,pitch=-e.movementY*.002;multiplayer.captureLook(yaw,pitch);nav.look(yaw,pitch);}});
   const help=$('help-dialog');
   function openHelp(){if(!nav.enabled||transiting||opening?.active||inventoryUI.open||fleetUI.open||document.querySelector("#station-cargo-dialog[open],#station-elevator-dialog[open],#station-shop-dialog[open]")||systemMap.open)return;if(document.pointerLockElement)document.exitPointerLock();nav.keys.clear();nav.enabled=false;shipPowerUI.update();help.showModal();}
   function closeHelp(){help.close();nav.enabled=!transiting;}
@@ -241,6 +310,7 @@ try {
   async function transit(name){
     // Elevator travel closes its dialog before the fade ends, while navigation
     // stays paused. A second transit must wait for that owner to release control.
+    if(multiplayer.connected){notify('Quick transit is unavailable in shared flight. Use the system map drive.');return;}
     if(!nav.enabled||opening?.active||inventoryUI.open||fleetUI.open||document.querySelector("#station-cargo-dialog[open],#station-elevator-dialog[open],#station-shop-dialog[open]")||systemMap.open||transiting||name==='station'&&!station.ready)return;opening?.leave();transiting=true;nav.enabled=false;nav.keys.clear();nav.velocity.set(0,0,0);
     if(document.pointerLockElement)document.exitPointerLock();
     const resourceRoute=resourceRoutes.find(r=>r.id===name);
@@ -268,6 +338,9 @@ try {
     resizePending=true;
   }});
   const graphicsButton=document.createElement('button');graphicsButton.type='button';graphicsButton.id='graphics-button';graphicsButton.textContent='GRAPHICS';graphicsButton.addEventListener('click',()=>graphicsSettings.open());document.querySelector('.top-actions').prepend(graphicsButton);
+  for(const [label,open,secondary] of [['ACCOUNT',multiplayerUI.openAccount,true],['COMMS',multiplayerUI.openComms,false],['INVENTORY',multiplayerUI.openInventory,true]]){
+    const button=document.createElement('button');button.type='button';button.className=`mp-top-button${secondary?' mp-top-secondary':''}`;button.textContent=label;button.addEventListener('click',open);document.querySelector('.top-actions').prepend(button);
+  }
   const gearNotice=document.createElement('div');gearNotice.id='gear-flight-prompt';gearNotice.setAttribute('role','status');gearNotice.hidden=true;document.body.append(gearNotice);
   const utilityStatus=document.createElement('div');utilityStatus.id='ship-utility-status';document.querySelector('.telemetry').append(utilityStatus);
   const controllerUI=createControllerUI({nav,actions:[
@@ -275,7 +348,8 @@ try {
     {id:'gear',label:'Landing gear · G / LB+RB + ↓',activate:()=>nav.toggleGear(),enabled:()=>nav.mode==='flight'&&!nav.autoland&&!nav.stationLift&&!nav.travel&&nav.powered},
     {id:'lights',label:'Lights / flashlight · L / LB+RB + ←',activate:()=>nav.toggleLights(),enabled:()=>nav.mode!=='crashed'},
     {id:'camera-view',label:'Camera view · 4 / LB+RB + →',activate:()=>document.getElementById('camera-button').click(),enabled:()=>['flight','walk','landed'].includes(nav.mode)},
-    {id:'graphics',label:'Graphics · LB+RB + Menu',activate:()=>graphicsSettings.open()},{id:'crash-recover',label:'Return to orbit after crash',activate:()=>transit('orbit'),enabled:()=>nav.mode==='crashed'},{id:'fleet',label:'Fleet registry',activate:()=>fleetUI.openMenu()},{id:'power',label:'Toggle ship main power',activate:()=>nav.togglePower(),enabled:()=>nav.canTogglePower},...Object.entries(WEAPONS).map(([id,p])=>({id:`weapon-${id}`,label:`Ship weapon · ${p.label}`,activate:()=>flightEffects.select(id),enabled:()=>nav.mode==='flight'}))],openBackpack:()=>inventoryUI.openPack(),toggleTool:()=>miningTool.toggle(),openEquipment:()=>inventoryUI.openEquipment(),cycleEquipment:()=>miningTool.cycle(),cycleQuick:()=>{const r=loadout.selectQuick((loadout.state.quickIndex+1)%4);if(!r.ok)nav.notify(r.message);},useQuick:()=>useQuick(loadout.state.quickIndex),destinations:[...document.querySelectorAll('#quick-transit-menu [data-destination]')].map(button=>({id:button.dataset.destination,label:button.dataset.destination==='moon'?'Selene':button.dataset.destination==='ring'?'Selene rings':button.textContent.trim(),activate:()=>transit(button.dataset.destination),enabled:()=>!button.disabled})).concat(resourceRoutes.map(route=>({id:route.id,label:route.label,activate:()=>transit(route.id)})))});
+    {id:'account',label:'Pilot account',activate:()=>multiplayerUI.openAccount()},{id:'comms',label:'Multiplayer comms',activate:()=>multiplayerUI.openComms()},{id:'server-inventory',label:'Server inventory',activate:()=>multiplayerUI.openInventory(),enabled:()=>multiplayer.connected},
+    {id:'graphics',label:'Graphics · LB+RB + Menu',activate:()=>graphicsSettings.open()},{id:'crash-recover',label:'Return to orbit after crash',activate:()=>transit('orbit'),enabled:()=>nav.mode==='crashed'},{id:'fleet',label:'Fleet registry',activate:()=>fleetUI.openMenu(),enabled:()=>!multiplayer.connected},{id:'power',label:'Toggle ship main power',activate:()=>nav.togglePower(),enabled:()=>nav.canTogglePower},...Object.entries(WEAPONS).map(([id,p])=>({id:`weapon-${id}`,label:`Ship weapon · ${p.label}`,activate:()=>flightEffects.select(id),enabled:()=>nav.mode==='flight'&&!multiplayer.connected}))],openBackpack:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenPack(),toggleTool:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.toggle(),openEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():localOpenEquipment(),cycleEquipment:()=>multiplayer.connected?multiplayerUI.openInventory():miningTool.cycle(),cycleQuick:()=>{if(multiplayer.connected){multiplayerUI.openInventory();return;}const r=loadout.selectQuick((loadout.state.quickIndex+1)%4);if(!r.ok)nav.notify(r.message);},useQuick:()=>multiplayer.connected?multiplayerUI.openInventory():useQuick(loadout.state.quickIndex),destinations:[...document.querySelectorAll('#quick-transit-menu [data-destination]')].map(button=>({id:button.dataset.destination,label:button.dataset.destination==='moon'?'Selene':button.dataset.destination==='ring'?'Selene rings':button.textContent.trim(),activate:()=>transit(button.dataset.destination),enabled:()=>!button.disabled&&!multiplayer.connected})).concat(resourceRoutes.map(route=>({id:route.id,label:route.label,activate:()=>transit(route.id),enabled:()=>!multiplayer.connected})))});
   nav.onControllerInput=(pad,dt)=>{if(!firstReady||nav.openingActive)return;if(systemMap.open){systemMap.controllerInput(pad.ui);return;}if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}controllerUI.update(pad,dt);flightEffects.controller(pad);};
   const systemsHelp=document.createElement('button');systemsHelp.type='button';systemsHelp.textContent='Ship systems / Graphics';systemsHelp.addEventListener('click',()=>{closeHelp();controllerUI.open();});document.querySelector('.menu-actions').append(systemsHelp);
   const menuButton=document.createElement('button');menuButton.id='commands-button';menuButton.type='button';menuButton.textContent='MENU';menuButton.title='Command menu · controller Menu';menuButton.addEventListener('click',()=>controllerUI.open());document.querySelector('.top-actions').prepend(menuButton);
@@ -354,7 +428,7 @@ try {
     if(document.hidden||opening?.phase==='loading'){resolution.resetMeasurements();return;}
     if(systemMap.open){resolution.resetMeasurements();nav.update(0);return;}
     elapsed+=dt;
-    const steps=nav.travel||opening?.active?1:Math.max(1,Math.ceil(dt/.025));nav.beginFrame(dt);if(firstReady)for(let i=0;i<steps;i++)nav.update(dt/steps);
+    const steps=nav.travel||opening?.active?1:Math.max(1,Math.ceil(dt/.025));nav.beginFrame(dt);if(firstReady)for(let i=0;i<steps;i++)nav.update(dt/steps);multiplayer.update(dt);
     if(systemMap.open){resolution.resetMeasurements();return;}
     opening?.update(firstReady?dt:0);
     shipPowerUI.update();
@@ -376,6 +450,7 @@ try {
     document.body.classList.toggle('camera-engaged',shipCamera.engaged&&nav.mode==='flight');
     origin.copy(shipCamera.position);camera.position.set(0,0,0);camera.quaternion.copy(shipCamera.orientation);
     character.placeCameraRelative(origin);
+    remotePlayers.update(dt,origin);
     if(!opening?.placeCamera(camera,origin)&&camera.fov!==52){camera.fov=52;camera.updateProjectionMatrix();}
     station.update(nav.position,origin,nav.sunDirection,dt);
     travelEffects.update(nav.enabled?dt:0,nav,camera);
@@ -432,7 +507,8 @@ try {
     }
     if(planet.error)stopGraphics(planet.error);
   }
+  window.addEventListener('beforeunload',()=>{multiplayerUI.dispose();multiplayer.dispose();remotePlayers.dispose();},{once:true});
   requestAnimationFrame(frame);
   // Explicit read-only diagnostics plus navigational hooks for reproducible browser tests.
-  window.starAgent={get state(){return {preload:{...preload.state,orbitalResolution:planet.orbitalSurface.resolution,orbitalComplete:planet.orbitalSurface.complete},reentryHeat:ship.userData.reentryHeating.heat,crash:nav.crash?structuredClone(nav.crash):null,renderedFrames,graphics:graphicsSettings.state,utilities:{gearDeployed:nav.gearDeployed,gearProgress:ship.userData.gearProgress,gearAssemblies:ship.userData.gearAssemblies,...utilityLights.state},pyre:{...pyre.state,altitude:bodyAltitude(nav.position,PYRE),ready:pyre.ready,epoch:PYRE_EPOCH,generatorVersion:PYRE_GENERATOR_VERSION,resources:nav.body.id==='pyre'?pyreResources(...nav.normal.toArray()):null,region:nav.body.id==='pyre'?pyreRegion(...nav.normal.toArray()):null},heat,terrainDetail:planet.detailStats,terrainLod:planet.lodStats,loadout:structuredClone(loadout.state),equippedMass:loadout.mass,effects:{...effects.state,...flightEffects.state,beamVisible:effects.beam.mesh.visible,bloom:atmosphere.bloom.enabled},shipMarker:shipMarker.state,fieldCache:mining.fieldCache.position.toArray(),containers:inventoryUI.state,eva:nav.evaState,rings:moon.rings.state,mining:{...mining.state,tool:miningTool.state},fleet:fleet.snapshot,shipId:nav.shipId,powered:nav.powered,cabinFlight:nav.cabinFlight,shipSpeed:nav.shipSpeed,shipVelocity:nav.shipVelocity.toArray(),shipPosition:nav.shipPosition?.toArray(),shipOrientation:nav.shipOrientation.toArray(),lifts:nav.freighter?.snapshot,opening:opening?.state??{phase:'skipped'},character:{ready:character.ready,visible:character.object.visible,state:character.state,position:character.worldPosition.toArray(),error:character.error},camera:{mode:nav.mode==='walk'?(shipCamera.active?'third-person':'first-person'):(shipCamera.active?'external':'cockpit'),shipVisible:ship.visible,selected:shipCamera.selected(nav.mode),obstructed:shipCamera.obstructed,position:origin.toArray(),fov:camera.fov},audio:{created:Boolean(audio.context),enabled:audio.enabled},travel:nav.travelState,travelTarget:nav.travelTarget,mapOpen:systemMap.open,tunnel:travelEffects.state,speedProfile:nav.speedProfile,moon:{resources:moonResources(...nav.position.clone().sub(moon.worldPosition).normalize().toArray()),resourceProvinces:RESOURCE_PROVINCES,effects:moon.effects,position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,distance:nav.position.distanceTo(moon.worldPosition)},controller:{id:nav.gamepad.id,connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{...station.snapshot,ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:nav.canDock},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale:resolution.scale,renderResolution:resolution.state};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){resolution.setScale(THREE.MathUtils.clamp(value,.4,1));resizePending=true;},get openingSequence(){return new URLSearchParams(location.search).has('debug')?opening:undefined;},get planet(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?planet:undefined;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;},get pyreSites(){return {landing:pyreLandingDirection(),volcanoes:VOLCANOES.map(v=>({name:v.name,height:v.height,active:v.active,direction:fromPyreBody(...v.direction)})),fields:LAVA_FIELDS.map(f=>({name:f.name,direction:fromPyreBody(...f.direction)}))};}};
+  window.starAgent={get state(){return {multiplayer:{...multiplayer.state,remote:remotePlayers.state},preload:{...preload.state,orbitalResolution:planet.orbitalSurface.resolution,orbitalComplete:planet.orbitalSurface.complete},reentryHeat:ship.userData.reentryHeating.heat,crash:nav.crash?structuredClone(nav.crash):null,renderedFrames,graphics:graphicsSettings.state,utilities:{gearDeployed:nav.gearDeployed,gearProgress:ship.userData.gearProgress,gearAssemblies:ship.userData.gearAssemblies,...utilityLights.state},pyre:{...pyre.state,altitude:bodyAltitude(nav.position,PYRE),ready:pyre.ready,epoch:PYRE_EPOCH,generatorVersion:PYRE_GENERATOR_VERSION,resources:nav.body.id==='pyre'?pyreResources(...nav.normal.toArray()):null,region:nav.body.id==='pyre'?pyreRegion(...nav.normal.toArray()):null},heat,terrainDetail:planet.detailStats,terrainLod:planet.lodStats,loadout:structuredClone(loadout.state),equippedMass:loadout.mass,effects:{...effects.state,...flightEffects.state,beamVisible:effects.beam.mesh.visible,bloom:atmosphere.bloom.enabled},shipMarker:shipMarker.state,fieldCache:mining.fieldCache.position.toArray(),containers:inventoryUI.state,eva:nav.evaState,rings:moon.rings.state,mining:{...mining.state,tool:miningTool.state},fleet:fleet.snapshot,shipId:nav.shipId,powered:nav.powered,cabinFlight:nav.cabinFlight,shipSpeed:nav.shipSpeed,shipVelocity:nav.shipVelocity.toArray(),shipPosition:nav.shipPosition?.toArray(),shipOrientation:nav.shipOrientation.toArray(),lifts:nav.freighter?.snapshot,opening:opening?.state??{phase:'skipped'},character:{ready:character.ready,visible:character.object.visible,state:character.state,position:character.worldPosition.toArray(),error:character.error},camera:{mode:nav.mode==='walk'?(shipCamera.active?'third-person':'first-person'):(shipCamera.active?'external':'cockpit'),shipVisible:ship.visible,selected:shipCamera.selected(nav.mode),obstructed:shipCamera.obstructed,position:origin.toArray(),fov:camera.fov},audio:{created:Boolean(audio.context),enabled:audio.enabled},travel:nav.travelState,travelTarget:nav.travelTarget,mapOpen:systemMap.open,tunnel:travelEffects.state,speedProfile:nav.speedProfile,moon:{resources:moonResources(...nav.position.clone().sub(moon.worldPosition).normalize().toArray()),resourceProvinces:RESOURCE_PROVINCES,effects:moon.effects,position:moon.worldPosition.toArray(),radius:MOON_RADIUS,altitude:bodyAltitude(nav.position,SELENE),patches:moon.terrain.visibleCount,lod:moon.terrain.maxLevel,distance:nav.position.distanceTo(moon.worldPosition)},controller:{id:nav.gamepad.id,connected:nav.gamepad.connected,active:nav.controllerActive,armed:nav.gamepad.armed,status:nav.gamepad.status},body:nav.body.id,seed:SEED,generatorVersion:GENERATOR_VERSION,position:nav.position.toArray(),altitude:nav.altitude,speed:nav.speed,mode:nav.mode,autoland:nav.autoland,flightAssist:nav.flightAssist,flightRegime:nav.flightEnvironment.regime,atmosphereFraction:nav.flightEnvironment.atmosphereFraction,velocity:nav.velocity.toArray(),angularVelocity:nav.angularVelocity.toArray(),groundHeight:nav.groundHeight,biome:nav.body.airless?'SELENE · AIRLESS MOON':biomeAt(...nav.normal.toArray()),sunDistance:nav.position.clone().sub(new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE)).length(),patches:planet.visibleCount,lod:planet.maxVisibleLevel,pending:planet.pending,vegetation:vegetation.stats,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,ready:firstReady,transiting,fps,shipAsset:ship.userData.assetStatus,shipAssetError:ship.userData.assetError,storageOpen:ship.userData.storageOpen,storageProgress:ship.userData.storageProgress,inventory:inventory.snapshot,mfds:ship.displayState(),doorOpen:nav.doorOpen,doorProgress:nav.doorProgress,insideShip:nav.insideShip,station:{...station.snapshot,ready:station.ready,error:station.error,doorsOpen:station.doorsOpen,distance:nav.stationDistance,local:nav.stationLocal?.toArray(),deckClearance:nav.deckClearance,docked:nav.dockedAtStation,lifting:nav.stationLift,canDock:nav.canDock},shipLocal:nav.toShipLocal()?.toArray(),interaction:nav.interaction,renderScale:resolution.scale,renderResolution:resolution.state};},destinations,transit,land:()=>nav.landOrLaunch(),embark:()=>nav.embark(),setRenderScale(value){resolution.setScale(THREE.MathUtils.clamp(value,.4,1));resizePending=true;},get openingSequence(){return new URLSearchParams(location.search).has('debug')?opening:undefined;},get planet(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?planet:undefined;},get navigation(){return import.meta.env.DEV||new URLSearchParams(location.search).has('debug')?nav:undefined;},get pyreSites(){return {landing:pyreLandingDirection(),volcanoes:VOLCANOES.map(v=>({name:v.name,height:v.height,active:v.active,direction:fromPyreBody(...v.direction)})),fields:LAVA_FIELDS.map(f=>({name:f.name,direction:fromPyreBody(...f.direction)}))};}};
 }catch(error){console.error(error);fatal(`Could not start WebGL 2. Use a current desktop browser with hardware acceleration enabled. ${error.message}`);}
