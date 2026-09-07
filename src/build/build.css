@@ -35,3 +35,29 @@
 .exploring #flight-state.base-target{white-space:normal;align-items:center;line-height:1.6}
 #flight-state.base-target #state-text{min-width:0;overflow-wrap:break-word}
 @media(max-width:600px){#build-dialog h2{margin:10px 0}.build-description{margin:10px 0}.build-scroll-hint{font-size:9px}#flight-state.base-target{top:calc(50% + 110px)}}
+
+
+/* Spatial piece picker: native buttons over eight decorative SVG sectors. */
+#build-dialog.is-radial{width:min(650px,96vw)}
+#build-dialog.is-radial h2{margin:8px 0;font-size:26px}
+#build-dialog.is-radial .build-description{margin:10px 0;color:var(--muted)}
+#build-dialog.is-radial .build-content{display:flex;flex-direction:column;align-items:center;padding:0;gap:8px}
+.build-wheel{position:relative;width:min(520px,100%,max(290px,calc(88dvh - 260px)));aspect-ratio:1;flex-shrink:0;isolation:isolate}
+.build-wheel-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.build-wheel-art path{fill:var(--dialog-bg);stroke:var(--line);stroke-width:2;transition:fill 100ms,stroke 100ms}
+.build-wheel-art path.selected{fill:var(--mint);fill-opacity:.17;stroke:var(--mint);stroke-width:3}
+#build-dialog .build-wheel-piece{position:absolute;transform:translate(-50%,-50%);width:24%;height:21%;min-height:44px;padding:4px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);box-shadow:none;outline-offset:-4px}
+#build-dialog .build-wheel-piece[aria-pressed=true]{color:var(--mint)}
+.build-wheel-piece svg{width:30px;height:32px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.build-wheel-piece span{font-size:12px;line-height:1.2}
+.build-wheel-centre{position:absolute;left:30%;top:30%;width:40%;height:40%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;gap:7px}
+.build-wheel-centre strong{font-size:21px;line-height:1.15;color:var(--mint)}
+.build-wheel-centre p{font:10px/1.5 var(--mono);color:var(--muted);margin:0}
+.build-wheel-centre small{font:10px var(--mono);color:var(--mint)}
+.build-wheel-note{font-size:11px;line-height:1.5;color:var(--muted);text-align:center;margin:0}
+@media(max-width:600px){#build-dialog.is-radial{padding:14px}.build-wheel-centre{gap:5px}.build-wheel-centre .build-eyebrow{display:none}.build-wheel-centre strong{font-size:15px}.build-wheel-centre p,.build-wheel-centre small{font-size:8px}.build-wheel-piece svg{width:24px;height:26px}.build-wheel-piece span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.build-wheel-art path{transition:none}}
+
+/* The focused slice is the focus ring; avoid a square halo over the wedge. */
+#build-dialog .build-wheel-piece[data-controller-selected]{outline:none!important;box-shadow:none!important}
+.build-wheel:focus-within .build-wheel-art path.selected{stroke-width:5}

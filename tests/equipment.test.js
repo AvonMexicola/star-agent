@@ -57,14 +57,14 @@ test('anything that shoots has a unit barrel axis, a muzzle point and a range', 
 
 test('the aim clips are ones character.js actually knows, and only the guns recoil', () => {
   assert.equal(ITEMS['rifle-laser'].aimClip, 'aim-rifle');
-  // Meshy shipped no `aim-pistol` / `use-tool`; both fall back to the rifle aim.
-  assert.equal(ITEMS['sidearm-pistol'].aimClip, 'aim-rifle');
-  assert.equal(ITEMS['mining-laser-tool'].aimClip, 'aim-rifle');
+  assert.equal(ITEMS['sidearm-pistol'].aimClip, 'aim-pistol');
+  assert.equal(ITEMS['mining-laser-tool'].aimClip, 'use-tool');
   assert.equal(ITEMS['rifle-laser'].fireClip, 'fire-rifle');
   assert.equal(ITEMS['sidearm-pistol'].fireClip, 'fire-pistol');
   assert.equal(ITEMS['mining-laser-tool'].fireClip, null, 'a beam has no one-shot recoil');
   assert.equal(ITEMS['rifle-laser'].aiming, 'rifle');
   assert.equal(ITEMS['sidearm-pistol'].aiming, 'pistol');
+  assert.equal(ITEMS['mining-laser-tool'].aiming, 'tool');
 });
 
 test('both two-handed items expose a support-hand grip for a later IK pass', () => {
@@ -333,7 +333,7 @@ test('the muzzle of a scaled Meshy socket still lands in metres', () => {
 
 const sockets = JSON.parse(await readFile(new URL('../public' + SOCKETS_URL, import.meta.url), 'utf8'));
 
-test('the socket file is where equipment.js looks for it and covers all three rigs', () => {
+test('the socket file is where equipment.js looks for it and covers every rig', () => {
   assert.equal(SOCKETS_URL, '/models/props/equipment-sockets.json');
   assert.deepEqual(Object.keys(sockets.rigs), [...RIGS]);
 });
@@ -378,7 +378,7 @@ test('each rig maps every logical socket onto a bone name', () => {
 // Which way "behind the character" runs in the chest bone's own frame: the
 // mannequin was authored facing -Z, the two Meshy pilots facing +Z, so their
 // chest bones' +Z points the opposite way.
-const BACK = Object.freeze({ mannequin: 1, 'player-male': -1, 'player-female': -1 });
+const BACK = Object.freeze({ mannequin: 1, 'player-male': -1, 'player-female': -1, 'player-expedition': -1 });
 
 test('a slung weapon really is on the back, and the pack is behind the chest', () => {
   for (const rig of RIGS) {

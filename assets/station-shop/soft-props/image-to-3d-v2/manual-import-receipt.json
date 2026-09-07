@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "status": "kestrel-reviewed-ready-for-integration",
+  "userSelection": "Cees: I downloaded them, the ones with an acceptable quality. Only the new KESTREL download was found; clarification about other selected files is pending. No older source substituted.",
+  "delivery": "Manual user download; copied unchanged from Downloads. Prior automated export blocker preserved in export-receipt.json.",
+  "originalFilename": "Meshy_AI_KESTREL_GPT_image_v2__0907095023_texture.glb",
+  "source": {
+    "path": "assets/station-shop/soft-props/image-to-3d-v2/raw/kestrel-maintenance-roll/source.glb",
+    "bytes": 5253528,
+    "sha256": "5c1bf23065327f4cbb895adb62d0bfe07c752a1ad8893518ff887c9217f7f0b3",
+    "glbVersion": 2,
+    "headerLengthVerified": true,
+    "triangles": 4145,
+    "materials": 1,
+    "imageMimeTypes": [
+      "image/jpeg",
+      "image/jpeg",
+      "image/jpeg"
+    ],
+    "extensionsUsed": [],
+    "extensionsRequired": []
+  },
+  "runtimeCandidate": {
+    "path": "public/models/props/kestrel-maintenance-roll.glb",
+    "bytes": 268872,
+    "sha256": "76d741972c05ddffe76d1c51f6607109cfd3dc265510b9f62876105e4d2357d7",
+    "glbVersion": 2,
+    "headerLengthVerified": true,
+    "triangles": 4000,
+    "materials": 1,
+    "imageMimeTypes": [
+      "image/webp",
+      "image/webp",
+      "image/webp"
+    ],
+    "extensionsUsed": [
+      "EXT_texture_webp"
+    ],
+    "extensionsRequired": [
+      "EXT_texture_webp"
+    ]
+  },
+  "sourceBlenderInspection": {
+    "triangles": 4145,
+    "vertices": 3859,
+    "materials": 1,
+    "textureCount": 3,
+    "textureResolution": [
+      2048,
+      2048
+    ],
+    "finiteUVs": true,
+    "views": [
+      "front-oblique",
+      "opposite-oblique",
+      "underside"
+    ],
+    "rootFinding": "Coherent closed roll, continuous straps and buckles, layered ends and complete underside. Suitable to try local intake."
+  },
+  "cleanup": {
+    "trianglesRemoved": 145,
+    "uniformScale": 0.2906554285416915,
+    "runtimeDimensionsMetres": [
+      0.2787342667579651,
+      0.12999999523162842,
+      0.29069778323173523
+    ],
+    "textures": "3 embedded 1024x1024 WebP maps: base color, packed metallic/roughness, normal",
+    "gameBudgetChecks": "pass",
+    "rootCleanedStudioFinding": "Folded ends and strap silhouette retained; correct top-up, closed underside. New orientation rotates about vertical only. Fine weave is softer at runtime texture resolution."
+  },
+  "review": {
+    "independent": "Astra 4/4/4/4/4/4 = 4.00 after contact and viewer fixes; docs/qa/station-shop-props-review.md",
+    "gameIntegration": "staged isolated feat/retail-soft-props candidate on port 5263",
+    "acceptedShopPreview5260": "unchanged",
+    "jacket": "not downloaded; not enabled, no speculative HTTP request",
+    "finalBundle": {
+      "path": "/assets/index-CoFnp-fX.js",
+      "sha256": "363bf688666e94b55d7bf460e887732e57e4e45917c168c48b893312fb8b8081"
+    },
+    "runtimeOverhead": {
+      "draws": 2,
+      "submittedTriangles": 4002,
+      "contact": "one shared64px alpha approximate contact-AO plane; static only, roll casts no shadow but receives it",
+      "timingLimitation": "Outside browser workload contention; no causal latency or whole-scene frame-budget pass claimed"
+    }
+  },
+  "meshCreditsThisImport": 0,
+  "sourcesPreserved": true,
+  "validation": {
+    "npmTest": "186 passed",
+    "npmBuild": "passed; existing chunk-size warning",
+    "blender": "5.2.0 Cycles CPU studio source and candidate. Source render finished but audio shutdown hung; cleanup and cleaned renders exited0 with ALSOFT_DRIVERS=null. Installed addon cattrs/registration warnings remain.",
+    "browser": "3 initial focused cases passed: concourse resources, artwork fallback, physical passenger transit/controller purchase/cargo/reload. Touch initially timed out with help open/controller detected; fixture isolated host gamepads, then touch-only rerun passed11.1s. No app code changed for that fixture."
+  }
+}

@@ -63,3 +63,85 @@ test('mixer gates pre-gesture voices, caps polyphony, attenuates distant shots a
   audio.setEnabled(true);audio.event({type:'shot',weapon:'pulse',point:new THREE.Vector3(1000,0,0)},{focused:true,position:new THREE.Vector3()});assert.equal(audio.state.shots,0);
   audio.dispose();assert.equal(audio.play('pulse'),false);assert.equal(audio.state.buffers,0);
 });
+
+test('sized ship shots lower pitch and increase the bounded gain without altering default personal shots',()=>{
+  const context=mockContext(),sources=[];const original=context.createBufferSource;
+  context.createBufferSource=()=>{const node=original();node.playbackRate={value:1};sources.push(node);return node;};
+  const audio=new GameplayAudio(context,context.createGain());audio.setEnabled(true);
+  const calls=[],play=audio.play.bind(audio);audio.play=(kind,options)=>{calls.push(options);return play(kind,options);};
+  const nav={focused:true,position:new THREE.Vector3()};
+  audio.event({type:'shot',weapon:'pulse'},nav);
+  audio.event({type:'shot',weapon:'pulse',size:3,pitch:.72},nav);
+  assert.equal(sources[0].playbackRate.value,1);assert.equal(sources[1].playbackRate.value,.72);
+  assert.ok(calls[1].gain>calls[0].gain);assert.ok(calls[1].gain<.2);audio.dispose();
+});
+
+
+test('creature attacks map species, spatialize once per event, and stop on interruption',()=>{
+ const audio=new GameplayAudio(mockContext(),{}),nav={focused:true,enabled:true,mode:'walk',position:new THREE.Vector3(),orientation:new THREE.Quaternion()};
+ const bear={type:'creature-attack',species:'pyrebear',point:new THREE.Vector3(3,0,-3)};
+ audio.event(bear,nav);assert.equal(audio.state.attacks,0);
+ audio.setEnabled(true);audio.event(bear,nav);assert.equal(audio.state.last,'pyrebear-attack');assert.equal(audio.state.attacks,1);
+ audio.event({...bear,species:'suloher'},nav);assert.equal(audio.state.last,'sulphurhound-attack');assert.equal(audio.state.attacks,2);
+ audio.event({...bear,species:'unknown'},nav);assert.equal(audio.state.attacks,2);
+ audio.event({...bear,point:new THREE.Vector3(301,0,0)},nav);assert.equal(audio.state.attacks,2);
+ audio.event(bear,{...nav,enabled:false});audio.event(bear,{...nav,focused:false});assert.equal(audio.state.attacks,2);
+ audio.suspend();assert.equal(audio.state.voices,0,'long growls stop on menu/focus interruption');
+ audio.event({type:'building-placement',point:new THREE.Vector3(2,0,0)},nav);assert.equal(audio.state.placements,1);assert.equal(audio.last,'building-placement');
+ audio.setEnabled(false);assert.equal(audio.state.voices,0);audio.dispose();
+});
+test('bear growl is longer and has more low-frequency weight than the hound snarl',()=>{
+ const bear=synthesize('pyrebear-attack',0,24000),hound=synthesize('sulphurhound-attack',0,24000);
+ const lowShare=samples=>{let low=0,energy=0,total=0;const a=1-Math.exp(-2*Math.PI*180/24000);for(const n of samples){low+=a*(n-low);energy+=low*low;total+=n*n;}return energy/total;};
+ assert.ok(bear.length>hound.length);assert.ok(lowShare(bear)>lowShare(hound)*1.15);
+ for(const kind of ['building-placement','pyrebear-attack','sulphurhound-attack']){const pcm=synthesize(kind,0,24000);assert.ok(Math.abs(pcm.at(-1))<.001,'no sharp ending');}
+});
+
+test('engine spools with actual thrust and boost, idles seated, and stops when power is lost',async()=>{
+  const {engineMix,EngineAudio}=await import('../src/audio/engine.js');
+  const idle=engineMix({mode:'landed'}),thrust=engineMix({throttle:1}),boost=engineMix({throttle:1,boost:true});
+  assert.ok(idle.tone>0&&thrust.tone>idle.tone&&boost.exhaust>thrust.exhaust);
+  assert.equal(engineMix({throttle:0,boost:true}).boost,false,'holding boost while coasting does not fire engines');
+  for(const mode of ['walk','eva','crashed','destroyed'])assert.equal(engineMix({mode,throttle:1}).exhaust,0);
+  assert.equal(engineMix({powered:false,throttle:1,boost:true}).tone,0);
+  assert.equal(engineMix({throttle:NaN}).load,0);
+  const context=mockContext(),noise=context.createBufferSource(),engine=new EngineAudio(context,{},noise);
+  assert.equal(engine.toneGain.gain.value,0,'constructed engine is silent until updated after gesture');
+  engine.update({throttle:1});assert.ok(engine.exhaustGain.gain.value>idle.exhaust);
+  engine.update({powered:false});assert.equal(engine.exhaustGain.gain.value,0);
+  engine.dispose();engine.update({throttle:1});assert.equal(engine.exhaustGain.gain.value,0);
+});
+
+
+test('flyby approaches high, recedes low, pans with the camera and fades with distance',async()=>{
+  const {flybyMix}=await import('../src/audio/flyby.js');
+  const velocity=new THREE.Vector3(180,0,0),mix=(x,z=-25,q)=>flybyMix(new THREE.Vector3(x,0,z),velocity,q);
+  assert.ok(mix(-100).doppler>1&&mix(100).doppler<1);
+  assert.ok(mix(-100).pan<0&&mix(100).pan>0);
+  assert.ok(mix(0).gain>mix(0,-160).gain);
+  assert.ok(mix(-100,-25,new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI)).pan>0);
+  assert.equal(mix(500),null);
+  assert.equal(flybyMix(new THREE.Vector3(20,0,0),new THREE.Vector3()),null);
+});
+test('flyby rejects first samples, co-moving ships, warps and gaps; limits and clears audio voices',async()=>{
+  const {FlybyTracker,FlybyAudio}=await import('../src/audio/flyby.js');
+  const tracker=new FlybyTracker(),q=new THREE.Quaternion(),listener=new THREE.Vector3();
+  const ships=x=>Array.from({length:9},(_,id)=>({id,position:new THREE.Vector3(x,0,-25-id)}));
+  assert.equal(tracker.update(ships(-100),listener,q,.1).length,0);
+  assert.equal(tracker.update(ships(-82),listener,q,.1).length,4);
+  assert.equal(tracker.update(ships(-64),new THREE.Vector3(18,0,0),q,.1).length,0,'co-moving listener');
+  assert.equal(tracker.update(ships(10000),listener,q,.1).length,0);
+  assert.equal(tracker.update(ships(-100),listener,q,2).length,0);
+  assert.equal(tracker.update(ships(-82),listener,q,.1).length,0);
+  const c=mockContext(),audio=new FlybyAudio(c,{},c.createBufferSource());
+  audio.update(ships(-100),listener,q,.1);assert.equal(audio.voices.length,0);
+  audio.setEnabled(true);audio.update(ships(-100),listener,q,.1);audio.update(ships(-82),listener,q,.1);
+  assert.equal(audio.state.voices,4);assert.equal(audio.voices.length,4);
+  assert.ok(audio.voices.every(v=>v.noiseGain.gain.value>0));
+  audio.update([],listener,q,.1);assert.equal(audio.state.voices,0);assert.ok(audio.voices.every(v=>v.noiseGain.gain.value===0));
+  audio.update(ships(-100),listener,q,.1);audio.update(ships(-82),listener,q,.1);
+  audio.setEnabled(false);assert.equal(audio.tracker.previous.size,0);assert.ok(audio.voices.every(v=>v.toneGain.gain.value===0));
+  audio.setEnabled(true);audio.update(ships(-64),listener,q,.1);assert.equal(audio.state.voices,0);
+  audio.update(ships(-46),listener,q,.1,{active:false});assert.equal(audio.tracker.previous.size,0);
+  audio.dispose();assert.equal(audio.voices.length,0);
+});

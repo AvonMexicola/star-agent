@@ -77,8 +77,10 @@ test('Kestrel has no hidden construction cargo; map labels, soundtrack and refre
  expect(Object.values(s.containers.containers.find(c=>c.id==='ship').items).every(q=>q===0)).toBe(true);
  expect(s.containers.shipAccess.available).toBe(false);expect(s.audio.created).toBe(false);
  await page.keyboard.press('M');await expect(page.locator('#system-map')).toHaveCSS('opacity','1');await frames(page);
- await expect(page.locator('[data-travel-target="star"] small')).toHaveText('STAR');await expect(page.locator('[data-travel-target="miasma"] small')).toHaveText('MOON');
+ await expect(page.locator('[data-travel-target="star"] small')).toHaveText('Star');
  for(const [id,name] of [['aeon','Aeon'],['selene','Selene'],['pyre','Pyre'],['star','Our star'],['miasma','Miasma']]){
+   await page.locator('[data-controller-key="map-breadcrumb-star"]').click();
+   if(['selene','miasma'].includes(id))await page.locator('[data-travel-target="'+(id==='selene'?'aeon':'pyre')+'"]').click();
    await page.locator('[data-travel-target="'+id+'"]').click();await expect(page.locator('#map-target-name')).toContainText(name);
  }
  expect(errors).toEqual([]);

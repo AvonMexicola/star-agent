@@ -1,0 +1,83 @@
+{
+  "id": "kestrel-maintenance-roll",
+  "status": "measured-unreviewed",
+  "source": {
+    "file": "assets/station-shop/soft-props/image-to-3d-v2/raw/kestrel-maintenance-roll/source.glb",
+    "bytes": 5253528,
+    "sha256": "5c1bf23065327f4cbb895adb62d0bfe07c752a1ad8893518ff887c9217f7f0b3"
+  },
+  "runtimeCandidate": {
+    "file": "assets/station-shop/soft-props/processed/kestrel-maintenance-roll/kestrel-maintenance-roll.glb",
+    "bytes": 268872,
+    "sha256": "76d741972c05ddffe76d1c51f6607109cfd3dc265510b9f62876105e4d2357d7"
+  },
+  "trianglesBefore": 4145,
+  "triangles": 4000,
+  "cleanupTriangleTarget": 4000,
+  "providerTriangleTarget": 2500,
+  "triangleCap": 4000,
+  "materials": 1,
+  "uniformScale": 0.2906554285416915,
+  "sourceBlenderSize": [
+    1.0,
+    0.9589849710464478,
+    0.44726499915122986
+  ],
+  "orientationMatrix": [
+    [
+      -0.0,
+      -1.0,
+      -0.0
+    ],
+    [
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "sizeMetres": [
+    0.2787342667579651,
+    0.12999999523162842,
+    0.29069778323173523
+  ],
+  "boundsMetres": {
+    "min": [
+      -0.13936713337898254,
+      0.0,
+      -0.14534889161586761
+    ],
+    "max": [
+      0.13936713337898254,
+      0.12999999523162842,
+      0.14534889161586761
+    ]
+  },
+  "textures": [
+    {
+      "name": "base_color",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "name": "metallic_roughness",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "name": "normal",
+      "width": 1024,
+      "height": 1024
+    }
+  ],
+  "proposedHubBasePosition": [
+    12.04,
+    -6.908,
+    -0.25
+  ],
+  "notes": "Native source preserved; WEBP PBR export and geometry reduction require visual verification."
+}

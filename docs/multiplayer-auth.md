@@ -28,6 +28,12 @@ const auth = createAuth({
 The context argument is `{cookie: req.headers.cookie, ip: trustedRemoteAddress}`.
 `createPostgresStore` and `createSMTPMailer` are asynchronous factories.
 
+The PostgreSQL adapter uses Prisma 7 with `@prisma/adapter-pg`, following the
+MijnSchoolInzicht project's PostgreSQL/Prisma pattern. `prisma/schema.prisma` maps
+the established tables; `npm ci` generates a server-only JavaScript client under
+ignored `server/generated/`. No generated database client enters the browser.
+The public store methods and persisted account/state formats are unchanged.
+
 | Method | Input | Successful body |
 | --- | --- | --- |
 | `register(input, context)` | `{email,callsign,password}` | `{account:{id,callsign}}`, status 201, session cookie |
@@ -106,13 +112,19 @@ has not been verified against a real provider by the unit suite.
 
 ## Database lifecycle and saved state
 
-`store.migrate()` applies numbered SQL migrations transactionally, with a Postgres
+`store.migrate()` retains the numbered SQL migrations transactionally, with a Postgres
 advisory lock and `schema_migrations` version record. It is safe to call again or
 from concurrent startup processes. The database role needs schema creation/table
 permissions during initial deployment; applications should run against a dedicated
 database. Startup must fail if configured persistence is unavailable; there is no
 automatic ephemeral fallback. Call `store.close()` during shutdown. When supplying
 a `pg.Pool` via `{pool}`, the caller owns pool shutdown.
+
+Prisma model queries use that pool's current PostgreSQL schema. Row locks and
+literal case-insensitive email equality use bound SQL through Prisma; `%` and `_`
+in an email are never treated as wildcard patterns. The existing lower-case unique
+indexes and check constraints remain authoritative. Prisma's schema-push/reset
+commands do not replace the deployed migration history.
 
 `loadPlayerState(accountId)` returns the saved JSON object or `null`.
 `savePlayerState(accountId, state)` atomically replaces that account's JSONB object,
@@ -125,6 +137,12 @@ the store's atomic replacement does not merge independent updates.
 `createMemoryStore()` implements the same persistence contracts for explicitly
 chosen tests/local development. It copies saved objects and cannot be used by
 production authentication. Never select it because a database connection failed.
+
+The shared `npm run dev:all` preview now uses persistent native PostgreSQL with
+Prisma, not the memory adapter. Its private data directory is outside worktrees
+and survives process restarts. See [local development](local-development.md) for
+location, configuration and backup/restore. Previously lost RAM-only accounts
+cannot be recovered from this new database.
 
 ## Verification
 

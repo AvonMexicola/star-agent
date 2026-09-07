@@ -10,17 +10,17 @@ mapping, not operating-system Bluetooth status.
 
 | Context | Binding | Action |
 | --- | --- | --- |
-| Everywhere in gameplay | Menu | Command menu: destinations, backpack, tool, help |
+| Everywhere in gameplay | Menu | Gameplay menu: Comms, Map, Contracts, Inventory, Loadout, Ship, Settings |
 | Everywhere in gameplay | View | Backpack |
 | Dialog | D-pad / left stick | Move visible focus between available controls |
 | Dialog | A / B | Activate / close and return |
 | Dialog | Right stick | Scroll |
 | Flight / walking | Left / right stick | Move / aim |
-| Flight | RT / LT | Rise / descend |
-| Flight | A / ✕ | Fire selected ship weapon (pulse / solar lance / singularity) |
+| Flight | A / B | Rise / descend |
+| Flight | RT / R2 | Fire selected ship weapon (pulse / solar lance / singularity) |
 | Flight | LB / RB | Roll |
 | Flight | Y / X | Land or launch / interact |
-| Flight | B / right-stick click | Brake / flight assist |
+| Flight | LT / right-stick click | Brake / flight assist |
 | Walking | A / X | Jump / interact, including hatch and cargo |
 | Walking / EVA | D-pad right | Equip or holster mining tool |
 | Walking / EVA | RT | Fire equipped weapon or mining tool |
@@ -208,30 +208,34 @@ keyboard registration and physical-device testing remain separate checks.
 
 ## Construction
 
-Menu → Build enters the shared piece palette while walking outside a ship on a
-planet. Choose a piece with D-pad and A; X reopens the palette while building.
+B enters the shared piece palette while walking outside within 64 m of an owned
+mainframe. Menu → Build also establishes a new site on a planet. Point the left
+stick at a radial slice and press A; B reopens the wheel
+while building. D-pad also browses pieces and the recipes/supplies tabs. Releasing
+the stick retains its highlight; B closes without choosing. A choice never places
+a piece until a fresh A press after controls return to neutral.
 The contextual controls consume the existing shared Gamepad poll:
 
 | Construction action | Controller | Keyboard / touch |
 | --- | --- | --- |
-| Enter | Menu → Build | B or visible Build button |
-| Place one piece | RT edge | Enter or Place button |
-| Next snap target | LT edge | T or Snap button |
-| Rotate / flip wall facing | LB / RB | Q / E or rotate buttons |
+| Enter | B near owned mainframe; Menu → Build anywhere buildable | B or visible Build button |
+| Place one piece | A edge | Enter or Place button |
+| Next snap target | LB edge | T or Snap button |
+| Rotate / flip wall facing | LT / RT edges | Q / E or rotate buttons |
 | Foundation height / upper level | D-pad up / down | Up / Down or height buttons |
-| Piece palette | X | P or Pieces button |
-| Exit construction | B | Escape or Exit button |
-| Move / look / jump | Sticks / A | WASD / look / Space |
+| Piece wheel | B; left stick points, A chooses | P or Pieces button; pointer / Tab + Enter |
+| Exit construction | X | Escape or Exit button |
+| Move / look / jump | Sticks / RB | WASD / look / Space |
 | Backpack / command menu | View / Menu | Existing inventory and menu routes |
 
 Ordinary pieces rotate in quarter turns. Walls flip facing by 180° on their
-selected supporting edge; LT changes the edge. Foundation height uses 0.25m
+selected supporting edge; LB changes the edge. Foundation height uses 0.25m
 steps. Non-foundation height selection uses storeys where supported by the
 piece's placement rules.
 
 Construction suppresses mining/fire, EVA/boarding shortcuts and quick-item
 shortcuts. Its own hints replace the equipment bar and ordinary tool hints.
-Dialog transitions use neutral arming, so held RT cannot replay placement after
+Dialog transitions use neutral arming, so held A cannot replay placement after
 the palette or backpack closes. Construction does not take over EVA controls.
 
 Menu → Field recipes and the palette's Recipes tab use the same native dialog
@@ -257,3 +261,65 @@ injected standard Gamepads, read-only steering feedback and the real combat mode
 It includes input interruption gates, both kills, the report and return to flight.
 The separate close-up/keyboard fixture uses controlled poses for visual inspection;
 that is not controller-only journey evidence. Physical-device validation is separate.
+
+
+## Controller layout and trigger revision — 2026-09-07
+
+Supersedes earlier A-fire / RT-ascent descriptions in this historical record.
+RT / R2 fires ship weapons; A/B provides vertical thrust; LT brakes and cancels
+drive. EVA and on-foot fire remain RT; A still confirms dialogs and recovers
+a destroyed ship. Menu → Settings → Controller layout or Help → View controller layout
+opens a responsive diagram with Flight, On foot, EVA and Shortcuts & menus views.
+The shared dialog router and neutral-input gate apply to the entire route.
+
+
+## Fixed gameplay terminal — 2026-09-07
+
+Menu / Options and Escape open the last gameplay tab. LB/RB or bracket keys
+changes tabs; D-pad/LS moves visible focus; A confirms; B/Escape/Resume closes.
+Inventory, loadout, recipes, fleet and development lists use explicit pages.
+Page arrows remain focusable at boundaries and do not perform out-of-range actions.
+Tab switches await native close cleanup and require neutral input again.
+Dev → Console list opens the actual console; Dev is present only with the enabled
+development launcher. Settings includes graphics, sound and the controller diagram.
+
+Navigation targeting: Map uses the common fixed gameplay screen. D-pad left opens
+it in flight; D-pad/left stick selects, A confirms and B resumes. LB/RB changes
+outer gameplay tabs. Point the nose at a visible body or enabled beacon to charge
+the reticle ring, then LB+RB + D-pad up engages the relativistic drive. LT aborts.
+Charge does not fire the drive automatically; modal/focus/controller changes clear
+it. RT remains weapon fire. Keyboard N/J and the on-screen engage button share the
+same charged-target command. With no target, the shortcut retains free heading.
+
+
+The radial uses optional `dialog.controllerNavigation(ui)` in the shared router.
+It returns a native focus target; confirm/back and device/focus neutral arming
+remain owned by the existing router and GamepadInput. `ui.stickX/stickY` carry
+analog direction without D-pad contributions. Keep eight slice locations stable.
+See `docs/qa/base-building/radial.md` for verification and remaining review limits.
+
+Current B/A/trigger mappings and context checks: [hotkey evidence](qa/base-building/controller-hotkeys.md).
+
+## Combat momentum — 2026-09-07
+
+Flight defaults to fly-by-wire with finite thrust and drift correction. R3 / V
+selects unlocked flight; releasing thrust coasts while the ship turns independently.
+Hold LT / L2 (keyboard X) for maximum braking, allowing stopping distance.
+Menu → Ship → Combat / cruise (keyboard Z) selects the speed regime independently:
+Kestrel 220, Nomad 180, Atlas 120 m/s. RT fires only in combat mode, within its
+speed limit, with boost off and landing gear retracted. Cruise locks weapons.
+Landing assist requires speed below 10 m/s. All hulls retain momentum; Atlas
+has the slowest correction. Injected Gamepad evidence is documented separately
+from physical controller testing.
+
+
+## Expanded construction menus
+
+LB/RB changes the active native build tab (Blocks/Shapes/Facilities/Resources/
+Sandbox supplies/Mainframe when available). Tab changes consume the shared UI
+edge before analog focus or A confirmation and suspend until neutral. The hooks
+are `dialog.controllerAction(ui)` for tab changes and `controllerNavigation(ui)`
+for the wheel; neither polls Gamepad independently. B enter uses the actual saved
+claim radius,64m normally or96m after placing a large pad. X outside build mode
+operates rack/terminal/hangar/pad-designation interactions through the same shared
+native inventory/dialog flow. See `qa/base-building/expansion.md` for evidence.

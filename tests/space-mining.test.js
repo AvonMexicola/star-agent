@@ -15,6 +15,20 @@ class SynchronousWorker {
   }
   terminate(){this.terminated=true;}
 }
+
+test('third-person inspection reports and enforces reach from the physical player eye',()=>{
+  const point=new Vector3(0,0,-10),origin=new Vector3(),eye=new Vector3(0,0,-4);
+  const field={cache:new Map(),regionalRocks:new Map(),stones:{raycast:()=>null},rings:{raycast:()=>null},fieldCache:{raycast:()=>null},store:{canEditRock:()=>true},
+    readyRaycast:()=>({point, distance:point.distanceTo(origin),rock:{rockId:'test-rock',space:false}})};
+  const inspect=()=>MiningField.prototype.inspectTarget.call(field,origin,new Vector3(0,0,-1),8,eye);
+  assert.equal(inspect().status,'ready');assert.equal(inspect().distance,6);
+  point.z=-13;assert.equal(inspect().status,'out-of-range');assert.equal(inspect().distance,9);
+  field.readyRaycast=()=>null;
+  field.stones.raycast=()=>({point,distance:point.distanceTo(origin),descriptor:{id:'loose-test',looseStone:true,name:'Basalt'}});
+  point.z=-10;assert.equal(inspect().status,'preparing');assert.equal(inspect().distance,6);
+  point.z=-13;assert.equal(inspect().status,'out-of-range');assert.equal(inspect().distance,9);
+  assert.deepEqual(origin,new Vector3());assert.deepEqual(eye,new Vector3(0,0,-4));
+});
 test('ring rock promotion mines into the shared backpack and restores its cut after streaming away',t=>{
   const old=globalThis.Worker;globalThis.Worker=SynchronousWorker;t.after(()=>{if(old)globalThis.Worker=old;else delete globalThis.Worker;});
   const entries=new Map(),storage={getItem:k=>entries.get(k)??null,setItem:(k,v)=>entries.set(k,v)},scene=new Scene(),rings=new MoonRings(scene,12),field=new MiningField(scene,storage,rings);

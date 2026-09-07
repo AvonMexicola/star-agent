@@ -1,0 +1,161 @@
+/* Fixed terminal chrome. Existing screens keep their controls and handlers. */
+dialog.gameplay-screen{inset:16px!important;margin:0!important;width:calc(100vw - 32px)!important;max-width:none!important;height:calc(100dvh - 32px)!important;max-height:none!important;padding:0!important;overflow:hidden!important;background:var(--dialog-solid)!important;border:1px solid var(--line)!important;border-radius:8px;box-sizing:border-box;scroll-padding:0!important}
+dialog.gameplay-screen[open]{display:flex!important;flex-direction:column!important}
+.gameplay-screen [hidden]{display:none!important}
+.gameplay-screen .gameplay-header{display:grid!important;grid-template-columns:1fr auto!important;align-items:center!important;gap:18px!important;padding:20px 28px 0!important;margin:0!important;border-bottom:1px solid var(--line);flex:none;background:var(--dialog-solid);position:static!important}
+.gameplay-brand{display:flex;align-items:center;gap:14px;min-width:0}.gameplay-brand strong{font:500 27px var(--font-display);white-space:nowrap}.gameplay-mark{font-size:30px;color:var(--mint)}.gameplay-context{color:var(--muted);font-size:12px;padding-left:14px;border-left:1px solid var(--line)}
+.gameplay-screen .gameplay-resume{width:auto!important;min-height:44px!important;font:12px var(--font-body)!important;padding:10px 16px!important;background:transparent;border:1px solid var(--line);white-space:nowrap}.gameplay-resume kbd{margin-left:12px}
+.gameplay-screen .gameplay-tabs{grid-column:1/-1;display:grid!important;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px!important;margin:0!important;flex-wrap:nowrap!important}
+.gameplay-screen .gameplay-tabs button{width:auto!important;min-height:48px!important;padding:10px 12px!important;margin:0!important;font:14px var(--font-body)!important;border:0!important;border-radius:0!important;border-bottom:3px solid transparent!important;background:transparent!important;color:var(--muted)!important;text-align:center!important}
+.gameplay-screen .gameplay-tabs button[aria-selected=true]{color:var(--mint)!important;border-bottom-color:var(--mint)!important;background:#b6efd10b!important}
+.gameplay-screen .gameplay-content{flex:1;min-height:0;overflow:hidden;padding:22px 28px;position:relative}
+.gameplay-screen .gameplay-footer{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:16px!important;padding:12px 28px!important;margin:0!important;border-top:1px solid var(--line);font:10px/1.5 var(--mono)!important;color:var(--muted);flex:none}
+.gameplay-screen .gameplay-pagination{display:flex!important;grid-column:1/-1;align-items:center;justify-content:center;gap:16px!important;margin:8px 0 0!important;padding:0!important;flex:none}
+.gameplay-screen .gameplay-pagination button{min-width:44px!important;min-height:36px!important;padding:4px 12px!important;font:24px/1 var(--font-body)!important}.gameplay-pagination button[aria-disabled=true]{opacity:.35}.gameplay-pagination span{font:11px var(--mono)}
+/* Redundant dialog chrome is replaced by the shared header/footer. */
+.gameplay-content :is(.station-close,.inventory-close,.controller-menu-top,[data-controller-close],.system-map-header,.system-map-footer,.mp-dialog-top,.mp-controller-note,.dev-footer>span){display:none!important}
+#controller-menu.gameplay-screen .gameplay-content>p{display:none}
+#controller-menu.gameplay-screen .controller-command-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-content:start;max-width:1150px;margin:auto}
+#controller-menu.gameplay-screen .controller-command-list>button{min-height:68px;font:14px/1.5 var(--font-body);padding:16px}
+#patrol-console.gameplay-screen .gameplay-content{max-width:1060px;width:100%;align-self:center;display:grid;grid-template-columns:1.2fr 1fr;column-gap:48px;align-content:center}
+#patrol-console.gameplay-screen h2{font:500 46px/1.1 var(--font-display);margin:12px 0 20px;grid-column:1}
+#patrol-console.gameplay-screen .eyebrow,#patrol-console.gameplay-screen .patrol-brief{grid-column:1}
+#patrol-console.gameplay-screen dl{grid-column:2;grid-row:1/5;margin:0;padding:24px;background:#10232a;border:1px solid var(--line);align-self:start}
+#patrol-console.gameplay-screen :is(.patrol-status,.patrol-actions,.patrol-log,small){grid-column:1/-1}
+#patrol-console.gameplay-screen .patrol-actions{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+#patrol-console.gameplay-screen p{font-size:14px;line-height:1.65}
+#patrol-console.gameplay-screen small{max-width:85ch}
+
+#cargo-dialog.gameplay-screen .gameplay-content{display:flex;flex-direction:column;gap:10px}
+#cargo-dialog.gameplay-screen .inventory-header{padding:0;border:0;flex:none}
+#cargo-dialog.gameplay-screen .inventory-header .eyebrow,#cargo-dialog.gameplay-screen .inventory-view-tabs,#cargo-dialog.gameplay-screen .inventory-mining-skill,#cargo-dialog.gameplay-screen .inventory-toolbar>p,#cargo-dialog.gameplay-screen .cargo-save,#cargo-dialog.gameplay-screen .inventory-empty-context{display:none!important}
+#cargo-dialog.gameplay-screen :is(.inventory-ship-link,.inventory-starter,.inventory-toolbar,.inventory-footer){padding:0;margin:0;border:0;flex:none}
+#cargo-dialog.gameplay-screen .inventory-ship-link{font-size:10px}
+#cargo-dialog.gameplay-screen .inventory-starter>span,#cargo-dialog.gameplay-screen .inventory-bulk>span{display:none}
+#cargo-dialog.gameplay-screen .inventory-toolbar{display:flex;justify-content:space-between;gap:8px}
+#cargo-dialog.gameplay-screen .inventory-bulk{margin:0;padding:0;border:0}
+#cargo-dialog.gameplay-screen .inventory-columns{padding:0;gap:16px;align-items:start;flex:1;min-height:0;align-content:start}
+#cargo-dialog.gameplay-screen .inventory-columns:not(:has(.inventory-container:nth-child(2))){grid-template-columns:1fr}
+#cargo-dialog.gameplay-screen .inventory-container{padding:12px;position:relative}
+#cargo-dialog.gameplay-screen .container-stat{margin:7px 0;padding-bottom:7px}
+#cargo-dialog.gameplay-screen .inventory-boxes{max-height:none;overflow:visible;padding:0}
+#cargo-dialog.gameplay-screen .inventory-box{margin:0}
+#cargo-dialog.gameplay-screen .inventory-slot{height:84px!important;min-height:0;padding:4px}
+#cargo-dialog.gameplay-screen .slot-art{width:30px;height:30px}.gameplay-screen .slot-name{min-height:18px}
+#cargo-dialog.gameplay-screen .inventory-add-box{margin-top:8px;min-height:36px;padding:6px 10px}
+#cargo-dialog.gameplay-screen .inventory-detail{flex:none;margin:0;padding:10px;min-height:60px;gap:10px}
+#cargo-dialog.gameplay-screen .detail-controls{display:none}
+#cargo-dialog.gameplay-screen .detail-item p{max-width:60ch}
+#cargo-dialog.gameplay-screen .inventory-footer{display:block}
+#cargo-dialog.gameplay-screen .cargo-feedback{min-height:0;font-size:11px;margin:0}
+#cargo-dialog.gameplay-screen .inventory-equipment{padding:0;min-height:0;flex:1}
+#cargo-dialog.gameplay-screen.equipment-view :is(.inventory-ship-link,.inventory-starter,.inventory-toolbar){display:none!important}
+#cargo-dialog.gameplay-screen .loadout-summary{display:flex;justify-content:space-between;align-items:center;margin:0 0 14px;padding:0}
+#cargo-dialog.gameplay-screen .loadout-summary>div:first-child{display:none}
+#cargo-dialog.gameplay-screen .loadout-stats{margin:0;gap:24px}
+#cargo-dialog.gameplay-screen .loadout-layout{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:start}
+#cargo-dialog.gameplay-screen .loadout-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#cargo-dialog.gameplay-screen .loadout-slot{grid-column:auto!important;min-height:85px!important;padding:8px!important}
+#cargo-dialog.gameplay-screen .loadout-slot-art{height:32px;margin:2px 0}.gameplay-screen .loadout-slot-art svg{width:32px;height:32px}
+#cargo-dialog.gameplay-screen .loadout-slot small,#cargo-dialog.gameplay-screen .loadout-note{display:none}
+#cargo-dialog.gameplay-screen .loadout-detail{padding:14px}
+#cargo-dialog.gameplay-screen .loadout-detail-art{display:none}
+#cargo-dialog.gameplay-screen .loadout-detail p{margin:8px 0;font-size:12px}
+#cargo-dialog.gameplay-screen .loadout-candidates{max-height:none;overflow:visible;display:grid;gap:6px}
+#cargo-dialog.gameplay-screen .loadout-candidates>button{padding:7px}
+#cargo-dialog.gameplay-screen .loadout-actions{gap:6px;flex-wrap:wrap}
+#dev-launcher.gameplay-screen .gameplay-content{display:flex;flex-direction:column;gap:16px}
+#dev-launcher.gameplay-screen .gameplay-content>header,#dev-launcher.gameplay-screen .dev-intro,#dev-launcher.gameplay-screen .dev-asset-note,#dev-launcher.gameplay-screen .dev-seed{display:none}
+#dev-launcher.gameplay-screen .dev-screen-tabs{display:flex;gap:8px;flex:none}
+#dev-launcher.gameplay-screen .dev-screen-tabs button{padding:10px 20px}
+#dev-launcher.gameplay-screen .dev-choices{flex:1;min-height:0;gap:22px;grid-template-columns:260px 1fr}
+#dev-launcher.gameplay-screen .dev-locations{max-height:none;overflow:visible;grid-template-columns:repeat(2,minmax(0,1fr));padding:0}
+#dev-launcher.gameplay-screen .dev-locations button{padding:10px;min-height:66px}
+#dev-launcher.gameplay-screen .gameplay-content>footer{margin:0;padding:12px 0 0;flex:none}
+#dev-launcher.gameplay-screen .dev-footer{margin:0;justify-content:flex-start}
+#dev-launcher.gameplay-screen :is(.dev-console-list,.dev-review-list){display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+#dev-launcher.gameplay-screen :is(.dev-console-list button,.dev-review-list a){min-height:76px;padding:16px}
+#graphics-settings.gameplay-screen .gameplay-content{width:min(800px,100%);align-self:center;padding-top:32px}
+#graphics-settings.gameplay-screen .graphics-options{gap:14px}.gameplay-screen .graphics-options button{min-height:60px}
+#controller-layout.gameplay-screen .gameplay-content>header,#controller-layout.gameplay-screen .gameplay-content>footer{display:none}
+#controller-layout.gameplay-screen .gameplay-content>nav{margin:0 0 16px;gap:8px}
+#controller-layout.gameplay-screen .layout-board{grid-template-columns:1fr minmax(220px,1.4fr) 1fr;gap:20px;max-width:1080px;margin:auto}
+#controller-layout.gameplay-screen .layout-board dl>div{min-height:52px;padding:8px 0}
+#controller-layout.gameplay-screen .layout-art{max-width:360px;margin:auto}
+#multiplayer-comms-dialog.gameplay-screen .gameplay-content{max-width:1000px;width:100%;align-self:center}
+#multiplayer-comms-dialog.gameplay-screen .mp-roster{max-height:none;overflow:visible;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#multiplayer-account-dialog.gameplay-screen .gameplay-content{max-width:740px;width:100%;align-self:center}
+#multiplayer-account-dialog.gameplay-screen .mp-intro{display:none}
+#multiplayer-account-dialog.gameplay-screen [data-auth-form]{display:grid;grid-template-columns:1fr auto;gap:8px}
+#multiplayer-account-dialog.gameplay-screen [data-auth-form] label{margin:0}
+#multiplayer-inventory-dialog.gameplay-screen .mp-inventory-list{max-height:none;overflow:visible}
+@media(max-width:749px),(max-height:719px){
+ dialog.gameplay-screen{inset:8px!important;width:calc(100vw - 16px)!important;height:calc(100dvh - 16px)!important;border-radius:5px}
+ .gameplay-screen .gameplay-header{padding:10px 12px 0!important;gap:10px!important}.gameplay-brand{gap:7px}.gameplay-brand strong{font-size:23px}.gameplay-mark{font-size:23px}.gameplay-context{display:none}.gameplay-resume kbd{display:none}
+ .gameplay-screen .gameplay-resume{font-size:12px!important;min-height:38px!important;padding:8px 12px!important}
+ .gameplay-screen .gameplay-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:0!important}
+ .gameplay-screen .gameplay-tabs button{font-size:12px!important;min-height:38px!important;padding:7px 2px!important}
+ .gameplay-screen .gameplay-content{padding:14px 12px}
+ .gameplay-screen .gameplay-footer{padding:8px 12px!important;font-size:9px!important;gap:8px!important}.gameplay-keyboard-tabs{display:none}
+ #controller-menu.gameplay-screen .controller-command-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #controller-menu.gameplay-screen .controller-command-list>button{font-size:12px;min-height:70px;padding:12px}
+ #patrol-console.gameplay-screen .gameplay-content{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:14px}
+ #patrol-console.gameplay-screen .eyebrow{font-size:9px;margin:0}#patrol-console.gameplay-screen h2{font-size:32px;margin:4px 0}
+ #patrol-console.gameplay-screen p{font-size:12px;line-height:1.5;margin:3px 0}#patrol-console.gameplay-screen dl{padding:10px;margin:4px 0;font-size:11px;align-self:stretch}#patrol-console.gameplay-screen dl dt{font-size:9px}#patrol-console.gameplay-screen dl dd{margin-bottom:8px}
+ #patrol-console.gameplay-screen .patrol-actions{gap:8px;margin:4px 0}#patrol-console.gameplay-screen small{font-size:9px;line-height:1.5}
+
+ #cargo-dialog.gameplay-screen .gameplay-content{gap:7px;padding:10px 12px}#cargo-dialog.gameplay-screen h2{font-size:20px;margin:0}
+ #cargo-dialog.gameplay-screen .inventory-columns{grid-template-columns:1fr!important;gap:0;flex:none}
+ #cargo-dialog.gameplay-screen .inventory-container{padding:8px}#cargo-dialog.gameplay-screen .inventory-container h3{font-size:16px}
+ #cargo-dialog.gameplay-screen .inventory-slot{height:70px!important}.gameplay-screen .slot-art{width:25px!important;height:25px!important}#cargo-dialog.gameplay-screen .slot-name{font-size:8px;min-height:17px}
+ #cargo-dialog.gameplay-screen .inventory-toolbar{display:block}#cargo-dialog.gameplay-screen .inventory-bulk{display:none!important}
+ #cargo-dialog.gameplay-screen .inventory-locations button{padding:7px;font-size:10px;min-height:36px}#cargo-dialog.gameplay-screen .inventory-starter button{font-size:10px;min-height:36px;padding:7px}
+ #cargo-dialog.gameplay-screen .inventory-detail{padding:8px;gap:6px;align-items:stretch}#cargo-dialog.gameplay-screen .detail-item>svg{display:none}#cargo-dialog.gameplay-screen .detail-item p{font-size:9px!important;margin:3px 0}#cargo-dialog.gameplay-screen .detail-actions{justify-content:flex-start;gap:6px}#cargo-dialog.gameplay-screen .detail-actions button{font-size:10px;padding:6px;min-height:36px}.gameplay-screen .detail-actions>span{font-size:9px}#cargo-dialog.gameplay-screen .container-mass{font-size:18px}
+ #cargo-dialog.gameplay-screen .loadout-layout{grid-template-columns:1fr;gap:10px}#cargo-dialog.gameplay-screen .loadout-grid{grid-template-columns:1fr 1fr;gap:6px}
+ #cargo-dialog.gameplay-screen .loadout-summary{margin:0 0 8px}#cargo-dialog.gameplay-screen .loadout-stats{gap:12px}#cargo-dialog.gameplay-screen .loadout-stats strong{font-size:14px}#cargo-dialog.gameplay-screen .loadout-stats span{font-size:9px}
+ #cargo-dialog.gameplay-screen .loadout-slot{min-height:68px!important;padding:6px!important}#cargo-dialog.gameplay-screen .loadout-slot-art{display:none}#cargo-dialog.gameplay-screen .loadout-slot strong{font-size:10px}
+ #cargo-dialog.gameplay-screen .loadout-detail{padding:8px}#cargo-dialog.gameplay-screen .loadout-detail h3{font-size:16px}#cargo-dialog.gameplay-screen .loadout-detail p{font-size:10px;margin:4px 0}#cargo-dialog.gameplay-screen .loadout-detail h4{font-size:9px;margin:8px 0}#cargo-dialog.gameplay-screen .loadout-actions button{font-size:10px;min-height:36px;padding:6px}#cargo-dialog.gameplay-screen .loadout-candidates>button{font-size:10px;min-height:38px}#cargo-dialog.gameplay-screen .loadout-candidates svg{width:24px;height:24px}
+ #dev-launcher.gameplay-screen .gameplay-content{gap:12px}#dev-launcher.gameplay-screen .dev-choices{grid-template-columns:1fr;gap:12px;flex:none}#dev-launcher.gameplay-screen .dev-ships{grid-template-columns:repeat(3,1fr);gap:6px}#dev-launcher.gameplay-screen .dev-ships button{padding:8px 5px;min-height:44px}#dev-launcher.gameplay-screen .dev-ships strong{font-size:12px}#dev-launcher.gameplay-screen .dev-ships span{display:none}#dev-launcher.gameplay-screen h3{font-size:10px;margin-bottom:7px}#dev-launcher.gameplay-screen .dev-locations{gap:6px}#dev-launcher.gameplay-screen .dev-locations button{min-height:70px;padding:8px}#dev-launcher.gameplay-screen .dev-locations strong{font-size:11px}#dev-launcher.gameplay-screen .dev-locations span{font-size:9px;line-height:1.4}#dev-launcher.gameplay-screen .gameplay-content>footer{padding:8px 0 0;gap:8px;flex-wrap:wrap}#dev-launcher.gameplay-screen .gameplay-content>footer strong{font-size:12px}#dev-launcher.gameplay-screen .dev-launch{min-height:42px;padding:8px 12px}#dev-launcher.gameplay-screen .dev-footer{gap:6px;flex-wrap:wrap}#dev-launcher.gameplay-screen .dev-footer a{padding:8px;font-size:10px;min-height:36px}#dev-launcher.gameplay-screen .dev-console-list{grid-template-columns:1fr 1fr;gap:8px}#dev-launcher.gameplay-screen .dev-console-list button{min-height:68px;font-size:12px;padding:10px}
+ #controller-layout.gameplay-screen .gameplay-content>nav{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 8px}#controller-layout.gameplay-screen .gameplay-content>nav button{font-size:12px;padding:8px;min-height:38px}#controller-layout.gameplay-screen .layout-note{font-size:11px;line-height:1.5;min-height:0;margin:0 0 8px}#controller-layout.gameplay-screen .layout-board{grid-template-columns:1fr 1fr;gap:8px}#controller-layout.gameplay-screen .layout-art{width:170px;grid-column:1/-1;grid-row:1}#controller-layout.gameplay-screen .layout-art p{display:none}#controller-layout.gameplay-screen .layout-board dl>div{min-height:48px;padding:6px 0}#controller-layout.gameplay-screen .layout-board dt{font-size:9px}#controller-layout.gameplay-screen .layout-board dd{font-size:10px}#controller-layout.gameplay-screen .gameplay-pagination{grid-column:auto;margin:0!important}
+ #multiplayer-comms-dialog.gameplay-screen h2{font-size:24px;margin:0 0 12px}#multiplayer-comms-dialog.gameplay-screen .mp-status-grid{gap:6px}#multiplayer-comms-dialog.gameplay-screen .mp-hangar{margin:12px 0;padding:12px}#multiplayer-comms-dialog.gameplay-screen .mp-action-row{gap:6px}#multiplayer-comms-dialog.gameplay-screen .mp-roster{grid-template-columns:1fr}#multiplayer-comms-dialog.gameplay-screen .mp-action-row button{font-size:11px;padding:8px}
+ #multiplayer-account-dialog.gameplay-screen h2{font-size:22px;margin:0 0 10px}#multiplayer-account-dialog.gameplay-screen .mp-auth-tabs{margin:8px 0}#multiplayer-account-dialog.gameplay-screen input{min-height:36px;padding:8px}#multiplayer-account-dialog.gameplay-screen form button{min-height:36px;padding:7px;font-size:11px}
+}
+/* Native hidden must beat each screen's display rules, including pagers. */
+.gameplay-screen .gameplay-pagination[hidden]{display:none!important}
+#patrol-console.gameplay-screen .patrol-actions button{min-height:44px;padding:10px 16px}
+#graphics-settings.gameplay-screen [data-controller-key=controller-layout],#graphics-settings.gameplay-screen [data-controller-key=menu-audio]{min-height:48px;padding:12px 20px;margin:10px 10px 0 0}
+#fleet-dialog.gameplay-screen .fleet-close,#fleet-dialog.gameplay-screen .meridian-lockup,#fleet-dialog.gameplay-screen .fleet-save{display:none}
+#fleet-dialog.gameplay-screen .gameplay-content{max-width:1100px;width:100%;align-self:center}
+@media(max-width:749px){#fleet-dialog.gameplay-screen .fleet-ships{grid-template-columns:1fr}.gameplay-screen .fleet-ships button{padding:10px;min-height:70px}}
+
+#multiplayer-account-dialog.gameplay-screen .gameplay-content:has(.mp-keyboard:not([hidden]))>:not(.mp-keyboard):not(h2){display:none!important}
+#multiplayer-account-dialog.gameplay-screen .mp-keyboard{margin-top:12px}
+#fleet-dialog.gameplay-screen .fleet-ships{max-height:none;overflow:visible}
+#fleet-dialog.gameplay-screen .fleet-ships>.gameplay-pagination{grid-column:1/-1}
+#build-dialog.gameplay-screen .gameplay-content{max-width:1000px;width:100%;align-self:center}
+#build-dialog.gameplay-screen .gameplay-content>.dialog-top,#build-dialog.gameplay-screen .build-scroll-hint{display:none!important}
+#build-dialog.gameplay-screen .build-content{max-height:none;overflow:visible;flex:none;min-height:0;padding:0}
+#build-dialog.gameplay-screen .build-tabs{margin:12px 0}
+@media(max-width:749px){
+ #fleet-dialog.gameplay-screen h2,#build-dialog.gameplay-screen h2{font-size:26px;margin:0 0 8px}
+ #fleet-dialog.gameplay-screen .fleet-progress,#fleet-dialog.gameplay-screen .fleet-message{font-size:12px;line-height:1.5;margin:8px 0}
+ #fleet-dialog.gameplay-screen .fleet-ships article{padding:14px}
+ #build-dialog.gameplay-screen .build-content{grid-template-columns:1fr}
+ #build-dialog.gameplay-screen .build-description{font-size:11px;line-height:1.5;margin:8px 0}
+ #build-dialog.gameplay-screen .build-tabs{gap:6px;margin:8px 0}
+ #build-dialog.gameplay-screen .build-tabs button{padding:8px;font-size:11px;min-height:38px}
+ #build-dialog.gameplay-screen .build-recipe{padding:10px}
+ #build-dialog.gameplay-screen .build-recipe p{font-size:10px;line-height:1.4;margin:3px 0}
+ #build-dialog.gameplay-screen .build-recipe h3{font-size:14px}
+ #build-dialog.gameplay-screen .build-batches button{padding:6px;font-size:10px;min-height:36px}
+ #build-dialog.gameplay-screen .build-feedback{font-size:10px;min-height:0;margin:6px 0}
+}
+/* Tab changes keep the terminal frame stationary. */
+dialog.gameplay-screen{animation:none!important}
+#dev-launcher.gameplay-screen .dev-review-list a{display:flex;align-items:center;line-height:1.45;text-align:left}
+@media(max-width:749px),(max-height:719px){
+ #dev-launcher.gameplay-screen .dev-screen-tabs button{padding:9px 10px;font-size:12px;flex:1}
+ #dev-launcher.gameplay-screen .dev-review-list{grid-template-columns:1fr;gap:8px}
+ #dev-launcher.gameplay-screen .dev-review-list a{min-height:52px;padding:12px;font-size:12px}
+ #dev-launcher.gameplay-screen .dev-review-list .gameplay-pagination{grid-column:1/-1}
+}

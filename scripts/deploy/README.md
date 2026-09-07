@@ -2,6 +2,11 @@
 
 **Everything is served from this box. Vercel is being retired.**
 
+The frozen public homepage/solo release now uses independent Caddy roots and
+`/opt/staragent/public-current`; see [the public release runbook](../../docs/public-release.md).
+The pipeline and `/opt/staragent/current` paths below describe the legacy main
+release. They no longer control the public home/solo hosts after that cutover.
+
 | Host | Serves | From |
 |---|---|---|
 | `play.staragent.site` | the game client (+ `/ws`, `/api` → shards on 127.0.0.1:8080–8083) | `/opt/staragent/current/public` |

@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { cloneCharacterGLTF, tintCharacterSuit, RemotePlayers, PLAYER_COLORS, applySuitColor } from '../src/multiplayer/remote-players.js';
 import { clearEquipmentCache } from '../src/equipment.js';
+import { PLAYER_AVATAR } from '../src/player-avatar.js';
 
 // Read real rig/bones/animations and real weapon geometry without a GPU or image
 // decoder. Only PBR textures are omitted; browser coverage renders the textures.
@@ -19,9 +20,9 @@ async function readModel(url) {
   json.materials = (json.materials || []).map(m => ({ name: m.name, pbrMetallicRoughness: { baseColorFactor: [1, 1, 1, 1] } }));
   return new Promise((resolve, reject) => new GLTFLoader().parse(JSON.stringify(json), '', resolve, reject));
 }
-const rig = await readModel('/models/props/player-male.glb');
+const rig = await readModel(PLAYER_AVATAR.url);
 const sockets = JSON.parse(await readFile(new URL('../public/models/props/equipment-sockets.json', import.meta.url)));
-const models = new Map([['/models/props/player-male.glb', rig]]);
+const models = new Map([[PLAYER_AVATAR.url, rig]]);
 const loader = { load(url, ready, progress, error) {
   if (!models.has(url)) models.set(url, readModel(url));
   Promise.resolve(models.get(url)).then(ready, error);
@@ -41,9 +42,11 @@ async function ready(manager) {
   await Promise.resolve();
 }
 
-test('ten server colors are distinct and clones own their skeleton/materials', () => {
-  assert.equal(new Set(PLAYER_COLORS).size, 10);
+test('twenty server colors are distinct and clones own their skeleton/materials', () => {
+  assert.equal(new Set(PLAYER_COLORS).size, 20);
   const a = cloneCharacterGLTF(rig), b = cloneCharacterGLTF(rig);
+  assert.deepEqual(a.asset.extras.requiredClips, rig.asset.extras.requiredClips);
+  assert.equal(a.parser, rig.parser, 'optional shadow accessors use the cached parser');
   const am = meshOf(a.scene), bm = meshOf(b.scene), original = meshOf(rig.scene);
   assert.notEqual(am.skeleton, bm.skeleton);
   assert.notEqual(am.skeleton.bones[0], bm.skeleton.bones[0]);
@@ -97,8 +100,10 @@ test('real remote rifle/pistol/cutter sockets follow the firing hand and aim dir
     assert.ok(direction.dot(new THREE.Vector3(0, 0, -1)) > .9999, `barrel must face the remote aim: ${entry.peer.weapon}`);
     const target = entry.equipment.leftHandTargetWorld();
     if (target) {
-      const wrist = entry.character.skeleton.bones.find(bone => bone.name === 'LeftHand').getWorldPosition(new THREE.Vector3()).add(origin);
-      assert.ok(wrist.distanceTo(target) < .06, `support wrist must reach the actual two-handed grip: ${entry.peer.weapon} ${wrist.distanceTo(target)}`);
+      const hand = entry.character.skeleton.bones.find(bone => bone.name === 'LeftHand');
+      const palm = hand.getWorldPosition(new THREE.Vector3()).add(origin)
+        .add(new THREE.Vector3(-.007, .107, 0).applyQuaternion(hand.getWorldQuaternion(new THREE.Quaternion())));
+      assert.ok(palm.distanceTo(target) < .04, `support palm must reach the actual two-handed grip: ${entry.peer.weapon} ${palm.distanceTo(target)}`);
     }
     const worldSize = new THREE.Box3().setFromObject(held).getSize(new THREE.Vector3()).length();
     assert.ok(worldSize > .2 && worldSize < 2, `socket scale must compensate the 0.01 armature: ${worldSize}`);
@@ -152,7 +157,7 @@ test('disconnect releases only the instance; cached skin buffers live until mana
   clearEquipmentCache();
   let loads = 0;
   const countingLoader = { load(url, done, progress, error) {
-    if (url.endsWith('player-male.glb')) loads++;
+    if (url === PLAYER_AVATAR.url) loads++;
     loader.load(url, done, progress, error);
   } };
   const manager = new RemotePlayers(new THREE.Scene(), { loader: countingLoader, sockets });

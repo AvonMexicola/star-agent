@@ -35,3 +35,12 @@ test('ship bearing follows suit yaw and roll and is stable at interplanetary coo
 test('distance labels cover a nearby ramp and a distant ship without scientific notation',()=>{
   assert.equal(markerDistance(24.4),'24 m');assert.equal(markerDistance(1250),'1.3 km');assert.equal(markerDistance(25000000),'25,000 km');
 });
+
+test('navigation overlay can reserve cockpit readouts without changing arrow direction',()=>{
+ const bounds={left:350,right:1090,top:225,bottom:585};
+ for(const x of [-1000,1000])for(const z of [-100,100]){
+  const p=projectShipMarker(origin,orientation,new Vector3(x,0,z),{...view,bounds});
+  assert.equal(p.onScreen,false);assert.ok(Math.abs(p.x-(x<0?350:1090))<1e-9);
+  assert.equal(p.behind,z>0);assert.equal(p.y,450);
+ }
+});
