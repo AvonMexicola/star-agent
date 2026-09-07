@@ -1,0 +1,62 @@
+{
+  "created": "2026-09-06",
+  "generator": "Suno v5.5",
+  "account": "ceesmiddel",
+  "encoding": "MP3 160 kb/s, stereo 48 kHz; loudnorm I=-22 TP=-2 LRA=11; 2 s opening / 3 s ending fades",
+  "tracks": [
+    {
+      "file": "between-worlds-1.mp3",
+      "title": "Star Agent - Between Worlds",
+      "variant": 1,
+      "sourceUrl": "https://suno.com/song/794cc1ec-1f1b-4c46-b5df-b05e3de0b10b",
+      "sourceSha256": "8e2ea2033a50e9c270252ccd92968d8c97b20a3e5e978b027d75f5902358e9f1",
+      "sourceDurationSeconds": 209.92,
+      "bytes": 4199737
+    },
+    {
+      "file": "between-worlds-2.mp3",
+      "title": "Star Agent - Between Worlds",
+      "variant": 2,
+      "sourceUrl": "https://suno.com/song/c3f3b71c-1c1e-4f39-afbe-fa0dac0e097e",
+      "sourceSha256": "fc2bddf701e791f85beed0bac9cab78802ad9b1c69796b31db4d18548948fa00",
+      "sourceDurationSeconds": 208.44,
+      "bytes": 4169977
+    },
+    {
+      "file": "atmospheric-descent-1.mp3",
+      "title": "Star Agent - Atmospheric Descent",
+      "variant": 1,
+      "sourceUrl": "https://suno.com/song/3bd80d2b-d1d2-4151-98cf-9aacbb23a7d1",
+      "sourceSha256": "63564fb2fe67ccb17dbf14c955c0479d291ab6ff2c0dd0b4d93b75eb8a4bc5ae",
+      "sourceDurationSeconds": 149.84,
+      "bytes": 2998302
+    },
+    {
+      "file": "atmospheric-descent-2.mp3",
+      "title": "Star Agent - Atmospheric Descent",
+      "variant": 2,
+      "sourceUrl": "https://suno.com/song/c09c1132-8874-4ddd-8748-a6eea708db1d",
+      "sourceSha256": "d20afa978fb6eb1c2499f98d1460b2a6fba4157bf7ce9cb89a3cb9e21870eda1",
+      "sourceDurationSeconds": 149.92,
+      "bytes": 2999742
+    },
+    {
+      "file": "blue-horizon-1.mp3",
+      "title": "Star Agent - Blue Horizon",
+      "variant": 1,
+      "sourceUrl": "https://suno.com/song/23add39a-b5f4-46ff-9827-9d6a3e0b4867",
+      "sourceSha256": "4effbe942c64d3d3f00341bf06ef5fbb0781c3d28feab9dbd5fa4e6db1c83b4c",
+      "sourceDurationSeconds": 162.52,
+      "bytes": 3251735
+    },
+    {
+      "file": "blue-horizon-2.mp3",
+      "title": "Star Agent - Blue Horizon",
+      "variant": 2,
+      "sourceUrl": "https://suno.com/song/b0db6692-4d99-4888-bfc7-85351c9a8e3e",
+      "sourceSha256": "de3a9aeef33f39f562bd7d319d553ccff038ef3845f4c3a6fa4b1e259c437406",
+      "sourceDurationSeconds": 205.0,
+      "bytes": 4101335
+    }
+  ]
+}

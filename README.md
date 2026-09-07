@@ -103,3 +103,16 @@ Flight-model checks cover vacuum momentum, body-axis thrust/torque, density boun
 The browser tests default to system Chromium with ANGLE/SwiftShader. Override `CHROMIUM_PATH` for another executable. Software-rendered test frame rates are not hardware performance claims. Render scale adapts to slow machines; `starAgent.setRenderScale(1)` fixes native scale for visual inspection.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) for contribution and architecture contracts.
+
+## Local soundtrack
+
+The opening's first movement gesture enables sound, or press **H** and use **SOUND ON** in the
+flight menu after the opening. Blue Horizon accompanies orbit, landing and quiet
+exploration. Between Worlds plays during distant travel; Atmospheric Descent
+plays during an actual atmospheric descent. Each has two local instrumental
+variants, with six-second fades. Music pauses when muted or the tab is hidden
+and resumes at its previous position. Crash/destruction silences the score.
+
+No audio is requested before a gesture. The six MP3s total 21.7 MB; only the
+current track and incoming fade partner load. Engine, wind and hangar sounds
+remain procedural. Credits and source provenance: [soundtrack notes](public/audio/music/README.md).
