@@ -6,7 +6,7 @@ import { MiningStore, RECOVERED_KG_PER_CUBIC_METRE } from './store.js';
 import { ROCK_ID, normalizeResourceWeights, MINERAL_GLSL, RESOURCE_VEIN_VERSION } from './volume.js';
 
 export class MineableRock {
-  constructor(scene,storage,{worker=new Worker(new URL('./worker.js',import.meta.url),{type:'module'}),store=null,rockId=ROCK_ID,position=null,quaternion=null,initialField=null,space=false,resourceWeights=null}={}){
+  constructor(scene,storage,{worker=new Worker(new URL('./worker.js',import.meta.url),{type:'module'}),store=null,rockId=ROCK_ID,position=null,quaternion=null,initialField=null,space=false,resourceWeights=null,material=null}={}){
     this.store=store??new MiningStore(storage);this.rockId=rockId;this.initialField=initialField;this.space=space;this.worker=worker;this.scene=scene;this.pending=false;this.ready=false;this.budget=0;this.sequence=0;this.grounded=false;this.meshMs=0;this.publishMs=0;
     const up=new THREE.Vector3(...MOON_LANDING_DIRECTION),east=new THREE.Vector3(...LANDING_FRAME.east),north=new THREE.Vector3(...LANDING_FRAME.north);
     // Behind and to the left of the ramp, entirely within the level landing shelf.
@@ -32,6 +32,7 @@ export class MineableRock {
         diffuseColor.rgb*=1.0+grain*.15*fade;`);
     };
     this.material.customProgramCacheKey=()=> 'mineable-rock-resources-v1';
+    if(material){this.material.dispose();this.material=material;}
     this.worker.onmessage=({data})=>this.receive(data);
     this.worker.onerror=()=>{this.pending=false;this.error='Rock worker unavailable. Mining paused.';};
     this.request();
