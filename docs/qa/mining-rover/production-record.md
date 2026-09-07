@@ -114,8 +114,16 @@ failed after loading the game: it expected the legacy Ship dialog
 selection. Dialog closure, held-stick suppression, unchanged position and neutral
 rearming remain checked. This branch still has the flat five-target map, so its
 existing target-selection loop is retained. Syntax, repository and whitespace
-checks pass for this test-only correction; no local browser rerun or new hosted
-pass is claimed. Runtime and candidate 10 assets are unchanged.
+checks passed locally for this test-only correction. Runtime and candidate 10
+assets are unchanged.
+
+The correction at `a3328179c1309e3bc61049569d180398ef6f4d3f` then passed hosted
+[run 34158011227](https://github.com/AvonMexicola/star-agent/actions/runs/34158011227).
+All five required jobs passed: browser **7 min 12 s**, multiplayer **1 min 24 s**,
+source **3 min 9 s**, plan **26 s**, and verify **3 s**. The feature integrator confirmed
+PR #66's passing checks on 2026-09-07 at 20:16 UTC. No local browser rerun was
+performed for this correction; the hosted smoke result adds functional CI
+evidence, not hardware performance or product approval.
 
 ## Independent review and remaining limits
 
