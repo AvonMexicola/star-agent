@@ -244,10 +244,10 @@ test('controller toggles once per press, applies inertial torque and holds brake
   advance(.5);assert.equal(nav.flightAssist,false,'holding R3 does not repeatedly toggle assist');
   button(11,false);pad.axes[1]=-1;pad.axes[2]=.5;button(4,true);advance(.5);
   assert.ok(nav.speed>1);assert.ok(nav.angularVelocity.length()>.1);
-  button(1,true);const position=nav.position.clone();advance(.5);
+  button(6,true);const position=nav.position.clone();advance(.5);
   assert.ok(nav.position.equals(position),'brake overrides thrust and gravity while held');
   near(nav.speed,0);near(nav.angularVelocity.length(),0);
-  button(1,false);button(4,false);pad.axes.fill(0);button(11,true);advance(.1);
+  button(6,false);button(4,false);pad.axes.fill(0);button(11,true);advance(.1);
   assert.equal(nav.flightAssist,true);
 });
 

@@ -6,8 +6,8 @@ and controller dialog/input router. No new external services or assets are neede
 
 ## Play
 
-1. Start in orbit with Nomad or Kestrel in the local ship/location launcher.
-2. Open **Patrol console** on screen or **Menu → Patrol console**. The physical
+1. Start in orbit with Nomad, Kestrel or Atlas in the local ship/location launcher.
+2. Open **Patrol console** on screen or **Menu → Contracts**. The physical
    hangar cargo terminal also has a Security contracts button. Accept the patrol.
 3. Follow the amber signal marker. From open space it is 3 km ahead; at the station
    dispatch places it 6 km beyond the approach. Regular flight reaches it without
@@ -19,15 +19,16 @@ and controller dialog/input router. No new external services or assets are neede
 
 | Action | Keyboard / pointer | Standard controller |
 |---|---|---|
-| Open mission / combat report | Patrol console button; hangar cargo terminal | Menu → Patrol console |
+| Open mission / combat report | Patrol console button; hangar cargo terminal | Menu → Contracts |
 | Aim / fly | Existing flight controls | Right / left stick |
-| Fire | Hold T or the ship's Hold to fire button | Hold A / ✕ |
-| Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship weapon |
-| Next hostile | Tab or Next target button | Menu → Next hostile target |
-| Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Patrol console → Recover |
+| Fire | Hold T or the ship's Hold to fire button | Hold RT / R2 |
+| Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship → Ship weapon |
+| Next hostile | Tab or Next target button | Menu → Ship → Next hostile target |
+| Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Contracts → Recover |
 | Abandon | Console → Abandon patrol | Same console action |
 
-RT/LT keep flight ascent/descent; no flight binding was repurposed. The selected
+A/B rises/descends and LT brakes (matching EVA). Menu → Settings → Controller layout
+shows the complete diagram, also available through Help. The selected
 contact has brackets, shield/hull readings and a projectile lead ring. Edge arrows
 continue tracking targets behind the camera. Solar lance is hitscan and needs no
 lead ring. Tracking does not steer the ship or guarantee a hit.
@@ -41,10 +42,11 @@ requires explicit recovery. Projectiles sweep moving spherical ship envelopes;
 laser queries are immediate. Existing ground crash and stellar thermal models
 remain separate from these combat hitpoints.
 
-NPCs use the current authored hulls with mechanisms stowed. This prototype enables
-the shared energy array on Kestrel; fitted gun meshes, hardpoint equipment,
-missiles, squad coordination, component damage, wreck salvage, player/NPC ship
-collisions, mission rewards and persistence are not implemented. Combat is offline;
+Player and NPC hulls carry the [sized Meridian guns](ship-weapons.md). NPC
+mechanisms are stowed; actual barrel poses drive their fixed-bore shots. Raise
+landing gear before player fire. Missiles, squad coordination, component damage,
+wreck salvage, player/NPC ship collisions, mission rewards and persistence are
+not implemented. Combat is offline;
 multiplayer keeps server authority and does not run this NPC simulation. Contracts,
 reports and combat integrity reset on reload. Opening a dialog or losing focus
 pauses combat. Leaving the engagement, boarding or engaging travel abandons it.
@@ -60,7 +62,7 @@ Build the local-launcher version with `VITE_DEV_TOOLS=1 npm run build`, then run
 quota, set `COMBAT_TMPDIR` to an existing writable directory on another filesystem.
 The browser fixture stubs only the unrelated signed-out account session response.
 
-The two controller journeys start through the supported orbital launcher, accept
+The three controller journeys start through the supported orbital launcher, accept
 through the actual console, fly using the sticks, target and fire, receive NPC
 hits, destroy both contacts, file the report and return to play. They only read
 navigation state for steering feedback; they do not set poses or call gameplay
