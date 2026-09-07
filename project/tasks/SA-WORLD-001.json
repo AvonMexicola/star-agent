@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex landmark rocks",
-  "status": "active",
+  "status": "integrated",
   "branch": "feat/landmark-rocks",
   "base": "f8e48d916c849111cc8d557fdb6a88b4d2c7b521",
   "updated": "2026-09-07",

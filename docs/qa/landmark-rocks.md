@@ -3,6 +3,15 @@
 7 September 2026. Builder inspection by Codex; independent visual acceptance and
 physical controller testing are pending. This is a local development checkpoint.
 
+Local integration: `dev/all-features` fast-forwarded from `4d38827` to `f0077f6`.
+The shared preview service was restarted once to load the authoritative collider;
+5178 serves the new landmark wiring and API 8087 returns `{"ok":true}`. The existing
+PostgreSQL directory and schema were retained. Eight focused geometry/server
+checks pass on the integrated tree. Repository checks pass against both the local
+pre-feature head and the bounded remote base. The final bounded production build
+also passes, retaining Vite's existing large-chunk warning. This restart check does
+not repeat or replace the account persistence tests in their own QA record.
+
 ## Result and source identity
 
 Aeon gains rare, seeded bedrock formations above its existing terrain: undercut
