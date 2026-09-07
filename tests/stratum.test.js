@@ -177,6 +177,27 @@ test('actual muzzle and nozzle transforms remain local and precise after rebasin
   }
 });
 
+test('canonical pilot forward view retains real glass and excludes opaque central structure', () => {
+  const {model}=fresh(), eye=vec(L.interior.pilotEye), glass=[], opaque=[];
+  model.updateMatrixWorld(true);
+  model.traverse(mesh=>{
+    if(!mesh.isMesh)return;
+    const materials=[mesh.material].flat();
+    assert.equal(materials.length,1,'asset batches have one material');
+    mesh.material=materials[0].clone();mesh.material.side=THREE.DoubleSide;
+    (mesh.material.transparent?glass:opaque).push(mesh);
+  });
+  assert.ok(glass.length,'the actual pressure glazing must remain present');
+  for(const pitch of [-5,0,10])for(const yaw of [-8,0,8]){
+    const direction=vec([Math.sin(yaw*Math.PI/180),Math.tan(pitch*Math.PI/180),-Math.cos(yaw*Math.PI/180)]).normalize();
+    const ray=new THREE.Raycaster(eye,direction,.01,20);
+    assert.ok(ray.intersectObjects(glass,false).length,`missing glass at yaw ${yaw}, pitch ${pitch}`);
+    const hit=ray.intersectObjects(opaque,false)[0];
+    assert.equal(hit,undefined,`central view at yaw ${yaw}, pitch ${pitch} blocked by ${hit?.object.name}`);
+  }
+  for(const mesh of [...glass,...opaque])mesh.material.dispose();
+});
+
 test('all four real display faces are visible from the canonical pilot eye', () => {
   const { model }=fresh(), eye=vec(L.interior.pilotEye);
   for (const spec of L.displays) {
