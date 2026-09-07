@@ -1,5 +1,9 @@
 # Nomad 02 — draft review checkpoint
 
+[Draft PR #46](https://github.com/AvonMexicola/star-agent/pull/46) publishes this
+checkpoint. The implementation is commit `9a363cb`; the final finish and
+acceptance gates listed below are still open.
+
 The user requested a substantial original visual upgrade and Cutter-like starter
 utility gameplay, then specifically requested folding gear, empty S1 hardpoints,
 ramp/sign clearance, corrected Nomad 02 markings and the shared Meridian
