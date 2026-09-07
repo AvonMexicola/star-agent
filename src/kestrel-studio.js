@@ -71,6 +71,8 @@ function resize(){const {width,height}=viewport.getBoundingClientRect();renderer
 new ResizeObserver(resize).observe(viewport);view('exterior');resize();
 const ready=asset.readyPromise.then(()=>{
  for(const key of ['canopy','gear','ladder'])document.getElementById(key+'-toggle').disabled=false;
+ const mounts=asset.snapshot().hardpoints;
+ document.getElementById('hardpoint-spec').textContent=`${mounts.length} × S${mounts[0].size} hardpoints`;
  status.hidden=true;return asset;
 }).catch(error=>{status.textContent='The fighter could not load. Reload this page to retry.';throw error;});
 let padIndex=null,neutral=false,previousButtons=[];

@@ -29,15 +29,21 @@ model is 13.5 m long, 9 m wide and 3.2 m high, with 0.9 m belly clearance and a
 | Pilot | `PilotEye` at `[0, 2.49, -1.9]`, seat, stick, throttle and pedals |
 | Displays | `MFD_1..4`, 4:3, 512×384 canvas textures; optical `HUD_Glass` |
 | Drives | `Nozzle_L/R`, emissive `EngineCores`, initially hidden `AB_L/R` cones |
-| Mounts | `HP_Nose`, `HP_WingL/R`, `HP_Belly`, all facing −Z |
+| Mounts | Four empty fixed S2 sockets: `HP_Nose`, `HP_WingL/R`, `HP_Belly`; bore −Z, normal outward |
 | RCS | Twelve `RCS_*` sockets with positions/directions in the contract |
 
 The hard limits include the cockpit: 60,000 triangles, 4,000,000 bytes and 1024²
 WebP textures. The `.blend`, HDRI and baking inputs are authoring files; the page
 bundles only the runtime GLB.
-The current candidate is 36,226 triangles and 2,330,924 bytes, with three 1024²
+The current candidate is 36,226 triangles and 2,331,576 bytes, with three 1024²
 WebP maps. Its complete authoring/verification record is in
 [`docs/qa/kestrel/record.md`](qa/kestrel/record.md).
+
+The [shared fitting standard](weapon-mount-standard.md) defines S1/S2/S3
+interfaces. Kestrel's four exported nodes carry size 2, fixed-mount and empty
+attachment metadata. Their origins sit on the underside mating plane, with local
++Y pointing outward and −Z forward. Protective covers retain their reviewed
+geometry. The rating does not install guns or certify a future weapon's clearance.
 
 ## Rebuild
 
@@ -107,6 +113,9 @@ candidate; that fallback does not satisfy the final asset recipe.
 Export batches geometry only within a rigid assembly and retains animated
 parents, socket transforms, display UVs, glass and independently driven parts.
 Tracks with the same mechanism name become one glTF animation clip.
+The final export writes the socket metadata and compensates cover-child
+transforms when aligning mating frames; geometry, textures and animation buffers
+remain unchanged by that socket conversion.
 
 The render HDRI is **Studio Small 09** by Sergej Majboroda, CC0 from
 [Poly Haven](https://polyhaven.com/a/studio_small_09). References and attribution
@@ -129,6 +138,8 @@ GLB URL; the studio resolves it through Vite. The adapter owns visual animation.
 Its interlocks require canopy/gear readiness before ladder deployment, ladder
 stowage before canopy closure and closed access before gear retraction.
 Durations use elapsed time even under slow rendering.
+The snapshot also lists hardpoints from the loaded GLB. The studio derives its
+“4 × S2 hardpoints” specification from those actual nodes.
 
 The MFD painter accepts optional canvas height/profile arguments; its default
 Nomad path is preserved. Kestrel displays label the static inspection state and
@@ -180,3 +191,10 @@ silhouette 4.5, materials 4.0, lighting 4.0, cohesion 4.0, function 4.5 and moti
 unchanged geometry, UVs, node records and animations. Those reports preserve
 the actual candidates assessed. Close cockpit/nozzle detail remains optional
 polish. Final acceptance remains Cees's PR gate.
+
+Cees's subsequent S2 mount request has a
+[scoped independent follow-up](qa/kestrel/reviewer/s2-followup/review.md).
+Fresh desktop/phone checks verify the specification and socket data; a complete
+vertex comparison confirms unchanged world geometry throughout sampled animation
+poses. The original round-6 visual score and performance measurements keep their
+original candidate identity rather than being presented as newly rerun tests.

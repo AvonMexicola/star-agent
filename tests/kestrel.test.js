@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {mountAccepts,mountGeometrySlot,mountTransformFromAsset} from '../src/weapon-mounts.js';
 globalThis.ProgressEvent??=class ProgressEvent{constructor(type,init={}){this.type=type;Object.assign(this,init);}};
 
 const path=new URL('../assets/kestrel/kestrel.glb',import.meta.url),bytes=fs.readFileSync(path);
@@ -39,7 +40,19 @@ test('all pilot, hardpoint, drive and RCS nodes keep useful transforms',()=>{
  const root=gltf.scene;root.updateMatrixWorld(true);
  for(const name of ['PilotEye','HUD_Glass','Nozzle_L','Nozzle_R','AB_L','AB_R',...contract.hardpoints,...contract.rcs.map(r=>r.name)])assert.ok(root.getObjectByName(name),name);
  const eye=root.getObjectByName('PilotEye').getWorldPosition(new THREE.Vector3());contract.pilotEye.forEach((v,i)=>close(eye.getComponent(i),v,.001));
- for(const name of contract.hardpoints){const node=root.getObjectByName(name),q=node.getWorldQuaternion(new THREE.Quaternion()),forward=new THREE.Vector3(0,0,-1).applyQuaternion(q);assert.ok(forward.distanceTo(new THREE.Vector3(0,0,-1))<1e-5);}
+ for(const name of contract.hardpoints){
+  const node=root.getObjectByName(name),q=node.getWorldQuaternion(new THREE.Quaternion()),forward=new THREE.Vector3(0,0,-1).applyQuaternion(q);
+  assert.ok(forward.distanceTo(new THREE.Vector3(0,0,-1))<1e-5);
+  assert.ok(new THREE.Vector3(0,1,0).applyQuaternion(q).distanceTo(new THREE.Vector3(0,-1,0))<1e-5,'underside mount normal faces out of hull');
+  assert.equal(node.userData.size,2);assert.equal(node.userData.size,contract.hardpointSize);
+  assert.equal(node.userData.kind,'weapon');assert.equal(node.userData.mount,'fixed');assert.equal(node.userData.installedWeapon,null);
+  const mount={node:name,size:node.userData.size};
+  assert.ok(mountAccepts(mount,{size:2}));assert.equal(mountAccepts(mount,{size:1}),false);assert.equal(mountAccepts(mount,{size:3}),false);
+  assert.ok(mountTransformFromAsset(root,mount,{size:2}).equals(node.matrixWorld));
+  assert.throws(()=>mountTransformFromAsset(root,mount,{size:1}),/does not fit/);
+  close(node.getWorldScale(new THREE.Vector3()).distanceTo(new THREE.Vector3(1,1,1)),0,1e-5);
+ }
+ assert.equal(mountGeometrySlot(2).dockingDiameter,.8);assert.throws(()=>mountGeometrySlot(4),/size must be/);
  for(const r of contract.rcs){const node=root.getObjectByName(r.name),dir=new THREE.Vector3(0,0,-1).applyQuaternion(node.getWorldQuaternion(new THREE.Quaternion()));assert.ok(dir.distanceTo(new THREE.Vector3(...r.direction))<1e-5,r.name);}
  for(const side of ['L','R'])assert.equal(root.getObjectByName('AB_'+side).userData.initiallyHidden,true);
  for(const x of [-1.26,1.26]){

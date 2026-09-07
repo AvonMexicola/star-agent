@@ -21,6 +21,10 @@ async function expectGeometryAboveControls(page,names){
 }
 test('studio loads and frames the authored fighter from all inspection angles',async({page})=>{
  const errors=await open(page);await fs.mkdir(OUT,{recursive:true});
+ await expect(page.locator('#hardpoint-spec')).toHaveText('4 × S2 hardpoints');
+ expect(await page.evaluate(()=>window.kestrelStudio.snapshot().hardpoints)).toEqual(
+  expect.arrayContaining(['HP_Nose','HP_WingL','HP_WingR','HP_Belly'].map(node=>({node,size:2,mount:'fixed',installedWeapon:null})))
+ );
  for(const [name,label] of [['exterior','Exterior'],['rear','Engines'],['top','Planform'],['cockpit','Pilot seat'],['boarding','Boarding'],['belly','Underside']]){
   await page.getByRole('button',{name:label,exact:true}).click();await expect(page.getByRole('button',{name:label,exact:true})).toHaveAttribute('aria-pressed','true');
   const frame=await page.evaluate(()=>window.kestrelStudio.snapshot().frames);await page.waitForFunction(n=>window.kestrelStudio.snapshot().frames>n+1,frame);await page.screenshot({path:`${OUT}/${name}.png`});
@@ -75,6 +79,7 @@ test.describe('touch',()=>{
 });
 test('phone inspection controls remain reachable and keyboard views work',async({page})=>{
  await page.setViewportSize({width:390,height:844});const errors=await open(page);
+ await expect(page.locator('#hardpoint-spec')).toHaveText('4 × S2 hardpoints');
  for(const label of ['Exterior','Engines','Planform','Pilot seat','Boarding','Underside']){const button=page.getByRole('button',{name:label,exact:true});await button.click();await expect(button).toHaveAttribute('aria-pressed','true');}
  await page.keyboard.press('1');await expect(page.getByRole('button',{name:'Exterior',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.screenshot({path:`${OUT}/phone.png`,fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);

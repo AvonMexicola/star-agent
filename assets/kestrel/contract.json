@@ -10,6 +10,7 @@
   "animations":{"CanopyOpen":3,"GearDown":1.2,"LadderDown":1.8},
   "pilotEye":[0,2.49,-1.9],
   "screens":{"count":4,"aspect":[4,3],"texturePixels":[512,384]},
+  "hardpointSize":2,
   "hardpoints":["HP_Nose","HP_WingL","HP_WingR","HP_Belly"],
   "rcs":[
     {"name":"RCS_NoseL_Up","position":[-0.38,1.98,-4.8],"direction":[0,1,0]},

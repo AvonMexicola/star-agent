@@ -8,11 +8,38 @@ retain a recorded UV hash, so downloaded textures cannot silently remap a hull.
 """
 import bpy,sys,json,hashlib,math
 from pathlib import Path
-from mathutils import Vector
+from mathutils import Vector,Matrix,Quaternion
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parent;sys.path.insert(0,str(HERE))
 import fighter_geometry as g
 OUT=ROOT/'assets/kestrel';TEX=OUT/'textures';TEX.mkdir(parents=True,exist_ok=True)
 ARGS=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
+
+def hardpoint_contract(doc):
+    """Size and outward mating frames, without moving the protective covers.
+
+    Source empties sit at cover centres. The finished mating plane is the
+    underside face, 17 mm lower; local +Y points down and -Z stays forward.
+    Child local transforms compensate, leaving every visible vertex unchanged.
+    glTF extras can represent an empty installedWeapon as null (Blender ID
+    properties cannot), so the final socket metadata is written here.
+    """
+    contract=json.loads((OUT/'contract.json').read_text())
+    def matrix(node):
+        if 'matrix' in node:return Matrix([node['matrix'][i::4] for i in range(4)])
+        x,y,z,w=node.get('rotation',[0,0,0,1])
+        return Matrix.Translation(Vector(node.get('translation',[0,0,0]))) @ Quaternion((w,x,y,z)).to_matrix().to_4x4() @ Matrix.Diagonal(Vector([*node.get('scale',[1,1,1]),1]))
+    def assign(node,value):
+        for key in ['translation','rotation','scale']:node.pop(key,None)
+        node['matrix']=[float(value[row][column]) for column in range(4) for row in range(4)]
+    for name in contract['hardpoints']:
+        node=next(n for n in doc['nodes'] if n.get('name')==name)
+        old=matrix(node)
+        turn=Matrix.Diagonal(Vector([-1,-1,1,1]))
+        new=old @ Matrix.Translation(Vector((0,-.017,0))) @ turn
+        compensation=new.inverted() @ old
+        for child in node.get('children',[]):assign(doc['nodes'][child],compensation @ matrix(doc['nodes'][child]))
+        assign(node,new)
+        node.setdefault('extras',{}).update({'kind':'weapon','size':contract['hardpointSize'],'mount':'fixed','installedWeapon':None,'forward':[0,0,-1],'socketOnly':True})
 
 def meshes():return [o for o in bpy.context.scene.objects if o.type=='MESH']
 def selected(objects):
@@ -125,7 +152,12 @@ def export():
     output=OUT/'kestrel.glb'
     bpy.ops.export_scene.gltf(filepath=str(output),export_format='GLB',export_image_format='WEBP',export_image_quality=88,export_yup=True,export_extras=True,export_cameras=False,export_lights=False,export_animations=True,export_animation_mode='ACTIONS',export_merge_animation='NLA_TRACK',export_force_sampling=True)
     data=output.read_bytes();import struct
-    doc=json.loads(data[20:20+struct.unpack_from('<I',data,12)[0]])
+    json_length=struct.unpack_from('<I',data,12)[0]
+    doc=json.loads(data[20:20+json_length]);hardpoint_contract(doc)
+    payload=json.dumps(doc,separators=(',',':')).encode();payload+=b' '*((-len(payload))%4)
+    remainder=data[20+json_length:]
+    data=struct.pack('<4sIII4s',b'glTF',2,20+len(payload)+len(remainder),len(payload),b'JSON')+payload+remainder
+    output.write_bytes(data)
     triangles=sum(doc['accessors'][p['indices']]['count']//3 for mesh in doc['meshes'] for p in mesh['primitives'])
     manifest={'version':1,'id':'kestrel','source':'blender/build_fighter.py','authoring':'assets/kestrel/kestrel.blend','contract':'assets/kestrel/contract.json','triangles':triangles,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'meshes':len(doc['meshes']),'materials':len(doc['materials']),'textures':len(doc.get('images',[])),'animations':[a['name'] for a in doc.get('animations',[])],'status':'review-candidate'}
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

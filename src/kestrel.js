@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createShipMFDs} from './ship-mfd.js';
+import {mountGeometrySlot} from './weapon-mounts.js';
 
 const CLIPS={canopy:'CanopyOpen',gear:'GearDown',ladder:'LadderDown'};
 function afterburnerMaterial(tint){
@@ -37,13 +38,18 @@ export function createKestrel({url}={}){
  if(!url)throw new Error('createKestrel requires the exported GLB URL.');
  const root=new THREE.Group();root.name='Kestrel inspection assembly';
  const values={canopy:0,gear:1,ladder:0},targets={...values};let mixer,asset,core,coreTint,actions={},throttle=.15,ready=false;
- const white=new THREE.Color(1,1,1);
+ const white=new THREE.Color(1,1,1),hardpoints=[];
  const mfd=createShipMFDs({height:384,profile:'kestrel'}),textures=mfd.screenTextures();
  const nav={flightEnvironment:{regime:'STUDIO',atmosphereFraction:0},normal:new THREE.Vector3(0,1,0),orientation:new THREE.Quaternion(),velocity:new THREE.Vector3(),speed:0,altitude:.9,mode:'inspection',flightAssist:true,doorOpen:false,doorProgress:0,previewThrottle:throttle};
  nav.previewProgress=values;nav.previewTargets=targets;
  function evaluate(){for(const key of Object.keys(actions))actions[key].time=values[key]*actions[key].getClip().duration;mixer?.update(0);}
  root.readyPromise=new GLTFLoader().loadAsync(url).then(gltf=>{
   asset=gltf.scene;root.add(asset);mixer=new THREE.AnimationMixer(asset);
+  asset.traverse(node=>{
+   if(!node.name.startsWith('HP_')||node.userData.kind!=='weapon')return;
+   const slot=mountGeometrySlot(node.userData.size);
+   hardpoints.push({node:node.name,size:slot.size,mount:node.userData.mount,installedWeapon:node.userData.installedWeapon??null});
+  });
   for(const [key,name] of Object.entries(CLIPS)){
    const clip=THREE.AnimationClip.findByName(gltf.animations,name);if(!clip)throw new Error(`Kestrel missing animation ${name}`);
    const action=mixer.clipAction(clip);action.play();action.paused=true;action.setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;actions[key]=action;
@@ -83,7 +89,7 @@ export function createKestrel({url}={}){
    const cone=asset.getObjectByName('AB_'+side);if(cone){cone.visible=throttle>.72;cone.scale.set(1,1,Math.max(.01,(throttle-.72)/.28));}
   }
  };
- root.snapshot=()=>({ready,progress:{...values},target:{...targets},throttle,displays:mfd.snapshot()});
+ root.snapshot=()=>({ready,progress:{...values},target:{...targets},throttle,displays:mfd.snapshot(),hardpoints:hardpoints.map(mount=>({...mount}))});
  root.getNode=name=>asset?.getObjectByName(name);
  root.dispose=()=>{
   mixer?.stopAllAction();const geos=new Set(),mats=new Set(),maps=new Set(textures);

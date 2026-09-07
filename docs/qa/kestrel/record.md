@@ -9,8 +9,10 @@ animated rig. Round 5 rejected the direct import's finish. Round 6 passes the
 material mix that restores authored regions and filters generated wear; no
 criterion is below 4. No merge, gameplay integration or public intake is implied.
 
-Current GLB: `ef42a970295f0db8535fdd08aa6f8b2385243545891f512816392befdbaed374`.
-36,226 triangles, 2,330,924 bytes, 45 meshes, six materials, three 1024² WebP maps.
+Current GLB: `c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a`.
+36,226 triangles, 2,331,576 bytes, 45 meshes, six materials, three 1024² WebP maps.
+This adds Cees's S2 socket request to the round-6 finish; its scoped verification
+is recorded below. Historical reviews and measurements retain their original hashes.
 UV layout: `91899f96b0de0221e206455e5c46659f0768a3d9a9e71c78bc674d6e80389b6d`.
 The asset remains under `assets/kestrel/`, pending intake approval.
 
@@ -47,7 +49,7 @@ the round-4 review. Original captures and scores remain preserved.
   gear clearance, emitted-light line of sight, screen winding and ladder bounds.
 - Production Vite build passed. Its existing large-chunk advisory remains; this
   is distinct from browser console warnings. No new dependency was added.
-- All five Chromium interaction cases passed on the final GLB: six views,
+- All five Chromium interaction cases passed on round-6 GLB `ef42a970…`: six views,
   reversible mechanisms/interlocks, injected controller neutral/focus guards,
   phone touch and keyboard reach. Refined material candidate hardware suite:
   41.7 s. This includes the material mix and revised engine glow/plume range.
@@ -193,3 +195,36 @@ comparison confirms all 45 mesh payloads, 81 node records and three animation
 payloads are identical to the approved procedural rig; all 12 recorded map-source
 hash/size comparisons also match. The reviewer assesses the studio asset only;
 performance, physical traversal and gameplay integration are separate concerns.
+
+## S2 hardpoint follow-up
+
+Cees requested S1 on Nomad and S2 on the fighter. Kestrel now exports four empty
+fixed S2 sockets, retaining `HP_Nose`, `HP_WingL`, `HP_WingR` and `HP_Belly`.
+The shared fitting contract gains S2 without changing its existing S1/S3 records.
+The final exporter moves each socket origin 17 mm to its cover's underside and
+turns +Y outward while preserving −Z forward. Child transforms compensate so
+the protective covers remain in exactly the same world positions. The studio
+reads the actual GLB metadata for its “4 × S2 hardpoints” specification.
+
+Current candidate `c48ed4e9…` adds 652 bytes of JSON and retains the complete BIN
+chunk byte-for-byte. Mesh/accessor, material and animation records are unchanged.
+An independent audit compares 53,513 vertices across 45 meshes in the resting
+pose and five times per clip: 856,208 position/normal comparisons, with zero
+difference in positions, normals or mesh world matrices. All four sockets have
+unit scale, a right-handed frame, outward normal, forward bore and origins on
+the actual retained cover underside. Exact S2 attachment checks pass; S1/S3 fail.
+This verifies socket allocation, not a future weapon package's physical fit.
+
+All 17 test files pass on the S2 candidate. Production build passes (4.19 s),
+with the existing Vite advisory. Targeted hardware desktop tour and phone
+inspection checks pass 2/2 in 6.7 s, including loaded socket metadata and the
+visible specification. Zero browser page errors or console warnings/errors.
+Independent desktop/phone captures pass separately in 5.3 s total with zero
+diagnostics. Browser/backend remain Chromium 151 / AMD Radeon 860M / ANGLE GL;
+builder desktop 1600×900, independent desktop 1440×900, phone 390×844.
+
+The [scoped independent closure](reviewer/s2-followup/review.md) preserves the
+round-6 score rather than inventing a new full art review. The unchanged binary
+geometry, textures and animations retain the previous full interaction and
+performance evidence, whose original candidate hash is recorded above. No new
+performance measurement or full-game combat/flight integration is claimed.
