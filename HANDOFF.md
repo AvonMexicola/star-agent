@@ -2004,3 +2004,56 @@ Gameplay menu integrated locally by fast-forward to adbd806 on dev/all-features.
 The persistent shared preview on5178 serves src/gameplay-menu.js with the new
 Pilot interface and tab frame. No service/database restart or production deployment
 was performed. SA-UI-002 is integrated; independent review remains pending.
+
+
+SA-FAU-001 ACTIVE — Cees requests downloaded Pyrebear on Pyre and newest
+Suloher dog on Miasma, both hostile/shootable/killable, bear higher HP, Blender
+death animations. Root owns isolated .worktrees/pyrebear feat/pyrebear from
+dev4d38827: src/fauna, new creature GLBs/source/Blender scripts, narrow
+src/main.js, src/mining/tool.js and src/effects/weapon-target.js hooks,
+dev-launch-options + tests/docs. Agents own disjoint habitat, asset and medical
+modules; root integrates. Offline session wildlife with canonical body floors,
+bounded deterministic spawns; no server damage/persistence schema claim.
+Target preview5515/5516, no GPU claim yet (momentum/navigation queues preserved).
+Do not overwrite shared5178/API8087/database51224 or other owners' unfinished work.
+
+SA-AUD-002 READY / LOCAL INTEGRATION — Nova, 2026-09-07:
+Commit3a7775a on feat/construction-fauna-audio is now fast-forwarded into local
+dev/all-features (shared5178), preserving dirty HANDOFF notes and services/DB.
+Building placement callback fires after successful commit; Pyrebear deep growl
+and Sulphurhound snarl are in audio/synthesis + gameplay.event. 95 full test-file
+suites,28 focused cases, build and repo checks pass. Chrome audio-only studio
+played all3 with nonzero PCM, mute0 and no captured errors. No GPU job used.
+
+FAUNA OWNER ACTION: audio is ready in dev. Exact small onAttack→onSound patch:
+/home/cees/projects/star-agent-construction-audio/docs/qa/construction-audio/fauna-attack-hook.patch
+It adds one event at windup entry in hostile-simulation, forwards worldVector3
+in hostile-fauna and binds to audio.gameplay.event in main. Apply/reconcile it
+once after updating your audio modules from3a7775a; preserve your newer runtime.
+Current species suloher is already mapped to sulphurhound-attack. Audio task
+has not modified/copied/committed your in-progress fauna source or assets.
+Building is live; creature attack hookup remains pending your owned integration.
+Preview http://127.0.0.1:5178/tests/gameplay-audio.html .
+
+SA-AUD-002 SOURCE COMPLETION — Nova observed the fauna owner's onAttack/onSound
+hook already applied in hostile-simulation/hostile-fauna/main. The two committed
+audio modules are still at the older version there. Nova now claims ONLY the
+bounded3a7775a diff for src/audio/gameplay.js and src/audio/synthesis.js in the
+fauna worktree, applying it after a clean patch check. No fauna/main/assets or
+owner commits will be changed. This connects that existing callback to the ready
+sounds; source-level attack/event checks follow, creature GPU QA remains owner work.
+
+SA-AUD-002 FINAL SOURCE CONNECTION — 2026-09-07:
+Fauna owner applied onAttack→onSound→main. Nova applied ONLY the committed
+3a7775a src/audio/gameplay.js and synthesis.js diff into its worktree after
+patch check (already applied; do not duplicate). Both real species simulation
+→mixer checks pass: one sound on windup, no frame repeats, new sound next attack,
+zero voices after interruption, no dead attacks. Repro script:
+scripts/verify-fauna-audio.mjs /path/to/fauna-worktree.
+Fauna runtime remains owner-uncommitted; sound modules are now source-connected.
+Full creature feature/shared-game integration and its GPU journey remain owner work.
+Audio source4f86821; reviewfb4a096; draft PR64:
+https://github.com/AvonMexicola/star-agent/pull/64 .
+Local dev retained newer navigation integration; source verification/docs applied
+as6d3abb0. Shared5178 sound studio verified real Pyrebear output and mute0.
+No shared service/database restart or public deployment. Audio file claims released.

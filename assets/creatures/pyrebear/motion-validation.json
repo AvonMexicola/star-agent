@@ -1,0 +1,9 @@
+{
+  "runtime": "/models/creatures/pyrebear.glb",
+  "samples": 121,
+  "walkZeroToDeathZeroMaxVertexDisplacementMetres": 1.018018716548421e-05,
+  "maxLimbJointDistanceChangeMetres": 9.168304595852383e-06,
+  "maxAdjacentSampleVertexDisplacementMetres": 0.04272845239789896,
+  "sampleIntervalSeconds": 0.015000000000000001,
+  "limits": "Sampling checks continuity and limb length, not physical contact or anatomical realism."
+}
