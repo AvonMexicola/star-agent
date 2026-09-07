@@ -102,8 +102,9 @@ continuous swept-solid or station placement certificate.
 The same-camera native05 review scored **3.60**, below the 4.0 bar. Its
 [unmodified report](reviews/bastion-native-05.md) remains part of the record.
 Candidate06 improves circular surface normals, dark rough open bores and subtle
-PBR finish without changing geometry. Its native review is pending; no art score
-is inferred from successful export or motion tests.
+PBR finish without changing geometry. Its [native review](reviews/bastion-native-06.md) scores **3.90**: curved metal
+and dark bores improve, but the broad white enamel faces still need finish.
+Candidate07 is being authored; no final art acceptance is claimed.
 
 ## Browser acceptance in progress
 
@@ -131,7 +132,11 @@ the current developer launcher; attempt04 physically reached the hub before an
 assertion read the weapon from the inventory instead of the own-player snapshot.
 Attempt05 was explicitly interrupted when another reserved GPU job started;
 it is not a pass. Corrected fixture assertions use the actual shared UI and state.
-No application defect was hidden by those harness changes.
+Attempt06 reached the hub and verified the lock, then the controller tool shortcut
+opened the authoritative inventory as intended. The fixture had tried to walk
+without closing that dialog. It now verifies the repeated disabled selection,
+closes the real screen and asserts gameplay is enabled before walking. No
+application behavior was bypassed by those harness changes.
 
 ## Remaining boundaries
 
@@ -147,3 +152,13 @@ Online equipment retail is not added by this work. Additional stations are not
 spawned; their later implementation can register separate station zones/markets.
 Hardware controllers, physical phones, whole-station performance and public
 release remain separate from injected Gamepad/native touch browser evidence.
+
+The [author-side placement audit](reviews/bastion-placement.md) measures actual
+station triangles and full foundation support. The shared server/client table now
+aligns to the decoded support planes, eliminating 2.817/7.004 mm nominal fixed-base
+embedding. The conservative complete articulation cylinder clears non-contact
+station geometry; moving rings, hub and berth bounds are hundreds of metres away.
+Some valid bore directions are obstructed by other station structures. Admitted
+impact retaliation deliberately uses unconditional hitscan, so those obstructions
+do not create an immunity exploit. The legacy fallback exterior does not share
+these support planes and is excluded from placement acceptance.

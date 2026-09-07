@@ -27,7 +27,7 @@ async function setup(page,context,mode,callsign,diagnostics){
  if(mode==='controller')await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
  return {errors,warnings,account};
 }
-async function close(page,mode){if(mode==='controller')await pulse(page,1);else if(mode==='keyboard')await page.keyboard.press('Escape');else await page.locator('dialog[open]').last().locator('.gameplay-resume').tap();await page.waitForTimeout(220);}
+async function close(page,mode){if(mode==='controller')await pulse(page,1);else if(mode==='keyboard')await page.keyboard.press('Escape');else await page.locator('dialog[open]').last().locator('.gameplay-resume').tap();await expect(page.locator('dialog[open]')).toHaveCount(0);await expect.poll(async()=>(await state(page)).enabled).toBe(true);await page.waitForTimeout(220);}
 async function interact(page,mode){if(mode==='controller')await pulse(page,2);else if(mode==='keyboard')await page.keyboard.press('KeyF');else await page.locator('[data-cabin-interact]').tap();await page.waitForTimeout(120);}
 async function menu(page,mode){if(mode==='controller')await pulse(page,9);else if(mode==='keyboard')await page.keyboard.press('Escape');else await page.locator('[data-cabin-menu]').tap();}
 async function walker(page,context,mode){
@@ -40,6 +40,7 @@ async function walker(page,context,mode){
   if(key){if(cdp)await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...centers[key],id:1,radiusX:6,radiusY:6,force:1}]});else await page.keyboard.down(key);held=key;}
  }
  return {stop:()=>input(null),async walk(x,z){
+  await expect.poll(async()=>(await state(page)).enabled).toBe(true);
   let last;
   for(let i=0;i<420;i++){
    const c=await page.evaluate(({x,z})=>{const n=starAgent.navigation,frame=n.station.frame,local=frame.toLocal(n.position,n.position.clone()),delta=frame.toWorld(local.clone().set(x,local.y,z),local.clone()).sub(n.position).applyQuaternion(n.orientation.clone().invert());return {local:local.toArray(),dx:delta.x,dz:delta.z,distance:Math.hypot(delta.x,delta.z),frame:n.physicsFrame};},{x,z});last=c;
@@ -55,23 +56,36 @@ async function walker(page,context,mode){
 
 async function controllerInterruptions(page,context,record){
  record.interruptions=[];
- for(const kind of ['focus','disconnect','replacement','unsupported']){
+ const blank=await context.newPage(),gameCDP=await context.newCDPSession(page),blankCDP=await context.newCDPSession(blank);
+ const focus=()=>page.evaluate(()=>({documentFocused:document.hasFocus(),focused:starAgent.state.focused,events:[...hubFocusEvents]}));
+ try{
+  await page.evaluate(()=>{window.hubFocusEvents=[];window.hubFocusListener=e=>hubFocusEvents.push({type:e.type,trusted:e.isTrusted,at:performance.now(),visibility:document.visibilityState});window.addEventListener('blur',hubFocusListener);window.addEventListener('focus',hubFocusListener);document.addEventListener('visibilitychange',hubFocusListener);});
+  await blank.goto('about:blank');
+  await gameCDP.send('Emulation.setFocusEmulationEnabled',{enabled:false});await blankCDP.send('Emulation.setFocusEmulationEnabled',{enabled:false});
+  await page.bringToFront();await expect.poll(async()=>{const s=await focus();return s.documentFocused&&s.focused;}).toBe(true);
+  await page.evaluate(()=>hubPad.buttons[7]={pressed:false,value:0});await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
+  await page.evaluate(()=>hubPad.buttons[7]={pressed:true,value:1});await page.waitForTimeout(100);const before=await focus();
+  await blank.bringToFront();await expect.poll(async()=>{const s=await focus();return !s.documentFocused&&!s.focused;}).toBe(true);
+  const background=await focus();expect(background.events.slice(before.events.length).some(e=>e.type==='blur'&&e.trusted)).toBe(true);expect((await state(page)).controller.armed).toBe(false);
+  await page.bringToFront();await expect.poll(async()=>{const s=await focus();return s.documentFocused&&s.focused;}).toBe(true);
+  const returned=await focus();expect(returned.events.slice(background.events.length).some(e=>e.type==='focus'&&e.trusted)).toBe(true);
+  await page.waitForTimeout(200);const held=await state(page);expect(held.controller.armed).toBe(false);expect(heldWeapon(held)).toBeNull();
+  await page.evaluate(()=>hubPad.buttons[7]={pressed:false,value:0});await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
+  record.interruptions.push({kind:'focus',method:'native tab focus with Playwright focus override disabled',before,background,returned,heldArmed:false,releasedArmed:true});
+ }finally{
+  await gameCDP.send('Emulation.setFocusEmulationEnabled',{enabled:true}).catch(()=>{});await blankCDP.send('Emulation.setFocusEmulationEnabled',{enabled:true}).catch(()=>{});
+  await page.bringToFront().catch(()=>{});await blank.close().catch(()=>{});await gameCDP.detach().catch(()=>{});await blankCDP.detach().catch(()=>{});
+  await page.evaluate(()=>{window.removeEventListener('blur',hubFocusListener);window.removeEventListener('focus',hubFocusListener);document.removeEventListener('visibilitychange',hubFocusListener);}).catch(()=>{});
+ }
+ for(const kind of ['disconnect','replacement','unsupported']){
   await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
   await page.evaluate(()=>hubPad.buttons[7]={pressed:true,value:1});
-  let blank;
-  if(kind==='focus'){
-   blank=await context.newPage();await blank.goto('about:blank');await blank.bringToFront();
-   await expect.poll(async()=>(await state(page)).focused).toBe(false);
-  }else await page.evaluate(kind=>{if(kind==='disconnect')hubPad.connected=false;if(kind==='replacement')hubPad.id+=' replacement';if(kind==='unsupported')hubPad.mapping='';},kind);
-  await page.waitForTimeout(160);
-  expect((await state(page)).controller.armed).toBe(false);
-  if(blank){await blank.close();await page.bringToFront();await expect.poll(async()=>(await state(page)).focused).toBe(true);}
-  else await page.evaluate(()=>{hubPad.connected=true;hubPad.mapping='standard';});
-  await page.waitForTimeout(200);const held=await state(page);
-  expect(held.controller.armed).toBe(false);expect(heldWeapon(held)).toBeNull();
-  await page.evaluate(()=>hubPad.buttons[7]={pressed:false,value:0});
-  await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
-  record.interruptions.push({kind,heldArmed:held.controller.armed,heldWeapon:heldWeapon(held),releasedArmed:(await state(page)).controller.armed,focusMethod:kind==='focus'?'native browser tab focus':undefined});
+  await page.evaluate(kind=>{if(kind==='disconnect')hubPad.connected=false;if(kind==='replacement')hubPad.id+=' replacement';if(kind==='unsupported')hubPad.mapping='';},kind);
+  await page.waitForTimeout(160);expect((await state(page)).controller.armed).toBe(false);
+  await page.evaluate(()=>{hubPad.connected=true;hubPad.mapping='standard';});
+  await page.waitForTimeout(200);const held=await state(page);expect(held.controller.armed).toBe(false);expect(heldWeapon(held)).toBeNull();
+  await page.evaluate(()=>hubPad.buttons[7]={pressed:false,value:0});await expect.poll(async()=>(await state(page)).controller.armed).toBe(true);
+  record.interruptions.push({kind,heldArmed:held.controller.armed,heldWeapon:heldWeapon(held),releasedArmed:(await state(page)).controller.armed});
  }
 }
 
@@ -96,6 +110,9 @@ for(const mode of ['controller','keyboard','touch'])test(`${mode}: physical bert
   await page.screenshot({path:folder+'/03-hands-free-inventory.png'});await close(page,mode);
   if(mode==='controller')await pulse(page,15);else if(mode==='keyboard')await page.keyboard.press('Digit3');
   expect(heldWeapon(await state(page))).toBeNull();
+  // Online D-pad right intentionally opens the authoritative inventory.
+  // Verify its disabled selection again and close it before physical walking.
+  if(mode==='controller'){await expect(page.locator('#multiplayer-inventory-dialog')).toBeVisible();for(const button of await equipment.all())await expect(button).toBeDisabled();await close(page,mode);}
   await walk.walk(0,-8.5);await walk.walk(-5.5,-10.2);await interact(page,mode);
   await expect(page.locator('#trading-dialog')).toBeVisible();
   record.trade=await verifyStationMarketTrade({page,activate:key=>activate(page,mode,key),screenshotPath:folder+'/04-market.png'});

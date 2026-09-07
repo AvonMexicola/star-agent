@@ -4,9 +4,11 @@ import layout from '../assets/station-defense/layout.json' with {type:'json'};
 export const AEON_STATION_ID = 'aeon-orbital';
 export const STATION_PROTECTION_RADIUS = 30_000;
 export const DEFENSE_LAYOUT = Object.freeze(layout);
+// The authored exterior GLB quantizes its nominal −18/−92 m support planes.
+// Use the measured decoded surfaces so all four foundations sit flush.
 export const STATION_DEFENSE_MOUNTS = Object.freeze([-665, 665].flatMap((x, side) => [
-  Object.freeze({id:`bastion-${side + 1}-upper`,position:[x,-18,0],rotation:[0,0,0,1]}),
-  Object.freeze({id:`bastion-${side + 1}-lower`,position:[x,-92,0],rotation:[0,0,1,0]}),
+  Object.freeze({id:`bastion-${side + 1}-upper`,position:[x,-17.997183184697576,0],rotation:[0,0,0,1]}),
+  Object.freeze({id:`bastion-${side + 1}-lower`,position:[x,-92.0070038910506,0],rotation:[0,0,1,0]}),
 ]));
 const finitePoint = point => point?.isVector3 && point.toArray().every(Number.isFinite);
 const FORWARD = new THREE.Vector3(0,0,-1), UP = new THREE.Vector3(0,1,0), RIGHT = new THREE.Vector3(1,0,0);
