@@ -16,16 +16,35 @@
     "plan:checks": "node scripts/development/plan.mjs",
     "branches": "node scripts/development/branches.mjs",
     "test:development": "node --test tests/development/contracts.test.mjs tests/development/git-tools.test.mjs",
-    "test:ci-browser": "playwright test -c scripts/ci-browser.config.js"
+    "test:ci-browser": "playwright test -c scripts/ci-browser.config.js",
+    "postinstall": "prisma generate",
+    "prisma:generate": "prisma generate",
+    "db:local": "node scripts/database.mjs local",
+    "db:migrate": "node scripts/database.mjs migrate",
+    "test:database": "node --test tests/dev-database.test.js"
   },
   "dependencies": {
-    "three": "^0.180.0",
+    "@prisma/adapter-pg": "7.9.1",
+    "@prisma/client": "7.9.1",
     "nodemailer": "^10.0.0",
     "pg": "^8.23.0",
+    "three": "^0.180.0",
     "ws": "^8.21.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
+    "embedded-postgres": "16.14.0-beta.17",
+    "prisma": "7.9.1",
     "vite": "^7.1.0"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.0",
+    "mysql2": "3.24.3"
+  },
+  "allowScripts": {
+    "@embedded-postgres/linux-x64@16.14.0-beta.17": true,
+    "@prisma/engines@7.9.1": true,
+    "prisma@7.9.1": true,
+    "esbuild@0.28.2": true
   }
 }

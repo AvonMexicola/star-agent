@@ -11,7 +11,7 @@ and tooling changes do not certify the entire game as finished.
 | Ships | Flyable Nomad 02, Kestrel and legacy 30 m Atlas | 64 m Atlas is a separate 59,443-triangle geometry studio; final materials/flight integration open |
 | Station | Hangar/concourse, physical boarding, services and local opening integrated | Opt-in exterior geometry preview integrated; final materials/art/timing and wider multi-user acceptance open |
 | Mining/building | Local mining including useful Aeon loose stones, inventory/equipment, processing and construction | Full authoritative mining/building persistence and economy not integrated |
-| Multiplayer | Ten-player prototype, accounts, comms-assigned hangars, authoritative inventory/hits, remote players | Local build uses memory, no SMTP; online Nomad only; live ten-person soak not established here |
+| Multiplayer | Ten-player prototype, persistent PostgreSQL/Prisma accounts and inventory, comms-assigned hangars, authoritative hits, remote players | Local database survives restarts; no SMTP; online Nomad only; live ten-person soak not established here |
 | Combat | Offline Nomad/Kestrel patrol encounters, shield/hull damage and recovery; integrated controller/browser evidence | No reward ledger, durable mission, physical weapon fittings or multiplayer NPC authority |
 | Audio | Six local score variants plus material footsteps/weapon/cutter synthesis | Final mix/listening review, broad surface and remote audio coverage |
 | Developer entry | Three ships, 14 starts, temporary saves and shared seed URLs | A dev start is explicit teleport; it does not prove continuous travel by itself |

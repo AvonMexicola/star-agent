@@ -35,11 +35,39 @@ the parked Nomad. It replaces the dev teleport, ship selection and test inventor
 Hangar gravity follows the occupied bay, including EVA entry into another pilot's
 hangar; crossing an open deck edge returns to EVA. Local construction is not replicated.
 
-The runner starts Vite on 5178 and an isolated memory API on 8087. Optional local
-registration/login works through ACCOUNT; accounts reset when the runner stops.
+The runner starts Vite on 5178, the API on 8087 and native PostgreSQL on loopback
+51224. Optional registration/login works through ACCOUNT. Accounts, sessions and
+server inventory persist across runner restarts. Prisma uses the existing SQL
+tables and authentication contracts. The runner drains API save queues before
+stopping PostgreSQL. A database failure stops startup; it never falls back to RAM.
 Forgotten-password emails require SMTP and are unavailable in this local mode.
 Ports in use cause an explicit failure rather than killing another preview.
-Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned services.
+Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops the owned frontend,
+API and local database after queued saves finish.
+
+The default database directory on Linux is
+`~/.local/share/star-agent/postgres/star-agent-local/` (or under `XDG_DATA_HOME`).
+It contains `cluster/` and a private `credentials.json`; keep both outside Git and
+browser assets. Changing worktrees or reinstalling dependencies does not replace
+this directory. `DEV_DATABASE_NAME` selects a separate named database and
+`DEV_DATABASE_PORT` chooses its loopback port. `DEV_DATABASE_URL` explicitly selects
+an already running local PostgreSQL database. An inherited production
+`DATABASE_URL` is never used by `dev:all`. No root access or Docker is required;
+the pinned development dependency supplies native PostgreSQL 16.14 binaries.
+
+For a cold backup, stop the runner and copy the entire named database directory,
+including `credentials.json` and `cluster/`, to private storage. Restore the copy
+under a new `DEV_DATABASE_NAME` and start with that name; the restart/restore test
+verifies that its accounts, cookies and inventory still work. Keep the original
+until the restored instance is verified. PostgreSQL major-version changes require
+an explicit upgrade or dump/restore; the runner refuses mismatched clusters.
+Never delete the database directory as part of a routine restart.
+
+`npm run db:local` starts just this SQL service. `npm run prisma:generate` regenerates
+the server-only Prisma client; `npm ci` does this through `postinstall` too.
+`npm run db:migrate` requires an explicit `DATABASE_URL` and applies the existing
+transactional SQL migrations. Do not use `prisma db push` or `migrate reset` on this
+schema: its expression indexes/checks and deployed migration history are retained.
 
 ## Integration snapshot
 
@@ -49,6 +77,7 @@ Override `DEV_PORT` and `DEV_API_PORT` when needed. Ctrl+C stops both owned serv
 | Consolidated flight, grass/terrain loading, mining/EVA/inventory, station opening | `integrate/main-2026-09-06` through multiplayer ancestry |
 | Gear-limited flight, handling, drive, utilities, graphics, multiplayer | `feat/multiplayer-ten` at `f7a30ef` |
 | Server-assigned hangar spawns and local station gravity | `fix/multiplayer-hangar-gravity` at `b7eefc5` (PR #51) |
+| Persistent local accounts, sessions and inventory through PostgreSQL/Prisma | `fix/persistent-local-accounts` (SA-DB-001) |
 | Flyable Kestrel and shared Meridian identity | `feat/kestrel-flight` at `e4ec7df` |
 | Nomad 02 hull, cabin, berth, cargo rack, folding gear | `feat/nomad-utility` at `385c138` (asset/gameplay `9a363cb`) |
 | Construction, mainframes, recipes and polished building pieces | `feat/base-building` at `891c916` |
