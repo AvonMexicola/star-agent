@@ -335,3 +335,13 @@ Moving rifle pulses and ship lasers follow the actual muzzle. Ballistic shots
 inherit launch velocity; collision and lead prediction use that trajectory.
 [Momentum QA](qa/combat-momentum.md) records the exact checked source, failures,
 evidence and limits. This is a local development checkpoint, not release approval.
+
+
+## Cargo tractor follow-up
+
+Checked on `feat/cargo-tractor` (runtime70fcaad), pending the next shared local
+promotion. Menu → Trade → Cargo → Equip tractor beam; hold RT / T to guide a
+crate and X / F to secure its compatible grid. Phone controls support a second
+finger while the first powers the beam. All SBU sizes work; only1SBU is hand
+carriable. This follow-up requires matching protocol4 client/API; no new SQL
+migration. See [controls](cargo-tractor.md) and [actual QA](qa/cargo-tractor.md).
