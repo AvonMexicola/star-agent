@@ -15,7 +15,7 @@ import './terminal.css';
 export function createTradingUI(api,nav){
   const dialog=document.createElement('dialog');dialog.id='trading-dialog';dialog.setAttribute('aria-labelledby','trading-title');
   dialog.innerHTML=`<header class="terminal-header"><div class="terminal-site"><p class="terminal-network"></p><h2 id="trading-title" class="trade-place"></h2><p class="terminal-role"></p></div><div class="terminal-session"><span class="terminal-status"></span><span class="terminal-pilot"></span></div><button data-close aria-label="Close cargo and trade">✕</button></header><div class="terminal-workspace"><nav class="trade-tabs" aria-label="Cargo views"></nav><section class="terminal-manifest"><div class="terminal-view-heading"><h3 class="terminal-view-name">Local stock</h3><span class="terminal-context"></span></div><div class="trade-summary"></div><div class="trade-selection"></div><main class="trade-content"></main><footer><p class="trade-feedback" role="status"></p><div class="trade-pages"></div><small>D-pad / stick: choose · A: confirm · B: close · Only 1 SBU can be carried</small></footer></section></div>`;
-  document.body.append(dialog);let view='buy',page=0,size=1,shipId='',terminal='',busy=false,message='',source='pack';
+  document.body.append(dialog);let view='buy',page=0,size=1,shipId='',terminal='',busy=false,message='',source='pack',contentKey='';
   const $=s=>dialog.querySelector(s);
   const button=(label,key,fn,disabled=false)=>{const b=document.createElement('button');b.textContent=label;b.dataset.controllerKey=key;b.disabled=disabled;b.onclick=fn;return b;};
   const select=(list,current,fn,prefix)=>{const wrap=document.createElement('div');wrap.className='trade-choices';wrap.setAttribute('role','group');wrap.setAttribute('aria-label',prefix==='size'?'Shipment quantity in SBU':'Choices');for(const o of list){const b=button(o.label,`${prefix}-${o.id}`,()=>{fn(o.id);render();},o.disabled);b.setAttribute('aria-pressed',String(o.id===current));wrap.append(b);}return wrap;};
@@ -27,7 +27,7 @@ export function createTradingUI(api,nav){
     const ship=ships.find(h=>h.id===shipId),t=s.terminals.find(t=>t.id===terminal),own=t?.owner===s.owner,site=settlementById(terminal),goods=settlementGoods(s.markets?.[terminal]),near=api.atTerminal(terminal),dock=ship&&api.docked(ship,terminal);
     if(t?.base&&own&&!Object.hasOwn(t.base.storage,source))source=Object.keys(t.base.storage)[0]??'';
     const identity=terminalIdentity(s,terminal,{powered:t?api.baseActive?.(t)!==false:true});
-    $('.trade-place').textContent=identity.name;$('.terminal-role').textContent=identity.role;$('.terminal-network').textContent=identity.network;
+    $('.trade-place').textContent=identity.name;$('.terminal-role').textContent=site?.activity??identity.role;$('.terminal-network').textContent=identity.network;
     $('.terminal-status').textContent=near?(identity.available?'Terminal connected':identity.status):'Remote cargo access';
     $('.terminal-pilot').textContent=s.online?(s.players?.find(p=>p.id===s.owner)?.callsign??'Pilot'):'Local pilot';
     $('.terminal-context').textContent=near?(dock?'Delivery pad linked':'Land your ship to trade'):'Approach an exchange to trade';
@@ -46,7 +46,6 @@ export function createTradingUI(api,nav){
       const sources=Object.entries(t.base.storage).map(([id,c])=>({id,name:c.name}));selection.append(button(`Local storage: ${sources.find(c=>c.id===source)?.name??'Choose'} · change`,'base-source',()=>{source=sources[(sources.findIndex(c=>c.id===source)+1)%sources.length]?.id??'';page=0;render();},busy||sources.length<2));
     }
     const content=$('.trade-content');content.replaceChildren();let totalPages=1;
-    if(site&&['buy','cargo'].includes(view)){const activity=document.createElement('p');activity.className='settlement-activity';activity.textContent=site.activity;content.append(activity);}
     if(view==='buy'||view==='pack'){
       if(view==='buy'&&t?.base&&(!t.base.open||api.baseActive?.(t)===false)){const status=document.createElement('p');status.className='trade-reason';status.textContent=!t.base.open?'Shop closed. Stock is retained until the owner reopens.':'Shop unpowered. Restore base power to trade.';content.append(status);}
       totalPages=Math.ceil(TRADE_RESOURCES.length/3);page=Math.min(page,totalPages-1);
@@ -101,6 +100,7 @@ export function createTradingUI(api,nav){
     }
     const pages=$('.trade-pages');pages.replaceChildren(button('Previous','previous-page',()=>{page--;render();},page<=0),document.createTextNode(` ${page+1} / ${totalPages} `),button('Next','next-page',()=>{page++;render();},page>=totalPages-1));
     $('.trade-feedback').textContent=message||s.error|| (s.online?'Aeon exchanges share stock and prices':site?'Deliveries fill local needs. Stock and needs persist in your save.':'Cargo saved with this browser’s mining inventory');
+    const nextContentKey=`${terminal}:${view}:${page}`;if(contentKey!==nextContentKey){content.scrollTop=0;contentKey=nextContentKey;}
     if(focused)dialog.querySelector(`[data-controller-key="${CSS.escape(focused)}"]`)?.focus({preventScroll:true});
   }
   $('[data-close]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{nav.keys.clear();nav.gamepad.suspend();nav.enabled=!document.querySelector('dialog[open]');nav.canvas.focus({preventScroll:true});});

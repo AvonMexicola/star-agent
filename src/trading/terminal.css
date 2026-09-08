@@ -1,6 +1,6 @@
 /* Exchange presentation is scoped; the pilot menu and transaction router stay shared. */
 #trading-dialog{--exchange-ink:#14333e;--exchange-paper:#edf4f1;--exchange-muted:#48646d;--exchange-edge:#cadbd6;grid-template-rows:auto minmax(0,1fr)}
-#trading-dialog .terminal-header{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:0;padding:2px 0 20px;color:#edf4f1}
+#trading-dialog .terminal-header{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:0;padding:2px 0 14px;color:#edf4f1}
 #trading-dialog .terminal-network{font:500 13px var(--font-body);color:#b6efd1;margin:0 0 7px}
 #trading-dialog .terminal-header h2,#trading-dialog.gameplay-screen .gameplay-content>.terminal-header h2{font:500 38px/1.04 var(--font-display);margin:0;color:#edf4f1;max-width:28ch}
 #trading-dialog .terminal-role{font:14px/1.5 var(--font-body);color:#a8c2c6;margin:8px 0 0}
@@ -28,7 +28,7 @@
 #trading-dialog .trade-choices button{min-width:36px;padding:7px!important}
 #trading-dialog .trade-content{gap:0;scroll-padding:12px;overscroll-behavior:contain}
 #trading-dialog .trade-content>p{font-size:13px;line-height:1.6;color:var(--exchange-muted);max-width:76ch;margin:4px 0 12px}
-#trading-dialog .trade-content article{min-height:92px;flex-shrink:0;border-bottom:1px solid var(--exchange-edge);padding:14px 0;gap:24px;align-items:center}
+#trading-dialog .trade-content article{min-height:84px;flex-shrink:0;border-bottom:1px solid var(--exchange-edge);padding:10px 0;gap:24px;align-items:center}
 #trading-dialog .trade-content article>div:first-child{min-width:0}
 #trading-dialog .trade-content h3{font-size:17px;font-weight:600;line-height:1.4;margin:0 0 5px;color:var(--exchange-ink)}
 #trading-dialog [data-commodity]{display:flex;align-items:center;gap:10px}

@@ -1,3 +1,5 @@
 import {defineConfig} from '@playwright/test';
-process.env.TMPDIR='/tmp';
-export default defineConfig({testDir:'.',testMatch:'projected-terminals.spec.js',timeout:300000,workers:1,retries:0,maxFailures:1,reporter:'list',outputDir:'/tmp/star-agent-projected-terminals-results',use:{hasTouch:true,baseURL:'http://127.0.0.1:5668',viewport:{width:1440,height:900},actionTimeout:12000,launchOptions:{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']}},webServer:{command:'npm run preview -- --port 5668 --strictPort',url:'http://127.0.0.1:5668',reuseExistingServer:false}});
+import {mkdirSync} from 'node:fs';
+import {resolve} from 'node:path';
+process.env.TMPDIR=process.env.TERMINAL_TMPDIR??process.env.TMPDIR??'/tmp';mkdirSync(process.env.TMPDIR,{recursive:true});
+export default defineConfig({testDir:'.',testMatch:'projected-terminals.spec.js',timeout:300000,workers:1,retries:0,maxFailures:1,reporter:'list',outputDir:resolve('test-results/projected-terminals-output'),use:{hasTouch:true,baseURL:'http://127.0.0.1:5668',viewport:{width:1440,height:900},actionTimeout:12000,launchOptions:{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']}},webServer:{command:'npm run preview -- --port 5668 --strictPort',url:'http://127.0.0.1:5668',reuseExistingServer:false}});

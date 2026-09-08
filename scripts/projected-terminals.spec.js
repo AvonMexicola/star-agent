@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {build as bundle} from 'esbuild';
 import {MiningStore} from '../src/mining/store.js';
 import {LocalTrading} from '../src/trading/local.js';
 import {settlementMarketId} from '../src/settlements/catalog.js';
@@ -63,10 +64,12 @@ test('projected terminal connects to its exchange dashboard through a complete c
  // Read-only aim target shifted to the display; still actual standard Gamepad look.
  const projected=await page.evaluate(()=>{const s=window.starAgent.state.settlements.sites.find(s=>s.body==='selene'),n=window.starAgent.navigation;return n.position.clone().fromArray(s.terminal).add(n.position.clone().set(0,.76,.56).applyQuaternion(n.shipOrientation.clone().fromArray(s.quaternion))).toArray();});
  await aim(page,projected,'world');await capture(page,'projected-welcome');
+ await tap(15);await tap(9);await choose('tab-settings');await choose('hud-display');await choose('hud-display');await tap(1);await page.waitForFunction(()=>window.starAgent.state.enabled&&document.body.dataset.hudMode==='none');
+ await capture(page,'projected-welcome-clean');
  const uploads=await page.evaluate(()=>window.starAgent.state.trading.projections.uploads);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.trading.projections.uploads)).toBe(uploads);
  await tap(2);await expect(page.locator('#trading-dialog')).toBeVisible();await expect(page.locator('.trade-place')).toHaveText('Stillwater Exchange');await expect(page.locator('.terminal-status')).toHaveText('Terminal connected');
  const before=await page.evaluate(()=>window.starAgent.state.trading);
- await choose('next-page');await expect(page.locator('[data-need-resource="conductor"]')).toContainText('Needs 1 SBU');await expect(page.locator('[data-need-resource="conductor"]')).toContainText('Power wiring');
+ await choose('next-page');expect(await page.locator('.trade-content').evaluate(e=>e.scrollTop)).toBe(0);await expect(page.locator('[data-need-resource="conductor"]')).toContainText('Needs 1 SBU');await expect(page.locator('[data-need-resource="conductor"]')).toContainText('Power wiring');
  for(const viewport of [{width:1440,height:900},{width:390,height:844}]){await page.setViewportSize(viewport);await frames(page);await capture(page,`local-stock-${viewport.width}`);if(viewport.width===390){await page.locator('[data-controller-key="previous-page"]').tap();await page.locator('[data-controller-key="next-page"]').tap();await expect(page.locator('[data-need-resource="conductor"]')).toContainText('Needs 1 SBU');await page.locator('[data-need-resource="conductor"]').scrollIntoViewIfNeeded();await capture(page,'phone-conductor-details');}expect(await page.locator('#trading-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);}
  await page.setViewportSize({width:1440,height:900});for(const key of ['previous-page','next-page']){for(let i=0;i<60&&await page.evaluate(k=>document.activeElement?.dataset.controllerKey!==k,key);i++)await page.keyboard.press('Tab');expect(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)).toBe(key);await page.keyboard.press('Enter');}await choose('view-cargo');const crates=before.ships.find(s=>s.hull==='nomad').crates;
  await choose(`sell-${crates[0].id}`);await expect(page.locator('.trade-feedback')).toContainText('Sold 1 SBU');
@@ -85,3 +88,30 @@ test('projected terminal connects to its exchange dashboard through a complete c
  await capture(page,'returned-to-flight');expect(errors).toEqual([]);await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,physicalController:false,start:'Explicit approach at 65 m with two previously purchased conductor crates and destination reserve 255/256 SBU. All subsequent navigation uses injected standard Gamepad; terminal pagination also checks keyboard and native touch. No pose mutation.',projections:await page.evaluate(()=>window.starAgent.state.trading.projections),state:await page.evaluate(()=>window.starAgent.state)},null,2));
 });
 
+
+// Presentation regression with explicit fixture state and recorded command intents.
+// Real cargo transactions and physical controller access are exercised above.
+test('owner offer and beacon controls stay usable in the desktop and phone dashboard',async({page})=>{
+ await mkdir(out,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const html=await readFile(new URL('../dist/index.html',import.meta.url),'utf8'),css=html.match(/href="\.\/(assets\/main-[^"]+\.css)"/)[1];
+ await page.route('**/terminal-ui-fixture',r=>r.fulfill({contentType:'text/html',body:`<!doctype html><html><head><link rel="stylesheet" href="/${css}"></head><body></body></html>`}));
+ await page.goto('/terminal-ui-fixture');
+ const js=await bundle({stdin:{contents:`
+ import {createTradingUI} from './src/trading/ui.js';
+ import {createGameplayMenu} from './src/gameplay-menu.js';
+ const t={id:'base-one',name:'Rockhaven Depot',owner:'pilot',stock:{},prices:{},base:{claim:{id:'claim-one'},open:true,public:false,storage:{rack:{name:'Workshop rack',items:{basalt:64}}},offers:{rack:{}}}};
+ const s={owner:'pilot',online:false,revision:0,account:{credits:1500},terminals:[t],ships:[{id:'pilot:nomad',owner:'pilot',hull:'nomad',crates:[]}],markets:{}};
+ const nav={keys:new Set(),gamepad:{suspend(){}},enabled:true,canvas:document.createElement('canvas'),shipId:'nomad',mode:'walk',insideShip:false};
+ const api={snapshot:()=>structuredClone(s),atTerminal:()=>true,nearestTerminal:()=>t.id,docked:()=>true,baseActive:()=>true,localBases:()=>[],sources:()=>[],loose:()=>0,async command(m){window.terminalIntents.push(m);if(m.op==='base-offer'){t.base.offers[m.source][m.resource]=m.quantity;t.stock[m.resource]=m.quantity;t.prices[m.resource]=m.price;}else if(m.op==='base-settings')t.base[m.setting]=m.value;s.revision++;return {message:'Saved.'};}};
+ window.terminalIntents=[];window.terminalFixture=s;const ui=createTradingUI(api,nav);
+ const labels=['Comms','Map','Contracts','Inventory','Trade','Loadout','Ship','Settings','Dev'];createGameplayMenu({nav,dev:true,screens:labels.map(label=>({id:label.toLowerCase(),label,dialogs:label==='Trade'?['trading-dialog']:[],open:()=>ui.openView('stock',t.id)}))});ui.openView('stock',t.id);
+ `,resolveDir:process.cwd()},bundle:true,format:'iife',write:false,loader:{'.css':'empty'}});
+ await page.addScriptTag({content:js.outputFiles[0].text});await expect(page.locator('.trade-place')).toHaveText('Rockhaven Depot');
+ const key='base-offer-add';for(let i=0;i<70&&await page.evaluate(k=>document.activeElement?.dataset.controllerKey!==k,key);i++)await page.keyboard.press('Tab');await expect(page.locator('[data-controller-key="base-offer-add"]')).toBeFocused();await page.keyboard.press('Enter');
+ await expect(page.locator('.base-stock-row')).toContainText('For sale: 1 SBU');await expect(page.locator('[data-controller-key="base-offer-add"]')).toBeFocused();await page.screenshot({path:out+'/owner-desktop.png'});
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:out+'/owner-phone-before.png'});await page.locator('[data-controller-key="base-public"]').tap();await expect(page.locator('[data-controller-key="base-public"]')).toHaveText('Beacon: Public');
+ await page.screenshot({path:out+'/owner-phone.png'});await page.locator('[data-controller-key="base-open"]').tap();await expect(page.locator('[data-controller-key="base-open"]')).toHaveText('Shop: Closed');
+ expect(await page.locator('#trading-dialog').evaluate(e=>e.scrollWidth<=e.clientWidth+2)).toBe(true);
+ const state=await page.evaluate(()=>({intents:window.terminalIntents,state:window.terminalFixture}));expect(state.intents[0]).toMatchObject({op:'base-offer',quantity:1,resource:'basalt',source:'rack',terminal:'base-one'});expect(state.state.terminals[0].base.open).toBe(false);expect(state.state.terminals[0].base.public).toBe(true);expect(errors).toEqual([]);
+ await writeFile(out+'/owner-controls.json',JSON.stringify({fixture:'Presentation-only mocked terminal reach and recorded command handler; no physical base journey or transaction-authority claim.',errors,...state},null,2));
+});
