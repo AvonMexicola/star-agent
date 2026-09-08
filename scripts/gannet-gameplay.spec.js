@@ -8,6 +8,7 @@ import {turnPath} from './gannet-primary-inputs.js';
 const output = process.env.GANNET_OUTPUT ?? '/home/cees/projects/.medium-ships-qa/gannet-controller';
 const sourceRoot = process.env.GANNET_SOURCE ?? new URL('..', import.meta.url).pathname;
 const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ship-gameplay.js', 'src/medium-ships.js', 'src/medium-ship-lights.js', 'src/gannet.js',
+  'src/medium-ship-inventory.js', 'src/ship-mfd.js', 'src/ship-marker.js', 'src/effects/energy-effects.js',
   'src/gannet-systems.js', 'src/gannet-layout.js', 'src/mining-rover.js', 'src/rover-carrier.js',
   'src/rover-support.js', 'src/rover-physics.js', 'src/gamepad.js', 'src/controller-ui.js',
   'src/ship-inventory-ui.js', 'src/mining/rock.js', 'src/mining/store.js',

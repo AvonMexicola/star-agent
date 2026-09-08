@@ -46,7 +46,7 @@ export function createMediumShip(id, systems) {
         {rows:[['SPEED', `${nav.speed.toFixed(1)} m/s`], ['ALTITUDE', `${Math.round(nav.altitude).toLocaleString()} m`], ['DRIVE', nav.powered ? 'ONLINE' : 'OFF']], footer:'MERIDIAN / STRATUM M-05'},
         {rows:[['BODY', nav.body.id.toUpperCase()], ['REGIME', nav.flightEnvironment.regime], ['FLIGHT ASSIST', nav.flightAssist ? 'ENGAGED' : 'UNLOCKED']], footer:'Continuous flight / metres'},
         {rows:[['CUTTER CHARGE', `${Math.round((mining.charge ?? 1) * 100)}%`], ['TWIN BEAMS', mining.beaming ? 'CUTTING' : 'STANDBY'], ['ORE BIN', `${ore.toFixed(2)} / 384 kg`]], footer:mining.reason ?? 'RT / T / hold cutter control'},
-        {rows:[['SUPPLIES', `${inventory.mass('ship').toFixed(1)} / 240 kg`], ['BOARDING RAMP', systems.moving ? 'MOVING' : systems.secured ? 'SECURED' : 'DEPLOYED'], ['LANDING GEAR', nav.gearProgress >= .999 ? 'DOWN' : nav.gearProgress <= .001 ? 'STOWED' : 'MOVING']], footer:'32 SBU freight / separate ore bin'},
+        {rows:[[inventory.massReadout ? 'SHIP STORAGE' : 'SUPPLIES', inventory.massReadout?.('ship') ?? `${inventory.mass('ship').toFixed(1)} / 240 kg`], ['BOARDING RAMP', systems.moving ? 'MOVING' : systems.secured ? 'SECURED' : 'DEPLOYED'], ['LANDING GEAR', nav.gearProgress >= .999 ? 'DOWN' : nav.gearProgress <= .001 ? 'STOWED' : 'MOVING']], footer:'32 SBU freight / separate ore bin'},
       ]);
     };
     ship.displayState = () => mfd.snapshot();

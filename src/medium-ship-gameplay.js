@@ -64,6 +64,7 @@ export class StratumGameplaySystems {
   setGear(progress) { this.gearProgress = progress; }
   get secured() { return this.progress === 0 && this.target === 0; }
   get moving() { return this.progress !== this.target; }
+  get accessStatus() { return this.moving ? 'WAIT FOR RAMP' : this.progress === 1 && this.target === 1 ? 'APPROACH SLOWLY' : 'CLOSED'; }
   get snapshot() { return {id: 'stratum', ramp: this.progress, target: this.target, secured: this.secured}; }
   get exteriorParts() {
     const p = STRATUM_FLIGHT_PARTS.find(part => part.id === 'pressure-body'), b = S.interior;
@@ -151,6 +152,11 @@ export class GannetGameplaySystems extends GannetSystems {
   }
   setGear(progress) { this.gearProgress = progress; }
   setPowered(powered) { this.powered = Boolean(powered); }
+  get accessStatus() {
+    if (this.moving || this.queued) return 'WAIT FOR ELEVATOR';
+    if (this.hatch.progress === 1 && this.hatch.target === 1 && this.lift.y <= .001 && this.lift.target === P.low) return 'APPROACH SLOWLY';
+    return this.secured ? 'CLOSED' : 'LOWER ELEVATOR';
+  }
   get exteriorParts() {
     let parts = gannetCollisionParts(this.mechanismPose(this.gearProgress)).filter(part => part.node === 'OuterHull' || part.node.startsWith('Gear_'));
     // A tapered fairing's enclosing box crosses the actual empty aft aisle.

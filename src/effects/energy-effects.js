@@ -90,10 +90,10 @@ export class EnergyEffects {
     }
   }
   /** Called only after a successful save/mesh commit, never for an attempted cut. */
-  collect(point,yields,normal=Z){
+  collect(point,yields,normal=Z,{attract=true}={}){
     if(!yields?.some(n=>n>0))return;
     this.collectedBursts++;this.onSound?.({type:'collect',point});
-    yields.forEach((amount,i)=>{if(amount>0)this.spray(point,normal,Math.min(18,Math.max(2,Math.ceil(amount*1100))),{color:ORE[i],speed:1.7,size:.065,life:1.5,kind:3,attract:true});});
+    yields.forEach((amount,i)=>{if(amount>0)this.spray(point,normal,Math.min(18,Math.max(2,Math.ceil(amount*1100))),{color:ORE[i],speed:1.7,size:.065,life:1.5,kind:3,attract});});
   }
   impact(point,normal=Z,power=1,{color=0x6dcfff,kind='pulse'}={}){
     this.weaponImpacts++;this.onSound?.({type:'impact',point});

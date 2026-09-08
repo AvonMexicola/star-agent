@@ -15,6 +15,7 @@ const output = process.env.STRATUM_PRIMARY_OUTPUT ?? '/home/cees/projects/.mediu
 const sourceRoot = process.env.STRATUM_SOURCE ?? fileURLToPath(new URL('..', import.meta.url));
 const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ships.js', 'src/medium-ship-lights.js', 'src/medium-ship-gameplay.js',
   'src/stratum.js', 'src/stratum-systems.js', 'src/stratum-layout.js', 'src/stratum-flight-parts.js',
+  'src/medium-ship-inventory.js', 'src/ship-marker.js', 'src/effects/energy-effects.js',
   'src/ship-mining.js', 'src/ship-mining-input.js', 'src/ship-mining.css', 'src/ship-mfd.js',
   'src/nomad-cabin-controls.js', 'src/nomad-cabin-controls.css', 'src/secondary-touch-buttons.js',
   'src/gameplay-menu.js', 'src/controller-ui.js', 'src/ship-inventory-ui.js', 'src/ship-camera.js',

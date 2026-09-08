@@ -80,6 +80,7 @@ import { PLAYER_AVATAR } from './player-avatar.js';
 import { createWalkableShip } from './ship-walkable.js';
 import { createShipPowerUI } from './ship-power-ui.js';
 import { ShipInventory } from './ship-inventory.js';
+import { createMediumShipInventory } from './medium-ship-inventory.js';
 import { createInventoryUI } from './ship-inventory-ui.js';
 import { Fleet, SHIPS } from './fleet.js';
 import { createFleetUI } from './fleet-ui.js';
@@ -195,6 +196,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   });
   const inventory=new ShipInventory(localInventoryStorage,SHIPS[fleet.active].capacity||120);
   const mining=new MiningField(scene,localInventoryStorage,moon.rings);nav.surfaceObstacles=mining;
+  const mediumInventory=createMediumShipInventory(mining.store,inventory);
   // Read the actual committed adapter bytes only on an explicit diagnostic view.
   // Practice flights intentionally use an isolated in-memory save.
   function miningSaveSnapshot(){
@@ -209,7 +211,9 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   nav.faunaRaycast=fauna.raycast;nav.onFaunaWeaponHit=fauna.weaponHit;
   nav.parkedShipRaycast=(start,direction,range)=>nav.mode==='walk'||nav.mode==='eva'?parkedShipHit(nav,start,direction,range):null;
   const miningTool=createMiningTool({scene,camera,canvas,nav,rock:mining,effects,loadout,character,thirdPerson:()=>shipCamera.active});
-  mining.onExtract=({point,yields,normal})=>effects.collect(point,yields,normal);
+  // Vehicle-bin feedback stays at the cut; backpack pickups can approach the suit.
+  // Use the committed job's destination, even if the player has changed seats.
+  mining.onExtract=({point,yields,normal,destination='pack'})=>effects.collect(point,yields,normal,{attract:destination==='pack'});
   const resetMiningEffects=()=>{effects.miningInput=null;effects.reset();};
   window.addEventListener('blur',resetMiningEffects);
   document.addEventListener('visibilitychange',resetMiningEffects);
@@ -815,7 +819,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     else{ship.quaternion.copy(nav.orientation);ship.position.copy(nav.position).sub(origin).sub(new THREE.Vector3(...nav.layout.seatEye).applyQuaternion(nav.orientation));}
     if(ship.visible){
       ship.syncFlight?.(nav);ship.setDoor(nav.doorOpen);ship.update(dt);
-      ship.updateDisplays(dt,nav,inventory,navigationTargets.course??course);
+      ship.updateDisplays(dt,nav,mediumSystems[nav.shipId]&&!multiplayer.connected?mediumInventory:inventory,navigationTargets.course??course);
       ship.updateCabin?.(nav,mining.store);
     }
     updateShipEngineVisuals(ship,engine);
