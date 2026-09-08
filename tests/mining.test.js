@@ -36,6 +36,26 @@ test('a fully removed volume no longer blocks traversal',()=>{
   assert.equal(c.raycast(new Vector3(0,0,4),new Vector3(0,0,-1),8),null);
   assert.equal(c.sweep(new Vector3(0,1,4),new Vector3(0,1,-4)).hit,false);
 });
+test('resting rock contact permits reverse and tangent motion but still blocks movement into the rock',()=>{
+  const plane=new RockCollision(new Float32Array([-10,-2,0,10,-2,0,10,5,0,-10,-2,0,10,5,0,-10,5,0]));
+  // A valid substep can finish inside the contact tolerance without penetrating
+  // the mesh. The rover must be able to back out from that last safe pose.
+  const start=new Vector3(0,1.75,.2505);
+  const reverse=plane.sweep(start,start.clone().add(new Vector3(0,0,.0001)));
+  assert.equal(reverse.hit,false);assert.ok(reverse.point.z>start.z);
+  const tangent=plane.sweep(start,start.clone().add(new Vector3(.1,0,0)));
+  assert.equal(tangent.hit,false);assert.ok(tangent.point.x>.099);
+  const inward=plane.sweep(start,start.clone().add(new Vector3(0,0,-.0001)));
+  assert.equal(inward.hit,true);assert.ok(inward.point.z>=.25);
+  const through=plane.sweep(new Vector3(0,1.75,2),new Vector3(0,1.75,-2));
+  assert.equal(through.hit,true);assert.ok(through.point.z>=.25);
+  const corner=new RockCollision(new Float32Array([...plane.positions,
+    0,-2,-10,0,5,10,0,-2,10,0,-2,-10,0,5,-10,0,5,10]));
+  const cornerStart=new Vector3(.2505,1.75,.2505);
+  const across=corner.sweep(cornerStart,cornerStart.clone().add(new Vector3(.01,0,-.01)));
+  assert.equal(across.hit,true,'separating from one face cannot bypass the other');
+  assert.ok(across.point.z>=.25);
+});
 test('cuts and collected samples survive reload as one transaction without replay rewards',()=>{
   const db=storage(),s=new MiningStore(db),result=carve(s.state.field,[0,0,1.35],.025);
   assert.equal(s.commit(result,0),true);assert.equal(s.commit(result,0),false);
