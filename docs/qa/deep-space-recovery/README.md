@@ -100,3 +100,15 @@ trace. Fix only the controller helper: hold LT until actual speed<0.01m/s at
 each waypoint. Later guarded/phone cases did not run. Static review also catches
 the guarded fixture leaving cruise weapons locked; it now uses the real Combat
 mode action, and the guarded mission UI supplies that discoverable instruction.
+
+## Attempt04 — short drive observation race
+
+Frozenba1d694/build04 PASS6.28s/main-i3Nn_Fsm.js. The actual short drive completed
+during the helper’s controller chord/release frames. Saved failure position is
+at the real20km wreck approach with no issued cargo; the subsequent wait for an
+active drive timed out. Original04 trace/video/state retained, no app errors.
+The fixture now records drive phases/positions before controller activation and
+asserts completed displacement plus several distinct observed positions. It does
+not require observing the transient drive after the action already returned.
+No runtime change or rebuild; later cases again did not run. Draft PR105 opened
+on the checked Pirate103 base with all gameplay limits explicit.
