@@ -212,7 +212,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   const effects=new EnergyEffects(scene,{onSound:event=>audio.gameplay?.event(event,nav),capacity:1024,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
   const loadout=new Loadout(mining.store);
   const fauna=createHostileFauna({scene,nav,loadout,seed:SEED,online:()=>multiplayer.connected,onSound:event=>audio.gameplay?.event(event,nav)});
-  const pirates=createPirates({scene,nav,loadout,store:mining.store,effects,medical:fauna.medical,character,online:()=>multiplayer.connected,transit,openInventory:id=>{inventoryUI.registerContainer({id,name:mining.store.container(id).name,kind:'base',boxes:1,available:()=>Boolean(pirates.interaction)});inventoryUI.openStorage(id);}});
+  const pirates=createPirates({scene,nav,mining,loadout,store:mining.store,effects,medical:fauna.medical,character,online:()=>multiplayer.connected,transit,openInventory:id=>{inventoryUI.registerContainer({id,name:mining.store.container(id).name,kind:'base',boxes:1,available:()=>Boolean(pirates.interaction)});inventoryUI.openStorage(id);}});
   nav.canCrouch=()=>!multiplayer.connected;nav.pirateRaycast=pirates.raycast;nav.onPirateWeaponHit=pirates.weaponHit;nav.pirateCoverRaycast=pirates.coverRaycast;nav.pirateConstrainWalker=pirates.constrainWalker;nav.pirateAction=pirates.interact;nav.pirateInteraction=()=>pirates.interaction;
   nav.faunaRaycast=fauna.raycast;nav.onFaunaWeaponHit=fauna.weaponHit;
   nav.parkedShipRaycast=(start,direction,range)=>nav.mode==='walk'||nav.mode==='eva'?parkedShipHit(nav,start,direction,range):null;

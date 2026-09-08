@@ -8,14 +8,18 @@ import {parkedShipHit} from '../fauna/fauna-target.js';
 import {createPirateSites,PIRATE_ROLES} from './sites.js';
 import {createPirateSquad} from './simulation.js';
 import {ensurePirateLoot} from './loot.js';
+import {createPirateNaturalObstacles} from './obstacles.js';
+import {secondaryTouchButtons} from '../secondary-touch-buttons.js';
 import './pirates.css';
 const V=a=>new THREE.Vector3(...a);
 const nearest=hits=>hits.filter(Boolean).sort((a,b)=>a.distance-b.distance)[0]??null;
-export function createPirates({scene,nav,loadout,store,effects,medical,character:player,online=()=>false,transit,openInventory}){
+export function createPirates({scene,nav,mining,loadout,store,effects,medical,character:player,online=()=>false,transit,openInventory}){
+ const natural=createPirateNaturalObstacles(mining);
  const sites=createPirateSites(),camps=new Map(),assets=new Map(),actors=new Map();
  let disposed=false,active=null,origin=new THREE.Vector3(),shotCount=0,lastHit=null,sockets=null;
  void loadSocketCalibration().then(s=>sockets=s);
- const hud=document.createElement('aside');hud.id='pirate-status';hud.hidden=true;hud.innerHTML='<strong></strong><meter min="0" aria-label="Pirate health"></meter><span></span><small>C / R3 · Crouch &nbsp; RT / T · Fire &nbsp; D-pad down · Medical item</small>';document.body.append(hud);
+ const hud=document.createElement('aside');hud.id='pirate-status';hud.hidden=true;hud.innerHTML='<strong></strong><meter min="0" aria-label="Pirate health"></meter><span></span><small>C / R3 · Crouch &nbsp; RT / T · Fire &nbsp; D-pad down · Medical item</small><button class="pirate-crouch-touch" type="button" aria-pressed="false">Crouch</button>';document.body.append(hud);
+ const crouchButton=hud.querySelector('button');crouchButton.onclick=()=>nav.toggleCrouch();const disposeTouch=secondaryTouchButtons(hud);
  const lootButton=document.createElement('button');lootButton.className='pirate-loot-button';lootButton.hidden=true;lootButton.textContent='F / X · Recover salvage cache';lootButton.onclick=()=>interact();document.body.append(lootButton);
  const dialog=document.createElement('dialog');dialog.id='pirate-console';dialog.setAttribute('aria-labelledby','pirate-console-title');dialog.innerHTML='<h2 id="pirate-console-title">Ground pirate camps</h2><p>Land outside the camp, leave your ship and recover the stolen supplies. Equip your carbine with 1 / D-pad left. Captains aim before firing: move or duck behind the salvage barriers.</p><div class="pirate-sites"></div><footer><button data-controller-key="pirate-close">Resume exploration</button></footer>';
  for(const site of sites){const article=document.createElement('article');article.innerHTML=`<h3>${site.name}</h3><p>${site.description}</p><button data-controller-key="pirate-visit-${site.id}">Quick transit · ${site.body.name} camp approach</button>`;article.querySelector('button').onclick=()=>{dialog.addEventListener('close',()=>transit(site.id),{once:true});dialog.close();};dialog.querySelector('.pirate-sites').append(article);}
@@ -36,7 +40,7 @@ export function createPirates({scene,nav,loadout,store,effects,medical,character
   }return best;
  }
  function obstruction(site,start,end,padding=0){const ray=end.clone().sub(start),range=ray.length();if(range<.001)return null;ray.divideScalar(range);
-  const solid=nearest([coverRay(site,start,ray,range,padding),parkedShipHit(nav,start,ray,range,padding),nav.buildingRaycast?.(start,ray,range)]);if(solid)return solid;
+  const solid=nearest([coverRay(site,start,ray,range,padding),parkedShipHit(nav,start,ray,range,padding),nav.buildingRaycast?.(start,ray,range),natural.raycast(start,ray,range)]);if(solid)return solid;
   for(let t=.3;t<range;t+=.5)if(bodyAltitude(start.clone().addScaledVector(ray,t),site.body)<.04)return {distance:t};return null;
  }
  function createCamp(site){
@@ -44,7 +48,7 @@ export function createPirates({scene,nav,loadout,store,effects,medical,character
   const camp={site,group,squad:null,ready:false};camps.set(site.id,camp);
   const prop=request('barricade');const cache=request('salvage-cache');for(const id of site.models)request(id);
   camp.squad=createPirateSquad(site,{
-   canMove:(e,to)=>{const a=site.ground(e.x,e.z,.65),b=site.ground(to.x,to.z,.65);return Math.abs(b.clone().sub(a).dot(V(site.up)))<.2&&!obstruction(site,a,b,.32);},
+   canMove:(e,to)=>{const a=site.ground(e.x,e.z,.65),b=site.ground(to.x,to.z,.65);return Math.abs(b.clone().sub(a).dot(V(site.up)))<.2&&!obstruction(site,a,b,.32)&&natural.canWalk(site.ground(e.x,e.z,1.75),site.ground(to.x,to.z,1.75));},
    visible:(e,p,crouch)=>{const a=site.ground(e.x,e.z,crouch?1.02:1.48),b=site.ground(p.x,p.z,Math.max(.3,p.eye-.28));return !obstruction(site,a,b);},
    onShot:({entity,target,hit})=>{
     const actor=actors.get(entity.id),start=actor?.equipment.muzzleWorldPosition()??site.ground(entity.x,entity.z,entity.crouching?1.02:1.48);
@@ -87,7 +91,7 @@ export function createPirates({scene,nav,loadout,store,effects,medical,character
   if(online()||!nav.enabled||!nav.focused||document.querySelector('dialog[open]')||!nearCache())return false;
   const result=ensurePirateLoot(store,active.site);if(!result.ok){nav.notify(result.message);return true;}player.playGesture('interact');openInventory(result.id);return true;
  }
- function coverTarget(start,direction,range){return online()||!active?.ready?null:coverRay(active.site,start,direction,range);}
+ function coverTarget(start,direction,range){return online()||!active?.ready?null:nearest([coverRay(active.site,start,direction,range),natural.raycast(start,direction,range)]);}
  function constrainWalker(previous,proposed){
   if(online()||!active?.ready)return {point:proposed,hit:false};
   const site=active.site,up=V(site.up),eye=nav.walkEyeHeight??1.75,offset=eye-.65,a=previous.clone().addScaledVector(up,-offset),b=proposed.clone().addScaledVector(up,-offset),delta=b.clone().sub(a),length=delta.length();if(length<1e-6)return {point:proposed,hit:false};
@@ -118,10 +122,11 @@ export function createPirates({scene,nav,loadout,store,effects,medical,character
   if(!paused&&nav.mode==='walk'&&!nav.insideShip){
    hud.hidden=false;const forward=new THREE.Vector3(0,0,-1).applyQuaternion(nav.orientation),aim=targetRay(nav.position,forward,100);const warning=active.squad.entities.find(e=>e.state==='aim'&&e.health>0),target=active.squad.entities.find(e=>e.id===aim?.id)??warning;
    hud.querySelector('strong').textContent=target?PIRATE_ROLES[target.model].name:site.name;hud.querySelector('meter').hidden=!target;if(target){hud.querySelector('meter').max=target.maxHealth;hud.querySelector('meter').value=target.health;}
+   crouchButton.textContent=nav.crouching?'Stand':'Crouch';crouchButton.setAttribute('aria-pressed',String(Boolean(nav.crouching)));
    hud.dataset.warning=String(Boolean(warning));hud.querySelector('span').textContent=!active.ready?'Preparing pirate assets…':active.squad.state.cleared?`${nav.position.distanceTo(site.cache).toFixed(0)} m · Salvage cache unlocked`:warning?'INCOMING FIRE · MOVE OR TAKE COVER':`${active.squad.entities.filter(e=>e.health>0).length} pirates · ${nav.crouching?'CROUCHED':'STANDING'}`;
    lootButton.hidden=!nearCache();
   }
  }
  function disposeGLTF(g){g.scene.traverse(o=>{o.geometry?.dispose();for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){for(const v of Object.values(m))if(v?.isTexture)v.dispose();m.dispose();}});}
- return {sites,open,update,raycast:targetRay,weaponHit,coverRaycast:coverTarget,constrainWalker,interact,get interaction(){return !online()&&nearCache()?'F / X · Recover salvage cache':null;},get state(){return {playerHits:shotCount,active:active?.site.id??null,ready:Boolean(active?.ready),shots:shotCount,lastHit,site:active?{id:active.site.id,origin:active.site.origin,cache:active.site.cache.toArray(),approach:active.site.approach.toArray()}:null,...(active?.squad.state??{entities:[],cleared:false}),entities:active?.squad.entities.map(e=>({...e,position:active.site.ground(e.x,e.z).toArray(),normal:active.site.normal(e.x,e.z).toArray()}))??[],assets:Object.fromEntries([...assets].map(([id,s])=>[id,{status:s.status,error:s.error}]))};},dispose(){disposed=true;hud.remove();dialog.remove();lootButton.remove();for(const a of actors.values()){a.equipment.dispose();a.character.dispose();}for(const c of camps.values())c.group.removeFromParent();for(const a of assets.values())if(a.gltf)disposeGLTF(a.gltf);}};
+ return {sites,open,update,raycast:targetRay,weaponHit,coverRaycast:coverTarget,constrainWalker,interact,get interaction(){return !online()&&nearCache()?'F / X · Recover salvage cache':null;},get state(){return {playerHits:shotCount,active:active?.site.id??null,ready:Boolean(active?.ready),shots:shotCount,lastHit,site:active?{id:active.site.id,origin:active.site.origin,cache:active.site.cache.toArray(),approach:active.site.approach.toArray()}:null,...(active?.squad.state??{entities:[],cleared:false}),entities:active?.squad.entities.map(e=>({...e,position:active.site.ground(e.x,e.z).toArray(),normal:active.site.normal(e.x,e.z).toArray()}))??[],assets:Object.fromEntries([...assets].map(([id,s])=>[id,{status:s.status,error:s.error}]))};},dispose(){disposed=true;disposeTouch();hud.remove();dialog.remove();lootButton.remove();for(const a of actors.values()){a.equipment.dispose();a.character.dispose();}for(const c of camps.values())c.group.removeFromParent();for(const a of assets.values())if(a.gltf)disposeGLTF(a.gltf);}};
 }
