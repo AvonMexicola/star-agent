@@ -1,6 +1,6 @@
 # SA-COMBAT-001 — Regional encounter verification
 
-Status: validated development checkpoint; local integration in progress.
+Status: validated and integrated locally at `547d901` (2026-09-08).
 Independent acceptance and physical-device testing remain pending. No deployment.
 
 Branch `feat/enemy-encounters`, original base `c766544`. Final browser-tested
@@ -119,3 +119,16 @@ no NPC asteroid avoidance or ship-to-ship collision. The automated Kestrel/lance
 pilot won these routes with full hull, so these passes establish reachability and
 state/input correctness, not human difficulty tuning. Cees can playtest each tier
 and request balance changes; independent gameplay/visual review remains pending.
+
+## Local delivery
+
+Validated candidate `dde4d02` was merged into `dev/all-features` at `547d901`,
+including the ready settlement metadata `c079ce2`. The guarded merge preserved
+all 56,247 bytes of pre-existing uncommitted HANDOFF notes; originals and receipt
+remain under `/tmp/star-agent-enemy-integration/20260908T123930187518Z`.
+The running 5178 preview serves the new regional contracts; all four combat
+source files match the candidate. Direct and proxied API health return 200.
+No API, SQL, protocol, schema or service restart was needed. The HTTP/source
+receipt is `/tmp/star-agent-enemy-integration/http-source-verification.json`.
+The local guide and task registry describe the integrated checkpoint. Public
+release and independent acceptance remain separate.
