@@ -1,6 +1,11 @@
 import {InstancedMesh,Matrix4} from 'three';
 
 const TYPES=new Set(['wall','floor','roof-flat','foundation-ramp']);
+const ignored=new Set(['id','uuid','name','version','userData']);
+// Match effective material values and shared texture resources, never labels.
+// The only per-piece shader uniform on these static kit types is coverage;
+// every piece in the same claim receives the same coverage each frame.
+const materialKey=material=>JSON.stringify(Object.fromEntries(Object.keys(material).sort().filter(k=>!ignored.has(k)).map(k=>[k,material[k]?.isTexture?{texture:material[k].uuid}:material[k]])))+material.customProgramCacheKey();
 /** Readonly repeated kit pieces share draws. Collision remains the original kit.
  * Instance transforms are assembled in each claim's local metre frame. */
 export class PirateStaticKit {
@@ -14,7 +19,7 @@ export class PirateStaticKit {
    const bins=new Map();
    for(const piece of pieces)this.buildings.models.get(piece.id).group.traverse(mesh=>{
     if(!mesh.isMesh||!mesh.visible||Array.isArray(mesh.material)||mesh.material.transparent)return;
-    const key=[mesh.geometry.uuid,mesh.material.name,mesh.castShadow,mesh.receiveShadow].join('/');
+    const key=[mesh.geometry.uuid,materialKey(mesh.material),mesh.castShadow,mesh.receiveShadow].join('/');
     const bin=bins.get(key)??[];bin.push(mesh);bins.set(key,bin);
    });
    const entry={group,instances:[],originals:[]};
