@@ -15,9 +15,14 @@ export class PiratePerimeter {
       if(distance<P.engage&&this.timer===0&&clear&&aligned){this.phase='charge';this.timer=P.telegraphSeconds;this.burst=0;}
       return;
     }
+    // Losing aim/visibility must not shorten the five-second cooling interval.
+    if(this.phase==='rest'){
+      this.timer=Math.max(0,this.timer-dt);
+      if(this.timer===0){this.phase='charge';this.timer=P.telegraphSeconds;this.burst=0;}
+      return;
+    }
     if(!clear||!aligned){this.phase='charge';this.timer=P.telegraphSeconds;return;}
     this.timer=Math.max(0,this.timer-dt);if(this.timer>0)return;
-    if(this.phase==='rest'){this.phase='charge';this.timer=P.telegraphSeconds;this.burst=0;return;}
     if(this.phase==='charge'||this.phase==='burst'){
       this.onShot({damage:P.damage,barrel:this.shots%2});this.shots++;this.burst++;
       this.phase=this.burst>=P.burstShots?'rest':'burst';this.timer=this.phase==='rest'?P.restSeconds:P.shotInterval;

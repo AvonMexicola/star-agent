@@ -91,6 +91,10 @@ test('retreat, ground route, pause and long frame cannot preserve a stale volley
 test('obstruction and turning require a fresh telegraph, burst stays bounded',()=>{
  let shots=0;const p=new PiratePerimeter({onShot:()=>shots++});step(p,7,{clear:false});assert.equal(shots,0);step(p,7,{aligned:false});assert.equal(shots,0);step(p,1);assert.equal(shots,0);step(p,2.1);assert.equal(shots,3);step(p,4);assert.equal(shots,3);
 });
+test('turning and cover cannot skip the rest between volleys',()=>{
+ let shots=0;const p=new PiratePerimeter({onShot:()=>shots++});while(shots<3)step(p,.05);assert.equal(p.phase,'rest');
+ step(p,2,{aligned:false});assert.equal(p.phase,'rest');step(p,2,{clear:false});assert.equal(p.phase,'rest');step(p,2);assert.equal(shots,3,'Rest plus a fresh telegraph must elapse even after aim/visibility changes.');step(p,.5);assert.equal(shots,4);
+});
 test('secret market initialization is additive, idempotent, depleted stock stays depleted',()=>{
  const previous=normalizeSettlementMarkets(emptyCommerce()),copy=structuredClone(previous),next=normalizePirateMarket(previous);
  assert.deepEqual(previous,copy);assert.equal(SETTLEMENTS.length,4);assert.equal(settlementById(PIRATE_MARKET.id),PIRATE_MARKET);assert.ok(validCommerce(next));assert.equal(normalizePirateMarket(next),next);
