@@ -84,43 +84,6 @@ async function board(page,role){
   await neutral(page);return {maxStep,samples:samples.length,largest};
 }
 
-test('controller physically boards both Sentry seats, drives/reverses, fires, inspects backpack and suppresses held inputs',async({page,browser})=>{
-  await mkdir(output,{recursive:true});const errors=[],report={browser:browser.version(),input:'Injected standard Gamepad only after the explicit development start. No physical controller.'};await pad(page);
-  try{
-    await boot(page,'/?dev=1&intro=0&ship=nomad&start=sentry-surface&debug=1',errors);await offline(page);
-    await wait(page,()=>starAgent.state.sentry.vehicles.length===1&&!starAgent.state.transiting,null,120000);
-    report.pilotAccess=await board(page,'pilot');await chase(page);await page.screenshot({path:output+'/01-sentry-exterior.png'});
-    const start=(await state(page)).sentry.current;
-    await axes(page,[0,-.5,0,0]);await wait(page,start=>starAgent.state.sentry.current.distance>start+2,start.distance);await stop(page);
-    const afterForward=(await state(page)).sentry.current.position;
-    await axes(page,[0,.5,0,0]);await wait(page,()=>starAgent.state.sentry.current.speed<-.3);await page.waitForTimeout(500);await stop(page);
-    report.drive={start:start.position,forward:afterForward,reverse:(await state(page)).sentry.current.position};
-    await axes(page,[0,0,.45,-.2]);await page.waitForTimeout(650);await neutral(page);await button(page,7,true);
-    await wait(page,()=>starAgent.state.sentry.current.shots>2&&starAgent.state.sentry.beams.some(b=>b.visible));report.beams=(await state(page)).sentry.beams;expect(report.beams.some(b=>Math.hypot(...b.end.map((x,i)=>x-b.start[i]))>2)).toBe(true);await page.screenshot({path:output+'/02-sentry-firing.png'});
-    await page.evaluate(()=>{
-      window.sentryModalBoundary={before:{time:performance.now(),shots:starAgent.state.sentry.current.shots},opened:null};
-      const observer=new MutationObserver(()=>{if(document.querySelector('dialog[open]')){sentryModalBoundary.opened={time:performance.now(),shots:starAgent.state.sentry.current.shots};observer.disconnect();}});
-      observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
-    });
-    await tap(page,8);await expect(page.locator('dialog[open]')).toBeVisible();report.modal=await page.evaluate(()=>sentryModalBoundary);expect(report.modal.opened).not.toBeNull();const shots=report.modal.opened.shots;await page.screenshot({path:output+'/03-sentry-backpack.png'});
-    await tap(page,1);await expect(page.locator('dialog[open]')).toBeVisible();expect((await state(page)).sentry.current.shots).toBe(shots);
-    await neutral(page);await button(page,7,true);await tap(page,1);await expect(page.locator('dialog[open]')).toHaveCount(0);await page.waitForTimeout(650);expect((await state(page)).sentry.current.shots).toBe(shots);
-    await button(page,7,false);await neutral(page);await button(page,7,true);await wait(page,shots=>starAgent.state.sentry.current.shots>shots,shots);
-    await page.evaluate(()=>{sentryPad.connected=false;});await page.waitForTimeout(400);const stopped=(await state(page)).sentry.current.shots;
-    await page.evaluate(()=>{sentryPad.connected=true;});await page.waitForTimeout(650);expect((await state(page)).sentry.current.shots).toBe(stopped);
-    await neutral(page);await button(page,7,true);await wait(page,n=>starAgent.state.sentry.current.shots>n,stopped);await button(page,7,false);await stop(page);
-    report.nativeFocus=await nativeFocusGate(page);
-    const replace=(await state(page)).sentry.current.shots;await button(page,7,true);await page.evaluate(()=>sentryPad.id='Replacement standard controller');await page.waitForTimeout(600);const replaced=(await state(page)).sentry.current.shots;await page.waitForTimeout(350);expect((await state(page)).sentry.current.shots).toBe(replaced);
-    await page.evaluate(()=>sentryPad.mapping='unsupported');await page.waitForTimeout(350);await page.evaluate(()=>sentryPad.mapping='standard');await page.waitForTimeout(350);expect((await state(page)).sentry.current.shots).toBe(replaced);report.device={before:replace,replaced};await neutral(page);
-    await chase(page);await tap(page,2);await wait(page,()=>!starAgent.state.sentry.occupied,null,40000);
-    await walk(page,await roverPoint(page,[-2.5,1.75,3.45]));await walk(page,await roverPoint(page,[0,1.75,3.45]));
-    report.gunnerAccess=await board(page,'gunner');await page.screenshot({path:output+'/04-sentry-gunner-sight.png'});
-    await axes(page,[0,0,-.45,.1]);await page.waitForTimeout(600);await neutral(page);const g=(await state(page)).sentry.current.shots;
-    await button(page,7,true);await wait(page,n=>starAgent.state.sentry.current.shots>n,g);await button(page,7,false);await neutral(page);
-    await tap(page,2);await wait(page,()=>!starAgent.state.sentry.occupied,null,40000);report.final=await state(page);expect([...errors]).toEqual([]);
-  }finally{report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;report.renderer=await rendererInfo(page).catch(()=>null);report.last=await state(page).catch(()=>null);await writeFile(output+'/controller-report.json',JSON.stringify(report,null,2));}
-});
-
 async function register(page,index,errors){
   await page.bringToFront();await pad(page);await boot(page,'/?dev=1&intro=0&start=hangar&debug=1',errors);
   await neutral(page);await tap(page,9);await choose(page,'tab-comms');await choose(page,'comms-account');
@@ -170,6 +133,43 @@ test('two real connected players reach one rover physically and hand gunner auth
   }finally{report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;report.renderer=await rendererInfo(pilot).catch(()=>null);report.pilot=await state(pilot).catch(()=>null);report.gunner=await state(gunner).catch(()=>null);report.walks=await Promise.all([pilot,gunner].map(p=>p.evaluate(()=>window.sentryWalk).catch(()=>null)));await pilot.screenshot({path:output+'/last-pilot.png'}).catch(()=>{});await gunner.screenshot({path:output+'/last-gunner.png'}).catch(()=>{});await writeFile(output+'/multiplayer-report.json',JSON.stringify(report,null,2));await a.close();await b.close();}
 });
 const pageDelay=(page,ms)=>page.waitForTimeout(ms);
+
+test('controller physically boards both Sentry seats, drives/reverses, fires, inspects backpack and suppresses held inputs',async({page,browser})=>{
+  await mkdir(output,{recursive:true});const errors=[],report={browser:browser.version(),input:'Injected standard Gamepad only after the explicit development start. No physical controller.'};await pad(page);
+  try{
+    await boot(page,'/?dev=1&intro=0&ship=nomad&start=sentry-surface&debug=1',errors);await offline(page);
+    await wait(page,()=>starAgent.state.sentry.vehicles.length===1&&!starAgent.state.transiting,null,120000);
+    report.pilotAccess=await board(page,'pilot');await chase(page);await page.screenshot({path:output+'/01-sentry-exterior.png'});
+    const start=(await state(page)).sentry.current;
+    await axes(page,[0,-.5,0,0]);await wait(page,start=>starAgent.state.sentry.current.distance>start+2,start.distance);await stop(page);
+    const afterForward=(await state(page)).sentry.current.position;
+    await axes(page,[0,.5,0,0]);await wait(page,()=>starAgent.state.sentry.current.speed<-.3);await page.waitForTimeout(500);await stop(page);
+    report.drive={start:start.position,forward:afterForward,reverse:(await state(page)).sentry.current.position};
+    await axes(page,[0,0,.45,-.2]);await page.waitForTimeout(650);await neutral(page);await button(page,7,true);
+    await wait(page,()=>starAgent.state.sentry.current.shots>2&&starAgent.state.sentry.beams.some(b=>b.visible));report.beams=(await state(page)).sentry.beams;expect(report.beams.some(b=>Math.hypot(...b.end.map((x,i)=>x-b.start[i]))>2)).toBe(true);await page.screenshot({path:output+'/02-sentry-firing.png'});
+    await page.evaluate(()=>{
+      window.sentryModalBoundary={before:{time:performance.now(),shots:starAgent.state.sentry.current.shots},opened:null};
+      const observer=new MutationObserver(()=>{if(document.querySelector('dialog[open]')){sentryModalBoundary.opened={time:performance.now(),shots:starAgent.state.sentry.current.shots};observer.disconnect();}});
+      observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+    });
+    await tap(page,8);await expect(page.locator('dialog[open]')).toBeVisible();report.modal=await page.evaluate(()=>sentryModalBoundary);expect(report.modal.opened).not.toBeNull();const shots=report.modal.opened.shots;await page.screenshot({path:output+'/03-sentry-backpack.png'});
+    await tap(page,1);await expect(page.locator('dialog[open]')).toBeVisible();expect((await state(page)).sentry.current.shots).toBe(shots);
+    await neutral(page);await button(page,7,true);await tap(page,1);await expect(page.locator('dialog[open]')).toHaveCount(0);await page.waitForTimeout(650);expect((await state(page)).sentry.current.shots).toBe(shots);
+    await button(page,7,false);await neutral(page);await button(page,7,true);await wait(page,shots=>starAgent.state.sentry.current.shots>shots,shots);
+    await page.evaluate(()=>{sentryPad.connected=false;});await page.waitForTimeout(400);const stopped=(await state(page)).sentry.current.shots;
+    await page.evaluate(()=>{sentryPad.connected=true;});await page.waitForTimeout(650);expect((await state(page)).sentry.current.shots).toBe(stopped);
+    await neutral(page);await button(page,7,true);await wait(page,n=>starAgent.state.sentry.current.shots>n,stopped);await button(page,7,false);await stop(page);
+    report.nativeFocus=await nativeFocusGate(page);
+    const replace=(await state(page)).sentry.current.shots;await button(page,7,true);await page.evaluate(()=>sentryPad.id='Replacement standard controller');await page.waitForTimeout(600);const replaced=(await state(page)).sentry.current.shots;await page.waitForTimeout(350);expect((await state(page)).sentry.current.shots).toBe(replaced);
+    await page.evaluate(()=>sentryPad.mapping='unsupported');await page.waitForTimeout(350);await page.evaluate(()=>sentryPad.mapping='standard');await page.waitForTimeout(350);expect((await state(page)).sentry.current.shots).toBe(replaced);report.device={before:replace,replaced};await neutral(page);
+    await chase(page);await tap(page,2);await wait(page,()=>!starAgent.state.sentry.occupied,null,40000);
+    await walk(page,await roverPoint(page,[-2.5,1.75,3.45]));await walk(page,await roverPoint(page,[0,1.75,3.45]));
+    report.gunnerAccess=await board(page,'gunner');await page.screenshot({path:output+'/04-sentry-gunner-sight.png'});
+    await axes(page,[0,0,-.45,.1]);await page.waitForTimeout(600);await neutral(page);const g=(await state(page)).sentry.current.shots;
+    await button(page,7,true);await wait(page,n=>starAgent.state.sentry.current.shots>n,g);await button(page,7,false);await neutral(page);
+    await tap(page,2);await wait(page,()=>!starAgent.state.sentry.occupied,null,40000);report.final=await state(page);expect([...errors]).toEqual([]);
+  }finally{report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;report.renderer=await rendererInfo(page).catch(()=>null);report.last=await state(page).catch(()=>null);await writeFile(output+'/controller-report.json',JSON.stringify(report,null,2));}
+});
 
 test('keyboard and native phone controls board, aim, fire and leave the Sentry',async({browser})=>{
   const report={input:'Keyboard events and native Chromium touchscreen contacts. No Gamepad injected.'},errors=[];
