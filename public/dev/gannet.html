@@ -6,6 +6,12 @@
     <nav aria-label="Inspection view" class="views">
       <button data-view="exterior" aria-pressed="true">Exterior</button><button data-view="rear">Rear</button><button data-view="side">Side</button><button data-view="top">Top</button><button data-view="underside">Underside</button><button data-view="bay">Vehicle bay</button><button data-view="cabin">Cabin</button><button data-view="cockpit">Pilot view</button>
     </nav>
+    <nav aria-label="Pilot look direction" class="pilot-look" id="pilot-look" hidden>
+      <button data-pilot-look="left" aria-pressed="false">Look left · Flight</button>
+      <button data-pilot-look="center" aria-pressed="true">Look forward</button>
+      <button data-pilot-look="right" aria-pressed="false">Look right · Cargo</button>
+    </nav>
+    <div id="inspection-stage" class="inspection-stage"></div>
     <section class="mechanisms" aria-label="Inspection mechanisms">
       <div><button data-command="open">Open hatch</button><button data-command="close">Close hatch</button></div>
       <div><button data-command="lower">Lower lift</button><button data-command="raise">Raise lift</button></div>

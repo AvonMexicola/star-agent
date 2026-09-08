@@ -7,14 +7,15 @@ import {GannetSystems} from './gannet-systems.js';
 import {GANNET_LAYOUT as L} from './gannet-layout.js';
 
 const renderer=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);
+const stage=document.querySelector('#inspection-stage');
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(stage.clientWidth,stage.clientHeight);
 renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.domElement.setAttribute('aria-label','Gannet T-06 three dimensional inspection');document.body.append(renderer.domElement);
+renderer.domElement.setAttribute('aria-label','Gannet T-06 three dimensional inspection');stage.append(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color('#101c24');scene.fog=new THREE.Fog('#101c24',90,200);
 const pmrem=new THREE.PMREMGenerator(renderer),environment=new RoomEnvironment();
 scene.environment=pmrem.fromScene(environment,.025).texture;environment.dispose();pmrem.dispose();
-const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.035,240);
+const camera=new THREE.PerspectiveCamera(42,stage.clientWidth/stage.clientHeight,.035,240);
 const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.minDistance=.15;controls.maxDistance=100;
 scene.add(new THREE.HemisphereLight(0xc3e4e8,0x435052,1.45));
 for(const [color,intensity,position] of [[0xffe9ce,4,[9,19,-15]],[0x9bcbe5,2.1,[-15,8,2]],[0xbfffe0,2.2,[3,8,17]]]){
@@ -40,15 +41,48 @@ const views={
   cockpit:[L.seatEye,[0,2.95,-15]],
 };
 let selected='exterior';
+let pilotDirection='center';
+const pilotLook=document.querySelector('#pilot-look');
+function resizeCanvas(){
+  const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight);
+  camera.aspect=width/height;renderer.setSize(width,height);camera.updateProjectionMatrix();
+}
+function fixedPilotLook(direction='center'){
+  if(!['left','center','right'].includes(direction))return;
+  pilotDirection=direction;
+  const target=direction==='center'?views.cockpit[1]:L.mfdMounts[direction==='left'?0:3].position;
+  camera.position.set(...L.seatEye);controls.target.set(...target);camera.lookAt(controls.target);camera.updateMatrixWorld(true);
+  document.querySelectorAll('[data-pilot-look]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.pilotLook===direction)));
+}
+function fitExterior(){
+  // Fit the canonical complete hull and its measured human reference inside
+  // the real canvas, never underneath inspection controls. Keep each authored
+  // view direction, using the available aspect ratio instead of a phone zoom.
+  const direction=camera.position.clone().sub(controls.target).normalize();
+  camera.lookAt(controls.target);const inverse=camera.quaternion.clone().invert();
+  const tanY=Math.tan(THREE.MathUtils.degToRad(camera.fov/2)),tanX=tanY*camera.aspect;
+  const bounds=new THREE.Box3(new THREE.Vector3(...L.flightBounds.min),new THREE.Vector3(...L.flightBounds.max));
+  if(selected!=='underside')bounds.expandByPoint(new THREE.Vector3(5.1,1.8,12.4));
+  let distance=0;
+  for(const x of [bounds.min.x,bounds.max.x])for(const y of [bounds.min.y,bounds.max.y])for(const z of [bounds.min.z,bounds.max.z]){
+    const p=new THREE.Vector3(x,y,z).sub(controls.target).applyQuaternion(inverse);
+    distance=Math.max(distance,p.z+Math.max(Math.abs(p.x)/tanX,Math.abs(p.y)/tanY));
+  }
+  camera.position.copy(controls.target).addScaledVector(direction,distance*1.12);
+}
 function view(name){
   if(!views[name])throw new Error('Unknown Gannet view');selected=name;
-  camera.fov=name==='cockpit'?52:name==='cabin'||name==='bay'?60:42;
+  const fixed=name==='cockpit';pilotLook.hidden=!fixed;resizeCanvas();
+  camera.fov=fixed||name==='cabin'||name==='bay'?60:42;
+  controls.enabled=!fixed;
   camera.position.set(...views[name][0]);controls.target.set(...views[name][1]);
-  if(innerWidth<650&&!['cockpit','cabin','bay','underside','top'].includes(name))camera.position.sub(controls.target).multiplyScalar(1.45).add(controls.target);
-  camera.updateProjectionMatrix();controls.update();floor.visible=name!=='underside';grid.visible=floor.visible;
+  if(fixed)fixedPilotLook('center');
+  else{if(!['cabin','bay'].includes(name))fitExterior();controls.update();}
+  camera.updateProjectionMatrix();floor.visible=name!=='underside';grid.visible=floor.visible;
   document.querySelectorAll('[data-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.view===name)));
 }
 document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>view(button.dataset.view)));
+document.querySelectorAll('[data-pilot-look]').forEach(button=>button.addEventListener('click',()=>{if(selected==='cockpit')fixedPilotLook(button.dataset.pilotLook);}));
 const status=document.querySelector('#asset-state'),mechanismStatus=document.querySelector('#mechanism-state');
 document.querySelectorAll('[data-command]').forEach(button=>button.addEventListener('click',()=>{const result=systems.command(button.dataset.command);if(!result.ok)mechanismStatus.textContent=result.reason;}));
 let gear=1,gearTarget=1;
@@ -72,7 +106,11 @@ document.querySelector('#rover').addEventListener('click',async()=>{
 });
 ship.readyPromise.then(()=>{status.textContent='Authored geometry loaded · visual review pending';}).catch(error=>{status.textContent=error.message;document.body.dataset.assetError=error.message;});
 view('exterior');
-window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;renderer.setSize(innerWidth,innerHeight);view(selected);});
+new ResizeObserver(()=>{
+  resizeCanvas();
+  if(selected==='cockpit')fixedPilotLook(pilotDirection);
+  else if(!['cabin','bay'].includes(selected)){camera.position.set(...views[selected][0]);controls.target.set(...views[selected][1]);fitExterior();controls.update();}
+}).observe(stage);
 let last=performance.now(),readout=0;
 function frame(time){
   const dt=Math.min(.1,(time-last)/1000);last=time;systems.update(dt);
@@ -80,7 +118,8 @@ function frame(time){
   ship.setMechanismPose(systems.mechanismPose(gear));ship.updateInspectionDisplays(dt);
   if(rover)rover.position.y=systems.lift.y;
   readout+=dt;if(readout>.25){readout=0;if(!systems.lastReason)mechanismStatus.textContent=`Hatch ${Math.round(systems.hatch.progress*100)}% · Elevator ${systems.lift.y.toFixed(2)} m · ${systems.secured?'secured':'access open'}`;}
-  controls.update();renderer.render(scene,camera);requestAnimationFrame(frame);
+  if(selected!=='cockpit')controls.update();
+  renderer.render(scene,camera);requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 window.gannetStudio={ship,systems,view,scene,camera,renderer,controls,ready:ship.readyPromise,get rover(){return rover;}};

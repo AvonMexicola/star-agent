@@ -64,7 +64,7 @@ def text(name,body,pos,size,parent=hull,mat=ink,rotation=(math.pi/2,0,0)):
     o=bpy.data.objects.new(name,c);bpy.context.collection.objects.link(o);o.location=g.xyz(pos);o.rotation_euler=rotation;c.materials.append(mat);g.parent(o,parent)
     bpy.ops.object.select_all(action='DESELECT');o.select_set(True);bpy.context.view_layer.objects.active=o;bpy.ops.object.convert(target='MESH')
     return remember(o,0,False)
-def loft(name,sections,tile=0,parent=hull):
+def loft(name,sections,tile=0,parent=hull,edge=.025):
     # Closed octagonal volumes, only used OUTSIDE the living and vehicle voids.
     pts=[]
     for z,x,w,low,high in sections:
@@ -72,7 +72,7 @@ def loft(name,sections,tile=0,parent=hull):
         pts.extend([(x-w+bevel,low,z),(x+w-bevel,low,z),(x+w,low+bevel,z),(x+w,high-bevel,z),(x+w-bevel,high,z),(x-w+bevel,high,z),(x-w,high-bevel,z),(x-w,low+bevel,z)])
     faces=[tuple(range(7,-1,-1)),tuple(range((len(sections)-1)*8,len(sections)*8))]
     faces += [(j*8+i,j*8+(i+1)%8,(j+1)*8+(i+1)%8,(j+1)*8+i) for j in range(len(sections)-1) for i in range(8)]
-    return remember(g.mesh(name,pts,faces,surface,.025,parent),tile)
+    return remember(g.mesh(name,pts,faces,surface,edge,parent),tile)
 
 # Low forward prow, pressure-cell skirts and continuous shoulder armor. The
 # nose volume ends ahead of the pilot; no solid fuselage fills the cabin.
@@ -80,22 +80,40 @@ loft('Faceted forward prow',[(-13,0,1.10,1.62,2.08),(-12.2,0,2.25,1.25,2.38),(-1
 drive_skins={}
 for side in (-1,1):
     loft('Pressure cell lower chine', [(-10.6,side*2.15,.45,1.25,2.27),(-7.7,side*2.53,.48,1.18,2.24),(1.9,side*2.76,.53,1.18,2.31),(4.5,side*3.19,.28,1.24,2.20)],0)
-    loft('Swept shoulder fairing',[(-10.2,side*2.80,.48,2.04,3.60),(-6.4,side*3.81,1.40,1.84,4.46),(1.8,side*4.95,.80,2.01,4.80),(8.7,side*4.73,.46,2.05,5.08)],1)
-    loft('Fore shoulder ceramic pressure guard',[(-9.7,side*2.92,.40,2.24,3.62),(-6.4,side*3.81,1.37,2.20,4.50),(-2.25,side*4.40,1.12,2.40,4.70)],0)
-    loft('Aft shoulder load guard',[(1.8,side*4.95,.78,2.44,4.84),(6.3,side*4.81,.56,2.45,5.04),(8.7,side*4.73,.44,2.55,5.13)],0)
-    # Continuous graphite load keel, two shaped ceramic cowls and a recessed
-    # heat-exchanger bridge. The different crowns/waist read at use distance;
-    # all of this structure remains outboard of the living and freight voids.
-    drive=[(-8.3,side*5.6,.50,2.09,3.87),(-5.8,side*6.05,1.39,2.04,4.99),
-           (1.0,side*6.23,1.57,2.04,5.27),(8.95,side*6.30,1.35,2.10,5.20),(10.55,side*6.3,1.04,2.58,4.86)]
-    drive_skins[side]=[loft('Outboard longitudinal drive',drive,1)]
+    # The cabin-to-drive load arms have a shallow neck ahead of the load bay.
+    # Their substantial aft roots carry the fins and the roof cross-members.
+    # Closed skins stay outside both living and freight clear volumes.
+    loft('Swept shoulder fairing',[(-10.2,side*2.80,.48,2.04,3.16),(-7.65,side*3.43,.96,1.84,3.32),
+         (-5.50,side*3.95,1.28,2.02,3.26),(-2.1,side*4.48,.83,2.35,3.29),
+         (1.10,side*4.83,.53,2.67,4.07),(3.35,side*4.78,.52,2.30,4.25),
+         (8.9,side*4.74,.46,2.31,4.87)],1,edge=.055)
+    loft('Fore shoulder ceramic pressure guard',[(-9.96,side*2.86,.38,3.05,3.26),(-7.55,side*3.45,.94,3.11,4.16),
+         (-5.40,side*3.94,1.25,3.14,4.64),(-3.65,side*4.21,1.16,3.18,4.69),
+         (-2.18,side*4.46,.80,3.23,4.30)],0,edge=.055)
+    loft('Aft shoulder load guard',[(1.25,side*4.85,.52,3.98,4.22),(3.40,side*4.78,.57,3.96,4.98),
+         (6.10,side*4.80,.55,4.18,5.12),(8.90,side*4.74,.48,4.66,5.26),
+         (9.67,side*4.77,.29,4.73,5.15)],0,edge=.045)
+    # A deep fore power/gear lobe and aft engine lobe join through a narrower,
+    # raised service waist. This is actual primary geometry on every silhouette,
+    # not a painted division across a straight full-length pontoon. Under the
+    # armor, the graphite load keel ends below its skirt: no almost-coplanar
+    # duplicate cowl sidewalls can show through as repeating fine streaks.
+    drive=[(-8.76,side*5.56,.31,2.79,3.19),(-7.1,side*5.86,1.02,2.15,3.17),
+           (-5.45,side*6.04,1.31,2.04,3.18),(-3.55,side*6.07,1.30,2.25,3.24),
+           (-2.2,side*6.12,1.10,2.67,4.42),(-1.82,side*6.12,.94,2.79,4.64),
+           (1.07,side*6.12,.94,2.79,4.64),(2.85,side*6.19,1.35,2.26,3.22),
+           (5.65,side*6.22,1.46,2.09,3.18),(7.95,side*6.28,1.29,2.15,3.18),
+           (9.22,side*6.30,1.08,2.49,3.16),(10.48,side*6.30,.92,2.78,3.22)]
+    drive_skins[side]=[loft('Outboard longitudinal drive',drive,1,edge=.065)]
     cowls=[
-        [(-8.16,side*5.64,.48,2.94,3.91),(-5.80,side*6.05,1.43,2.98,5.10),
-         (-3.05,side*6.12,1.50,3.02,5.19),(-2.15,side*6.15,1.40,3.14,4.94)],
-        [(1.42,side*6.24,1.53,3.10,5.10),(3.05,side*6.25,1.56,2.96,5.38),
-         (7.80,side*6.29,1.43,2.98,5.34),(9.12,side*6.30,1.35,3.03,5.15),(10.38,side*6.30,1.08,3.05,4.91)],
+        [(-8.48,side*5.60,.42,3.09,3.42),(-6.91,side*5.90,1.15,3.10,4.56),
+         (-5.38,side*6.04,1.48,3.11,5.06),(-3.56,side*6.07,1.45,3.17,5.15),
+         (-2.12,side*6.12,1.19,3.34,4.78)],
+        [(1.90,side*6.17,1.15,3.22,4.82),(3.26,side*6.20,1.58,3.13,5.52),
+         (5.67,side*6.22,1.58,3.11,5.44),(7.90,side*6.28,1.42,3.10,5.11),
+         (9.14,side*6.30,1.13,3.11,4.74)],
     ]
-    for i,sections in enumerate(cowls):drive_skins[side].append(loft(('Fore' if i==0 else 'Aft')+' drive ceramic cowl',sections,0))
+    for i,sections in enumerate(cowls):drive_skins[side].append(loft(('Fore' if i==0 else 'Aft')+' drive ceramic cowl',sections,0,edge=.055))
     def drive_x(z,sections=drive):
         for a,b in zip(sections,sections[1:]):
             if a[0]<=z<=b[0]:
@@ -109,20 +127,36 @@ for side in (-1,1):
         faces=[tuple(range(count)),tuple(range(2*count-1,count-1,-1))]
         faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
         return remember(g.mesh(name,points,faces,surface,.008,hull),tile)
-    for sections,front,back in [(cowls[0],-5.62,-3.34),(cowls[1],3.36,7.50)]:
-        service_patch('Fitted drive maintenance cover',[(front,3.72),(front+.18,3.55),(back-.18,3.55),(back,3.72),(back,4.05),(front,4.05)],sections)
+    for sections,front,back in [(cowls[0],-5.18,-3.74),(cowls[1],3.48,5.39)]:
+        # Raised access lids land in shallow fitted black gaskets. Each return
+        # enters its actual cowl face; they cannot float on a constant-X plane.
+        outline=[(front,3.88),(front+.16,3.71),(back-.16,3.71),(back,3.88),(back,4.41),(front,4.41)]
+        service_patch('Drive maintenance lid gasket',outline,sections,3,.018,.052)
+        inset=[(front+.06,3.90),(front+.19,3.78),(back-.19,3.78),(back-.06,3.90),(back-.06,4.34),(front+.06,4.34)]
+        service_patch('Fitted drive maintenance cover',inset,sections,4,.045,.060)
         for z in (front+.22,back-.22):
-            x=side*(drive_x(z,sections)+.040)
-            rod('Drive cover captive fastener',(x-side*.014,3.85,z),(x,3.85,z),.030,2,segments=6,collision=False)
-    # Exposed bridge is recessed behind the adjacent cowl ends, with mounted
-    # thermal blades following the original outer keel face.
-    service_patch('Drive thermal bridge recess',[(-1.84,3.10),(.69,3.10),(.69,4.40),(-1.84,4.40)],drive,3)
-    for z in (-1.60,-1.21,-.82,-.43,-.04,.35):
-        service_patch('Thermal bridge cooling blade',[(z,3.22),(z+.12,3.22),(z+.12,4.29),(z,4.29)],drive,2,.065,.070)
-    rod('Drive mint running light',(side*(drive_x(-1.5)+.028),4.48,-1.5),(side*(drive_x(.48)+.028),4.48,.48),.022,parent=hull,mat=mint,collision=False)
-    # Short blended upper fins explain the tall transport outline.
-    panel('Aft vertical load stabilizer',[(side*4.54,4.68,3.1),(side*4.46,6.71,6.35),(side*4.63,7.18,8.05),(side*4.99,5.04,10.40)],1,.13)
-    panel('Stabilizer ceramic leading edge',[(side*4.54,4.75,3.25),(side*4.46,6.71,6.35),(side*4.63,7.13,7.95),(side*4.65,6.14,6.55)],0,.045)
+            x=side*(drive_x(z,sections)+.051)
+            rod('Drive cover captive fastener',(x-side*.016,4.16,z),(x,4.16,z),.030,2,segments=6,collision=False)
+    # Actual machined pocket in the narrower service waist. Short heat blades
+    # seat on the rear plate, inside the armor-lobe outline on both sides.
+    g.apply(drive_skins[side][0])
+    cutter=g.box('Temporary drive service pocket',(side*7.075,3.72,-.37),(.44,1.12,2.35),surface,.025)
+    g.apply(cutter);g.cut(drive_skins[side][0],cutter)
+    box('Drive thermal pocket rear plate',(side*6.863,3.72,-.37),(.04,1.03,2.26),3,.008)
+    for z in (-1.29,-.92,-.55,-.18,.19,.56):
+        box('Thermal bridge cooling blade',(side*6.97,3.72,z),(.25,.96,.105),2,.018)
+    rod('Drive mint running light',(side*7.074,4.42,-1.44),(side*7.074,4.42,.71),.022,parent=hull,mat=mint,collision=False)
+    # Canted clipped fins have real thickened load roots and a tapered foil,
+    # rather than one triangular sheet planted on top of a box.
+    loft('Stabilizer load saddle',[(3.35,side*4.79,.49,4.68,5.00),(5.65,side*4.87,.60,4.78,5.36),
+         (8.30,side*4.96,.53,4.84,5.48),(9.64,side*4.89,.27,4.83,5.16)],1,edge=.055)
+    fin=[(3.58,side*4.67,.21,4.83,5.08),(5.64,side*4.88,.28,4.95,6.46),
+         (7.22,side*5.10,.22,5.06,7.18),(8.39,side*5.17,.17,5.14,7.11),
+         (9.51,side*4.99,.11,5.10,5.79)]
+    loft('Aft vertical load stabilizer',fin,0,edge=.035)
+    # Fitted graphite leading spar follows the actual foil's fore sweep.
+    rod('Stabilizer forward load spar',(side*4.69,5.13,3.67),(side*4.90,6.47,5.66),.069,1)
+    rod('Stabilizer upper load spar',(side*4.90,6.47,5.66),(side*5.10,7.12,7.23),.045,1)
     # Flush lower gear wells with actual telescoping suspension inside the pod.
     for z in (-6.5,7.8):
         for dx in (-.78,.78):box('Gear well longitudinal wall',(side*5.45+dx,2.88,z),(.12,1.67,1.98),1)
@@ -146,15 +180,29 @@ panel('Forward pressure glazing',[(-1.84,2.29,-10.75),(1.84,2.29,-10.75),(1.75,4
 rod('Windscreen top seal',(-1.78,4.17,-10.09),(1.78,4.17,-10.09),.06,1,cabin)
 rod('Windscreen lower seal',(-1.92,2.26,-10.77),(1.92,2.26,-10.77),.06,1,cabin)
 prism('Faceted cockpit crown',[(-1.80,-10.12),(1.80,-10.12),(2.25,-8.90),(2.26,-7.20),(-2.26,-7.20),(-2.25,-8.90)],4.33,4.17,0)
-prism('Habitation crown',[(-2.26,-7.45),(2.26,-7.45),(2.45,-6.90),(2.45,2.65),(2.85,3.40),(-2.85,3.40),(-2.45,2.65),(-2.45,-6.90)],4.52,3.91,0)
+prism('Habitation crown',[(-2.26,-7.45),(2.26,-7.45),(2.45,-6.90),(2.45,2.65),(2.85,3.40),(-2.85,3.40),(-2.45,2.65),(-2.45,-6.90)],4.52,3.91,1)
 for z in (-6.4,-3.7,-1.0,1.7):
     box('Ceiling liner cassette',(0,3.88,z),(3.98,.06,2.56),7,.013,cabin)
     for side in (-1,1):rod('Cabin ceiling work lamp',(side*1.60,3.825,z-.85),(side*1.60,3.825,z+.85),.024,parent=cabin,mat=mint,collision=False)
-    # Fitted two-piece pressure service lids on a narrow recessed gasket.
-    box('Crown service gasket',(0,4.533,z),(3.80,.026,2.34),1,.014)
-    for side in (-1,1):
-        prism('Crown service lid',[(side*.10,z-1.09),(side*1.61,z-1.09),(side*1.79,z-.82),(side*1.79,z+.82),(side*1.61,z+1.09),(side*.10,z+1.09)],4.603,4.548,0,hull,.014)
-        box('Crown service latch',(side*1.55,4.615,z),(.12,.026,.32),2,.005)
+# A forward pressure-access lid and a separate aft climate/service housing
+# replace the repeated ladder of identical roof panels. Both seat on the same
+# closed pressure crown; none of the cabin roof or lamp geometry is moved.
+prism('Forward roof pressure gasket',[(-1.82,-7.18),(1.82,-7.18),(1.95,-6.85),(1.95,-4.02),(1.64,-3.56),(-1.64,-3.56),(-1.95,-4.02),(-1.95,-6.85)],4.553,4.514,3,hull,.014)
+prism('Forward roof pressure access',[(-1.75,-7.09),(1.75,-7.09),(1.85,-6.80),(1.85,-4.07),(1.60,-3.66),(-1.60,-3.66),(-1.85,-4.07),(-1.85,-6.80)],4.681,4.546,0,hull,.025)
+for side in (-1,1):
+    box('Pressure access hinge',(side*1.88,4.60,-6.31),(.085,.09,.62),2,.012)
+    box('Pressure access captive latch',(side*1.44,4.69,-4.15),(.26,.038,.10),2,.009)
+climate=loft('Crown life support housing',[(-3.33,0,1.05,4.51,4.69),(-2.77,0,1.22,4.51,4.96),
+             (.98,0,1.10,4.51,4.94),(2.43,0,.77,4.51,4.72)],0,edge=.035)
+g.apply(climate)
+cutter=g.box('Temporary climate service well',(0,4.98,-.89),(1.32,.53,2.22),surface,.045)
+g.apply(cutter);g.cut(climate,cutter)
+box('Climate service well backplate',(0,4.724,-.89),(1.23,.04,2.13),1,.012)
+for z in (-1.70,-1.29,-.88,-.47,-.06):
+    box('Climate heat exchange louver',(0,4.80,z),(1.20,.145,.115),4,.018)
+for side in (-1,1):
+    # Lower removable side covers land directly on the pressure crown.
+    prism('Crown side service cover',[(side*1.39,-2.67),(side*2.19,-2.32),(side*2.19,1.96),(side*1.16,2.51)],4.591,4.516,7,hull,.018)
 
 # Wider fixed vestibule behind the cabin portal: safe route to rover's side door.
 box('VestibuleFloor',(0,1.32,3.95),(5.8,.16,1.1),1,0,cabin,keep=True)
@@ -182,12 +230,24 @@ for side in (-1,1):
     g.empty('CabinLight_Bay_'+('Port' if side<0 else 'Starboard'),(side*1.88,4.601,7.44),cabin)
 for z in (4.78,7.1,9.7):
     box('Overhead bay reinforcement',(0,4.645,z),(5.78,.07,.17),2,.008,cabin)
-    # The roof carries the transverse loads through fitted external hat beams.
-    box('Bay roof structural crossbeam',(0,4.867,z),(8.24,.13,.23),1,.024)
-for z,length in [(5.94,1.89),(8.42,2.20)]:
-    box('Bay roof access gasket',(0,4.809,z),(6.78,.024,length),1,.010)
-    prism('Bay roof armored service hatch',[(-3.30,z-length/2+.06),(3.30,z-length/2+.06),(3.34,z-length/2+.28),(3.34,z+length/2-.28),(3.11,z+length/2-.06),(-3.11,z+length/2-.06),(-3.34,z+length/2-.28),(-3.34,z-length/2+.28)],4.895,4.827,0,hull,.016)
-    for side in (-1,1):box('Bay roof service handle',(side*2.79,4.914,z),(.38,.036,.11),2,.008)
+    if z!=7.1:
+        # Two transverse load arches return into the shoulder roots. Their
+        # underside lies above the actual pressure roof and retained lamps.
+        profile=[(-4.78,4.80),(-4.49,5.16),(-3.55,5.13),(-2.93,5.01),
+                 (2.93,5.01),(3.55,5.13),(4.49,5.16),(4.78,4.80)]
+        points=[(x,y,zz) for zz in (z-.14,z+.14) for x,y in profile];count=len(profile)
+        faces=[tuple(range(count-1,-1,-1)),tuple(range(count,count*2))]
+        faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
+        remember(g.mesh('Bay roof transverse load arch',points,faces,surface,.025,hull),1)
+box('Bay roof recessed service spine',(0,4.831,7.36),(1.02,.07,4.39),1,.018)
+for side in (-1,1):
+    # Two longitudinal cassette covers share the load arches, with a narrow
+    # accessible service spine between them. These are fitted roof structure,
+    # not more broad panels stacked on the previous repeated hatch pattern.
+    prism('Bay roof longitudinal cassette',[(side*.60,5.03),(side*3.44,5.03),(side*3.74,5.56),
+          (side*3.63,8.88),(side*3.24,9.43),(side*.60,9.43)],4.936,4.793,0,hull,.028)
+    box('Bay roof service hinge',(side*3.55,4.943,6.3),(.085,.09,.69),2,.012)
+    box('Bay roof captive service latch',(side*1.01,4.956,8.65),(.31,.041,.11),2,.009)
 for side in (-1,1):
     for z in (4.78,7.1,9.7):
         if z!=7.1:box('Bay roof service inset',(side*1.88,4.607,z+.34),(.65,.008,.28),4,.002,cabin)
@@ -275,8 +335,15 @@ for engine in L['engines']:
         g.apply(skin)
         cutter=g.rod('Temporary drive nozzle bore',(x,y,9.60),(x,y,10.78),.84,surface,48)
         g.cut(skin,cutter)
-    remember(g.annulus('Drive ceramic nozzle shroud',x,y,[(9.76,1.02),(10.46,1.05),(10.64,.96),(10.65,.82),(10.12,.78),(9.76,.79)],surface,hull,40),0)
-    remember(g.annulus('Recessed nozzle metal throat',x,y,[(10.56,.83),(10.11,.72),(9.72,.66)],surface,hull,40),2)
+    remember(g.annulus('Drive graphite nozzle collar',x,y,[(9.04,1.09),(9.33,1.16),(9.70,1.15),(10.21,1.04),(10.57,.90),
+                 (10.58,.806),(10.11,.73),(9.72,.66),(9.04,.69)],surface,hull,40),1)
+    remember(g.annulus('Nozzle collar retaining band',x,y,[(9.40,1.171),(9.48,1.184),(9.64,1.171)],surface,hull,40),2)
+    remember(g.annulus('Nozzle machined lip',x,y,[(10.55,.915),(10.63,.877),(10.65,.84),(10.65,.812),(10.57,.800)],surface,hull,40),2)
+    remember(g.annulus('Recessed nozzle graphite throat',x,y,[(10.51,.807),(10.09,.706),(9.71,.648)],surface,hull,40),1)
+    # The tapered drive now exposes a genuine deep chamber. Its dark rear
+    # bulkhead joins the inner collar behind the stator and luminous annulus;
+    # otherwise axial gaps between stators would see through the whole engine.
+    rod('Recessed drive chamber bulkhead',(x,y,9.54),(x,y,9.59),.69,1,segments=40)
     remember(g.annulus('Drive luminous core',x,y,[(9.78,.65),(9.77,.56)],mint,hull,40),0,False)
     rod('Dark turbine centre',(x,y,9.70),(x,y,9.78),.22,1,segments=24)
     for i in range(12):
