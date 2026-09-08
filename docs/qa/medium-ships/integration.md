@@ -268,3 +268,31 @@ still fails at mean3.90/silhouette4.1; its framing and nominal motion evidence
 are now closed, while primary hull transitions, cabin finish and contact need
 more work. Art12 is being authored in isolation. No acceptance criterion is
 reduced and earlier failures remain retained.
+
+
+[Gannet keyboard01](gannet-keyboard-01.md) passes its full physical route in3.9
+minutes, and [native-touch01](gannet-touch-01.md) passes in4.3 minutes on frozen
+`19e4ab0` / build09. Both include real ore transfer, dialog/focus release gates,
+reverse loading, physical pilot return and loaded flight/gear/landing. Each has
+stable source identities and empty page diagnostics. Gannet now has all three
+full input routes. Phone HUD crowding and the touch host wrapper's final143
+status are retained in the evidence record; neither is concealed by an exit0
+or main-game per-MFD readability claim.
+
+Stratum keyboard01 remains a failed original journey at ramp return: its fixed
+0.75m-per-frame assertion rejected a valid0.750188499m uphill step over166.6ms.
+The actual horizontal speed was4.35846m/s and the rise exactly follows the
+authored1.35/5.2 ramp. A shared cadence-aware fixture correction is being
+independently reviewed before keyboard02 and native touch. The first helper
+packet also needs a support-transition correction found by the independent
+reviewer; no full Stratum primary-input pass is claimed.
+
+[Independent Stratum Art03 review](stratum-native-review-03.md) requests changes
+at mean3.97/silhouette4.2. Full nominal mechanism/phone studio MFD evidence is
+closed, while tool-root structure, broad finish and cabin depth need work.
+Art04 is isolated; neither brief nor budget is relaxed.
+[The checked startup merge review](direct-entry-review.md) finds no required
+changes, with exact source identity,19 independent CPU cases and six delayed
+readiness probes. [The earlier functional seam review](functional-seam-review.md)
+records the Fleet preparation failure fix and six actual-callback closure cases.
+These bounded reviews do not replace final art or remaining gameplay evidence.
