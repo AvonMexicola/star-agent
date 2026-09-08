@@ -547,7 +547,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     else if(name==='grazer-habitat')nav.transit(AEON_GRAZER_QA.direction,35);
     else if(name==='miasma-surface')nav.transitMiasma(180);
     else if(name==='station'){const target=station.transitParams(180,6);nav.transit(target.direction,target.altitude);nav.orientToward(target.lookAt,target.up);}
-    else if(name==='pirate-hush')pirateCompound.approach();
+    else if(pirateCompound.layouts.some(site=>site.id===name))pirateCompound.approach(name);
     else if(name.startsWith('settlement-'))settlements.approach(name);
     else if(name==='orbit')nav.orbit();else nav.transit(destinations[name],name==='mountain'?700:name==='polar'?90:95);
     for(const b of document.querySelectorAll('.destination'))b.classList.toggle('active',b===button);

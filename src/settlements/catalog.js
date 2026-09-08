@@ -1,4 +1,4 @@
-import {PIRATE_MARKET} from '../pirate-compound/catalog.js';
+import {pirateMarketById} from '../pirate-compound/catalog.js';
 /** World-owned exchanges. Initial supplies seed once; reserve targets describe
  * current demand without replacing any saved warehouse quantities. Units: SBU. */
 export const SETTLEMENTS = Object.freeze([
@@ -27,5 +27,5 @@ export const SETTLEMENTS = Object.freeze([
     targets:{basalt:1600,copper:2400,ice:768,aggregate:512,'metal-stock':768,conductor:384},
     uses:{ice:'Clean water for sealed habitats.',aggregate:'Raised pads and sealed habitat foundations.','metal-stock':'Replacement frames damaged by corrosion.',conductor:'Replacement wiring for prospecting equipment.'}},
 ].map(s=>Object.freeze({...s,exports:Object.freeze(s.exports),stock:Object.freeze(s.stock),targets:Object.freeze(s.targets),uses:Object.freeze(s.uses)})));
-export const settlementById = id => SETTLEMENTS.find(s=>s.id===id)??(id===PIRATE_MARKET.id?PIRATE_MARKET:undefined);
+export const settlementById = id => SETTLEMENTS.find(s=>s.id===id)??pirateMarketById(id);
 export const settlementMarketId = id => settlementById(id) ? id : null;
