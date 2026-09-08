@@ -33,13 +33,17 @@ async function loadMissionCrate(page,tap,button,choose){
  await choose('transport-tractor');await page.waitForFunction(()=>window.starAgent.state.trading.tractor.active&&window.starAgent.state.controller.armed);
  await walk(page,[-2,0,-12]);await walk(page,[9,0,-12]);await walk(page,[9,0,35]);
  const crate=(await state(page)).trading.loose[0];await aim(page,crate.position,'world');await button(7,true);await page.waitForFunction(()=>Boolean(window.starAgent.state.trading.tractor.held));await capture(page,'crate-on-apron');
- // Clear space behind the Nomad, then guide the crate through its open ramp.
+ // Stay behind the ramp and guide the crate through its clear centre first.
+ // Walking uphill while holding a fixed look angle lifted the crate into the
+ // header in attempt03; the fixture now observes the actual carried centre.
  await aim(page,[0,1.8,-10]);await walk(page,[0,1.75,11],'ship');
- for(let i=0;i<20&&(await state(page)).trading.tractor.distance>3;i++)await tap(12);
- await walk(page,[0,2.75,5],'ship');await aim(page,[1.24,1.3,2.46]);
- // Set the beam distance close to the actual grid centre, using its real D-pad controls.
- const distance=await page.evaluate(()=>window.starAgent.navigation.fromShipLocal(window.starAgent.navigation.position.clone().set(1.24,1.3,2.46)).distanceTo(window.starAgent.navigation.position));
- for(let i=0;i<20;i++){const held=(await state(page)).trading.tractor.distance;if(Math.abs(held-distance)<.26)break;await tap(held>distance?12:13);}
+ async function guide(point){
+  await aim(page,point);
+  const distance=await page.evaluate(point=>window.starAgent.navigation.fromShipLocal(window.starAgent.navigation.position.clone().fromArray(point)).distanceTo(window.starAgent.navigation.position),point);
+  for(let i=0;i<30;i++){const held=(await state(page)).trading.tractor.distance;if(Math.abs(held-distance)<.24)break;await tap(held>distance?12:13);}
+  await page.waitForFunction(point=>{const n=window.starAgent.navigation,c=window.starAgent.state.trading.loose[0];return n.toShipLocal(n.position.clone().fromArray(c.position)).distanceTo(n.position.clone().fromArray(point))<.45;},point,{timeout:15000});
+ }
+ await guide([0,1.6,7]);await capture(page,'crate-clear-of-ramp');await guide([0,1.6,3]);
  await page.waitForFunction(()=>Boolean(window.starAgent.state.trading.tractor.slot),undefined,{timeout:15000});await capture(page,'crate-at-grid');await tap(2);await page.waitForFunction(()=>window.starAgent.state.trading.loose.length===0);await button(7,false);await tap(15);await capture(page,'crate-secured');
 }
 
