@@ -1,0 +1,32 @@
+{
+  "before": "5f8f01870b3cd3e408a1ef60231134883c9363f3",
+  "candidate": "3bf082b4a6caf28d36aff933f5a26210623e2604",
+  "integrated": "3bf082b4a6caf28d36aff933f5a26210623e2604",
+  "preservedJournalBytes": 56247,
+  "journalSha256": "3bf320f09e28c4d384e811998fc68a7724ab0093d01fc486c0454eb91e7f9abe",
+  "time": "2026-09-08T18:49:27.328218+00:00",
+  "verified": "2026-09-08T18:50:39.776178+00:00",
+  "http": {
+    "http://127.0.0.1:8087/api/health": {
+      "ok": true
+    },
+    "http://127.0.0.1:5178/api/health": {
+      "ok": true
+    },
+    "projection": 200,
+    "dashboard": 200,
+    "terminalCss": 200
+  },
+  "sourceSha256": {
+    "terminal-projection.js": "da4764c4aec56d0cd2c9d1c90b00a4b36ad9371e956d9e2783e8a59960cef3a1",
+    "terminal-frames.js": "2a0a5dfa9812d9a781a62d4fb48c0e37ecb7b06c9742dd9fa354e66a9b2f185c",
+    "terminal-identity.js": "c0a0c6d785719f326c0c401637b83fb99d5056eff224b1fcda7ce0b25426a804",
+    "terminal.css": "436987e84dd3f79f8d12010f4396a856a095177065cdcc079df5757da8225554",
+    "ui.js": "37cdffd980288eeda9929d3d06990ea65e5c3e1abe1dfdb2380f5e2f7b7e8c41",
+    "system.js": "a1fb0e8ddc2309e6607c3c859017cda9d35f5fc2568fdeecd3dde69a9bdf52e1"
+  },
+  "serviceRestart": false,
+  "schemaChange": false,
+  "publicDeployment": false,
+  "failedProbe": "Initial /health route returned HTTP 404; documented /api/health passed."
+}
