@@ -17,7 +17,7 @@ for(const id of (await readdir('/proc')).filter(x=>/^\d+$/.test(x))){
     const words=args.flatMap(a=>a.split(/\s+/));
     const chromium=/\/(chromium|chrome|chrome-headless-shell)$/.test(exe)&&words.some(a=>a==='--remote-debugging-pipe'||a==='--test-type'||a.startsWith('--test-type='));
     const cli=words.includes('test')&&words.some(a=>/(?:\/\.bin\/playwright|\/(?:@playwright\/test|playwright)\/cli\.js)$/.test(a));
-    const testWorker=words.some(a=>/\/playwright\/lib\/worker\/workerMain\.js$/.test(a));
+    const testWorker=words.some(a=>/\/playwright\/lib\/worker\/worker(?:Main|ProcessEntry)\.js$/.test(a));
     const worker=/\/(node|npm)$/.test(exe)&&(cli||testWorker);
     if(chromium||worker)jobs.push({pid:Number(id),exe,args});
   }catch{}
