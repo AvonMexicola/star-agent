@@ -23,6 +23,18 @@ Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`
 - Combined multiplayer suite passes 193 individual cases, with two existing
   optional skips, in 22.55s (`/tmp/transport-multiplayer02.log`). Includes the
   new actual-room and isolated SQL transport cases.
+- Private-cargo collision follow-up `51332b3`: all 11 focused cargo/transport
+  server cases pass, zero skips, 5.68s (`/tmp/transport-private-collision02.log`).
+  The owner's crate retains collision; other players cannot hit an invisible
+  sealed crate through the walking or EVA adapters. The first numerical EVA
+  probe was above the crate's collision envelope and was corrected; that failed
+  fixture is retained in `/tmp/transport-private-collision01.log`.
+- Terminal union `623d80e` retains checked projected-screen owner `23ca619`.
+  Preserve its identity/header, scroll reset, exchange panels and real handlers;
+  add Freight through the existing view router. Freight text uses the new paper
+  panel's readable dark palette. The production development build passes 4.77s
+  at browser-fixture checkpoint `311f866`; its ignored `.env.local` sets
+  `VITE_DEV_TOOLS=1`. Repository and whitespace checks pass.
 - Repository checks and whitespace checks pass on the implementation checkpoint.
 
 ## Original failures and corrections
