@@ -3,7 +3,8 @@
 Status: feature branch implemented and controller journeys validated; local integration pending.
 Owner: Codex, no independent reviewer or physical controller acceptance claimed.
 Branch: `feat/base-commerce-beacons`; implementation `debd634`, latest development
-merge `1a90ea4` incorporates `c766544`. Worktree `/tmp/star-agent-base-commerce`.
+merge `1a90ea4` incorporates `c766544`. Worktree `/tmp/star-agent-base-commerce`. Final base source `4b36b50`;
+the later elevator merge preserves its runtime files unchanged.
 Isolated preview 5610 and test-only memory API 8610. No production deployment.
 
 ## Player-visible behavior
@@ -124,3 +125,7 @@ Latest development merge preserved medium ship inventory hooks and unioned all
 normal tests. HANDOFF conflict resolution retained both journals. This changes the
 multiplayer protocol: paired local client/API restart is required on integration.
 Public release and independent approval are not implied by local testing.
+
+Review screenshots: [owner stock](base-commerce/owner-stock.png), [public map entry](base-commerce/base-map.png), [buyer cargo](base-commerce/buyer-cargo.png).
+
+Final elevator union `f51822f`: 31 focused base/room/SQL/station checks passed in 2.90 s; development production build passed in 3.87 s. The base runtime files match the browser-validated source. The station owner retains its separate keyboard/phone validation limits.
