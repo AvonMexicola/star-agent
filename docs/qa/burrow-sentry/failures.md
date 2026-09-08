@@ -23,6 +23,8 @@ turns an incomplete or skipped check into a pass.
 
 | browser01 pulse image review | Counter advanced but the sampled still had no visible laser. A .13 s new pulse immediately lost the current frame's dt (up to .2 s), so it could expire before first draw. | Each confirmed pulse now renders once before aging. Added read-only actual endpoint/visibility receipt; build06 passes6.78s, rendered follow-up pending. |
 
+| browser02 `2026-09-08T21-49-28.932Z` | Both accounts connected and controller Menu deployed a real shared rover. The direct diagonal pilot waypoint crossed the aft hull and stopped at local [-1.277,1.75,2.8846], matching the2.88 m boundary. | Parent independently confirmed. The fixture now walks aft, across the port corner, then to the door. Collision was preserved. Both-context video and retained path samples added; no runtime change. |
+
 Runtime `eda1ba7` preserves checked shared `f1ef821`. Browser01 used Chromium's
 ANGLE OpenGL ES backend on **AMD Radeon 860M** at **1440×900**. It recorded zero
 page/console errors or warnings, and one aborted music MP3 request. The actual

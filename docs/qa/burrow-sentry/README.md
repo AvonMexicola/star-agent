@@ -18,8 +18,9 @@ Gannet ceiling refusal. Browser evidence is pending and is not inferred from
 these fixtures.
 
 Frozen runtime `eda1ba7` passes **42 focused GLB/core/Atlas/security/room cases**
-in 19.00 s and production preview build05 in 9.21 s. The earlier **160 registered
-normal test files** passed in 39.36 s. After generating the missing ignored Prisma client, the parent-owned serialized
+in 19.00 s and production preview build05 in 9.21 s. Final `unit04.log` runs all **160 registered normal files / 1,209 cases** on
+`6c1510d` with proper two-worker flags: **all pass in 50.299 s**. The command and
+exact source header are retained in that log. After generating the missing ignored Prisma client, the parent-owned serialized
 multiplayer05 run passed **210 cases, with two existing opt-in skips**, no
 failures/cancellations, in **65.093 s** on the same authority source. Its TAP is
 `assets/burrow-sentry/.staging/multiplayer05-parent.log`. The missing-module

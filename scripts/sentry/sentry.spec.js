@@ -72,11 +72,12 @@ async function walk(page,target,{reach=.32,eva=false,timeout=45000}={}){
 }
 async function board(page,role){
   await neutral(page);expect((await state(page)).sentry.near?.role).toBe(role);
-  await page.evaluate(()=>{window.sentryAccess=[];window.sentryRecord=true;const frame=()=>{if(!sentryRecord)return;sentryAccess.push(starAgent.state.position);requestAnimationFrame(frame);};frame();});
+  await page.evaluate(()=>{window.sentryAccess=[];window.sentryRecord=true;const frame=()=>{if(!sentryRecord)return;const s=starAgent.state,peer=s.multiplayer.players.find(p=>p.id===s.multiplayer.ownId);sentryAccess.push({time:performance.now(),position:s.position,seat:s.sentry.current?.seats[s.sentry.role]?.phase??null,peer:peer?{position:peer.position,seat:peer.sentrySeat,frame:peer.physicsFrame}:null});requestAnimationFrame(frame);};frame();});
   await tap(page,2);await wait(page,role=>{const s=starAgent.state.sentry;return s.role===role&&s.current?.seats[role].phase==='seated';},role,40000);
-  const positions=await page.evaluate(()=>{sentryRecord=false;return sentryAccess;});
-  const maxStep=Math.max(...positions.slice(1).map((p,i)=>Math.hypot(...p.map((n,j)=>n-positions[i][j]))));expect(maxStep).toBeLessThan(.6);
-  await neutral(page);return {maxStep,samples:positions.length};
+  const samples=await page.evaluate(()=>{sentryRecord=false;return sentryAccess;}),steps=samples.slice(1).map((p,i)=>({distance:Math.hypot(...p.position.map((n,j)=>n-samples[i].position[j])),elapsed:(p.time-samples[i].time)/1000,before:samples[i],after:p})),largest=steps.reduce((a,b)=>a.distance>b.distance?a:b,{distance:0}),maxStep=largest.distance;
+  await writeFile(output+'/access-'+((await state(page)).multiplayer.ownId??'solo')+'-'+role+'.json',JSON.stringify({largest,samples},null,2));
+  expect.soft(maxStep,'Maximum rendered access step; timestamped authority samples retained').toBeLessThan(.6);
+  await neutral(page);return {maxStep,samples:samples.length,largest};
 }
 
 test('controller physically boards both Sentry seats, drives/reverses, fires, inspects backpack and suppresses held inputs',async({page,browser})=>{

@@ -193,3 +193,16 @@ test('authoritative driving stops before a walker and another Sentry without pha
   assert.ok(-gap.z>=L.bounds.max[2]-L.bounds.min[2]+.04);assert.deepEqual(f.players.map(p=>[p.health,p.shipHealth]),hp);
   assert.ok(f.players.every(p=>!f.room.security.pending(p)));assert.equal(f.messages.get(pilot.id).some(e=>e.event==='stationStrike'),false);
 });
+
+
+test('actual room access positions follow the bounded physical route at every server tick',async t=>{
+  const f=await fixture(t),[p]=f.players,r=await f.deploy();
+  p.nav.position.copy(r.world([-2.5,1.75,.2]));p.nav.velocity.set(0,0,0);
+  assert.equal((await f.request(p,{command:'board',id:r.id,role:'pilot'})).ok,true);
+  let previous=p.nav.position.clone(),max=0;const phases=new Set();
+  for(let i=0;i<500&&r.seats.pilot.phase!=='seated';i++){
+    f.advance(1/30);const delta=p.nav.position.distanceTo(previous);max=Math.max(max,delta);
+    assert.ok(delta<=.85/30+.004,JSON.stringify({delta,phase:r.seats.pilot.phase}));previous.copy(p.nav.position);phases.add(r.seats.pilot.phase);
+  }
+  assert.equal(r.seats.pilot.phase,'seated');assert.ok(max>.02);assert.ok(phases.has('traversing'));assert.ok(phases.has('closing'));assert.ok(p.nav.position.distanceTo(r.world(L.seats.pilot.eye))<1e-8);
+});
