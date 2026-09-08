@@ -7,7 +7,7 @@ const UP = new Vector3(0, 1, 0), FORWARD = new Vector3(0, 0, -1);
  * movement; this service only requests a checked unoccupied vehicle placement. */
 export function createGarageSystem({scene, nav, settlements, ensureRover, getRover}) {
   const sites = settlements.layouts.filter(s => s.garage).map(s => ({...s, frame: terminalPieceFrame(s.claim, s.garage.terminalPiece)}));
-  const active = () => sites.filter(s => settlements.claims.some(c => c.id === s.claim.id));
+  const active = () => nav.multiplayer?.connected ? [] : sites.filter(s => settlements.claims.some(c => c.id === s.claim.id));
   const world = (s, p) => new Vector3(...p).applyQuaternion(new Quaternion(...s.claim.quaternion)).add(new Vector3(...s.claim.origin));
   function atTerminal(site) {
     return Boolean(site && active().includes(site) && nav.mode === 'walk' && !nav.insideShip && !nav.travel && !nav.openingActive && nav.position.distanceTo(site.frame.position) < 3.3);

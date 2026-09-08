@@ -52,7 +52,7 @@ test('controller lands, walks to garage, deploys and physically boards Burrow, d
  await expect(page.locator('.garage-status')).toContainText('Burrow is ready', {timeout:30000});await capture(page,'garage-deployed');
  const pose=await page.evaluate(()=>window.starAgent.state.position);await button(7,true);await tap(1);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
  expect(await page.evaluate(p=>window.starAgent.navigation.position.distanceTo(window.starAgent.navigation.position.clone().fromArray(p)),pose)).toBeLessThan(.005);
- await walk(page,[28,0,-2]);await walk(page,[32.1,0,1.6]);await page.waitForFunction(()=>window.starAgent.state.rover.near);await capture(page,'port-door');
+ await walk(page,[23.2,0,1.6]);await walk(page,[28,0,1.6]);await walk(page,[32.1,0,1.6]);await page.waitForFunction(()=>window.starAgent.state.rover.near);await capture(page,'port-door');
  await tap(2);await page.waitForFunction(()=>window.starAgent.state.rover.occupied&&!window.starAgent.state.rover.busy,undefined,{timeout:25000});await capture(page,'garage-cockpit');
  await page.evaluate(()=>window.settlementPad.axes=[0,-.5,0,0]);
  try{await page.waitForFunction(()=>{const s=window.starAgent.state,n=window.starAgent.navigation,site=s.settlements.sites.find(s=>s.body==='selene');return n.position.clone().fromArray(s.rover.position).sub(n.position.clone().fromArray(site.origin)).applyQuaternion(n.orientation.clone().fromArray(site.quaternion).invert()).x>79;},undefined,{timeout:30000});}finally{await page.evaluate(()=>window.settlementPad.axes.fill(0));}
@@ -62,7 +62,7 @@ test('controller lands, walks to garage, deploys and physically boards Burrow, d
  await button(7,true);await page.waitForTimeout(2200);await tap(2);await button(7,false);await page.waitForFunction(()=>!window.starAgent.state.rover.occupied&&!window.starAgent.state.rover.busy,undefined,{timeout:25000});await capture(page,'return-to-surface');
  const retained=await page.evaluate(()=>({mass:window.starAgent.state.rover.mass,charge:window.starAgent.state.rover.charge}));expect(retained.charge).toBeLessThan(1);
  // Walk the real driveway back and retrieve the parked vehicle with keyboard.
- await walk(page,[70,0,1.6]);await walk(page,[44,0,1.6]);await walk(page,[28,0,-2]);await walk(page,[23.2,0,-2]);await aim(page,terminal,'world');
+ await walk(page,[70,0,1.6]);await walk(page,[44,0,1.6]);await walk(page,[28,0,1.6]);await walk(page,[23.2,0,1.6]);await walk(page,[23.2,0,-2]);await aim(page,terminal,'world');
  await page.keyboard.press('f');await expect(page.locator('#garage-dialog')).toBeVisible();
  await page.setViewportSize({width:390,height:844});await frames(page);await capture(page,'garage-phone');expect(await page.locator('#garage-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);
  await page.locator('[data-controller-key="garage-retrieve"]').tap();await expect(page.locator('.garage-status')).toContainText('Burrow is ready');expect(await page.evaluate(()=>({mass:window.starAgent.state.rover.mass,charge:window.starAgent.state.rover.charge}))).toEqual(retained);await page.locator('[data-controller-key="garage-close"]').tap();await page.waitForFunction(()=>window.starAgent.state.enabled);
