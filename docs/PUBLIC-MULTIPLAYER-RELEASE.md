@@ -1,5 +1,60 @@
 # Current multiplayer release
 
+The corrected static client **`b51fa894b1b1e26784f235b2de1e475ad98d8a5c`** is
+live at <https://multiplayer.staragent.site> as of **2026-09-08 00:36:17 UTC**.
+The server remains **`623430d106155f3f5b7f669f81e0975d8d47e89c`**, protocol 5,
+seed 7291, capacity 20. Public `release.json` records `clientSource` and
+`serverSource` separately; its `source` field identifies the current static client.
+
+The default page now enters the Nomad hangar opening directly. F2 and controller
+Menu keep scene selection optional; Comms/account login and the server-assigned
+multiplayer opening remain available. Existing practice-store isolation and
+explicit scene links are preserved. Gameplay model requests carry content SHA-256
+revisions, including the current Nomad and hangar assets. This prevents an earlier
+release's model URL from supplying stale bytes. The checked hangar has no long
+floor hoses; its wall reels and overhead services remain authored details.
+
+The patch adapts checked `5879ec8` and `c885f5c` onto the existing multiplayer
+release, preserving its auth wiring. It was built with `VITE_DEV_TOOLS=1`, with
+neither solo mode nor a forced account entry enabled. No server, protocol, model,
+lockfile, environment, service or database source changed.
+
+Static rollout validation:
+
+- **49/49** focused cache, entry, startup, opening and multiplayer UI tests pass,
+  zero skips. Production build, repository and whitespace checks pass.
+  The resulting gameplay module is `main-CcHQYLAx.js`.
+- Parent source acceptance: **1,024 normal tests**, **30 focused checks** and the
+  combined actual solo opening/controller/model-request browser case pass. This
+  multiplayer adaptation adds CPU and HTTP verification; no new GPU, controller
+  hardware or authenticated-account fixture was run.
+- All **223** built files match the staged content manifest. All **37** previous
+  hashed assets remain available for already-open clients. The static directory
+  changed atomically with Linux `renameat2(RENAME_EXCHANGE)` after a backup.
+- Public HTTPS hashes match **10** artifacts: HTML, release metadata, new main,
+  six versioned models and the previous main module. Health is successful before
+  and after. PID **19466** and its start time, **442** runtime source files and
+  the private environment digest are unchanged. No SQL connection, account
+  creation or API restart was performed.
+
+Exact artifact and promotion evidence is in
+[the static correction receipt](qa/multiplayer/static-correction-2026-09-08.json).
+The underlying runtime symlink remains `/opt/staragent/multiplayer-candidate` →
+`/opt/staragent/multiplayer-releases/623430d106155f3f5b7f669f81e0975d8d47e89c`.
+Only its `dist` entry now points to
+`/opt/staragent/multiplayer-static-releases/b51fa894b1b1e26784f235b2de1e475ad98d8a5c/dist`.
+The complete prior static build is retained in the root-only
+`/opt/staragent/backups/multiplayer-static-before-b51fa89/dist` (and `dist-original`).
+A static rollback can atomically replace the `dist` symlink with one pointing at
+that backup; it must not restart the API or roll back the database.
+
+Standalone studios, raw manifest fetches and textures outside `/models/` remain
+outside this cache correction. Restart Vite after changing model files so its
+content manifest regenerates. No production renderer or new gameplay acceptance
+beyond the named checks is claimed.
+
+## Underlying fleet and server release
+
 Cees explicitly authorized the development build's multiplayer release on
 2026-09-08. Runtime **`623430d106155f3f5b7f669f81e0975d8d47e89c`** is live at
 <https://multiplayer.staragent.site> as of **2026-09-07 23:20:04 UTC**. It merges
