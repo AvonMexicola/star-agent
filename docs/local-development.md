@@ -673,3 +673,18 @@ contains night before/after views, controller/phone evidence and measured costs.
 Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
 and served asset/source checks passed. Refresh the page to load the masts.
 Independent art and hardware/performance acceptance remain pending.
+
+
+## Projected trade terminals
+
+Settlement and base consoles project the exchange name and the normal **F /
+controller X** connection prompt. Interacting opens a crisp trade dashboard with
+local stock, cargo, shipment quantities, credits and settlement needs. Owners
+retain **My shop** controls for offered stock, prices, shop opening and the public
+beacon. No account or password is required.
+
+Use **F2 → Stillwater Exchange** for the explicit approach, then land and walk to
+the console. The shared Pilot menu, keyboard navigation and phone controls remain
+available. The [terminal QA record](qa/projected-terminals/README.md) separates
+actual gameplay evidence from the owner presentation fixture and physical-device
+acceptance. This is a development feature; no public deployment is included.

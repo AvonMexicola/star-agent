@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex projected terminals",
-  "status": "active",
+  "status": "review",
   "branch": "feat/projected-trade-terminals",
   "base": "1d4181c3525f444ce5930a30f16de4b1ef58a1b9",
   "updated": "2026-09-08",
