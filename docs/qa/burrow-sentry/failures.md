@@ -125,3 +125,12 @@ occupied class. This is a source-review correction, not a recorded08 phone
 failure. The native 390×844 route now checks disjoint panel/control bounds and
 actual button hit targets before entry and after exit, saves an on-foot image,
 and uses native touch to walk away. Its rendered result remains pending.
+
+The peer World/Faction startup race exposed a guard-format gap before09. The
+owned guard now recognizes `.bin/playwright`, `@playwright/test/cli.js` and
+`playwright/cli.js` test commands, plus worker processes. Chromium can expose its
+command line as one space-joined argument; flag-word normalization now detects
+that actual form. A host `--guard-only` check at `2026-09-08T23-52-56.066Z`
+correctly returned busy (exit 2) for Faction CLI 2275526 and its Chromium processes,
+including 2276141. No Sentry browser or server launched. The raw private process
+receipt is retained; this is guard validation, not a gameplay attempt or pass.
