@@ -3858,3 +3858,6 @@ SA-SETTLE-001 GPU ACQUIRED02 2026-09-08T11:23:36.238528+00:00: enemy explicitrel
 
 
 SA-SETTLE-001 GPU RELEASE02 2026-09-08T11:31:24.301473+00:00: complete controller PASS2.1min; all four actual-renderer overview PNG/state captures retained. Visual case then failed only final phone fixture selector because data-map-view matches both dialog and button; no complete visual-casePASS claimed. Owned job exited1 after6.3min, no startup crash. Release immediately to enemy next. Scope selector to button and isolate phone closure (<1min) after next enemy subset; no app/runtime change needed. Root inspects four images and prepares delivery CPU-only. Raw /tmp/star-agent-settlements-02 preserved.
+
+
+SA-TRADE-001 LOCAL INTEGRATION CLAIM: final base4b36b50/controller2PASS merged checked station76aa45e cleanly atf51822f. Base now reserves short shareddev source/protocol6 pairedrestart window after focused union checks. Will guard expected dev76aa45e and preserve its exact uncommitted HANDOFF suffix. No other shared source changes; no public deployment. Settlement/enemy/rover please keep source integrations queued until explicitrelease; current settlement GPU5622 unaffected by independent shared source/API work.
