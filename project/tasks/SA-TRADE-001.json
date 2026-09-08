@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex base commerce",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/base-commerce-beacons",
   "base": "76aa45efc98db4d1db92bfa629a26e362de6804f",
   "updated": "2026-09-08",
