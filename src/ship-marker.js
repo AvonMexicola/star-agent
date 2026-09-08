@@ -25,7 +25,8 @@ export function createShipMarker({nav,camera,entryLocal,shipName='Nomad',parent=
       element.dataset.edge=String(!projection.onScreen);element.dataset.behind=String(projection.behind);
       arrow.style.transform=`rotate(${projection.angle}deg)`;
       title.textContent=`${shipName.toUpperCase()} · ${markerDistance(projection.distance)}`;
-      detail.textContent=projection.behind?'YOUR SHIP · TURN BACK':projection.distance<75?`${accessLabel} · ${nav.doorOpen?'APPROACH SLOWLY':'CLOSED'}`:'YOUR SHIP · BEACON';
+      const accessStatus=nav.freighter?.accessStatus??(nav.doorOpen?'APPROACH SLOWLY':'CLOSED');
+      detail.textContent=projection.behind?'YOUR SHIP · TURN BACK':projection.distance<75?`${accessLabel} · ${accessStatus}`:'YOUR SHIP · BEACON';
       element.setAttribute('aria-label',`Your ship, ${shipName}, ${markerDistance(projection.distance)} to ${accessLabel.toLowerCase()}${projection.behind?', behind you':''}`);
     },
     get state(){return state;},

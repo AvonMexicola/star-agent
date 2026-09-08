@@ -1,0 +1,40 @@
+{
+  "id": "SA-SHIP-002",
+  "title": "Meridian Gannet T-06 Burrow transport",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex medium ships asset author",
+  "status": "integrated",
+  "branch": "feat/meridian-gannet",
+  "base": "0a18574f308ba343c86e7a96ccf9ed6ad4344793",
+  "updated": "2026-09-08",
+  "areas": [
+    "assets",
+    "flight",
+    "rendering",
+    "industry",
+    "interface"
+  ],
+  "claims": [
+    "assets/gannet/",
+    "blender/build_gannet.py",
+    "public/models/gannet.glb",
+    "src/gannet.js",
+    "src/gannet-layout.js",
+    "src/gannet-systems.js",
+    "src/gannet-studio.js",
+    "src/gannet-studio.css",
+    "public/dev/gannet.html",
+    "tests/gannet.test.js",
+    "scripts/gannet.spec.js",
+    "scripts/gannet.config.js",
+    "docs/qa/gannet/",
+    "scripts/gannet-vite.config.js",
+    "scripts/gannet-gameplay.spec.js",
+    "scripts/gannet-gameplay.config.js",
+    "scripts/gannet-primary-inputs.spec.js",
+    "scripts/gannet-primary-inputs.config.js",
+    "scripts/gannet-primary-inputs.js"
+  ],
+  "brief": "docs/briefs/meridian-medium-ships.md"
+}

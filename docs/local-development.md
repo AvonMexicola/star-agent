@@ -5,20 +5,36 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-This guide describes the fleet integration candidate through **`cee70b7`**:
-the playable 64 m Atlas, enlarged default station bays and authored exterior,
-ground-ready Burrow start, fleet particles/audio/music, roof and power systems,
-animated shopkeepers and current weapon/tool art. Combined browser acceptance,
-the community-hub union and promotion to the shared preview are still pending.
-See the [integration brief](briefs/fleet-engine-integration.md) and
-[dated QA record](qa/fleet-engine-integration.md); older receipts do not certify
-this combined candidate. Client and API must move together to **protocol 5**.
+The shared local preview at **http://127.0.0.1:5178/** includes the checked
+medium-ship runtime **`3cf80ad`**, merged locally at **`b793921`** on 2026-09-08.
+**Stratum M-05** is an 18 m miner; **Gannet T-06** is a 24 m transport carrying
+Burrow. They join Nomad 02, Kestrel and Atlas in the launcher. Both new hulls are
+solo/development features. The final normal suite passes **1,113 tests**; final
+studio and scoped actual-game reviews pass. The
+[medium integration record](qa/medium-ships/integration.md) keeps exact input,
+source, visual and remaining performance limits separate.
 
-The preceding delivery recorded here was `638a5e4`, with the physical tractor
-and handheld pass on protocol 4, preserving social tools, wildlife and player
-optimisation. Its paired frontend/API refresh retained the persistent database.
-That [historical delivery evidence](qa/handheld-tools.md) remains valid for its
-own exports and journeys; this guide does not announce another shared restart.
+The preserved direct-entry/model-cache update (runtime `fc676f9`) opens the
+Nomad hangar after one preload; scene selection is optional. Its 44 focused
+checks and development build pass. See the [startup evidence](qa/direct-entry-2026-09-08.md)
+for that checkpoint's exact validation and browser coverage.
+
+The preceding fleet integration at **`c99736f`**, with runtime **`5f63893`**, added
+the playable 64 m Atlas, enlarged default
+station and community hub, ground Burrow and Atlas/Burrow meadow starts, fleet
+particles/audio/music, roofs/lights/base power, animated shopkeepers and current
+weapon/tool art. The client and API run **protocol 5** together. The paired local
+refresh preserved the persistent PostgreSQL cluster and every existing table's
+row count, applying only the missing additive base-site migration 003.
+
+The complete normal suite passes 1,016 tests before the narrow meadow preset;
+its owner passes 35 focused checks and the parent passes 16. All three engine/audio
+journeys, the complete Burrow ground controller route, actual Atlas station
+boarding/departure, and normal solo/authenticated opening pass. Cees also personally
+tested loading Burrow and flying Atlas and recorded video. See the
+[dated integration evidence](qa/fleet-engine-integration.md) for exact source,
+input and acceptance limits. Public/main and multiplayer release are separately
+tracked; a local merge does not identify what a public URL serves.
 
 ## Multiplayer chat and friends
 
@@ -62,13 +78,17 @@ npm ci
 npm run dev:all
 ```
 
-Open http://127.0.0.1:5178/ after starting this source. The launcher offers
-Nomad 02, Kestrel and the current **64 m Atlas**, with station hangar/approach,
+Open http://127.0.0.1:5178/ after starting this source. After the initial preload,
+the Nomad hangar opens with the shoulder camera behind the character. No scene
+selection or second load is required. F2, the visible Dev button, or controller
+Menu opens optional scene choices during the opening; after taking control, use
+Menu → Dev. The launcher offers
+Nomad 02, Kestrel, the current **64 m Atlas**, **Stratum M-05** and
+**Gannet T-06 + Burrow**, with station hangar/approach,
 **Burrow mining — Selene surface**, Aeon coast/forest/highlands/polar/orbit,
 Selene surface/rings, Pyre twilight/surface, Miasma approach/surface and stellar
-observation starts. Choose a ship, choose a location, then Launch test flight.
-F2 or controller Menu → Dev reopens the dialog after taking
-control. D-pad/left stick selects; A confirms; B returns. Keyboard Tab/Enter and
+observation starts. To change scenes, choose a ship and location, then Launch test
+flight. D-pad/left stick selects; A confirms; B returns. Keyboard Tab/Enter and
 touch use the same buttons. No account or ship-unlock milestone is needed.
 
 For immediate rover play, choose **Burrow mining — Selene surface** in Test
@@ -76,10 +96,21 @@ starts or its direct Dev link. Burrow starts seated on its four wheels beside th
 canonical Crescent outcrop; the selected ship stays parked at the station.
 WASD / left stick drives, T / RT mines, I / View opens ore bins, and F / X follows
 the real door/step exit and re-entry. This is an offline temporary test session.
-Its [CPU placement record](qa/mining-rover/surface-start.md) is separate from
-pending combined rendered acceptance. The **Atlas + Burrow mining rover · Selene**
+Its [CPU placement record](qa/mining-rover/surface-start.md) is complemented by
+the passing combined ground mining, driving and physical exit/reboard journey. The **Atlas + Burrow mining rover · Selene**
 link remains a carrier test, with Burrow on the new cargo deck and the actual
 aft loading ramp. G / Y operates that ramp while aboard; no belly lift is used.
+
+For the new medium ships, select **Stratum M-05** or **Gannet T-06 + Burrow**
+and **Selene · landing site**, then Launch test flight. Direct starts:
+[Stratum](http://127.0.0.1:5178/?dev=1&intro=0&ship=stratum&start=moon&seed=7291)
+and [Gannet with Burrow](http://127.0.0.1:5178/?dev=1&intro=0&ship=gannet&start=moon&seed=7291).
+Use B / controller Y to land, then F / X to leave the chair. Follow the reachable
+ramp/elevator prompts and secure access before launching. Stratum holds T / RT
+(or its visible cutter control) to mine within 40 m, with a 120-second battery,
+30-second recharge and separate 384 kg ore bin. In Gannet, walk aft to Burrow's
+side door, board it, lower the elevator and drive out. Its 128 SBU freight banks
+remain beside the rover lane. These development inventories reset on reload.
 
 Dev → Content review collects the expedition character studio, both Burrow
 starts, construction sandbox, current Atlas studio, station exterior overview,
@@ -89,12 +120,19 @@ Pyrebear habitat and Miasma's Sulphurhound habitat. Habitat starts place the shi
 The newer character is the default local and remote pilot, including its corrected
 hips and calibrated weapon grips. Press 4, or LB + RB + D-pad right, for third person.
 
-Each launch reloads into an isolated temporary test inventory and unlocked fleet.
+Only an explicit scene launch reloads the page. The default opening and selected
+test starts use an isolated temporary test inventory and unlocked fleet.
 Normal browser progression is neither read nor written. Test-session cargo and
 construction reset when reloading. The current seed is retained in the URL;
 use `?seed=42` or the ordinary controls panel to choose a different world.
 A copied test URL includes its ship and start. This selector is gated by
 `VITE_DEV_TOOLS=1`, set by `dev:all`; ordinary production builds retain their entry.
+
+Vite generates content hashes for known gameplay `/models/` assets at startup and
+build time. Changing model bytes requires the frontend's Vite process to reload
+its configuration so its development manifest updates; API and PostgreSQL do not
+need a restart. The medium integration refreshed this frontend manifest and
+verified the served model hashes while leaving the API and database running.
 
 The supplied construction sandbox is an exception to temporary test inventory:
 it uses its own saved namespace and a refillable 4,608 kg materials bank. Reload
@@ -102,7 +140,7 @@ retains its bases and remaining stock. The ordinary save is separate. B near an
 owned mainframe opens its wheel; LB/RB changes piece categories, A selects/places,
 LT/RT rotates, LB cycles snap and RB jumps during placement. The original kit
 includes structural shapes, storage facilities, hangar doors, ramps and S/M/L
-pads. The current candidate adds the reviewed roof skins, ceiling lights and
+pads. The current build adds the reviewed roof skins, ceiling lights and
 power kit described below; the original 21-piece count is historical.
 
 Flight now preserves momentum under finite thruster authority. V / R3 selects

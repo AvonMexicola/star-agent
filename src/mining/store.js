@@ -77,6 +77,7 @@ export class MiningStore {
     return remote ? { id, ...remote, boxes: state.boxes[id], items: { ...emptyItems(), ...remote.items } } : null;
   }
   limits(id, state = this.state) {
+    if(id==='stratum-ore')return {resources:384,supplies:0};
     if(id==='pack'&&!state.loadout.slots.backpack)return {resources:0,supplies:0};
     if(id==='ship'&&this.manifest?.capacity.ship===0)return {resources:0,supplies:0};
     return { resources: state.boxes[id] * MINERAL_CAPACITY_PER_BOX, supplies: id === 'pack' ? 20 : id === 'ship' ? (this.manifest?.capacity.ship??2400) : state.boxes[id] * 30 };

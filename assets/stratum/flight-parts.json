@@ -1,0 +1,211 @@
+{
+  "assetSha256": "1f5cae2a4901a2618d7cff36f1713a19777b45d586022614b9bc5449560cb75b",
+  "units": "metres",
+  "convention": "Closed access only; conservative all-gear/all-boom envelope. Individual ground-reaching gear volumes, not a full-width floor box.",
+  "paddingMetres": 0.02,
+  "parts": [
+    {
+      "id": "pressure-body",
+      "min": [
+        -2.710000057220459,
+        1.0022625732421875,
+        -9.02
+      ],
+      "max": [
+        2.710000057220459,
+        5.5260000419616695,
+        7.262499828338623
+      ],
+      "source": "evaluated static source meshes"
+    },
+    {
+      "id": "drive-port",
+      "min": [
+        -5.932499904632568,
+        1.629999976158142,
+        -4.639999885559082
+      ],
+      "max": [
+        -2.7294137287139892,
+        4.548024196624755,
+        7.73999979019165
+      ],
+      "source": "evaluated static source meshes"
+    },
+    {
+      "id": "drive-starboard",
+      "min": [
+        2.7294137287139892,
+        1.629999976158142,
+        -4.639999885559082
+      ],
+      "max": [
+        5.932499904632568,
+        4.548024673461914,
+        7.73999979019165
+      ],
+      "source": "evaluated static source meshes"
+    },
+    {
+      "id": "axle-Gear_Fore_Port",
+      "min": [
+        -3.129999895095825,
+        1.372582654953003,
+        -3.6900000762939453
+      ],
+      "max": [
+        -2.670000057220459,
+        1.7474172306060791,
+        -3.3099999237060547
+      ],
+      "source": "evaluated static source meshes"
+    },
+    {
+      "id": "axle-Gear_Fore_Starboard",
+      "min": [
+        2.670000057220459,
+        1.372582654953003,
+        -3.6900000762939453
+      ],
+      "max": [
+        3.129999895095825,
+        1.7474172306060791,
+        -3.3099999237060547
+      ],
+      "source": "evaluated static source meshes"
+    },
+    {
+      "id": "axle-Gear_Aft_Port",
+      "min": [
+        -3.579999942779541,
+        1.372582654953003,
+        4.710000019073487
+      ],
+      "max": [
+        -3.120000104904175,
+        1.7474172306060791,
+        5.0900001716613765
+      ],
+      "source": "evaluated static source meshes"
+    },
+    {
+      "id": "axle-Gear_Aft_Starboard",
+      "min": [
+        3.120000104904175,
+        1.372582654953003,
+        4.710000019073487
+      ],
+      "max": [
+        3.579999942779541,
+        1.7474172306060791,
+        5.0900001716613765
+      ],
+      "source": "evaluated static source meshes"
+    },
+    {
+      "id": "Gear_Fore_Port",
+      "node": "Gear_Fore_Port",
+      "min": [
+        -4.689156675933486,
+        0,
+        -3.970000047683716
+      ],
+      "max": [
+        -2.7012631702423096,
+        1.8835730040786611,
+        -3.029999952316284
+      ],
+      "source": "13 sampled actual gear poses, 0..1"
+    },
+    {
+      "id": "Gear_Fore_Starboard",
+      "node": "Gear_Fore_Starboard",
+      "min": [
+        2.7012631702423096,
+        0,
+        -3.970000047683716
+      ],
+      "max": [
+        4.689156675933486,
+        1.8835730040786611,
+        -3.029999952316284
+      ],
+      "source": "13 sampled actual gear poses, 0..1"
+    },
+    {
+      "id": "Gear_Aft_Port",
+      "node": "Gear_Aft_Port",
+      "min": [
+        -5.139156701490108,
+        0,
+        4.429999809265137
+      ],
+      "max": [
+        -3.1512632179260254,
+        1.8835730040786611,
+        5.369999904632568
+      ],
+      "source": "13 sampled actual gear poses, 0..1"
+    },
+    {
+      "id": "Gear_Aft_Starboard",
+      "node": "Gear_Aft_Starboard",
+      "min": [
+        3.1512632179260254,
+        0,
+        4.429999809265137
+      ],
+      "max": [
+        5.139156701490108,
+        1.8835730040786611,
+        5.369999904632568
+      ],
+      "source": "13 sampled actual gear poses, 0..1"
+    },
+    {
+      "id": "MiningBoom_Port",
+      "node": "MiningBoom_Port",
+      "min": [
+        -5.868973601082053,
+        1.417181257709115,
+        -9.433319038550623
+      ],
+      "max": [
+        -2.8310266755152447,
+        3.7800259409171684,
+        -3.5900001335144043
+      ],
+      "source": "169 sampled actual yaw/pitch combinations including limits"
+    },
+    {
+      "id": "MiningBoom_Starboard",
+      "node": "MiningBoom_Starboard",
+      "min": [
+        2.8310266755152447,
+        1.417181257709115,
+        -9.433319038550623
+      ],
+      "max": [
+        5.868973601082053,
+        3.7800259409171684,
+        -3.5900001335144043
+      ],
+      "source": "169 sampled actual yaw/pitch combinations including limits"
+    },
+    {
+      "id": "access-stowed",
+      "node": "Ramp_Hinge",
+      "min": [
+        -0.9699999880790711,
+        1.330000023841858,
+        6.9780001449584965
+      ],
+      "max": [
+        0.9699999880790711,
+        3.5699998331069946,
+        7.520000119209289
+      ],
+      "source": "actual closed nested ramp and hatch"
+    }
+  ]
+}

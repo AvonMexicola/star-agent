@@ -3,6 +3,8 @@ export const ATLAS_MEADOW_SEED = 7291;
 export const DEV_SHIPS = Object.freeze([
   {id:'nomad',name:'Nomad 02',detail:'Utility · walkable cabin, berth & cargo'},
   {id:'kestrel',name:'Kestrel',detail:'Interceptor · port ladder · energy weapons'},
+  {id:'stratum',name:'Stratum M-05',detail:'Medium miner · twin cutters · 384 kg ore bin'},
+  {id:'gannet',name:'Gannet T-06 + Burrow',detail:'Medium transport · vehicle elevator · 128 SBU freight'},
   {id:'atlas',name:'Atlas',detail:'64 m freighter · loading ramps & crew lift'},
 ]);
 export const DEV_LOCATIONS = Object.freeze([
@@ -33,6 +35,16 @@ export function devLaunchOptions(search,enabled){
   const ship=DEV_SHIPS.find(s=>s.id===query.get('ship'))?.id??'nomad';
   const location=DEV_LOCATIONS.find(s=>s.id===query.get('start'))?.id??'hangar';
   return {ship:DEV_LOCATIONS.find(s=>s.id===location)?.ship??ship,location,autoStart:query.get('dev')==='1'&&DEV_LOCATIONS.some(s=>s.id===query.get('start'))};
+}
+/** Keep practice saves isolated while allowing the ordinary hangar introduction. */
+export function flightEntryOptions(search,devTools=false){
+  const query=new URLSearchParams(search),devOptions=devLaunchOptions(search,devTools);
+  const atlasMeadowStart=devOptions?.location==='atlas-meadow';
+  const testFlight=Boolean(devOptions)||query.get('ship')==='kestrel';
+  const sandboxEnabled=!atlasMeadowStart&&query.get('sandbox')==='build';
+  const defaultHangar=devOptions?.ship==='nomad'&&!DEV_LOCATIONS.some(s=>s.id===query.get('start'));
+  const introEnabled=(!testFlight||defaultHangar)&&!sandboxEnabled&&query.get('intro')!=='0';
+  return {devOptions,atlasMeadowStart,testFlight,sandboxEnabled,introEnabled};
 }
 export function devLaunchURL(href,{ship,location}){
   if(!DEV_SHIPS.some(s=>s.id===ship)||!DEV_LOCATIONS.some(s=>s.id===location))throw new Error('Choose a test ship and location.');

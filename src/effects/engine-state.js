@@ -10,6 +10,8 @@ const socket = (position, node = null) => Object.freeze({ position: Object.freez
 // z=30.904; its authored annuli sit deeper at z=27.5. Kestrel has AB sockets.
 export const ENGINE_EXHAUST = Object.freeze({
   nomad: Object.freeze({ sockets: Object.freeze(SHIP_LAYOUT.nozzles.map(p => socket(p))), radius: .48, length: 4.3, boostLength: 7, authoredCones: false }),
+  stratum: Object.freeze({sockets:Object.freeze([-1,1].map(s=>socket([s*4.4,2.65,7.72],s<0?'Nozzle_Port':'Nozzle_Starboard'))),radius:.61,length:5.6,boostLength:8.5,authoredCones:false}),
+  gannet: Object.freeze({sockets:Object.freeze([-1,1].map(s=>socket([s*6.3,3.72,10.65],s<0?'EngineNozzle_Port':'EngineNozzle_Starboard'))),radius:.78,length:7,boostLength:10,authoredCones:false}),
   atlas: Object.freeze({ sockets: Object.freeze([-1, 1].map(s => socket([s * 13.1, 7.9, 30.92]))), radius: 1.65, length: 11, boostLength: 15, authoredCones: false }),
   kestrel: Object.freeze({ sockets: Object.freeze([-1, 1].map(s => socket([s * 1.26, 1.62, 6.68], s < 0 ? 'AB_L' : 'AB_R'))), radius: .39, length: 1.62, boostLength: 1.2, authoredCones: true }),
 });
