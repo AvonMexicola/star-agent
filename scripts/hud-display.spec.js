@@ -19,7 +19,10 @@ async function start(page,{controller=false}={}){
     expect(errors).toEqual([]);
   };
 }
-async function mode(page,value){await expect(page.locator('body')).toHaveAttribute('data-hud-mode',value);}
+async function mode(page,value){
+  try{await expect(page.locator('body')).toHaveAttribute('data-hud-mode',value);}
+  catch(error){console.error('HUD input state',await page.evaluate(()=>({mode:document.body.dataset.hudMode,enabled:starAgent.state.enabled,focused:starAgent.state.focused,active:document.activeElement?.outerHTML?.slice(0,250),dialog:document.querySelector('dialog[open]')?.id})));throw error;}
+}
 async function capture(page,name){await frames(page);await page.screenshot({path:`${output}/${name}.png`});}
 
 test('Tab cycles full → markers and reticle → none, preserving dialogs and target selection',async({page})=>{
