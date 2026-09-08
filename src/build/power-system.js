@@ -1,3 +1,4 @@
+import {releaseInvalidBaseOffers} from '../trading/base-stock.js';
 import {initialPower,advancePower,powerStatus,POWER_PARTS} from './power.js';
 import {powerEnvironment} from './power-environment.js';
 export const coreId=c=>`build-core-${c.id.split('-').at(-1)}`;
@@ -11,7 +12,7 @@ export class BasePower {
  update(){const now=this.now();if(now-this.last<10000||this.store.blocked||this.build.blocked||this.cloud?.enabled)return;this.last=now;
   const data=this.store.state.build;if(!data?.claims.length)return;
   const claims=data.claims.map(c=>{const start=this.sandbox?{...c,power:{...(c.power??initialPower(now)),health:100}}:c;return advancePower(start,now,t=>powerEnvironment(c,t),this.sandbox?{decayMs:Infinity}:undefined);}).filter(c=>c.power.health>0);
-  this.store.write({...pruneBaseStorage(this.store.state,claims),build:{...data,claims}});
+  this.store.write(releaseInvalidBaseOffers({...pruneBaseStorage(this.store.state,claims),build:{...data,claims}}));
  }
  status(c){const second=Math.floor(this.now()/1000),cached=this.statusCache.get(c);if(cached?.second===second)return cached.value;const value=powerStatus(c,powerEnvironment(c,this.now()));this.statusCache.set(c,{second,value});return value;}
  action(claimId,action,item){

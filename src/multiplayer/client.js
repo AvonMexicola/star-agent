@@ -1,3 +1,4 @@
+import { hydrateBaseCommerce } from '../trading/base-stock.js';
 import * as THREE from 'three';
 import { cleanInput, MAX_PLAYERS, MULTIPLAYER_VERSION, WORLD_SEED } from './protocol.js';
 
@@ -213,7 +214,7 @@ export class MultiplayerClient {
       }
       const patch = {
         connected: true, ownId: message.id, maxPlayers: message.maxPlayers ?? MAX_PLAYERS,
-        players: Array.isArray(message.players) ? message.players : [], inventory: message.inventory ?? null, commerce: message.commerce ?? null,
+        players: Array.isArray(message.players) ? message.players : [], inventory: message.inventory ?? null, commerce: hydrateBaseCommerce(null,message.commerce) ?? null,
         health: message.health ?? message.inventory?.health ?? null, doors: message.doors ?? null,
         hangar: message.hangar ?? null, stationFrame: message.stationFrame ?? null, hub: message.hub ?? null, defense: message.defense ?? [],
         drops: Array.isArray(message.drops) ? message.drops : [], error: null,
@@ -223,7 +224,7 @@ export class MultiplayerClient {
     if (message.type === 'state') {
       const patch = {
         players: Array.isArray(message.players) ? message.players : this.state.players,
-        inventory: message.inventory ?? this.state.inventory, commerce: message.commerce ?? this.state.commerce, health: message.health ?? message.inventory?.health ?? this.state.health,
+        inventory: message.inventory ?? this.state.inventory, commerce: message.commerce?hydrateBaseCommerce(this.state.commerce,message.commerce):this.state.commerce, health: message.health ?? message.inventory?.health ?? this.state.health,
         doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar,
         stationFrame: message.stationFrame ?? this.state.stationFrame, hub: message.hub ?? this.state.hub, defense: message.defense ?? this.state.defense,
         drops: Array.isArray(message.drops) ? message.drops : this.state.drops,
