@@ -1,0 +1,16 @@
+{
+  "id":"SA-BUILD-003",
+  "title":"Faction paints, rigid posters and corporate landing sites",
+  "milestone":"M0",
+  "owner":"@AvonMexicola",
+  "agent":"Codex faction building finishes",
+  "status":"active",
+  "branch":"feat/faction-building-finishes",
+  "base":"cc1e74933791a3abdf36e65bdad732b4985994a9",
+  "updated":"2026-09-09",
+  "areas":["industry","assets","interface"],
+  "claims":["src/factions/","src/build/appearance.js","src/build/visuals.js","src/build/system.js","src/build/state.js","src/build/ui.js","src/build/build.css","src/build/handheld.js","src/settlements/catalog.js","src/settlements/layout.js","src/settlements/system.js"],
+  "brief":"docs/briefs/faction-building-finishes.md",
+  "validation":"Implementation and checks pending; delegated pirate Miasma/enclosure work remains separately owned.",
+  "evidence":"docs/briefs/faction-building-finishes.md"
+}
