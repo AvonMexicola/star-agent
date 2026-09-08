@@ -46,8 +46,12 @@ export function createShipMiningInput({nav, canvas, mining, cutter, inventoryUI}
     clear,
     beforeUpdate() {
       if (!canInput()) { key = pointer = touch = false; }
-      const primary = key || pointer || touch, source = primary || !nav.controllerActive ? 'primary' : `controller:${nav.gamepad.id}`;
-      cutter.input({trigger:primary || Boolean(pad?.trigger), armed:source === 'primary' || Boolean(pad?.armed), source});
+      const primary = key || pointer || touch;
+      // Device identity is stable through neutral frames. controllerActive only
+      // changes after a used input, so it cannot identify a reconnect's release.
+      const connected = nav.gamepad.connected;
+      const source = connected ? `controller:${nav.gamepad.id}:${nav.gamepad.index}` : 'primary';
+      cutter.input({trigger:primary || Boolean(pad?.trigger), armed:primary || !connected || Boolean(pad?.armed), source});
       pad = null;
       nav.shipMiningActive = cutter.available;
     },

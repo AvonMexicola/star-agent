@@ -185,3 +185,37 @@ Gannet despite a failed Burrow spawn. Commit `7664b19` prepares the rover before
 selection and reports failures according to the actual selected hull. Six
 source-extracted success/failure cases and a real callback switch-away/retry
 sequence pass. This is callback evidence, not a full physical gameplay pass.
+
+Controller attempt02 on `4650188` / build06 `main-KeqqW2_p.js` advances through
+real extraction and visible transfer. Both independently reconstructed articulated
+GLB tips match the actual beam starts exactly, with direction errors below5e-16;
+both hit the existing Crescent outcrop at21.9514m. The separate practice-save
+reader sees committed voxel revision and ore changes, and a real0.002035kg
+helium-3 transfer preserves the matching ore/backpack balance. Dialog and trusted
+native focus interruptions pass. The full2.9-minute journey still fails at the
+first trigger after controller reconnection: the input adapter changes its source
+identity only when the controller becomes active, rejecting that already-fresh
+press. Root is correcting this actual runtime transition; the fixture is retained.
+Original evidence is `stratum-controller-02` beside01, with stable sources and
+zero page errors, warnings or failed HTTP responses.
+
+[Independent cockpit/UI review](stratum-runtime-ui-review-02.md) closes desktop
+MFD clipping and cutter-panel overlap at the unchanged seated eye. It reviews
+actual02 landing/cutting/stopped images, plus27 camera cases and actual GLB
+projection. Phone per-display readability and complete input acceptance remain
+pending. [Independent Stratum Art02 review](stratum-native-review-02.md) still
+fails: static mean3.84, silhouette4.0. Both authors are refining primary forms
+and fitted finishes without changing protected clear-view or physical contracts.
+[The Gannet primary-input source review](gannet-primary-review-01.md) finds no
+concrete blocking fixture fault; its actual keyboard/native-touch routes remain
+unrun.
+
+The reconnect correction now uses connected supported device ID/index throughout
+neutral and active samples. [Independent source review](input-reconnect-review.md)
+finds no safety blocker. A [composed regression](input-reconnect-cpu.md) using real
+GamepadInput, Navigation polling, the complete input adapter, cutter and Stratum
+GLB fails on the original first fresh press (two cut calls instead of four), then
+passes all28 reported tests with the fix. Fifteen new scenarios cover first
+reconnect press, held reconnection, replacement ID/index, unsupported mapping,
+keyboard/touch coexistence and modal/focus transitions. Existing ten cutter
+tests remain unchanged. The browser retry still must close controller02's failure.

@@ -1,6 +1,7 @@
 import test, { before } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createStratum } from '../src/stratum.js';
@@ -10,6 +11,9 @@ import { MiningStore } from '../src/mining/store.js';
 import { MineableRock } from '../src/mining/rock.js';
 import { createDensity, carve, meshVolume } from '../src/mining/volume.js';
 import { emptyItems, MATERIAL_IDS } from '../src/inventory/containers.js';
+import { GamepadInput } from '../src/gamepad.js';
+import { Navigation } from '../src/navigation.js';
+import { secondaryTouchButtons } from '../src/secondary-touch-buttons.js';
 
 // Decode actual exported triangles/rig. Texture stubs are CPU-only; this makes
 // no claim about WebP decoding, shader compilation or visible beam quality.
@@ -58,6 +62,142 @@ async function fixture(options = {}) {
   };
   return { scene, ship, nav, pose, origin, calls, queries, inspected, rocks, mining, ctx, runtime, frame };
 }
+
+// Minimal event/element boundary for the actual browser adapter. No aggregation
+// or neutral logic is replaced: evaluate its complete source, removing only ESM
+// imports/export because Node cannot load its CSS import. This is not native UI QA.
+const miningInputSource = fs.readFileSync(new URL('../src/ship-mining-input.js', import.meta.url), 'utf8');
+class MiningInputSurface {
+  constructor() { this.listeners = new Map(); this.children = new Map(); this.classList = { contains: () => true }; }
+  addEventListener(type, fn) { if (!this.listeners.has(type)) this.listeners.set(type, new Set()); this.listeners.get(type).add(fn); }
+  removeEventListener(type, fn) { this.listeners.get(type)?.delete(fn); }
+  dispatch(type, detail = {}) {
+    const event = { target: this, preventDefault() {}, stopPropagation() {}, ...detail };
+    for (const fn of this.listeners.get(type) ?? []) fn(event);
+  }
+  querySelector(selector) {
+    if (!this.children.has(selector)) this.children.set(selector, new MiningInputSurface());
+    return this.children.get(selector);
+  }
+  closest() { return null; }
+  contains() { return false; }
+  append() {}
+  remove() {}
+  setPointerCapture() {}
+}
+
+async function inputFixture(t) {
+  const saved = Object.fromEntries(['document', 'window'].map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
+  const document = new MiningInputSurface(), window = new MiningInputSurface(), canvas = new MiningInputSurface();
+  let modal = false, panel;
+  document.hidden = false; document.body = new MiningInputSurface();
+  document.querySelector = selector => selector === 'dialog[open]' && modal ? {} : null;
+  document.createElement = () => (panel = new MiningInputSurface());
+  for (const [key, value] of Object.entries({ document, window })) Object.defineProperty(globalThis, key, { configurable: true, value });
+  let f, adapter;
+  t.after(() => {
+    adapter?.dispose(); f?.runtime.dispose();
+    for (const key of ['document', 'window']) {
+      if (saved[key]) Object.defineProperty(globalThis, key, saved[key]); else delete globalThis[key];
+    }
+  });
+  f = await fixture();
+  const pad = { id: 'Standard Stratum pad', index: 0, connected: true, mapping: 'standard', axes: [0, 0, 0, 0],
+    buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
+  f.nav.gamepad = new GamepadInput(() => [pad]); f.nav.controllerActive = false;
+  f.nav.engineAcceleration = new THREE.Vector3(); f.nav.resetSteering = () => {};
+  // Stop unrelated movement after Navigation's real poll/callback/source-owner
+  // path. The actual Stratum asset, muzzle obstruction, power and cutter run below.
+  f.nav.vehicle = { step: () => true };
+  const createInput = vm.runInNewContext(miningInputSource.replace(/^import[^\n]*\n/gm, '')
+    .replace('export function createShipMiningInput', 'function createShipMiningInput') + '\ncreateShipMiningInput;',
+  { document, window, MATERIAL_IDS, secondaryTouchButtons }, { filename: 'ship-mining-input.js' });
+  adapter = createInput({ nav: f.nav, canvas, mining: f.mining, cutter: f.runtime, inventoryUI: { openStorage() {} } });
+  f.nav.onControllerInput = sample => adapter.controller(sample);
+  const tick = () => {
+    Navigation.prototype.update.call(f.nav, .02);
+    adapter.beforeUpdate(); f.runtime.update(.02, f.origin);
+    return f.runtime.state;
+  };
+  const button = (index, down) => { pad.buttons[index] = { pressed: down, value: Number(down) }; };
+  const primary = (kind, down, repeat = false) => {
+    if (kind === 'keyboard') document.dispatch(down ? 'keydown' : 'keyup', { code: 'KeyT', repeat, target: canvas });
+    else panel.querySelector('[data-ship-mine]').dispatch(down ? 'pointerdown' : 'pointerup', { pointerId: 8, pointerType: 'touch' });
+  };
+  const ready = () => {
+    tick(); button(0, true); tick(); button(0, false); tick();
+    assert.equal(f.nav.gamepad.armed, true); assert.equal(f.nav.controllerActive, true);
+  };
+  const stopCheck = (calls, cutSeconds, message) => {
+    assert.equal(f.calls.length, calls, message); near(f.runtime.state.cutSeconds, cutSeconds);
+    assert.equal(f.runtime.state.active, false, message); assert.equal(f.runtime.state.beams.length, 0, message);
+  };
+  return { ...f, adapter, document, window, pad, tick, button, primary, ready, stopCheck,
+    modal(value) { modal = value; f.nav.enabled = !value; } };
+}
+
+test('input aggregation fires on the first fresh RT after reconnect neutral, using the real gamepad poll and Stratum cutter', async t => {
+  const f = await inputFixture(t); f.ready(); f.button(7, true); f.tick();
+  assert.equal(f.calls.length, 2, 'Precondition: both actual heads cut before disconnect');
+  const count = f.calls.length, cutSeconds = f.runtime.state.cutSeconds;
+  f.pad.connected = false; f.tick();
+  assert.equal(f.nav.controllerActive, false, 'Navigation actually clears the active-input flag');
+  f.stopCheck(count, cutSeconds, 'Disconnected RT must stop');
+  f.button(7, false); f.pad.connected = true; f.tick();
+  assert.equal(f.nav.gamepad.armed, true); assert.equal(f.nav.controllerActive, false, 'Neutral reconnect has not used the pad');
+  f.button(7, true); f.tick();
+  assert.equal(f.nav.controllerActive, true);
+  assert.equal(f.calls.length, count + 2, 'First fresh RT after the real neutral reconnect must cut; no extra release/repress');
+  assert.equal(f.runtime.state.active, true);
+});
+
+test('input aggregation keeps held reconnect, replacement and unsupported devices off until real neutral', async t => {
+  for (const transition of ['reconnect', 'replacement-id', 'replacement-index', 'unsupported']) await t.test(transition, async t => {
+    const f = await inputFixture(t); f.ready(); f.button(7, true); f.tick();
+    assert.equal(f.calls.length, 2);
+    const count = f.calls.length, seconds = f.runtime.state.cutSeconds;
+    if (transition === 'reconnect') { f.pad.connected = false; f.tick(); f.pad.connected = true; }
+    if (transition === 'replacement-id') f.pad.id = 'Replacement standard pad';
+    if (transition === 'replacement-index') f.pad.index = 1;
+    if (transition === 'unsupported') f.pad.mapping = '';
+    f.tick(); f.tick(); f.stopCheck(count, seconds, transition + ' held RT');
+    if (transition === 'unsupported') { f.pad.mapping = 'standard'; f.tick(); f.stopCheck(count, seconds, 'Restored mapping with RT still held'); }
+    assert.equal(f.nav.gamepad.armed, false);
+    f.button(7, false); f.tick(); assert.equal(f.nav.gamepad.armed, true);
+    f.button(7, true); f.tick(); assert.equal(f.calls.length, count + 2, 'First physical release then press must resume ' + transition);
+  });
+});
+
+test('keyboard and touch cutters remain usable with a connected neutral or unsupported pad', async t => {
+  for (const kind of ['keyboard', 'touch']) for (const supported of [true, false]) await t.test(kind + (supported ? ' with neutral pad' : ' with unsupported pad'), async t => {
+    const f = await inputFixture(t); f.ready();
+    if (!supported) { f.pad.mapping = ''; f.button(7, true); f.tick(); }
+    assert.equal(f.nav.gamepad.connected, supported);
+    f.primary(kind, true); f.tick();
+    assert.equal(f.calls.length, 2, 'First fresh primary press must cut while the pad is idle or unsupported');
+    f.primary(kind, false); f.tick(); assert.equal(f.runtime.state.active, false);
+  });
+});
+
+test('aggregated pad, keyboard and touch retain modal and focus release requirements', async t => {
+  for (const kind of ['pad', 'keyboard', 'touch']) for (const boundary of ['focus', 'modal']) await t.test(kind + ' ' + boundary, async t => {
+    const f = await inputFixture(t); f.ready();
+    const held = down => kind === 'pad' ? f.button(7, down) : f.primary(kind, down);
+    held(true); f.tick(); assert.equal(f.calls.length, 2);
+    const count = f.calls.length, seconds = f.runtime.state.cutSeconds;
+    if (boundary === 'focus') {
+      f.nav.focused = false; f.window.dispatch('blur');
+      f.stopCheck(count, seconds, 'Blur clears actual cutter immediately, even before another animation frame');
+    } else f.modal(true);
+    f.tick(); f.stopCheck(count, seconds, boundary + ' blocked frame');
+    if (boundary === 'focus') { f.nav.focused = true; f.window.dispatch('focus'); } else f.modal(false);
+    if (kind === 'keyboard') f.primary(kind, true, true); // OS repeat from the same held key.
+    if (kind === 'touch') f.document.dispatch('pointermove', { pointerId: 8, pointerType: 'touch' });
+    f.tick(); f.tick(); f.stopCheck(count, seconds, 'Held input cannot restart after ' + boundary);
+    held(false); f.tick(); held(true); f.tick();
+    assert.equal(f.calls.length, count + 2, 'First fresh press after release resumes ' + kind + ' after ' + boundary);
+  });
+});
 
 test('actual articulated muzzle nodes drive two world-double cuts and camera-relative Plasma, even with stale render transforms', async () => {
   const f = await fixture(); f.frame(false); f.frame(true);
