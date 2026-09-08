@@ -114,7 +114,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
   };
   dialog.querySelector('[data-controller-key="patrol-debrief"]').onclick=()=>{if(sim.debrief())nav.notify('Combat report filed. Patrol complete.');renderDialog();};
   dialog.querySelector('[data-controller-key="patrol-abort"]').onclick=()=>{sim.abort();renderDialog();};
-  function recover(){if(sim.phase!=='failed'||nav.mode!=='destroyed')return false;nav.destruction=null;nav.orbit();sim.repair();sim.enemies=[];sim.targetId=null;sim.phase='idle';nav.enabled=true;if(dialog.open)dialog.close();nav.notify('Replacement ship ready in orbit. Open Patrol console to retry.');return true;}
+  function recover(){if(sim.phase!=='failed'||nav.mode!=='destroyed')return false;nav.destruction=null;nav.orbit();sim.recover();nav.enabled=true;if(dialog.open)dialog.close();nav.notify('Replacement ship ready in orbit. Open Patrol console to retry.');return true;}
   dialog.querySelector('[data-controller-key="patrol-recover"]').onclick=recover;
   document.addEventListener('keydown',event=>{
     if(event.code==='Tab'&&!event.repeat&&nav.enabled&&nav.focused&&nav.mode==='flight'&&!document.querySelector('dialog[open]')){event.preventDefault();sim.cycle();}

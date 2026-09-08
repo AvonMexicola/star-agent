@@ -26,7 +26,13 @@ plane. Combat report filing is single-use; reports freeze actual finish state.
 - Repository checks pass: 11 areas, 28 tasks, 38 managed documents.
 - Suggested plan against `origin/dev/all-features` includes already integrated
   medium-ship changes (221 paths); this feature owns the bounded combat diff.
-- Actual browser/controller and 390×844 native touch checks: queued, not yet run.
+- Combined current-station/input/combat checks: **42 cases pass** after merging
+  local station repair `76aa45e` into the feature branch.
+- Actual browser/controller and 390×844 native touch checks: queued. UI01 was
+  deliberately interrupted during world readiness when an earlier queued GPU
+  owner started during approval latency; exit 130, no validation pass. Its page
+  rendered the loading screen. Trace/screenshot remain in
+  `/tmp/star-agent-encounter-results-ui01`; log `/tmp/enemy-encounters-ui01.log`.
 
 ## Failures and corrections
 
@@ -35,7 +41,8 @@ node_modules symlink inside the sandbox (EROFS). The same build passed through
 approved execution. No application change was used to mask this infrastructure
 failure. Source review also caught report drift after a post-completion repair or
 ship change; report values now freeze on the final kill, covered by a regression.
-The longer contract screen gets local vertical scrolling so phone controls and
+Recovery also clears pending reinforcements and targets, including a simultaneous
+wave-clear/player-loss edge case. The longer contract screen gets local vertical scrolling so phone controls and
 report history remain reachable within the existing fixed menu chrome.
 
 ## Limits

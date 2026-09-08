@@ -176,6 +176,10 @@ test('reinforcement countdown cannot revive an abandoned or destroyed encounter'
   if(end==='abort')assert.equal(sim.abort(),true);else damage(sim.player,9999);
   for(let i=0;i<100;i++)sim.update(.2,pose());
   assert.equal(sim.phase,end==='abort'?'aborted':'failed');assert.equal(sim.wave,1);assert.equal(sim.debrief(),false);assert.equal(sim.completed,0);
+  if(end==='death'){
+   assert.ok(sim.recover());assert.equal(sim.phase,'idle');assert.equal(sim.reinforcementIn,0);assert.equal(sim.wave,0);assert.equal(sim.enemies.length,0);assert.equal(sim.targetId,null);assert.equal(sim.player.hull,sim.player.maxHull);
+   for(let i=0;i<100;i++)sim.update(.2,pose());assert.equal(sim.phase,'idle');assert.equal(sim.enemies.length,0);
+  }
  }
 });
 

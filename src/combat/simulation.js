@@ -62,6 +62,10 @@ export class CombatSimulation{
     this.reports.length=Math.min(this.reports.length,12);this.phase='debriefed';return true;
   }
   repair(){this.player=integrity(this.shipId);}
+  recover(){
+    if(this.phase!=='failed')return false;
+    this.repair();this.enemies=[];this.projectiles=[];this.targetId=null;this.wave=0;this.reinforcementIn=0;this.phase='idle';return true;
+  }
   spawn(){
     const roster=this.contract.waves[this.wave];if(!roster)return;
     const difficulty=this.contract.difficulty;
