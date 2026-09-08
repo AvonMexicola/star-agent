@@ -13,7 +13,7 @@ export function terminalPieceFrame(claim,piece){
 export function terminalFrames({snapshot,settlements,station,baseActive,localClaims=[],claimPowered=()=>true}){
   const result=[],add=(id,frame)=>result.push({id,...terminalIdentity(snapshot,id,{powered:(snapshot.terminals?.some(t=>t.id===id)?baseActive?.(snapshot.terminals.find(t=>t.id===id)):true)??true}),...frame});
   // Active claims follow the existing offline/online settlement visibility owner.
-  for(const claim of settlements?.claims??[]){const layout=settlements.layouts.find(s=>s.claim.id===claim.id);if(layout)add(layout.id,terminalPieceFrame(claim,layout.terminalPiece));}
+  for(const claim of settlements?.claims??[]){const layout=settlements.layouts.find(s=>s.claim.id===claim.id);if(layout)add(layout.id,{...terminalPieceFrame(claim,layout.terminalPiece),...settlements.terminalStatus?.(layout.id)});}
   for(const t of snapshot.terminals??[]){
     if(t.base){const claim=materializeBase(t),piece=claim.pieces.find(p=>p.id===t.base.terminalPiece);if(piece)add(t.id,terminalPieceFrame(claim,piece));}
     else if(t.origin)add(t.id,terminalPieceFrame({origin:t.position,quaternion:t.quaternion},{position:[0,0,0],rotation:Math.PI}));

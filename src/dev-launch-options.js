@@ -9,6 +9,7 @@ export const DEV_SHIPS = Object.freeze([
   {id:'atlas',name:'Atlas',detail:'64 m freighter · loading ramps & crew lift'},
 ]);
 export const DEV_LOCATIONS = Object.freeze([
+  {id:'pirate-hush',name:'Hush Exchange · secret Selene compound',detail:'Outer landing apron · isolate the anti-ship tower on foot · salvage trade'},
   ...SETTLEMENTS.map(s=>({id:s.id,name:`${s.name} · ${s.body}`,detail:`65 m above trade pad · ${s.role}`})),
   {id:'hangar',name:'Station hangar',detail:'Parked · boarding, cabins and departure'},
   {id:'sentry-surface',name:'Burrow Sentry — Selene surface',detail:'Rear laser turret · pilot or gunner door · two-player crew online'},

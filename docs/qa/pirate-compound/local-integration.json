@@ -1,0 +1,84 @@
+{
+  "integratedAt": "2026-09-08T21:54:50.428288+00:00",
+  "previousHead": "f1ef821a1e24a0724c22b14e30efd6d5092ba0fd",
+  "integratedHead": "c7b09ab4bc8f4ed95e9dcc1771548ce302ee3f9b",
+  "sharedWorktree": "/home/cees/projects/star-agent-dev",
+  "branch": "dev/all-features",
+  "dirtyJournalPreserved": true,
+  "journalBytes": 520678,
+  "journalSHA256": "2f201781af25958b2287a4e28a4a172a83f4b77b143bcd0c93b53edf4bc45823",
+  "status": "M HANDOFF.md",
+  "publicDeployment": false,
+  "served": {
+    "verifiedAt": "2026-09-08T21:56:42.030327+00:00",
+    "method": "Read-only curl -L --fail --silent --write-out %{http_code}; all 11 endpoints returned 200",
+    "mainSHA256": "987a9f94b147ce9a27577070a032ec5b7f868fae29f42e0cdabc6ac37ee2ec25",
+    "sourceChecks": {
+      "pirateImport": true,
+      "garageImport": true,
+      "pirateAfterGarage": true,
+      "normalSitesOnline": true,
+      "soloPirate": true,
+      "hushLauncher": true,
+      "runtimeWrapper": true
+    },
+    "assets": [
+      {
+        "url": "http://127.0.0.1:5178/models/pirate-tower.glb",
+        "status": 200,
+        "bytes": 357384,
+        "sha256": "39799a0d054eecb50c281fc8b6ee12a4a782d9be4382ca20436b236a81148cf9",
+        "matchesCheckedAsset": true
+      },
+      {
+        "url": "http://127.0.0.1:5178/models/pirate-props/generator.glb",
+        "status": 200,
+        "bytes": 879952,
+        "sha256": "46cfbc349e582c01c7b0e91c6f77fd8d1314593fea7d1f1ab0a248de405f61d2",
+        "matchesCheckedAsset": true
+      },
+      {
+        "url": "http://127.0.0.1:5178/models/pirate-props/floodlight.glb",
+        "status": 200,
+        "bytes": 920348,
+        "sha256": "879ca7654e510936b909d246c91302ecedc8edd44e2244f3de5ff5c6dd81dace",
+        "matchesCheckedAsset": true
+      },
+      {
+        "url": "http://127.0.0.1:5178/models/pirate-props/workbench.glb",
+        "status": 200,
+        "bytes": 765704,
+        "sha256": "2cb5ff5220c968f71fd3eed28645b6b9890369ed6c4e800d1c4f0e1b67b86507",
+        "matchesCheckedAsset": true
+      },
+      {
+        "url": "http://127.0.0.1:5178/models/pirate-props/crate.glb",
+        "status": 200,
+        "bytes": 976016,
+        "sha256": "091440b10e597d444c7b4cf40be2b86970dea82aa4f85d66f9c096b102bb7a22",
+        "matchesCheckedAsset": true
+      }
+    ],
+    "apiHealth": [
+      {
+        "port": 5178,
+        "status": 200,
+        "json": {
+          "ok": true
+        }
+      },
+      {
+        "port": 8087,
+        "status": 200,
+        "json": {
+          "ok": true
+        }
+      }
+    ],
+    "previewRestarted": false,
+    "apiRestarted": false,
+    "databaseChanged": false,
+    "optionalModelRevisionRefresh": "Unchanged vite.config.js touch refused EROFS under default sandbox; no escalation. New model URLs fall through the existing modifier unchanged and serve exact checked bytes. Existing services preserved.",
+    "failedProbe": "First literal normal-settlement check omitted scene,nav arguments and failed. Corrected exact served expression above passes; no application edit."
+  }
+}
