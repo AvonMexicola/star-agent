@@ -68,7 +68,8 @@
           0.34375
         ]
       },
-      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte."
+      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte.",
+      "normalRepairs": []
     },
     {
       "id": "floodlight",
@@ -76,7 +77,7 @@
       "sourceSha256": "fae06d6a55d89255924802b5102c37bb6566724b38793bf53a89fdb6546232e2",
       "sourceBytes": 7495008,
       "runtime": "public/models/pirate-props/floodlight.glb",
-      "sha256": "3ef4dcdd5e2414050d269604909e2b1d3ee07d179f9f44dba8a514cb520e67e3",
+      "sha256": "879ca7654e510936b909d246c91302ecedc8edd44e2244f3de5ff5c6dd81dace",
       "bytes": 920348,
       "triangles": 982,
       "draws": 1,
@@ -136,7 +137,135 @@
           0.5
         ]
       },
-      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte."
+      "geometryPolicy": "All original non-image bytes preserved except the explicitly listed zero-length NORMAL entries, replaced with unit normals from their isolated nondegenerate face winding. Positions, indices, UVs and all other normals remain byte-identical.",
+      "normalRepairs": [
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 11,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.6490134596824646,
+            0.04969903454184532,
+            0.7591518759727478
+          ],
+          "face": [
+            11,
+            12,
+            13
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 12,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.6490134596824646,
+            0.04969903454184532,
+            0.7591518759727478
+          ],
+          "face": [
+            11,
+            12,
+            13
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 13,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.6490134596824646,
+            0.04969903454184532,
+            0.7591518759727478
+          ],
+          "face": [
+            11,
+            12,
+            13
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1322,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.6490134596824646,
+            -0.04969903454184532,
+            -0.7591518759727478
+          ],
+          "face": [
+            1322,
+            1323,
+            1324
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1323,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.6490134596824646,
+            -0.04969903454184532,
+            -0.7591518759727478
+          ],
+          "face": [
+            1322,
+            1323,
+            1324
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1324,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.6490134596824646,
+            -0.04969903454184532,
+            -0.7591518759727478
+          ],
+          "face": [
+            1322,
+            1323,
+            1324
+          ],
+          "faceArea2": 0.0045032029068115785
+        }
+      ]
     },
     {
       "id": "workbench",
@@ -144,7 +273,7 @@
       "sourceSha256": "b881fe5f0bcaf2509a5ca11994290244fb7e92035ff9a4b23e3d544a09343a6c",
       "sourceBytes": 6583564,
       "runtime": "public/models/pirate-props/workbench.glb",
-      "sha256": "0c40b2f10c1e8c713945961d23e66c6d298fd08691981d5e7535e9b56f0d9283",
+      "sha256": "2cb5ff5220c968f71fd3eed28645b6b9890369ed6c4e800d1c4f0e1b67b86507",
       "bytes": 765704,
       "triangles": 953,
       "draws": 1,
@@ -204,7 +333,135 @@
           0.30273398756980896
         ]
       },
-      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte."
+      "geometryPolicy": "All original non-image bytes preserved except the explicitly listed zero-length NORMAL entries, replaced with unit normals from their isolated nondegenerate face winding. Positions, indices, UVs and all other normals remain byte-identical.",
+      "normalRepairs": [
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 317,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.004321177490055561,
+            0.9999846816062927,
+            0.0034610875882208347
+          ],
+          "face": [
+            317,
+            318,
+            319
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 318,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.004321177490055561,
+            0.9999846816062927,
+            0.0034610875882208347
+          ],
+          "face": [
+            317,
+            318,
+            319
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 319,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.004321177490055561,
+            0.9999846816062927,
+            0.0034610875882208347
+          ],
+          "face": [
+            317,
+            318,
+            319
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1297,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.004321177490055561,
+            -0.9999846816062927,
+            -0.0034610875882208347
+          ],
+          "face": [
+            1297,
+            1298,
+            1299
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1298,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.004321177490055561,
+            -0.9999846816062927,
+            -0.0034610875882208347
+          ],
+          "face": [
+            1297,
+            1298,
+            1299
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1299,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.004321177490055561,
+            -0.9999846816062927,
+            -0.0034610875882208347
+          ],
+          "face": [
+            1297,
+            1298,
+            1299
+          ],
+          "faceArea2": 0.1288798632933821
+        }
+      ]
     },
     {
       "id": "crate",
@@ -272,7 +529,8 @@
           0.33398398756980896
         ]
       },
-      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte."
+      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte.",
+      "normalRepairs": []
     }
   ]
 }

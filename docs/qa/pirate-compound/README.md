@@ -20,8 +20,11 @@ pending module and is not implemented by this compound task.
   remains owned by the station asset record; its earlier visual gates are not
   inherited as acceptance of this placement.
 - Crimson user source hashes and embedded texture derivatives are in
-  [manifest](../../../assets/pirate-props/manifest.json). All geometry/index/UV/normal
-  buffer payloads remain byte-identical.512² lossless WebP, three maps per prop,
+  [manifest](../../../assets/pirate-props/manifest.json). Positions, indices, UVs
+  and valid authored normals remain byte-identical. Six zero-length normals each
+  on the lamp and workbench are repaired from isolated nondegenerate face winding;
+  exact exceptions are recorded and every other non-image byte is verified.
+  512² lossless WebP, three maps per prop,
   native GLTF `EXT_texture_webp`; no decoder service/runtime dependency.
 - Site survey uses canonical Selene surface functions; both raised kit slabs have
   measured support under8m piers, with real0.6m kit ramps to terrain. The outer
@@ -145,3 +148,27 @@ real landed/ship-cabin occupants retain targeting. Focused pirate, space-combat
 and momentum files passed in0.679s. The pending Sentry vehicle contract has not
 been consumed. Formal independent art review requires the reviewer's own captures;
 parent inspection of author frames is recorded as defect review only.
+
+Browser05 reached the actual isolator by controller and disabled the tower. The
+next fixture segment at z=-8 crossed the second tripod's real foot, stopping at
+local(16.236,6.791,-7.935). Actual GLB triangle collision now proves that rejected
+lane is blocked and the revised z=-10 lane is clear. The complete journey remains
+pending. Native phone was skipped by the first-failure limit.
+
+Browser06's diagnostic disproved the embedded-emitter hypothesis: the same lamp
+rectangle and102 non-finite RGB samples remained after moving the source in front
+of the casing. The physical emitter clearance is retained, but it is not a fix
+for this artifact. Raw half-float HDR samples and before/after images are retained.
+Subsequent independent CPU scans by both author and parent found six zero normals
+on the lamp (11–13 and1322–1324), plus six on the workbench (317–319 and1297–1299).
+Each set consists of two opposite-winding, nondegenerate triangles with isolated
+vertices. The derivative builder repairs only those twelve vectors; originals
+remain untouched, other non-image bytes are identical, and all runtime normals
+now have finite unit length. A signed-negative-zero assertion failed first and
+was corrected to treat both IEEE zero signs as zero; the full14 focused checks
+then passed in0.557s. The upcoming renderer comparison temporarily restores only
+the old six lamp normals to test causality. Native/controller now precede this
+diagnostic so it cannot repeatedly skip those independent journeys.
+
+The last complete normal suite passed all155 files in59.449s on ce033b9 before
+the isolated normal derivative repair; contributor and plan checks passed.
