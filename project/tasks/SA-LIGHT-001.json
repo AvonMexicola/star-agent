@@ -4,11 +4,25 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex floodlights",
-  "status": "active",
+  "status": "review",
   "branch": "feat/outdoor-floodlights",
   "base": "32966e3a1ec1830936d997a6b57b95c4e83a3071",
   "updated": "2026-09-08",
-  "areas": ["assets", "industry"],
-  "claims": ["src/build/floodlights.js", "src/build/floodlight-definition.js", "blender/build_floodlight.py", "assets/build-floodlight/", "public/models/base/floodlight.glb", "tests/floodlights.test.js", "scripts/floodlights.spec.js", "scripts/floodlights.config.js"],
-  "brief": "docs/briefs/outdoor-floodlights.md"
+  "areas": [
+    "assets",
+    "industry"
+  ],
+  "claims": [
+    "src/build/floodlights.js",
+    "src/build/floodlight-definition.js",
+    "blender/build_floodlight.py",
+    "assets/build-floodlight/",
+    "public/models/base/floodlight.glb",
+    "tests/floodlights.test.js",
+    "scripts/floodlights.spec.js",
+    "scripts/floodlights.config.js"
+  ],
+  "brief": "docs/briefs/outdoor-floodlights.md",
+  "validation": "153 unit files, 191 multiplayer cases plus 2 existing opt-in skips, production build, 6 final browser cases; independent art and hardware acceptance pending",
+  "evidence": "docs/qa/outdoor-floodlights/README.md"
 }

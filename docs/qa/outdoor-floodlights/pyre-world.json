@@ -1,0 +1,357 @@
+{
+  "browser": "151.0.7922.173",
+  "views": [
+    {
+      "body": "pyre",
+      "view": "approach",
+      "width": 1440,
+      "height": 900,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawCalls": 2457,
+      "triangles": 1658168,
+      "fps": 28,
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1440,
+        "height": 900
+      },
+      "floodlights": {
+        "max": 6,
+        "maxShadows": 2,
+        "active": 6,
+        "shadows": 2,
+        "fixtures": [
+          {
+            "id": "build-claim-12000/build-piece-12178",
+            "intensity": 1500,
+            "position": [
+              47.162113189697266,
+              47.03625965118408,
+              -24.622196197509766
+            ],
+            "target": [
+              53.98265075683594,
+              63.285762786865234,
+              -29.936227798461914
+            ],
+            "shadow": true
+          },
+          {
+            "id": "build-claim-12000/build-piece-12177",
+            "intensity": 1500,
+            "position": [
+              41.93446350097656,
+              81.09456729888916,
+              -22.61998176574707
+            ],
+            "target": [
+              48.245094299316406,
+              97.81679916381836,
+              -27.018611907958984
+            ],
+            "shadow": true
+          },
+          {
+            "id": "build-claim-12000/build-piece-12175",
+            "intensity": 1500,
+            "position": [
+              66.17213439941406,
+              52.267008781433105,
+              -64.52523422241211
+            ],
+            "target": [
+              64.80324172973633,
+              66.26312828063965,
+              -52.64921760559082
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12176",
+            "intensity": 1500,
+            "position": [
+              36.84690856933594,
+              114.38469886779785,
+              -20.70794677734375
+            ],
+            "target": [
+              48.11119079589844,
+              101.62079906463623,
+              -27.70821762084961
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12174",
+            "intensity": 1500,
+            "position": [
+              60.96601486206055,
+              86.3312406539917,
+              -62.56820869445801
+            ],
+            "target": [
+              59.926841735839844,
+              101.03111839294434,
+              -51.539215087890625
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12173",
+            "intensity": 1500,
+            "position": [
+              55.856929779052734,
+              119.61544799804688,
+              -60.61098289489746
+            ],
+            "target": [
+              58.93178176879883,
+              104.59816551208496,
+              -50.421207427978516
+            ],
+            "shadow": false
+          }
+        ]
+      }
+    },
+    {
+      "body": "pyre",
+      "view": "walk",
+      "width": 1440,
+      "height": 900,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawCalls": 2224,
+      "triangles": 1527810,
+      "fps": 30,
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1440,
+        "height": 900
+      },
+      "floodlights": {
+        "max": 6,
+        "maxShadows": 2,
+        "active": 6,
+        "shadows": 2,
+        "fixtures": [
+          {
+            "id": "build-claim-12000/build-piece-12177",
+            "intensity": 1500,
+            "position": [
+              -7.515544891357422,
+              11.186912536621094,
+              3.774698257446289
+            ],
+            "target": [
+              -1.2049140930175781,
+              27.909144401550293,
+              -0.623931884765625
+            ],
+            "shadow": true
+          },
+          {
+            "id": "build-claim-12000/build-piece-12178",
+            "intensity": 1500,
+            "position": [
+              -2.2878952026367188,
+              -22.871395111083984,
+              1.7724838256835938
+            ],
+            "target": [
+              4.532642364501953,
+              -6.621891975402832,
+              -3.5415477752685547
+            ],
+            "shadow": true
+          },
+          {
+            "id": "build-claim-12000/build-piece-12174",
+            "intensity": 1500,
+            "position": [
+              11.516006469726562,
+              16.423585891723633,
+              -36.17352867126465
+            ],
+            "target": [
+              10.47683334350586,
+              31.12346363067627,
+              -25.144535064697266
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12175",
+            "intensity": 1500,
+            "position": [
+              16.722126007080078,
+              -17.64064598083496,
+              -38.13055419921875
+            ],
+            "target": [
+              15.353233337402344,
+              -3.644526481628418,
+              -26.25453758239746
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12176",
+            "intensity": 1500,
+            "position": [
+              -12.603099822998047,
+              44.477044105529785,
+              5.686733245849609
+            ],
+            "target": [
+              -1.3388175964355469,
+              31.713144302368164,
+              -1.31353759765625
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12173",
+            "intensity": 1500,
+            "position": [
+              6.40692138671875,
+              49.70779323577881,
+              -34.2163028717041
+            ],
+            "target": [
+              9.481773376464844,
+              34.690510749816895,
+              -24.026527404785156
+            ],
+            "shadow": false
+          }
+        ]
+      }
+    },
+    {
+      "body": "pyre",
+      "view": "mast",
+      "width": 1440,
+      "height": 900,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawCalls": 2053,
+      "triangles": 1417668,
+      "fps": 28,
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1440,
+        "height": 900
+      },
+      "floodlights": {
+        "max": 6,
+        "maxShadows": 2,
+        "active": 6,
+        "shadows": 2,
+        "fixtures": [
+          {
+            "id": "build-claim-12000/build-piece-12177",
+            "intensity": 1500,
+            "position": [
+              -6.306365966796875,
+              3.292144775390625,
+              3.315858840942383
+            ],
+            "target": [
+              0.00426483154296875,
+              20.014376640319824,
+              -1.0827713012695312
+            ],
+            "shadow": true
+          },
+          {
+            "id": "build-claim-12000/build-piece-12178",
+            "intensity": 1500,
+            "position": [
+              -1.0787162780761719,
+              -30.766162872314453,
+              1.3136444091796875
+            ],
+            "target": [
+              5.7418212890625,
+              -14.5166597366333,
+              -4.000387191772461
+            ],
+            "shadow": true
+          },
+          {
+            "id": "build-claim-12000/build-piece-12176",
+            "intensity": 1500,
+            "position": [
+              -11.3939208984375,
+              36.582276344299316,
+              5.227893829345703
+            ],
+            "target": [
+              -0.129638671875,
+              23.818376541137695,
+              -1.7723770141601562
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12174",
+            "intensity": 1500,
+            "position": [
+              12.72518539428711,
+              8.528818130493164,
+              -36.632368087768555
+            ],
+            "target": [
+              11.686012268066406,
+              23.2286958694458,
+              -25.603374481201172
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12175",
+            "intensity": 1500,
+            "position": [
+              17.931304931640625,
+              -25.53541374206543,
+              -38.589393615722656
+            ],
+            "target": [
+              16.56241226196289,
+              -11.539294242858887,
+              -26.713376998901367
+            ],
+            "shadow": false
+          },
+          {
+            "id": "build-claim-12000/build-piece-12173",
+            "intensity": 1500,
+            "position": [
+              7.616100311279297,
+              41.81302547454834,
+              -34.67514228820801
+            ],
+            "target": [
+              10.69095230102539,
+              26.795742988586426,
+              -24.485366821289062
+            ],
+            "shadow": false
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "artViewpoints": true,
+  "performanceAcceptance": false
+}

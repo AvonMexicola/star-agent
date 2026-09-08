@@ -3995,3 +3995,29 @@ build6.10s/repo and controller1PASS2.6m, keyboard/native390 pagination and held
 modal/nativefocus/disconnectPASS. No service/SQL/schema/protocol/public changes.
 Physicaldevice/independentvisual review remain separate. Final integratedtask and
 localguide/status metadata in this commit; no gameplay changes since tested source.
+
+
+## SA-LIGHT-001 — outdoor floodlights ready for local checkpoint (2026-09-08)
+
+Codex owns `.worktrees/outdoor-floodlights`, `feat/outdoor-floodlights`; temporary
+QA5654/private API8654 are stopped. Runtime `bb7ff9d`, final combined `f8c9fa0`
+retains HUD9b629f2, settlement290f5ad and Burrowb34bc69. One original Blender
+twin-head 6 m mast, 9,826 triangles/837,064 bytes, hash3f2d93fc8eb0; six per pad
+at all four settlements. Power-wheel placement, exact8/3/2 material debit,600 W,
+reachable F/X switch and durable switch flag. Shared6 spotlights/2 shadow maps.
+
+Validated: all153 unit files,191 multiplayer cases+2 existing opt-in skips; final
+352-module build6.01s; after checked Burrow merge four affected files PASS2.39s.
+Final complete injected-controller journey plus Aeon/Selene/baseline4/4PASS5.3m
+onc38d89a; Pyre/Miasma2/2PASS2.7m ondbd4c6e, all appdiagnostics empty. Nine owned
+runtime/asset files remain byte-identical after Burrow merge. Chromium151 AMD860M
+ANGLE/GL1440×900, native390 touch. Source, curated images, failed checks and scene
+costs: docs/qa/outdoor-floodlights/README.md. Builder evidence only; independent
+rubric, hardware controller and performance acceptance remain pending. Miasma
+inherited flora/rock intrusion and scene draw-budget excess are explicit.
+
+Next: guarded localFF preserving exact dirtyHANDOFF suffix, then one graceful
+restart of existing star-agent-persistent-preview.service so client/API share
+the new piece catalog. Same persistent database; no schema/protocol migration,
+save reset or public deployment. Record actual HTTP/module/GLB checks before
+claiming integration. Frozen prior settlement preview5622 remains for review.
