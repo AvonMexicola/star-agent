@@ -88,9 +88,11 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
       for(const carrier of carriers())if(!roverCarrierClear({previous,proposed,previousCorners,corners},carrier.systems,carrier.frame,{layout:L,cargoConstrain:carrier.cargoConstrain}))return false;
       if(!clearPose(proposed.position,proposed.quaternion,ownId))return false;
       const a=roverFootprint(previous.position,previous.quaternion,{layout:L}),b=roverFootprint(proposed.position,proposed.quaternion,{layout:L});
-      // Lift the bottom samples off the supporting surface before sweeping.
-      const up=UP.clone().applyQuaternion(proposed.quaternion);
-      return a.every((p,i)=>!ray(p.addScaledVector(up,.15),b[i].addScaledVector(up,.15),{carrier:false}));
+      // The conservative tyre suspension envelope extends below the deck. Its
+      // floor contact belongs to sampleSupport, so sweep lower side samples
+      // 15 cm above the chassis root; keep upper clearance at the true top.
+      const raise=(p,pose)=>{const up=UP.clone().applyQuaternion(pose.quaternion),height=p.clone().sub(pose.position).dot(up);return p.addScaledVector(up,Math.max(0,.15-height));};
+      return a.every((p,i)=>!ray(raise(p,previous),raise(b[i],proposed),{carrier:false}));
     },
     accessClear:(a,b)=>!ray(a,b),
   };

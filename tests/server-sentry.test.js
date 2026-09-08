@@ -182,13 +182,13 @@ test('authoritative driving stops before a walker and another Sentry without pha
   walker.nav.mode='walk';walker.nav.insideShip=false;walker.nav.position.copy(r.world([0,1.75,-5]));walker.nav.velocity.set(0,0,0);
   const hp=f.players.map(p=>[p.health,p.shipHealth]);
   f.advance(3,new Map([[pilot,{forward:1}]]));
-  assert.ok(r.physics.state.distance>.5);assert.equal(r.physics.state.reason,'collision');
+  assert.ok(r.physics.state.distance>.5,JSON.stringify({physics:r.snapshot(),controls:r.controls,walker:walker.nav.position.toArray(),mode:walker.nav.mode}));assert.equal(r.physics.state.reason,'collision');
   const clearance=walker.nav.position.clone().sub(r.physics.state.position).applyQuaternion(q.clone().invert());
   assert.ok(clearance.z<=L.bounds.min[2]-.29);assert.deepEqual(f.players.map(p=>[p.health,p.shipHealth]),hp);
   walker.nav.position.copy(r.world([8,1.75,0]));r.physics.setPose(origin,q);
   second.physics.setPose(r.world([0,0,-7]),q);f.input(pilot,{});f.advance(.1);
   f.advance(4,new Map([[pilot,{forward:1}]]));
-  assert.ok(r.physics.state.distance>.5);assert.equal(r.physics.state.reason,'collision');
+  assert.ok(r.physics.state.distance>.5,JSON.stringify({physics:r.snapshot(),controls:r.controls,walker:walker.nav.position.toArray(),mode:walker.nav.mode}));assert.equal(r.physics.state.reason,'collision');
   const gap=second.physics.state.position.clone().sub(r.physics.state.position).applyQuaternion(q.clone().invert());
   assert.ok(-gap.z>=L.bounds.max[2]-L.bounds.min[2]+.04);assert.deepEqual(f.players.map(p=>[p.health,p.shipHealth]),hp);
   assert.ok(f.players.every(p=>!f.room.security.pending(p)));assert.equal(f.messages.get(pilot.id).some(e=>e.event==='stationStrike'),false);
