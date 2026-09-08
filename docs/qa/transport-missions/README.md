@@ -1,7 +1,7 @@
 # SA-TRANSPORT-001 — Verification record
 
 Status: implemented and developer-validated. Full controller and keyboard/native
-touch journeys pass. Local integration is next; independent acceptance, public
+touch journeys pass. Locally integrated at `f294a98`; independent acceptance, public
 deployment and physical controller testing remain pending.
 Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`.
 
@@ -132,3 +132,27 @@ complete solo Nomad Aeon→Pyre route, plus model coverage of all routes and fou
 canonical sites. It does not establish a rendered two-client online flight,
 physical-device testing, all-hull/all-route gameplay, independent review or FPS
 acceptance. Actual-room/two-account and PostgreSQL authority evidence is separate.
+
+## Local integration — 2026-09-08
+
+Checked development sync `524b729` has the identical tree to retained terminal
+`23ca619`; merging its ancestry changed no runtime. A guarded native
+`git merge --ff-only --autostash f294a98` integrated this feature into local
+`dev/all-features`. All19 changed runtime files match the tested worktree.
+The unrelated append-only HANDOFF suffix was backed up and verified byte-for-byte:
+56,247bytes, SHA256 `3bf320f09e28c4d384e811998fc68a7724ab0093d01fc486c0454eb91e7f9abe`.
+
+Only `star-agent-persistent-preview.service` was gracefully restarted at20:18:10UTC.
+It reopened the same persistent local PostgreSQL cluster and port51224; no tables,
+schema, account data or inventory were reset. This is not a table-row-count audit.
+Both8087/api/health and5178/api/health returned `ok:true`. HTTP source comparisons
+confirm protocol7, the exact route catalog and the new Contracts entry. A first
+source-map-only probe found Vite does not include a map on every transformed
+module; the corrected raw-source comparison passes alongside actual module checks.
+Local receipts/backups remain in ignored `test-results/integration`.
+
+`npm run check:repo` and `git diff --check` pass. Final
+`npm run plan:checks -- --base origin/dev/all-features` reports40 feature paths
+and the expected gameplay/controller/database checks; it is a plan, not a result.
+No public deployment, protected release merge or independently reviewed acceptance
+is implied. The local paired preview remains available at http://127.0.0.1:5178/.
