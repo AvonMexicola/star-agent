@@ -19,11 +19,26 @@ turns an incomplete or skipped check into a pass.
 | server03–04 / collision01–02 | Added actual moving room fixture never moved: full suspension envelope was ray-swept below its supporting station deck | `eda1ba7` raises only lower side samples to 15 cm above the root while preserving true upper clearance; canonical support still owns tyres. collision03 passes walker/rover stop and no phantom owner-ship damage. |
 | focused09 / build05 | Final frozen deck-contact source | All 42 focused GLB/core/Atlas/security/room cases pass in 19.00 s; production preview build passes in 9.21 s. |
 
-| browser01 `2026-09-08T21-39-51.380Z` | Actual pilot boarding, forward/reverse, aim/fire, seated local Character and backpack reached; held RT correctly prevented the first B in the new dialog. The fixture waited for gameplay arming while still in UI. Gunner/two-client skipped by maxFailures=1. | Fix the fixture to wait for the existing `uiArmed` gate in a dialog, release the entering held input, then hold RT while actually leaving. Fixture correction does not change gameplay. Sources unchanged during01; original video/stills/state retained. Its firing image also exposed the presentation lifetime issue below. |
+Browser01 (`2026-09-08T21-39-51.380Z`) reached actual pilot boarding,
+forward/reverse, aim/fire, seated local Character and backpack. Held RT correctly
+prevented the first B in the new dialog, but the fixture waited for gameplay
+arming while still in UI. It now waits for the existing `uiArmed` gate, releases
+the entering held input, then holds RT while actually leaving. No gameplay
+change was needed. Gunner/two-client cases were skipped by `maxFailures=1`;
+unchanged source hashes, original video, stills and state are retained.
 
-| browser01 pulse image review | Counter advanced but the sampled still had no visible laser. A .13 s new pulse immediately lost the current frame's dt (up to .2 s), so it could expire before first draw. | Each confirmed pulse now renders once before aging. Added read-only actual endpoint/visibility receipt; build06 passes6.78s, rendered follow-up pending. |
+Its firing image exposed a real presentation issue: a new 0.13 s pulse immediately
+lost the current frame's dt (up to 0.2 s), so it could expire before its first
+draw. Each confirmed pulse now renders once before aging, with read-only actual
+endpoint/visibility evidence. Build06 passed in 6.78 s; subsequent04/05/08
+captures show the actual twin barrel beams.
 
-| browser02 `2026-09-08T21-49-28.932Z` | Both accounts connected and controller Menu deployed a real shared rover. The direct diagonal pilot waypoint crossed the aft hull and stopped at local [-1.277,1.75,2.8846], matching the2.88 m boundary. | Parent independently confirmed. The fixture now walks aft, across the port corner, then to the door. Collision was preserved. Both-context video and retained path samples added; no runtime change. |
+Browser02 (`2026-09-08T21-49-28.932Z`) connected both accounts and deployed a real
+shared rover through controller Menu. The direct diagonal pilot waypoint crossed
+the aft hull and stopped at local [-1.277, 1.75, 2.8846], matching its 2.88 m
+boundary. Parent independently confirmed that collision. The fixture now walks
+aft, across the port corner, then to the door. Collision was preserved, with no
+runtime change; both-context video and physical path samples are retained.
 
 Runtime `eda1ba7` preserves checked shared `f1ef821`. Browser01 used Chromium's
 ANGLE OpenGL ES backend on **AMD Radeon 860M** at **1440×900**. It recorded zero
@@ -101,3 +116,12 @@ existing online-aware `nav.openInventory` when connected. The strict server
 dialog assertion is retained, with an additional actual panel Backpack click
 and connection check. No authority or rate limit changed. Solo/native cases
 did not run, and the original failure and unchanged source hashes are retained.
+
+Before09, a separate source review identified a phone return-to-walking overlap:
+the on-foot Sentry panel used bottom 82 px over the existing coarse walking
+controls at bottom 88 px. The normal Burrow already reserves bottom 350 px when
+unoccupied. The owned Sentry panel now applies that same separation based on its
+occupied class. This is a source-review correction, not a recorded08 phone
+failure. The native 390×844 route now checks disjoint panel/control bounds and
+actual button hit targets before entry and after exit, saves an on-foot image,
+and uses native touch to walk away. Its rendered result remains pending.

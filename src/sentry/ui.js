@@ -11,7 +11,7 @@ export function createSentryUI(api){
     for(const name of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(name,()=>api.touch.delete(b.dataset.hold));
   }
   return {update(){
-    const state=api.state;panel.hidden=!state.visible;if(panel.hidden)return;
+    const state=api.state;panel.hidden=!state.visible;if(panel.hidden)return;panel.classList.toggle('sentry-occupied',state.occupied);
     panel.querySelector('.sentry-state').textContent=state.message;
     panel.querySelector('meter').value=state.current?.charge??1;
     panel.querySelector('[data-action="deploy"]').hidden=!state.canDeploy;

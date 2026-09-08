@@ -30,6 +30,14 @@ async function boot(page,url,errors){
   await page.goto(url);await wait(page,()=>window.starAgent?.state.ready,null,120000);
 }
 const rendererInfo=page=>page.evaluate(()=>{const gl=document.getElementById('viewport').getContext('webgl2'),debug=gl.getExtension('WEBGL_debug_renderer_info');return {vendor:gl.getParameter(debug?.UNMASKED_VENDOR_WEBGL??gl.VENDOR),renderer:gl.getParameter(debug?.UNMASKED_RENDERER_WEBGL??gl.RENDERER),version:gl.getParameter(gl.VERSION),resolution:[gl.drawingBufferWidth,gl.drawingBufferHeight],viewport:[innerWidth,innerHeight]};});
+async function phoneWalkingControls(page){
+  await expect(page.locator('#nomad-cabin-controls')).toBeVisible();
+  const layout=await page.evaluate(()=>{
+    const panel=document.getElementById('sentry-panel'),controls=document.getElementById('nomad-cabin-controls'),rect=el=>{const r=el.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom};};
+    return {panel:rect(panel),controls:rect(controls),buttons:[...controls.querySelectorAll('button')].filter(b=>b.getClientRects().length&&!b.disabled).map(b=>{const r=b.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {label:b.getAttribute('aria-label')??b.textContent,rect:rect(b),reachable:hit===b||b.contains(hit)};})};
+  });
+  const a=layout.panel,b=layout.controls;expect(a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top).toBe(true);expect(layout.buttons.length).toBeGreaterThanOrEqual(4);expect(layout.buttons.every(b=>b.reachable)).toBe(true);return layout;
+}
 async function nativeFocusGate(page){
   const blank=await page.context().newPage(),game=await page.context().newCDPSession(page),other=await page.context().newCDPSession(blank),report={};
   try{
@@ -195,6 +203,7 @@ test('keyboard and native phone controls board, aim, fire and leave the Sentry',
       await boot(page,'/?dev=1&intro=0&ship=nomad&start=sentry-surface&debug=1',errors);
       if(await page.locator('#multiplayer-account-dialog').isVisible()){const b=page.locator('[data-controller-key="account-continue"]');if(mobile)await b.tap();else await b.click();}
       await wait(page,()=>starAgent.state.sentry.near?.role==='pilot'&&!starAgent.state.transiting,null,120000);
+      if(mobile)report.phoneApproach=await phoneWalkingControls(page);
       if(mobile)await page.locator('#sentry-panel [data-action="entry"]').tap();else await page.keyboard.press('KeyF');
       await wait(page,()=>starAgent.state.sentry.current?.seats.pilot.phase==='seated',null,40000);await page.waitForTimeout(350);
       let touch;
@@ -206,7 +215,15 @@ test('keyboard and native phone controls board, aim, fire and leave the Sentry',
       }else{await page.keyboard.down('ArrowLeft');await page.waitForTimeout(300);await page.keyboard.up('ArrowLeft');await page.keyboard.down('KeyT');}
       await wait(page,()=>starAgent.state.sentry.current.shots>0);await page.screenshot({path:output+(mobile?'/08-sentry-native-phone.png':'/07-sentry-keyboard.png')});
       if(mobile){await touch.cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await touch.cdp.detach();await page.locator('#sentry-panel [data-action="entry"]').tap();}else{await page.keyboard.up('KeyT');await page.keyboard.press('KeyF');}
-      await wait(page,()=>!starAgent.state.sentry.occupied,null,40000);report[mobile?'phone':'keyboard']={state:await state(page),renderer:await rendererInfo(page)};
+      await wait(page,()=>!starAgent.state.sentry.occupied,null,40000);
+      if(mobile){
+        report.phoneExit=await phoneWalkingControls(page);await page.screenshot({path:output+'/10-sentry-phone-on-foot.png'});
+        const start=(await state(page)).position,walk=await page.locator('#nomad-cabin-controls [data-cabin-key="KeyA"]').boundingBox(),cdp=await context.newCDPSession(page);
+        try{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:walk.x+walk.width/2,y:walk.y+walk.height/2,id:1}]});await wait(page,start=>Math.hypot(...starAgent.state.position.map((v,i)=>v-start[i]))>.4,start);}
+        finally{await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}
+        report.phoneWalk={start,end:(await state(page)).position};
+      }
+      report[mobile?'phone':'keyboard']={state:await state(page),renderer:await rendererInfo(page)};
     }finally{report[mobile?'phoneLast':'keyboardLast']=await state(page).catch(()=>null);report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;await writeFile(output+'/native-input-report.json',JSON.stringify(report,null,2));await context.close();}
   }
   report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;await writeFile(output+'/native-input-report.json',JSON.stringify(report,null,2));expect([...errors]).toEqual([]);
