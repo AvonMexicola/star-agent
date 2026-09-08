@@ -1,7 +1,8 @@
 # SA-PIRATE-002 — checked handoff, 2026-09-08
 
-Status: checked development checkpoint; parent garage agent owns serialized local
-integration and draft export. No public deployment. Branch
+Status: checked development checkpoint, integrated locally at `c7b09ab`;
+[served receipt](local-integration.json). Parent garage agent owns draft export.
+No public deployment. Author branch
 `feat/pirate-trade-compound`, base23ca6199d2b5f0ee5cbfa9f914612320e8d8e684.
 Runtime/assets2c2f2fb49fcfbfc65bcfbc4bf012d78d66491375; complete browser09 tested
 clean201588c with only fixture/documentation changes above that runtime.
@@ -111,3 +112,10 @@ Parent may now integrate this checked checkpoint under the standing local-testin
 authorization. Source ownership transfers only for that serialized integration;
 formal art, hardware/performance, missing shade sheet and separate ground enemies
 remain explicitly pending. Cees retains public-release authority.
+
+Parent local integration completed with the exact 520,678-byte dirty journal
+preserved, existing services unchanged, all new served model hashes matching
+checked assets and both API health routes returning 200. The optional unchanged
+Vite config timestamp refresh was refused by the default sandbox; no escalation
+was requested. These newly introduced model URLs serve the checked files through
+the existing no-revision fallback. See the linked receipt for exact boundaries.

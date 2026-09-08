@@ -1,5 +1,5 @@
 {
-  "status": "Combined unit/build/browser and delegated full journey pass; shared integration receipt follows",
+  "status": "Combined and delegated checks pass; integrated locally at c7b09ab with served source/assets/API receipt",
   "runtime": "73a7be883846394ad42ee563360302190c192833",
   "pirateCandidate": "2c2f2fb49fcfbfc65bcfbc4bf012d78d66491375",
   "sharedDependency": "f1ef821",
@@ -179,7 +179,7 @@
   "repositoryCheck": "PASS",
   "checkPlan": {
     "base": "origin/dev/all-features",
-    "changedPaths": 170,
+    "changedPaths": 185,
     "result": "Informational; not a test certificate"
   },
   "browser": {
@@ -253,7 +253,10 @@
       }
     ]
   },
-  "sharedIntegration": false,
+  "sharedIntegration": {
+    "head": "c7b09ab4bc8f4ed95e9dcc1771548ce302ee3f9b",
+    "receipt": "../pirate-compound/local-integration.json"
+  },
   "publicDeployment": false,
   "garageHosted": {
     "head": "09011e7",

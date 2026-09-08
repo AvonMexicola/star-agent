@@ -773,5 +773,8 @@ site. The market uses existing solo cargo/save authority; ground pirate NPC comb
 belongs to a separate feature. See the [production record](qa/pirate-compound/README.md)
 for the exact checked state, assets, browser evidence and remaining acceptance.
 All three final browser cases pass, including the physical injected-controller
-journey, native phone commerce and repaired floodlight HDR check. Parent local
-integration is being recorded; no public deployment is included.
+journey, native phone commerce and repaired floodlight HDR check. Checked source
+`c7b09ab` is integrated locally; [the served receipt](qa/pirate-compound/local-integration.json)
+verifies the combined hooks, all five new GLBs and healthy APIs. Refresh the
+[Hush approach](http://127.0.0.1:5178/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291)
+to try it. No public deployment is included.
