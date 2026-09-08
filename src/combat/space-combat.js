@@ -39,7 +39,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     <div class="patrol-difficulties" role="group" aria-label="Encounter difficulty">${Object.values(DIFFICULTIES).map(d=>`<button type="button" data-controller-key="patrol-${d.id}" data-difficulty="${d.id}" aria-pressed="false">${d.label}</button>`).join('')}</div>
     <h2 id="patrol-title"></h2><p class="patrol-brief"></p>
     <dl><dt>CONTACTS</dt><dd class="patrol-roster"></dd><dt>OBJECTIVE</dt><dd class="patrol-goal"></dd><dt>THREAT</dt><dd class="patrol-threat"></dd><dt>SHIP SYSTEMS</dt><dd>Shields recharge after 6 seconds without a hit. Hull repairs at the dock.</dd></dl>
-    <button data-controller-key="transport-contracts">Transport contracts · sealed freight</button><p class="patrol-status" role="status"></p><div class="patrol-actions"><button data-controller-key="patrol-accept" data-controller-focus>Accept patrol</button><button data-controller-key="patrol-debrief">File combat report</button><button data-controller-key="patrol-abort">Abandon patrol</button><button data-controller-key="patrol-recover">Recover in orbit</button></div>
+    <button data-controller-key="transport-contracts">Transport contracts · sealed freight</button><button data-controller-key="recovery-contracts">Cargo recovery · disabled Atlas</button><p class="patrol-status" role="status"></p><div class="patrol-actions"><button data-controller-key="patrol-accept" data-controller-focus>Accept patrol</button><button data-controller-key="patrol-debrief">File combat report</button><button data-controller-key="patrol-abort">Abandon patrol</button><button data-controller-key="patrol-recover">Recover in orbit</button></div>
     <p class="patrol-log"></p><ol class="patrol-reports" aria-label="Recent combat reports"></ol>
     <small>Local dispatch: visit Aeon, Selene, Pyre, Miasma or the asteroid belt for different sorties. Fly to the amber beacon; surface dispatch requires climbing into orbit. T / RT fires · Next target / Menu → Ship selects targets. Reports reset on reload; no credit or cargo reward.</small>`;
   document.body.append(dialog);
@@ -70,7 +70,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     dialog.querySelector('[data-controller-key="patrol-debrief"]').disabled=sim.phase!=='complete';
     dialog.querySelector('[data-controller-key="patrol-abort"]').disabled=!['transit','engage'].includes(sim.phase);
     dialog.querySelector('[data-controller-key="patrol-recover"]').hidden=sim.phase!=='failed'||nav.mode!=='destroyed';
-    dialog.querySelector('[data-controller-key="patrol-accept"]').disabled ||= !permitted();
+    dialog.querySelector('[data-controller-key="patrol-accept"]').disabled ||= !permitted()||Boolean(nav.recoveryActive?.());
     if(!permitted())dialog.querySelector('.patrol-status').textContent=nav.multiplayer?.connected?'Patrol contracts are available in offline flight.':!['nomad','kestrel','atlas'].includes(nav.shipId)?'Choose an armed Nomad, Kestrel or Atlas for security contracts.':!selectedRegion?'No security dispatch near the star. Visit a planet, moon or the asteroid belt.':'Board your ship or visit a station terminal to accept a patrol.';
     dialog.querySelector('.patrol-log').textContent=`Reports filed: ${sim.completed}`+(sim.enemies.length?` · ${locked()?'This':'Previous'} sortie: ${sim.enemies.filter(e=>e.integrity.hull===0).length} / ${sim.contract.total} hostiles cleared`:'');
     const reports=dialog.querySelector('.patrol-reports');reports.replaceChildren();
@@ -90,6 +90,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     nav.keys.clear();nav.gamepad.suspend();nav.enabled=false;if(document.pointerLockElement)document.exitPointerLock();renderDialog();dialog.showModal();
   }
   dialog.querySelector('[data-controller-key="transport-contracts"]').onclick=()=>{dialog.addEventListener('close',()=>nav.openTransport?.(),{once:true});dialog.close();};
+  dialog.querySelector('[data-controller-key="recovery-contracts"]').onclick=()=>{dialog.addEventListener('close',()=>nav.openRecovery?.(),{once:true});dialog.close();};
   dialog.querySelector('.station-close').onclick=()=>dialog.close();
   dialog.addEventListener('close',()=>{nav.keys.clear();nav.gamepad.suspend();nav.enabled=true;nav.canvas.focus();});
   async function prepare(){
@@ -108,7 +109,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     return assetsPromise;
   }
   dialog.querySelector('[data-controller-key="patrol-accept"]').onclick=async()=>{
-    if(!permitted()||loading||['transit','engage','complete'].includes(sim.phase))return;
+    if(!permitted()||nav.recoveryActive?.()||loading||['transit','engage','complete'].includes(sim.phase))return;
     loading=true;assetError='';renderDialog();
     try{await prepare();if(!permitted())return;selectedRegion=encounterRegion(nav.position);const contract=encounterContract(selectedRegion.id,selectedDifficulty);nav.onTakeControl?.();sim.accept(encounterWaypoint(nav,selectedRegion),nav.orientation,contract);nav.notify(`${contract.title} accepted · ${contract.difficulty.label}. Follow the amber beacon, brake on arrival, then engage.`);}
     catch(error){assetError=`Patrol unavailable: ${error.message}`;}
@@ -203,5 +204,9 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     const profile=shipWeaponProfile(weapon,SHIP_WEAPON_SIZES[nav.shipId]??1);
     if(t&&i<4&&Number.isFinite(profile.speed)){const point=interceptPoint(nav.position,t.position,t.velocity.clone().sub(nav.velocity),profile.speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
   }
-  return {open,permitted,recover,cycle:()=>sim.cycle(),update,fire:(...args)=>{if(shipWeaponStatus(nav)==='WEAPONS READY')sim.fire(...args);},get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
+  return {open,permitted,recover,
+    async beginRecoveryEncounter(point,contract){if(nav.multiplayer?.connected||nav.mode!=='flight'||!['nomad','atlas'].includes(nav.shipId)||['transit','engage','complete','failed'].includes(sim.phase))throw new Error('Finish the current sortie in an armed ship before engaging recovery guards.');await prepare();if(nav.recoveryActive?.()!==contract.id||nav.multiplayer?.connected||nav.mode!=='flight')return false;sim.setShip(nav.shipId);return sim.accept(point,nav.orientation,contract);},
+    finishRecoveryEncounter:id=>sim.contract.id===id&&sim.debrief(),
+    cancelRecoveryEncounter:id=>sim.contract.id===id&&(sim.phase==='complete'?sim.debrief():sim.abort()),
+    cycle:()=>sim.cycle(),update,fire:(...args)=>{if(shipWeaponStatus(nav)==='WEAPONS READY')sim.fire(...args);},get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
 }

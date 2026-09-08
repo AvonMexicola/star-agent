@@ -16,9 +16,9 @@ export function tractorCommand(state,owner,m,ctx){
   if(m.op==='tractor-grab'){
     check(!held(),'Release or secure your current tractor crate first.');
     let c=Object.hasOwn(loose,m.crate)?loose[m.crate]:null;
-    if(c){check(cargoVisibleTo(c,owner),'This sealed crate belongs to another pilot.');check(!c.holder||c.until<=now,'Another pilot has a tractor lock on this crate.');check(ctx.tractor?.grab(c,null),'Aim the tractor at a reachable crate.');}
+    if(c){if(c.recovery)check(ctx.recovery?.canHandle?.(c.recovery.id),'Clear the defending flight before recovering this cargo.');check(cargoVisibleTo(c,owner),'This sealed crate belongs to another pilot.');check(!c.holder||c.until<=now,'Another pilot has a tractor lock on this crate.');check(ctx.tractor?.grab(c,null),'Aim the tractor at a reachable crate.');}
     else{
-      const ship=state.ships[m.ship],source=ship?.crates.find(c=>c.id===m.crate);check(source,'Crate no longer present.');check(cargoVisibleTo(source,owner),'This sealed crate belongs to another pilot.');
+      const ship=state.ships[m.ship],source=ship?.crates.find(c=>c.id===m.crate);check(source,'Crate no longer present.');if(source.recovery)check(ctx.recovery?.canHandle?.(source.recovery.id),'Clear the defending flight before recovering this cargo.');check(cargoVisibleTo(source,owner),'This sealed crate belongs to another pilot.');
       check(canRemoveCrate(ship.hull,ship.crates,source.id),'Remove the crates above this one first.');
       check(ship.owner===owner||ctx.loot?.(ship,source),'Board the ship or disable it before taking cargo.');
       const pose=ctx.tractor?.grab(source,ship);check(pose,'Aim within 12 m through an open cargo access. Both ships must be stationary.');

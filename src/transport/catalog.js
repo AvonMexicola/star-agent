@@ -8,5 +8,5 @@ export const TRANSPORT_ROUTES=Object.freeze(SETTLEMENTS.flatMap(from=>SETTLEMENT
 }))));
 export const transportRoute=id=>TRANSPORT_ROUTES.find(r=>r.id===id);
 export const transportSiteName=id=>settlementById(id)?.name??id;
-export const transportCargo=c=>({id:c.id,sbu:c.sbu,resource:c.resource,...(c.transport?{transport:{...c.transport}}:{})});
-export const cargoVisibleTo=(c,owner)=>!c.transport||c.transport.owner===owner;
+export const transportCargo=c=>({id:c.id,sbu:c.sbu,resource:c.resource,...(c.transport?{transport:{...c.transport}}:{}),...(c.recovery?{recovery:{...c.recovery}}:{})});
+export const cargoVisibleTo=(c,owner)=>(!c.transport||c.transport.owner===owner)&&(!c.recovery||c.recovery.owner===owner);

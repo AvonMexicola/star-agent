@@ -1,0 +1,27 @@
+{
+  "id": "SA-RECOVERY-001",
+  "title": "Deep-space disabled Atlas cargo recovery",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex mission designer",
+  "status": "active",
+  "branch": "feat/deep-space-recovery",
+  "base": "f1ef821a1e24a0724c22b14e30efd6d5092ba0fd",
+  "updated": "2026-09-08",
+  "areas": [
+    "industry",
+    "combat",
+    "interface"
+  ],
+  "claims": [
+    "src/recovery/",
+    "tests/recovery-missions.test.js",
+    "scripts/recovery-missions.spec.js",
+    "scripts/recovery-missions.config.js",
+    "scripts/recovery-flight.js",
+    "scripts/recovery-qa-guard.js",
+    "docs/briefs/deep-space-recovery.md",
+    "docs/qa/deep-space-recovery/"
+  ],
+  "brief": "docs/briefs/deep-space-recovery.md"
+}
