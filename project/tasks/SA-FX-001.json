@@ -4,10 +4,10 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex integration steward with fleet effects and audio agents",
-  "status": "active",
+  "status": "integrated",
   "branch": "feat/fleet-engine-integration",
   "base": "20e9f1b50b3409cccda58a7db04d3d1d56797ec8",
-  "updated": "2026-09-07",
+  "updated": "2026-09-08",
   "areas": [
     "integration",
     "rendering",
