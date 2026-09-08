@@ -38,6 +38,7 @@ On touch screens, a two-finger tap on the view restores Everything.
 | Walking / EVA | RT | Fire equipped weapon or mining tool |
 | Walking / EVA | D-pad left | Cycle weapon 1, weapon 2 and tool |
 | Walking / EVA | D-pad up / down | Select next quick slot / use selected item |
+| Solo outdoor walking | Right-stick click / R3 | Crouch / stand, including directional crouch movement |
 
 | Walking / EVA | D-pad right | Equip or holster held tool |
 | Walking / EVA | RT | Fire equipped cutter, carbine or sidearm |

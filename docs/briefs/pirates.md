@@ -7,3 +7,11 @@ Five source meshes receive fitted skeletons, skin weights, in-place movement and
 Own deterministic simulation, camp ground sampling from canonical world functions, rendering relative to camera origin, local cover collision, target/equipment adapter and status/loot UI in src/pirates. Existing input router owns all polling and modal neutral arming. Keyboard and controller must physically land, disembark, fight, crouch, collect real loot, inspect inventory and return to the ship. Add focus/dialog/disconnect/replacement held-trigger tests.
 
 No runtime dependencies, no new online authority/protocol/save schema, no production deployment. Preview5664 and asset review5665; serialize any browser/GPU job through latest HANDOFF and actual process inventory. Independent acceptance and physical controller testing are separate from author/injected checks.
+
+Additional user steering: inspect the latest rigged Lizzy download's arms and
+prepare her as a tutorial-guide asset. Preserve the supplied walk/run, correct
+the arm posture and provide relaxed idle/greeting. This asset work does not
+claim a tutorial script or in-world placement. Source identity is inferred from
+the latest rigged Trailblazer ZIP and recorded with its exact members and hashes.
+
+The final isolated production preview and asset studio both use port5664.

@@ -47,7 +47,9 @@
     "vite.config.js",
     "scripts/pirates-qa.mjs",
     "tests/pirate-obstacles.test.js",
-    "docs/local-development.md"
+    "docs/local-development.md",
+    "docs/controller-contract.md",
+    "docs/pirate-encounters.md"
   ],
   "brief": "docs/briefs/pirates.md"
 }

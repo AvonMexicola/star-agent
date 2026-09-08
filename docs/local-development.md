@@ -1,5 +1,15 @@
 # All-features local development
 
+**Ground pirate camps**: the current isolated candidate adds three Red Wake
+pirates on Aeon and two Vacuum Jackals on Selene, with ranged combat, cover and
+finite salvage. Menu → Contracts → Ground pirate camps offers both approaches;
+land and leave the ship physically. **C / R3** crouches while walking outside,
+including forward/backward and both strafes. The phone camp status has a crouch
+button. [Player route](pirate-encounters.md) and
+[validation/asset record](qa/pirates/README.md) distinguish the checked paths,
+pending final integration and independent acceptance. Lizzy's prepared guide
+model can be viewed at `/dev/pirates.html?guide=1`; the tutorial itself is pending.
+
 **Personal transport missions** are locally integrated at `f294a98`. The paired
 5178/8087 preview was gracefully refreshed with protocol7 on2026-09-08, keeping
 its existing persistent PostgreSQL cluster; both health routes and served source
