@@ -4075,7 +4075,3 @@ No service restart, schema migration or public deployment. Final metadata only
 follows. Receipt docs/qa/projected-terminals/local-integration.json; short disk
 browser cache/evidence retained under ignored test-results. Feature is available
 for local testing; physical-device and independent art/FPS acceptance stay pending.
-
-
-
-SA-TOOL-001 AUTHOR CHECKPOINT 2026-09-08T18:53:13.864651+00:00: Compact builder runtime and authored GLB ff62545a ready for browser inspection. All 154 normal files and seven focused files pass; production build/repository pass. Existing material/save/placement authority and controller bindings retained; new held model, live status and success-only projection. Exact scope and failures in docs/qa/builder-tool/README.md. Preview 5670 / private API 8670 / short disk-backed TMPDIR, GPU still queued after prior ready lanes. No shared integration or public deployment yet. New user medical GLBs and rotating mining reference are a subsequent continuation; builder runtime freezes for QA.

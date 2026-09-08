@@ -64,3 +64,26 @@ The same native model is registered in the existing avatar studio for grip revie
 Raw receipts: ignored `assets/builder-tool/.staging/qa-01` through `qa-04`, including
 logs, source hashes, game states and videos. Curated native and real-game images
 here retain distinct labels. Independent art/hardware review and FPS remain pending.
+
+## Combined handheld follow-up
+
+The combined01 run on `b34b081` passed the complete controller construction
+journey again, including a grounded third-person capture. Keyboard and phone
+placement and equipment restoration also completed; the final diagnostic
+assertion rejected a music request cancelled by the test's deliberate page
+reload (`net::ERR_ABORTED`). There were no application errors or warnings.
+The recorder now labels only music cancellations observed during that explicit
+reload, preserving the original raw failure and all unexpected request checks.
+
+The first portrait adjustment exposed too much of the tool high in the frame.
+A second portrait-only position moves it farther from the camera and lower;
+desktop placement is unchanged. Its production build passes in 4.17 seconds
+(`assets/field-cutter/.staging/production02.log`). The focused phone follow-up
+and final image inspection remain pending. Combined01 raw evidence is retained
+under `assets/field-cutter/.staging/qa-combined01`.
+
+## Preserved pre-browser checkpoint
+
+The original author checkpoint is kept here; the live root coordination journal remains unchanged.
+
+SA-TOOL-001 AUTHOR CHECKPOINT 2026-09-08T18:53:13.864651+00:00: Compact builder runtime and authored GLB ff62545a ready for browser inspection. All 154 normal files and seven focused files pass; production build/repository pass. Existing material/save/placement authority and controller bindings retained; new held model, live status and success-only projection. Exact scope and failures in docs/qa/builder-tool/README.md. Preview 5670 / private API 8670 / short disk-backed TMPDIR, GPU still queued after prior ready lanes. No shared integration or public deployment yet. New user medical GLBs and rotating mining reference are a subsequent continuation; builder runtime freezes for QA.

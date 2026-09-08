@@ -20,7 +20,7 @@ async function choose(page,key){
 async function setup(page,url){
   await mkdir(out,{recursive:true});const errors=[],warnings=[],requests=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
-  page.on('requestfailed',r=>requests.push({url:r.url(),error:r.failure()}));
+  page.on('requestfailed',r=>requests.push({url:r.url(),error:r.failure(),expectedNavigationAbort:Boolean(page.builderReloading&&r.failure()?.errorText==='net::ERR_ABORTED'&&new URL(r.url()).pathname.startsWith('/audio/music/'))}));
   await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
   await page.addInitScript(()=>{
     window.testPad={id:'Builder standard Gamepad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
@@ -91,7 +91,7 @@ test('native builder model and controller construction with finite materials and
   await tap(page,2);await page.waitForFunction(item=>!window.starAgent.state.build.active&&window.starAgent.state.mining.tool.item===item,initialItem);
   expect(await page.evaluate(()=>window.starAgent.state.mining.tool.builder.visible)).toBe(false);
   await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),...diagnostics,graphics:await graphics(page),input:'Injected standard Gamepad from authored supplied sandbox, menu entry, real placement/materials, result inventory, focus/device gates and exit. No pose or action injection; physical device untested.'},null,2));
-  expect(diagnostics.errors).toEqual([]);expect(diagnostics.warnings).toEqual([]);expect(diagnostics.requests).toEqual([]);
+  expect(diagnostics.errors).toEqual([]);expect(diagnostics.warnings).toEqual([]);expect(diagnostics.requests.filter(r=>!r.expectedNavigationAbort)).toEqual([]);
 
   await page.goto('/tests/handheld-tools/fixture.html?item=builder-tool');await page.waitForFunction(()=>window.toolReady);
   await page.evaluate(()=>{const q=window.toolQA,b=new q.camera.position.constructor();q.model.updateMatrixWorld(true);b.set(-.06,.045,0);q.camera.position.copy(b).add(q.camera.position.clone().set(-.38,.32,1).normalize().multiplyScalar(.62));q.camera.lookAt(b);q.render();});
@@ -113,7 +113,7 @@ test('keyboard and native phone controls draw the builder and return to their pr
   await page.waitForFunction(n=>window.starAgent.state.build.pieceCount===n+1,before);await page.keyboard.press('Escape');
   await page.waitForFunction(()=>!window.starAgent.state.build.active);await capture(page,'09-keyboard-return');
   // Native CDP touch, in a fresh storage namespace context at phone resolution.
-  await page.evaluate(()=>localStorage.clear());await page.setViewportSize({width:390,height:844});await page.reload();await ready(page);
+  await page.evaluate(()=>localStorage.clear());await page.setViewportSize({width:390,height:844});page.builderReloading=true;await page.reload();await ready(page);page.builderReloading=false;
   const touch=await page.context().newCDPSession(page);
   async function touchButton(selector){
     const target=page.locator(selector);await target.scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/touch-presented.png`});
@@ -129,5 +129,5 @@ test('keyboard and native phone controls draw the builder and return to their pr
   const touches=await page.evaluate(()=>window.builderTouches);expect(touches.some(e=>e.trusted&&e.type==='touch'&&e.key==='build-hud-place')).toBe(true);
   await capture(page,'11-phone-return');await touch.detach();
   await writeFile(`${out}/keyboard-touch.json`,JSON.stringify({browser:browser.version(),...diagnostics,touches,graphics:await graphics(page)},null,2));
-  expect(diagnostics.errors).toEqual([]);expect(diagnostics.warnings).toEqual([]);expect(diagnostics.requests).toEqual([]);
+  expect(diagnostics.errors).toEqual([]);expect(diagnostics.warnings).toEqual([]);expect(diagnostics.requests.filter(r=>!r.expectedNavigationAbort)).toEqual([]);
 });
