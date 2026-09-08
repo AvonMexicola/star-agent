@@ -89,8 +89,12 @@ test('Burrow panels follow actual mining and driving through physical cabin acce
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'getGamepads', {value: () => []});
     window.burrowTouches = [];
-    for (const type of ['pointerdown', 'pointerup', 'pointercancel']) window.addEventListener(type, e => {
-      if (e.pointerType === 'touch') burrowTouches.push({type, trusted: e.isTrusted, pointer: e.pointerId});
+    for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'gotpointercapture', 'lostpointercapture', 'click']) window.addEventListener(type, e => {
+      if (e.pointerType === 'touch' || type === 'click') {
+        const b = e.target.closest?.('button');
+        burrowTouches.push({type, trusted: e.isTrusted, pointer: e.pointerId, primary: e.isPrimary,
+          time: performance.now(), x: e.clientX, y: e.clientY, target: b?.dataset.controllerKey ?? b?.dataset.roverHold ?? b?.dataset.roverAction ?? e.target.tagName});
+      }
     }, true);
   });
   const input = await inputs(page, phone);
@@ -169,6 +173,7 @@ test('Burrow panels follow actual mining and driving through physical cabin acce
       return g ? {renderer: g.getParameter(e ? e.UNMASKED_RENDERER_WEBGL : g.RENDERER), buffer: [g.drawingBufferWidth, g.drawingBufferHeight]} : null;
     }).catch(() => null);
     await writeFile(dir + '/journey.json', JSON.stringify({complete, failed, browser: browser.version(), viewport: page.viewportSize(), gpu,
+      nativeTouches: await page.evaluate(() => burrowTouches).catch(() => []),
       scope: 'Explicit developer surface start, followed by real keyboard or injected native touch. Controller carrier journey recorded separately; no hardware/FPS claim.',
       errors, warnings, requests, milestones, access, final: await state(page).catch(() => null)}, null, 2));
   }
