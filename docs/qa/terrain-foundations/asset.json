@@ -1,0 +1,14 @@
+{
+  "builder": "blender/build_foundation_strut.py",
+  "source": "Original scripted braces; inherited original base foundation deck",
+  "coordinates": "metres, Y up; deck top Y0; unit-Y braces and centred shoes transformed in runtime",
+  "bytes": 120720,
+  "sha256": "8e45fbcb52808ab1c8b0699d655ed06fdd049297167dacca776d9a76f5b3b517",
+  "triangles": 1272,
+  "nodes": [
+    "CliffBrace0",
+    "CliffBrace1",
+    "CliffFoot0",
+    "CliffFoot1"
+  ]
+}

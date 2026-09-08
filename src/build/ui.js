@@ -24,7 +24,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
   hud.innerHTML = '<span class="build-eyebrow">CONSTRUCTION MODE</span><strong class="build-selected"></strong><p class="build-placement" role="status"></p><p class="build-cost"></p><p class="build-ship-link"></p><p class="build-hints">A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap &nbsp; ↑ ↓ · Height<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump</p><div class="build-touch"></div>';
   const shortcut = button(sandbox?'Sandbox · Build / B':'Build · B', 'build-open', () => open()); shortcut.id = 'build-shortcut'; shortcut.hidden = true;
   document.body.append(dialog, hud, shortcut);
-  const wheels={pieces:undefined,shapes:['foundation-triangle','wall-quarter','window-quarter','foundation-quarter','floor-quarter','floor-triangle','wall','floor'],power:['solar-array','wind-turbine','battery','uranium-generator','helium-generator','ceiling-light','mainframe','terminal'],roofs:['roof-flat','roof-edge','roof-corner','roof-triangle','roof-quarter','ceiling-light','floor','floor-triangle'],facilities:['rack','terminal','hangar-door','foundation-ramp','foundation-pad-small','foundation-pad-medium','foundation-pad-large','mainframe']};
+  const wheels={pieces:undefined,shapes:['foundation-triangle','wall-quarter','window-quarter','foundation-quarter','floor-quarter','floor-triangle','foundation-strut','floor'],power:['solar-array','wind-turbine','battery','uranium-generator','helium-generator','ceiling-light','mainframe','terminal'],roofs:['roof-flat','roof-edge','roof-corner','roof-triangle','roof-quarter','ceiling-light','floor','floor-triangle'],facilities:['rack','terminal','hangar-door','foundation-ramp','foundation-pad-small','foundation-pad-medium','foundation-pad-large','mainframe']};
   let radial=null;
   dialog.controllerNavigation=ui=>radial?.navigate(ui);
   dialog.controllerAction=ui=>{const direction=Number(ui.pressed.has(5))-Number(ui.pressed.has(4));if(!direction)return null;const available=[...tabs.children].filter(b=>!b.hidden),i=available.findIndex(b=>b.dataset.controllerKey===`build-tab-${tab}`),target=available[(i+direction+available.length)%available.length];target.click();nav.gamepad.suspend();return target;};
@@ -53,7 +53,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
       radial=createBuildRadial({order:wheels[tab],selected:build.pieceId??build.state?.pieceId??'mainframe',onChoose:choose,formatCost:amounts});
       content.append(radial.element);
       if(build.beginRemoval)content.append(button('Remove tool · no material refund','build-remove-tool',()=>{const result=build.beginRemoval();if(!result.ok){report(result);return;}dialog.close();suspend();update();}));
-      const note=document.createElement('p');note.className='build-wheel-note';note.textContent=sandbox?'Sandbox supply bank · Refill from Sandbox supplies.':'Start with a mainframe. Supplies: backpack, mainframe buffer, or ship within 50 m.';content.append(note);
+      const note=document.createElement('p');note.className='build-wheel-note';note.textContent=sandbox?'Sandbox supply bank · Refill from Sandbox supplies.':'Start with foundations. Add a mainframe on the deck to secure doors. Supplies: backpack or nearby ship.';content.append(note);
       if(!sandbox&&onSandbox)content.append(button('Open supplied build sandbox','sandbox-enter',onSandbox));
     } else if (tab === 'recipes') {
       lastMaterials = JSON.stringify(store.container('pack')?.items);
@@ -81,7 +81,7 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
     } else {
       description.textContent = 'Local owner access. This mainframe records your claim and construction supplies.';
       const info = document.createElement('dl'); info.className = 'build-overview';
-      for (const [label,value] of [['Site',claim?.name || 'Mainframe'],['Body',nav.body?.name || String(claim?.body || nav.body?.id || '').replace(/^./,c=>c.toUpperCase())],['Authority','Local owner · Build and storage access'],['Boundary',`${claim?.radius || 64} m radius`],['Pieces',Array.isArray(claim?.pieces) ? claim.pieces.length : build.state?.pieceCount ?? 0]]) {
+      for (const [label,value] of [['Site',claim?.name || 'Mainframe'],['Body',nav.body?.name || String(claim?.body || nav.body?.id || '').replace(/^./,c=>c.toUpperCase())],['Access',claim?.pieces?.some(p=>p.type==='mainframe')?'Mainframe installed · Owner door controls':'Unsecured · Doors stay open'],['Boundary',`${claim?.radius || 64} m radius`],['Pieces',Array.isArray(claim?.pieces) ? claim.pieces.length : build.state?.pieceCount ?? 0]]) {
         const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = label; dd.textContent = String(value); info.append(dt,dd);
       }
       content.append(info);

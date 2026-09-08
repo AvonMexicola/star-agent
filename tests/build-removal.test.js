@@ -13,9 +13,10 @@ function fixture(){
  function aim(p){nav.position.copy(build.toWorld(new Vector3(p.position[0],p.position[1]+1.65,p.position[2]+4),claim));const target=build.toWorld(new Vector3(...p.position).add(new Vector3(0,.7,0)),claim);nav.orientation.setFromRotationMatrix(new Matrix4().lookAt(nav.position,target,normal));}
  return {build,store,disk,claim,nav,aim};
 }
-test('removal protects occupied storage, mainframe and structural support',()=>{
+test('removal permits an empty mainframe and protects occupied storage and structural support',()=>{
  const f=fixture(),data=f.store.state.build,storage=f.store.state.remote;
- assert.match(planRemoval(data,storage,f.claim.id,'build-piece-2').message,/other pieces/);
+ assert.equal(planRemoval(data,storage,f.claim.id,'build-piece-2').ok,true);
+ assert.match(planRemoval(data,{...storage,'build-core-1':{items:{concrete:1}}},f.claim.id,'build-piece-2').message,/Empty/);
  assert.match(planRemoval(data,storage,f.claim.id,'build-piece-4').message,/supports/);
  assert.match(planRemoval(data,{...storage,'build-crate-3':{items:{basalt:.1}}},f.claim.id,'build-piece-3').message,/Empty/);
  const removed=planRemoval(data,storage,f.claim.id,'build-piece-3');assert.ok(removed.ok);assert.equal(removed.build.nextId,6);assert.equal(removed.build.claims[0].pieces.length,3);
