@@ -62,7 +62,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     if(selectedId&&!lastTargets.some(t=>t.id===selectedId)){selectedId=null;nav.travelTarget=null;reset();}
     const modal=Boolean(document.querySelector('dialog[open]'));
     const enabled=nav.enabled&&nav.focused&&!document.hidden&&!modal&&!nav.travel&&nav.mode==='flight';
-    aimed=enabled?aimedNavigationTarget(nav.position,nav.orientation,lastTargets.filter(t=>t.category==='bodies'||filters[t.category]||t.id===selectedId),selectedId):null;
+    aimed=enabled?aimedNavigationTarget(nav.position,nav.orientation,lastTargets.filter(t=>t.category==='bodies'||filters[t.category]||t.id===selectedId),selectedId,{rotationTime:nav.rotationClock?nav.rotationTime:null}):null;
     const planned=aimed?route(aimed):null;reason=planned?.reason??'';
     lock.update(dt,aimed,enabled&&planned?.ok);
     document.body.classList.toggle('navigation-acquired',Boolean(aimed));

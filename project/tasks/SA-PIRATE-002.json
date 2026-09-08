@@ -4,10 +4,10 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex pirate compound (parent garage integration)",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/pirate-trade-compound",
   "base": "23ca6199d2b5f0ee5cbfa9f914612320e8d8e684",
-  "updated": "2026-09-08",
+  "updated": "2026-09-09",
   "areas": [
     "assets",
     "industry",

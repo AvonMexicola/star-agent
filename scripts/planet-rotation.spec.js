@@ -96,8 +96,9 @@ test('two real clients share the planetary clock and keep controller contact wit
         window.rotationPad={id:'Rotation shared controller',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
         navigator.getGamepads=()=>[window.rotationPad];
       },i*420_000);
-      await p.goto('/?debug');
+      await p.goto('/?intro=0&debug');
       await p.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:120_000});
+      if(!await p.locator('#multiplayer-account-dialog').isVisible())await p.locator('#multiplayer-access').click();
       await expect(p.locator('#multiplayer-account-dialog')).toBeVisible();
       await p.locator('[data-auth-view=register]').click();
       await p.locator('#mp-register-email').fill(`rotation-${i}-${Date.now()}@example.test`);
@@ -127,4 +128,35 @@ test('two real clients share the planetary clock and keep controller contact wit
     await page.screenshot({path:`${out}/shared-station.png`});expect(errors).toEqual([]);
     await receipt(page,browser,'shared-clock',errors,{scope:'Two real authenticated clients, second OS clock skewed seven minutes; controller station walk and rendered peer convergence. Account entry uses typed credentials.',initial,moved,later,observer:await state(observer)});
   }finally{await context.close();}
+});
+
+
+test('controller acquires the visible moon and drives across the rotating frame boundary',async({page,browser})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  await boot(page,'orbit');await page.evaluate(()=>window.rotationQA.offset=900);await frames(page,20);
+  for(let i=0;i<220;i++){
+    const e=await page.evaluate(()=>{
+      const n=window.starAgent.navigation,t=window.starAgent.state.navigationTargets.targets.find(t=>t.id==='selene');
+      const d=n.viewPoint(n.position.clone().fromArray(t.center)).sub(n.position).applyQuaternion(n.orientation.clone().invert());
+      return [Math.atan2(d.x,-d.z),Math.atan2(d.y,Math.hypot(d.x,d.z))];
+    });
+    if(e.every(v=>Math.abs(v)<.006)){await axes(page,[0,0,0,0]);break;}
+    await axes(page,[0,0,...[e[0],-e[1]].map(v=>Math.sign(v)*Math.min(.8,.19+Math.abs(v)*1.2))]);await frames(page,3);
+  }
+  await neutral(page);
+  await page.waitForFunction(()=>window.starAgent.state.navigationTargets.aimedId==='selene'&&window.starAgent.state.navigationTargets.ready);
+  const before=await state(page);expect(before.planetRotation.frame).toBe('aeon');
+  const marker=await page.evaluate(()=>{const n=window.starAgent.navigation,t=window.starAgent.state.navigationTargets.targets.find(t=>t.id==='station-aeon');return {label:document.querySelector('[data-id="station-aeon"] strong')?.textContent,distance:n.position.distanceTo(n.viewPoint(n.position.clone().fromArray(t.center)))};});
+  await page.screenshot({path:`${out}/controller-moon-lock.png`});
+  await down(page,4,1);await down(page,5,1);await frames(page);await tap(page,12);
+  await page.waitForFunction(()=>window.starAgent.state.travel?.active||window.starAgent.navigation.travel!==null);
+  const during=await state(page);expect(during.travel.targetId).toBe('selene');
+  await down(page,4,0);await down(page,5,0);
+  await page.waitForFunction(()=>window.starAgent.navigation.travel===null&&window.starAgent.state.body==='selene');
+  await neutral(page);const after=await state(page);
+  expect(after.planetRotation.frame).toBe('selene');expect(after.altitude).toBeGreaterThan(19000);expect(after.altitude).toBeLessThan(21000);
+  expect(distance(before.planetRotation.inertialPosition,after.planetRotation.inertialPosition)).toBeGreaterThan(1e6);
+  expect(after.navigationTargets.arrivalTarget).toBe('selene');expect(errors).toEqual([]);
+  await page.screenshot({path:`${out}/controller-moon-arrival.png`});
+  await receipt(page,browser,'controller-drive',errors,{scope:'Supported orbital start, only clock phase changed; actual sticks acquire the visible moon and controller shoulder chord engages continuous travel.',before,during,after,marker});
 });

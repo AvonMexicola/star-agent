@@ -6,7 +6,7 @@ import { PLANET_DAY_SECONDS, ROTATION_DOMAIN_RADII, ROTATING_BODIES, PlanetRotat
   planetRotation, rotationFrameAt, toInertial, fromInertial, frameRelative,
   velocityBetweenFrames, frameVelocity, betweenFrames, inertialSurfacePoint } from '../src/planet-rotation.js';
 import { reframeNavigation } from '../src/navigation-rotation.js';
-import { planNavigationTravel, surfaceTarget } from '../src/navigation-targets.js';
+import { planNavigationTravel, surfaceTarget, aimedNavigationTarget, NAV_BODIES } from '../src/navigation-targets.js';
 import { step as flightStep } from '../src/flight-model.js';
 import { PlanetRenderFrames } from '../src/planet-render-frames.js';
 const near=(a,b,tolerance=1e-5)=>assert.ok(a.distanceTo(b)<tolerance,`${a.toArray()} vs ${b.toArray()}`);
@@ -124,4 +124,13 @@ test('the camera and a hull retain their explicit chart when they straddle its b
   near(piece.getWorldPosition(new Vector3()),frameRelative(anchor,SELENE,origin,AEON,900),1e-5);
   frames.restore();near(root.position,new Vector3());assert.ok(root.quaternion.angleTo(new Quaternion())<1e-8);
   for(const mesh of [ship,piece]){mesh.geometry.dispose();mesh.material.dispose();}
+});
+
+
+test('a controller nose in a rotated local frame locks the actual foreign world bearing',()=>{
+  const seconds=900,position=new Vector3(AEON.radius+150_000,0,0);
+  const physical=toInertial(position,AEON,seconds),moon=new Vector3(...SELENE.center);
+  const inertialLook=new Quaternion().setFromUnitVectors(new Vector3(0,0,-1),moon.sub(physical).normalize());
+  const localLook=planetRotation(AEON,seconds).invert().multiply(inertialLook);
+  assert.equal(aimedNavigationTarget(position,localLook,NAV_BODIES,null,{rotationTime:seconds})?.id,'selene');
 });
