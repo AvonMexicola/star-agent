@@ -5,11 +5,19 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-The shared local preview at **http://127.0.0.1:5178/** now includes the direct-entry
-and model-cache update at tested runtime **`fc676f9`**. The default URL enters the
-Nomad hangar opening after one preload; scene selection is optional. Its 44 focused
+The shared local preview at **http://127.0.0.1:5178/** includes the checked
+medium-ship runtime **`3cf80ad`**, merged locally at **`b793921`** on 2026-09-08.
+**Stratum M-05** is an 18 m miner; **Gannet T-06** is a 24 m transport carrying
+Burrow. They join Nomad 02, Kestrel and Atlas in the launcher. Both new hulls are
+solo/development features. The final normal suite passes **1,113 tests**; final
+studio and scoped actual-game reviews pass. The
+[medium integration record](qa/medium-ships/integration.md) keeps exact input,
+source, visual and remaining performance limits separate.
+
+The preserved direct-entry/model-cache update (runtime `fc676f9`) opens the
+Nomad hangar after one preload; scene selection is optional. Its 44 focused
 checks and development build pass. See the [startup evidence](qa/direct-entry-2026-09-08.md)
-for exact validation and browser coverage.
+for that checkpoint's exact validation and browser coverage.
 
 The preceding fleet integration at **`c99736f`**, with runtime **`5f63893`**, added
 the playable 64 m Atlas, enlarged default
@@ -75,7 +83,8 @@ the Nomad hangar opens with the shoulder camera behind the character. No scene
 selection or second load is required. F2, the visible Dev button, or controller
 Menu opens optional scene choices during the opening; after taking control, use
 Menu → Dev. The launcher offers
-Nomad 02, Kestrel and the current **64 m Atlas**, with station hangar/approach,
+Nomad 02, Kestrel, the current **64 m Atlas**, **Stratum M-05** and
+**Gannet T-06 + Burrow**, with station hangar/approach,
 **Burrow mining — Selene surface**, Aeon coast/forest/highlands/polar/orbit,
 Selene surface/rings, Pyre twilight/surface, Miasma approach/surface and stellar
 observation starts. To change scenes, choose a ship and location, then Launch test
@@ -91,6 +100,17 @@ Its [CPU placement record](qa/mining-rover/surface-start.md) is complemented by
 the passing combined ground mining, driving and physical exit/reboard journey. The **Atlas + Burrow mining rover · Selene**
 link remains a carrier test, with Burrow on the new cargo deck and the actual
 aft loading ramp. G / Y operates that ramp while aboard; no belly lift is used.
+
+For the new medium ships, select **Stratum M-05** or **Gannet T-06 + Burrow**
+and **Selene · landing site**, then Launch test flight. Direct starts:
+[Stratum](http://127.0.0.1:5178/?dev=1&intro=0&ship=stratum&start=moon&seed=7291)
+and [Gannet with Burrow](http://127.0.0.1:5178/?dev=1&intro=0&ship=gannet&start=moon&seed=7291).
+Use B / controller Y to land, then F / X to leave the chair. Follow the reachable
+ramp/elevator prompts and secure access before launching. Stratum holds T / RT
+(or its visible cutter control) to mine within 40 m, with a 120-second battery,
+30-second recharge and separate 384 kg ore bin. In Gannet, walk aft to Burrow's
+side door, board it, lower the elevator and drive out. Its 128 SBU freight banks
+remain beside the rover lane. These development inventories reset on reload.
 
 Dev → Content review collects the expedition character studio, both Burrow
 starts, construction sandbox, current Atlas studio, station exterior overview,
@@ -111,8 +131,8 @@ A copied test URL includes its ship and start. This selector is gated by
 Vite generates content hashes for known gameplay `/models/` assets at startup and
 build time. Changing model bytes requires the frontend's Vite process to reload
 its configuration so its development manifest updates; API and PostgreSQL do not
-need a restart. The Vite configuration update in this integration triggers that
-frontend reload automatically.
+need a restart. The medium integration refreshed this frontend manifest and
+verified the served model hashes while leaving the API and database running.
 
 The supplied construction sandbox is an exception to temporary test inventory:
 it uses its own saved namespace and a refillable 4,608 kg materials bank. Reload
