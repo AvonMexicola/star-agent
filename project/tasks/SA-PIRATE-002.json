@@ -29,7 +29,8 @@
     "src/settlements/catalog.js",
     "src/combat/space-combat.js",
     "src/main.js",
-    "src/dev-launch-options.js"
+    "src/dev-launch-options.js",
+    "src/combat/ship-occupancy.js"
   ],
   "brief": "docs/briefs/pirate-compound.md",
   "validation": "Live tower burst/retreat PASS; keyboard/phone fixture correction and full controller journey pending",

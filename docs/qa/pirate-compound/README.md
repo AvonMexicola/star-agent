@@ -108,3 +108,40 @@ accepted, walls stop the walking capsule, the exchange door is traversable, and
 both ramp runs continuously support physical0.1m walking steps. Twelve focused
 tests PASS in0.726s (`test-results/physics-01.log`). Live03 must verify this correction.
 The preceding full155file suite passed62.803s on4b63505 before this correction.
+
+Browser03 on the corrected collision runtime5f95b44 physically landed on the pad,
+opened the real hatch, exited the ship, crossed the outer apron and descended its
+supported ramp. The long terrain segment failed: the test helper independently
+clamped camera-local X/Z, changing the desired vector direction. It drifted back
+towards the pad side. Normalizing the vector before transforming to camera space
+preserves the requested direction; no game movement or timeout was changed.
+
+Full normal suite07 passed all155 registered files in50.575s on5f95b44, with a
+disk-backed TMPDIR. Production build and contributor check passed. Browser04's
+tower case passed in1.4min with the corrected collision, reduced tripod lighting
+and grouped crates. Actual Nomad hull240 stayed intact, shield180→126; retreat
+prevented additional fire. All application errors/warnings were empty. The same
+overview camera shows corrected light pools. The warm five-second RAF sample
+reported29.3ms median/31.7ms p95,773 draw calls including shadows and2,160,279
+triangles at0.85 scale in1440×900 (render1224×765), Chromium151.0.7922.173,
+ANGLE AMD Radeon860M/radeonsi OpenGL ES3.2. The first overview snapshot had2145
+draws; only the latest has a comparable duration sample. Project frame/triangle
+budgets remain unmet; these are development measurements, not performance acceptance.
+
+Both author and parent inspected04's tower, yard, generator and locked exchange.
+Lighting glare was corrected, and crate/bench contact reads clearly. One perfectly
+black upright rectangle obscures the near tripod in the work-yard frame; it is
+absent from the source intake. Its actual scene source remains under diagnosis,
+so that frame is not accepted. Native phone04 successfully isolated the tower,
+opened the exchange and bought one SBU of ice with actual finite stock decrement.
+It then failed because a Cargo selector matched both the hidden inventory dialog
+and visible trade dialog. The selector is scoped to the trade dialog for05.
+
+Parent garage integration review found Burrow's occupied cabin uses walk mode
+with insideShip=true.6ba6611 adds a shared ship occupancy predicate explicitly
+excluding roverOccupied, used by targeting, external damage and destruction.
+The actual flag combination resets a burst and cannot damage the parked carrier;
+real landed/ship-cabin occupants retain targeting. Focused pirate, space-combat
+and momentum files passed in0.679s. The pending Sentry vehicle contract has not
+been consumed. Formal independent art review requires the reviewer's own captures;
+parent inspection of author frames is recorded as defect review only.
