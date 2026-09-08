@@ -19,18 +19,26 @@ export function createPirateSites(){return configs.map(config=>{
  const east=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),up).normalize();
  const back=new THREE.Vector3().crossVectors(east,up).normalize();
  // Search for a gentle, dry clearing; never flatten or substitute terrain.
- let selected=null,best=Infinity;
- for(let i=0;i<180;i++){
-  const d=up.clone().addScaledVector(east,(config.offset+(i%15)*60)/config.body.radius).addScaledVector(back,Math.floor(i/15)*60/config.body.radius).normalize();
+ let selected=null,best=Infinity,selectedRelief=Infinity;
+ const lunar=config.body===SELENE,columns=lunar?25:15;
+ for(let i=0;i<(lunar?600:180);i++){
+  const d=up.clone().addScaledVector(east,(config.offset+(i%columns)*60)/config.body.radius).addScaledVector(back,Math.floor(i/columns)*60/config.body.radius).normalize();
   if(config.body===AEON&&terrainHeight(...d.toArray())<12)continue;
   const center=bodySurfacePoint(d,config.body),heights=[];
-  for(const x of [-35,0,35])for(const z of [-45,0,45]){const p=center.clone().addScaledVector(east,x).addScaledVector(back,z);const ground=bodySurfacePoint(p.sub(new THREE.Vector3(...config.body.center)).normalize(),config.body);heights.push(ground.sub(center).dot(d));}
-  const relief=Math.max(...heights)-Math.min(...heights);if(relief<best){best=relief;selected=d;}if(relief<1.2)break;
+  const ground=(x,z)=>bodySurfacePoint(center.clone().addScaledVector(east,x).addScaledVector(back,z).sub(new THREE.Vector3(...config.body.center)).normalize(),config.body);
+  for(const x of [-35,0,35])for(const z of lunar?[-45,0,45,65,90]:[-45,0,45])heights.push(ground(x,z).sub(center).dot(d));
+  const relief=Math.max(...heights)-Math.min(...heights);let slope=0;
+  // The lunar camp can look flat while its approach lands on a small, steep
+  // formation. Sample the complete hull/ramp/walking apron, not just the yard.
+  if(lunar&&relief<=8)for(let x=-15;x<=15;x+=3)for(let z=50;z<=90;z+=3)slope=Math.max(slope,Math.acos(Math.min(1,bodySurfaceNormal(ground(x,z),config.body).dot(d)))*180/Math.PI);
+  const score=lunar?(relief>8?1000+relief:relief+slope*2):relief;
+  if(score<best){best=score;selected=d;selectedRelief=relief;}
+  if(lunar?relief<6&&slope<5:relief<1.2)break;
  }
  if(!selected)throw Error('No dry pirate site');
  const origin=bodySurfacePoint(selected,config.body),right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),selected).normalize(),rear=new THREE.Vector3().crossVectors(right,selected).normalize();
  const rotation=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right,selected,rear));
- const site={...config,bodyId:config.body.id,direction:selected.toArray(),origin:origin.toArray(),up:selected.toArray(),right:right.toArray(),back:rear.toArray(),rotation:rotation.toArray(),relief:best};
+ const site={...config,bodyId:config.body.id,direction:selected.toArray(),origin:origin.toArray(),up:selected.toArray(),right:right.toArray(),back:rear.toArray(),rotation:rotation.toArray(),relief:selectedRelief};
  site.ground=(x,z,clearance=0)=>{const p=origin.clone().addScaledVector(right,x).addScaledVector(rear,z).sub(new THREE.Vector3(...config.body.center)).normalize();return bodySurfacePoint(p,config.body,clearance);};
  site.local=p=>{const v=p.clone().sub(origin);return {x:v.dot(right),y:v.dot(selected),z:v.dot(rear)};};
  site.normal=(x,z)=>bodySurfaceNormal(site.ground(x,z),config.body);
