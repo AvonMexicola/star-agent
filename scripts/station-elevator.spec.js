@@ -38,6 +38,13 @@ async function walk(page,x,z,controller,ship=false){
       if(controller){const s=Math.min(.8,Math.max(.28,c.distance*.7));await page.evaluate(a=>elevatorPad.axes=a,[c.dx/c.distance*s,c.dz/c.distance*s,0,0]);}
       else{
         const key=Math.abs(c.dx)>Math.abs(c.dz)?c.dx>0?'KeyD':'KeyA':c.dz>0?'KeyS':'KeyW';
+        // Walking retains momentum after release. Settle, then take short real
+        // input steps near controls instead of overshooting into their housing.
+        if(c.distance<.85){
+          if(held){await keyUp(held);held=null;}
+          else{await keyDown(key);await page.waitForTimeout(35);await keyUp(key);}
+          await page.waitForTimeout(200);continue;
+        }
         if(key!==held){if(held)await keyUp(held);await keyDown(key);held=key;}
       }
       await page.waitForTimeout(55);
@@ -46,7 +53,7 @@ async function walk(page,x,z,controller,ship=false){
   }finally{
     if(controller)await page.evaluate(()=>elevatorPad.axes=[0,0,0,0]);
     else if(held)await keyUp(held);
-    await frames(page);
+    await page.waitForTimeout(180);await frames(page);
   }
 }
 async function choose(page,controller,key){
@@ -100,7 +107,7 @@ async function journey({page,browser},mode){
   const z=(await state(page)).station.local[2];
   await walk(page,8,z,controller);await walk(page,8,19,controller);await walk(page,2.65,19,controller);
   if(mode!=='touch')await lookAt(page,2.65,22.3,controller);
-  await walk(page,2.65,21.55,controller);
+  await walk(page,2.65,21,controller);
   expect((await state(page)).interaction).toMatch(/CALL ELEVATOR/);
   await interact();await page.waitForFunction(()=>starAgent.state.station.elevator===1);
   await page.screenshot({path:`${out}/${mode}-panel-open.png`});
@@ -130,7 +137,7 @@ async function journey({page,browser},mode){
     await page.waitForFunction(()=>starAgent.state.controller.armed);
   }
   await interact();await page.waitForFunction(()=>starAgent.state.station.elevator===0);
-  await walk(page,2.65,13.55,controller);await interact();await page.waitForFunction(()=>starAgent.state.station.elevator===1);
+  await walk(page,2.65,13,controller);await interact();await page.waitForFunction(()=>starAgent.state.station.elevator===1);
   await walk(page,2.65,12.3,controller);await walk(page,0,12.3,controller);
   // Call while almost touching the CLOSED leaves: only closing is interlocked.
   await interact();await page.waitForFunction(()=>starAgent.state.station.elevator===0);
