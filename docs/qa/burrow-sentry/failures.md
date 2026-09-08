@@ -45,3 +45,21 @@ Browser01's backpack also revealed that `insideShip` on a sealed rover bypassed
 the parked ship's normal cargo distance. The cargo helper now reuses checked
 `occupiesShip`; rover occupants use the actual 50 m distance branch. Focused10
 covers nearby Nomad/Atlas access and distant/missing carrier refusal.
+
+Browser04 (`2026-09-08T22-16-52.220Z`, 4.8 min) completed both real station/EVA
+approaches, boarding, concurrent pilot drive/gunner fire and neutral pilot fallback.
+Pilot access measured 0.0567 m across 246 samples; gunner 0.1417 m across 171,
+both passing the unchanged 0.6 m condition. The original03 timing remains unknown;
+no threshold was relaxed. The inspected crew images show both laser beams at the
+actual barrel ends and an unobstructed gunner sight.
+
+Its final server-inventory check exposed a real disconnect: the pilot's error was
+`Too many messages.`, and the local backpack appeared only after that disconnect.
+Sentry called immediate neutral transmission from both blocked simulation and
+render frames. The owned suspension adapter now stops on the transition once;
+the ordinary multiplayer 20 Hz clock still sends neutral heartbeats. The server
+rate limits and server-inventory assertion are unchanged. `input-rate03-host.log`
+passes all **33** Sentry/multiplayer input cases in **0.771 s**, including five
+seconds of 240 Hz blocked updates with Sentry occupied and inactive. Every
+synthetic neutral keeps `vehicleReady` false. Final browser connection checks
+now span inventory open, held dialog, close and physical pilot exit.

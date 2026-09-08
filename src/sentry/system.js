@@ -9,6 +9,7 @@ import {createWeaponTarget} from '../effects/weapon-target.js';
 import {roverSurfaceStart} from '../rover-surface-start.js';
 import {clipTerrainCamera} from '../ship-camera.js';
 import {isHandsFree,HANDS_FREE_REASON} from '../station-hub-policy.js';
+import {createSentryInputSuspension} from './input-suspension.js';
 
 const UP=new THREE.Vector3(0,1,0),FWD=new THREE.Vector3(0,0,-1),v=p=>new THREE.Vector3(...p),clamp=THREE.MathUtils.clamp;
 /** Input adapter and presentation. Online simulation lives exclusively in the
@@ -32,7 +33,8 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
     }
     return null;
   }
-  function suspend(){input=neutralSentryInput();mouseYaw=mousePitch=0;keyFire=pointerFire=false;touch.clear();local?.suspend();multiplayer.suspendInput();}
+  const suspension=createSentryInputSuspension(()=>{input=neutralSentryInput();mouseYaw=mousePitch=0;keyFire=pointerFire=false;touch.clear();local?.suspend();multiplayer.suspendInput();});
+  const suspend=()=>suspension.suspend();
   function reset(){suspend();nav.keys.clear();nav.gamepad.suspend();}
   async function request(command,fields={}){
     if(pending)return;pending=true;error=null;reset();
@@ -102,7 +104,7 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
       if(wasOnline&&!multiplayer.connected){local=null;nav.sentrySeat=null;nav.sentryFeet=null;nav.sentryBodyOrientation=null;nav.roverOccupied=false;nav.insideShip=false;suspend();}
       wasOnline=multiplayer.connected;
       if(!multiplayer.connected&&local&&!api.occupied)local.tick(dt);
-      if(!usable())suspend();renderer.update(dt,origin,snapshots());ui.update();
+      if(!usable()||pending)suspend();else suspension.resume();renderer.update(dt,origin,snapshots());ui.update();
     },
     camera(camera){
       const c=current(),role=c&&seatOf(c);if(!role)return;

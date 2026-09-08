@@ -9,9 +9,29 @@ import {readGLBGeometry} from './helpers/gltf-geometry.js';
 import {stat,readFile} from 'node:fs/promises';
 import {faunaWeaponDamage} from '../src/fauna/weapon-rules.js';
 import {createSentryEnvironment} from '../src/sentry/environment.js';
-import {applyAuthoritativePeer} from '../src/multiplayer/client.js';
+import {applyAuthoritativePeer,MultiplayerClient} from '../src/multiplayer/client.js';
+import {createSentryInputSuspension} from '../src/sentry/input-suspension.js';
 
 const v=p=>new THREE.Vector3(...p),up=v([0,1,0]);
+for(const occupied of [false,true])test(`a held modal with Sentry ${occupied?'occupied':'inactive'} keeps the actual client at its normal input rate`,()=>{
+  const sent=[],client=new MultiplayerClient({url:'ws://test/ws'});
+  client.state.connected=true;client.socket={readyState:1,send:value=>sent.push(JSON.parse(value))};
+  client.nav={enabled:false,focused:true,mode:'walk',roverOccupied:occupied,insideShip:occupied,keys:new Set(['KeyW'])};
+  client.keyFire=client.pointerFire=true;
+  let stopped=0;
+  const gate=createSentryInputSuspension(()=>{stopped++;client.suspendInput();});
+  gate.suspend();assert.equal(sent.length,1);assert.equal(sent[0].input.fire,false);assert.equal(sent[0].input.forward,0);
+  // A 240 Hz client calls both vehicle step and render update while a dialog is
+  // held. The real MultiplayerClient still runs its normal 20 Hz send clock.
+  for(let frame=0;frame<240*5;frame++){gate.suspend();gate.suspend();client.update(1/240);}
+  assert.equal(stopped,1);assert.ok(sent.length>=99&&sent.length<=102,`unexpected five-second message count ${sent.length}`);
+  assert.ok(sent.every(m=>m.type==='input'&&!m.input.fire&&m.input.forward===0&&!m.input.vehicleReady),'synthetic neutral cannot arm a Sentry authority epoch');
+  gate.resume();client.nav.enabled=true;client.keyFire=true;client.update(.05);
+  assert.equal(sent.at(-1).input.fire,true,'resumed ordinary input clock remains live');
+  const count=sent.length;gate.suspend();gate.suspend();
+  assert.equal(stopped,2);assert.equal(sent.length,count+1,'a new focus or modal boundary stops immediately once');
+  assert.equal(sent.at(-1).input.fire,false);assert.equal(client.keyFire,false);
+});
 function fixture(){
   const players=new Map(),inputs=new Map(),shots=[];let carriers=[];
   const support=p=>({point:p.clone().setY(0),normal:up.clone(),source:'terrain'});
