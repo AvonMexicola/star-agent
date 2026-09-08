@@ -47,7 +47,8 @@ under 0.1m and the parked hull under 0.00001m. Application errors are empty.
 ![Controller walking in daylight](surface-day.png)
 ![The same surface after half a day](surface-night.png)
 
-Shared-clock and corrected targeted-drive verification remain pending.
+Browser06 repeats the full ground controller journey on runtime `a4d07d4` successfully
+(1.4 minutes). Shared-clock and corrected targeted-drive verification remain pending.
 
 ## Failure ledger
 
@@ -60,6 +61,7 @@ Shared-clock and corrected targeted-drive verification remain pending.
 | Browser01 | Four-world orbital renderer check passed; no controller claim. |
 | Browser02 | Landing, hatch, ground/day-night and inventory reached; final seat wait stopped outside actual chair reach. Interrupted after trace diagnosis; fixture now waits for the actual seat interaction. Day/night contact checks and PNGs passed. |
 | Room clock07 | New fixture asserted before the actual 15 Hz publication tick; corrected to advance both 30 Hz room ticks. All six authoritative rotation cases then passed. |
+| Browser06 | Final runtime ground controller journey passes. First online client authenticates and joins successfully with no app errors; joining already closes the account dialog. Removed the fixture's second close click and assert the normal auto-close instead. Drive case did not run. Unique trace, stages and screenshots retained. |
 | Browser05 | Two-client setup selected the floating sign-in control hidden on the entry screen; the visible header ACCOUNT control is the correct route. No account was created and drive case did not run. Corrected only fixture, added stage receipts; original trace retained. |
 | Browser04 | Orbital and complete controller cases pass. Two-client fixture fails before auth because it assumed the account dialog opened automatically; corrected to use the normal sign-in button. Original trace and screenshots retained. |
 | Browser03 | Cancelled during build to honor another queued GPU job; no browser acceptance. Playwright reused the output directory, so the earlier02 trace may have been erased. Surviving logs/PNGs are the retained evidence, not an asserted archived trace. Subsequent attempts use unique directories. |

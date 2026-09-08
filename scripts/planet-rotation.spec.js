@@ -108,7 +108,7 @@ test('two real clients share the planetary clock and keep controller contact wit
       await expect(p.locator('[data-account-callsign]')).toHaveText(`Rotation_${i}`);
       await p.locator('[data-join]').click();
       await p.waitForFunction(()=>window.starAgent.state.multiplayer.connected);stages.push({client:i,stage:'joined',at:Date.now()});
-      await p.locator('#multiplayer-account-dialog [data-mp-close]').click();await neutral(p);stages.push({client:i,stage:'controller-ready',at:Date.now()});
+      await expect(p.locator('#multiplayer-account-dialog')).toBeHidden();await neutral(p);stages.push({client:i,stage:'controller-ready',at:Date.now()});
     }
     await page.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
     await observer.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
