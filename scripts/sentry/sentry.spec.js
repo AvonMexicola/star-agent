@@ -13,7 +13,7 @@ async function pad(page){
 const axes=(page,value)=>page.evaluate(value=>sentryPad.axes=value,value);
 async function button(page,index,pressed){await page.evaluate(({index,pressed})=>sentryPad.buttons[index]={pressed,value:+pressed},{index,pressed});await frames(page);}
 async function tap(page,index){await button(page,index,true);await button(page,index,false);}
-async function neutral(page){await axes(page,[0,0,0,0]);await page.evaluate(()=>{for(let i=0;i<17;i++)sentryPad.buttons[i]={pressed:false,value:0};});await wait(page,()=>starAgent.state.controller.armed);await frames(page);}
+async function neutral(page){await axes(page,[0,0,0,0]);await page.evaluate(()=>{for(let i=0;i<17;i++)sentryPad.buttons[i]={pressed:false,value:0};});await wait(page,()=>document.querySelector('dialog[open]')?starAgent.navigation.gamepad.uiArmed:starAgent.state.controller.armed);await frames(page);}
 async function choose(page,key){
   for(let i=0;i<100;i++){
     if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key)){await tap(page,0);return;}
@@ -93,7 +93,8 @@ test('controller physically boards both Sentry seats, drives/reverses, fires, in
     await axes(page,[0,0,.45,-.2]);await page.waitForTimeout(650);await neutral(page);await button(page,7,true);
     await wait(page,()=>starAgent.state.sentry.current.shots>0);await page.screenshot({path:output+'/02-sentry-firing.png'});
     const shots=(await state(page)).sentry.current.shots;await tap(page,8);await expect(page.locator('dialog[open]')).toBeVisible();await page.screenshot({path:output+'/03-sentry-backpack.png'});
-    await tap(page,1);await page.waitForTimeout(650);expect((await state(page)).sentry.current.shots).toBe(shots);
+    await tap(page,1);await expect(page.locator('dialog[open]')).toBeVisible();expect((await state(page)).sentry.current.shots).toBe(shots);
+    await neutral(page);await button(page,7,true);await tap(page,1);await expect(page.locator('dialog[open]')).toHaveCount(0);await page.waitForTimeout(650);expect((await state(page)).sentry.current.shots).toBe(shots);
     await button(page,7,false);await neutral(page);await button(page,7,true);await wait(page,shots=>starAgent.state.sentry.current.shots>shots,shots);
     await page.evaluate(()=>{sentryPad.connected=false;});await page.waitForTimeout(400);const stopped=(await state(page)).sentry.current.shots;
     await page.evaluate(()=>{sentryPad.connected=true;});await page.waitForTimeout(650);expect((await state(page)).sentry.current.shots).toBe(stopped);

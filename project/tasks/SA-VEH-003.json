@@ -8,7 +8,27 @@
   "branch": "feat/burrow-sentry",
   "base": "23ca6199d2b5f0ee5cbfa9f914612320e8d8e684",
   "updated": "2026-09-08",
-  "areas": ["assets", "flight", "combat", "multiplayer", "interface"],
-  "claims": ["src/sentry/", "server/sentry.js", "assets/burrow-sentry/", "public/models/burrow-sentry.glb", "blender/build_burrow_sentry.py", "tests/sentry.test.js", "tests/server-sentry.test.js", "scripts/sentry/", "docs/briefs/burrow-sentry.md", "docs/qa/burrow-sentry/", "docs/decisions/sentry-authority.md"],
+  "areas": [
+    "assets",
+    "flight",
+    "combat",
+    "multiplayer",
+    "interface"
+  ],
+  "claims": [
+    "src/sentry/",
+    "server/sentry.js",
+    "assets/burrow-sentry/",
+    "public/models/burrow-sentry.glb",
+    "blender/build_burrow_sentry.py",
+    "tests/sentry.test.js",
+    "tests/server-sentry.test.js",
+    "scripts/sentry/",
+    "docs/briefs/burrow-sentry.md",
+    "docs/qa/burrow-sentry/",
+    "docs/decisions/sentry-authority.md",
+    "tests/sentry-carrier.test.js",
+    "docs/burrow-sentry.md"
+  ],
   "brief": "docs/briefs/burrow-sentry.md"
 }
