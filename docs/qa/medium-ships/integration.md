@@ -245,3 +245,11 @@ mechanism checks in 31.2 seconds. The inspection canvas and actual display
 projection now pass on desktop and portrait at the unchanged pilot eye. Root
 geometry and lamp probes pass; independent visual scoring remains pending.
 These results do not close the still-unrun full Gannet carry/landing journey.
+
+[Gannet controller03 completes the physical journey](gannet-controller-03.md)
+on `f08fbc1` / build08 `main-CweJUU7V.js` with Art11 and clear Burrow. It passes
+in3.6 minutes, including0.603329820kg visible basalt transfer, all five
+interruption gates, reverse loading, cabin return and loaded flight/gear/landing.
+Source identity is stable and all page diagnostics are empty. Both medium
+ships now have a complete controller route; keyboard/native-touch and final
+independent art acceptance remain pending.
