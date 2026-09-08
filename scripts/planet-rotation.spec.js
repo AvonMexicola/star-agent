@@ -84,54 +84,6 @@ test('controller lands, walks through the rotating day, boards and launches',asy
 });
 
 
-test('two real clients share the planetary clock and keep controller contact with the rotating station',async({page,browser})=>{
-  const context=await browser.newContext({baseURL:'http://127.0.0.1:5682',viewport:{width:1440,height:900}});
-  const observer=await context.newPage(),errors=[],stages=[];
-  try{
-    for(const [i,p] of [page,observer].entries()){
-      p.setDefaultTimeout(30_000);
-      p.on('pageerror',e=>errors.push(String(e)));p.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-      await p.addInitScript(skew=>{
-        const actual=Date.now;Date.now=()=>actual()+skew;
-        window.rotationPad={id:'Rotation shared controller',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
-        navigator.getGamepads=()=>[window.rotationPad];
-      },i*420_000);
-      await p.goto('/?intro=0&seed=7291&debug');
-      await p.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:120_000});stages.push({client:i,stage:'ready',at:Date.now()});
-      if(!await p.locator('#multiplayer-account-dialog').isVisible())await p.getByRole('button',{name:'ACCOUNT',exact:true}).click();
-      await expect(p.locator('#multiplayer-account-dialog')).toBeVisible();
-      await p.locator('[data-auth-view=register]').click();
-      await p.locator('#mp-register-email').fill(`rotation-${i}-${Date.now()}@example.test`);
-      await p.locator('#mp-register-callsign').fill(`Rotation_${i}`);
-      await p.locator('#mp-register-password').fill('rotation-test-only-2026');
-      await p.locator('[data-auth-form=register] button[type=submit]').click();
-      await expect(p.locator('[data-account-callsign]')).toHaveText(`Rotation_${i}`);
-      await p.locator('[data-join]').click();
-      await p.waitForFunction(()=>window.starAgent.state.multiplayer.connected);stages.push({client:i,stage:'joined',at:Date.now()});
-      await expect(p.locator('#multiplayer-account-dialog')).toBeHidden();await neutral(p);
-      await tap(p,1);await expect(p.locator('dialog[open]')).toHaveCount(0);await neutral(p);stages.push({client:i,stage:'controller-ready',at:Date.now()});
-    }
-    await page.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
-    await observer.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
-    const a=await state(page),b=await state(observer);
-    expect(a.planetRotation.frame).toBe('aeon');expect(b.planetRotation.frame).toBe('aeon');
-    expect(Math.abs(a.planetRotation.seconds-b.planetRotation.seconds)).toBeLessThan(.5);
-    const initial=await state(page);await axes(page,[.45,0,0,0]);
-    await page.waitForFunction(start=>Math.hypot(...window.starAgent.state.position.map((v,i)=>v-start[i]))>2,initial.position);
-    await neutral(page);await frames(page,20);
-    const moved=await state(page);expect(moved.mode).toBe('walk');
-    expect(Math.abs(moved.station.deckClearance-initial.station.deckClearance)).toBeLessThan(.03);
-    const own=moved.multiplayer.ownId;
-    await observer.waitForFunction(({own,position})=>{const p=window.starAgent.state.multiplayer.remote.find(p=>p.id===own);return p&&Math.hypot(...p.position.map((v,i)=>v-position[i]))<.15;},{own,position:moved.position});
-    const stable=(await state(page)).position;await frames(page,90);const later=await state(page);
-    expect(distance(stable,later.position)).toBeLessThan(.03);
-    expect(distance(moved.planetRotation.inertialPosition,later.planetRotation.inertialPosition)).toBeGreaterThan(10);
-    await page.screenshot({path:`${out}/shared-station.png`});expect(errors).toEqual([]);
-    await receipt(page,browser,'shared-clock',errors,{scope:'Two real authenticated clients, second OS clock skewed seven minutes; controller station walk and rendered peer convergence. Account entry uses typed credentials.',initial,moved,later,observer:await state(observer)});
-  }finally{await writeFile(`${out}/shared-stages.json`,JSON.stringify({stages,errors,first:await state(page).catch(()=>null),second:await state(observer).catch(()=>null)},null,2));await context.close();}
-});
-
-
 test('controller acquires the visible moon and drives across the rotating frame boundary',async({page,browser})=>{
   const errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await boot(page,'orbit');await page.evaluate(()=>window.rotationQA.offset=900);await frames(page,20);
@@ -160,4 +112,52 @@ test('controller acquires the visible moon and drives across the rotating frame 
   expect(after.navigationTargets.arrivalTarget).toBe('selene');expect(errors).toEqual([]);
   await page.screenshot({path:`${out}/controller-moon-arrival.png`});
   await receipt(page,browser,'controller-drive',errors,{scope:'Supported orbital start, only clock phase changed; actual sticks acquire the visible moon and controller shoulder chord engages continuous travel.',before,during,after,marker});
+});
+
+
+test('two real clients share the planetary clock and keep controller contact with the rotating station',async({page,browser})=>{
+  const context=await browser.newContext({baseURL:'http://127.0.0.1:5682',viewport:{width:1440,height:900}});
+  const observer=await context.newPage(),errors=[],stages=[];
+  try{
+    for(const [i,p] of [page,observer].entries()){
+      p.setDefaultTimeout(30_000);
+      p.on('pageerror',e=>errors.push(String(e)));p.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+      await p.addInitScript(skew=>{
+        const actual=Date.now;Date.now=()=>actual()+skew;
+        window.rotationPad={id:'Rotation shared controller',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
+        navigator.getGamepads=()=>[window.rotationPad];
+      },i*420_000);
+      await p.goto('/?intro=0&seed=7291&debug');
+      await p.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:120_000});stages.push({client:i,stage:'ready',at:Date.now()});
+      if(!await p.locator('#multiplayer-account-dialog').isVisible())await p.getByRole('button',{name:'ACCOUNT',exact:true}).click();
+      await expect(p.locator('#multiplayer-account-dialog')).toBeVisible();
+      await p.locator('[data-auth-view=register]').click();
+      await p.locator('#mp-register-email').fill(`rotation-${i}-${Date.now()}@example.test`);
+      await p.locator('#mp-register-callsign').fill(`Rotation_${i}`);
+      await p.locator('#mp-register-password').fill('rotation-test-only-2026');
+      await p.locator('[data-auth-form=register] button[type=submit]').click();
+      await expect(p.locator('[data-account-callsign]')).toHaveText(`Rotation_${i}`);
+      await p.locator('[data-join]').click();
+      await p.waitForFunction(()=>window.starAgent.state.multiplayer.connected);stages.push({client:i,stage:'joined',at:Date.now()});
+      await expect(p.locator('#multiplayer-account-dialog')).toBeVisible();await neutral(p);
+      await tap(p,1);await expect(p.locator('dialog[open]')).toHaveCount(0);await neutral(p);stages.push({client:i,stage:'controller-ready',at:Date.now()});
+    }
+    await page.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
+    await observer.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
+    const a=await state(page),b=await state(observer);
+    expect(a.planetRotation.frame).toBe('aeon');expect(b.planetRotation.frame).toBe('aeon');
+    expect(Math.abs(a.planetRotation.seconds-b.planetRotation.seconds)).toBeLessThan(.5);
+    const initial=await state(page);await axes(page,[.45,0,0,0]);
+    await page.waitForFunction(start=>Math.hypot(...window.starAgent.state.position.map((v,i)=>v-start[i]))>2,initial.position);
+    await neutral(page);await frames(page,20);
+    const moved=await state(page);expect(moved.mode).toBe('walk');
+    expect(Math.abs(moved.station.deckClearance-initial.station.deckClearance)).toBeLessThan(.03);
+    const own=moved.multiplayer.ownId;
+    await observer.waitForFunction(({own,position})=>{const p=window.starAgent.state.multiplayer.remote.find(p=>p.id===own);return p&&Math.hypot(...p.position.map((v,i)=>v-position[i]))<.15;},{own,position:moved.position});
+    const stable=(await state(page)).position;await frames(page,90);const later=await state(page);
+    expect(distance(stable,later.position)).toBeLessThan(.03);
+    expect(distance(moved.planetRotation.inertialPosition,later.planetRotation.inertialPosition)).toBeGreaterThan(10);
+    await page.screenshot({path:`${out}/shared-station.png`});expect(errors).toEqual([]);
+    await receipt(page,browser,'shared-clock',errors,{scope:'Two real authenticated clients, second OS clock skewed seven minutes; controller station walk and rendered peer convergence. Account entry uses typed credentials.',initial,moved,later,observer:await state(observer)});
+  }finally{await writeFile(`${out}/shared-stages.json`,JSON.stringify({stages,errors,first:await state(page).catch(()=>null),second:await state(observer).catch(()=>null)},null,2));await context.close();}
 });
