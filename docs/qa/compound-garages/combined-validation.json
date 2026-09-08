@@ -1,5 +1,5 @@
 {
-  "status": "Combined unit/build/browser pass; delegated full journey and shared integration pending",
+  "status": "Combined unit/build/browser and delegated full journey pass; shared integration receipt follows",
   "runtime": "73a7be883846394ad42ee563360302190c192833",
   "pirateCandidate": "2c2f2fb49fcfbfc65bcfbc4bf012d78d66491375",
   "sharedDependency": "f1ef821",
@@ -264,5 +264,18 @@
     "browser": "PASS 7m46s",
     "verify": "PASS 3s"
   },
-  "build": "PASS in combined browser guard"
+  "build": "PASS in combined browser guard",
+  "pirateFinalOffer": "628d663c8e009bc9306d81b09fda4a1422223000",
+  "delegatedBrowser": {
+    "head": "201588cf87388f06b6402a126e8ba065608c0e5d",
+    "runtime": "2c2f2fb49fcfbfc65bcfbc4bf012d78d66491375",
+    "result": "PASS all 3 cases, 5.7 minutes",
+    "controller": "Complete physical injected Gamepad journey, 3.6 minutes",
+    "nativePhone": "Keyboard and native 390x844 touch commerce and return, 47.7 seconds; controlled nearby poses",
+    "hdr": "Same scene: repaired 0 nonfinite RGB samples; restoring only original six zero lamp normals gives 102",
+    "errors": [],
+    "warnings": [],
+    "physicalDeviceTested": false,
+    "evidence": "../pirate-compound/README.md"
+  }
 }
