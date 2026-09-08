@@ -39,7 +39,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     <div class="patrol-difficulties" role="group" aria-label="Encounter difficulty">${Object.values(DIFFICULTIES).map(d=>`<button type="button" data-controller-key="patrol-${d.id}" data-difficulty="${d.id}" aria-pressed="false">${d.label}</button>`).join('')}</div>
     <h2 id="patrol-title"></h2><p class="patrol-brief"></p>
     <dl><dt>CONTACTS</dt><dd class="patrol-roster"></dd><dt>OBJECTIVE</dt><dd class="patrol-goal"></dd><dt>THREAT</dt><dd class="patrol-threat"></dd><dt>SHIP SYSTEMS</dt><dd>Shields recharge after 6 seconds without a hit. Hull repairs at the dock.</dd></dl>
-    <p class="patrol-status" role="status"></p><div class="patrol-actions"><button data-controller-key="patrol-accept" data-controller-focus>Accept patrol</button><button data-controller-key="patrol-debrief">File combat report</button><button data-controller-key="patrol-abort">Abandon patrol</button><button data-controller-key="patrol-recover">Recover in orbit</button></div>
+    <button data-controller-key="transport-contracts">Transport contracts · sealed freight</button><p class="patrol-status" role="status"></p><div class="patrol-actions"><button data-controller-key="patrol-accept" data-controller-focus>Accept patrol</button><button data-controller-key="patrol-debrief">File combat report</button><button data-controller-key="patrol-abort">Abandon patrol</button><button data-controller-key="patrol-recover">Recover in orbit</button></div>
     <p class="patrol-log"></p><ol class="patrol-reports" aria-label="Recent combat reports"></ol>
     <small>Local dispatch: visit Aeon, Selene, Pyre, Miasma or the asteroid belt for different sorties. Fly to the amber beacon; surface dispatch requires climbing into orbit. T / RT fires · Tab / Menu → Ship selects targets. Reports reset on reload; no credit or cargo reward.</small>`;
   document.body.append(dialog);
@@ -89,6 +89,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     if(!locked())selectedRegion=encounterRegion(nav.position);
     nav.keys.clear();nav.gamepad.suspend();nav.enabled=false;if(document.pointerLockElement)document.exitPointerLock();renderDialog();dialog.showModal();
   }
+  dialog.querySelector('[data-controller-key="transport-contracts"]').onclick=()=>{dialog.addEventListener('close',()=>nav.openTransport?.(),{once:true});dialog.close();};
   dialog.querySelector('.station-close').onclick=()=>dialog.close();
   dialog.addEventListener('close',()=>{nav.keys.clear();nav.gamepad.suspend();nav.enabled=true;nav.canvas.focus();});
   async function prepare(){

@@ -1,3 +1,5 @@
+import {validTransports,transportCommand} from '../transport/model.js';
+import {transportCargo,cargoVisibleTo} from '../transport/catalog.js';
 import { SETTLEMENTS } from '../settlements/catalog.js';
 import { validBaseTerminal } from './base-site.js';
 import { setBaseOffer,consumeBaseOffer,offered } from './base-stock.js';
@@ -39,6 +41,7 @@ export function validCommerce(s){
       for(const r of TRADE_RESOURCES)check(int(t.stock[r.id]??0,100000)&&int(t.prices[r.id]??r.buy,10000)&&((t.prices[r.id]??r.buy)>0),'stock');
     }
     check(Object.keys(s.rocks??{}).length<=128&&Object.values(s.rocks??{}).every(r=>int(r.revision)&&r.revision>0&&typeof r.field==='string'&&r.field.length<400000&&Array.isArray(r.position)&&r.position.length===3&&r.position.every(Number.isFinite)),'excavation');
+    check(validTransports(s),'transport ledger');
     return true;
   }catch{return false;}
 }
@@ -62,7 +65,7 @@ export function commerceCommand(source,owner,m,ctx){
   const docked=()=>{ownedShip();check(ctx.docked?.(ship,m.terminal),'Choose a ship docked at this terminal.');};
   const atTerminal=()=>check(ctx.terminal?.(m.terminal),'Walk up to the trade terminal.');
   const add=(c)=>{const placed=placeCrate(ship.hull,ship.crates,c);check(placed,'No cargo grid space for that crate. Smaller crates may fit.');ship.crates.push(placed);};
-  const selected=()=>{const c=ship?.crates.find(c=>c.id===m.crate);check(c,'Crate no longer present.');check(canRemoveCrate(ship.hull,ship.crates,c.id),'Remove the crates above this one first.');return c;};
+  const selected=()=>{const c=ship?.crates.find(c=>c.id===m.crate);check(c,'Crate no longer present.');check(cargoVisibleTo(c,owner),'This sealed crate belongs to another pilot.');if(c.transport)check(m.op==='take','Sealed mission cargo can only be deposited through its transport contract.');check(canRemoveCrate(ship.hull,ship.crates,c.id),'Remove the crates above this one first.');return c;};
   const remove=c=>{ship.crates=ship.crates.filter(x=>x.id!==c.id);};
   const stationQuote=(side,sbu)=>{
     // The resolver is trusted server/local context, never a client market ID.
@@ -74,7 +77,9 @@ export function commerceCommand(source,owner,m,ctx){
     atTerminal();docked();check(r,'Choose a resource.');
     check(SBU_SIZES.includes(m.sbu),'Choose a crate size.');
   }
-  if(m.op==='base-register'){
+  if(m.op.startsWith('transport-')){
+    message=transportCommand(s,owner,m,ctx);
+  }else if(m.op==='base-register'){
     check(ctx.registerBase,'Base registration unavailable.');const result=ctx.registerBase(s,owner,m);s=result.state;message=result.message;
   }else if(['base-offer','base-settings','base-deposit','base-withdraw'].includes(m.op)){
     atTerminal();check(terminal?.base&&terminal.owner===owner,'Only the base owner can manage its local stock.');
@@ -128,7 +133,7 @@ export function commerceCommand(source,owner,m,ctx){
     check(!Object.values(s.loose??{}).some(c=>c.holder===owner&&c.until>(ctx.now?.()??Date.now())),'Release your tractor crate before hand carrying.');
     const c=selected();check(ctx.crate?.(ship,c),'Walk within reach of the crate through an open hatch.');
     check(ship.owner===owner||ctx.loot?.(ship,c),'Board the ship or disable it before taking cargo.');
-    check(c.sbu===1,'Only a 1 SBU crate can be carried by hand.');check(!a.carried,'Your hands are already full.');remove(c);a.carried={id:c.id,resource:c.resource,sbu:c.sbu};message='Carrying 1 SBU. Walk to a cargo grid to stow it.';
+    check(c.sbu===1,'Only a 1 SBU crate can be carried by hand.');check(!a.carried,'Your hands are already full.');remove(c);a.carried=transportCargo(c);message='Carrying 1 SBU. Walk to a cargo grid to stow it.';
   }else if(m.op==='stow'){
     ownedShip();check(a.carried,'You are not carrying a crate.');check(ctx.grid?.(ship),'Walk within reach of the cargo grid.');add(a.carried);a.carried=null;message='Crate secured on the cargo grid.';
   }else if(m.op==='haul'){

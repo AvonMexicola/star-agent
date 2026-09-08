@@ -1,3 +1,4 @@
+import {transportCargo} from '../transport/catalog.js';
 import * as THREE from 'three';
 import { EVA_SHIP_BOXES } from '../eva.js';
 import { FreighterSystems } from '../freighter-layout.js';
@@ -95,7 +96,7 @@ export function tractorWorldClear(nav,station,occludes){
 }
 export function tractorSlot(ship,c,eye,ships,loose,worldClear){
   if(!ship?.pose)return null;
-  const placed=placeCrate(ship.hull,ship.crates,{id:c.id,sbu:c.sbu,resource:c.resource});if(!placed)return null;
+  const placed=placeCrate(ship.hull,ship.crates,transportCargo(c));if(!placed)return null;
   const position=crateCentre(ship.hull,placed).applyQuaternion(ship.pose.quaternion).add(ship.pose.position);
   if(position.distanceTo(eye)>TRACTOR_RANGE||position.distanceTo(v(c.position))>1.6||q(c.quaternion).angleTo(ship.pose.quaternion)>.05)return null;
   // The slot is reached physically; securing cannot teleport through a bulkhead.
