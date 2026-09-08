@@ -1,3 +1,49 @@
+# SA-TRANSPORT-001 — handoff at 2026-09-08
+
+Status: implemented and developer-validated; ready for local integration. Owner: Cees /
+@AvonMexicola; Codex mission designer. Branch `feat/transport-missions`, isolated
+`.worktrees/transport-missions`, initial base `d08f181`, runtime `623d80e`, browser
+fixture `1df4438`. Checked projected-terminal `23ca619` and identical-tree development
+sync `524b729` are retained. New transport modules plus bounded commerce/cargo/
+settlement/navigation hooks; exact registry claims in SA-TRANSPORT-001. Private5662
+browser processes are stopped. No new dependencies, assets, database schema or tables.
+
+## What changed and what remains
+
+Twelve personal one-crate routes between four authored worlds. Acceptance creates
+no crate; the accepting owner orders at A, physically loads and secures the original
+sealed cargo, flies to B and deposits through its terminal for one payment. Server
+identity/reach/ship/seal/position/reward checks prevent remote, foreign or repeated
+issuance/payment. Owner-private snapshots and walking/EVA collision agree. Reload,
+reconnect, abandonment and failed-save behavior preserve cargo/credit invariants.
+See [player guide](docs/transport-missions.md) and [decision](docs/decisions/0002-personal-transport-cargo.md).
+
+## Validation
+
+Final combined155 normal test files pass, no skips;193 multiplayer individual cases
+pass with two existing optional skips. Subsequent private-collision11-case suite
+passes. Model31 and actual-room/two-account plus isolated PostgreSQL2 cases pass.
+Production development build passes4.77s, existing chunk advisory; repository and
+whitespace checks pass. Browser05 passes both cases14.1min: actual12min standard-
+Gamepad accept/order/tractor/continuous22.9Gm flight/land/deposit/+800CR/result/
+reboard/launch; keyboard entry and native390touch order/cancellation1.9min. Native
+focus/dialog/device held-input suppression passes. Chromium151/ANGLE-GL/AMD860M,
+1440×900/390×844, zero application errors/warnings. Original screenshots inspected.
+[Verification record](docs/qa/transport-missions/README.md) retains failures and fixes.
+No physical-device, rendered full online flight, independent review or deployment claim.
+
+## Integration and operations
+
+Ready to fast-forward local `dev/all-features` from checked `524b729`, preserving its
+append-only unrelated HANDOFF. Protocol7 requires the paired5178/8087 client/API
+refresh; retain the persistent local PostgreSQL data and existing account inventory.
+Do not deploy or merge a protected production PR as a side effect.
+
+## Resume here
+
+Complete guarded local integration and paired preview health/source verification,
+then update this status and open a bounded review PR. Cees retains release authority.
+
 # Star Agent — agent handoff (Claude ⇄ Astra)
 
 ## SA-UI-003 — HUD modes integrated locally — 2026-09-08
@@ -3928,8 +3974,6 @@ owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
 and client source refresh before cloud-save testing. No database migration or
 public deployment. Floodlight owner may layer onto committed build hooks.
 
-
-SA-PIRATE-001 CLAIM 2026-09-08T13:38:17.449678+00:00: Cees authorizes five new human pirates rigged/animated, compatible new player animations, and interesting NPCs to fight. Isolated feat/pirate-ground-encounters /tmp/star-agent-pirates from8b5ecd4; owns new src/pirates, assets/pirates, prepare_pirates/prepare-pirate-motions, runtime models/pirates, scoped tests/QA/docs; narrow character/crouch/navigation/controller/mining-target/main/dev-location hooks only. No new runtime dependencies; preview5664/studio5665, no GPU acquired. Source pirate files copied from user Downloads with hashes. Preserve transport/floodlight/Burrow/settlement owners and shared services5596/SQL/production. Local integration only after checks.
 BURROW CONCEPT UPGRADE CLAIM 2026-09-08T11:05:20.297183+00:00: Cees requests implementation toward the approved exterior/interior concepts, with panel controls instead of joysticks or a steering wheel (LCARS interpretation asked). Root owns isolated art/burrow-concept-upgrade at /home/cees/projects/star-agent-burrow-concept-upgrade from 76aa45e: assets/mining-rover, blender/build_mining_rover.py and new scoped detailing helper, public/models/mining-rover.glb, src/mining-rover.js and new rover display module, focused actual-asset/display tests, unique scripts/QA/brief/task docs. Preserve physical layout, wheel/cutter/door pivots, pilot eye, clear windscreen, storage and shared input/ship/server APIs. Private preview 5630, studio 5631, memory API 8630; no browser or GPU acquired. Existing trade5610, settlement5622 and enemy5398 queues retain priority. No shared source/services/user5596/SQL/public changes.
 
 

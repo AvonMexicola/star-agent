@@ -364,3 +364,17 @@ and quarter-circle tiles inherit the supporting ceiling rotation. Lights appear
 in Power and Roofs, mount underneath ceilings, and use aimed X/F to switch after
 leaving build mode. Held X must toggle only once; a saved off switch remains off
 after reload. See [ceiling and roof record](base-ceilings-roofs.md).
+
+## Personal transport contracts
+
+Menu → Contracts → Transport contracts opens the shared trade dialog's Freight
+view. D-pad selects a route and A accepts; B returns to flight. At the actual
+pickup terminal, X opens the exchange and Freight → Order my crate issues the
+owner's sealed cargo. Equip its tractor action, hold RT to guide, use D-pad
+up/down for beam distance and X to secure at a valid cargo-grid slot. At the
+destination terminal, Freight → Deposit crate consumes that original crate and
+shows the payment and completed-delivery count. B closes the result so the pilot
+can walk back, board and launch. These actions use the existing dialog/input
+router and preserve neutral-input suppression across modal, native focus and
+controller connection changes. See the [player guide](transport-missions.md)
+and [recorded journey and hardware limits](qa/transport-missions/README.md).

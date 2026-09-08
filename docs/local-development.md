@@ -1,5 +1,13 @@
 # All-features local development
 
+**Personal transport missions** are checked on `feat/transport-missions` and ready
+for local integration. Open **Menu → Contracts → Transport contracts**, or
+**Trade → Freight**. Accept, fly to pickup, order your private crate at the terminal,
+physically load and secure it, fly to delivery and deposit through its terminal.
+Twelve routes join Aeon, Selene, Pyre and Miasma; rewards are350CR or800CR.
+Acceptance creates no cargo. See the [player guide](transport-missions.md) and
+[complete controller, native-touch and authority evidence](qa/transport-missions/README.md).
+
 Burrow cutter/reverse follow-up is locally integrated at `b34bc69` (feature
 `03704e1`). Refresh the preview and choose **Burrow surface** to inspect the
 machined cutters and layered mining beams. **S** / controller stick-back reverses;
@@ -38,7 +46,7 @@ controller/keyboard/touch browser cases pass. [Screens and detailed evidence](qa
 retain failed attempts and physical-device/independent-review limits.
 Construction remains solo/account-backed solo; no public deployment is included.
 
-Four solo **trade settlements** use the existing construction kit: Greenbank
+Four **trade settlements** use the existing construction kit: Greenbank
 Supply on Aeon, Stillwater Exchange on Selene, Ember Works on Pyre and Verdigris
 Prospect on Miasma. Find them in **Map → a world → Locations** or the **Trade
 settlements** signal filter. Each has a large pad and a walk-in exchange with
@@ -52,8 +60,9 @@ pay credits and reduce the remaining need. Full reserves refuse excess crates.
 Map selections list current exports and shortages. Existing saved quantities
 are preserved. See [settlement delivery guide](settlement-economy.md) and
 [controller/keyboard/phone validation](qa/settlement-stock-needs/README.md).
-These authored exchanges are solo content; online player-base shops retain their
-separate authoritative implementation. Settlement runtime `03a561e` is locally
+The transport checkpoint pairs these authored exchanges with canonical server
+geometry and authoritative commerce. Full rendered online settlement gameplay
+remains a separate acceptance item; player-base shops retain their existing route. Settlement runtime `03a561e` is locally
 integrated at `32966e3`; its 1,127-case unit suite and complete controller
 landing/trading/reboarding journey pass. Independent art and physical-device
 acceptance remain separate from this development checkpoint.
