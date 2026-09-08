@@ -37,7 +37,7 @@ def build():
     Image.open(ROOT/'assets/brands/meridian-shipworks/emblem.webp').convert('RGBA').save(OUT/'manufacturer.png')
     files={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(OUT.iterdir()) if p.suffix in ('.png','.webp')}
     (OUT/'provenance.json').write_text(json.dumps({'source':'Original deterministic procedural PBR swatches; reused approved Meridian emblem only',
-        'builder':'blender/gannet_textures.py','layout':'4 columns × 2 rows from PNG top; deterministic face projection, Blender V inverted once, four-pixel margins',
+        'builder':'blender/gannet_textures.py','layout':'4 columns × 2 rows from PNG top; whole-part metric projection at most 24 texels/metre in central 128 × 256 pixels, continuous subdivided floor, Blender V inverted once',
         'size':[edge,edge],'baseColorSpace':'sRGB','dataMaps':'linear ORM and tangent normal',
         'ambientOcclusion':'ORM red is white. Separate geometry-derived static vertex AO is authored by build_gannet.py; moving assemblies remain white.',
         'files':files},indent=2)+'\n')

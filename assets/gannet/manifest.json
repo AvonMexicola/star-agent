@@ -2,12 +2,12 @@
   "model": "Gannet T-06",
   "builder": "blender/build_gannet.py",
   "layoutSha256": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
-  "builderSha256": "e21e6c5f9bdd8b6826868cbdf99633db1a27d434d01c9f7badefa2754e138119",
+  "builderSha256": "3860e25349a63fd269a77ea2885e4da01620d6d3069a220037a2ca446308a30c",
   "geometryHelperSha256": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
   "inputHashes": {
-    "blender/build_gannet.py": "e21e6c5f9bdd8b6826868cbdf99633db1a27d434d01c9f7badefa2754e138119",
+    "blender/build_gannet.py": "3860e25349a63fd269a77ea2885e4da01620d6d3069a220037a2ca446308a30c",
     "blender/fighter_geometry.py": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
-    "blender/gannet_textures.py": "893f6bba53cd00d5a69c2354765e2777068749265dc55543746d47629c357b47",
+    "blender/gannet_textures.py": "4adafd50676c353d833aac040de2790e406c3b635a0814b128ca6eaec16c8981",
     "assets/gannet/layout.json": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
     "assets/gannet/textures/surface-basecolor.png": "29fa07d3e608fe387a3826da282599c27c9162d292b045b399d41366cc01387f",
     "assets/gannet/textures/surface-orm.png": "5a5e98e86cbd3692ba0ac7e3190a4e8c78729bad0eebf3793774a769fdf6ddb6",
@@ -27,7 +27,7 @@
       11.0
     ]
   },
-  "sourceTriangles": 55622,
+  "sourceTriangles": 56490,
   "sourceMeshes": 33,
   "materials": [
     "Gannet / approved Meridian emblem",
@@ -56,9 +56,9 @@
     ],
     "staticObjects": 510,
     "movingObjects": 46,
-    "staticCorners": 93748,
+    "staticCorners": 95484,
     "movingWhiteCorners": 7536,
-    "samples": 88012,
+    "samples": 89748,
     "range": [
       0.4500000000000002,
       1.0
@@ -79,18 +79,18 @@
   },
   "status": "Authored geometry/material checkpoint; runtime visual and physical game acceptance pending",
   "asset": "public/models/gannet.glb",
-  "bytes": 3290672,
-  "triangles": 55622,
+  "bytes": 3169484,
+  "triangles": 56490,
   "meshPrimitives": 33,
   "nodes": 98,
   "images": 4,
   "textureFormat": "WebP",
-  "sha256": "6b4f48ad29aa5cf8a8e6004c0b45861fb65d97a449dc27c7533cbec83e052af8",
-  "sourceSha256": "4b96b2d544386acb0b090c14c7a5ecade90812661ce7cf8662c1799d1c242727",
-  "collisionSha256": "ae9c6911d33499ab0c7833e441e4816fa30c8b08340c840b2b034a5b8a0f7eaa",
+  "sha256": "8da0bc2e3da7c8c2a2db7b29957b226fab0ba30eb0155f98d82a3f82c3995e6f",
+  "sourceSha256": "474bc808ed71179df1acb704f64c3bf1f3c50e6c52c09d7629820f09a78e9d2f",
+  "collisionSha256": "cf4adc2e080ee9e512cdb8c0741a015280c6b4ebc6604a5ac84c5700cfd4366d",
   "packing": {
-    "inputBytes": 5615376,
-    "outputBytes": 3538256,
+    "inputBytes": 5388880,
+    "outputBytes": 3417068,
     "maximumPositionErrorMetres": 0.0003105262975675282,
     "maximumNormalErrorDegrees": 0.3795370599775062,
     "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"

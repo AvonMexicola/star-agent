@@ -1,7 +1,7 @@
 {
   "source": "Original deterministic procedural PBR swatches; reused approved Meridian emblem only",
   "builder": "blender/gannet_textures.py",
-  "layout": "4 columns \u00d7 2 rows from PNG top; deterministic face projection, Blender V inverted once, four-pixel margins",
+  "layout": "4 columns \u00d7 2 rows from PNG top; whole-part metric projection at most 24 texels/metre in central 128 \u00d7 256 pixels, continuous subdivided floor, Blender V inverted once",
   "size": [
     1024,
     1024

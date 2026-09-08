@@ -75,31 +75,37 @@ def loft(name,sections,tile=0,parent=hull,edge=.025,profile='octagon'):
     pts=[]
     for z,x,w,low,high in sections:
         bevel=min(w*.25,(high-low)*.24)
-        if profile=='cowl':
+        if profile in ('cowl','drive'):
             h=high-low
+            crown=.16 if profile=='drive' else .28
             pts.extend([(x-w*.70,low,z),(x+w*.70,low,z),(x+w,low+h*.16,z),(x+w,low+h*.68,z),
-                (x+w*.75,low+h*.89,z),(x+w*.28,high,z),(x-w*.28,high,z),(x-w*.75,low+h*.89,z),
+                (x+w*.75,low+h*.89,z),(x+w*crown,high,z),(x-w*crown,high,z),(x-w*.75,low+h*.89,z),
                 (x-w,low+h*.68,z),(x-w,low+h*.16,z)])
         else:pts.extend([(x-w+bevel,low,z),(x+w-bevel,low,z),(x+w,low+bevel,z),(x+w,high-bevel,z),(x+w-bevel,high,z),(x-w+bevel,high,z),(x-w,high-bevel,z),(x-w,low+bevel,z)])
-    count=10 if profile=='cowl' else 8
+    count=10 if profile in ('cowl','drive') else 8
     faces=[tuple(range(count-1,-1,-1)),tuple(range((len(sections)-1)*count,len(sections)*count))]
     faces += [(j*count+i,j*count+(i+1)%count,(j+1)*count+(i+1)%count,(j+1)*count+i) for j in range(len(sections)-1) for i in range(count)]
     return remember(g.mesh(name,pts,faces,surface,edge,parent),tile)
 
 # Low forward prow, pressure-cell skirts and continuous shoulder armor. The
 # nose volume ends ahead of the pilot; no solid fuselage fills the cabin.
-loft('Faceted forward prow',[(-13,0,1.10,1.62,2.08),(-12.2,0,2.25,1.25,2.38),(-10.5,0,2.62,1.25,2.31)],0)
+loft('Faceted forward prow',[(-13,0,1.02,1.76,2.00),(-12.38,0,1.94,1.43,2.27),
+     (-11.05,0,2.46,1.24,2.30),(-10.50,0,2.62,1.25,2.31)],0)
 drive_skins={}
 for side in (-1,1):
     loft('Pressure cell lower chine', [(-10.6,side*2.15,.45,1.25,2.27),(-7.7,side*2.53,.48,1.18,2.24),(1.9,side*2.76,.53,1.18,2.31),(4.5,side*3.19,.28,1.24,2.20)],0)
     # The cabin-to-drive load arms have a shallow neck ahead of the load bay.
     # Their substantial aft roots carry the fins and the roof cross-members.
     # Closed skins stay outside both living and freight clear volumes.
-    loft('Swept shoulder fairing',[(-10.2,side*2.80,.48,2.04,3.16),(-7.65,side*3.43,.96,1.84,3.32),
+    loft('Swept shoulder fairing',[(-12.05,side*2.24,.12,1.67,2.40),(-10.66,side*2.60,.30,1.44,2.69),
+         (-9.78,side*2.99,.52,1.71,3.42),(-7.65,side*3.43,.96,1.84,3.68),
          (-5.50,side*3.95,1.28,2.02,3.26),(-2.1,side*4.48,.83,2.35,3.29),
          (1.10,side*4.83,.53,2.67,4.07),(3.35,side*4.78,.52,2.30,4.25),
          (8.9,side*4.74,.46,2.31,4.87)],1,edge=.055)
-    loft('Fore shoulder ceramic pressure guard',[(-9.96,side*2.86,.38,3.05,3.26),(-7.55,side*3.45,.94,3.11,4.16),
+    # The cheek follows the lower prow into the same rising shoulder, rather
+    # than starting as a tall blunt block beside the pressure windscreen.
+    loft('Fore shoulder ceramic pressure guard',[(-11.85,side*2.24,.14,2.36,2.45),
+         (-10.50,side*2.66,.28,2.61,2.74),(-9.96,side*2.86,.38,2.68,3.26),(-7.55,side*3.45,.94,3.11,4.16),
          (-5.40,side*3.94,1.25,3.14,4.64),(-3.65,side*4.21,1.16,3.18,4.69),
          (-2.18,side*4.46,.80,3.23,4.30)],0,edge=.055)
     loft('Aft shoulder load guard',[(1.25,side*4.85,.52,3.98,4.22),(3.40,side*4.78,.57,3.96,4.98),
@@ -108,7 +114,8 @@ for side in (-1,1):
     # A continuous flared roof-to-shoulder fillet returns into the pressure crown
     # behind the side glass. This closes the abrupt narrow cockpit/shoulder step
     # without changing the glazing, pilot eye or occupied pressure-cell void.
-    loft('Cockpit shoulder roof fillet',[(-8.95,side*2.32,.18,3.95,4.20),(-7.58,side*2.77,.55,3.89,4.38),
+    loft('Cockpit shoulder roof fillet',[(-10.60,side*2.28,.12,2.56,2.80),(-9.65,side*2.37,.24,3.16,3.87),
+         (-8.95,side*2.42,.30,3.74,4.20),(-7.58,side*2.77,.55,3.89,4.38),
          (-6.44,side*3.04,.78,3.89,4.64),(-4.60,side*3.53,.69,3.97,4.65),(-3.30,side*3.94,.35,4.13,4.54)],0,edge=.045,profile='cowl')
     # A deep fore power/gear lobe and aft engine lobe join through a narrower,
     # raised service waist. This is actual primary geometry on every silhouette,
@@ -124,13 +131,13 @@ for side in (-1,1):
     drive_skins[side]=[loft('Outboard longitudinal drive',drive,1,edge=.065)]
     cowls=[
         [(-8.48,side*5.60,.42,3.09,3.42),(-6.91,side*5.90,1.15,3.10,4.56),
-         (-5.38,side*6.04,1.48,3.11,5.06),(-3.56,side*6.07,1.45,3.17,5.15),
-         (-2.12,side*6.12,1.19,3.34,4.78)],
-        [(1.90,side*6.17,1.15,3.22,4.82),(3.26,side*6.20,1.58,3.13,5.52),
-         (5.67,side*6.22,1.58,3.11,5.44),(7.90,side*6.28,1.42,3.10,5.11),
+         (-5.38,side*6.04,1.48,3.11,4.98),(-3.56,side*6.07,1.45,3.17,5.02),
+         (-2.12,side*6.12,1.19,3.34,4.72)],
+        [(1.90,side*6.17,1.15,3.22,4.72),(3.26,side*6.20,1.58,3.13,5.34),
+         (5.67,side*6.22,1.58,3.11,5.32),(7.90,side*6.28,1.42,3.10,5.11),
          (9.14,side*6.30,1.13,3.11,4.74)],
     ]
-    for i,sections in enumerate(cowls):drive_skins[side].append(loft(('Fore' if i==0 else 'Aft')+' drive ceramic cowl',sections,0,edge=.055,profile='cowl'))
+    for i,sections in enumerate(cowls):drive_skins[side].append(loft(('Fore' if i==0 else 'Aft')+' drive ceramic cowl',sections,0,edge=.055,profile='drive'))
     def drive_x(z,sections=drive):
         for a,b in zip(sections,sections[1:]):
             if a[0]<=z<=b[0]:
@@ -241,7 +248,7 @@ for side in (-1,1):
 panel('Forward pressure glazing',[(-1.84,2.29,-10.75),(1.84,2.29,-10.75),(1.75,4.12,-10.10),(-1.75,4.12,-10.10)],parent=cabin,mat=glass,thick=.018)
 rod('Windscreen top seal',(-1.78,4.17,-10.09),(1.78,4.17,-10.09),.06,1,cabin)
 rod('Windscreen lower seal',(-1.92,2.26,-10.77),(1.92,2.26,-10.77),.06,1,cabin)
-loft('Faceted cockpit crown',[(-10.12,0,1.80,4.17,4.33),(-8.90,0,2.25,4.17,4.40),(-7.20,0,2.26,4.17,4.49)],0,edge=.025)
+loft('Faceted cockpit crown',[(-10.12,0,1.80,4.17,4.23),(-8.90,0,2.25,4.17,4.40),(-7.20,0,2.26,4.17,4.49)],0,edge=.025)
 prism('Habitation crown',[(-2.26,-7.45),(2.26,-7.45),(2.45,-6.90),(2.45,2.65),(2.85,3.40),(-2.85,3.40),(-2.45,2.65),(-2.45,-6.90)],4.52,3.91,1)
 for z in (-6.4,-3.7,-1.0,1.7):
     box('Ceiling liner cassette',(0,3.88,z),(3.98,.06,2.56),7,.013,cabin)
@@ -434,7 +441,7 @@ def soft_pad(name,pos,size,parent=cabin,rotation=0):
     edge=contour(.998);radius=.0035
     for i,(x,z) in enumerate(edge):
         xx,zz=edge[(i+1)%len(edge)]
-        rod(name+' fitted welt',q(x,thickness*.10,z),q(xx,thickness*.10,zz),radius,1,parent,segments=6,collision=False)
+        rod(name+' fitted welt',q(x,thickness*.10,z),q(xx,thickness*.10,zz),radius,6,parent,segments=6,collision=False)
 
 def seat(name,x,z):
     chair=g.empty(name,(x,1.4,z),cabin)
@@ -490,7 +497,7 @@ for side in (-1,1):
 g.empty('PilotEye',L['seatEye'],root);g.empty('StandEye',L['stand'],root);g.empty('RoverPark',L['rover']['park'],root)
 
 # Exterior identity, service fasteners and low-contrast panel boundaries.
-text('Gannet bow model','GANNET', (0,2.39,-12.06),.38,rotation=(0,0,0))
+text('Gannet bow model','GANNET', (0,2.2827,-11.95),.38,rotation=(0,0,0))
 for side in (-1,1):
     text('Meridian side model','MERIDIAN  /  T-06',(side*2.64,3.03,-4.40),.24,rotation=(math.pi/2,0,side*math.pi/2))
     for z in (-6.0,-3.3,-.6,2.1):
@@ -506,16 +513,22 @@ for obj in parts:
     if obj.data.materials and obj.data.materials[0]==surface:
         uv=obj.data.uv_layers.new(name='UVMap') if not obj.data.uv_layers else obj.data.uv_layers.active
         tile=int(obj['gannetTile']);tx,ty=tile%4,tile//4
+        low=[min(v.co[k] for v in obj.data.vertices) for k in range(3)]
+        high=[max(v.co[k] for v in obj.data.vertices) for k in range(3)]
+        center=[(a+b)/2 for a,b in zip(low,high)];span=[b-a for a,b in zip(low,high)]
         for face in obj.data.polygons:
             axis=max(range(3),key=lambda k:abs(face.normal[k]));axes=[k for k in range(3) if k!=axis]
+            if obj.name=='CabinFloor':axes=[0,1]
+            # One metric projection over each whole part. Tiny bevel/welt faces
+            # must not stretch a complete tile: the old four-pixel margins were
+            # crossed by native mip footprints and made a bright deck lattice.
+            # Keep all samples in the central 128 × 256 pixels of each swatch,
+            # with at most 24 texels/metre. The subdivided floor is continuous.
+            density=min(24,128/max(span[axes[0]],1e-8),256/max(span[axes[1]],1e-8))
             values=[obj.data.vertices[obj.data.loops[i].vertex_index].co for i in face.loop_indices]
-            low=[min(v[k] for v in values) for k in axes];span=[max(v[k] for v in values)-low[j] for j,k in enumerate(axes)]
             for li,v in zip(face.loop_indices,values):
-                a=[(v[k]-low[j])/span[j] if span[j]>1e-8 else .5 for j,k in enumerate(axes)]
-                # Atlas rows are declared from the PNG top edge. Blender V
-                # starts at the bottom; glTF flips it on export. Correct this
-                # once here so graphite cannot silently sample amber below it.
-                uv.data[li].uv=((tx+(4+248*a[0])/256)/4,1-(ty+(4+504*a[1])/512)/2)
+                uv.data[li].uv=((tx*256+128+(v[axes[0]]-center[axes[0]])*density)/1024,
+                    1-(ty*512+256+(v[axes[1]]-center[axes[1]])*density)/1024)
     elif not obj.data.uv_layers:
         obj.data.uv_layers.new(name='UVMap')
     world=[obj.matrix_world@v.co for v in obj.data.vertices]
