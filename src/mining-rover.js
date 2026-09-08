@@ -93,11 +93,11 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
   function groundEntry(){const p=toWorld(v(L.cabin.entryGround)),probe=p.clone().addScaledVector(UP.clone().applyQuaternion(physics.state.quaternion),-1.75),s=support(probe);return s?s.point.addScaledVector(s.normal,1.75):p;}
   function nearby(){return spawned&&!occupied&&nav.mode==='walk'&&nav.position.distanceTo(groundEntry())<1.15;}
   function posePilot(){nav.position.copy(toWorld(v(L.cabin.pilotEye)));nav.orientation.copy(physics.state.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(aimPitch,aimYaw,0,'YXZ')));nav.velocity.copy(FWD).applyQuaternion(physics.state.quaternion).multiplyScalar(physics.state.speed);nav.insideShip=true;nav.roverOccupied=true;}
-  function accessBlocked(a,b){
+  function accessBlocked(a,b,quaternion=physics.state.quaternion){
     const contact=nav.surfaceObstacles?.constrainWalker(a,b);
-    if(contact?.hit&&(!contact.grounded||contact.point.clone().sub(b).projectOnPlane(UP.clone().applyQuaternion(physics.state.quaternion)).length()>.02))return true;
+    if(contact?.hit&&(!contact.grounded||contact.point.clone().sub(b).projectOnPlane(UP.clone().applyQuaternion(quaternion)).length()>.02))return true;
     const delta=b.clone().sub(a),distance=delta.length();if(distance<.0001)return false;
-    const direction=delta.divideScalar(distance),up=UP.clone().applyQuaternion(physics.state.quaternion),right=new THREE.Vector3(1,0,0).applyQuaternion(physics.state.quaternion);
+    const direction=delta.divideScalar(distance),up=UP.clone().applyQuaternion(quaternion),right=new THREE.Vector3(1,0,0).applyQuaternion(quaternion);
     return [[0,0],[.12,0],[-.12,0],[0,.12],[0,-.12]].some(([x,y])=>shipRay(a.clone().addScaledVector(right,x).addScaledVector(up,y),direction,distance));
   }
   function updateAccess(dt){
@@ -163,7 +163,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
           if(obstacles.constrainWalker(world([x,y,2.5]),world([x,y,-3])).hit||shipRay(world([x,y,2.5]),FWD.clone().applyQuaternion(pose.quaternion),5.5))return {ok:false,message:'Garage bay obstructed. Clear rocks, cargo or the parked ship first.'};
         }
         const entry=[L.cabin.entryGround,...L.cabin.entryRoute].map(world);
-        if(entry.some((p,i)=>i&&accessBlocked(entry[i-1],p)))return {ok:false,message:'Clear the port-side boarding path before retrieval.'};
+        if(entry.some((p,i)=>i&&accessBlocked(entry[i-1],p,pose.quaternion)))return {ok:false,message:'Clear the port-side boarding path before retrieval.'};
         const trial=createRoverPhysics({...pose,sampleSupport:support,referenceUp:p=>bodyOffset(p).normalize(),constrain});
         trial.step(1/60,{brake:1});
         if(!trial.state.supported||trial.state.blocked)return {ok:false,message:'Garage bay has no clear four-wheel support.'};

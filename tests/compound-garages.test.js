@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Vector3, Quaternion} from 'three';
+import {Scene, Vector3, Quaternion} from 'three';
+import {createSettlements} from '../src/settlements/system.js';
+import {SHIP_LAYOUT} from '../src/boarding.js';
+import {ROVER_LAYOUT} from '../src/rover-layout.js';
 import {createSettlementLayouts} from '../src/settlements/layout.js';
 import {createRoverBuildSupport} from '../src/rover-build-support.js';
 import {createRoverPhysics} from '../src/rover-physics.js';
@@ -52,4 +55,19 @@ test('retrieval rejects occupied, moving, loading and carried vehicles without c
   for (const delta of [{ready: false}, {occupied: true}, {busy: true}, {aboard: true}, {speed: -.11}, {speed: .2}]) {
     const candidate = {...state, ...delta}, before = structuredClone(candidate); assert.equal(garageRetrievalStatus(candidate).ok, false); assert.deepEqual(candidate, before);
   }
+});
+
+test('all garage cabin routes distinguish floor grounding from a blocking wall in the destination frame', () => {
+  const nav = {position: new Vector3(), orientation: new Quaternion(), layout: SHIP_LAYOUT, mode: 'walk', insideShip: false};
+  const system = createSettlements({scene: new Scene(), nav, render: false});
+  try {for (const s of sites) {
+    const q = new Quaternion(...s.claim.quaternion), rotation = q.clone().multiply(new Quaternion().setFromAxisAngle(UP, s.garage.rotation));
+    const position = new Vector3(...s.garage.position).applyQuaternion(q).add(new Vector3(...s.claim.origin));
+    const points = [ROVER_LAYOUT.cabin.entryGround, ...ROVER_LAYOUT.cabin.entryRoute].map(p => new Vector3(...p).applyQuaternion(rotation).add(position));
+    for (let i = 1; i < points.length; i++) {
+      const contact = system.constrainWalker(points[i - 1], points[i]);
+      const lateral = contact.point.clone().sub(points[i]).projectOnPlane(UP.clone().applyQuaternion(rotation)).length();
+      assert.ok(!contact.hit || contact.grounded && lateral < .02, `${s.id} boarding route ${i}`);
+    }
+  }} finally {system.dispose();}
 });
