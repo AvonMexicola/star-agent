@@ -1,10 +1,11 @@
 import {test,expect} from '@playwright/test';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,appendFile} from 'node:fs/promises';
 const out=process.env.TRANSPORT_EVIDENCE||'/tmp/star-agent-transport-attempt01';
 export const frames=p=>p.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise(r=>requestAnimationFrame(r));});
 export async function setup(page,site='aeon'){
  await mkdir(out,{recursive:true});const errors=[],warnings=[];
- page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
+ page.on('requestfailed',r=>{appendFile(`${out}/requests.log`,`${r.url()} ${JSON.stringify(r.failure())}\n`).catch(()=>{});});
+ page.on('pageerror',e=>{errors.push(e.message);appendFile(`${out}/diagnostics.log`,e.message+'\n').catch(()=>{});});page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());appendFile(`${out}/diagnostics.log`,m.text()+'\n').catch(()=>{});}if(m.type()==='warning')warnings.push(m.text());});
  await page.addInitScript(()=>{window.transportPad={id:'Settlement standard Gamepad',mapping:'standard',index:0,connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>window.transportDisconnected?[]:[window.transportPad]});});
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto(`/?dev=1&ship=nomad&start=settlement-${site}&intro=0&debug&seed=7291`);
