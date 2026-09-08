@@ -158,3 +158,20 @@ continuous Nomad take above, at normal speed, with a brief fade at each loop
 boundary. The poster is its real frame at 3.2 seconds. H.264,1280×800/30fps,
 CRF24, silent fast-start MP4. Existing pause/reduced-motion behavior is retained.
 The multiplayer tile and both long films retain their existing media.
+
+## User base-building recording
+
+`base-building.mp4` uses the user-identified 29.99 MB recording
+`screenrecording-2026-09-07_20-44-47.mp4`, source SHA-256
+`c36ab8e338795835ee511bcff5bacd98ea4e144bc15f20e25a127077d0280fda`.
+The 52.15-second 2560×1600/60fps source shows wall/floor construction on Selene.
+The first 4 seconds are omitted to clear the browser fullscreen hint; the remaining
+48.17 seconds play at normal speed, H.264 1280×800/30fps CRF24 with fast-start
+metadata and no audio. Poster is the original 49-second frame. Sampled frames
+across the full source show only game content and the initial browser hint.
+The three films share a responsive row and stack on phone widths; both original
+expedition screenshots and the Nomad solo loop remain visible.
+
+The updated homepage browser case passes in 5.8 seconds (Chromium 151), including
+all three films, ambient playback/pause, reduced motion, links, keyboard focus
+and 1440×900/390×844 layouts. No page/HTTP errors; all 18 site references resolve.
