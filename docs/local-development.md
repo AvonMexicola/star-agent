@@ -5,8 +5,14 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-The shared local preview at **http://127.0.0.1:5178/** is integrated at
-**`c99736f`**, with runtime **`5f63893`**: playable 64 m Atlas, enlarged default
+The shared local preview at **http://127.0.0.1:5178/** now includes the direct-entry
+and model-cache update at tested runtime **`fc676f9`**. The default URL enters the
+Nomad hangar opening after one preload; scene selection is optional. Its 44 focused
+checks and development build pass. See the [startup evidence](qa/direct-entry-2026-09-08.md)
+for exact validation and browser coverage.
+
+The preceding fleet integration at **`c99736f`**, with runtime **`5f63893`**, added
+the playable 64 m Atlas, enlarged default
 station and community hub, ground Burrow and Atlas/Burrow meadow starts, fleet
 particles/audio/music, roofs/lights/base power, animated shopkeepers and current
 weapon/tool art. The client and API run **protocol 5** together. The paired local
@@ -64,13 +70,16 @@ npm ci
 npm run dev:all
 ```
 
-Open http://127.0.0.1:5178/ after starting this source. The launcher offers
+Open http://127.0.0.1:5178/ after starting this source. After the initial preload,
+the Nomad hangar opens with the shoulder camera behind the character. No scene
+selection or second load is required. F2, the visible Dev button, or controller
+Menu opens optional scene choices during the opening; after taking control, use
+Menu → Dev. The launcher offers
 Nomad 02, Kestrel and the current **64 m Atlas**, with station hangar/approach,
 **Burrow mining — Selene surface**, Aeon coast/forest/highlands/polar/orbit,
 Selene surface/rings, Pyre twilight/surface, Miasma approach/surface and stellar
-observation starts. Choose a ship, choose a location, then Launch test flight.
-F2 or controller Menu → Dev reopens the dialog after taking
-control. D-pad/left stick selects; A confirms; B returns. Keyboard Tab/Enter and
+observation starts. To change scenes, choose a ship and location, then Launch test
+flight. D-pad/left stick selects; A confirms; B returns. Keyboard Tab/Enter and
 touch use the same buttons. No account or ship-unlock milestone is needed.
 
 For immediate rover play, choose **Burrow mining — Selene surface** in Test
@@ -91,12 +100,19 @@ Pyrebear habitat and Miasma's Sulphurhound habitat. Habitat starts place the shi
 The newer character is the default local and remote pilot, including its corrected
 hips and calibrated weapon grips. Press 4, or LB + RB + D-pad right, for third person.
 
-Each launch reloads into an isolated temporary test inventory and unlocked fleet.
+Only an explicit scene launch reloads the page. The default opening and selected
+test starts use an isolated temporary test inventory and unlocked fleet.
 Normal browser progression is neither read nor written. Test-session cargo and
 construction reset when reloading. The current seed is retained in the URL;
 use `?seed=42` or the ordinary controls panel to choose a different world.
 A copied test URL includes its ship and start. This selector is gated by
 `VITE_DEV_TOOLS=1`, set by `dev:all`; ordinary production builds retain their entry.
+
+Vite generates content hashes for known gameplay `/models/` assets at startup and
+build time. Changing model bytes requires the frontend's Vite process to reload
+its configuration so its development manifest updates; API and PostgreSQL do not
+need a restart. The Vite configuration update in this integration triggers that
+frontend reload automatically.
 
 The supplied construction sandbox is an exception to temporary test inventory:
 it uses its own saved namespace and a refillable 4,608 kg materials bank. Reload
