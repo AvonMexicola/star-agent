@@ -23,7 +23,7 @@ test('four distinct settlements use supported kit pieces and supported roof/ligh
   const support=supportedPieces(s.claim.pieces);
   for(const p of s.claim.pieces){assert.ok(PIECES[p.type]);assert.equal(mountReason(p,s.claim.pieces),null,`${s.id} ${p.type}`);if(['wall','floor','stairs'].includes(PIECES[p.type].category))assert.ok(support.has(p.id),p.id);}
   assert.equal(s.pad.type,'foundation-pad-large');assert.equal(s.pad.landingPad,true);
-  assert.equal(s.claim.pieces.filter(p=>p.type==='doorway').length,3);
+  assert.equal(s.claim.pieces.filter(p=>p.type==='doorway').length,2);
  }
 });
 test('slab surfaces clear actual terrain and all pad piers reach it',()=>{
