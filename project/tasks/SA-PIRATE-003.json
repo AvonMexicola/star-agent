@@ -1,0 +1,16 @@
+{
+  "id": "SA-PIRATE-003",
+  "title": "Crimson Pact vacuum habitats on Selene and Miasma",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex pirate compound, parent appearance integration",
+  "status": "active",
+  "branch": "feat/pirate-miasma",
+  "base": "cc1e74933791a3abdf36e65bdad732b4985994a9",
+  "updated": "2026-09-09",
+  "areas": ["assets", "industry", "combat"],
+  "claims": ["src/pirate-compound/", "tests/pirate-compound.test.js", "src/dev-launch-options.js", "scripts/pirate-fixtures.js", "scripts/pirate-miasma.spec.js", "scripts/pirate-miasma.config.js", "scripts/pirate-compound.spec.js"],
+  "brief": "docs/briefs/pirate-miasma.md",
+  "validation": "18 focused invariants pass; private appearance composition and complete browser journey pending",
+  "evidence": "docs/qa/pirate-miasma/README.md"
+}
