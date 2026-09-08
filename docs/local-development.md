@@ -90,7 +90,7 @@ See the [player guide](sbu-cargo.md) and [actual QA record](qa/sbu-cargo.md).
 
 ## Constructed base trade terminals
 
-The base-commerce checkpoint (`4b36b50`, with latest elevator repair preserved)
+The base-commerce checkpoint (integrated at `2607fe7`, runtime `4b36b50`, with latest elevator repair preserved)
 adds **My shop** to the Storage & trade terminal. Link a base with a designated
 landing pad, choose a real local container and commodity, offer only the selected
 quantity, set its price and enable the public beacon. New deposits stay private.

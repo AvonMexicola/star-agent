@@ -1,6 +1,6 @@
 # SA-TRADE-001 — Find a player base, buy its stock, fly home
 
-Status: implemented on the feature branch; controller browser journeys validated; local integration in progress. See [delivery record](../qa/base-commerce.md) for actual scope and evidence.
+Status: implemented on the feature branch; controller browser journeys validated; integrated locally at `2607fe7`. See [delivery record](../qa/base-commerce.md) for actual scope and evidence.
 Roadmap milestone: M0
 Human sponsor: Cees. Implementation owner: Codex, following the explicit implementation request.
 Reviewer and integration steward: to be assigned by Cees/current steward.
