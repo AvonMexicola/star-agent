@@ -1,5 +1,19 @@
 # Star Agent — agent handoff (Claude ⇄ Astra)
 
+## Passenger elevator repair — 2026-09-08
+
+`fix/station-elevator-access`, based on local `dev/all-features` at `c766544`,
+isolated `/tmp/star-agent-elevator`. The legacy vestibule is now a named assembly
+outside the fleet bay scale; the hangar door and button are visible together.
+Offline and authoritative server interlocks allow opening near closed leaves
+while preventing closure on an occupied threshold. Station GLB `6cc8a1b5` keeps
+89,944 triangles; the pressure-door kit is unchanged. No dependency, protocol or
+save/schema change. Owned files, actual tests, retained failures, curated images
+and acceptance limits: [elevator repair record](docs/qa/station-elevator-access.md).
+Final delivery/integration receipts are recorded there; shared journal suffixes
+must be preserved during local merge. The local API must reload the new asset and
+server guard together with the browser cache manifest.
+
 ## Team direction — Cees, 2026-09-05
 
 Hosting update from Cees: **Vercel is authorized temporarily until Monday,
