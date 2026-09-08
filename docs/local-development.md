@@ -747,5 +747,5 @@ on `9b6a7de` (runtime `2e686db`), including checked freight `f294a98`.
 The [garage record](qa/compound-garages/README.md) retains original failures,
 performance and night-view limitations. The [player guide](compound-garages.md)
 explains session-only vehicle pose/charge. Source is locally integrated at `e098947`; the [local receipt](qa/compound-garages/local-integration.json)
-records pending served-preview verification. This is not a public release or final
+records verified served garage source and healthy APIs on ports 5178 and 8087. This is not a public release or final
 art/hardware/performance acceptance.
