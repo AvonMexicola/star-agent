@@ -1,5 +1,5 @@
 {
-  "status": "Private combined checkpoint; browser and shared integration pending",
+  "status": "Combined unit/build/browser pass; delegated full journey and shared integration pending",
   "runtime": "73a7be883846394ad42ee563360302190c192833",
   "pirateCandidate": "2c2f2fb49fcfbfc65bcfbc4bf012d78d66491375",
   "sharedDependency": "f1ef821",
@@ -182,7 +182,77 @@
     "changedPaths": 170,
     "result": "Informational; not a test certificate"
   },
-  "browser": "Pending delegated full journey and parent combined-hook fixture",
+  "browser": {
+    "result": "PASS 1 case, 2.0 minutes",
+    "run": {
+      "startedAt": "2026-09-08T21:36:55.804939+00:00",
+      "head": "16c73a512d694cf9b2fd2ea78b9855b826c25649",
+      "status": "",
+      "command": [
+        "npm",
+        "run",
+        "test:browser",
+        "--",
+        "-c",
+        "scripts/compound-garages.config.js",
+        "--grep",
+        "combined garage and pirate interaction routes"
+      ],
+      "browser": "/usr/bin/chromium",
+      "backend": "ANGLE gl",
+      "publicDeployment": false,
+      "finishedAt": "2026-09-08T21:38:58.907010+00:00",
+      "headAfter": "16c73a512d694cf9b2fd2ea78b9855b826c25649",
+      "statusAfter": "",
+      "exitCode": 0
+    },
+    "state": {
+      "browser": "151.0.7922.173",
+      "graphics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "vendor": "Google Inc. (AMD)",
+        "drawCalls": 738,
+        "triangles": 2143447,
+        "renderResolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 1440,
+          "height": 900
+        },
+        "fpsSample": 21,
+        "performanceAcceptance": false
+      },
+      "errors": [],
+      "warnings": [],
+      "fixture": true,
+      "physicalJourney": false,
+      "independentReviewer": "Parent garage agent; pirate scene authored by delegated pirate agent."
+    },
+    "images": [
+      {
+        "path": "combined-garage.png",
+        "sha256": "576f4621e500ff1a8fd587837ef42c23f5f14c1ae3fee27d35776d687d17343f"
+      },
+      {
+        "path": "combined-isolator.png",
+        "sha256": "d6769ab131d29e5ac85d920d2d9a3d3c5de4f235b76295970bfb6acad7ee7123"
+      },
+      {
+        "path": "combined-pirate-yard.png",
+        "sha256": "320b39fcc2efeb88d3c8928782ada6982c3f48bc4d0bfdaaa833ea54bf4aee04"
+      },
+      {
+        "path": "combined-pirate-overview.png",
+        "sha256": "1f8f8a504f95c83f126a2f6ec83c06fc530486aa8756fda79406146933e1da3c"
+      }
+    ]
+  },
   "sharedIntegration": false,
   "publicDeployment": false,
   "garageHosted": {
@@ -193,5 +263,6 @@
     "multiplayer": "PASS 2m45s",
     "browser": "PASS 7m46s",
     "verify": "PASS 3s"
-  }
+  },
+  "build": "PASS in combined browser guard"
 }
