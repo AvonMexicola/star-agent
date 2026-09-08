@@ -1,5 +1,12 @@
 # All-features local development
 
+The mission update is also merged into GitHub `dev/all-features` through
+[PR99](https://github.com/AvonMexicola/star-agent/pull/99), merge `966f781`.
+All five required hosted checks pass on `f90f98c`. Its server cleanup now waits
+for owned PostgreSQL connections to disconnect before returning, fixing the
+reproduced shutdown race. The local branch retains the newer garage and handheld
+updates alongside these missions. No public deployment is included.
+
 **Personal transport missions** are locally integrated at `f294a98`. The paired
 5178/8087 preview was gracefully refreshed with protocol7 on2026-09-08, keeping
 its existing persistent PostgreSQL cluster; both health routes and served source

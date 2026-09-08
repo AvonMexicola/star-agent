@@ -191,3 +191,10 @@ machine load. The focused same transport SQL already passes. The ordinary
 connection timeout is retained. The same full suite with `--test-concurrency=1`
 passes196 cases with2 existing optional skips, zero failures, in33.22s. This is a
 separate failure from the fixed administrator-termination shutdown race.
+
+Final hosted run34278557180 on `f90f98c` passes all five required checks:
+plan35s, source4m50s, multiplayer/database2m59s, browser7m43s and verify3s.
+PR99 was merged into GitHub `dev/all-features` at `966f781` on2026-09-08.
+The local integration preserves the newer garage and handheld source; the three
+server-fix/test files are byte-identical to `f90f98c`. No new gameplay, physical
+controller, independent art or public-deployment claim is attached to this merge.

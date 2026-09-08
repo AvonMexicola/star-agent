@@ -4137,3 +4137,14 @@ and existing base-commerce/cargo/transport focused cases pass17/17; actual local
 restart/backup/unavailable SQL pass3/3. Full serialized multiplayer passes196 cases with2 existing optional skips;
 required hosted checks follow before protected merge. Isolated integrate/transport-development under
 .worktrees/dev-updates-sync; no GPU, shared services, schema or public changes.
+
+
+TRANSPORT PROTECTED MERGE COMPLETE 2026-09-08: PR99 merged at966f781 with exact
+headf90f98c. Hosted run34278557180 passes allfivechecks: plan35s/source4m50/
+multiplayer2m59/browser7m43/verify3s. Latest local583bf5f garage/handheld metadata
+is retained in the isolated combined candidate; only the owned pool-close fix,
+its regression and mission evidence/guide change. All three tested server files
+matchf90 exactly. Local guarded handoff-preserving merge and the existing paired
+preview refresh are recorded in the live integration journal and the isolated
+worktree test-results/mission-final-integration receipt. No schema/protocol/main
+or public-deployment change; physical-device/independent acceptance remains separate.
