@@ -23,7 +23,9 @@ export function createHUDDisplay({body,canvas,canChange}) {
   }
   const cycle=()=>set((index+1)%HUD_MODES.length);
   body.ownerDocument.addEventListener('keydown',event=>{
-    if(event.code!=='Tab'||event.defaultPrevented||event.repeat||event.altKey||event.ctrlKey||event.metaKey||!canChange())return;
+    // Navigation prevents Tab's browser focus movement before this handler;
+    // that does not consume the HUD action. Modal/editable guards own routing.
+    if(event.code!=='Tab'||event.repeat||event.altKey||event.ctrlKey||event.metaKey||!canChange())return;
     if(event.target?.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"]),dialog'))return;
     event.preventDefault();cycle();
   });
