@@ -109,7 +109,7 @@ function terrainDistance(origin, direction, limit) {
   return Infinity;
 }
 
-function worldDistance(world, origin, direction, range) {
+export function worldDistance(world, origin, direction, range) {
   let distance = range;
   const endpoint = origin.clone().addScaledVector(direction, range);
   const min = new THREE.Vector3(-.004, -.004, -.004), max = min.clone().negate();
@@ -135,7 +135,7 @@ function worldDistance(world, origin, direction, range) {
  * An accepted miss still spends one charge and advances the cooldown. Empty
  * hands/mining tools, missing pack weapons, dead players and pilots cannot fire.
  */
-export function shoot({ shooter, players, world, now, deferDamage = false }) {
+export function shoot({ shooter, players, world, now, deferDamage = false, vehicleHit = () => null }) {
   const nav = shooter?.nav;
   const rules = typeof shooter?.weapon === 'string' && Object.hasOwn(WEAPON_RULES, shooter.weapon) ? WEAPON_RULES[shooter.weapon] : null;
   const pack = shooter?.inventory?.containers?.pack;
@@ -146,6 +146,8 @@ export function shoot({ shooter, players, world, now, deferDamage = false }) {
   const origin = nav.position.clone();
   const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(nav.orientation).normalize();
   let distance = worldDistance(world, origin, direction, rules.range), target = null, kind = null;
+  const vehicle=vehicleHit(origin,direction,distance);
+  if(vehicle&&vehicle.distance<distance){distance=vehicle.distance;if(vehicle.health>0){target=vehicle;kind='vehicle';}}
   const candidates = players instanceof Map ? players.values() : players;
   for (const player of candidates || []) {
     if (!player?.nav || !finiteVector(player.nav.position)) continue;

@@ -11,6 +11,7 @@ import {PYRE_POSITION,toPyreBody} from '../pyre-world.js';
 import {MIASMA_POSITION} from '../miasma-world.js';
 import {bodyAltitude} from '../celestial.js';
 import {faunaOrientation,raycastFauna,parkedShipHit,faunaMovementBounds} from './fauna-target.js';
+import {faunaWeaponDamage} from './weapon-rules.js';
 import './hostile-fauna.css';
 
 const ASSETS={pyrebear:'pyrebear',suloher:'suloher-dog','aeon-amphibian':'aeon-amphibian','aeon-grazer':'aeon-grazer'};
@@ -74,8 +75,7 @@ export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false
   const aliveRenderable=()=>simulation.entities.filter(e=>actors.get(e.id)?.root.visible);
   function raycast(start,direction,range){return online()?null:raycastFauna(aliveRenderable(),start,direction,range,dimensions);}
   function weaponHit(hit,item){
-    if(online()||!nav.enabled||nav.mode!=='walk'&&nav.mode!=='eva'||nav.insideShip||hit?.kind!=='fauna')return false;
-    const damage={'rifle-laser':30,'sidearm-pistol':18}[item];if(!damage)return false;
+    const damage=faunaWeaponDamage(nav,hit,item,online());if(!damage)return false;
     const entity=simulation.entities.find(e=>e.id===hit.id);if(!entity||entity.health<=0)return false;
     const before=entity.health,result=simulation.hit(hit.id,damage);shots++;lastHit={id:hit.id,damage:Math.min(before,damage),weapon:item};
     if(entity.health===0){kills++;nav.notify(`${FAUNA_SPECIES[entity.species].name} down`);}return result;
