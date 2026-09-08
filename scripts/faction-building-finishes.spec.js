@@ -18,6 +18,7 @@ async function choose(page,key,hold=false){
  throw Error(`Controller could not reach ${key}`);
 }
 async function tab(page,id){for(let i=0;i<12;i++){if(await page.locator(`[data-controller-key="build-tab-${id}"]`).getAttribute('aria-pressed')==='true')return;await neutral(page);await tap(page,5);}throw Error(`Missing build tab ${id}`);}
+async function gameplayTab(page,id){for(let i=0;i<12;i++){if(await page.locator(`dialog[open] [data-controller-key="tab-${id}"]`).getAttribute('aria-selected')==='true')return;await neutral(page);await tap(page,5);}throw Error(`Missing gameplay tab ${id}`);}
 async function diagnostics(page){return page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info'),s=window.starAgent.state;return {browserGraphics:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),viewport:[innerWidth,innerHeight],resolution:s.renderResolution,draws:s.drawCalls,triangles:s.triangles,physicalDevice:false};});}
 async function capture(page,name){await page.screenshot({path:`${out}/${name}.png`});await writeFile(`${out}/${name}.json`,JSON.stringify({state:await page.evaluate(()=>window.starAgent.state),diagnostics:await diagnostics(page)},null,2));}
 async function artCapture(page,name){const style=await page.addStyleTag({content:'body > :not(canvas){visibility:hidden!important}'});try{await capture(page,name);}finally{await style.evaluate(el=>el.remove());}}
@@ -50,7 +51,7 @@ test.afterEach(async({page},info)=>{if(info.status!==info.expectedStatus)try{awa
 
 test('controller enters sandbox, chooses paint and print, builds, repaints, persists and returns',async({page,browser})=>{
  const record=await setup(page);await page.goto('/?intro=0&debug&seed=7291&epoch=1788876000000');await ready(page);
- const regular=await page.evaluate(key=>localStorage.getItem(key),MINING_KEY);await tap(page,9);await choose(page,'build-sandbox',true);await page.waitForURL(/sandbox=build/);await ready(page);
+ const regular=await page.evaluate(key=>localStorage.getItem(key),MINING_KEY);await tap(page,9);await gameplayTab(page,'ship');await choose(page,'build-sandbox',true);await page.waitForURL(/sandbox=build/);await ready(page);
  await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);const before=await saved(page);expect(before.build.claims[0].pieces).toHaveLength(10);
  await tap(page,1);await tab(page,'finishes');await choose(page,'build-finish-crimson');await choose(page,'build-graphic-crimson');await capture(page,'finishes-desktop');
  await tab(page,'pieces');await page.evaluate(()=>window.factionPad.axes=[.8,-.8,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','wall');await tap(page,0);await page.evaluate(()=>window.factionPad.axes.fill(0));await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);await capture(page,'crimson-placement');await tap(page,0);
@@ -65,7 +66,7 @@ test('controller enters sandbox, chooses paint and print, builds, repaints, pers
  expect((await saved(page)).build.claims[0].pieces.find(p=>p.type==='wall').finish).toBe('petrol');await tap(page,0);await tap(page,2);await ready(page);await artCapture(page,'helmet-painted');
  await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await capture(page,'result-inventory');await button(page,7,true);await tap(page,1);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(page,7,false);await ready(page);
  const final=await saved(page);expect(final.build.claims[0].pieces.find(p=>p.type==='wall')).toMatchObject({finish:'ivory',graphic:'helmet'});expect(final.remote).toEqual(inventory);await page.reload();await ready(page);expect((await saved(page)).build).toEqual(final.build);
- await tap(page,9);await choose(page,'sandbox-exit',true);await page.waitForURL(url=>!url.searchParams.has('sandbox'));await ready(page);expect(await page.evaluate(key=>localStorage.getItem(key),MINING_KEY)).toBe(regular);
+ await tap(page,9);await gameplayTab(page,'ship');await choose(page,'sandbox-exit',true);await page.waitForURL(url=>!url.searchParams.has('sandbox'));await ready(page);expect(await page.evaluate(key=>localStorage.getItem(key),MINING_KEY)).toBe(regular);
  expect(record.errors).toEqual([]);await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),...await diagnostics(page),...record,fixture:'Only standard Gamepad writes after normal game start; actual sandbox entry, aim/placement/repainting, save and inventory. No pose, save or action injection.',beforeCount:10,afterCount:11,concreteSpent:8,paintCost:0},null,2));
 });
 

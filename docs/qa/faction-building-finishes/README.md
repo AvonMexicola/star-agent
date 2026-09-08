@@ -36,3 +36,17 @@ build PASS46.98s before the final no-readback pad redraw refactor; the browser
 runner includes the final production build. Existing Vite chunk advisory retained.
 Repository/diff checks pass. First browser candidate5d4d3ff is queued after the
 shared machine's earlier ready Recovery/Sentry/Rotation jobs; no GPU acquired.
+
+Browser01 stopped before a page loaded: the default runner sandbox rejects even
+local socket creation with EPERM, so the private API/web server could not start.
+No Chromium crash or application workaround. A read-only /proc executable scan
+inside that sandbox was also unreliable because process symlink access is restricted.
+The same absolute guard under the authorised host test path correctly found an
+active Sentry worker and deferred without launching. Once that job released,02
+launched on clean faf344f, produced the final production build, loaded the game
+and rendered without page/console errors or warnings. It stopped after1.3m at
+an outdated fixture assumption: Menu now opens Contracts; sandbox is in Ship.
+The fixture now uses real RB tab changes to Ship for entry and exit. Original
+01 logs and02 state/image/video/error context remain under test-results/faction-01
+and faction-02; five later cases did not run. No acceptance pass is claimed yet.
+The existing build-ui bumper-order regression also now includes the Finishes tab.

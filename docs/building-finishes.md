@@ -1,5 +1,8 @@
 # Building paint and faction prints
 
+For supplied practice, use **Menu → Ship → Open build sandbox**. Return through
+**Menu → Ship → Return to regular game**.
+
 On foot outside a ship, open **Build → Finishes**. Select a colour and a print.
 Choose a part from Blocks, Shapes, Facilities, Power or Roofs and place it normally.
 The preview retains your chosen paint. Prints fit solid walls; large pad emblems
