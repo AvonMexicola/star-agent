@@ -1,6 +1,7 @@
 # SA-GARAGE-001 — compound vehicle garages
 
-Status: active. Cees requests garages that spawn ground vehicles. Codex owns
+Status: locally integrated development checkpoint at `e098947`; final art,
+hardware and performance acceptance remain pending. Cees requests garages that spawn ground vehicles. Codex owns
 `feat/compound-garages`, based on checked `23ca619`, in the matching worktree.
 Private preview5674/API8674; disk-backed browser cache and evidence.
 

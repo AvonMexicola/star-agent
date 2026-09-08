@@ -1,7 +1,8 @@
 # SA-GARAGE-001 — compound garage checkpoint
 
 Status: gameplay/browser checks complete; ready for a labeled local development
-checkpoint. Local integration receipt pending. Owner: Codex compound garages. Branch `feat/compound-garages`,
+checkpoint, integrated locally at `e098947`. Served-preview verification remains
+pending in the [local receipt](local-integration.json). Owner: Codex compound garages. Branch `feat/compound-garages`,
 base `23ca619`, combined runtime `2e686db` including checked Transport `f294a98`.
 Private preview5674 / memory API8674; no public
 release or shared service change. Final independent art, hardware and performance
@@ -119,6 +120,9 @@ Existing nondefault seeds still generate four sites; detailed driveway traversal
 uses seed7291. Session-only pose and charge behavior is in the
 [player route](../../compound-garages.md). The focused runner and private API are
 closed; raw logs, state and retained failed videos remain in the owner worktree.
-Next: serialize the source-only local FF over checked Transport `f294a98`, preserve
-the dirty journal byte-for-byte and record served-source/API checks. No garage
-runtime is yet claimed as served by the shared5178 preview.
+Native source-only FF from Transport metadata `65f1721` to `e098947` preserved
+the exact519025-byte dirty journal without rewriting it. No service, schema or
+protocol was changed. Normal shell socket creation returned EPERM, so served-source
+and API checks remain pending through the next already-authorized browser QA.
+No new escalation was requested. The receipt separates integrated source from
+verified served content.
