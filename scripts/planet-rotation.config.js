@@ -6,7 +6,8 @@ if(process.env.TEST_WORKER_INDEX===undefined){
     try{
       const exe=readlinkSync(`/proc/${id}/exe`),args=readFileSync(`/proc/${id}/cmdline`,'utf8').replaceAll('\0',' ');
       const playwright=/(?:\/(?:\.bin\/playwright|(?:@playwright\/test|playwright)\/cli\.js)\s+test\b|playwright\/lib\/worker\/)/.test(args);
-      return id!==String(process.pid)&&/\/node$/.test(exe)&&playwright?[id]:[];
+      const chromium=/\/(?:chromium|chrome|chrome-headless-shell)$/.test(exe)&&args.includes('--remote-debugging-pipe');
+      return id!==String(process.pid)&&(/\/node$/.test(exe)&&playwright||chromium)?[id]:[];
     }catch{return [];}
   });
   if(busy.length)throw new Error(`GPU queue busy: Playwright processes ${busy.join(', ')}`);
