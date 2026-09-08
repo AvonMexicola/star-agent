@@ -149,8 +149,11 @@ def bake_contact(objs):
                 col.data[l].color=(ao,ao,ao,1)
 
 def main():
-    report={}
+    report=json.loads((SOURCE/'manifest.json').read_text())
     for item,builder in [('rifle-laser',g.build_rifle),('sidearm-pistol',g.build_pistol),('mining-laser-tool',g.build_mining),('tractor-beam-tool',tractor)]:
+        if report.get(item,{}).get('builder','assets/handheld-tools/build.py')!='assets/handheld-tools/build.py':
+            print('Separate articulated source:',item,report[item]['builder'],flush=True)
+            continue
         g.reset_scene();g.faction_materials()
         bpy.context.preferences.filepaths.save_version=0
         for key,color in [('Teal',(.1,.25,.23)),('Ochre',(.56,.32,.07)),('Titanium',(.2,.25,.28)),('Label',(.1,.15,.14))]:g.material(key,color)

@@ -1,0 +1,43 @@
+{
+  "id": "SA-TOOL-002",
+  "title": "K-17 rotating handheld mining head",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex field cutter",
+  "status": "active",
+  "branch": "art/rotating-mining-tool",
+  "base": "67dc33b97a40e3aff6f76c527546a77e6669d960",
+  "updated": "2026-09-08",
+  "areas": [
+    "assets",
+    "industry",
+    "rendering"
+  ],
+  "claims": [
+    "assets/field-cutter",
+    "assets/medical-items",
+    "src/mining/cutter-head.js",
+    "src/equipment.js",
+    "src/equipment-materials.js",
+    "src/mining/tool.js",
+    "public/models/props/mining-laser-tool.glb",
+    "public/models/props/manifest.json",
+    "assets/handheld-tools/manifest.json",
+    "tests/cutter-head.test.js",
+    "tests/handheld-tools.test.js",
+    "scripts/field-cutter.config.js",
+    "scripts/field-cutter.spec.js",
+    "package.json",
+    "assets/handheld-tools/build.py",
+    "assets/handheld-tools/pack.mjs",
+    "public/models/props/bandage-medical.glb",
+    "public/models/props/med-stim.glb",
+    "tests/handheld-tools/visual.spec.js"
+  ],
+  "brief": "docs/briefs/field-cutter.md",
+  "dependencies": [
+    "SA-TOOL-001",
+    "SA-ART-001"
+  ],
+  "qa": "docs/qa/field-cutter/README.md"
+}

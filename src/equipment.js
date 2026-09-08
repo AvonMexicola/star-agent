@@ -27,6 +27,7 @@
 
 import * as THREE from 'three';
 import { textureMiningTool } from './mining/tool-materials.js';
+import { updateCutterHead } from './mining/cutter-head.js';
 import { shareHandheldTextures, hasAuthoredHandheldFinish, clearHandheldTextureCache } from './equipment-materials.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { solveArm, rotateBoneWorld } from './character-ik.js';
@@ -109,7 +110,7 @@ export const ITEMS = Object.freeze({
   },
   'mining-laser-tool': {
     name: 'mining-laser-tool',
-    label: 'Mining laser',
+    label: 'K-17 field cutter · Mk1',
     file: `${PROPS}mining-laser-tool.glb`,
     socket: 'RightHand',
     handed: 2,
@@ -740,6 +741,8 @@ export class Equipment {
 
     if (held && spec.shot === 'beam') this._updateBeam(step, wantsFire, source.targetWorldPoint, source.hasHit !== false);
     else { this._beaming = false; this._heat.update(step, false); this._hideBeam(); }
+    this.cutterHead=updateCutterHead(this._items.get('mining-laser-tool')?.root,step,this._beaming,
+      held&&spec.name==='mining-laser-tool');
 
     if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle() && (!source.authorizeFire || source.authorizeFire(spec.name))) {
       this._spawnTracer(spec, source.targetWorldPoint);

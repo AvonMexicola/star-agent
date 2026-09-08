@@ -457,22 +457,22 @@
     "name": "mining-laser-tool",
     "file": "mining-laser-tool.glb",
     "category": "gear",
-    "tris": 7868,
+    "tris": 9444,
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 0.4042,
+    "height_m": 0.34140000000000004,
     "footprint_m": [
-      0.8125,
-      0.197
+      0.802,
+      0.2318
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.77198,
-    "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
+    "file_mb": 0.9158,
+    "notes": "K-17 Mk1: fixed optical bore, rotating three-lobed head. User reference and editable Blender source in assets/field-cutter.",
     "source": "blender/build_gear.py",
     "origin": "rear pistol-grip palm point; emitter axis -X at y=0.14; muzzle (-0.60, 0.14, 0); leftGrip (-0.30, 0.01, 0)",
-    "sha256": "acaa2f44f0f8a946c19e4625351f71c758341d03d4bba387090d0604c33fdb43"
+    "sha256": "dc078fe73e0d46d32bbdf8a63db82f41231454178297ae6104d62db0cbece967"
   },
   {
     "name": "rifle-laser",
@@ -680,5 +680,69 @@
       0.104
     ],
     "notes": "Original compact Meridian builder; editable source and measured contract in assets/builder-tool."
+  },
+  {
+    "name": "bandage-medical",
+    "file": "bandage-medical.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 762,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.75724,
+    "sha256": "658ff570e40273bef0ab352d0517a5d3037c904afc6847717a100fd0da672119",
+    "height_m": 0.059296822547912596,
+    "footprint_m": [
+      0.0816406774520874,
+      0.11
+    ],
+    "bounds": {
+      "min": [
+        -0.0408203387260437,
+        0,
+        -0.055
+      ],
+      "max": [
+        0.0408203387260437,
+        0.059296822547912596,
+        0.055
+      ]
+    },
+    "sourceScale": 0.11,
+    "notes": "Cees-supplied Meshy medical model. Original geometry/UV/PBR preserved, 1K WebP and metre scale. Prop library asset; no new healing mechanics or use animation."
+  },
+  {
+    "name": "med-stim",
+    "file": "med-stim.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 534,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.635812,
+    "sha256": "044363ff5d972aea28649761b37738ea9d64d77e607e93d5b493ca9b8ece5841",
+    "height_m": 0.16,
+    "footprint_m": [
+      0.03226559996604919,
+      0.027421920299530028
+    ],
+    "bounds": {
+      "min": [
+        -0.016249920129776,
+        0,
+        -0.013671840429306031
+      ],
+      "max": [
+        0.016015679836273194,
+        0.16,
+        0.013750079870223999
+      ]
+    },
+    "sourceScale": 0.16,
+    "notes": "Cees-supplied Meshy medical model. Original geometry/UV/PBR preserved, 1K WebP and metre scale. Prop library asset; no new healing mechanics or use animation."
   }
 ]

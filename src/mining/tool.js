@@ -139,6 +139,6 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       button.disabled=!selected||Boolean(rock.error)||rock.store.blocked||rock.store.free<.001;
       $('.mining-feedback').textContent=rock.error||rock.store.warning||(rock.store.free<.001?'Pouch full. Use Deposit all resources at ship cargo.':equipment.overheated?'Cooling down…':!selected?(nav.controllerActive?'D-pad → · Equip mining laser':'3 · Equip mining laser'):rock.pending?'Cutting rock…':(nav.controllerActive?'RT · Mine / D-pad → · Holster / View · Backpack':'Hold T / mouse · R holsters · I opens backpack'));
     },
-    get state(){return {active,builder:builder.state,muzzleDirection:equipment.muzzleWorldDirection()?.toArray()??null,aimDirection:direction.toArray(),attachment:external?(attached?'character-hand':'loading'):'first-person',item:equipment.equipped,ammo:loadout?.ammoFor()??0,hit:hit?.point.toArray()??null,heat:equipment.heat,beaming:equipment.beaming,selected,target:rock.inspectState??null,toolError:equipment.error};},
+    get state(){return {active,builder:builder.state,cutterHead:equipment.cutterHead??null,muzzleDirection:equipment.muzzleWorldDirection()?.toArray()??null,aimDirection:direction.toArray(),attachment:external?(attached?'character-hand':'loading'):'first-person',item:equipment.equipped,ammo:loadout?.ammoFor()??0,hit:hit?.point.toArray()??null,heat:equipment.heat,beaming:equipment.beaming,selected,target:rock.inspectState??null,toolError:equipment.error};},
   };
 }

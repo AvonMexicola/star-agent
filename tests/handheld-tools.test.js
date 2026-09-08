@@ -28,8 +28,8 @@ test('shipped handhelds retain actual export budgets, UVs, normals, contact AO, 
     assert.ok(finish.pbrMetallicRoughness.baseColorTexture&&finish.pbrMetallicRoughness.metallicRoughnessTexture&&finish.normalTexture);
     for(const [kind,slot] of [['normal',finish.normalTexture],['basecolor',finish.pbrMetallicRoughness.baseColorTexture],['orm',finish.pbrMetallicRoughness.metallicRoughnessTexture]]){
       const index=glb.json.textures[slot.index].extensions.EXT_texture_webp.source;
-      assert.equal(glb.json.images[index].name,`HandheldAtlas-v1-${kind}`);
-      assert.deepEqual(glb.image(index),readFileSync(new URL(`../assets/handheld-tools/textures/${kind}.webp`,import.meta.url)),`${name} ${kind} uses its actual authored data`);
+      assert.equal(glb.json.images[index].name,entry.maps?.[kind]?.name??`HandheldAtlas-v1-${kind}`);
+      assert.deepEqual(glb.image(index),readFileSync(new URL(`../${entry.maps?.[kind]?.path??`assets/handheld-tools/textures/${kind}.webp`}`,import.meta.url)),`${name} ${kind} uses its actual authored data`);
     }
     assert.equal(glb.json.images.length,3);
     for(const im of glb.json.images)assert.equal(im.mimeType,'image/webp');
