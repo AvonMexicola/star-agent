@@ -1,9 +1,9 @@
 # Handheld builder production record
 
 2026-09-08, Europe/Amsterdam. [Brief](../../briefs/handheld-builder.md).
-Author implementation and browser04 validation complete on the pre-phone-adjustment
-checkpoint from `5f8f018`. A narrow portrait mount refinement awaits the final
-combined handheld run. Independent, physical-device and performance acceptance
+Author implementation, native/game image review and controller/keyboard/native
+touch validation are complete. Combined02 on `d1078be` validates the final
+builder portrait framing. Independent, physical-device and performance acceptance
 remain pending. Local integration is not yet claimed.
 
 The new model uses the existing original handheld atlas and Blender geometry,
@@ -31,8 +31,8 @@ samples; all nine aperture rays pass. Original first GLB retained in ignored
 Blender01 completed source/export, then hung in sandbox audio shutdown with
 `pa_write ... Operation not permitted`. Only its owned process was terminated.
 Corrected Blender02 exited 0 outside the sandbox. Blender's inherited multi-image
-sampler warning remains in `/tmp/builder-author02.log`; actual game material
-inspection is pending. Full production build passes in 6.36 s at the preceding
+sampler warning remains in `/tmp/builder-author02.log`; later browser04 material
+inspection passes. Full production build passes in 6.36 s at the preceding
 viewer version (`/tmp/builder-production01.log`); the final viewer build is
 `/tmp/builder-production02.log`. Repository check passes; the suggested check plan
 is `/tmp/builder-check-plan01.log` and is not a test result.
@@ -55,10 +55,10 @@ the complete controller path but its recorder omitted the avatarStudio state
 fallback. That recorder correction is present in the passing qa04.
 
 Author image review verified native finish, actual in-game projection and grip.
-The phone controls work, but the original desktop mount falls outside the narrow
-frustum; a portrait-only builder mount adjustment is pending the next browser
-receipt. The third-person screenshot caught a transient jump from the shared
-bumper camera chord; the final capture will wait for the physical landing.
+The phone controls work, but the original desktop mount fell outside the narrow
+frustum; the final portrait-only adjustment is validated below. The original
+third-person screenshot caught a transient jump from the shared bumper camera
+chord; combined01's capture waits for the physical landing.
 The same native model is registered in the existing avatar studio for grip review.
 
 Raw receipts: ignored `assets/builder-tool/.staging/qa-01` through `qa-04`, including
@@ -78,9 +78,13 @@ reload, preserving the original raw failure and all unexpected request checks.
 The first portrait adjustment exposed too much of the tool high in the frame.
 A second portrait-only position moves it farther from the camera and lower;
 desktop placement is unchanged. Its production build passes in 4.17 seconds
-(`assets/field-cutter/.staging/production02.log`). The focused phone follow-up
-and final image inspection remain pending. Combined01 raw evidence is retained
-under `assets/field-cutter/.staging/qa-combined01`.
+(`assets/field-cutter/.staging/production02.log`). Combined02's keyboard/native
+phone case passes in 1.6 minutes at `d1078be`, including actual placement and
+equipment restoration, with zero browser diagnostics or failed requests. The
+[final phone image](game-phone.png) keeps the tool and display inside the frame.
+The existing development phone HUD is dense; this pass does not redesign it.
+Combined01 and combined02 raw evidence is retained under
+`assets/field-cutter/.staging/qa-combined01` and `qa-combined02`.
 
 ## Preserved pre-browser checkpoint
 
