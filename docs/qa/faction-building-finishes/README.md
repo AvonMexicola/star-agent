@@ -50,3 +50,21 @@ The fixture now uses real RB tab changes to Ship for entry and exit. Original
 01 logs and02 state/image/video/error context remain under test-results/faction-01
 and faction-02; five later cases did not run. No acceptance pass is claimed yet.
 The existing build-ui bumper-order regression also now includes the Finishes tab.
+
+Browser03 loaded and completed real Ship/sandbox entry, coloured wall placement,
+two repaints, held modal/focus/disconnect/replacement/unsupported-device gates,
+result inventory and reload. It stopped after3.3m on an overbroad fixture assertion:
+the comparison included normal battery charge/time progression across reload
+(1.9911356→1.9857883 kWh). The correction compares every saved structural/cosmetic
+field and stable power health/fuel/version; atomic paint-time power preservation
+is independently covered by the CPU case. No application change. Zero page or
+console errors/warnings. Original03 screenshots/video/state/log remain retained.
+The first video appeared stuck at preload while the game was loading; the full
+receipt confirms it did load and continue, so no startup failure is inferred.
+
+Author inspected03 palette and three wall views. Eight original marks are distinct,
+with stable visible controller focus. The paired wall faces away from the sun and
+is too dark for useful appearance review. The next controller capture activates
+the existing suit flashlight with LB+RB+left before both views; no lighting/shader
+or emissive adjustment is made. Full journey return, phone and public-site views
+still await a passing run; partial03 is not counted as acceptance.

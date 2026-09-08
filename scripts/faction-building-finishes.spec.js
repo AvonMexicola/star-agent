@@ -8,6 +8,9 @@ const frames=page=>page.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise
 const ready=page=>page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&window.starAgent.state.controller.armed,undefined,{timeout:90000});
 const neutral=page=>page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);
 const saved=page=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),SANDBOX_PREFIX+MINING_KEY);
+// Charge and its clock legitimately advance during a real reload. Retain every
+// structural/cosmetic field and stable power health/fuel/version in this comparison.
+const persistedStructure=build=>({...build,claims:build.claims.map(claim=>({...claim,power:claim.power?{version:claim.power.version,health:claim.power.health,fuel:claim.power.fuel}:undefined}))});
 async function button(page,i,pressed){await page.evaluate(({i,pressed})=>window.factionPad.buttons[i]={pressed,value:+pressed},{i,pressed});await frames(page);}
 async function tap(page,i){await button(page,i,true);await button(page,i,false);}
 async function choose(page,key,hold=false){
@@ -20,7 +23,7 @@ async function choose(page,key,hold=false){
 async function tab(page,id){for(let i=0;i<12;i++){if(await page.locator(`[data-controller-key="build-tab-${id}"]`).getAttribute('aria-pressed')==='true')return;await neutral(page);await tap(page,5);}throw Error(`Missing build tab ${id}`);}
 async function gameplayTab(page,id){for(let i=0;i<12;i++){if(await page.locator(`dialog[open] [data-controller-key="tab-${id}"]`).getAttribute('aria-selected')==='true')return;await neutral(page);await tap(page,5);}throw Error(`Missing gameplay tab ${id}`);}
 async function diagnostics(page){return page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info'),s=window.starAgent.state;return {browserGraphics:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),viewport:[innerWidth,innerHeight],resolution:s.renderResolution,draws:s.drawCalls,triangles:s.triangles,physicalDevice:false};});}
-async function capture(page,name){await page.screenshot({path:`${out}/${name}.png`});await writeFile(`${out}/${name}.json`,JSON.stringify({state:await page.evaluate(()=>window.starAgent.state),diagnostics:await diagnostics(page)},null,2));}
+async function capture(page,name){await page.screenshot({path:`${out}/${name}.png`});await writeFile(`${out}/${name}.json`,JSON.stringify({state:await page.evaluate(()=>window.starAgent.state),diagnostics:await diagnostics(page)},null,2));console.log(`Captured ${name}`);}
 async function artCapture(page,name){const style=await page.addStyleTag({content:'body > :not(canvas){visibility:hidden!important}'});try{await capture(page,name);}finally{await style.evaluate(el=>el.remove());}}
 async function warmSample(page){return page.evaluate(async()=>{const times=[],start=performance.now();let previous=start;while(performance.now()-start<5000){await new Promise(r=>requestAnimationFrame(r));const now=performance.now();times.push(now-previous);previous=now;}times.sort((a,b)=>a-b);return {durationMs:performance.now()-start,samples:times.length,medianMs:times[Math.floor(times.length*.5)],p95Ms:times[Math.floor(times.length*.95)],acceptance:false};});}
 async function setup(page,pad=true){
@@ -55,7 +58,10 @@ test('controller enters sandbox, chooses paint and print, builds, repaints, pers
  await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);const before=await saved(page);expect(before.build.claims[0].pieces).toHaveLength(10);
  await tap(page,1);await tab(page,'finishes');await choose(page,'build-finish-crimson');await choose(page,'build-graphic-crimson');await capture(page,'finishes-desktop');
  await tab(page,'pieces');await page.evaluate(()=>window.factionPad.axes=[.8,-.8,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','wall');await tap(page,0);await page.evaluate(()=>window.factionPad.axes.fill(0));await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);await capture(page,'crimson-placement');await tap(page,0);
- await page.waitForFunction(()=>window.starAgent.state.build.pieceCount===11);await tap(page,2);await ready(page);await aim(page,await pointForWall(page));await artCapture(page,'wall-before-repaint');
+ await page.waitForFunction(()=>window.starAgent.state.build.pieceCount===11);await tap(page,2);await ready(page);await aim(page,await pointForWall(page));
+ // This wall faces away from the sun. Use the actual suit light for readable
+ // paired art views, through the existing controller chord.
+ await button(page,4,true);await button(page,5,true);await tap(page,14);await button(page,5,false);await button(page,4,false);await ready(page);await page.waitForFunction(()=>window.starAgent.state.utilities.suit);await artCapture(page,'wall-before-repaint');
  let current=await saved(page);expect(current.build.claims[0].pieces.find(p=>p.type==='wall')).toMatchObject({finish:'crimson',graphic:'crimson'});expect(current.remote['sandbox-supply-0'].items.concrete).toBe(before.remote['sandbox-supply-0'].items.concrete-8);
  const inventory=structuredClone(current.remote);
  await tap(page,1);await tab(page,'finishes');await choose(page,'build-finish-petrol');await choose(page,'build-graphic-tidemark');await choose(page,'build-paint-tool');await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);await tap(page,0);await frames(page);await artCapture(page,'wall-after-repaint');
@@ -65,7 +71,7 @@ test('controller enters sandbox, chooses paint and print, builds, repaints, pers
  expect((await saved(page)).build.claims[0].pieces.find(p=>p.type==='wall').finish).toBe('petrol');await button(page,0,false);await ready(page);await heldFocusAndDevices(page);
  expect((await saved(page)).build.claims[0].pieces.find(p=>p.type==='wall').finish).toBe('petrol');await tap(page,0);await tap(page,2);await ready(page);await artCapture(page,'helmet-painted');
  await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await capture(page,'result-inventory');await button(page,7,true);await tap(page,1);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(page,7,false);await ready(page);
- const final=await saved(page);expect(final.build.claims[0].pieces.find(p=>p.type==='wall')).toMatchObject({finish:'ivory',graphic:'helmet'});expect(final.remote).toEqual(inventory);await page.reload();await ready(page);expect((await saved(page)).build).toEqual(final.build);
+ const final=await saved(page);expect(final.build.claims[0].pieces.find(p=>p.type==='wall')).toMatchObject({finish:'ivory',graphic:'helmet'});expect(final.remote).toEqual(inventory);await page.reload();await ready(page);expect(persistedStructure((await saved(page)).build)).toEqual(persistedStructure(final.build));
  await tap(page,9);await gameplayTab(page,'ship');await choose(page,'sandbox-exit',true);await page.waitForURL(url=>!url.searchParams.has('sandbox'));await ready(page);expect(await page.evaluate(key=>localStorage.getItem(key),MINING_KEY)).toBe(regular);
  expect(record.errors).toEqual([]);await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),...await diagnostics(page),...record,fixture:'Only standard Gamepad writes after normal game start; actual sandbox entry, aim/placement/repainting, save and inventory. No pose, save or action injection.',beforeCount:10,afterCount:11,concreteSpent:8,paintCost:0},null,2));
 });
