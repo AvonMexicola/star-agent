@@ -37,3 +37,12 @@ return/deposit/result/relaunch, and guarded combat route. Keyboard/native phone
 actions, held input across dialogs/native focus/device changes. Inspect original
 1440×900/390×844 images and actual alarm motion/render diagnostics. Physical
 controller, all-hull journeys and independent acceptance remain separate.
+
+
+## Cees's specific-container revision
+
+Acceptance must show the required cargo-grid size rather than reject a full hold.
+New jobs require one named 2 SBU container; other wreck containers are optional
+loot which the player can keep or sell. Missing optional cargo never blocks the
+mission reward. Maintain original-container identity, accepting-pilot privacy,
+guard clearance, real tractor/grid movement and physical terminal delivery.

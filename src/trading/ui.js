@@ -70,12 +70,12 @@ export function createTradingUI(api,nav){
       selection.append(button('Equip tractor beam','equip-tractor',tractor,busy||isHandsFree(nav)||Boolean(nav.travel)||!['walk','eva'].includes(nav.mode)||Boolean(s.account?.carried)));
       const crates=ship?.crates??[];totalPages=Math.max(1,Math.ceil(crates.length/3));page=Math.min(page,totalPages-1);
       for(const c of crates.slice(page*3,page*3+3)){
-        const row=document.createElement('article'),text=document.createElement('div'),title=document.createElement('h3');title.textContent=`${c.sbu} SBU · ${c.recovery?'RECOVERY CARGO · ':c.transport?'SEALED FREIGHT · ':''}${resourceById(c.resource).name}`;text.append(title);
+        const row=document.createElement('article'),text=document.createElement('div'),title=document.createElement('h3');title.textContent=`${c.sbu} SBU · ${c.recovery?(c.recovery.optional?'BONUS LOOT · ':'MISSION CONTAINER · '):c.transport?'SEALED FREIGHT · ':''}${resourceById(c.resource).name}`;text.append(title);
         const sub=document.createElement('p');sub.textContent=`${c.grid} · ${c.sbu*16} kg packed resources`;text.append(sub);const actions=document.createElement('div');actions.className='trade-row-actions';
         actions.append(c.sbu===1?button('Carry',`take-${c.id}`,()=>run({op:'take',crate:c.id}),busy||Boolean(s.account?.carried)||!api.canTake(ship,c)):button('Tractor beam',`tractor-${c.id}`,tractor,busy||isHandsFree(nav)||Boolean(nav.travel)||Boolean(s.account?.carried)||!['walk','eva'].includes(nav.mode)));
         if(c.transport){sub.textContent+=' · Personal transport contract · cannot sell';actions.append(button('Open freight contract',`freight-${c.id}`,()=>{view='freight';page=0;render();}));}
-        if(c.recovery){sub.textContent+=' · Personal recovery · cannot sell';actions.append(button('Open recovery contract',`recovery-${c.id}`,()=>{view='recovery';page=0;render();}));}
-        if(!c.transport&&!c.recovery&&near&&dock&&ship.owner===s.owner){
+        if(c.recovery){sub.textContent+=c.recovery.optional?' · Optional recovery loot · yours to sell':' · Required mission container · cannot sell';actions.append(button('Open recovery contract',`recovery-${c.id}`,()=>{view='recovery';page=0;render();}));}
+        if(!c.transport&&(!c.recovery||c.recovery.optional)&&near&&dock&&ship.owner===s.owner){
           const quote=own||t?null:quoteStation(s,terminal,resourceById(c.resource),'sell',c.sbu);
           if(quote)sub.textContent+=site?` · Local stock ${quote.stockBefore} SBU · Needs ${quote.need} SBU${quote.ok?'':' · '+quote.reason}`:` · Exchange stock ${quote.stockBefore??'unavailable'}${quote.ok?'':' · '+quote.reason}`;
           actions.append(button(own?(t.base?'Deposit to base':'List for sale'):quote?.ok?`Sell ${c.sbu} · ${quote.total} CR`:'Sell · unavailable',`sell-${c.id}`,()=>run({op:own?(t.base?'base-deposit':'stock'):'sell',crate:c.id,resource:c.resource,sbu:c.sbu,revision:s.revision}),busy||Boolean(t&&!own)||Boolean(quote&&!quote.ok)));

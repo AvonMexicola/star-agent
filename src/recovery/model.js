@@ -1,5 +1,5 @@
-import {recoveryJob,recoveryCratePose} from './catalog.js';
-import {validGrid,capacitySBU,usedSBU} from '../cargo/grid.js';
+import {recoveryJob,recoveryCratePose,recoveryRequired} from './catalog.js';
+import {validGrid} from '../cargo/grid.js';
 const check=(ok,message)=>{if(!ok)throw new Error(message);};
 const record=x=>x&&typeof x==='object'&&!Array.isArray(x);
 const integer=n=>Number.isSafeInteger(n)&&n>=0&&n<=1e9;
@@ -18,12 +18,13 @@ export function validRecoveries(s){
       if(f.active===null)continue;
       const m=f.active,j=recoveryJob(m?.job);check(record(m)&&j&&/^recovery-[1-9][0-9]*$/.test(m.id)&&!missions.has(m.id)&&['accepted','recover'].includes(m.phase)&&typeof m.cleared==='boolean','recovery mission');missions.add(m.id);
       check(vector(m.position,3)&&vector(m.quaternion,4)&&Math.abs(Math.hypot(...m.quaternion)-1)<1e-5&&Array.isArray(m.crates)&&new Set(m.crates).size===m.crates.length,'recovery pose');
-      const found=all.filter(({crate:c})=>c.recovery?.id===m.id);
-      if(m.phase==='accepted'){check(!m.crates.length&&!found.length,'unissued recovery');continue;}
-      check(m.crates.length===j.crates&&found.length===j.crates,'original recovery crates');
-      for(const {crate:c,owner:holder} of found)check(m.crates.includes(c.id)&&c.recovery.owner===owner&&(!holder||holder===owner)&&(!c.holder||c.holder===owner)&&c.sbu===j.sbu&&c.resource===j.resource&&!c.transport,'recovery seal');
+      const found=all.filter(({crate:c})=>c.recovery?.id===m.id),required=found.filter(({crate:c})=>!c.recovery.optional),count=recoveryRequired(m,j);
+      if(Object.hasOwn(m,'loot'))check(Array.isArray(m.loot)&&new Set([...m.crates,...m.loot]).size===m.crates.length+m.loot.length&&m.loot.every(id=>/^sbu-[1-9][0-9]*$/.test(id)),'recovery loot');
+      if(m.phase==='accepted'){check(!m.crates.length&&!found.length&&!(m.loot?.length),'unissued recovery');continue;}
+      check(m.crates.length===count&&required.length===count&&(!m.loot||m.loot.length===j.crates-count),'original recovery crates');
+      for(const {crate:c,owner:holder} of found)check((c.recovery.optional?m.loot?.includes(c.id):m.crates.includes(c.id))&&c.recovery.owner===owner&&(!holder||holder===owner)&&(!c.holder||c.holder===owner)&&c.sbu===j.sbu&&c.resource===(c.recovery.optional?j.bonusResource:j.resource)&&!c.transport,'recovery seal');
     }
-    for(const {crate:c} of all){if(!Object.hasOwn(c,'recovery'))continue;const seal=c.recovery;check(record(seal)&&Object.keys(seal).length===2&&Object.hasOwn(s.accounts,seal.owner),'recovery owner');const m=s.accounts[seal.owner].recovery?.active;check(m?.phase==='recover'&&m.id===seal.id&&m.crates.includes(c.id),'orphan recovery cargo');}
+    for(const {crate:c} of all){if(!Object.hasOwn(c,'recovery'))continue;const seal=c.recovery;check(record(seal)&&Object.keys(seal).length===(seal.optional===true?3:2)&&(!Object.hasOwn(seal,'optional')||seal.optional===true)&&Object.hasOwn(s.accounts,seal.owner),'recovery owner');const m=s.accounts[seal.owner].recovery?.active;check(m?.phase==='recover'&&m.id===seal.id&&(seal.optional?m.loot?.includes(c.id):m.crates.includes(c.id)),'orphan recovery cargo');}
     return true;
   }catch{return false;}
 }
@@ -33,16 +34,16 @@ export function recoveryCommand(s,owner,command,ctx){
   const f=a.recovery,m=f.active;
   if(command.op==='recovery-accept'){
     const j=recoveryJob(command.job),ship=s.ships[command.ship];check(j,'Choose a recovery contract.');check(!m,'Complete or abandon your current recovery first.');
-    check(ship?.owner===owner&&capacitySBU(ship.hull)-usedSBU(ship.crates)>=j.sbu*j.crates,'Choose a cargo ship with enough grid capacity.');
+    check(ship?.owner===owner,'Choose your receiving cargo ship.');
     check(ctx.recovery.canAccept?.(j,ship),'Finish your active security sortie or choose a supported armed ship first.');
     const pose=ctx.recovery.pose(j);check(pose,'Recovery signal unavailable.');
-    f.active={id:`recovery-${s.nextId++}`,job:j.id,phase:'accepted',cleared:!j.guards.length,crates:[],...pose};return 'Recovery accepted. Track the disabled Atlas in Map → Missions. Fly there; no cargo has been issued yet.';
+    f.active={id:`recovery-${s.nextId++}`,job:j.id,phase:'accepted',cleared:!j.guards.length,crates:[],loot:[],...pose};return `Recovery accepted · ${j.container}. Required grid: 2 SBU · 0.6 × 0.6 × 1.2 m. Other containers are optional loot. Fly to the Atlas; no cargo has been issued yet.`;
   }
   check(m&&m.id===command.mission,'This recovery contract is not yours or is no longer active.');const j=recoveryJob(m.job);
   if(command.op==='recovery-arrive'){
     check(m.phase==='accepted','The original recovery crates have already been located.');check(ctx.recovery.atWreck?.(m),'Fly to the disabled Atlas before locating its cargo.');
-    s.loose??={};for(let i=0;i<j.crates;i++){const id=`sbu-${s.nextId++}`;m.crates.push(id);s.loose[id]={id,sbu:j.sbu,resource:j.resource,recovery:{id:m.id,owner},...recoveryCratePose(m,i),holder:null,until:0,movedAt:Math.floor(ctx.now?.()??Date.now())};}
-    m.phase='recover';return m.cleared?'Cargo located inside the open aft bay. EVA and tractor each marked crate into your own hold.':'Cargo located. Clear the defending ships before engaging the recovery tractor.';
+    const count=recoveryRequired(m,j);s.loose??={};for(let i=0;i<j.crates;i++){const id=`sbu-${s.nextId++}`,optional=i>=count;(optional?m.loot:m.crates).push(id);s.loose[id]={id,sbu:j.sbu,resource:optional?j.bonusResource:j.resource,recovery:{id:m.id,owner,...(optional?{optional:true}:{})},...recoveryCratePose(m,i),holder:null,until:0,movedAt:Math.floor(ctx.now?.()??Date.now())};}
+    m.phase='recover';return m.cleared?`${j.container} located in the open aft bay. Recover the marked mission container; other containers are optional loot.`:'Cargo located. Clear the defending ships before engaging the recovery tractor.';
   }
   if(command.op==='recovery-clear'){
     check(m.phase==='recover'&&!m.cleared&&ctx.recovery.defeated?.(m),'The defending flight is not cleared.');m.cleared=true;return 'Defending flight cleared. Recovery authorized: EVA to the open Atlas cargo bay.';
@@ -52,8 +53,8 @@ export function recoveryCommand(s,owner,command,ctx){
   if(!abandon){const ship=s.ships[command.ship];check(m.phase==='recover'&&m.cleared,'Locate the cargo and clear any defenders first.');check(command.terminal===j.destination&&ctx.terminal?.(command.terminal),'Walk to Greenbank Supply’s delivery terminal.');check(ship?.owner===owner&&ctx.docked?.(ship,command.terminal),'Park your selected cargo ship on the delivery pad.');check(m.crates.every(id=>ship.crates.some(c=>c.id===id&&c.recovery?.id===m.id)),'Secure every original recovery crate on the selected ship’s cargo grid.');check(integer(a.credits+j.reward)&&integer(f.earned+j.reward)&&integer(f.completed+1),'Recovery credit limit reached.');}
   // Remove the entire contract together, so its own upper crates do not block
   // its lower crates. Unrelated cargo must remain physically supported.
-  for(const ship of Object.values(s.ships)){const next=ship.crates.filter(c=>c.recovery?.id!==m.id);check(validGrid(ship.hull,next),'Unload other cargo stacked above recovery crates first.');ship.crates=next;}
-  for(const item of found){if(item.loose)delete s.loose[item.crate.id];if(item.carried)item.carried.carried=null;}
+  for(const ship of Object.values(s.ships)){const next=ship.crates.filter(c=>c.recovery?.id!==m.id||c.recovery.optional);check(validGrid(ship.hull,next),'Unload bonus loot or other cargo stacked above the mission container first.');ship.crates=next;}
+  for(const item of found){if(item.loose)delete s.loose[item.crate.id];else if(item.crate.recovery.optional)delete item.crate.recovery;else if(item.carried)item.carried.carried=null;}
   if(!abandon){a.credits+=j.reward;f.completed++;f.earned+=j.reward;f.history.unshift({id:m.id,job:j.id,paid:j.reward});f.history.length=Math.min(8,f.history.length);}
-  f.active=null;return abandon?'Recovery abandoned. Your marked crates were recalled; no payment issued.':`Recovery complete · ${j.crates} crates deposited · ${j.reward} CR paid.`;
+  f.active=null;return abandon?'Recovery abandoned. Mission cargo recalled; secured bonus loot is yours. No mission payment issued.':`Recovery complete · ${j.container} deposited · ${j.reward} CR paid. Secured bonus loot is yours.`;
 }

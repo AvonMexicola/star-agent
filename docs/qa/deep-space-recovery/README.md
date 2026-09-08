@@ -112,3 +112,36 @@ asserts completed displacement plus several distinct observed positions. It does
 not require observing the transient drive after the action already returned.
 No runtime change or rebuild; later cases again did not run. Draft PR105 opened
 on the checked Pirate103 base with all gameplay limits explicit.
+
+
+## Specific-container and bonus-loot revision
+
+Cees requested one specific required container, optional loot from other crates,
+and a grid-size notice instead of capacity-gated acceptance. New contracts now
+name one 2 SBU objective (0.6 × 0.6 × 1.2 m); remaining containers are private
+optional copper cargo. Secured loot can be sold and remains after completion or
+abandonment. Unsecured cargo is cleaned up with the closed wreck. Exact required
+identity, guard clearance and physical grid support remain enforced. Earlier
+accepted private saves preserve their original manifests.
+
+The prior four browser attempts remain useful physical/render/input evidence for
+the earlier revision, not acceptance of these changed cargo terms. Recovery05 was
+withdrawn from the GPU queue before launching. The new complete controller case
+loads optional loot first, retrieves the required container, deposits only that
+container, retains and sells the bonus, then returns to play. CPU cases cover
+leaving all optional loot behind, full-hold acceptance, selling bonus before
+completion, abandonment, identity/privacy, corruption and old-save compatibility.
+Final revised checks/build/browser results will be recorded below.
+
+Initial revised focused run:34/36 pass; the two new bonus-sale fixtures used an
+unregistered station ID and failed with Unknown station market. Corrected them
+to the real station:1 berth; no application or market-policy change.
+
+
+Revised focused36 individual cases PASS0.971s, zero fail/skip. Full normal suite
+`npm test -- --test-concurrency=2` PASS all160 registered files,31.397s, zero
+failed/skipped files; this runner reports file totals, not individual-case totals.
+Production build05 PASS4.57s,388modules,main-BFvQqjpN.js, existing chunk advisory.
+Repo12changed-path check and explicit-origin/dev suggested plan pass; that plan
+includes207 inherited paths and is not gameplay certification. The revised
+three-case browser batch is ready on the final source below; no pass claimed yet.

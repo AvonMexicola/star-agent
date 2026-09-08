@@ -66,7 +66,7 @@ export function commerceCommand(source,owner,m,ctx){
   const docked=()=>{ownedShip();check(ctx.docked?.(ship,m.terminal),'Choose a ship docked at this terminal.');};
   const atTerminal=()=>check(ctx.terminal?.(m.terminal),'Walk up to the trade terminal.');
   const add=(c)=>{const placed=placeCrate(ship.hull,ship.crates,c);check(placed,'No cargo grid space for that crate. Smaller crates may fit.');ship.crates.push(placed);};
-  const selected=()=>{const c=ship?.crates.find(c=>c.id===m.crate);check(c,'Crate no longer present.');check(cargoVisibleTo(c,owner),'This sealed crate belongs to another pilot.');if(c.transport||c.recovery)check(m.op==='take','Sealed mission cargo can only be deposited through its transport contract.');check(canRemoveCrate(ship.hull,ship.crates,c.id),'Remove the crates above this one first.');return c;};
+  const selected=()=>{const c=ship?.crates.find(c=>c.id===m.crate);check(c,'Crate no longer present.');check(cargoVisibleTo(c,owner),'This sealed crate belongs to another pilot.');if(c.transport||c.recovery&&!c.recovery.optional)check(m.op==='take','Sealed mission cargo can only be deposited through its mission contract.');check(canRemoveCrate(ship.hull,ship.crates,c.id),'Remove the crates above this one first.');return c;};
   const remove=c=>{ship.crates=ship.crates.filter(x=>x.id!==c.id);};
   const stationQuote=(side,sbu)=>{
     // The resolver is trusted server/local context, never a client market ID.

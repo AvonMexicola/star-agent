@@ -2,12 +2,14 @@ import {Vector3,Quaternion} from 'three';
 import {DIFFICULTIES} from '../combat/encounters.js';
 
 export const RECOVERY_JOBS=Object.freeze([
-  {id:'silent-atlas',name:'Silent Atlas',difficulty:'Recovery',crates:2,reward:900,offset:[0,6000000,0],guards:[],brief:'A disabled freighter is broadcasting on emergency power. No hostile ships reported.'},
-  {id:'raider-claim',name:'Raider claim',difficulty:'Standard',crates:2,reward:1500,offset:[1800000,7000000,0],guards:['nomad','kestrel'],brief:'Raiders have claimed a stranded Atlas. Clear both ships before recovering its cargo.'},
-  {id:'broken-convoy',name:'Broken convoy',difficulty:'Hard',crates:3,reward:2400,offset:[-1800000,8500000,1000000],guards:['nomad','kestrel','kestrel'],brief:'A reinforced raider flight protects the last freighter of a lost convoy.'},
-].map(j=>Object.freeze({...j,sbu:2,resource:'conductor',destination:'settlement-aeon',guards:Object.freeze(j.guards),offset:Object.freeze(j.offset)})));
+  {id:'silent-atlas',name:'Silent Atlas',container:'Atlas flight recorder',difficulty:'Recovery',crates:2,reward:900,offset:[0,6000000,0],guards:[],brief:'Recover the sealed flight recorder from a freighter broadcasting on emergency power. No hostile ships reported.'},
+  {id:'raider-claim',name:'Raider claim',container:'Navigation archive',difficulty:'Standard',crates:2,reward:1500,offset:[1800000,7000000,0],guards:['nomad','kestrel'],brief:'Raiders have claimed a stranded Atlas. Clear both ships and retrieve its navigation archive.'},
+  {id:'broken-convoy',name:'Broken convoy',container:'Convoy data vault',difficulty:'Hard',crates:3,reward:2400,offset:[-1800000,8500000,1000000],guards:['nomad','kestrel','kestrel'],brief:'A reinforced raider flight protects the last freighter of a lost convoy. Retrieve its sealed data vault.'},
+].map(j=>Object.freeze({...j,sbu:2,resource:'conductor',bonusResource:'copper',destination:'settlement-aeon',guards:Object.freeze(j.guards),offset:Object.freeze(j.offset)})));
 export const recoveryJob=id=>RECOVERY_JOBS.find(j=>j.id===id);
-export const recoveryCargo=c=>Boolean(c?.recovery);
+export const recoveryCargo=c=>Boolean(c?.recovery&&!c.recovery.optional);
+// Earlier private development saves retain their accepted whole-manifest terms.
+export const recoveryRequired=(mission,job)=>mission&&!Object.hasOwn(mission,'loot')?job.crates:1;
 export function recoveryPose(job,site){
   const rotation=new Quaternion(...site.claim.quaternion);
   return {position:new Vector3(...job.offset).applyQuaternion(rotation).add(new Vector3(...site.claim.origin)).toArray(),quaternion:rotation.toArray()};
