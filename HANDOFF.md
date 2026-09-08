@@ -3906,3 +3906,28 @@ local integration over currentdev; preserve append-only HANDOFF and other featur
 owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
 and client source refresh before cloud-save testing. No database migration or
 public deployment. Floodlight owner may layer onto committed build hooks.
+
+BURROW CONCEPT UPGRADE CLAIM 2026-09-08T11:05:20.297183+00:00: Cees requests implementation toward the approved exterior/interior concepts, with panel controls instead of joysticks or a steering wheel (LCARS interpretation asked). Root owns isolated art/burrow-concept-upgrade at /home/cees/projects/star-agent-burrow-concept-upgrade from 76aa45e: assets/mining-rover, blender/build_mining_rover.py and new scoped detailing helper, public/models/mining-rover.glb, src/mining-rover.js and new rover display module, focused actual-asset/display tests, unique scripts/QA/brief/task docs. Preserve physical layout, wheel/cutter/door pivots, pilot eye, clear windscreen, storage and shared input/ship/server APIs. Private preview 5630, studio 5631, memory API 8630; no browser or GPU acquired. Existing trade5610, settlement5622 and enemy5398 queues retain priority. No shared source/services/user5596/SQL/public changes.
+
+
+## SA-VEH-002 — Burrow concept checkpoint 12e, 2026-09-08
+
+Implemented in isolated art/burrow-concept-upgrade from76aa45e: fitted LCARS-style three-MFD/two-pad cabin, ivory liners/stowage/coves, fuller tyre tread and shell details. Physical steering wheel/column/pedals removed. Exact GLB5433c83744a21e6c4022dfd9b840f15069c96f95111b0518fbb851d2f8495bc1,24,902tris/2,427,608B; layout/pilot eye/glazing/access/cutter pivots/cargo unchanged. Current manifest has44primitives/120nodes/9materials/4images; live five faces share one1024×512texture/material. Owned files are recorded in SA-VEH-002; no new dependencies.
+
+Validation: normal148testfilesPASS,7new actual-asset/telemetry casesPASS, productionbuild6.51s/repoPASS, same-camera native cockpit before/after with zero diagnostics, complete Gannet controller entry→unload→realore→inventory→reverse reload→carriedflight/landingPASS including nativefocus/device/dialog gates. Keyboard/native390touch ground routes2/2PASS2.4m. Original logs/videos/hashes and failed clearance iterations remain in /tmp/burrow-concept-*. Initial pixel probes caused a Canvas2D readback warning; fixture now reads a CPU copy. Author review found old desktop HUD covered ore MFD; bounded src/rover.css moves occupied desktop actions to upper left, final union check pending.
+
+Integration: no sharedsource/services/SQL/public changes from this lane yet. Foundation owns current shared integration slot; Burrow follows its release with an isolated combined candidate and expected-head guard. Own preview5630/private memoryAPI8630 and native5631 are stopped after each guarded test. Independent functional/rubric, actual hardware and performance acceptance remain pending. See docs/qa/burrow-concept/production-record.md and docs/local-development.md; do not reuse historical Burrow scores as new asset approval.
+
+
+SA-BUILD-002 LOCAL DELIVERY 2026-09-08: runtime4396029 integrated with checked
+settlement/combat development at8b5ecd4. The union passes149unitfiles, build and
+repository checks; foundation runtime is unchanged from the two-case actual-game
+browser pass. Shared5178/API8087 gracefully refreshed through the existing service,
+all six HTTP checks200, exact120720B GLB hash verified. Exact56247B unrelated
+HANDOFF suffix preserved; backup/receipt /tmp/star-agent-foundation-integration.
+Task/brief/local guide/QA now record integrated status. No schema/account mutation,
+other preview operation or public deployment. Controller injections, keyboard and
+native touch tested; physical-device and independent art acceptance remain pending.
+Private5642/API8642 and GPU released; floodlight/rover may consume checked hooks.
+
+SA-VEH-002 LOCAL COMPLETE 2026-09-08: runtime e8bb11f / GLB5433c837 integrated with checked foundations/settlements/trade/encounters at ab418ca, exact56,247B dirtyHANDOFFsuffix preserved. Existing5178/8087 stays healthy; HTTPservedGLB matches reviewedbytes, new display module/CSS/launcher200. Combined151normalfiles/build4.54s/repoPASS; fullGannetcontrollerPASS; finalcombinedkeyboardPASS1.0m and native390touchPASS1.1m with zero appdiagnostics. Earlier phone native-target/provenance failures retained, no application input code changed. Current final sourcehashes unchanged from testedbundle. DraftPR92 stacked on88, independent functional/rubric/hardware/performance acceptance pending; source taskintegrated. No ownbrowser/privateAPI remains and GPUreleased to floodlight/settlement/HUD queue. Only this finaldocs/status commit follows, then short sourcewindow release; no API/schema/protocol/service/public changes. See docs/qa/burrow-concept/production-record.md and docs/local-development.md.

@@ -1,10 +1,11 @@
 # SA-BUILD-002 — Foundation-first construction
 
-Status: active. Sponsor: Cees. Implementer: Codex. Branch feat/terrain-foundations,
+Status: locally integrated and author-validated. Sponsor: Cees. Implementer: Codex. Branch feat/terrain-foundations,
 base 32966e3 (local development including completed base commerce and settlements).
 Private worktree /tmp/star-agent-foundations; preview 5642. No new dependencies.
-Owned paths: project/tasks/SA-BUILD-002.json. Shared integration is queued behind
-active settlement/enemy work; source hooks remain isolated until checked.
+Owned paths are recorded in project/tasks/SA-BUILD-002.json. Checked runtime
+4396029 is integrated with current settlement/combat development at 8b5ecd4.
+Shared preview 5178 and API8087 were refreshed together; private preview is stopped.
 
 ## Result and acceptance
 
