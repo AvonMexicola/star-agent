@@ -11,6 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'blender'))
 import fighter_geometry as g
 from rover_cabin import build_cabin, build_shell_details
+from rover_cutters import build_cutters
 SOURCE=ROOT/'assets/mining-rover'; OUT=ROOT/'public/models/mining-rover.glb'
 L=json.loads((SOURCE/'layout.json').read_text())
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
@@ -246,18 +247,7 @@ box('Roof scanner',(0,2.48,.53),(.31,.04,.28),4)
 for piece in parts[cargoPartsStart:]:
     if piece.name!='Roof scanner':piece.location+=Vector(g.xyz((0,.40,0)))
 
-# Independent hollow mining heads. Root radii <=0.11 near the tyre sweep.
-for c in L['cutters']:
-    x,y,z=c['position'];pivot=g.empty(c['pivot'],(x,y,z),root)
-    rod('Cutter support',(x,1.30,-1.57),(x,y,z),.072,2)
-    ring('Gimbal yoke',(x,y,z),[(-.06,.072),(-.06,.108),(.055,.108),(.055,.072),(-.06,.072)],2,'Z',pivot,segments=16)
-    box('Mining head receiver',(x,y,z-.24),(.20,.20,.36),0,.025,pivot)
-    box('Mining head lower rail',(x,y-.108,z-.31),(.12,.035,.41),2,.006,pivot)
-    ring('Emitter ceramic sleeve',(x,y,z),[(-.40,.070),(-.40,.098),(-.67,.098),(-.72,.080),(-.72,.048),(-.40,.048),(-.40,.070)],0,'Z',pivot,segments=20)
-    ring('Bored emitter nozzle',(x,y,z),[(-.67,.047),(-.67,.072),(-.77,.072),(-.80,.061),(-.80,.043),(-.67,.043),(-.67,.047)],2,'Z',pivot,segments=20)
-    ring('Mining aperture light',(x,y,z),[(-.782,.044),(-.782,.055),(-.791,.055),(-.791,.044),(-.782,.044)],axis='Z',parent=pivot,mat=light,segments=20)
-    for s in (-1,1):box('Head cooling slit',(x+s*.106,y,z-.25),(.008,.033,.21),1,.002,pivot)
-    g.empty(c['muzzle'],(x,y,z-.8),pivot)
+build_cutters(layout=L, g=g, box=box, rod=rod, ring=ring, root=root, light=light)
 
 # Restrained manufacturer plate / chevron motif, readable physical orientation.
 text('Forehead identity','BURROW  M-04',(0,2.397,-1.197),.092,(math.pi/2,0,math.pi))
@@ -301,5 +291,5 @@ bpy.context.view_layer.update()
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/'mining-rover.blend'),compress=True)
 bpy.ops.export_scene.gltf(filepath=str(OUT),export_format='GLB',export_extras=True,export_yup=True,export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_materials='EXPORT')
-(SOURCE/'manifest.json').write_text(json.dumps({'stage':'concept upgrade 12e; see production record for current acceptance','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original Blender geometry and procedural PBR maps; approved ChatGPT Image concepts in assets/mining-rover/design inform design only.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard'],'limitations':['Closed geometric cabin; no pressure simulation','Concept upgrade review pending; previous candidate reviews remain historical','Flat panel instruments mirror shared controls; pressure and hand IK are not simulated']},indent=2)+'\n')
+(SOURCE/'manifest.json').write_text(json.dumps({'stage':'cutter follow-up 13a; see production record for current acceptance','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original Blender geometry and procedural PBR maps; approved ChatGPT Image concepts in assets/mining-rover/design inform design only.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard'],'limitations':['Closed geometric cabin; no pressure simulation','Concept upgrade review pending; previous candidate reviews remain historical','Flat panel instruments mirror shared controls; pressure and hand IK are not simulated']},indent=2)+'\n')
 print('Rover source and export written. Run pack_mining_rover.py.')

@@ -87,6 +87,7 @@ const specs=DIAGNOSTIC?[
 {name:'02-port-seated',human:'seated',door:1.65,label:'PORT BOARDING / ACTUAL SEATED RIG / FIXED STEPS',dir:[-1,.20,-.35]},
 {name:'03-cockpit',cockpit:true,label:'PILOT EYE / ASSET INTERIOR / CONTROLLED IDLE PANELS / ACTUAL GAME CHECK SEPARATE'},
 {name:'04-cutter-roots',yaw:.4,pitch:-.48,steer:.52,suspension:.22,label:'CUTTER ROOTS / MAX AIM / STEER AND COMPRESSION',box:[[-1.70,.30,-2.70],[1.70,1.85,-.80]],dir:[-1,.30,-1.5]},
+{name:'09-cutter-detail',label:'BURROW / PORT CUTTER CARTRIDGE / ORIGINAL MACHINED GEOMETRY',box:[[-.83,1.02,-2.59],[-.40,1.41,-1.80]],dir:[-1,.65,-1.3]},
 {name:'05-articulated-underbody',steer:-.52,suspension:-.22,spin:.123,under:true,label:'ARTICULATED LINKS / FULL DROOP / ACTUAL EXPORTED GEOMETRY',dir:[-1,-.7,-1]},
 {name:'06-rear',label:'SEALED MINERAL CASSETTES / REAR FENDERS',dir:[1,.55,1.3]},
 {name:'08-cockpit-horizon',cockpit:true,lookTarget:[0,1.78,-3],label:'UNCHANGED PILOT EYE / HORIZON LOOK / CONTROLLED IDLE PANELS'},

@@ -38,5 +38,7 @@ test('reverse motion and cabin/boarding state remain explicit while control pads
   const moving=roverReadout(state({busy:true,controls}));
   assert.equal(moving.mode,'Cabin moving');assert.deepEqual(moving.controls,{});
   assert.equal(roverReadout(state({aboard:true})).mode,'Carrier deck');
+  assert.equal(roverReadout(state({blocked:true,controls})).mode,'Drive blocked');
+  assert.equal(roverReadout(state({controls:{brake:1}})).mode,'Brake held');
   assert.deepEqual(roverReadout(state({occupied:false,controls})).controls,{});
 });

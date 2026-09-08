@@ -1,5 +1,9 @@
 # Burrow concept checkpoint 12e
 
+Historical cabin checkpoint. The subsequent
+[cutter and reverse follow-up](cutters-and-reverse.md) identifies the current export
+and its separate validation status; the figures below describe 12e.
+
 Status: locally integrated development checkpoint at `ab418ca` on 2026-09-08.
 Native author inspection, complete controller carrier gameplay and final combined
 keyboard/native-touch journeys pass. Independent functional/rubric acceptance, physical
