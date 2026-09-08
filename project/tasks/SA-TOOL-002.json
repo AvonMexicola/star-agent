@@ -32,7 +32,8 @@
     "assets/handheld-tools/pack.mjs",
     "public/models/props/bandage-medical.glb",
     "public/models/props/med-stim.glb",
-    "tests/handheld-tools/visual.spec.js"
+    "tests/handheld-tools/visual.spec.js",
+    "scripts/handheld-combined.config.js"
   ],
   "brief": "docs/briefs/field-cutter.md",
   "dependencies": [

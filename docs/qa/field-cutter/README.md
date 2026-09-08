@@ -27,3 +27,11 @@ initialization; runtime coordinates were not changed to satisfy it.
 
 The supplied medical GLBs are preserved separately under `assets/medical-items`.
 They are not evidence of implemented medical-use animations.
+
+Combined checkpoint `534907b` retains the checked projected terminals and builder
+phone refinement. All 156 normal test files pass with two CPU workers (68.46 s),
+and the production/native-viewer build passes (76 s under shared memory load).
+Repository checks pass; the suggested plan is retained in ignored
+`.staging/check-plan02.log`. Shared helper claims transferred from SA-TOOL-001
+to SA-TOOL-002 within the same parent; the builder retains its dedicated modules.
+One serialized combined browser job covers both tools without parallel GPU jobs.
