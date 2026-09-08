@@ -26,3 +26,8 @@ The complete Miasma controller landing/walk/airlock/trade/result/return route,
 keyboard/native touch, both-site rigid enclosure and renderer appearance must be
 checked before offering local integration. Physical devices and formal art review
 remain separate acceptance gates.
+
+Checked delivery: full Miasma controller and final native/renderer/Verdigris
+checks pass; parent has privately composed runtime cc6b035. See the production
+record for source boundaries, before/after corrections and remaining physical
+device, independent art, performance and shared integration status.
