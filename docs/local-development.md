@@ -629,8 +629,10 @@ models in the prop library; medical equip/use animations are still pending.
 See the [builder record](qa/builder-tool/README.md) and
 [cutter record](qa/field-cutter/README.md) for source and acceptance status.
 The complete controller/keyboard/native-touch journeys and final phone framing
-pass. Local integration is the remaining delivery step; physical-device and
-independent art acceptance remain separate.
+pass. Both tools are available in the existing **5178** preview at `0abc2f7`;
+the [local receipt](qa/field-cutter/local-integration.json) confirms served model
+and source hashes, current asset revisions and healthy 5178/8087 services.
+Physical-device and independent art acceptance remain separate.
 
 ## Fleet audio, merchants, roofs and power in the candidate
 
