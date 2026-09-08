@@ -1,5 +1,14 @@
 # All-features local development
 
+Burrow cutter/reverse follow-up is locally integrated at `b34bc69` (feature
+`03704e1`). Refresh the preview and choose **Burrow surface** to inspect the
+machined cutters and layered mining beams. **S** / controller stick-back reverses;
+keyboard **X** / controller **LT** brakes. The rover now backs away from rock
+contact instead of retaining a false collision stop. The
+[current evidence record](qa/burrow-concept/cutters-and-reverse.md) covers the
+actual reverse/mining checks, complete controller carrier journey and remaining
+independent art/performance review. This is a local checkpoint, not a public release.
+
 The ongoing local test branch is `dev/all-features`. Cees explicitly requests new
 features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
@@ -664,3 +673,22 @@ contains night before/after views, controller/phone evidence and measured costs.
 Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
 and served asset/source checks passed. Refresh the page to load the masts.
 Independent art and hardware/performance acceptance remain pending.
+
+
+## Projected trade terminals
+
+Settlement and base consoles project the exchange name and the normal **F /
+controller X** connection prompt. Interacting opens a crisp trade dashboard with
+local stock, cargo, shipment quantities, credits and settlement needs. Owners
+retain **My shop** controls for offered stock, prices, shop opening and the public
+beacon. No account or password is required.
+
+Use **F2 → Stillwater Exchange** for the explicit approach, then land and walk to
+the console. The shared Pilot menu, keyboard navigation and phone controls remain
+available. The [terminal QA record](qa/projected-terminals/README.md) separates
+actual gameplay evidence from the owner presentation fixture and physical-device
+acceptance. This is a development feature; no public deployment is included.
+
+Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
+[the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
+The existing API remains healthy; no service restart or save migration was needed.

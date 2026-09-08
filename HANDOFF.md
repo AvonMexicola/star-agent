@@ -4032,3 +4032,46 @@ docs/qa/outdoor-floodlights/local-integration.json; raw backup
 /tmp/star-agent-floodlights-integration/20260908T172400Z. No migration/protocol
 change, account mutation, save reset or public deployment. All runtime files
 remain unchanged from the recorded checks; final metadata only follows.
+
+
+BURROW CUTTERS / REVERSE READY FOR REVIEW 2026-09-08T17:29:45.968987+00:00: Feature 03704e1, asset 13a / 85bfeaa9 (29,254 triangles / 2,611,096 bytes). Nine native views and geometry checks PASS; all 148 feature test files and 152 combined test files, build and repository checks PASS. Actual keyboard and final native 390px phone routes PASS direct reverse and backing away from collision. The full combined Gannet controller journey passes in 3.9 min with actual 0.692856 kg transfer, reverse cargo reload, carried flight/landing and all input gates. Final phone passes in 1.2 min after test f241817 captures the presented frame and asserts the actual native pager target; prior failures are retained and no inventory runtime fix is claimed.
+
+Local runtime b34bc69 integrated at 17:16 UTC and is retained by floodlight 1d4181c. The exact 56,247-byte dirty journal was preserved; served GLB matches 85bfeaa9 and 5178/8087 health returns HTTP 200. Current QA: docs/qa/burrow-concept/cutters-and-reverse.md. Editable Blender and shader sources are retained. S / stick back reverses, X / LT brakes; no central strut. Independent functional/rubric, physical-controller and performance acceptance remain pending. Draft PR92; no protected merge or public deployment. All private GPU jobs and processes are closed; only final delivery metadata remains.
+
+
+## SA-UI-004 — projected terminals ready for local integration, 2026-09-08
+
+Owner: Codex, feat/projected-trade-terminals; checked runtime b0f14a2, based on
+1d4181c with checked Burrow metadata 5f8f018 preserved. Isolated worktree
+.worktrees/projected-terminals owns terminal-{identity,frames,projection}.js,
+terminal.css and narrow trading/ui.js/system.js hooks plus its own tests/docs.
+Private preview 5668 is stopped; no shared service or API change is required.
+
+Physical consoles project truthful public welcome screens. F / controller X opens
+the native HTML stock/cargo/owner dashboard. Real transaction authority and the
+shared input router are unchanged. Displays use camera-relative double precision,
+built-in log depth, a six-screen pool and disposal; no manufactured asset added.
+
+Normal unit suite: 1,170 cases pass, zero skips; production build and repository
+check pass. Full injected-controller landing/walking/trade/return journey plus
+keyboard/native-phone interactions pass at 4dab0f5, with modal/focus/disconnect/
+replacement/unsupported held-input gates. Final phone-only CSS b0f14a2 passes a
+focused owner native-touch offer/beacon/open-state check. Author images inspected.
+See docs/qa/projected-terminals/README.md for failures, fixtures and raw evidence.
+Physical-device, independent art and FPS acceptance remain pending. No separate
+station or multiplayer-base visual journey is claimed.
+
+Next: guarded fast-forward to local dev/all-features, retain its append-only
+journal, verify existing 5178/8087 preview and publish a draft review PR. Transport
+retains its unfinished Freight actions; no source copied from that lane. No public
+deployment, schema change or service restart is included.
+
+
+SA-UI-004 LOCAL INTEGRATION COMPLETE, 2026-09-08: checked checkpoint3bf082b
+fast-forwarded from5f8f018 into dev/all-features. Exact56,247-byte unrelated journal
+preserved (SHA2563bf320f0); six runtime files match checked source. Existing5178
+serves projection/dashboard/CSS HTTP200; both5178/8087 /api/health return ok:true.
+No service restart, schema migration or public deployment. Final metadata only
+follows. Receipt docs/qa/projected-terminals/local-integration.json; short disk
+browser cache/evidence retained under ignored test-results. Feature is available
+for local testing; physical-device and independent art/FPS acceptance stay pending.

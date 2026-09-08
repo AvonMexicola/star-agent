@@ -10,7 +10,7 @@ const selectors = {entry: '[data-rover-action="entry"]', cargo: '[data-rover-act
 
 // Native touch contacts use the Chromium 151 released-points protocol already
 // established by mining-rover-inputs.spec.js; no synthetic DOM action dispatch.
-async function inputs(page, phone) {
+async function inputs(page, phone, dir) {
   const session = phone ? await page.context().newCDPSession(page) : null;
   const held = new Map(); let serial = 1;
   async function center(selector) {
@@ -54,8 +54,16 @@ async function inputs(page, phone) {
   }
   async function tap(action) {
     if (!phone) return page.keyboard.press({entry: 'KeyF', cargo: 'KeyI', close: 'KeyI'}[action]);
+    // Read the presented dialog before locating a second-finger page action.
+    // Previous failures hit HEADER even though main-thread elementFromPoint
+    // had reported the pager. Retain the actual painted frame for diagnosis.
+    if (action === 'next') await page.screenshot({path:dir+'/before-native-pager.png'});
     const p = await center(selectors[action]);
     await session.send('Input.dispatchTouchEvent', {type: 'touchStart', touchPoints: [p]});
+    if (action === 'next') {
+      const landed = await page.evaluate(() => burrowTouches.filter(e => e.type === 'pointerdown').at(-1));
+      expect(landed?.target, 'native contact must land on the visually presented pager').toBe('page-containers-next');
+    }
     await page.waitForTimeout(70);
     await session.send('Input.dispatchTouchEvent', {type: 'touchEnd', touchPoints: held.size ? [p] : []});
   }
@@ -97,7 +105,7 @@ test('Burrow panels follow actual mining and driving through physical cabin acce
       }
     }, true);
   });
-  const input = await inputs(page, phone);
+  const input = await inputs(page, phone, dir);
   const shot = name => page.screenshot({path: dir + '/' + name + '.png'});
   async function note(name) {
     const display = await atlas(page);
