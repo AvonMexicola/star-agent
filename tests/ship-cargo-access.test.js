@@ -36,3 +36,18 @@ test('a hull without a hold and a stellar-destroyed hull cannot expose cargo',()
  for(const mode of ['flight','landed','walk','eva'])assert.equal(shipCargoAccess({shipId:'kestrel',mode,insideShip:true,position:point(),shipPosition:point()}).available,false);
  assert.equal(shipCargoAccess({mode:'destroyed',insideShip:true}).available,false);
 });
+test('a sealed rover uses actual carrier distance instead of its cabin flag', () => {
+  for (const shipId of ['nomad', 'atlas']) {
+    const nav = {shipId, mode: 'walk', insideShip: true, roverOccupied: true,
+      position: point(30, 40), shipPosition: point()};
+    assert.deepEqual(shipCargoAccess(nav), {available: true, aboard: false, distance: 50, range: 50});
+    nav.position.y += .01;
+    assert.equal(shipCargoAccess(nav).available, false);
+    nav.position = point(2_000, 3_000, 4_000);
+    assert.equal(shipCargoAccess(nav).available, false, 'parked ship cargo is unavailable from a distant rover');
+    nav.shipPosition = null;
+    assert.equal(shipCargoAccess(nav).available, false, 'a cabin flag cannot substitute for the carrier position');
+    nav.roverOccupied = false;
+    assert.equal(shipCargoAccess(nav).aboard, true, 'ordinary ship cabin access is retained');
+  }
+});

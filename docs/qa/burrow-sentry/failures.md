@@ -30,3 +30,18 @@ ANGLE OpenGL ES backend on **AMD Radeon 860M** at **1440×900**. It recorded zer
 page/console errors or warnings, and one aborted music MP3 request. The actual
 GLB rendered and local Character state was visible/seated; full feature browser
 acceptance remains pending. No hardware-controller or FPS pass is inferred.
+
+Browser03 (`2026-09-08T21-57-16.900Z`) traversed the corrected aft-port path and
+physically seated the pilot, but its largest sampled rendered step was 0.746 m,
+above the unchanged 0.6 m check. The recording lacked timestamps, so this alone
+does not distinguish a reconciliation discontinuity from a delayed rendered
+frame. The original context videos, state and failure are retained. The next
+fixture writes time, rendered position and authoritative peer pose before
+evaluating the same condition with a soft assertion, allowing later independent
+authority steps to produce evidence. The added actual-room regression checks
+every 30 Hz route step and passes as part of focused10 (20 cases, 14.515 s).
+
+Browser01's backpack also revealed that `insideShip` on a sealed rover bypassed
+the parked ship's normal cargo distance. The cargo helper now reuses checked
+`occupiesShip`; rover occupants use the actual 50 m distance branch. Focused10
+covers nearby Nomad/Atlas access and distant/missing carrier refusal.

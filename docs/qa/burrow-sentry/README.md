@@ -4,8 +4,9 @@ Status: implemented candidate on `feat/burrow-sentry`, private ports 5678/8678.
 Not yet browser accepted, integrated or deployed. Parent owns the final checked
 source offer and paired protocol-8 refresh of the existing managed preview.
 
-The source preserves checked Transport, Garage and Handheld ancestry through
-`f1ef821`. Normal Burrow remains separate. See [player controls](../../burrow-sentry.md),
+The source preserves checked Transport, Garage, Handheld and Pirate002 ancestry
+through shared `cc1e749` and parent composition `22007db`. Normal Burrow remains
+separate. See [player controls](../../burrow-sentry.md),
 [the authority decision](../../decisions/sentry-authority.md) and
 [source/export provenance](../../../assets/burrow-sentry/README.md).
 
@@ -28,6 +29,13 @@ finding, original native runner failures and deck-contact regression remain in
 [the failure record](failures.md). The later presentation-only correction guarantees a confirmed pulse reaches one
 rendered frame before aging; build06 passes in 6.78 s. Browser acceptance remains
 pending.
+
+The checked parent composition passes all **1,224 normal cases** and a production
+build. After consuming it, `focused10.log` passes **20 actual-room and cargo cases**
+in **14.515 s**. The added room check observes every 30 Hz authoritative access
+position, preserving the 0.85 m/s physical route through its final seat pose.
+Sealed rover cargo access now uses the same live 50 m carrier distance as an
+outside walker; near Nomad/Atlas access and distant refusal are covered.
 
 The portable browser runner hashes all relevant Sentry, shared input/render and
 server sources before/after each job, checks actual host process executable and

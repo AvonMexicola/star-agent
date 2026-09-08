@@ -17,7 +17,7 @@ for(const id of (await readdir('/proc')).filter(x=>/^\d+$/.test(x))){
 }
 await writeFile(path.join(output,'process-guard.json'),JSON.stringify({time:new Date().toISOString(),jobs},null,2));
 if(jobs.length){console.error('GPU busy; no Sentry browser launched. Guard:',output);process.exit(2);}
-const sourceFiles=[...(await readdir(path.join(root,'src/sentry'))).filter(n=>/\.(js|css)$/.test(n)).map(n=>'src/sentry/'+n),'src/rover-carrier.js','src/rover-physics.js','src/rover-support.js','src/multiplayer/client.js','src/multiplayer/remote-players.js','scripts/sentry/sentry.config.js','scripts/sentry/sentry.spec.js','src/main.js','src/multiplayer/protocol.js','server/sentry.js','server/room.js','server/security.js','server/combat.js','public/models/burrow-sentry.glb'];
+const sourceFiles=[...(await readdir(path.join(root,'src/sentry'))).filter(n=>/\.(js|css)$/.test(n)).map(n=>'src/sentry/'+n),'src/rover-carrier.js','src/rover-physics.js','src/rover-support.js','src/multiplayer/client.js','src/multiplayer/remote-players.js','src/inventory/ship-access.js','src/combat/ship-occupancy.js','scripts/sentry/run-browser.mjs','scripts/sentry/sentry.config.js','scripts/sentry/sentry.spec.js','src/main.js','src/multiplayer/protocol.js','server/sentry.js','server/room.js','server/security.js','server/combat.js','public/models/burrow-sentry.glb'];
 const hashes=async()=>Object.fromEntries(await Promise.all(sourceFiles.map(async name=>[name,createHash('sha256').update(await readFile(path.join(root,name))).digest('hex')])));
 const before=await hashes();await writeFile(path.join(output,'source-before.json'),JSON.stringify(before,null,2));
 const tmp=process.env.SENTRY_TMPDIR??path.join(root,'test-results','tmp');await mkdir(tmp,{recursive:true});
