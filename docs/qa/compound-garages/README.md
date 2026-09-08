@@ -80,6 +80,18 @@ no evidence was deleted. Normal and previously approved commands now work withou
 new permission requests. Combined transport integration retained its multiplayer
 settlements; the garage interaction remains explicitly solo.
 
+Additional freight compatibility checks: `tests/cargo-tractor.test.js` and
+`tests/server-station-market.test.js` passed. The full server-transport file then
+aborted in Node26.7.0 `InternalCallbackScope::Close` (SIGABRT, host PID1799927,
+2026-09-08T20:25:11UTC), coincident with creation of its isolated SQL fixture.
+Coredump metadata shows the runtime assertion; the root cause remains unresolved.
+No OOM entry was found and no fixture PostgreSQL process remained. No alternate
+Node binary was installed. The relevant in-memory case passed separately with
+`--test-name-pattern='^server binds contract'`, actual new garage layouts and
+disk-backed TMPDIR (2.05s). That result does not relabel the SQL attempt as passed.
+The checked freight dependency retains its owner's prior passing SQL evidence.
+No application or system configuration was changed to hide this failure.
+
 ## Images and remaining acceptance
 
 The author inspected all four actual compound views and the desktop/phone journey
