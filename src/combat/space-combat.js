@@ -41,11 +41,11 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     <dl><dt>CONTACTS</dt><dd class="patrol-roster"></dd><dt>OBJECTIVE</dt><dd class="patrol-goal"></dd><dt>THREAT</dt><dd class="patrol-threat"></dd><dt>SHIP SYSTEMS</dt><dd>Shields recharge after 6 seconds without a hit. Hull repairs at the dock.</dd></dl>
     <p class="patrol-status" role="status"></p><div class="patrol-actions"><button data-controller-key="patrol-accept" data-controller-focus>Accept patrol</button><button data-controller-key="patrol-debrief">File combat report</button><button data-controller-key="patrol-abort">Abandon patrol</button><button data-controller-key="patrol-recover">Recover in orbit</button></div>
     <p class="patrol-log"></p><ol class="patrol-reports" aria-label="Recent combat reports"></ol>
-    <small>Local dispatch: visit Aeon, Selene, Pyre, Miasma or the asteroid belt for different sorties. Fly to the amber beacon; surface dispatch requires climbing into orbit. T / RT fires · Tab / Menu → Ship selects targets. Reports reset on reload; no credit or cargo reward.</small>`;
+    <small>Local dispatch: visit Aeon, Selene, Pyre, Miasma or the asteroid belt for different sorties. Fly to the amber beacon; surface dispatch requires climbing into orbit. T / RT fires · Next target / Menu → Ship selects targets. Reports reset on reload; no credit or cargo reward.</small>`;
   document.body.append(dialog);
   const button=document.createElement('button');button.id='patrol-console-button';button.textContent='PATROL CONSOLE';button.onclick=()=>open();document.body.append(button);
   const hud=document.createElement('aside');hud.id='combat-hud';hud.hidden=true;hud.setAttribute('aria-label','Ship combat systems');
-  hud.innerHTML='<span class="combat-kicker">SHIP INTEGRITY</span><div class="combat-integrity"></div><p class="combat-objective"></p><div class="combat-target"></div><button class="combat-cycle">Next target · Tab</button><small class="combat-hint"></small>';
+  hud.innerHTML='<span class="combat-kicker">SHIP INTEGRITY</span><div class="combat-integrity"></div><p class="combat-objective"></p><div class="combat-target"></div><button class="combat-cycle">Next target</button><small class="combat-hint"></small>';
   document.body.append(hud);hud.querySelector('button').onclick=()=>sim.cycle();
   const markers=document.createElement('div');markers.id='combat-markers';markers.setAttribute('aria-hidden','true');document.body.append(markers);
   const markerNodes=Array.from({length:4},()=>{const el=document.createElement('div');el.className='combat-marker';el.innerHTML='<span>◇</span><small></small>';markers.append(el);return el;});
@@ -118,7 +118,6 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
   function recover(){if(sim.phase!=='failed'||nav.mode!=='destroyed')return false;nav.destruction=null;nav.orbit();sim.recover();nav.enabled=true;if(dialog.open)dialog.close();nav.notify('Replacement ship ready in orbit. Open Patrol console to retry.');return true;}
   dialog.querySelector('[data-controller-key="patrol-recover"]').onclick=recover;
   document.addEventListener('keydown',event=>{
-    if(event.code==='Tab'&&!event.repeat&&nav.enabled&&nav.focused&&nav.mode==='flight'&&!document.querySelector('dialog[open]')){event.preventDefault();sim.cycle();}
     if(event.code==='Enter'&&!event.repeat&&sim.phase==='failed'&&!document.querySelector('dialog[open]'))recover();
   });
   function marker(el,point,label,{lead=false,waypoint=false,selected=false}={},origin){
@@ -195,7 +194,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     const t=sim.target;
     hud.querySelector('.combat-target').textContent=t?`${t.label} / ${t.strategy.toUpperCase()}\nSHIELD ${Math.ceil(t.integrity.shield)} · HULL ${Math.ceil(t.integrity.hull)}`:'NO TARGET';
     hud.querySelector('.combat-cycle').disabled=!sim.living.length;
-    hud.querySelector('.combat-hint').textContent=nav.controllerActive?'RT · Fire / Menu · Next hostile':'T · Fire / Tab · Next hostile';
+    hud.querySelector('.combat-hint').textContent=nav.controllerActive?'RT · Fire / Menu · Next hostile':'T · Fire / Menu → Ship · Next hostile';
     markers.hidden=modal||nav.mode!=='flight'||nav.multiplayer?.connected;
     markerNodes.forEach(el=>el.hidden=true);let i=0;
     if(sim.phase==='transit'||sim.reinforcementIn>0)marker(markerNodes[i++],sim.point,sim.contract.title.toUpperCase(),{waypoint:true},origin);

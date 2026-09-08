@@ -1,0 +1,26 @@
+{
+  "id": "SA-UI-003",
+  "title": "Three HUD display modes on Tab",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex HUD display",
+  "status": "review",
+  "branch": "feat/hud-display-modes",
+  "base": "01a28dfa2d63975d1829445e0dd457f757b70a2b",
+  "updated": "2026-09-08",
+  "areas": [
+    "interface"
+  ],
+  "claims": [
+    "src/hud-display.js",
+    "src/hud-display.css",
+    "src/main.js",
+    "index.html",
+    "src/combat/space-combat.js",
+    "scripts/hud-display.config.js",
+    "scripts/hud-display.spec.js",
+    "scripts/space-combat.spec.js",
+    "tests/browser/flight.spec.js"
+  ],
+  "brief": "docs/briefs/hud-display.md"
+}
