@@ -37,7 +37,8 @@ test('Tab cycles full → markers and reticle → none, preserving dialogs and t
   await page.keyboard.press('Escape');await expect(page.locator('dialog[open]')).toBeVisible();
   await page.locator('dialog[open] [data-tab="settings"]').click();await expect(page.locator('#hud-display-button')).toContainText('No HUD');
   await page.keyboard.press('Tab');await mode(page,'none');
-  await page.keyboard.press('Escape');await page.keyboard.press('Tab');await mode(page,'full');
+  await page.keyboard.press('Escape');await page.waitForFunction(()=>window.starAgent.state.enabled&&!document.querySelector('dialog[open]'));
+  await page.keyboard.press('Tab');await mode(page,'full');
   await page.keyboard.press('KeyH');await page.locator('#seed-input').focus();await page.keyboard.press('Tab');await mode(page,'full');
   await page.keyboard.press('Escape');await frames(page);await page.keyboard.press('KeyF');
   await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
