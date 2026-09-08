@@ -237,3 +237,11 @@ fixtures already use canonical item balances; they now choose the largest real
 ore stack so screenshot quantities remain legible. The complete physical paths
 and interruption assertions are retained. No Gannet carry/landing pass is yet
 claimed; original02 receipt/video/images remain alongside01.
+
+Gannet Art11 is imported at `a3bb83e`: 45,394 triangles and 2,439,212 bytes,
+with unchanged protected bay, moving geometry, displays and glazing. Its
+[native studio inspection](gannet-native-11.md) passes all 21 views and complete
+mechanism checks in 31.2 seconds. The inspection canvas and actual display
+projection now pass on desktop and portrait at the unchanged pilot eye. Root
+geometry and lamp probes pass; independent visual scoring remains pending.
+These results do not close the still-unrun full Gannet carry/landing journey.
