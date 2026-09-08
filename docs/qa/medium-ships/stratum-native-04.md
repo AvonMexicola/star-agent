@@ -23,8 +23,11 @@ yaw±0.20 and pitch−0.12..+0.14, and neutral return. Every one of the four MFD
 inspected from the fixed authored pilot eye with the unchanged72° studio lens.
 The actual production geometry is rendered without page errors or console
 warnings; failed HTTP responses are included in the fixture's error channel.
-Root inspected the exterior, side, cabin and mining-head originals. Independent
-Art04 visual scoring is pending; native render/control success is not that score.
+Root inspected the exterior, side, cabin and mining-head originals. The separate
+[independent Art04 review](stratum-native-review-04.md) passes the scoped native
+rubric at 4.12 overall, silhouette 4.5 and lowest criterion 3.8. It preserves cabin
+flatness and simple folded-gear limitations; it does not accept main-game lighting
+or performance.
 
 Browser is Chromium151.0.7922.173, ANGLE/OpenGL ES3.2 on AMD Radeon860M;
 1440×900 desktop and390×844 phone, DPR1. Desktop uses native pointer input;

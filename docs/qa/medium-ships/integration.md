@@ -2,8 +2,10 @@
 
 Status on 2026-09-08: isolated implementation with all six complete input journeys
 passing on their recorded source/model versions.
-Both final art reviews still request changes. Shared development integration
-and deployment have not occurred. The dated checkpoints below preserve earlier
+Stratum Art04 now passes independent studio review (4.12 overall, silhouette 4.5).
+Gannet Art13 passes native inspection and awaits its independent score. Final-model
+gameplay checks and shared development integration are underway; deployment has
+not occurred. The dated checkpoints below preserve earlier
 failures and the exact source tested at each stage.
 
 Stratum is an 18 m medium miner with two actual articulated barrel origins, a
