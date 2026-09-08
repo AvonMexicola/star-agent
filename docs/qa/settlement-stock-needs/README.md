@@ -64,3 +64,12 @@ This lane needed no failed browser rerun or runtime workaround.
 Physical Gamepad hardware, independent visual review and continuous
 interplanetary flight are not established by this injected approach fixture.
 No automatic production or multiplayer settlement economy is claimed.
+
+## Final local combination
+
+Checked Burrow a75b82f was merged at 9e49597. Settlement, trading and navigation
+runtime files are byte-identical to the passing browser candidate 1f8a20a.
+Only the package test list conflicted; both additions remain. This final union
+passes **1,154 individual unit cases**, zero skips, 32.98 s, production development
+build **6.10 s**, and repository checks. Logs at the union paths above now record
+this final run. No additional GPU run was needed for unchanged settlement code.

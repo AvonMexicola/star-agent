@@ -3948,3 +3948,32 @@ native touch tested; physical-device and independent art acceptance remain pendi
 Private5642/API8642 and GPU released; floodlight/rover may consume checked hooks.
 
 SA-VEH-002 LOCAL COMPLETE 2026-09-08: runtime e8bb11f / GLB5433c837 integrated with checked foundations/settlements/trade/encounters at ab418ca, exact56,247B dirtyHANDOFFsuffix preserved. Existing5178/8087 stays healthy; HTTPservedGLB matches reviewedbytes, new display module/CSS/launcher200. Combined151normalfiles/build4.54s/repoPASS; fullGannetcontrollerPASS; finalcombinedkeyboardPASS1.0m and native390touchPASS1.1m with zero appdiagnostics. Earlier phone native-target/provenance failures retained, no application input code changed. Current final sourcehashes unchanged from testedbundle. DraftPR92 stacked on88, independent functional/rubric/hardware/performance acceptance pending; source taskintegrated. No ownbrowser/privateAPI remains and GPUreleased to floodlight/settlement/HUD queue. Only this finaldocs/status commit follows, then short sourcewindow release; no API/schema/protocol/service/public changes. See docs/qa/burrow-concept/production-record.md and docs/local-development.md.
+
+
+# SA-SETTLE-002 — validated settlement economy checkpoint
+
+Status: implementation and author validation complete; local integration next.
+Branch feat/settlement-stock-needs, base d08f181, feature d50bc56; controller
+receipt on 1f8a20a, evidence 68c74c6, checked Burrow combined at 9e49597.
+Owned /tmp/star-agent-settlement-needs, isolated preview5652 now stopped.
+
+Four settlements have complete local stock and purpose-based reserve needs.
+Deliveries atomically fill needs, transfer cargo and pay credits; excess crates
+stay aboard. Map and terminal use the same warehouse. Existing saves retain
+stock, including surplus/depletion. No production/refill timers, shared-settlement
+replication, schema/protocol or generic station/base-shop behavior changes.
+
+Validation: 23 focused cases; 191 multiplayer pass/two existing opt-in skips;
+combined foundation 1,147 individual unit cases/build/repo pass. Browser1/1
+passes2.6min, Chromium151/AMD860M/ANGLE GL,1440x900 and390x844, zero app diagnostics.
+Injected Gamepad physically lands/walks/delivers/buys/reboards/takes off;
+keyboard/native-touch pagination and held dialog/nativefocus/disconnect gates
+pass. Physical hardware and independent visual review remain separate.
+[Full evidence and limits](docs/qa/settlement-stock-needs/README.md).
+
+Integration preserves current Burrow/foundation/combat/settlement source and
+both test-list additions. Only package test-list and append-only handoff conflicts
+occurred. Transport owns new Freight/online hooks and may consume this checkpoint;
+no pending edits copied from its lane. Next: final union checks, guarded local
+fast-forward preserving dirty HANDOFF suffix, HTTP source verification, draft PR.
+No public deployment or shared API/SQL restart is required for this delta.
