@@ -68,3 +68,11 @@ is too dark for useful appearance review. The next controller capture activates
 the existing suit flashlight with LB+RB+left before both views; no lighting/shader
 or emissive adjustment is made. Full journey return, phone and public-site views
 still await a passing run; partial03 is not counted as acceptance.
+
+A subsequent source review found that Object.hasOwn alone coerces array keys:
+['crimson'] could pass as a listed identifier. Finish, faction and print lookups
+now require strings before any property lookup. Malformed array/object save cases
+were added to the existing real validator regression. All56 cases across actual
+appearance/build-state/settlements/pirate modules pass in7.179s. Valid identifiers,
+artwork and rendering are unchanged; final composition will receive the full
+normal suite. Draft PR107 is stacked on the checked Hush compound PR103.

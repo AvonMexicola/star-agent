@@ -11,7 +11,7 @@ export const BUILD_FINISHES = Object.freeze({
   jade:Object.freeze({id:'jade',label:'Field green',swatch:'#66866b',concrete:'#7a9c7e',armour:'#d9ddc5'}),
   violet:Object.freeze({id:'violet',label:'Vesper violet',swatch:'#88709f',concrete:'#9983ae',armour:'#e1d6e9'}),
 });
-export const finishById = id => Object.hasOwn(BUILD_FINISHES,id) ? BUILD_FINISHES[id] : null;
+export const finishById = id => typeof id==='string'&&Object.hasOwn(BUILD_FINISHES,id) ? BUILD_FINISHES[id] : null;
 export const printablePiece = type => type==='wall'||['foundation-pad-small','foundation-pad-medium','foundation-pad-large'].includes(type);
 export const validAppearance = p => (p.finish===undefined||Boolean(finishById(p.finish))) && (p.graphic===undefined||p.graphic==='none'||printablePiece(p.type)&&Boolean(printById(p.graphic)));
 export const appearanceFor = (type,finish='mineral',graphic='none') => ({...(finish!=='mineral'?{finish}:{}),...(graphic!=='none'&&printablePiece(type)?{graphic}:{})});

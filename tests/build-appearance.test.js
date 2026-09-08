@@ -48,7 +48,7 @@ test('paint requires actual reach, solo exterior access and local ownership',()=
 });
 test('optional appearance fields preserve legacy saves and reject malformed/prototype/unbounded values',()=>{
  const f=fixture(),before=f.store.state.build;assert.ok(validBuild(before));
- for(const patch of [{finish:'constructor'},{finish:[]},{finish:'#ffffff'},{finish:'x'.repeat(10000)},{graphic:'__proto__'},{graphic:{}},{graphic:null}]){const next=structuredClone(before);Object.assign(next.claims[0].pieces[3],patch);assert.equal(validBuild(next),false,JSON.stringify(patch).slice(0,70));}
+ for(const patch of [{finish:'constructor'},{finish:[]},{finish:['crimson']},{finish:{toString:null}},{finish:'#ffffff'},{finish:'x'.repeat(10000)},{graphic:'__proto__'},{graphic:{}},{graphic:['crimson']},{graphic:{toString:null}},{graphic:null}]){const next=structuredClone(before);Object.assign(next.claims[0].pieces[3],patch);assert.equal(validBuild(next),false,JSON.stringify(patch).slice(0,70));}
  const wrong=structuredClone(before);wrong.claims[0].pieces[0].graphic='crimson';assert.equal(validBuild(wrong),false,'posters cannot occlude a working terminal');
  assert.deepEqual(appearanceFor('window','crimson','airlock'),{finish:'crimson'});f.build.dispose();
 });
