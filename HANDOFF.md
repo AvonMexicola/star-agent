@@ -3864,3 +3864,45 @@ SA-TRADE-001 LOCAL INTEGRATION CLAIM: final base4b36b50/controller2PASS merged c
 
 
 SA-TRADE-001 LOCAL VERIFIED 2026-09-08T11:50:33.434107+00:00: runtime4b36b50/candidate65163fa integrated locally at2607fe7 over76aa45e. Exact56247-byte shared HANDOFF suffix preserved; same persistent-preview service restarted, paired5178/8087healthOK and servedprotocol6 verified. Tablecounts identical before/after (local data tables empty,4migrationrows); no schema or productionDB change. Normal147filesPASS, multiplayer190PASS/2existingoptinskips, final31base/elevator/isolatedSQLPASS, build3.87s; actual seller+offlineownerbuyer controller2PASS3.1m, zero appdiagnostics, screenshots builder-inspected. Physicalcontroller/independentreview unclaimed. Only final docs/taskstatus commit follows; shared runtime source ownership RELEASED to queued settlement/enemy. No further baseGPU/APIjob/publicdeployment.
+
+
+SA-SETTLE-001 LOCAL VERIFIED / SOURCE RELEASE 2026-09-08T11:54:47.029333+00:00: latest2022a6b final base docs preserved, tested settlementruntime03a561e integrated at32966e3. Guard correctly stopped stale2607beforeanywrite, then fast-forwarded checked candidate; exact491225B originalHANDOFF and56247B suffix restored (backup /tmp/star-agent-settlements-integration). HTTP5178 main wires renderer/collision/trading, launcher imports allfourstarts and APIhealth200. No API/SQL/service restart or publicdeployment. Checked station1435008 QA included. Source integration window RELEASED now; only settlement final phone/QA/status follow-up remains and will preserve later owner heads.
+
+
+SA-SETTLE-001 FINAL QA 2026-09-08T12:00:16.085758+00:00: runtime03a561e remains integrated32966e3; full1127/62focused/buildPASS, complete injectedcontroller land/trade/reboard/departurePASS2.1m, final guarded390phone mapPASS51.4s with zero app errors/warnings. Allfour overview plus nearMiasma lighting images builder-inspected; dark distant night exteriors/performance/independent/hardware limits retained. Attempt01seatwaypoint,02ambiguousselector,03delayedoverlap/contextloss and04pausedfixture remain accurately recorded;05passes. Finaldocs/task-integratedstatus/phone evidence only follow in owned branch; current enemy shared-source window is respected. Preview5622 is own standalone review server; no API. No further GPU or runtime work; independent art/hardware acceptance and shared settlements remain separate.
+
+
+## SA-COMBAT-001 — validated regional encounter checkpoint (2026-09-08)
+
+Owner: Cees / Codex mission designer. Branch `feat/enemy-encounters`; scoped combat modules, fixture, tests and docs are listed in the task registry. Fifteen opt-in planetary, lunar and belt sorties now offer Easy/Standard/Hard, two-wave hard fights, recovery and frozen session reports. Existing authored ships and fitted weapons are reused; no new dependency, server or asset contract.
+
+Validation: full six-case browser batch passes on own runtime `510e25a`, including five complete controller flight/fight/report/return routes, native focus and held-input/device gates, phone report scrolling and keyboard/native touch. Combined station/base/settlement source passes 1,133 individual unit cases, build, repository checks, plus final keyboard/native-touch regression at `ad11386` (44.7s, zero collected errors). Browser evidence is Chromium151 / AMD860M ANGLE GL, 1440×900 and 390×844, injected Gamepad; physical hardware and independent review remain pending. Original failures, unchanged screenshots, exact commands and limits: `docs/qa/enemy-encounters.md`.
+
+Ready for guarded local integration over `32966e3`, including offered settlement metadata `c079ce2`, with existing shared HANDOFF bytes preserved. No deployment or API/SQL restart. Next owner: Cees for human difficulty tuning; current automated Kestrel/lance wins establish functional completion, not balance acceptance. Offline/session-only; no credits, loot or multiplayer NPCs. Preview5398/GPU released; shared local preview remains5178.
+
+
+SA-COMBAT-001 LOCAL DELIVERY 2026-09-08: validated candidate dde4d02 integrated at547d901 into dev/all-features, including ready settlementc079 metadata. Original494354B HANDOFF and exact56247B dirty suffix preserved with guarded backup/receipt under /tmp/star-agent-enemy-integration. Shared5178 serves regional contracts, allfourcombat source files match candidate, direct/proxied APIhealth200. No API/SQL/schema/protocol/service restart or deployment. Full1133unit/build/repo checks PASS; five complete controller routes plus keyboard/touch PASS6/6 and final combined UI PASS44.7s. Docs/QA/task state updated; physical-device and independent balance/visual acceptance remain pending. GPU5398 released; final metadata commit follows without changing runtime.
+
+
+## SA-BUILD-002 — terrain foundations and optional mainframes (2026-09-08)
+
+Owner Cees / Codex. Branch feat/terrain-foundations, original base32966e3.
+Foundation-first sites, deck-mounted mainframes, unsecured open doors, removable
+empty mainframes, 8m concrete supports and 45degree braced cliff decks implemented.
+Build/state/collision/visual/inputpalette and account-save dimension/removal guards
+are the owned scope; no navigation/planet/multiplayer protocol rewrite.
+
+Validation:149normaltestfilesPASS,191multiplayerPASS/2existingoptinskips, real
+isolated PostgreSQL persistencePASS, build/repository/plan checksPASS. Final two
+actual-game browser casesPASS4.2min (Chromium151/AMD860M ANGLE GL,1440×900/390×844),
+zero app diagnostics: full controller foundation/door/mainframe/tall construction,
+inventory/reload and neutral gates, keyboard/native touch, plus canonical4.859m
+relief hillside rendering and device replacement/mapping gates. Physical device
+and independent art review remain separate. Source/provenance/failures/screens:
+[terrain-foundation QA](docs/qa/terrain-foundations/README.md).
+
+Private5642/API8642 and GPU released. Coherent candidate is ready for guarded
+local integration over currentdev; preserve append-only HANDOFF and other feature
+owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
+and client source refresh before cloud-save testing. No database migration or
+public deployment. Floodlight owner may layer onto committed build hooks.

@@ -33,7 +33,7 @@ export function registerBase(source,owner,command,{nav,getContainer,shared=false
   check(incoming&&validBuild(baseBuild(incoming))&&validClaimAnchor(incoming),'Choose a valid constructed base.');
   const restored=restoreBuildAnchors(baseBuild(incoming));check(restored.ok,'Base anchor unavailable.');
   const raw=restored.build.claims[0];
-  const claim={id:raw.id,name:raw.name,body:raw.body,owner:LOCAL_OWNER,useBuffer:false,origin:raw.origin,quaternion:raw.quaternion,anchor:raw.anchor,radius:raw.radius,...(!shared&&raw.power?{power:structuredClone(raw.power)}:{}),pieces:raw.pieces.map(p=>({id:p.id,type:p.type,position:[...p.position],rotation:p.rotation,doorOpen:p.doorOpen,...(p.landingPad!==undefined?{landingPad:p.landingPad}:{}),...(p.lightOn!==undefined?{lightOn:p.lightOn}:{})}))};
+  const claim={id:raw.id,name:raw.name,body:raw.body,owner:LOCAL_OWNER,useBuffer:false,origin:raw.origin,quaternion:raw.quaternion,anchor:raw.anchor,radius:raw.radius,...(!shared&&raw.power?{power:structuredClone(raw.power)}:{}),pieces:raw.pieces.map(p=>({id:p.id,type:p.type,position:[...p.position],rotation:p.rotation,doorOpen:p.doorOpen,...(p.supportDepth!==undefined?{supportDepth:p.supportDepth}:{}),...(p.landingPad!==undefined?{landingPad:p.landingPad}:{}),...(p.lightOn!==undefined?{lightOn:p.lightOn}:{})}))};
   check(claim.pieces.some(p=>p.id===terminalPiece&&p.type==='terminal'),'Build an inventory terminal at this base first.');
   check(claim.pieces.some(p=>p.landingPad&&PIECES[p.type].padSize),'Designate a landing pad at this base first.');
   check(nav.mode==='walk'&&!nav.insideShip&&!nav.dockedAtStation&&!nav.travel,'Walk up to the base terminal.');

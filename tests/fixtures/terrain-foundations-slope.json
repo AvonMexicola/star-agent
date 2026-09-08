@@ -1,0 +1,52 @@
+{
+  "i": 13,
+  "claim": {
+    "id": "build-claim-1",
+    "body": "selene",
+    "name": "Selene outpost 1",
+    "owner": "local-player",
+    "useBuffer": false,
+    "origin": [
+      -2193379.188281917,
+      94766.604954252,
+      -23505855.50377517
+    ],
+    "quaternion": [
+      0.4238997940679353,
+      -0.2651264993341308,
+      -0.4592332682172223,
+      0.7342490785166297
+    ],
+    "radius": 64,
+    "pieces": [
+      {
+        "id": "build-piece-2",
+        "type": "foundation-strut",
+        "position": [
+          0,
+          3.25,
+          0
+        ],
+        "rotation": 3.141592653589793,
+        "doorOpen": false,
+        "supportDepth": 5.5
+      }
+    ],
+    "anchor": {
+      "version": 1,
+      "body": "selene",
+      "origin": [
+        194710.06822205707,
+        94766.604954252,
+        375037.0612645745
+      ],
+      "quaternion": [
+        0.4238997940679353,
+        -0.2651264993341308,
+        -0.4592332682172223,
+        0.7342490785166297
+      ]
+    }
+  },
+  "spread": 4.859039799853917
+}

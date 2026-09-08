@@ -86,10 +86,11 @@ export function getPlacementBoxes(placement) {
 
 /** Complete assembly envelope for claim/headroom checks, not a filled collider. */
 export function getPlacementBounds(placement) {
-  const def=getPieceDefinition(placement),b=AUTHORED_BOUNDS[def?.id];
+  const def=getPieceDefinition(placement),b=AUTHORED_BOUNDS[def?.id==='foundation-strut'?'foundation':def?.id];
   if(!b)return null;
   const p=placement.position??[placement.x??0,placement.y??0,placement.z??0];
   const c=Math.cos(placement.rotation??0),s=Math.sin(placement.rotation??0),pts=[];
   for(const x of [b.min[0],b.max[0]])for(const z of [b.min[2],b.max[2]])pts.push([p[0]+c*x+s*z,p[2]-s*x+c*z]);
-  return {min:[Math.min(...pts.map(v=>v[0])),p[1]+b.min[1],Math.min(...pts.map(v=>v[1]))],max:[Math.max(...pts.map(v=>v[0])),p[1]+b.max[1],Math.max(...pts.map(v=>v[1]))]};
+  const boxes=getWorldBoxes(placement);
+  return {min:[Math.min(...pts.map(v=>v[0]),...boxes.map(b=>b.min[0])),Math.min(p[1]+b.min[1],...boxes.map(b=>b.min[1])),Math.min(...pts.map(v=>v[1]),...boxes.map(b=>b.min[2]))],max:[Math.max(...pts.map(v=>v[0]),...boxes.map(b=>b.max[0])),Math.max(p[1]+b.max[1],...boxes.map(b=>b.max[1])),Math.max(...pts.map(v=>v[1]),...boxes.map(b=>b.max[2]))]};
 }

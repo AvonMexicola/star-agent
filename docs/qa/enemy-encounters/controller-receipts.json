@@ -1,0 +1,132 @@
+[
+  {
+    "browser": "151.0.7922.173",
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "viewport": [
+      1440,
+      900
+    ],
+    "report": {
+      "id": 1,
+      "contractId": "aeon-standard",
+      "title": "Outer perimeter patrol",
+      "region": "Aeon orbit",
+      "difficulty": "Standard",
+      "kills": 2,
+      "waves": 1,
+      "seconds": 19,
+      "shots": 10,
+      "hits": 9,
+      "incomingHits": 0,
+      "hull": 160,
+      "ship": "kestrel"
+    },
+    "errors": [],
+    "warnings": [],
+    "physicalController": false
+  },
+  {
+    "browser": "151.0.7922.173",
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "viewport": [
+      1440,
+      900
+    ],
+    "report": {
+      "id": 1,
+      "contractId": "belt-standard",
+      "title": "Belt interdiction",
+      "region": "Selene asteroid belt",
+      "difficulty": "Standard",
+      "kills": 2,
+      "waves": 1,
+      "seconds": 26,
+      "shots": 11,
+      "hits": 9,
+      "incomingHits": 0,
+      "hull": 160,
+      "ship": "kestrel"
+    },
+    "errors": [],
+    "warnings": [],
+    "physicalController": false
+  },
+  {
+    "browser": "151.0.7922.173",
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "viewport": [
+      1440,
+      900
+    ],
+    "report": {
+      "id": 1,
+      "contractId": "miasma-hard",
+      "title": "Toxic cordon",
+      "region": "Miasma orbit",
+      "difficulty": "Hard",
+      "kills": 5,
+      "waves": 2,
+      "seconds": 43,
+      "shots": 37,
+      "hits": 28,
+      "incomingHits": 0,
+      "hull": 160,
+      "ship": "kestrel"
+    },
+    "errors": [],
+    "warnings": [],
+    "physicalController": false
+  },
+  {
+    "browser": "151.0.7922.173",
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "viewport": [
+      1440,
+      900
+    ],
+    "report": {
+      "id": 1,
+      "contractId": "pyre-easy",
+      "title": "Ash runner",
+      "region": "Pyre orbit",
+      "difficulty": "Easy",
+      "kills": 1,
+      "waves": 1,
+      "seconds": 15,
+      "shots": 5,
+      "hits": 4,
+      "incomingHits": 0,
+      "hull": 160,
+      "ship": "kestrel"
+    },
+    "errors": [],
+    "warnings": [],
+    "physicalController": false
+  },
+  {
+    "browser": "151.0.7922.173",
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "viewport": [
+      1440,
+      900
+    ],
+    "report": {
+      "id": 1,
+      "contractId": "selene-easy",
+      "title": "Lunar picket",
+      "region": "Selene orbit",
+      "difficulty": "Easy",
+      "kills": 1,
+      "waves": 1,
+      "seconds": 152,
+      "shots": 7,
+      "hits": 3,
+      "incomingHits": 0,
+      "hull": 160,
+      "ship": "kestrel"
+    },
+    "errors": [],
+    "warnings": [],
+    "physicalController": false
+  }
+]
