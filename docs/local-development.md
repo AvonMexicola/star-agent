@@ -1,9 +1,42 @@
 # All-features local development
 
+Burrow cutter/reverse follow-up is locally integrated at `b34bc69` (feature
+`03704e1`). Refresh the preview and choose **Burrow surface** to inspect the
+machined cutters and layered mining beams. **S** / controller stick-back reverses;
+keyboard **X** / controller **LT** brakes. The rover now backs away from rock
+contact instead of retaining a false collision stop. The
+[current evidence record](qa/burrow-concept/cutters-and-reverse.md) covers the
+actual reverse/mining checks, complete controller carrier journey and remaining
+independent art/performance review. This is a local checkpoint, not a public release.
+
 The ongoing local test branch is `dev/all-features`. Cees explicitly requests new
 features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
+
+**HUD display**: press **Tab** during gameplay to cycle **Everything → Markers and
+reticle → No HUD**. Controller and touch use **Menu → Settings → HUD**. A two-finger
+tap on the view restores Everything on touch screens. Tab still moves focus inside
+menus. Next hostile is available through **Next target / Menu → Ship**. The display
+choice affects screen overlays; physical cockpit instruments remain visible.
+See [the checked source and browser evidence](qa/hud-display.md).
+
+**Foundation-first building** is available in the same local preview. Place a
+foundation and build before fitting a mainframe; it can sit on the finished deck.
+Doors remain open while the site has no mainframe. Square, triangle and curved
+concrete foundations extend down to dry terrain up to **8 m**. Use D-pad or
+keyboard Up/Down for quarter-metre height steps, and **Shapes → Cliff foundation ·
+45° braces** for a supported cliff deck. Rotate its feet toward the hillside;
+both must reach actual terrain. See [controls and limits](base-building.md).
+
+Runtime `4396029` was combined with settlement/combat development and locally
+integrated at `8b5ecd4` on 2026-09-08. The existing 5178/8087 client/API service was
+gracefully refreshed, preserving its persistent database and unrelated handoff
+edits; both health routes and the exact new asset hash passed. Full 149-file unit
+suite, multiplayer/persistence checks, production build and two actual-game
+controller/keyboard/touch browser cases pass. [Screens and detailed evidence](qa/terrain-foundations/README.md)
+retain failed attempts and physical-device/independent-review limits.
+Construction remains solo/account-backed solo; no public deployment is included.
 
 Four solo **trade settlements** use the existing construction kit: Greenbank
 Supply on Aeon, Stillwater Exchange on Selene, Ember Works on Pyre and Verdigris
@@ -12,6 +45,13 @@ settlements** signal filter. Each has a large pad and a walk-in exchange with
 independent finite stock and real ship cargo trading. F2 / Dev → Ship & location
 offers an approach above each pad. See the [player route](trade-settlements.md)
 and [construction and validation record](qa/trade-settlements/README.md).
+Settlement economy `d50bc56` is locally integrated at `dc578d8`. Each exchange
+now has explicit **local supplies and logical needs**. Its Local
+stock tab explains reserve targets and resource uses; deliveries consume cargo,
+pay credits and reduce the remaining need. Full reserves refuse excess crates.
+Map selections list current exports and shortages. Existing saved quantities
+are preserved. See [settlement delivery guide](settlement-economy.md) and
+[controller/keyboard/phone validation](qa/settlement-stock-needs/README.md).
 These authored exchanges are solo content; online player-base shops retain their
 separate authoritative implementation. Settlement runtime `03a561e` is locally
 integrated at `32966e3`; its 1,127-case unit suite and complete controller
@@ -608,3 +648,47 @@ The terrain ramp fixes and clear Burrow windscreen are included in the preset's
 fleet dependency. Cees manually verified driving aboard and flying away with the
 rover; this records local solo gameplay, not multiplayer rover replication.
 See [scene verification](qa/atlas-meadow-launcher.md) for checks and limitations.
+
+
+## Burrow concept cabin checkpoint
+
+The Burrow upgrade follows the approved exterior/interior concepts with five flat LCARS-style instrument faces, fitted ivory cabin panels, warmer coves, deeper tyre tread and manufactured shell details. The steering wheel, column and pedals are removed; the clear windshield and physical boarding route remain. Screens show actual cutter reserve, ore and driving state. Existing keyboard/controller/phone controls still operate the vehicle.
+
+Use **F2 → Burrow mining — Selene surface** for the explicit seated developer start; F / controller X exits and physically reboards. WASD / left stick drives, arrows / right stick aims, T / RT mines, X / LT brakes, and I / View opens ore bins. Select **Gannet → Selene** for the full pilot-to-rover elevator journey. The [production record](qa/burrow-concept/production-record.md) separates passing gameplay checks from pending independent art/hardware/performance acceptance. This remains a local development checkpoint.
+
+Burrow concept runtime is locally integrated at `ab418ca` (2026-09-08), with final controller, keyboard and native-touch evidence. Refresh the preview to load the new GLB; independent art and hardware/performance acceptance are still pending. [Draft PR92](https://github.com/AvonMexicola/star-agent/pull/92) preserves Cees’s review gate.
+
+
+## Outdoor construction floodlights
+
+The floodlight candidate adds six twin-head masts around each of the four trade
+settlement pads. Build your own through **Build → Power → Floodlight**. Each costs
+8 metal stock, 3 conductor and 2 glass and uses 600 W while switched on. Walk to
+the service box and press **F / controller X**; the setting survives a reload.
+Ceiling lights remain in **Roofs**. The same normal power and placement rules apply.
+
+Use **F2 → a settlement** to inspect the commissioned lights, or **Build sandbox**
+for construction. The [asset and gameplay record](qa/outdoor-floodlights/README.md)
+contains night before/after views, controller/phone evidence and measured costs.
+Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
+and served asset/source checks passed. Refresh the page to load the masts.
+Independent art and hardware/performance acceptance remain pending.
+
+
+## Projected trade terminals
+
+Settlement and base consoles project the exchange name and the normal **F /
+controller X** connection prompt. Interacting opens a crisp trade dashboard with
+local stock, cargo, shipment quantities, credits and settlement needs. Owners
+retain **My shop** controls for offered stock, prices, shop opening and the public
+beacon. No account or password is required.
+
+Use **F2 → Stillwater Exchange** for the explicit approach, then land and walk to
+the console. The shared Pilot menu, keyboard navigation and phone controls remain
+available. The [terminal QA record](qa/projected-terminals/README.md) separates
+actual gameplay evidence from the owner presentation fixture and physical-device
+acceptance. This is a development feature; no public deployment is included.
+
+Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
+[the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
+The existing API remains healthy; no service restart or save migration was needed.

@@ -1,3 +1,6 @@
+import {terminalFrames} from './terminal-frames.js';
+import {createTerminalProjections} from './terminal-projection.js';
+import {settlementSummary} from '../settlements/economy.js';
 import { settlementMarketId } from '../settlements/catalog.js';
 import { createBaseScene } from './base-scene.js';
 import { baseTerminalPoint,baseDocked,materializeBase } from './base-site.js';
@@ -57,13 +60,14 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   const ui=createTradingUI(api,nav),pads=createTradingPads(scene,()=>snapshot().terminals.filter(t=>!t.base));
   nav.openBaseTrade=claimId=>{const t=snapshot().terminals.find(t=>t.base?.claim.id===claimId&&t.owner===snapshot().owner);return ui.openView(t?'stock':'build',t?.id);};
   const bases=createBaseScene(scene,nav,()=>snapshot().terminals);
+  const projections=createTerminalProjections(scene);
   const previousRay=nav.buildingRaycast;nav.buildingRaycast=(...args)=>{const a=previousRay?.(...args),b=bases.raycast(...args);return a&&(!b||a.distance<b.distance)?a:b;};
   const previousLanding=nav.baseLandingSurface;nav.baseLandingSurface=pose=>bases.landingSurface(pose)??previousLanding?.(pose);
   const previousBaseRevision=nav.baseLandingRevision;let baseRevision=null,previousBaseData=null,previousBaseKey='';nav.baseLandingRevision=()=>{const data=previousBaseRevision?.(),key=snapshot().terminals.filter(t=>t.base).map(t=>`${t.id}:${t.base.claim.pieces.length}`).join(',');if(data!==previousBaseData||key!==previousBaseKey){previousBaseData=data;previousBaseKey=key;baseRevision={};}return baseRevision;};
   nav.cargoEVA=(a,b)=>constrainCargoEVA(a,b,snapshot().ships.filter(s=>pose(s)).map(s=>({...s,pose:pose(s),open:s.owner===snapshot().owner?nav.doorProgress>.98:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:s.owner===snapshot().owner?nav.freighter:peerLifts.get(s.owner)})));
   const oldCargo=nav.cargoConstrain;nav.cargoConstrain=(a,b)=>{const s=snapshot().ships.find(s=>s.owner===snapshot().owner&&s.hull===nav.shipId);return constrainShipAttachments(a,oldCargo?.(a,b)??b,(s?.crates??[]).map(c=>crateBounds(nav.shipId,c)));};
   const oldWalker=nav.cargoWalk;nav.cargoWalk=(a,b)=>{const previous=oldWalker?.(a,b)??{point:b,hit:false};const peers=snapshot().ships.filter(s=>s.owner!==snapshot().owner&&pose(s)).map(s=>({...s,pose:pose(s),open:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:peerLifts.get(s.owner)}));const foreign=walkForeignShips(a,previous.point,peers);const result=pads.constrain(a,foreign.point,nav.layout.eyeHeight);return {...result,grounded:result.grounded||foreign.grounded,hit:result.hit||previous.hit||result.grounded||foreign.hit};};
-  nav.tradeBeacons=()=>{const s=snapshot(),plans=s.online?api.localBases().filter(c=>!s.terminals.some(t=>t.owner===s.owner&&t.base?.claim.id===c.id)).map(c=>({id:`base-plan-${c.id}`,name:c.name,kind:'Your unregistered base plan',summary:'Visit this site · Trade → Build to register',category:'bases',parent:c.body,body:c.body,surface:true,center:c.origin,radius:0})):[];return [...(settlements?.beacons()??[]),...plans,...s.terminals.filter(t=>!t.base||t.base.public||t.owner===snapshot().owner).map(t=>({id:`trade-${t.id}`,localClaimId:t.base&&!t.base.shared?t.base.claim.id:undefined,name:t.name,kind:t.base?'Player base':'Player trading pad',summary:api.baseActive(t)===false?'Shop unpowered':tradeSummary(t),sales:[t.padSummary??basePadSummary(t),Object.entries(t.stock).filter(([,n])=>n>0).map(([id,n])=>`${resourceById(id)?.name??id}: ${n} SBU · ${t.prices[id]??resourceById(id)?.buy} CR/SBU`).join(' · ')].filter(Boolean).join(' · '),category:'bases',parent:t.body,body:t.body,surface:true,center:t.base?materializeBase(t).origin:t.origin,radius:0}))];};
+  nav.tradeBeacons=()=>{const s=snapshot(),plans=s.online?api.localBases().filter(c=>!s.terminals.some(t=>t.owner===s.owner&&t.base?.claim.id===c.id)).map(c=>({id:`base-plan-${c.id}`,name:c.name,kind:'Your unregistered base plan',summary:'Visit this site · Trade → Build to register',category:'bases',parent:c.body,body:c.body,surface:true,center:c.origin,radius:0})):[];return [...(settlements?.beacons()??[]).map(b=>({...b,...settlementSummary(s.markets?.[b.id])})),...plans,...s.terminals.filter(t=>!t.base||t.base.public||t.owner===snapshot().owner).map(t=>({id:`trade-${t.id}`,localClaimId:t.base&&!t.base.shared?t.base.claim.id:undefined,name:t.name,kind:t.base?'Player base':'Player trading pad',summary:api.baseActive(t)===false?'Shop unpowered':tradeSummary(t),sales:[t.padSummary??basePadSummary(t),Object.entries(t.stock).filter(([,n])=>n>0).map(([id,n])=>`${resourceById(id)?.name??id}: ${n} SBU · ${t.prices[id]??resourceById(id)?.buy} CR/SBU`).join(' · ')].filter(Boolean).join(' · '),category:'bases',parent:t.body,body:t.body,surface:true,center:t.base?materializeBase(t).origin:t.origin,radius:0}))];};
   nav.cargoLandingSurface=p=>pads.floorAt(p);
   // Pad poses are immutable after deployment; commerce/stock changes do not move them.
   nav.cargoLandingRevision=()=>multiplayer.connected?`online:${multiplayer.state.commerce?.terminals?.length??0}`:`offline:${Object.keys(local.state.terminals).length}`;
@@ -75,7 +79,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   nav.cargoInteraction=()=>nav.buildActive?'':tractor.held?(tractor.state.slot?'F / X · Secure tractor crate':'Tractor · Guide crate to your cargo grid'):nearestTerminal()?'F / X · Trade terminal':nearbyGrid()&&nav.mode==='walk'?'F / X · Physical SBU cargo':'';
   nav.cargoAction=()=>{if(tractor.held){if(!tractor.secure())nav.notify('Guide the crate closer to its free slot, or release RT to leave it here.');return true;}if(!nav.cargoInteraction())return false;return ui.openView(nearestTerminal()?'buy':'cargo');};
   return {ui,api,tractor,registerHull:hull=>!multiplayer.connected&&local.registerHull(hull),
-    get state(){return {...snapshot(),tractor:tractor.state,error:local.error,carrying:nav.carryingCargo,visuals:[...visuals].map(([id,v])=>({id,objects:v.root.children.length,error:v.root.userData.error??null})),terminal:nearestTerminal()};},
+    get state(){return {...snapshot(),tractor:tractor.state,projections:projections.state,error:local.error,carrying:nav.carryingCargo,visuals:[...visuals].map(([id,v])=>({id,objects:v.root.children.length,error:v.root.userData.error??null})),terminal:nearestTerminal()};},
     update(origin,dt=.016){
       const s=snapshot(),ids=new Set();
       const peers=multiplayer.state.players??[];
@@ -101,7 +105,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
       for(const [id,v]of visuals)if(!ids.has(id)){v.dispose();visuals.delete(id);}
       tractor.update(dt,origin);nav.carryingCargo=Boolean(s.account?.carried||tractor.held);carry.visible=Boolean(s.account?.carried)&&['walk','eva'].includes(nav.mode);carry.position.set(0,-.66,-.9).applyQuaternion(nav.orientation).add(nav.position).sub(origin);carry.quaternion.copy(nav.orientation);
       const uiRevision=`${s.revision}|${isHandsFree(nav)}|${Boolean(nav.travel)}`;
-      pads.update(origin);bases.update(origin);miningClient.update();if(lastRevision!==uiRevision){lastRevision=uiRevision;if(ui.open)ui.render();}
-    },dispose(){bases.dispose();tractor.dispose();ui.dispose();pads.dispose();for(const v of visuals.values())v.dispose();for(const a of accessModels.values())a.dispose();carry.removeFromParent();},
+      pads.update(origin);bases.update(origin);projections.update(terminalFrames({snapshot:s,settlements,station,baseActive:api.baseActive,localClaims:multiplayer.connected?[]:build.claims,claimPowered:c=>!build.power||build.power.status(c).powered}),nav.position,origin,ui.open?ui.terminal:'');miningClient.update();if(lastRevision!==uiRevision){lastRevision=uiRevision;if(ui.open)ui.render();}
+    },dispose(){projections.dispose();bases.dispose();tractor.dispose();ui.dispose();pads.dispose();for(const v of visuals.values())v.dispose();for(const a of accessModels.values())a.dispose();carry.removeFromParent();},
   };
 }

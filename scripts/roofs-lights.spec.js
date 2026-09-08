@@ -23,7 +23,7 @@ test('controller builds a separate rounded roof and ceiling lamp, switches illum
  await page.addInitScript(()=>{window.testPad={id:'Ceiling and roof controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};navigator.getGamepads=()=>[window.testPad];});
  await page.goto('/?sandbox=build&intro=0&debug&seed=7291');await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);
  await buildPiece(page,'wall','pieces',[2,.3,0]);await buildPiece(page,'floor','pieces',[0,3.3,0]);await buildPiece(page,'floor','pieces',[-4,3.3,0]);
- await buildPiece(page,'ceiling-light','power',[0,3.12,0]);await buildPiece(page,'roof-corner','roofs',[0,3.3,0]);await buildPiece(page,'roof-edge','roofs',[-4,3.3,0]);
+ await buildPiece(page,'ceiling-light','roofs',[0,3.12,0]);await buildPiece(page,'roof-corner','roofs',[0,3.3,0]);await buildPiece(page,'roof-edge','roofs',[-4,3.3,0]);
  const before=await saved(page),lamp=before.build.claims[0].pieces.find(p=>p.type==='ceiling-light');expect(lamp.position[1]).toBeCloseTo(3.12,2);await page.screenshot({path:`${out}/rounded-roof-built.png`});
  await walkTo(page,await worldPoint(page,[0,1.95,1]));await aimAt(page,await worldPoint(page,[lamp.position[0],lamp.position[1]-.06,lamp.position[2]]));await expect(page.locator('#state-text')).toContainText('ceiling light');
  await page.waitForFunction(id=>window.starAgent.state.build.visuals.lights.fixtures.some(f=>f.id===id),lamp.id);await page.screenshot({path:`${out}/ceiling-light-on.png`});

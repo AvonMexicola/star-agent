@@ -1,0 +1,94 @@
+{
+  "fixture": "Presentation-only mocked terminal reach and recorded command handler; no physical base journey or transaction-authority claim.",
+  "errors": [],
+  "intents": [
+    {
+      "op": "base-offer",
+      "resource": "basalt",
+      "quantity": 1,
+      "price": 20,
+      "revision": 0,
+      "ship": "pilot:nomad",
+      "terminal": "base-one",
+      "source": "rack"
+    },
+    {
+      "op": "base-settings",
+      "setting": "public",
+      "value": true,
+      "revision": 1,
+      "ship": "pilot:nomad",
+      "terminal": "base-one",
+      "source": "rack"
+    },
+    {
+      "op": "base-offer",
+      "resource": "basalt",
+      "quantity": 2,
+      "price": 20,
+      "revision": 2,
+      "ship": "pilot:nomad",
+      "terminal": "base-one",
+      "source": "rack"
+    },
+    {
+      "op": "base-settings",
+      "setting": "open",
+      "value": false,
+      "revision": 3,
+      "ship": "pilot:nomad",
+      "terminal": "base-one",
+      "source": "rack"
+    }
+  ],
+  "state": {
+    "owner": "pilot",
+    "online": false,
+    "revision": 4,
+    "account": {
+      "credits": 1500
+    },
+    "terminals": [
+      {
+        "id": "base-one",
+        "name": "Rockhaven Depot",
+        "owner": "pilot",
+        "stock": {
+          "basalt": 2
+        },
+        "prices": {
+          "basalt": 20
+        },
+        "base": {
+          "claim": {
+            "id": "claim-one"
+          },
+          "open": false,
+          "public": true,
+          "storage": {
+            "rack": {
+              "name": "Workshop rack",
+              "items": {
+                "basalt": 64
+              }
+            }
+          },
+          "offers": {
+            "rack": {
+              "basalt": 2
+            }
+          }
+        }
+      }
+    ],
+    "ships": [
+      {
+        "id": "pilot:nomad",
+        "owner": "pilot",
+        "hull": "nomad",
+        "crates": []
+      }
+    ],
+    "markets": {}
+  }
+}

@@ -46,7 +46,7 @@ uses two Kestrels. Each Hard sortie has its own roster, listed before acceptance
 | Fly-by-wire / unlocked | V | R3 |
 | Full braking | Hold X | Hold LT / L2 |
 | Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship → Ship weapon |
-| Next hostile | Tab or Next target button | Menu → Ship → Next hostile target |
+| Next hostile | Next target button or Esc → Ship | Menu → Ship → Next hostile target |
 | Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Contracts → Recover |
 | Abandon | Console → Abandon patrol | Same console action |
 

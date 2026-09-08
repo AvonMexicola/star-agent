@@ -12,7 +12,7 @@ and tooling changes do not certify the entire game as finished.
 | Station | Authored exterior and enlarged 20-berth station are default; physical community hub, finite market, defense and animated shopkeepers integrated | Final exterior materials, broad firing arcs and wider multi-user acceptance remain open |
 | Mining/building | Local mining including Aeon loose stones, inventory/equipment, processing, saved supply sandbox, construction/facility/pad kit, six roof skins and powered ceiling lights | Full authoritative mining/building persistence and economy not integrated |
 | Cargo/trade | Physical1–64SBU crates, Nomad6SBU/Atlas512SBU grids, carry/salvage, station exchange, durable player shops, constructed-base stock offers and public sales beacons; controller/phone and isolated SQL evidence | Mechanical handler animation, persistent offline wrecks, dynamic NPC market and rendered online playtest |
-| Settlements | Four construction-kit settlements integrated locally at `32966e3`, with map locations, physical large pads and independent finite solo exchanges; complete injected-controller land/trade/reboard/departure route passes | Shared settlement authority, resident NPCs, physical controller and independent visual/performance review remain open; [evidence and limits](../qa/trade-settlements/README.md) |
+| Settlements | Four construction-kit settlements integrated locally at `32966e3`, with map locations, physical large pads and independent finite solo exchanges; local stock and role-based delivery needs integrated at `dc578d8`, with terminal/map shortages and complete controller delivery/departure validation | Shared settlement authority, resident NPCs, physical controller and independent visual/performance review remain open; [evidence and limits](../qa/trade-settlements/README.md) |
 | Characters | Expedition suit is the default local/remote model, with corrected leg rig, calibrated palms,26clips and an animation studio | Final art/motion and whole-scene performance acceptance remain open |
 | Rover | Ground Selene and Atlas/Burrow Aeon meadow starts, real aft-ramp carriage and clear windscreen; full ground controller and Gannet carrier keyboard/controller/native-touch routes pass; Cees manually tested Atlas loading/flight | Broader terrain and performance acceptance, physical-device testing and multiplayer replication remain open |
 | Multiplayer | Ten-player prototype, persistent PostgreSQL/Prisma accounts and inventory, comms-assigned hangars, authoritative hits, assigned remote suit colors | Local database survives restarts; no SMTP; online Nomad/Atlas cargo hulls, with remaining fleet parity open; live ten-person soak not established here |
@@ -122,3 +122,9 @@ calibration. Four final Chromium cases pass on equivalent runtime `a50c060`.
 The refreshed local client/API use protocol4 and the same persistent database,
 with no schema migration. [Builder QA and comparison](../qa/handheld-tools.md)
 record asset budgets, failed checks/corrections and acceptance limits.
+
+
+Projected terminals (SA-UI-004) add nearby welcome projections and a native HTML
+exchange dashboard over the existing trade handlers. Stock, needs, cargo and owner
+offers retain their existing authority. See [terminal QA](../qa/projected-terminals/README.md)
+for checked source, browser evidence, local integration and acceptance limits.

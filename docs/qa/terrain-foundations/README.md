@@ -1,7 +1,6 @@
 # Terrain foundations — development verification
 
-Implemented and author-validated on 2026-09-08; local integration follows the
-checked candidate. Independent art review and physical-controller testing are not
+Implemented, author-validated and locally integrated on 2026-09-08. Independent art review and physical-controller testing are not
 claimed. No public deployment. Source is the `feat/terrain-foundations` change;
 asset identity and rebuilding instructions are in [asset.json](asset.json).
 
@@ -85,3 +84,20 @@ mesh batches (five inherited deck materials and four articulated members).
 Construction remains solo/account-backed solo. This change does not implement
 multiplayer construction or new visitor authorization services. Commissioned
 shared trade layouts retain their explicitly open public entrances.
+
+## Local integration receipt
+
+Runtime `4396029` was merged with the latest checked development `d08f181` at
+`8b5ecd4` and fast-forwarded into local `dev/all-features`. Only the append-only
+HANDOFF needed conflict resolution; both histories were retained. Foundation
+runtime files are unchanged in the union, which passes all 149 unit files, the
+development production build and repository checks.
+
+The guarded shared-worktree integration retained the exact 56,247-byte unrelated
+HANDOFF suffix (SHA256 `3bf320f09e28c4d384e811998fc68a7724ab0093d01fc486c0454eb91e7f9abe`).
+The existing `star-agent-persistent-preview.service` was gracefully restarted to
+pair client/API; no schema or account mutation was performed. Direct API8087 and
+proxied API5178 health, preview index, foundation/system modules and braced GLB
+all return 200. The served 120,720-byte GLB has the exact asset.json SHA256.
+Local backup and machine receipts are `/tmp/star-agent-foundation-integration`.
+No further browser run or FPS claim is attached to this service refresh.

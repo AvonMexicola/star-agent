@@ -82,7 +82,7 @@ def trim_edge(a,c,y,width=.045,material='EdgeSteel'):
  return prism('PerimeterRail',[(a[0]-nx,a[1]-nz),(c[0]-nx,c[1]-nz),(c[0]+nx,c[1]+nz),(a[0]+nx,a[1]+nz)],y-.045,y,material,0)
 manifest={'builder':'blender/build_base.py','coordinates':'metres, Y up; origin support surface, wall x width; stair rises toward -Z','source':'original deterministic scripted construction; no external imagery','pieces':{}}
 for id,d in defs.items():
- if id=='foundation-strut':continue # Dedicated articulated asset, rebuilt below.
+ if id in ['foundation-strut','floodlight']:continue # Dedicated articulated asset, rebuilt below.
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False);objects=[]
  if id=='ceiling-light':
   b('CeilingMount',(0,-.026,0),(.8,.052,.8),'EdgeSteel',.01)
@@ -322,3 +322,5 @@ with open(os.path.join(OUT,'manifest.json'),'w') as f:json.dump(manifest,f,inden
 print(json.dumps(manifest,indent=2))
 
 subprocess.run([bpy.app.binary_path,"--background","--factory-startup","--python-exit-code","1","--python",os.path.join(ROOT,"blender/build_foundation_strut.py")],check=True)
+
+subprocess.run([bpy.app.binary_path,"--background","--factory-startup","--python-exit-code","1","--python",os.path.join(ROOT,"blender/build_floodlight.py")],check=True)
