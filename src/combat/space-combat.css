@@ -6,5 +6,5 @@ body:not(.player-active) #ship-weapons{display:none}
 #patrol-console.gameplay-screen dl{grid-row:1/6}
 #patrol-console.gameplay-screen .patrol-reports{grid-column:1/-1;margin:0;padding-left:20px;color:var(--muted);font-size:12px;line-height:1.6}
 .patrol-reports:empty{display:none}.combat-objective{white-space:pre-line}
-#patrol-console.gameplay-screen .gameplay-content{overflow-y:auto;align-content:safe center}
-@media(max-width:749px){#patrol-console.gameplay-screen .gameplay-content{justify-content:safe center}#patrol-console.gameplay-screen .patrol-difficulties{margin:4px 0}.patrol-difficulties button{flex:1;min-width:72px;padding:8px}#patrol-console.gameplay-screen .patrol-reports{font-size:11px}}
+dialog#patrol-console.gameplay-screen .gameplay-content{overflow-y:auto;align-content:safe center}
+@media(max-width:749px){dialog#patrol-console.gameplay-screen .gameplay-content{justify-content:safe center}#patrol-console.gameplay-screen .patrol-difficulties{margin:4px 0}.patrol-difficulties button{flex:1;min-width:72px;padding:8px}#patrol-console.gameplay-screen .patrol-reports{font-size:11px}}

@@ -94,7 +94,7 @@ test('keyboard and native touch select difficulties, abandon and return at phone
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto('/?dev=1&ship=kestrel&start=orbit&intro=0&debug&seed=7291');
  await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&!window.starAgent.state.transiting,{},{timeout:90000});
- await page.keyboard.press('Escape');await page.locator('[data-tab="contracts"]').click();
+ await page.keyboard.press('Escape');await page.locator('dialog[open] [data-tab="contracts"]').click();
  await page.locator('[data-difficulty="hard"]').focus();await page.keyboard.press('Enter');
  await expect(page.locator('.patrol-goal')).toContainText('5 hostiles');
  await page.locator('[data-controller-key="patrol-accept"]').focus();await page.keyboard.press('Enter');
