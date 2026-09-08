@@ -3864,3 +3864,27 @@ SA-TRADE-001 LOCAL INTEGRATION CLAIM: final base4b36b50/controller2PASS merged c
 
 
 SA-TRADE-001 LOCAL VERIFIED 2026-09-08T11:50:33.434107+00:00: runtime4b36b50/candidate65163fa integrated locally at2607fe7 over76aa45e. Exact56247-byte shared HANDOFF suffix preserved; same persistent-preview service restarted, paired5178/8087healthOK and servedprotocol6 verified. Tablecounts identical before/after (local data tables empty,4migrationrows); no schema or productionDB change. Normal147filesPASS, multiplayer190PASS/2existingoptinskips, final31base/elevator/isolatedSQLPASS, build3.87s; actual seller+offlineownerbuyer controller2PASS3.1m, zero appdiagnostics, screenshots builder-inspected. Physicalcontroller/independentreview unclaimed. Only final docs/taskstatus commit follows; shared runtime source ownership RELEASED to queued settlement/enemy. No further baseGPU/APIjob/publicdeployment.
+
+
+## SA-BUILD-002 — terrain foundations and optional mainframes (2026-09-08)
+
+Owner Cees / Codex. Branch feat/terrain-foundations, original base32966e3.
+Foundation-first sites, deck-mounted mainframes, unsecured open doors, removable
+empty mainframes, 8m concrete supports and 45degree braced cliff decks implemented.
+Build/state/collision/visual/inputpalette and account-save dimension/removal guards
+are the owned scope; no navigation/planet/multiplayer protocol rewrite.
+
+Validation:149normaltestfilesPASS,191multiplayerPASS/2existingoptinskips, real
+isolated PostgreSQL persistencePASS, build/repository/plan checksPASS. Final two
+actual-game browser casesPASS4.2min (Chromium151/AMD860M ANGLE GL,1440×900/390×844),
+zero app diagnostics: full controller foundation/door/mainframe/tall construction,
+inventory/reload and neutral gates, keyboard/native touch, plus canonical4.859m
+relief hillside rendering and device replacement/mapping gates. Physical device
+and independent art review remain separate. Source/provenance/failures/screens:
+[terrain-foundation QA](docs/qa/terrain-foundations/README.md).
+
+Private5642/API8642 and GPU released. Coherent candidate is ready for guarded
+local integration over currentdev; preserve append-only HANDOFF and other feature
+owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
+and client source refresh before cloud-save testing. No database migration or
+public deployment. Floodlight owner may layer onto committed build hooks.
