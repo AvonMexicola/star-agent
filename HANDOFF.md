@@ -3977,3 +3977,6 @@ occurred. Transport owns new Freight/online hooks and may consume this checkpoin
 no pending edits copied from its lane. Next: final union checks, guarded local
 fast-forward preserving dirty HANDOFF suffix, HTTP source verification, draft PR.
 No public deployment or shared API/SQL restart is required for this delta.
+
+
+BURROW FOLLOW-UP CLAIM 2026-09-08T14:07:35.990123+00:00: Cees reports reverse remaining on brake and asks for more developed cutter heads/beams. Continuing isolated art/burrow-concept-upgrade at acbf4be; source baseline shared a75b82f. Own assets/mining-rover, blender/build_mining_rover.py plus NEW blender/rover_cutters.py, src/mining-rover.js, NEW src/rover-cutting-beam.js and bounded rover input/physics/UI changes if reproduced, relevant tests/scripts/burrow-concept and Burrow docs/task metadata. No shared main/navigation/gamepad/energy-effects hooks claimed; coordinate separately if evidence requires them. Existing dependencies only; reserve own 5630/8630 production and 5631 native previews, GPU queued after existing settlement/HUD/transport reservations and fresh host inventory. No shared integration/service action until checked candidate and fresh HANDOFF. Original clear glazing/entry/muzzle/carrier contracts retained. Reverse input clarification pending while source/art work continues.
