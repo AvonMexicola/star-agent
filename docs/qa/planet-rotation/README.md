@@ -54,6 +54,7 @@ Shared-clock and corrected targeted-drive verification remain pending.
 | Browser01 | Four-world orbital renderer check passed; no controller claim. |
 | Browser02 | Landing, hatch, ground/day-night and inventory reached; final seat wait stopped outside actual chair reach. Interrupted after trace diagnosis; fixture now waits for the actual seat interaction. Day/night contact checks and PNGs passed. |
 | Room clock07 | New fixture asserted before the actual 15 Hz publication tick; corrected to advance both 30 Hz room ticks. All six authoritative rotation cases then passed. |
+| Browser05 | Two-client setup selected the floating sign-in control hidden on the entry screen; the visible header ACCOUNT control is the correct route. No account was created and drive case did not run. Corrected only fixture, added stage receipts; original trace retained. |
 | Browser04 | Orbital and complete controller cases pass. Two-client fixture fails before auth because it assumed the account dialog opened automatically; corrected to use the normal sign-in button. Original trace and screenshots retained. |
 | Browser03 | Cancelled during build to honor another queued GPU job; no browser acceptance. Playwright reused the output directory, so the earlier02 trace may have been erased. Surviving logs/PNGs are the retained evidence, not an asserted archived trace. Subsequent attempts use unique directories. |
 

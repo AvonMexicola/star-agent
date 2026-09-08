@@ -86,7 +86,7 @@ test('controller lands, walks through the rotating day, boards and launches',asy
 
 test('two real clients share the planetary clock and keep controller contact with the rotating station',async({page,browser})=>{
   const context=await browser.newContext({viewport:{width:1440,height:900}});
-  const observer=await context.newPage(),errors=[];
+  const observer=await context.newPage(),errors=[],stages=[];
   try{
     for(const [i,p] of [page,observer].entries()){
       p.setDefaultTimeout(30_000);
@@ -97,8 +97,8 @@ test('two real clients share the planetary clock and keep controller contact wit
         navigator.getGamepads=()=>[window.rotationPad];
       },i*420_000);
       await p.goto('/?intro=0&debug');
-      await p.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:120_000});
-      if(!await p.locator('#multiplayer-account-dialog').isVisible())await p.locator('#multiplayer-access').click();
+      await p.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:120_000});stages.push({client:i,stage:'ready',at:Date.now()});
+      if(!await p.locator('#multiplayer-account-dialog').isVisible())await p.getByRole('button',{name:'ACCOUNT',exact:true}).click();
       await expect(p.locator('#multiplayer-account-dialog')).toBeVisible();
       await p.locator('[data-auth-view=register]').click();
       await p.locator('#mp-register-email').fill(`rotation-${i}-${Date.now()}@example.test`);
@@ -107,8 +107,8 @@ test('two real clients share the planetary clock and keep controller contact wit
       await p.locator('[data-auth-form=register] button[type=submit]').click();
       await expect(p.locator('[data-account-callsign]')).toHaveText(`Rotation_${i}`);
       await p.locator('[data-join]').click();
-      await p.waitForFunction(()=>window.starAgent.state.multiplayer.connected);
-      await p.locator('#multiplayer-account-dialog [data-mp-close]').click();await neutral(p);
+      await p.waitForFunction(()=>window.starAgent.state.multiplayer.connected);stages.push({client:i,stage:'joined',at:Date.now()});
+      await p.locator('#multiplayer-account-dialog [data-mp-close]').click();await neutral(p);stages.push({client:i,stage:'controller-ready',at:Date.now()});
     }
     await page.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
     await observer.waitForFunction(()=>window.starAgent.state.multiplayer.players.length===2&&window.starAgent.state.multiplayer.remote[0]?.characterReady);
@@ -127,7 +127,7 @@ test('two real clients share the planetary clock and keep controller contact wit
     expect(distance(moved.planetRotation.inertialPosition,later.planetRotation.inertialPosition)).toBeGreaterThan(10);
     await page.screenshot({path:`${out}/shared-station.png`});expect(errors).toEqual([]);
     await receipt(page,browser,'shared-clock',errors,{scope:'Two real authenticated clients, second OS clock skewed seven minutes; controller station walk and rendered peer convergence. Account entry uses typed credentials.',initial,moved,later,observer:await state(observer)});
-  }finally{await context.close();}
+  }finally{await writeFile(`${out}/shared-stages.json`,JSON.stringify({stages,errors,first:await state(page).catch(()=>null),second:await state(observer).catch(()=>null)},null,2));await context.close();}
 });
 
 
