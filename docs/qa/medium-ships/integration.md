@@ -1,7 +1,7 @@
 # Medium ships integration record
 
-Status on 2026-09-08: the isolated **3cf80ad** runtime is ready for shared local
-integration. All six complete keyboard/controller/native-touch journeys pass on
+Status on 2026-09-08: the checked **3cf80ad** runtime is integrated into shared
+local development at **b793921**. All six complete keyboard/controller/native-touch journeys pass on
 their recorded source/model versions. Both final assets pass independent studio
 review: Stratum Art04 **4.12**, Gannet Art13 **4.10**, both with silhouette **4.5**
 and no waived threshold. Both final models pass actual-game controller routes.
@@ -12,8 +12,8 @@ keyboard / Gannet controller routes. Independent current-game follow-ups pass
 **4.02 / 4.04**, closing the incorrect access/cargo labels and cockpit-bound
 collection effects. [Correction evidence](display-corrections.md) preserves exact
 versions, native screenshots and the Stratum completed-PASS/outer-wrapper143
-discrepancy. Shared integration and public release are separate; deployment has
-not occurred. The dated checkpoints below preserve earlier failures and the
+discrepancy. The shared preview is verified at `http://127.0.0.1:5178/`; public deployment
+has not occurred. The dated checkpoints below preserve earlier failures and the
 exact source tested at each stage.
 
 Stratum is an 18 m medium miner with two actual articulated barrel origins, a
@@ -362,3 +362,31 @@ mandatory. The [Gannet Art12 payload review](gannet-payload-review-12.md)
 independently reproduces84,932/207,260 raw assembly triangles for both128SBU
 configurations, with exact body-inset, label, visual-contact and nominal-memory
 limits. It is not a full game/GPU/FPS measurement.
+
+
+## Verified shared local promotion — 2026-09-08
+
+Local merge **b793921** consumes coherent candidate **b73a8ee** over development
+**9d9b3fe**, with unchanged tested runtime **3cf80ad**. An exact backup preserves
+the full 472,032-byte working HANDOFF and its 53,410-byte append-only suffix;
+the suffix is restored after merging the incoming tracked history. No unrelated
+working file or staged change was overwritten.
+
+The existing Vite process reloads its model manifest after a configuration-mtime
+refresh. HTTP `/@vite/env` now contains 109 revisions, including exact final
+Stratum `1f5cae2a…`, Gannet `8da0bc2e…` and clear Burrow `831b9569…` hashes.
+All three served GLBs match repository bytes; twelve key source/dependency files
+match the tested candidate, and the served main/launcher expose both hulls and
+the offline inventory adapter. Direct API and proxied health return 200/ok.
+The original dev runner, API, PostgreSQL and Vite PIDs/start identities remain
+unchanged. No schema/protocol/server-source change or database restart occurs.
+Raw preservation and HTTP receipts remain in
+`/tmp/star-agent-medium-local-integration/`.
+
+This is source/HTTP/cache/service verification of the shared preview. The native
+journeys ran on build18 from that same runtime source, rather than another
+post-merge browser run. The separate user preview on5596 was untouched. The
+[local guide](../../local-development.md) has direct starts and controls. Tasks
+SA-SHIP-001/002 are integrated, releasing active ownership while retaining their
+historical file lists. PR87 targets development; Cees retains public acceptance
+and no production release is performed by this integration.

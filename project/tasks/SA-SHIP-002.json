@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex medium ships asset author",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/meridian-gannet",
   "base": "0a18574f308ba343c86e7a96ccf9ed6ad4344793",
   "updated": "2026-09-08",
