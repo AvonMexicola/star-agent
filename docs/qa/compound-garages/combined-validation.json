@@ -184,5 +184,14 @@
   },
   "browser": "Pending delegated full journey and parent combined-hook fixture",
   "sharedIntegration": false,
-  "publicDeployment": false
+  "publicDeployment": false,
+  "garageHosted": {
+    "head": "09011e7",
+    "run": "https://github.com/AvonMexicola/star-agent/actions/runs/34280008113",
+    "plan": "PASS 34s",
+    "source": "PASS 4m43s",
+    "multiplayer": "PASS 2m45s",
+    "browser": "PASS 7m46s",
+    "verify": "PASS 3s"
+  }
 }
