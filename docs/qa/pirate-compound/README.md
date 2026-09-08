@@ -41,7 +41,7 @@ pending module and is not implemented by this compound task.
 
 | Check | Result |
 | --- | --- |
-|10 focused balance/survey/market/asset/light invariants|PASS; own test file|
+|12 focused balance/survey/market/asset/light invariants|PASS; own test file|
 |Normal unit suite before props hook|155 files PASS42.82s|
 |Production build after four props|PASS6.46s; existing bundle-size advisory|
 |Contributor check|PASS38 changed paths|
@@ -81,3 +81,30 @@ failed file passed when rerun with task disk-backed TMPDIR, without source chang
 Original failure retained. The latest focused pirate/light files pass after the
 lighting correction. Contributor check and plan reran against updated remote
 `origin/dev/all-features`:40 changed paths, no broad unrelated stack.
+
+Browser02 on d32b8a3 completed actual controller landing and cabin walking. The
+helper stopped at ship-local(-0.146,2.75,2.814), within its22cm tolerance, where the
+existing side-specific cargo interaction correctly opened storage. The revised
+physical waypoint(0.2,2.75,3.55) checks the actual hatch hint before activation.
+No ship navigation or reach rule changed. Instancing diagnostics in this real
+run report412 source static draws→19 instance draws within the compound. Final
+same-camera performance and complete route are still pending.
+
+Only readonly wall/floor/roof/ramp render parts are instanced, in claim-local
+metres. Original collision, doors, lights, displays and transparent pieces remain
+independent. Parent source review required matching effective material values
+and texture identities instead of labels; corrected and tested with different
+colours, roughness and texture maps, including a guard against pixel encoding.
+Bastion source hash verified8d0dcbb6395479ad083cd609217833b97c74008acdd15b72ed9182ced46b64ae.
+
+During the03 queue, deeper source inspection found a real collision initialization
+error: world claims had been supplied to the player-save-validating BuildSystem
+constructor. It rejected that content, so prior controller landing was on terrain;
+prior physical-pad assumptions are invalidated. The fix follows the checked normal
+settlement pattern exactly: construct from empty state, then supply readonly world
+claims outside player save authority. No player validation was weakened. Actual
+BuildSystem invariants now prove both claims exist, the large landing surface is
+accepted, walls stop the walking capsule, the exchange door is traversable, and
+both ramp runs continuously support physical0.1m walking steps. Twelve focused
+tests PASS in0.726s (`test-results/physics-01.log`). Live03 must verify this correction.
+The preceding full155file suite passed62.803s on4b63505 before this correction.

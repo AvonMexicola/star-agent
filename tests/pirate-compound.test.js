@@ -4,6 +4,8 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {Vector3,Quaternion,Scene,Group,Mesh,BoxGeometry,MeshStandardMaterial,Matrix4,Texture} from 'three';
 import {PirateStaticKit} from '../src/pirate-compound/static-kit.js';
+import {createPirateCollision} from '../src/pirate-compound/world-collision.js';
+import {SHIP_LAYOUT} from '../src/boarding.js';
 import {createFloodlights} from '../src/build/floodlights.js';
 import {PiratePerimeter} from '../src/pirate-compound/perimeter.js';
 import {PIRATE_MARKET,PERIMETER as P} from '../src/pirate-compound/catalog.js';
@@ -17,6 +19,18 @@ import {terminalFrames} from '../src/trading/terminal-frames.js';
 import {getWorldBoxes} from '../src/build/collision.js';
 import {getPieceDefinition} from '../src/build/definitions.js';
 const step=(sim,seconds,context={})=>{for(let i=0;i<Math.ceil(seconds/.05);i++)sim.update(.05,{distance:120,altitude:30,ship:true,...context});};
+test('actual world collision accepts the pad, blocks walls, opens the door and carries both ramps',()=>{
+ const s=pirateLayout(),q=new Quaternion(...s.claim.quaternion),origin=new Vector3(...s.claim.origin),world=a=>new Vector3(...a).applyQuaternion(q).add(origin),nav={position:world(s.approach),orientation:q,layout:SHIP_LAYOUT,mode:'flight'},collision=createPirateCollision(new Scene(),nav,[s.claim,s.outerClaim]);
+ try{
+  assert.equal(collision.blocked,false);assert.equal(collision.error,'');assert.equal(collision.claims.length,2);
+  const surface=collision.landingSurface({position:world(s.pad.position),orientation:q});assert.equal(surface?.size,'L');assert.ok(surface.point.distanceTo(world(s.pad.position))<1e-6);
+  const eye=SHIP_LAYOUT.eyeHeight,wall=collision.constrainWalker(world([20,s.deck+eye,0]),world([24,s.deck+eye-.1,0]));assert.equal(wall.hit,true);assert.ok(collision.toLocal(wall.point,s.claim).x<22);
+  const door=collision.constrainWalker(world([6,s.deck+eye,-10]),world([6,s.deck+eye-.1,-14]));assert.ok(collision.toLocal(door.point,s.claim).z< -13.8);assert.equal(door.grounded,true);
+  for(const claim of [s.claim,s.outerClaim]){const ramps=claim.pieces.filter(p=>p.type==='foundation-ramp'),first=ramps[0],last=ramps.at(-1),point=a=>collision.toWorld(new Vector3(...a),claim);let previous=point([first.position[0],first.position[1]+eye,first.position[2]-2]);
+   for(let z=first.position[2]-1.9;z<last.position[2]+1.9;z+=.1){const local=collision.toLocal(previous,claim),result=collision.constrainWalker(previous,point([first.position[0],local.y-.06,z]));assert.ok(collision.toLocal(result.point,claim).z>z-.02,`${claim.name} ramp blocked at${z}`);assert.equal(result.grounded,true,`${claim.name} ramp lacks real support at${z}`);previous=result.point;}
+  }
+ }finally{collision.dispose();}
+});
 test('readonly kit instancing preserves local nested transforms and releases without changing collision sources',()=>{
  const group=new Group();group.position.set(22e9,4e8,-3e6);group.rotation.y=.7;const geometry=new BoxGeometry(4,3,.3),material=new MeshStandardMaterial(),models=new Map(),pieces=[];
  for(let i=0;i<7;i++){const root=new Group(),nested=new Group(),mesh=new Mesh(geometry,material.clone());if(i===3)mesh.material.color.set('red');if(i===4)mesh.material.roughness=.17;if(i>=5){mesh.material.map=new Texture();mesh.material.map.toJSON=()=>{throw Error('Instancing must not encode texture pixels');};}root.position.set(i*4,5,-12);root.rotation.y=i*Math.PI/2;nested.position.set(.2,.3,-.1);root.add(nested);nested.add(mesh);group.add(root);pieces.push({id:`p${i}`,type:i===2?'doorway':'wall'});models.set(`p${i}`,{ready:true,group:root});}

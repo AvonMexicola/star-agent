@@ -8,13 +8,14 @@ import {PiratePerimeter} from './perimeter.js';
 import {PirateProps} from './props.js';
 import {PirateTower} from './tower.js';
 import {PirateStaticKit} from './static-kit.js';
+import {createPirateCollision} from './world-collision.js';
 import {pirateLayout} from './layout.js';
 import './style.css';
 const v=a=>new Vector3(...a);
 export function createPirateCompound({scene,nav,mining,getCombat,enabled=()=>!nav.multiplayer?.connected}){
  const layout=pirateLayout(),q=new Quaternion(...layout.claim.quaternion),claims=[layout.claim,layout.outerClaim],point=p=>v(p).applyQuaternion(q).add(v(layout.claim.origin)),local=p=>p.clone().sub(v(layout.claim.origin)).applyQuaternion(q.clone().invert());
- const store={state:{build:emptyBuild()},container:()=>null},collisionStore={state:{build:{...emptyBuild(),claims}},container:()=>null};
- const buildings=new BuildSystem({scene,nav,store}),collision=new BuildSystem({scene,nav,store:collisionStore,render:false});
+ const store={state:{build:emptyBuild()},container:()=>null};
+ const buildings=new BuildSystem({scene,nav,store}),collision=createPirateCollision(scene,nav,claims);
  const staticKit=new PirateStaticKit(buildings);
  const props=new PirateProps(scene,layout);props.readyPromise.catch(error=>nav.notify(`Crimson props unavailable: ${error.message}`));
  const tower=new PirateTower(scene,layout);tower.readyPromise.catch(error=>nav.notify(`Hush tower unavailable: ${error.message}`));let visible=false,discovered=false;
@@ -51,7 +52,7 @@ export function createPirateCompound({scene,nav,mining,getCombat,enabled=()=>!na
    policy.update(dt,{distance,altitude:targetLocal.y-layout.deck,ship:aircraft,active:!suspended,clear:lineClear,aligned});tower.update(Math.min(.1,dt),origin,{enabled:on,phase:policy.phase});
    warning.hidden=suspended||!aircraft||!['warning','charge','burst','rest'].includes(policy.phase);warning.textContent=policy.phase==='warning'?`HUSH AIRSPACE · ${Math.ceil(distance)}m · NO SHIPS WITHIN 180 m\nLand at outer apron; approach on foot. ${policy.timer>0?`Weapons arm in ${Math.ceil(policy.timer)}s.`:''}`:policy.phase==='charge'?`TOWER CHARGING · ${policy.timer.toFixed(1)}s · RETREAT BEYOND 220 m`:`PERIMETER ACTIVE · RETREAT BEYOND 220 m · SHIELD ${Math.ceil(nav.combat?.player?.shield??0)}`;
    touch.hidden=!nearPanel()||!nav.enabled||Boolean(document.querySelector('dialog[open]'));
-  },get state(){return {available:enabled(),discovered,unlocked:policy.disabled,...policy.state,ready:tower.ready&&props.ready&&[...buildings.models.values()].every(m=>m.ready),rendered:buildings.models.size,error:[buildings.error,tower.error,props.error].filter(Boolean).join(' '),site:{id:layout.id,origin:layout.claim.origin,quaternion:layout.claim.quaternion,deck:layout.deck,padDeck:layout.padDeck,pad:point(layout.pad.position).toArray(),terminal:point(layout.terminalPiece.position).toArray(),panel:panelPoint.toArray(),tower:tower.origin.toArray()},props:props.placements,staticKit:staticKit.state,assets:{tower:'/models/pirate-tower.glb',battery:'/models/station-defense.glb'}};},
+  },get state(){return {available:enabled(),discovered,unlocked:policy.disabled,...policy.state,ready:tower.ready&&props.ready&&[...buildings.models.values()].every(m=>m.ready),rendered:buildings.models.size,error:[buildings.error,collision.error,tower.error,props.error].filter(Boolean).join(' '),site:{id:layout.id,origin:layout.claim.origin,quaternion:layout.claim.quaternion,deck:layout.deck,padDeck:layout.padDeck,pad:point(layout.pad.position).toArray(),terminal:point(layout.terminalPiece.position).toArray(),panel:panelPoint.toArray(),tower:tower.origin.toArray()},props:props.placements,staticKit:staticKit.state,assets:{tower:'/models/pirate-tower.glb',battery:'/models/station-defense.glb'}};},
   dispose(){staticKit.dispose();props.dispose();tower.dispose();buildings.dispose();collision.dispose();dialog.remove();touch.remove();warning.remove();}};return api;
 }
 /** Combine collision and commerce adapters without changing regular layouts. */
