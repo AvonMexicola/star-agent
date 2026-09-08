@@ -32,6 +32,7 @@ export const REQUIRED_CLIPS = Object.freeze([
 ]);
 export const CLIPS = Object.freeze([
   ...REQUIRED_CLIPS,
+  'crouch-idle','crouch-strafe-left','crouch-strafe-right','crouch-backward','walk-backward','strafe-left','strafe-right','stand-to-crouch','crouch-to-stand',
   'rest-pose', 'climb-ladder', 'climb-idle', 'wave', 'take-damage', 'aim-pistol',
   'use-tool', 'reload-rifle', 'reload-pistol', 'interact',
   'climb-mount', 'climb-finish',
@@ -59,10 +60,11 @@ export const WOUNDED_HEALTH = 0.4;
 export const FADE = 0.2;
 
 /** Clips whose playback rate follows the walk stride. */
-export const WALK_CLIPS = Object.freeze(['walk', 'carry-walk', 'wounded-walk', 'crouch-walk']);
+export const WALK_CLIPS = Object.freeze(['crouch-strafe-left','crouch-strafe-right','crouch-backward','walk-backward','strafe-left','strafe-right','walk', 'carry-walk', 'wounded-walk', 'crouch-walk']);
 
 /** Nearest usable clip when the authored one is missing, in preference order. */
 export const CLIP_FALLBACKS = Object.freeze({
+  'crouch-idle':['crouch-walk','idle'], 'crouch-strafe-left':['crouch-walk'], 'crouch-strafe-right':['crouch-walk'], 'crouch-backward':['crouch-walk'], 'walk-backward':['walk'], 'strafe-left':['walk'], 'strafe-right':['walk'], 'stand-to-crouch':['crouch-walk'], 'crouch-to-stand':['idle'],
   'idle': [],
   'walk': ['run', 'idle'],
   'run': ['walk', 'idle'],
@@ -122,6 +124,7 @@ const FIRE_STATES = Object.freeze(['fire-rifle', 'fire-pistol']);
 const NO_FIRE = Object.freeze({ allowFire: false });
 const OPEN_GRIP_STATES = new Set(['wave', 'rest', 'climb', 'dead', 'sit']);
 const LOWER_BODY_KEYS = Object.freeze({
+  ...Object.fromEntries(['crouch-idle','crouch-strafe-left','crouch-strafe-right','crouch-backward','walk-backward','strafe-left','strafe-right'].map(k=>[k,k+'-lower'])),
   idle: 'idle-lower', walk: 'walk-lower', run: 'run-lower',
   'crouch-walk': 'crouch-walk-lower', 'carry-walk': 'carry-walk-lower', 'wounded-walk': 'wounded-walk-lower',
 });
@@ -508,7 +511,7 @@ export class Character {
     };
 
     // Full-body clips, one action per contract clip.
-    const oneShotClips = new Set(['jump', 'sit-down', 'stand-up', 'death', ...Object.values(GESTURES)]);
+    const oneShotClips = new Set(['stand-to-crouch','crouch-to-stand','jump', 'sit-down', 'stand-up', 'death', ...Object.values(GESTURES)]);
     for (const name of CLIPS) {
       if (['fire-rifle', 'fire-pistol', 'aim-rifle', 'aim-pistol', 'use-tool'].includes(name)) continue;
       const info = resolveClip(name, available);
@@ -674,6 +677,13 @@ export class Character {
     }
     this._activeCorrections.length = 0;
     const source = input || EMPTY_INPUT;
+    const crouched=Boolean(source.crouching);
+    if(crouched!==Boolean(this._crouched)&&this.ready&&!source.dead&&!source.seated&&finite(source.health,1)>0&&finite(source.speed,0)<.2){
+      const key=crouched?'stand-to-crouch':'crouch-to-stand';
+      if(this.actions[key]&&!this.clipInfo[key]?.fallback){this._stance={key,remaining:.28};this.actions[key].reset().play();}
+    }
+    this._crouched=crouched;
+    if(this._stance){this._stance.remaining-=Math.max(0,dt);if(this._stance.remaining<=0||source.dead||source.seated||finite(source.speed,0)>.2)this._stance=null;}
     const health = finite(source.health, 1);
     this._hitCooldown = Math.max(0, this._hitCooldown - Math.max(0, finite(dt, 0)));
     // An opening animation has no health input. Seed from the first actual
@@ -762,6 +772,14 @@ export class Character {
       this._set(Math.abs(finite(input?.climbSpeed, 0)) > .01 ? 'climb-ladder' : 'climb-idle', 1);
     } else if (GESTURES[state]) {
       this._set(GESTURES[state], 1);
+    } else if(this._stance){
+      this._set(this._stance.key,1);
+    } else if (input?.crouching) {
+      const key=this._lastSpeed<=SPEED.idle?'crouch-idle':Math.abs(input.moveX??0)>Math.abs(input.moveZ??0)*1.1?((input.moveX??0)<0?'crouch-strafe-left':'crouch-strafe-right'):(input.moveZ??1)<0?'crouch-backward':'crouch-walk';
+      this._set(overlay?LOWER_BODY_KEYS[key]:key,1);
+    } else if(this._lastSpeed>SPEED.idle&&(Math.abs(input?.moveX??0)>Math.abs(input?.moveZ??0)*1.1||(input?.moveZ??1)<-.2)){
+      const key=Math.abs(input?.moveX??0)>Math.abs(input?.moveZ??0)*1.1?((input.moveX??0)<0?'strafe-left':'strafe-right'):'walk-backward';
+      this._set(overlay?LOWER_BODY_KEYS[key]:key,1);
     } else {
       const blend = blendWeights(this._lastSpeed, this._blend);
       const slot = walkClipForState(state);

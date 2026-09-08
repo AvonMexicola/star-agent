@@ -22,6 +22,7 @@ test('the clip contract retains locomotion and adds traversal, gestures and dist
   assert.deepEqual([...CLIPS], [
     'idle', 'walk', 'run', 'jump', 'crouch-walk', 'sit-down', 'sit-idle', 'stand-up',
     'carry-walk', 'wounded-walk', 'aim-rifle', 'fire-rifle', 'fire-pistol', 'death',
+    'crouch-idle','crouch-strafe-left','crouch-strafe-right','crouch-backward','walk-backward','strafe-left','strafe-right','stand-to-crouch','crouch-to-stand',
     'rest-pose', 'climb-ladder', 'climb-idle', 'wave', 'take-damage', 'aim-pistol',
     'use-tool', 'reload-rifle', 'reload-pistol', 'interact',
     'climb-mount', 'climb-finish',
@@ -178,6 +179,7 @@ test('a complete rig uses every authored clip directly', () => {
 test('fallback mapping when clips are missing', () => {
   const minimal = new Set(['idle', 'walk']);
   const expected = {
+    'crouch-idle':['idle',1], 'crouch-strafe-left':['idle',1], 'crouch-strafe-right':['idle',1], 'crouch-backward':['idle',1], 'walk-backward':['walk',1], 'strafe-left':['walk',1], 'strafe-right':['walk',1], 'stand-to-crouch':['idle',1], 'crouch-to-stand':['idle',1],
     'idle': ['idle', 1],
     'walk': ['walk', 1],
     'run': ['walk', FALLBACK_TIME_SCALE.run],

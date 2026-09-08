@@ -3906,3 +3906,6 @@ local integration over currentdev; preserve append-only HANDOFF and other featur
 owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
 and client source refresh before cloud-save testing. No database migration or
 public deployment. Floodlight owner may layer onto committed build hooks.
+
+
+SA-PIRATE-001 CLAIM 2026-09-08T13:38:17.449678+00:00: Cees authorizes five new human pirates rigged/animated, compatible new player animations, and interesting NPCs to fight. Isolated feat/pirate-ground-encounters /tmp/star-agent-pirates from8b5ecd4; owns new src/pirates, assets/pirates, prepare_pirates/prepare-pirate-motions, runtime models/pirates, scoped tests/QA/docs; narrow character/crouch/navigation/controller/mining-target/main/dev-location hooks only. No new runtime dependencies; preview5664/studio5665, no GPU acquired. Source pirate files copied from user Downloads with hashes. Preserve transport/floodlight/Burrow/settlement owners and shared services5596/SQL/production. Local integration only after checks.

@@ -1,0 +1,69 @@
+{
+  "sources": [
+    {
+      "id": "aeon-leader",
+      "downloadName": "Meshy_AI_Aeon_pirate_leader_0908132801_texture.glb",
+      "source": "assets/pirates/source/aeon-leader.glb",
+      "sha256": "80727be80cfda16a606dc022b4a3f07fd2c5f4836d9e804312712652bc544f7e",
+      "provenance": "User-supplied Meshy textured human pirate export, 2026-09-08"
+    },
+    {
+      "id": "aeon-raider",
+      "downloadName": "Meshy_AI_male_aeon_pirate_anim_0908132835_texture.glb",
+      "source": "assets/pirates/source/aeon-raider.glb",
+      "sha256": "fc2eae7954fbf366e1e7088870585ebcb7443b13cfcfef891626261a5ad26db9",
+      "provenance": "User-supplied Meshy textured human pirate export, 2026-09-08"
+    },
+    {
+      "id": "aeon-flanker",
+      "downloadName": "Meshy_AI_female_aeon_pirate_0908130151_texture (1).glb",
+      "source": "assets/pirates/source/aeon-flanker.glb",
+      "sha256": "cfaf078617817ef791c6e16ca837c23ef95b0b019bfa991333fcb18ca3671fd7",
+      "provenance": "User-supplied Meshy textured human pirate export, 2026-09-08"
+    },
+    {
+      "id": "selene-leader",
+      "downloadName": "Meshy_AI_selene_lleader_pirate_0908132821_texture.glb",
+      "source": "assets/pirates/source/selene-leader.glb",
+      "sha256": "72ddf96c17a129189d1115a5ec7098f7293e3ec8998eb29d3eea53327f2683c7",
+      "provenance": "User-supplied Meshy textured human pirate export, 2026-09-08"
+    },
+    {
+      "id": "selene-adjutant",
+      "downloadName": "Meshy_AI_selene_adjudant_pirat_0908132828_texture.glb",
+      "source": "assets/pirates/source/selene-adjutant.glb",
+      "sha256": "7807c369bd6eb5a47651c6dc59a648fec06fa486f38eea28c9ee02de5217c836",
+      "provenance": "User-supplied Meshy textured human pirate export, 2026-09-08"
+    },
+    {
+      "id": "crouch-left",
+      "downloadName": "Meshy_AI_male_aeon_pirate_anim_biped.zip",
+      "member": "Meshy_AI_male_aeon_pirate_anim_biped/Meshy_AI_male_aeon_pirate_anim_biped_Animation_Crouch_Walk_Left_with_Gun_withSkin.glb",
+      "source": "assets/pirates/source/crouch-left.glb",
+      "sha256": "45c29f39a504a5664cd9fcfcc7e45c3aff5f3a50bdab736e17814a00fafe59e7",
+      "provenance": "User-supplied Meshy rig/clip export, 2026-09-08"
+    },
+    {
+      "id": "aeon-rig",
+      "downloadName": "Meshy_AI_male_aeon_pirate_anim_biped.zip",
+      "member": "Meshy_AI_male_aeon_pirate_anim_biped/Meshy_AI_male_aeon_pirate_anim_biped_Character_output.glb",
+      "source": "assets/pirates/source/aeon-rig.glb",
+      "sha256": "29be377d2f32ad2f27419c459bd4e09c5f21cf3b7b922886d498a0d0c57a7ee2",
+      "provenance": "User-supplied Meshy rig/clip export, 2026-09-08"
+    },
+    {
+      "id": "crouch-look",
+      "downloadName": "Meshy_AI_male_aeon_pirate_anim_biped (1).zip",
+      "member": "Meshy_AI_male_aeon_pirate_anim_biped/Meshy_AI_male_aeon_pirate_anim_biped_Animation_CrouchLookAroundBow_withSkin.glb",
+      "source": "assets/pirates/source/crouch-look.glb",
+      "sha256": "d191b66984142623bbe875491b09989bf9a9893e4b9e080196cdc3d30e0c3a68",
+      "provenance": "User-supplied Meshy rig/clip export, 2026-09-08"
+    },
+    {
+      "id": "player-expedition-base",
+      "source": "assets/pirates/source/player-expedition-base.glb",
+      "sha256": "04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa",
+      "provenance": "Existing expedition player at git 8b5ecd43b533265f5657ead841355185391380bf; see assets/character/expedition-v2 and public/models/props/manifest.json. Original mesh, grips and existing motion library preserved as rebuild input."
+    }
+  ]
+}

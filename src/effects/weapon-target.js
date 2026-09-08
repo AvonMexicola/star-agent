@@ -8,7 +8,7 @@ export function createWeaponTarget({nav,mining}){
     let hit=mining.raycast(start,direction,range);
     const building=nav.buildingRaycast?.(start,direction,range);
     if(building&&(!hit||building.distance<hit.distance))hit=building;
-    for(const candidate of [nav.parkedShipRaycast?.(start,direction,range),nav.faunaRaycast?.(start,direction,range)]){
+    for(const candidate of [nav.parkedShipRaycast?.(start,direction,range),nav.faunaRaycast?.(start,direction,range),nav.pirateRaycast?.(start,direction,range),nav.pirateCoverRaycast?.(start,direction,range)]){
       if(candidate&&(!hit||candidate.distance<hit.distance))hit=candidate;
     }
     if(nav.station){

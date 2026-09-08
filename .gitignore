@@ -17,3 +17,6 @@ server/generated/
 .env
 .env.*
 !.env.example
+
+# Reproducible pirate rig intermediates; original inputs and runtime exports retained.
+/assets/pirates/rigged/

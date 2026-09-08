@@ -1,0 +1,42 @@
+{
+  "id": "SA-PIRATE-001",
+  "title": "Rig five pirates and add playable Aeon/Selene ground encounters",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "active",
+  "branch": "feat/pirate-ground-encounters",
+  "base": "8b5ecd43b533265f5657ead841355185391380bf",
+  "updated": "2026-09-08",
+  "areas": [
+    "combat",
+    "assets",
+    "interface"
+  ],
+  "claims": [
+    "src/pirates/**",
+    "assets/pirates/**",
+    "blender/prepare_pirates.py",
+    "blender/prepare-pirate-motions.mjs",
+    "public/models/pirates/**",
+    "src/character.js",
+    "public/models/props/player-expedition.glb",
+    "src/main.js (narrow pirate wiring)",
+    "src/mining/tool.js (target adapter only)",
+    "src/dev-launch-options.js (two locations)",
+    "src/navigation.js (crouch only)",
+    "src/controller-ui.js (contextual crouch command)",
+    "tests/pirate*.test.js",
+    "scripts/pirates.*",
+    "docs/briefs/pirates.md",
+    "docs/qa/pirates/**",
+    "src/fauna/pyrebear-medical.js (neutral emergency heading)",
+    "tests/pyrebear-medical.test.js",
+    "public/models/props/manifest.json",
+    "blender/build-pirates.mjs",
+    "blender/build_pirate_camp.py",
+    "src/effects/weapon-target.js (pirate/cover targets)",
+    "package.json (focused tests)"
+  ],
+  "brief": "docs/briefs/pirates.md"
+}

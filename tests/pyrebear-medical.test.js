@@ -115,7 +115,7 @@ test('different wildlife share suit health and attacker copy remains plain text'
   medical.applyBite(20);assert.equal(medical.state.creatureName,'Pyrebear');
   assert.equal(medical.applyBite(80,{creatureName:'Suloher dog'}).ok,true);
   assert.equal(loadout.state.health,0);assert.equal(medical.state.creatureName,'Suloher dog');
-  assert.match(nodes[0].html,/>Wildlife attack<\/h2>/);
+  assert.match(nodes[0].html,/>Suit emergency<\/h2>/);
   assert.match(nodes[0].status.textContent,/Suloher dog attack/);
   assert.equal(store.state.loadout.creatureName,undefined);
   medical.recover();medical.applyBite(100,{creatureName:'<b>unknown</b>'});

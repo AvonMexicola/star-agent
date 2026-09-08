@@ -32,8 +32,8 @@
     ],
     "credits": 35,
     "concept": "assets/character/expedition-v2/concept.png",
-    "file_mb": 8.496328,
-    "sha256": "04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa",
+    "file_mb": 8.686516,
+    "sha256": "c25a0a4cf7b554b2151c5333572603c1216a7b7e575308efa83fa52ba959a133",
     "animations": [
       {
         "name": "idle",
@@ -50,10 +50,6 @@
       {
         "name": "jump",
         "seconds": 1.9333332777023315
-      },
-      {
-        "name": "crouch-walk",
-        "seconds": 1.1666666269302368
       },
       {
         "name": "sit-down",
@@ -108,6 +104,14 @@
         "seconds": 6.0333333015441895
       },
       {
+        "name": "rest-pose",
+        "seconds": 1
+      },
+      {
+        "name": "climb-idle",
+        "seconds": 1
+      },
+      {
         "name": "aim-rifle",
         "seconds": 1
       },
@@ -120,27 +124,59 @@
         "seconds": 1
       },
       {
-        "name": "rest-pose",
-        "seconds": 1
-      },
-      {
-        "name": "climb-idle",
-        "seconds": 1
-      },
-      {
         "name": "fire-rifle",
-        "seconds": 0.3
+        "seconds": 0.30000001192092896
       },
       {
         "name": "fire-pistol",
-        "seconds": 0.3
+        "seconds": 0.30000001192092896
       },
       {
         "name": "reload-pistol",
-        "seconds": 3.7
+        "seconds": 3.700000047683716
+      },
+      {
+        "name": "crouch-strafe-left",
+        "seconds": 1.2999999523162842
+      },
+      {
+        "name": "crouch-strafe-right",
+        "seconds": 1.2999999523162842
+      },
+      {
+        "name": "walk-backward",
+        "seconds": 1.0666667222976685
+      },
+      {
+        "name": "crouch-idle",
+        "seconds": 1
+      },
+      {
+        "name": "crouch-walk",
+        "seconds": 1
+      },
+      {
+        "name": "crouch-backward",
+        "seconds": 1
+      },
+      {
+        "name": "stand-to-crouch",
+        "seconds": 0.2800000011920929
+      },
+      {
+        "name": "crouch-to-stand",
+        "seconds": 0.2800000011920929
+      },
+      {
+        "name": "strafe-left",
+        "seconds": 1
+      },
+      {
+        "name": "strafe-right",
+        "seconds": 1
       }
     ],
-    "notes": "Expedition suit v2. Meshy 7 + humanoid rig; UV-matched 2K color and PBR maps; 26 normalized/derived clips. Build and provenance: assets/character/expedition-v2. User-requested fidelity increase supersedes the previous 20k/1K character target; final visual acceptance recorded separately.",
+    "notes": "Expedition suit v2. Meshy 7 + humanoid rig; UV-matched 2K color and PBR maps; 26 normalized/derived clips. Build and provenance: assets/character/expedition-v2. User-requested fidelity increase supersedes the previous 20k/1K character target; final visual acceptance recorded separately. Pirate motion extension: assets/pirates/README.md.",
     "morph_targets": [
       "GripRight",
       "GripLeft"
