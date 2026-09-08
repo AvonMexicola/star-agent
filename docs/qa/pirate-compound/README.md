@@ -1,10 +1,10 @@
 # Hush Exchange production record
 
 Builder: delegated Codex pirate-compound agent. Parent garage agent integrates.
-Base23ca619. **Checked development checkpoint, offered for parent local integration.**
+Base23ca619. **Checked development checkpoint, integrated locally at `c7b09ab`.**
 Runtime/assets2c2f2fb49fcfbfc65bcfbc4bf012d78d66491375; final browser fixture201588c.
-Formal art, physical-device and performance acceptance remain pending. No local
-integration or deployment is claimed by this branch; parent owns those receipts.
+Formal art, physical-device and performance acceptance remain pending. The parent [local integration receipt](local-integration.json) verifies the served
+combined hooks, five new asset hashes and healthy APIs. No public deployment.
 
 Cees requested a secret pirate trading/PvE compound and a reduced station turret
 on a cylindrical tower. Later supplied Crimson generator, floodlight, workbench,
