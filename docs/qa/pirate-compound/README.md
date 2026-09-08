@@ -1,8 +1,10 @@
 # Hush Exchange production record
 
 Builder: delegated Codex pirate-compound agent. Parent garage agent integrates.
-Base23ca619. **Development candidate; browser and independent review pending.**
-No local integration or deployment claimed by this branch.
+Base23ca619. **Checked development checkpoint, offered for parent local integration.**
+Runtime/assets2c2f2fb49fcfbfc65bcfbc4bf012d78d66491375; final browser fixture201588c.
+Formal art, physical-device and performance acceptance remain pending. No local
+integration or deployment is claimed by this branch; parent owns those receipts.
 
 Cees requested a secret pirate trading/PvE compound and a reduced station turret
 on a cylindrical tower. Later supplied Crimson generator, floodlight, workbench,
@@ -48,10 +50,57 @@ pending module and is not implemented by this compound task.
 |Latest author normal unit suite|155 files PASS59.449s on ce033b9, before the narrow normals/cooldown changes|
 |Parent private combined normal suite|159 files PASS48.325s on73a7be8, including runtime2c2f2fb; no shared integration implied|
 |Production build|PASS in each actual browser launch; existing bundle-size advisory|
-|Contributor check|PASS; latest plan45 changed paths against origin/dev/all-features|
+|Contributor check|PASS; plan reran against origin/dev/all-features|
 |Actual tower renderer, burst survival and retreat|PASS01: Chromium151.0.7922.173, ANGLE AMD Radeon860M/OpenGL ES3.2,1440×900; zero errors/warnings|
-|Complete controller / corrected native phone|Pending|
+|Complete controller approach/isolate/buy/sell/result/return|PASS09,3.6min; actual Gamepad movement after explicit developer approach|
+|Keyboard / native phone service and commerce / Resume|PASS09,47.7s; initial390×844 mobile/touch context, controlled nearby poses|
+|Repaired-normal HDR comparison and final art capture|PASS09,1.2min:0 nonfinite RGB with repairs,102 after restoring only original six zero normals|
+|Parent combined garage/pirate hooks and own captures|PASS04,2.0min on16c73a5/runtime73a7be8; defect review confirms clean lamp|
 |Independent art, physical controller, FPS acceptance|Pending|
+
+Browser09 completed all three remaining cases in5.7min on clean201588c, with the
+runtime unchanged since2c2f2fb. Browser151.0.7922.173, ANGLE AMD Radeon860M
+Graphics/radeonsi krackan1 ACO OpenGL ES3.2; desktop1440×900, phone390×844.
+Every application error/warning list is empty. The production build passed;
+existing Vite chunk-size, test-runner colour and private API SMTP advisories are
+not application console diagnostics. One worker, no retries, no backend change.
+
+The full controller route lowers the gear, physically lands on the large pad,
+leaves the chair, opens the hatch and walks down the pad ramp. It crosses239m of
+canonical terrain and enters through the supported core ramp, isolates the tower,
+walks around the actual tripod collider and enters the exchange. It buys one ice
+SBU (stock24→23, credits1500→1453), views that crate in Cargo, sells it back
+(stock24, crate removed, credits1482), and walks outside. Holding RT across modal
+close, actual tab blur/focus, disconnect/reconnect, device replacement and
+unsupported mapping keeps input disarmed until neutral. No pose or action method
+is injected after the explicit developer start. This is injected standard Gamepad
+evidence; a physical controller and phone were not available for this check.
+
+Final lamp comparison captures the actual half-float scene target at1440×900,
+ROI[850,190,210,300]. Corrected data produces0 nonfinite samples; temporarily
+restoring exactly six original lamp zero normals produces102 and the same black
+rectangle; restoring repairs removes it again. This establishes the bad normal
+data as the cause in this renderer. Both source originals remain unchanged.
+Author inspected the final yard, workbench, overview and control images; parent
+independently captured and inspected the same yard on the combined build. These
+are scoped defect reviews, not a scored QUALITY art acceptance.
+
+Curated unchanged images: [compound overview](compound-overview.png),
+[Crimson work yard](crimson-work-yard.png), [workbench](crimson-workbench.png),
+[generator](crimson-generator.png), [controller Cargo](trade-cargo.png),
+[return to play](returned-to-play.png), and [native phone Cargo](trade-phone.png).
+The [invalid-source-normal comparison](invalid-source-normals.png) and
+[initial excessive light pools](initial-glare.png) retain the visible failures.
+Generator and initial-glare images are04 and01 respectively; all other curated
+images are09. Exact commands, integration boundary and limitations are in the
+[checked handoff](handoff.md). Raw logs, screenshots, state JSON and failed videos
+remain in ignored `test-results/pirate-01` through `pirate-09`; they are not copied
+as generated test reports into the repository.
+
+## Historical failures and corrections
+
+The following entries preserve the state at each attempt. Their pending checks
+are resolved by the final09 results above unless a limitation is stated there.
 
 Retained failures in ignored `test-results`: tower export01 exceeded10k/1MB
 (16839tri/1.41MB), corrected hidden bevel/bolt tessellation in02. Restricted Vite

@@ -709,5 +709,5 @@ link is `/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291` in a
 site. The market uses existing solo cargo/save authority; ground pirate NPC combat
 belongs to a separate feature. See the [production record](qa/pirate-compound/README.md)
 for the exact checked state, assets, browser evidence and remaining acceptance.
-This candidate is awaiting final browser checks and parent local integration;
+This checked candidate is offered for parent local integration;
 no public deployment is included.
