@@ -9,6 +9,7 @@ const manifest=JSON.parse(readFileSync(new URL('manifest.json',source)));
 const propsPath=new URL('public/models/props/manifest.json',root);
 const props=JSON.parse(readFileSync(propsPath));
 for(const [name,entry] of Object.entries(manifest)){
+  if(entry.builder!=='assets/handheld-tools/build.py'){console.log(name,'uses separate packer beside',entry.builder);continue;}
   const path=new URL(`public/models/props/${name}.glb`,root),glb=new AvatarGLB(path);
   const imageKinds=new Map();
   for(const material of glb.json.materials) {

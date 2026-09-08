@@ -215,7 +215,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   const fauna=createHostileFauna({scene,nav,loadout,seed:SEED,online:()=>multiplayer.connected,onSound:event=>audio.gameplay?.event(event,nav)});
   nav.faunaRaycast=fauna.raycast;nav.onFaunaWeaponHit=fauna.weaponHit;
   nav.parkedShipRaycast=(start,direction,range)=>nav.mode==='walk'||nav.mode==='eva'?parkedShipHit(nav,start,direction,range):null;
-  const miningTool=createMiningTool({scene,camera,canvas,nav,rock:mining,effects,loadout,character,thirdPerson:()=>shipCamera.active});
+  const miningTool=createMiningTool({scene,camera,canvas,nav,rock:mining,effects,loadout,character,thirdPerson:()=>shipCamera.active,getBuild:()=>build});
   // Vehicle-bin feedback stays at the cut; backpack pickups can approach the suit.
   // Use the committed job's destination, even if the player has changed seats.
   mining.onExtract=({point,yields,normal,destination='pack'})=>effects.collect(point,yields,normal,{attract:destination==='pack'});

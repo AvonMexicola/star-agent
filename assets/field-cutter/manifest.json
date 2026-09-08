@@ -1,0 +1,90 @@
+{
+  "name": "mining-laser-tool",
+  "source": "assets/field-cutter/mining-tool-mk1.blend",
+  "builder": "assets/field-cutter/build.py",
+  "reference": "assets/field-cutter/source/mining-tool-mk1.png",
+  "units": "metres",
+  "up": "+Y",
+  "barrel": "-X",
+  "muzzle": [
+    -0.6,
+    0.14,
+    0
+  ],
+  "leftGrip": [
+    -0.3,
+    0.01,
+    0
+  ],
+  "headMount": [
+    -0.44,
+    0.14,
+    0
+  ],
+  "rotorPivot": [
+    -0.52,
+    0.14,
+    0
+  ],
+  "bounds": {
+    "min": [
+      -0.6,
+      -0.0839,
+      -0.1159
+    ],
+    "max": [
+      0.202,
+      0.2575,
+      0.1159
+    ]
+  },
+  "sourceTriangles": 9636,
+  "sourceDraws": 5,
+  "tiers": "Mk1 implemented; common K17-M30 mount retained for future heads",
+  "maps": {
+    "normal": {
+      "path": "assets/handheld-tools/textures/normal.webp",
+      "name": "HandheldAtlas-v1-normal",
+      "sha256": "0e5f12de0b8f696ef52e092fc70c9c375a432164872c52e6c55573bdce03e607",
+      "bytes": 64170,
+      "size": 1024
+    },
+    "basecolor": {
+      "path": "assets/field-cutter/textures/basecolor.webp",
+      "name": "FieldCutterAtlas-v1-basecolor",
+      "sha256": "3bdf999f27502e263e0c8be0a9ec02748815b93d7d871133fc7504b26db1670c",
+      "bytes": 14582,
+      "size": 1024
+    },
+    "orm": {
+      "path": "assets/handheld-tools/textures/orm.webp",
+      "name": "HandheldAtlas-v1-orm",
+      "sha256": "0ec0bff38b0ce9fe8927b3fc4b6d358774a2f3b52bb1fef4640516c7f7585050",
+      "bytes": 26948,
+      "size": 1024
+    }
+  },
+  "cleanup": {
+    "zeroAreaTrianglesRemoved": 192,
+    "outwardWindingRepaired": 0,
+    "areaThreshold": 1e-10
+  },
+  "triangles": 9444,
+  "drawPrimitives": 5,
+  "bytes": 915800,
+  "sha256": "dc078fe73e0d46d32bbdf8a63db82f41231454178297ae6104d62db0cbece967",
+  "nodes": 10,
+  "materials": [
+    "Glass",
+    "HandheldFinish",
+    "Mint",
+    "Amber"
+  ],
+  "textures": 3,
+  "textureSize": 1024,
+  "textureFormat": "WebP",
+  "textureResidencyMiB": 16,
+  "sourceSHA256": "27aaa2332628f88b1e3d19e2d74f4f48baa788e3678aa1b520871e559a316de3",
+  "textureSharing": "Normal/ORM byte-identical to handheld atlas; one shared cutter-specific basecolor (~5.33 MiB additional GPU residency with mipmaps)",
+  "lod": "Held hero prop; hidden when not in use. Separate body and rotor batches preserve articulation."
+}

@@ -221,7 +221,7 @@ export class BuildSystem {
     this.removalPending=true;let result;try{
       if(this.power?.cloud?.enabled)result=await this.power.cloud.action(preview.claim.id,'remove',preview.piece.id);
       else {const plan=this._removalPlan,ok=this.store.write({...pruneBaseStorage(this.store.state,plan.build.claims),build:plan.build});result={ok,message:ok?plan.message:this.store.warning};}
-      if(result.ok){this.revision++;this._syncedData=null;this.sync();}return result;
+      if(result.ok){this.revision++;this.lastToolAction={kind:'remove',position:[...preview.position],revision:this.revision};this._syncedData=null;this.sync();}return result;
     }finally{this.removalPending=false;this.nav.gamepad.suspend();if(this.active)this.refreshPreview();}
   }
   place(){
@@ -237,6 +237,7 @@ export class BuildSystem {
     if(!validBuild(data)||!this.store.validContainers(next))return {ok:false,message:'Building or storage limits reached.'};
     if(!this.store.write(next))return {ok:false,message:this.store.warning};
     this.revision++;this.sync();this.refreshPreview();
+    this.lastToolAction={kind:'place',position:this.toWorld(v(p.position),c).toArray(),revision:this.revision};
     this.onSound?.({type:'building-placement',point:this.toWorld(v(p.position),c),pieceId:p.id,claimId:c.id});
     return {ok:true,message:`${PIECES[p.type].label} placed.`,pieceId:p.id,claimId:c.id};
   }
