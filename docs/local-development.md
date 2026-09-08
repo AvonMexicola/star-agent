@@ -5,6 +5,13 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+The passenger elevator repair keeps its hangar vestibule at human scale, exposing
+the same pressure-door kit used in the lobby and a clear call-panel approach.
+F / controller X / the touch Interact button calls the elevator; walk inside to
+choose a destination. Closed doors can be called open from close range; an
+occupied doorway still prevents closing. See the
+[repair and validation record](qa/station-elevator-access.md).
+
 The shared local preview at **http://127.0.0.1:5178/** includes the checked
 medium-ship runtime **`3cf80ad`**, merged locally at **`b793921`** on 2026-09-08.
 **Stratum M-05** is an 18 m miner; **Gannet T-06** is a 24 m transport carrying

@@ -33,6 +33,9 @@ test('passenger entry uses physical cabin height, width and door plane',()=>{
   assert.equal(elevatorLocation(frame,point(0,-6.25,15.95)).cabin,true);
   assert.equal(elevatorLocation(frame,point(0,-6.25,12.3)).door,true);
   assert.equal(elevatorLocation(frame,point(0,-6.25,14.3)).threshold,true);
+  const panel=elevatorLocation(frame,point(2.65,-6.25,14.0));
+  assert.equal(panel.door,true,'the call panel is reachable beside the opening');
+  assert.equal(panel.threshold,false,'standing beside the call panel cannot obstruct the sliding doorway');
   assert.equal(elevatorLocation(frame,point(1.8,-6.25,15.95)).cabin,false);
   assert.equal(elevatorLocation(frame,point(0,-4.5,15.95)).cabin,false,'jumping is not settled passenger entry');
   assert.equal(elevatorLocation(frame,point(0,-4.5,15.95)).occupiesCabin,true,'jumping body still occupies a destination cabin');
