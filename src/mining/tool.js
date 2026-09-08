@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createWeaponTarget } from '../effects/weapon-target.js';
 import { Equipment, loadSocketCalibration } from '../equipment.js';
+import { BuilderHandheld, BUILDER_ITEM } from '../build/handheld.js';
 import { PLAYER_AVATAR } from '../player-avatar.js';
 import { MINERALS } from './volume.js';
 import { MINERAL_CAPACITY_PER_BOX } from '../inventory/containers.js';
@@ -9,25 +10,26 @@ import './mining.css';
 
 /** One equipment instance moves between the first-person mount and the player's
  * rig. Both views use the same inventory, heat, ammunition and muzzle validation. */
-export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,loadout=null,character=null,thirdPerson=()=>false}){
+export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,loadout=null,character=null,thirdPerson=()=>false,getBuild=()=>null}){
   const mount=new THREE.Group(),hand=new THREE.Bone(),back=new THREE.Bone();hand.name='RightHand';back.name='Spine2';
   hand.rotation.y=-Math.PI/2;back.visible=false;mount.add(hand,back);scene.add(mount);
-  const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:Object.fromEntries(['mining-laser-tool','tractor-beam-tool','rifle-laser','sidearm-pistol'].map(id=>[id,{position:[0,0,0],rotation:[0,0,0]}]))}}};
+  const sockets={rigs:{mannequin:{bones:{RightHand:'RightHand',Spine2:'Spine2'},items:Object.fromEntries(['mining-laser-tool','tractor-beam-tool','rifle-laser','sidearm-pistol',BUILDER_ITEM].map(id=>[id,{position:[0,0,0],rotation:[0,0,0]}]))}}};
   let hit=null,held=false,keyHeld=false,selected=true,active=false,recoil=0,direction=new THREE.Vector3(),tractorBefore=false;
-  let restrictedLast=false,inputSequence=0;
+  let restrictedLast=false,inputSequence=0,buildBefore=false,selectedBeforeBuild=true;
   const hubFire=createHubFireGate(),physicalPointers=new Set();
   const viewRig={skeleton:{bones:[hand,back]}};let rigSockets=null,external=false,attached=false;
   const aimOrigin=new THREE.Vector3(),handAim=new THREE.Vector3();
   loadSocketCalibration().then(value=>{rigSockets=value;});
   const equipment=new Equipment(viewRig,scene,{camera,sockets,onMine:data=>{if(hit&&active){const contact={...data,point:hit.point.clone(),normal:hit.normal?.clone(),target:hit.rock};if(!nav.mineCargo?.(contact))rock.onMine(contact,direction);}}});
+  const builder=new BuilderHandheld(scene);
   equipment.equip(loadout?.item??'mining-laser-tool');
   const weaponTarget=createWeaponTarget({nav,mining:rock});
   const panel=document.createElement('aside');panel.id='mining-panel';panel.hidden=true;
   panel.innerHTML='<div class="mining-eyebrow">SELENE / FIELD SURVEY</div><strong class="mining-target"></strong><div class="field-equipment"><button data-field-item="rifle-laser">1 · Carbine</button><button data-field-item="sidearm-pistol">2 · Sidearm</button><button data-field-item="mining-laser-tool">3 · Cutter</button></div><p class="mining-guide"></p><div class="mining-heat"><span>LASER HEAT</span><meter min="0" max="1" value="0" aria-label="Mining laser heat"></meter></div><p class="mining-resources"></p><button type="button" class="mining-trigger">HOLD TO MINE</button><small class="mining-feedback" role="status"></small>';
   document.body.append(panel);const $=s=>panel.querySelector(s),button=$('.mining-trigger');
   const clear=()=>{held=false;keyHeld=false;recoil=0;if(!nav.roverOccupied&&!nav.shipMiningActive)rock.budget=0;if(effects)effects.miningInput=null;};
-  function select(slot){nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(slot!==null&&isHandsFree(nav)){nav.notify(HANDS_FREE_REASON);return;}if(loadout){const result=loadout.select(slot);if(!result.ok)nav.notify(result.message);}else selected=slot!==null;}
-  function cycle(){nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(isHandsFree(nav)){nav.notify(HANDS_FREE_REASON);return;}if(loadout){const result=loadout.cycle();if(!result.ok)nav.notify(result.message);}}
+  function select(slot){if(nav.buildActive)return;nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(slot!==null&&isHandsFree(nav)){nav.notify(HANDS_FREE_REASON);return;}if(loadout){const result=loadout.select(slot);if(!result.ok)nav.notify(result.message);}else selected=slot!==null;}
+  function cycle(){if(nav.buildActive)return;nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(isHandsFree(nav)){nav.notify(HANDS_FREE_REASON);return;}if(loadout){const result=loadout.cycle();if(!result.ok)nav.notify(result.message);}}
   // Keep a physical hold separate from clear(), which stops effects. A held
   // finger surviving a modal or arrival is not a fresh trigger.
   document.addEventListener('pointerdown',e=>{if(e.button===0&&(nav.locked||e.target.closest?.('.mining-trigger')))physicalPointers.add(e.pointerId);});
@@ -45,19 +47,23 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   document.addEventListener('keyup',e=>{if(e.code==='KeyT')keyHeld=false;});
   return {
     equipment,select,cycle,
-    get pose(){const held=!isHandsFree(nav)&&!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.querySelector('dialog[open]');return {aiming:held?equipment.aimingInput():'none',firing:held&&equipment.firingInput()};},
+    get pose(){const held=!isHandsFree(nav)&&(!nav.buildActive||equipment.equipped===BUILDER_ITEM)&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.querySelector('dialog[open]');return {aiming:held?equipment.aimingInput():'none',firing:held&&equipment.firingInput()};},
     toggle(){select(loadout?(loadout.active==='tool'?null:'tool'):(selected?null:'tool'));},
     update(dt,origin){
+      const build=getBuild(),isBuilding=Boolean(nav.buildActive&&build?.active);
+      if(isBuilding&&!buildBefore)selectedBeforeBuild=selected;
+      if(!isBuilding&&buildBefore&&!loadout)selected=selectedBeforeBuild;
+      buildBefore=isBuilding;
       const restricted=isHandsFree(nav);
       const triggerReady=hubFire.update(restricted,Boolean(physicalPointers.size||nav.physicalKeys?.has('KeyT')||nav.toolTrigger>.1),++inputSequence);
       if(restricted&&!restrictedLast){clear();nav.gamepad.suspend();if(loadout&&!nav.multiplayer?.connected)loadout.select(null);else if(!loadout)selected=false;}
       restrictedLast=restricted;
       if(tractorBefore!==Boolean(nav.tractorActive)){clear();tractorBefore=Boolean(nav.tractorActive);}
-      if(loadout){const item=nav.tractorActive?'tractor-beam-tool':loadout.item;selected=Boolean(item);if(equipment.equipped!==item){clear();if(item)equipment.equip(item);else equipment.unequip();}}
+      if(loadout||isBuilding||equipment.equipped===BUILDER_ITEM){const item=isBuilding?BUILDER_ITEM:nav.tractorActive?'tractor-beam-tool':loadout?loadout.item:selected?'mining-laser-tool':null;selected=Boolean(item);if(equipment.equipped!==item){clear();if(item)equipment.equip(item);else equipment.unequip();}}
       const isMining=equipment.equipped==='mining-laser-tool';
       const distance=nav.position.distanceTo(rock.position);
-      active=!restricted&&(!nav.carryingCargo||nav.tractorActive)&&!nav.buildActive&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
-      panel.hidden=!active||nav.tractorActive;
+      active=!restricted&&(!nav.carryingCargo||nav.tractorActive)&&(!nav.buildActive||isBuilding)&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]');
+      panel.hidden=!active||nav.tractorActive||isBuilding;
       external=thirdPerson();
       attached=Boolean(external&&character?.ready&&rigSockets);
       equipment.bindCharacter(attached?character:viewRig,attached?PLAYER_AVATAR.rig:'mannequin',attached?rigSockets:sockets);
@@ -72,15 +78,16 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       if(hit)hit={...hit,distance:hit.point.distanceTo(nav.position)};
       if(hit&&nav.buildingRaycast?.(aimOrigin,direction,aimOrigin.distanceTo(hit.point)))hit=null;
       recoil*=Math.exp(-dt*18);
-      mount.position.set(equipment.equipped==='sidearm-pistol'?.25:.29,equipment.equipped==='sidearm-pistol'?-.25:-.35,-.47+recoil).applyQuaternion(nav.orientation);mount.position.add(nav.position.clone().sub(origin));mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
+      const compact=equipment.equipped==='sidearm-pistol'||isBuilding;
+      mount.position.set(compact?.25:.29,compact?-.25:-.35,-.47+recoil).applyQuaternion(nav.orientation);mount.position.add(nav.position.clone().sub(origin));mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
       const gesture=character?.gestureActive==='wave'||character?.state==='dead';
       equipment.setRenderOrigin(origin);equipment.holster(!active||!selected||gesture);
       const weaponRange=equipment.equipped==='rifle-laser'?1200:450;
-      const sightTarget=attached&&active&&selected&&!gesture&&!isMining?weaponTarget(aimOrigin,direction,origin,weaponRange):null;
+      const sightTarget=attached&&active&&selected&&!gesture&&!isMining&&!isBuilding?weaponTarget(aimOrigin,direction,origin,weaponRange):null;
       const sightEnd=sightTarget?.point??aimOrigin.clone().addScaledVector(direction,weaponRange);
       if(attached&&active&&selected&&!gesture){
         const wrist=equipment.muzzleWorldPosition();
-        handAim.copy(isMining?(hit?.point??aimOrigin.clone().addScaledVector(direction,8)):sightEnd);
+        handAim.copy(isBuilding&&build.preview?.position?aimOrigin.clone().fromArray(build.preview.position):isMining?(hit?.point??aimOrigin.clone().addScaledVector(direction,8)):sightEnd);
         handAim.sub(wrist??nav.position).normalize();
         equipment.aimHeld(handAim);
       }
@@ -88,8 +95,9 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       const muzzle=equipment.muzzleWorldPosition();
       if(hit&&muzzle){const obstruction=nav.buildingRaycast?.(muzzle,hit.point.clone().sub(muzzle).normalize(),muzzle.distanceTo(hit.point));if(obstruction)hit=null;}
       if(hit&&muzzle){const to=hit.point.clone().sub(muzzle),length=to.length(),muzzleHit=rock.raycast(muzzle,to.normalize(),length+.1);if(muzzleHit&&muzzleHit.point.distanceTo(hit.point)>.22)hit=null;}
-      const firing=triggerReady&&!nav.tractorActive&&active&&selected&&!gesture&&Boolean(held||keyHeld||(nav.gamepad.armed&&nav.toolTrigger>.1))&&!rock.store.blocked&&(isMining?rock.store.free>.001&&!rock.error:loadout?.ammoFor()>0);
+      const firing=triggerReady&&!nav.tractorActive&&!isBuilding&&active&&selected&&!gesture&&Boolean(held||keyHeld||(nav.gamepad.armed&&nav.toolTrigger>.1))&&!rock.store.blocked&&(isMining?rock.store.free>.001&&!rock.error:loadout?.ammoFor()>0);
       equipment.update(dt,{firing,authorizeFire:item=>loadout?.spendRound(item)??false,hasHit:Boolean(hit),targetWorldPoint:hit?.point??(inspected?.point?.distanceTo(nav.position)<=8?inspected.point:null)??aimOrigin.clone().addScaledVector(direction,rayRange)});
+      builder.update(dt,{build,equipment,origin,visible:active&&selected&&!gesture&&(!external||attached)});
       if(effects&&!isMining&&equipment.firingInput()){
         const start=equipment.muzzleWorldPosition(),range=weaponRange;
         if(start){
@@ -110,7 +118,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
         effects.miningInput=isMining&&start&&equipment.beaming?{active:true,start,end:hit?.point.clone()??start.clone().addScaledVector(direction,8),hit:Boolean(hit),normal:hit?.normal?.clone()}:null;
       }
       if(!firing)if(!nav.roverOccupied&&!nav.shipMiningActive)rock.budget=0;
-      if(!active)return;
+      if(!active||isBuilding)return;
       $('.mining-heat').hidden=!isMining;button.textContent=isMining?'HOLD TO MINE':'HOLD TO FIRE';
       if(!isMining){
         $('.mining-eyebrow').textContent='SUIT / EQUIPMENT';
@@ -131,6 +139,6 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       button.disabled=!selected||Boolean(rock.error)||rock.store.blocked||rock.store.free<.001;
       $('.mining-feedback').textContent=rock.error||rock.store.warning||(rock.store.free<.001?'Pouch full. Use Deposit all resources at ship cargo.':equipment.overheated?'Cooling down…':!selected?(nav.controllerActive?'D-pad → · Equip mining laser':'3 · Equip mining laser'):rock.pending?'Cutting rock…':(nav.controllerActive?'RT · Mine / D-pad → · Holster / View · Backpack':'Hold T / mouse · R holsters · I opens backpack'));
     },
-    get state(){return {active,muzzleDirection:equipment.muzzleWorldDirection()?.toArray()??null,aimDirection:direction.toArray(),attachment:external?(attached?'character-hand':'loading'):'first-person',item:equipment.equipped,ammo:loadout?.ammoFor()??0,hit:hit?.point.toArray()??null,heat:equipment.heat,beaming:equipment.beaming,selected,target:rock.inspectState??null,toolError:equipment.error};},
+    get state(){return {active,builder:builder.state,muzzleDirection:equipment.muzzleWorldDirection()?.toArray()??null,aimDirection:direction.toArray(),attachment:external?(attached?'character-hand':'loading'):'first-person',item:equipment.equipped,ammo:loadout?.ammoFor()??0,hit:hit?.point.toArray()??null,heat:equipment.heat,beaming:equipment.beaming,selected,target:rock.inspectState??null,toolError:equipment.error};},
   };
 }

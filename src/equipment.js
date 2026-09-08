@@ -136,6 +136,14 @@ export const ITEMS = Object.freeze({
     // Cargo owns the beam and authorization. This held model never fires/mines.
     fireRate: 0, shot: null, range: 12, holsterable: true,
   },
+  'builder-tool': {
+    name: 'builder-tool', label: 'Meridian field builder', file: `${PROPS}builder-tool.glb`,
+    socket: 'RightHand', handed: 1, length: .28,
+    barrelAxis: [-1, 0, 0], muzzle: [-.191, .076, 0], leftGrip: null,
+    aimClip: 'aim-pistol', fireClip: null, aiming: 'pistol',
+    // Construction owns its actions. The held device cannot fire or mine.
+    fireRate: 0, shot: null, range: 12, holsterable: true,
+  },
   'backpack-life-support': {
     name: 'backpack-life-support',
     label: 'Life-support pack',

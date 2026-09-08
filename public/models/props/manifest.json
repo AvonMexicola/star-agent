@@ -661,5 +661,24 @@
       0.182
     ],
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock."
+  },
+  {
+    "name": "builder-tool",
+    "file": "builder-tool.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 4700,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.513804,
+    "sha256": "ff62545afa3a7ed57b018eccf1f307f3861f706be1ce4a0c998a2b55c58e3f27",
+    "height_m": 0.2277,
+    "footprint_m": [
+      0.275,
+      0.104
+    ],
+    "notes": "Original compact Meridian builder; editable source and measured contract in assets/builder-tool."
   }
 ]
