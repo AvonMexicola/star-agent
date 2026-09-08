@@ -1,4 +1,6 @@
+import {FLOODLIGHT} from './floodlight-definition.js';
 import {rectangle,contains} from './polygons.js';
+import {adjustableFoundation,foundationDepth,cliffColliders} from './foundations.js';
 /** Canonical kit dimensions in metres, Y up; origins are support-surface level. */
 export const GRID = 4;
 export const STOREY = 3;
@@ -21,7 +23,9 @@ export const roofProfile=(shape,x,z)=>{const rounded=v=>Math.sqrt(Math.max(0,1-(
 const roofCuts=[-2,2-ROOF_HEIGHT,...Array.from({length:6},(_,i)=>2-ROOF_HEIGHT+ROOF_HEIGHT*Math.sin((i+1)*Math.PI/12))];
 const roofTile=(id,label,shape='flat',polygon=rectangle(4,4))=>({id,label,category:'utility',mount:'roof',support:true,roofShape:shape,shape,polygon,footprint:[Math.max(...polygon.map(p=>p[0]))-Math.min(...polygon.map(p=>p[0])),Math.max(...polygon.map(p=>p[1]))-Math.min(...polygon.map(p=>p[1]))],height:ROOF_HEIGHT,cost:{concrete:4,'metal-stock':1},colliders:shape==='edge'||shape==='corner'?roofCuts.slice(0,-1).flatMap((z0,z)=>{const xs=shape==='corner'?roofCuts:[-2,2];return xs.slice(0,-1).map((x0,x)=>box([x0,0,z0],[xs[x+1],Math.max(.012,roofProfile(shape,x0,z0)),roofCuts[z+1]]));}):[prism(polygon,0,ROOF_HEIGHT)]});
 export const PIECES = Object.freeze({
+  floodlight:FLOODLIGHT,
   foundation: { id:'foundation', label:'Concrete foundation', category:'foundation', cost:{concrete:12}, footprint:[4,4], height:.6, colliders:[panel([-2,-.6,-2],[2,0,2])], support:true },
+  'foundation-strut': {id:'foundation-strut',label:'Cliff foundation · 45° braces',category:'foundation',cost:{concrete:12,'metal-stock':8},footprint:[4,4],height:.6,colliders:[panel([-2,-.6,-2],[2,0,2])],support:true},
   floor: { id:'floor', label:'Floor / flat roof', category:'floor', cost:{concrete:8,'metal-stock':1}, footprint:[4,4], height:.18, colliders:[panel([-2,-.18,-2],[2,0,2])], support:true },
   wall: { id:'wall', label:'Concrete wall', category:'wall', cost:{concrete:8}, footprint:[4,.3], height:3, colliders:[panel([-2,0,-.15],[2,3,.15])] },
   doorway: { id:'doorway', label:'Manual doorway', category:'wall', cost:{concrete:4,'metal-stock':3}, footprint:[4,.3], height:3, colliders:[panel([-2,0,-.15],[-.75,3,.15]),panel([.75,0,-.15],[2,3,.15]),panel([-.75,2.25,-.15],[.75,3,.15])], door:[{...box([-.74,0,-.09],[0,2.24,.09],'door'),travel:-.8},{...box([0,0,-.09],[.74,2.24,.09],'door'),travel:.8}] },
@@ -38,7 +42,7 @@ export const PIECES = Object.freeze({
   'foundation-pad-medium':padSlab('foundation-pad-medium','Medium pad foundation',32,40,{concrete:960,'metal-stock':80},'M'),
   'foundation-pad-large':padSlab('foundation-pad-large','Large pad foundation · Atlas',48,72,{concrete:2592,'metal-stock':216},'L'),
   rack:{id:'rack',label:'Storage rack',category:'utility',cost:{'metal-stock':10},footprint:[2.4,1],height:2.4,storageBoxes:8,colliders:[box([-1.2,0,-.5],[1.2,2.4,.5])]},
-  terminal:{id:'terminal',label:'Inventory terminal',category:'utility',cost:{'metal-stock':5,conductor:3,glass:2},footprint:[1.4,.8],height:1.5,colliders:[box([-.7,0,-.4],[.7,1.5,.4])]},
+  terminal:{id:'terminal',label:'Storage & trade terminal',category:'utility',cost:{'metal-stock':5,conductor:3,glass:2},footprint:[1.4,.8],height:1.5,colliders:[box([-.7,0,-.4],[.7,1.5,.4])]},
   'hangar-door':{id:'hangar-door',label:'Nomad hangar door',category:'wall',cost:{concrete:48,'metal-stock':32,conductor:4},footprint:[16,.6],height:6,colliders:[box([-8,0,-.3],[-7.3,6,.3]),box([7.3,0,-.3],[8,6,.3]),box([-7.3,5.4,-.3],[7.3,6,.3])],door:[{...box([-7.29,0,-.12],[7.29,5.39,.12],'door'),collapse:.96}]},
   'ceiling-light':{id:'ceiling-light',label:'Ceiling light · 50 W',category:'utility',mount:'ceiling',light:true,cost:{'metal-stock':1,conductor:.5,glass:.5},footprint:[.8,.8],height:.12,colliders:[box([-.4,-.12,-.4],[.4,0,.4])]},
   'roof-flat':roofTile('roof-flat','Flat roof tile'),
@@ -60,6 +64,8 @@ export function getLocalColliders(piece, doorOpen = false) {
   const def = getPieceDefinition(piece);
   if (!def) return [];
   const boxes = def.colliders.map(b=>({...b,min:[...b.min],max:[...b.max]}));
+  if(def.id==='foundation-strut')boxes.push(...cliffColliders(typeof piece==='string'?{type:piece}:piece));
+  else if(adjustableFoundation(def.id))for(const b of boxes)b.min[1]=-foundationDepth(piece);
   if (def.id === 'stairs') {
     for (const side of [-1, 1]) {
       // Twelve narrow segments follow the authored sloping handrail. They are
@@ -97,6 +103,7 @@ export function sampleLocalSupport(piece, x, z) {
 export const AUTHORED_BOUNDS = Object.freeze({
   ...Object.fromEntries(Object.values(PIECES).map(d=>[d.id,{min:[Math.min(...d.colliders.map(b=>b.min[0]))-.09,Math.min(...d.colliders.map(b=>b.min[1]))-.012,Math.min(...d.colliders.map(b=>b.min[2]))-.09],max:[Math.max(...d.colliders.map(b=>b.max[0]))+.09,Math.max(...d.colliders.map(b=>b.max[1]))+.012,Math.max(...d.colliders.map(b=>b.max[2]))+.09]}])),
   foundation: {min:[-2,-.601,-2],max:[2,.002,2]},
+  'foundation-strut':{min:[-2,-3.701,-2],max:[2,.002,2]},
   floor: {min:[-2,-.181,-2],max:[2,.002,2]},
   wall: {min:[-2,0,-.164],max:[2,3,.164]},
   doorway: {min:[-2,0,-.226],max:[2,3,.164]},

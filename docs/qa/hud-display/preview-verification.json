@@ -1,0 +1,16 @@
+{
+  "integration": "6a3c9f2e1af5d861de41d64c00ccd6fd0598d454",
+  "preview": "http://127.0.0.1:5178",
+  "health": {
+    "ok": true
+  },
+  "mainHUDHook": true,
+  "combatTabConflictRemoved": true,
+  "sourceSHA256": {
+    "src/hud-display.js": "79c4970459b14a7c692a8da3981d2d831dc9c1ea87c6afca8ec2b47266778aab",
+    "src/hud-display.css": "1bc589c390f9afa15adc0d34a1c54cf0aa6675d16868431b2eb3edf7e4f29ff9",
+    "src/main.js": "b9a128b93d23c428cb4fcc9fbfb341a2a75c8138b7ad27a492f5e43684541df8",
+    "src/combat/space-combat.js": "bd134675820cd5f78e59cb137e6ac4303c42ef787336be3b8815a70a3b20c1e1",
+    "index.html": "a5d24a6c4971c324d0ef72dc3e6019d220581dc125a6f99451a24d357ed6d044"
+  }
+}

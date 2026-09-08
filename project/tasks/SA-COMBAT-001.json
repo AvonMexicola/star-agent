@@ -1,0 +1,29 @@
+{
+  "id": "SA-COMBAT-001",
+  "title": "Regional enemy ship encounters with three difficulty tiers",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex mission designer",
+  "status": "integrated",
+  "branch": "feat/enemy-encounters",
+  "base": "c766544b5c9beb98ec3c66b50595e4c974b461f3",
+  "updated": "2026-09-08",
+  "areas": [
+    "combat",
+    "interface"
+  ],
+  "claims": [
+    "src/combat/encounters.js",
+    "src/combat/simulation.js",
+    "src/combat/space-combat.js",
+    "src/combat/space-combat.css",
+    "tests/space-combat.test.js",
+    "scripts/enemy-encounters.spec.js",
+    "scripts/enemy-encounters.config.js",
+    "docs/briefs/enemy-encounters.md",
+    "docs/qa/enemy-encounters.md",
+    "docs/space-combat.md",
+    "docs/qa/enemy-encounters/"
+  ],
+  "brief": "docs/briefs/enemy-encounters.md"
+}

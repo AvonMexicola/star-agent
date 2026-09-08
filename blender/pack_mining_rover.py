@@ -52,6 +52,8 @@ manifest_path=ROOT/'assets/mining-rover/manifest.json'
 m=json.loads(manifest_path.read_text())
 m.update({'asset':'public/models/mining-rover.glb','sha256':hashlib.sha256(data).hexdigest(),
           'bytes':len(data),'triangles':sum(j['accessors'][p['indices']]['count']//3 for mesh in j['meshes'] for p in mesh['primitives']),
+          'meshPrimitives':sum(len(mesh['primitives']) for mesh in j['meshes']),
+          'nodes':len(j['nodes']),'materials':len(j.get('materials',[])),
           'packing':packing,'textureFormat':'WebP: three original 1024x1024 PBR swatches and approved 512x512 Meridian emblem (RGBA)',
           'textures':len(j.get('images',[]))})
 manifest_path.write_text(json.dumps(m,indent=2)+'\n')

@@ -1,0 +1,14 @@
+{
+  "browser": "151.0.7922.173",
+  "graphics": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "vendor": "Google Inc. (AMD)"
+  },
+  "errors": [],
+  "warnings": [],
+  "viewpointFixture": true
+}

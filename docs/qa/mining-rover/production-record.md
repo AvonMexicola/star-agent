@@ -1,5 +1,11 @@
 # Meridian Burrow M-04 production record
 
+Current asset follow-up: [windscreen correction 11](windscreen-open/README.md)
+removes the central forward strut while preserving the continuous glass and all
+other geometry. Exact CPU delta and existing shell/cabin/cutter probes pass;
+paired native cockpit comparison passes with no page or console diagnostics. The candidate 10 delivery history,
+reviews and environment below remain unchanged historical evidence.
+
 Candidate 10 has completed recorded controller, keyboard and native touch
 journeys at the checkpoints below. Independent review gives the isolated native
 asset **4.04/5** and keyboard motion **3.8/5**; the explicitly mixed-evidence

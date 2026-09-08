@@ -1,21 +1,89 @@
 # All-features local development
 
+Burrow cutter/reverse follow-up is locally integrated at `b34bc69` (feature
+`03704e1`). Refresh the preview and choose **Burrow surface** to inspect the
+machined cutters and layered mining beams. **S** / controller stick-back reverses;
+keyboard **X** / controller **LT** brakes. The rover now backs away from rock
+contact instead of retaining a false collision stop. The
+[current evidence record](qa/burrow-concept/cutters-and-reverse.md) covers the
+actual reverse/mining checks, complete controller carrier journey and remaining
+independent art/performance review. This is a local checkpoint, not a public release.
+
 The ongoing local test branch is `dev/all-features`. Cees explicitly requests new
 features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-The shared local preview at **http://127.0.0.1:5178/** now includes the direct-entry
-and model-cache update at tested runtime **`fc676f9`**. The default URL enters the
-Nomad hangar opening after one preload; scene selection is optional. Its 44 focused
+**HUD display**: press **Tab** during gameplay to cycle **Everything → Markers and
+reticle → No HUD**. Controller and touch use **Menu → Settings → HUD**. A two-finger
+tap on the view restores Everything on touch screens. Tab still moves focus inside
+menus. Next hostile is available through **Next target / Menu → Ship**. The display
+choice affects screen overlays; physical cockpit instruments remain visible.
+See [the checked source and browser evidence](qa/hud-display.md).
+
+**Foundation-first building** is available in the same local preview. Place a
+foundation and build before fitting a mainframe; it can sit on the finished deck.
+Doors remain open while the site has no mainframe. Square, triangle and curved
+concrete foundations extend down to dry terrain up to **8 m**. Use D-pad or
+keyboard Up/Down for quarter-metre height steps, and **Shapes → Cliff foundation ·
+45° braces** for a supported cliff deck. Rotate its feet toward the hillside;
+both must reach actual terrain. See [controls and limits](base-building.md).
+
+Runtime `4396029` was combined with settlement/combat development and locally
+integrated at `8b5ecd4` on 2026-09-08. The existing 5178/8087 client/API service was
+gracefully refreshed, preserving its persistent database and unrelated handoff
+edits; both health routes and the exact new asset hash passed. Full 149-file unit
+suite, multiplayer/persistence checks, production build and two actual-game
+controller/keyboard/touch browser cases pass. [Screens and detailed evidence](qa/terrain-foundations/README.md)
+retain failed attempts and physical-device/independent-review limits.
+Construction remains solo/account-backed solo; no public deployment is included.
+
+Four solo **trade settlements** use the existing construction kit: Greenbank
+Supply on Aeon, Stillwater Exchange on Selene, Ember Works on Pyre and Verdigris
+Prospect on Miasma. Find them in **Map → a world → Locations** or the **Trade
+settlements** signal filter. Each has a large pad and a walk-in exchange with
+independent finite stock and real ship cargo trading. F2 / Dev → Ship & location
+offers an approach above each pad. See the [player route](trade-settlements.md)
+and [construction and validation record](qa/trade-settlements/README.md).
+Settlement economy `d50bc56` is locally integrated at `dc578d8`. Each exchange
+now has explicit **local supplies and logical needs**. Its Local
+stock tab explains reserve targets and resource uses; deliveries consume cargo,
+pay credits and reduce the remaining need. Full reserves refuse excess crates.
+Map selections list current exports and shortages. Existing saved quantities
+are preserved. See [settlement delivery guide](settlement-economy.md) and
+[controller/keyboard/phone validation](qa/settlement-stock-needs/README.md).
+These authored exchanges are solo content; online player-base shops retain their
+separate authoritative implementation. Settlement runtime `03a561e` is locally
+integrated at `32966e3`; its 1,127-case unit suite and complete controller
+landing/trading/reboarding journey pass. Independent art and physical-device
+acceptance remain separate from this development checkpoint.
+
+The passenger elevator repair keeps its hangar vestibule at human scale, exposing
+the same pressure-door kit used in the lobby and a clear call-panel approach.
+F / controller X / the touch Interact button calls the elevator; walk inside to
+choose a destination. Closed doors can be called open from close range; an
+occupied doorway still prevents closing. See the
+[repair and validation record](qa/station-elevator-access.md).
+
+The shared local preview at **http://127.0.0.1:5178/** includes the checked
+medium-ship runtime **`3cf80ad`**, merged locally at **`b793921`** on 2026-09-08.
+**Stratum M-05** is an 18 m miner; **Gannet T-06** is a 24 m transport carrying
+Burrow. They join Nomad 02, Kestrel and Atlas in the launcher. Both new hulls are
+solo/development features. The final normal suite passes **1,113 tests**; final
+studio and scoped actual-game reviews pass. The
+[medium integration record](qa/medium-ships/integration.md) keeps exact input,
+source, visual and remaining performance limits separate.
+
+The preserved direct-entry/model-cache update (runtime `fc676f9`) opens the
+Nomad hangar after one preload; scene selection is optional. Its 44 focused
 checks and development build pass. See the [startup evidence](qa/direct-entry-2026-09-08.md)
-for exact validation and browser coverage.
+for that checkpoint's exact validation and browser coverage.
 
 The preceding fleet integration at **`c99736f`**, with runtime **`5f63893`**, added
 the playable 64 m Atlas, enlarged default
 station and community hub, ground Burrow and Atlas/Burrow meadow starts, fleet
 particles/audio/music, roofs/lights/base power, animated shopkeepers and current
-weapon/tool art. The client and API run **protocol 5** together. The paired local
+weapon/tool art. That checkpoint paired client and API at **protocol 5**. The paired local
 refresh preserved the persistent PostgreSQL cluster and every existing table's
 row count, applying only the missing additive base-site migration 003.
 
@@ -57,11 +125,34 @@ Normal solo saves keep cargo with mining inventory; development test starts rese
 on reload. Online cargo, stock, credits and common-outcrop yields persist through
 additive PostgreSQL migration002. Joining supplies the server-owned ledger; local
 saves are not imported. The original cargo checkpoint used protocol 3; the
-current candidate uses protocol 5 and requires a matching client/API pair.
+current local candidate uses protocol 6 and requires a matching client/API pair.
 Player shop sales continue when the seller disconnects. The physical tractor now
 moves 1–64 SBU crates with swept collision, range and lease checks; the former
 instant large-crate transfer is retired. Persistent offline wrecks remain open.
 See the [player guide](sbu-cargo.md) and [actual QA record](qa/sbu-cargo.md).
+
+## Constructed base trade terminals
+
+The base-commerce checkpoint (integrated at `2607fe7`, runtime `4b36b50`, with latest elevator repair preserved)
+adds **My shop** to the Storage & trade terminal. Link a base with a designated
+landing pad, choose a real local container and commodity, offer only the selected
+quantity, set its price and enable the public beacon. New deposits stay private.
+The map shows stocked goods, prices and landing pads; new saves enable Bases by
+default. Existing saved map filters remain yours to change.
+
+For shared trading, join Comms and track your private unregistered base-plan
+marker. Walk to the planned terminal location, then **Menu → Trade → Build →
+Register shared** (500 CR). Registration validates a fixed layout and creates
+empty server storage. Deposit actual docked ship cargo, then list the quantity in
+**My shop**. Visitors can buy while you are offline; credits and cargo save in one
+transaction. Shared sites are self-powered, at most 64 pieces, with doors open;
+full multiplayer construction editing/upkeep and solo inventory import are outside
+this checkpoint. Online hull support remains Nomad/Atlas.
+
+This update requires matching **protocol 6** client/API. It changes no SQL schema.
+The two controller browser journeys pass, including map discovery, physical base
+access, partial offers, a seller-offline purchase, cargo and takeoff. Physical
+controller hardware is untested. See the [delivery evidence](qa/base-commerce.md).
 
 ## Run and use
 
@@ -75,7 +166,8 @@ the Nomad hangar opens with the shoulder camera behind the character. No scene
 selection or second load is required. F2, the visible Dev button, or controller
 Menu opens optional scene choices during the opening; after taking control, use
 Menu → Dev. The launcher offers
-Nomad 02, Kestrel and the current **64 m Atlas**, with station hangar/approach,
+Nomad 02, Kestrel, the current **64 m Atlas**, **Stratum M-05** and
+**Gannet T-06 + Burrow**, with station hangar/approach,
 **Burrow mining — Selene surface**, Aeon coast/forest/highlands/polar/orbit,
 Selene surface/rings, Pyre twilight/surface, Miasma approach/surface and stellar
 observation starts. To change scenes, choose a ship and location, then Launch test
@@ -91,6 +183,17 @@ Its [CPU placement record](qa/mining-rover/surface-start.md) is complemented by
 the passing combined ground mining, driving and physical exit/reboard journey. The **Atlas + Burrow mining rover · Selene**
 link remains a carrier test, with Burrow on the new cargo deck and the actual
 aft loading ramp. G / Y operates that ramp while aboard; no belly lift is used.
+
+For the new medium ships, select **Stratum M-05** or **Gannet T-06 + Burrow**
+and **Selene · landing site**, then Launch test flight. Direct starts:
+[Stratum](http://127.0.0.1:5178/?dev=1&intro=0&ship=stratum&start=moon&seed=7291)
+and [Gannet with Burrow](http://127.0.0.1:5178/?dev=1&intro=0&ship=gannet&start=moon&seed=7291).
+Use B / controller Y to land, then F / X to leave the chair. Follow the reachable
+ramp/elevator prompts and secure access before launching. Stratum holds T / RT
+(or its visible cutter control) to mine within 40 m, with a 120-second battery,
+30-second recharge and separate 384 kg ore bin. In Gannet, walk aft to Burrow's
+side door, board it, lower the elevator and drive out. Its 128 SBU freight banks
+remain beside the rover lane. These development inventories reset on reload.
 
 Dev → Content review collects the expedition character studio, both Burrow
 starts, construction sandbox, current Atlas studio, station exterior overview,
@@ -111,8 +214,8 @@ A copied test URL includes its ship and start. This selector is gated by
 Vite generates content hashes for known gameplay `/models/` assets at startup and
 build time. Changing model bytes requires the frontend's Vite process to reload
 its configuration so its development manifest updates; API and PostgreSQL do not
-need a restart. The Vite configuration update in this integration triggers that
-frontend reload automatically.
+need a restart. The medium integration refreshed this frontend manifest and
+verified the served model hashes while leaving the API and database running.
 
 The supplied construction sandbox is an exception to temporary test inventory:
 it uses its own saved namespace and a refillable 4,608 kg materials bank. Reload
@@ -276,18 +379,25 @@ after integration.
 
 ## Space patrol combat
 
-The local integration includes the offline patrol loop from `feat/space-combat`.
-Choose **Nomad 02** or **Kestrel**, start in **Orbit**, then open **Patrol console**
-(on-screen button or controller Menu) and accept. Fly to the amber beacon, brake,
-and fight the Nomad/Kestrel pair. T / RT fires; 1–3 / Menu selects weapons;
-Tab / Menu selects the next hostile. The physical hangar cargo terminal also opens
-the console. File the combat report after both kills, or recover after ship loss.
+The local build offers **15 regional enemy ship sorties**: Easy, Standard and
+Hard contracts around Aeon, Selene, Pyre, Miasma and Selene's asteroid belt. Fly an
+armed Nomad, Kestrel or Atlas to the region and open **Menu → Contracts** (or the
+Patrol console button / station security terminal). Choose a tier, read the
+advertised flight and accept. Follow the nearby amber beacon; surface dispatch
+requires climbing into orbit. Acceptance never teleports the player.
 
-Shields regenerate after six seconds without a hit; docking repairs hull damage.
-Progress resets on reload. This first slice is offline and does not add persistent
-contracts or credit rewards. See [combat controls and scope](space-combat.md) and
-[verification evidence](qa/space-combat.md). The asset studios remain inspection
-surfaces. The offline playable fleet now carries the fitted Meridian gun kit.
+Easy has one weakened contact; Standard has two full-strength ships; Hard has
+five reinforced enemies in two waves, with a ten-second reinforcement warning.
+File the report after clearing every wave, or abandon / recover through the
+console. Controller: D-pad / A select, B resumes, sticks fly/aim, RT fires and
+right stick scrolls the report. Existing ship weapon/target commands remain in
+Menu → Ship; page through that menu to reach the weapons.
+
+This is an offline, session-only development checkpoint. Reports reset on reload;
+there are no currency/cargo rewards or multiplayer NPCs. Five complete regional
+controller journeys plus keyboard/native-phone UI pass; physical-controller and
+independent balance/visual acceptance remain pending. See [encounter guide](space-combat.md)
+and [exact QA, limits and original failures](qa/enemy-encounters.md).
 
 ## Default station and exterior overview
 
@@ -538,3 +648,47 @@ The terrain ramp fixes and clear Burrow windscreen are included in the preset's
 fleet dependency. Cees manually verified driving aboard and flying away with the
 rover; this records local solo gameplay, not multiplayer rover replication.
 See [scene verification](qa/atlas-meadow-launcher.md) for checks and limitations.
+
+
+## Burrow concept cabin checkpoint
+
+The Burrow upgrade follows the approved exterior/interior concepts with five flat LCARS-style instrument faces, fitted ivory cabin panels, warmer coves, deeper tyre tread and manufactured shell details. The steering wheel, column and pedals are removed; the clear windshield and physical boarding route remain. Screens show actual cutter reserve, ore and driving state. Existing keyboard/controller/phone controls still operate the vehicle.
+
+Use **F2 → Burrow mining — Selene surface** for the explicit seated developer start; F / controller X exits and physically reboards. WASD / left stick drives, arrows / right stick aims, T / RT mines, X / LT brakes, and I / View opens ore bins. Select **Gannet → Selene** for the full pilot-to-rover elevator journey. The [production record](qa/burrow-concept/production-record.md) separates passing gameplay checks from pending independent art/hardware/performance acceptance. This remains a local development checkpoint.
+
+Burrow concept runtime is locally integrated at `ab418ca` (2026-09-08), with final controller, keyboard and native-touch evidence. Refresh the preview to load the new GLB; independent art and hardware/performance acceptance are still pending. [Draft PR92](https://github.com/AvonMexicola/star-agent/pull/92) preserves Cees’s review gate.
+
+
+## Outdoor construction floodlights
+
+The floodlight candidate adds six twin-head masts around each of the four trade
+settlement pads. Build your own through **Build → Power → Floodlight**. Each costs
+8 metal stock, 3 conductor and 2 glass and uses 600 W while switched on. Walk to
+the service box and press **F / controller X**; the setting survives a reload.
+Ceiling lights remain in **Roofs**. The same normal power and placement rules apply.
+
+Use **F2 → a settlement** to inspect the commissioned lights, or **Build sandbox**
+for construction. The [asset and gameplay record](qa/outdoor-floodlights/README.md)
+contains night before/after views, controller/phone evidence and measured costs.
+Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
+and served asset/source checks passed. Refresh the page to load the masts.
+Independent art and hardware/performance acceptance remain pending.
+
+
+## Projected trade terminals
+
+Settlement and base consoles project the exchange name and the normal **F /
+controller X** connection prompt. Interacting opens a crisp trade dashboard with
+local stock, cargo, shipment quantities, credits and settlement needs. Owners
+retain **My shop** controls for offered stock, prices, shop opening and the public
+beacon. No account or password is required.
+
+Use **F2 → Stillwater Exchange** for the explicit approach, then land and walk to
+the console. The shared Pilot menu, keyboard navigation and phone controls remain
+available. The [terminal QA record](qa/projected-terminals/README.md) separates
+actual gameplay evidence from the owner presentation fixture and physical-device
+acceptance. This is a development feature; no public deployment is included.
+
+Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
+[the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
+The existing API remains healthy; no service restart or save migration was needed.

@@ -1,7 +1,7 @@
 """Original Meridian Burrow M-04, metres / Y up / -Z forward.
 Build textures with rover_textures.py; run in Blender, then pack_mining_rover.py.
 Named pivots are the runtime contract; the cabin is hollow and the tyres have
-an actual steering/suspension keep-out. No external model or image input.
+an actual steering/suspension keep-out. Original geometry; saved concept references inform finish.
 """
 from pathlib import Path
 import sys, json, math
@@ -10,6 +10,8 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'blender'))
 import fighter_geometry as g
+from rover_cabin import build_cabin, build_shell_details
+from rover_cutters import build_cutters
 SOURCE=ROOT/'assets/mining-rover'; OUT=ROOT/'public/models/mining-rover.glb'
 L=json.loads((SOURCE/'layout.json').read_text())
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
@@ -112,7 +114,7 @@ for w in L['wheels']:
     steer=g.empty(w['steer'] or 'Axle_'+w['id'],pos,suspension)
     wheel=g.empty(w['node'],pos,steer)
     rod('Non-spinning hub clevis',(pos[0]-s*.205,pos[1],pos[2]),(pos[0]-s*.32,pos[1],pos[2]),.055,2,steer)
-    profile=[(-.20,.32),(-.20,.43),(-.16,.50),(-.115,.51),(.115,.51),(.16,.50),(.20,.43),(.20,.32),(-.20,.32)]
+    profile=[(-.20,.32),(-.20,.43),(-.16,.475),(-.115,.486),(.115,.486),(.16,.475),(.20,.43),(.20,.32),(-.20,.32)]
     ring('Vacuum tyre carcass',pos,profile,3,parent=wheel,mat=rubber)
     ring('Forged wheel rim',pos,[(-.205,.22),(-.205,.32),(-.19,.355),(.19,.355),(.205,.32),(.205,.22),(-.205,.22)],2,parent=wheel)
     rod('Hub motor',(pos[0]-.208,pos[1],pos[2]),(pos[0]+.208,pos[1],pos[2]),.205,1,wheel,n=20)
@@ -123,8 +125,8 @@ for w in L['wheels']:
         points=[]
         for x in (-.13,0,.13):
             aa=a+(.025 if x==0 else -.025)
-            for da in (-.035,.035):points.append((pos[0]+x,pos[1]+.52*math.cos(aa+da),pos[2]+.52*math.sin(aa+da)))
-        panel('Tread chevron',[points[i] for i in (0,2,4,5,3,1)],3,.001,wheel,mat=rubber)
+            for da in (-.070,.070):points.append((pos[0]+x,pos[1]+.52*math.cos(aa+da),pos[2]+.52*math.sin(aa+da)))
+        panel('Tread chevron',[points[i] for i in (0,2,4,5,3,1)],3,.024,wheel,mat=rubber)
     for i in range(6):
         a=i*math.tau/6
         rod('Recessed hub fastener',(pos[0]+s*.209,pos[1]+.17*math.cos(a),pos[2]+.17*math.sin(a)),(pos[0]+s*.220,pos[1]+.17*math.cos(a),pos[2]+.17*math.sin(a)),.023,2,wheel,n=6)
@@ -173,8 +175,8 @@ for y in (.66,1.92):rod('Pressure door hinge',(-.98,y-.065,.46),(-.98,y+.065,.46
 rod('Starboard window divider',(.85,1.32,-.665),(.85,2.385,-.665),.038,2)
 for s in (-1,1):rod('Rear window closure',(s*.838,1.32,.645),(s*.838,2.39,.645),.025,2)
 panel('Port aft fixed glazing',[(-.86,1.36,.457),(-.82,2.36,.457),(-.82,2.36,.67),(-.86,1.36,.67)],mat=glass,thick=.01)
-panel('Port aft pressure skin',[(-.86,.47,.47),(-.86,1.32,.47),(-.86,1.32,.67),(-.86,.47,.67)],0)
-rod('Port aft window sill',(-.86,1.333,.47),(-.86,1.333,.69),.029,2)
+panel('Port aft pressure skin',[(-.86,.47,.455),(-.86,1.32,.455),(-.86,1.32,.67),(-.86,.47,.67)],0)
+rod('Port aft window sill',(-.86,1.333,.455),(-.86,1.333,.69),.029,2)
 box('Starboard header seal',(.827,2.348,.005),(.07,.026,1.30),3,.002)
 steps=g.empty('BoardingSteps',(-.87,.46,-.1),root)
 for x,y in ((-1.55,.16),(-1.19,.34),(-.94,.44)):
@@ -211,7 +213,7 @@ for loop in mark.data.loops:
     uv.data[loop.index].uv=((.14-p.x)/.28,(p.z-.74)/.28)
 parts.append(mark)
 
-# Seat, footwell, yoke and consoles occupy measured space, never the entry aisle.
+# Seat, footwell and flat consoles occupy measured space, never the entry aisle.
 seatPartsStart=len(parts)
 box('Seat pedestal',(.11,.69,-.11),(.41,.43,.40),1)
 box('Seat cushion',(.10,.95,-.23),(.60,.15,.59),3,.032)
@@ -220,22 +222,9 @@ box('Seat head restraint',(.10,1.86,.06),(.35,.24,.15),1,.025)
 for s in (-1,1):
     box('Seat shoulder bolster',(.10+s*.29,1.29,-.04),(.10,.53,.23),4,.022)
     rod('Harness',(.10+s*.14,1.58,-.055),(.10+s*.20,1.03,-.28),.025,5)
-    box('Pedal',(.10+s*.17,.56,-1.28),(.14,.08,.24),2)
 for piece in parts[seatPartsStart:]:
-    if not piece.name.startswith('Pedal'):piece.location+=Vector(g.xyz((-.10,0,-.46)))
-box('Instrument shelf',(0,1.24,-1.33),(1.10,.12,.39),1,.025)
-box('Dashboard lower service panel',(0,1.04,-1.46),(1.10,.24,.16),4)
-rod('Steering column',(.10,.88,-1.30),(.10,1.13,-1.10),.045,1)
-yoke=g.empty('SteeringYoke',(.10,1.17,-1.085),root)
-rod('Steering crossbar',(-.10,1.17,-1.085),(.30,1.17,-1.085),.025,2,yoke)
-for x in (-.12,.32):rod('Yoke grip',(x,1.13,-1.085),(x,1.27,-1.085),.03,3,yoke)
-# The live screen is inserted by runtime at this exact named surface.
-screen=g.empty('RoverDisplay',(0,1.39,-1.355),root)
-box('MFD surround',(0,1.39,-1.389),(.61,.29,.055),1)
-box('MFD glass',(0,1.39,-1.355),(.55,.235,.008),mat=glass)
-for s in (-1,1):
-    for i in range(3):box('Console status lamp',(s*.39,1.312,-1.48+i*.08),(.06,.012,.026),mat=amber if i==2 else light)
-box('Interior lamp',(0,2.35,.34),(.40,.012,.035),mat=light)
+    piece.location+=Vector(g.xyz((-.10,0,-.46)))
+build_cabin(g=g, box=box, rod=rod, panel=panel, text=text, plain=plain, root=root, door=door, parts=parts)
 
 # Split sealed ore cassettes and service spine, readable from behind.
 cargoPartsStart=len(parts)
@@ -258,18 +247,7 @@ box('Roof scanner',(0,2.48,.53),(.31,.04,.28),4)
 for piece in parts[cargoPartsStart:]:
     if piece.name!='Roof scanner':piece.location+=Vector(g.xyz((0,.40,0)))
 
-# Independent hollow mining heads. Root radii <=0.11 near the tyre sweep.
-for c in L['cutters']:
-    x,y,z=c['position'];pivot=g.empty(c['pivot'],(x,y,z),root)
-    rod('Cutter support',(x,1.30,-1.57),(x,y,z),.072,2)
-    ring('Gimbal yoke',(x,y,z),[(-.06,.072),(-.06,.108),(.055,.108),(.055,.072),(-.06,.072)],2,'Z',pivot,segments=16)
-    box('Mining head receiver',(x,y,z-.24),(.20,.20,.36),0,.025,pivot)
-    box('Mining head lower rail',(x,y-.108,z-.31),(.12,.035,.41),2,.006,pivot)
-    ring('Emitter ceramic sleeve',(x,y,z),[(-.40,.070),(-.40,.098),(-.67,.098),(-.72,.080),(-.72,.048),(-.40,.048),(-.40,.070)],0,'Z',pivot,segments=20)
-    ring('Bored emitter nozzle',(x,y,z),[(-.67,.047),(-.67,.072),(-.77,.072),(-.80,.061),(-.80,.043),(-.67,.043),(-.67,.047)],2,'Z',pivot,segments=20)
-    ring('Mining aperture light',(x,y,z),[(-.782,.044),(-.782,.055),(-.791,.055),(-.791,.044),(-.782,.044)],axis='Z',parent=pivot,mat=light,segments=20)
-    for s in (-1,1):box('Head cooling slit',(x+s*.106,y,z-.25),(.008,.033,.21),1,.002,pivot)
-    g.empty(c['muzzle'],(x,y,z-.8),pivot)
+build_cutters(layout=L, g=g, box=box, rod=rod, ring=ring, root=root, light=light)
 
 # Restrained manufacturer plate / chevron motif, readable physical orientation.
 text('Forehead identity','BURROW  M-04',(0,2.397,-1.197),.092,(math.pi/2,0,math.pi))
@@ -280,6 +258,8 @@ for s in (-1,1):
     box('Forward work lamp',(s*.72,1.50,-1.69),(.20,.045,.022),mat=light)
     rod('Work lamp bracket',(s*.78,1.34,-1.646),(s*.72,1.481,-1.689),.016,2,n=8)
     box('Rear marker',(s*.77,.63,2.09),(.11,.036,.011),mat=amber)
+
+build_shell_details(g=g, box=box, rod=rod, panel=panel, root=root, light=light, amber=amber)
 
 # Apply actual bevels, deliberate local face projection into the shared atlas.
 for o in parts:
@@ -311,5 +291,5 @@ bpy.context.view_layer.update()
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/'mining-rover.blend'),compress=True)
 bpy.ops.export_scene.gltf(filepath=str(OUT),export_format='GLB',export_extras=True,export_yup=True,export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_materials='EXPORT')
-(SOURCE/'manifest.json').write_text(json.dumps({'stage':'playable windscreen correction 11; native comparison pending','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original procedural geometry and PBR maps. Meridian family design; no external models or imagery.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard','SteeringYoke'],'limitations':['Closed geometric cabin; no pressure simulation','Candidate 10 reviews retained; revised windshield native comparison pending']},indent=2)+'\n')
+(SOURCE/'manifest.json').write_text(json.dumps({'stage':'cutter follow-up 13a; see production record for current acceptance','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original Blender geometry and procedural PBR maps; approved ChatGPT Image concepts in assets/mining-rover/design inform design only.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard'],'limitations':['Closed geometric cabin; no pressure simulation','Concept upgrade review pending; previous candidate reviews remain historical','Flat panel instruments mirror shared controls; pressure and hand IK are not simulated']},indent=2)+'\n')
 print('Rover source and export written. Run pack_mining_rover.py.')

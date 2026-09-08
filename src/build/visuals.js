@@ -1,6 +1,7 @@
-import { CanvasTexture, Mesh, PlaneGeometry, MeshStandardMaterial, TextureLoader, RepeatWrapping, SRGBColorSpace, EdgesGeometry, LineBasicMaterial, LineSegments, Color } from 'three';
+import { CanvasTexture, Mesh, PlaneGeometry, MeshStandardMaterial, TextureLoader, RepeatWrapping, SRGBColorSpace, EdgesGeometry, LineBasicMaterial, LineSegments, Color, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { getPieceDefinition } from './definitions.js';
+import {adjustableFoundation,foundationDepth,cliffBraces} from './foundations.js';
 const loader=new GLTFLoader(), templates=new Map();
 let finish;
 const MINT=new Color(0xb6efd1),WARNING=new Color(0xe2bf87);
@@ -36,6 +37,7 @@ export function setBuildOpacity(root,opacity) {
 
 /** Dispose instance materials only: GLTF geometry and finish textures are cached. */
 export function disposeBuildVisual(root) {
+  for(const geometry of root.userData.foundationGeometry??[])geometry.dispose();
   for(const material of root.userData.buildFinish?.materials.values()??[])material.dispose();
   const display=root.userData.statusDisplay;
   if(display){display.texture.dispose();display.mesh.geometry.dispose();display.sourceMaterial.dispose();}
@@ -48,6 +50,30 @@ function concreteFinish() {
     map.colorSpace=SRGBColorSpace;return {map,bumpMap};
   }).catch(error=>{finish=null;throw error;});
 }
+/** Configure only instance-owned transforms/geometry; deck hardware stays at its
+ * original height and vertical concrete UVs retain their two-metre repeat. */
+export function configureFoundationVisual(root,piece) {
+  if(piece.type==='foundation-strut'){
+    cliffBraces(piece).forEach(({top,foot},i)=>{
+      const brace=root.getObjectByName(`CliffBrace${i}`),shoe=root.getObjectByName(`CliffFoot${i}`);
+      const a=new Vector3(...top),b=new Vector3(...foot),delta=a.clone().sub(b);
+      brace.position.copy(a).add(b).multiplyScalar(.5);brace.quaternion.setFromUnitVectors(new Vector3(0,1,0),delta.clone().normalize());brace.scale.y=delta.length();
+      shoe.position.copy(b);
+    });
+  }else if(adjustableFoundation(piece.type)&&foundationDepth(piece)>.6){
+    root.userData.foundationGeometry=[];
+    root.traverse(mesh=>{
+      if(!mesh.isMesh||mesh.material.name!=='MineralConcrete')return;
+      const geometry=mesh.geometry.clone(),position=geometry.attributes.position,normal=geometry.attributes.normal,uv=geometry.attributes.uv,scale=foundationDepth(piece)/.6;
+      for(let i=0;i<position.count;i++){
+        position.setY(i,position.getY(i)*scale);
+        if(uv&&Math.abs(normal.getY(i))<.5)uv.setY(i,uv.getY(i)*scale);
+      }
+      geometry.computeVertexNormals();geometry.computeBoundingBox();geometry.computeBoundingSphere();
+      mesh.geometry=geometry;root.userData.foundationGeometry.push(geometry);
+    });
+  }
+}
 export async function createBuildVisual(piece) {
   const def=getPieceDefinition(piece);
   if(!def) throw new Error('Unknown building piece');
@@ -59,6 +85,7 @@ export async function createBuildVisual(piece) {
     templates.set(def.id,pending);
   }
   const root=(await templates.get(def.id)).clone(true);
+  configureFoundationVisual(root,typeof piece==='string'?{type:piece}:piece);
   root.userData.pieceType=def.id;
   setBuildOpacity(root,1);
   if(def.padSize){

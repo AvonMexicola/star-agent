@@ -3,6 +3,8 @@
 export const SHIP_HANDLING = Object.freeze({
   kestrel: Object.freeze({speed:1.05, turn:1.55, steeringLag:0, assistResponse:5.5, thrust:58, rcs:30, torque:2.65}),
   nomad: Object.freeze({speed:1, turn:1, steeringLag:0, assistResponse:3.5, thrust:35, rcs:18, torque:1.6}),
+  stratum: Object.freeze({speed:.98, turn:.76, steeringLag:.09, assistResponse:2.2, thrust:26, rcs:14, torque:1.2}),
+  gannet: Object.freeze({speed:.97, turn:.60, steeringLag:.14, assistResponse:1.5, thrust:21, rcs:11, torque:.88}),
   atlas: Object.freeze({speed:.95, turn:.42, steeringLag:.22, assistResponse:.85, thrust:14, rcs:7, torque:.55}),
 });
 export const shipHandling = id => SHIP_HANDLING[id] ?? SHIP_HANDLING.nomad;

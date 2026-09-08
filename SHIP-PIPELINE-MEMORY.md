@@ -695,3 +695,16 @@ the Atlas adapter demonstrates real ramp/lift/seat state, moving anchors and gua
 F/A/TAP activation. The shared hangar verb contract awaits station adoption.
 [Nose/MFD/control evidence and limitations](docs/qa/atlas-mark-ii/cockpit-controls-record.md)
 records the actual candidate, input checks, geometry fixes and independent-review boundary.
+
+## Burrow cabin and cutter continuation
+
+The [Burrow record](docs/qa/burrow-concept/cutters-and-reverse.md) tracks the fitted
+flat-panel cabin and original machined cutter follow-up. Keep the uninterrupted
+windshield, 125-sample physical eye route, carrier envelope and authored muzzle
+sockets when refining it. Current 13a geometry is 29,254 triangles / 2,611,096
+bytes with the existing four maps; the six beam quads are runtime presentation.
+Distinguish a contact from motion into that contact: the rover rejects obstructed
+sweeps, so reporting a hit while separating can prevent reverse. Preserve the
+regression and inward/corner blocking, not merely a reverse-speed unit test.
+The record distinguishes native/game evidence, injected controls and pending
+independent visual/performance acceptance. Historical scores do not approve 13a.

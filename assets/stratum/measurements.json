@@ -1,0 +1,101 @@
+{
+  "assetSha256": "1f5cae2a4901a2618d7cff36f1713a19777b45d586022614b9bc5449560cb75b",
+  "parkedBounds": {
+    "min": [
+      -5.912499904632568,
+      0,
+      -9.399999618530273
+    ],
+    "max": [
+      5.912552439405216,
+      5.50593565218125,
+      7.71999979019165
+    ]
+  },
+  "deployedBounds": {
+    "min": [
+      -5.912499904632568,
+      0,
+      -9.399999618530273
+    ],
+    "max": [
+      5.912552439405216,
+      5.50593565218125,
+      12.203014985492977
+    ]
+  },
+  "closedEnvelope": {
+    "min": [
+      -6.5,
+      0,
+      -10
+    ],
+    "max": [
+      6.5,
+      5.6,
+      8
+    ],
+    "includes": "closed ramp, all gear and boom poses"
+  },
+  "neutralMuzzles": [
+    {
+      "name": "Muzzle_Mining_Port",
+      "position": [
+        -4.349999904632568,
+        2.549999952316284,
+        -9.449999809265137
+      ],
+      "direction": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "name": "Muzzle_Mining_Starboard",
+      "position": [
+        4.349999904632568,
+        2.549999952316284,
+        -9.449999809265137
+      ],
+      "direction": [
+        0,
+        0,
+        -1
+      ]
+    }
+  ],
+  "nozzles": [
+    {
+      "name": "Nozzle_Port",
+      "position": [
+        -4.400000095367432,
+        2.6500000953674316,
+        7.71999979019165
+      ],
+      "direction": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Nozzle_Starboard",
+      "position": [
+        4.400000095367432,
+        2.6500000953674316,
+        7.71999979019165
+      ],
+      "direction": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "gearSamples": 13,
+  "boomSamples": 169,
+  "flightPartCount": 14,
+  "precisionProbeMetres": 25000000000,
+  "scope": "CPU real-binary geometry and normalized rigs. No renderer/gameplay/performance acceptance."
+}

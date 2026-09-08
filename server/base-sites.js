@@ -29,7 +29,7 @@ export function updateBaseSites(previous,command,now){
    if(!old&&Number(c.id.split('-').at(-1))<current.build.nextId)return [];
    if(old&&c.pieces.some(p=>!old.pieces.some(a=>a.id===p.id)&&Number(p.id.split('-').at(-1))<current.build.nextId))throw fail(409,'A removed piece cannot be restored by a stale save.');
    if(old&&canonicalJSON(c.anchor)!==canonicalJSON(old.anchor))throw fail(400,'A saved site cannot change its anchor.');
-   if(old&&old.pieces.some(p=>{const next=c.pieces.find(n=>n.id===p.id);return !next||next.type!==p.type||JSON.stringify(next.position)!==JSON.stringify(p.position)||next.rotation!==p.rotation;}))throw fail(409,'Existing pieces cannot be removed or moved by a stale save.');
+   if(old&&old.pieces.some(p=>{const next=c.pieces.find(n=>n.id===p.id);return !next||next.type!==p.type||JSON.stringify(next.position)!==JSON.stringify(p.position)||next.rotation!==p.rotation||next.supportDepth!==p.supportDepth;}))throw fail(409,'Existing pieces cannot be removed or moved by a stale save.');
    return [{...c,power:old?.power??initialPower(now)}];
   });
   // Omission is not demolition. A stale/offline client cannot erase another saved site.
@@ -49,9 +49,10 @@ export function updateBaseSites(previous,command,now){
  const claim=current.build.claims.find(c=>c.id===command.claimId);if(!claim)throw fail(404,'Base has expired or is unavailable.');
  if(command.action==='remove'){
   const result=planRemoval(current.build,current.storage,claim.id,command.item);if(!result.ok)throw fail(400,result.message);
-  current.build=result.build;if(result.container)delete current.storage[result.container];if(!result.build.claims.some(c=>c.id===claim.id))delete current.buffers[claim.id];
+  current.build=result.build;if(result.container)delete current.storage[result.container];if(!result.build.claims.some(c=>c.id===claim.id&&c.pieces.some(p=>p.type==='mainframe')))delete current.buffers[claim.id];
   return {...current,revision:current.revision+1};
  }
+ if(!claim.pieces.some(p=>p.type==='mainframe'))throw fail(400,'Install a mainframe to manage supplies and power.');
  if(command.action==='fuel'){
   const def=Object.values(POWER_PARTS).find(d=>d.fuel===command.item);
   if(!def||!claim.pieces.some(p=>POWER_PARTS[p.type]?.fuel===command.item))throw fail(400,'Build the matching generator first.');

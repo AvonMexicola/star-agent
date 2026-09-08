@@ -1,0 +1,23 @@
+{
+  "id": "SA-SETTLE-001",
+  "title": "Four authored construction-kit trade settlements",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex settlements",
+  "status": "integrated",
+  "branch": "feat/trade-settlements",
+  "base": "c766544b5c9beb98ec3c66b50595e4c974b461f3",
+  "updated": "2026-09-08",
+  "areas": [
+    "industry",
+    "interface",
+    "world"
+  ],
+  "claims": [
+    "src/settlements/",
+    "tests/settlements.test.js",
+    "scripts/settlements.spec.js",
+    "scripts/settlements.config.js"
+  ],
+  "brief": "docs/briefs/trade-settlements.md"
+}

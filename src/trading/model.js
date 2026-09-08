@@ -1,15 +1,12 @@
+import { SETTLEMENTS } from '../settlements/catalog.js';
+import { validBaseTerminal } from './base-site.js';
+import { setBaseOffer,consumeBaseOffer,offered } from './base-stock.js';
+import { fitsBox } from '../inventory/containers.js';
 import { SBU_SIZES, capacitySBU, placeCrate, validGrid, canRemoveCrate } from '../cargo/grid.js';
 import { tractorCommand,validLooseCargo } from '../cargo/tractor-ledger.js';
 import { AEON_MARKET_ID,createMarket,validMarkets,marketIdForTerminal,quoteMarket } from './market.js';
-export const TRADE_RESOURCES=Object.freeze([
-  {id:'basalt',name:'Basalt concentrate',kgPerSBU:16,buy:20,sell:12,color:0x9aa4ac},
-  {id:'copper',name:'Copper ore',kgPerSBU:16,buy:48,sell:30,color:0xc58c60},
-  {id:'ice',name:'Water ice',kgPerSBU:16,buy:24,sell:15,color:0x8ed9e4},
-  {id:'aggregate',name:'Aggregate',kgPerSBU:16,buy:28,sell:17,color:0xb5aaa0},
-  {id:'metal-stock',name:'Metal stock',kgPerSBU:16,buy:64,sell:40,color:0xa0b8b0},
-  {id:'conductor',name:'Conductor stock',kgPerSBU:16,buy:80,sell:50,color:0xd9ad72},
-]);
-export const resourceById=id=>TRADE_RESOURCES.find(r=>r.id===id);
+import { TRADE_RESOURCES,resourceById } from './resources.js';
+export { TRADE_RESOURCES,resourceById } from './resources.js';
 export const shipKey=(owner,hull)=>`${owner}:${hull}`;
 export const emptyCommerce=()=>({version:1,marketVersion:1,revision:0,nextId:1,accounts:{},ships:{},terminals:{},receipts:{},markets:{[AEON_MARKET_ID]:createMarket(TRADE_RESOURCES)}});
 const check=(condition,message)=>{if(!condition)throw new Error(message);};
@@ -38,6 +35,7 @@ export function validCommerce(s){
     check(validLooseCargo(s.loose??{}),'loose cargo');for(const c of Object.values(s.loose??{}))crate(c);
     for(const [id,t] of Object.entries(s.terminals)){
       check(safe(id)&&s.accounts[t.owner]&&Array.isArray(t.position)&&t.position.length===3&&t.position.every(Number.isFinite)&&t.stock&&t.prices,'terminal');
+      if(t.base)check(validBaseTerminal(t),'base terminal');
       for(const r of TRADE_RESOURCES)check(int(t.stock[r.id]??0,100000)&&int(t.prices[r.id]??r.buy,10000)&&((t.prices[r.id]??r.buy)>0),'stock');
     }
     check(Object.keys(s.rocks??{}).length<=128&&Object.values(s.rocks??{}).every(r=>int(r.revision)&&r.revision>0&&typeof r.field==='string'&&r.field.length<400000&&Array.isArray(r.position)&&r.position.length===3&&r.position.every(Number.isFinite)),'excavation');
@@ -58,7 +56,7 @@ export function commerceCommand(source,owner,m,ctx){
   const receiptKey=`${owner}:${m.commandId}`;
   if(Object.hasOwn(source.receipts,receiptKey))return {state:source,...source.receipts[receiptKey],replayed:true};
   check(m.revision===source.revision,'Cargo changed. Review the manifest and try again.');
-  const s=structuredClone(source),a=ensureAccount(s,owner),ship=s.ships[m.ship],r=resourceById(m.resource),terminal=Object.hasOwn(s.terminals,m.terminal)?s.terminals[m.terminal]:null;
+  let s=structuredClone(source);const a=ensureAccount(s,owner),ship=s.ships[m.ship],r=resourceById(m.resource),terminal=Object.hasOwn(s.terminals,m.terminal)?s.terminals[m.terminal]:null;
   let message='',resourceDelta=0,quote=null;
   const ownedShip=()=>check(ship?.owner===owner,'Choose your ship.');
   const docked=()=>{ownedShip();check(ctx.docked?.(ship,m.terminal),'Choose a ship docked at this terminal.');};
@@ -76,15 +74,35 @@ export function commerceCommand(source,owner,m,ctx){
     atTerminal();docked();check(r,'Choose a resource.');
     check(SBU_SIZES.includes(m.sbu),'Choose a crate size.');
   }
-  if(m.op.startsWith('tractor-')){
+  if(m.op==='base-register'){
+    check(ctx.registerBase,'Base registration unavailable.');const result=ctx.registerBase(s,owner,m);s=result.state;message=result.message;
+  }else if(['base-offer','base-settings','base-deposit','base-withdraw'].includes(m.op)){
+    atTerminal();check(terminal?.base&&terminal.owner===owner,'Only the base owner can manage its local stock.');
+    if(m.op==='base-offer'){
+      setBaseOffer(terminal,m.source,m.resource,m.quantity,m.price);message=m.quantity?'Offer saved. Only the listed quantity is for sale.':'Offer removed. Stock is available for personal use.';
+    }else if(m.op==='base-settings'){
+      check(['public','open'].includes(m.setting)&&typeof m.value==='boolean','Choose a beacon or shop setting.');terminal.base[m.setting]=m.value;message=m.setting==='public'?(m.value?'Public base beacon enabled.':'Base beacon is private.'):(m.value?'Shop open.':'Shop closed. Existing stock retained.');
+    }else{
+      docked();check(r&&SBU_SIZES.includes(m.sbu)&&Object.hasOwn(terminal.base.storage,m.source),'Choose a base container and crate size.');
+      const container=terminal.base.storage[m.source];
+      if(m.op==='base-deposit'){
+        const c=selected();check(c.resource===r.id&&c.sbu===m.sbu,'Crate changed.');
+        container.items[r.id]+=m.sbu*r.kgPerSBU;check(fitsBox(container.items,container.boxes),'This base container is full. Choose another container.');remove(c);message='Cargo deposited into local base storage. It is not listed for sale.';
+      }else{
+        check(container.items[r.id]-offered(terminal,m.source,r.id)*r.kgPerSBU+1e-7>=m.sbu*r.kgPerSBU,'Not enough unlisted stock. Reduce the sale offer first.');
+        add({id:`sbu-${s.nextId++}`,resource:r.id,sbu:m.sbu});container.items[r.id]-=m.sbu*r.kgPerSBU;message='Unlisted base stock loaded aboard.';
+      }
+    }
+  }else if(m.op.startsWith('tractor-')){
     message=tractorCommand(s,owner,m,ctx);
   }else if(m.op==='buy'){
     const price=terminal?(terminal.prices[r.id]??r.buy)*m.sbu:stationQuote('buy',m.sbu).total;
     check(a.credits>=price,'Insufficient credits.');
+    if(terminal?.base)check(terminal.base.open&&ctx.baseActive?.(terminal)!==false,'This base shop is closed or unpowered.');
     if(terminal){check((terminal.stock[r.id]??0)>=m.sbu,'Seller does not have that much stock.');check(terminal.owner!==owner,'Use Withdraw stock for your own terminal.');}
     add({id:`sbu-${s.nextId++}`,resource:r.id,sbu:m.sbu});
     a.credits-=price;
-    if(terminal){terminal.stock[r.id]-=m.sbu;s.accounts[terminal.owner].credits+=price;}
+    if(terminal){if(terminal.base)consumeBaseOffer(terminal,r.id,m.sbu);else terminal.stock[r.id]-=m.sbu;s.accounts[terminal.owner].credits+=price;}
     else s.markets[quote.marketId].stock[r.id]=quote.stockAfter;
     message=`Loaded ${m.sbu} SBU of ${r.name} aboard ${ship.hull} for ${price} CR.`;
   }else if(m.op==='sell'){
@@ -97,11 +115,12 @@ export function commerceCommand(source,owner,m,ctx){
     add({id:`sbu-${s.nextId++}`,resource:r.id,sbu:m.sbu});resourceDelta=-r.kgPerSBU*m.sbu;
     message=`Packed ${m.sbu} SBU aboard ${ship.hull}.`;
   }else if(m.op==='stock'){
-    check(terminal?.owner===owner,'Only the terminal owner can deposit stock.');
+    check(terminal?.owner===owner,'Only the terminal owner can deposit stock.');check(!terminal.base,'Use Deposit to base, then choose an offer from local stock.');
     const c=selected();check(c.resource===r.id&&c.sbu===m.sbu,'Crate changed.');
     remove(c);terminal.stock[r.id]=(terminal.stock[r.id]??0)+c.sbu;message=`Listed ${c.sbu} SBU for visitors to buy.`;
   }else if(m.op==='withdraw'){
     atTerminal();docked();check(terminal?.owner===owner&&r&&SBU_SIZES.includes(m.sbu),'Choose your stock.');
+    check(!terminal.base,'Unlist base stock before withdrawing it.');
     check((terminal.stock[r.id]??0)>=m.sbu,'Not enough stock.');add({id:`sbu-${s.nextId++}`,resource:r.id,sbu:m.sbu});terminal.stock[r.id]-=m.sbu;message='Stock loaded aboard.';
   }else if(m.op==='price'){
     atTerminal();check(terminal?.owner===owner&&r&&int(m.price,10000)&&m.price>0,'Choose a price from 1 to 10,000 credits.');terminal.prices[r.id]=m.price;message='Price saved.';
@@ -120,4 +139,18 @@ export function commerceCommand(source,owner,m,ctx){
   // Bounded history plus revision validation: old retries cannot execute again.
   const keys=Object.keys(s.receipts);if(keys.length>512)delete s.receipts[keys[0]];
   check(validCommerce(s),'Cargo transaction failed validation.');return {state:s,...receipt};
+}
+
+/** Add each authored solo market once; depletion and old receipts survive reload. */
+export function normalizeSettlementMarkets(source){
+  const normalized=normalizeCommerce(source);
+  const missing=SETTLEMENTS.filter(s=>!Object.hasOwn(normalized.markets,s.id));
+  if(Object.hasOwn(normalized,'settlementVersion')){
+    check(normalized.settlementVersion===1&&!missing.length,'Settlement markets are invalid. Original save retained.');
+    return normalized;
+  }
+  const next={...structuredClone(normalized),settlementVersion:1};
+  for(const site of missing){const market=createMarket(TRADE_RESOURCES,site.id);Object.assign(market.stock,site.stock);next.markets[site.id]=market;}
+  check(validCommerce(next),'Settlement market initialization failed. Original save retained.');
+  return next;
 }

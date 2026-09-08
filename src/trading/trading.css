@@ -7,3 +7,6 @@
 @media(max-width:600px){#trading-dialog.gameplay-screen .gameplay-content{padding:10px;gap:6px}.trade-content article{min-height:68px}.trade-content h3{font-size:13px}#trading-dialog.gameplay-screen .gameplay-content>header h2{font-size:18px}.trade-pages button{min-height:32px!important}.trade-content{gap:4px}.trade-summary{font-size:12px}}
 
 @media(max-width:600px){.trade-content article{flex-shrink:0}.trade-stock-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:128px}.trade-stock-actions button:last-child{grid-column:1 / -1}}
+
+.trade-content{overflow:auto}.trade-content .base-stock-row{display:block}.base-stock-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}.base-stock-actions button{white-space:normal}
+@media(max-width:600px){.base-stock-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.base-stock-row p{line-height:1.5}}

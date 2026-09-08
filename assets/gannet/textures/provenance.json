@@ -1,0 +1,42 @@
+{
+  "source": "Original deterministic procedural PBR swatches; reused approved Meridian emblem only",
+  "builder": "blender/gannet_textures.py",
+  "layout": "4 columns \u00d7 2 rows from PNG top; whole-part metric projection at most 24 texels/metre in central 128 \u00d7 256 pixels, continuous subdivided floor, Blender V inverted once",
+  "size": [
+    1024,
+    1024
+  ],
+  "baseColorSpace": "sRGB",
+  "dataMaps": "linear ORM and tangent normal",
+  "ambientOcclusion": "ORM red is white. Separate geometry-derived static vertex AO is authored by build_gannet.py; moving assemblies remain white.",
+  "files": {
+    "manufacturer.png": {
+      "bytes": 85286,
+      "sha256": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
+    },
+    "surface-basecolor.png": {
+      "bytes": 149331,
+      "sha256": "29fa07d3e608fe387a3826da282599c27c9162d292b045b399d41366cc01387f"
+    },
+    "surface-basecolor.webp": {
+      "bytes": 43442,
+      "sha256": "b67286fc9136eadff4625593f317f628f1da618461c4eab84578025f398ea7ba"
+    },
+    "surface-normal.png": {
+      "bytes": 5334,
+      "sha256": "86993e9276b669289b91c2563b704bd0116c0c59af1949f08c79bfc2e2e8ff9b"
+    },
+    "surface-normal.webp": {
+      "bytes": 88,
+      "sha256": "741d1b1f09d26aae362cee7d3d59eb3e56908e0c6880a5d5a5172d3f8f1a5a50"
+    },
+    "surface-orm.png": {
+      "bytes": 389026,
+      "sha256": "5a5e98e86cbd3692ba0ac7e3190a4e8c78729bad0eebf3793774a769fdf6ddb6"
+    },
+    "surface-orm.webp": {
+      "bytes": 299526,
+      "sha256": "31cb7026f4d636ecab956992481dd5077bcb46c7054091c775f2b2a4cfab228a"
+    }
+  }
+}
