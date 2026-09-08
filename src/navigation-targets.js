@@ -8,7 +8,7 @@ import { MIASMA_SITES } from './miasma-world.js';
 
 export const NAV_ARRIVAL = 20_000;
 export const NAV_CHARGE_SECONDS = 3;
-export const NAV_FILTERS = Object.freeze({bodies:'Worlds',stations:'Stations',ships:'Ships',bases:'Bases',friends:'Friends / pilots',missions:'Missions',locations:'Surface sites'});
+export const NAV_FILTERS = Object.freeze({bodies:'Worlds',stations:'Stations',ships:'Ships',bases:'Bases',trade:'Trade settlements',friends:'Friends / pilots',missions:'Missions',locations:'Surface sites'});
 export const BODY_PARENTS = Object.freeze({star:null,aeon:'star',pyre:'star',selene:'aeon',miasma:'pyre'});
 const v = p => p?.isVector3 ? p.clone() : new Vector3(...p);
 const valid = p => (p?.isVector3 ? p.toArray() : p)?.length===3 && (p?.isVector3 ? p.toArray() : p).every(Number.isFinite);

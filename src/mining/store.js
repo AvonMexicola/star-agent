@@ -1,3 +1,4 @@
+import { reconcileLocalBaseStock } from '../trading/base-stock.js';
 import { ROCK_ID, ROCK_VERSION, SIDE, createDensity, encodeDensity, decodeDensity } from './volume.js';
 import { STARTER_CREDITS, STATION_SHOPS, initialShopStock } from '../station-shop.js';
 import { ShipInventory, ITEMS } from '../ship-inventory.js';
@@ -98,6 +99,7 @@ export class MiningStore {
   }
   write(next, encodedField) {
     if (this.blocked) return false;
+    try { next=reconcileLocalBaseStock(next); } catch(error) { this.warning=error.message; return false; }
     try {
       if (!this.storage) throw Error('Browser storage unavailable');
       const rocks = Object.fromEntries(Object.entries(next.rocks).map(([id, rock]) => [id, { ...rock, field: this.encode(rock.field), encodedField: undefined }]));

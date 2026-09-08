@@ -1,3 +1,4 @@
+import {reconcileLocalBaseStock} from '../trading/base-stock.js';
 import {mountHeight,mountReason} from './mounts.js';
 import {planRemoval} from './removal.js';
 import {pruneBaseStorage} from './power-system.js';
@@ -42,7 +43,7 @@ export class BuildSystem {
     this._origin=new THREE.Vector3();this._lastPreview=0;
   }
   get data(){return this.store.state.build??emptyBuild();}
-  get claims(){return this.blocked?[]:this.data.claims;}
+  get claims(){return this.blocked||this.nav.multiplayer?.connected?[]:this.data.claims;}
   get state(){return {controllerAvailable:this.controllerAvailable,active:this.active,removing:this.removing,pieceId:this.pieceId,preview:this.preview?{pieceId:this.pieceId,valid:this.preview.valid,reason:this.preview.reason,cost:this.preview.cost,sources:this.preview.sources,rotation:this.preview.piece?.rotation,position:this.preview.position,claimId:this.preview.claim?.id??null}:null,claims:structuredClone(this.claims),pieceCount:this.claims.reduce((s,c)=>s+c.pieces.length,0),error:this.error,grounded:this.grounded,visuals:this.visualDiagnostics,assetsReady:this.models.size>0&&[...this.models.values()].every(m=>m.ready),materials:this.store.container('pack')?.items};}
   get visualDiagnostics(){return {doors:[...this.doorMotion.doors].map(([id,d])=>({id,target:Boolean(d.target),fraction:d.fraction,colliderFraction:d.fraction,blocked:d.blocked})),ghost:{pieceId:this.ghost.userData.piece??null,ready:Boolean(this.ghostModel),meshes:this.ghostModel?(()=>{let count=0;this.ghostModel.traverse(o=>{if(o.isMesh)count++;});return count;})():0},claims:this.claimVisibility,lights:{active:this.serviceLights.filter(l=>l.visible).length,fixtures:this.serviceLights.filter(l=>l.visible).map(l=>({id:l.userData.fixtureId,intensity:l.intensity})),max:MAX_SERVICE_LIGHTS,work:this.workLight.visible}};}
   canBuild(){return !this.nav.multiplayer?.connected&&!this.nav.openingActive&&this.nav.mode==='walk'&&!this.nav.insideShip&&!this.nav.dockedAtStation&&!this.nav.travel&&this.nav.altitude<80;}
@@ -134,6 +135,7 @@ export class BuildSystem {
     if(!this.assetsLoaded)return this.error||'Loading construction models…';
     if(!this.canBuild())return 'Build on foot outside the ship.';
     if(c.owner!==LOCAL_OWNER)return 'Building permission required.';
+    if((this.protectedClaims?.()??[]).some(other=>other.body===c.body&&v(other.origin).distanceTo(v(c.origin))<other.radius+c.radius))return 'Keep your claim clear of the public trade settlement.';
     const body=BODIES.find(b=>b.id===c.body),point=this.toWorld(v(p.position),c),localPlayer=this.toLocal(this.nav.position,c),boxes=getPlacementBoxes(p),bounds=getPlacementBounds(p);
     if(Math.hypot(distanceToPolygon(footprint(p),localPlayer.x,localPlayer.z),Math.max(bounds.min[1]-localPlayer.y,0,localPlayer.y-bounds.max[1]))>12)return 'Move within 12 m of the piece.';
     if(c.pieces.length>=MAX_PIECES)return `Prototype limit: ${MAX_PIECES} pieces per site.`;
@@ -184,6 +186,7 @@ export class BuildSystem {
   async remove(){
     if(this.removalPending)return {ok:false,message:'Removal in progress.'};if(!this.canBuild()||this.blocked||this.store.blocked)return {ok:false,message:'Construction is unavailable.'};
     this._removalData=null;this.refreshRemoval();const preview=this.preview;if(!preview?.valid)return {ok:false,message:preview?.reason};
+    try{reconcileLocalBaseStock({...pruneBaseStorage(this.store.state,this._removalPlan.build.claims),build:this._removalPlan.build});}catch(error){return {ok:false,message:error.message};}
     this.removalPending=true;let result;try{
       if(this.power?.cloud?.enabled)result=await this.power.cloud.action(preview.claim.id,'remove',preview.piece.id);
       else {const plan=this._removalPlan,ok=this.store.write({...pruneBaseStorage(this.store.state,plan.build.claims),build:plan.build});result={ok,message:ok?plan.message:this.store.warning};}
@@ -213,7 +216,7 @@ export class BuildSystem {
   }
   sync(){
     if(this.disposed)return;
-    if(this._syncedData===this.data)return;this._syncedData=this.data;
+    if(this._syncedData===this.data&&this._syncedOnline===Boolean(this.nav.multiplayer?.connected))return;this._syncedData=this.data;this._syncedOnline=Boolean(this.nav.multiplayer?.connected);
     const alive=new Set(this.claims.flatMap(c=>c.pieces.map(p=>p.id)));
     for(const [id,entry] of this.models)if(!alive.has(id)){if(entry.group)disposeBuildVisual(entry.group);this.models.delete(id);this.registered.delete(id);this.doorMotion.doors.delete(id);}
     for(const [id,group] of this.groups)if(!this.claims.some(c=>c.id===id)){group.removeFromParent();this.groups.delete(id);}
@@ -323,7 +326,7 @@ export class BuildSystem {
     const dir=FORWARD.clone().applyQuaternion(this.nav.orientation);
     return this.claims.flatMap(c=>c.pieces.filter(p=>(['mainframe','crate','rack','terminal'].includes(p.type)||POWER_PARTS[p.type]||PIECES[p.type].light||PIECES[p.type].door)).map(p=>{const point=this.toWorld(v(p.position).addScaledVector(UP,PIECES[p.type].light?-.06:.8),c),delta=point.sub(this.nav.position);return {c,p,d:delta.length(),f:delta.normalize().dot(dir)};})).filter(x=>x.d<3.5&&x.f>.15).sort((a,b)=>b.f-a.f||a.d-b.d)[0]??this.claims.flatMap(c=>c.pieces.filter(p=>PIECES[p.type].padSize).map(p=>{const local=this.toLocal(this.nav.position,c);return {c,p,d:Math.hypot(distanceToPolygon(footprint(p),local.x,local.z),local.y-p.position[1])};})).find(hit=>hit.d<3.5)??null;
   }
-  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${PIECES[hit.p.type].light?`Switch ceiling light ${hit.p.lightOn===false?'on':'off'}`:Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':hit.p.doorOpen?'Close':'Open')+' base door':(hit.p.type==='mainframe'||POWER_PARTS[hit.p.type])?'Base mainframe / power':hit.p.type==='terminal'?'Inventory terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
+  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${PIECES[hit.p.type].light?`Switch ceiling light ${hit.p.lightOn===false?'on':'off'}`:Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':hit.p.doorOpen?'Close':'Open')+' base door':(hit.p.type==='mainframe'||POWER_PARTS[hit.p.type])?'Base mainframe / power':hit.p.type==='terminal'?'Storage & trade terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
   interact(){
     const hit=this.nearbyInteraction();if(!hit)return false;
     const {c,p}=hit;

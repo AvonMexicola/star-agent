@@ -5,6 +5,16 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+Four solo **trade settlements** use the existing construction kit: Greenbank
+Supply on Aeon, Stillwater Exchange on Selene, Ember Works on Pyre and Verdigris
+Prospect on Miasma. Find them in **Map → a world → Locations** or the **Trade
+settlements** signal filter. Each has a large pad and a walk-in exchange with
+independent finite stock and real ship cargo trading. F2 / Dev → Ship & location
+offers an approach above each pad. See the [player route](trade-settlements.md)
+and [construction and validation record](qa/trade-settlements/README.md).
+These authored exchanges are solo content; online player-base shops retain their
+separate authoritative implementation.
+
 The passenger elevator repair keeps its hangar vestibule at human scale, exposing
 the same pressure-door kit used in the lobby and a clear call-panel approach.
 F / controller X / the touch Interact button calls the elevator; walk inside to
@@ -30,7 +40,7 @@ The preceding fleet integration at **`c99736f`**, with runtime **`5f63893`**, ad
 the playable 64 m Atlas, enlarged default
 station and community hub, ground Burrow and Atlas/Burrow meadow starts, fleet
 particles/audio/music, roofs/lights/base power, animated shopkeepers and current
-weapon/tool art. The client and API run **protocol 5** together. The paired local
+weapon/tool art. That checkpoint paired client and API at **protocol 5**. The paired local
 refresh preserved the persistent PostgreSQL cluster and every existing table's
 row count, applying only the missing additive base-site migration 003.
 
@@ -72,11 +82,34 @@ Normal solo saves keep cargo with mining inventory; development test starts rese
 on reload. Online cargo, stock, credits and common-outcrop yields persist through
 additive PostgreSQL migration002. Joining supplies the server-owned ledger; local
 saves are not imported. The original cargo checkpoint used protocol 3; the
-current candidate uses protocol 5 and requires a matching client/API pair.
+current local candidate uses protocol 6 and requires a matching client/API pair.
 Player shop sales continue when the seller disconnects. The physical tractor now
 moves 1–64 SBU crates with swept collision, range and lease checks; the former
 instant large-crate transfer is retired. Persistent offline wrecks remain open.
 See the [player guide](sbu-cargo.md) and [actual QA record](qa/sbu-cargo.md).
+
+## Constructed base trade terminals
+
+The base-commerce checkpoint (integrated at `2607fe7`, runtime `4b36b50`, with latest elevator repair preserved)
+adds **My shop** to the Storage & trade terminal. Link a base with a designated
+landing pad, choose a real local container and commodity, offer only the selected
+quantity, set its price and enable the public beacon. New deposits stay private.
+The map shows stocked goods, prices and landing pads; new saves enable Bases by
+default. Existing saved map filters remain yours to change.
+
+For shared trading, join Comms and track your private unregistered base-plan
+marker. Walk to the planned terminal location, then **Menu → Trade → Build →
+Register shared** (500 CR). Registration validates a fixed layout and creates
+empty server storage. Deposit actual docked ship cargo, then list the quantity in
+**My shop**. Visitors can buy while you are offline; credits and cargo save in one
+transaction. Shared sites are self-powered, at most 64 pieces, with doors open;
+full multiplayer construction editing/upkeep and solo inventory import are outside
+this checkpoint. Online hull support remains Nomad/Atlas.
+
+This update requires matching **protocol 6** client/API. It changes no SQL schema.
+The two controller browser journeys pass, including map discovery, physical base
+access, partial offers, a seller-offline purchase, cargo and takeoff. Physical
+controller hardware is untested. See the [delivery evidence](qa/base-commerce.md).
 
 ## Run and use
 

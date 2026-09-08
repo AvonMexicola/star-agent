@@ -1,3 +1,6 @@
+import { createBaseScene } from '../src/trading/base-scene.js';
+import { registerBase,baseTerminalPoint,baseDocked,materializeBase } from '../src/trading/base-site.js';
+import { publicBaseTerminal } from '../src/trading/base-stock.js';
 import { mineCargoRock,cargoDeposit } from './cargo-mining.js';
 import { createTradingPads } from '../src/trading/pads.js';
 import { walkForeignShips,constrainCargoEVA } from '../src/cargo/physics.js';
@@ -15,23 +18,24 @@ const fail=message=>{throw new Error(message);};
 /** One durable world ledger. All money/cargo/stock writes and loose-resource
  * deductions share a database transaction; publish only after COMMIT. */
 export function createTrading({store,players,world,persistent,flushWrites,now=Date.now,stationMarket=marketIdForTerminal,canTractor=()=>true}){
-  let state=emptyCommerce();
-  const pads=createTradingPads(null,()=>Object.values(state.terminals));
+  let state=emptyCommerce();const layoutVersions=new WeakMap();
+  const pads=createTradingPads(null,()=>Object.values(state.terminals).filter(t=>!t.base));
   const pose=s=>{const p=players.get(s.owner);return p&&p.nav.shipId===s.hull?shipPose(p.nav):null;};
   const station=world.station??world;
   const marketTerminals=()=>Object.fromEntries(AEON_STATION_TERMINALS.map(t=>[t.id,stationMarket(t.id)]));
   const terminalPoint=(id,ledger=state)=>{
     if(id.startsWith('station:'))return stationTerminalPoint(station,id);
+    if(ledger.terminals[id]?.base)return baseTerminalPoint(ledger.terminals[id]);
     return ledger.terminals[id]?new THREE.Vector3(...ledger.terminals[id].position).add(new THREE.Vector3(0,1.3,0).applyQuaternion(new THREE.Quaternion(...ledger.terminals[id].quaternion))):null;
   };
   const physicalShips=(ledger=state)=>Object.values(ledger.ships).filter(s=>pose(s)).map(s=>({...s,pose:pose(s),speed:players.get(s.owner).nav.shipSpeed,open:players.get(s.owner).nav.doorProgress>.98,systems:players.get(s.owner).nav.freighter}));
   const loose=(ledger=state)=>Object.values(ledger.loose??{});
   const terminalReach=(p,id,ledger=state)=>{const point=terminalPoint(id,ledger);return point&&p.health>0&&p.nav.mode==='walk'&&!p.nav.insideShip&&p.nav.position.distanceTo(point)<STATION_TERMINAL_REACH;};
   function context(p,ledger){return {
-    now,
+    now,registerBase:(state,owner,command)=>registerBase(state,owner,command,{nav:p.nav,shared:true,now}),
     tractor:tractorContext({nav:p.nav,ships:()=>physicalShips(ledger),loose:()=>loose(ledger),worldClear:tractorWorldClear(p.nav,world.station,world.occludes),enabled:()=>p.weapon==='mining-laser-tool'&&canTractor(p)}),
     terminal:id=>terminalReach(p,id,ledger),stationMarket,
-    docked:(s,id)=>{const n=players.get(s.owner)?.nav;return s.owner===p.id&&n&&n.shipId===s.hull&&!n.cabinFlight&&n.shipVelocity.length()<1&&!n.travel&&(id.startsWith('station:')?stationedForTrade({nav:n,hangarId:p.hangarId,station},id):n.shipSpeed<1&&onTradePad(pose(s)?.position,ledger.terminals[id]));},
+    docked:(s,id)=>{const n=players.get(s.owner)?.nav;return s.owner===p.id&&n&&n.shipId===s.hull&&!n.cabinFlight&&n.shipVelocity.length()<1&&!n.travel&&(id.startsWith('station:')?stationedForTrade({nav:n,hangarId:p.hangarId,station},id):n.shipSpeed<1&&(ledger.terminals[id]?.base?baseDocked(ledger.terminals[id],n):onTradePad(pose(s)?.position,ledger.terminals[id])));},
     resources:id=>(ledger.accounts[p.id]?.resources?.[id]??0)+(p.inventory.containers.pack[id]??0),
     crate:(s,c)=>{const t=pose(s);return t&&['walk','eva'].includes(p.nav.mode)&&aboard(p.nav.position,t,s.hull)&&nearCrate(p.nav.position,t,s.hull,c);},
     grid:s=>{const t=pose(s);return t&&p.nav.mode==='walk'&&aboard(p.nav.position,t,s.hull)&&nearGrid(p.nav.position,t,s.hull);},
@@ -44,16 +48,24 @@ export function createTrading({store,players,world,persistent,flushWrites,now=Da
       const result=await store.transactCommerce(current=>{const next=normalizeCommerce(current??emptyCommerce());ensureAccount(next,p.id);return {state:next};});state=result.state;
     },
     snapshot(p){
+      const near=t=>new THREE.Vector3(...materializeBase(t).origin).distanceTo(p.nav.position)<20000;
+      const visible=Object.values(state.terminals).filter(t=>!t.base||t.base.public||t.owner===p.id||near(t));
+      const full=visible.filter(t=>t.base&&(t.owner===p.id||near(t))),key=full.map(t=>t.id).join(',');
+      const baseLayouts=layoutVersions.get(p)===key?null:full.map(t=>({id:t.id,claim:materializeBase(t)}));layoutVersions.set(p,key);
+      const terminals=visible.map(t=>{const value=publicBaseTerminal(t,p.id);return value.base?{...value,base:{...value.base,claim:{...value.base.claim,pieces:[]}}}:value;});
       // Credits only for self. Manifests are physical public cargo, never account details.
-      return {version:state.version,revision:state.revision,account:state.accounts[p.id],ships:Object.values(state.ships).filter(s=>s.owner===p.id||players.has(s.owner)),loose:loose().filter(c=>p.nav.position.distanceTo(new THREE.Vector3(...c.position))<2000),terminals:Object.values(state.terminals),markets:state.markets,marketTerminals:marketTerminals(),rocks:Object.entries(state.rocks??{}).filter(([,r])=>p.nav.position.distanceTo(new THREE.Vector3(...r.position))<40).map(([id,r])=>({id,revision:r.revision}))};
+      return {version:state.version,revision:state.revision,account:state.accounts[p.id],ships:Object.values(state.ships).filter(s=>s.owner===p.id||players.has(s.owner)),loose:loose().filter(c=>p.nav.position.distanceTo(new THREE.Vector3(...c.position))<2000),terminals,...(baseLayouts?{baseLayouts}:{}),markets:state.markets,marketTerminals:marketTerminals(),rocks:Object.entries(state.rocks??{}).filter(([,r])=>p.nav.position.distanceTo(new THREE.Vector3(...r.position))<40).map(([id,r])=>({id,revision:r.revision}))};
     },
     attach(p){
+      const bases=createBaseScene(null,p.nav,()=>Object.values(state.terminals));
+      const previousRay=p.nav.buildingRaycast;p.nav.buildingRaycast=(...args)=>{const a=previousRay?.(...args),b=bases.raycast(...args);return a&&(!b||a.distance<b.distance)?a:b;};
+      p.nav.baseLandingSurface=pose=>bases.landingSurface(pose);p.nav.baseLandingRevision=()=>Object.keys(state.terminals).join(',');
       Object.defineProperty(p.nav,'carryingCargo',{configurable:true,get:()=>Boolean(state.accounts[p.id]?.carried||loose().some(c=>c.holder===p.id&&c.until>now()))});
       p.nav.cargoEVA=(a,b)=>{const hit=constrainCargoEVA(a,b,physicalShips());const point=constrainLooseCargo(a,hit.point,loose(),{eva:true});return {point,hit:hit.hit||!point.equals(hit.point)};};
       p.nav.cargoLandingSurface=position=>pads.floorAt(position);
       // Pad poses are immutable after deployment; ignore unrelated ledger changes.
       p.nav.cargoLandingRevision=()=>Object.keys(state.terminals).length;
-      p.nav.cargoWalk=(a,b)=>{const ships=physicalShips().filter(s=>s.owner!==p.id);const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point),point=constrainLooseCargo(a,pad.point,loose());return {...pad,point,grounded:pad.grounded||foreign.grounded,hit:pad.hit||pad.grounded||foreign.hit||!point.equals(pad.point)};};
+      p.nav.cargoWalk=(a,b)=>{const ships=physicalShips().filter(s=>s.owner!==p.id);const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point),base=bases.constrain(a,pad.point),point=constrainLooseCargo(a,base.point,loose());return {...base,point,grounded:base.grounded||pad.grounded||foreign.grounded,hit:base.hit||pad.hit||pad.grounded||foreign.hit||!point.equals(base.point)};};
       p.nav.cargoConstrain=(previous,proposed)=>{const constrained=constrainShipAttachments(previous,proposed,(state.ships[shipKey(p.id,p.nav.shipId)]?.crates??[]).map(c=>crateBounds(p.nav.shipId,c)));return p.nav.toShipLocal(constrainLooseCargo(p.nav.fromShipLocal(previous),p.nav.fromShipLocal(constrained),loose()));};},
     async request(p,m){
       if(p.health<=0)fail('Respawn before handling cargo.');
