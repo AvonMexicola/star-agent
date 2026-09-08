@@ -104,6 +104,8 @@ export class TouchInput {
   }
   async dragView(dx, dy) {
     expect(this.contacts.size, 'Release propulsion before a fresh native look drag').toBe(0);
+    const lock = () => this.page.evaluate(() => ({navigation: starAgent.navigation.locked, element: document.pointerLockElement?.id ?? null}));
+    expect(await lock(), 'Touch look must not enter mouse pointer lock').toEqual({navigation: false, element: null});
     const point = await this.page.evaluate(({dx, dy}) => {
       const canvas = document.querySelector('#viewport');
       for (const y of [innerHeight * .32, innerHeight * .4, innerHeight * .22]) for (const x of [innerWidth * .4, innerWidth * .6, innerWidth * .25]) {
@@ -120,26 +122,32 @@ export class TouchInput {
         await this.event('touchMove', [{...contact, x: point.x + dx * i / 6, y: point.y + dy * i / 6}]); await this.page.waitForTimeout(16);
       }
     } finally { await this.event('touchEnd', []); }
-    this.log.push({time: Date.now(), canvasDrag: {start: point, dx, dy}}); await frames(this.page);
+    await frames(this.page);
+    const after = await lock();
+    this.log.push({time: Date.now(), canvasDrag: {start: point, dx, dy}, lock: after});
+    expect(after, 'A compatibility click after a touch drag must leave touch look available').toEqual({navigation: false, element: null});
   }
 }
 
 export async function installNativeReceipts(page) {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'getGamepads', {value: () => []});
-    const a = window.__stratumPrimary = {pointers: new Map(), events: [], focus: [], keys: [], access: null};
+    const a = window.__stratumPrimary = {pointers: new Map(), events: [], clicks: [], locks: [], focus: [], keys: [], access: null};
     function keyOf(target) {
       const el = target.closest?.('[data-ship-mine],[data-ship-ore],[data-cabin-key],[data-cabin-interact],[data-cabin-land],[data-cabin-menu],[data-controller-key],#viewport');
       if (!el) return null;
       if (el.hasAttribute('data-ship-mine')) return 'mine';
       return el.dataset.cabinKey ?? (el.dataset.controllerKey ? 'ui:' + el.dataset.controllerKey : el.id || 'native-action');
     }
-    for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'gotpointercapture', 'lostpointercapture']) window.addEventListener(type, e => {
+    for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'gotpointercapture', 'lostpointercapture']) window.addEventListener(type, e => {
       const key = a.pointers.get(e.pointerId) ?? keyOf(e.target); if (e.pointerType !== 'touch' || !key) return;
       if (type === 'pointerdown') a.pointers.set(e.pointerId, key);
-      a.events.push({type, key, pointer: e.pointerId, trusted: e.isTrusted, primary: e.isPrimary, time: performance.now()});
+      a.events.push({type, key, pointer: e.pointerId, trusted: e.isTrusted, primary: e.isPrimary, x: e.clientX, y: e.clientY, time: performance.now()});
       if (['pointerup', 'pointercancel'].includes(type)) a.pointers.delete(e.pointerId);
     }, true);
+    document.addEventListener('click', e => a.clicks.push({trusted: e.isTrusted, target: e.target.id,
+      pointerType: e.pointerType ?? null, firesTouchEvents: e.sourceCapabilities?.firesTouchEvents ?? null, time: performance.now()}), true);
+    document.addEventListener('pointerlockchange', () => a.locks.push({element: document.pointerLockElement?.id ?? null, time: performance.now()}));
     for (const type of ['keydown', 'keyup']) window.addEventListener(type, e => a.keys.push({type, code: e.code, repeat: e.repeat, trusted: e.isTrusted, time: performance.now()}), true);
     const record = e => a.focus.push({type: e.type, trusted: e.isTrusted, time: performance.now(), focused: document.hasFocus(), visibility: document.visibilityState});
     window.addEventListener('blur', record); window.addEventListener('focus', record); document.addEventListener('visibilitychange', record);

@@ -449,13 +449,20 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   viewportChanged();resize();resizePending=false;
   const mfdRaycaster=new THREE.Raycaster(),mfdPointer=new THREE.Vector2();
   function activateMFD(event){
+    if(!Number.isFinite(event?.clientX)||!Number.isFinite(event?.clientY))return false;
     if(!nav.powered||!['flight','landed'].includes(nav.mode)||document.querySelector('dialog[open]'))return false;
     const bounds=canvas.getBoundingClientRect();mfdPointer.set((event.clientX-bounds.left)/bounds.width*2-1,-(event.clientY-bounds.top)/bounds.height*2+1);
     scene.updateMatrixWorld(true);mfdRaycaster.setFromCamera(mfdPointer,camera);
     for(const hit of mfdRaycaster.intersectObject(ship,true)){let target=hit.object;while(target&&target!==ship&&!target.userData.action)target=target.parent;if(target?.userData.action){target.userData.action();return true;}}
     return false;
   }
-  function capture(event){if(activateMFD(event)||transiting||!nav.enabled||opening?.active)return;enterPlayerInterface();nav.capture();}
+  function capture(event){
+    if(activateMFD(event)||transiting||!nav.enabled||opening?.active)return;
+    enterPlayerInterface();
+    // A short touch drag can also produce a click. Mouse capture would then
+    // lock out the canvas touch-look path until the player releases that lock.
+    if(event?.pointerType!=='touch'&&!event?.sourceCapabilities?.firesTouchEvents)nav.capture();
+  }
   canvas.addEventListener('click',capture);$('begin-button').addEventListener('click',capture);
   // Touch and pointer-lock fallback share the same look path. The canvas owns
   // this gesture; cancelling it must not leave a drag alive behind a dialog.
@@ -485,7 +492,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     if(nav.enabled)canvas.focus({preventScroll:true});
   });
   $('map-button').addEventListener('click',()=>{closeHelp();systemMap.openMap();});
-  $('help-fly').addEventListener('click',()=>{closeHelp();capture();});
+  $('help-fly').addEventListener('click',event=>{closeHelp();capture(event);});
   $('sound-button').addEventListener('click',toggleAudio);
   const photo=()=>{hidden=!hidden;document.body.classList.toggle('photo-mode',hidden);};$('photo-button').addEventListener('click',()=>{closeHelp();photo();});
   document.addEventListener('keydown',e=>{if(opening?.active||e.repeat||inventoryUI.open||fleetUI.open||(document.querySelector('dialog[open]')&&!help.open)||systemMap.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='Tab'&&!help.open){e.preventDefault();photo();}if(e.code==='KeyO'&&!help.open)transit('orbit');});

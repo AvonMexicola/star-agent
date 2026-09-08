@@ -29,6 +29,7 @@ export function createNomadCabinControls(nav) {
   window.addEventListener('blur', cancel);
   document.addEventListener('visibilitychange', cancel);
   function update() {
+    root.classList.toggle('medium-controls',medium());root.dataset.mode=nav.mode;
     const usable = (Boolean(nav.layout.berth)||Boolean(nav.freighter)||nav.mode==='walk'&&nav.stationPhysics) && !nav.roverOccupied && ['flight', 'landed', 'walk'].includes(nav.mode) && available();
     const next = `${nav.shipId}:${nav.mode}:${nav.powered}:${nav.berthRest}:${Boolean(nav.berthTransition)}:${usable}`;
     if (next !== context) { cancel();context = next; }

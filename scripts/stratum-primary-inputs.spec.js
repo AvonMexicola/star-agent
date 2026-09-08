@@ -98,7 +98,10 @@ test('Stratum: real landing and ramp → short flight → twin practice-store co
       const base = n.shipPosition?.clone() ?? n.position.clone().sub(n.position.clone().fromArray(n.layout.seatEye).applyQuaternion(q));
       const camera = n.position.clone().fromArray(s.camera.position), inverse = n.orientation.clone().fromArray(s.camera.orientation).invert();
       const aspect = innerWidth / innerHeight, tan = Math.tan(s.camera.fov * Math.PI / 360);
-      return {eye: n.position.toArray(), camera: s.camera, orientation: n.orientation.toArray(), shipOrientation: q.toArray(), mfds: s.mfds,
+      const hud = [...document.querySelectorAll('#combat-hud,.telemetry,#resource-survey,#ship-mining,#nomad-cabin-controls,#toast.visible')]
+        .filter(el => el.checkVisibility()).map(el => { const r = el.getBoundingClientRect();
+          return {id: el.id || el.className, bounds: [r.left, r.top, r.right, r.bottom]}; });
+      return {eye: n.position.toArray(), camera: s.camera, orientation: n.orientation.toArray(), shipOrientation: q.toArray(), mfds: s.mfds, hud,
         nominalLayoutCenters: displays.map(d => {
           const p = n.position.clone().fromArray(d.position).applyQuaternion(q).add(base).sub(camera).applyQuaternion(inverse);
           const x = p.x / (-p.z * tan * aspect), y = p.y / (-p.z * tan);
@@ -111,21 +114,27 @@ test('Stratum: real landing and ramp → short flight → twin practice-store co
       visualRequirement: 'Clear actual forward view and unobstructed readable MFD faces. Portrait may use native look; no camera offset/FOV/DOM hiding by fixture.'});
   }
   async function pilotShot(name) { await cockpit(); await input.reset(); await page.waitForTimeout(750); await shot(name); await sightline(name); }
-  async function feedback(target) {
-    return page.evaluate(target => {
-      const n = starAgent.navigation, inverse = n.orientation.clone().invert(), d = n.position.clone().fromArray(target).sub(n.position).applyQuaternion(inverse);
+  async function feedback(target, renderedLook = false) {
+    return page.evaluate(({target, renderedLook}) => {
+      const n = starAgent.navigation, inverse = n.orientation.clone();
+      if (renderedLook) inverse.fromArray(starAgent.state.camera.orientation);
+      inverse.invert();
+      const d = n.position.clone().fromArray(target).sub(n.position).applyQuaternion(inverse);
       return {yaw: Math.atan2(d.x, -d.z), pitch: Math.atan2(d.y, Math.hypot(d.x, d.z)), distance: d.length(), mode: n.mode,
         position: n.position.toArray(), orientation: n.orientation.toArray(), turn: n.assistedTurn.toArray(),
         speed: n.speed, forwardSpeed: -n.velocity.clone().applyQuaternion(inverse).z, altitude: n.altitude, t: performance.now()};
-    }, target);
+    }, {target, renderedLook});
   }
   async function aim(target, mode = 'flight') {
     await input.hold([]); const deadline = Date.now() + (phone ? 65000 : 35000);
+    // Landed display inspection centres the real rendered view, including its
+    // fixed optical tilt. Flight aiming still follows the ship/weapon bore.
+    const renderedLook = phone && mode === 'landed';
     while (Date.now() < deadline) {
-      const c = await feedback(target); flight.push({...c, phase, action: 'native-look'});
+      const c = await feedback(target, renderedLook); flight.push({...c, phase, action: 'native-look', renderedLook});
       if (c.mode !== mode) throw Error('Native aim left expected mode: ' + JSON.stringify(c));
       if (Math.hypot(c.yaw, c.pitch) < .022) {
-        await input.hold([]); await page.waitForTimeout(240); const settled = await feedback(target);
+        await input.hold([]); await page.waitForTimeout(240); const settled = await feedback(target, renderedLook);
         if (Math.hypot(settled.yaw, settled.pitch) < .032) return;
       } else if (phone) {
         const sensitivity = .002 * (mode === 'flight' ? shipHandling('stratum').turn : 1);
@@ -139,7 +148,7 @@ test('Stratum: real landing and ramp → short flight → twin practice-store co
         await page.waitForTimeout(35);
       }
     }
-    throw Error('Native view input failed to reach target: ' + JSON.stringify(await feedback(target)));
+    throw Error('Native view input failed to reach target: ' + JSON.stringify(await feedback(target, renderedLook)));
   }
   async function lookLocal(point, mode = 'walk') {
     const world = await page.evaluate(point => { const n = starAgent.navigation; return n.fromShipLocal(n.position.clone().fromArray(point)).toArray(); }, point);
@@ -151,6 +160,11 @@ test('Stratum: real landing and ramp → short flight → twin practice-store co
     for (const display of S.displays) {
       await lookLocal(display.position, 'landed'); await pilotShot('00-phone-' + display.node.toLowerCase());
       expect(distance((await state(page)).position, eye), 'Looking at a real display cannot move the pilot eye').toBeLessThan(.00001);
+      const record = sightlines.at(-1), face = record.nominalLayoutCenters.find(d => d.name === display.node);
+      record.inspectedDisplay = display.node;
+      expect(face.centerInFrame).toBe(true); expect(Math.hypot(...face.ndc)).toBeLessThan(.12);
+      record.centerHUDOverlap = record.hud.filter(({bounds: b}) => face.pixel[0] >= b[0] && face.pixel[0] <= b[2] && face.pixel[1] >= b[1] && face.pixel[1] <= b[3]);
+      expect(record.centerHUDOverlap, 'The inspected physical display centre must clear the phone HUD').toEqual([]);
     }
     await lookLocal([S.interior.pilotEye[0], S.interior.pilotEye[1], S.interior.pilotEye[2] - 100], 'landed');
     await pilotShot('00-phone-forward-restored');
