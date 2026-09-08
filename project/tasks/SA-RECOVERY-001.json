@@ -19,6 +19,7 @@
     "scripts/recovery-missions.spec.js",
     "scripts/recovery-missions.config.js",
     "scripts/recovery-flight.js",
+    "scripts/recovery-helpers.js",
     "scripts/recovery-qa-guard.js",
     "docs/briefs/deep-space-recovery.md",
     "docs/qa/deep-space-recovery/",

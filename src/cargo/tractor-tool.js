@@ -14,7 +14,7 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
   document.body.append(panel);const $=s=>panel.querySelector(s),power=$('[data-tractor="power"]');
   const ghost=new THREE.BoxHelper(new THREE.Mesh(new THREE.BoxGeometry(1,1,1)),0xb6efd1);ghost.name='Tractor compatible grid slot';ghost.visible=false;scene.add(ghost);
   let busy=false,pendingOp=null,queued=null,key=false,pointer=false,pointerId=null,distance=2,elapsed=0,message='',target=null,slot=null,time=0,triggerBefore=false,requireRelease=false,lastOwner=null;
-  let restrictedLast=false,inputSequence=0;
+  let restrictedLast=false,inputSequence=0,lastExpired='';
   const hubGate=createHubFireGate(),physicalPointers=new Set();
   const loose=()=>api.snapshot().loose??[],held=()=>loose().find(c=>c.holder===api.snapshot().owner&&c.until>Date.now());
   const restricted=()=>isHandsFree(nav)||Boolean(nav.travel);
@@ -68,6 +68,11 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
       if(requireRelease)trigger=false;
       if(!active){key=false;pointer=false;requireRelease=true;}
       target=active&&!c?aimedCrate(nav.position,nav.orientation,all,items,worldClear):null;
+      const expired=!c&&active&&items.find(item=>item.holder===s.owner&&item.until<=Date.now());
+      if(expired&&lastExpired!==`${expired.id}:${expired.until}`){
+        lastExpired=`${expired.id}:${expired.until}`;message='Tractor lock expired. Release RT / T, then aim and engage again.';
+        requireRelease=true;key=false;pointer=false;
+      }
       slot=null;if(c&&active){for(const ship of all.filter(x=>x.owner===s.owner)){const candidate=tractorSlot(ship,c,nav.position,all,items,worldClear);if(candidate){slot={...candidate,ship};break;}}}
       if(!busy){
         if(c&&(!trigger||!active))void release();

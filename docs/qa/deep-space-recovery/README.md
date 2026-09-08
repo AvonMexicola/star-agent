@@ -32,7 +32,8 @@ excludes other Playwright jobs, records source hashes and uses short disk-backed
 TMPDIR `.browser-cache/rc`. Raw attempts stay in ignored `test-results/recovery-NN`.
 No shared preview, API or database is touched by this QA harness.
 
-The full controller case begins at the supported65m Aeon settlement approach. All
+The current full controller case begins at the supported Aeon orbit entry.
+Attempt02 separately passed the continuous ascent from the supported65m settlement approach. All
 subsequent movement, aiming, entry, acceptance, tractor control, payment and return
 use standard Gamepad input. Navigation state is read only for steering feedback.
 A separate actual ship fight checks the raider variant, and a keyboard/native phone
@@ -58,3 +59,25 @@ Two focused actual-room regressions also pass on0994b83:
 These cover authenticated personal freight ownership/terminal/deposit/reload and
 Atlas cargo/2SBU hand-carry denial. Only the named memory-store cases were selected;
 no PostgreSQL migration or full multiplayer-suite result is claimed for this run.
+
+## Attempt02 — physical wreck reached, tractor lease expired
+
+Frozen4b4bc55/runtime0994b83.9.1min full controller case reached continuous Aeon
+ascent, drive arrival, normal approach/parking, actual cabin/ramp exit and a
+physical EVA exterior inspection, then aimed at the two original marked crates.
+Original1440×900 exterior and open-bay PNGs were inspected: Atlas geometry, ramps,
+white/dark materials and amber strips render; no fallback, application error or
+new warning. Renderer scale was adaptive0.8 at the exterior capture,396 draws /
+162,875 triangles; this isolated snapshot is not an FPS or art acceptance.
+
+The saved receipts show a successful tractor grab and four movement commits. The
+trace then has a10.071s screencast gap after499.66s; the1.5s lock expired. Its
+presentation silently lost the held state, so the fixture’s later observation
+timed out. No renderer/shader/host cause is asserted from that gap alone. Original
+PNG+JSON/video/trace retained in `test-results/recovery-02`; later cases did not run.
+The correction adds an explicit expired-lock instruction and requires a fresh
+release/re-engage, without extending any server lease or moving cargo remotely.
+The fixture records up to three actual release/re-engage attempts if that message
+appears. The next full journey uses the normal supported orbit start and retains
+real entry, travel, EVA, hauling, inbound atmospheric flight, terminal payment and
+return to play. No debug pose is assigned after setup.
