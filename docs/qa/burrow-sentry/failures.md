@@ -63,3 +63,29 @@ passes all **33** Sentry/multiplayer input cases in **0.771 s**, including five
 seconds of 240 Hz blocked updates with Sentry occupied and inactive. Every
 synthetic neutral keeps `vehicleReady` false. Final browser connection checks
 now span inventory open, held dialog, close and physical pilot exit.
+
+Browser05 (`2026-09-08T22-37-01.560Z`, 1.3 min) reached the solo pilot, drive,
+reverse, visible barrel pulses, distant-cargo refusal, held modal and controller
+disconnect checks. The native focus helper closed its temporary tab before
+detaching that tab's CDP session, causing teardown to throw and obscure its
+return. The fixture now saves the focus receipt before cleanup and detaches
+before closing. No runtime change was made. Remaining cases did not run.
+
+Browser06 (`2026-09-08T22-44-27.274Z`, 59.1 s) recorded six bursts before View
+was sent and seven when the held-input dialog check ran. Both controller and
+turret were disarmed in the visible dialog, but the original counts do not
+establish when that extra burst occurred. The fixture now records the actual
+dialog-open attribute mutation with its timestamp and shot count; subsequent
+no-fire/modal and held-exit conditions use that boundary. No input or cadence
+code changed, and06's missing timing remains unobserved. The two-client case
+now runs first so its connected inventory/exit verification takes priority.
+
+Browser07 (`2026-09-08T22-49-12.369Z`, 4.2 min) kept both players connected and
+seated the pilot, then the gunner's first exterior EVA waypoint failed to
+converge. Its retained final samples oscillated 9.56–37.82 m from the point with
+5.18 m/s final speed. The fixture pursued position without damping velocity in
+the actual inertial EVA model. Its replacement observes local velocity, reduces
+desired speed toward the point and uses the existing LT brake for deliberate
+stops; only standard Gamepad axes/buttons change. The physical waypoints, reach
+and timeouts are retained. There was no application error/warning or connection
+loss; Vite's reset warning during context teardown is retained in the raw log.

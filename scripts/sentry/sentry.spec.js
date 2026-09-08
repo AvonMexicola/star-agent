@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
+import {evaWaypointInput} from './eva-feedback.mjs';
 const output=process.env.SENTRY_OUTPUT??'test-results/sentry-manual';
 const state=page=>page.evaluate(()=>starAgent.state);
 const wait=(page,fn,arg=null,timeout=30000)=>page.waitForFunction(fn,arg,{timeout,polling:80});
@@ -57,22 +58,36 @@ const roverPoint=(page,local,id=null)=>page.evaluate(({local,id})=>{
 /** Feedback reads poses, then changes only standard Gamepad axes/buttons.
  * No navigation, interaction, vehicle or authority method is called here. */
 async function walk(page,target,{reach=.32,eva=false,timeout=45000}={}){
+  if(eva)return walkEVA(page,target,{reach,timeout});
   await neutral(page);
-  await page.evaluate(({target,reach,eva})=>{
-    window.sentryWalk={target,reach,eva,done:false,samples:[],active:true};
+  await page.evaluate(({target,reach})=>{
+    window.sentryWalk={target,reach,eva:false,done:false,samples:[],active:true};
     function update(){
       const task=sentryWalk;if(!task.active)return;
-      const n=starAgent.navigation,d=n.position.clone().fromArray(task.target).sub(n.position).applyQuaternion(n.orientation.clone().invert()),distance=task.eva?d.length():Math.hypot(d.x,d.z);
+      const n=starAgent.navigation,d=n.position.clone().fromArray(task.target).sub(n.position).applyQuaternion(n.orientation.clone().invert()),distance=Math.hypot(d.x,d.z);
       task.samples.push({position:n.position.toArray(),mode:n.mode,distance});if(task.samples.length>3000)task.samples.shift();
       if(distance<task.reach){sentryPad.axes=[0,0,0,0];sentryPad.buttons[0]=sentryPad.buttons[1]={pressed:false,value:0};task.done=true;task.active=false;return;}
       const rate=Math.min(.65,Math.max(.20,distance*.18)),planar=Math.hypot(d.x,d.z),scale=planar?rate/planar:0;
       sentryPad.axes=[d.x*scale,d.z*scale,0,0];
-      if(task.eva){const brake=distance<Math.max(.8,n.speed*.7)&&n.speed>.45;sentryPad.buttons[0]={pressed:!brake&&d.y>.22,value:+(!brake&&d.y>.22)};sentryPad.buttons[1]={pressed:!brake&&d.y<-.22,value:+(!brake&&d.y<-.22)};sentryPad.buttons[6]={pressed:brake,value:+brake};if(brake)sentryPad.axes=[0,0,0,0];}
       requestAnimationFrame(update);
     }requestAnimationFrame(update);
-  },{target,reach,eva});
+  },{target,reach});
   try{await wait(page,()=>sentryWalk.done,null,timeout);}finally{await page.evaluate(()=>{if(window.sentryWalk)sentryWalk.active=false;sentryPad.axes=[0,0,0,0];for(const i of [0,1,6])sentryPad.buttons[i]={pressed:false,value:0};});}
-  if(eva)await stop(page);else await neutral(page);
+  await neutral(page);
+}
+async function walkEVA(page,target,{reach,timeout}){
+  await neutral(page);await page.evaluate(({target,reach})=>window.sentryWalk={target,reach,eva:true,done:false,samples:[],active:true},{target,reach});
+  const end=Date.now()+timeout;
+  try{
+    while(Date.now()<end){
+      const sample=await page.evaluate(target=>{const n=starAgent.navigation,q=n.orientation.clone().invert(),delta=n.position.clone().fromArray(target).sub(n.position).applyQuaternion(q),velocity=n.velocity.clone().applyQuaternion(q),sample={time:performance.now(),position:n.position.toArray(),mode:n.mode,distance:delta.length(),delta:delta.toArray(),velocity:velocity.toArray()};sentryWalk.samples.push(sample);return sample;},target);
+      const input=evaWaypointInput(sample.delta,sample.velocity,reach);
+      await page.evaluate(input=>{sentryPad.axes=input.axes;for(const [i,on]of [[0,input.up],[1,input.down],[6,input.brake]])sentryPad.buttons[i]={pressed:on,value:+on};sentryWalk.done=input.done;},input);
+      if(input.done){await neutral(page);return;}
+      await page.waitForTimeout(70);
+    }
+    throw Error('Physical EVA waypoint did not converge; velocity and input-route samples retained.');
+  }finally{await page.evaluate(()=>{sentryWalk.active=false;sentryPad.axes=[0,0,0,0];for(const i of [0,1,6])sentryPad.buttons[i]={pressed:false,value:0};});}
 }
 async function board(page,role){
   await neutral(page);expect((await state(page)).sentry.near?.role).toBe(role);
