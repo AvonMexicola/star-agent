@@ -33,7 +33,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   }
   const obstacles=()=>station.ready?[{id:'station-aeon',name:'Aeon Orbital',center:(station.centre??station.worldPosition).toArray(),radius:2000}]:[];
   function route(target){
-    if(multiplayer.connected)return {ok:false,reason:'Targeted drive is available in solo flight. Shared pilots remain trackable.',plan:null};
+    if(multiplayer.connected&&!nav.transportDriveAvailable?.(target?.id))return {ok:false,reason:'Shared targeted drive supports your active freight pickup and delivery. Other shared routes use free heading.',plan:null};
     if(nav.mode!=='flight'||!nav.powered||nav.autoland||nav.stationLift)return {ok:false,reason:'Launch with main power on and leave landing assist.',plan:null};
     if(nav.gearLimited)return {ok:false,reason:'Retract landing gear before charging.',plan:null};
     if(nav.altitude<19_990&&nav.flightEnvironment.atmosphereFraction>0)return {ok:false,reason:'Climb to 20 km before charging the drive.',plan:null};
@@ -50,6 +50,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     if(!current||!lock.ready||lock.id!==current.id){nav.notify('Aim at a destination and hold until the relativistic drive ring is full.');return false;}
     const planned=route(current);if(!planned.ok){reset();nav.notify(planned.reason);return false;}
     activeTarget=current;selectedId=current.id;nav.travelTarget=current.id;
+    if(multiplayer.connected){reset();nav.transportDrive?.(current.id);return true;}
     nav.travel={plan:planned.plan,elapsed:planned.plan.spoolSeconds,targetId:current.id,targetName:current.name,targeted:true};
     nav.keys.clear();nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.boost=false;nav.flightAssist=true;nav.combatMode=false;reset();
     nav.notify(`Relativistic drive engaged · ${current.name}. Automatic arrival braking; LT / X aborts.`);return true;

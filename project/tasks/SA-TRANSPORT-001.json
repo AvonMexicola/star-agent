@@ -1,0 +1,36 @@
+{
+  "id": "SA-TRANSPORT-001",
+  "title": "Personal sealed cargo transport between worlds",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex mission designer",
+  "status": "review",
+  "branch": "feat/transport-missions",
+  "base": "d08f1810edb1c6bd1d1aeb0cc54cd6406d7ec30c",
+  "updated": "2026-09-08",
+  "areas": [
+    "industry",
+    "interface",
+    "multiplayer"
+  ],
+  "claims": [
+    "src/transport/",
+    "src/trading/model.js",
+    "src/cargo/tractor-ledger.js",
+    "src/cargo/tractor-physics.js",
+    "server/trading.js",
+    "tests/transport-missions.test.js",
+    "tests/server-transport.test.js",
+    "scripts/transport-missions.spec.js",
+    "scripts/transport-missions.config.js",
+    "docs/briefs/transport-missions.md",
+    "docs/qa/transport-missions/",
+    "src/navigation-targeting.js",
+    "src/settlements/system.js",
+    "src/multiplayer/protocol.js",
+    "src/combat/space-combat.js",
+    "src/cargo/tractor-tool.js",
+    "scripts/transport-helpers.js"
+  ],
+  "brief": "docs/briefs/transport-missions.md"
+}
