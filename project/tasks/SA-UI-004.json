@@ -1,0 +1,27 @@
+{
+  "id": "SA-UI-004",
+  "title": "Projected trade terminal welcome screens and exchange dashboard",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex projected terminals",
+  "status": "active",
+  "branch": "feat/projected-trade-terminals",
+  "base": "1d4181c3525f444ce5930a30f16de4b1ef58a1b9",
+  "updated": "2026-09-08",
+  "areas": [
+    "industry",
+    "interface"
+  ],
+  "claims": [
+    "src/trading/terminal-projection.js",
+    "src/trading/terminal-frames.js",
+    "src/trading/terminal-identity.js",
+    "src/trading/terminal.css",
+    "src/trading/ui.js",
+    "src/trading/system.js",
+    "tests/terminal-projection.test.js",
+    "scripts/projected-terminals.spec.js",
+    "scripts/projected-terminals.config.js"
+  ],
+  "brief": "docs/briefs/projected-terminals.md"
+}

@@ -1,0 +1,75 @@
+/* Exchange presentation is scoped; the pilot menu and transaction router stay shared. */
+#trading-dialog{--exchange-ink:#14333e;--exchange-paper:#edf4f1;--exchange-muted:#48646d;--exchange-edge:#cadbd6;grid-template-rows:auto minmax(0,1fr)}
+#trading-dialog .terminal-header{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:0;padding:2px 0 20px;color:#edf4f1}
+#trading-dialog .terminal-network{font:500 13px var(--font-body);color:#b6efd1;margin:0 0 7px}
+#trading-dialog .terminal-header h2,#trading-dialog.gameplay-screen .gameplay-content>.terminal-header h2{font:500 38px/1.04 var(--font-display);margin:0;color:#edf4f1;max-width:28ch}
+#trading-dialog .terminal-role{font:14px/1.5 var(--font-body);color:#a8c2c6;margin:8px 0 0}
+#trading-dialog .terminal-session{display:flex;flex-direction:column;align-items:end;gap:8px;flex-shrink:0;font-size:12px;color:#a8c2c6}
+#trading-dialog .terminal-status{display:flex;align-items:center;gap:8px;color:#b6efd1}
+#trading-dialog .terminal-status:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+#trading-dialog .terminal-workspace{display:grid;grid-template-columns:170px minmax(0,1fr);min-height:0;overflow:hidden;border:1px solid #47666a;border-radius:5px;background:#163c46}
+#trading-dialog .trade-tabs{flex-direction:column;align-items:stretch;gap:3px;padding:20px 12px;overflow:auto}
+#trading-dialog .trade-tabs button{flex:none;min-height:48px;border:0;border-radius:3px;background:transparent;color:#d0e1df;text-align:left;font-size:14px;padding:12px 16px!important}
+#trading-dialog .trade-tabs button[aria-pressed=true]{background:#b6efd1;color:#14333e}
+#trading-dialog .terminal-manifest{display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;min-height:0;padding:22px 26px 14px;background:var(--exchange-paper);color:var(--exchange-ink);gap:14px;overflow:hidden}
+#trading-dialog .terminal-view-heading{display:flex;align-items:baseline;justify-content:space-between;gap:15px}
+#trading-dialog .terminal-view-name{font:500 26px var(--font-display);margin:0}
+#trading-dialog .terminal-context{font-size:12px;color:var(--exchange-muted)}
+#trading-dialog .trade-summary{display:flex;gap:36px;padding-bottom:14px;border-bottom:1px solid var(--exchange-edge);color:var(--exchange-ink)}
+#trading-dialog .trade-summary>div{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+#trading-dialog .trade-summary span{font-size:12px;color:var(--exchange-muted)}
+#trading-dialog .trade-summary strong{font-size:19px;font-weight:500;font-variant-numeric:tabular-nums}
+#trading-dialog .trade-selection{gap:10px;flex-wrap:wrap;align-items:center}
+#trading-dialog .terminal-manifest button{min-height:44px;border:1px solid #92ada7;background:#f8fcfa;color:var(--exchange-ink);border-radius:3px;font-size:13px;padding:10px 13px;line-height:1.35}
+#trading-dialog .terminal-manifest button[aria-pressed=true]{background:#163c46;color:#f8fcfa;border-color:#163c46}
+#trading-dialog .terminal-manifest button:disabled{opacity:.5}
+#trading-dialog button:focus-visible,#trading-dialog button[data-controller-focused]{outline:3px solid #e5a456;outline-offset:3px}
+#trading-dialog .trade-choices{gap:3px;flex-wrap:wrap}
+#trading-dialog .trade-choices button{min-width:36px;padding:7px!important}
+#trading-dialog .trade-content{gap:0;scroll-padding:12px;overscroll-behavior:contain}
+#trading-dialog .trade-content>p{font-size:13px;line-height:1.6;color:var(--exchange-muted);max-width:76ch;margin:4px 0 12px}
+#trading-dialog .trade-content article{min-height:92px;flex-shrink:0;border-bottom:1px solid var(--exchange-edge);padding:14px 0;gap:24px;align-items:center}
+#trading-dialog .trade-content article>div:first-child{min-width:0}
+#trading-dialog .trade-content h3{font-size:17px;font-weight:600;line-height:1.4;margin:0 0 5px;color:var(--exchange-ink)}
+#trading-dialog [data-commodity]{display:flex;align-items:center;gap:10px}
+#trading-dialog [data-commodity]:before{content:'';display:block;flex:none;width:14px;height:14px;background:var(--commodity-color);border:1px solid #31596766;transform:rotate(30deg);border-radius:3px}
+#trading-dialog .trade-content p{font:13px/1.6 var(--font-body);color:var(--exchange-muted);margin:3px 0}
+#trading-dialog .trade-content .settlement-need{max-width:72ch}
+#trading-dialog .trade-content>article>button{background:#163c46;color:#f7fcf9;min-width:135px;border-color:#163c46;font-weight:500}
+#trading-dialog .terminal-manifest footer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;border-top:1px solid var(--exchange-edge);padding-top:10px}
+#trading-dialog .terminal-manifest footer>small{grid-column:1/-1;color:var(--exchange-muted)}
+#trading-dialog .trade-feedback{min-height:0;color:#655024!important;font-size:12px;margin:0;line-height:1.5}
+#trading-dialog .trade-reason{color:#765022!important}
+#trading-dialog .trade-pages{gap:10px;white-space:nowrap;font-size:12px}
+#trading-dialog .trade-pages button{min-height:36px;padding:7px 12px}
+#trading-dialog.gameplay-screen .gameplay-content{display:grid;grid-template-rows:auto minmax(0,1fr);gap:0;max-width:1320px;padding:22px 28px;align-self:center;width:100%}
+#trading-dialog.gameplay-screen .terminal-header>[data-close],#trading-dialog.gameplay-screen .terminal-manifest footer>small{display:none}
+@media(max-width:749px),(max-height:719px){
+ #trading-dialog.gameplay-screen .gameplay-content{padding:12px;gap:0}
+ #trading-dialog .terminal-header{padding:0 2px 12px;gap:12px}
+ #trading-dialog .terminal-header h2,#trading-dialog.gameplay-screen .gameplay-content>.terminal-header h2{font-size:28px}
+ #trading-dialog .terminal-network{font-size:11px;margin-bottom:4px}
+ #trading-dialog .terminal-role{font-size:11px;margin-top:5px}
+ #trading-dialog .terminal-session{font-size:10px;gap:5px;max-width:95px}
+ #trading-dialog .terminal-workspace{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+ #trading-dialog .trade-tabs{flex-direction:row;flex-wrap:wrap;padding:6px;gap:4px;overflow:visible}
+ #trading-dialog .trade-tabs button{flex:1 1 75px;text-align:center;min-height:40px;padding:8px 5px!important;font-size:12px!important}
+ #trading-dialog .terminal-manifest{padding:12px 10px 8px;gap:9px}
+ #trading-dialog .terminal-view-heading{gap:8px}.terminal-view-heading .terminal-view-name{font-size:21px!important}
+ #trading-dialog .terminal-context{max-width:17ch;text-align:right;font-size:10px}
+ #trading-dialog .trade-summary{gap:10px;padding-bottom:8px;justify-content:space-between}
+ #trading-dialog .trade-summary>div{display:block}
+ #trading-dialog .trade-summary span{display:block;font-size:10px}
+ #trading-dialog .trade-summary strong{font-size:15px;display:block;margin-top:3px}
+ #trading-dialog .trade-selection{gap:6px}
+ #trading-dialog .terminal-manifest button{font-size:12px;padding:8px;min-height:44px}
+ #trading-dialog .trade-choices{gap:3px}#trading-dialog .trade-choices button{min-width:31px;padding:6px!important}
+ #trading-dialog .trade-content article{min-height:100px;padding:12px 0;gap:10px;align-items:start}
+ #trading-dialog .trade-content h3{font-size:14px}#trading-dialog .trade-content p,#trading-dialog .trade-content>p{font-size:12px;line-height:1.6}
+ #trading-dialog .trade-content>article>button{min-width:80px;max-width:88px;flex-shrink:0}
+ #trading-dialog .terminal-manifest footer{grid-template-columns:1fr;gap:7px;padding-top:7px}
+ #trading-dialog .trade-feedback{font-size:11px}#trading-dialog .trade-pages{gap:12px}#trading-dialog .trade-pages button{min-height:36px!important}
+ #trading-dialog .trade-row-actions{flex-direction:column}
+}
+@media(max-width:450px){#trading-dialog .terminal-session{display:none}#trading-dialog .terminal-role{display:none}}
+@media(prefers-reduced-motion:reduce){#trading-dialog *{animation:none!important;transition:none!important}}
