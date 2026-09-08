@@ -2,7 +2,8 @@
 
 2026-09-08. Author implementation, native rendering and the full gameplay journey
 pass on `d1078be`. The final portrait framing and combined gameplay follow-up
-passes at `d666490`; local integration and independent acceptance are pending.
+passes at `d666490`. Local integration at `0abc2f7` is served and verified;
+independent acceptance remains pending.
 See the [brief](../../briefs/field-cutter.md).
 
 Current exported Mk1: `dc078fe73e0d46d32bbdf8a63db82f41231454178297ae6104d62db0cbece967`,
@@ -75,7 +76,7 @@ Author game review confirms the beam starts at the actual fixed emitter and
 meets the mined surface. The original phone frame clips most of the rotating
 head; a portrait-only mount adjustment brings it toward the centre and farther
 from the camera. Its production build passes in 10.33 seconds
-(`.staging/production04.log`); one focused gameplay/phone follow-up is pending.
+(`.staging/production04.log`); the focused gameplay/phone follow-up passes below.
 The earlier passing builder/native cases are not repeated for this adjustment.
 
 Combined03 at `d666490` includes the checked Garage `83e10ae` and validates the
@@ -91,3 +92,25 @@ collected material and visible head. The phone's existing crowded HUD remains;
 this change adjusts tool framing without redesigning the HUD. No further browser
 run is needed for documentation-only delivery changes. Raw final receipt:
 `assets/field-cutter/.staging/qa-combined03`.
+
+## Local integration receipt
+
+The existing `dev/all-features` preview fast-forwarded from `83e10ae` to
+`0abc2f7`. At 20:55:05 UTC on 2026-09-08, the frontend on 5178, its proxied
+API health route and the direct API on 8087 all returned HTTP 200. Served hashes
+match all four new GLBs and five affected source modules; all 15 guarded source,
+model and test paths match the final browser receipt. The development model
+revision map contains the new asset hashes. The [curated receipt](local-integration.json)
+records these checks.
+
+The first verification attempt looked for the revision map inline in
+`src/model-cache.js`; Vite serves object-valued development defines through
+`/@vite/env`. The unchanged config timestamp had already refreshed the map.
+The corrected verifier reads the actual development map and passes without a
+second refresh. The failed verifier log is retained with the successful raw
+receipt in ignored `test-results/handheld-delivery/0abc2f7e89e4/`.
+
+The exact 519,025-byte dirty shared journal, config bytes and three existing
+service identities were preserved. No backend protocol, database or schema
+change accompanied this merge. Independent review, physical controller testing,
+performance acceptance and public deployment are not claimed.

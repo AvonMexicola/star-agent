@@ -4,7 +4,9 @@
 Author implementation, native/game image review and controller/keyboard/native
 touch validation are complete. Combined02 on `d1078be` validates the final
 builder portrait framing. Independent, physical-device and performance acceptance
-remain pending. Local integration is not yet claimed.
+remain pending. Local integration at `0abc2f7` is served and verified on 5178;
+the [combined receipt](../field-cutter/local-integration.json) records exact
+model/source hashes and preservation of the shared services and journal.
 
 The new model uses the existing original handheld atlas and Blender geometry,
 UV and contact-AO helpers. Other held assets are not rebuilt. Editable source:

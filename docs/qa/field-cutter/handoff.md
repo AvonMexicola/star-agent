@@ -1,7 +1,7 @@
 # SA-TOOL-001 / SA-TOOL-002 — handheld delivery
 
 Status: author implementation, final portrait framing and full input journeys
-validated; ready for local integration. Parent retains integration.
+validated; locally integrated and served-verified at `0abc2f7`.
 Branch `art/rotating-mining-tool`, worktree `.worktrees/rotating-mining-tool`.
 Current combined runtime `d666490` includes checked Garage `83e10ae` and
 Transport `65f1721`; no pending Pirate or Sentry source is copied.
@@ -58,16 +58,19 @@ and their corrections remain in the production records.
 
 ## Integration and operations
 
-Local integration is not yet claimed. The intended target is the existing
-`dev/all-features` preview on 5178 with API 8087. This handheld delta adds no
-server protocol, schema or database change. Refresh the unchanged Vite config's
-timestamp once after the checked merge so its model revision map includes the
-new GLBs; verify served bytes and preserve the existing services and dirty journal.
-No production deployment or protected branch merge is authorized by this delivery.
+The existing `dev/all-features` preview on 5178 with API 8087 fast-forwarded
+from checked `83e10ae` to `0abc2f7`. Served verification passed at 20:55:05 UTC
+on 2026-09-08: all four new models and five affected source modules hash-match,
+all 15 browser-guarded paths are unchanged, the model revision map is current,
+and frontend/proxied/direct API checks return HTTP 200. The unchanged Vite
+config timestamp was refreshed once. Exact dirty journal bytes, config content
+and existing service identities were preserved; no backend protocol, schema or
+database change occurred. See the [local receipt](local-integration.json).
+Public deployment and protected branch merging remain separate.
 
 ## Resume here
 
-Serialize the checked local merge, preserve the dirty journal, verify served
-hashes and the regenerated model revision map, then update the local guide/root
-journal and open the draft PR for Cees's gate. No further handheld browser job is
-queued. Continue the separately delegated Sentry review/integration when ready.
+Open the draft PR for Cees's gate after recording final integration metadata.
+No further handheld browser job is queued. Continue the separately delegated
+Sentry review/integration when ready; that unfinished variant is not part of
+this handheld delivery.
