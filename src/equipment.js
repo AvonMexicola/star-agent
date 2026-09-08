@@ -27,6 +27,7 @@
 
 import * as THREE from 'three';
 import { textureMiningTool } from './mining/tool-materials.js';
+import { updateCutterHead } from './mining/cutter-head.js';
 import { shareHandheldTextures, hasAuthoredHandheldFinish, clearHandheldTextureCache } from './equipment-materials.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { solveArm, rotateBoneWorld } from './character-ik.js';
@@ -109,7 +110,7 @@ export const ITEMS = Object.freeze({
   },
   'mining-laser-tool': {
     name: 'mining-laser-tool',
-    label: 'Mining laser',
+    label: 'K-17 field cutter · Mk1',
     file: `${PROPS}mining-laser-tool.glb`,
     socket: 'RightHand',
     handed: 2,
@@ -134,6 +135,14 @@ export const ITEMS = Object.freeze({
     barrelAxis: [-1, 0, 0], muzzle: [-.60, .14, 0], leftGrip: [-.30, .01, 0],
     aimClip: 'use-tool', fireClip: null, aiming: 'tool',
     // Cargo owns the beam and authorization. This held model never fires/mines.
+    fireRate: 0, shot: null, range: 12, holsterable: true,
+  },
+  'builder-tool': {
+    name: 'builder-tool', label: 'Meridian field builder', file: `${PROPS}builder-tool.glb`,
+    socket: 'RightHand', handed: 1, length: .28,
+    barrelAxis: [-1, 0, 0], muzzle: [-.191, .076, 0], leftGrip: null,
+    aimClip: 'aim-pistol', fireClip: null, aiming: 'pistol',
+    // Construction owns its actions. The held device cannot fire or mine.
     fireRate: 0, shot: null, range: 12, holsterable: true,
   },
   'backpack-life-support': {
@@ -732,6 +741,8 @@ export class Equipment {
 
     if (held && spec.shot === 'beam') this._updateBeam(step, wantsFire, source.targetWorldPoint, source.hasHit !== false);
     else { this._beaming = false; this._heat.update(step, false); this._hideBeam(); }
+    this.cutterHead=updateCutterHead(this._items.get('mining-laser-tool')?.root,step,this._beaming,
+      held&&spec.name==='mining-laser-tool');
 
     if (held && spec.shot === 'tracer' && wantsFire && this._gate.tryFire() && this._updateMuzzle() && (!source.authorizeFire || source.authorizeFire(spec.name))) {
       this._spawnTracer(spec, source.targetWorldPoint);

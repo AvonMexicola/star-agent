@@ -1,0 +1,38 @@
+[
+  {
+    "index": 0,
+    "originalSize": [
+      2048,
+      2048
+    ],
+    "size": [
+      1024,
+      1024
+    ],
+    "file": "0.webp"
+  },
+  {
+    "index": 1,
+    "originalSize": [
+      2048,
+      2048
+    ],
+    "size": [
+      1024,
+      1024
+    ],
+    "file": "1.webp"
+  },
+  {
+    "index": 2,
+    "originalSize": [
+      2048,
+      2048
+    ],
+    "size": [
+      1024,
+      1024
+    ],
+    "file": "2.webp"
+  }
+]

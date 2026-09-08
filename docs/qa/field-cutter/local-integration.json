@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-09-08T20:55:05.480502+00:00",
+  "branch": "dev/all-features",
+  "integratedCommit": "0abc2f7e89e4e1ed4fe2c7d5c5545f5850790b48",
+  "testedRuntimeCommit": "d66649046707af44870b2a0dea4fd02fe0dfd08c",
+  "previousSharedCommit": "83e10ae41728e8ad97f6547046c16028c8e7d280",
+  "preview": "http://localhost:5178",
+  "httpStatus": {
+    "frontend": 200,
+    "proxiedApiHealth": 200,
+    "directApiHealth8087": 200
+  },
+  "browserReceipt": "assets/field-cutter/.staging/qa-combined03",
+  "browserGuardedPathsMatching": 15,
+  "servedSHA256": {
+    "public/models/props/mining-laser-tool.glb": "dc078fe73e0d46d32bbdf8a63db82f41231454178297ae6104d62db0cbece967",
+    "public/models/props/bandage-medical.glb": "658ff570e40273bef0ab352d0517a5d3037c904afc6847717a100fd0da672119",
+    "public/models/props/med-stim.glb": "044363ff5d972aea28649761b37738ea9d64d77e607e93d5b493ca9b8ece5841",
+    "public/models/props/builder-tool.glb": "ff62545afa3a7ed57b018eccf1f307f3861f706be1ce4a0c998a2b55c58e3f27",
+    "src/main.js": "5b72aa94629098c5e78f4664440804ba83a04dc29daf29000f0728c79df8e734",
+    "src/mining/tool.js": "7755526d1825e072d82ac284061b6e00de7717ae4db85475d2bc45a2dc0856cf",
+    "src/mining/cutter-head.js": "00958c068be1bce74772662119030848b3080225b5f74a35c86e611b6292d5cd",
+    "src/equipment.js": "7b444035032e0d877533d7fb38bbf317fb1901d08bc6d61042499c13b0557270",
+    "src/build/handheld.js": "50ca555e037c25eaa6d063f787e7c2490730388e8e34654550438e5b1da3ff88"
+  },
+  "modelRevisionMapCurrent": true,
+  "viteConfigBytesUnchanged": true,
+  "dirtyJournalPreserved": {
+    "bytes": 519025,
+    "sha256": "f924661f9bba1b3fed7946c8afc0be26828fe8351a5a71f6700f4aaeb987309f",
+    "comparedAgainAfterVerification": true
+  },
+  "existingServiceIdentitiesPreserved": 3,
+  "databaseOrSchemaAction": false,
+  "backendProtocolChange": false,
+  "verificationCorrection": "The first verifier looked for inline hashes in model-cache.js. The corrected verifier reads the actual development object define from /@vite/env; it passed without a second config refresh.",
+  "acceptanceLimits": [
+    "Injected standard Gamepad, keyboard and native CDP touch tested; no physical-device claim.",
+    "Author image review completed; independent art and performance acceptance pending.",
+    "Local integration only; no public deployment or protected branch merge."
+  ]
+}
