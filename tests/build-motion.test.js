@@ -11,7 +11,7 @@ function fixture(open=false){
  const origin=bodySurfacePoint(v(MOON_LANDING_DIRECTION),SELENE),normal=origin.clone().sub(v(SELENE.center)).normalize();
  const nav={position:origin.clone(),normal,sunDirection:normal.clone(),orientation:new THREE.Quaternion(),mode:'walk',altitude:0,insideShip:false,enabled:true,focused:true,keys:new Set(),gamepad:{suspend(){}},layout:{eyeHeight:1.75}};
  const store=new MiningStore(null),build=new BuildSystem({scene:new THREE.Scene(),nav,store,render:false}),claim=build.newClaim(origin);
- claim.pieces=[{id:'door',type:'doorway',position:[0,.3,0],rotation:0,doorOpen:open}];store.state.build={version:1,nextId:5,claims:[claim]};nav.position.copy(build.toWorld(v([3,2.05,2]),claim));build.sync();
+ claim.pieces=[{id:'door',type:'doorway',position:[0,.3,0],rotation:0,doorOpen:open},{id:'core',type:'mainframe',position:[40,0,0],rotation:0,doorOpen:false}];store.state.build={version:1,nextId:5,claims:[claim]};nav.position.copy(build.toWorld(v([3,2.05,2]),claim));build.sync();
  const model=new THREE.Group();for(const name of ['DoorLeafLeft','DoorLeafRight']){const leaf=new THREE.Object3D();leaf.name=name;model.add(leaf);}build.models.set('door',{ready:true,group:model});
  return {nav,build,claim,piece:claim.pieces[0],model,world:a=>build.toWorld(v(a),claim),origin};
 }

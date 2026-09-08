@@ -197,13 +197,13 @@ test('placement sound fires once after committed material spend, never for previ
  f.system.sync();assert.equal(sounds.length,1,'reload/sync does not replay placement');
 });
 
-test('controller build shortcut requires on-foot access within an owned mainframe radius',()=>{
- const f=setup();assert.equal(f.system.controllerAvailable,false);const c=f.core(),core=c.pieces.find(p=>p.type==='mainframe');
+test('controller build shortcut permits new sites and still requires safe on-foot access',()=>{
+ const f=setup();assert.equal(f.system.controllerAvailable,true);const c=f.core(),core=c.pieces.find(p=>p.type==='mainframe');
  const center=f.system.toWorld(v(core.position),c);f.nav.position.copy(center).addScaledVector(f.nav.normal,1.65);assert.equal(f.system.controllerAvailable,true);
  for(const mode of ['flight','landed','eva']){f.nav.mode=mode;assert.equal(f.system.controllerAvailable,false);}f.nav.mode='walk';
  f.nav.insideShip=true;assert.equal(f.system.controllerAvailable,false);f.nav.insideShip=false;
  f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),63.9);assert.equal(f.system.controllerAvailable,true);
- f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),64.1);assert.equal(f.system.controllerAvailable,false);
+ f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),64.1);assert.equal(f.system.controllerAvailable,true);
  f.nav.position.copy(center);f.nav.dockedAtStation=true;assert.equal(f.system.controllerAvailable,false);f.nav.dockedAtStation=false;
  f.store.blocked=true;assert.equal(f.system.controllerAvailable,false);
 });

@@ -1,24 +1,21 @@
 # Meridian Burrow M-04
 
 Original compact enclosed four-wheel mining vehicle. This is a development
-candidate; see the current [production record](../../docs/qa/mining-rover/production-record.md)
+candidate; see the current [concept-upgrade record](../../docs/qa/burrow-concept/production-record.md)
 for validation and independent review status.
 
-Current export is windscreen correction 11: **21,526 triangles / 2,175,556 bytes**,
-SHA-256 `831b9569633efda11652e3827057d2f4bc3f47d20f23a47df152fa437cb29468`.
-The [bounded correction record](../../docs/qa/mining-rover/windscreen-open/README.md)
-proves only the 44-triangle center strut was removed; the continuous pane, all
-remaining geometry, PBR maps and mechanisms are unchanged. The paired native cockpit
-comparison passes and confirms the clear forward view at the unchanged pilot eye. The following review scores describe candidate 10.
-The [strict 09→10 delta](../../docs/qa/mining-rover/review-candidate-10-delta.md)
-retains geometry, UVs, hierarchy and mechanism layout; only rod/cap normals and
-the ORM payload change. Native static review is 4.04/5; keyboard motion is 3.8/5,
-with an explicitly mixed-evidence mean of 4.00/5. Recorded controller, keyboard
-and native touch journeys pass at the checkpoints in the production record.
-The adjusted physical MFD footer passes its separate settled desktop review.
-Performance and Cees's final acceptance are not
-implied by these scoped results. The manifest's generation-stage text is historical;
-the production record carries the current review/delivery status.
+Current export is concept checkpoint **12e: 24,902 triangles / 2,427,608 bytes**,
+SHA-256 `5433c83744a21e6c4022dfd9b840f15069c96f95111b0518fbb851d2f8495bc1`.
+It adds fitted cabin liners, recessed storage and warm coves, five flat LCARS-style
+instrument faces, fuller tread and manufactured shell details. Physical steering
+wheel, column and pedals are removed. The canonical dimensions, pilot eye, clear
+windscreen, boarding path, suspension and twin-cutter origins are retained.
+
+Native author inspection, actual-asset geometry checks and complete controller
+carrier gameplay pass. The current record distinguishes keyboard/touch validation,
+local integration and pending independent visual acceptance. Previous candidate
+10 scores and the [candidate 11 windscreen correction](../../docs/qa/mining-rover/windscreen-open/README.md)
+are historical; they do not approve this new export.
 
 The asset uses the Kestrel/Meridian manufacturing language: ivory ceramic panels,
 graphite polymer, steel, petrol cassette housings and mint work lights. Geometry
@@ -50,4 +47,8 @@ its actual wheel carrier; hub clevises do not rotate with the tyre.
 
 The cabin is a closed geometric shell with a working door. Pressure, life support,
 seated hand IK and multiplayer vehicle authority are not simulated. The live
-cockpit screen is a runtime canvas at `RoverDisplay`.
+cockpit uses one runtime canvas atlas and material across `RoverDisplay`,
+`RoverCuttersDisplay`, `RoverOreDisplay`, `RoverDrivePad` and `RoverMiningPad`.
+These fitted faces show actual telemetry and shared input feedback. They are not
+ray-click vehicle controls; keyboard, controller and the existing phone controls
+continue to operate the rover.

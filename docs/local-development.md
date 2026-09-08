@@ -5,6 +5,23 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+**Foundation-first building** is available in the same local preview. Place a
+foundation and build before fitting a mainframe; it can sit on the finished deck.
+Doors remain open while the site has no mainframe. Square, triangle and curved
+concrete foundations extend down to dry terrain up to **8 m**. Use D-pad or
+keyboard Up/Down for quarter-metre height steps, and **Shapes → Cliff foundation ·
+45° braces** for a supported cliff deck. Rotate its feet toward the hillside;
+both must reach actual terrain. See [controls and limits](base-building.md).
+
+Runtime `4396029` was combined with settlement/combat development and locally
+integrated at `8b5ecd4` on 2026-09-08. The existing 5178/8087 client/API service was
+gracefully refreshed, preserving its persistent database and unrelated handoff
+edits; both health routes and the exact new asset hash passed. Full 149-file unit
+suite, multiplayer/persistence checks, production build and two actual-game
+controller/keyboard/touch browser cases pass. [Screens and detailed evidence](qa/terrain-foundations/README.md)
+retain failed attempts and physical-device/independent-review limits.
+Construction remains solo/account-backed solo; no public deployment is included.
+
 Four solo **trade settlements** use the existing construction kit: Greenbank
 Supply on Aeon, Stillwater Exchange on Selene, Ember Works on Pyre and Verdigris
 Prospect on Miasma. Find them in **Map → a world → Locations** or the **Trade
@@ -608,3 +625,12 @@ The terrain ramp fixes and clear Burrow windscreen are included in the preset's
 fleet dependency. Cees manually verified driving aboard and flying away with the
 rover; this records local solo gameplay, not multiplayer rover replication.
 See [scene verification](qa/atlas-meadow-launcher.md) for checks and limitations.
+
+
+## Burrow concept cabin checkpoint
+
+The Burrow upgrade follows the approved exterior/interior concepts with five flat LCARS-style instrument faces, fitted ivory cabin panels, warmer coves, deeper tyre tread and manufactured shell details. The steering wheel, column and pedals are removed; the clear windshield and physical boarding route remain. Screens show actual cutter reserve, ore and driving state. Existing keyboard/controller/phone controls still operate the vehicle.
+
+Use **F2 → Burrow mining — Selene surface** for the explicit seated developer start; F / controller X exits and physically reboards. WASD / left stick drives, arrows / right stick aims, T / RT mines, X / LT brakes, and I / View opens ore bins. Select **Gannet → Selene** for the full pilot-to-rover elevator journey. The [production record](qa/burrow-concept/production-record.md) separates passing gameplay checks from pending independent art/hardware/performance acceptance. This remains a local development checkpoint.
+
+Burrow concept runtime is locally integrated at `ab418ca` (2026-09-08), with final controller, keyboard and native-touch evidence. Refresh the preview to load the new GLB; independent art and hardware/performance acceptance are still pending. [Draft PR92](https://github.com/AvonMexicola/star-agent/pull/92) preserves Cees’s review gate.
