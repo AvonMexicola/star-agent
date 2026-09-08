@@ -3,11 +3,11 @@ import {AEON,SELENE,bodySurfacePoint,bodySurfaceNormal} from '../celestial.js';
 import {terrainHeight} from '../world.js';
 
 export const PIRATE_ROLES=Object.freeze({
- 'aeon-leader':{name:'Red Wake captain',role:'leader',health:120,speed:1.6,range:25,damage:7,aim:1.35,reload:3.2,burst:3},
- 'aeon-raider':{name:'Red Wake raider',role:'raider',health:90,speed:2.5,range:14,damage:5,aim:1.15,reload:3.4,burst:2},
- 'aeon-flanker':{name:'Red Wake scout',role:'flanker',health:75,speed:2.8,range:19,damage:4,aim:1.05,reload:2.8,burst:2},
- 'selene-leader':{name:'Vacuum Jackal captain',role:'leader',health:150,speed:1.3,range:29,damage:9,aim:1.55,reload:3.8,burst:2},
- 'selene-adjutant':{name:'Vacuum Jackal adjutant',role:'flanker',health:105,speed:2.1,range:23,damage:6,aim:1.3,reload:3.2,burst:2},
+ 'aeon-leader':{name:'Red Wake captain',role:'leader',health:120,speed:1.6,range:25,attackRange:65,damage:7,aim:1.35,reload:3.2,burst:3},
+ 'aeon-raider':{name:'Red Wake raider',role:'raider',health:90,speed:2.5,range:14,attackRange:34,damage:5,aim:1.15,reload:3.4,burst:2},
+ 'aeon-flanker':{name:'Red Wake scout',role:'flanker',health:75,speed:2.8,range:19,attackRange:50,damage:4,aim:1.05,reload:2.8,burst:2},
+ 'selene-leader':{name:'Vacuum Jackal captain',role:'leader',health:150,speed:1.3,range:29,attackRange:70,damage:9,aim:1.55,reload:3.8,burst:2},
+ 'selene-adjutant':{name:'Vacuum Jackal adjutant',role:'flanker',health:105,speed:2.1,range:23,attackRange:55,damage:6,aim:1.3,reload:3.2,burst:2},
 });
 const configs=[
  {id:'aeon-pirates',body:AEON,name:'Red Wake salvage camp',description:'A captain holds the yard while a raider closes in and a scout flanks. Break their sight lines and watch the amber aim warning.',direction:[.013597990268841662,.6051666666666666,.795982663263594],offset:1400,models:['aeon-leader','aeon-raider','aeon-flanker']},

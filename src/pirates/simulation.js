@@ -30,7 +30,7 @@ export function createPirateSquad(site,{canMove=()=>true,visible=()=>true,onShot
    if(e.health<=0)continue;
    e.clock+=dt;e.cooldown=Math.max(0,e.cooldown-dt);e.speedNow=0;
    const range=distance(e,player),los=visible(e,player,e.crouching);
-   if(player.active&&range<48&&los)e.alert=true;
+   if(player.active&&range<70&&los)e.alert=true;
    const engaged=player.active&&player.health>0&&range<85&&e.alert&&distance(player,{x:0,z:0})<105;
    if(e.state==='stagger'&&e.clock<.38)continue;
    if(!engaged){e.crouching=false;e.state='patrol';const target={x:e.home.x+Math.sin(time*.18+e.side)*4,z:e.home.z+Math.cos(time*.18+e.side)*3};move(e,target,.75,dt);e.heading=Math.atan2(target.x-e.x,target.z-e.z);e.animation=e.speedNow>.1?'walk':'idle';e.rounds=0;continue;}
@@ -52,7 +52,7 @@ export function createPirateSquad(site,{canMove=()=>true,visible=()=>true,onShot
     e.rounds++;e.cooldown=.55;e.clock=0;e.state=e.rounds>=e.burst?'reload':'engage';e.animation='fire-rifle';continue;
    }
    e.crouching=e.role==='leader'&&(range<e.range+8||e.health<e.maxHealth*.5);
-   if(los&&range<e.range+7&&e.cooldown<=0){e.state='aim';e.clock=0;e.target={x:player.x,z:player.z,y:player.y-.3};e.animation='aim-rifle';continue;}
+   if((los||(e.role==='leader'&&visible(e,player,false)))&&range<(e.attackRange??e.range+7)&&e.cooldown<=0){e.crouching=false;e.state='aim';e.clock=0;e.target={x:player.x,z:player.z,y:player.y-.3};e.animation='aim-rifle';continue;}
    e.state=e.role==='flanker'?'flank':e.role==='leader'?'hold':'advance';
    const dx=e.x-player.x,dz=e.z-player.z,len=Math.hypot(dx,dz)||1;
    const lateral=e.role==='flanker'?e.side*13:Math.sin(time*.45+e.side)*3;

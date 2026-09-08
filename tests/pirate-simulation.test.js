@@ -11,3 +11,5 @@ test('damage wakes squad, death is sticky, invalid/repeated hits cannot add kill
 test('actors never cross an obstacle callback or chase beyond the camp leash',()=>{const s=createPirateSquad(site,{canMove:()=>false});const before=s.entities.map(e=>[e.x,e.z]);run(s,15);assert.deepEqual(s.entities.map(e=>[e.x,e.z]),before);run(s,15,{...player(),x:500});assert.ok(s.entities.every(e=>e.state==='patrol'));});
 
 test('a muzzle obstruction vetoes damage after a clear eye-level sight line',()=>{const s=createPirateSquad(site,{onShot:()=>false});run(s,15);assert.ok(s.state.shots>0);assert.equal(s.state.damage,0);});
+
+test('captains rise to aim over waist-height cover and crouch while reloading',()=>{const s=createPirateSquad({id:'cover',models:['aeon-leader']},{visible:(e,p,crouch)=>!crouch});s.entities[0].alert=true;run(s,2.2);assert.equal(s.entities[0].state,'aim');assert.equal(s.entities[0].crouching,false);run(s,10);assert.ok(s.state.shots>0);});

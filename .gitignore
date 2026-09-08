@@ -20,3 +20,5 @@ server/generated/
 
 # Reproducible pirate rig intermediates; original inputs and runtime exports retained.
 /assets/pirates/rigged/
+
+/assets/characters/lizzy/.staging/

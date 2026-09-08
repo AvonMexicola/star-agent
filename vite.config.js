@@ -12,6 +12,7 @@ function atlasMarkIIStudioDevEntries() {
     name: 'atlas-mark-ii-studio-dev-entries',
     configureServer(server) {
       server.middlewares.use((request, _response, next) => {
+        if (request.url?.startsWith('/assets/pirate-studio.js')) request.url = request.url.replace('/assets/pirate-studio.js', '/src/pirates/studio.js');
         if (request.url?.startsWith('/assets/props-viewer.js')) request.url = request.url.replace('/assets/props-viewer.js', '/dev/props.js');
         if (request.url?.startsWith('/assets/avatar-studio.js')) request.url = request.url.replace('/assets/avatar-studio.js', '/src/avatar-studio.js');
         if (request.url?.startsWith('/assets/avatar-studio.css')) request.url = request.url.replace('/assets/avatar-studio.css', '/src/avatar-studio.css');
@@ -42,6 +43,7 @@ export default defineConfig({
         effects: resolve('effects/index.html'),
         nomad: resolve('nomad/index.html'),
         avatarStudio: resolve('src/avatar-studio.js'),
+        pirateStudio: resolve('src/pirates/studio.js'),
         avatarStudioStyle: resolve('src/avatar-studio.css'),
         propsViewer: resolve('public/dev/props.js'),
         audioStudio: resolve('tests/gameplay-audio.html'),
@@ -50,6 +52,7 @@ export default defineConfig({
       },
       output: {
         entryFileNames(chunk) {
+          if (chunk.name === 'pirateStudio') return 'assets/pirate-studio.js';
           if (chunk.name === 'propsViewer') return 'assets/props-viewer.js';
           if (chunk.name === 'avatarStudio') return 'assets/avatar-studio.js';
           return chunk.name === 'atlasMarkIIStudio'
