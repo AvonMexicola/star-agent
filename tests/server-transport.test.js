@@ -14,6 +14,9 @@ const worldPromise=createWorld();
 // only travel is a separate browser journey, never inferred from these tests.
 test('server binds contract and crate to authenticated owner, actual terminal and parked ship; reload preserves it',async t=>{
  const world=await worldPromise,store=createMemoryStore();let now=Date.now(),serial=0;
+ // Keep the authored direct route on the visible side of both rotating worlds.
+ // Other phases correctly require a limb approach; this is a freight-authority fixture.
+ world.rotationClock.now=()=>now;world.rotationClock.synchronize(0);
  const room=createRoom({world,store,autoStart:false,now:()=>now});t.after(()=>room.close());
  const messages=new Map(),accounts=[];
  for(const callsign of ['Freight_A','Freight_B']){const a=await store.createAccount({email:`${callsign}@example.test`,callsign,passwordHash:'test-only'});accounts.push(a);messages.set(a.id,[]);await room.join(a,m=>messages.get(a.id).push(m));}
@@ -48,8 +51,8 @@ test('server binds contract and crate to authenticated owner, actual terminal an
  assert.ok(bob.nav.cargoEVA(evaA,evaB).point.distanceTo(evaB)<1e-6,'other players have no invisible EVA cargo');
  assert.ok(bob.nav.cargoWalk(pathA,pathB).point.distanceTo(pathB)<1e-6,'other players have no invisible walking cargo');
  // Execute the new online drive request against actual navigation state.
- park(rejoined,pickup);const n=rejoined.nav,up=new Vector3(0,1,0).applyQuaternion(n.shipOrientation);n.mode='flight';n.shipPosition=null;n.position=v(pickup.pad.position).applyQuaternion(new Quaternion(...pickup.claim.quaternion)).add(v(pickup.claim.origin)).addScaledVector(up,20500);n.gearDeployed=false;n.gearProgress=0;n.enabled=true;n.orientToward(v(destination.pad.position).applyQuaternion(new Quaternion(...destination.claim.quaternion)).add(v(destination.claim.origin)),up);
- const drive=await request(rejoined,{op:'transport-drive',target:destination.id,position:[0,0,0],end:[0,0,0]});assert.equal(drive.ok,true,drive.error);assert.equal(n.travel.targetId,destination.id);assert.ok(n.travel.plan.start.distanceTo(n.position)<.001);assert.ok(n.travel.plan.distance>1000000);assert.equal(room.trading.state.accounts[alice.id].transport.completed,0);const flightStart=n.position.clone();for(let i=0;i<90;i++){now+=1000/30;room.tick();}assert.ok(n.position.distanceTo(flightStart)>1000,'server integrator flies continuously after committed plan revival');assert.ok(n.travel);n.travel=null;
+ park(rejoined,pickup);const n=rejoined.nav,up=new Vector3(0,1,0).applyQuaternion(n.shipOrientation);n.mode='flight';n.shipPosition=null;n.position=v(pickup.pad.position).applyQuaternion(new Quaternion(...pickup.claim.quaternion)).add(v(pickup.claim.origin)).addScaledVector(up,20500);n.gearDeployed=false;n.gearProgress=0;n.enabled=true;n.orientToward(n.viewPoint(v(destination.pad.position).applyQuaternion(new Quaternion(...destination.claim.quaternion)).add(v(destination.claim.origin))),up);
+ const drive=await request(rejoined,{op:'transport-drive',target:destination.id,position:[0,0,0],end:[0,0,0]});assert.equal(drive.ok,true,drive.error);assert.equal(n.travel.targetId,destination.id);assert.ok(n.travel.plan.start.distanceTo(n.inertialPosition)<.001);assert.ok(n.travel.plan.distance>1000000);assert.equal(room.trading.state.accounts[alice.id].transport.completed,0);const flightStart=n.inertialPosition;for(let i=0;i<90;i++){now+=1000/30;room.tick();}assert.ok(n.inertialPosition.distanceTo(flightStart)>1000,'server integrator flies continuously after committed plan revival');assert.ok(n.travel);n.travel=null;
  const deposit={op:'transport-deposit',mission:active.id,crate:crate.id,terminal:destination.id,ship:`${alice.id}:nomad`};
  park(rejoined,pickup);assert.equal((await request(rejoined,deposit)).ok,false);park(rejoined,destination);
  const credits=room.trading.state.accounts[alice.id].credits,revision=room.trading.state.revision;

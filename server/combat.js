@@ -1,3 +1,4 @@
+import { betweenFrames, frameRotation, rotationFrameAt } from '../src/planet-rotation.js';
 /** Authoritative hitscan. Call only with room-owned player/navigation objects;
  * no ray, target, distance or damage from a network message is accepted. */
 import * as THREE from 'three';
@@ -58,7 +59,7 @@ export function shipPose(player) {
   const rotation = nav.shipPosition ? nav.shipOrientation : nav.orientation;
   if (!finiteQuaternion(rotation)) return null;
   const position = nav.shipPosition?.clone() || nav.position.clone().sub(new THREE.Vector3(...layout.seatEye).applyQuaternion(rotation));
-  return { position, rotation, bounds: layout.flightBounds };
+  return { position, rotation, bounds: layout.flightBounds, ...(nav.rotationClock?{frame:nav.shipPosition&&!nav.cabinFlight?rotationFrameAt(position):nav.rotationFrame}:{}) };
 }
 
 /** Ray/slab intersection, subtracting the world hull root before rotation. A
@@ -151,6 +152,10 @@ export function shoot({ shooter, players, world, now, deferDamage = false }) {
     if (!player?.nav || !finiteVector(player.nav.position)) continue;
     const ship = shipPose(player);
     if (ship) {
+      if(nav.rotationClock){
+        betweenFrames(ship.position,ship.frame,nav.rotationFrame,nav.rotationTime,ship.position);
+        ship.rotation=frameRotation(ship.frame,nav.rotationFrame,nav.rotationTime).multiply(ship.rotation);
+      }
       const hit = shipDistance(origin, direction, ship.position, ship.rotation, ship.bounds);
       if (hit < distance) {
         distance = hit;
@@ -160,7 +165,9 @@ export function shoot({ shooter, players, world, now, deferDamage = false }) {
       }
     }
     if (player.id === shooter.id || !['walk', 'eva'].includes(player.nav.mode) || !Number.isFinite(player.health) || !(player.health > 0)) continue;
-    const hit = capsuleDistance(origin, direction, player.nav.position, playerUp(player.nav));
+    const eye=nav.rotationClock?betweenFrames(player.nav.position,player.nav.rotationFrame,nav.rotationFrame,nav.rotationTime):player.nav.position;
+    const up=playerUp(player.nav);if(nav.rotationClock)up.applyQuaternion(frameRotation(player.nav.rotationFrame,nav.rotationFrame,nav.rotationTime));
+    const hit = capsuleDistance(origin, direction, eye, up);
     if (hit < distance) { distance = hit; target = player; kind = 'player'; }
   }
   pack[rules.ammo]--;

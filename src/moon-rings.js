@@ -1,3 +1,4 @@
+import { rotationMatrix } from './planet-render-frames.js';
 import * as THREE from 'three';
 import { MOON_RADIUS, MOON_POSITION } from './moon-world.js';
 import { SUN_DIRECTION } from './world.js';
@@ -37,11 +38,11 @@ export class MoonRings {
     };
     this.rockMaterial.customProgramCacheKey=()=> 'selene-geological-ring-lod-v3';
     this.near=this.makeBatches(1024,8,2);this.mid=this.makeBatches(1024,3,1);this.far=this.makeBatches(1024,1,0);this.rocks=this.far[0];
-    this.material=new THREE.ShaderMaterial({side:THREE.DoubleSide,transparent:true,depthWrite:false,uniforms:{sun:{value:new THREE.Vector3(...SUN_DIRECTION)},normal:{value:new THREE.Vector3(...RING_NORMAL)}},
+    this.material=new THREE.ShaderMaterial({side:THREE.DoubleSide,transparent:true,depthWrite:false,uniforms:{frameInverse:{value:new THREE.Matrix3()},sun:{value:new THREE.Vector3(...SUN_DIRECTION)},normal:{value:new THREE.Vector3(...RING_NORMAL)}},
       vertexShader:`#include <common>
         #include <logdepthbuf_pars_vertex>
-        varying vec3 vLunar;varying vec3 vView;
-        void main(){vLunar=(modelMatrix*vec4(position,0.0)).xyz;vView=(modelViewMatrix*vec4(position,1)).xyz;gl_Position=projectionMatrix*vec4(vView,1);
+        uniform mat3 frameInverse;varying vec3 vLunar;varying vec3 vView;
+        void main(){vLunar=frameInverse*(modelMatrix*vec4(position,0.0)).xyz;vView=(modelViewMatrix*vec4(position,1)).xyz;gl_Position=projectionMatrix*vec4(vView,1);
         #include <logdepthbuf_vertex>
         }`,
       fragmentShader:`#include <common>
@@ -129,8 +130,11 @@ export class MoonRings {
     const r=radius/scale,lift=new THREE.Vector3(0,r,0),result=this.shapeColliders.get(geometryIndex).sweep(a.add(lift),b.add(lift),{radius:r,height:r*2});
     return {...result,point:result.point.sub(lift).multiplyScalar(scale).applyQuaternion(frame.rotation).add(frame.position)};
   }
-  update(origin,elapsed){
-    this.ice.update(origin,elapsed);
+  update(origin,elapsed,sunDirection=null,rotation=new THREE.Quaternion()){
+    if(sunDirection){this.material.uniforms.sun.value.copy(sunDirection);this.rockMaterial.userData.asteroidSun.copy(sunDirection);}
+    rotationMatrix(rotation.clone().invert(),this.material.uniforms.frameInverse.value);
+    rotationMatrix(rotation.clone().invert(),this.rockMaterial.userData.asteroidFrameInverse.value);
+    this.ice.update(origin,elapsed,sunDirection,rotation);
     this.band.position.copy(this.center).sub(origin);this.rockOrigin.value.copy(origin).sub(this.center);
     const key=ringCellAt(origin).join(':');
     if(key!==this.cellKey){this.cellKey=key;this.local=nearbyAsteroids(origin,2);this.localIds=new Set(this.local.map(r=>r.id));}

@@ -1,3 +1,5 @@
+import { planetRotation, frameRotation, frameVelocity, rotationFrameAt, toInertial, fromInertial, betweenFrames } from './planet-rotation.js';
+import { reframeNavigation, rotationEnvironment } from './navigation-rotation.js';
 import {constrainShipAttachments} from './ship-attachment-collision.js';
 import { MIASMA_ARRIVAL_ALTITUDE, miasmaArrivalDirection, constrainMiasmaStep } from './miasma-world.js';
 import * as THREE from 'three';
@@ -117,7 +119,13 @@ export class Navigation {
     this.flightAssist=!this.flightAssist;this.resetSteering();this.angularVelocity.set(0,0,0);
     this.notify(this.flightAssist?'Fly-by-wire. Thrusters correct drift and brake on release; allow stopping distance.':'Unlocked. Thrust off to coast; turn and fire while drifting. Hold X / LT to brake; V / R3 restores fly-by-wire.');
   }
-  get flightEnvironment(){
+  get rotationTime(){return this.rotationClock?.seconds??0;}
+  get rotationFrame(){return this._rotationStepFrame!==undefined?this._rotationStepFrame:this.rotationClock?rotationFrameAt(this.position):null;}
+  get inertialPosition(){return toInertial(this.position,this.rotationFrame,this.rotationTime);}
+  viewPoint(point){return betweenFrames(point,this.rotationClock?rotationFrameAt(point):null,this.rotationFrame,this.rotationTime);}
+  get inertialOrientation(){return planetRotation(this.rotationFrame,this.rotationTime).multiply(this.orientation);}
+  get flightEnvironment(){return rotationEnvironment(this.localFlightEnvironment,this.position,Boolean(this.rotationClock));}
+  get localFlightEnvironment(){
     const body=this.body;
     if(body.id==='aeon')return environmentAt(this.position,RADIUS);
     const local=bodyOffset(this.position,body),r=Math.max(body.radius,local.length());
@@ -159,8 +167,8 @@ export class Navigation {
     if(this.gearLimited)return {ok:false,reason:'Retract landing gear before engaging the drive: G / LB+RB + D-pad down.'};
     if(!this.powered||this.mode!=='flight'||this.autoland||this.stationLift)return {ok:false,reason:'Launch and leave landing assist with main power on before spooling.'};
     const obstacles=[{name:'the star',center:new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).toArray(),radius:2.5e8}];
-    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:(this.station.centre??this.station.worldPosition).toArray(),radius:2000});
-    return planFreeTravel(this.position,FORWARD.clone().applyQuaternion(this.orientation),{body:this.body,altitude:this.altitude,outsideAtmosphere:this.flightEnvironment.atmosphereFraction===0,obstacles});
+    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:toInertial(this.station.centre??this.station.worldPosition,this.rotationClock?rotationFrameAt(this.station.centre??this.station.worldPosition):null,this.rotationTime).toArray(),radius:2000});
+    return planFreeTravel(this.inertialPosition,FORWARD.clone().applyQuaternion(this.inertialOrientation),{body:this.body,altitude:this.altitude,outsideAtmosphere:this.flightEnvironment.atmosphereFraction===0,obstacles});
   }
   beginFreeTravel(){
     if(this.targeting?.hasTarget)return this.targeting.engage();
@@ -177,8 +185,8 @@ export class Navigation {
     if(!this.travelTarget)return {ok:false,reason:'Select a world on the map (M).',plan:null};
     if(this.mode!=='flight'||this.autoland||this.stationLift)return {ok:false,reason:'Launch and leave landing assist before engaging the drive.',plan:null};
     const obstacles=[];
-    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:(this.station.centre??this.station.worldPosition).toArray(),radius:2000});
-    return planTravel(this.position,this.travelTarget,{obstacles});
+    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:toInertial(this.station.centre??this.station.worldPosition,this.rotationClock?rotationFrameAt(this.station.centre??this.station.worldPosition):null,this.rotationTime).toArray(),radius:2000});
+    return planTravel(this.inertialPosition,this.travelTarget,{obstacles,rotationTime:this.rotationTime});
   }
   beginTravel(){
     if(this.targeting)return this.targeting.engage();
@@ -204,6 +212,7 @@ export class Navigation {
   }
   updateTravel(dt){
     const travel=this.travel;
+    this.orientation.copy(this.inertialOrientation);
     travel.elapsed+=Math.max(0,Number.isFinite(dt)?dt:0);
     const sample=sampleTravel(travel.plan,travel.elapsed);
     if(!travel.manual&&travel.plan.direction.lengthSq()>0){
@@ -212,6 +221,11 @@ export class Navigation {
       this.orientation.slerp(aligned,sample.phase==='spooling'?1-Math.exp(-4*dt):1);
     }
     this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
+    if(this.rotationClock){
+      const frame=rotationFrameAt(sample.position),q=planetRotation(frame,this.rotationTime).invert();
+      fromInertial(sample.position,frame,this.rotationTime,this.position);
+      this.velocity.applyQuaternion(q).sub(frameVelocity(this.position,frame));this.orientation.premultiply(q).normalize();
+    }
     if(sample.done){
       if(travel.targeted){this.gamepad.suspend();this.targeting?.reset();}
       this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
@@ -221,6 +235,7 @@ export class Navigation {
   }
   startStation(){
     if(!this.station?.ready)throw new Error('Station is not ready for deck spawn.');
+    this._placementRevision=(this._placementRevision??0)+1;delete this._rotationStepFrame;
     if('location' in this.station)this.station.location='hangar';
     if(Number.isInteger(this.station.activeIndex))this.station.parkedPod=this.station.activeIndex;
     this.gearDeployed=true;this.gearProgress=1;
@@ -241,6 +256,7 @@ export class Navigation {
   }
   orbit(){
     if(this.mode==='destroyed'&&this.stellarThermal?.destroyed)return;
+    this._placementRevision=(this._placementRevision??0)+1;delete this._rotationStepFrame;
     this.kestrelAccess?.reset();
     this.crash=null;
     this.freighter?.reset({gearProgress:0});
@@ -302,23 +318,35 @@ export class Navigation {
   get spaceFlightAttitude(){return this.mode==='flight'&&!this.autoland&&!this.stationLift&&this.flightEnvironment.regime==='SPACE';}
   get body(){return bodyAt(this.position);}
   get normal(){return bodyOffset(this.position,this.body).normalize();}
-  get groundHeight(){return bodyHeight(this.normal,this.body);}
+  get surfacePosition(){return this.rotationClock?betweenFrames(this.position,this.rotationFrame,this.body,this.rotationTime):this.position.clone();}
+  get surfaceDirection(){return bodyOffset(this.surfacePosition,this.body).normalize();}
+  get surfaceSunDirection(){return this.sunDirection.applyQuaternion(frameRotation(this.rotationFrame,this.rotationClock?this.body:null,this.rotationTime));}
+  get groundHeight(){return bodyHeight(this.surfaceDirection,this.body);}
   get altitude(){
     // HUD, camera, flight limits and effects read the same position repeatedly.
     // Reuse only an exact-position scalar; movement (including substeps and
     // authoritative corrections) invalidates it without quantizing the terrain.
-    const {x,y,z}=this.position,body=this.body,cached=this._altitudeSample;
-    if(cached&&cached.x===x&&cached.y===y&&cached.z===z&&cached.body===body&&cached.seed===SEED)return cached.value;
-    const value=Math.max(0,bodyAltitude(this.position,body));
-    if(cached){cached.x=x;cached.y=y;cached.z=z;cached.body=body;cached.seed=SEED;cached.value=value;}
-    else this._altitudeSample={x,y,z,body,seed:SEED,value};
+    const {x,y,z}=this.position,body=this.body,cached=this._altitudeSample,phase=this.rotationClock&&this.rotationFrame!==body?this.rotationTime:0;
+    if(cached&&cached.x===x&&cached.y===y&&cached.z===z&&cached.body===body&&cached.seed===SEED&&cached.phase===phase)return cached.value;
+    const value=Math.max(0,bodyAltitude(this.surfacePosition,body));
+    if(cached){cached.x=x;cached.y=y;cached.z=z;cached.body=body;cached.seed=SEED;cached.phase=phase;cached.value=value;}
+    else this._altitudeSample={x,y,z,body,seed:SEED,phase,value};
     return value;
   }
   get speed(){return this.velocity.length();}
   get debrisSpeedLimit(){return debrisSpeedLimit(this.position);}
-  get sunDirection(){return new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).sub(this.position).normalize();}
-  toShipLocal(point=this.position){return this.shipPosition?point.clone().sub(this.shipPosition).applyQuaternion(this.shipOrientation.clone().invert()):null;}
-  fromShipLocal(point){return point.clone().applyQuaternion(this.shipOrientation).add(this.shipPosition);}
+  get sunDirection(){return new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).sub(this.inertialPosition).normalize().applyQuaternion(planetRotation(this.rotationFrame,this.rotationTime).invert());}
+  toShipLocal(point=this.position){
+    if(!this.shipPosition)return null;
+    const frame=this.cabinFlight?this.rotationFrame:rotationFrameAt(this.shipPosition);
+    const local=this.rotationClock?betweenFrames(point,this.rotationFrame,frame,this.rotationTime):point.clone();
+    return local.sub(this.shipPosition).applyQuaternion(this.shipOrientation.clone().invert());
+  }
+  fromShipLocal(point){
+    const local=point.clone().applyQuaternion(this.shipOrientation).add(this.shipPosition);
+    const frame=this.cabinFlight?this.rotationFrame:rotationFrameAt(this.shipPosition);
+    return this.rotationClock?betweenFrames(local,frame,this.rotationFrame,this.rotationTime):local;
+  }
   shipInteraction(local){return this.kestrelAccess?(this.kestrelAccess.reachable(this)?'ladder':null):this.freighter?this.freighter.interaction(local):interactionAt(local,this.doorOpen);}
   get landingClearance(){return this.layout.landingClearance??Math.max(3.2,this.layout.seatEye[1]+.35);}
   get interaction(){
@@ -710,6 +738,12 @@ export class Navigation {
       // Assisted travel and inertial flight share the same swept collision path.
   }
   update(dt){
+    const frame=this.rotationFrame,travel=Boolean(this.travel),placement=this._placementRevision;
+    this._rotationStepFrame=frame;
+    try{Navigation.prototype.updateLocal.call(this,dt);}finally{delete this._rotationStepFrame;}
+    if(this.rotationClock&&!travel&&placement===this._placementRevision)reframeNavigation(this,frame,this.rotationTime);
+  }
+  updateLocal(dt){
     this.engineAcceleration.set(0,0,0);
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(document.querySelector('dialog[open]'))});
     this.controllerShortcutModifier=Boolean(pad.shortcutModifier);

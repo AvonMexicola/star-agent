@@ -17,8 +17,8 @@ export function planTransportDrive(state,owner,id,nav,sites,station){
  const target=sites.beacons().find(t=>t.id===id);if(!target)return fail('Transport destination unavailable.');
  const m=state.accounts[owner].transport.active,r=transportRoute(m.route);
  if(id===r.to&&!state.ships[`${owner}:${nav.shipId}`]?.crates.some(c=>c.id===m.crate&&c.transport?.id===m.id))return fail('Secure your sealed crate aboard this ship before flying the delivery leg.');
- const direction=new Vector3(...target.center).sub(nav.position).normalize(),nose=new Vector3(0,0,-1).applyQuaternion(nav.orientation);
+ const direction=(nav.viewPoint?.(new Vector3(...target.center))??new Vector3(...target.center)).sub(nav.position).normalize(),nose=new Vector3(0,0,-1).applyQuaternion(nav.orientation);
  if(nose.dot(direction)<Math.cos(.025))return fail('Aim your ship at the transport destination.');
  const obstacles=station?.ready?[{id:'station-aeon',name:'Aeon Orbital',center:(station.centre??station.worldPosition).toArray(),radius:2000}]:[];
- return {...planNavigationTravel(nav.position,target,{obstacles}),target};
+ return {...planNavigationTravel(nav.position,target,{obstacles,rotationTime:nav.rotationClock?nav.rotationTime:null,spoolSeconds:0}),target};
 }

@@ -1,3 +1,4 @@
+import { PLANET_ANGULAR_SPEED } from './planet-rotation.js';
 import { Vector3, Quaternion } from 'three';
 import { shipHandling } from './ship-handling.js';
 
@@ -84,7 +85,10 @@ export function step(state, controls, env, dt) {
     const translation = (controls.translation || new Vector3()).clone().clampLength(0, 1);
     const torque = (controls.rotation || new Vector3()).clone().clampLength(0, 1);
     const gravity = env.gravity || new Vector3();
+    const omega = env.rotationOffset ? new Vector3(0,PLANET_ANGULAR_SPEED,0) : null;
+    const centrifugal = omega ? omega.clone().cross(omega.clone().cross(env.rotationOffset)).negate() : new Vector3();
     for (let i = 0; i < count; i++) {
+      if(omega)orientation.premultiply(new Quaternion().setFromAxisAngle(new Vector3(0,1,0),-PLANET_ANGULAR_SPEED*h)).normalize();
       angularVelocity.addScaledVector(torque, handling.torque * h);
       const spin = angularVelocity.length();
       if (spin > 0) orientation.multiply(new Quaternion().setFromAxisAngle(angularVelocity.clone().divideScalar(spin), spin * h)).normalize();
@@ -92,6 +96,7 @@ export function step(state, controls, env, dt) {
         translation.z * handling.thrust).applyQuaternion(orientation).multiplyScalar(controls.boost ? 3 : 1);
       engineAcceleration.addScaledVector(thrust, h / dt);
       const aero = aerodynamics(velocity, orientation, env.density);
+      if(omega)velocity.addScaledVector(omega.clone().cross(velocity),-2*h).addScaledVector(centrifugal,h);
       velocity.addScaledVector(gravity, h).addScaledVector(thrust, h);
       // Rotate velocity for lift so this force does no work, even at large q.
       const speed = velocity.length();

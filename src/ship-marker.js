@@ -19,7 +19,7 @@ export function createShipMarker({nav,camera,entryLocal,shipName='Nomad',parent=
       element.dataset.mode=nav.mode;
       if(!visible){state={visible:false};return;}
       const target=entryLocal.clone().applyQuaternion(nav.shipOrientation).add(nav.shipPosition);
-      const projection=projectShipMarker(nav.position,nav.orientation,target,{width,height,fov:camera.getEffectiveFOV()});
+      const projection=projectShipMarker(nav.position,nav.orientation,nav.viewPoint?.(target)??target,{width,height,fov:camera.getEffectiveFOV()});
       state={visible:true,...projection,target:target.toArray(),shipName};
       element.style.left=`${projection.x}px`;element.style.top=`${projection.y}px`;
       element.dataset.edge=String(!projection.onScreen);element.dataset.behind=String(projection.behind);

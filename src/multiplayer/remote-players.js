@@ -1,6 +1,7 @@
 /** Remote visuals only. All poses stay in double precision until camera-relative
  * placement; this module never decides damage, movement authority or suit colors. */
 import * as THREE from 'three';
+import { rotationFrameAt } from '../planet-rotation.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { Character } from '../character.js';
@@ -322,7 +323,7 @@ export class RemotePlayers {
       if (!entry) { entry = this._create(peer); this.peers.set(peer.id, entry); }
       const changedColor = entry.peer.colorIndex !== peer.colorIndex;
       const changedMode = entry.peer.mode !== peer.mode;
-      const changedFrame = entry.peer.physicsFrame !== peer.physicsFrame;
+      const changedFrame = entry.peer.physicsFrame !== peer.physicsFrame || entry.peer.planetFrame !== peer.planetFrame;
       entry.peer = peer;
       entry.body = BODIES.find(body => body.id === peer.body);
       entry.hasPhysicsUp = Boolean(peer.physicsFrame && Array.isArray(peer.physicsUp)
@@ -394,6 +395,11 @@ export class RemotePlayers {
       // can be supplied when the sender is pitched independently of its torso.
       character.setWorldPose(this._feet, this._bodyRotation);
       character.placeCameraRelative(origin);
+      if(Object.hasOwn(peer,'planetFrame')){
+        character.object.userData.planetFrame=peer.planetFrame;
+        equipment.vfx.userData.planetFrame=peer.planetFrame;
+        entry.ship.userData.planetFrame=peer.mode==='flight'||peer.cabinFlight?peer.planetFrame:rotationFrameAt(entry.shipPosition)?.id??null;
+      }
       const onFoot = peer.mode === 'walk' || peer.mode === 'eva' || peer.mode === 'dead';
       character.setVisible(onFoot);
       equipment.setRenderOrigin(origin);
