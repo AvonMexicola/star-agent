@@ -1,3 +1,4 @@
+import './model-cache.js';
 import {isHandsFree} from './station-hub-policy.js';
 import {StationDefense} from './station-security.js';
 import { createTradingSystem } from './trading/system.js';
