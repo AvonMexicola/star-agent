@@ -661,5 +661,6 @@ Ceiling lights remain in **Roofs**. The same normal power and placement rules ap
 Use **F2 → a settlement** to inspect the commissioned lights, or **Build sandbox**
 for construction. The [asset and gameplay record](qa/outdoor-floodlights/README.md)
 contains night before/after views, controller/phone evidence and measured costs.
-Local promotion and paired client/API refresh are recorded separately in HANDOFF;
-independent art and hardware/performance acceptance remain pending.
+Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
+and served asset/source checks passed. Refresh the page to load the masts.
+Independent art and hardware/performance acceptance remain pending.

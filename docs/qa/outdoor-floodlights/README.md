@@ -202,3 +202,11 @@ No database/schema or protocol-version change. Client and API both import the
 piece catalog and power model; reload them together before account-backed solo
 saves contain the new type. Older clients reject unknown pieces through the
 existing save guards. Public deployment is not part of this task.
+
+
+Locally integrated at `8566a43` on 2026-09-08. The guarded fast-forward preserved
+all 56,247 unrelated dirty HANDOFF bytes (SHA3bf320f0). The existing persistent
+preview service restarted once through its graceful shutdown path, retaining
+the same database. Direct8087 and proxied5178 health both return200; served light
+modules return200 and the served GLB matches the tested SHA256 exactly.
+[Integration receipt](local-integration.json). No public deployment occurred.

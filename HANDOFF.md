@@ -4021,3 +4021,14 @@ restart of existing star-agent-persistent-preview.service so client/API share
 the new piece catalog. Same persistent database; no schema/protocol migration,
 save reset or public deployment. Record actual HTTP/module/GLB checks before
 claiming integration. Frozen prior settlement preview5622 remains for review.
+
+
+SA-LIGHT-001 LOCAL COMPLETE (2026-09-08T17:24Z): checked runtime/QA8566a43
+fast-forwarded into dev/all-features; exact56,247B unrelated journal preserved.
+Existing persistent preview5178/API8087 gracefully restarted once against the
+same local database. Both health routes and lighting modules HTTP200; served
+floodlight GLB exactly3f2d93fc8eb0/837,064B. Receipt
+docs/qa/outdoor-floodlights/local-integration.json; raw backup
+/tmp/star-agent-floodlights-integration/20260908T172400Z. No migration/protocol
+change, account mutation, save reset or public deployment. All runtime files
+remain unchanged from the recorded checks; final metadata only follows.

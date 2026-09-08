@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex floodlights",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/outdoor-floodlights",
   "base": "32966e3a1ec1830936d997a6b57b95c4e83a3071",
   "updated": "2026-09-08",
@@ -24,5 +24,6 @@
   ],
   "brief": "docs/briefs/outdoor-floodlights.md",
   "validation": "153 unit files, 191 multiplayer cases plus 2 existing opt-in skips, production build, 6 final browser cases; independent art and hardware acceptance pending",
-  "evidence": "docs/qa/outdoor-floodlights/README.md"
+  "evidence": "docs/qa/outdoor-floodlights/README.md",
+  "integration": "8566a43"
 }
