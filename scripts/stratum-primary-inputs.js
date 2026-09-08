@@ -108,10 +108,14 @@ export class TouchInput {
     expect(await lock(), 'Touch look must not enter mouse pointer lock').toEqual({navigation: false, element: null});
     const point = await this.page.evaluate(({dx, dy}) => {
       const canvas = document.querySelector('#viewport');
-      for (const y of [innerHeight * .32, innerHeight * .4, innerHeight * .22]) for (const x of [innerWidth * .4, innerWidth * .6, innerWidth * .25]) {
+      // The on-foot field-tool panel occupies the upper view. Search the actual
+      // canvas below it too; never hide a panel or send a drag through a button.
+      for (const yf of [.32, .4, .22, .5, .6, .7, .12, .85]) for (const xf of [.4, .6, .25, .5, .75]) {
+        const x = innerWidth * xf, y = innerHeight * yf;
         const end = {x: x + dx, y: y + dy};
         if (end.x < 8 || end.y < 8 || end.x > innerWidth - 8 || end.y > innerHeight - 8) continue;
-        if (Array.from({length: 7}, (_, i) => document.elementFromPoint(x + dx * i / 6, y + dy * i / 6) === canvas).every(Boolean)) return {x, y};
+        const steps = Math.max(6, Math.ceil(Math.hypot(dx, dy) / 4));
+        if (Array.from({length: steps + 1}, (_, i) => document.elementFromPoint(x + dx * i / steps, y + dy * i / steps) === canvas).every(Boolean)) return {x, y};
       }
       return null;
     }, {dx, dy});

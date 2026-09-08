@@ -22,8 +22,10 @@
    information above that view and the actual touch controls at the bottom. */
 @media(max-width:700px) and (pointer:coarse){
   #nomad-cabin-controls.medium-controls:not([hidden]){right:12px;bottom:12px;width:174px;gap:6px}
+  #nomad-cabin-controls.medium-controls[data-mode="walk"]:not([hidden]){bottom:88px}
   #nomad-cabin-controls.medium-controls[data-mode="landed"]:not([hidden]){left:12px;width:auto;grid-template-columns:repeat(3,minmax(0,1fr))}
   #nomad-cabin-controls.medium-controls[data-mode="landed"] small{grid-column:1/-1;text-align:center}
+  body:has(#nomad-cabin-controls.medium-controls[data-mode="landed"]:not([hidden])) #flight-state{display:none}
   body:has(#nomad-cabin-controls.medium-controls) #ship-mining{bottom:12px;width:174px}
   body:has(#nomad-cabin-controls.medium-controls[data-mode="landed"]) #ship-mining{bottom:88px}
   body:has(#nomad-cabin-controls.medium-controls) #resource-survey{top:112px;width:calc(100vw - 24px);max-width:none;padding:7px 10px;font-size:9px}

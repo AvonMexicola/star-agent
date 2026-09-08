@@ -48,3 +48,14 @@ MFD inspection follows the rendered optical tilt through real touch input;
 flight aim still follows the ship bore. Full touch gameplay and final phone
 layout review remain separate pending checks. No FPS, physical-device,
 multiplayer or deployment acceptance is inferred from this correction.
+
+The [independent capture review](touch-capture-review.md) closes the scoped
+input defect. Full touch02 (`c422331`, build12) confirms all four fixed-eye
+MFD looks and physical ramp egress, with no pointer lock or page diagnostics.
+Its later terrain-to-ramp turn fails because the fixture searches only the
+upper22–40% of the screen, occupied by the actual field-tool panel. The original
+failure remains in `stratum-primary-touch-02`. The fixture now also searches
+clear central/lower canvas lanes and checks the whole drag path at4px intervals;
+it never hides UI, bypasses controls or writes orientation. Walking controls
+retain their clearance above the equipment bar, and the duplicated landed
+keyboard hint gives way to the visible touch action. Full touch03 follows.

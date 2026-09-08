@@ -98,7 +98,7 @@ test('Stratum: real landing and ramp → short flight → twin practice-store co
       const base = n.shipPosition?.clone() ?? n.position.clone().sub(n.position.clone().fromArray(n.layout.seatEye).applyQuaternion(q));
       const camera = n.position.clone().fromArray(s.camera.position), inverse = n.orientation.clone().fromArray(s.camera.orientation).invert();
       const aspect = innerWidth / innerHeight, tan = Math.tan(s.camera.fov * Math.PI / 360);
-      const hud = [...document.querySelectorAll('#combat-hud,.telemetry,#resource-survey,#ship-mining,#nomad-cabin-controls,#toast.visible')]
+      const hud = [...document.querySelectorAll('#combat-hud,.telemetry,#resource-survey,#ship-mining,#nomad-cabin-controls,#toast.visible,#flight-state')]
         .filter(el => el.checkVisibility()).map(el => { const r = el.getBoundingClientRect();
           return {id: el.id || el.className, bounds: [r.left, r.top, r.right, r.bottom]}; });
       return {eye: n.position.toArray(), camera: s.camera, orientation: n.orientation.toArray(), shipOrientation: q.toArray(), mfds: s.mfds, hud,
