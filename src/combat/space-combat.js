@@ -72,7 +72,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     dialog.querySelector('[data-controller-key="patrol-recover"]').hidden=sim.phase!=='failed'||nav.mode!=='destroyed';
     dialog.querySelector('[data-controller-key="patrol-accept"]').disabled ||= !permitted();
     if(!permitted())dialog.querySelector('.patrol-status').textContent=nav.multiplayer?.connected?'Patrol contracts are available in offline flight.':!['nomad','kestrel','atlas'].includes(nav.shipId)?'Choose an armed Nomad, Kestrel or Atlas for security contracts.':!selectedRegion?'No security dispatch near the star. Visit a planet, moon or the asteroid belt.':'Board your ship or visit a station terminal to accept a patrol.';
-    dialog.querySelector('.patrol-log').textContent=`Reports filed: ${sim.completed} · Hostiles destroyed this patrol: ${sim.enemies.filter(e=>e.integrity.hull===0).length} / ${sim.contract.total}`;
+    dialog.querySelector('.patrol-log').textContent=`Reports filed: ${sim.completed}`+(sim.enemies.length?` · ${locked()?'This':'Previous'} sortie: ${sim.enemies.filter(e=>e.integrity.hull===0).length} / ${sim.contract.total} hostiles cleared`:'');
     const reports=dialog.querySelector('.patrol-reports');reports.replaceChildren();
     for(const r of sim.reports.slice(0,3)){const item=document.createElement('li');item.textContent=`${r.title} · ${r.difficulty} · ${r.region} — ${r.kills} kills / ${r.waves} waves · ${r.seconds}s · Hull ${r.hull} · ${r.hits} hits from ${r.shots} shots`;reports.append(item);}
   }

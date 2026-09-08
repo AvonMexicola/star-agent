@@ -2,8 +2,8 @@ import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 const output=process.env.ENCOUNTER_EVIDENCE||'/tmp/star-agent-encounters';
 const routes=[['orbit','aeon','standard'],['pyre','pyre','easy'],['miasma','miasma','hard'],['moon','selene','easy'],['ring','belt','standard']];
-for(const [start,region,tier] of routes)test(`${region} ${tier}: controller dispatch, physical approach, combat and report`,async({page,browser})=>{
- const evidence=`${output}/${region}-${tier}`;await mkdir(evidence,{recursive:true});const errors=[],warnings=[];
+for(const [start,region,tier] of routes)test(`${region} ${tier}: controller dispatch, physical approach, combat and report`,async({page,browser},testInfo)=>{
+ const evidence=process.env.ENCOUNTER_EVIDENCE?`${output}/${region}-${tier}`:testInfo.outputPath('evidence');await mkdir(evidence,{recursive:true});const errors=[],warnings=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
  await page.addInitScript(()=>{
   window.encounterPad={id:'Encounter standard controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
@@ -89,8 +89,8 @@ for(const [start,region,tier] of routes)test(`${region} ${tier}: controller disp
  await writeFile(`${evidence}/receipt.json`,JSON.stringify({browser:browser.version(),backend,viewport:[1440,900],report,errors,warnings,physicalController:false},null,2));expect(errors).toEqual([]);
 });
 
-test('keyboard and native touch select difficulties, abandon and return at phone width',async({page})=>{
- const evidence=`${output}/interface`;await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+test('keyboard and native touch select difficulties, abandon and return at phone width',async({page},testInfo)=>{
+ const evidence=process.env.ENCOUNTER_EVIDENCE?`${output}/interface`:testInfo.outputPath('evidence');await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto('/?dev=1&ship=kestrel&start=orbit&intro=0&debug&seed=7291');
  await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&!window.starAgent.state.transiting,{},{timeout:90000});
