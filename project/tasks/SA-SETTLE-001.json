@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex settlements",
-  "status": "active",
+  "status": "integrated",
   "branch": "feat/trade-settlements",
   "base": "c766544b5c9beb98ec3c66b50595e4c974b461f3",
   "updated": "2026-09-08",

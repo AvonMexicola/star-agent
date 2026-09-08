@@ -13,7 +13,10 @@ independent finite stock and real ship cargo trading. F2 / Dev → Ship & locati
 offers an approach above each pad. See the [player route](trade-settlements.md)
 and [construction and validation record](qa/trade-settlements/README.md).
 These authored exchanges are solo content; online player-base shops retain their
-separate authoritative implementation.
+separate authoritative implementation. Settlement runtime `03a561e` is locally
+integrated at `32966e3`; its 1,127-case unit suite and complete controller
+landing/trading/reboarding journey pass. Independent art and physical-device
+acceptance remain separate from this development checkpoint.
 
 The passenger elevator repair keeps its hangar vestibule at human scale, exposing
 the same pressure-door kit used in the lobby and a clear call-panel approach.
