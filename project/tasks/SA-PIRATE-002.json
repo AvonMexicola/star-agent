@@ -1,1 +1,37 @@
-{"id":"SA-PIRATE-002","title":"Secret Hush trading compound and reduced perimeter turret","milestone":"M0","owner":"@AvonMexicola","agent":"Codex pirate compound (parent garage integration)","status":"active","branch":"feat/pirate-trade-compound","base":"23ca6199d2b5f0ee5cbfa9f914612320e8d8e684","updated":"2026-09-08","areas":["assets","industry","combat"],"claims":["src/pirate-compound/","blender/build_pirate_tower.py","assets/pirate-tower/","public/models/pirate-tower.glb","tests/pirate-compound.test.js","scripts/pirate-compound.spec.js","scripts/pirate-compound.config.js"],"brief":"docs/briefs/pirate-compound.md","validation":"Implementation in progress; no gameplay pass claimed","evidence":"docs/qa/pirate-compound/README.md"}
+{
+  "id": "SA-PIRATE-002",
+  "title": "Secret Hush trading compound and reduced perimeter turret",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex pirate compound (parent garage integration)",
+  "status": "active",
+  "branch": "feat/pirate-trade-compound",
+  "base": "23ca6199d2b5f0ee5cbfa9f914612320e8d8e684",
+  "updated": "2026-09-08",
+  "areas": [
+    "assets",
+    "industry",
+    "combat"
+  ],
+  "claims": [
+    "src/pirate-compound/",
+    "blender/build_pirate_tower.py",
+    "assets/pirate-tower/",
+    "public/models/pirate-tower.glb",
+    "tests/pirate-compound.test.js",
+    "scripts/pirate-compound.spec.js",
+    "scripts/pirate-compound.config.js",
+    "assets/pirate-props/",
+    "public/models/pirate-props/",
+    "src/build/floodlights.js (optional per-fixture intensity/range)",
+    "src/trading/terminal-frames.js (status callback)",
+    "src/trading/local.js (additive market normalization)",
+    "src/settlements/catalog.js (separate secret lookup)",
+    "src/combat/space-combat.js (external solo hit adapter)",
+    "src/main.js (isolated adapter hooks)",
+    "src/dev-launch-options.js (explicit QA approach)"
+  ],
+  "brief": "docs/briefs/pirate-compound.md",
+  "validation": "Live tower burst/retreat PASS; keyboard/phone fixture correction and full controller journey pending",
+  "evidence": "docs/qa/pirate-compound/README.md"
+}

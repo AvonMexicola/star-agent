@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {Vector3,Quaternion} from 'three';
+import {Vector3,Quaternion,Scene} from 'three';
+import {createFloodlights} from '../src/build/floodlights.js';
 import {PiratePerimeter} from '../src/pirate-compound/perimeter.js';
 import {PIRATE_MARKET,PERIMETER as P} from '../src/pirate-compound/catalog.js';
 import {pirateLayout} from '../src/pirate-compound/layout.js';
@@ -15,6 +16,12 @@ import {terminalFrames} from '../src/trading/terminal-frames.js';
 import {getWorldBoxes} from '../src/build/collision.js';
 import {getPieceDefinition} from '../src/build/definitions.js';
 const step=(sim,seconds,context={})=>{for(let i=0;i<Math.ceil(seconds/.05);i++)sim.update(.05,{distance:120,altitude:30,ship:true,...context});};
+test('short tripod lighting stays capped and reused pooled slots restore mast defaults',()=>{
+ const scene=new Scene(),lights=createFloodlights(scene),zero=new Vector3(),fixture={id:'tripod',position:new Vector3(0,1.5,0),target:new Vector3(0,0,-11),intensity:90,range:28};
+ lights.update([fixture],zero,zero);const light=scene.children.find(o=>o.isSpotLight);assert.equal(light.intensity,90);assert.equal(light.distance,28);assert.equal(light.shadow.camera.far,28);
+ lights.update([{...fixture,intensity:9000,range:999}],zero,zero);assert.equal(light.intensity,1500);assert.equal(light.distance,75);
+ lights.update([{id:'mast',position:new Vector3(0,6,0),target:new Vector3(0,0,-18)}],zero,zero);assert.equal(light.intensity,1500);assert.equal(light.distance,75);assert.equal(light.shadow.camera.far,75);assert.equal(scene.children.filter(o=>o.isSpotLight).length,6);lights.dispose();
+});
 test('single shot and complete burst preserve every supported full-health hull',()=>{
  for(const ship of ['nomad','kestrel','atlas','gannet','stratum']){
   const state=integrity(ship);let hits=0;const p=new PiratePerimeter({onShot:({damage:amount})=>{hits++;damage(state,amount);}});
