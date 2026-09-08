@@ -6,10 +6,14 @@ import { scatterMinerals } from './mineral-fragments.js';
 const CENTER=new THREE.Vector3(...MIASMA_POSITION),UP=new THREE.Vector3(0,1,0);
 export const FLORA_SPECIES=Object.freeze(['alien-tree-bulb','alien-tree-spire','giant-mushroom-cluster','puffball-plant']);
 const HEIGHTS=[12,18,4,.9],RANGES=[140,140,105,48],CAPACITIES=[128,96,192,96];
+// Maximum absolute X/Z extents about each planting origin, measured from the
+// four unchanged runtime GLBs (not half the width of an off-centre model).
+const HALF_EXTENTS=[[5.261585235595703,4.80457067489624],[5.730332374572754,3.8245315551757812],[1.694920539855957,1.3473937511444092],[.5688942074775696,.568889319896698]];
+export function floraCanopyRadius(species,size){const slope=species<2?.18:.4,height=HEIGHTS[species];return (Math.hypot(...HALF_EXTENTS[species])+height*slope/Math.hypot(1,slope)+height*.015+.02)*size;}
 const hash=(x,y,s)=>{let h=Math.imul(x,374761393)^Math.imul(y,668265263)^s;h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))>>>0)/4294967295;};
 /** Canonical, stable colonies: large silhouettes among mineral-rich ground, with
  * smaller fungi and pods between them. Ship clearance includes the model canopy. */
-export function floraCandidates(up,shipLocal=null){
+export function floraCandidates(up,shipLocal=null,exclude=null){
   const candidates=[];
   scatterMinerals(up,(d,col,row,a,b)=>{
     const surface=miasmaSurface(...d.toArray()),colony=.5+.5*Math.sin(d.x*MIASMA_RADIUS/85+Math.sin(d.z*MIASMA_RADIUS/110))*Math.sin(d.y*MIASMA_RADIUS/97);
@@ -24,6 +28,7 @@ export function floraCandidates(up,shipLocal=null){
     const dx=(height(east,1)-height(east,-1))*.5,dy=(height(north,1)-height(north,-1))*.5;
     if(Math.hypot(dx,dy)>(species<2?.18:.4))return;
     const normal=d.clone().addScaledVector(east,-dx).addScaledVector(north,-dy).normalize();
+    if(exclude?.(point,floraCanopyRadius(species,size)))return;
     candidates.push({id:`${col}/${row}`,species,size,point:point.toArray(),normal:normal.toArray(),yaw:b*Math.PI*2,phase:a*100});
   },{spacing:11,range:148,density:.68,seed:9137});
   return candidates;
@@ -74,15 +79,15 @@ export class MiasmaFlora {
     }));
     this.loaded=true;this.last.set(Infinity,0,0);if(this.disposed)this.release();
   }
-  update(position,origin,altitude,elapsed,shipPosition){
+  update(position,origin,altitude,elapsed,shipPosition,scenery=null){
     this.time.value=elapsed;this.group.visible=altitude>=0&&altitude<145;
     if(altitude<2500&&!this.loading)this.load();
     if(!this.group.visible||!this.loaded)return;
-    const local=position.clone().sub(CENTER),up=local.clone().normalize(),clearing=shipPosition?.toArray().join('/')??null;
+    const local=position.clone().sub(CENTER),up=local.clone().normalize(),clearing=(shipPosition?.toArray().join('/')??'')+'|'+(scenery?.key??'');
     if(local.distanceToSquared(this.last)>36||clearing!==this.clearing){
       this.last.copy(local);this.clearing=clearing;this.anchor.copy(up).multiplyScalar(MIASMA_RADIUS+miasmaSurface(...up.toArray()).height);this.counts.fill(0);
       const q=new THREE.Quaternion(),yaw=new THREE.Quaternion(),scale=new THREE.Vector3(),matrix=new THREE.Matrix4();
-      for(const plant of floraCandidates(up,shipPosition?.clone().sub(CENTER))){
+      for(const plant of floraCandidates(up,shipPosition?.clone().sub(CENTER),scenery?.excludes)){
         const i=this.counts[plant.species];if(i>=CAPACITIES[plant.species])continue;
         q.setFromUnitVectors(UP,new THREE.Vector3(...plant.normal));q.multiply(yaw.setFromAxisAngle(UP,plant.yaw));scale.setScalar(plant.size);
         const point=new THREE.Vector3(...plant.point).addScaledVector(new THREE.Vector3(...plant.normal),-.06).sub(this.anchor);matrix.compose(point,q,scale);

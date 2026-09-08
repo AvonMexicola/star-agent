@@ -5,11 +5,11 @@ export const frames=p=>p.evaluate(async()=>{for(let i=0;i<4;i++)await new Promis
 export async function setup(page,site='pirate-hush'){
  await mkdir(out,{recursive:true});const errors=[],warnings=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
- await page.addInitScript(()=>{window.settlementPad={id:'Settlement standard Gamepad',mapping:'standard',index:0,connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>window.settlementDisconnected?[]:[window.settlementPad]});});
+ await page.addInitScript(()=>{window.settlementPad={id:'Settlement standard Gamepad',mapping:'standard',index:0,connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>window.settlementDisconnected?[]:[window.settlementPad]});});
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto(`/?dev=1&ship=nomad&start=${site}&intro=0&debug&seed=7291&epoch=1788876000000`);
  await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&!window.starAgent.state.transiting&&window.starAgent.state.controller.armed,undefined,{timeout:90000});
- await page.waitForFunction(()=>window.starAgent.state.pirateCompound.ready&&window.starAgent.state.pirateCompound.rendered>0);
+ await page.waitForFunction(site=>{const s=window.starAgent.state;return site.startsWith('pirate-')?s.pirateCompound.ready&&s.pirateCompound.rendered>0:s.settlements.ready&&s.settlements.rendered>0;},site);
  const button=async(i,pressed)=>{await page.evaluate(({i,pressed})=>window.settlementPad.buttons[i]={pressed,value:+pressed},{i,pressed});await frames(page);};
  const tap=async i=>{await button(i,true);await button(i,false);};
  const choose=async key=>{for(let i=0;i<95;i++){if(await page.evaluate(k=>document.activeElement?.dataset.controllerKey===k,key)){await tap(0);return;}await tap(13);}throw Error(`Missing controller action ${key}`);};
