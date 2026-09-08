@@ -7,11 +7,13 @@ import {createRoverPhysics} from '../src/rover-physics.js';
 import {sampleRoverSupport} from '../src/rover-support.js';
 import {bodyAt, bodyOffset} from '../src/celestial.js';
 import {garageRetrievalStatus} from '../src/settlements/garage-policy.js';
+import {validFoundationDepth} from '../src/build/foundations.js';
 import {terminalPieceFrame} from '../src/trading/terminal-frames.js';
 const UP = new Vector3(0, 1, 0);
 const sites = createSettlementLayouts();
 
 for (const site of sites) test(`${site.body}: four wheels leave the garage over actual kit support and reach canonical terrain`, () => {
+  assert.ok(site.claim.pieces.every(validFoundationDepth));
   const q = new Quaternion(...site.claim.quaternion), origin = new Vector3(...site.claim.origin), construction = createRoverBuildSupport({claims: () => [site.claim]});
   const rover = createRoverPhysics({position: new Vector3(...site.garage.position).applyQuaternion(q).add(origin), quaternion: q.clone().multiply(new Quaternion().setFromAxisAngle(UP, site.garage.rotation)),
     sampleSupport: point => sampleRoverSupport(point, {construction: construction.sample}), referenceUp: p => bodyOffset(p, bodyAt(p)).normalize(), constrain: ({previous, proposed}) => construction.clearPose(previous, proposed)});

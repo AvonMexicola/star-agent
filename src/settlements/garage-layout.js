@@ -1,4 +1,5 @@
 import {Vector3, Quaternion} from 'three';
+import {MAX_FOUNDATION_DEPTH} from '../build/foundations.js';
 import {bodyAt, bodyOffset, bodySurfacePoint} from '../celestial.js';
 
 /** Existing kit parts; all ramp supports sample the same canonical world floor. */
@@ -18,7 +19,11 @@ export function addGarageAccess(put, site, z, flatRows = 0) {
     const bottom = top - (descending ? .6 : 0);
     for (const lane of [-2, 2]) {
       const floor = Math.min(...[-2, 0, 2].flatMap(dx => [-2, 0, 2].map(dz => height(x + dx, z + lane + dz))));
-      put('foundation', x, bottom, z + lane, 0, {supportDepth: Math.max(.6, Math.min(24, Math.ceil((bottom - floor + .15) * 10) / 10))});
+      let depth = Math.max(.6, Math.ceil((bottom - floor + .15) * 10) / 10), level = bottom;
+      // Reuse the kit's eight-metre limit even on another surveyed seed.
+      // Deeper support is an actual stack, with its bottom reaching terrain.
+      while (depth > MAX_FOUNDATION_DEPTH) {put('foundation', x, level, z + lane, 0, {supportDepth: MAX_FOUNDATION_DEPTH}); level -= MAX_FOUNDATION_DEPTH; depth -= MAX_FOUNDATION_DEPTH;}
+      put('foundation', x, level, z + lane, 0, {supportDepth: Math.max(.6, depth)});
       if (descending) put('foundation-ramp', x, top, z + lane, Math.PI / 2);
     }
     if (descending) rampCount++;
