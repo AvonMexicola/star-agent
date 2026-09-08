@@ -36,3 +36,21 @@ renderer. Player saves and claim ownership are separate from authored content.
 
 Browser/controller/visual results will be recorded below after the queued job.
 Independent visual review and physical-controller acceptance remain pending.
+
+
+Additional regression evidence: 55 focused settlement/build/navigation/market cases
+pass after public-site protection and the seed fallback. All four sites resolve on
+seeds 0,1,42,12345,4294967295 and7291. Fifteen shared cargo/market regressions pass;
+the separate disposable PostgreSQL persistence case passes after generating this
+worktree's Prisma client with npm run prisma:generate. Its first run aborted Node
+26.7.0 inside InternalCallbackScope::Close at callback.cc:185 while reaching a
+local socket test in the sandbox (SIGABRT, host PID694819, 12:55:18 CEST).
+The approved run avoided that abort but found the missing generated client.
+Original logs and core metadata were retained, no app fix was made for either
+harness failure, and only the failed fixture's own PostgreSQL process was stopped.
+A missing generated client caused that fixture to leave its child server running;
+the repaired rerun exited0 and cleaned up its own database normally.
+
+Before browser validation, checked local station repair76aa45e was merged into
+this branch at586d619. No settlement runtime conflicts occurred. Existing public
+station bytes are the checked owner revision, not another worktree's pending edits.

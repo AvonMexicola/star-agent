@@ -25,6 +25,9 @@ async function aim(page,target,frame='ship'){
  try{await page.waitForFunction(()=>window.settlementAimDone,undefined,{timeout:20000});}finally{await page.evaluate(()=>{clearInterval(window.settlementAimTimer);window.settlementPad.axes=[0,0,0,0];});}await frames(page);
 }
 async function capture(page,name){await page.screenshot({path:`${out}/${name}.png`});await writeFile(`${out}/${name}.json`,JSON.stringify(await page.evaluate(()=>window.starAgent.state),null,2));}
+async function graphics(page){return page.evaluate(()=>{const canvas=document.querySelector('canvas'),gl=canvas?.getContext('webgl2')||canvas?.getContext('webgl'),debug=gl?.getExtension('WEBGL_debug_renderer_info');return {viewport:{width:innerWidth,height:innerHeight},renderer:debug?gl.getParameter(debug.UNMASKED_RENDERER_WEBGL):gl?.getParameter(gl.RENDERER),vendor:debug?gl.getParameter(debug.UNMASKED_VENDOR_WEBGL):gl?.getParameter(gl.VENDOR)};});}
+
+test.afterEach(async({page},info)=>{if(info.status!==info.expectedStatus){try{await capture(page,'failure-'+info.retry);}catch{}}});
 
 test('controller selects settlement, lands, walks to exchange, buys/sells cargo and returns to flight',async({page,browser})=>{
  const {tap,button,choose,errors,warnings}=await setup(page);
@@ -45,11 +48,12 @@ test('controller selects settlement, lands, walks to exchange, buys/sells cargo 
  await choose('view-cargo');await capture(page,'cargo-desktop');
  for(const size of [{width:390,height:844},{width:1440,height:900}]){await page.setViewportSize(size);await frames(page);await capture(page,`cargo-${size.width}`);expect(await page.locator('#trading-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);}
  const crate=after.ships.find(s=>s.hull==='nomad').crates[0];await choose(`sell-${crate.id}`);await expect(page.locator('.trade-feedback')).toContainText('Sold 1 SBU');
+ const sold=await page.evaluate(()=>window.starAgent.state.trading);expect(sold.markets['settlement-selene'].stock.ice).toBe(before.stock);expect(sold.account.credits).toBeGreaterThan(after.account.credits);expect(sold.ships.find(s=>s.hull==='nomad').crates).toHaveLength(0);
  await button(7,true);await tap(1);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
  // Held translation cannot replay after focus or disconnect transitions.
  for(const kind of ['focus','disconnect']){await button(7,true);await page.evaluate(kind=>kind==='focus'?window.dispatchEvent(new Event('blur')):window.settlementDisconnected=true,kind);await frames(page);await page.evaluate(kind=>kind==='focus'?window.dispatchEvent(new Event('focus')):window.settlementDisconnected=false,kind);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);}
- await walk(page,[-2,0,-12]);await walk(page,[9,0,-12]);await walk(page,[9,0,30]);await walk(page,[0,1.75,8],'ship');await aim(page,[0,2.75,0]);await walk(page,[0,2.75,3],'ship');await walk(page,[0,2.75,0],'ship');await aim(page,[0,2.75,-3]);await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='flight');
- await capture(page,'returned-to-flight');expect(errors).toEqual([]);await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),errors,warnings,physicalController:false,start:'Explicit development approach at 65 m; all subsequent navigation input from injected standard Gamepad.',state:await page.evaluate(()=>window.starAgent.state)},null,2));
+ await walk(page,[-2,0,-12]);await walk(page,[9,0,-12]);await walk(page,[9,0,30]);await walk(page,[0,1.75,8],'ship');await aim(page,[0,2.75,0]);await walk(page,[0,2.75,3],'ship');await walk(page,[0,2.75,-1.65],'ship');await aim(page,[0,2.75,-3]);await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='flight');
+ await capture(page,'returned-to-flight');expect(errors).toEqual([]);await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,physicalController:false,start:'Explicit development approach at 65 m; all subsequent navigation input from injected standard Gamepad.',state:await page.evaluate(()=>window.starAgent.state)},null,2));
 });
 
 test('all four settlement layouts render in the game and appear on the phone map',async({page,browser})=>{
@@ -59,6 +63,6 @@ test('all four settlement layouts render in the game and appear on the phone map
   // Art-only viewpoint fixture; separate from the controller journey above.
   await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body===n.body.id),q=n.orientation.clone().fromArray(s.quaternion),origin=n.position.clone().fromArray(s.origin),up=n.normal.clone();n.position.copy(n.position.clone().set(83,65,92).applyQuaternion(q).add(origin));n.orientToward(n.position.clone().set(0,5,4).applyQuaternion(q).add(origin),up);n.velocity.set(0,0,0);});await frames(page);await page.waitForTimeout(2500);await capture(page,`${body}-overview`);
  }
- await page.keyboard.press('m');await page.locator('[data-travel-target="pyre"]').click();await page.locator('[data-travel-target="miasma"]').click();await page.setViewportSize({width:390,height:844});await frames(page);await page.locator('[data-map-view="locations"]').click();await capture(page,'map-phone');
- expect(errors).toEqual([]);await writeFile(`${out}/visual-tour.json`,JSON.stringify({browser:browser.version(),errors,warnings,viewpointFixture:true},null,2));
+ await page.keyboard.press('m');await page.locator('[data-travel-target="pyre"]').click();await page.locator('[data-travel-target="miasma"]').click();await page.setViewportSize({width:390,height:844});await frames(page);await page.locator('[data-map-view="locations"]').click();await page.locator('#nav-page-next').click();await expect(page.locator('[data-nav-target="settlement-miasma"]')).toBeVisible();await capture(page,'map-phone');
+ expect(errors).toEqual([]);await writeFile(`${out}/visual-tour.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,viewpointFixture:true},null,2));
 });
