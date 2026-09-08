@@ -727,3 +727,21 @@ acceptance. This is a development feature; no public deployment is included.
 Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
 [the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
 The existing API remains healthy; no service restart or save migration was needed.
+
+
+## Compound vehicle garages
+
+Four trade settlements now have a drive-through garage candidate. Land, walk to
+its **Garage** console and press **F / controller X**, then choose **Deploy Burrow**.
+Board at the port-side door and drive down the outer ramp. **Retrieve Burrow**
+returns the same parked solo vehicle with its ore and cutter charge retained.
+Occupied, moving, carried or obstructed vehicles cannot be retrieved.
+
+Use **F2 → Stillwater Exchange** for the tested Selene route. The complete injected
+controller journey, keyboard/native390 retrieval and all four world views pass
+on `9b6a7de` (runtime `2e686db`), including checked freight `f294a98`.
+The [garage record](qa/compound-garages/README.md) retains original failures,
+performance and night-view limitations. The [player guide](compound-garages.md)
+explains session-only vehicle pose/charge. Source is locally integrated at `e098947`; the [local receipt](qa/compound-garages/local-integration.json)
+records pending served-preview verification. This is not a public release or final
+art/hardware/performance acceptance.

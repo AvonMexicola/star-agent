@@ -1,0 +1,12 @@
+{
+  "startedAt": "2026-09-08T20:29:46.006201+00:00",
+  "previous": "65f17212b91e4e8aa792431f3a2936582adc6971",
+  "candidate": "e098947a5a84a9113b3c4de455ab2b489324102f",
+  "journalBytes": 519025,
+  "journalSHA256": "f924661f9bba1b3fed7946c8afc0be26828fe8351a5a71f6700f4aaeb987309f",
+  "publicDeployment": false,
+  "serviceRestart": false,
+  "verifiedAt": "2026-09-08T20:31:57.698688+00:00",
+  "journalPreserved": true,
+  "httpVerification": "Pending: normal shell socket creation EPERM; no escalation requested. Next authorized browser QA will read local source/API."
+}
