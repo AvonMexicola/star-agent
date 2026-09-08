@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex terrain foundations",
-  "status": "active",
+  "status": "integrated",
   "branch": "feat/terrain-foundations",
   "base": "32966e3a1ec1830936d997a6b57b95c4e83a3071",
   "updated": "2026-09-08",

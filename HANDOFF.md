@@ -3906,3 +3906,15 @@ local integration over currentdev; preserve append-only HANDOFF and other featur
 owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
 and client source refresh before cloud-save testing. No database migration or
 public deployment. Floodlight owner may layer onto committed build hooks.
+
+
+SA-BUILD-002 LOCAL DELIVERY 2026-09-08: runtime4396029 integrated with checked
+settlement/combat development at8b5ecd4. The union passes149unitfiles, build and
+repository checks; foundation runtime is unchanged from the two-case actual-game
+browser pass. Shared5178/API8087 gracefully refreshed through the existing service,
+all six HTTP checks200, exact120720B GLB hash verified. Exact56247B unrelated
+HANDOFF suffix preserved; backup/receipt /tmp/star-agent-foundation-integration.
+Task/brief/local guide/QA now record integrated status. No schema/account mutation,
+other preview operation or public deployment. Controller injections, keyboard and
+native touch tested; physical-device and independent art acceptance remain pending.
+Private5642/API8642 and GPU released; floodlight/rover may consume checked hooks.
