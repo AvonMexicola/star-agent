@@ -108,7 +108,39 @@ world reloads. Original logs/screens/state remain in /tmp/star-agent-settlements
 
 ## Delivery boundary
 
+Runtime 03a561e is locally integrated at **32966e3**, over checked development
+2022a6b, including the base-commerce final delivery and station QA1435008.
+The stale 2607fe7 guard refused to write after the other owner's documentation
+advanced; the corrected merge preserved all subsequent work. The shared
+491,225-byte handoff and its exact 56,247-byte append-only suffix were backed up
+and restored. HTTP5178 serves the four catalog entries, main gameplay wiring and
+launcher approaches; proxied API health is 200. No service or SQL restart.
+The receipt is retained in /tmp/star-agent-settlements-integration.
+
 Player-base commerce and station repair are preserved at their checked owner
 revisions. The settlement feature adds no server schema or protocol change of
 its own. Independent review, physical gamepad testing and shared authoritative
 settlements remain open. Public release is not implied by local integration.
+
+Attempt03's phone closure was delayed in approval from 11:35 until 11:47:42 UTC,
+after the next reserved GPU job began. Its page loaded and captured the lit
+Miasma doorway, then lost WebGL context before opening the map. An immediate
+request to interrupt only its Playwright process executed after it had already
+failed naturally; no successful termination or phone pass is claimed. This is
+distinct from Crashpad startup failure, and the brief overlap does not establish
+a causal GPU diagnosis. A fresh executable-process gate now runs inside the
+approved closure command, immediately before launch, to handle approval delays.
+Original03 image, state and log are retained. No application change masks it.
+
+Final phone closure **passes: 1 case, 51.4 s**, runtime03a561e, same Chromium/AMD
+backend, 390 × 844, zero page/console errors or warnings. The normal map selects
+Miasma → Locations → second page → Verdigris Prospect, with its trade role, large
+pad label and follow-bearing action visible and no horizontal overflow.
+[Phone map](map-phone.png) and [receipt](phone-map-receipt.json) are committed.
+The [nearby Miasma entrance](miasma-doorway.png) shows actual doorway and interior
+lights; it is a builder art viewpoint, not another physical controller journey.
+The preceding guarded04 case retained that image but paused navigation before
+its keyboard shortcut, so the map correctly stayed shut. Moving the art-only
+viewpoint after map selection corrected the test; guarded05 passes. Logs and
+states remain under /tmp/star-agent-settlements-04 / -05. No further GPU work
+is queued by this lane, and the private5622 preview remains available for review.
