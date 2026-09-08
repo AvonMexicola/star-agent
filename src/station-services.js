@@ -85,8 +85,8 @@ export function createStationServices(nav,station,inventory,{loadout=null,online
     if(interaction.kind==='cargo')openCargo();
     else if(interaction.kind==='shop')shopUI.open(interaction.shopId);
     else if(interaction.kind==='door'){
-      const p=station.toLocal(nav.position,new THREE.Vector3());
-      if(Math.abs(p.z-station.lift.z)<.5){nav.notify('Step clear of the elevator doorway.');return true;}
+      const at=elevatorLocation(station.frame,nav.position,nav.layout.eyeHeight);
+      if(station.lift.open&&at?.threshold){nav.notify('Step clear of the elevator doorway.');return true;}
       station.lift.open=!station.lift.open;
     }else if(interaction.kind==='travel')openDestinations();
     else nav.notify(interaction.label);
