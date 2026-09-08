@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex HUD display",
-  "status": "active",
+  "status": "review",
   "branch": "feat/hud-display-modes",
   "base": "01a28dfa2d63975d1829445e0dd457f757b70a2b",
   "updated": "2026-09-08",

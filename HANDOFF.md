@@ -1,5 +1,21 @@
 # Star Agent — agent handoff (Claude ⇄ Astra)
 
+## SA-UI-003 — HUD modes checked, local integration queued — 2026-09-08
+
+Runtime `ad32435` / browser harness `9a3910d`, isolated `/tmp/star-agent-hud`,
+`feat/hud-display-modes` from01a28df; [PR94](https://github.com/AvonMexicola/star-agent/pull/94)
+stacked on foundationPR93. Tab cycles Everything → Markers and reticle → No HUD;
+Settings exposes the same action to controller/touch and two-finger touch restores
+Everything. Native menus retain Tab focus; hostile selection remains Next target /
+Menu → Ship. No asset/dependency/server/protocol change. Full1,140units/build/repo
+pass; final production keyboard/controller/native-touch3/3 pass2.2min with zero
+app errors/warnings. Chromium151/AMD860M/ANGLE GL at1440×900 and390×844. Failed
+routing guard and fixture timing attempts retained; see [QA](docs/qa/hud-display.md).
+GPU and private5666/API8666 are released. Next: merge this checked change after
+settlement's shared source claim releases, preserve all unrelated journal bytes
+and newer module hooks, verify5178 serves it, then record actual integration SHA.
+No physical-device testing, independent acceptance or public deployment claimed.
+
 ## Passenger elevator repair — 2026-09-08
 
 `fix/station-elevator-access`, based on local `dev/all-features` at `c766544`,
