@@ -756,3 +756,25 @@ performance and night-view limitations. The [player guide](compound-garages.md)
 explains session-only vehicle pose/charge. Source is locally integrated at `e098947`; the [local receipt](qa/compound-garages/local-integration.json)
 records verified served garage source and healthy APIs on ports 5178 and 8087. This is not a public release or final
 art/hardware/performance acceptance.
+
+## Hush Exchange candidate
+
+The secret Selene compound adds a protected outer landing pad, a ground route to
+a tower isolator, and an existing cargo exchange stocked with salvage supplies.
+The station turret has a warning, visible charge and reduced three-shot bursts.
+Land on the outer apron and approach on foot; use **F / controller X** at the
+tower isolator, then the exchange console. On a phone, use the visible interaction
+button and return through **Resume**. Occupied ground rovers do not count as ships.
+
+The development launcher includes **Hush Exchange · secret Selene compound**. Its explicit approach
+link is `/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291` in a
+`VITE_DEV_TOOLS=1` build. Normal discovery begins with a weak lunar relay near the
+site. The market uses existing solo cargo/save authority; ground pirate NPC combat
+belongs to a separate feature. See the [production record](qa/pirate-compound/README.md)
+for the exact checked state, assets, browser evidence and remaining acceptance.
+All three final browser cases pass, including the physical injected-controller
+journey, native phone commerce and repaired floodlight HDR check. Checked source
+`c7b09ab` is integrated locally; [the served receipt](qa/pirate-compound/local-integration.json)
+verifies the combined hooks, all five new GLBs and healthy APIs. Refresh the
+[Hush approach](http://127.0.0.1:5178/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291)
+to try it. No public deployment is included.

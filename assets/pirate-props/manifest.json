@@ -1,0 +1,536 @@
+{
+  "provenance": "User supplied Meshy GLBs on2026-09-08; original files retained with hashes. No new paid generation or invented provenance. Game uses independent lossless WebP texture derivatives. Source scale/semantic identity must be inspected before placement.",
+  "builder": "python3 assets/pirate-props/prepare.py",
+  "assets": [
+    {
+      "id": "generator",
+      "source": "assets/pirate-props/source/Meshy_AI__0908191353_texture.glb",
+      "sourceSha256": "cb5507328931f1f78d35f8c8fae2df3d3e58d0c353aa36d73c3dd326ef7886ec",
+      "sourceBytes": 7386512,
+      "runtime": "public/models/pirate-props/generator.glb",
+      "sha256": "46cfbc349e582c01c7b0e91c6f77fd8d1314593fea7d1f1ab0a248de405f61d2",
+      "bytes": 879952,
+      "triangles": 912,
+      "draws": 1,
+      "textures": [
+        {
+          "index": 0,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 296522,
+          "sha256": "58e78f8b107cfa6e07fb2b26658b97a6902addfa61a27772b3227c4989e04f4d",
+          "colorspace": "sRGB basecolor"
+        },
+        {
+          "index": 1,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 285144,
+          "sha256": "41e1fd72dbe343f692701ddda46d7f029a1c895b11f9b756b1285bc8b7773272",
+          "colorspace": "linear data"
+        },
+        {
+          "index": 2,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 232290,
+          "sha256": "b60861c7abbce392a73b27fa5277189ea1cb8e37a0ba6490602790a352451990",
+          "colorspace": "linear data"
+        }
+      ],
+      "rawMeshBounds": {
+        "min": [
+          -0.5,
+          -0.3828119933605194,
+          -0.34375
+        ],
+        "max": [
+          0.5,
+          0.38085898756980896,
+          0.34375
+        ]
+      },
+      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte.",
+      "normalRepairs": []
+    },
+    {
+      "id": "floodlight",
+      "source": "assets/pirate-props/source/Meshy_AI_Industrial_Tripod_Wor_0908191206_texture.glb",
+      "sourceSha256": "fae06d6a55d89255924802b5102c37bb6566724b38793bf53a89fdb6546232e2",
+      "sourceBytes": 7495008,
+      "runtime": "public/models/pirate-props/floodlight.glb",
+      "sha256": "879ca7654e510936b909d246c91302ecedc8edd44e2244f3de5ff5c6dd81dace",
+      "bytes": 920348,
+      "triangles": 982,
+      "draws": 1,
+      "textures": [
+        {
+          "index": 0,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 315928,
+          "sha256": "b99ddcf610b29923c2d315985f6427c78e832a379f4521a40e05efd5f09d3a4a",
+          "colorspace": "sRGB basecolor"
+        },
+        {
+          "index": 1,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 289202,
+          "sha256": "b1156827906a47737d970739f551c66b3bd6f1ee9d57b2ff4cd9467de769c28c",
+          "colorspace": "linear data"
+        },
+        {
+          "index": 2,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 252040,
+          "sha256": "3437ff30c07d7b81f95aa5a057e8641f795f453ecf8c7d633f8a1d41044e5991",
+          "colorspace": "linear data"
+        }
+      ],
+      "rawMeshBounds": {
+        "min": [
+          -0.5,
+          -0.5006890296936035,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "geometryPolicy": "All original non-image bytes preserved except the explicitly listed zero-length NORMAL entries, replaced with unit normals from their isolated nondegenerate face winding. Positions, indices, UVs and all other normals remain byte-identical.",
+      "normalRepairs": [
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 11,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.6490134596824646,
+            0.04969903454184532,
+            0.7591518759727478
+          ],
+          "face": [
+            11,
+            12,
+            13
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 12,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.6490134596824646,
+            0.04969903454184532,
+            0.7591518759727478
+          ],
+          "face": [
+            11,
+            12,
+            13
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 13,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.6490134596824646,
+            0.04969903454184532,
+            0.7591518759727478
+          ],
+          "face": [
+            11,
+            12,
+            13
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1322,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.6490134596824646,
+            -0.04969903454184532,
+            -0.7591518759727478
+          ],
+          "face": [
+            1322,
+            1323,
+            1324
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1323,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.6490134596824646,
+            -0.04969903454184532,
+            -0.7591518759727478
+          ],
+          "face": [
+            1322,
+            1323,
+            1324
+          ],
+          "faceArea2": 0.0045032029068115785
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1324,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.6490134596824646,
+            -0.04969903454184532,
+            -0.7591518759727478
+          ],
+          "face": [
+            1322,
+            1323,
+            1324
+          ],
+          "faceArea2": 0.0045032029068115785
+        }
+      ]
+    },
+    {
+      "id": "workbench",
+      "source": "assets/pirate-props/source/Meshy_AI__0908191153_texture.glb",
+      "sourceSha256": "b881fe5f0bcaf2509a5ca11994290244fb7e92035ff9a4b23e3d544a09343a6c",
+      "sourceBytes": 6583564,
+      "runtime": "public/models/pirate-props/workbench.glb",
+      "sha256": "2cb5ff5220c968f71fd3eed28645b6b9890369ed6c4e800d1c4f0e1b67b86507",
+      "bytes": 765704,
+      "triangles": 953,
+      "draws": 1,
+      "textures": [
+        {
+          "index": 0,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 250408,
+          "sha256": "4bfd70bc21fa6db4ba2d69e45d638dc7eb8fb85bc199eee2259a154d6c84e664",
+          "colorspace": "sRGB basecolor"
+        },
+        {
+          "index": 1,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 267068,
+          "sha256": "6b992a1403b277fc5cd732ba8dee65338c931352feb1f76d00a12174539445c1",
+          "colorspace": "linear data"
+        },
+        {
+          "index": 2,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 183586,
+          "sha256": "ab1a133c3742e73ac08205cd3ecb0471ffa6507468cf5ccd8b490ab627aadcc3",
+          "colorspace": "linear data"
+        }
+      ],
+      "rawMeshBounds": {
+        "min": [
+          -0.5,
+          -0.28710898756980896,
+          -0.3046880066394806
+        ],
+        "max": [
+          0.5,
+          0.2851560115814209,
+          0.30273398756980896
+        ]
+      },
+      "geometryPolicy": "All original non-image bytes preserved except the explicitly listed zero-length NORMAL entries, replaced with unit normals from their isolated nondegenerate face winding. Positions, indices, UVs and all other normals remain byte-identical.",
+      "normalRepairs": [
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 317,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.004321177490055561,
+            0.9999846816062927,
+            0.0034610875882208347
+          ],
+          "face": [
+            317,
+            318,
+            319
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 318,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.004321177490055561,
+            0.9999846816062927,
+            0.0034610875882208347
+          ],
+          "face": [
+            317,
+            318,
+            319
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 319,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            0.004321177490055561,
+            0.9999846816062927,
+            0.0034610875882208347
+          ],
+          "face": [
+            317,
+            318,
+            319
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1297,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.004321177490055561,
+            -0.9999846816062927,
+            -0.0034610875882208347
+          ],
+          "face": [
+            1297,
+            1298,
+            1299
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1298,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.004321177490055561,
+            -0.9999846816062927,
+            -0.0034610875882208347
+          ],
+          "face": [
+            1297,
+            1298,
+            1299
+          ],
+          "faceArea2": 0.1288798632933821
+        },
+        {
+          "accessor": 2,
+          "bufferView": 3,
+          "vertex": 1299,
+          "source": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "value": [
+            -0.004321177490055561,
+            -0.9999846816062927,
+            -0.0034610875882208347
+          ],
+          "face": [
+            1297,
+            1298,
+            1299
+          ],
+          "faceArea2": 0.1288798632933821
+        }
+      ]
+    },
+    {
+      "id": "crate",
+      "source": "assets/pirate-props/source/Meshy_AI_Crimson_Skull_Crate_0908191136_texture.glb",
+      "sourceSha256": "b06222a938d1cf302fac0a3f0bb29685c9130bfc74b8dc5b58ba178c1fe083c4",
+      "sourceBytes": 8316244,
+      "runtime": "public/models/pirate-props/crate.glb",
+      "sha256": "091440b10e597d444c7b4cf40be2b86970dea82aa4f85d66f9c096b102bb7a22",
+      "bytes": 976016,
+      "triangles": 1082,
+      "draws": 1,
+      "textures": [
+        {
+          "index": 0,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 343334,
+          "sha256": "cfa893dfb819c72ff1e2dc33462cac251b2a03273f0c4fb116dc0510d647cc0b",
+          "colorspace": "sRGB basecolor"
+        },
+        {
+          "index": 1,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 293642,
+          "sha256": "1c071f733cdac8a49034851013d535dd1fc2cbd293012a4c429b67a2c918a96d",
+          "colorspace": "linear data"
+        },
+        {
+          "index": 2,
+          "originalSize": [
+            2048,
+            2048
+          ],
+          "size": [
+            512,
+            512
+          ],
+          "bytes": 271902,
+          "sha256": "4428800bb96a6e722928f119b23949dc95ef21dbbabba81074f68d341b2abf92",
+          "colorspace": "linear data"
+        }
+      ],
+      "rawMeshBounds": {
+        "min": [
+          -0.5,
+          -0.27148398756980896,
+          -0.33789101243019104
+        ],
+        "max": [
+          0.5,
+          0.2695310115814209,
+          0.33398398756980896
+        ]
+      },
+      "geometryPolicy": "All original non-image buffer payloads, mesh indices, vertices, UVs and normals preserved byte-for-byte.",
+      "normalRepairs": []
+    }
+  ]
+}
