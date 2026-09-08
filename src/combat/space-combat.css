@@ -8,3 +8,5 @@ body:not(.player-active) #ship-weapons{display:none}
 .patrol-reports:empty{display:none}.combat-objective{white-space:pre-line}
 dialog#patrol-console.gameplay-screen .gameplay-content{overflow-y:auto;align-content:safe center}
 @media(max-width:749px){dialog#patrol-console.gameplay-screen .gameplay-content{justify-content:safe center}#patrol-console.gameplay-screen .patrol-difficulties{margin:4px 0}.patrol-difficulties button{flex:1;min-width:72px;padding:8px}#patrol-console.gameplay-screen .patrol-reports{font-size:11px}}
+
+#patrol-console button:disabled{opacity:.4;cursor:default}

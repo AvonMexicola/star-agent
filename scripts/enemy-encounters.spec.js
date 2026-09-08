@@ -76,19 +76,33 @@ for(const [start,region,tier] of routes)test(`${region} ${tier}: controller disp
  await tap(9);await choose('patrol-debrief');
  const report=await page.evaluate(()=>window.starAgent.state.combat.reports[0]);expect(report.contractId).toBe(`${region}-${tier}`);expect(report.kills).toBe(tier==='hard'?5:tier==='easy'?1:2);
  await expect(page.locator('.patrol-reports')).toContainText(`${report.kills} kills`);
- await page.screenshot({path:`${evidence}/report.png`});await tap(1);await armed();
+ await page.screenshot({path:`${evidence}/report.png`});
+ await page.setViewportSize({width:390,height:844});await frames();
+ const scroll=page.locator('#patrol-console .gameplay-content');expect(await scroll.evaluate(el=>el.scrollHeight>el.clientHeight)).toBe(true);
+ await page.evaluate(()=>{window.encounterPad.axes[3]=-1;});await page.waitForFunction(()=>document.querySelector('#patrol-console .gameplay-content').scrollTop<1);
+ await page.evaluate(()=>{window.encounterPad.axes[3]=1;});await page.waitForFunction(()=>{const el=document.querySelector('#patrol-console .gameplay-content');return el.scrollTop>=el.scrollHeight-el.clientHeight-2;});
+ await page.evaluate(()=>{window.encounterPad.axes[3]=0;});await frames();await page.screenshot({path:`${evidence}/phone-report.png`});
+ await tap(1);await armed();await page.setViewportSize({width:1440,height:900});
  // No held RT is replayed after a mission menu, focus loss or controller replacement.
  await tap(9);await button(7,true);await tap(1);await frames();
  let shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await frames();expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);
  await button(7,false);await armed();
- for(const kind of ['focus','disconnect','replacement','unsupported']){
-  await button(7,true);let other;
-  if(kind==='focus'){other=await page.context().newPage();await other.bringToFront();await page.waitForTimeout(200);}
-  else{await page.evaluate(kind=>{const p=window.encounterPad;if(kind==='disconnect')p.connected=false;if(kind==='replacement')p.id+=' replacement';if(kind==='unsupported')p.mapping='';},kind);await frames();}
+ const blank=await page.context().newPage(),gameCDP=await page.context().newCDPSession(page),blankCDP=await page.context().newCDPSession(blank);
+ try{
+  await blank.goto('about:blank');await gameCDP.send('Emulation.setFocusEmulationEnabled',{enabled:false});await blankCDP.send('Emulation.setFocusEmulationEnabled',{enabled:false});
+  await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&window.starAgent.state.focused);await armed();
+  const beforeFocus=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await button(7,true);await page.waitForFunction(before=>window.starAgent.state.effects.weaponShots>before,beforeFocus);
+  await blank.bringToFront();await page.waitForFunction(()=>!window.starAgent.state.focused,null,{polling:100});
+  expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);
+  await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&window.starAgent.state.focused);await frames();await frames();
+  expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots),'held RT after native tab focus').toBe(shots);
+  expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(7,false);await armed();
+ }finally{await gameCDP.send('Emulation.setFocusEmulationEnabled',{enabled:true});await blankCDP.send('Emulation.setFocusEmulationEnabled',{enabled:true});await gameCDP.detach();await blankCDP.detach();await blank.close();await page.bringToFront();}
+ for(const kind of ['disconnect','replacement','unsupported']){
+  await button(7,true);await page.evaluate(kind=>{const p=window.encounterPad;if(kind==='disconnect')p.connected=false;if(kind==='replacement')p.id+=' replacement';if(kind==='unsupported')p.mapping='';},kind);await frames();
   shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);
-  if(other)await page.bringToFront();
   await page.evaluate(()=>{window.encounterPad.connected=true;window.encounterPad.mapping='standard';});await frames();await frames();
-  expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);if(other)await other.close();await button(7,false);await armed();
+  expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots),`held RT after ${kind}`).toBe(shots);await button(7,false);await armed();
  }
  const backend=await page.evaluate(()=>{const gl=document.querySelector('#viewport').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):'unavailable';});
  await writeFile(`${evidence}/receipt.json`,JSON.stringify({browser:browser.version(),backend,viewport:[1440,900],report,errors,warnings,physicalController:false},null,2));expect(errors).toEqual([]);

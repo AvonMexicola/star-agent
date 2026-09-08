@@ -85,6 +85,7 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
   };
   function open(){
     if(nav.openingActive||document.querySelector('dialog[open]'))return;
+    const content=dialog.querySelector('.gameplay-content');if(content)content.dataset.controllerScroll='';
     if(!locked())selectedRegion=encounterRegion(nav.position);
     nav.keys.clear();nav.gamepad.suspend();nav.enabled=false;if(document.pointerLockElement)document.exitPointerLock();renderDialog();dialog.showModal();
   }
