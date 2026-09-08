@@ -17,7 +17,9 @@ for(const [start,region,tier] of routes)test(`${region} ${tier}: controller disp
   const tab=key.startsWith('patrol-')?'contracts':key.startsWith('weapon-')||key==='combat-target'?'ship':null;
   if(tab&&await page.locator('dialog[open].gameplay-screen').count())for(let i=0;i<8&&await page.locator('dialog[open]').getAttribute('data-gameplay-tab')!==tab;i++)await tap(5);
   for(let i=0;i<80;i++){
-   if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key)){await tap(0);return;}
+   const focus=await page.evaluate(key=>{const active=document.activeElement,target=[...document.querySelectorAll('dialog[open] [data-controller-key]')].find(el=>el.dataset.controllerKey===key);return {key:active?.dataset.controllerKey,visible:Boolean(target?.getClientRects().length),page:active?.dataset.controllerKey?.startsWith('page-'),available:active?.getAttribute('aria-disabled')!=='true'};},key);
+   if(focus.key===key){await tap(0);return;}
+   if(!focus.visible&&focus.page&&focus.available){await tap(0);continue;}
    await tap(13);
   }
   throw Error(`Controller could not focus ${key}`);
@@ -80,16 +82,20 @@ for(const [start,region,tier] of routes)test(`${region} ${tier}: controller disp
  let shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);await frames();expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);
  await button(7,false);await armed();
  for(const kind of ['focus','disconnect','replacement','unsupported']){
-  await button(7,true);await page.evaluate(kind=>{const p=window.encounterPad;if(kind==='focus')window.dispatchEvent(new Event('blur'));if(kind==='disconnect')p.connected=false;if(kind==='replacement')p.id+=' replacement';if(kind==='unsupported')p.mapping='';},kind);await frames();
+  await button(7,true);let other;
+  if(kind==='focus'){other=await page.context().newPage();await other.bringToFront();await page.waitForTimeout(200);}
+  else{await page.evaluate(kind=>{const p=window.encounterPad;if(kind==='disconnect')p.connected=false;if(kind==='replacement')p.id+=' replacement';if(kind==='unsupported')p.mapping='';},kind);await frames();}
   shots=await page.evaluate(()=>window.starAgent.state.effects.weaponShots);
-  await page.evaluate(()=>{window.encounterPad.connected=true;window.encounterPad.mapping='standard';window.dispatchEvent(new Event('focus'));});await frames();await frames();
-  expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);await button(7,false);await armed();
+  if(other)await page.bringToFront();
+  await page.evaluate(()=>{window.encounterPad.connected=true;window.encounterPad.mapping='standard';});await frames();await frames();
+  expect(await page.evaluate(()=>window.starAgent.state.effects.weaponShots)).toBe(shots);if(other)await other.close();await button(7,false);await armed();
  }
  const backend=await page.evaluate(()=>{const gl=document.querySelector('#viewport').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):'unavailable';});
  await writeFile(`${evidence}/receipt.json`,JSON.stringify({browser:browser.version(),backend,viewport:[1440,900],report,errors,warnings,physicalController:false},null,2));expect(errors).toEqual([]);
 });
 
 test('keyboard and native touch select difficulties, abandon and return at phone width',async({page},testInfo)=>{
+ await page.addInitScript(()=>Object.defineProperty(navigator,'getGamepads',{value:()=>[]}));
  const evidence=process.env.ENCOUNTER_EVIDENCE?`${output}/interface`:testInfo.outputPath('evidence');await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto('/?dev=1&ship=kestrel&start=orbit&intro=0&debug&seed=7291');
