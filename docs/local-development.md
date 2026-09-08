@@ -692,3 +692,22 @@ acceptance. This is a development feature; no public deployment is included.
 Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
 [the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
 The existing API remains healthy; no service restart or save migration was needed.
+
+
+## Hush Exchange candidate
+
+The secret Selene compound adds a protected outer landing pad, a ground route to
+a tower isolator, and an existing cargo exchange stocked with salvage supplies.
+The station turret has a warning, visible charge and reduced three-shot bursts.
+Land on the outer apron and approach on foot; use **F / controller X** at the
+tower isolator, then the exchange console. On a phone, use the visible interaction
+button and return through **Resume**. Occupied ground rovers do not count as ships.
+
+The development launcher includes **Hush Exchange · secret Selene compound**. Its explicit approach
+link is `/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291` in a
+`VITE_DEV_TOOLS=1` build. Normal discovery begins with a weak lunar relay near the
+site. The market uses existing solo cargo/save authority; ground pirate NPC combat
+belongs to a separate feature. See the [production record](qa/pirate-compound/README.md)
+for the exact checked state, assets, browser evidence and remaining acceptance.
+This candidate is awaiting final browser checks and parent local integration;
+no public deployment is included.
