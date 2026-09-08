@@ -8,6 +8,8 @@ import {roverFitsPlatform} from '../src/rover-physics.js';
 import {readGLBGeometry} from './helpers/gltf-geometry.js';
 import {stat,readFile} from 'node:fs/promises';
 import {faunaWeaponDamage} from '../src/fauna/weapon-rules.js';
+import {createSentryEnvironment} from '../src/sentry/environment.js';
+import {applyAuthoritativePeer} from '../src/multiplayer/client.js';
 
 const v=p=>new THREE.Vector3(...p),up=v([0,1,0]);
 function fixture(){
@@ -67,6 +69,23 @@ test('mounted fauna damage requires an actual seated rover; handheld and multipl
   for(const phase of ['opening','traversing','closing',null])assert.equal(faunaWeaponDamage({...nav,sentrySeat:{phase}},hit,'rover-laser'),0);
   assert.equal(faunaWeaponDamage({...nav,insideShip:false,sentrySeat:null},hit,'rover-laser'),0);
   assert.equal(faunaWeaponDamage(nav,hit,'rover-laser',true),0);assert.equal(faunaWeaponDamage({...nav,enabled:false},hit,'rover-laser'),0);
+});
+
+test('peer rovers and unseated walkers stop the complete moving envelope, while its own crew is excluded',()=>{
+  const rover={id:'other',position:[0,0,0],quaternion:[0,0,0,1],wheels:[]},walker={mode:'walk',position:v([8,1.75,0]),sentrySeat:null};
+  const environment=createSentryEnvironment({getRovers:()=>[rover],getWalkers:()=>[walker]});
+  assert.equal(environment.peersClear(v([0,0,0]),new THREE.Quaternion(),'mine'),false);
+  assert.equal(environment.peersClear(v([8,0,0]),new THREE.Quaternion(),'mine'),false);
+  walker.roverOccupied=true;walker.sentrySeat={id:'mine'};assert.equal(environment.peersClear(v([8,0,0]),new THREE.Quaternion(),'mine'),true);
+  assert.equal(environment.peersClear(v([0,0,0]),new THREE.Quaternion(),'other'),true);
+});
+
+test('local reconciliation hydrates the real seat feet and chassis heading for the existing Character and clears them on exit',()=>{
+  const nav={mode:'walk',position:v([0,0,0]),orientation:new THREE.Quaternion(),multiplayer:{connected:true}},seat={id:'r',role:'gunner',phase:'seated'},feet=[25e9,1234,5678],body=[0,.3,0,Math.sqrt(.91)];
+  applyAuthoritativePeer(nav,{mode:'walk',sentrySeat:seat,sentryFeet:feet,bodyOrientation:body,position:[25e9,1235,5678],orientation:[0,0,0,1]});
+  assert.deepEqual(nav.sentryFeet,feet);assert.deepEqual(nav.sentryBodyOrientation,body);assert.equal(nav.roverOccupied,true);assert.notEqual(nav.sentryFeet,feet);
+  applyAuthoritativePeer(nav,{mode:'walk',sentrySeat:null,position:[25e9,1235,5682],orientation:[0,0,0,1]});
+  assert.equal(nav.sentryFeet,null);assert.equal(nav.sentryBodyOrientation,null);assert.equal(nav.roverOccupied,false);
 });
 
 const assetURL=new URL('../public/models/burrow-sentry.glb',import.meta.url),asset=await readGLBGeometry(assetURL),scene=asset.scene;scene.updateMatrixWorld(true);

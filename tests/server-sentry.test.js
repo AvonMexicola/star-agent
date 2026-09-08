@@ -153,3 +153,43 @@ test('one hull debit checks every real crew relationship; a friendly pilot canno
   assert.deepEqual(relationships.map(x=>x[1]).sort(),[pilot.id,gunner.id].sort());
   assert.equal(f.messages.get(attacker.id).findLast(e=>e.event==='stationStrike').victimId,gunner.id);
 });
+
+test('all crew participate in pending friendship resolution and a leaving nonfriend cannot erase the impact',async t=>{
+  const f=await fixture(t,3),[pilot,gunner,attacker]=f.players,r=await f.deploy();await f.board(pilot,r,'pilot');await f.board(gunner,r,'gunner');
+  let resolveFriend;const held=new Promise(resolve=>resolveFriend=resolve);f.store.areFriends=async(a,b)=>b===gunner.id?held:true;
+  const target=r.world([0,1.8,1.4]),up=new THREE.Vector3(0,1,0).applyQuaternion(r.physics.state.quaternion);
+  attacker.nav.mode='eva';attacker.nav.position.copy(r.world([-4,1.8,1.4]));attacker.nav.orientation.setFromRotationMatrix(new THREE.Matrix4().lookAt(attacker.nav.position,target,up));attacker.nav.velocity.set(0,0,0);
+  f.input(attacker,{fire:true});f.advance(1/30);assert.equal(r.state.health,L.hull);
+  assert.equal(f.room.security.pending(gunner),true);assert.equal(f.room.security.pending(pilot),true);
+  let left=false;const departure=f.room.leave(gunner.id).then(()=>left=true);await Promise.resolve();assert.equal(left,false);
+  resolveFriend(false);await departure;await f.room.security.settle(attacker);
+  assert.equal(r.state.health,L.hull-25);assert.equal(attacker.health,0);assert.equal(pilot.shipHealth,100);
+});
+
+test('community hub refuses armed rover deployment using the existing hands-free policy',async t=>{
+  const f=await fixture(t),[p]=f.players,hub=f.world.station.hub;
+  p.nav.position.copy(hub.toWorld(new THREE.Vector3(0,-6,0),new THREE.Vector3()));p.nav.mode='walk';p.nav.insideShip=false;
+  const reply=await f.request(p,{command:'deploy'});assert.equal(reply.ok,false);assert.match(reply.error,/Community hub/);assert.equal(f.room.sentries.vehicles.size,0);
+});
+
+
+test('authoritative driving stops before a walker and another Sentry without phantom parked-ship damage',async t=>{
+  const f=await fixture(t,3),[pilot,other,walker]=f.players,r=await f.deploy(),second=await f.deploy(other);
+  await f.board(pilot,r,'pilot');
+  // Fixture placement arranges real bodies on the same authored hangar deck.
+  // All movement below is the actual room input and canonical rover solver.
+  const origin=r.physics.state.position.clone(),q=r.physics.state.quaternion.clone();
+  walker.nav.mode='walk';walker.nav.insideShip=false;walker.nav.position.copy(r.world([0,1.75,-5]));walker.nav.velocity.set(0,0,0);
+  const hp=f.players.map(p=>[p.health,p.shipHealth]);
+  f.advance(3,new Map([[pilot,{forward:1}]]));
+  assert.ok(r.physics.state.distance>.5);assert.equal(r.physics.state.reason,'collision');
+  const clearance=walker.nav.position.clone().sub(r.physics.state.position).applyQuaternion(q.clone().invert());
+  assert.ok(clearance.z<=L.bounds.min[2]-.29);assert.deepEqual(f.players.map(p=>[p.health,p.shipHealth]),hp);
+  walker.nav.position.copy(r.world([8,1.75,0]));r.physics.setPose(origin,q);
+  second.physics.setPose(r.world([0,0,-7]),q);f.input(pilot,{});f.advance(.1);
+  f.advance(4,new Map([[pilot,{forward:1}]]));
+  assert.ok(r.physics.state.distance>.5);assert.equal(r.physics.state.reason,'collision');
+  const gap=second.physics.state.position.clone().sub(r.physics.state.position).applyQuaternion(q.clone().invert());
+  assert.ok(-gap.z>=L.bounds.max[2]-L.bounds.min[2]+.04);assert.deepEqual(f.players.map(p=>[p.health,p.shipHealth]),hp);
+  assert.ok(f.players.every(p=>!f.room.security.pending(p)));assert.equal(f.messages.get(pilot.id).some(e=>e.event==='stationStrike'),false);
+});

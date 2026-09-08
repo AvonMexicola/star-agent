@@ -4,12 +4,13 @@ import {createSentryEnvironment,sentryDeploymentPoses} from '../src/sentry/envir
 import {sentryBodyDistance} from '../src/sentry/occlusion.js';
 import {SENTRY_LAYOUT as L} from '../src/sentry/layout.js';
 import {worldDistance,capsuleDistance,playerUp,shipDistance,shipPose} from './combat.js';
+import {isHandsFree,HANDS_FREE_REASON} from '../src/station-hub-policy.js';
 
 /** Room-owned session vehicles. A station pilot or surface walker may deploy
  * one supported rover; the command contains no transforms or target fields. */
 export function createSentries({players,world,send,impact,security,broadcast,canFire=()=>true,now=Date.now}){
   const vehicles=new Map();
-  const environment=createSentryEnvironment({station:world.station,getRovers:()=>[...vehicles.values()],getHulls:()=>[...players.values()].filter(p=>!p.nav.freighter).map(shipPose).filter(Boolean).map(s=>({...s,quaternion:s.rotation})),getCarriers:()=>[...players.values()].filter(p=>p.nav.freighter&&shipPose(p)).map(p=>{const ship=shipPose(p);return {id:p.id,systems:p.nav.freighter,frame:{position:ship.position,quaternion:ship.rotation},inFlight:p.nav.mode==='flight'||p.nav.cabinFlight||p.nav.spaceParked,cargoConstrain:p.nav.cargoConstrain};}),getObstacles:()=>players.values().next().value?.nav.surfaceObstacles});
+  const environment=createSentryEnvironment({station:world.station,getRovers:()=>[...vehicles.values()],getWalkers:()=>[...players.values()].filter(p=>p.health>0),getHulls:()=>[...players.values()].filter(p=>!p.nav.freighter).map(shipPose).filter(Boolean).map(s=>({...s,quaternion:s.rotation})),getCarriers:()=>[...players.values()].filter(p=>p.nav.freighter&&shipPose(p)).map(p=>{const ship=shipPose(p);return {id:p.id,systems:p.nav.freighter,frame:{position:ship.position,quaternion:ship.rotation},inFlight:p.nav.mode==='flight'||p.nav.cabinFlight||p.nav.spaceParked,cargoConstrain:p.nav.cargoConstrain};}),getObstacles:()=>players.values().next().value?.nav.surfaceObstacles,buildingRaycast:(...args)=>players.values().next().value?.nav.buildingRaycast?.(...args)});
   function current(id){return [...vehicles.values()].find(r=>r.occupant(id));}
   function validPlayer(p){if(!p||p.health<=0||p.shipHealth<=0||p.nav.stationHubTransit||security.pending(p))throw new Error('A living pilot outside station transit or a pending defense response is required.');}
   function vehicleHit(origin,direction,range){
@@ -50,7 +51,7 @@ export function createSentries({players,world,send,impact,security,broadcast,can
     }
   }
   function construct(p,pose){
-    return createSentrySimulation({id:'sentry:'+p.id,ownerId:p.id,...pose,sampleSupport:environment.support,referenceUp:environment.up,constrain:environment.constrain,accessClear:environment.accessClear,
+    return createSentrySimulation({id:'sentry:'+p.id,ownerId:p.id,...pose,sampleSupport:environment.support,referenceUp:environment.up,constrain:movement=>environment.constrain(movement,'sentry:'+p.id),accessClear:environment.accessClear,
       getCarriers:environment.carriers,getPlayer:id=>players.get(id),getInput:id=>{const user=players.get(id);return user&&!user.busy&&now()-user.lastInput<500?{...user.input,mouseYaw:user.lookYaw,mousePitch:user.lookPitch,sequence:user.sequence,enabled:user.input.vehicleReady===true}:neutralSentryInput();},
       canFire:id=>{const user=players.get(id);return Boolean(user&&canFire(user));},onFire:fire,
       onSeat:(id,role)=>{const user=players.get(id);if(user){user.input=neutralSentryInput();user.lookYaw=user.lookPitch=0;send(user,{type:'event',event:'notice',message:role?`Burrow Sentry: ${role} access. Release controls before taking command.`:'Left Burrow Sentry. Pilot control resumes only after neutral input.'});}},
@@ -60,11 +61,12 @@ export function createSentries({players,world,send,impact,security,broadcast,can
     request(p,m){
       validPlayer(p);
       if(m.command==='deploy'){
+        if(isHandsFree(p.nav))throw new Error(HANDS_FREE_REASON);
         if(p.nav.mode!=='walk'||p.nav.roverOccupied||p.nav.carryingCargo||p.nav.insideShip)throw new Error('Deploy on foot outside your ship with empty hands.');
         const prior=vehicles.get('sentry:'+p.id);if(!prior&&vehicles.size>=10)throw new Error('The room already has ten Sentry rovers.');if(prior?.occupied||prior?.busy)throw new Error('Your Sentry is occupied or its doors are moving.');
         if(prior&&prior.physics.state.position.distanceTo(p.nav.position)>20)throw new Error('Return within 20 m of your Sentry before relocating it.');
         for(const pose of sentryDeploymentPoses(p.nav)){
-          if(!environment.clearPose(pose.position,pose.quaternion)||[...vehicles.values()].some(r=>r!==prior&&r.physics.state.position.distanceTo(pose.position)<7))continue;
+          if(!environment.clearPose(pose.position,pose.quaternion,prior?.id)||[...vehicles.values()].some(r=>r!==prior&&r.physics.state.position.distanceTo(pose.position)<7))continue;
           const rover=construct(p,pose);rover.physics.step(1/30,{brake:1});
           if(!rover.physics.state.supported||rover.physics.state.blocked||!rover.ground('pilot')||!rover.ground('gunner'))continue;
           vehicles.set(rover.id,rover);return;

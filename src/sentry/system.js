@@ -8,6 +8,7 @@ import {createSentryUI} from './ui.js';
 import {createWeaponTarget} from '../effects/weapon-target.js';
 import {roverSurfaceStart} from '../rover-surface-start.js';
 import {clipTerrainCamera} from '../ship-camera.js';
+import {isHandsFree,HANDS_FREE_REASON} from '../station-hub-policy.js';
 
 const UP=new THREE.Vector3(0,1,0),FWD=new THREE.Vector3(0,0,-1),v=p=>new THREE.Vector3(...p),clamp=THREE.MathUtils.clamp;
 /** Input adapter and presentation. Online simulation lives exclusively in the
@@ -39,7 +40,7 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
     catch(e){error=e.message;nav.notify(error);}finally{pending=false;reset();}
   }
   function createLocal(pose){
-    return createSentrySimulation({id:'solo-sentry',ownerId:localId,...pose,sampleSupport:environment.support,referenceUp:environment.up,constrain:environment.constrain,accessClear:environment.accessClear,getCarriers:environment.carriers,getPlayer:id=>id===localId?player:null,getInput:()=>input,
+    return createSentrySimulation({id:'solo-sentry',ownerId:localId,...pose,sampleSupport:environment.support,referenceUp:environment.up,constrain:movement=>environment.constrain(movement,'solo-sentry'),accessClear:environment.accessClear,getCarriers:environment.carriers,getPlayer:id=>id===localId?player:null,getInput:()=>input,
       onSeat:()=>reset(),onFire:(poses,id,sequence,rover)=>{
         for(let barrel=0;barrel<poses.length;barrel++){
           const p=poses[barrel],range=Math.min(L.turret.range,sentryBodyDistance(p.start,p.direction,rover.physics.state.position,rover.physics.state.quaternion)),hit=ray(p.start,p.direction,origin,range),end=hit?.point??p.start.clone().addScaledVector(p.direction,range);
@@ -59,12 +60,13 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
     get interaction(){const c=current(),n=nearest();return c?'BURROW SENTRY · X / F LEAVE '+seatOf(c).toUpperCase():n?'X / F · '+(n.occupied?'OCCUPIED ':'BOARD SENTRY ')+n.role.toUpperCase():'';},
     async deploy(){
       if(!usable()||pending)return false;
+      if(isHandsFree(nav)){nav.notify(HANDS_FREE_REASON);return false;}
       if(multiplayer.connected){await request('deploy');return !error;}
       if(nav.mode!=='walk'||nav.roverOccupied||nav.insideShip||nav.carryingCargo){nav.notify('Deploy on foot outside your ship with empty hands.');return false;}
       if(local?.occupied||local?.busy){nav.notify('Leave the Sentry and close its doors before relocating it.');return false;}
       await renderer.ready();
       for(const pose of sentryDeploymentPoses(nav)){
-        if(!environment.clearPose(pose.position,pose.quaternion))continue;
+        if(!environment.clearPose(pose.position,pose.quaternion,'solo-sentry'))continue;
         const candidate=createLocal(pose);candidate.physics.step(1/30,{brake:1});
         if(!candidate.physics.state.supported||candidate.physics.state.blocked||!candidate.ground('pilot')||!candidate.ground('gunner'))continue;
         local=candidate;nav.notify('Sentry deployed. Port door: pilot. Aft ladder: gunner.');return true;
@@ -97,7 +99,7 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
     networkInput(base){if(!api.occupied)return base;return {...base,...input,vehicleReady:input.enabled===true,mouseYaw:base.mouseYaw,mousePitch:base.mousePitch,fire:usable()&&api.acceptInput&&(base.fire||input.fire)};},
     update(dt,renderOrigin){
       origin.copy(renderOrigin);
-      if(wasOnline&&!multiplayer.connected){local=null;nav.sentrySeat=null;nav.roverOccupied=false;nav.insideShip=false;suspend();}
+      if(wasOnline&&!multiplayer.connected){local=null;nav.sentrySeat=null;nav.sentryFeet=null;nav.sentryBodyOrientation=null;nav.roverOccupied=false;nav.insideShip=false;suspend();}
       wasOnline=multiplayer.connected;
       if(!multiplayer.connected&&local&&!api.occupied)local.tick(dt);
       if(!usable())suspend();renderer.update(dt,origin,snapshots());ui.update();
@@ -113,7 +115,7 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
       if(camera.playerExternal){const target=v(c.position).addScaledVector(UP.clone().applyQuaternion(q),1.5),end=v([4,5,7]).applyQuaternion(q).add(v(c.position));camera.position.copy(clipTerrainCamera(target,end));camera.orientation.setFromRotationMatrix(new THREE.Matrix4().lookAt(camera.position.clone().sub(target),new THREE.Vector3(),UP.clone().applyQuaternion(q)));camera.active=true;}
     },
     constrainWalker(a,b){for(const s of snapshots())b=constrainSentryWalker(replica(s),a,b,ownId());return b;},
-    get state(){const c=current(),role=c&&seatOf(c),near=nearest();return {visible:Boolean(enabled||c||near||multiplayer.connected&&nav.mode==='walk'),canDeploy:Boolean((enabled||multiplayer.connected)&&nav.mode==='walk'&&!nav.roverOccupied&&!nav.insideShip),occupied:Boolean(c),role,near,busy:api.busy,current:c,vehicles:snapshots(),models:renderer.state(),message:error??(pending?'Waiting for rover authority…':c?c.busy?'Cabin access moving…':c.controllerId===ownId()?`You control the turret · ${c.armed?'ready':'release controls'} · ${c.shots} bursts`:`Gunner controls the turret · pilot drives · ${Math.abs(c.speed).toFixed(1)} m/s`:near?`Approach ${near.role} door · ${near.occupied?'occupied':'X / F to board'}`:'Two crew seats · gunner priority · pilot fallback')};},
+    get state(){const c=current(),role=c&&seatOf(c),near=nearest();return {visible:Boolean(enabled||c||near||multiplayer.connected&&nav.mode==='walk'&&!isHandsFree(nav)),canDeploy:Boolean((enabled||multiplayer.connected)&&nav.mode==='walk'&&!nav.roverOccupied&&!nav.insideShip&&!isHandsFree(nav)),occupied:Boolean(c),role,near,busy:api.busy,current:c,vehicles:snapshots(),models:renderer.state(),message:error??(pending?'Waiting for rover authority…':c?c.busy?'Cabin access moving…':c.controllerId===ownId()?`You control the turret · ${c.armed?'ready':'release controls'} · ${c.shots} bursts · Hull ${c.health}/${L.hull}`:`Gunner controls the turret · pilot drives · ${Math.abs(c.speed).toFixed(1)} m/s · Hull ${c.health}/${L.hull}`:near?`Approach ${near.role} door · ${near.occupied?'occupied':'X / F to board'}`:'Two crew seats · gunner priority · pilot fallback')};},
   };
   const ui=createSentryUI(api);
   multiplayer.onEvent(e=>{if(e.event==='sentryFire')renderer.fire(e);});

@@ -777,17 +777,18 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
       clipShip:nav.shipPosition?(start,end)=>clipShipCamera(start,end,ship,point=>nav.toShipLocal(point)):undefined,
     });
     sentry.camera(shipCamera);
-    rover?.camera(shipCamera,nav.shipPosition?(start,end)=>clipShipCamera(start,end,ship,point=>nav.toShipLocal(point)):null);
+    if(!sentry.occupied)rover?.camera(shipCamera,nav.shipPosition?(start,end)=>clipShipCamera(start,end,ship,point=>nav.toShipLocal(point)):null);
     const onFoot=nav.mode==='walk'||nav.mode==='eva';
     if(!opening?.active){
       character.setHeadHidden(false);
-      character.setVisible(onFoot&&shipCamera.active&&!nav.kestrelAccess?.busy&&!nav.roverOccupied);
+      character.setVisible(onFoot&&shipCamera.active&&!nav.kestrelAccess?.busy&&(!nav.roverOccupied||Boolean(nav.sentrySeat)));
     }
     if(onFoot&&!opening?.active){
       const eva=nav.mode==='eva',up=eva?new THREE.Vector3(0,1,0).applyQuaternion(nav.orientation):playerUp(nav),feet=nav.position.clone().addScaledVector(up,-SHIP_LAYOUT.eyeHeight);
-      if(eva)character.setWorldPose(feet,nav.orientation);
+      if(nav.sentrySeat){if(nav.sentryFeet)feet.fromArray(nav.sentryFeet);character.setWorldPose(feet,nav.sentryBodyOrientation?new THREE.Quaternion(...nav.sentryBodyOrientation):nav.orientation);}
+      else if(eva)character.setWorldPose(feet,nav.orientation);
       else character.alignToSurface(feet,up,new THREE.Vector3(0,0,-1).applyQuaternion(nav.orientation));
-      character.update(dt,{speed:eva?0:nav.velocity.clone().projectOnPlane(up).length(),grounded:eva||nav.jumpHeight===0,jumping:!eva&&nav.jumpHeight>0,health:loadout.state.health/100,...miningTool.pose});
+      character.update(dt,{speed:eva||nav.sentrySeat?0:nav.velocity.clone().projectOnPlane(up).length(),grounded:eva||nav.jumpHeight===0,jumping:!eva&&nav.jumpHeight>0,health:loadout.state.health/100,...miningTool.pose,...(nav.sentrySeat?{seated:nav.sentrySeat.phase==='seated',crouching:nav.sentrySeat.phase!=='seated',speed:nav.sentrySeat.phase==='traversing'?.85:0,aiming:'none',firing:false}:{})});
     }
     document.body.classList.toggle('external-view',shipCamera.active);
     document.body.classList.toggle('camera-engaged',shipCamera.engaged&&nav.mode==='flight');

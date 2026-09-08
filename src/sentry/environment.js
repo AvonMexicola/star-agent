@@ -10,7 +10,7 @@ import {SENTRY_LAYOUT as L} from './layout.js';
 const UP=new THREE.Vector3(0,1,0),v=p=>new THREE.Vector3(...p);
 /** Support is always supplied by the existing canonical terrain, carrier or
  * authored station deck. This adapter is identical in the browser and room. */
-export function createSentryEnvironment({station=null,getCarriers=()=>[],getRovers=()=>[],getHulls=()=>[],getObstacles=()=>null,buildingRaycast=()=>null}={}){
+export function createSentryEnvironment({station=null,getCarriers=()=>[],getRovers=()=>[],getWalkers=()=>[],getHulls=()=>[],getObstacles=()=>null,buildingRaycast=()=>null}={}){
   const guarded=new WeakSet();
   function carriers(){
     const list=getCarriers();
@@ -53,7 +53,23 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
     }
     return false;
   }
-  function clearPose(position,quaternion){
+  function peersClear(position,quaternion,ownId){
+    const points=roverFootprint(position,quaternion,{layout:L});
+    for(const r of getRovers()){
+      if(r.id===ownId)continue;const s=r.physics?.state??r,root=s.position.isVector3?s.position:v(s.position),q=s.quaternion.isQuaternion?s.quaternion:new THREE.Quaternion(...s.quaternion),inverse=q.clone().invert();
+      const local=points.map(p=>p.clone().sub(root).applyQuaternion(inverse));
+      if([0,1,2].every(i=>Math.min(...local.map(p=>p.getComponent(i)))<L.bounds.max[i]+.05&&Math.max(...local.map(p=>p.getComponent(i)))>L.bounds.min[i]-.05))return false;
+    }
+    const inverse=quaternion.clone().invert();
+    for(const walker of getWalkers()){
+      const n=walker.nav??walker;if(!['walk','eva'].includes(n.mode)||n.sentrySeat?.id===ownId||n.roverOccupied)continue;
+      const eye=n.position.clone().sub(position).applyQuaternion(inverse);
+      if(eye.x>L.bounds.min[0]-.3&&eye.x<L.bounds.max[0]+.3&&eye.z>L.bounds.min[2]-.3&&eye.z<L.bounds.max[2]+.3&&eye.y>L.bounds.min[1]-.2&&eye.y-1.75<L.bounds.max[1])return false;
+    }
+    return true;
+  }
+  function clearPose(position,quaternion,ownId){
+    if(!peersClear(position,quaternion,ownId))return false;
     const world=p=>v(p).applyQuaternion(quaternion).add(position);
     for(const hull of getHulls()){
       const inverse=hull.quaternion.clone().invert(),points=roverFootprint(position,quaternion,{layout:L}).map(p=>p.sub(hull.position).applyQuaternion(inverse));
@@ -66,11 +82,11 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
     for(const x of [-.83,0,.83])for(const y of [.50,1.10,1.8,2.35,3.02])if(ray(world([x,y,-1.7]),world([x,y,2.15]),{carrier:false}))return false;
     return true;
   }
-  return {support,ray,clearPose,carriers,
+  return {support,ray,clearPose,peersClear,carriers,
     up:point=>support(point)?.normal??bodyOffset(point).normalize(),
-    constrain({previous,proposed,previousCorners,corners}){
+    constrain({previous,proposed,previousCorners,corners},ownId){
       for(const carrier of carriers())if(!roverCarrierClear({previous,proposed,previousCorners,corners},carrier.systems,carrier.frame,{layout:L,cargoConstrain:carrier.cargoConstrain}))return false;
-      if(!clearPose(proposed.position,proposed.quaternion))return false;
+      if(!clearPose(proposed.position,proposed.quaternion,ownId))return false;
       const a=roverFootprint(previous.position,previous.quaternion,{layout:L}),b=roverFootprint(proposed.position,proposed.quaternion,{layout:L});
       // Lift the bottom samples off the supporting surface before sweeping.
       const up=UP.clone().applyQuaternion(proposed.quaternion);

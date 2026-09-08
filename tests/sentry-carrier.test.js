@@ -17,7 +17,7 @@ const surface=()=>({position:bodySurfacePoint(up,SELENE),quaternion:new Quaterni
 function fixture(systems=new FreighterSystems(),expectFit=true){
   const frame=surface(),carrier={id:'ship',frame,systems,inFlight:false},rovers=[];
   const env=createSentryEnvironment({getCarriers:()=>[carrier],getRovers:()=>rovers}),start=roverCarrierStart(systems);
-  const rover=createSentrySimulation({id:'test',ownerId:'pilot',position:start.position.clone().applyQuaternion(frame.quaternion).add(frame.position),quaternion:frame.quaternion.clone().multiply(start.quaternion),sampleSupport:env.support,referenceUp:env.up,constrain:env.constrain,accessClear:env.accessClear,getCarriers:env.carriers});
+  const rover=createSentrySimulation({id:'test',ownerId:'pilot',position:start.position.clone().applyQuaternion(frame.quaternion).add(frame.position),quaternion:frame.quaternion.clone().multiply(start.quaternion),sampleSupport:env.support,referenceUp:env.up,constrain:movement=>env.constrain(movement,'test'),accessClear:env.accessClear,getCarriers:env.carriers});
   rovers.push(rover);rover.tick(1/60);if(expectFit){assert.equal(rover.physics.state.supported,true);assert.equal(rover.physics.state.blocked,false,rover.physics.state.reason);}
   return {frame,carrier,rover,systems,env};
 }

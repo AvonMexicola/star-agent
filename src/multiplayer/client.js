@@ -88,6 +88,8 @@ export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } 
   const hard = snap || modeChanged || frameChanged || Boolean(peer.sentrySeat);
   nav.authoritativePhysicsFrame = peer.physicsFrame ?? null;
   nav.sentrySeat=peer.sentrySeat??null;
+  nav.sentryFeet=nav.sentrySeat&&finiteArray(peer.sentryFeet,3)?[...peer.sentryFeet]:null;
+  nav.sentryBodyOrientation=nav.sentrySeat&&finiteArray(peer.bodyOrientation,4)?[...peer.bodyOrientation]:null;
   if(nav.sentrySeat)nav.roverOccupied=true;else if(nav.multiplayer?.connected)nav.roverOccupied=false;
   nav.position = setVector(nav.position, peer.position, blend, hard);
   nav.orientation = setQuaternion(nav.orientation, peer.orientation, blend, hard);
