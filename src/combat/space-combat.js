@@ -202,5 +202,5 @@ export function createSpaceCombat({scene,nav,camera,effects,mining}){
     const profile=shipWeaponProfile(weapon,SHIP_WEAPON_SIZES[nav.shipId]??1);
     if(t&&i<4&&Number.isFinite(profile.speed)){const point=interceptPoint(nav.position,t.position,t.velocity.clone().sub(nav.velocity),profile.speed);marker(markerNodes[i],point,'LEAD',{lead:true},origin);}
   }
-  return {open,permitted,recover,cycle:()=>sim.cycle(),update,fire:(...args)=>{if(shipWeaponStatus(nav)==='WEAPONS READY')sim.fire(...args);},get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
+  return {open,permitted,recover,cycle:()=>sim.cycle(),update,receiveExternalHit(amount,point,direction){if(nav.multiplayer?.connected||nav.mode!=='flight'||!Number.isFinite(amount)||amount<=0)return false;sim.setShip(nav.shipId);sim.hit('player',{damage:amount,direction,weapon:'laser',profile:{effectScale:.6,color:0xffab50}},point);if(sim.player.hull<=0)sim.phase='failed';return true;},fire:(...args)=>{if(shipWeaponStatus(nav)==='WEAPONS READY')sim.fire(...args);},get state(){return {...sim.state,assets:[...templates.keys()],models:models.size,assetError};}};
 }
