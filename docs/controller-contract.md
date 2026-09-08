@@ -13,6 +13,11 @@ action, equip its tool, reach its target, activate it, inspect the result and re
 to play without a mouse or keyboard. Xbox labels refer to the browser's W3C standard
 mapping, not operating-system Bluetooth status.
 
+HUD display: **Menu → Settings → HUD** cycles Everything, Markers and reticle,
+then No HUD. The menu remains reachable in every mode; B resumes play. Tab does
+the same during keyboard gameplay and retains normal focus navigation in dialogs.
+On touch screens, a two-finger tap on the view restores Everything.
+
 ## Shared bindings
 
 | Context | Binding | Action |
