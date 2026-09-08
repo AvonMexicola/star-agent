@@ -100,6 +100,19 @@ requests. It includes the complete physical cabin route, real mining/inventory,
 held-input suppression, direct forward-to-reverse and backing away from a real
 collision. Controls are native Chromium touch contacts at 390×844.
 
+An extra combined phone attempt subsequently failed at the pager even with
+`mining.pending === false`: the native touch landed on `HEADER`, although the
+prior DOM hit test reported the pager. That disproves the pending-cut wait as
+an established fix. Its full receipt is retained at
+`/tmp/burrow-cutters-union-phone13a/`. The fixture now captures the presented
+dialog before locating/tapping and asserts where the native contact actually
+lands. The final combined run **passes in 1.2 min**, with trusted down/capture/up
+on the pager and the existing semantic click. No inventory runtime change or
+general browser fix is claimed. Final receipt and video:
+`/tmp/burrow-cutters-union-phone13a02/`; errors, warnings and failed requests are
+empty. It retains an atomic snapshot of the real collision stop followed by
+successful native reverse. Test diagnostics are committed as `f241817`.
+
 | Previous native exterior | Updated native exterior |
 | --- | --- |
 | ![12e](native-after-exterior.png) | ![13a](cutters-exterior.png) |
@@ -120,4 +133,39 @@ The new asset has no independent rubric yet. Author inspection, finite collision
 samples and injected browser controls do not establish physical-device support,
 continuous swept clearance, structural strength or final concept-level art quality.
 
-Final controller and local integration receipts: pending.
+## Combined controller and local integration
+
+The complete unchanged Gannet controller journey passes in 3.9 min on combined
+runtime `180a461`: pilot exit, physical Burrow door/steps, elevator descent,
+four wheels onto canonical terrain, actual steering/mining, inventory transfer,
+reverse reloading, pilot return, loaded flight and landing. It transfers
+0.692856 kg of actual basalt, conserves stock and passes dialog/native-focus,
+disconnect, replacement and unsupported-mapping gates. Page/console diagnostics
+and request failures are empty. This is injected standard Gamepad evidence,
+not a physical controller. Source and served-asset hashes are stable, including
+the new shader and corrected collision module. Originals and video:
+`/tmp/burrow-cutters-gannet13a/`.
+
+![Actual controller mining on the combined build](cutters-controller-mining.png)
+
+![The same rover reverse-loaded into Gannet](cutters-controller-loaded.png)
+
+The combined branch passes all 152 normal test files, the production build
+(4.63 s), repository and suggested-plan checks. Logs:
+`/tmp/burrow-cutters-union-unit.log`, `/tmp/burrow-cutters-union-build.log`,
+`/tmp/burrow-cutters-union-repo.log`, `/tmp/burrow-cutters-union-plan.log`.
+The server imports `RockCollision` only for unchanged raycasting; no server,
+inventory/schema or protocol change was introduced by this follow-up.
+
+Feature runtime `03704e1` was integrated locally at **`b34bc69`**, 2026-09-08
+17:16 UTC, preserving final HUD `9b629f2` and settlement `290f5ad`. The latter
+merges add only metadata relative to tested runtime `180a461`. The guarded
+fast-forward preserved the exact 56,247-byte unrelated HANDOFF suffix, SHA
+`3bf320f09e28c4d384e811998fc68a7724ab0093d01fc486c0454eb91e7f9abe`.
+Existing 5178/8087 health, launcher and changed module requests return HTTP 200;
+the served GLB matches `85bfeaa9` byte-for-byte. Receipt:
+`/tmp/burrow-integration-cutters-runtime/`. Burrow required no service restart;
+no public deployment was performed. Final combined phone validation passes as
+recorded above. Floodlight `1d4181c` subsequently retains the Burrow runtime;
+its owner handled its separate catalogue/service update. Final metadata does
+not change the checked Burrow runtime, model or input bindings.
