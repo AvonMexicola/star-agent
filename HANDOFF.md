@@ -4124,3 +4124,16 @@ No service restart, schema migration or public deployment. Final metadata only
 follows. Receipt docs/qa/projected-terminals/local-integration.json; short disk
 browser cache/evidence retained under ignored test-results. Feature is available
 for local testing; physical-device and independent art/FPS acceptance stay pending.
+
+
+TRANSPORT DEVELOPMENT MERGE FOLLOW-UP 2026-09-08: Cees requests the new missions
+merged remotely; checked65f1721 already exists in local development. PR99's
+first hosted source/browser passed, but its private base-commerce database
+shutdown raised administrator termination. A native probe reproduces owned
+store.close returning before the client end event. Narrow server/postgres-pool.js
+and database.js cleanup now await actual owned socket closure; supplied-pool
+ownership and all mission gameplay remain unchanged. New server-pool-close tests
+and existing base-commerce/cargo/transport focused cases pass17/17; actual local
+restart/backup/unavailable SQL pass3/3. Full serialized multiplayer passes196 cases with2 existing optional skips;
+required hosted checks follow before protected merge. Isolated integrate/transport-development under
+.worktrees/dev-updates-sync; no GPU, shared services, schema or public changes.

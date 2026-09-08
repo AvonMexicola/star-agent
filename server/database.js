@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { createMemorySocialStore, createPostgresSocialStore } from './social-store.js';
+import { createPostgresPoolCloser } from './postgres-pool.js';
 
 const clone = (value) => value == null ? value : structuredClone(value);
 const conflict = () => Object.assign(new Error('Account details unavailable.'), { code: 'ACCOUNT_CONFLICT' });
@@ -86,6 +87,7 @@ export function createMemoryStore() {
 export async function createPostgresStore({ connectionString, pool: suppliedPool } = {}) {
   if (!suppliedPool && !connectionString) throw new Error('DATABASE_URL is required for persistent multiplayer.');
   const pool = suppliedPool ?? new (await import('pg')).default.Pool({ connectionString, max: 10, connectionTimeoutMillis: 5000 });
+  const closePool = suppliedPool ? null : createPostgresPoolCloser(pool);
   let prisma;
   try {
     const [{ PrismaClient }, { PrismaPg }, schema] = await Promise.all([
@@ -95,7 +97,7 @@ export async function createPostgresStore({ connectionString, pool: suppliedPool
     if (!schema.rows[0]?.name) throw new Error('Database search path must select an existing schema.');
     prisma = new PrismaClient({ adapter: new PrismaPg(pool, { schema: schema.rows[0].name }) });
   } catch (error) {
-    if (!suppliedPool) await pool.end();
+    await closePool?.();
     throw error;
   }
   async function transaction(fn) {
@@ -123,7 +125,7 @@ export async function createPostgresStore({ connectionString, pool: suppliedPool
         }
       });
     },
-    async close() { try { await prisma.$disconnect(); } finally { if (!suppliedPool) await pool.end(); } },
+    async close() { try { await prisma.$disconnect(); } finally { await closePool?.(); } },
     async createAccount({ email, callsign, passwordHash }) {
       try { return await prisma.account.create({ data: { id: randomUUID(), email, callsign, passwordHash }, select: accountFields }); }
       catch (error) { if (error.code === 'P2002') throw conflict(); throw error; }

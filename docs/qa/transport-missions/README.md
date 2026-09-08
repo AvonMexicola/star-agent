@@ -156,3 +156,38 @@ Local receipts/backups remain in ignored `test-results/integration`.
 and the expected gameplay/controller/database checks; it is a plan, not a result.
 No public deployment, protected release merge or independently reviewed acceptance
 is implied. The local paired preview remains available at http://127.0.0.1:5178/.
+
+## Development merge follow-up: PostgreSQL shutdown
+
+The first PR99 hosted run34274422075 passed source and browser checks but failed
+`server-base-commerce.test.js` during private database cleanup with
+`terminating connection due to administrator command`. The earlier development
+sync had the same error in the cargo database fixture. These failures remain
+recorded; they were not mission gameplay failures or passing checks.
+
+A native connection-lifecycle probe against the existing store reproduced
+`afterStoreClose: [false]`: the store returned before its client's `end` event.
+The installed pg-pool removes clients before their socket callbacks complete.
+Stopping PostgreSQL immediately can therefore interrupt those remaining clients.
+The existing community persistence fixture already accounted for this lifecycle.
+
+The owned store now tracks active client disconnects from pool creation, waits
+for them after `pool.end()`, and releases its listener. Initialization failure
+uses the same cleanup. Caller-supplied pools retain caller ownership. No database
+error is suppressed, and no migration, mission, protocol or renderer changes.
+The same native probe now reports `afterStoreClose: [true]`.
+
+`tests/server-pool-close.test.js` checks delayed/concurrent disconnects, drain
+failure propagation, actual SQL reopen durability and initialization failure,
+and continued use of caller-owned pools. All17 focused pool/base-commerce/cargo/
+transport cases pass in7.78s, including actual isolated databases. Full local
+restart/cold-backup/unavailable-database checks pass3/3 in25.19s. Machine logs
+remain in `.worktrees/dev-updates-sync/test-results/`; no shared database is used.
+
+The first parallel full local multiplayer run passed195 cases with2 existing
+optional skips but timed out opening the transport fixture's private SQL
+connection (5s limit) while several isolated databases started under shared
+machine load. The focused same transport SQL already passes. The ordinary
+connection timeout is retained. The same full suite with `--test-concurrency=1`
+passes196 cases with2 existing optional skips, zero failures, in33.22s. This is a
+separate failure from the fixed administrator-termination shutdown race.
