@@ -85,6 +85,16 @@ test('concurrent travellers cannot share a destination and occupied frame stays 
   assert.equal(other.nav.physicsFrame,'station:hub');assert.equal(observer.nav.physicsFrame,'hangar:3');
 });
 
+test('a close approach opens closed passenger doors while occupied doors cannot close',async()=>{
+  const {world,service,p,tick,messages}=await setup(),frame=world.pods[0];
+  frame.toWorld(new THREE.Vector3(0,frame.lift.floor+p.nav.layout.eyeHeight,frame.lift.z-.34),p.nav.position);
+  p.nav.mode='walk';p.nav.insideShip=false;
+  assert.equal(service.action(p),true);assert.equal(frame.lift.open,true);
+  tick(1);assert.equal(frame.lift.progress,1,'the doorway interlock must not stop opening');
+  assert.equal(service.action(p),true);assert.equal(frame.lift.open,true,'the body still prevents closing');
+  assert.match(messages.at(-1).message,/Step clear/);
+});
+
 test('door threshold interlock and disconnect cancel do not crush or strand another passenger',async()=>{
   const {world,service,p,players,cabin,tick}=await setup(2),other=players.get('p1'),frame=world.pods[0];
   cabin(p);frame.lift.open=true;frame.lift.progress=1;updateElevator(frame.lift,0);service.request(p,{destination:'hub'});

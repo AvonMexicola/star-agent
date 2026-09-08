@@ -1,0 +1,14 @@
+{
+  "id": "SA-STATION-001",
+  "title": "Restore physical passenger elevator access in fleet hangars",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex elevator repair",
+  "status": "integrated",
+  "branch": "fix/station-elevator-access",
+  "base": "c766544b5c9beb98ec3c66b50595e4c974b461f3",
+  "updated": "2026-09-08",
+  "areas": ["station", "assets", "multiplayer"],
+  "claims": ["src/station-fleet-hangar.js", "src/station-services.js", "server/station-hub.js", "blender/build_station.py", "public/models/station.glb", "tests/station-fleet-hangar.test.js", "tests/station-hub-policy.test.js", "tests/server-station-hub.test.js", "scripts/station-elevator.spec.js", "scripts/station-elevator.config.js", "docs/qa/station-elevator-access.md", "docs/qa/station-elevator-access/"],
+  "brief": "docs/qa/station-elevator-access.md"
+}

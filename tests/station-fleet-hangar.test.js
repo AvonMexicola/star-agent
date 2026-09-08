@@ -6,6 +6,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { fleetHangarAsset, FLEET_HANGAR } from '../src/station-fleet-hangar.js';
 import { Station } from '../src/station.js';
 import { constrainStationSweep } from '../src/station-collision.js';
+import { createPressureElevator, attachPressureElevator } from '../src/station-elevator.js';
+import { updateElevator, elevatorBoxes } from '../src/station-architecture.js';
 
 globalThis.ProgressEvent ??= class { constructor(type, init) { Object.assign(this, init); } };
 const source = await readFile(new URL('../public/models/station.glb', import.meta.url));
@@ -27,8 +29,36 @@ test('fleet refit preserves source geometry, service floor and back wall while e
     const sourceMeshes = [], nextMeshes = [];
     gltf.scene.traverse(m => { if (m.isMesh) sourceMeshes.push(m); });
     next.scene.traverse(m => { if (m.isMesh) nextMeshes.push(m); });
-    sourceMeshes.forEach((m, i) => assert.equal(m.geometry, nextMeshes[i].geometry, 'immutable geometry is shared'));
+    sourceMeshes.forEach(m => assert.equal(m.geometry, nextMeshes.find(n => n.name === m.name).geometry, 'immutable geometry is shared'));
   }
+});
+
+test('fleet elevator preserves human scale and the full body path from call panel to cabin', async t => {
+  const gltf = await load(), refit = fleetHangarAsset(gltf);
+  for (const name of ['ElevatorVestibule', 'ElevatorVestibuleLights', 'Sign_Hub', 'Sign_Transit']) {
+    const original = gltf.scene.getObjectByName(name), fitted = refit.scene.getObjectByName(name);
+    assert.ok(original && fitted, `${name} is an explicit authored assembly`);
+    const before = new THREE.Box3().setFromObject(original), after = new THREE.Box3().setFromObject(fitted);
+    near(before.min.toArray(), after.min.toArray()); near(before.max.toArray(), after.max.toArray());
+  }
+  const station = new Station(new THREE.Scene(), { gltf: refit, lodUrl: null });
+  await station.readyPromise; t.after(() => station.dispose());
+  const bytes = await readFile(new URL('../public/models/station-elevator.glb', import.meta.url));
+  const asset = await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
+  const lift = createPressureElevator(station.group, 22.3);
+  attachPressureElevator(lift, asset, { sign: () => null });
+  const min = new THREE.Vector3(-.25, -1.75, -.25), max = new THREE.Vector3(.25, .15, .25);
+  const path = [[2.65, -6.25, 19], [2.65, -6.25, 21.55], [0, -6.25, 21.55], [0, -6.25, 24]];
+  lift.open = true; updateElevator(lift, 1);
+  for (let i = 1; i < path.length; i++) {
+    const a = new THREE.Vector3(...path[i - 1]), b = new THREE.Vector3(...path[i]);
+    for (const [start, end] of [[a, b], [b, a]]) assert.equal(constrainStationSweep(station.colliders,
+      [...lift.staticBoxes, ...elevatorBoxes(lift)], start, end, min, max).hit, false,
+      `open physical approach ${start.toArray()} → ${end.toArray()}`);
+  }
+  lift.open = false; updateElevator(lift, 1);
+  assert.equal(constrainStationSweep(station.colliders, [...lift.staticBoxes, ...elevatorBoxes(lift)],
+    new THREE.Vector3(0, -6.25, 21.7), new THREE.Vector3(0, -6.25, 24), min, max).hit, true);
 });
 
 test('full authored Atlas clears deck, maintenance equipment and open doors at launch height', async t => {

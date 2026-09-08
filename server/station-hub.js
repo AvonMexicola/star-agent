@@ -47,7 +47,7 @@ export function createStationHub({world,players=new Map(),send=(p,event)=>p.send
       if(!at.cabin&&!at.door)return false;
       if(locks.has(grid.id)){notice(p,'Passenger elevator busy. Wait for it to arrive.');return true;}
       if(at.cabin){send(p,{type:'event',event:'stationHub',action:'destinations',frame:grid.id});return true;}
-      if(at.threshold){notice(p,'Step clear of the elevator doorway.');return true;}
+      if(frame.lift.open&&at.threshold){notice(p,'Step clear of the elevator doorway.');return true;}
       if(frame.lift.open&&blockedDoor(frame)){notice(p,'Elevator doorway occupied.');return true;}
       frame.lift.open=!frame.lift.open;return true;
     },
