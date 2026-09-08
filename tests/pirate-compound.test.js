@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {Vector3,Quaternion,Scene,Group,Mesh,BoxGeometry,MeshStandardMaterial,Matrix4,Texture} from 'three';
+import {Vector3,Quaternion,Scene,Group,Mesh,BoxGeometry,MeshStandardMaterial,Matrix4,Texture,BufferGeometry,Float32BufferAttribute,Triangle} from 'three';
+import {piratePropPlacements,crimsonLampEmitter} from '../src/pirate-compound/prop-layout.js';
+import {buildStationColliders,constrainStationSweep} from '../src/station-collision.js';
 import {PirateStaticKit} from '../src/pirate-compound/static-kit.js';
 import {createPirateCollision} from '../src/pirate-compound/world-collision.js';
 import {SHIP_LAYOUT} from '../src/boarding.js';
@@ -24,6 +26,21 @@ import {terminalFrames} from '../src/trading/terminal-frames.js';
 import {getWorldBoxes} from '../src/build/collision.js';
 import {getPieceDefinition} from '../src/build/definitions.js';
 const step=(sim,seconds,context={})=>{for(let i=0;i<Math.ceil(seconds/.05);i++)sim.update(.05,{distance:120,altitude:30,ship:true,...context});};
+function propGeometry(path){
+ const data=readFileSync(new URL('../'+path,import.meta.url)),length=data.readUInt32LE(12),g=JSON.parse(data.subarray(20,20+length)),bin=data.subarray(28+length),p=g.meshes[0].primitives[0];
+ const values=id=>{const a=g.accessors[id],view=g.bufferViews[a.bufferView],count=a.type==='VEC3'?3:1,bytes=a.componentType===5123?2:4,result=[];for(let i=0;i<a.count;i++)for(let j=0;j<count;j++){const offset=(view.byteOffset??0)+(a.byteOffset??0)+i*(view.byteStride??bytes*count)+j*bytes;result.push(a.componentType===5126?bin.readFloatLE(offset):a.componentType===5125?bin.readUInt32LE(offset):bin.readUInt16LE(offset));}return result;};
+ const geometry=new BufferGeometry();geometry.setAttribute('position',new Float32BufferAttribute(values(p.attributes.POSITION),3));geometry.setIndex(values(p.indices));return geometry;
+}
+test('actual Crimson geometry leaves the trader approach clear and the emitter outside its casing',()=>{
+ const manifest=JSON.parse(readFileSync(new URL('../assets/pirate-props/manifest.json',import.meta.url))),deck=pirateLayout().deck,group=new Group(),geometries=[],material=new MeshStandardMaterial();
+ for(const spec of piratePropPlacements(deck)){const record=manifest.assets.find(a=>a.id===spec.id),bounds=record.rawMeshBounds,scale=spec.width/(bounds.max[0]-bounds.min[0]),geometry=propGeometry(record.runtime),mesh=new Mesh(geometry,material),holder=new Group();geometries.push(geometry);mesh.scale.setScalar(scale);mesh.position.set(-(bounds.min[0]+bounds.max[0])/2*scale,-bounds.min[1]*scale,-(bounds.min[2]+bounds.max[2])/2*scale);if(spec.id==='floodlight')mesh.rotation.y=Math.PI;holder.position.fromArray(spec.position);holder.rotation.y=spec.rotation;holder.add(mesh);group.add(holder);
+  if(spec.id==='floodlight'){mesh.updateMatrix();const emitter=new Vector3(...crimsonLampEmitter((bounds.max[1]-bounds.min[1])*scale)),positions=geometry.attributes.position;let distance=Infinity;for(let i=0;i<geometry.index.count;i+=3){const triangle=new Triangle(...[0,1,2].map(j=>new Vector3().fromBufferAttribute(positions,geometry.index.getX(i+j)).applyMatrix4(mesh.matrix)));distance=Math.min(distance,triangle.closestPointToPoint(emitter,new Vector3()).distanceTo(emitter));}assert.ok(distance>.3,`Point emitter needs casing clearance, got${distance}`);}
+ }
+ try{const tree=buildStationColliders(group),eye=SHIP_LAYOUT.eyeHeight,point=([x,z])=>new Vector3(x,deck+eye,z),min=new Vector3(-.28,-eye,-.28),max=new Vector3(.28,.2,.28);
+  assert.equal(constrainStationSweep(tree,[],point([20,-8]),point([6,-8]),min,max).hit,true,'The rejected browser waypoint crosses an actual tripod foot.');
+  const route=[[-16,-5.5],[-16,20],[20,20],[20,-10],[6,-10],[6,-19.8]];for(let i=1;i<route.length;i++)assert.equal(constrainStationSweep(tree,[],point(route[i-1]),point(route[i]),min,max).hit,false,`Crimson props block trader route ${route[i-1]} to${route[i]}`);
+ }finally{geometries.forEach(g=>g.dispose());material.dispose();}
+});
 test('actual rover cabin flags reset the perimeter without making landed ships immune',()=>{
  for(const nav of [{mode:'flight'}, {mode:'landed',insideShip:true}, {mode:'walk',insideShip:true}])assert.equal(occupiesShip(nav),true);
  const rover={mode:'walk',insideShip:true,roverOccupied:true};assert.equal(occupiesShip(rover),false);
