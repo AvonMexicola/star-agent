@@ -8,7 +8,7 @@ export function builderReadout(build) {
   const preview = build?.preview;
   return {
     label: PIECES[preview?.pieceId ?? build?.pieceId]?.label ?? 'Field builder',
-    mode: build?.removing ? 'REMOVE' : 'ASSEMBLE',
+    mode: build?.decorating ? 'PAINT' : build?.removing ? 'REMOVE' : 'ASSEMBLE',
     status: !build?.active ? 'STOWED' : preview?.valid ? 'READY' : 'BLOCKED',
     valid: Boolean(preview?.valid),
   };
