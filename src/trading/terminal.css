@@ -53,7 +53,7 @@
  #trading-dialog .terminal-session{font-size:10px;gap:5px;max-width:95px}
  #trading-dialog .terminal-workspace{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
  #trading-dialog .trade-tabs{flex-direction:row;flex-wrap:wrap;padding:6px;gap:4px;overflow:visible}
- #trading-dialog .trade-tabs button{flex:1 1 75px;text-align:center;min-height:40px;padding:8px 5px!important;font-size:12px!important}
+ #trading-dialog .trade-tabs button{flex:1 1 55px;text-align:center;min-height:40px;padding:8px 5px!important;font-size:12px!important}
  #trading-dialog .terminal-manifest{padding:12px 10px 8px;gap:9px}
  #trading-dialog .terminal-view-heading{gap:8px}.terminal-view-heading .terminal-view-name{font-size:21px!important}
  #trading-dialog .terminal-context{max-width:17ch;text-align:right;font-size:10px}
@@ -62,6 +62,7 @@
  #trading-dialog .trade-summary span{display:block;font-size:10px}
  #trading-dialog .trade-summary strong{font-size:15px;display:block;margin-top:3px}
  #trading-dialog .trade-selection{gap:6px}
+ #trading-dialog [data-controller-key="choose-ship"]:disabled,#trading-dialog [data-controller-key="base-source"]:disabled{display:none}
  #trading-dialog .terminal-manifest button{font-size:12px;padding:8px;min-height:44px}
  #trading-dialog .trade-choices{gap:3px}#trading-dialog .trade-choices button{min-width:31px;padding:6px!important}
  #trading-dialog .trade-content article{min-height:100px;padding:12px 0;gap:10px;align-items:start}
