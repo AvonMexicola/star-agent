@@ -1,8 +1,8 @@
 # Burrow concept checkpoint 12e
 
-Status: implemented development checkpoint; native author inspection and complete
-controller carrier gameplay pass. Final desktop HUD placement and shared local
-integration are being checked. Independent functional/rubric acceptance, physical
+Status: locally integrated development checkpoint at `ab418ca` on 2026-09-08.
+Native author inspection, complete controller carrier gameplay and final combined
+keyboard/native-touch journeys pass. Independent functional/rubric acceptance, physical
 controller testing and performance acceptance remain pending. Historical Burrow
 scores do not approve this export. Nothing in this record authorizes a public release.
 
@@ -118,7 +118,7 @@ Phone controls remain visible and usable; they cover much of the fitted console
 at this narrow viewport. In the first desktop captures the old HUD covered the
 ore MFD. The final occupied desktop CSS places actions and bindings at the upper
 left and lets the physical instruments supply telemetry. Final union evidence
-and integration disposition follow below.
+and integration disposition are recorded below.
 
 ## Failed iterations and remaining gates
 
@@ -148,4 +148,50 @@ constitute simulated life support or a new local lighting system. Broader terrai
 hardware controls, performance and multiplayer rover authority remain separate.
 
 
-Final combined candidate dd31cd6 passes151normal test files and productionbuild4.54s. The first final UI run passes keyboard, including the relocated HUD, but its phone test tried to press the paged-inventory next button while the dialog was still moving. The native centre-hit assertion stopped before sending that contact. The fixture now waits for three stable, hittable animation frames; no application action or collision check was relaxed. Original failure/video: /tmp/burrow-concept-union-panels12e/. Final phone rerun is pending.
+## Final combined validation and local integration
+
+The private combined candidate `dd31cd6` passes **151 normal test files**,
+production build **4.54 s**, repository checks and the suggested check plan.
+It preserves the checked foundation, settlement, base-commerce and encounter
+features. The normal-test command preserves every foundation entry and adds the
+two Burrow files; the handoff conflict retains both histories. The first private
+merge command ran before worktree creation had finished and stopped on its index
+lock; after checkout completion the merge proceeded. No shared files were touched
+by that setup failure.
+
+The final desktop route passes in **1.0 min**, with the HUD clear of the ore
+screen. Its original output is `/tmp/burrow-concept-union-panels12e/keyboard/`.
+The same batch's phone case stopped at a non-hittable centre as inventory opened;
+layout timing was suspected, and the fixture now observes three stable, hittable
+frames before contact. Phone attempt02 then delivered a tap without advancing the
+page; no application cause was established. Attempt03 completed every gameplay
+action, with trusted native down/up/capture events, then failed an overbroad check
+that also demanded the existing second-finger helper's semantic `.click()` be
+trusted. That helper deliberately invokes the normal button handler. The final
+assertion distinguishes real native contacts from those semantic clicks. All
+three original attempts and videos remain in `/tmp/burrow-concept-union-*`.
+
+Final phone attempt04 **passes in 1.1 min**, including held-input cargo paging,
+release/repress, real ore, physical exit/reboard, steering, braking and reverse.
+There are 48 trusted pointer/capture events. Both final desktop and phone receipts
+have **zero app errors, warnings or failed requests**. Their runtime and asset
+hashes match the production build; subsequent changes are review fixtures and
+metadata only. Final phone output: `/tmp/burrow-concept-union-phone12e-04/`.
+
+![Final desktop mining and unobstructed instruments](game-desktop-mining.png)
+
+![Final phone inventory with actual collected ore](game-touch-inventory.png)
+
+The checked candidate was combined with foundation's final `01a28df` metadata,
+then fast-forwarded into local `dev/all-features` at **`ab418ca`**. The guard
+preserved the exact **56,247-byte** uncommitted handoff suffix and retained the
+existing preview/API processes. Direct and proxied API health, launcher, display
+module, CSS and model all return HTTP200. The served GLB is byte-for-byte identical
+to the reviewed `5433c837…` artifact. Receipts: `/tmp/burrow-integration-runtime/`.
+No API, schema, protocol, account data or public deployment changed.
+
+Test in the normal [local preview](http://127.0.0.1:5178/?dev=1&intro=0&start=rover-surface&debug=1&seed=7291),
+or use F2 → Burrow mining — Selene surface. Select Gannet → Selene for physical
+carrier entry. [Draft PR92](https://github.com/AvonMexicola/star-agent/pull/92) is
+stacked on station-access PR88 / `1435008` to keep its changes bounded.
+The source integration is complete; independent art acceptance remains pending.
