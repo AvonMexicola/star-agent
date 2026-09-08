@@ -40,6 +40,13 @@ test('server binds contract and crate to authenticated owner, actual terminal an
  // authoritative deposit can separately exercise destination/reach/rollback.
  await store.transactCommerce(s=>{const h=s.ships[`${alice.id}:nomad`];h.crates.push(placeCrate(h.hull,h.crates,transportCargo(s.loose[crate.id])));delete s.loose[crate.id];return {state:s};});await room.trading.join(rejoined);
  assert.equal(room.trading.snapshot(bob).ships.find(s=>s.owner===alice.id&&s.hull==='nomad').crates.length,0,'private mission manifest not exposed');
+ // Private cargo must not leave an invisible walking/EVA obstacle for Bob.
+ park(rejoined,pickup);
+ const pathA=rejoined.nav.fromShipLocal(new Vector3(0,2.75,2.46)),pathB=rejoined.nav.fromShipLocal(new Vector3(1.24,2.75,2.46));
+ const evaA=rejoined.nav.fromShipLocal(new Vector3(0,1.9,2.46)),evaB=rejoined.nav.fromShipLocal(new Vector3(1.24,1.9,2.46));
+ assert.equal(rejoined.nav.cargoEVA(evaA,evaB).hit,true,'the owner still collides with the sealed crate');
+ assert.ok(bob.nav.cargoEVA(evaA,evaB).point.distanceTo(evaB)<1e-6,'other players have no invisible EVA cargo');
+ assert.ok(bob.nav.cargoWalk(pathA,pathB).point.distanceTo(pathB)<1e-6,'other players have no invisible walking cargo');
  // Execute the new online drive request against actual navigation state.
  park(rejoined,pickup);const n=rejoined.nav,up=new Vector3(0,1,0).applyQuaternion(n.shipOrientation);n.mode='flight';n.shipPosition=null;n.position=v(pickup.pad.position).applyQuaternion(new Quaternion(...pickup.claim.quaternion)).add(v(pickup.claim.origin)).addScaledVector(up,20500);n.gearDeployed=false;n.gearProgress=0;n.enabled=true;n.orientToward(v(destination.pad.position).applyQuaternion(new Quaternion(...destination.claim.quaternion)).add(v(destination.claim.origin)),up);
  const drive=await request(rejoined,{op:'transport-drive',target:destination.id,position:[0,0,0],end:[0,0,0]});assert.equal(drive.ok,true,drive.error);assert.equal(n.travel.targetId,destination.id);assert.ok(n.travel.plan.start.distanceTo(n.position)<.001);assert.ok(n.travel.plan.distance>1000000);assert.equal(room.trading.state.accounts[alice.id].transport.completed,0);const flightStart=n.position.clone();for(let i=0;i<90;i++){now+=1000/30;room.tick();}assert.ok(n.position.distanceTo(flightStart)>1000,'server integrator flies continuously after committed plan revival');assert.ok(n.travel);n.travel=null;

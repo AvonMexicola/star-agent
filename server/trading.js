@@ -67,15 +67,16 @@ export function createTrading({store,players,world,persistent,flushWrites,now=Da
     attach(p){
       const sites=attachTransportSites(p.nav);settlements.set(p,sites);
       const privateLoose=()=>loose().filter(c=>cargoVisibleTo(c,p.id));
+      const privateShips=()=>physicalShips().map(s=>({...s,crates:s.crates.filter(c=>cargoVisibleTo(c,p.id))}));
       const bases=createBaseScene(null,p.nav,()=>Object.values(state.terminals));
       const previousRay=p.nav.buildingRaycast;p.nav.buildingRaycast=(...args)=>{return [previousRay?.(...args),bases.raycast(...args),sites.raycast(...args)].filter(Boolean).sort((a,b)=>a.distance-b.distance)[0]??null;};
       p.nav.baseLandingSurface=pose=>bases.landingSurface(pose)??sites.landingSurface(pose);p.nav.baseLandingRevision=()=>Object.keys(state.terminals).join(',');
       Object.defineProperty(p.nav,'carryingCargo',{configurable:true,get:()=>Boolean(state.accounts[p.id]?.carried||loose().some(c=>c.holder===p.id&&c.until>now()))});
-      p.nav.cargoEVA=(a,b)=>{const hit=constrainCargoEVA(a,b,physicalShips());const point=constrainLooseCargo(a,hit.point,privateLoose(),{eva:true});return {point,hit:hit.hit||!point.equals(hit.point)};};
+      p.nav.cargoEVA=(a,b)=>{const hit=constrainCargoEVA(a,b,privateShips());const point=constrainLooseCargo(a,hit.point,privateLoose(),{eva:true});return {point,hit:hit.hit||!point.equals(hit.point)};};
       p.nav.cargoLandingSurface=position=>pads.floorAt(position);
       // Pad poses are immutable after deployment; ignore unrelated ledger changes.
       p.nav.cargoLandingRevision=()=>Object.keys(state.terminals).length;
-      p.nav.cargoWalk=(a,b)=>{const ships=physicalShips().filter(s=>s.owner!==p.id);const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point),base=bases.constrain(a,pad.point),point=constrainLooseCargo(a,base.point,privateLoose());return {...base,point,grounded:base.grounded||pad.grounded||foreign.grounded,hit:base.hit||pad.hit||pad.grounded||foreign.hit||!point.equals(base.point)};};
+      p.nav.cargoWalk=(a,b)=>{const ships=privateShips().filter(s=>s.owner!==p.id);const foreign=walkForeignShips(a,b,ships);const pad=pads.constrain(a,foreign.point),base=bases.constrain(a,pad.point),point=constrainLooseCargo(a,base.point,privateLoose());return {...base,point,grounded:base.grounded||pad.grounded||foreign.grounded,hit:base.hit||pad.hit||pad.grounded||foreign.hit||!point.equals(base.point)};};
       p.nav.cargoConstrain=(previous,proposed)=>{const constrained=constrainShipAttachments(previous,proposed,(state.ships[shipKey(p.id,p.nav.shipId)]?.crates??[]).map(c=>crateBounds(p.nav.shipId,c)));return p.nav.toShipLocal(constrainLooseCargo(p.nav.fromShipLocal(previous),p.nav.fromShipLocal(constrained),privateLoose()));};},
     async request(p,m){
       if(p.health<=0)fail('Respawn before handling cargo.');
