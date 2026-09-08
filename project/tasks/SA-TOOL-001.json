@@ -4,8 +4,8 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex handheld builder",
-  "status": "active",
-  "branch": "feat/handheld-builder",
+  "status": "review",
+  "branch": "art/rotating-mining-tool",
   "base": "5f8f01870b3cd3e408a1ef60231134883c9363f3",
   "updated": "2026-09-08",
   "areas": [

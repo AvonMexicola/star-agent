@@ -1,8 +1,8 @@
 # Field cutter production record
 
 2026-09-08. Author implementation, native rendering and the full gameplay journey
-pass on `d1078be`. A narrow portrait framing follow-up at `03d789a` is queued;
-local integration and independent acceptance are pending.
+pass on `d1078be`. The final portrait framing and combined gameplay follow-up
+passes at `d666490`; local integration and independent acceptance are pending.
 See the [brief](../../briefs/field-cutter.md).
 
 Current exported Mk1: `dc078fe73e0d46d32bbdf8a63db82f41231454178297ae6104d62db0cbece967`,
@@ -77,3 +77,17 @@ head; a portrait-only mount adjustment brings it toward the centre and farther
 from the camera. Its production build passes in 10.33 seconds
 (`.staging/production04.log`); one focused gameplay/phone follow-up is pending.
 The earlier passing builder/native cases are not repeated for this adjustment.
+
+Combined03 at `d666490` includes the checked Garage `83e10ae` and validates the
+final mount in the complete controller/mining/keyboard/touch journey: one case
+passes in 1.3 minutes, with zero application errors, warnings or failed requests
+and stable source/asset hashes. All 158 combined normal test files pass in
+72.02 seconds; final production/native-viewer build passes in 45.03 seconds.
+Repository checks pass, and the suggested plan is retained in `check-plan05.log`.
+
+Author review of [actual mining](game-mining.png), [collected inventory](game-inventory.png)
+and [final phone framing](game-phone.png) confirms the emitter/beam connection,
+collected material and visible head. The phone's existing crowded HUD remains;
+this change adjusts tool framing without redesigning the HUD. No further browser
+run is needed for documentation-only delivery changes. Raw final receipt:
+`assets/field-cutter/.staging/qa-combined03`.

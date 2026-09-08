@@ -608,7 +608,7 @@ independent visual and physical-controller acceptance remain separate.
 
 ## Compact builder and K-17 rotating cutter
 
-The isolated handheld candidate adds a compact Meridian field builder with a
+The compact Meridian field builder has a
 live piece/status display and a brief projection from its emitter after a
 successful placement or removal. On foot outside the ship, open **Menu → Build**
 on a controller, **B** on a keyboard or the visible **Build** button. Choose a
@@ -628,7 +628,9 @@ Editable sources and reproduction scripts are in `assets/builder-tool/` and
 models in the prop library; medical equip/use animations are still pending.
 See the [builder record](qa/builder-tool/README.md) and
 [cutter record](qa/field-cutter/README.md) for source and acceptance status.
-Final cutter gameplay/phone validation and local integration are pending.
+The complete controller/keyboard/native-touch journeys and final phone framing
+pass. Local integration is the remaining delivery step; physical-device and
+independent art acceptance remain separate.
 
 ## Fleet audio, merchants, roofs and power in the candidate
 

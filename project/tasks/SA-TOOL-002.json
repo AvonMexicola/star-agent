@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex field cutter",
-  "status": "active",
+  "status": "review",
   "branch": "art/rotating-mining-tool",
   "base": "67dc33b97a40e3aff6f76c527546a77e6669d960",
   "updated": "2026-09-08",
