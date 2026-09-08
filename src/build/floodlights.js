@@ -45,9 +45,11 @@ class FloodlightPool {
     this.lights.forEach((light, i) => {
       const fixture = candidates[i];
       light.visible = Boolean(fixture);
-      light.intensity = fixture ? 1500 * floodlightFade(fixture.distance) : 0;
+      light.intensity = fixture ? (Number.isFinite(fixture.intensity) ? Math.max(0, Math.min(1500, fixture.intensity)) : 1500) * floodlightFade(fixture.distance) : 0;
       light.userData.fixtureId = fixture?.id ?? null;
       if (fixture) {
+        light.distance = Number.isFinite(fixture.range) ? Math.max(1, Math.min(FLOODLIGHT_RANGE, fixture.range)) : FLOODLIGHT_RANGE;
+        light.shadow.camera.far = light.distance;
         light.position.copy(fixture.position).sub(origin);
         light.target.position.copy(fixture.target).sub(origin);
       }

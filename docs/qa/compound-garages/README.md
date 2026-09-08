@@ -4,6 +4,7 @@ Status: gameplay/browser checks complete; ready for a labeled local development
 checkpoint, integrated locally at `e098947` (metadata `83e10ae`). Served preview
 and paired API are verified in the [local receipt](local-integration.json). Owner: Codex compound garages. Branch `feat/compound-garages`,
 base `23ca619`, combined runtime `2e686db` including checked Transport `f294a98`.
+Draft [PR #100](https://github.com/AvonMexicola/star-agent/pull/100) preserves garage runtime `41a5cba`; review head `09011e7` also consumes merged freight PR #99 and its checked database shutdown correction. The garage source and assets are unchanged by that merge.
 Private preview5674 / memory API8674; no public
 release or shared service change. Final independent art, hardware and performance
 acceptance remain pending.
@@ -129,3 +130,5 @@ import/update and served rover deployAt. Parent inspected the raw source files
 and verified their recorded SHA256. [Exact commands/results](served-preview.json).
 The opt-in HTTP browser helper was not run; its guard correctly deferred when
 another job was active, and the independent receipt made another GPU job unnecessary.
+
+Hosted run [34280008113](https://github.com/AvonMexicola/star-agent/actions/runs/34280008113) on review head `09011e7` passed all five checks: planning 34s, source 4m43s, multiplayer 2m45s, browser 7m46s and aggregate verification 3s. The preceding run on `41a5cba` passed source/browser/planning but failed multiplayer and aggregate verification. Its detailed log could not be fetched through the session’s ordinary read path; no cause is asserted for that specific hosted failure. The later run includes the independently checked and merged database lifecycle fix.
