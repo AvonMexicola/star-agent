@@ -1,10 +1,11 @@
 # SA-GARAGE-001 — compound garage checkpoint
 
-Status: implementation and CPU checks complete; browser acceptance and local
-integration pending. Owner: Codex compound garages. Branch `feat/compound-garages`,
+Status: gameplay/browser checks complete; ready for a labeled local development
+checkpoint. Local integration receipt pending. Owner: Codex compound garages. Branch `feat/compound-garages`,
 base `23ca619`, combined runtime `2e686db` including checked Transport `f294a98`.
 Private preview5674 / memory API8674; no public
-release or shared service change. A final receipt will replace this pending status.
+release or shared service change. Final independent art, hardware and performance
+acceptance remain pending.
 
 ## Scope and asset provenance
 
@@ -43,10 +44,17 @@ precede the descending ramps. Terrain comes from the original canonical function
 - `npm run check:repo`: passes. `npm run plan:checks -- --base
   origin/dev/all-features` completes; its current57-path plan includes the checked
   transport dependency. Helpers do not certify gameplay.
-- Browser controller/keyboard/native390 journey and four world image comparisons
-  are prepared in `scripts/compound-garages.spec.js`. Attempt02 reached actual
-  controller landing, ship exit, console interaction and Burrow deployment, with
-  zero application errors/warnings; the complete journey is still pending.
+- `npm run test:browser -- -c scripts/compound-garages.config.js`: **5/5 pass**,
+  7.4min, on frozen `9b6a7de` (runtime `2e686db`). The 2.7min injected standard
+  Gamepad journey lands Nomad, physically walks out, reaches the console, deploys
+  Burrow, boards via its door/steps, drives all wheels onto terrain, opens its ore
+  bins, exits and walks back. Keyboard entry and native390 touch retrieve it again.
+  Actual empty-bin mass0 and partially used charge are unchanged by retrieval;
+  this browser case does not claim nonzero cargo transfer. Held-trigger checks
+  cover dialog close, real focus changes and device disconnect/reconnect.
+- All four fixed-time/seed world views render with zero page/console errors or
+  warnings. The production build in that focused run passed. Runtime/source stayed
+  clean and at the same SHA throughout. [Validation identity and metrics](validation.json).
 
 Raw CPU logs remain ignored under `test-results/garage-cpu` in the owner worktree.
 The first combined focused run exposed a mast/header overlap; moving that one mast
@@ -72,17 +80,33 @@ no evidence was deleted. Normal and previously approved commands now work withou
 new permission requests. Combined transport integration retained its multiplayer
 settlements; the garage interaction remains explicitly solo.
 
-## Limits and next action
+## Images and remaining acceptance
 
-No complete browser acceptance, independent visual score, physical-controller
-test or FPS acceptance is claimed yet. Existing nondefault seeds still generate four sites;
-the detailed driveway traversal evidence is for seed7291. Session-only pose and
-charge behavior is documented in the [player route](../../compound-garages.md).
+The author inspected all four actual compound views and the desktop/phone journey
+images. [Aeon](aeon-compound.png) and [Selene](selene-compound.png) show the clear
+drive-through openings, workshop fittings and supported ramps. Their same-camera
+[before](../outdoor-floodlights/aeon-approach.png)/[after](aeon-approach.png) keeps
+the large pad and other buildings fixed. [Pyre](pyre-compound.png) and
+[Miasma](miasma-compound.png) retain the existing night exposure; the outer garage
+faces and long driveway are dark at the distant art camera. Better night approach
+lighting remains a presentation follow-up, not an accepted art result.
 
-Run the one-worker focused browser command through the owner actual-executable
-and argument guard after earlier ready owners release the GPU. Use short disk-backed
-`.browser-cache/g` and unique disk-backed evidence; tmpfs is quota-constrained.
-Inspect the final images and console diagnostics, fix observed failures, then
-record exact candidate/QA heads and integrate the checked development checkpoint
-while preserving the shared append-only journal. Shared local preview5178/API8087
-currently includes checked Transport `f294a98`; no requested garage runtime is served there yet.
+The [desktop console](garage-deployed.png), [phone console](garage-phone.png),
+[physical cabin](garage-cockpit.png) and [terrain exit](driveway-exit.png) record
+the real journey. This is author inspection, not an independent rubric score.
+
+Chromium151.0.7922.173 used ANGLE AMD Radeon860M/OpenGL ES3.2,1440×900 and390×844,
+seed7291 and epoch1788876000000. Same-camera draw calls before→after are
+Aeon2713→3076, Selene2345→2591, and Miasma2841→3104; full values for every world
+are in the JSON. Existing scenes already exceed the budget and the additional
+kit adds draws. The isolated FPS snapshots are observations under shared-machine
+load, not a controlled benchmark or performance acceptance. No physical controller
+or formal independent visual review is claimed.
+
+Existing nondefault seeds still generate four sites; detailed driveway traversal
+uses seed7291. Session-only pose and charge behavior is in the
+[player route](../../compound-garages.md). The focused runner and private API are
+closed; raw logs, state and retained failed videos remain in the owner worktree.
+Next: serialize the source-only local FF over checked Transport `f294a98`, preserve
+the dirty journal byte-for-byte and record served-source/API checks. No garage
+runtime is yet claimed as served by the shared5178 preview.
