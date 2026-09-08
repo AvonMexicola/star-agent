@@ -13,7 +13,7 @@ location; it is absent from distant public settlement listings.
 
 The tower warns within300m, waits5s, charges visibly1.2s, then fires18-damage shots
 in three-round bursts at0.75s spacing. Five-second rests allow a retreat beyond
-220m; only ships above8m are targets. Full-health supported hulls survive a shot
+220m; flight, landed pilots and aboard cabin occupants are targets. Full-health supported hulls survive a shot
 and a complete burst. No catch-up firing after focus/modal pauses. Foot isolation
 unlocks trading for the session. NPC ground combat remains owned by SA-PIRATE-001
 and will only be consumed from its checked offered release.

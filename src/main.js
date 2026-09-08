@@ -227,7 +227,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   if(sandboxEnabled){const result=prepareSandbox(mining.store);if(!result.ok)throw Error(result.message);}
   const sandbox=sandboxEnabled?{totals:()=>sandboxTotals(mining.store),refill:()=>refillSandbox(mining.store)}:null;
   const build=new BuildSystem({scene,nav,store:mining.store,supplySources:()=>sandboxEnabled?SANDBOX_BINS.map(b=>b.id):[]});
-  const pirateCompound=createPirateCompound({scene,nav,getCombat:()=>combat,enabled:()=>!sandboxEnabled&&!multiplayer.connected});
+  const pirateCompound=createPirateCompound({scene,nav,mining,getCombat:()=>combat,enabled:()=>!sandboxEnabled&&!multiplayer.connected});
   const settlements=withPirateCompound(createSettlements({scene,nav,enabled:()=>!sandboxEnabled&&!multiplayer.connected}),pirateCompound);
   build.protectedClaims=()=>settlements.claims;
   if(sandboxEnabled)spawnInSandbox(nav,build);

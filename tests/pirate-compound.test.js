@@ -11,6 +11,8 @@ import {SETTLEMENTS,settlementById} from '../src/settlements/catalog.js';
 import {emptyCommerce,normalizeSettlementMarkets,validCommerce} from '../src/trading/model.js';
 import {integrity,damage} from '../src/combat/simulation.js';
 import {SELENE,bodySurfacePoint} from '../src/celestial.js';
+import {terminalFrames} from '../src/trading/terminal-frames.js';
+import {getWorldBoxes} from '../src/build/collision.js';
 import {getPieceDefinition} from '../src/build/definitions.js';
 const step=(sim,seconds,context={})=>{for(let i=0;i<Math.ceil(seconds/.05);i++)sim.update(.05,{distance:120,altitude:30,ship:true,...context});};
 test('single shot and complete burst preserve every supported full-health hull',()=>{
@@ -24,7 +26,7 @@ test('retreat, ground route, pause and long frame cannot preserve a stale volley
  step(p,.1,{distance:221});assert.equal(p.phase,'warning');assert.ok(p.timer>=4.9);step(p,5,{distance:170});assert.equal(shots,before);
  p.update(999,{distance:120,altitude:30,ship:true});assert.ok(shots<=before+1);
  step(p,.1,{active:false});assert.equal(p.phase,'idle');step(p,5);assert.ok(shots<=before+1);
- step(p,60,{ship:false});assert.equal(p.phase,'idle');step(p,60,{altitude:7});assert.equal(p.phase,'idle');
+ step(p,60,{ship:false});assert.equal(p.phase,'idle');const low=new PiratePerimeter();step(low,8,{altitude:2});assert.equal(low.shots,3,'A still-piloted landed ship is not immune.');
  p.isolate();step(p,60);assert.equal(p.phase,'disabled');assert.ok(shots<=before+1);
 });
 test('obstruction and turning require a fresh telegraph, burst stays bounded',()=>{
@@ -51,4 +53,12 @@ test('Crimson derivatives retain exact source geometry and three bounded native 
  for(const record of m.assets){const source=readFileSync(new URL('../'+record.source,import.meta.url)),runtime=readFileSync(new URL('../'+record.runtime,import.meta.url)),a=parse(source),b=parse(runtime),images=new Set(a.g.images.map(i=>i.bufferView));assert.equal(createHash('sha256').update(source).digest('hex'),record.sourceSha256);assert.equal(createHash('sha256').update(runtime).digest('hex'),record.sha256);assert.ok(runtime.length<=1000000&&record.triangles<=10000);assert.equal(record.textures.length,3);assert.ok(record.textures.every(t=>Math.max(...t.size)<=512));assert.ok(b.g.extensionsRequired.includes('EXT_texture_webp'));
   for(let i=0;i<a.g.bufferViews.length;i++)if(!images.has(i)){const x=a.g.bufferViews[i],y=b.g.bufferViews[i];assert.deepEqual(a.bin.subarray(x.byteOffset??0,(x.byteOffset??0)+x.byteLength),b.bin.subarray(y.byteOffset??0,(y.byteOffset??0)+y.byteLength));}
  }
+});
+
+test('ramp supporting foundations reach sampled terrain without protruding through the incline',()=>{
+ const s=pirateLayout(),pieces=[...s.claim.pieces,...s.outerClaim.pieces];
+ for(const entry of s.rampSupports){const ramp=pieces.find(p=>p.id===entry.rampId),supports=entry.supportIds.map(id=>pieces.find(p=>p.id===id));if(!supports.length)continue;assert.ok(supports.every(p=>p.supportDepth>=.6&&p.supportDepth<=8));assert.equal(supports[0].position[1],ramp.position[1]-.6);assert.ok(supports.every(p=>getWorldBoxes(p).every(b=>b.max[1]<=ramp.position[1]-.6+1e-7)));assert.ok(supports.at(-1).position[1]-supports.at(-1).supportDepth<=entry.terrainLow-.099);}
+});
+test('locked exchange projection directs players to the isolator',()=>{
+ const s=pirateLayout(),frames=terminalFrames({snapshot:{terminals:[]},settlements:{claims:[s.claim],layouts:[s],terminalStatus:()=>({status:'Isolate perimeter tower',available:false})},station:null});assert.equal(frames.length,1);assert.equal(frames[0].status,'Isolate perimeter tower');assert.equal(frames[0].available,false);
 });

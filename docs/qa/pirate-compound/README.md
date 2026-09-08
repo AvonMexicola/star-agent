@@ -30,8 +30,8 @@ pending module and is not implemented by this compound task.
   subtract the camera origin before GPU uploads. Existing standard materials
   supply log depth. Tripod lamps share the global six-light/two-shadow pool.
 - Tower:300m warning/180m engagement/220m disengagement;5s initial warning,
-  1.2s visible charge,3shots×18damage at0.75s intervals,5s burst rest. Only airborne
-  ships above8m are targets. Shared combat shield/hull/effects/recovery adapter;
+  1.2s visible charge,3shots×18damage at0.75s intervals,5s burst rest. Flight, landed pilots and aboard cabin occupants are targets;
+  actual exterior on-foot approach is safe. Shared combat shield/hull/effects/recovery adapter;
   each full-health supported ship survives a complete54damage burst with hull intact.
 - On-foot tower isolation unlocks the existing finite-stock trade UI this session.
   Market stock persists in the existing atomic solo commerce save and is seeded
