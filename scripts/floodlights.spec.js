@@ -109,47 +109,42 @@ test('controller constructs floodlight, checks materials, switches it and return
   await writeFile(`${out}/controller.json`, JSON.stringify({browser: browser.version(), graphics: await graphics(page), input: 'Injected standard Gamepad; actual shipped sandbox, no pose or inventory injection. Keyboard/phone closure separately.', physicalDevice: false, errors, warnings, lamp, materialsSpent: {'metal-stock': 8, conductor: 3, glass: 2}}, null, 2));
 });
 
-test('settlement floodlights illuminate all four actual worlds with bounded lighting', async ({page, browser}) => {
-  const {errors, warnings} = await setup(page, '/?dev=1&ship=nomad&start=settlement-aeon&intro=0&debug&seed=7291'); const views = [];
-  // Fixed art viewpoints are deliberately separate from the real input route.
-  for (const body of ['aeon', 'selene', 'pyre', 'miasma']) {
-    if (body !== 'aeon') {await page.goto(`/?dev=1&ship=nomad&start=settlement-${body}&intro=0&debug&seed=7291`); await ready(page);}
-    await page.waitForFunction(() => window.starAgent.state.settlements.ready && window.starAgent.state.settlements.rendered > 0);
-    await page.addStyleTag({content: 'body > :not(canvas) { visibility: hidden !important; }'});
-    for (const [view, eye, target] of [['approach', [70, 42, 92], [0, 2, 12]], ['walk', [17, 1.75, 32], [0, 3, -18]]]) {
-      await page.evaluate(({eye, target}) => {
-        const n = window.starAgent.navigation, s = window.starAgent.state.settlements.sites.find(s => s.body === n.body.id), q = n.orientation.clone().fromArray(s.quaternion), origin = n.position.clone().fromArray(s.origin);
-        const deck = n.position.clone().fromArray(s.pad).sub(origin).applyQuaternion(q.clone().invert()).y;
-        const point = a => n.position.clone().fromArray(a).add(n.position.clone().set(0, deck, 0)).applyQuaternion(q).add(origin);
-        n.mode = 'walk'; n.enabled = false; n.insideShip = false; n.position.copy(point(eye)); n.orientToward(point(target), n.normal); n.velocity.set(0, 0, 0);
-      }, {eye, target});
-      await frames(page); await page.waitForTimeout(2200); await capture(page, `${body}-${view}`);
-      const g = await graphics(page); expect(g.floodlights.active).toBe(6); expect(g.floodlights.shadows).toBeLessThanOrEqual(2); views.push({body, view, ...g});
-    }
+async function artView(page, eye, target) {
+  await page.evaluate(({eye, target}) => {
+    const n = window.starAgent.navigation, s = window.starAgent.state.settlements.sites.find(s => s.body === n.body.id), q = n.orientation.clone().fromArray(s.quaternion), origin = n.position.clone().fromArray(s.origin);
+    const deck = n.position.clone().fromArray(s.pad).sub(origin).applyQuaternion(q.clone().invert()).y;
+    const point = a => n.position.clone().fromArray(a).add(n.position.clone().set(0, deck, 0)).applyQuaternion(q).add(origin);
+    n.mode = 'walk'; n.enabled = false; n.insideShip = false; n.position.copy(point(eye)); n.orientToward(point(target), n.normal); n.velocity.set(0, 0, 0);
+  }, {eye, target});
+  await frames(page);
+  // Capture the real canonical floor after its queued meshes and morphs finish.
+  await page.waitForFunction(() => {
+    const s = window.starAgent.state;
+    return s.body === 'aeon' ? s.terrainLod.settled : s.body === 'selene' ? s.moon.pending === 0 && s.moon.effects.settled : s[s.body].pending === 0 && s[s.body].morphing === 0;
+  }, null, {timeout: 60000});
+  await page.waitForTimeout(1000);
+}
+const artViews = [['approach', [70, 42, 92], [0, 2, 12]], ['walk', [17, 1.75, 32], [0, 3, -18]], ['mast', [17, 1.75, 10], [22.5, 3, 20]]];
+for (const body of ['aeon', 'selene', 'pyre', 'miasma']) test(`settlement floodlights render on ${body}`, async ({page, browser}) => {
+  const {errors, warnings} = await setup(page, `/?dev=1&ship=nomad&start=settlement-${body}&intro=0&debug&seed=7291&epoch=1788876000000`), views = [];
+  await page.waitForFunction(() => window.starAgent.state.settlements.ready && window.starAgent.state.settlements.rendered > 0);
+  await page.addStyleTag({content: 'body > :not(canvas) { visibility: hidden !important; }'});
+  for (const [view, eye, target] of artViews) {
+    await artView(page, eye, target); await capture(page, `${body}-${view}`);
+    const g = await graphics(page); expect(g.floodlights.active).toBe(6); expect(g.floodlights.shadows).toBeLessThanOrEqual(2); views.push({body, view, ...g});
   }
-  expect(errors).toEqual([]); await writeFile(`${out}/worlds.json`, JSON.stringify({browser: browser.version(), views, errors, warnings, artViewpoints: true, performanceAcceptance: false}, null, 2));
+  expect(errors).toEqual([]); await writeFile(`${out}/${body}-world.json`, JSON.stringify({browser: browser.version(), views, errors, warnings, artViewpoints: true, performanceAcceptance: false}, null, 2));
 });
 
-test('matched night views and walking-scale mast inspection', async ({page, browser}) => {
-  test.setTimeout(300000);
+test('pre-floodlight Pyre comparison uses the same settled viewpoints', async ({page, browser}) => {
   const baseline = process.env.FLOODLIGHT_BASELINE_URL;
   test.skip(!baseline, 'Provide the frozen pre-floodlight settlement preview URL for comparison.');
-  const {errors, warnings} = await setup(page, '/?dev=1&ship=nomad&start=settlement-pyre&intro=0&debug&seed=7291');
-  const views = [];
-  for (const body of ['pyre', 'miasma']) for (const version of ['before', 'after']) {
-    await page.goto(`${version === 'before' ? baseline : 'http://127.0.0.1:5654'}/?dev=1&ship=nomad&start=settlement-${body}&intro=0&debug&seed=7291`);
-    await ready(page); await page.waitForFunction(() => window.starAgent.state.settlements.ready && window.starAgent.state.settlements.rendered > 0);
-    await page.addStyleTag({content: 'body > :not(canvas) { visibility: hidden !important; }'});
-    for (const [view, eye, target] of [['approach', [70, 42, 92], [0, 2, 12]], ['mast', [17, 1.75, 24], [22.5, 3, 20]]]) {
-      await page.evaluate(({eye, target}) => {
-        const n = window.starAgent.navigation, s = window.starAgent.state.settlements.sites.find(s => s.body === n.body.id), q = n.orientation.clone().fromArray(s.quaternion), origin = n.position.clone().fromArray(s.origin);
-        const deck = n.position.clone().fromArray(s.pad).sub(origin).applyQuaternion(q.clone().invert()).y;
-        const point = a => n.position.clone().fromArray(a).add(n.position.clone().set(0, deck, 0)).applyQuaternion(q).add(origin);
-        n.mode = 'walk'; n.enabled = false; n.insideShip = false; n.position.copy(point(eye)); n.orientToward(point(target), n.normal); n.velocity.set(0, 0, 0);
-      }, {eye, target});
-      await frames(page); await page.waitForTimeout(2200); await capture(page, `${body}-${view}-${version}`); views.push({body, version, view, ...await graphics(page)});
-    }
+  const {errors, warnings} = await setup(page, `${baseline}/?dev=1&ship=nomad&start=settlement-pyre&intro=0&debug&seed=7291&epoch=1788876000000`), views = [];
+  await page.waitForFunction(() => window.starAgent.state.settlements.ready && window.starAgent.state.settlements.rendered > 0);
+  await page.addStyleTag({content: 'body > :not(canvas) { visibility: hidden !important; }'});
+  for (const [view, eye, target] of artViews) {
+    await artView(page, eye, target); await capture(page, `pyre-${view}-before`); views.push({view, ...await graphics(page)});
   }
   expect(errors).toEqual([]);
-  await writeFile(`${out}/comparison.json`, JSON.stringify({browser: browser.version(), baseline, baselineRuntime: '03a561e / pre-floodlight settlement preview', views, errors, warnings, artViewpoints: true, performanceAcceptance: false}, null, 2));
+  await writeFile(`${out}/comparison-before.json`, JSON.stringify({browser: browser.version(), baseline, baselineRuntime: '03a561e / pre-floodlight settlement preview', views, errors, warnings, artViewpoints: true, performanceAcceptance: false}, null, 2));
 });
