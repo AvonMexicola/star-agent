@@ -76,3 +76,20 @@ were added to the existing real validator regression. All56 cases across actual
 appearance/build-state/settlements/pirate modules pass in7.179s. Valid identifiers,
 artwork and rendering are unchanged; final composition will receive the full
 normal suite. Draft PR107 is stacked on the checked Hush compound PR103.
+
+Browser04 on clean3af53c7 passed the saved structural/appearance comparison after
+reload and invoked Return to regular game. The fixture then awaited four frames
+in the old document while the actual return action replaced it; Playwright correctly
+reported destroyed execution context. Its navigation helper now observes the URL
+change alongside the real A press, with no old-document frame wait or swallowed
+error. The actual game reported zero errors/warnings. Original04 records stay
+retained; this3.0m case is not counted as a passed test. The previously unrun four
+corporate views and phone case now execute before the complete controller case.
+This changes only fixture ordering, not acceptance criteria.
+
+04 suit-lit wall views show distinct paint and prints with the physical kit
+texture retained. The held tools cast different shadows, so these gameplay images
+are not a pixel/performance comparison. Corporate and pirate art views supply
+unobstructed site review. The palette and inventory suppress scene draws to zero;
+03 sandbox scene was497–499 draws/1.13–1.14M triangles on AMD860M ANGLE gl at
+1440×900, scale1. These snapshots are not frame-time acceptance.

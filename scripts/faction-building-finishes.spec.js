@@ -13,12 +13,19 @@ const saved=page=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),SANDB
 const persistedStructure=build=>({...build,claims:build.claims.map(claim=>({...claim,power:claim.power?{version:claim.power.version,health:claim.power.health,fuel:claim.power.fuel}:undefined}))});
 async function button(page,i,pressed){await page.evaluate(({i,pressed})=>window.factionPad.buttons[i]={pressed,value:+pressed},{i,pressed});await frames(page);}
 async function tap(page,i){await button(page,i,true);await button(page,i,false);}
-async function choose(page,key,hold=false){
+async function focusControl(page,key){
  for(let i=0;i<85;i++){
-  if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key)){await button(page,0,true);if(!hold)await button(page,0,false);return;}
+  if(await page.evaluate(key=>document.activeElement?.dataset.controllerKey===key,key))return;
   await neutral(page);await tap(page,13);
  }
  throw Error(`Controller could not reach ${key}`);
+}
+async function choose(page,key,hold=false){await focusControl(page,key);await button(page,0,true);if(!hold)await button(page,0,false);}
+async function controllerNavigate(page,key,url){
+ await focusControl(page,key);
+ // The real A action replaces the document. Observe that navigation instead of
+ // awaiting animation frames in the document which is being destroyed.
+ await Promise.all([page.waitForURL(url),page.evaluate(()=>window.factionPad.buttons[0]={pressed:true,value:1})]);await ready(page);
 }
 async function tab(page,id){for(let i=0;i<12;i++){if(await page.locator(`[data-controller-key="build-tab-${id}"]`).getAttribute('aria-pressed')==='true')return;await neutral(page);await tap(page,5);}throw Error(`Missing build tab ${id}`);}
 async function gameplayTab(page,id){for(let i=0;i<12;i++){if(await page.locator(`dialog[open] [data-controller-key="tab-${id}"]`).getAttribute('aria-selected')==='true')return;await neutral(page);await tap(page,5);}throw Error(`Missing gameplay tab ${id}`);}
@@ -52,9 +59,33 @@ async function heldFocusAndDevices(page){
 }
 test.afterEach(async({page},info)=>{if(info.status!==info.expectedStatus)try{await capture(page,`failure-${info.title.replace(/\W+/g,'-').slice(0,60)}`);await writeFile(`${out}/failure-diagnostics.json`,JSON.stringify(errorsByPage.get(page),null,2));}catch{}});
 
+for(const body of ['aeon','selene','pyre','miasma'])test(`corporate buildings and pad identity on ${body}`,async({page,browser})=>{
+ const record=await setup(page,false);await page.goto(`/?dev=1&ship=nomad&start=settlement-${body}&intro=0&debug&seed=7291&epoch=1788876000000`);await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.settlements.ready&&window.starAgent.state.settlements.rendered>0,undefined,{timeout:90000});
+ await page.addStyleTag({content:'body > :not(canvas){visibility:hidden!important}'});
+ for(const [name,eye,look] of [['approach',[70,42,92],[0,2,12]],['entrance',[8,2,-5],[2,1.5,-16]]]){
+  // Art-only camera placement. Full controller construction is a separate test above.
+  await page.evaluate(({body,eye,look})=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body===body),q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin),deck=n.position.clone().fromArray(s.pad).sub(o).applyQuaternion(q.clone().invert()).y,world=a=>n.position.clone().fromArray(a).add(n.position.clone().set(0,deck,0)).applyQuaternion(q).add(o);n.mode='walk';n.insideShip=false;n.enabled=false;n.position.copy(world(eye));n.orientToward(world(look),n.normal);n.velocity.set(0,0,0);},{body,eye,look});
+  await page.waitForFunction(()=>{const s=window.starAgent.state;return s.body==='aeon'?s.terrainLod.settled:s.body==='selene'?s.moon.pending===0&&s.moon.effects.settled:s[s.body].pending===0&&s[s.body].morphing===0;},undefined,{timeout:60000});await frames(page);await capture(page,`${body}-${name}`);
+ }
+ expect(record.errors).toEqual([]);await writeFile(`${out}/${body}-art.json`,JSON.stringify({browser:browser.version(),...await diagnostics(page),...record,warm:await warmSample(page),fixture:'Fixed art camera only; corporate exterior/pad sign review, no traversal claim'},null,2));
+});
+
+test('native phone chooses faction finish, places one wall and returns with keyboard entry regression',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1}),page=await context.newPage();
+ try{
+  const record=await setup(page,false);await page.goto('/?sandbox=build&intro=0&debug&seed=7291&epoch=1788876000000');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.build.assetsReady&&window.starAgent.state.enabled,undefined,{timeout:90000});
+  await page.locator('#build-shortcut').tap();await page.locator('[data-controller-key="build-tab-finishes"]').tap();await page.locator('[data-controller-key="build-finish-jade"]').tap();await page.locator('[data-controller-key="build-graphic-verdant"]').tap();await capture(page,'finishes-phone');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.locator('[data-controller-key="build-tab-pieces"]').tap();await page.locator('[data-controller-key="build-piece-wall"]').tap();await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);await page.locator('[data-controller-key="build-hud-place"]').tap();await page.waitForFunction(()=>window.starAgent.state.build.pieceCount===11);await page.locator('[data-controller-key="build-hud-exit"]').tap();await capture(page,'phone-built');
+  expect((await saved(page)).build.claims[0].pieces.find(p=>p.type==='wall')).toMatchObject({finish:'jade',graphic:'verdant'});
+  await page.keyboard.press('b');await expect(page.locator('#build-dialog')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('#build-dialog')).not.toBeVisible();await page.waitForFunction(()=>window.starAgent.state.enabled);expect(record.errors).toEqual([]);
+  await writeFile(`${out}/phone.json`,JSON.stringify({browser:browser.version(),...await diagnostics(page),...record,fixture:'Native mobile/touch from supported sandbox; keyboard B/Escape regression. No pose/save mutation.'},null,2));
+ }catch(error){try{await capture(page,'failure-native-phone');await writeFile(`${out}/failure-phone-diagnostics.json`,JSON.stringify(errorsByPage.get(page),null,2));}catch{}throw error;}finally{await context.close();}
+});
+
+
 test('controller enters sandbox, chooses paint and print, builds, repaints, persists and returns',async({page,browser})=>{
  const record=await setup(page);await page.goto('/?intro=0&debug&seed=7291&epoch=1788876000000');await ready(page);
- const regular=await page.evaluate(key=>localStorage.getItem(key),MINING_KEY);await tap(page,9);await gameplayTab(page,'ship');await choose(page,'build-sandbox',true);await page.waitForURL(/sandbox=build/);await ready(page);
+ const regular=await page.evaluate(key=>localStorage.getItem(key),MINING_KEY);await tap(page,9);await gameplayTab(page,'ship');await controllerNavigate(page,'build-sandbox',/sandbox=build/);
  await page.waitForFunction(()=>window.starAgent.state.build.assetsReady);const before=await saved(page);expect(before.build.claims[0].pieces).toHaveLength(10);
  await tap(page,1);await tab(page,'finishes');await choose(page,'build-finish-crimson');await choose(page,'build-graphic-crimson');await capture(page,'finishes-desktop');
  await tab(page,'pieces');await page.evaluate(()=>window.factionPad.axes=[.8,-.8,0,0]);await expect(page.locator('.build-wheel')).toHaveAttribute('data-selected','wall');await tap(page,0);await page.evaluate(()=>window.factionPad.axes.fill(0));await ready(page);await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);await capture(page,'crimson-placement');await tap(page,0);
@@ -72,29 +103,6 @@ test('controller enters sandbox, chooses paint and print, builds, repaints, pers
  expect((await saved(page)).build.claims[0].pieces.find(p=>p.type==='wall').finish).toBe('petrol');await tap(page,0);await tap(page,2);await ready(page);await artCapture(page,'helmet-painted');
  await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await capture(page,'result-inventory');await button(page,7,true);await tap(page,1);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(page,7,false);await ready(page);
  const final=await saved(page);expect(final.build.claims[0].pieces.find(p=>p.type==='wall')).toMatchObject({finish:'ivory',graphic:'helmet'});expect(final.remote).toEqual(inventory);await page.reload();await ready(page);expect(persistedStructure((await saved(page)).build)).toEqual(persistedStructure(final.build));
- await tap(page,9);await gameplayTab(page,'ship');await choose(page,'sandbox-exit',true);await page.waitForURL(url=>!url.searchParams.has('sandbox'));await ready(page);expect(await page.evaluate(key=>localStorage.getItem(key),MINING_KEY)).toBe(regular);
+ await tap(page,9);await gameplayTab(page,'ship');await controllerNavigate(page,'sandbox-exit',url=>!url.searchParams.has('sandbox'));expect(await page.evaluate(key=>localStorage.getItem(key),MINING_KEY)).toBe(regular);
  expect(record.errors).toEqual([]);await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),...await diagnostics(page),...record,fixture:'Only standard Gamepad writes after normal game start; actual sandbox entry, aim/placement/repainting, save and inventory. No pose, save or action injection.',beforeCount:10,afterCount:11,concreteSpent:8,paintCost:0},null,2));
-});
-
-test('native phone chooses faction finish, places one wall and returns with keyboard entry regression',async({browser})=>{
- const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1}),page=await context.newPage();
- try{
-  const record=await setup(page,false);await page.goto('/?sandbox=build&intro=0&debug&seed=7291&epoch=1788876000000');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.build.assetsReady&&window.starAgent.state.enabled,undefined,{timeout:90000});
-  await page.locator('#build-shortcut').tap();await page.locator('[data-controller-key="build-tab-finishes"]').tap();await page.locator('[data-controller-key="build-finish-jade"]').tap();await page.locator('[data-controller-key="build-graphic-verdant"]').tap();await capture(page,'finishes-phone');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.locator('[data-controller-key="build-tab-pieces"]').tap();await page.locator('[data-controller-key="build-piece-wall"]').tap();await page.waitForFunction(()=>window.starAgent.state.build.preview?.valid);await page.locator('[data-controller-key="build-hud-place"]').tap();await page.waitForFunction(()=>window.starAgent.state.build.pieceCount===11);await page.locator('[data-controller-key="build-hud-exit"]').tap();await capture(page,'phone-built');
-  expect((await saved(page)).build.claims[0].pieces.find(p=>p.type==='wall')).toMatchObject({finish:'jade',graphic:'verdant'});
-  await page.keyboard.press('b');await expect(page.locator('#build-dialog')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('#build-dialog')).not.toBeVisible();await page.waitForFunction(()=>window.starAgent.state.enabled);expect(record.errors).toEqual([]);
-  await writeFile(`${out}/phone.json`,JSON.stringify({browser:browser.version(),...await diagnostics(page),...record,fixture:'Native mobile/touch from supported sandbox; keyboard B/Escape regression. No pose/save mutation.'},null,2));
- }finally{await context.close();}
-});
-
-for(const body of ['aeon','selene','pyre','miasma'])test(`corporate buildings and pad identity on ${body}`,async({page,browser})=>{
- const record=await setup(page,false);await page.goto(`/?dev=1&ship=nomad&start=settlement-${body}&intro=0&debug&seed=7291&epoch=1788876000000`);await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.settlements.ready&&window.starAgent.state.settlements.rendered>0,undefined,{timeout:90000});
- await page.addStyleTag({content:'body > :not(canvas){visibility:hidden!important}'});
- for(const [name,eye,look] of [['approach',[70,42,92],[0,2,12]],['entrance',[8,2,-5],[2,1.5,-16]]]){
-  // Art-only camera placement. Full controller construction is a separate test above.
-  await page.evaluate(({body,eye,look})=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body===body),q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin),deck=n.position.clone().fromArray(s.pad).sub(o).applyQuaternion(q.clone().invert()).y,world=a=>n.position.clone().fromArray(a).add(n.position.clone().set(0,deck,0)).applyQuaternion(q).add(o);n.mode='walk';n.insideShip=false;n.enabled=false;n.position.copy(world(eye));n.orientToward(world(look),n.normal);n.velocity.set(0,0,0);},{body,eye,look});
-  await page.waitForFunction(()=>{const s=window.starAgent.state;return s.body==='aeon'?s.terrainLod.settled:s.body==='selene'?s.moon.pending===0&&s.moon.effects.settled:s[s.body].pending===0&&s[s.body].morphing===0;},undefined,{timeout:60000});await frames(page);await capture(page,`${body}-${name}`);
- }
- expect(record.errors).toEqual([]);await writeFile(`${out}/${body}-art.json`,JSON.stringify({browser:browser.version(),...await diagnostics(page),...record,warm:await warmSample(page),fixture:'Fixed art camera only; corporate exterior/pad sign review, no traversal claim'},null,2));
 });
