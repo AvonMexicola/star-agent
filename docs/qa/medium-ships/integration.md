@@ -1,7 +1,10 @@
 # Medium ships integration record
 
-Status on 2026-09-08: isolated implementation checkpoint; not browser accepted,
-independently approved, integrated into shared development, or deployed.
+Status on 2026-09-08: isolated implementation with five complete input journeys
+passing. Stratum native touch is being rechecked after a confirmed capture fix.
+Both final art reviews still request changes. Shared development integration
+and deployment have not occurred. The dated checkpoints below preserve earlier
+failures and the exact source tested at each stage.
 
 Stratum is an 18 m medium miner with two actual articulated barrel origins, a
 40 m cutting range, a 120-second battery and 30-second recharge. Accepted voxel
@@ -313,3 +316,20 @@ compliant pads, measured fixed contact and studio-only fixture shadows retain
 the physical layout, all66 protected transforms, five exact MFD/glass meshes
 and11 moving envelopes. Fresh native and independent visual review follow;
 Art11's gameplay evidence is not a new Art12 score.
+
+[Stratum keyboard02](stratum-keyboard-02.md) now passes its complete physical
+landing, ramp, short flight, twin mining, inventory and return journey on
+`9610187` / build10. Both canonical access traces pass and the actual inventory
+transfers0.392757425kg basalt. This closes the original cadence false failure.
+
+Stratum touch01 stopped on its second cockpit display: a short touch drag
+produced a trusted compatibility click that entered mouse pointer lock, disabling
+later touch drags. [The capture correction](touch-capture-fix.md) preserves touch
+provenance, actual MFD picking and mouse capture. The actual native short/large
+drag and mouse regression passes; the full touch journey remains pending.
+
+[Gannet Art12 native inspection](gannet-native-12.md) passes the complete studio
+mechanism/framing case. Its [independent review](gannet-native-review-12.md) still
+requests changes at3.97 overall /4.4 silhouette, including a newly visible floor
+grid. Art13 and Stratum Art04 remain isolated authoring work; these records do
+not waive either art threshold.
