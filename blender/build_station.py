@@ -974,6 +974,8 @@ marks.build()
 # ============================================================================= HANGAR INTERIOR
 interior = Batch('HangarInterior')
 lights = Batch('HangarLights')
+vestibule = Batch('ElevatorVestibule')
+vestibule_lights = Batch('ElevatorVestibuleLights')
 # Ceiling light bars: recessed fixtures inside the coffers cut into the ceiling (one per bay), with a
 # gunmetal reflector frame; the LOD keeps the old flush bars.
 if DETAIL:
@@ -1117,10 +1119,10 @@ if DETAIL:
     text_mesh('Sign_Freight','FREIGHT TRANSFER',.42,(-12,-23.5,HZ0+3.6),rot(math.pi/2,0,math.pi),'MintPaint',.005)
     # A real 4 m wide elevator vestibule behind its runtime sliding leaves.
     for side in [-1,1]:
-        interior.add(box_geo(.18,3.4,3.3,place((side*2.15,-24,HZ0+1.65))),'HullPanel')
-        lights.add(box_geo(.04,2.8,.04,place((side*1.95,-24,HZ0+3.1))),'HangarLight')
-    interior.add(box_geo(4.5,.25,.35,place((0,-22.35,HZ0+3.35))),'ServiceOchre')
-    interior.add(box_geo(4.4,3.4,.18,place((0,-24,HZ0+3.5))),'Gunmetal')
+        vestibule.add(box_geo(.18,3.4,3.3,place((side*2.15,-24,HZ0+1.65))),'HullPanel')
+        vestibule_lights.add(box_geo(.04,2.8,.04,place((side*1.95,-24,HZ0+3.1))),'HangarLight')
+    vestibule.add(box_geo(4.5,.25,.35,place((0,-22.35,HZ0+3.35))),'ServiceOchre')
+    vestibule.add(box_geo(4.4,3.4,.18,place((0,-24,HZ0+3.5))),'Gunmetal')
     text_mesh('Sign_Hub','CENTRAL HUB',.50,(0,-22.16,HZ0+4.15),rot(math.pi/2,0,math.pi),'MintPaint',.006)
     text_mesh('Sign_Transit','ELEVATOR / CONCOURSE',.21,(0,-22.16,HZ0+3.65),rot(math.pi/2,0,math.pi),'MintPaint',.003)
     # Suspended wayfinding and hazard decals, away from the walking capsule.
@@ -1129,6 +1131,8 @@ if DETAIL:
         text_mesh(f'Sign_Wayfinding_{x}',label,.40,(x,-14.84,HZ0+12.0),rot(math.pi/2,0,math.pi),'MintPaint',.005)
     sign_backplates.build()
 interior.build(); lights.build()
+if DETAIL:
+    vestibule.build(); vestibule_lights.build()
 
 # ============================================================================= HANGAR DOORS
 def build_door(side):

@@ -23,6 +23,13 @@ export function fleetHangarAsset(gltf) {
   frame.scale.fromArray(FLEET_HANGAR.scale);
   frame.position.fromArray(FLEET_HANGAR.anchor);
   frame.position.sub(frame.position.clone().multiply(frame.scale));
-  frame.add(source.clone(true)); root.add(frame);
+  const shell = source.clone(true);
+  frame.add(shell); root.add(frame);
+  // The original vestibule belongs to the human-scale passenger cabin. Scaling
+  // its depth with the bay projects its walls across the call-panel approach.
+  for (const name of ['ElevatorVestibule', 'ElevatorVestibuleLights', 'Sign_Hub', 'Sign_Transit']) {
+    const service = shell.getObjectByName(name);
+    if (service) root.add(service);
+  }
   return { ...gltf, scene: root, scenes: [root] };
 }
