@@ -4,6 +4,8 @@ export const FLEET_KEY = 'star-agent.fleet.v1';
 export const SHIPS = Object.freeze({
   nomad: { name: nomad.name, revision: nomad.revision, registry: nomad.revision + " / UTILITY", capacity: 120, description: 'Solo utility ship · walkable cabin & berth · rear cargo access · 120 kg supplies' },
   kestrel: { name: 'Kestrel', registry: '01 / INTERCEPTOR', capacity: 0, description: 'Single pilot · port boarding ladder · agile flight · 4 empty S2 mounts · no cargo hold' },
+  stratum: {name:'Stratum', registry:'05 / MEDIUM MINER', capacity:240, description:'18 m mining ship · twin cutters · 384 kg ore bin · 32 SBU freight · 240 kg supplies'},
+  gannet: {name:'Gannet', registry:'06 / VEHICLE TRANSPORT', capacity:960, description:'24 m transport · Burrow vehicle elevator · 128 SBU freight · 960 kg supplies'},
   atlas: { name: 'Atlas', registry: '03 / HEAVY LOGISTICS', capacity: 2400, description: '64 m heavy freighter · front and aft ramps · crew lift · 512 SBU cargo grid · 2,400 kg supplies' },
 });
 
@@ -17,7 +19,7 @@ export class Fleet {
         this.surfaceVisited = data.surfaceVisited === true;
         this.unlocked = this.surfaceVisited && data.unlocked === true;
         if (this.unlocked && data.active === 'atlas') this.active = 'atlas';
-        if (data.active === 'kestrel') this.active = 'kestrel';
+        if (['kestrel','stratum','gannet'].includes(data.active)) this.active = data.active;
       }
     } catch { this.saved = false; }
   }
@@ -32,6 +34,6 @@ export class Fleet {
     } catch { this.saved = false; }
     return !before && this.unlocked;
   }
-  allows(id) { return id === 'nomad' || id === 'kestrel' || id === 'atlas' && this.unlocked; }
+  allows(id) { return ['nomad','kestrel','stratum','gannet'].includes(id) || id === 'atlas' && this.unlocked; }
   get snapshot() { return { surfaceVisited: this.surfaceVisited, unlocked: this.unlocked, active: this.active, saved: this.saved }; }
 }

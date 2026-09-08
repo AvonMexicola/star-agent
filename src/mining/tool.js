@@ -25,7 +25,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
   const panel=document.createElement('aside');panel.id='mining-panel';panel.hidden=true;
   panel.innerHTML='<div class="mining-eyebrow">SELENE / FIELD SURVEY</div><strong class="mining-target"></strong><div class="field-equipment"><button data-field-item="rifle-laser">1 · Carbine</button><button data-field-item="sidearm-pistol">2 · Sidearm</button><button data-field-item="mining-laser-tool">3 · Cutter</button></div><p class="mining-guide"></p><div class="mining-heat"><span>LASER HEAT</span><meter min="0" max="1" value="0" aria-label="Mining laser heat"></meter></div><p class="mining-resources"></p><button type="button" class="mining-trigger">HOLD TO MINE</button><small class="mining-feedback" role="status"></small>';
   document.body.append(panel);const $=s=>panel.querySelector(s),button=$('.mining-trigger');
-  const clear=()=>{held=false;keyHeld=false;recoil=0;if(!nav.roverOccupied)rock.budget=0;if(effects)effects.miningInput=null;};
+  const clear=()=>{held=false;keyHeld=false;recoil=0;if(!nav.roverOccupied&&!nav.shipMiningActive)rock.budget=0;if(effects)effects.miningInput=null;};
   function select(slot){nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(slot!==null&&isHandsFree(nav)){nav.notify(HANDS_FREE_REASON);return;}if(loadout){const result=loadout.select(slot);if(!result.ok)nav.notify(result.message);}else selected=slot!==null;}
   function cycle(){nav.onTractorHolster?.();clear();nav.gamepad.suspend();if(isHandsFree(nav)){nav.notify(HANDS_FREE_REASON);return;}if(loadout){const result=loadout.cycle();if(!result.ok)nav.notify(result.message);}}
   // Keep a physical hold separate from clear(), which stops effects. A held
@@ -109,7 +109,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
         const start=equipment.muzzleWorldPosition();
         effects.miningInput=isMining&&start&&equipment.beaming?{active:true,start,end:hit?.point.clone()??start.clone().addScaledVector(direction,8),hit:Boolean(hit),normal:hit?.normal?.clone()}:null;
       }
-      if(!firing)if(!nav.roverOccupied)rock.budget=0;
+      if(!firing)if(!nav.roverOccupied&&!nav.shipMiningActive)rock.budget=0;
       if(!active)return;
       $('.mining-heat').hidden=!isMining;button.textContent=isMining?'HOLD TO MINE':'HOLD TO FIRE';
       if(!isMining){

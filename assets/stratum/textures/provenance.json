@@ -1,0 +1,256 @@
+{
+  "authoring": "Original scripted hard-surface Stratum geometry; reusable primitive convention from repository fighter_geometry.py",
+  "textureSource": "Deterministic authored manufactured finish; numpy seeds505..508; isotropic filtered and quantized roughness; no generated/downloaded/photographic inputs",
+  "textureCoordinates": "Planar per-face local metre coordinates, one4m repeat. Display surfaces have unique0..1 UVs.",
+  "channels": {
+    "basecolor": "Subtle seven-bit reflectance grain, lossless WebP; no shadows/highlights",
+    "normal": "Independent filtered isotropic micro-height gradient, slopes bounded to0.01; no91-cycle directional stripe and not luminance-derived",
+    "orm": "R=1 (no baked AO); G=filtered process roughness without a dominant directional stripe; B=1, scaled by material metalness"
+  },
+  "contactVisibility": {
+    "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner against other static fittings; 22cm distance falloff; base-color contact visibility",
+    "distanceMetres": 0.22,
+    "maximumAttenuation": 0.24,
+    "sourceCorners": 34084,
+    "darkenedCorners": 17192,
+    "rays": 344453,
+    "selfHitsSkipped": 7733,
+    "minimumLinearFactor": 0.7600378494909125,
+    "contactGridObjects": 17,
+    "maximumContactGridMetres": 0.24,
+    "dynamicMechanisms": "white; no pose-dependent bake",
+    "lightingBaked": false
+  },
+  "fittedSkinVisibility": {
+    "panels": 118,
+    "samples": 944,
+    "visibleSamples": 918,
+    "buriedByOwnBacking": 0
+  },
+  "packingSource": "Stratum-scoped adapter of existing blender/pack_rigid_geometry.py; same position/normal codec, protected moving/glass/MFD geometry, unused-UV pruning, exact-neutral-color omission and complete byte-identical encoded static tuple indexing",
+  "previousNativeReviews": [
+    {
+      "assetSha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
+      "staticMean": 3.26,
+      "silhouette": 3.4,
+      "status": "failed; retained, not superseded by CPU checks"
+    },
+    {
+      "assetSha256": "b2660a8e400c7ae64ed75cf3e4166d66f1953f0fb6dcbcce5357b1edaa37eb3e",
+      "staticMean": 3.84,
+      "silhouette": 4.0,
+      "reportSha256": "b1ea9d2548255ce612bac5612f71b0994e409ee2c08ad2663dfadf276a319255",
+      "status": "Art02 failed; original images and report retained"
+    },
+    {
+      "assetSha256": "22bbf0296e349e24f1a9bd636745511bf31b9291f1a305814f13d4a45cac4d08",
+      "mean": 3.9666666666666663,
+      "staticMean": 3.96,
+      "silhouette": 4.2,
+      "reportSha256": "558d1a40e1d6d74bbd37b61bab869a3eafc0af264c34177b1e2896dfd0252fcd",
+      "status": "Art03 failed; original images, motions and report retained"
+    }
+  ],
+  "retainedBudgetRejection": {
+    "stage": "Art03a",
+    "sha256": "4ea18bcc3d351a075aefc8c01112e057452b30b49ecc06b010e055908d8970a6",
+    "bytes": 4044832,
+    "limitBytes": 4000000,
+    "triangles": 51346,
+    "correction": "Seven-bit basecolor grain; measured preflight maximum1/255 channel change; no geometry or normal/ORM change"
+  },
+  "art04BudgetRejection": {
+    "stage": "Art04a",
+    "sha256": "fdff87fdb7e8ddfd6b26be41e3654790529ef6913b508b6a641001dcac05f119",
+    "bytes": 4104316,
+    "triangles": 59224,
+    "limitBytes": 4000000,
+    "correction": "Lossless reindexing of complete identical encoded static position/normal/UV/color tuples; triangle order/winding and every rendered corner unchanged; protected rig/glass/display buffers excluded"
+  },
+  "art04OpticalCorrection": "Art04a new solid load shell crossed the internal optical path; final tail stops19cm behind the retained emitter. Original failure and exact final bore-ray closure retained in QA.",
+  "materialRecipes": {
+    "Stratum | ivory enamel": {
+      "baseColorFactor": [
+        0.67,
+        0.705,
+        0.65,
+        1
+      ],
+      "roughnessFactor": 0.58,
+      "metallicFactor": 0,
+      "normalScale": 0.28,
+      "textured": true
+    },
+    "Stratum | graphite frame": {
+      "baseColorFactor": [
+        0.025,
+        0.037,
+        0.039,
+        1
+      ],
+      "roughnessFactor": 0.73,
+      "metallicFactor": 0.05,
+      "normalScale": 0.22,
+      "textured": true
+    },
+    "Stratum | petrol service": {
+      "baseColorFactor": [
+        0.026,
+        0.115,
+        0.116,
+        1
+      ],
+      "roughnessFactor": 0.72,
+      "metallicFactor": 0.08,
+      "normalScale": 0.32,
+      "textured": true
+    },
+    "Stratum | brushed mechanisms": {
+      "baseColorFactor": [
+        0.27,
+        0.32,
+        0.325,
+        1
+      ],
+      "roughnessFactor": 0.64,
+      "metallicFactor": 0.78,
+      "normalScale": 0.6,
+      "textured": true
+    },
+    "Stratum | anodized trim": {
+      "baseColorFactor": [
+        0.13,
+        0.17,
+        0.18,
+        1
+      ],
+      "roughnessFactor": 0.72,
+      "metallicFactor": 0.55,
+      "normalScale": 0.42,
+      "textured": true
+    },
+    "Stratum | cabin composite": {
+      "baseColorFactor": [
+        0.12,
+        0.16,
+        0.155,
+        1
+      ],
+      "roughnessFactor": 0.88,
+      "metallicFactor": 0.02,
+      "normalScale": 0.14,
+      "textured": true
+    },
+    "Stratum | recessed panel joint": {
+      "baseColorFactor": [
+        0.095,
+        0.125,
+        0.122,
+        1
+      ],
+      "roughnessFactor": 0.86,
+      "metallicFactor": 0.03,
+      "normalScale": 0.14,
+      "textured": true
+    },
+    "Stratum | soft interior": {
+      "baseColorFactor": [
+        0.034,
+        0.045,
+        0.049,
+        1
+      ],
+      "roughnessFactor": 0.96,
+      "metallicFactor": 0,
+      "normalScale": 0.18,
+      "textured": true
+    },
+    "Stratum | bore interior": {
+      "baseColorFactor": [
+        0.005,
+        0.009,
+        0.011,
+        1
+      ],
+      "roughnessFactor": 0.92,
+      "metallicFactor": 0.08,
+      "normalScale": 0.35,
+      "textured": true
+    },
+    "Stratum | amber hazard": {
+      "baseColorFactor": [
+        0.94,
+        0.4,
+        0.055,
+        1
+      ],
+      "roughnessFactor": 0.6,
+      "metallicFactor": 0,
+      "normalScale": 0.2,
+      "textured": true
+    },
+    "Stratum | powered indicator": {
+      "baseColorFactor": [
+        0.36,
+        0.89,
+        0.66,
+        1
+      ],
+      "roughnessFactor": 0.4,
+      "metallicFactor": 0,
+      "normalScale": 0,
+      "textured": false
+    },
+    "Stratum | display substrate": {
+      "baseColorFactor": [
+        0.004,
+        0.018,
+        0.022,
+        1
+      ],
+      "roughnessFactor": 0.4,
+      "metallicFactor": 0.08,
+      "normalScale": 0.3,
+      "textured": true
+    },
+    "Stratum | protective glazing": {
+      "baseColorFactor": [
+        0.095,
+        0.2,
+        0.22,
+        0.26
+      ],
+      "roughnessFactor": 0.14,
+      "metallicFactor": 0.02,
+      "normalScale": 0,
+      "textured": false
+    }
+  },
+  "files": {
+    "stratum-basecolor.png": {
+      "sha256": "2905280d5d48f65590cb8612c52b6f019dd7fe305076521b81e960915bd33eac",
+      "bytes": 274854
+    },
+    "stratum-basecolor.webp": {
+      "sha256": "df508237e61b6817b2ba5c103784fc638f84b195bfa3eeb124bbe971dda685e6",
+      "bytes": 176650
+    },
+    "stratum-normal.png": {
+      "sha256": "78b6b7ef50d1f20a9ab71f98997e42c257cb03da54cb16857f3a5b221c4721b0",
+      "bytes": 84463
+    },
+    "stratum-normal.webp": {
+      "sha256": "644578538a33c1c6339ade2a0b3cae367dbd7146293c8b24831610986de3bdb5",
+      "bytes": 56872
+    },
+    "stratum-orm.png": {
+      "sha256": "ffefa5eaeac2e4947a21cfab70cf9ac50b4e3d7af4bdffd824f6863afadcc50e",
+      "bytes": 304311
+    },
+    "stratum-orm.webp": {
+      "sha256": "0763f3bf56f8073235083ff7930dff941d8d8d100235fcd47d3ed16b6ba1a4f2",
+      "bytes": 262306
+    }
+  },
+  "blenderVersion": "5.2.0 LTS"
+}

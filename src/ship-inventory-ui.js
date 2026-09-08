@@ -1,3 +1,4 @@
+import {SHIPS} from './fleet.js';
 import { shipCargoAccess, shipCargoLabel } from './inventory/ship-access.js';
 import {secondaryTouchButtons} from './secondary-touch-buttons.js';
 import { MiningStore } from './mining/store.js';
@@ -17,7 +18,7 @@ export function createInventoryUI(nav, ship, inventory, mining = null, {loadout=
   // The shared save keeps its stable "ship" ID when the player changes hull.
   const container = id => {
     const value = store.container(id);
-    return id === 'ship' && value ? {...value, name: `${nav.shipId === 'atlas' ? 'Atlas' : nav.shipId === 'kestrel' ? 'Kestrel' : 'Nomad'} cargo`} : value;
+    return id === 'ship' && value ? {...value, name: `${SHIPS[nav.shipId]?.name??'Ship'} cargo`} : value;
   };
   const availability = new Map();
   let view='cargo',selectedSlot='tool',lastAvailability='';

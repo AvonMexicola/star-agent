@@ -1,0 +1,89 @@
+{
+  "id": "stratum",
+  "model": "Stratum M-05",
+  "manufacturer": "meridian-shipworks",
+  "version": 1,
+  "units": "metres",
+  "axes": {"up": [0, 1, 0], "forward": [0, 0, -1]},
+  "flightBounds": {"min": [-6.5, 0, -10], "max": [6.5, 5.6, 8], "includes": "closed ramp, all gear and boom poses"},
+  "interior": {
+    "floorY": 1.35,
+    "minX": -1.8,
+    "maxX": 1.8,
+    "minZ": -6.2,
+    "maxZ": 7.0,
+    "ceilingY": 3.65,
+    "aisle": {"minX": -0.55, "maxX": 0.55, "minZ": -4.8, "maxZ": 7.0},
+    "pilotEye": [0, 2.90, -5.8],
+    "standingEye": [0, 3.10, -4.2],
+    "standingFacing": [0, 0, 1],
+    "capsuleRadius": 0.25,
+    "capsuleHeight": 1.8,
+    "pilotSeat": {"min": [-0.43, 1.35, -6.15], "max": [0.43, 2.67, -5.25]}
+  },
+  "ramp": {
+    "hinge": [0, 1.35, 7.0],
+    "halfWidth": 0.95,
+    "run": 5.2,
+    "endZ": 12.2,
+    "portalHeight": 2.2,
+    "segmentLength": 1.94,
+    "segments": 3,
+    "stackDrop": 0.13,
+    "deckRise": 0.006,
+    "maxSurfaceStep": 0.012,
+    "duration": 3.2,
+    "hingeNode": "Ramp_Hinge",
+    "slideNodes": ["Ramp_Slide_Middle", "Ramp_Slide_End"],
+    "sequence": "0..0.40 rotates three stacked plates; 0.40..0.90 extends below the walking level; 0.90..1 raises the extended plates on short cams. Closing reverses exactly. Only fully deployed is walkable."
+  },
+  "gear": {
+    "duration": 1.8,
+    "canonicalProgress": "0 stowed; 1 down. Runtime may supply navigation gearProgress directly.",
+    "legs": [
+      {"node": "Gear_Fore_Port", "pivot": [-2.9, 1.56, -3.5], "side": -1},
+      {"node": "Gear_Fore_Starboard", "pivot": [2.9, 1.56, -3.5], "side": 1},
+      {"node": "Gear_Aft_Port", "pivot": [-3.35, 1.56, 4.9], "side": -1},
+      {"node": "Gear_Aft_Starboard", "pivot": [3.35, 1.56, 4.9], "side": 1}
+    ],
+    "stowedAngle": 1.20
+  },
+  "mining": {
+    "type": "dedicated-mining-beam",
+    "yawLimit": 0.20,
+    "pitchMin": -0.12,
+    "pitchMax": 0.14,
+    "forward": [0, 0, -1],
+    "booms": [
+      {"node": "MiningBoom_Port", "pitchNode": "MiningPitch_Port", "pivot": [-4.35, 2.55, -4.0], "muzzle": "Muzzle_Mining_Port", "muzzlePosition": [-4.35, 2.55, -9.45]},
+      {"node": "MiningBoom_Starboard", "pitchNode": "MiningPitch_Starboard", "pivot": [4.35, 2.55, -4.0], "muzzle": "Muzzle_Mining_Starboard", "muzzlePosition": [4.35, 2.55, -9.45]}
+    ],
+    "note": "Asset transforms only. Extraction, input, battery and persistent ore payout belong to game integration."
+  },
+  "nozzles": [
+    {"node": "Nozzle_Port", "position": [-4.4, 2.65, 7.72], "direction": [0, 0, 1], "radius": 0.61},
+    {"node": "Nozzle_Starboard", "position": [4.4, 2.65, 7.72], "direction": [0, 0, 1], "radius": 0.61}
+  ],
+  "displays": [
+    {"node": "MFD_1", "position": [-0.90, 2.30, -6.96], "width": 0.52, "height": 0.39, "rotationX": -0.48, "page": "flight"},
+    {"node": "MFD_2", "position": [-0.30, 2.30, -6.96], "width": 0.52, "height": 0.39, "rotationX": -0.48, "page": "navigation"},
+    {"node": "MFD_3", "position": [0.30, 2.30, -6.96], "width": 0.52, "height": 0.39, "rotationX": -0.48, "page": "mining"},
+    {"node": "MFD_4", "position": [0.90, 2.30, -6.96], "width": 0.52, "height": 0.39, "rotationX": -0.48, "page": "cargo"}
+  ],
+  "storage": {
+    "ore": {"id": "stratum-ore", "capacityKg": 384, "access": [-1.35, 2.12, 3.7]},
+    "supplies": {"id": "stratum-supplies", "capacityKg": 240, "access": [1.35, 2.12, 3.7]},
+    "freight": {"capacitySbu": 32, "banks": [
+      {"id": "Stratum_Freight_Port", "min": [-1.95, 1.35, 0.0], "max": [-0.75, 2.55, 2.4]},
+      {"id": "Stratum_Freight_Starboard", "min": [0.75, 1.35, 0.0], "max": [1.95, 2.55, 2.4]}
+    ]},
+    "note": "These are reserved empty volumes and authored access faces; this asset-only checkpoint does not implement a ledger."
+  },
+  "collisionParts": [
+    {"id": "pilot-seat", "min": [-0.43, 1.35, -6.15], "max": [0.43, 2.67, -5.25]},
+    {"id": "port-berth", "min": [-2.12, 1.35, -3.1], "max": [-0.85, 2.25, -0.5]},
+    {"id": "starboard-berth", "min": [0.85, 1.35, -3.1], "max": [2.12, 2.25, -0.5]},
+    {"id": "ore-bin", "min": [-2.12, 1.35, 3.05], "max": [-0.80, 2.55, 4.50]},
+    {"id": "supply-bin", "min": [0.80, 1.35, 3.05], "max": [2.12, 2.55, 4.50]}
+  ]
+}
