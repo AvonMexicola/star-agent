@@ -34,6 +34,16 @@ export function devLaunchOptions(search,enabled){
   const location=DEV_LOCATIONS.find(s=>s.id===query.get('start'))?.id??'hangar';
   return {ship:DEV_LOCATIONS.find(s=>s.id===location)?.ship??ship,location,autoStart:query.get('dev')==='1'&&DEV_LOCATIONS.some(s=>s.id===query.get('start'))};
 }
+/** Keep practice saves isolated while allowing the ordinary hangar introduction. */
+export function flightEntryOptions(search,devTools=false){
+  const query=new URLSearchParams(search),devOptions=devLaunchOptions(search,devTools);
+  const atlasMeadowStart=devOptions?.location==='atlas-meadow';
+  const testFlight=Boolean(devOptions)||query.get('ship')==='kestrel';
+  const sandboxEnabled=!atlasMeadowStart&&query.get('sandbox')==='build';
+  const defaultHangar=devOptions?.ship==='nomad'&&!DEV_LOCATIONS.some(s=>s.id===query.get('start'));
+  const introEnabled=(!testFlight||defaultHangar)&&!sandboxEnabled&&query.get('intro')!=='0';
+  return {devOptions,atlasMeadowStart,testFlight,sandboxEnabled,introEnabled};
+}
 export function devLaunchURL(href,{ship,location}){
   if(!DEV_SHIPS.some(s=>s.id===ship)||!DEV_LOCATIONS.some(s=>s.id===location))throw new Error('Choose a test ship and location.');
   const preset=DEV_LOCATIONS.find(s=>s.id===location);

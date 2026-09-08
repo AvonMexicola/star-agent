@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { modelRevisions } from './scripts/model-revisions.mjs';
 
 const STUDIO_SCRIPT = '/assets/atlas-mark-ii-studio.js';
 const STUDIO_STYLE = '/assets/atlas-mark-ii-studio.css';
@@ -24,6 +25,7 @@ function atlasMarkIIStudioDevEntries() {
 
 export default defineConfig({
   base: './',
+  define: { __STAR_AGENT_MODEL_REVISIONS__: JSON.stringify(modelRevisions(resolve('public/models'))) },
   cacheDir: process.env.STAR_AGENT_VITE_CACHE,
   plugins: [atlasMarkIIStudioDevEntries()],
   server: {
