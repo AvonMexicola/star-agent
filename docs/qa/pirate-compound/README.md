@@ -44,11 +44,11 @@ pending module and is not implemented by this compound task.
 
 | Check | Result |
 | --- | --- |
-|12 focused balance/survey/market/asset/light invariants|PASS; own test file|
-|Normal unit suite before props hook|155 files PASS42.82s|
-|Production build after four props|PASS6.46s; existing bundle-size advisory|
-|Contributor check|PASS38 changed paths|
-|Suggested check plan|Ran against stale remote integration; broad488path stack informational|
+|15 focused balance/physics/market/asset/light invariants|PASS0.463s on frozen runtime2c2f2fb; three focused combat files PASS3.403s|
+|Latest author normal unit suite|155 files PASS59.449s on ce033b9, before the narrow normals/cooldown changes|
+|Parent private combined normal suite|159 files PASS48.325s on73a7be8, including runtime2c2f2fb; no shared integration implied|
+|Production build|PASS in each actual browser launch; existing bundle-size advisory|
+|Contributor check|PASS; latest plan45 changed paths against origin/dev/all-features|
 |Actual tower renderer, burst survival and retreat|PASS01: Chromium151.0.7922.173, ANGLE AMD Radeon860M/OpenGL ES3.2,1440×900; zero errors/warnings|
 |Complete controller / corrected native phone|Pending|
 |Independent art, physical controller, FPS acceptance|Pending|
@@ -172,3 +172,23 @@ diagnostic so it cannot repeatedly skip those independent journeys.
 
 The last complete normal suite passed all155 files in59.449s on ce033b9 before
 the isolated normal derivative repair; contributor and plan checks passed.
+
+Runtime2c2f2fb also fixes a source-review finding: losing line of sight or aim
+during the five-second burst rest must not skip that rest. The rest timer now
+finishes before a fresh1.2s aiming charge. A focused invariant proves the complete
+rest plus charge even when the pilot turns or moves behind cover. Fifteen own
+invariants pass; the three focused pirate/combat/momentum files pass in3.403s.
+Parent privately composed this clean frozen runtime with checked Garage,
+Transport and Handheld at73a7be8; all159 registered files passed48.325s. Shared
+integration remains gated on the browser journeys below.
+
+Browser07 passed keyboard and native service isolation, then found that resizing
+a desktop context to390px does not create a coarse pointer: the normal mobile
+Open trade action correctly remained hidden. The phone test now creates its
+390×844 mobile/touch context before application startup and asserts actual coarse
+pointer capability. Browser08 then passed visible Open trade, actual purchase,
+finite stock24→23 and Cargo1/6SBU. Its final close selector targeted the hidden
+standalone trading header inside the shared Pilot Interface. Fixtureaac75db uses
+the actual visible Resume button; no runtime input or dialog rule changed.
+Both attempts retain images, JSON, errors, video and runner logs. Controller and
+HDR cases were skipped by the single-failure limit and are still pending.
