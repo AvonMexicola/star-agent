@@ -86,7 +86,8 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
       }
       content.append(info);
       if(claim?.terminal){
-        description.textContent='Inventory terminal · Access every storage container on this site while standing at the terminal.';
+        description.textContent='Storage and trade terminal · Choose local storage or manage goods offered for sale.';
+        content.append(button('Trade terminal · Select local stock for sale','base-trade-open',()=>{dialog.addEventListener('close',()=>nav.openBaseTrade?.(claim.id),{once:true});dialog.close();}));
         for(const container of claim.containers??[])content.append(button(container.name,`terminal-${container.id}`,()=>{dialog.addEventListener('close',()=>onOpenStorage(container.id),{once:true});dialog.close();}));
       }
       if(claim?.pad){
