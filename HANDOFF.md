@@ -4032,3 +4032,8 @@ docs/qa/outdoor-floodlights/local-integration.json; raw backup
 /tmp/star-agent-floodlights-integration/20260908T172400Z. No migration/protocol
 change, account mutation, save reset or public deployment. All runtime files
 remain unchanged from the recorded checks; final metadata only follows.
+
+
+BURROW CUTTERS / REVERSE READY FOR REVIEW 2026-09-08T17:29:45.968987+00:00: Feature 03704e1, asset 13a / 85bfeaa9 (29,254 triangles / 2,611,096 bytes). Nine native views and geometry checks PASS; all 148 feature test files and 152 combined test files, build and repository checks PASS. Actual keyboard and final native 390px phone routes PASS direct reverse and backing away from collision. The full combined Gannet controller journey passes in 3.9 min with actual 0.692856 kg transfer, reverse cargo reload, carried flight/landing and all input gates. Final phone passes in 1.2 min after test f241817 captures the presented frame and asserts the actual native pager target; prior failures are retained and no inventory runtime fix is claimed.
+
+Local runtime b34bc69 integrated at 17:16 UTC and is retained by floodlight 1d4181c. The exact 56,247-byte dirty journal was preserved; served GLB matches 85bfeaa9 and 5178/8087 health returns HTTP 200. Current QA: docs/qa/burrow-concept/cutters-and-reverse.md. Editable Blender and shader sources are retained. S / stick back reverses, X / LT brakes; no central strut. Independent functional/rubric, physical-controller and performance acceptance remain pending. Draft PR92; no protected merge or public deployment. All private GPU jobs and processes are closed; only final delivery metadata remains.
