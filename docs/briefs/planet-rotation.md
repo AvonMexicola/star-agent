@@ -19,5 +19,7 @@ save compatibility and shared clock/protocol adoption must be explicit.
 An initial numerical test disproved the assumption that the existing eight-radius
 navigation domains are disjoint: Pyre and Miasma overlap. Rotation charts use
 three radii, leaving a gap without changing the existing gravity-domain policy.
-The frame round-trip, fixed surface anchors, distant-world precision, boundary
-momentum and shared clock tests pass; runtime/browser validation is pending.
+The combined runtime passes 1,216 normal tests, 201 multiplayer checks with two
+existing optional skips, production build and repository checks. Four-world WebGL
+inspection and the full ground controller journey pass; final two-client browser
+and targeted-drive cases remain pending. See the current [QA record](../qa/planet-rotation/README.md).

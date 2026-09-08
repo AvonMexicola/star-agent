@@ -6,7 +6,11 @@ import { AEON } from '../src/celestial.js';
 import { ROTATION_DOMAIN_RADII, rotationFrameAt, planetRotation, fromInertial, toInertial } from '../src/planet-rotation.js';
 import { shoot, shipPose } from '../server/combat.js';
 import { capturePeerMotion, createRammingResolver } from '../server/ramming.js';
-import { applyAuthoritativePeer } from '../src/multiplayer/client.js';
+import { PlanetRotationClock, ROTATION_EPOCH_MS } from '../src/planet-rotation.js';
+import { createWorld } from '../server/world.js';
+import { createRoom } from '../server/room.js';
+import { createMemoryStore } from '../server/database.js';
+import { applyAuthoritativePeer, MultiplayerClient } from '../src/multiplayer/client.js';
 import { reframeNavigation } from '../src/navigation-rotation.js';
 import { createStationSecurity } from '../server/security.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
@@ -97,4 +101,34 @@ test('an EVA chart crossing preserves a nearby parked hull and cabin-relative co
   assert.deepEqual(nav.shipPosition.toArray(),parked.toArray());
   assert.ok(nav.toShipLocal().distanceTo(new Vector3(21,0,0))<1e-6);
   assert.ok(nav.fromShipLocal(new Vector3(21,0,0)).distanceTo(nav.position)<1e-6);
+});
+
+
+test('real room snapshots synchronize skewed clients through a day without moving station anchors',async t=>{
+  const world=await createWorld(),store=createMemoryStore();let time=ROTATION_EPOCH_MS;
+  world.rotationClock.now=()=>time;world.rotationClock.synchronize(0);
+  const errors=[],room=createRoom({world,store,autoStart:false,now:()=>time,onError:e=>errors.push(e)});
+  t.after(()=>room.close());
+  const clients=[];
+  for(const [i,skew] of [420_000,-210_000].entries()){
+    const account=await store.createAccount({email:`rotation-room-${i}@example.test`,callsign:`Rotation_Room_${i}`,passwordHash:'test-only'});
+    const client=new MultiplayerClient({url:'ws://127.0.0.1/unused'});
+    client.nav=new Navigation({addEventListener(){}},()=>{});
+    client.nav.rotationClock=new PlanetRotationClock({now:()=>time+skew});
+    await room.join(account,message=>client._message(JSON.stringify(message)));
+    assert.equal(client.connected,true);assert.equal(client.nav.rotationTime,0);
+    clients.push(client);
+  }
+  const anchors=clients.map(c=>c.nav.position.clone()),hulls=clients.map(c=>c.nav.shipPosition.clone());
+  for(const phase of [900,1800,2700,3600]){
+    time=ROTATION_EPOCH_MS+phase*1000;room.tick();room.tick(); // Room publishes at 15 Hz.
+    for(const [i,client] of clients.entries()){
+      assert.equal(client.nav.rotationTime,phase);assert.equal(client.nav.rotationFrame,AEON);
+      assert.ok(client.nav.position.distanceTo(anchors[i])<1e-6);
+      assert.ok(client.nav.shipPosition.distanceTo(hulls[i])<1e-6);
+      const physical=toInertial(anchors[i],AEON,phase);
+      assert.ok(client.nav.inertialPosition.distanceTo(physical)<1e-6);
+    }
+  }
+  assert.deepEqual(errors,[]);
 });

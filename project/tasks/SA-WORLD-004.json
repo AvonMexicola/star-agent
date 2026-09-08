@@ -58,5 +58,7 @@
     "tests/server-planet-rotation.test.js",
     "tests/server-transport.test.js"
   ],
-  "brief": "docs/briefs/planet-rotation.md"
+  "brief": "docs/briefs/planet-rotation.md",
+  "validation": "Combined58a73af:1216 normal PASS,201 multiplayer PASS/2existingoptinskips, build/repository PASS; four-world orbital and full ground controller04 PASS. Targeting6366b2d focused23PASS; six real-room/frame cases PASS. Final two-client/drive browser and shared integration pending; independent review/hardware/performance not claimed.",
+  "evidence": "docs/qa/planet-rotation/README.md"
 }
