@@ -138,3 +138,103 @@ test('actual fitted NPC barrels fire from the current physics pose despite an un
   armament.dispose();
  }
 });
+
+test('all fifteen regional sorties advertise their exact waves and report only after the final kill',async()=>{
+ const {ENCOUNTER_REGIONS,DIFFICULTIES,encounterContract}=await import('../src/combat/encounters.js');
+ const names=new Set();
+ for(const region of ENCOUNTER_REGIONS)for(const tier of Object.keys(DIFFICULTIES)){
+  const contract=encounterContract(region.id,tier),sim=new CombatSimulation();names.add(contract.title);
+  sim.accept(new Vector3(),new Quaternion(),contract);sim.update(.1,pose());
+  assert.equal(sim.phase,'engage');assert.equal(sim.wave,1);assert.equal(sim.enemies.length,contract.waves[0].length);
+  for(let wave=0;wave<contract.waves.length;wave++){
+   assert.deepEqual(sim.living.map(e=>e.ship),contract.waves[wave]);
+   const target=sim.targetId;sim.cycle();assert.ok(sim.living.some(e=>e.id===sim.targetId));
+   if(sim.living.length>1)assert.notEqual(sim.targetId,target);
+   for(const enemy of sim.living){assert.equal(enemy.integrity.maxHull,integrity(enemy.ship).maxHull*contract.difficulty.integrity);damage(enemy.integrity,9999);}
+   sim.update(.1,pose());
+   if(wave<contract.waves.length-1){
+    assert.equal(sim.phase,'engage');assert.equal(sim.reinforcementIn,10);assert.equal(sim.debrief(),false);
+    for(let i=0;i<200;i++)sim.update(.1,{...pose(),active:false});assert.equal(sim.reinforcementIn,10);
+    for(let i=0;i<49;i++)sim.update(.2,pose());assert.equal(sim.wave,1);assert.ok(sim.reinforcementIn>0);
+    sim.update(.2,pose());assert.equal(sim.wave,2);assert.equal(sim.reinforcementIn,0);
+   }
+  }
+  assert.equal(sim.phase,'complete');assert.equal(sim.enemies.length,contract.total);
+  assert.equal(sim.debrief(),true);assert.equal(sim.debrief(),false);assert.equal(sim.completed,1);
+  assert.equal(sim.reports[0].kills,contract.total);assert.equal(sim.reports[0].waves,contract.waves.length);
+  assert.equal(sim.reports[0].contractId,contract.id);assert.ok(Number.isFinite(sim.reports[0].seconds));
+ }
+ assert.equal(names.size,15);
+});
+
+test('reinforcement countdown cannot revive an abandoned or destroyed encounter',async()=>{
+ const {encounterContract}=await import('../src/combat/encounters.js');
+ for(const end of ['abort','death']){
+  const sim=new CombatSimulation();sim.accept(new Vector3(),new Quaternion(),encounterContract('belt','hard'));sim.spawn();
+  for(const enemy of sim.enemies)damage(enemy.integrity,9999);sim.update(.1,pose());
+  assert.equal(sim.reinforcementIn,10);
+  if(end==='abort')assert.equal(sim.abort(),true);else damage(sim.player,9999);
+  for(let i=0;i<100;i++)sim.update(.2,pose());
+  assert.equal(sim.phase,end==='abort'?'aborted':'failed');assert.equal(sim.wave,1);assert.equal(sim.debrief(),false);assert.equal(sim.completed,0);
+  if(end==='death'){
+   assert.ok(sim.recover());assert.equal(sim.phase,'idle');assert.equal(sim.reinforcementIn,0);assert.equal(sim.wave,0);assert.equal(sim.enemies.length,0);assert.equal(sim.targetId,null);assert.equal(sim.player.hull,sim.player.maxHull);
+   for(let i=0;i<100;i++)sim.update(.2,pose());assert.equal(sim.phase,'idle');assert.equal(sim.enemies.length,0);
+  }
+ }
+});
+
+test('regional dispatch keeps beacons over the current body and above the asteroid plane without moving the pilot',async()=>{
+ const {ENCOUNTER_REGIONS,encounterRegion,encounterWaypoint}=await import('../src/combat/encounters.js');
+ const {bodySurfacePoint,bodyAltitude,SELENE,STAR}=await import('../src/celestial.js');
+ const {RING_RADIUS,RING_ROTATION,RING_THICKNESS}=await import('../src/ring-world.js');
+ for(const region of ENCOUNTER_REGIONS.filter(r=>r.id!=='belt'))for(const altitude of [180,100000]){
+  const position=bodySurfacePoint(new Vector3(0,1,0),region.body,altitude),before=position.clone();
+  // Deliberately point directly at the ground: dispatch must still be safe.
+  const orientation=new Quaternion().setFromUnitVectors(new Vector3(0,0,-1),new Vector3(0,-1,0));
+  assert.equal(encounterRegion(position).id,region.id);
+  const point=encounterWaypoint({position,orientation,stationDistance:Infinity},region);
+  assert.ok(bodyAltitude(point,region.body)>=20000-1e-6,region.id);assert.equal(encounterRegion(point).id,region.id);assert.deepEqual(position,before);
+ }
+ const region=ENCOUNTER_REGIONS.find(r=>r.id==='belt'),center=new Vector3(...SELENE.center);
+ for(const side of [-1,1]){
+  const position=new Vector3(RING_RADIUS,0,side*100).applyQuaternion(RING_ROTATION).add(center),before=position.clone();
+  assert.equal(encounterRegion(position).id,'belt');
+  const point=encounterWaypoint({position,orientation:new Quaternion()},region),local=point.clone().sub(center).applyQuaternion(RING_ROTATION.clone().invert());
+  assert.ok(Math.abs(local.z)>RING_THICKNESS/2+2000);assert.equal(encounterRegion(point).id,'belt');assert.deepEqual(position,before);
+ }
+ assert.equal(encounterRegion(new Vector3(...STAR.center)),null);
+});
+
+test('difficulty affects real NPC handling and firing pressure while retaining sized weapon damage',async()=>{
+ const {encounterContract}=await import('../src/combat/encounters.js');
+ const results=[];
+ for(const tier of ['easy','standard','hard']){
+  const sim=new CombatSimulation();sim.accept(new Vector3(),new Quaternion(),encounterContract('aeon',tier));sim.spawn();sim.enemies=sim.enemies.slice(0,1);
+  const e=sim.enemies[0];e.position.set(0,0,0);e.orientation.identity();e.cooldown=0;arm(e,{position:new Vector3(0,0,-4)});
+  sim.update(.1,pose(new Vector3(0,0,-600)));
+  assert.equal(e.armament.shots,1);assert.equal(sim.projectiles[0].damage,24);
+  results.push({cooldown:e.cooldown,hull:e.integrity.maxHull});
+ }
+ assert.ok(results[0].cooldown>results[1].cooldown&&results[1].cooldown>results[2].cooldown);
+ assert.ok(results[0].hull<results[1].hull&&results[1].hull<results[2].hull);
+});
+
+test('reports isolate each sortie, stay bounded and cannot be edited through a state snapshot',async()=>{
+ const {encounterContract}=await import('../src/combat/encounters.js');
+ const sim=new CombatSimulation();
+ for(let i=0;i<14;i++){
+  sim.accept(new Vector3(),new Quaternion(),encounterContract('aeon','easy'));sim.spawn();
+  sim.fire(new Vector3(),new Vector3(0,0,-1));sim.enemies[0].integrity.hull=0;sim.update(.1,pose());
+  assert.ok(sim.debrief());assert.equal(sim.reports[0].shots,1);
+ }
+ assert.equal(sim.completed,14);assert.equal(sim.reports.length,12);assert.equal(sim.reports.at(-1).id,3);
+ const snapshot=sim.state;snapshot.reports[0].kills=999;assert.equal(sim.state.reports[0].kills,1);
+});
+
+test('filing later preserves the actual finish hull, ship and shot count',async()=>{
+ const {encounterContract}=await import('../src/combat/encounters.js');
+ const sim=new CombatSimulation();sim.accept(new Vector3(),new Quaternion(),encounterContract('pyre','easy'));sim.spawn();
+ damage(sim.player,190);sim.fire(new Vector3(),new Vector3(0,0,-1));sim.enemies[0].integrity.hull=0;sim.update(.1,pose());
+ const hull=sim.player.hull;sim.repair();sim.setShip('atlas');sim.fire(new Vector3(),new Vector3(0,0,-1));
+ sim.update(.2,pose());assert.ok(sim.debrief());assert.equal(sim.reports[0].hull,hull);assert.equal(sim.reports[0].ship,'nomad');assert.equal(sim.reports[0].shots,1);
+});
