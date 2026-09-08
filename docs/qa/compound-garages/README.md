@@ -4,6 +4,7 @@ Status: gameplay/browser checks complete; ready for a labeled local development
 checkpoint, integrated locally at `e098947` (metadata `83e10ae`). Served preview
 and paired API are verified in the [local receipt](local-integration.json). Owner: Codex compound garages. Branch `feat/compound-garages`,
 base `23ca619`, combined runtime `2e686db` including checked Transport `f294a98`.
+Draft [PR #100](https://github.com/AvonMexicola/star-agent/pull/100) preserves the checked garage checkpoint at `41a5cba` and names freight PR #99 as its dependency.
 Private preview5674 / memory API8674; no public
 release or shared service change. Final independent art, hardware and performance
 acceptance remain pending.
