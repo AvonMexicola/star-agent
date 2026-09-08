@@ -73,3 +73,11 @@ Only the package test list conflicted; both additions remain. This final union
 passes **1,154 individual unit cases**, zero skips, 32.98 s, production development
 build **6.10 s**, and repository checks. Logs at the union paths above now record
 this final run. No additional GPU run was needed for unchanged settlement code.
+
+Local integration fast-forwarded a75b82f → **dc578d8**. The guard backed up and
+restored the exact unrelated 56,247-byte HANDOFF suffix (SHA-256 3bf320f09e28c4d384e811998fc68a7724ab0093d01fc486c0454eb91e7f9abe).
+The existing http://127.0.0.1:5178 preview serves the new economy and terminal
+modules with HTTP200; proxied API health is200. Five runtime files exactly match
+the passing browser candidate. [HTTP/source receipt](local-integration.json),
+original preservation receipt /tmp/settlement-needs-integration/runtime.
+No shared service restart, database/schema/protocol mutation or public deployment.

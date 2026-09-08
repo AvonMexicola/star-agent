@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex settlement economy",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/settlement-stock-needs",
   "base": "d08f1810edb1c6bd1d1aeb0cc54cd6406d7ec30c",
   "updated": "2026-09-08",

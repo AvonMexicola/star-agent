@@ -3961,3 +3961,14 @@ occurred. Transport owns new Freight/online hooks and may consume this checkpoin
 no pending edits copied from its lane. Next: final union checks, guarded local
 fast-forward preserving dirty HANDOFF suffix, HTTP source verification, draft PR.
 No public deployment or shared API/SQL restart is required for this delta.
+
+
+SA-SETTLE-002 LOCAL COMPLETE: checked economy d50bc56 and QA/Burrow union are
+integrated on dev/all-features at dc578d8. Guard preserved exact56,247B unrelated
+HANDOFF suffix; backup/receipt /tmp/settlement-needs-integration/runtime. Existing
+5178 economy/UI and proxiedhealth200; allfivechangedruntimefiles exactly match
+passing controller1f8a20a. Final1154individualunitcases/191multiplayer+2optinskips/
+build6.10s/repo and controller1PASS2.6m, keyboard/native390 pagination and held
+modal/nativefocus/disconnectPASS. No service/SQL/schema/protocol/public changes.
+Physicaldevice/independentvisual review remain separate. Final integratedtask and
+localguide/status metadata in this commit; no gameplay changes since tested source.
