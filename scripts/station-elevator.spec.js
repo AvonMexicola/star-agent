@@ -12,7 +12,7 @@ async function press(page,index){
 async function start(page,controller){
   await page.addInitScript(connected=>{
     window.elevatorPad={id:'Elevator standard controller',index:0,connected,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
-    Object.defineProperty(navigator,'getGamepads',{value:()=>elevatorPad.connected?[elevatorPad]:[]});
+    Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>elevatorPad.connected?[elevatorPad]:[]});
   },controller);
   await page.goto('/?debug=1&dev=1&ship=nomad&start=hangar&intro=0&seed=7291');
   await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.navigation.enabled&&starAgent.state.mode==='landed',null,{timeout:90000});

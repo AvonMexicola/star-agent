@@ -54,7 +54,7 @@ no full-scene frame-time or budget acceptance is inferred.
 game renderer. The old GLB is served from the base commit for the baseline. The
 old stretched wall hides the doors; the correction exposes the existing door kit
 beside its call panel. These controlled poses establish visual comparison only.
-The independent keyboard/controller/phone routes start seated in the actual
+The separate keyboard/controller/phone routes start seated in the actual
 development hangar and use movement/interact inputs to leave the ship, walk to
 the panel, enter, travel, leave the lobby cabin, call it again, return and board.
 State is read only for steering and assertions throughout those routes.
@@ -88,6 +88,68 @@ standard Gamepad checks application routing; no physical-device claim.
   including held interact through destinations and held reconnect at the lobby.
   Keyboard's added camera turn exposed a test route into the call-panel housing;
   preserve that failure and step back before crossing. Final run is recorded below.
+- Native phone reached the lobby, then its stop drift left the call control
+  outside interaction range. A later close approach also overshot into the panel
+  housing; keyboard crossed too close after turning. These are retained under
+  `attempt-02` and `attempt-04`. The driver now allows physical momentum to settle,
+  takes short input steps near targets, and stands clear of the panel before
+  crossing. These fixture changes do not alter player movement or collision.
+- `attempt-03` retains two readiness timeouts: a newly bounded 15 s action timeout
+  also affected world preload. Readiness now has its own 90 s limit; interaction
+  waits remain bounded. No Chromium startup crash occurred.
+- `node scripts/community-hub-route.mjs`: final runtime passes the authoritative
+  normal-spawn → physical elevator → hub exchange approach → same berth journey,
+  using protocol controls/requests and read-only steering. Ship position is
+  unchanged and server diagnostics are empty. This is CPU/server evidence,
+  separate from browser and physical-device input.
 
-Validation and integration pending. This is a bounded repair, not final station
-art acceptance. Physical controller testing and independent review are separate.
+## Local integration
+
+Runtime `16a0bb4`, fixture follow-up `4bc565c`, merged into local development at
+`76aa45e`. The original shared HANDOFF plus its 56,247-byte append-only suffix
+are backed up under `/tmp/star-agent-elevator-qa/integration`; the exact suffix
+was restored after the guarded merge. Only unrelated journal notes remain dirty.
+
+The local `star-agent-persistent-preview.service` was gracefully restarted to
+reload both server collision and door logic. It retains the existing persistent
+local database; there were no established API/preview client connections at the
+precheck. The separate user preview process was preserved. HTTP 5178 confirms
+the updated source, exact `6cc8a1b5` station bytes and the corresponding model
+revision in `/@vite/env`; direct API health returns 200. Probing the revision in
+`main.js` and `model-cache.js` first was the wrong check for Vite development mode,
+whose global defines are injected by `/@vite/env`.
+
+## Final route closure
+
+On core runtime `16a0bb4`, fixture `4bc565c`, development bundle
+`main-BPv6rs-P.js`, the final focused browser command
+passes **2/2**, shell exit 0:
+
+```sh
+npm run test:browser -- -c scripts/station-elevator.config.js -g 'keyboard:|touch:'
+```
+
+Keyboard completes in 1.9 minutes and native phone in 3.4 minutes. Both leave the
+pilot seat, walk the ramp and hangar, call from the side panel, enter, travel to
+the lobby, exit, call the lift again, open from close to closed leaves, return,
+walk back to the ship and sit in the original cockpit. Ship position and inventory
+are unchanged. Page/console errors and warnings are empty in both final receipts.
+The [open lobby cabin](station-elevator-access/lobby-open.png) and
+[native phone controls](station-elevator-access/phone-lobby.png) come from those
+physical routes; no pose/interaction shortcut writes are used.
+
+The preceding complete injected controller journey passed in 2.0 minutes on the
+same corrected station geometry and lateral-threshold fix, before the final
+opening-only interlock relaxation. It also checks held interact across the
+destination dialog and held interact through disconnect/reconnect. Its source
+boundary is retained rather than attributing that run to a later guard revision;
+the final guard is covered by the new authoritative unit case and final two
+browser routes. Shared native-focus handling was not changed by this repair.
+
+Final raw JSON/video evidence remains under `/tmp/star-agent-elevator-qa`, with
+the clean controller receipt in `attempt-02/controller.json`, keyboard in
+`keyboard.json`, phone in `touch.json`, and failed runs in `attempt-01` through
+`attempt-04`. A later fixture-only cleanup allows its Gamepad shim to be installed
+again during the two-navigation baseline capture; gameplay code and routes are
+unchanged. No physical controller or independent art acceptance is claimed.
+This is a bounded local repair, with no public deployment or protected remote merge.

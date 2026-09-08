@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex elevator repair",
-  "status": "active",
+  "status": "integrated",
   "branch": "fix/station-elevator-access",
   "base": "c766544b5c9beb98ec3c66b50595e4c974b461f3",
   "updated": "2026-09-08",
