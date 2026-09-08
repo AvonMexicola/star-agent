@@ -19,7 +19,7 @@ exterior concept while retaining all tested moving pivots and clearances.
 
 Display direction: graphite #17262b background, ivory #d8dfd8 text, mint #b6efd1
 live state, warm amber #e9b274 attention and muted petrol #517880 structure.
-Use the game's local sans face with tabular values. A curved side rail joins
+Use local Barlow Condensed for readings and DM Sans for labels. A curved side rail joins
 functional readouts; large primary drive information is flanked by cutter and
 ore panels. Armrest pads indicate actual directional/cutter input. No fictional
 life-support simulation, terrain scanner, range or cargo values from the concept.
