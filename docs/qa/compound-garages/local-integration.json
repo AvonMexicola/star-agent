@@ -8,5 +8,7 @@
   "serviceRestart": false,
   "verifiedAt": "2026-09-08T20:31:57.698688+00:00",
   "journalPreserved": true,
-  "httpVerification": "Pending: normal shell socket creation EPERM; no escalation requested. Next authorized browser QA will read local source/API."
+  "httpVerification": "Verified from independently executed SA-PIRATE-001 receipt, with raw source SHA256 inspected by parent.",
+  "httpReceipt": "served-preview.json",
+  "httpVerifiedAt": "2026-09-08T20:45:54.421960+00:00"
 }

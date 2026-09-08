@@ -1,8 +1,8 @@
 # SA-GARAGE-001 — compound garage checkpoint
 
 Status: gameplay/browser checks complete; ready for a labeled local development
-checkpoint, integrated locally at `e098947`. Served-preview verification remains
-pending in the [local receipt](local-integration.json). Owner: Codex compound garages. Branch `feat/compound-garages`,
+checkpoint, integrated locally at `e098947` (metadata `83e10ae`). Served preview
+and paired API are verified in the [local receipt](local-integration.json). Owner: Codex compound garages. Branch `feat/compound-garages`,
 base `23ca619`, combined runtime `2e686db` including checked Transport `f294a98`.
 Private preview5674 / memory API8674; no public
 release or shared service change. Final independent art, hardware and performance
@@ -121,8 +121,11 @@ uses seed7291. Session-only pose and charge behavior is in the
 [player route](../../compound-garages.md). The focused runner and private API are
 closed; raw logs, state and retained failed videos remain in the owner worktree.
 Native source-only FF from Transport metadata `65f1721` to `e098947` preserved
-the exact519025-byte dirty journal without rewriting it. No service, schema or
-protocol was changed. Normal shell socket creation returned EPERM, so served-source
-and API checks remain pending through the next already-authorized browser QA.
-No new escalation was requested. The receipt separates integrated source from
-verified served content.
+the exact 519,025-byte dirty journal without rewriting it. No service, schema or
+protocol was changed. Normal shell socket creation returned EPERM; no new
+escalation was requested. SA-PIRATE-001 supplied a read-only receipt using its
+existing approved curl command: HTTP 200 from both health routes on ports 5178 and 8087, served main garage
+import/update and served rover deployAt. Parent inspected the raw source files
+and verified their recorded SHA256. [Exact commands/results](served-preview.json).
+The opt-in HTTP browser helper was not run; its guard correctly deferred when
+another job was active, and the independent receipt made another GPU job unnecessary.
