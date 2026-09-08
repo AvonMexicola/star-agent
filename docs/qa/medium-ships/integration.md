@@ -142,3 +142,46 @@ test API8582; shared services, databases and the user's5596 tab are untouched.
 Build03 predates the wider pilot FOV, camera fix and checked fleet merge. The
 final authored revisions and attached powered cabin lighting require a new build
 and actual native gameplay acceptance.
+
+## September 8 follow-up checkpoint
+
+The checked fleet union is retained. Stratum Art02 (`b2660a8e`,41,048 triangles,
+3,407,756 bytes) and Gannet Art10 (`ca49eb99`,41,302 triangles,2,251,080 bytes)
+are integrated, with the current clear-view Burrow `831b9569`. Forty-one final
+asset/runtime checks pass, and the actual-mesh lamp probe verifies nine powered
+fixtures and nineteen unobstructed room-light paths. These are finite CPU checks.
+
+Native isolated Stratum views pass both desktop and phone cases in33.3 seconds;
+Gannet passes its desktop/resized-portrait case in29.5 seconds. Original images,
+video and diagnostics are retained under `/tmp/star-agent-stratum-native-art02`
+and `/tmp/star-agent-gannet-native-art10`. Both use Chromium151/ANGLE AMD860M
+and record no errors or warnings. Gannet portrait is a resized pointer context,
+not a native-touch gameplay pass. [Independent Gannet Art10 review](gannet-native-review-10.md)
+still fails: static mean3.62, silhouette3.7 against4.5. The incorrect gold material
+mapping is visibly corrected; primary hull forms and surface finish need another
+pass. Hatch/gear motion was off-camera, so its motion score remains unassigned.
+Stratum's independent Art02 review is pending.
+
+The first actual Stratum controller journey used source `7664b19`, production
+build05 `main-D-Ls_xay.js` (build4.79 seconds), and the exact Art02 GLB. It reached
+Y landing with deployed gear, continuous ramp egress onto canonical terrain,
+physical reboarding, relaunch and a26m flight approach. It failed before mining:
+the fixture read browser localStorage while this explicit development flight
+uses an isolated Map-backed practice save. The original2.2-minute failure, video
+and screenshots remain at `/home/cees/projects/.medium-ships-qa/stratum-controller-01`.
+Source hashes were stable; no page errors, warnings or failed HTTP responses
+were recorded. Ore extraction, transfer and interruption gates were not reached.
+
+The correction exposes actual adapter bytes through a read-only debug getter,
+with an explicit storage-kind label. Revised fixtures must parse those committed
+practice bytes independently. This establishes serialization within the practice
+session, not retention across reloading a development flight. The original
+pilot screenshot also exposed cropped lower MFD rows and a mining panel covering
+the port display; a fixed-eye camera tilt and compact controls are under native
+verification. No full six-input-route or final visual acceptance is claimed.
+
+A separate independent bounded runtime review found Fleet reporting a ready
+Gannet despite a failed Burrow spawn. Commit `7664b19` prepares the rover before
+selection and reports failures according to the actual selected hull. Six
+source-extracted success/failure cases and a real callback switch-away/retry
+sequence pass. This is callback evidence, not a full physical gameplay pass.

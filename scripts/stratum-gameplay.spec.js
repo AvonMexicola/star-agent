@@ -11,11 +11,32 @@ const output = process.env.STRATUM_OUTPUT ?? '/home/cees/projects/.medium-ships-
 const sourceRoot = process.env.STRATUM_SOURCE ?? new URL('..', import.meta.url).pathname;
 const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ships.js', 'src/medium-ship-lights.js', 'src/medium-ship-gameplay.js',
   'src/stratum.js', 'src/stratum-systems.js', 'src/stratum-layout.js', 'src/stratum-flight-parts.js',
-  'src/ship-mining.js', 'src/ship-mining-input.js', 'src/rover-power.js', 'src/flight-model.js',
+  'src/ship-mining.js', 'src/ship-mining-input.js', 'src/ship-mining.css', 'src/rover-power.js', 'src/flight-model.js',
   'src/ship-handling.js', 'src/gamepad.js', 'src/controller-ui.js', 'src/ship-inventory-ui.js',
-  'src/effects/weapon-target.js', 'src/mining/field.js', 'src/mining/rock.js', 'src/mining/store.js',
+  'src/effects/weapon-target.js', 'src/mining/field.js', 'src/mining/rock.js', 'src/mining/store.js', 'src/test-flight.js',
   'assets/stratum/layout.json', 'public/models/stratum.glb'];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+
+// Read the actual adapter bytes. These explicit dev-flight journeys use a fresh
+// practice Map; a successful parse certifies serialization, not reload retention.
+function readPracticeMiningSave(receipt) {
+  expect(receipt, 'The existing debug getter must expose the actual mining save receipt').toBeTruthy();
+  expect(receipt.key, 'Receipt key must identify the canonical mining transaction').toBe(MINING_KEY);
+  expect(receipt.kind, 'This explicit dev flight must use isolated practice storage').toBe('practice-memory');
+  expect(receipt.error, 'Reading the actual selected storage adapter must succeed').toBeUndefined();
+  expect(typeof receipt.value, 'Accepted commits must exist as actual serialized bytes').toBe('string');
+  const raw = receipt.value;
+  expect(raw.length, 'An empty value is not a committed mining save').toBeGreaterThan(0);
+  const store = new MiningStore({getItem: key => key === MINING_KEY ? raw : null,
+    setItem() { throw Error('Read-only practice serialization probe'); }});
+  expect(store.blocked, 'The production parser must accept the actual save bytes').not.toBe(true);
+  expect(store.warning).toBe(''); expect(store.persistedRaw).toBe(raw);
+  expect(store.container('stratum-ore'), 'The committed dedicated bin must be present').not.toBeNull();
+  return {kind: receipt.kind, key: receipt.key, sha256: hash(raw), bytes: Buffer.byteLength(raw), revision: store.state.revision,
+    rocks: Object.fromEntries(Object.entries(store.state.rocks).map(([id, rock]) => [id, rock.revision])),
+    ore: store.container('stratum-ore'), pack: store.container('pack'), supplies: store.container('ship'),
+    oreLimit: store.limits('stratum-ore').resources};
+}
 const sourceHashes = async () => Object.fromEntries(await Promise.all(sourceFiles.map(async file => [file, hash(await readFile(sourceRoot + '/' + file))])));
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const vector = v => Array.isArray(v) ? new Vector3(...v) : new Vector3(v.x, v.y, v.z);
@@ -57,12 +78,12 @@ function muzzleReader(bytes) {
 // Extends the established mining-rover/Gannet controller and genuine native-focus
 // helpers. Only navigator.getGamepads input drives the game; debug reads supply
 // steering feedback and evidence. This is injected input, not hardware testing.
-test('controller Stratum: actual landing/ramp → flight approach → twin persisted ore → inventory → neutral return', async ({page, browser}) => {
+test('controller Stratum: actual landing/ramp → flight approach → twin practice-store commits → inventory → neutral return', async ({page, browser}) => {
   await mkdir(output, {recursive: true});
   const errors = [], warnings = [], requests = [], milestones = [], gates = {}, flightPath = [], accessPaths = {};
   const beforeHashes = await sourceHashes(), glb = await readFile(sourceRoot + '/public/models/stratum.glb');
   const actualMuzzles = muzzleReader(glb);
-  let phase = 'startup', failed = null, complete = false, persistence = null, beamReceipt = null;
+  let phase = 'startup', failed = null, complete = false, serialization = null, beamReceipt = null;
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); if (m.type() === 'warning') warnings.push(m.text()); });
   page.on('response', r => { if (r.status() >= 400) requests.push({status: r.status(), url: r.url()}); });
@@ -213,16 +234,8 @@ test('controller Stratum: actual landing/ramp → flight approach → twin persi
     throw Error('Controller cannot focus ' + key + '; visible=' + JSON.stringify(visible));
   }
   async function saveReceipt() {
-    const raw = await page.evaluate(key => localStorage.getItem(key), MINING_KEY);
-    expect(raw, 'Committed cuts and bins must exist in actual browser storage').not.toBeNull();
-    // A separate reader verifies the persisted bytes; its storage adapter cannot write.
-    const readOnly = new MiningStore({getItem: key => key === MINING_KEY ? raw : null, setItem() { throw Error('Read-only persistence probe'); }});
-    expect(readOnly.blocked).not.toBe(true); expect(readOnly.warning).toBe('');
-    const parsed = JSON.parse(raw);
-    return {sha256: hash(raw), bytes: Buffer.byteLength(raw), revision: parsed.revision,
-      rocks: Object.fromEntries(Object.entries(parsed.rocks ?? {}).map(([id, rock]) => [id, rock.revision])),
-      ore: readOnly.container('stratum-ore'), pack: readOnly.container('pack'), supplies: readOnly.container('ship'),
-      oreLimit: readOnly.limits('stratum-ore').resources};
+    const receipt = await page.evaluate(() => starAgent.miningSave);
+    return readPracticeMiningSave(receipt);
   }
   async function muzzleReceipt() {
     const live = await page.evaluate(() => ({position: starAgent.navigation.position.toArray(), orientation: starAgent.navigation.orientation.toArray(),
@@ -322,7 +335,7 @@ test('controller Stratum: actual landing/ramp → flight approach → twin persi
     phase = 'nose-turn-to-existing-outcrop'; await aim(target);
     phase = 'controlled-short-flight'; await approach(target); await readyInput();
     await note('Real stick turn and controlled 26 m approach to existing outcrop');
-    phase = 'real-twin-cutter-payout'; const before = await state(); persistence = {before: await saveReceipt(), initialTarget};
+    phase = 'real-twin-cutter-payout'; const before = await state(); serialization = {before: await saveReceipt(), initialTarget};
     await button(7, true);
     await wait(previous => starAgent.state.mining.ship.beaming === 2 && starAgent.state.mining.ship.mass > previous + .02, before.mining.ship.mass, 25000);
     beamReceipt = await muzzleReceipt(); await shot('04-real-twin-mining-cockpit'); await page.waitForTimeout(1500); await button(7, false);
@@ -331,14 +344,14 @@ test('controller Stratum: actual landing/ramp → flight approach → twin persi
     expect(s.containers.saved).toBe(true); expect(s.containers.warning).toBe(''); expect(s.mining.ship.charge).toBeGreaterThan(.7);
     expect(s.containers.containers.find(c => c.id === 'pack').items).toEqual(before.containers.containers.find(c => c.id === 'pack').items);
     expect(s.containers.containers.find(c => c.id === 'ship').items).toEqual(before.containers.containers.find(c => c.id === 'ship').items);
-    persistence.mined = await saveReceipt(); expect(persistence.mined.oreLimit).toBe(384);
-    expect(mass(persistence.mined.ore.items)).toBeGreaterThan(mass(persistence.before.ore.items) + .02);
-    expect(persistence.mined.sha256).not.toBe(persistence.before.sha256);
+    serialization.mined = await saveReceipt(); expect(serialization.mined.oreLimit).toBe(384);
+    expect(mass(serialization.mined.ore.items)).toBeGreaterThan(mass(serialization.before.ore.items) + .02);
+    expect(serialization.mined.sha256).not.toBe(serialization.before.sha256);
     const hit = beamReceipt.comparisons[0].rockId;
-    expect(hit === ROCK_ID ? persistence.mined.revision > persistence.before.revision
-      : (persistence.mined.rocks[hit] ?? 0) > (persistence.before.rocks[hit] ?? 0),
-    'Persisted voxel revision must advance alongside real ore').toBe(true);
-    await note('Accepted voxel cuts persisted into Stratum ore; backpack and supplies unchanged');
+    expect(hit === ROCK_ID ? serialization.mined.revision > serialization.before.revision
+      : (serialization.mined.rocks[hit] ?? 0) > (serialization.before.rocks[hit] ?? 0),
+    'Serialized voxel revision must advance alongside real ore').toBe(true);
+    await note('Accepted voxel cuts and Stratum ore serialized to practice memory; backpack and supplies unchanged');
     // External view uses the real gameplay camera and retains the target/ship pose.
     await chord(15); await wait(() => starAgent.state.camera.mode === 'external');
     await readyInput(); await button(7, true); await wait(() => starAgent.state.mining.ship.beaming === 2); await shot('05-real-external-twin-cutters'); await button(7, false);
@@ -358,7 +371,7 @@ test('controller Stratum: actual landing/ramp → flight approach → twin persi
     expect(added).toBeGreaterThan(0); expect(added).toBeLessThanOrEqual(1.000001);
     expect(transferBefore.ore.items[item] - transferAfter.ore.items[item]).toBeCloseTo(added, 6);
     expect(transferAfter.supplies.items).toEqual(transferBefore.supplies.items);
-    persistence.transfer = {item, added, before: transferBefore, after: transferAfter}; await shot('07-visible-controller-ore-transfer');
+    serialization.transfer = {item, added, before: transferBefore, after: transferAfter}; await shot('07-visible-controller-ore-transfer');
     await button(7, true); await tap(1); await expect(page.locator('#cargo-dialog')).not.toBeVisible();
     await page.waitForTimeout(350); expect((await state()).mining.ship.beaming).toBe(0);
     gates.dialog = {result: 'PASS', triggerHeldAcrossOpenAndClose: true}; await readyInput();
@@ -380,7 +393,7 @@ test('controller Stratum: actual landing/ramp → flight approach → twin persi
       gates[kind] = {result: 'PASS', suppressed};
     }
     phase = 'return-to-pilot-control'; await readyInput(); await brake();
-    await wait(() => !starAgent.state.mining.pending); persistence.final = await saveReceipt();
+    await wait(() => !starAgent.state.mining.pending); serialization.final = await saveReceipt();
     s = await state(); expect(s.mode).toBe('flight'); expect(s.powered).toBe(true); expect(s.enabled).toBe(true);
     expect(s.controller.armed).toBe(true); expect(s.mining.ship.beaming).toBe(0); expect(s.lifts.secured).toBe(true);
     await pilotShot('08-final-powered-pilot-ore-mfd'); await note('Dialog, native focus and device gates closed; actual pilot control restored');
@@ -401,9 +414,9 @@ test('controller Stratum: actual landing/ramp → flight approach → twin persi
     await writeFile(output + '/journey.json', JSON.stringify({result: complete ? 'PASS' : 'FAIL', phase, failed,
       input: 'Injected W3C standard Gamepad only; genuine native focus interruption; no physical controller claim',
       browser: browser.version(), viewport: page.viewportSize(), beforeHashes, afterHashes, sourcesStable,
-      errors, warnings, requests, milestones, gates, flightPath, accessPaths, beamReceipt, persistence, final, diagnostics,
+      errors, warnings, requests, milestones, gates, flightPath, accessPaths, beamReceipt, serialization, final, diagnostics,
       limits: ['Actual screenshots/video require visual review; no automatic cockpit/art acceptance', 'No keyboard, touch, online authority or FPS claim',
-        'Persistence is re-read from real saved bytes without mutating or reloading the game; ramp walk occurs at the first real landing'], performanceClaim: false}, null, 2));
+        'Actual practice-memory bytes are re-read and parsed without mutation; no browser-localStorage or dev-flight reload persistence claim. Ramp walk occurs at the first real landing'], performanceClaim: false}, null, 2));
     expect(afterHashes, 'Freeze source/asset throughout the complete journey').toEqual(beforeHashes);
   }
 });
