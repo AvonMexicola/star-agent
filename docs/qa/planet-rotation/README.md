@@ -27,8 +27,9 @@ is claimed. [Decision](../../decisions/planet-rotation.md).
 - The update-time target lock uses the same rotation phase as engage; 23 focused
   rotation/targeting/travel cases pass, including the actual foreign bearing at a
   quarter-turn. Final combined browser verification follows.
-- Initial draft PR104 hosted checks at3180064 pass all five jobs, including
-  isolated PostgreSQL persistence. They predate the final cabin boundary fixes.
+- PR104 hosted checks on final runtime `a4d07d4` pass all five jobs (run
+  `34289735420`), including isolated PostgreSQL persistence and the existing
+  browser regression suite. Dedicated shared-clock/drive evidence follows separately.
 
 The first production orbital inspection passed all four worlds in 57 seconds,
 with eight PNGs and no application errors. Chromium 151.0.7922.173, ANGLE OpenGL,
