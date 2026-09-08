@@ -17,7 +17,7 @@ export class BasePower {
  status(c){const second=Math.floor(this.now()/1000),cached=this.statusCache.get(c);if(cached?.second===second)return cached.value;const value=powerStatus(c,powerEnvironment(c,this.now()));this.statusCache.set(c,{second,value});return value;}
  action(claimId,action,item){
   if(this.cloud?.enabled)return this.cloud.action(claimId,action,item);
-  const current=this.build.claims.find(c=>c.id===claimId);if(!current)return {ok:false,message:'Base is unavailable.'};
+  const current=this.build.claims.find(c=>c.id===claimId);if(!current?.pieces.some(p=>p.type==='mainframe'))return {ok:false,message:'Base is unavailable.'};
   const c=advancePower(current,this.now(),t=>powerEnvironment(current,t),this.sandbox?{decayMs:Infinity}:undefined);
   if(c.power.health<=0)return {ok:false,message:'This base has expired.'};
   const container=this.store.container(coreId(c)),items={...container?.items};

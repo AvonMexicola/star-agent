@@ -3882,3 +3882,39 @@ Ready for guarded local integration over `32966e3`, including offered settlement
 
 
 SA-COMBAT-001 LOCAL DELIVERY 2026-09-08: validated candidate dde4d02 integrated at547d901 into dev/all-features, including ready settlementc079 metadata. Original494354B HANDOFF and exact56247B dirty suffix preserved with guarded backup/receipt under /tmp/star-agent-enemy-integration. Shared5178 serves regional contracts, allfourcombat source files match candidate, direct/proxied APIhealth200. No API/SQL/schema/protocol/service restart or deployment. Full1133unit/build/repo checks PASS; five complete controller routes plus keyboard/touch PASS6/6 and final combined UI PASS44.7s. Docs/QA/task state updated; physical-device and independent balance/visual acceptance remain pending. GPU5398 released; final metadata commit follows without changing runtime.
+
+
+## SA-BUILD-002 — terrain foundations and optional mainframes (2026-09-08)
+
+Owner Cees / Codex. Branch feat/terrain-foundations, original base32966e3.
+Foundation-first sites, deck-mounted mainframes, unsecured open doors, removable
+empty mainframes, 8m concrete supports and 45degree braced cliff decks implemented.
+Build/state/collision/visual/inputpalette and account-save dimension/removal guards
+are the owned scope; no navigation/planet/multiplayer protocol rewrite.
+
+Validation:149normaltestfilesPASS,191multiplayerPASS/2existingoptinskips, real
+isolated PostgreSQL persistencePASS, build/repository/plan checksPASS. Final two
+actual-game browser casesPASS4.2min (Chromium151/AMD860M ANGLE GL,1440×900/390×844),
+zero app diagnostics: full controller foundation/door/mainframe/tall construction,
+inventory/reload and neutral gates, keyboard/native touch, plus canonical4.859m
+relief hillside rendering and device replacement/mapping gates. Physical device
+and independent art review remain separate. Source/provenance/failures/screens:
+[terrain-foundation QA](docs/qa/terrain-foundations/README.md).
+
+Private5642/API8642 and GPU released. Coherent candidate is ready for guarded
+local integration over currentdev; preserve append-only HANDOFF and other feature
+owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
+and client source refresh before cloud-save testing. No database migration or
+public deployment. Floodlight owner may layer onto committed build hooks.
+
+
+SA-BUILD-002 LOCAL DELIVERY 2026-09-08: runtime4396029 integrated with checked
+settlement/combat development at8b5ecd4. The union passes149unitfiles, build and
+repository checks; foundation runtime is unchanged from the two-case actual-game
+browser pass. Shared5178/API8087 gracefully refreshed through the existing service,
+all six HTTP checks200, exact120720B GLB hash verified. Exact56247B unrelated
+HANDOFF suffix preserved; backup/receipt /tmp/star-agent-foundation-integration.
+Task/brief/local guide/QA now record integrated status. No schema/account mutation,
+other preview operation or public deployment. Controller injections, keyboard and
+native touch tested; physical-device and independent art acceptance remain pending.
+Private5642/API8642 and GPU released; floodlight/rover may consume checked hooks.
