@@ -1,3 +1,4 @@
+import './model-cache.js';
 import {createShipMining} from './ship-mining.js';
 import {MINING_KEY} from './mining/store.js';
 import {createShipMiningInput} from './ship-mining-input.js';
@@ -90,7 +91,7 @@ import { KESTREL_LAYOUT, KestrelAccess } from './kestrel-access.js';
 import { createKestrel } from './kestrel.js';
 import kestrelURL from '../assets/kestrel/kestrel.glb?url';
 import { testFlightStorage } from './test-flight.js';
-import { devLaunchOptions, devLaunchURL, ATLAS_MEADOW_SEED } from './dev-launch-options.js';
+import { flightEntryOptions, devLaunchURL, ATLAS_MEADOW_SEED } from './dev-launch-options.js';
 import { createDevLauncher } from './dev-launcher.js';
 import { MERIDIAN } from './ship-manufacturers.js';
 import { createNavigationTargeting } from './navigation-targeting.js';
@@ -110,17 +111,13 @@ let toastTimeout;
 function notify(message){$('toast').textContent=message;$('toast').classList.add('visible');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>$('toast').classList.remove('visible'),4500);}
 function fatal(message){document.body.classList.add('fatal');$('loading').classList.remove('hidden');$('loading').querySelector('p').textContent='FLIGHT SYSTEM OFFLINE';$('loading').querySelector('span').textContent=message;}
 
-const devOptions=devLaunchOptions(location.search,import.meta.env.VITE_DEV_TOOLS==='1');
-const atlasMeadowStart=devOptions?.location==='atlas-meadow';
+const {devOptions,atlasMeadowStart,testFlight,sandboxEnabled,introEnabled}=flightEntryOptions(location.search,import.meta.env.VITE_DEV_TOOLS==='1');
 // Normalize a shared preset link before creating a renderer or generation workers.
 if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   location.replace(devLaunchURL(location.href,devOptions));
 }else try {
   const multiplayerEntry=import.meta.env.VITE_MULTIPLAYER_ENTRY==='1';
   const surfaceRoverStart=devOptions?.location==='rover-surface';
-  const testFlight=Boolean(devOptions)||new URLSearchParams(location.search).get('ship')==='kestrel';
-  const sandboxEnabled=!atlasMeadowStart&&new URLSearchParams(location.search).get('sandbox')==='build';
-  const introEnabled=!testFlight&&!sandboxEnabled&&new URLSearchParams(location.search).get('intro')!=='0';
   const canvas=$('viewport');
   const renderer=new THREE.WebGLRenderer({canvas,antialias:false,logarithmicDepthBuffer:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.outputColorSpace=THREE.LinearSRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;
@@ -271,7 +268,8 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     nav.mode='landed';nav.dockedAtStation=true;nav.stationLift=false;nav.autoland=false;nav.gearDeployed=true;nav.gearProgress=1;
     nav.doorOpen=false;nav.doorProgress=0;nav.insideShip=true;nav.jumpHeight=0;nav.jumpVelocity=0;nav.resetCabinFlight();
   }
-  const testFlightReady=testFlight&&!sandboxEnabled?Promise.all([station.readyPromise,ship.readyPromise]).then(()=>{
+  // The opening owns the walking spawn; a later practice setup must not reseat it.
+  const testFlightReady=testFlight&&!sandboxEnabled&&!opening?Promise.all([station.readyPromise,ship.readyPromise]).then(()=>{
     if(!station.ready)throw new Error('Test-flight hangar unavailable.');
     parkShip(fleet.active);
     if(devOptions)return;
@@ -613,7 +611,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     if(systemMap.open&&!gameplayMenu.active){systemMap.controllerInput(pad.ui);return;}
     // Account dialogs pause the intro but still need the shared modal router.
     if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
-    if(nav.openingActive){if(pad.pressed.has(9))multiplayerUI.openAccount();return;}
+    if(nav.openingActive){if(pad.pressed.has(9)){if(devLauncher&&!multiplayer.connected)devLauncher.open();else multiplayerUI.openAccount();}return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
     if(rover?.occupied&&!pad.shortcuts?.size){
       if(pad.pressed.has(9))gameplayMenu.open();
@@ -864,7 +862,6 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
               }
             }).catch(error=>{nav.enabled=true;notify('Test start failed: '+error.message);});
           }
-          else devLauncher.open();
         }else if(multiplayerEntry)multiplayerUI.openAccount();
       }
     }

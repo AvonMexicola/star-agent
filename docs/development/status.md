@@ -1,6 +1,6 @@
 # Verified development status
 
-**Snapshot: 2026-09-07, reviewed wildlife integrated locally at `c4f6b5b`.** This page states
+**Snapshot: 2026-09-08, checked fleet/content integrated locally at `c99736f`.** This page states
 capabilities and gaps; [ROADMAP](../../ROADMAP.md) states ambitions. New governance
 and tooling changes do not certify the entire game as finished.
 
@@ -8,19 +8,32 @@ and tooling changes do not certify the entire game as finished.
 | --- | --- | --- |
 | Worlds | Seeded Aeon, Selene, Pyre, Miasma, stellar encounter and canonical rock relief integrated; actual five-world browser tour | Broad visual/performance acceptance, hydrology, caves, shared dynamic weather |
 | Flight | Continuous flight, targeted/heading drive, gear limits, finite-thrust momentum, combat/cruise modes, differentiated handling, crashes and moving cabins | Complete fleet/server parity and deeper engineering |
-| Ships | Flyable Nomad 02, Kestrel and legacy 30 m Atlas | 64 m Atlas is a separate 59,443-triangle geometry studio; final materials/flight integration open |
-| Station | Hangar/concourse, physical boarding, services and local opening integrated | Opt-in exterior geometry preview integrated; final materials/art/timing and wider multi-user acceptance open |
-| Mining/building | Local mining including Aeon loose stones, inventory/equipment, processing, saved supply sandbox and21-piece construction kit with facilities/pads | Full authoritative mining/building persistence and economy not integrated |
+| Ships | Flyable Nomad 02, Kestrel and current 64 m Atlas; actual two-deck/ramp/crew-lift/station departure journey passes | Final Atlas materials/performance and Kestrel ladder animation hookup remain open |
+| Station | Authored exterior and enlarged 20-berth station are default; physical community hub, finite market, defense and animated shopkeepers integrated | Final exterior materials, broad firing arcs and wider multi-user acceptance remain open |
+| Mining/building | Local mining including Aeon loose stones, inventory/equipment, processing, saved supply sandbox, construction/facility/pad kit, six roof skins and powered ceiling lights | Full authoritative mining/building persistence and economy not integrated |
 | Cargo/trade | Physical1–64SBU crates, Nomad6SBU/Atlas512SBU grids, carry/salvage, station exchange and durable player shops; controller/phone and isolated SQL evidence | Mechanical handler animation, persistent offline wrecks, dynamic NPC market and rendered online playtest |
 | Characters | Expedition suit is the default local/remote model, with corrected leg rig, calibrated palms,26clips and an animation studio | Final art/motion and whole-scene performance acceptance remain open |
-| Rover | Offline Atlas/Burrow start with physical lift, twin-cutter mining, saved ore/transfer and flight carriage; full injected-controller route verified | Art polish, keyboard/touch and multiplayer replication remain open |
+| Rover | Ground Selene and Atlas/Burrow Aeon meadow starts, real aft-ramp carriage and clear windscreen; full ground controller route passes and Cees manually tested loading/flight | Final art/performance, broader keyboard/touch and multiplayer replication remain open |
 | Multiplayer | Ten-player prototype, persistent PostgreSQL/Prisma accounts and inventory, comms-assigned hangars, authoritative hits, assigned remote suit colors | Local database survives restarts; no SMTP; online Nomad/Atlas cargo hulls, with remaining fleet parity open; live ten-person soak not established here |
 | Social | Server chat, persistent mutual friends, presence, blocking and private session kicks; complete controller/keyboard/touch and ten-pilot fixture checks | Small English-first moderation rules; no direct messages, offline delivery, chat archive, reports inbox or permanent bans |
 | Combat | Offline Nomad/Kestrel patrol encounters, shield/hull damage and recovery; integrated controller/browser evidence | No reward ledger, durable mission or multiplayer NPC authority; fitted S1/S2/S3 weapons are integrated |
 | Wildlife | Offline Pyrebear/Suloher encounters and medical recovery; seeded Aeon Tidebacks defend after injury and peaceful Mallow grazers retreat; deer rig viewer installed | No online animal replication or persistence; deer world spawning, complete native-touch encounter and final motion/performance acceptance remain open |
 | Audio | Six local score variants, material footsteps/weapon/cutter synthesis, thrust-responsive engines, Doppler flybys and building/creature effects | Final mix/listening review, broad surface and remote audio coverage |
-| Developer entry | Three ships, paged world/habitat starts, temporary saves, shared seeds and one content-review menu | A dev start is explicit teleport; it does not prove continuous travel by itself |
+| Developer entry | Three ships, ground rover and Atlas meadow presets, paged world/habitat starts, temporary saves, shared seeds and one content-review menu | A dev start is explicit teleport; it does not prove continuous travel by itself |
 | Contribution process | Governance/roadmap/helpers/CI integrated in PR52; default dev and protected shared branches verified | Newcomer onboarding/restore rehearsal and additional human maintainers remain open |
+
+The latest fleet combination passes **1,016 normal tests** and the prior combined
+HUB checkpoint passes **193 multiplayer/database checks with real disposable SQL,
+zero skips**. The later ground-ramp union passes 136 physical and 51 server checks;
+the final meadow preset passes its own focused checks. Three engine/audio cases,
+Burrow ground mining/exit/reboard, full Atlas station boarding/departure and actual
+solo/authenticated opening pass with zero page/console errors. Cees supplied the
+manual loaded-rover/Atlas flight acceptance. The local client/API refresh preserves
+the database and adds migration 003. [Fleet integration evidence](../qa/fleet-engine-integration.md)
+records source boundaries and unperformed release-level acceptance. Base sites
+have account-scoped solo cloud saves, not shared multiplayer construction.
+
+The following named checkpoints are historical evidence, not current fleet dimensions.
 
 Current content review passes834unit tests,90multiplayer checks (one explicit
 SQL fixture skipped), production build, repository checks and six combined browser
@@ -50,8 +63,8 @@ page/console errors. Four actual-game images were inspected. Exact live GLB hash
 and served modules were verified after local promotion `c4f6b5b`. This client-only
 update preserves the existing API and database without a service restart. See
 [wildlife integration evidence](../qa/wildlife-integration.md). Base power, newer
-rover polish, handheld tractor, community hub and performance work remain separate
-from this named checkpoint.
+rover polish, handheld tractor, community hub and performance work were separate
+from that historical checkpoint and are included in the latest local integration.
 
 Historical validation follows. The combined launcher checkpoint passed 650 unit checks, 79 multiplayer checks
 with one PostgreSQL-only skip, a build and focused browser journeys on Chromium
