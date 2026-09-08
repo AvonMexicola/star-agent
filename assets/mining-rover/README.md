@@ -1,18 +1,21 @@
 # Meridian Burrow M-04
 
 Original compact enclosed four-wheel mining vehicle. This is a development
-candidate; see the current [concept-upgrade record](../../docs/qa/burrow-concept/production-record.md)
+candidate; see the current [cutter and reverse record](../../docs/qa/burrow-concept/cutters-and-reverse.md)
 for validation and independent review status.
 
-Current export is concept checkpoint **12e: 24,902 triangles / 2,427,608 bytes**,
-SHA-256 `5433c83744a21e6c4022dfd9b840f15069c96f95111b0518fbb851d2f8495bc1`.
+Current export is cutter checkpoint **13a: 29,254 triangles / 2,611,096 bytes**,
+SHA-256 `85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e`.
 It adds fitted cabin liners, recessed storage and warm coves, five flat LCARS-style
 instrument faces, fuller tread and manufactured shell details. Physical steering
 wheel, column and pedals are removed. The canonical dimensions, pilot eye, clear
 windscreen, boarding path, suspension and twin-cutter origins are retained.
+The cutter follow-up adds original machined cartridges, cooling hardware and
+stepped nozzles, plus layered live beams. Contact reversal is corrected in the
+collision sweep; the status panel distinguishes obstructions from held brakes.
 
-Native author inspection, actual-asset geometry checks and complete controller
-carrier gameplay pass. The current record distinguishes keyboard/touch validation,
+Native author inspection and actual-asset geometry checks pass. The current
+record distinguishes the controller carrier journey, keyboard/touch validation,
 local integration and pending independent visual acceptance. Previous candidate
 10 scores and the [candidate 11 windscreen correction](../../docs/qa/mining-rover/windscreen-open/README.md)
 are historical; they do not approve this new export.

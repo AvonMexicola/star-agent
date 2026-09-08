@@ -29,3 +29,12 @@ Target ≤30,000 triangles, ≤4 MB GLB, 1024² WebP PBR maps. Retain source, co
 provenance, measured export and current actual-asset/body/muzzle/display checks.
 Validate native cockpit/exterior before and after, actual game input journeys,
 diagnostics, counts and independent review; label each gate separately.
+
+Follow-up, 2026-09-08: Cees finds the cutter heads and cutting beam too simple
+and reports reverse holding the brake. Refine the original cartridges with
+manufactured cooling, service and nozzle detail within the same budget and
+mechanical contracts. Give the actual twin rays a hot core, restrained moving
+filaments, aperture glow and a contact effect only at a real hit. Keep visual
+effects separate from extraction, power and inventory authority. Reproduce the
+reported reverse route before changing its input/physics behavior; explicitly
+test reversing directly from forward motion and the independent brake.

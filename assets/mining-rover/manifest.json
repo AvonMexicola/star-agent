@@ -1,5 +1,5 @@
 {
-  "stage": "concept upgrade 12e; see production record for current acceptance",
+  "stage": "cutter follow-up 13a; see production record for current acceptance",
   "name": "Burrow M-04",
   "manufacturer": "Meridian Shipworks",
   "units": "metres",
@@ -23,19 +23,19 @@
     "Flat panel instruments mirror shared controls; pressure and hand IK are not simulated"
   ],
   "asset": "public/models/mining-rover.glb",
-  "sha256": "5433c83744a21e6c4022dfd9b840f15069c96f95111b0518fbb851d2f8495bc1",
-  "bytes": 2427608,
-  "triangles": 24902,
+  "sha256": "85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e",
+  "bytes": 2611096,
+  "triangles": 29254,
+  "meshPrimitives": 44,
+  "nodes": 120,
+  "materials": 9,
   "packing": {
-    "inputBytes": 3802968,
-    "outputBytes": 3308468,
+    "inputBytes": 4091900,
+    "outputBytes": 3491960,
     "maximumPositionErrorMetres": 5.163889789237211e-05,
     "maximumNormalErrorDegrees": 0.3687926033562305,
     "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
   },
   "textureFormat": "WebP: three original 1024x1024 PBR swatches and approved 512x512 Meridian emblem (RGBA)",
-  "textures": 4,
-  "meshPrimitives": 44,
-  "nodes": 120,
-  "materials": 9
+  "textures": 4
 }
