@@ -6,7 +6,7 @@ const UP=new Vector3(0,1,0);
 const inside=(p,b)=>p.x>=b.minX&&p.x<=b.maxX&&p.z>=b.minZ&&p.z<=b.maxZ;
 export const roverShipLocal=(point,frame)=>point.clone().sub(frame.position).applyQuaternion(frame.quaternion.clone().invert());
 /** Ask the existing floor owner. In particular, raised internal lifts leave holes. */
-export function sampleRoverSupport(point,{freighter=null,frame=null}={}){
+export function sampleRoverSupport(point,{freighter=null,frame=null,construction=null}={}){
   if(freighter&&frame){
     const s=roverShipLocal(point,frame);
     // The 64 m hull's ramps extend beyond the retired 30 m broadphase.
@@ -19,8 +19,10 @@ export function sampleRoverSupport(point,{freighter=null,frame=null}={}){
       }
     }
   }
-  const body=bodyAt(point);if(body.star)return null;
+  const building=construction?.(point);
+  const body=bodyAt(point);if(body.star)return building??null;
   const surface=bodySurfacePoint(bodyOffset(point,body).normalize(),body);
+  if(building&&(point.distanceTo(surface)>.4||building.point.clone().sub(surface).dot(building.normal)>=0))return building;
   if(point.distanceTo(surface)>.4)return null;
   return {point:surface,normal:bodySurfaceNormal(point,body),source:'terrain'};
 }

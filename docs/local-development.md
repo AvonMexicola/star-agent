@@ -606,6 +606,34 @@ both weapons and cargo securing. At that delivery, the four served GLB hashes an
 eight source modules matched the checked candidate. This is builder-tested local development;
 independent visual and physical-controller acceptance remain separate.
 
+## Compact builder and K-17 rotating cutter
+
+The compact Meridian field builder has a
+live piece/status display and a brief projection from its emitter after a
+successful placement or removal. On foot outside the ship, open **Menu → Build**
+on a controller, **B** on a keyboard or the visible **Build** button. Choose a
+piece, then **A / Enter / Place** confirms it; **X / Esc / Exit** restores the
+previous equipment. Existing recipes, material costs and placement rules apply.
+The supplied construction sandbox is available from the development launcher.
+
+The yellow **K-17 Mk1** replaces the handheld mining cutter. Its three-pod head
+spins up with the actual beam and coasts down when released or cooling; its
+central lens and muzzle remain fixed. Equip with **D-pad right / 3**, then hold
+**RT / T / Hold to mine** within 8 m of a mineable surface. **View / I** opens
+the collected-material inventory. Only Mk1 is playable; the common cartridge
+mount prepares later heads, without adding tier bonuses or an upgrade menu.
+
+Editable sources and reproduction scripts are in `assets/builder-tool/` and
+`assets/field-cutter/`. The supplied bandage and injector have normalized native
+models in the prop library; medical equip/use animations are still pending.
+See the [builder record](qa/builder-tool/README.md) and
+[cutter record](qa/field-cutter/README.md) for source and acceptance status.
+The complete controller/keyboard/native-touch journeys and final phone framing
+pass. Both tools are available in the existing **5178** preview at `0abc2f7`;
+the [local receipt](qa/field-cutter/local-integration.json) confirms served model
+and source hashes, current asset revisions and healthy 5178/8087 services.
+Physical-device and independent art acceptance remain separate.
+
 ## Fleet audio, merchants, roofs and power in the candidate
 
 Nomad, Kestrel and Atlas consume actual acceleration, boost, power and hull pose
@@ -703,3 +731,21 @@ acceptance. This is a development feature; no public deployment is included.
 Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
 [the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
 The existing API remains healthy; no service restart or save migration was needed.
+
+
+## Compound vehicle garages
+
+Four trade settlements now have a drive-through garage candidate. Land, walk to
+its **Garage** console and press **F / controller X**, then choose **Deploy Burrow**.
+Board at the port-side door and drive down the outer ramp. **Retrieve Burrow**
+returns the same parked solo vehicle with its ore and cutter charge retained.
+Occupied, moving, carried or obstructed vehicles cannot be retrieved.
+
+Use **F2 → Stillwater Exchange** for the tested Selene route. The complete injected
+controller journey, keyboard/native390 retrieval and all four world views pass
+on `9b6a7de` (runtime `2e686db`), including checked freight `f294a98`.
+The [garage record](qa/compound-garages/README.md) retains original failures,
+performance and night-view limitations. The [player guide](compound-garages.md)
+explains session-only vehicle pose/charge. Source is locally integrated at `e098947`; the [local receipt](qa/compound-garages/local-integration.json)
+records verified served garage source and healthy APIs on ports 5178 and 8087. This is not a public release or final
+art/hardware/performance acceptance.

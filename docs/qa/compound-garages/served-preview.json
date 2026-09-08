@@ -1,0 +1,42 @@
+{
+  "source": "SA-PIRATE-001 independent read-only receipt",
+  "inspectedAt": "2026-09-08T20:49:38.354373+00:00",
+  "utc": "2026-09-08T20:45:54.421960+00:00",
+  "commands": [
+    "curl -L --fail --silent http://127.0.0.1:5178/src/main.js -o /tmp/pirate-shared-before.js",
+    "curl -L --fail --silent --write-out %{http_code} http://127.0.0.1:5178/src/mining-rover.js -o /tmp/pirate-shared-rover.js",
+    "curl -L --fail --silent --write-out %{http_code} http://127.0.0.1:5178/api/health -o /tmp/pirate-health-5178.json",
+    "curl -L --fail --silent --write-out %{http_code} http://127.0.0.1:8087/api/health -o /tmp/pirate-health-8087.json"
+  ],
+  "http": [
+    {
+      "path": "5178/src/mining-rover.js",
+      "status": 200
+    },
+    {
+      "path": "5178/api/health",
+      "status": 200,
+      "json": {
+        "ok": true
+      }
+    },
+    {
+      "path": "8087/api/health",
+      "status": 200,
+      "json": {
+        "ok": true
+      }
+    }
+  ],
+  "main": {
+    "path": "/tmp/pirate-shared-before.js",
+    "sha256": "f098d5213c8a9c0ab2214338099bd4d8b5d116afd6062a3d01870b2350fe7fa7",
+    "garageImport": true,
+    "garageUpdate": true
+  },
+  "rover": {
+    "path": "/tmp/pirate-shared-rover.js",
+    "sha256": "ebae5d57c7d0f19dee56359d482db66c8d94332ff78f0082056685c4e5ae7f23",
+    "deployAt": true
+  }
+}
