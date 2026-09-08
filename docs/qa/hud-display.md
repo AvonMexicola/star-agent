@@ -65,5 +65,11 @@ was added for that timing. Both original logs, screenshots and videos remain in
 [phone Settings](hud-display/phone-settings-none.png).
 
 PR94 is stacked on foundation PR93 because remote dev/all-features is behind the
-local development line. Local integration is pending the shared source slot;
-no public deployment or independent review is claimed.
+local development line. Local integration `6a3c9f2` retains final settlement metadata `290f5ad` and Burrow.
+Its combined production build passed (349 modules, 5.73 s), plus focused gamepad,
+combat and settlement economy tests and repo checks. The guarded fast-forward
+preserved the exact 56,247-byte unrelated handoff journal (SHA256 `3bf320f0…`).
+The existing preview5178 serves both new modules and the main hook, and proxied
+health returns OK. All five changed runtime files are byte-identical to the
+browser-tested ad32435; see [source verification](hud-display/preview-verification.json).
+No service restart, SQL mutation, public deployment or independent review is claimed.

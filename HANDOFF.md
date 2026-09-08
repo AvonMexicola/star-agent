@@ -1,6 +1,6 @@
 # Star Agent — agent handoff (Claude ⇄ Astra)
 
-## SA-UI-003 — HUD modes checked, local integration queued — 2026-09-08
+## SA-UI-003 — HUD modes integrated locally — 2026-09-08
 
 Runtime `ad32435` / browser harness `9a3910d`, isolated `/tmp/star-agent-hud`,
 `feat/hud-display-modes` from01a28df; [PR94](https://github.com/AvonMexicola/star-agent/pull/94)
@@ -11,9 +11,13 @@ Menu → Ship. No asset/dependency/server/protocol change. Final full unit suite
 pass; final production keyboard/controller/native-touch3/3 pass2.2min with zero
 app errors/warnings. Chromium151/AMD860M/ANGLE GL at1440×900 and390×844. Failed
 routing guard and fixture timing attempts retained; see [QA](docs/qa/hud-display.md).
-GPU and private5666/API8666 are released. Next: merge this checked change after
-settlement's shared source claim releases, preserve all unrelated journal bytes
-and newer module hooks, verify5178 serves it, then record actual integration SHA.
+Local integration `6a3c9f2` preserves settlement metadata `290f5ad` and Burrow.
+The guarded fast-forward preserved the exact 56,247-byte unrelated journal suffix.
+Preview5178 serves both HUD modules and the main hook; proxied health is OK.
+All five affected runtime files match the browser-tested ad32435 byte for byte.
+The combined build passed (349 modules, 5.73 s), as did focused input/combat/
+settlement tests and repo checks. GPU and private5666/API8666 are released;
+shared services and SQL were not restarted. Final metadata/PR update follows.
 No physical-device testing, independent acceptance or public deployment claimed.
 
 ## Passenger elevator repair — 2026-09-08
@@ -3980,3 +3984,14 @@ No public deployment or shared API/SQL restart is required for this delta.
 
 
 BURROW FOLLOW-UP CLAIM 2026-09-08T14:07:35.990123+00:00: Cees reports reverse remaining on brake and asks for more developed cutter heads/beams. Continuing isolated art/burrow-concept-upgrade at acbf4be; source baseline shared a75b82f. Own assets/mining-rover, blender/build_mining_rover.py plus NEW blender/rover_cutters.py, src/mining-rover.js, NEW src/rover-cutting-beam.js and bounded rover input/physics/UI changes if reproduced, relevant tests/scripts/burrow-concept and Burrow docs/task metadata. No shared main/navigation/gamepad/energy-effects hooks claimed; coordinate separately if evidence requires them. Existing dependencies only; reserve own 5630/8630 production and 5631 native previews, GPU queued after existing settlement/HUD/transport reservations and fresh host inventory. No shared integration/service action until checked candidate and fresh HANDOFF. Original clear glazing/entry/muzzle/carrier contracts retained. Reverse input clarification pending while source/art work continues.
+
+
+SA-SETTLE-002 LOCAL COMPLETE: checked economy d50bc56 and QA/Burrow union are
+integrated on dev/all-features at dc578d8. Guard preserved exact56,247B unrelated
+HANDOFF suffix; backup/receipt /tmp/settlement-needs-integration/runtime. Existing
+5178 economy/UI and proxiedhealth200; allfivechangedruntimefiles exactly match
+passing controller1f8a20a. Final1154individualunitcases/191multiplayer+2optinskips/
+build6.10s/repo and controller1PASS2.6m, keyboard/native390 pagination and held
+modal/nativefocus/disconnectPASS. No service/SQL/schema/protocol/public changes.
+Physicaldevice/independentvisual review remain separate. Final integratedtask and
+localguide/status metadata in this commit; no gameplay changes since tested source.
