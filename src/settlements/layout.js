@@ -79,6 +79,11 @@ export function settlementLayout(def,index,site){
   put(def.body==='selene'?'helium-generator':'uranium-generator',-6,y,-28);
   if(def.body==='aeon'||def.body==='miasma')put('wind-turbine',32,y+3.62,def.wings[1]);
   else put('solar-array',32,y+3.62,def.wings[1]);
+  // Corner masts wash the pad; the middle pair also picks out the exchange.
+  // Feet stay outside the Atlas' 36 × 64 m envelope on the actual support slab.
+  for(const x of [-22.5,22.5])for(const z of [-14.5,20,54.5]){
+    put('floodlight',x,y,z,Math.atan2(x,z-(z===20?-20:20)),{lightOn:true});
+  }
   const claim=withClaimAnchor({id:`build-claim-${10000+index*1000}`,body:def.body,name:def.name,owner:'Settlement authority',useBuffer:false,radius:96,origin:site.origin,quaternion:site.quaternion,pieces});
   return {...def,claim,terminalPiece:terminal,pad:pieces[0],terrain:site.terrain};
 }

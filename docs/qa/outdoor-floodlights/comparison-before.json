@@ -1,0 +1,62 @@
+{
+  "browser": "151.0.7922.173",
+  "baseline": "http://127.0.0.1:5622",
+  "baselineRuntime": "03a561e / pre-floodlight settlement preview",
+  "views": [
+    {
+      "view": "approach",
+      "width": 1440,
+      "height": 900,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawCalls": 1670,
+      "triangles": 1171318,
+      "fps": 35,
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "view": "walk",
+      "width": 1440,
+      "height": 900,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawCalls": 1410,
+      "triangles": 1043026,
+      "fps": 36,
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "view": "mast",
+      "width": 1440,
+      "height": 900,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "drawCalls": 1414,
+      "triangles": 1075148,
+      "fps": 35,
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "artViewpoints": true,
+  "performanceAcceptance": false
+}
