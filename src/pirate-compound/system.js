@@ -7,6 +7,7 @@ import {PIRATE_MARKET,PERIMETER as P} from './catalog.js';
 import {PiratePerimeter} from './perimeter.js';
 import {PirateProps} from './props.js';
 import {PirateTower} from './tower.js';
+import {PirateStaticKit} from './static-kit.js';
 import {pirateLayout} from './layout.js';
 import './style.css';
 const v=a=>new Vector3(...a);
@@ -14,6 +15,7 @@ export function createPirateCompound({scene,nav,mining,getCombat,enabled=()=>!na
  const layout=pirateLayout(),q=new Quaternion(...layout.claim.quaternion),claims=[layout.claim,layout.outerClaim],point=p=>v(p).applyQuaternion(q).add(v(layout.claim.origin)),local=p=>p.clone().sub(v(layout.claim.origin)).applyQuaternion(q.clone().invert());
  const store={state:{build:emptyBuild()},container:()=>null},collisionStore={state:{build:{...emptyBuild(),claims}},container:()=>null};
  const buildings=new BuildSystem({scene,nav,store}),collision=new BuildSystem({scene,nav,store:collisionStore,render:false});
+ const staticKit=new PirateStaticKit(buildings);
  const props=new PirateProps(scene,layout);props.readyPromise.catch(error=>nav.notify(`Crimson props unavailable: ${error.message}`));
  const tower=new PirateTower(scene,layout);tower.readyPromise.catch(error=>nav.notify(`Hush tower unavailable: ${error.message}`));let visible=false,discovered=false;
  const cameraOrigin=new Vector3(),obstruction=createWeaponTarget({nav:{get body(){return nav.body;},get normal(){return nav.normal;},buildingRaycast:(...args)=>nav.buildingRaycast?.(...args)},mining});let clearAge=0,lineClear=true;
@@ -40,7 +42,7 @@ export function createPirateCompound({scene,nav,mining,getCombat,enabled=()=>!na
   constrainWalker(a,b){if(!enabled())return {point:b,hit:false,grounded:false};const initial=collision.constrainWalker(a,b),d=initial.point.clone().sub(a),distance=d.length();if(distance<1e-8)return initial;d.normalize();const envelope={min:[-.28,-nav.layout.eyeHeight,-.28],max:[.28,.2,.28],orientation:q};const hit=[tower.raycast(a,d,distance,envelope),props.raycast(a,d,distance,envelope)].filter(Boolean).sort((a,b)=>a.distance-b.distance)[0];return hit?{...initial,point:a.clone().addScaledVector(d,Math.max(0,hit.distance-.005)),hit:true}:initial;},
   raycast(...args){if(!enabled())return null;return [collision.raycast(...args),tower.raycast(...args),props.raycast(...args)].filter(Boolean).sort((a,b)=>a.distance-b.distance)[0]??null;},landingSurface(pose){return enabled()?collision.landingSurface(pose):null;},
   approach(){if(!enabled())return false;nav.orbit();nav.position.copy(point(layout.approach));nav.orientation.copy(q);nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.keys.clear();nav.gamepad.suspend();nav.resetSteering();return true;},
-  update(dt,origin){cameraOrigin.copy(origin);const on=enabled(),near=on&&nav.position.distanceTo(v(layout.claim.origin))<2400;if(near!==visible){visible=near;store.state.build={...emptyBuild(),claims:near?claims:[]};}buildings.update(dt,origin);
+  update(dt,origin){cameraOrigin.copy(origin);const on=enabled(),near=on&&nav.position.distanceTo(v(layout.claim.origin))<2400;if(near!==visible){visible=near;store.state.build={...emptyBuild(),claims:near?claims:[]};}buildings.update(dt,origin);staticKit.update();
    if(on&&nav.position.distanceTo(v(layout.claim.origin))<1000&&!discovered){discovered=true;nav.notify('Hidden signal resolved · Hush Exchange. Amber outer pad is clear; isolate the tower on foot to trade.');}
    const suspended=!on||!nav.enabled||!nav.focused||document.hidden||Boolean(document.querySelector('dialog[open]'))||Boolean(nav.travel)||!tower.ready;
    const aircraft=['flight','landed'].includes(nav.mode)||nav.mode==='walk'&&nav.insideShip,ship=nav.mode==='flight'?nav.position:nav.shipPosition??nav.position,targetLocal=local(ship),distance=ship.distanceTo(tower.origin),aligned=!suspended&&aircraft?tower.aim(ship,Math.min(.1,dt)):false;
@@ -49,8 +51,8 @@ export function createPirateCompound({scene,nav,mining,getCombat,enabled=()=>!na
    policy.update(dt,{distance,altitude:targetLocal.y-layout.deck,ship:aircraft,active:!suspended,clear:lineClear,aligned});tower.update(Math.min(.1,dt),origin,{enabled:on,phase:policy.phase});
    warning.hidden=suspended||!aircraft||!['warning','charge','burst','rest'].includes(policy.phase);warning.textContent=policy.phase==='warning'?`HUSH AIRSPACE · ${Math.ceil(distance)}m · NO SHIPS WITHIN 180 m\nLand at outer apron; approach on foot. ${policy.timer>0?`Weapons arm in ${Math.ceil(policy.timer)}s.`:''}`:policy.phase==='charge'?`TOWER CHARGING · ${policy.timer.toFixed(1)}s · RETREAT BEYOND 220 m`:`PERIMETER ACTIVE · RETREAT BEYOND 220 m · SHIELD ${Math.ceil(nav.combat?.player?.shield??0)}`;
    touch.hidden=!nearPanel()||!nav.enabled||Boolean(document.querySelector('dialog[open]'));
-  },get state(){return {available:enabled(),discovered,unlocked:policy.disabled,...policy.state,ready:tower.ready&&props.ready&&[...buildings.models.values()].every(m=>m.ready),rendered:buildings.models.size,error:[buildings.error,tower.error,props.error].filter(Boolean).join(' '),site:{id:layout.id,origin:layout.claim.origin,quaternion:layout.claim.quaternion,deck:layout.deck,padDeck:layout.padDeck,pad:point(layout.pad.position).toArray(),terminal:point(layout.terminalPiece.position).toArray(),panel:panelPoint.toArray(),tower:tower.origin.toArray()},props:props.placements,assets:{tower:'/models/pirate-tower.glb',battery:'/models/station-defense.glb'}};},
-  dispose(){props.dispose();tower.dispose();buildings.dispose();collision.dispose();dialog.remove();touch.remove();warning.remove();}};return api;
+  },get state(){return {available:enabled(),discovered,unlocked:policy.disabled,...policy.state,ready:tower.ready&&props.ready&&[...buildings.models.values()].every(m=>m.ready),rendered:buildings.models.size,error:[buildings.error,tower.error,props.error].filter(Boolean).join(' '),site:{id:layout.id,origin:layout.claim.origin,quaternion:layout.claim.quaternion,deck:layout.deck,padDeck:layout.padDeck,pad:point(layout.pad.position).toArray(),terminal:point(layout.terminalPiece.position).toArray(),panel:panelPoint.toArray(),tower:tower.origin.toArray()},props:props.placements,staticKit:staticKit.state,assets:{tower:'/models/pirate-tower.glb',battery:'/models/station-defense.glb'}};},
+  dispose(){staticKit.dispose();props.dispose();tower.dispose();buildings.dispose();collision.dispose();dialog.remove();touch.remove();warning.remove();}};return api;
 }
 /** Combine collision and commerce adapters without changing regular layouts. */
 export function withPirateCompound(settlements,pirate){return {

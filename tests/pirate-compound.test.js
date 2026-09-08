@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {Vector3,Quaternion,Scene} from 'three';
+import {Vector3,Quaternion,Scene,Group,Mesh,BoxGeometry,MeshStandardMaterial,Matrix4} from 'three';
+import {PirateStaticKit} from '../src/pirate-compound/static-kit.js';
 import {createFloodlights} from '../src/build/floodlights.js';
 import {PiratePerimeter} from '../src/pirate-compound/perimeter.js';
 import {PIRATE_MARKET,PERIMETER as P} from '../src/pirate-compound/catalog.js';
@@ -16,6 +17,14 @@ import {terminalFrames} from '../src/trading/terminal-frames.js';
 import {getWorldBoxes} from '../src/build/collision.js';
 import {getPieceDefinition} from '../src/build/definitions.js';
 const step=(sim,seconds,context={})=>{for(let i=0;i<Math.ceil(seconds/.05);i++)sim.update(.05,{distance:120,altitude:30,ship:true,...context});};
+test('readonly kit instancing preserves local nested transforms and releases without changing collision sources',()=>{
+ const group=new Group();group.position.set(22e9,4e8,-3e6);group.rotation.y=.7;const geometry=new BoxGeometry(4,3,.3),material=new MeshStandardMaterial(),models=new Map(),pieces=[];
+ for(let i=0;i<3;i++){const root=new Group(),nested=new Group(),mesh=new Mesh(geometry,material.clone());root.position.set(i*4,5,-12);root.rotation.y=i*Math.PI/2;nested.position.set(.2,.3,-.1);root.add(nested);nested.add(mesh);group.add(root);pieces.push({id:`p${i}`,type:i===2?'doorway':'wall'});models.set(`p${i}`,{ready:true,group:root});}
+ const buildings={claims:[{id:'c',pieces}],groups:new Map([['c',group]]),models},kit=new PirateStaticKit(buildings);kit.update();assert.deepEqual(kit.state,{originalDraws:2,instancedDraws:1});
+ const batch=group.children.find(o=>o.isInstancedMesh),actual=new Matrix4();for(let i=0;i<2;i++){batch.getMatrixAt(i,actual);const root=models.get(`p${i}`).group,nested=root.children[0];root.updateMatrix();nested.updateMatrix();const expected=root.matrix.clone().multiply(nested.matrix);actual.elements.forEach((n,j)=>assert.ok(Math.abs(n-expected.elements[j])<1e-5));assert.equal(nested.children[0].visible,false);}
+ assert.equal(models.get('p2').group.children[0].children[0].visible,true);kit.update();assert.equal(group.children.filter(o=>o.isInstancedMesh).length,1);
+ buildings.groups.clear();buildings.claims=[];kit.update();assert.deepEqual(kit.state,{originalDraws:0,instancedDraws:0});assert.equal(group.children.filter(o=>o.isInstancedMesh).length,0);assert.equal(models.get('p0').group.children[0].children[0].visible,true);kit.dispose();
+});
 test('short tripod lighting stays capped and reused pooled slots restore mast defaults',()=>{
  const scene=new Scene(),lights=createFloodlights(scene),zero=new Vector3(),fixture={id:'tripod',position:new Vector3(0,1.5,0),target:new Vector3(0,0,-11),intensity:90,range:28};
  lights.update([fixture],zero,zero);const light=scene.children.find(o=>o.isSpotLight);assert.equal(light.intensity,90);assert.equal(light.distance,28);assert.equal(light.shadow.camera.far,28);
