@@ -50,7 +50,7 @@ test('orbital view, terrain streaming, landing, walking, boarding and launch',as
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>9);
   await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
   expect(await page.evaluate(()=>window.starAgent.state.insideShip)).toBe(false);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');await page.keyboard.press('Tab');
   await page.screenshot({path:'test-results/forest-walk.png'});
   await page.keyboard.press('KeyF');
   expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('walk');

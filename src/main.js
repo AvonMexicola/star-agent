@@ -1,3 +1,5 @@
+import {createHUDDisplay} from './hud-display.js';
+import './hud-display.css';
 import { createSettlements } from './settlements/system.js';
 import './model-cache.js';
 import {createShipMining} from './ship-mining.js';
@@ -439,7 +441,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     frames=0;frameAccumulator=0;
   });
   const releaseLoadingKeys=blockStartupInput(document,()=>firstReady);
-  let elapsed=0,last=null,lastHud=0,frames=0,fps=0,frameAccumulator=0,firstReady=false,transiting=false,hidden=false;
+  let elapsed=0,last=null,lastHud=0,frames=0,fps=0,frameAccumulator=0,firstReady=false,transiting=false;
   document.addEventListener('visibilitychange',()=>{last=null;refreshAudioSuspension();});
   window.addEventListener('blur',()=>audio.setSuspended(true));
   window.addEventListener('focus',()=>refreshAudioSuspension());
@@ -501,8 +503,9 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   $('map-button').addEventListener('click',()=>{closeHelp();systemMap.openMap();});
   $('help-fly').addEventListener('click',event=>{closeHelp();capture(event);});
   $('sound-button').addEventListener('click',toggleAudio);
-  const photo=()=>{hidden=!hidden;document.body.classList.toggle('photo-mode',hidden);};$('photo-button').addEventListener('click',()=>{closeHelp();photo();});
-  document.addEventListener('keydown',e=>{if(opening?.active||e.repeat||inventoryUI.open||fleetUI.open||(document.querySelector('dialog[open]')&&!help.open)||systemMap.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='Tab'&&!help.open){e.preventDefault();photo();}if(e.code==='KeyO'&&!help.open)transit('orbit');});
+  const hudDisplay=createHUDDisplay({body:document.body,canvas,canChange:()=>firstReady&&nav.enabled&&nav.focused&&!opening?.active&&!transiting&&!document.querySelector('dialog[open]')});
+  $('photo-button').addEventListener('click',closeHelp);hudDisplay.bind($('photo-button'));
+  document.addEventListener('keydown',e=>{if(opening?.active||e.repeat||inventoryUI.open||fleetUI.open||(document.querySelector('dialog[open]')&&!help.open)||systemMap.open)return;if(e.code==='KeyH'){help.open?closeHelp():openHelp();}if(e.code==='KeyO'&&!help.open)transit('orbit');});
   function toggleCamera(){
     if(nav.berthRest||nav.berthTransition)return;
     if(opening?.active||transiting||!nav.enabled||inventoryUI.open||document.querySelector('dialog[open]'))return;
@@ -561,7 +564,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   const utilityStatus=document.createElement('div');utilityStatus.id='ship-utility-status';document.querySelector('.telemetry').append(utilityStatus);
   const devLauncher=devOptions?createDevLauncher({nav,options:devOptions,seed:SEED,available:()=>!transiting&&!multiplayer.connected}):null;
   const controllerLayout=createControllerLayout({nav});
-  const controllerUI=createControllerUI({nav,canOpenBuild:()=>build.controllerAvailable,openBuild:()=>multiplayer.connected?notify('Construction is available in offline testing.'):buildUI.open(),openRecipes:()=>multiplayer.connected?notify('Field recipes use the offline inventory.'):buildUI.openRecipes(),buildActive:()=>build.active,handleBuild:pad=>buildUI.handleController(pad),actions:[{id:'combat-mode',label:'Combat / cruise mode · Z',activate:()=>nav.toggleCombatMode(),enabled:()=>nav.mode==='flight'&&!nav.travel},{id:'build-sandbox',label:sandboxEnabled?'Sandbox supplies / refill':'Open build sandbox',activate:()=>sandboxEnabled?buildUI.openSandbox():location.assign(sandboxURL(location.href)),enabled:()=>!multiplayer.connected},...(sandboxEnabled?[{id:'sandbox-exit',label:'Return to regular game',activate:()=>location.assign(sandboxURL(location.href,false))}]:[]),{id:'controller-layout',label:'Controller layout',activate:()=>controllerLayout.open()},{id:'patrol-console',label:'Patrol console · Missions / report',activate:()=>combat.open(),enabled:()=>combat.permitted()},{id:'combat-target',label:'Next hostile target · Tab',activate:()=>combat.cycle(),enabled:()=>nav.mode==='flight'&&combat.state.enemies.some(e=>e.hull>0)},
+  const controllerUI=createControllerUI({nav,canOpenBuild:()=>build.controllerAvailable,openBuild:()=>multiplayer.connected?notify('Construction is available in offline testing.'):buildUI.open(),openRecipes:()=>multiplayer.connected?notify('Field recipes use the offline inventory.'):buildUI.openRecipes(),buildActive:()=>build.active,handleBuild:pad=>buildUI.handleController(pad),actions:[{id:'combat-mode',label:'Combat / cruise mode · Z',activate:()=>nav.toggleCombatMode(),enabled:()=>nav.mode==='flight'&&!nav.travel},{id:'build-sandbox',label:sandboxEnabled?'Sandbox supplies / refill':'Open build sandbox',activate:()=>sandboxEnabled?buildUI.openSandbox():location.assign(sandboxURL(location.href)),enabled:()=>!multiplayer.connected},...(sandboxEnabled?[{id:'sandbox-exit',label:'Return to regular game',activate:()=>location.assign(sandboxURL(location.href,false))}]:[]),{id:'controller-layout',label:'Controller layout',activate:()=>controllerLayout.open()},{id:'patrol-console',label:'Patrol console · Missions / report',activate:()=>combat.open(),enabled:()=>combat.permitted()},{id:'combat-target',label:'Next hostile target',activate:()=>combat.cycle(),enabled:()=>nav.mode==='flight'&&combat.state.enemies.some(e=>e.hull>0)},
     ...(devLauncher?[{id:'dev-launcher',label:'DEV · Ship & location',activate:()=>devLauncher.open(),enabled:()=>!transiting&&!multiplayer.connected}]:[]),
     {id:'free-drive',label:'Relativistic drive · N / LB+RB + ↑',activate:()=>nav.travel?nav.cancelTravel():nav.beginFreeTravel(),enabled:()=>Boolean(nav.travel)||nav.mode==='flight'},
     {id:'gear',label:'Landing gear · G / LB+RB + ↓',activate:()=>nav.toggleGear(),enabled:()=>nav.mode==='flight'&&!nav.autoland&&!nav.stationLift&&!nav.travel&&nav.powered},
@@ -584,6 +587,8 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   nav.openGameplayMenu=()=>gameplayMenu.open();
   function switchScreen(open){const dialog=document.querySelector('dialog[open]');if(dialog){dialog.addEventListener('close',()=>open(),{once:true});dialog.close();}else open();}
   const controlsSettings=document.createElement('button');controlsSettings.type='button';controlsSettings.dataset.controllerKey='controller-layout';controlsSettings.textContent='Controller layout';controlsSettings.onclick=()=>switchScreen(()=>controllerLayout.open());document.querySelector('#graphics-settings .graphics-options').after(controlsSettings);
+  const hudSettings=document.createElement('button');hudSettings.type='button';hudSettings.id='hud-display-button';hudSettings.dataset.controllerKey='hud-display';hudDisplay.bind(hudSettings);
+  const hudNote=document.createElement('p');hudNote.id='hud-display-note';hudNote.textContent='Tab cycles Everything → Markers and reticle → No HUD. Touch: tap the view with two fingers to restore Everything.';hudSettings.setAttribute('aria-describedby',hudNote.id);controlsSettings.after(hudSettings,hudNote);
   const menuAudio=document.createElement('button');menuAudio.type='button';menuAudio.dataset.controllerKey='menu-audio';menuAudio.onclick=toggleAudio;controlsSettings.after(menuAudio);
   function syncAudioControls(){
     const enabled=audio.enabled;menuAudio.textContent='Sound · '+(enabled?'On':'Off');menuAudio.setAttribute('aria-pressed',String(enabled));

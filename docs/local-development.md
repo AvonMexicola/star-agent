@@ -5,6 +5,13 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+**HUD display**: press **Tab** during gameplay to cycle **Everything → Markers and
+reticle → No HUD**. Controller and touch use **Menu → Settings → HUD**. A two-finger
+tap on the view restores Everything on touch screens. Tab still moves focus inside
+menus. Next hostile is available through **Next target / Menu → Ship**. The display
+choice affects screen overlays; physical cockpit instruments remain visible.
+See [the checked source and browser evidence](qa/hud-display.md).
+
 **Foundation-first building** is available in the same local preview. Place a
 foundation and build before fitting a mainframe; it can sit on the finished deck.
 Doors remain open while the site has no mainframe. Square, triangle and curved
@@ -29,6 +36,13 @@ settlements** signal filter. Each has a large pad and a walk-in exchange with
 independent finite stock and real ship cargo trading. F2 / Dev → Ship & location
 offers an approach above each pad. See the [player route](trade-settlements.md)
 and [construction and validation record](qa/trade-settlements/README.md).
+Settlement economy `d50bc56` is locally integrated at `dc578d8`. Each exchange
+now has explicit **local supplies and logical needs**. Its Local
+stock tab explains reserve targets and resource uses; deliveries consume cargo,
+pay credits and reduce the remaining need. Full reserves refuse excess crates.
+Map selections list current exports and shortages. Existing saved quantities
+are preserved. See [settlement delivery guide](settlement-economy.md) and
+[controller/keyboard/phone validation](qa/settlement-stock-needs/README.md).
 These authored exchanges are solo content; online player-base shops retain their
 separate authoritative implementation. Settlement runtime `03a561e` is locally
 integrated at `32966e3`; its 1,127-case unit suite and complete controller
