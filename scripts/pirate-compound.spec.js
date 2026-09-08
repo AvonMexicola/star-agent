@@ -40,14 +40,18 @@ async function focusInterruption(page,button){
 
 test.afterEach(async({page},info)=>{if(info.status!==info.expectedStatus){try{await capture(page,'failure-'+info.retry);}catch{}}});
 
+test.describe('phone',()=>{
+test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 test('keyboard and native phone use the service panel and actual trade handlers',async({page,browser})=>{
  const {errors,warnings}=await setup(page);
+ expect(await page.evaluate(()=>matchMedia('(pointer:coarse)').matches&&navigator.maxTouchPoints>0)).toBe(true);
  // Presentation regression uses explicit nearby poses, separate from the full controller route.
  async function pose(x,z){await page.evaluate(({x,z})=>{const n=window.starAgent.navigation,s=window.starAgent.state.pirateCompound.site,q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin);n.mode='walk';n.insideShip=false;n.cabinFlight=false;n.enabled=true;n.position.set(x,s.deck+n.layout.eyeHeight,z).applyQuaternion(q).add(o);n.orientation.copy(q);n.velocity.set(0,0,0);n.shipPosition=n.position.clone().fromArray(s.pad);n.shipOrientation.copy(q);n.shipVelocity.set(0,0,0);},{x,z});await frames(page);}
  await pose(-16,-5.5);await page.keyboard.press('f');await expect(page.locator('#pirate-service')).toBeVisible();await capture(page,'service-keyboard');await page.keyboard.press('Escape');await expect(page.locator('#pirate-service')).not.toBeVisible();
- await page.setViewportSize({width:390,height:844});await frames(page);await page.locator('.pirate-service-action').tap();await expect(page.locator('#pirate-service')).toBeVisible();await page.locator('[data-isolate]').tap();expect(await page.evaluate(()=>window.starAgent.state.pirateCompound.unlocked)).toBe(true);expect(await page.locator('#pirate-service').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);await capture(page,'service-phone');await page.locator('#pirate-service [data-close]').tap();
+ await frames(page);await page.locator('.pirate-service-action').tap();await expect(page.locator('#pirate-service')).toBeVisible();await page.locator('[data-isolate]').tap();expect(await page.evaluate(()=>window.starAgent.state.pirateCompound.unlocked)).toBe(true);expect(await page.locator('#pirate-service').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);await capture(page,'service-phone');await page.locator('#pirate-service [data-close]').tap();
  await pose(6,-19.8);await expect(page.locator('[data-cabin-interact]')).toHaveText('Open trade');await page.locator('[data-cabin-interact]').tap();await expect(page.locator('#trading-dialog')).toBeVisible();const before=await page.evaluate(()=>window.starAgent.state.trading.markets['pirate-hush'].stock.ice);await page.locator('[data-controller-key="purchase-ice"]').tap();await expect(page.locator('.trade-feedback')).toContainText('Loaded 1 SBU');expect(await page.evaluate(()=>window.starAgent.state.trading.markets['pirate-hush'].stock.ice)).toBe(before-1);await page.locator('#trading-dialog [data-controller-key="view-cargo"]').tap();await capture(page,'trade-phone');expect(await page.locator('#trading-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);await page.locator('#trading-dialog [data-close]').tap();await page.waitForFunction(()=>window.starAgent.state.enabled);
  expect(errors).toEqual([]);await writeFile(`${out}/native-phone.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,controlledPose:true,physicalController:false},null,2));
+});
 });
 
 test('controller physically approaches, isolates tower, trades and returns to play',async({page,browser})=>{
