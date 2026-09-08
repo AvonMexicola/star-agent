@@ -95,7 +95,19 @@ test('keyboard contract entry and native phone terminal ordering preserve single
  // below concern the actual new terminal actions, not phone flight validation.
  await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',undefined,{timeout:60000});await exitAndTerminal(page,tap);await choose('view-freight');
  await page.evaluate(()=>window.transportDisconnected=true);await frames(page);await page.setViewportSize({width:390,height:844});const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});
- async function touch(key){const box=await page.locator(`[data-controller-key="${key}"]`).boundingBox();expect(box).not.toBe(null);expect(box.y+box.height).toBeLessThan(844);const point={x:box.x+box.width/2,y:box.y+box.height/2,id:1,radiusX:1,radiusY:1};await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});await frames(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await frames(page);}
+ async function touch(key){
+  // Scroll the actual manifest with native touch if its action is below the
+  // visible paper panel. Never activate a clipped or covered coordinate.
+  for(let i=0;i<5;i++){
+   const target=await page.locator(`[data-controller-key="${key}"]`).boundingBox(),panel=await page.locator('.trade-content').boundingBox();
+   if(target.y>=panel.y+2&&target.y+target.height<=panel.y+panel.height-2)break;
+   const x=panel.x+panel.width*.65,lo=panel.y+panel.height-12,hi=panel.y+12,start=target.y<panel.y?hi:lo,end=target.y<panel.y?lo:hi;
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y:start,id:1}]});
+   for(let n=1;n<=8;n++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:start+(end-start)*n/8,id:1}]});await frames(page);}
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await frames(page);
+  }
+  await capture(page,`touch-ready-${key}`);
+  const box=await page.locator(`[data-controller-key="${key}"]`).boundingBox();expect(box).not.toBe(null);expect(box.y+box.height).toBeLessThan(844);const point={x:box.x+box.width/2,y:box.y+box.height/2,id:1,radiusX:1,radiusY:1};await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});await frames(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await frames(page);}
  const before=(await state(page)).trading.account.credits;await capture(page,'phone-pickup-before-order');await touch('transport-order');await expect(page.locator('.trade-feedback')).toContainText('loading apron');expect((await state(page)).trading.loose).toHaveLength(1);await capture(page,'phone-issued');await touch('transport-abandon');await expect(page.locator('.trade-feedback')).toContainText('Transport abandoned');const end=(await state(page)).trading;expect(end.account.transport.active).toBe(null);expect(end.account.credits).toBe(before);expect(end.loose).toHaveLength(0);await capture(page,'phone-abandoned');await page.keyboard.press('Escape');expect((await state(page)).enabled).toBe(true);
  expect(errors).toEqual([]);await writeFile(`${out}/keyboard-touch-receipt.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,nativeTouch:true,keyboardContractEntry:true,approach:'Supported start, actual controller landing/walking before native terminal actions',physicalController:false},null,2));await cdp.detach();
 });
