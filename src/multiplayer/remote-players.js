@@ -398,7 +398,7 @@ export class RemotePlayers {
       if(Object.hasOwn(peer,'planetFrame')){
         character.object.userData.planetFrame=peer.planetFrame;
         equipment.vfx.userData.planetFrame=peer.planetFrame;
-        entry.ship.userData.planetFrame=peer.mode==='flight'||peer.cabinFlight?peer.planetFrame:rotationFrameAt(entry.shipPosition)?.id??null;
+        entry.ship.userData.planetFrame=peer.mode==='flight'||peer.cabinFlight&&!peer.spaceParked?peer.planetFrame:rotationFrameAt(entry.shipPosition)?.id??null;
       }
       const onFoot = peer.mode === 'walk' || peer.mode === 'eva' || peer.mode === 'dead';
       character.setVisible(onFoot);

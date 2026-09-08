@@ -10,19 +10,25 @@ is claimed. [Decision](../../decisions/planet-rotation.md).
 - Nine numerical invariants cover disjoint domains, terrain/save anchors through
   a day on all worlds, double precision, moving arrivals with/without spool,
   frame position/attitude/momentum, inertial flight and render-root boundaries.
-- Six authoritative regressions cover cross-frame hitscan, continuous swept hull
-  contact, polar reconciliation, protected station rams and parked-hull EVA access. Actual
+- Eight authoritative regressions cover cross-frame hitscan, continuous swept hull
+  contact, polar reconciliation, protected station rams, parked-hull EVA access,
+  boundary boarding and carried cabin collision. Actual
   room snapshots also synchronize two skewed client clocks through a complete
   day while preserving station/parked-hull anchors.
 - Freight authority and isolated PostgreSQL persistence pass at a deterministic
   clear departure phase. Real wall-clock phases can correctly block the direct
   line through a planet; this fixture does not certify a physical freight journey.
-- Combined runtime58a73af passes all 1,216 normal tests across 160 files; build,
-  repository and suggested-plan checks complete. The server/nav/client bytes are
-  unchanged from the 201-pass multiplayer run with two existing opt-in skips.
-- A subsequent one-line targeting update uses the same rotation phase as engage;
-  23 focused rotation/targeting/travel cases pass, including the actual foreign
-  bearing at a quarter-turn. Controller drive verification follows.
+- Latest source passes all 1,217 normal tests across 160 files (63.5 seconds),
+  plus 204 multiplayer cases with two existing opt-in skips (100.4 seconds).
+  Focused boundary/navigation/travel checks pass all 118 cases. Parked cabins
+  retain their hull frame while an EVA character crosses the domain; boarding
+  preserves physical attitude and inherited velocity, and collision correction
+  keeps a moving cabin and its carried eye in the same coordinate chart.
+- The update-time target lock uses the same rotation phase as engage; 23 focused
+  rotation/targeting/travel cases pass, including the actual foreign bearing at a
+  quarter-turn. Final combined browser verification follows.
+- Initial draft PR104 hosted checks at3180064 pass all five jobs, including
+  isolated PostgreSQL persistence. They predate the final cabin boundary fixes.
 
 The first production orbital inspection passed all four worlds in 57 seconds,
 with eight PNGs and no application errors. Chromium 151.0.7922.173, ANGLE OpenGL,

@@ -16,7 +16,7 @@ export function reframeNavigation(nav, from, seconds) {
   nav.cruiseVelocity?.applyQuaternion(rotation);
   // A moving cabin and its pilot change chart together. A distant parked ship
   // remains in its own chart; its recovery beacon transforms independently.
-  if (nav.shipPosition && (nav.cabinFlight)) {
+  if (nav.shipPosition && nav.cabinFlight && !nav.spaceParked) {
     const ship = nav.shipPosition.clone();
     velocityBetweenFrames(nav.shipVelocity, ship, from, to, seconds, nav.shipVelocity);
     betweenFrames(ship, from, to, seconds, nav.shipPosition);
@@ -30,4 +30,15 @@ export function rotationEnvironment(environment, position, enabled) {
   const body = enabled ? rotationFrameAt(position) : null;
   if (!body) return environment;
   return {...environment, rotationOffset:position.clone().sub(new Vector3(...body.center))};
+}
+
+
+/** A stopped space cabin retains cabinFlight for boarding, but its parked hull
+ * must keep its own chart when the suit walks away. */
+export function navigationShipFrame(nav) {
+  if(!nav.rotationClock)return null;
+  return nav.shipPosition&&(!nav.cabinFlight||nav.spaceParked)?rotationFrameAt(nav.shipPosition):nav.rotationFrame;
+}
+export function shipOrientationInView(nav) {
+  return frameRotation(navigationShipFrame(nav),nav.rotationFrame,nav.rotationTime).multiply(nav.shipOrientation);
 }

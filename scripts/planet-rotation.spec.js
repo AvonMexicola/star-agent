@@ -85,7 +85,7 @@ test('controller lands, walks through the rotating day, boards and launches',asy
 
 
 test('two real clients share the planetary clock and keep controller contact with the rotating station',async({page,browser})=>{
-  const context=await browser.newContext({viewport:{width:1440,height:900}});
+  const context=await browser.newContext({baseURL:'http://127.0.0.1:5682',viewport:{width:1440,height:900}});
   const observer=await context.newPage(),errors=[],stages=[];
   try{
     for(const [i,p] of [page,observer].entries()){
@@ -96,7 +96,7 @@ test('two real clients share the planetary clock and keep controller contact wit
         window.rotationPad={id:'Rotation shared controller',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
         navigator.getGamepads=()=>[window.rotationPad];
       },i*420_000);
-      await p.goto('/?intro=0&debug');
+      await p.goto('/?intro=0&seed=7291&debug');
       await p.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:120_000});stages.push({client:i,stage:'ready',at:Date.now()});
       if(!await p.locator('#multiplayer-account-dialog').isVisible())await p.getByRole('button',{name:'ACCOUNT',exact:true}).click();
       await expect(p.locator('#multiplayer-account-dialog')).toBeVisible();
@@ -148,11 +148,11 @@ test('controller acquires the visible moon and drives across the rotating frame 
   const before=await state(page);expect(before.planetRotation.frame).toBe('aeon');
   const marker=await page.evaluate(()=>{const n=window.starAgent.navigation,t=window.starAgent.state.navigationTargets.targets.find(t=>t.id==='station-aeon');return {label:document.querySelector('[data-id="station-aeon"] strong')?.textContent,distance:n.position.distanceTo(n.viewPoint(n.position.clone().fromArray(t.center)))};});
   await page.screenshot({path:`${out}/controller-moon-lock.png`});
+  await page.evaluate(()=>{window.rotationDriveSamples=[];const sample=()=>{const n=window.starAgent.navigation;window.rotationDriveSamples.push({time:n.rotationTime,position:n.inertialPosition.toArray(),frame:n.rotationFrame?.id??null,travel:n.travel?{target:n.travel.targetId,elapsed:n.travel.elapsed,duration:n.travel.plan.duration}:null});if(window.rotationDriveSamples.length<1500)requestAnimationFrame(sample);};requestAnimationFrame(sample);});
   await down(page,4,1);await down(page,5,1);await frames(page);await tap(page,12);
-  await page.waitForFunction(()=>window.starAgent.state.travel?.active||window.starAgent.navigation.travel!==null);
-  const during=await state(page);expect(during.travel.targetId).toBe('selene');
   await down(page,4,0);await down(page,5,0);
-  await page.waitForFunction(()=>window.starAgent.navigation.travel===null&&window.starAgent.state.body==='selene');
+  await page.waitForFunction(()=>window.starAgent.navigation.travel===null&&window.starAgent.state.body==='selene'&&window.starAgent.state.navigationTargets.arrivalTarget==='selene');
+  const during=await page.evaluate(()=>window.rotationDriveSamples);expect(during.some(s=>s.travel?.target==='selene')).toBe(true);
   await neutral(page);const after=await state(page);
   expect(after.planetRotation.frame).toBe('selene');expect(after.altitude).toBeGreaterThan(19000);expect(after.altitude).toBeLessThan(21000);
   expect(distance(before.planetRotation.inertialPosition,after.planetRotation.inertialPosition)).toBeGreaterThan(1e6);

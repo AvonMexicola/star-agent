@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { Vector3, Quaternion } from 'three';
 import { Navigation } from '../src/navigation.js';
 import { AEON } from '../src/celestial.js';
-import { ROTATION_DOMAIN_RADII, rotationFrameAt, planetRotation, fromInertial, toInertial } from '../src/planet-rotation.js';
+import { ROTATION_DOMAIN_RADII, frameVelocity, rotationFrameAt, planetRotation, fromInertial, toInertial } from '../src/planet-rotation.js';
 import { shoot, shipPose } from '../server/combat.js';
 import { capturePeerMotion, createRammingResolver } from '../server/ramming.js';
 import { PlanetRotationClock, ROTATION_EPOCH_MS } from '../src/planet-rotation.js';
@@ -92,6 +92,7 @@ test('a ram near the rotating station retains its protected canonical impact poi
 
 test('an EVA chart crossing preserves a nearby parked hull and cabin-relative coordinates',()=>{
   const nav=pilot('walker',new Vector3(boundary-10,0,0)).nav;
+  nav.cabinFlight=true;nav.spaceParked=true; // Actual parked-cabin flags survive EVA exit.
   nav.shipPosition=fromInertial(new Vector3(boundary-20,0,0),AEON,seconds);
   nav.shipOrientation.copy(planetRotation(AEON,seconds).invert());
   const parked=nav.shipPosition.clone();
@@ -100,6 +101,8 @@ test('an EVA chart crossing preserves a nearby parked hull and cabin-relative co
   reframeNavigation(nav,AEON,seconds);
   assert.deepEqual(nav.shipPosition.toArray(),parked.toArray());
   assert.ok(nav.toShipLocal().distanceTo(new Vector3(21,0,0))<1e-6);
+  assert.ok(Math.abs(nav.evaState.shipDistance-21)<1e-6);
+  assert.equal(shipPose({nav}).frame,AEON);
   assert.ok(nav.fromShipLocal(new Vector3(21,0,0)).distanceTo(nav.position)<1e-6);
 });
 
@@ -131,4 +134,42 @@ test('real room snapshots synchronize skewed clients through a day without movin
     }
   }
   assert.deepEqual(errors,[]);
+});
+
+
+test('boarding a parked hull across the chart boundary preserves the physical seat and attitude',()=>{
+  const nav=pilot('walker',new Vector3(boundary+10,0,0)).nav;
+  const root=new Vector3(boundary-1,0,0),look=new Quaternion().setFromAxisAngle(new Vector3(0,1,0),-Math.PI/2);
+  nav.shipPosition=fromInertial(root,AEON,seconds);
+  nav.shipOrientation.copy(planetRotation(AEON,seconds).invert()).multiply(look);
+  nav.cabinFlight=true;nav.spaceParked=true;nav.mode='walk';nav.insideShip=true;
+  const seat=root.clone().add(new Vector3(...nav.layout.seatEye).applyQuaternion(look));
+  place(nav,seat,look);assert.equal(nav.rotationFrame,null);
+  assert.equal(nav.shipInteraction(nav.toShipLocal()),'seat');
+  nav.embark();assert.equal(nav.mode,'flight');assert.equal(nav.shipPosition,null);
+  assert.ok(nav.inertialPosition.distanceTo(seat)<1e-6);
+  assert.ok(nav.inertialOrientation.angleTo(look)<1e-7);
+  const expected=frameVelocity(fromInertial(seat,AEON,seconds),AEON).applyQuaternion(planetRotation(AEON,seconds));
+  assert.ok(nav.velocity.distanceTo(expected)<1e-6);
+});
+
+
+test('a stopped moving cabin keeps its eye and root coherent on opposite sides of a chart boundary',()=>{
+  const layout={...SHIP_LAYOUT,flightBounds:{min:[-5,-5,-5],max:[5,5,5]}};
+  const look=new Quaternion().setFromAxisAngle(new Vector3(0,1,0),-Math.PI/2);
+  const eye=root=>root.clone().add(new Vector3(...layout.seatEye).applyQuaternion(look));
+  const rootA=new Vector3(boundary-30,0,0),rootB=new Vector3(boundary+9,0,0);
+  const a=pilot('a',eye(rootA),look),b=pilot('b',eye(rootB),look);
+  for(const p of [a,b])p.nav.layout=layout;
+  a.nav.mode='walk';a.nav.cabinFlight=true;a.nav.spaceParked=false;a.nav.insideShip=true;b.nav.mode='flight';
+  const movingRoot=root=>{place(a.nav,eye(root),look);a.nav.shipPosition=fromInertial(root,a.nav.rotationFrame,seconds);a.nav.shipOrientation.copy(planetRotation(a.nav.rotationFrame,seconds).invert()).multiply(look);};
+  movingRoot(rootA);
+  const players=new Map([[a.id,a],[b.id,b]]),before=capturePeerMotion(players);
+  movingRoot(new Vector3(boundary+15,0,0));
+  createRammingResolver().step(players,before,1,()=>{});
+  const pose=shipPose(a),physical=toInertial(pose.position,pose.frame,seconds);
+  assert.ok(physical.x<boundary&&physical.x>boundary-2);
+  assert.equal(a.nav.rotationFrame,null);
+  assert.ok(a.nav.inertialPosition.distanceTo(eye(physical))<1e-6);
+  assert.ok(a.nav.inertialOrientation.angleTo(look)<1e-7);
 });

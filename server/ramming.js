@@ -221,14 +221,21 @@ function stopHull(entry,after,time) {
   const travel=a.position.distanceTo(b.position)+radiusOf(a.bounds)*a.rotation.angleTo(b.rotation),safe=Math.max(0,time-SKIN/Math.max(SKIN,travel));
   const pose=lerpPose(a,b,safe);
   if(n.rotationClock){
-    const seconds=n.rotationTime,frame=rotationFrameAt(pose.position),inverse=planetRotation(frame,seconds).invert();
+    const seconds=n.rotationTime;
     if(n.shipPosition){
       const local=n.inertialPosition.sub(b.position).applyQuaternion(b.rotation.clone().invert());
       const look=b.rotation.clone().invert().multiply(n.inertialOrientation);
-      fromInertial(pose.position,frame,seconds,n.shipPosition);n.shipOrientation.copy(inverse).multiply(pose.rotation);n.shipVelocity.set(0,0,0);
-      if(n.cabinFlight){
-        const eye=local.applyQuaternion(pose.rotation).add(pose.position);
-        fromInertial(eye,frame,seconds,n.position);n.orientation.copy(n.shipOrientation).multiply(look);n.velocity.set(0,0,0);
+      const eye=local.applyQuaternion(pose.rotation).add(pose.position),eyeFrame=rotationFrameAt(eye);
+      const movingCabin=n.cabinFlight&&!n.spaceParked;
+      // An occupied moving hull shares the eye's chart even if its root lies
+      // across the boundary. A parked hull keeps its own chart; an outside suit
+      // does not become its passenger just because cabinFlight remains set.
+      const shipFrame=movingCabin?eyeFrame:rotationFrameAt(pose.position);
+      fromInertial(pose.position,shipFrame,seconds,n.shipPosition);
+      n.shipOrientation.copy(planetRotation(shipFrame,seconds).invert()).multiply(pose.rotation);n.shipVelocity.set(0,0,0);
+      if(movingCabin||n.insideShip){
+        fromInertial(eye,eyeFrame,seconds,n.position);
+        n.orientation.copy(planetRotation(eyeFrame,seconds).invert()).multiply(pose.rotation).multiply(look);n.velocity.set(0,0,0);
       }
     }else{
       const eye=pose.position.clone().add(new THREE.Vector3(...n.layout.seatEye).applyQuaternion(pose.rotation));

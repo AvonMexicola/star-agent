@@ -1,5 +1,6 @@
+import { navigationShipFrame } from './navigation-rotation.js';
 import { AEON } from './celestial.js';
-import { PlanetRotationClock, rotationFrameAt, betweenFrames } from './planet-rotation.js';
+import { PlanetRotationClock, betweenFrames } from './planet-rotation.js';
 import { PlanetRenderFrames, rotationMatrix, installPlanetMaterialFrame } from './planet-render-frames.js';
 import {createPirateCompound,withPirateCompound} from './pirate-compound/system.js';
 import {createHUDDisplay} from './hud-display.js';
@@ -687,8 +688,8 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     $('camera-button').innerHTML=shipCamera.selected(nav.mode)?`${nav.mode==='walk'||nav.mode==='eva'?'FIRST PERSON':'COCKPIT'} <kbd>4</kbd>`:'EXTERNAL <kbd>4</kbd>';
     $('camera-button').disabled=Boolean(nav.berthRest||nav.berthTransition)||!['flight','landed','walk','eva'].includes(nav.mode);
     if(course){
-      if(course.system&&nav.travel?.plan.kind==='travel')course.point.copy(nav.travel.plan.end);
-      const offset=course.point.clone().sub(nav.position),distance=offset.length();
+      const point=course.system&&nav.travel?.plan.kind==='travel'?betweenFrames(nav.travel.plan.end,null,nav.rotationFrame,nav.rotationTime):nav.viewPoint(course.point);
+      const offset=point.sub(nav.position),distance=offset.length();
       const local=offset.clone().applyQuaternion(nav.orientation.clone().invert());
       const bearing=Math.atan2(local.x,-local.z)*180/Math.PI;
       const beyond=!course.system&&course.name!=='orbit'&&course.name!=='moon'&&Math.acos(THREE.MathUtils.clamp(n.dot(course.direction),-1,1))>Math.acos(THREE.MathUtils.clamp(RADIUS/nav.position.length(),0,1));
@@ -823,10 +824,10 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     aeonGroup.visible=nav.inertialPosition.length()<PYRE_MESH_RANGE;moonGroup.visible=nav.inertialPosition.distanceTo(moon.worldPosition)<PYRE_MESH_RANGE;
     shipMarker.update(innerWidth,innerHeight);
     navigationTargets.update(dt,{width:innerWidth,height:innerHeight,origin,orientation:camera.quaternion});
-    moon.update(moonOrigin,moonOrigin,elapsed,!nav.insideShip,nav.shipPosition?betweenFrames(nav.shipPosition,nav.cabinFlight?nav.rotationFrame:rotationFrameAt(nav.shipPosition),SELENE,nav.rotationTime):null,rotationFrames.sunFor(SELENE,sun.worldPosition),moonGroup.quaternion);
+    moon.update(moonOrigin,moonOrigin,elapsed,!nav.insideShip,nav.shipPosition?betweenFrames(nav.shipPosition,navigationShipFrame(nav),SELENE,nav.rotationTime):null,rotationFrames.sunFor(SELENE,sun.worldPosition),moonGroup.quaternion);
     landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);settlements.update(dt,origin);garages.update(origin);fauna.update(dt,origin);shipMiningInput.beforeUpdate();miningTool.update(dt,origin);trading.update(origin,dt);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
     pyre.update(pyreOrigin,pyreOrigin,rotationFrames.sunFor(PYRE,sun.worldPosition));
-    miasma.update(miasmaOrigin,miasmaOrigin,elapsed,nav.shipPosition?betweenFrames(nav.shipPosition,nav.cabinFlight?nav.rotationFrame:rotationFrameAt(nav.shipPosition),MIASMA,nav.rotationTime):null);
+    miasma.update(miasmaOrigin,miasmaOrigin,elapsed,nav.shipPosition?betweenFrames(nav.shipPosition,navigationShipFrame(nav),MIASMA,nav.rotationTime):null);
     // Distant worlds as bright points: Pyre from Aeon and Selene, Aeon from Pyre.
     const pyreDistance=pyre.distance,aeonDistance=nav.position.length();
     pyreDirection.copy(rotationFrames.directionTo(pyre.worldPosition));aeonDirection.copy(rotationFrames.directionTo(new THREE.Vector3()));
@@ -845,7 +846,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     ship.visible=Boolean(nav.shipPosition)||(nav.mode==='flight'&&(nav.shipId==='kestrel'||nav.locked||nav.controllerActive||shipCamera.engaged||document.body.classList.contains('player-active')));
     // Hidden cockpit hulls still own the live firing pose. Visibility must not
     // leave a named muzzle at an old/identity transform before first movement.
-    ship.userData.planetFrame=(nav.shipPosition&&!nav.cabinFlight?rotationFrameAt(nav.shipPosition):nav.rotationFrame)?.id??null;
+    ship.userData.planetFrame=navigationShipFrame(nav)?.id??null;
     if(nav.shipPosition){ship.position.copy(nav.shipPosition).sub(origin);ship.quaternion.copy(nav.shipOrientation);}
     else{ship.quaternion.copy(nav.orientation);ship.position.copy(nav.position).sub(origin).sub(new THREE.Vector3(...nav.layout.seatEye).applyQuaternion(nav.orientation));}
     if(ship.visible){

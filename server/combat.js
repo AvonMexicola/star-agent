@@ -1,4 +1,5 @@
-import { betweenFrames, frameRotation, rotationFrameAt } from '../src/planet-rotation.js';
+import { navigationShipFrame } from '../src/navigation-rotation.js';
+import { betweenFrames, frameRotation } from '../src/planet-rotation.js';
 /** Authoritative hitscan. Call only with room-owned player/navigation objects;
  * no ray, target, distance or damage from a network message is accepted. */
 import * as THREE from 'three';
@@ -59,7 +60,7 @@ export function shipPose(player) {
   const rotation = nav.shipPosition ? nav.shipOrientation : nav.orientation;
   if (!finiteQuaternion(rotation)) return null;
   const position = nav.shipPosition?.clone() || nav.position.clone().sub(new THREE.Vector3(...layout.seatEye).applyQuaternion(rotation));
-  return { position, rotation, bounds: layout.flightBounds, ...(nav.rotationClock?{frame:nav.shipPosition&&!nav.cabinFlight?rotationFrameAt(position):nav.rotationFrame}:{}) };
+  return { position, rotation, bounds: layout.flightBounds, ...(nav.rotationClock?{frame:navigationShipFrame(nav)}:{}) };
 }
 
 /** Ray/slab intersection, subtracting the world hull root before rotation. A
