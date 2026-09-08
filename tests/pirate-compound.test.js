@@ -6,6 +6,10 @@ import {Vector3,Quaternion,Scene,Group,Mesh,BoxGeometry,MeshStandardMaterial,Mat
 import {PirateStaticKit} from '../src/pirate-compound/static-kit.js';
 import {createPirateCollision} from '../src/pirate-compound/world-collision.js';
 import {SHIP_LAYOUT} from '../src/boarding.js';
+import {KESTREL_LAYOUT} from '../src/kestrel-access.js';
+import {FREIGHTER_LAYOUT} from '../src/freighter-layout.js';
+import {GANNET_LAYOUT} from '../src/gannet-layout.js';
+import {STRATUM_LAYOUT} from '../src/stratum-layout.js';
 import {createFloodlights} from '../src/build/floodlights.js';
 import {PiratePerimeter} from '../src/pirate-compound/perimeter.js';
 import {PIRATE_MARKET,PERIMETER as P} from '../src/pirate-compound/catalog.js';
@@ -23,7 +27,7 @@ test('actual world collision accepts the pad, blocks walls, opens the door and c
  const s=pirateLayout(),q=new Quaternion(...s.claim.quaternion),origin=new Vector3(...s.claim.origin),world=a=>new Vector3(...a).applyQuaternion(q).add(origin),nav={position:world(s.approach),orientation:q,layout:SHIP_LAYOUT,mode:'flight'},collision=createPirateCollision(new Scene(),nav,[s.claim,s.outerClaim]);
  try{
   assert.equal(collision.blocked,false);assert.equal(collision.error,'');assert.equal(collision.claims.length,2);
-  const surface=collision.landingSurface({position:world(s.pad.position),orientation:q});assert.equal(surface?.size,'L');assert.ok(surface.point.distanceTo(world(s.pad.position))<1e-6);
+  for(const layout of [SHIP_LAYOUT,KESTREL_LAYOUT,FREIGHTER_LAYOUT,GANNET_LAYOUT,STRATUM_LAYOUT]){nav.layout=layout;const surface=collision.landingSurface({position:world(s.pad.position),orientation:q});assert.equal(surface?.size,'L',layout.id??'nomad');assert.ok(surface.point.distanceTo(world(s.pad.position))<1e-6);}nav.layout=SHIP_LAYOUT;
   const eye=SHIP_LAYOUT.eyeHeight,wall=collision.constrainWalker(world([20,s.deck+eye,0]),world([24,s.deck+eye-.1,0]));assert.equal(wall.hit,true);assert.ok(collision.toLocal(wall.point,s.claim).x<22);
   const door=collision.constrainWalker(world([6,s.deck+eye,-10]),world([6,s.deck+eye-.1,-14]));assert.ok(collision.toLocal(door.point,s.claim).z< -13.8);assert.equal(door.grounded,true);
   for(const claim of [s.claim,s.outerClaim]){const ramps=claim.pieces.filter(p=>p.type==='foundation-ramp'),first=ramps[0],last=ramps.at(-1),point=a=>collision.toWorld(new Vector3(...a),claim);let previous=point([first.position[0],first.position[1]+eye,first.position[2]-2]);
