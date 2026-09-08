@@ -1,7 +1,9 @@
 # All-features local development
 
-**Personal transport missions** are checked on `feat/transport-missions` and ready
-for local integration. Open **Menu → Contracts → Transport contracts**, or
+**Personal transport missions** are locally integrated at `f294a98`. The paired
+5178/8087 preview was gracefully refreshed with protocol7 on2026-09-08, keeping
+its existing persistent PostgreSQL cluster; both health routes and served source
+checks pass. Refresh the preview to load this version. Open **Menu → Contracts → Transport contracts**, or
 **Trade → Freight**. Accept, fly to pickup, order your private crate at the terminal,
 physically load and secure it, fly to delivery and deposit through its terminal.
 Twelve routes join Aeon, Selene, Pyre and Miasma; rewards are350CR or800CR.
