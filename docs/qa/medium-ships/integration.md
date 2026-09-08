@@ -225,3 +225,15 @@ in2.6 minutes on source `4b80706` / build07 `main-C2Axz7bX.js`. All five
 interruption gates, first reconnect press, real extraction and visible transfer
 pass with stable sources and zero page diagnostics. Normal unit checks pass
 1076/1076 in34.214 seconds. Keyboard/touch and final art remain pending.
+
+Gannet controller attempt02 on `1d3d9c3` / build07 reaches physical rover
+boarding, lift unloading, four-wheel terrain support, the corrected steering arc
+and real two-beam ore extraction. It fails at2.1 minutes in a fixture assertion
+after a successful0.002844kg helium-3 transfer: the old `mining.pack` tuple only
+counts basalt/copper/ice. Actual canonical backpack and rover-bin contents show
+the transfer correctly. The fixture now checks the selected item's exact
+pack/bin balance, unchanged ship supplies and accepted save status. All primary
+fixtures already use canonical item balances; they now choose the largest real
+ore stack so screenshot quantities remain legible. The complete physical paths
+and interruption assertions are retained. No Gannet carry/landing pass is yet
+claimed; original02 receipt/video/images remain alongside01.

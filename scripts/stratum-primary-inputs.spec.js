@@ -230,7 +230,10 @@ test('Stratum: real landing and ramp → short flight → twin practice-store co
     expect((await state(page)).containers.target).toBe('stratum-ore');
     await expect(page.locator('#cargo-dialog')).toContainText('Stratum dedicated ore bin');
     await expect(page.getByRole('button', {name: 'Stratum cargo', exact: true})).toBeVisible();
-    const slot = page.locator('[data-from="stratum-ore"][data-item]:visible').first();
+    const realOre = (await state(page)).containers.containers.find(c => c.id === 'stratum-ore').items;
+    const largest = Object.entries(realOre).filter(([, quantity]) => quantity > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
+    expect(largest).toBeTruthy();
+    const slot = page.locator(`[data-from="stratum-ore"][data-item="${largest}"]:visible`);
     for (let i = 0; i < 6 && !await slot.count(); i++) { await input.choose('page-containers-next'); await frames(page); }
     await expect(slot).toBeVisible(); const item = await slot.getAttribute('data-item'), key = await slot.getAttribute('data-controller-key');
     const before = await saved(); await input.choose(key); await input.choose('transfer-one'); const after = await saved();

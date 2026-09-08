@@ -158,7 +158,10 @@ test('Gannet chair → physical Burrow → real ore → reverse reload → carri
     await expect(page.getByRole('button', {name: 'Gannet cargo', exact: true})).toBeVisible();
     expect((await state(page)).containers.target).toBe(R.cargo.id);
     await wait(page, () => starAgent.state.rover.beaming === 0 && !starAgent.state.mining.pending);
-    const slot = page.locator(`[data-from="${R.cargo.id}"][data-item]:visible`).first();
+    const realOre = (await state(page)).containers.containers.find(c => c.id === R.cargo.id).items;
+    const largest = Object.entries(realOre).filter(([, quantity]) => quantity > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
+    expect(largest).toBeTruthy();
+    const slot = page.locator(`[data-from="${R.cargo.id}"][data-item="${largest}"]:visible`);
     for (let i = 0; i < 6 && !await slot.count(); i++) { await input.choose('page-containers-next'); await frames(page); }
     await expect(slot).toBeVisible();
     const oreKey = await slot.getAttribute('data-controller-key'), item = await slot.getAttribute('data-item');

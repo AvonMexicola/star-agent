@@ -267,13 +267,26 @@ test('controller Gannet → physical Burrow → elevator → real ore → revers
     await expect(page.getByRole('button', {name: 'Gannet cargo', exact: true})).toBeVisible();
     await wait(() => starAgent.state.rover.beaming === 0); await neutral();
     await wait(() => starAgent.navigation.gamepad.uiArmed);
-    // The shared inventory pages, not hidden DOM slots, own controller focus.
-    let slot = page.locator(`[data-from="${R.cargo.id}"][data-item]:visible`).first();
+    await wait(() => !starAgent.state.mining.pending);
+    // Choose a real bulk stack so the displayed quantity is legible. The common
+    // paginated dialog still owns every focus/transfer action.
+    const transferBefore = (await state()).containers;
+    const binBefore = transferBefore.containers.find(c => c.id === R.cargo.id);
+    const packBefore = transferBefore.containers.find(c => c.id === 'pack');
+    const item = Object.entries(binBefore.items).filter(([, amount]) => amount > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
+    expect(item).toBeTruthy();
+    const slot = page.locator(`[data-from="${R.cargo.id}"][data-item="${item}"]:visible`);
     for (let i = 0; i < 6 && !await slot.count(); i++) { await choose('page-containers-next'); await frames(); }
     await expect(slot).toBeVisible(); const oreKey = await slot.getAttribute('data-controller-key');
-    const packBefore = (await state()).mining.pack.reduce((a, b) => a + b, 0);
+    const amount = Math.min(1, binBefore.items[item]); expect(amount).toBeGreaterThan(0);
     await choose(oreKey); await choose('transfer-one');
-    expect((await state()).mining.pack.reduce((a, b) => a + b, 0)).toBeGreaterThan(packBefore);
+    const transferAfter = (await state()).containers;
+    const binAfter = transferAfter.containers.find(c => c.id === R.cargo.id), packAfter = transferAfter.containers.find(c => c.id === 'pack');
+    expect(packAfter.items[item]).toBeCloseTo(packBefore.items[item] + amount, 6);
+    expect(binAfter.items[item]).toBeCloseTo(binBefore.items[item] - amount, 6);
+    expect(transferAfter.containers.find(c => c.id === 'ship').items).toEqual(transferBefore.containers.find(c => c.id === 'ship').items);
+    expect(transferAfter.saved).toBe(true); expect(transferAfter.warning).toBe('');
+    gates.transfer = {result: 'PASS', item, amount, before: {pack: packBefore.items[item], bin: binBefore.items[item]}, after: {pack: packAfter.items[item], bin: binAfter.items[item]}};
     await shot('05-controller-ore-transfer');
     // Menu has already received neutral. Keep a new RT hold through B closure.
     await button(7, true); await tap(1); await expect(page.locator('#cargo-dialog')).not.toBeVisible();
