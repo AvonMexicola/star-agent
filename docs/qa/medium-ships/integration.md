@@ -219,3 +219,9 @@ passes all28 reported tests with the fix. Fifteen new scenarios cover first
 reconnect press, held reconnection, replacement ID/index, unsupported mapping,
 keyboard/touch coexistence and modal/focus transitions. Existing ten cutter
 tests remain unchanged. The browser retry still must close controller02's failure.
+
+[Controller attempt03 passes the complete Stratum journey](stratum-controller-03.md)
+in2.6 minutes on source `4b80706` / build07 `main-C2Axz7bX.js`. All five
+interruption gates, first reconnect press, real extraction and visible transfer
+pass with stable sources and zero page diagnostics. Normal unit checks pass
+1076/1076 in34.214 seconds. Keyboard/touch and final art remain pending.
