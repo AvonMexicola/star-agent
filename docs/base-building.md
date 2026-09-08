@@ -280,7 +280,20 @@ floor pieces. In **Roofs**, choose a flat, rounded-edge, rounded-corner, triangl
 or quarter-circle outer tile. It fits over the ceiling; LT/RT or Q/E orient the
 rounded square edges and corners. Each costs 4 kg concrete and 1 kg metal stock.
 
-**Ceiling light** is in Power and Roofs. Aim beneath a ceiling to place it; leave
+**Ceiling light** is in Roofs. Aim beneath a ceiling to place it; leave
 build mode, look at the fixture and use **X / F** to switch it. Each enabled lamp
 uses 50 W and follows the base power supply. The switch setting is saved. Remove
 attached lights and roof tiles before removing their supporting ceiling.
+
+## Outdoor floodlights
+
+Choose **Build → Power → Floodlight** and aim at a supported foundation or floor.
+The six-metre mast has two downward-angled heads and a switch panel at walking
+height. LT/RT or Q/E rotate the beam; A/Enter places it for 8 kg metal stock,
+3 kg conductor and 2 kg glass. Leave placement, face the panel and use **X / F**
+to switch it. The setting survives reload. An enabled floodlight consumes 600 W
+from the base supply, in addition to the usual piece upkeep.
+
+Each authored trade settlement has six masts around its large pad, clear of the
+Atlas landing envelope and exchange entrances. They illuminate the pad on
+approach and on foot. World settlement fixtures remain settlement property.

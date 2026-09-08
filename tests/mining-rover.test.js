@@ -22,6 +22,8 @@ test('paused, malformed and long frames cannot silently exhaust or recharge a ro
 import {Vector3,Quaternion} from 'three';
 import {roverLiftMayMove} from '../src/rover-support.js';
 import {createRoverPhysics} from '../src/rover-physics.js';
+import {RoverCuttingBeam} from '../src/rover-cutting-beam.js';
+import {Scene} from 'three';
 const frame={position:new Vector3(25e9,2000,3000),quaternion:new Quaternion()};
 const world=p=>new Vector3(...p).add(frame.position);
 test('the legacy platform guard rejects a straddling or underneath rover but permits fully carried parking',()=>{
@@ -36,4 +38,23 @@ test('substep time survives stationary carrier rebasing at 240 Hz',()=>{
   const up=new Vector3(0,1,0),p=createRoverPhysics({sampleSupport:q=>({point:new Vector3(q.x,0,q.z),normal:up,source:'atlas-lift:main'})});
   for(let i=0;i<240;i++){p.setPose(p.state.position,p.state.quaternion,{preserveMotion:true});p.step(1/240,{throttle:1});}
   assert.ok(p.state.distance>1.4);assert.ok(p.state.speed>2.9);
+});
+
+test('cutter effects follow real endpoints across a stellar render-origin change and stop without a hit',()=>{
+  const scene=new Scene(),beam=new RoverCuttingBeam(scene);
+  const start=new Vector3(25e9+.125,300,.5),end=start.clone().add(new Vector3(4,1,-20));
+  for(const origin of [new Vector3(25e9,299,0),new Vector3(25e9+3,298,-10)]){
+    beam.set(start,end,origin,7,{hit:true,normal:new Vector3(0,1,0)});
+    beam.mesh.updateMatrixWorld(true);
+    const visualStart=beam.ribbon.localToWorld(new Vector3()).add(origin);
+    // The shader places the ribbon's 0..1 longitudinal coordinate on local Z.
+    const visualEnd=beam.ribbon.localToWorld(new Vector3(0,0,1)).add(origin);
+    assert.ok(visualStart.distanceTo(start)<1e-7);assert.ok(visualEnd.distanceTo(end)<1e-7);
+    assert.ok(beam.mesh.position.length()<30);assert.equal(beam.contact.visible,true);
+  }
+  beam.set(start,end,new Vector3(25e9,0,0),8,{reducedMotion:true});
+  assert.equal(beam.contact.visible,false);assert.equal(beam.material.uniforms.time.value,0);
+  beam.set(start,start,start,9);assert.equal(beam.mesh.visible,false);
+  let disposed=0;for(const resource of [beam.material,beam.glowMaterial,beam.ribbon.geometry,beam.glowGeometry])resource.addEventListener('dispose',()=>disposed++);
+  beam.dispose();assert.equal(scene.children.length,0);assert.equal(disposed,4);
 });

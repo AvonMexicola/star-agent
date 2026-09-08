@@ -1,3 +1,4 @@
+import {FLOODLIGHT} from './floodlight-definition.js';
 import {rectangle,contains} from './polygons.js';
 import {adjustableFoundation,foundationDepth,cliffColliders} from './foundations.js';
 /** Canonical kit dimensions in metres, Y up; origins are support-surface level. */
@@ -22,6 +23,7 @@ export const roofProfile=(shape,x,z)=>{const rounded=v=>Math.sqrt(Math.max(0,1-(
 const roofCuts=[-2,2-ROOF_HEIGHT,...Array.from({length:6},(_,i)=>2-ROOF_HEIGHT+ROOF_HEIGHT*Math.sin((i+1)*Math.PI/12))];
 const roofTile=(id,label,shape='flat',polygon=rectangle(4,4))=>({id,label,category:'utility',mount:'roof',support:true,roofShape:shape,shape,polygon,footprint:[Math.max(...polygon.map(p=>p[0]))-Math.min(...polygon.map(p=>p[0])),Math.max(...polygon.map(p=>p[1]))-Math.min(...polygon.map(p=>p[1]))],height:ROOF_HEIGHT,cost:{concrete:4,'metal-stock':1},colliders:shape==='edge'||shape==='corner'?roofCuts.slice(0,-1).flatMap((z0,z)=>{const xs=shape==='corner'?roofCuts:[-2,2];return xs.slice(0,-1).map((x0,x)=>box([x0,0,z0],[xs[x+1],Math.max(.012,roofProfile(shape,x0,z0)),roofCuts[z+1]]));}):[prism(polygon,0,ROOF_HEIGHT)]});
 export const PIECES = Object.freeze({
+  floodlight:FLOODLIGHT,
   foundation: { id:'foundation', label:'Concrete foundation', category:'foundation', cost:{concrete:12}, footprint:[4,4], height:.6, colliders:[panel([-2,-.6,-2],[2,0,2])], support:true },
   'foundation-strut': {id:'foundation-strut',label:'Cliff foundation · 45° braces',category:'foundation',cost:{concrete:12,'metal-stock':8},footprint:[4,4],height:.6,colliders:[panel([-2,-.6,-2],[2,0,2])],support:true},
   floor: { id:'floor', label:'Floor / flat roof', category:'floor', cost:{concrete:8,'metal-stock':1}, footprint:[4,4], height:.18, colliders:[panel([-2,-.18,-2],[2,0,2])], support:true },

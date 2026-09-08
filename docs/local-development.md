@@ -5,6 +5,13 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+**HUD display**: press **Tab** during gameplay to cycle **Everything → Markers and
+reticle → No HUD**. Controller and touch use **Menu → Settings → HUD**. A two-finger
+tap on the view restores Everything on touch screens. Tab still moves focus inside
+menus. Next hostile is available through **Next target / Menu → Ship**. The display
+choice affects screen overlays; physical cockpit instruments remain visible.
+See [the checked source and browser evidence](qa/hud-display.md).
+
 **Foundation-first building** is available in the same local preview. Place a
 foundation and build before fitting a mainframe; it can sit on the finished deck.
 Doors remain open while the site has no mainframe. Square, triangle and curved
@@ -641,3 +648,19 @@ The Burrow upgrade follows the approved exterior/interior concepts with five fla
 Use **F2 → Burrow mining — Selene surface** for the explicit seated developer start; F / controller X exits and physically reboards. WASD / left stick drives, arrows / right stick aims, T / RT mines, X / LT brakes, and I / View opens ore bins. Select **Gannet → Selene** for the full pilot-to-rover elevator journey. The [production record](qa/burrow-concept/production-record.md) separates passing gameplay checks from pending independent art/hardware/performance acceptance. This remains a local development checkpoint.
 
 Burrow concept runtime is locally integrated at `ab418ca` (2026-09-08), with final controller, keyboard and native-touch evidence. Refresh the preview to load the new GLB; independent art and hardware/performance acceptance are still pending. [Draft PR92](https://github.com/AvonMexicola/star-agent/pull/92) preserves Cees’s review gate.
+
+
+## Outdoor construction floodlights
+
+The floodlight candidate adds six twin-head masts around each of the four trade
+settlement pads. Build your own through **Build → Power → Floodlight**. Each costs
+8 metal stock, 3 conductor and 2 glass and uses 600 W while switched on. Walk to
+the service box and press **F / controller X**; the setting survives a reload.
+Ceiling lights remain in **Roofs**. The same normal power and placement rules apply.
+
+Use **F2 → a settlement** to inspect the commissioned lights, or **Build sandbox**
+for construction. The [asset and gameplay record](qa/outdoor-floodlights/README.md)
+contains night before/after views, controller/phone evidence and measured costs.
+Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
+and served asset/source checks passed. Refresh the page to load the masts.
+Independent art and hardware/performance acceptance remain pending.

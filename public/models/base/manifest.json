@@ -803,8 +803,56 @@
         "WhiteArmour"
       ],
       "configuration": "Default 3.6m assembly; runtime foundationDepth adjusts articulated members."
+    },
+    "floodlight": {
+      "builder": "blender/build_floodlight.py",
+      "nativeSource": "assets/build-floodlight/floodlight.blend",
+      "runtime": "public/models/base/floodlight.glb",
+      "provenance": "Original deterministic Blender authorship; no external assets or textures.",
+      "coordinates": "Metres, Y up, origin mounting surface; beam -Z; switch +Z.",
+      "triangles": 9826,
+      "drawPrimitives": 5,
+      "bytes": 837064,
+      "sha256": "3f2d93fc8eb0f236e2cc590cf327cda09e84711a13aceba73fb62560a797240b",
+      "bounds": {
+        "min": [
+          -1.337499976158142,
+          0.0,
+          -0.6078828573226929
+        ],
+        "max": [
+          1.337499976158142,
+          5.8449201583862305,
+          0.5799999833106995
+        ]
+      },
+      "materials": [
+        "DarkPolymer",
+        "EdgeSteel",
+        "MintStatus",
+        "WarmTaskLight",
+        "WhiteArmour"
+      ],
+      "textures": 0,
+      "anchors": {
+        "LightEmitter": [
+          0,
+          5.55,
+          -0.45
+        ],
+        "LightTarget": [
+          0,
+          0,
+          -18
+        ],
+        "SwitchTarget": [
+          0,
+          1.2,
+          0.4
+        ]
+      }
     }
   },
-  "aggregateBytes": 5531820,
-  "aggregateTriangles": 62204
+  "aggregateBytes": 6368884,
+  "aggregateTriangles": 72030
 }

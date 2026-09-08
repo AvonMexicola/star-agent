@@ -16,7 +16,7 @@ export function roverReadout(state){
   return {
     speed:Math.abs(state.speed).toFixed(1),
     direction:state.speed<-.05?'Reverse':state.speed>.05?'Forward':'Stopped',
-    mode:state.busy?'Cabin moving':!state.occupied?'Standby':state.aboard?'Carrier deck':state.blocked?'Brake held':'Surface drive',
+    mode:state.busy?'Cabin moving':!state.occupied?'Standby':state.aboard?'Carrier deck':state.blocked?'Drive blocked':state.controls?.brake?'Brake held':'Surface drive',
     charge:Math.round(charge*100),seconds:Math.floor(charge*L.mining.continuousSeconds+1e-7),
     active:state.beaming===2,cutters:state.beaming,
     mass:state.mass.toFixed(2),capacity:L.cargo.capacityKg,
@@ -51,7 +51,7 @@ function paint(ctx,role,r,w,h){
     rail(ctx,'BURROW M-04',w,h);
     label(ctx,r.speed,58,117,68,C.text,600);label(ctx,'m/s',244,115,25,C.dim);
     label(ctx,r.direction,59,153,23,C.mint);
-    label(ctx,r.mode,59,192,20,r.mode==='Brake held'?C.amber:C.text);
+    label(ctx,r.mode,59,192,20,['Brake held','Drive blocked'].includes(r.mode)?C.amber:C.text);
     round(ctx,337,55,3,148,1,C.rail);
     label(ctx,'CUTTER CHARGE',360,77,17,C.dim);
     label(ctx,`${r.charge}%`,360,124,38,C.mint,600);
