@@ -7,7 +7,7 @@
   "status": "active",
   "branch": "feat/deep-space-recovery",
   "base": "f1ef821a1e24a0724c22b14e30efd6d5092ba0fd",
-  "updated": "2026-09-08",
+  "updated": "2026-09-09",
   "areas": [
     "industry",
     "combat",
@@ -21,7 +21,8 @@
     "scripts/recovery-flight.js",
     "scripts/recovery-qa-guard.js",
     "docs/briefs/deep-space-recovery.md",
-    "docs/qa/deep-space-recovery/"
+    "docs/qa/deep-space-recovery/",
+    "docs/deep-space-recovery.md"
   ],
   "brief": "docs/briefs/deep-space-recovery.md"
 }
