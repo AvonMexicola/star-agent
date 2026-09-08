@@ -29,6 +29,12 @@ settlements** signal filter. Each has a large pad and a walk-in exchange with
 independent finite stock and real ship cargo trading. F2 / Dev → Ship & location
 offers an approach above each pad. See the [player route](trade-settlements.md)
 and [construction and validation record](qa/trade-settlements/README.md).
+Each exchange now has explicit **local supplies and logical needs**. Its Local
+stock tab explains reserve targets and resource uses; deliveries consume cargo,
+pay credits and reduce the remaining need. Full reserves refuse excess crates.
+Map selections list current exports and shortages. Existing saved quantities
+are preserved. See [settlement delivery guide](settlement-economy.md) and
+[controller/keyboard/phone validation](qa/settlement-stock-needs/README.md).
 These authored exchanges are solo content; online player-base shops retain their
 separate authoritative implementation. Settlement runtime `03a561e` is locally
 integrated at `32966e3`; its 1,127-case unit suite and complete controller
