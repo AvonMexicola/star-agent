@@ -1,5 +1,25 @@
 # Star Agent — agent handoff (Claude ⇄ Astra)
 
+## SA-UI-003 — HUD modes integrated locally — 2026-09-08
+
+Runtime `ad32435` / browser harness `9a3910d`, isolated `/tmp/star-agent-hud`,
+`feat/hud-display-modes` from01a28df; [PR94](https://github.com/AvonMexicola/star-agent/pull/94)
+stacked on foundationPR93. Tab cycles Everything → Markers and reticle → No HUD;
+Settings exposes the same action to controller/touch and two-finger touch restores
+Everything. Native menus retain Tab focus; hostile selection remains Next target /
+Menu → Ship. No asset/dependency/server/protocol change. Final full unit suite (149 test files), build and repo checks
+pass; final production keyboard/controller/native-touch3/3 pass2.2min with zero
+app errors/warnings. Chromium151/AMD860M/ANGLE GL at1440×900 and390×844. Failed
+routing guard and fixture timing attempts retained; see [QA](docs/qa/hud-display.md).
+Local integration `6a3c9f2` preserves settlement metadata `290f5ad` and Burrow.
+The guarded fast-forward preserved the exact 56,247-byte unrelated journal suffix.
+Preview5178 serves both HUD modules and the main hook; proxied health is OK.
+All five affected runtime files match the browser-tested ad32435 byte for byte.
+The combined build passed (349 modules, 5.73 s), as did focused input/combat/
+settlement tests and repo checks. GPU and private5666/API8666 are released;
+shared services and SQL were not restarted. Final metadata/PR update follows.
+No physical-device testing, independent acceptance or public deployment claimed.
+
 ## Passenger elevator repair — 2026-09-08
 
 `fix/station-elevator-access`, based on local `dev/all-features` at `c766544`,
@@ -3884,6 +3904,7 @@ Ready for guarded local integration over `32966e3`, including offered settlement
 SA-COMBAT-001 LOCAL DELIVERY 2026-09-08: validated candidate dde4d02 integrated at547d901 into dev/all-features, including ready settlementc079 metadata. Original494354B HANDOFF and exact56247B dirty suffix preserved with guarded backup/receipt under /tmp/star-agent-enemy-integration. Shared5178 serves regional contracts, allfourcombat source files match candidate, direct/proxied APIhealth200. No API/SQL/schema/protocol/service restart or deployment. Full1133unit/build/repo checks PASS; five complete controller routes plus keyboard/touch PASS6/6 and final combined UI PASS44.7s. Docs/QA/task state updated; physical-device and independent balance/visual acceptance remain pending. GPU5398 released; final metadata commit follows without changing runtime.
 
 
+SA-SETTLE-002 CLAIM 2026-09-08T12:50:26.351096+00:00: Cees requests settlement local stock/logical needs. Isolated feat/settlement-stock-needs /tmp/star-agent-settlement-needs fromd08f181 owns catalog supplies/targets, new settlements/economy.js, narrow trading market/UI/beacon hooks and own tests/docs. Existing finite ledger/receipts/prices; actual shortage caps buying and deliveries reduce need, no refill/reset of existing stock. No settlement geometry/system/main/lighting or shared input changes; preserve foundation/floodlight/rover work. Preview5652 only, no browser/API yet. GPU request follows after focused checks, current foundation5642 retained.
 ## SA-BUILD-002 — terrain foundations and optional mainframes (2026-09-08)
 
 Owner Cees / Codex. Branch feat/terrain-foundations, original base32966e3.
@@ -3931,3 +3952,43 @@ native touch tested; physical-device and independent art acceptance remain pendi
 Private5642/API8642 and GPU released; floodlight/rover may consume checked hooks.
 
 SA-VEH-002 LOCAL COMPLETE 2026-09-08: runtime e8bb11f / GLB5433c837 integrated with checked foundations/settlements/trade/encounters at ab418ca, exact56,247B dirtyHANDOFFsuffix preserved. Existing5178/8087 stays healthy; HTTPservedGLB matches reviewedbytes, new display module/CSS/launcher200. Combined151normalfiles/build4.54s/repoPASS; fullGannetcontrollerPASS; finalcombinedkeyboardPASS1.0m and native390touchPASS1.1m with zero appdiagnostics. Earlier phone native-target/provenance failures retained, no application input code changed. Current final sourcehashes unchanged from testedbundle. DraftPR92 stacked on88, independent functional/rubric/hardware/performance acceptance pending; source taskintegrated. No ownbrowser/privateAPI remains and GPUreleased to floodlight/settlement/HUD queue. Only this finaldocs/status commit follows, then short sourcewindow release; no API/schema/protocol/service/public changes. See docs/qa/burrow-concept/production-record.md and docs/local-development.md.
+
+
+# SA-SETTLE-002 — validated settlement economy checkpoint
+
+Status: implementation and author validation complete; local integration next.
+Branch feat/settlement-stock-needs, base d08f181, feature d50bc56; controller
+receipt on 1f8a20a, evidence 68c74c6, checked Burrow combined at 9e49597.
+Owned /tmp/star-agent-settlement-needs, isolated preview5652 now stopped.
+
+Four settlements have complete local stock and purpose-based reserve needs.
+Deliveries atomically fill needs, transfer cargo and pay credits; excess crates
+stay aboard. Map and terminal use the same warehouse. Existing saves retain
+stock, including surplus/depletion. No production/refill timers, shared-settlement
+replication, schema/protocol or generic station/base-shop behavior changes.
+
+Validation: 23 focused cases; 191 multiplayer pass/two existing opt-in skips;
+combined foundation 1,147 individual unit cases/build/repo pass. Browser1/1
+passes2.6min, Chromium151/AMD860M/ANGLE GL,1440x900 and390x844, zero app diagnostics.
+Injected Gamepad physically lands/walks/delivers/buys/reboards/takes off;
+keyboard/native-touch pagination and held dialog/nativefocus/disconnect gates
+pass. Physical hardware and independent visual review remain separate.
+[Full evidence and limits](docs/qa/settlement-stock-needs/README.md).
+
+Integration preserves current Burrow/foundation/combat/settlement source and
+both test-list additions. Only package test-list and append-only handoff conflicts
+occurred. Transport owns new Freight/online hooks and may consume this checkpoint;
+no pending edits copied from its lane. Next: final union checks, guarded local
+fast-forward preserving dirty HANDOFF suffix, HTTP source verification, draft PR.
+No public deployment or shared API/SQL restart is required for this delta.
+
+
+SA-SETTLE-002 LOCAL COMPLETE: checked economy d50bc56 and QA/Burrow union are
+integrated on dev/all-features at dc578d8. Guard preserved exact56,247B unrelated
+HANDOFF suffix; backup/receipt /tmp/settlement-needs-integration/runtime. Existing
+5178 economy/UI and proxiedhealth200; allfivechangedruntimefiles exactly match
+passing controller1f8a20a. Final1154individualunitcases/191multiplayer+2optinskips/
+build6.10s/repo and controller1PASS2.6m, keyboard/native390 pagination and held
+modal/nativefocus/disconnectPASS. No service/SQL/schema/protocol/public changes.
+Physicaldevice/independentvisual review remain separate. Final integratedtask and
+localguide/status metadata in this commit; no gameplay changes since tested source.

@@ -1,3 +1,4 @@
+import { settlementById } from '../settlements/catalog.js';
 import { AEON_MARKET_ID, stationTerminalMarket } from './station-terminals.js';
 export { AEON_MARKET_ID } from './station-terminals.js';
 /** Shared NPC warehouse stock and discrete marginal prices. No clocks/refills. */
@@ -55,12 +56,13 @@ export function quoteMarket(market, resource, side, sbu) {
   require(integer(sbu, MARKET_STOCK_LIMIT) && sbu > 0, 'Choose a positive SBU quantity.');
   const stock = market.stock[resource.id];
   require(integer(stock, MARKET_STOCK_LIMIT), 'Station stock is invalid; original data retained.');
+  const site=settlementById(market.id),target=site?.targets[resource.id],limit=side==='sell'&&site?target:MARKET_STOCK_LIMIT;
   const after = stock + (side === 'buy' ? -sbu : sbu);
   const quote = { marketId: market.id, resource: resource.id, side, sbu, stockBefore: stock,
-    stockAfter: after, stockLimit: MARKET_STOCK_LIMIT };
-  if (after < 0) return { ...quote, ok: false, reason: `Only ${stock} SBU in station stock.`, total: null };
-  if (after > MARKET_STOCK_LIMIT) return { ...quote, ok: false,
-    reason: `Station has room for ${MARKET_STOCK_LIMIT - stock} SBU.`, total: null };
+    stockAfter: after, stockLimit: MARKET_STOCK_LIMIT,...(site?{need:Math.max(0,target-stock),target,settlement:true}:{}) };
+  if (after < 0) return { ...quote, ok: false, reason: `Only ${stock} SBU in ${site?'local':'station'} stock.`, total: null };
+  if (after > limit) return { ...quote, ok: false,
+    reason: site?`${site.name} needs ${Math.max(0,target-stock)} SBU of ${resource.name}. Choose a smaller delivery or another market.`:`Station has room for ${MARKET_STOCK_LIMIT - stock} SBU.`, total: null };
   let total = 0, unitMin = Infinity, unitMax = 0;
   const low = Math.min(stock, after) + 1, high = Math.max(stock, after);
   for (let level = low; level <= high; level++) {

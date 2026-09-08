@@ -104,7 +104,7 @@ test('keyboard and pointer fire, authored NPC close-ups, loss and recovery',asyn
  await page.keyboard.down('t');await page.waitForFunction(()=>window.starAgent.state.combat.shots>1);await page.keyboard.up('t');
  const shots=await page.evaluate(()=>window.starAgent.state.combat.shots);
  await page.locator('.ship-trigger').hover();await page.mouse.down();await page.waitForFunction(shots=>window.starAgent.state.combat.shots>shots,shots);await page.mouse.up();
- const target=await page.evaluate(()=>window.starAgent.state.combat.targetId);await page.keyboard.press('Tab');expect(await page.evaluate(()=>window.starAgent.state.combat.targetId)).not.toBe(target);
+ const target=await page.evaluate(()=>window.starAgent.state.combat.targetId);await page.locator('.combat-cycle').click();expect(await page.evaluate(()=>window.starAgent.state.combat.targetId)).not.toBe(target);
  // Separate controlled visual inspection. These pose changes are NOT controller journey evidence.
  for(const ship of ['nomad','kestrel']){
   await page.evaluate(ship=>{
