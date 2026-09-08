@@ -17,7 +17,7 @@ export function renderRecovery({content,selection,button,s,api,ship,terminal,nea
     actions.append(button(`Deposit all · ${j.reward} CR`,'recovery-deposit',()=>run({op:'recovery-deposit',mission:m.id,revision:s.revision}),busy||!m.cleared||!all||!near||!dock||terminal!==j.destination||!validGrid(ship?.hull,ship?.crates.filter(c=>c.recovery?.id!==m.id)??[])));
     actions.append(button('Abandon recovery','recovery-abandon',()=>run({op:'recovery-abandon',mission:m.id,revision:s.revision}),busy));card.append(actions);content.append(card);
     if(status?.error)content.append(para(status.error,'trade-reason'));
-    if(!m.cleared)content.append(para('Stay in your armed ship until the flight is cleared. Leaving combat or reloading before clearance lets the defenders regroup. Completed clearance is saved.','trade-reason'));
+    if(!m.cleared)content.append(para('Switch to Combat mode in Menu → Ship before firing with RT. Stay in your armed ship until the flight is cleared. Leaving combat or reloading before clearance lets the defenders regroup. Completed clearance is saved.','trade-reason'));
     return;
   }
   content.append(para('Recover sealed cargo from a disabled Atlas with emergency lights and open loading ramps. Your marked crates are personal; ordinary cargo cannot replace them.'));

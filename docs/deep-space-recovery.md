@@ -16,7 +16,8 @@ signal. It does not issue cargo or move your ship.
 1. Track the disabled Atlas and fly to its deep-space signal. The drive stops
    at20km; approach in normal flight. Your marked crates appear inside its aft
    cargo bay when you reach the wreck. Both ramps are already open.
-2. For guarded jobs, destroy the defending flight from an armed Nomad or Atlas.
+2. For guarded jobs, switch to Combat mode in Menu → Ship and destroy the
+   defending flight from an armed Nomad or Atlas.
    Clearance is saved. Leaving before clearance lets the defenders regroup.
 3. Brake completely, stand with X and physically walk out through your open rear
    hatch. EVA to the Atlas aft bay. These2SBU crates require the tractor beam.

@@ -81,3 +81,22 @@ The fixture records up to three actual release/re-engage attempts if that messag
 appears. The next full journey uses the normal supported orbit start and retains
 real entry, travel, EVA, hauling, inbound atmospheric flight, terminal payment and
 return to play. No debug pose is assigned after setup.
+
+## Attempt03 — real beam and interruption checks, EVA drift correction
+
+Frozen2a6ab9d; production build03 PASS4.75s/main-CitUshvm.js. Supported orbit
+entry, real drive/approach/parking/EVA and original crate pickup pass. The actual
+held sealed crate survives menu, native tab focus, disconnect, replacement and
+unsupported mapping transitions with no stale beam replay. Its physical haul
+clears the Atlas ramp; original active-beam PNGs were inspected. No expired-lock
+retry was needed on this run. No application error or warning was recorded.
+
+5.4min case stopped during guiding toward the Nomad. The fixture released LT
+before stopping the suit: its saved exit velocity was0.331m/s. During the next
+guiding steps it coasted from outside to the real Nomad ramp, attached magnetic
+boots, and blocked its own intended crate path. The original crate and tractor
+lock remained intact. Raw03 includes exact movement/pose/cargo, two videos and
+trace. Fix only the controller helper: hold LT until actual speed<0.01m/s at
+each waypoint. Later guarded/phone cases did not run. Static review also catches
+the guarded fixture leaving cruise weapons locked; it now uses the real Combat
+mode action, and the guarded mission UI supplies that discoverable instruction.
