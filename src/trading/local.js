@@ -1,4 +1,4 @@
-import { emptyCommerce,ensureAccount,validCommerce,normalizeCommerce,commerceCommand,shipKey } from './model.js';
+import { emptyCommerce,ensureAccount,validCommerce,normalizeSettlementMarkets,commerceCommand,shipKey } from './model.js';
 import { POST_COST,tradeSite } from './sites.js';
 import * as THREE from 'three';
 export const LOCAL_TRADER='local-player';
@@ -9,7 +9,7 @@ export class LocalTrading {
     if(store.blocked){this.error=store.warning;return;}
     try{
       const previous=store.state.commerce;
-      let next=Object.hasOwn(store.state,'commerce')?normalizeCommerce(previous):emptyCommerce();
+      let next=normalizeSettlementMarkets(Object.hasOwn(store.state,'commerce')?previous:emptyCommerce());
       if(!next.accounts[LOCAL_TRADER]){next=structuredClone(next);ensureAccount(next,LOCAL_TRADER,store.state.economy.credits);}
       // One normalizing save, including initial stock, before quoting. A read of
       // an exhausted market never creates fresh inventory or writes a new save.

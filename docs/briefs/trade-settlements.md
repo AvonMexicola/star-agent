@@ -1,0 +1,7 @@
+# Construction-kit trade settlements
+
+Build four distinct public NPC settlements, one on each landable world, from the existing authored base kit. Each has a clear large landing pad, a walkable exchange, storage/service buildings and power equipment. Existing authored dimensions, canonical terrain and body-fixed frames govern placement and collision. Mint/white concrete kit materials and actual map/UI typography are retained; no new assets or dependencies.
+
+Public settlement layouts are world content, separate from player claims and inventory. Solo exchanges use the existing finite commodity ledger and physical ship/terminal reach. Do not import unfinished shared-base commerce or grant multiplayer local authority. Names, world, trade role and large pad appear in map signals and surface locations. Existing controller map and trade dialogs provide input; actual injected-controller landing, physical egress, trade, cargo and return must be checked. Dev launcher approach starts are explicit fixtures, not proof of travel.
+
+Source base c766544. Owned new src/settlements, tests and documentation; narrow additive main wiring, local market resolution and developer location hooks. Preview 5622, no new API/server. Base commerce owner retains its protocol/shared-base implementation. Settlements remain unavailable online until authoritative world collision/trading integration. Validate structure/terrain/precision, market conservation/reload, renderer images and controller journey. Independent/hardware/performance acceptance must remain distinct from author checks.

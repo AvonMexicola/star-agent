@@ -1,3 +1,4 @@
+import { settlementMarketId } from '../settlements/catalog.js';
 import { createRemoteCargoAccess } from '../cargo/remote-access.js';
 import { FreighterSystems } from '../freighter-layout.js';
 import { bindCargoMining } from './mining-client.js';
@@ -17,19 +18,22 @@ import { createCargoTractor } from '../cargo/tractor-tool.js';
 import { tractorContext } from '../cargo/tractor-context.js';
 import { tractorWorldClear,constrainLooseCargo } from '../cargo/tractor-physics.js';
 import { isHandsFree } from '../station-hub-policy.js';
-export function createTradingSystem({scene,nav,station,store,multiplayer,getShip,build,mining,remotePlayers,getMuzzle,stationMarket=marketIdForTerminal}){
+export function createTradingSystem({scene,nav,station,store,multiplayer,getShip,build,mining,remotePlayers,getMuzzle,settlements,stationMarket=marketIdForTerminal}){
+  const resolveMarket=id=>settlementMarketId(id)||stationMarket(id);
+  const settlementIds=()=>settlements?.beacons().map(s=>s.id)??[];
   const miningClient=bindCargoMining({multiplayer,mining,nav});
   const local=new LocalTrading(store),visuals=new Map(),accessModels=new Map(),peerLifts=new Map(),carry=new THREE.Group();carry.name='Carried 1 SBU';scene.add(carry);let lastRevision=-1,serial=0;
   cargoAsset(1).then(m=>carry.add(m)).catch(e=>{carry.userData.error=e.message;});
-  const snapshot=()=>{if(multiplayer.connected){const s=multiplayer.state.commerce;return {...s,owner:multiplayer.state.ownId,online:true,ships:s?.ships??[],loose:s?.loose??[],players:multiplayer.state.players,terminals:s?.terminals??[]};}const s=local.state;return {...s,ships:Object.values(s.ships),loose:Object.values(s.loose??{}),terminals:Object.values(s.terminals),marketTerminals:Object.fromEntries(AEON_STATION_TERMINALS.map(t=>[t.id,stationMarket(t.id)])),account:{...s.accounts[LOCAL_TRADER],credits:store.state.economy.credits},owner:LOCAL_TRADER,online:false};};
+  const snapshot=()=>{if(multiplayer.connected){const s=multiplayer.state.commerce;return {...s,owner:multiplayer.state.ownId,online:true,ships:s?.ships??[],loose:s?.loose??[],players:multiplayer.state.players,terminals:s?.terminals??[]};}const s=local.state;return {...s,ships:Object.values(s.ships),loose:Object.values(s.loose??{}),terminals:Object.values(s.terminals),marketTerminals:Object.fromEntries([...AEON_STATION_TERMINALS.map(t=>t.id),...settlementIds()].map(id=>[id,resolveMarket(id)])),account:{...s.accounts[LOCAL_TRADER],credits:store.state.economy.credits},owner:LOCAL_TRADER,online:false};};
   const pose=s=>{if(s.owner===snapshot().owner)return s.hull===nav.shipId?shipPose(nav):null;const p=multiplayer.state.players.find(p=>p.id===s.owner&&p.shipId===s.hull);return p?.shipPosition?{position:new THREE.Vector3(...p.shipPosition),quaternion:new THREE.Quaternion(...p.shipOrientation)}:null;};
   function terminalPosition(id){
+    if(settlementMarketId(id))return settlements?.terminalPosition(id)??null;
     if(id?.startsWith('station:'))return stationTerminalPoint(station,id);
     const t=snapshot().terminals.find(t=>t.id===id);return t?new THREE.Vector3(...t.position).add(new THREE.Vector3(0,1.3,0).applyQuaternion(new THREE.Quaternion(...t.quaternion))):null;
   }
   const atTerminal=id=>{const p=terminalPosition(id);return p&&nav.mode==='walk'&&!nav.insideShip&&nav.position.distanceTo(p)<STATION_TERMINAL_REACH;};
-  const nearestTerminal=()=>[...AEON_STATION_TERMINALS.map(t=>t.id),...snapshot().terminals.map(t=>t.id)].filter(atTerminal).sort((a,b)=>terminalPosition(a).distanceToSquared(nav.position)-terminalPosition(b).distanceToSquared(nav.position))[0]??null;
-  const docked=(s,id)=>s.owner===snapshot().owner&&s.hull===nav.shipId&&!nav.cabinFlight&&nav.shipVelocity.length()<1&&!nav.travel&&(id?.startsWith('station:')?stationedForTrade({nav,hangarId:multiplayer.connected?multiplayer.state.hangar?.id:station.parkedPod+1,station},id):nav.shipSpeed<1&&onTradePad(pose(s)?.position,snapshot().terminals.find(t=>t.id===id)));
+  const nearestTerminal=()=>[...AEON_STATION_TERMINALS.map(t=>t.id),...settlementIds(),...snapshot().terminals.map(t=>t.id)].filter(atTerminal).sort((a,b)=>terminalPosition(a).distanceToSquared(nav.position)-terminalPosition(b).distanceToSquared(nav.position))[0]??null;
+  const docked=(s,id)=>s.owner===snapshot().owner&&s.hull===nav.shipId&&!nav.cabinFlight&&nav.shipVelocity.length()<1&&!nav.travel&&(settlementMarketId(id)?!multiplayer.connected&&settlements?.docked(id,pose(s)):id?.startsWith('station:')?stationedForTrade({nav,hangarId:multiplayer.connected?multiplayer.state.hangar?.id:station.parkedPod+1,station},id):nav.shipSpeed<1&&onTradePad(pose(s)?.position,snapshot().terminals.find(t=>t.id===id)));
   const canTake=(s,c)=>{const p=pose(s);return p&&['walk','eva'].includes(nav.mode)&&aboard(nav.position,p,s.hull)&&nearCrate(nav.position,p,s.hull,c);};
   const canStow=s=>{const p=pose(s);return s.owner===snapshot().owner&&p&&nav.mode==='walk'&&aboard(nav.position,p,s.hull)&&nearGrid(nav.position,p,s.hull);};
   const sources=()=>{const a=[{id:'pack',name:'Backpack'}];if(!multiplayer.connected){if(nav.insideShip||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50)a.push({id:'ship',name:'Ship sample lockers'});if(nav.shipId==='stratum'&&store.container('stratum-ore')&&(nav.insideShip||nav.mode==='landed'||nav.mode==='flight'||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50))a.push({id:'stratum-ore',name:'Stratum ore bin'});for(const c of build.claims)if(new THREE.Vector3(...c.origin).distanceTo(nav.position)<20)for(const [id,v]of Object.entries(store.state.remote))if(id.includes(c.id))a.push({id,name:v.name});}return a;};
@@ -41,7 +45,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
     async command(m){
       const fields={...m,commandId:`cargo-${Date.now()}-${++serial}`,revision:m.revision??snapshot().revision};
       if(multiplayer.connected){await multiplayer.request('cargo',fields);return {message:m.op.startsWith('tractor-')?'':'Cargo transaction saved on the server.'};}
-      return local.command(fields,{terminal:atTerminal,docked,stationMarket,resources:id=>api.loose(m.source,id),crate:canTake,grid:canStow,loot:()=>false,tractor:tractorContext({nav,ships:physicalShips,loose:()=>snapshot().loose,worldClear})});
+      return local.command(fields,{terminal:atTerminal,docked,stationMarket:resolveMarket,resources:id=>api.loose(m.source,id),crate:canTake,grid:canStow,loot:()=>false,tractor:tractorContext({nav,ships:physicalShips,loose:()=>snapshot().loose,worldClear})});
     },
     async deploy(){if(multiplayer.connected){await multiplayer.request('cargo',{op:'deploy',revision:snapshot().revision,commandId:`cargo-${Date.now()}-${++serial}`});return {message:'Shared trading pad built.'};}return local.deploy(nav);},
   };
@@ -50,7 +54,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   nav.cargoEVA=(a,b)=>constrainCargoEVA(a,b,snapshot().ships.filter(s=>pose(s)).map(s=>({...s,pose:pose(s),open:s.owner===snapshot().owner?nav.doorProgress>.98:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:s.owner===snapshot().owner?nav.freighter:peerLifts.get(s.owner)})));
   const oldCargo=nav.cargoConstrain;nav.cargoConstrain=(a,b)=>{const s=snapshot().ships.find(s=>s.owner===snapshot().owner&&s.hull===nav.shipId);return constrainShipAttachments(a,oldCargo?.(a,b)??b,(s?.crates??[]).map(c=>crateBounds(nav.shipId,c)));};
   const oldWalker=nav.cargoWalk;nav.cargoWalk=(a,b)=>{const previous=oldWalker?.(a,b)??{point:b,hit:false};const peers=snapshot().ships.filter(s=>s.owner!==snapshot().owner&&pose(s)).map(s=>({...s,pose:pose(s),open:(multiplayer.state.players.find(p=>p.id===s.owner)?.doorProgress??0)>.98,systems:peerLifts.get(s.owner)}));const foreign=walkForeignShips(a,previous.point,peers);const result=pads.constrain(a,foreign.point,nav.layout.eyeHeight);return {...result,grounded:result.grounded||foreign.grounded,hit:result.hit||previous.hit||result.grounded||foreign.hit};};
-  nav.tradeBeacons=()=>snapshot().terminals.map(t=>({id:`trade-${t.id}`,name:t.name,kind:'Player trading pad',category:'bases',parent:t.body,body:t.body,surface:true,center:t.origin,radius:0}));
+  nav.tradeBeacons=()=>[...(settlements?.beacons()??[]),...snapshot().terminals.map(t=>({id:`trade-${t.id}`,name:t.name,kind:'Player trading pad',category:'bases',parent:t.body,body:t.body,surface:true,center:t.origin,radius:0}))];
   nav.cargoLandingSurface=p=>pads.floorAt(p);
   // Pad poses are immutable after deployment; commerce/stock changes do not move them.
   nav.cargoLandingRevision=()=>multiplayer.connected?`online:${multiplayer.state.commerce?.terminals?.length??0}`:`offline:${Object.keys(local.state.terminals).length}`;
