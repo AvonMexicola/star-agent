@@ -29,3 +29,10 @@ to integrated, retaining formal art/hardware/performance caveats. No source take
 from that old lane. Build and production browser evidence follow below. A new
 worktree read was attempted before checkout finished and found no module yet;
 checkout completed normally and the read was repeated, with no missing-source fix.
+
+Full normal registered suite:160 files PASS60.20s on48be92e, two workers with
+disk TMPDIR, raw test-results/faction-units-01/unit.{json,log}. First production
+build PASS46.98s before the final no-readback pad redraw refactor; the browser
+runner includes the final production build. Existing Vite chunk advisory retained.
+Repository/diff checks pass. First browser candidate5d4d3ff is queued after the
+shared machine's earlier ready Recovery/Sentry/Rotation jobs; no GPU acquired.
