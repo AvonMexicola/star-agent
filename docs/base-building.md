@@ -33,13 +33,30 @@ and copper into conductor. The first mainframe costs **5 kg metal stock,
 3 kg conductor and 2 kg glass**. Each chosen recipe consumes its input; processing
 one kilogram into metal does not also award glass or aggregate.
 
-Choose **Mainframe** from the Pieces view and aim at clear, reasonably flat ground.
-Place it at least 128 m from another mainframe and clear of ships and stations.
-It establishes a 64 m radius site belonging to the current local player. There is
-no multiplayer authorization service yet. Foundations cost 12 kg concrete, made
-by crushing basalt into aggregate, separating a separate binder batch, and pressing
-8 kg aggregate with 2 kg binder into 10 kg dry concrete. Additional material and
-recipe contracts are in [field materials](design/field-materials-slice.md).
+Start with **Foundation** in the Blocks wheel. A foundation establishes a 64 m
+construction site without needing a mainframe. Keep new sites at least 128 m apart
+and clear of ships and stations. Build walls, storage and roofs as usual. Without
+a mainframe, doors stay open and cannot restrict entry. Place one **Mainframe**
+on a foundation or supported floor when ready; it uses the existing site and gives
+its owner door controls and an optional construction supply buffer. Empty its
+supplies before removing it; removal leaves the other structures intact and
+returns doors to open access. Solo construction and account-backed solo saves
+remain separate from multiplayer construction authority. Shared commissioned
+trade-site entrances retain their explicitly public access.
+
+Square, triangle and curved concrete foundations extend down to meet dry terrain,
+up to **8 m** beneath the deck. Raise/lower in **0.25 m** steps with D-pad or keyboard
+Up/Down, or the touch height buttons. Aim at an existing edge to continue its
+level; use Snap to choose another socket or free placement. Terrain beyond the
+support limit or above the deck is rejected. Existing saves keep their original
+0.6 m foundations until new pieces are built.
+
+**Shapes → Cliff foundation · 45° braces** adds a 4 × 4 m deck on two steel braces.
+Rotate the braces toward the hillside and adjust height until both feet contact
+terrain. The feet extend toward the indicated side of the deck; an unsupported
+cantilever is rejected. The braces cost 12 kg concrete and 8 kg metal stock.
+Ordinary square foundations retain their 12 kg concrete cost. Recipe contracts
+are in [field materials](design/field-materials-slice.md).
 
 All processed resources use the existing backpack, ship and base inventory grids,
 with 48 kg mineral capacity, 16 kg material stacks and eight slots per attached
@@ -74,7 +91,7 @@ tool bonuses and technology unlocks remain future work.
 
 | Action | Keyboard | Standard Xbox mapping |
 | --- | --- | --- |
-| Open pieces | B, outside on foot | B within 64 m of owned mainframe; Menu → Build for a new site |
+| Open pieces | B, outside on foot | B outside on foot, including new sites |
 | Move / aim | WASD / mouse | Left / right stick |
 | Place one piece | Enter | A press |
 | Next snap candidate | T | LB press |
@@ -142,7 +159,7 @@ while placing pieces. Open **Build → Sandbox supplies → Refill bank** whenev
 needed. Reload keeps your buildings and remaining stock in a separate sandbox
 save. **Command menu → Return to regular game** restores your ordinary save.
 
-Keyboard **B** or controller **B** near the mainframe opens the palette. Select with
+Keyboard **B** or controller **B** outside on foot opens the palette. Select with
 left stick / A, place with A, rotate with LT/RT, and exit with X. Existing support,
 collision and 1,024-piece-per-site limits still apply. Nine foundations plus the
 mainframe use ten of the starting site's slots.
@@ -150,7 +167,7 @@ mainframe use ten of the starting site's slots.
 
 ## Building wheel
 
-Controller **B** within 64 m of your mainframe or keyboard **B** opens the radial
+Controller **B** outside on foot or keyboard **B** opens the radial
 piece picker. **Menu → Build** also starts a new site.
 Point the **left stick** at a piece and press **A** to choose. Its name and costs
 appear in the centre. **B** reopens the wheel during placement; **B** closes it

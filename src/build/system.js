@@ -1,3 +1,6 @@
+import {hasMainframe,doorTarget} from './access.js';
+import {adjustableFoundation,foundationDepth,cliffBraces,MAX_FOUNDATION_DEPTH} from './foundations.js';
+import {reconcileLocalBaseStock} from '../trading/base-stock.js';
 import {mountHeight,mountReason} from './mounts.js';
 import {planRemoval} from './removal.js';
 import {pruneBaseStorage} from './power-system.js';
@@ -23,7 +26,7 @@ const overlap=volumesOverlap;
 const bufferId=(claim,piece)=>piece.type==='mainframe'?`build-core-${claim.id.split('-').at(-1)}`:`build-crate-${piece.id.split('-').at(-1)}`;
 export class BuildSystem {
   constructor({scene,nav,store,render=true,supplySources=()=>[]}){
-    this.supplySources=supplySources;this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.removing=false;this.removalPending=false;this.pieceId='mainframe';this.turn=0;this.height=0;this.snap=0;
+    this.supplySources=supplySources;this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.removing=false;this.removalPending=false;this.pieceId='foundation';this.turn=0;this.height=0;this.snap=0;
     this.doorMotion=new DoorMotion();this.ghostRequest=0;this.ghostModel=null;this.ghostFactory=createBuildGhost;this.ghostDisposer=disposeBuildGhost;this.disposed=false;this.claimVisibility=[];
     this.groups=new Map();this.models=new Map();this.registered=new Set();this.grounded=false;this.error='';this.preview=null;this.revision=0;
     const restored=store.state.build!==undefined&&!validBuild(store.state.build)?{ok:false,message:'Base save is invalid. Original data retained; construction paused.'}:restoreBuildAnchors(store.state.build);
@@ -42,13 +45,13 @@ export class BuildSystem {
     this._origin=new THREE.Vector3();this._lastPreview=0;
   }
   get data(){return this.store.state.build??emptyBuild();}
-  get claims(){return this.blocked?[]:this.data.claims;}
+  get claims(){return this.blocked||this.nav.multiplayer?.connected?[]:this.data.claims;}
   get state(){return {controllerAvailable:this.controllerAvailable,active:this.active,removing:this.removing,pieceId:this.pieceId,preview:this.preview?{pieceId:this.pieceId,valid:this.preview.valid,reason:this.preview.reason,cost:this.preview.cost,sources:this.preview.sources,rotation:this.preview.piece?.rotation,position:this.preview.position,claimId:this.preview.claim?.id??null}:null,claims:structuredClone(this.claims),pieceCount:this.claims.reduce((s,c)=>s+c.pieces.length,0),error:this.error,grounded:this.grounded,visuals:this.visualDiagnostics,assetsReady:this.models.size>0&&[...this.models.values()].every(m=>m.ready),materials:this.store.container('pack')?.items};}
   get visualDiagnostics(){return {doors:[...this.doorMotion.doors].map(([id,d])=>({id,target:Boolean(d.target),fraction:d.fraction,colliderFraction:d.fraction,blocked:d.blocked})),ghost:{pieceId:this.ghost.userData.piece??null,ready:Boolean(this.ghostModel),meshes:this.ghostModel?(()=>{let count=0;this.ghostModel.traverse(o=>{if(o.isMesh)count++;});return count;})():0},claims:this.claimVisibility,lights:{active:this.serviceLights.filter(l=>l.visible).length,fixtures:this.serviceLights.filter(l=>l.visible).map(l=>({id:l.userData.fixtureId,intensity:l.intensity})),max:MAX_SERVICE_LIGHTS,work:this.workLight.visible}};}
   canBuild(){return !this.nav.multiplayer?.connected&&!this.nav.openingActive&&this.nav.mode==='walk'&&!this.nav.insideShip&&!this.nav.dockedAtStation&&!this.nav.travel&&this.nav.altitude<80;}
   get controllerAvailable(){
     if(this.blocked||this.store.blocked||!this.canBuild())return false;
-    return this.claims.some(c=>c.owner===LOCAL_OWNER&&c.body===this.nav.body.id&&c.pieces.some(p=>p.type==='mainframe'&&this.nav.position.distanceTo(this.toWorld(v(p.position),c))<=c.radius));
+    return true;
   }
   begin(id=this.pieceId){if(!this.canBuild())return {ok:false,message:'Leave the ship and stand on a planetary surface to build.'};if(this.blocked||this.store.blocked)return {ok:false,message:this.error||this.store.warning};this.active=true;this.nav.buildActive=true;this.nav.keys.clear();this.nav.gamepad.suspend();return this.select(id);}
   select(id){if(!PIECES[id])return {ok:false,message:'Choose a building piece.'};this.removing=false;this.pieceId=id;this.snap=0;this.height=0;this.refreshPreview();return {ok:true};}
@@ -102,26 +105,51 @@ export class BuildSystem {
       }
       const snapped=panels.filter(p=>PIECES[p.type].category==='foundation').flatMap(p=>attachedPanels(this.pieceId,p,p.position[1]+this.height));
       // Prefer nearby edge sockets; retain a free grid candidate for new islands.
-      const free={position:[Math.round(local.x/GRID)*GRID,.3+this.height,Math.round(local.z/GRID)*GRID],rotation};
+      const ground=this.toLocal(bodySurfacePoint(bodyOffset(target,BODIES.find(b=>b.id===claim.body)).normalize(),BODIES.find(b=>b.id===claim.body)),claim);
+      const free={position:[Math.round(local.x/GRID)*GRID,Math.round(ground.y*4)/4+.3+this.height,Math.round(local.z/GRID)*GRID],rotation};
       return [...sort(snapped).filter(p=>v(p.position).distanceTo(local)<3),free];
     }
     // Pick the floor nearest the aimed height, not the highest roof overhead.
     const x=Math.round(local.x*2)/2,z=Math.round(local.z*2)/2;
     const base=panels.filter(p=>contains(footprint(p),x,z)).sort((a,b)=>Math.abs(a.position[1]-local.y)-Math.abs(b.position[1]-local.y))[0];
-    return [{position:[x,base?.position[1]??local.y,z],rotation}];
+    return [{position:[x,base?.position[1]??local.y,z],rotation:rotation+(def.id==='mainframe'?Math.PI:0)}];
   }
 
+  foundationSamples(p){
+    const polygon=footprint(p),samples=[[p.position[0],p.position[2]]];
+    polygon.forEach((a,i)=>{const b=polygon[(i+1)%polygon.length],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5);for(let j=0;j<=steps;j++)samples.push(a.map((n,k)=>n+(b[k]-n)*j/steps));});
+    return samples;
+  }
+  cliffGrounded(c,p){
+    const body=BODIES.find(b=>b.id===c.body);
+    return cliffBraces(p).every(({foot})=>{
+      const local=v(foot).applyAxisAngle(UP,p.rotation).add(v(p.position)),point=this.toWorld(local,c),alt=bodyAltitude(point,body);
+      return alt>=-.25&&alt<=.05&&(!body.water||terrainHeight(...bodyOffset(point,body).normalize().toArray())>=0);
+    });
+  }
+  fitFoundation(c,p){
+    if(p.type==='foundation-strut'){
+      p.supportDepth=MAX_FOUNDATION_DEPTH;
+      for(let depth=1.1;depth<=MAX_FOUNDATION_DEPTH+.001;depth+=.05){p.supportDepth=Number(depth.toFixed(2));if(this.cliffGrounded(c,p))break;}
+      return;
+    }
+    const body=BODIES.find(b=>b.id===c.body),depth=Math.max(.6,...this.foundationSamples(p).map(([x,z])=>bodyAltitude(this.toWorld(v([x,p.position[1],z]),c),body)+.05));
+    p.supportDepth=Math.min(MAX_FOUNDATION_DEPTH,Math.ceil(depth*20)/20);
+  }
   refreshPreview(){
     if(!this.active)return;
     if(this.removing)return this.refreshRemoval();
-    const target=this.target();let claim=this.pieceId==='mainframe'?this.newClaim(target):this.nearestClaim(target);
+    const target=this.target();let claim=this.nearestClaim(target);
+    if(!claim&&(this.pieceId==='mainframe'||PIECES[this.pieceId].category==='foundation'))claim=this.newClaim(target);
+    const newSite=claim&&!this.claims.some(c=>c.id===claim.id);
     if(claim&&PIECES[this.pieceId].padSize==='L')claim={...claim,radius:96};
-    const candidates=claim?(this.pieceId==='mainframe'?[{position:[0,0,0],rotation:(this.turn+2)%4*Math.PI/2}]:this.candidates(claim,target)):[];
+    const candidates=claim?(this.pieceId==='mainframe'&&newSite?[{position:[0,0,0],rotation:(this.turn+2)%4*Math.PI/2}]:this.candidates(claim,target)):[];
     const candidate=candidates[this.snap%Math.max(1,candidates.length)];
-    const p={type:this.pieceId,id:`build-piece-${this.data.nextId+(this.pieceId==='mainframe'?1:0)}`,position:candidate?.position??[0,0,0],rotation:candidate?.rotation??0,doorOpen:false};
+    const p={type:this.pieceId,id:`build-piece-${this.data.nextId+(newSite?1:0)}`,position:candidate?.position??[0,0,0],rotation:candidate?.rotation??0,doorOpen:false};
+    if(claim&&adjustableFoundation(p.type))this.fitFoundation(claim,p);
     const actor=claim?this.toLocal(this.nav.position,claim):null;
-    const sources=claim?.useBuffer&&this.pieceId!=='mainframe'&&Math.hypot(actor.x,actor.z)<=claim.radius?['pack',bufferId(claim,claim.pieces.find(p=>p.type==='mainframe'))]:['pack'];
-    let reason=!claim?'Place a mainframe to establish building rights.':!candidate?(PIECES[this.pieceId].mount?'Build a supported ceiling first.':'Place a supporting foundation first.'):this.validate(claim,p);
+    const sources=hasMainframe(claim)&&claim.useBuffer&&this.pieceId!=='mainframe'&&Math.hypot(actor.x,actor.z)<=claim.radius?['pack',bufferId(claim,claim.pieces.find(p=>p.type==='mainframe'))]:['pack'];
+    let reason=!claim?'Place a foundation to start a site; add a mainframe when ready.':!candidate?(PIECES[this.pieceId].mount?'Build a supported ceiling first.':'Place a supporting foundation first.'):this.validate(claim,p);
     if(shipCargoAccess(this.nav).available)sources.push('ship');
     sources.push(...this.supplySources());
     const cost=PIECES[p.type].cost,resources=planCost(this.store,this.store.state,cost,sources);
@@ -134,13 +162,15 @@ export class BuildSystem {
     if(!this.assetsLoaded)return this.error||'Loading construction models…';
     if(!this.canBuild())return 'Build on foot outside the ship.';
     if(c.owner!==LOCAL_OWNER)return 'Building permission required.';
+    if((this.protectedClaims?.()??[]).some(other=>other.body===c.body&&v(other.origin).distanceTo(v(c.origin))<other.radius+c.radius))return 'Keep your claim clear of the public trade settlement.';
     const body=BODIES.find(b=>b.id===c.body),point=this.toWorld(v(p.position),c),localPlayer=this.toLocal(this.nav.position,c),boxes=getPlacementBoxes(p),bounds=getPlacementBounds(p);
     if(Math.hypot(distanceToPolygon(footprint(p),localPlayer.x,localPlayer.z),Math.max(bounds.min[1]-localPlayer.y,0,localPlayer.y-bounds.max[1]))>12)return 'Move within 12 m of the piece.';
     if(c.pieces.length>=MAX_PIECES)return `Prototype limit: ${MAX_PIECES} pieces per site.`;
-    if(bounds.min[1]<(PIECES[p.type].padSize?-16:-2)||bounds.max[1]>CLAIM_HEIGHT||[bounds.min[0],bounds.max[0]].some(x=>[bounds.min[2],bounds.max[2]].some(z=>Math.hypot(x,z)>c.radius)))return 'The complete piece must fit inside the claim.';
-    if(p.type==='mainframe'){
+    if(bounds.min[1]<(PIECES[p.type].padSize||adjustableFoundation(p.type)?-16:-2)||bounds.max[1]>CLAIM_HEIGHT||[bounds.min[0],bounds.max[0]].some(x=>[bounds.min[2],bounds.max[2]].some(z=>Math.hypot(x,z)>c.radius)))return 'The complete piece must fit inside the claim.';
+    if(p.type==='mainframe'&&hasMainframe(c))return 'Another mainframe already overlaps this site. One mainframe per site.';
+    if(!this.claims.some(other=>other.id===c.id)){
       if(this.claims.length>=MAX_CLAIMS)return 'Prototype claim limit reached.';
-      if(this.claims.some(other=>other.body===c.body&&v(other.origin).distanceTo(point)<other.radius+c.radius))return 'Another mainframe claim overlaps this site.';
+      if(this.claims.some(other=>other.body===c.body&&v(other.origin).distanceTo(v(c.origin))<other.radius+c.radius))return 'Another mainframe claim overlaps this site.';
     }
     if(c.radius>64&&this.claims.some(other=>other.id!==c.id&&other.body===c.body&&v(other.origin).distanceTo(v(c.origin))<other.radius+c.radius))return 'The larger pad claim would overlap another site.';
     if(this.nav.stationDistance<300)return 'Protected station area.';
@@ -164,13 +194,14 @@ export class BuildSystem {
     const def=PIECES[p.type];
     if(def.mount)return mountReason(p,c.pieces);
     if(def.category==='foundation'||def.category==='utility'){
-      const samples=[...footprint(p),[p.position[0],p.position[2]]];
+      const samples=adjustableFoundation(p.type)?this.foundationSamples(p):[...footprint(p),[p.position[0],p.position[2]]];
       for(const [x,z] of samples){
         const sample=this.toWorld(v([x,p.position[1],z]),c),alt=bodyAltitude(sample,body),normal=bodyOffset(sample,body).normalize();
         if(body.water&&terrainHeight(...normal.toArray())<0)return 'Choose dry land.';
         const onPanel=def.category==='utility'&&c.pieces.some(a=>isPanel(a)&&close(a.position[1],p.position[1])&&contains(footprint(a),x,z,.005));
-        if(!onPanel&&(alt<-.04||alt>(def.padSize?8:def.category==='foundation'?.6:.35)))return 'Terrain is too uneven. Adjust height or choose a flatter site.';
+        if(!onPanel&&(alt<-.04||alt>(def.padSize?8:adjustableFoundation(p.type)?(p.type==='foundation-strut'?Infinity:foundationDepth(p)):def.category==='foundation'?.6:.35)))return 'Terrain is too uneven. Adjust height or choose a flatter site.';
       }
+      if(p.type==='foundation-strut'&&!this.cliffGrounded(c,p))return 'Rotate the braces toward the hillside or adjust height until both feet meet terrain.';
     }else {const reason=structuralReason(p,c.pieces);if(reason)return reason;}
 
     return null;
@@ -184,6 +215,7 @@ export class BuildSystem {
   async remove(){
     if(this.removalPending)return {ok:false,message:'Removal in progress.'};if(!this.canBuild()||this.blocked||this.store.blocked)return {ok:false,message:'Construction is unavailable.'};
     this._removalData=null;this.refreshRemoval();const preview=this.preview;if(!preview?.valid)return {ok:false,message:preview?.reason};
+    try{reconcileLocalBaseStock({...pruneBaseStorage(this.store.state,this._removalPlan.build.claims),build:this._removalPlan.build});}catch(error){return {ok:false,message:error.message};}
     this.removalPending=true;let result;try{
       if(this.power?.cloud?.enabled)result=await this.power.cloud.action(preview.claim.id,'remove',preview.piece.id);
       else {const plan=this._removalPlan,ok=this.store.write({...pruneBaseStorage(this.store.state,plan.build.claims),build:plan.build});result={ok,message:ok?plan.message:this.store.warning};}
@@ -195,7 +227,9 @@ export class BuildSystem {
     this.refreshPreview();const preview=this.preview;if(!preview?.valid)return {ok:false,message:preview?.reason??'Enter build mode first.'};
     const c=structuredClone(preview.claim),p=structuredClone(preview.piece),data=structuredClone(this.data);
     const paid=planCost(this.store,this.store.state,preview.cost,preview.sources);if(!paid.ok)return paid;
-    c.pieces.push(p);if(p.type==='mainframe'){c.power=initialPower(Date.now());data.claims.push(c);data.nextId+=2;}else{data.claims=data.claims.map(old=>old.id===c.id?c:old);data.nextId++;}
+    const newSite=!data.claims.some(old=>old.id===c.id);
+    c.pieces.push(p);if(p.type==='mainframe')c.power??=initialPower(Date.now());
+    if(newSite){data.claims.push(c);data.nextId+=2;}else{data.claims=data.claims.map(old=>old.id===c.id?c:old);data.nextId++;}
     let next={...paid.next,build:data};
     if(['mainframe','crate','rack'].includes(p.type))next=addBuildContainer(next,bufferId(c,p),p.type==='mainframe'?`${c.name} supplies`:`${c.name} ${PIECES[p.type].label} ${p.id.split('-').at(-1)}`,PIECES[p.type].storageBoxes??2);
     if(!validBuild(data)||!this.store.validContainers(next))return {ok:false,message:'Building or storage limits reached.'};
@@ -206,26 +240,26 @@ export class BuildSystem {
   }
   setBufferEnabled(id,enabled){
     const c=this.claims.find(c=>c.id===id),core=c?.pieces.find(p=>p.type==='mainframe');
-    if(!c||this.nav.mode!=='walk'||this.nav.insideShip||typeof enabled!=='boolean'||this.nav.position.distanceTo(this.toWorld(v(core.position),c))>4)return {ok:false,message:'Approach your mainframe to configure supplies.'};
+    if(!core||this.nav.mode!=='walk'||this.nav.insideShip||typeof enabled!=='boolean'||this.nav.position.distanceTo(this.toWorld(v(core.position),c))>4)return {ok:false,message:'Approach your mainframe to configure supplies.'};
     const data={...this.data,claims:this.data.claims.map(c=>c.id===id?{...c,useBuffer:enabled}:c)};
     if(!this.store.write({...this.store.state,build:data}))return {ok:false,message:this.store.warning};
     this.refreshPreview();return {ok:true,message:enabled?'Local construction buffer enabled.':'Local buffer disabled. Backpack and nearby ship cargo remain available.'};
   }
   sync(){
     if(this.disposed)return;
-    if(this._syncedData===this.data)return;this._syncedData=this.data;
+    if(this._syncedData===this.data&&this._syncedOnline===Boolean(this.nav.multiplayer?.connected))return;this._syncedData=this.data;this._syncedOnline=Boolean(this.nav.multiplayer?.connected);
     const alive=new Set(this.claims.flatMap(c=>c.pieces.map(p=>p.id)));
     for(const [id,entry] of this.models)if(!alive.has(id)){if(entry.group)disposeBuildVisual(entry.group);this.models.delete(id);this.registered.delete(id);this.doorMotion.doors.delete(id);}
     for(const [id,group] of this.groups)if(!this.claims.some(c=>c.id===id)){group.removeFromParent();this.groups.delete(id);}
     for(const c of this.claims){
       let group=this.groups.get(c.id);if(!group){group=new THREE.Group();group.name=c.name;group.quaternion.fromArray(c.quaternion);this.groups.set(c.id,group);if(this.render)this.scene.add(group);}
       for(const p of c.pieces){
-        if(Boolean(PIECES[p.type].door))this.doorMotion.ensure(p.id,p.doorOpen);
+        if(Boolean(PIECES[p.type].door))this.doorMotion.ensure(p.id,doorTarget(c,p));
         if(this.render&&!this.models.has(p.id)){
           const entry={ready:false,group:null,pieceId:p.id};this.models.set(p.id,entry);
-          createBuildVisual(p).then(model=>{if(this.disposed||!this.claims.some(c=>c.pieces.some(p=>p.id===entry.pieceId))){disposeBuildVisual(model);return;}entry.group=model;entry.rotor=model.getObjectByName('TurbineRotor');entry.ready=true;this._syncedData=null;model.position.fromArray(p.position);model.rotation.y=p.rotation;group.add(model);setDoorOpen(model,this.doorFraction(p));}).catch(e=>{this.error=`Building asset unavailable: ${e.message}`;});
+          createBuildVisual(p).then(model=>{if(this.disposed||!this.claims.some(c=>c.pieces.some(p=>p.id===entry.pieceId))){disposeBuildVisual(model);return;}entry.group=model;entry.rotor=model.getObjectByName('TurbineRotor');entry.ready=true;this._syncedData=null;model.position.fromArray(p.position);model.rotation.y=p.rotation;group.add(model);setDoorOpen(model,this.doorFraction(p,c));}).catch(e=>{this.error=`Building asset unavailable: ${e.message}`;});
         }
-        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,(!this.power||this.power.status(c).powered)&&(!PIECES[p.type].light||p.lightOn!==false));const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
+        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,(!this.power||this.power.status(c).powered)&&(!PIECES[p.type].light||p.lightOn!==false));const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p,c));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
         if(['mainframe','crate','rack'].includes(p.type)&&this.onRegisterContainer&&!this.registered.has(p.id)){
           const id=bufferId(c,p),registered=this.onRegisterContainer({id,name:this.store.container(id)?.name??c.name,kind:'base',boxes:PIECES[p.type].storageBoxes??2,available:()=>this.claims.some(c=>c.pieces.some(piece=>piece.id===p.id))&&this.nav.mode==='walk'&&!this.nav.insideShip&&(this.nav.position.distanceTo(this.toWorld(v(p.position),c))<4||this.terminalAccess(c))});
           if(registered!==false)this.registered.add(p.id);
@@ -233,8 +267,8 @@ export class BuildSystem {
       }
     }
   }
-  doorFraction(piece){return this.doorMotion.fraction(piece.id,piece.doorOpen);}
-  livePieces(claim){return claim.pieces.map(p=>Boolean(PIECES[p.type].door)?{...p,doorOpen:this.doorFraction(p)}:p);}
+  doorFraction(piece,claim){if(!PIECES[piece.type]?.door)return 0;claim??=this.claims.find(c=>c.pieces.some(p=>p.id===piece.id));return claim&&!hasMainframe(claim)?1:this.doorMotion.fraction(piece.id,piece.doorOpen);}
+  livePieces(claim){return claim.pieces.map(p=>Boolean(PIECES[p.type].door)?{...p,doorOpen:this.doorFraction(p,claim)}:p);}
   canCloseDoor(claim,piece,previous,next){
     const feet=this.toLocal(this.nav.position,claim).addScaledVector(UP,-(this.nav.layout?.eyeHeight??1.65));
     const before=getWorldBoxes(piece,previous).filter(b=>b.kind==='door'),after=getWorldBoxes(piece,next).filter(b=>b.kind==='door');
@@ -253,9 +287,9 @@ export class BuildSystem {
     if(!this.render||!this.preview||this.disposed)return;
     this.removeRoot.visible=this.active&&this.removing&&Boolean(this.preview.piece);
     if(this.removing){this.ghost.visible=false;this.boundary.visible=false;if(this.preview.piece){const bounds=getPlacementBounds(this.preview.piece);this.removeOutline.box.min.fromArray(bounds.min);this.removeOutline.box.max.fromArray(bounds.max);this.removeOutline.material.color.set(this.preview.valid?0xffa36c:0xf06a74);this.removeRoot.position.fromArray(this.preview.claim.origin).sub(this._origin);this.removeRoot.quaternion.fromArray(this.preview.claim.quaternion);}return;}
-    const key=this.pieceId;
-    if(this.ghost.userData.piece!==key){
-      this.ghost.userData.piece=key;const request=++this.ghostRequest;
+    const key=`${this.pieceId}:${this.preview.piece.supportDepth??''}`;
+    if(this.ghost.userData.shapeKey!==key){
+      this.ghost.userData.shapeKey=key;this.ghost.userData.piece=this.pieceId;const request=++this.ghostRequest;
       if(this.ghostModel){this.ghost.remove(this.ghostModel);this.ghostDisposer(this.ghostModel);this.ghostModel=null;}
       this.ghost.visible=false;
       this.ghostFactory(this.preview.piece).then(model=>{
@@ -277,8 +311,8 @@ export class BuildSystem {
       if(opacity<=0)continue;
       const powered=!this.power||this.power.status(c).powered;
       for(const p of c.pieces){
-        if(Boolean(PIECES[p.type].door)){const wasBlocked=this.doorMotion.doors.get(p.id)?.blocked;this.doorMotion.update(p.id,p.doorOpen,dt,(previous,next)=>this.canCloseDoor(c,p,previous,next));if(!wasBlocked&&this.doorMotion.doors.get(p.id).blocked)this.nav.notify?.('Closing paused · step clear of the doorway.');}
-        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,powered&&(!PIECES[p.type].light||p.lightOn!==false));const rotor=this.models.get(p.id)?.rotor;if(rotor&&!BODIES.find(b=>b.id===c.body)?.airless)rotor.rotation.y+=dt;if(PIECES[p.type].door)setDoorOpen(model,this.doorFraction(p));if(model.userData.buildOpacity!==opacity){setBuildOpacity(model,opacity);model.userData.buildOpacity=opacity;}}
+        if(Boolean(PIECES[p.type].door)){const wasBlocked=this.doorMotion.doors.get(p.id)?.blocked;this.doorMotion.update(p.id,doorTarget(c,p),dt,(previous,next)=>this.canCloseDoor(c,p,previous,next));if(!wasBlocked&&this.doorMotion.doors.get(p.id).blocked)this.nav.notify?.('Closing paused · step clear of the doorway.');}
+        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,powered&&(!PIECES[p.type].light||p.lightOn!==false));const rotor=this.models.get(p.id)?.rotor;if(rotor&&!BODIES.find(b=>b.id===c.body)?.airless)rotor.rotation.y+=dt;if(PIECES[p.type].door)setDoorOpen(model,this.doorFraction(p,c));if(model.userData.buildOpacity!==opacity){setBuildOpacity(model,opacity);model.userData.buildOpacity=opacity;}}
         if(opacity>0&&powered&&(['doorway','mainframe'].includes(p.type)||PIECES[p.type].light&&p.lightOn!==false)){
           const offset=PIECES[p.type].light?v([0,-.20,0]):Boolean(PIECES[p.type].door)?v([0,2.36,-.30]):v([0,1.50,-.56]),position=this.toWorld(offset.applyAxisAngle(UP,p.rotation).add(v(p.position)),c);
           fixtures.push({id:p.id,type:p.type,position,distance:position.distanceTo(this.nav.position),opacity});
@@ -323,20 +357,21 @@ export class BuildSystem {
     const dir=FORWARD.clone().applyQuaternion(this.nav.orientation);
     return this.claims.flatMap(c=>c.pieces.filter(p=>(['mainframe','crate','rack','terminal'].includes(p.type)||POWER_PARTS[p.type]||PIECES[p.type].light||PIECES[p.type].door)).map(p=>{const point=this.toWorld(v(p.position).addScaledVector(UP,PIECES[p.type].light?-.06:.8),c),delta=point.sub(this.nav.position);return {c,p,d:delta.length(),f:delta.normalize().dot(dir)};})).filter(x=>x.d<3.5&&x.f>.15).sort((a,b)=>b.f-a.f||a.d-b.d)[0]??this.claims.flatMap(c=>c.pieces.filter(p=>PIECES[p.type].padSize).map(p=>{const local=this.toLocal(this.nav.position,c);return {c,p,d:Math.hypot(distanceToPolygon(footprint(p),local.x,local.z),local.y-p.position[1])};})).find(hit=>hit.d<3.5)??null;
   }
-  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${PIECES[hit.p.type].light?`Switch ceiling light ${hit.p.lightOn===false?'on':'off'}`:Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':hit.p.doorOpen?'Close':'Open')+' base door':(hit.p.type==='mainframe'||POWER_PARTS[hit.p.type])?'Base mainframe / power':hit.p.type==='terminal'?'Inventory terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
+  get interaction(){const hit=this.nearbyInteraction();return hit?`F / X · ${PIECES[hit.p.type].light?`Switch ceiling light ${hit.p.lightOn===false?'on':'off'}`:Boolean(PIECES[hit.p.type].door)?(this.doorMotion.doors.get(hit.p.id)?.blocked?'Closing paused · step clear · Open':!hasMainframe(hit.c)?'Unsecured · open':hit.p.doorOpen?'Close':'Open')+' base door':(hit.p.type==='mainframe'||POWER_PARTS[hit.p.type])?'Base mainframe / power':hit.p.type==='terminal'?'Storage & trade terminal':PIECES[hit.p.type].padSize?'Landing pad designation':'Base storage'}`:'';}
   interact(){
     const hit=this.nearbyInteraction();if(!hit)return false;
     const {c,p}=hit;
     if(PIECES[p.type].light){const data=structuredClone(this.data),lamp=data.claims.find(a=>a.id===c.id).pieces.find(a=>a.id===p.id);lamp.lightOn=p.lightOn===false;if(this.store.write({...this.store.state,build:data})){this.sync();this.nav.gamepad.suspend();this.nav.notify(lamp.lightOn?'Ceiling light on.':'Ceiling light off.');}else this.nav.notify(this.store.warning);return true;}
-    if(POWER_PARTS[p.type]){const core=c.pieces.find(p=>p.type==='mainframe');this.onMainframe?.({...structuredClone(c),bufferId:bufferId(c,core)});return true;}
+    if(POWER_PARTS[p.type]){const core=c.pieces.find(p=>p.type==='mainframe');if(!core){this.nav.notify('Add a mainframe on a foundation to manage power and supplies.');return true;}this.onMainframe?.({...structuredClone(c),bufferId:bufferId(c,core)});return true;}
     if(p.type==='mainframe'){this.onMainframe?.({...structuredClone(c),bufferId:bufferId(c,p)});return true;}
     if(p.type==='terminal'&&this.power&&!this.power.status(c).powered){this.nav.notify('Terminal has no power. Open storage directly or restore generation.');return true;}
     if(p.type==='terminal'){this.onMainframe?.({...structuredClone(c),terminal:true,containers:c.pieces.filter(a=>['mainframe','crate','rack'].includes(a.type)).map(a=>({id:bufferId(c,a),name:this.store.container(bufferId(c,a))?.name}))});return true;}
     if(PIECES[p.type].padSize){this.onMainframe?.({...structuredClone(c),pad:{id:p.id,size:PIECES[p.type].padSize,enabled:Boolean(p.landingPad)}});return true;}
     if(['crate','rack'].includes(p.type)){this.onOpenStorage?.(bufferId(c,p));return true;}
+    if(PIECES[p.type].door&&!hasMainframe(c)){this.nav.notify('Unsecured site · doors stay open until a mainframe is installed.');return true;}
     if(p.type==='hangar-door'&&this.power&&!this.power.status(c).powered){this.nav.notify('Hangar motor has no power. Restore generation.');return true;}
     if(p.doorOpen){const feet=this.toLocal(this.nav.position,c).addScaledVector(UP,-(this.nav.layout?.eyeHeight??1.65));if(getWorldBoxes({...p,doorOpen:false}).some(b=>capsuleIntersectsBox(feet,.35,1.8,b))){this.nav.notify('Step clear of the doorway before closing.');return true;}}
-    this.doorMotion.ensure(p.id,p.doorOpen);
+    this.doorMotion.ensure(p.id,doorTarget(c,p));
     const data=structuredClone(this.data),piece=data.claims.find(a=>a.id===c.id).pieces.find(a=>a.id===p.id);piece.doorOpen=!piece.doorOpen;
     if(this.store.write({...this.store.state,build:data})){this.sync();this.nav.gamepad.suspend();this.nav.notify(piece.doorOpen?'Opening base door…':'Closing base door…');}else this.nav.notify(this.store.warning);return true;
   }
@@ -361,7 +396,7 @@ export class BuildSystem {
         offsets=new THREE.Box3();const rotation=q(c.quaternion).invert().multiply(envelope.orientation??new THREE.Quaternion());
         for(const x of [envelope.min[0],envelope.max[0]])for(const y of [envelope.min[1],envelope.max[1]])for(const z of [envelope.min[2],envelope.max[2]])offsets.expandByPoint(new THREE.Vector3(x,y,z).applyQuaternion(rotation));
       }
-      for(const p of c.pieces)for(const b of getWorldBoxes(p,this.doorFraction(p))){
+      for(const p of c.pieces)for(const b of getWorldBoxes(p,this.doorFraction(p,c))){
         const box=new THREE.Box3(v(b.min),v(b.max));
         if(offsets){
           box.min.sub(offsets.max);box.max.sub(offsets.min);

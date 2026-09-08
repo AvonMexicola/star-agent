@@ -1,3 +1,4 @@
+import {releaseInvalidBaseOffers,reconcileLocalBaseStock} from '../trading/base-stock.js';
 import {canonicalJSON} from './snapshot.js';
 import {restoreBuildAnchors} from './anchors.js';
 import {validBuild} from './state.js';
@@ -42,6 +43,7 @@ export class BaseCloud {
    if(sent&&JSON.stringify(this.store.container(id)?.items)!==JSON.stringify(sent.storage[id]?.items))continue;
    next.boxes[id]=value.boxes;next.remote[id]={name:value.name,kind:'base',items:value.items};
   }
+  next=releaseInvalidBaseOffers(next);
   this.applying=true;try{if(!this.store.validContainers(next)||!this.store.write(next))throw Error('Could not cache server bases locally. Reload to retry.');}finally{this.applying=false;}this.build.sync();
  }
  async sync(){if(!this.enabled||this.busy)return;if(this.store.blocked){this.status='Server save pending · reload to recover the local cache';return;}this.busy=true;
@@ -54,6 +56,10 @@ export class BaseCloud {
  }
  update(dt){this.elapsed+=dt;if(this.elapsed>=10){this.elapsed=0;void this.sync();}}
  async action(claimId,action,item){
+  if(action==='repair'){
+   const claim=this.build.claims.find(c=>c.id===claimId),id=claim&&coreId(claim),container=id&&this.store.container(id);
+   if(container){try{reconcileLocalBaseStock(this.store.withItems(this.store.state,id,{...container.items,'metal-stock':(container.items['metal-stock']??0)-5}));}catch(error){return {ok:false,message:error.message};}}
+  }
   await this.sync();if(this.busy||this.status.startsWith('Server save pending'))return {ok:false,message:this.status};this.busy=true;
   try{const sent=this.snapshot();this.profile=await this.request({action,claimId,item,amount:.1,revision:this.profile.revision});this.apply(this.profile,{sent,removed:action==='remove'?{claimId,pieceId:item}:null});return {ok:true,message:action==='fuel'?'Fuel loaded on server.':action==='remove'?'Piece removed on server. No material refund.':'Base repaired on server.'};}
   catch(error){return {ok:false,message:error.message};}finally{this.busy=false;}

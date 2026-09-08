@@ -8,7 +8,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   const fixed=staticNavigationTargets(destinations),lock=new NavigationLock();
   let selectedId=null,aimed=null,reason='',lastTargets=fixed,activeTarget=null,lastController=nav.gamepad.id;
   let lastConnected=nav.gamepad.connected;
-  let filters=Object.fromEntries(Object.keys(NAV_FILTERS).map(id=>[id,['bodies','stations','missions'].includes(id)]));
+  let filters=Object.fromEntries(Object.keys(NAV_FILTERS).map(id=>[id,['bodies','stations','missions','bases','trade'].includes(id)]));
   try{const saved=JSON.parse(localStorage.getItem('star-agent-nav-filters'));for(const key of Object.keys(filters))if(typeof saved?.[key]==='boolean')filters[key]=saved[key];}catch{}
   document.body.classList.add('navigation-beacons');
   const markers=document.createElement('div');markers.id='navigation-markers';markers.setAttribute('aria-label','Navigation beacons');parent.append(markers);
@@ -21,7 +21,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     const values=[...fixed,...(nav.tradeBeacons?.()??[])];
     if(station.ready)values.push({id:'station-aeon',name:'Aeon Orbital',kind:'Space station',category:'stations',parent:'aeon',body:'aeon',center:(station.centre??station.worldPosition).toArray(),radius:2000});
     if(nav.shipPosition&&['walk','eva'].includes(nav.mode))values.push({id:'your-ship',name:'Your ship',kind:'Recovery beacon',category:'ships',parent:nav.body.id,center:nav.shipPosition.toArray(),radius:0});
-    for(const claim of build.claims??[])values.push({id:`base-${claim.id}`,name:claim.name||'Your base',kind:'Surface base',category:'bases',parent:claim.body,body:claim.body,surface:true,center:[...claim.origin],radius:0});
+    for(const claim of build.claims??[])if(!values.some(t=>t.localClaimId===claim.id))values.push({id:`base-${claim.id}`,name:claim.name||'Your base',kind:'Surface base',category:'bases',parent:claim.body,body:claim.body,surface:true,center:[...claim.origin],radius:0});
     for(const peer of multiplayer.state.players??[])if(peer.id!==multiplayer.state.ownId){
       values.push({id:`pilot-${peer.id}`,name:peer.callsign||peer.name||'Shared pilot',kind:'Comms contact',category:'friends',parent:peer.body??'aeon',center:[...peer.position],radius:0});
       if(peer.mode==='flight'||peer.shipPosition)values.push({id:`ship-${peer.id}`,name:`${peer.callsign||peer.name||'Pilot'} · ship`,kind:'Shared ship',category:'ships',parent:peer.body??'aeon',center:[...(peer.shipPosition??peer.position)],radius:0});

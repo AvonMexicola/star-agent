@@ -1,0 +1,26 @@
+{
+  "id": "SA-SETTLE-002",
+  "title": "Settlement local supplies and role-based demand",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex settlement economy",
+  "status": "integrated",
+  "branch": "feat/settlement-stock-needs",
+  "base": "d08f1810edb1c6bd1d1aeb0cc54cd6406d7ec30c",
+  "updated": "2026-09-08",
+  "areas": [
+    "industry",
+    "interface"
+  ],
+  "claims": [
+    "src/settlements/catalog.js",
+    "src/settlements/economy.js",
+    "src/trading/market.js",
+    "src/trading/system.js",
+    "src/trading/ui.js",
+    "tests/settlement-economy.test.js",
+    "scripts/settlement-economy.spec.js",
+    "scripts/settlement-economy.config.js"
+  ],
+  "brief": "docs/briefs/settlement-stock-needs.md"
+}

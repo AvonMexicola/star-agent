@@ -5,6 +5,43 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
+**Foundation-first building** is available in the same local preview. Place a
+foundation and build before fitting a mainframe; it can sit on the finished deck.
+Doors remain open while the site has no mainframe. Square, triangle and curved
+concrete foundations extend down to dry terrain up to **8 m**. Use D-pad or
+keyboard Up/Down for quarter-metre height steps, and **Shapes → Cliff foundation ·
+45° braces** for a supported cliff deck. Rotate its feet toward the hillside;
+both must reach actual terrain. See [controls and limits](base-building.md).
+
+Runtime `4396029` was combined with settlement/combat development and locally
+integrated at `8b5ecd4` on 2026-09-08. The existing 5178/8087 client/API service was
+gracefully refreshed, preserving its persistent database and unrelated handoff
+edits; both health routes and the exact new asset hash passed. Full 149-file unit
+suite, multiplayer/persistence checks, production build and two actual-game
+controller/keyboard/touch browser cases pass. [Screens and detailed evidence](qa/terrain-foundations/README.md)
+retain failed attempts and physical-device/independent-review limits.
+Construction remains solo/account-backed solo; no public deployment is included.
+
+Four solo **trade settlements** use the existing construction kit: Greenbank
+Supply on Aeon, Stillwater Exchange on Selene, Ember Works on Pyre and Verdigris
+Prospect on Miasma. Find them in **Map → a world → Locations** or the **Trade
+settlements** signal filter. Each has a large pad and a walk-in exchange with
+independent finite stock and real ship cargo trading. F2 / Dev → Ship & location
+offers an approach above each pad. See the [player route](trade-settlements.md)
+and [construction and validation record](qa/trade-settlements/README.md).
+Settlement economy `d50bc56` is locally integrated at `dc578d8`. Each exchange
+now has explicit **local supplies and logical needs**. Its Local
+stock tab explains reserve targets and resource uses; deliveries consume cargo,
+pay credits and reduce the remaining need. Full reserves refuse excess crates.
+Map selections list current exports and shortages. Existing saved quantities
+are preserved. See [settlement delivery guide](settlement-economy.md) and
+[controller/keyboard/phone validation](qa/settlement-stock-needs/README.md).
+These authored exchanges are solo content; online player-base shops retain their
+separate authoritative implementation. Settlement runtime `03a561e` is locally
+integrated at `32966e3`; its 1,127-case unit suite and complete controller
+landing/trading/reboarding journey pass. Independent art and physical-device
+acceptance remain separate from this development checkpoint.
+
 The passenger elevator repair keeps its hangar vestibule at human scale, exposing
 the same pressure-door kit used in the lobby and a clear call-panel approach.
 F / controller X / the touch Interact button calls the elevator; walk inside to
@@ -30,7 +67,7 @@ The preceding fleet integration at **`c99736f`**, with runtime **`5f63893`**, ad
 the playable 64 m Atlas, enlarged default
 station and community hub, ground Burrow and Atlas/Burrow meadow starts, fleet
 particles/audio/music, roofs/lights/base power, animated shopkeepers and current
-weapon/tool art. The client and API run **protocol 5** together. The paired local
+weapon/tool art. That checkpoint paired client and API at **protocol 5**. The paired local
 refresh preserved the persistent PostgreSQL cluster and every existing table's
 row count, applying only the missing additive base-site migration 003.
 
@@ -72,11 +109,34 @@ Normal solo saves keep cargo with mining inventory; development test starts rese
 on reload. Online cargo, stock, credits and common-outcrop yields persist through
 additive PostgreSQL migration002. Joining supplies the server-owned ledger; local
 saves are not imported. The original cargo checkpoint used protocol 3; the
-current candidate uses protocol 5 and requires a matching client/API pair.
+current local candidate uses protocol 6 and requires a matching client/API pair.
 Player shop sales continue when the seller disconnects. The physical tractor now
 moves 1–64 SBU crates with swept collision, range and lease checks; the former
 instant large-crate transfer is retired. Persistent offline wrecks remain open.
 See the [player guide](sbu-cargo.md) and [actual QA record](qa/sbu-cargo.md).
+
+## Constructed base trade terminals
+
+The base-commerce checkpoint (integrated at `2607fe7`, runtime `4b36b50`, with latest elevator repair preserved)
+adds **My shop** to the Storage & trade terminal. Link a base with a designated
+landing pad, choose a real local container and commodity, offer only the selected
+quantity, set its price and enable the public beacon. New deposits stay private.
+The map shows stocked goods, prices and landing pads; new saves enable Bases by
+default. Existing saved map filters remain yours to change.
+
+For shared trading, join Comms and track your private unregistered base-plan
+marker. Walk to the planned terminal location, then **Menu → Trade → Build →
+Register shared** (500 CR). Registration validates a fixed layout and creates
+empty server storage. Deposit actual docked ship cargo, then list the quantity in
+**My shop**. Visitors can buy while you are offline; credits and cargo save in one
+transaction. Shared sites are self-powered, at most 64 pieces, with doors open;
+full multiplayer construction editing/upkeep and solo inventory import are outside
+this checkpoint. Online hull support remains Nomad/Atlas.
+
+This update requires matching **protocol 6** client/API. It changes no SQL schema.
+The two controller browser journeys pass, including map discovery, physical base
+access, partial offers, a seller-offline purchase, cargo and takeoff. Physical
+controller hardware is untested. See the [delivery evidence](qa/base-commerce.md).
 
 ## Run and use
 
@@ -303,18 +363,25 @@ after integration.
 
 ## Space patrol combat
 
-The local integration includes the offline patrol loop from `feat/space-combat`.
-Choose **Nomad 02** or **Kestrel**, start in **Orbit**, then open **Patrol console**
-(on-screen button or controller Menu) and accept. Fly to the amber beacon, brake,
-and fight the Nomad/Kestrel pair. T / RT fires; 1–3 / Menu selects weapons;
-Tab / Menu selects the next hostile. The physical hangar cargo terminal also opens
-the console. File the combat report after both kills, or recover after ship loss.
+The local build offers **15 regional enemy ship sorties**: Easy, Standard and
+Hard contracts around Aeon, Selene, Pyre, Miasma and Selene's asteroid belt. Fly an
+armed Nomad, Kestrel or Atlas to the region and open **Menu → Contracts** (or the
+Patrol console button / station security terminal). Choose a tier, read the
+advertised flight and accept. Follow the nearby amber beacon; surface dispatch
+requires climbing into orbit. Acceptance never teleports the player.
 
-Shields regenerate after six seconds without a hit; docking repairs hull damage.
-Progress resets on reload. This first slice is offline and does not add persistent
-contracts or credit rewards. See [combat controls and scope](space-combat.md) and
-[verification evidence](qa/space-combat.md). The asset studios remain inspection
-surfaces. The offline playable fleet now carries the fitted Meridian gun kit.
+Easy has one weakened contact; Standard has two full-strength ships; Hard has
+five reinforced enemies in two waves, with a ten-second reinforcement warning.
+File the report after clearing every wave, or abandon / recover through the
+console. Controller: D-pad / A select, B resumes, sticks fly/aim, RT fires and
+right stick scrolls the report. Existing ship weapon/target commands remain in
+Menu → Ship; page through that menu to reach the weapons.
+
+This is an offline, session-only development checkpoint. Reports reset on reload;
+there are no currency/cargo rewards or multiplayer NPCs. Five complete regional
+controller journeys plus keyboard/native-phone UI pass; physical-controller and
+independent balance/visual acceptance remain pending. See [encounter guide](space-combat.md)
+and [exact QA, limits and original failures](qa/enemy-encounters.md).
 
 ## Default station and exterior overview
 

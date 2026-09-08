@@ -1,3 +1,4 @@
+import { SETTLEMENTS } from './settlements/catalog.js';
 /** Explicit local test starts. Normal/public entry ignores these parameters. */
 export const ATLAS_MEADOW_SEED = 7291;
 export const DEV_SHIPS = Object.freeze([
@@ -8,6 +9,7 @@ export const DEV_SHIPS = Object.freeze([
   {id:'atlas',name:'Atlas',detail:'64 m freighter · loading ramps & crew lift'},
 ]);
 export const DEV_LOCATIONS = Object.freeze([
+  ...SETTLEMENTS.map(s=>({id:s.id,name:`${s.name} · ${s.body}`,detail:`65 m above trade pad · ${s.role}`})),
   {id:'hangar',name:'Station hangar',detail:'Parked · boarding, cabins and departure'},
   {id:'rover-surface',name:'Burrow mining — Selene surface',detail:'Seated in the ground rover · nearby outcrop · ready to drive and mine'},
   {id:'atlas-meadow',name:'Aeon · Atlas + Burrow meadow',detail:'Landed Atlas · rover parked beside it · load up and fly',ship:'atlas',seed:ATLAS_MEADOW_SEED},
