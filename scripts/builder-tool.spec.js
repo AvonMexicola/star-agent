@@ -6,7 +6,7 @@ const out=process.env.BUILDER_EVIDENCE;
 const frames=page=>page.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise(requestAnimationFrame);});
 const ready=page=>page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.controller.armed,null,{timeout:90000});
 const saved=page=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),SANDBOX_PREFIX+MINING_KEY);
-async function capture(page,name){await page.screenshot({path:`${out}/${name}.png`});await writeFile(`${out}/${name}.json`,JSON.stringify(await page.evaluate(()=>window.starAgent?.state??window.toolQA?.meta()),null,2));}
+async function capture(page,name){await page.screenshot({path:`${out}/${name}.png`});await writeFile(`${out}/${name}.json`,JSON.stringify(await page.evaluate(()=>window.starAgent?.state??window.toolQA?.meta()??window.avatarStudio?.state??null),null,2));}
 async function button(page,i,pressed){await page.evaluate(({i,pressed})=>window.testPad.buttons[i]={pressed,value:+pressed},{i,pressed});await frames(page);}
 async function tap(page,i){await button(page,i,true);await button(page,i,false);}
 async function choose(page,key){
@@ -60,8 +60,13 @@ test('native builder model and controller construction with finite materials and
   await page.waitForFunction(()=>!window.starAgent.state.mining.tool.builder.projection);
   await tap(page,0);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.build.pieceCount)).toBe(count+1);
   expect(await page.evaluate(()=>window.starAgent.state.mining.tool.builder.projection)).toBe(false);
-  await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await tap(page,13);await capture(page,'04-inventory');
-  await button(page,0,true);await tap(page,1);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+  await tap(page,8);await expect(page.locator('#cargo-dialog')).toBeVisible();await capture(page,'04-inventory');
+  // Resume is the dialog's initial controller focus. Holding A closes the
+  // inventory and must not carry that same press into construction.
+  await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);
+  expect(await page.evaluate(()=>document.activeElement?.dataset.controllerKey)).toBe('gameplay-resume');
+  await button(page,0,true);await expect(page.locator('#cargo-dialog')).not.toBeVisible();
+  expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
   await button(page,0,false);await ready(page);expect(await page.evaluate(()=>window.starAgent.state.build.pieceCount)).toBe(count+1);
   // The native focus transition, disconnection/replacement and mapping gates own held A.
   const blank=await page.context().newPage(),game=await page.context().newCDPSession(page),other=await page.context().newCDPSession(blank);
@@ -80,7 +85,9 @@ test('native builder model and controller construction with finite materials and
   expect(await page.evaluate(()=>window.starAgent.state.build.pieceCount)).toBe(count+1);
   // Existing bumper chord switches to third person without leaving construction.
   await button(page,4,true);await button(page,5,true);await tap(page,15);await button(page,5,false);await button(page,4,false);await ready(page);
-  await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='character-hand');await capture(page,'05-third-person');
+  await page.waitForFunction(()=>window.starAgent.state.mining.tool.attachment==='character-hand');
+  await page.waitForFunction(()=>window.starAgent.navigation.jumpHeight<.001&&window.starAgent.state.character.state!=='jump');
+  await capture(page,'05-third-person');
   await tap(page,2);await page.waitForFunction(item=>!window.starAgent.state.build.active&&window.starAgent.state.mining.tool.item===item,initialItem);
   expect(await page.evaluate(()=>window.starAgent.state.mining.tool.builder.visible)).toBe(false);
   await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),...diagnostics,graphics:await graphics(page),input:'Injected standard Gamepad from authored supplied sandbox, menu entry, real placement/materials, result inventory, focus/device gates and exit. No pose or action injection; physical device untested.'},null,2));

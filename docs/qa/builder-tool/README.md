@@ -1,9 +1,10 @@
 # Handheld builder production record
 
 2026-09-08, Europe/Amsterdam. [Brief](../../briefs/handheld-builder.md).
-Author implementation in progress, based on local `5f8f018`. No independent,
-hardware or performance acceptance is claimed. Runtime and verification evidence
-will be recorded before local delivery.
+Author implementation and browser04 validation complete on the pre-phone-adjustment
+checkpoint from `5f8f018`. A narrow portrait mount refinement awaits the final
+combined handheld run. Independent, physical-device and performance acceptance
+remain pending. Local integration is not yet claimed.
 
 The new model uses the existing original handheld atlas and Blender geometry,
 UV and contact-AO helpers. Other held assets are not rebuilt. Editable source:
@@ -36,5 +37,30 @@ viewer version (`/tmp/builder-production01.log`); the final viewer build is
 `/tmp/builder-production02.log`. Repository check passes; the suggested check plan
 is `/tmp/builder-check-plan01.log` and is not a test result.
 
-Browser evidence, local integration and independent acceptance remain pending.
+## Browser04 receipt
+
+Both complete tests passed in 3.9 minutes on Chromium 151.0.7922.173 / ANGLE
+OpenGL ES 3.2 / AMD Radeon 860M, 1440×900 and native-touch 390×844. No application
+errors, warnings or failed requests. Real controller menu entry, 8 metal / 3
+conductor / 2 glass debit, actual floodlight placement, occupied-space refusal,
+result inventory, held-A modal/focus/device gates, camera change and equipment
+restoration pass. Keyboard and native CDP touch placement/exit also pass. No pose
+or action callback was injected; physical-device testing is not claimed.
+
+Retained failures: qa01 lost its own stdout when Playwright removed the output
+root; the evidence and runner output directories are now separate, and both
+servers have explicit cwd. qa02's held A selected the Comms tab and correctly
+suspended UI input; the test now holds A on the real Resume control. qa03 passed
+the complete controller path but its recorder omitted the avatarStudio state
+fallback. That recorder correction is present in the passing qa04.
+
+Author image review verified native finish, actual in-game projection and grip.
+The phone controls work, but the original desktop mount falls outside the narrow
+frustum; a portrait-only builder mount adjustment is pending the next browser
+receipt. The third-person screenshot caught a transient jump from the shared
+bumper camera chord; the final capture will wait for the physical landing.
 The same native model is registered in the existing avatar studio for grip review.
+
+Raw receipts: ignored `assets/builder-tool/.staging/qa-01` through `qa-04`, including
+logs, source hashes, game states and videos. Curated native and real-game images
+here retain distinct labels. Independent art/hardware review and FPS remain pending.
