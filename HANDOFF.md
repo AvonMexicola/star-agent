@@ -3917,3 +3917,15 @@ Implemented in isolated art/burrow-concept-upgrade from76aa45e: fitted LCARS-sty
 Validation: normal148testfilesPASS,7new actual-asset/telemetry casesPASS, productionbuild6.51s/repoPASS, same-camera native cockpit before/after with zero diagnostics, complete Gannet controller entry→unload→realore→inventory→reverse reload→carriedflight/landingPASS including nativefocus/device/dialog gates. Keyboard/native390touch ground routes2/2PASS2.4m. Original logs/videos/hashes and failed clearance iterations remain in /tmp/burrow-concept-*. Initial pixel probes caused a Canvas2D readback warning; fixture now reads a CPU copy. Author review found old desktop HUD covered ore MFD; bounded src/rover.css moves occupied desktop actions to upper left, final union check pending.
 
 Integration: no sharedsource/services/SQL/public changes from this lane yet. Foundation owns current shared integration slot; Burrow follows its release with an isolated combined candidate and expected-head guard. Own preview5630/private memoryAPI8630 and native5631 are stopped after each guarded test. Independent functional/rubric, actual hardware and performance acceptance remain pending. See docs/qa/burrow-concept/production-record.md and docs/local-development.md; do not reuse historical Burrow scores as new asset approval.
+
+
+SA-BUILD-002 LOCAL DELIVERY 2026-09-08: runtime4396029 integrated with checked
+settlement/combat development at8b5ecd4. The union passes149unitfiles, build and
+repository checks; foundation runtime is unchanged from the two-case actual-game
+browser pass. Shared5178/API8087 gracefully refreshed through the existing service,
+all six HTTP checks200, exact120720B GLB hash verified. Exact56247B unrelated
+HANDOFF suffix preserved; backup/receipt /tmp/star-agent-foundation-integration.
+Task/brief/local guide/QA now record integrated status. No schema/account mutation,
+other preview operation or public deployment. Controller injections, keyboard and
+native touch tested; physical-device and independent art acceptance remain pending.
+Private5642/API8642 and GPU released; floodlight/rover may consume checked hooks.
