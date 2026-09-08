@@ -1,0 +1,39 @@
+{
+  "before": "b34bc6962c4445c902d47028627500da0e38ec6e",
+  "after": "8566a4376098131d5bb2ef3a22e03aa37176a550",
+  "suffixBytes": 56247,
+  "suffixSHA256": "3bf320f09e28c4d384e811998fc68a7724ab0093d01fc486c0454eb91e7f9abe",
+  "assetSHA256": "3f2d93fc8eb0f236e2cc590cf327cda09e84711a13aceba73fb62560a797240b",
+  "serviceRestart": true,
+  "publicDeployment": false,
+  "backup": "/tmp/star-agent-floodlights-integration/20260908T172400Z",
+  "service": "star-agent-persistent-preview.service",
+  "http": {
+    "http://127.0.0.1:8087/api/health": {
+      "status": 200,
+      "bytes": 11,
+      "sha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93"
+    },
+    "http://127.0.0.1:5178/api/health": {
+      "status": 200,
+      "bytes": 11,
+      "sha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93"
+    },
+    "http://127.0.0.1:5178/src/build/floodlights.js": {
+      "status": 200,
+      "bytes": 20755,
+      "sha256": "8981df2395f32308aca27805fb170c4b6c725d042256163f039af0905d844673"
+    },
+    "http://127.0.0.1:5178/src/build/floodlight-definition.js": {
+      "status": 200,
+      "bytes": 4383,
+      "sha256": "999b7c8f62838582bb3a3331bdb758883ad6c97b48cbab512ed4135fa7736be3"
+    },
+    "http://127.0.0.1:5178/models/base/floodlight.glb": {
+      "status": 200,
+      "bytes": 837064,
+      "sha256": "3f2d93fc8eb0f236e2cc590cf327cda09e84711a13aceba73fb62560a797240b"
+    }
+  },
+  "verifiedAt": "2026-09-08T17:24:02.304802+00:00"
+}
