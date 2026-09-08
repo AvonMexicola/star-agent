@@ -162,7 +162,10 @@ test('Burrow panels follow actual mining and driving through physical cabin acce
     expect(errors).toEqual([]); expect(requests).toEqual([]);
     if (phone) {
       const touches = await page.evaluate(() => burrowTouches);
-      expect(touches.length).toBeGreaterThan(12); expect(touches.every(e => e.trusted)).toBe(true);
+      const native = touches.filter(e => e.type !== 'click');
+      // SecondaryTouchButtons deliberately invokes existing click handlers for
+      // a second finger; its semantic click is synthetic, its contacts are native.
+      expect(native.length).toBeGreaterThan(12); expect(native.every(e => e.trusted)).toBe(true);
     }
     complete = true;
   } catch (error) { failed = error.message; throw error; }
