@@ -1,6 +1,6 @@
 # SA-TRANSPORT-001 — handoff at 2026-09-08
 
-Status: implemented and developer-validated; ready for local integration. Owner: Cees /
+Status: locally integrated at `f294a98` and developer-validated. Owner: Cees /
 @AvonMexicola; Codex mission designer. Branch `feat/transport-missions`, isolated
 `.worktrees/transport-missions`, initial base `d08f181`, runtime `623d80e`, browser
 fixture `1df4438`. Checked projected-terminal `23ca619` and identical-tree development
@@ -34,15 +34,18 @@ No physical-device, rendered full online flight, independent review or deploymen
 
 ## Integration and operations
 
-Ready to fast-forward local `dev/all-features` from checked `524b729`, preserving its
-append-only unrelated HANDOFF. Protocol7 requires the paired5178/8087 client/API
-refresh; retain the persistent local PostgreSQL data and existing account inventory.
+Local `dev/all-features` fast-forwarded from checked `524b729` to `f294a98`; exact
+56,247byte unrelated HANDOFF suffix preserved and all19 runtime files verified.
+Only the persistent-preview service was gracefully restarted at20:18:10UTC with
+protocol7; the same PostgreSQL cluster/port and existing account inventory remain.
+Both5178/8087 health routes and HTTP protocol/catalog/Contracts source checks pass.
 Do not deploy or merge a protected production PR as a side effect.
 
 ## Resume here
 
-Complete guarded local integration and paired preview health/source verification,
-then update this status and open a bounded review PR. Cees retains release authority.
+Review the bounded development PR and independently playtest the private freight
+route. No transport GPU or source slot remains reserved; private5662 is stopped.
+The existing paired5178/8087 local preview remains running. Cees retains release authority.
 
 # Star Agent — agent handoff (Claude ⇄ Astra)
 
