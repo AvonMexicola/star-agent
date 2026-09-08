@@ -4,7 +4,7 @@
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex mission designer",
-  "status": "active",
+  "status": "review",
   "branch": "feat/transport-missions",
   "base": "d08f1810edb1c6bd1d1aeb0cc54cd6406d7ec30c",
   "updated": "2026-09-08",

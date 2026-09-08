@@ -1,6 +1,6 @@
 # SA-TRANSPORT-001 — Interplanetary sealed cargo contracts
 
-Status: in progress. Sponsor: Cees / @AvonMexicola. Implementer: Codex mission designer.
+Status: implemented and developer-validated; local integration next. Sponsor: Cees / @AvonMexicola. Implementer: Codex mission designer.
 Branch `feat/transport-missions`, base `d08f181`; isolated `.worktrees/transport-missions`.
 Owned preview5662 / private test API8662. No new dependencies or assets.
 

@@ -1,7 +1,8 @@
 # SA-TRANSPORT-001 — Verification record
 
-Status: implementation checkpoint. Full browser journey, local integration and
-independent acceptance are pending. No deployment or physical controller claim.
+Status: implemented and developer-validated. Full controller and keyboard/native
+touch journeys pass. Local integration is next; independent acceptance, public
+deployment and physical controller testing remain pending.
 Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`.
 
 ## Checks already performed
@@ -35,6 +36,9 @@ Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`
   panel's readable dark palette. The production development build passes 4.77s
   at browser-fixture checkpoint `311f866`; its ignored `.env.local` sets
   `VITE_DEV_TOOLS=1`. Repository and whitespace checks pass.
+- Final combined normal suite at runtime `623d80e`: all 155 test files pass,
+  zero skips, 142.69s with file concurrency one. The Node runner reports files
+  here, not 155 individual assertions. `/tmp/transport-final-union-unit02.log`.
 - Repository checks and whitespace checks pass on the implementation checkpoint.
 
 ## Original failures and corrections
@@ -61,7 +65,8 @@ Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`
   recorder reported EDQUOT, and its trace contains no network events. `/tmp` had
   a user quota despite filesystem free space. Another owner's guard also allowed
   an overlapping browser under memory pressure. The original PNG/state remain
-  in `/tmp/star-agent-transport-attempt01`; no gameplay pass is claimed.
+  in `test-results/transport-attempt01` (moved intact from `/tmp` after its
+  quota later prevented sandbox startup); no gameplay pass is claimed.
 - Browser02 moved profiles/evidence onto the project disk, but the deeply nested
   temporary path exceeded Chromium's Unix socket limit. Chromium1531804 aborted
   before a page existed, with an explicit `process_singleton_posix.cc:313`
@@ -76,8 +81,41 @@ Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`
   the actual crate through its clear centre before securing. No collision rule
   was weakened. Browser02/03 originals are in the ignored worktree
   `test-results/transport-attempt02` and `transport-attempt03` directories.
+- Browser04 passed actual acceptance, landing, ordering, tractor loading,
+  securing, reboarding, launch and the 20km atmospheric climb. It then timed out
+  at 51.7% of the continuous 22.9Gm drive, with the original sealed crate still
+  aboard: the fixture allowed 45s for a flight whose plan required about 89s.
+  Test-only `6492976` now derives its bounded wait from the actual drive ETA.
+  Original state, screenshot, video and trace are retained in
+  `test-results/transport-attempt04`; no full-journey pass is attributed to it.
 
-## Scope and pending evidence
+## Final browser acceptance — 2026-09-08
+
+`npm run test:browser -- -c scripts/transport-missions.config.js` passes both
+cases in 14.1 minutes, one worker, no retries. Attempt05 ran19:28:11–19:42:21UTC
+on fixture `1df4438`, runtime `623d80e`; launch/end hashes report no source changes.
+Chromium151.0.7922.173, ANGLE/GL, AMD Radeon860M/radeonsi,1440×900 and390×844.
+Both receipts contain zero application errors and warnings.
+
+- Complete standard-Gamepad journey passes in12.0min: accept with no crate, actual
+  landing/walking to Greenbank, order one sealed crate, tractor it through Nomad’s
+  ramp, secure, reboard, climb20km, fly22.9Gm continuously, descend/land at Pyre,
+  walk to Ember Works, deposit, inspect2300CR from1500CR and empty cargo, then
+  reboard and launch. All901 drive samples retain the original `sbu-2` crate.
+- Held RT remains suppressed across dialog closure, actual native focus loss,
+  disconnect, replacement and unsupported mapping until released.
+- Keyboard contract entry and native390touch terminal case passes in1.9min:
+  physical landing/walking precedes touch ordering and abandonment; one crate
+  appears, is recalled, and credits remain unchanged. Native swipes expose the
+  real action before tapping; keyboard closes the dialog and returns to play.
+
+Original images were inspected without alteration: [acceptance](accepted-before-pickup.png),
+[physical loading](crate-at-grid.png), [destination](destination-terminal.png),
+[payment and empty hold](phone-completion.png), [native order action](touch-ready-transport-order.png).
+Full logs, state, original screenshots,901 flight samples and videos remain in
+the ignored worktree `test-results/transport-attempt05`; no raw reports are committed.
+
+## Scope and remaining limits
 
 Twelve personal one-crate routes across the four authored worlds. Existing SBU
 crate/ship/tool assets are reused. Ordering spawns only at pickup, only for the
@@ -89,4 +127,8 @@ It starts at the supported65m Aeon approach, accepts, lands, orders, walks and
 physically loads the crate, crosses the atmosphere and interplanetary space,
 lands at Pyre, deposits, inspects payment and returns. It writes only Gamepad
 input after setup; navigation reads are steering feedback. Browser result and
-1440×900 /390×844 original evidence remain pending, as do native touch checks.
+1440×900 /390×844 original evidence pass as recorded above. This validates one
+complete solo Nomad Aeon→Pyre route, plus model coverage of all routes and four
+canonical sites. It does not establish a rendered two-client online flight,
+physical-device testing, all-hull/all-route gameplay, independent review or FPS
+acceptance. Actual-room/two-account and PostgreSQL authority evidence is separate.
