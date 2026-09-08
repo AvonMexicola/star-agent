@@ -1,0 +1,17 @@
+{
+  "time": "2026-09-08T14:23:19.919398+00:00",
+  "integrated": "dc578d8",
+  "preview": "http://127.0.0.1:5178",
+  "economyHTTP": 200,
+  "terminalHTTP": 200,
+  "proxiedHealthHTTP": 200,
+  "runtimeMatchesBrowserCommit": "1f8a20a",
+  "sha256": {
+    "src/settlements/catalog.js": "6f4772c49c21d880edac6d8ab77459ae9e767accc90b9b4877a44db351a9c3cf",
+    "src/settlements/economy.js": "d6ffbf79900cf08102c0faf4661b10cd327cf82454207536b4f24646d26ff1e4",
+    "src/trading/market.js": "224e9823e1d3f241368820ffe0db37e718430a1f822065f95c5ad792fdc361d5",
+    "src/trading/system.js": "f9a88817e42c1b46a43872c52b62651c2664c8e5cc4f2636a92b1815a913a7c6",
+    "src/trading/ui.js": "375a3b0921dbd8eb8d72ea3ea11349aafbd99fe22e3c6c646489865996c67825"
+  },
+  "serverRestart": false
+}
