@@ -1,0 +1,17 @@
+/* All screen overlays belong to the selected HUD mode. Native dialogs, loading,
+   transitions and recovery screens are interaction flows, so remain available.
+   New body-level HUD panels automatically obey this same rule. */
+body:is([data-hud-mode="markers"],[data-hud-mode="none"]) > :not(
+  canvas, dialog, #loading, #transit, #stellar-loss, #crash-panel,
+  #hud, #navigation-markers, #navigation-lock, #ship-marker, #combat-markers
+) { display:none!important; }
+
+body[data-hud-mode="markers"] #hud > :not(#reticle),
+body[data-hud-mode="markers"] #navigation-lock > div,
+body[data-hud-mode="none"] > :is(#hud, #navigation-markers, #navigation-lock, #ship-marker, #combat-markers),
+body:is([data-hud-mode="markers"],[data-hud-mode="none"])::after {
+  display:none!important;
+}
+
+#graphics-settings #hud-display-button{min-height:48px;padding:12px 20px;margin:10px 10px 0 0}
+#hud-display-note{font-size:11px;line-height:1.5;color:var(--muted)}
