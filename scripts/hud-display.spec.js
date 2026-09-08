@@ -11,7 +11,7 @@ async function start(page,{controller=false}={}){
   });
   await page.goto('/?dev=1&debug=1&ship=nomad&start=orbit&intro=0&seed=7291');
   await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled,undefined,{timeout:90000});
-  await expect(page.locator('#loading')).toHaveClass(/hidden/);await frames(page);
+  await expect(page.locator('#loading')).toHaveClass(/hidden/);await expect(page.locator('#loading')).toHaveCSS('opacity','0');await frames(page);
   await mkdir(output,{recursive:true});
   return async name=>{
     const renderer=await page.evaluate(()=>{const gl=document.querySelector('canvas').getContext('webgl2'),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);});
