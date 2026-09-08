@@ -146,3 +146,6 @@ Remaining art work includes finer material/lighting polish toward the concept an
 seated hand/body posing. The cabin is geometrically enclosed; emissive coves do not
 constitute simulated life support or a new local lighting system. Broader terrain,
 hardware controls, performance and multiplayer rover authority remain separate.
+
+
+Final combined candidate dd31cd6 passes151normal test files and productionbuild4.54s. The first final UI run passes keyboard, including the relocated HUD, but its phone test tried to press the paged-inventory next button while the dialog was still moving. The native centre-hit assertion stopped before sending that contact. The fixture now waits for three stable, hittable animation frames; no application action or collision check was relaxed. Original failure/video: /tmp/burrow-concept-union-panels12e/. Final phone rerun is pending.

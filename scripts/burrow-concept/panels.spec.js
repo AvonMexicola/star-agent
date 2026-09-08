@@ -15,7 +15,21 @@ async function inputs(page, phone) {
   const held = new Map(); let serial = 1;
   async function center(selector) {
     const el = page.locator(selector); await expect(el).toBeVisible(); await expect(el).toBeEnabled();
-    const b = await el.boundingBox(), viewport = page.viewportSize();
+    // A newly opened cargo dialog animates and lays out its paged containers.
+    // Observe a stable, actually hittable centre before sending native contact.
+    const b = await el.evaluate(async el => {
+      let previous = null, stable = 0;
+      const deadline = performance.now() + 5000;
+      while (performance.now() < deadline) {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        const r = el.getBoundingClientRect(), b = {x: r.x, y: r.y, width: r.width, height: r.height};
+        const same = previous && Object.keys(b).every(k => Math.abs(b[k] - previous[k]) < .1);
+        const hit = el.contains(document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2));
+        stable = same && hit ? stable + 1 : 0; previous = b;
+        if (stable >= 3) return b;
+      }
+      throw Error('Native touch control never settled at a hittable centre: ' + el.outerHTML.slice(0, 180));
+    }), viewport = page.viewportSize();
     expect(b.x).toBeGreaterThanOrEqual(0); expect(b.y).toBeGreaterThanOrEqual(0);
     expect(b.x + b.width).toBeLessThanOrEqual(viewport.width + .5);
     expect(b.y + b.height).toBeLessThanOrEqual(viewport.height + .5);
