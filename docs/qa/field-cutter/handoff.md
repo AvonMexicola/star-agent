@@ -70,7 +70,9 @@ Public deployment and protected branch merging remain separate.
 
 ## Resume here
 
-Open the draft PR for Cees's gate after recording final integration metadata.
+Draft [PR #102](https://github.com/AvonMexicola/star-agent/pull/102) is open for
+Cees's gate, stacked on checked Garage PR #100. Final local records at `e6c5e8b`
+include that dependency's served receipt; handheld runtime is unchanged.
 No further handheld browser job is queued. Continue the separately delegated
 Sentry review/integration when ready; that unfinished variant is not part of
 this handheld delivery.
