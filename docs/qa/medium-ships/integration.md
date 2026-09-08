@@ -253,3 +253,18 @@ interruption gates, reverse loading, cabin return and loaded flight/gear/landing
 Source identity is stable and all page diagnostics are empty. Both medium
 ships now have a complete controller route; keyboard/native-touch and final
 independent art acceptance remain pending.
+
+The checked startup/cache successor is merged at `ee50990`, preserving medium
+hooks and the full143-file unit command. [The merge record](direct-entry-merge.md)
+reports1083/1083 normal tests and58 focused checks passing. Stratum Art03 is
+imported at `f1f1a8d`:51,346triangles/3,932,512bytes. On final Art03/Art11,59
+asset/runtime checks and nine lamp/19 room-path checks pass. Fresh build09 is
+`main-BQoDRjRm.js` (5.21 seconds).
+
+[Stratum Art03 native inspection](stratum-native-03.md) passes2/2 with50 original
+views and full visible gear/ramp/head motion, zero diagnostics. Independent
+scoring remains pending. [Gannet Art11 independent review](gannet-native-review-11.md)
+still fails at mean3.90/silhouette4.1; its framing and nominal motion evidence
+are now closed, while primary hull transitions, cabin finish and contact need
+more work. Art12 is being authored in isolation. No acceptance criterion is
+reduced and earlier failures remain retained.

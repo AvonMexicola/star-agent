@@ -7,7 +7,7 @@ Art11 is a frozen development candidate awaiting native capture and independent 
 The source delta is based on Gannet commit `a58faba00c10d67ef467b6f4493ce8a0b03772c0`. The nine-file archive and exact base/final hashes remain in the local evidence archive `/tmp/star-agent-gannet-art11-delta.*`; this document is delivered separately.
 
 - GLB SHA256: `51f5578cc89f863453f937c7af5afb6bcee71fe4c4ef6a1e40105bd271bdaef1`.
-- **2,439,212 bytes; 45,394 triangles; 33 primitives; four embedded 1024 WebP maps.** Limits remain 4,000,000 bytes, 60,000 triangles and 1024 texture edge.
+- **2,439,212 bytes; 45,394 triangles; 33 primitives; three embedded 1024² WebP maps and one 512² WebP emblem.** Limits remain 4,000,000 bytes, 60,000 triangles and 1024 texture edge.
 - Editable blend: `5568605d44eb020bce991d1bf0362a1bf5bce3f22bd52a2f78aab6a8d79ce96c`; builder: `3510586a53bd02c49622284274a70c36fffec703337209599ed16746ea47b678`.
 - Canonical layout remains `9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5`. Original PBR generator/maps and Art10's corrected atlas routing are unchanged.
 
