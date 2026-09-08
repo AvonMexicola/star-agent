@@ -7,6 +7,17 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {FLOODLIGHT} from '../src/build/floodlight-definition.js';
 import {createFloodlights, floodlightFixture, floodlightFade} from '../src/build/floodlights.js';
 import {setBuildOpacity, setBuildPowered, disposeBuildVisual} from '../src/build/visuals.js';
+import {powerDemand, powerStep, initialPower} from '../src/build/power.js';
+import {createSettlementLayouts} from '../src/settlements/layout.js';
+import {createSettlements} from '../src/settlements/system.js';
+import {getWorldBoxes} from '../src/build/collision.js';
+import {FREIGHTER_LAYOUT} from '../src/freighter-layout.js';
+import {GANNET_LAYOUT} from '../src/gannet-layout.js';
+import {STRATUM_LAYOUT} from '../src/stratum-layout.js';
+import {SHIP_LAYOUT} from '../src/boarding.js';
+import {MiningStore} from '../src/mining/store.js';
+import {prepareSandbox} from '../src/build/sandbox.js';
+import {validBuild} from '../src/build/state.js';
 
 const bytes = fs.readFileSync(new URL('../public/models/base/floodlight.glb', import.meta.url));
 const manifest = JSON.parse(fs.readFileSync(new URL('../assets/build-floodlight/manifest.json', import.meta.url)));
@@ -84,4 +95,41 @@ test('approach illumination fades smoothly and distant planets never consume lig
   const scene = new Scene(), rig = createFloodlights(scene), zero = new Vector3();
   rig.update([{id: 'distant', position: new Vector3(25000000000, 6, 0), target: zero}], zero, zero);
   assert.equal(rig.diagnostics.active, 0); assert.equal(rig.diagnostics.shadows, 0); rig.dispose();
+});
+test('600 W operating demand drains real stored energy; on/off persists through the ordinary save', () => {
+  const disk = new Map(), storage = {getItem: k => disk.get(k) ?? null, setItem: (k, v) => disk.set(k, v)};
+  const store = new MiningStore(storage); assert.equal(prepareSandbox(store).ok, true);
+  const build = structuredClone(store.state.build), claim = build.claims[0];
+  const light = {id: `build-piece-${build.nextId++}`, type: 'floodlight', position: [0, .3, 4], rotation: 0, doorOpen: false, lightOn: true};
+  claim.pieces.push(light); claim.power = initialPower(0);
+  assert.equal(validBuild(build), true); const on = powerDemand(claim);
+  const zero = {solar: () => 0, wind: () => 0};
+  const energyOn = powerStep(claim, 3600000, zero).charge;
+  light.lightOn = false; assert.ok(Math.abs(on - powerDemand(claim) - .6) < 1e-9);
+  assert.ok(Math.abs(powerStep(claim, 3600000, zero).charge - energyOn - .6) < 1e-9);
+  assert.equal(store.write({...store.state, build}), true);
+  const reload = new MiningStore(storage); assert.equal(reload.state.build.claims[0].pieces.at(-1).lightOn, false);
+  const invalid = structuredClone(build); invalid.claims[0].pieces.at(-1).lightOn = 'yes'; assert.equal(validBuild(invalid), false);
+});
+test('all settlement masts have slab support, clear each other and preserve every supported ship approach', () => {
+  const sites = createSettlementLayouts(), nav = {position: new Vector3(), orientation: new Quaternion(), mode: 'flight', insideShip: false};
+  const system = createSettlements({scene: new Scene(), nav, render: false});
+  try {
+    for (const s of sites) {
+      const lights = s.claim.pieces.filter(p => p.type === 'floodlight'); assert.equal(lights.length, 6);
+      for (const light of lights) {
+        assert.equal(light.position[1], s.pad.position[1]);
+        const shoe = getWorldBoxes(light)[0];
+        assert.ok(shoe.min[0] > -24 && shoe.max[0] < 24 && shoe.min[2] > -16 && shoe.max[2] < 56);
+        for (const old of s.claim.pieces.filter(p => p !== light)) for (const a of getWorldBoxes(light)) for (const b of getWorldBoxes(old)) {
+          assert.equal(a.min.every((n, i) => n < b.max[i] - .004 && a.max[i] > b.min[i] + .004), false, `${s.id}: mast intersects ${old.type}`);
+        }
+      }
+      const position = new Vector3(...s.pad.position).applyQuaternion(new Quaternion(...s.claim.quaternion)).add(new Vector3(...s.claim.origin));
+      for (const layout of [SHIP_LAYOUT, FREIGHTER_LAYOUT, GANNET_LAYOUT, STRATUM_LAYOUT]) {
+        nav.layout = layout; nav.position.copy(position); nav.orientation.fromArray(s.claim.quaternion);
+        assert.equal(system.landingSurface({position, orientation: nav.orientation})?.size, 'L', `${s.id}: ${layout.id || 'nomad'} clearance`);
+      }
+    }
+  } finally {system.dispose();}
 });

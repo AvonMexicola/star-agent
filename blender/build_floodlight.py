@@ -187,4 +187,12 @@ manifest = {
 }
 assert manifest['triangles'] < 10000 and len(data) < 1000000, manifest
 (SOURCE/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
+# Also preserve the single complete runtime-kit inventory when rebuilt alone.
+kit_path = ROOT/'public/models/base/manifest.json'
+if kit_path.exists():
+    kit = json.loads(kit_path.read_text())
+    kit['pieces']['floodlight'] = manifest
+    kit['aggregateBytes'] = sum(p['bytes'] for p in kit['pieces'].values())
+    kit['aggregateTriangles'] = sum(p['triangles'] for p in kit['pieces'].values())
+    kit_path.write_text(json.dumps(kit, indent=2)+'\n')
 print(json.dumps(manifest, indent=2))
