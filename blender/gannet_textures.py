@@ -1,6 +1,6 @@
 """Original deterministic Meridian Gannet PBR swatches, no external imagery.
-System Python/Pillow. Geometry defines seams and contact; this does not pretend
-to be a baked whole-ship ambient-occlusion map.
+System Python/Pillow. These maps contain material response only. Separate short-
+range static vertex AO is measured from actual geometry by build_gannet.py.
 """
 from pathlib import Path
 import hashlib, json, math
@@ -9,9 +9,9 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets/gannet/textures'
 PALETTE = [(216,224,214),(39,51,57),(133,150,153),(22,29,32),
-           (42,79,85),(190,139,62),(129,143,137),(167,184,180)]
-ROUGH = [.57,.76,.47,.91,.64,.72,.88,.66]
-METAL = [.03,.12,.86,.01,.18,.02,.02,.30]
+           (42,79,85),(190,139,62),(69,83,81),(151,164,158)]
+ROUGH = [.63,.82,.54,.91,.68,.72,.96,.82]
+METAL = [.03,.02,.86,.01,.12,.02,0,.02]
 
 def build():
     OUT.mkdir(parents=True, exist_ok=True)
@@ -38,7 +38,9 @@ def build():
     files={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(OUT.iterdir()) if p.suffix in ('.png','.webp')}
     (OUT/'provenance.json').write_text(json.dumps({'source':'Original deterministic procedural PBR swatches; reused approved Meridian emblem only',
         'builder':'blender/gannet_textures.py','layout':'4 columns × 2 rows from PNG top; deterministic face projection, Blender V inverted once, four-pixel margins',
-        'size':[edge,edge],'baseColorSpace':'sRGB','dataMaps':'linear ORM and tangent normal','ambientOcclusion':'white; not a whole-ship bake','files':files},indent=2)+'\n')
+        'size':[edge,edge],'baseColorSpace':'sRGB','dataMaps':'linear ORM and tangent normal',
+        'ambientOcclusion':'ORM red is white. Separate geometry-derived static vertex AO is authored by build_gannet.py; moving assemblies remain white.',
+        'files':files},indent=2)+'\n')
     print('Gannet source PBR maps generated.')
 
 if __name__=='__main__': build()

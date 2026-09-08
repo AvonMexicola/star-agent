@@ -1,4 +1,4 @@
-"""Original Meridian Gannet T-06. CPU geometry authoring, no renderer/bake.
+"""Original Meridian Gannet T-06. CPU geometry and local static cavity authoring.
 
 Canonical units: metres, Y up, nose -Z. Run gannet_textures.py first, this file
 inside Blender, then gannet_pack.py. Outputs stage before budgeted publication.
@@ -6,6 +6,7 @@ inside Blender, then gannet_pack.py. Outputs stage before budgeted publication.
 from pathlib import Path
 import bpy, json, math, sys, hashlib
 from mathutils import Vector, Matrix
+from mathutils.bvhtree import BVHTree
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'blender'))
 import fighter_geometry as g
@@ -26,7 +27,12 @@ def texture(name,linear=False):
     return t
 base=texture('basecolor');orm=texture('orm',True);normal=texture('normal',True)
 split=n.new('ShaderNodeSeparateColor');links.new(orm.outputs['Color'],split.inputs['Color'])
-links.new(base.outputs['Color'],p.inputs['Base Color']);links.new(split.outputs['Green'],p.inputs['Roughness']);links.new(split.outputs['Blue'],p.inputs['Metallic'])
+# The exporter recognizes base texture × authored vertex colour. Static cavity
+# AO is measured from local geometry below; moving assemblies get white only.
+attr=n.new('ShaderNodeVertexColor');attr.layer_name='Col'
+mix=n.new('ShaderNodeMix');mix.data_type='RGBA';mix.blend_type='MULTIPLY';mix.inputs['Factor'].default_value=1
+links.new(base.outputs['Color'],mix.inputs[6]);links.new(attr.outputs['Color'],mix.inputs[7]);links.new(mix.outputs[2],p.inputs['Base Color'])
+links.new(split.outputs['Green'],p.inputs['Roughness']);links.new(split.outputs['Blue'],p.inputs['Metallic'])
 nm=n.new('ShaderNodeNormalMap');nm.inputs['Strength'].default_value=.32
 links.new(normal.outputs['Color'],nm.inputs['Color']);links.new(nm.outputs['Normal'],p.inputs['Normal'])
 
@@ -64,14 +70,20 @@ def text(name,body,pos,size,parent=hull,mat=ink,rotation=(math.pi/2,0,0)):
     o=bpy.data.objects.new(name,c);bpy.context.collection.objects.link(o);o.location=g.xyz(pos);o.rotation_euler=rotation;c.materials.append(mat);g.parent(o,parent)
     bpy.ops.object.select_all(action='DESELECT');o.select_set(True);bpy.context.view_layer.objects.active=o;bpy.ops.object.convert(target='MESH')
     return remember(o,0,False)
-def loft(name,sections,tile=0,parent=hull,edge=.025):
+def loft(name,sections,tile=0,parent=hull,edge=.025,profile='octagon'):
     # Closed octagonal volumes, only used OUTSIDE the living and vehicle voids.
     pts=[]
     for z,x,w,low,high in sections:
         bevel=min(w*.25,(high-low)*.24)
-        pts.extend([(x-w+bevel,low,z),(x+w-bevel,low,z),(x+w,low+bevel,z),(x+w,high-bevel,z),(x+w-bevel,high,z),(x-w+bevel,high,z),(x-w,high-bevel,z),(x-w,low+bevel,z)])
-    faces=[tuple(range(7,-1,-1)),tuple(range((len(sections)-1)*8,len(sections)*8))]
-    faces += [(j*8+i,j*8+(i+1)%8,(j+1)*8+(i+1)%8,(j+1)*8+i) for j in range(len(sections)-1) for i in range(8)]
+        if profile=='cowl':
+            h=high-low
+            pts.extend([(x-w*.70,low,z),(x+w*.70,low,z),(x+w,low+h*.16,z),(x+w,low+h*.68,z),
+                (x+w*.75,low+h*.89,z),(x+w*.28,high,z),(x-w*.28,high,z),(x-w*.75,low+h*.89,z),
+                (x-w,low+h*.68,z),(x-w,low+h*.16,z)])
+        else:pts.extend([(x-w+bevel,low,z),(x+w-bevel,low,z),(x+w,low+bevel,z),(x+w,high-bevel,z),(x+w-bevel,high,z),(x-w+bevel,high,z),(x-w,high-bevel,z),(x-w,low+bevel,z)])
+    count=10 if profile=='cowl' else 8
+    faces=[tuple(range(count-1,-1,-1)),tuple(range((len(sections)-1)*count,len(sections)*count))]
+    faces += [(j*count+i,j*count+(i+1)%count,(j+1)*count+(i+1)%count,(j+1)*count+i) for j in range(len(sections)-1) for i in range(count)]
     return remember(g.mesh(name,pts,faces,surface,edge,parent),tile)
 
 # Low forward prow, pressure-cell skirts and continuous shoulder armor. The
@@ -93,6 +105,11 @@ for side in (-1,1):
     loft('Aft shoulder load guard',[(1.25,side*4.85,.52,3.98,4.22),(3.40,side*4.78,.57,3.96,4.98),
          (6.10,side*4.80,.55,4.18,5.12),(8.90,side*4.74,.48,4.66,5.26),
          (9.67,side*4.77,.29,4.73,5.15)],0,edge=.045)
+    # A continuous flared roof-to-shoulder fillet returns into the pressure crown
+    # behind the side glass. This closes the abrupt narrow cockpit/shoulder step
+    # without changing the glazing, pilot eye or occupied pressure-cell void.
+    loft('Cockpit shoulder roof fillet',[(-8.95,side*2.32,.18,3.95,4.20),(-7.58,side*2.77,.55,3.89,4.38),
+         (-6.44,side*3.04,.78,3.89,4.64),(-4.60,side*3.53,.69,3.97,4.65),(-3.30,side*3.94,.35,4.13,4.54)],0,edge=.045,profile='cowl')
     # A deep fore power/gear lobe and aft engine lobe join through a narrower,
     # raised service waist. This is actual primary geometry on every silhouette,
     # not a painted division across a straight full-length pontoon. Under the
@@ -113,19 +130,42 @@ for side in (-1,1):
          (5.67,side*6.22,1.58,3.11,5.44),(7.90,side*6.28,1.42,3.10,5.11),
          (9.14,side*6.30,1.13,3.11,4.74)],
     ]
-    for i,sections in enumerate(cowls):drive_skins[side].append(loft(('Fore' if i==0 else 'Aft')+' drive ceramic cowl',sections,0,edge=.055))
+    for i,sections in enumerate(cowls):drive_skins[side].append(loft(('Fore' if i==0 else 'Aft')+' drive ceramic cowl',sections,0,edge=.055,profile='cowl'))
     def drive_x(z,sections=drive):
         for a,b in zip(sections,sections[1:]):
             if a[0]<=z<=b[0]:
                 t=(z-a[0])/(b[0]-a[0]);return abs(a[1])+(abs(b[1])-abs(a[1]))*t+a[2]+(b[2]-a[2])*t
         raise ValueError(z)
     def service_patch(name,zy,sections,tile=4,offset=.014,depth=.035):
-        # Closed conforming patch on the outboard flat cowl face; all stations
-        # share its actual varying X rather than floating on a constant plane.
-        front=[(side*(drive_x(z,sections)+offset),y,z) for z,y in zy]
-        points=front+[(x-side*depth,y,z) for x,y,z in front];count=len(front)
-        faces=[tuple(range(count)),tuple(range(2*count-1,count-1,-1))]
-        faces += [(i,(i+1)%count,(i+1)%count+count,i+count) for i in range(count)]
+        # Every actual longitudinal station gets a face edge. One broad n-gon
+        # across a canted fin bridged its high point and buried part of the
+        # first Art12 skin. These planar strips follow the underlying piecewise
+        # profile exactly, with joined vertices and closed fitted returns.
+        def clip(poly,z_limit,below):
+            result=[]
+            for a,b in zip(poly,poly[1:]+poly[:1]):
+                inside_a=a[0]<=z_limit if below else a[0]>=z_limit
+                inside_b=b[0]<=z_limit if below else b[0]>=z_limit
+                if inside_a:result.append(a)
+                if inside_a!=inside_b:
+                    t=(z_limit-a[0])/(b[0]-a[0]);result.append((z_limit,a[1]+t*(b[1]-a[1])))
+            return result
+        points=[];faces=[];indices={}
+        def vertex(p,rear=False):
+            z,y=p;key=(round(z,8),round(y,8),rear)
+            if key not in indices:
+                indices[key]=len(points);points.append((side*(drive_x(z,sections)+offset-(depth if rear else 0)),y,z))
+            return indices[key]
+        for a,b in zip(sections,sections[1:]):
+            poly=clip(clip(zy,a[0],False),b[0],True)
+            if len(poly)>=3:
+                faces.append(tuple(vertex(p) for p in poly));faces.append(tuple(vertex(p,True) for p in reversed(poly)))
+        boundary=[]
+        for a,b in zip(zy,zy[1:]+zy[:1]):
+            boundary.append(a)
+            stations=[s[0] for s in sections if min(a[0],b[0])<s[0]<max(a[0],b[0])]
+            for z in sorted(stations,reverse=b[0]<a[0]):boundary.append((z,a[1]+(z-a[0])/(b[0]-a[0])*(b[1]-a[1])))
+        for a,b in zip(boundary,boundary[1:]+boundary[:1]):faces.append((vertex(a),vertex(b),vertex(b,True),vertex(a,True)))
         return remember(g.mesh(name,points,faces,surface,.008,hull),tile)
     for sections,front,back in [(cowls[0],-5.18,-3.74),(cowls[1],3.48,5.39)]:
         # Raised access lids land in shallow fitted black gaskets. Each return
@@ -148,15 +188,18 @@ for side in (-1,1):
     rod('Drive mint running light',(side*7.074,4.42,-1.44),(side*7.074,4.42,.71),.022,parent=hull,mat=mint,collision=False)
     # Canted clipped fins have real thickened load roots and a tapered foil,
     # rather than one triangular sheet planted on top of a box.
-    loft('Stabilizer load saddle',[(3.35,side*4.79,.49,4.68,5.00),(5.65,side*4.87,.60,4.78,5.36),
-         (8.30,side*4.96,.53,4.84,5.48),(9.64,side*4.89,.27,4.83,5.16)],1,edge=.055)
-    fin=[(3.58,side*4.67,.21,4.83,5.08),(5.64,side*4.88,.28,4.95,6.46),
-         (7.22,side*5.10,.22,5.06,7.18),(8.39,side*5.17,.17,5.14,7.11),
-         (9.51,side*4.99,.11,5.10,5.79)]
+    loft('Stabilizer load saddle',[(3.35,side*4.79,.49,4.68,5.00),(5.65,side*4.93,.70,4.82,5.61),
+         (8.30,side*5.35,.50,4.86,6.05),(9.64,side*5.38,.24,4.83,5.32)],1,edge=.055,profile='cowl')
+    fin=[(4.75,side*4.96,.26,5.00,5.34),(6.10,side*5.25,.27,5.20,6.33),
+         (7.65,side*5.60,.18,5.40,7.17),(8.35,side*5.68,.15,5.44,7.10),
+         (9.15,side*5.62,.105,5.26,6.52),(9.75,side*5.43,.06,5.00,5.32)]
     loft('Aft vertical load stabilizer',fin,0,edge=.035)
-    # Fitted graphite leading spar follows the actual foil's fore sweep.
-    rod('Stabilizer forward load spar',(side*4.69,5.13,3.67),(side*4.90,6.47,5.66),.069,1)
-    rod('Stabilizer upper load spar',(side*4.90,6.47,5.66),(side*5.10,7.12,7.23),.045,1)
+    # A broad removable foil-service skin follows the canted external face;
+    # its gasket and returns are structural, not a detached flat decoration.
+    service_patch('Fin service skin gasket',[(6.42,5.73),(7.64,6.77),(8.24,6.70),(8.91,5.82),(8.31,5.62),(7.10,5.60)],fin,1,.012,.046)
+    service_patch('Fin fitted composite skin',[(6.59,5.80),(7.67,6.66),(8.17,6.60),(8.75,5.87),(8.28,5.71),(7.13,5.70)],fin,4,.037,.059)
+    rod('Stabilizer forward load spar',(side*4.97,5.36,4.83),(side*5.25,6.30,6.11),.060,1)
+    rod('Stabilizer upper load spar',(side*5.25,6.30,6.11),(side*5.60,7.12,7.64),.041,1)
     # Flush lower gear wells with actual telescoping suspension inside the pod.
     for z in (-6.5,7.8):
         for dx in (-.78,.78):box('Gear well longitudinal wall',(side*5.45+dx,2.88,z),(.12,1.67,1.98),1)
@@ -165,7 +208,26 @@ for side in (-1,1):
 
 # Pressure cabin: measured floor, fitted inner sidewalls, roof and windscreen.
 floor_outline=[(-1.78,-10.64),(1.78,-10.64),(2.05,-9.45),(2.05,3.4),(-2.05,3.4),(-2.05,-9.45)]
-floor=prism('CabinFloor',floor_outline,1.4,1.24,1,cabin,bevel=0);floor['preserveNode']=True
+# The same exact cabin floor boundary, with a 0.29 m interior grid so local
+# measured cavity AO can describe fixed furniture contact without broad fades.
+rows=sorted([-10.64,-9.45]+[-9.45+i*(3.4+9.45)/45 for i in range(1,46)]+[-3.80,-1.65,-.535,1.575])
+# Extra lines sit just outside the real fixed plinths. A uniform grid alone
+# left its nearest visible sample 15 cm away and missed the local contact.
+fractions=sorted([-1+2*i/14 for i in range(15)]+[x/2.05 for x in (-1.337,-1.023,1.023,1.337)])
+points=[];nx=len(fractions)-1
+for y in (1.24,1.4):
+    for z in rows:
+        w=1.78+(2.05-1.78)*min(1,(z+10.64)/1.19)
+        points.extend([(w*f,y,z) for f in fractions])
+nrow=nx+1;layer=len(rows)*nrow;faces=[]
+for j in range(len(rows)-1):
+    for i in range(nx):
+        a=j*nrow+i;b=a+1;c=a+nrow+1;d=a+nrow
+        faces.extend([(a,b,c,d),(a+layer,d+layer,c+layer,b+layer)])
+for i in range(nx):faces.extend([(i,i+layer,i+layer+1,i+1),((len(rows)-1)*nrow+i,(len(rows)-1)*nrow+i+1,(len(rows)-1)*nrow+i+1+layer,(len(rows)-1)*nrow+i+layer)])
+for j in range(len(rows)-1):
+    for i in (0,nx):a=j*nrow+i;b=a+nrow;faces.append((a,b,b+layer,a+layer))
+floor=remember(g.mesh('CabinFloor',points,faces,surface,0,cabin),1,True,True)
 for side in (-1,1):
     box('Cabin inner pressure wall',(side*2.10,2.65,-2.6),(.16,2.52,12.0),0,.025,cabin)
     # Recessed inner service texture breaks define real fitted panels.
@@ -179,7 +241,7 @@ for side in (-1,1):
 panel('Forward pressure glazing',[(-1.84,2.29,-10.75),(1.84,2.29,-10.75),(1.75,4.12,-10.10),(-1.75,4.12,-10.10)],parent=cabin,mat=glass,thick=.018)
 rod('Windscreen top seal',(-1.78,4.17,-10.09),(1.78,4.17,-10.09),.06,1,cabin)
 rod('Windscreen lower seal',(-1.92,2.26,-10.77),(1.92,2.26,-10.77),.06,1,cabin)
-prism('Faceted cockpit crown',[(-1.80,-10.12),(1.80,-10.12),(2.25,-8.90),(2.26,-7.20),(-2.26,-7.20),(-2.25,-8.90)],4.33,4.17,0)
+loft('Faceted cockpit crown',[(-10.12,0,1.80,4.17,4.33),(-8.90,0,2.25,4.17,4.40),(-7.20,0,2.26,4.17,4.49)],0,edge=.025)
 prism('Habitation crown',[(-2.26,-7.45),(2.26,-7.45),(2.45,-6.90),(2.45,2.65),(2.85,3.40),(-2.85,3.40),(-2.45,2.65),(-2.45,-6.90)],4.52,3.91,1)
 for z in (-6.4,-3.7,-1.0,1.7):
     box('Ceiling liner cassette',(0,3.88,z),(3.98,.06,2.56),7,.013,cabin)
@@ -351,24 +413,55 @@ for engine in L['engines']:
         rod('Engine core radial stator',(x+.25*math.cos(a),y+.25*math.sin(a),9.78),(x+.60*math.cos(a+.16),y+.60*math.sin(a+.16),9.78),.022,2,segments=6)
 
 # Fitted cabin: seats, two berths, accessible lockers, galley and actual MFDs.
+def soft_pad(name,pos,size,parent=cabin,rotation=0):
+    """Closed compliant upholstery, with a rounded crown and fitted welt.
+
+    All rings remain inside the former pad envelope. The welt is a physical
+    stitched edge seated in the shoulder, not a dark painted contact shadow.
+    """
+    width,thickness,depth=size;rot=Matrix.Rotation(rotation,4,'X')
+    def contour(scale):
+        w,d=width*scale/2,depth*scale/2;r=min(w,d)*.30
+        return [(cx+r*math.cos(a),cz+r*math.sin(a))
+            for cx,cz,start in [(w-r,d-r,0),(-w+r,d-r,math.pi/2),(-w+r,-d+r,math.pi),(w-r,-d+r,math.pi*1.5)]
+            for a in [start+i*math.pi/6 for i in range(4)]]
+    def q(x,y,z):return tuple(Vector(pos)+rot@Vector((x,y,z)))
+    rings=[(-.5,.86),(-.32,.98),(.10,1),(.38,.92),(.50,.72)]
+    points=[q(x,y*thickness,z) for y,scale in rings for x,z in contour(scale)];count=16
+    faces=[tuple(range(count-1,-1,-1)),tuple(range((len(rings)-1)*count,len(rings)*count))]
+    faces += [(j*count+i,j*count+(i+1)%count,(j+1)*count+(i+1)%count,(j+1)*count+i) for j in range(len(rings)-1) for i in range(count)]
+    remember(g.mesh(name,points,faces,surface,0,parent,smooth=True),6)
+    edge=contour(.998);radius=.0035
+    for i,(x,z) in enumerate(edge):
+        xx,zz=edge[(i+1)%len(edge)]
+        rod(name+' fitted welt',q(x,thickness*.10,z),q(xx,thickness*.10,zz),radius,1,parent,segments=6,collision=False)
+
 def seat(name,x,z):
     chair=g.empty(name,(x,1.4,z),cabin)
     box('Seat pedestal',(x,1.61,z),(.46,.42,.46),2,.025,chair)
-    box('Seat cushion',(x,1.94,z-.13),(.68,.18,.68),3,.045,chair)
-    box('Seat back',(x,2.30,z+.28),(.72,.68,.14),6,.05,chair)
-    box('Seat head restraint',(x,2.66,z+.25),(.40,.18,.16),3,.025,chair)
+    soft_pad('Seat cushion',(x,1.94,z-.13),(.68,.18,.68),chair)
+    soft_pad('Seat back',(x,2.30,z+.28),(.72,.14,.68),chair,-math.pi/2)
+    soft_pad('Seat head restraint',(x,2.66,z+.25),(.40,.16,.18),chair,-math.pi/2)
     for side in (-1,1):
         box('Seat arm',(x+side*.37,2.10,z-.10),(.07,.10,.50),2,.015,chair)
         rod('Seat harness',(x+side*.15,2.58,z+.17),(x+side*.22,2.06,z-.13),.018,1,chair)
     return chair
 seat('PilotChair',0,-8.4);seat('PassengerChair',1.30,-5.76)
 for side in (-1,1):
-    box('Berth storage plinth',(side*1.5,1.64,-2.725),(.94,.48,2.12),4,.035,cabin)
-    box('Rest berth mattress',(side*1.5,1.98,-2.725),(.89,.19,2.01),6,.055,cabin)
-    box('Rest pillow',(side*1.5,2.11,-3.42),(.75,.15,.42),7,.045,cabin)
+    plinth=box('Berth storage plinth',(side*1.5,1.64,-2.725),(.94,.48,2.12),1,.035,cabin)
+    # A real recessed toe kick leaves the end feet and lower sole in contact.
+    g.apply(plinth)
+    cutter=g.box('Temporary berth toe recess',(side*1.037,1.50,-2.725),(.14,.14,1.77),surface,.015)
+    g.apply(cutter);g.cut(plinth,cutter)
+    box('Berth fitted storage front',(side*1.025,1.74,-2.725),(.024,.21,1.92),4,.012,cabin)
+    soft_pad('Rest berth mattress',(side*1.5,1.98,-2.725),(.89,.19,2.01))
+    soft_pad('Rest pillow',(side*1.5,2.11,-3.42),(.75,.15,.42))
     box('Berth upper service cubby',(side*1.68,3.34,-2.7),(.52,.63,2.08),0,.026,cabin)
+    box('Cubby fitted ceiling return',(side*1.74,3.753,-2.7),(.40,.224,2.04),1,.012,cabin)
     box('Berth reading lamp',(side*1.965,2.7,-3.33),(.04,.06,.24),parent=cabin,mat=mint,collision=False)
     box('Cabin equipment locker',(side*1.66,2.4,.52),(.63,1.98,2.08),0,.035,cabin)
+    box('Locker floor plinth',(side*1.66,1.425,.52),(.61,.05,2.06),1,.006,cabin)
+    box('Locker fitted ceiling return',(side*1.74,3.6225,.52),(.40,.485,2.04),1,.012,cabin)
     for z in (-.06,1.02):
         box('Locker petrol front',(side*1.33,2.52,z),(.03,1.56,.85),4,.015,cabin)
         rod('Locker recessed handle',(side*1.30,2.26,z-.21),(side*1.30,2.53,z-.21),.018,2,cabin)
@@ -433,6 +526,66 @@ for obj in parts:
         while ancestor and ancestor not in (root,hull,cabin) and not ancestor.name.startswith(('Gear_','HatchSlat_')) and ancestor!=lift:ancestor=ancestor.parent
         colliders.append({'name':obj.name,'node':ancestor.name if ancestor else root.name,'min':low,'max':high})
 
+def bake_static_cavity(objects):
+    """Deterministic cosine-hemisphere vertex AO from actual fixed geometry.
+
+    Short-range rays describe cavities and fixed furniture contact only. Gear,
+    hatch leaves and the elevator neither cast nor receive this baked term;
+    their Col values are exactly white. There is no rover, terrain, world-light
+    direction or selected mechanism pose in the occluder set.
+    """
+    radius=.42;bias=.0035;rays=24
+    def moving(obj):
+        p=obj
+        while p:
+            if p.name=='VehicleLift' or p.name.startswith(('Gear_','HatchSlat_')):return True
+            p=p.parent
+        return False
+    receivers=[o for o in objects if o.type=='MESH' and o.data.materials[0]==surface]
+    fixed=[o for o in receivers if not moving(o)]
+    verts=[];polygons=[]
+    for obj in fixed:
+        offset=len(verts);verts.extend(obj.matrix_world@v.co for v in obj.data.vertices)
+        polygons.extend(tuple(offset+i for i in poly.vertices) for poly in obj.data.polygons)
+    tree=BVHTree.FromPolygons(verts,polygons,all_triangles=False)
+    directions=[]
+    for i in range(rays):
+        r=math.sqrt((i+.5)/rays);angle=i*math.pi*(3-math.sqrt(5))
+        directions.append((r*math.cos(angle),r*math.sin(angle),math.sqrt(1-r*r)))
+    summary={'method':'Deterministic cosine-hemisphere local vertex AO; actual fixed opaque mesh only',
+        'radiusMetres':radius,'originBiasMetres':bias,'raysPerSample':rays,'maximumDarkening':.55,
+        'exclusions':['VehicleLift','Gear_*','HatchSlat_*','glass','emitters','rover','terrain','world lights'],
+        'staticObjects':len(fixed),'movingObjects':len(receivers)-len(fixed),'staticCorners':0,'movingWhiteCorners':0,'samples':0,'range':[1.,1.]}
+    for obj in receivers:
+        mesh=obj.data;col=mesh.color_attributes.new(name='Col',type='BYTE_COLOR',domain='CORNER')
+        mesh.color_attributes.active_color=col
+        if moving(obj):
+            for entry in col.data:entry.color=(1,1,1,1)
+            summary['movingWhiteCorners']+=len(col.data);continue
+        normal_matrix=obj.matrix_world.to_3x3().inverted().transposed();cache={};values=[]
+        for poly in mesh.polygons:
+            # A geometric face normal avoids casting from a smoothed bevel
+            # normal back into its own solid. This is AO, not a light bake.
+            n=(normal_matrix@poly.normal).normalized()
+            ref=Vector((1,0,0)) if abs(n.x)<.85 else Vector((0,1,0))
+            u=n.cross(ref).normalized();v=n.cross(u)
+            local_dirs=[u*x+v*y+n*z for x,y,z in directions]
+            for li in poly.loop_indices:
+                vi=mesh.loops[li].vertex_index;key=(vi,tuple(round(c,5) for c in n))
+                if key not in cache:
+                    origin=obj.matrix_world@mesh.vertices[vi].co+n*bias;occlusion=0
+                    for direction in local_dirs:
+                        hit=tree.ray_cast(origin,direction,radius)
+                        if hit[0] is not None:occlusion+=max(0,1-hit[3]/radius)/rays
+                    cache[key]=max(.45,1-.55*occlusion)
+                value=cache[key];col.data[li].color=(value,value,value,1);values.append(value)
+        summary['staticCorners']+=len(col.data);summary['samples']+=len(cache)
+        summary['range'][0]=min(summary['range'][0],min(values,default=1))
+        if obj.name=='CabinFloor':summary['cabinFloor']={'vertices':len(mesh.vertices),'range':[min(values),max(values)],'maximumInteriorGridMetres':.294}
+    return summary
+
+vertex_ao=bake_static_cavity(parts)
+
 # Keep roots, moving nodes and each actual MFD/floor surface independently named.
 groups={}
 for obj in parts:
@@ -455,6 +608,7 @@ if triangles>L['budgets']['triangles']:raise ValueError(f'Gannet geometry exceed
 report={'model':L['name'],'builder':'blender/build_gannet.py','layoutSha256':hashlib.sha256(layout_bytes).hexdigest(),
     'builderSha256':input_hashes['blender/build_gannet.py'],'geometryHelperSha256':input_hashes['blender/fighter_geometry.py'],'inputHashes':input_hashes,'blenderVersion':bpy.app.version_string,
     'sourceBounds':bounds,'sourceTriangles':triangles,'sourceMeshes':len(meshes),'materials':sorted({m.name for o in meshes for m in o.data.materials}),
+    'vertexAmbientOcclusion':vertex_ao,
     'coordinateSystem':{'units':'metres','up':'+Y','forward':'-Z'},'collisionParts':colliders,
     'status':'Authored geometry/material checkpoint; runtime visual and physical game acceptance pending'}
 (STAGE/'source-manifest.json').write_text(json.dumps(report,indent=2)+'\n')

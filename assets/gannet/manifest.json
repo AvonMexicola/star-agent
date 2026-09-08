@@ -2,15 +2,15 @@
   "model": "Gannet T-06",
   "builder": "blender/build_gannet.py",
   "layoutSha256": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
-  "builderSha256": "3510586a53bd02c49622284274a70c36fffec703337209599ed16746ea47b678",
+  "builderSha256": "e21e6c5f9bdd8b6826868cbdf99633db1a27d434d01c9f7badefa2754e138119",
   "geometryHelperSha256": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
   "inputHashes": {
-    "blender/build_gannet.py": "3510586a53bd02c49622284274a70c36fffec703337209599ed16746ea47b678",
+    "blender/build_gannet.py": "e21e6c5f9bdd8b6826868cbdf99633db1a27d434d01c9f7badefa2754e138119",
     "blender/fighter_geometry.py": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
-    "blender/gannet_textures.py": "d9dacacda9b2fb522de3c0077fae797978525c00b0f853d9909631abb7b3de41",
+    "blender/gannet_textures.py": "893f6bba53cd00d5a69c2354765e2777068749265dc55543746d47629c357b47",
     "assets/gannet/layout.json": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
-    "assets/gannet/textures/surface-basecolor.png": "90ea71cce83b5f8e35900a5e5e2ee5f69cf90523e1e5701138ceca2c33a4924a",
-    "assets/gannet/textures/surface-orm.png": "1ab7ca828297597ca82c2183339fd3a880bf6335c9e26487ccee86b73a7e6a29",
+    "assets/gannet/textures/surface-basecolor.png": "29fa07d3e608fe387a3826da282599c27c9162d292b045b399d41366cc01387f",
+    "assets/gannet/textures/surface-orm.png": "5a5e98e86cbd3692ba0ac7e3190a4e8c78729bad0eebf3793774a769fdf6ddb6",
     "assets/gannet/textures/surface-normal.png": "86993e9276b669289b91c2563b704bd0116c0c59af1949f08c79bfc2e2e8ff9b",
     "assets/gannet/textures/manufacturer.png": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
   },
@@ -23,11 +23,11 @@
     ],
     "max": [
       7.846850395202637,
-      7.179999828338623,
+      7.1690778732299805,
       11.0
     ]
   },
-  "sourceTriangles": 45394,
+  "sourceTriangles": 55622,
   "sourceMeshes": 33,
   "materials": [
     "Gannet / approved Meridian emblem",
@@ -38,6 +38,40 @@
     "Gannet pressure glazing",
     "Gannet restrained mint emitters"
   ],
+  "vertexAmbientOcclusion": {
+    "method": "Deterministic cosine-hemisphere local vertex AO; actual fixed opaque mesh only",
+    "radiusMetres": 0.42,
+    "originBiasMetres": 0.0035,
+    "raysPerSample": 24,
+    "maximumDarkening": 0.55,
+    "exclusions": [
+      "VehicleLift",
+      "Gear_*",
+      "HatchSlat_*",
+      "glass",
+      "emitters",
+      "rover",
+      "terrain",
+      "world lights"
+    ],
+    "staticObjects": 510,
+    "movingObjects": 46,
+    "staticCorners": 93748,
+    "movingWhiteCorners": 7536,
+    "samples": 88012,
+    "range": [
+      0.4500000000000002,
+      1.0
+    ],
+    "cabinFloor": {
+      "vertices": 1938,
+      "range": [
+        0.452694232039368,
+        1.0
+      ],
+      "maximumInteriorGridMetres": 0.294
+    }
+  },
   "coordinateSystem": {
     "units": "metres",
     "up": "+Y",
@@ -45,19 +79,19 @@
   },
   "status": "Authored geometry/material checkpoint; runtime visual and physical game acceptance pending",
   "asset": "public/models/gannet.glb",
-  "bytes": 2439212,
-  "triangles": 45394,
+  "bytes": 3290672,
+  "triangles": 55622,
   "meshPrimitives": 33,
   "nodes": 98,
   "images": 4,
   "textureFormat": "WebP",
-  "sha256": "51f5578cc89f863453f937c7af5afb6bcee71fe4c4ef6a1e40105bd271bdaef1",
-  "sourceSha256": "5568605d44eb020bce991d1bf0362a1bf5bce3f22bd52a2f78aab6a8d79ce96c",
-  "collisionSha256": "c48104b28a465f3e395fd5af34b1f96b903f46c46f823da1bda1094ca4820930",
+  "sha256": "6b4f48ad29aa5cf8a8e6004c0b45861fb65d97a449dc27c7533cbec83e052af8",
+  "sourceSha256": "4b96b2d544386acb0b090c14c7a5ecade90812661ce7cf8662c1799d1c242727",
+  "collisionSha256": "ae9c6911d33499ab0c7833e441e4816fa30c8b08340c840b2b034a5b8a0f7eaa",
   "packing": {
-    "inputBytes": 3737484,
-    "outputBytes": 2704268,
-    "maximumPositionErrorMetres": 0.000312804763728851,
+    "inputBytes": 5615376,
+    "outputBytes": 3538256,
+    "maximumPositionErrorMetres": 0.0003105262975675282,
     "maximumNormalErrorDegrees": 0.3795370599775062,
     "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
   }

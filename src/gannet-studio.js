@@ -25,9 +25,39 @@ for(const [color,intensity,position] of [[0xffe9ce,4,[9,19,-15]],[0x9bcbe5,2.1,[
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(240,240),new THREE.MeshStandardMaterial({color:0x23343b,roughness:.82,metalness:.08}));floor.rotation.x=-Math.PI/2;floor.position.y=-.018;floor.receiveShadow=true;scene.add(floor);
 const grid=new THREE.GridHelper(80,40,0x47696d,0x2e494f);grid.position.y=-.016;grid.material.transparent=true;grid.material.opacity=.24;scene.add(grid);
 const systems=new GannetSystems();const ship=createGannet(systems);scene.add(ship);
-// Actual local lamps sit below authored cabin/vehicle ceiling fixtures.
-for(const [z,intensity] of [[-8,10],[-3,13],[1,10],[7.5,20]]){
-  const light=new THREE.PointLight(0xb9e8d8,intensity,z>4?7:5,2);light.position.set(0,z>4?4.36:3.69,z);ship.add(light);
+// Studio-only receiver lighting. The former centreline points had no emitter
+// and no local shadows. These finite cones point down from actual diffusers;
+// four shadow maps describe contact with the real rover and furniture. The
+// main-game light helper is separate and unchanged. Global lights/exposure and
+// the summed local source intensity (33 cabin + 20 bay) are retained.
+function installStudioFixtureLights(ship){
+  ship.updateMatrixWorld(true);
+  const emitter=ship.getObjectByName('Cabin__Gannet_restrained_mint_emitters_Geometry');
+  if(!emitter?.isMesh)throw new Error('Gannet studio needs the authored cabin emitters');
+  const definitions=[
+    {name:'CabinFore',position:[-1.6,3.77,-7],intensity:8.25,range:5,shadow:true},
+    {name:'CabinBerths',position:[1.6,3.77,-4.3],intensity:8.25,range:5},
+    {name:'CabinAisle',position:[-1.6,3.77,-1],intensity:8.25,range:5},
+    {name:'CabinPortal',position:[1.6,3.77,1.7],intensity:8.25,range:5,shadow:true},
+    ...['Port','Starboard'].map(side=>{
+      const anchor=ship.getObjectByName('CabinLight_Bay_'+side);
+      if(!anchor)throw new Error('Gannet studio needs the authored '+side+' bay diffuser');
+      const position=ship.worldToLocal(anchor.getWorldPosition(new THREE.Vector3()));position.y-=.04;
+      return {name:'Bay'+side,position:position.toArray(),intensity:10,range:5.5,shadow:true};
+    }),
+  ];
+  return definitions.map(d=>{
+    // End diffusers have broad lobes reaching the pilot and portal beyond
+    // their strips. Other sources use narrower downward receiver cones.
+    const end=d.name==='CabinFore'||d.name==='CabinPortal';
+    const light=new THREE.SpotLight(0xb9e8d8,d.intensity,d.range,Math.PI*(end?.42:.35),.48,2);
+    light.name='StudioFixture_'+d.name;
+    light.position.copy(emitter.worldToLocal(ship.localToWorld(new THREE.Vector3(...d.position))));
+    light.target.position.copy(emitter.worldToLocal(ship.localToWorld(new THREE.Vector3(...d.position).add(new THREE.Vector3(0,-1,0)))));
+    light.castShadow=Boolean(d.shadow);
+    if(light.castShadow){light.shadow.mapSize.set(1024,1024);light.shadow.camera.near=.04;light.shadow.camera.far=d.range;light.shadow.bias=-.00002;light.shadow.normalBias=.005;}
+    light.userData.authoredFixture=d.name;emitter.add(light,light.target);return light;
+  });
 }
 const scaleHuman=new THREE.Group();scaleHuman.name='1.80 m scale reference';scaleHuman.position.set(4.8,0,12.1);
 const humanMaterial=new THREE.MeshStandardMaterial({color:0xb6c6bf,roughness:.85});
@@ -104,7 +134,7 @@ document.querySelector('#rover').addEventListener('click',async()=>{
   }else rover.visible=!rover.visible;
   button.setAttribute('aria-pressed',String(rover?.visible===true));
 });
-ship.readyPromise.then(()=>{status.textContent='Authored geometry loaded · visual review pending';}).catch(error=>{status.textContent=error.message;document.body.dataset.assetError=error.message;});
+ship.readyPromise.then(()=>{installStudioFixtureLights(ship);status.textContent='Authored geometry loaded · visual review pending';}).catch(error=>{status.textContent=error.message;document.body.dataset.assetError=error.message;});
 view('exterior');
 new ResizeObserver(()=>{
   resizeCanvas();
