@@ -7,7 +7,7 @@ body:is([data-hud-mode="markers"],[data-hud-mode="none"]) > :not(
 ) { display:none!important; }
 
 body[data-hud-mode="markers"] #hud > :not(#reticle),
-body[data-hud-mode="markers"] #navigation-lock > div,
+body[data-hud-mode="markers"] #navigation-lock :is(span,small),
 body[data-hud-mode="none"] > :is(#hud, #navigation-markers, #navigation-lock, #ship-marker, #combat-markers),
 body:is([data-hud-mode="markers"],[data-hud-mode="none"])::after {
   display:none!important;
