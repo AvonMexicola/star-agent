@@ -1,8 +1,9 @@
 # SA-PIRATE-001 — pirate and guide production record
 
 Status: implemented in isolated `feat/pirate-ground-encounters`; final combined
-browser checks and local integration pending. Runtime candidate `6ebd31f`
-contains checked Transport `65f1721` and compound garages `e098947`. Owner: Codex
+browser checks and local integration pending. Runtime candidate `9be1630`
+contains checked Transport `65f1721`, compound garages `83e10ae` and handheld
+tools `0abc2f7`. Owner: Codex
 pirate encounters. Worktree `.worktrees/pirates`, production preview5664.
 No public deployment, protocol/schema change or independent acceptance is claimed.
 
@@ -65,8 +66,8 @@ Tutorial script, dialogue, voice and in-world placement remain unimplemented.
 
 ## Author validation
 
-- `npm test -- --test-concurrency=2`: **1,203 cases pass**,0fail/skip,46.50s on
-  `6ebd31f`. Includes the combined garage, transport, player and collision suites.
+- `npm test -- --test-concurrency=2`: **1,210 cases pass**,0fail/skip,37.71s on
+  `9be1630`. Includes combined handheld, garage, transport, player and collision suites.
   New tests inspect actual skinned vertices at sampled animation phases, weights,
   clip selection while aiming, real rock triangles, tactical timing, dodge,
   muzzle veto, paused state, death and finite persistent loot transactions.
@@ -82,8 +83,12 @@ Tutorial script, dialogue, voice and in-world placement remain unimplemented.
   actual Contracts transit activation, landing, hatch/ramp exit, movement,
   third-person crouch, return fire and health loss, all three kills, medical use,
   held RT across modal/native focus/device replacement/unsupported mapping,
-  exact loot transfers and physical reboarding. Final natural-cover revision
-  requires the current rebuilt repetition; the earlier result is not relabelled.
+  exact loot transfers and physical reboarding. The final natural-cover revision
+  also passed the complete Aeon route in the20:38:34UTC batch (5.0min):9 enemy
+  shots,35 damage applied, all3 pirates defeated, carbine ammo60→43, exact cache
+  transfers and final mode `landed` after physical reboarding. Zero diagnostics.
+  See [firing](aeon-fight.png), [crouched player](aeon-player-crouch.png),
+  [real loot result](aeon-loot-result.png) and [returned cockpit](aeon-returned.png).
 - Lizzy's four clips rendered successfully in the20:33:38UTC batch (3.9s),
   zero diagnostics. Author inspection confirms intact body proportions, arms
   closer to torso and a readable greeting. Studio review is distinct from
@@ -116,6 +121,19 @@ walking helper projected its cabin waypoint against planet up instead of the
 tilted ship's up. It timed out at a valid hatch interaction. The helper now uses
 the actual ship plane inside and canonical surface normal outside. The original
 failure PNG, state, video and trace remain.
+
+After that correction, the20:38Selene route opened the hatch and exited but
+exposed a real site-placement defect: a small formation under the landing
+approach tilted the ship51 degrees. The original yard-only samples ended before
+that area. Revision `8364d5d` samples the complete30×40 m hull/ramp apron every3 m
+and selects a different canonical site. Its measured maximum apron slope is
+4.13 degrees with4.56 m yard relief. The regression inspects those actual normals;
+the rebuilt browser route is checking physical return as well as arrival.
+
+The first keyboard-only fixture held S although the Nomad deliberately turns
+the pilot toward the rear on standing. Its retained video shows the pilot chair
+blocking backward travel. It now uses W for the actual aft exit, without a
+navigation/runtime change. Native phone crouch remains a separate scoped check.
 
 Original large artifacts stay ignored under root `test-results/pirates-*`;
 earlier diagnostics remain in `/tmp/star-agent-pirates-qa` and `/tmp/lizzy-audit`.
