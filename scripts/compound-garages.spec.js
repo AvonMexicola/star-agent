@@ -2,6 +2,22 @@ import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 const out=process.env.GARAGE_EVIDENCE;
 const diagnostics=new WeakMap();
+test('local preview serves checked garages and the paired healthy API',async({request})=>{
+ test.skip(process.env.GARAGE_VERIFY_LOCAL!=='1','Opt-in check for the shared local preview.');
+ const checks=[];
+ for(const [url,needle] of [
+  ['http://127.0.0.1:5178/api/health',null],
+  ['http://127.0.0.1:8087/api/health',null],
+  ['http://127.0.0.1:5178/src/main.js','createGarageSystem'],
+  ['http://127.0.0.1:5178/src/settlements/garage-system.js','createGarageSystem'],
+  ['http://127.0.0.1:5178/src/mining-rover.js','deployAt'],
+  ['http://127.0.0.1:5178/src/multiplayer/protocol.js','PROTOCOL_VERSION'],
+ ]){
+  const response=await request.get(url);expect(response.status()).toBe(200);const content=await response.text();if(needle)expect(content).toContain(needle);
+  checks.push({url,status:response.status(),bytes:Buffer.byteLength(content)});
+ }
+ await mkdir(out,{recursive:true});await writeFile(`${out}/local-preview.json`,JSON.stringify({verifiedAt:new Date().toISOString(),checks,mutations:false},null,2));
+});
 const frames=p=>p.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise(r=>requestAnimationFrame(r));});
 async function setup(page,site='selene'){
  await mkdir(out,{recursive:true});const errors=[],warnings=[];diagnostics.set(page,{errors,warnings});
