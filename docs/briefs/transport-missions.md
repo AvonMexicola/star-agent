@@ -42,3 +42,11 @@ physical pickup/load, interworld flight, delivery/result/return journey; held in
 across dialog/focus/disconnect/replacement. Keyboard/native390touch and original
 1440desktop screenshots. Build/repository/check plan. Physical hardware,
 independent acceptance and public deployment remain separate.
+
+## Coordinated shared trade hooks
+
+Settlement owner offered checked `1f8a20a` for transport integration. Preserve its
+local-stock label, activity/need rows and market beacon summaries while adding
+Freight. Those shared UI/system lines are dependencies, not exclusive transport
+registry claims; the new transport renderer/model remain owned here. Preserve
+foundation/rover tests in the package list and retire no other active task.

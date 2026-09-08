@@ -16,8 +16,6 @@
   "claims": [
     "src/transport/",
     "src/trading/model.js",
-    "src/trading/system.js",
-    "src/trading/ui.js",
     "src/cargo/tractor-ledger.js",
     "src/cargo/tractor-physics.js",
     "server/trading.js",
