@@ -1,0 +1,2714 @@
+{
+  "sha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa",
+  "bytes": 38037892,
+  "scope": "Read-only exact world-vertex bounds, named transforms, actual runtime systems bound to original GLB, limited downward surface rays and selected authored collider routes. Materials omitted only for Node decoding; no geometry changed. Not complete collision or animation clearance certification.",
+  "moduleResolution": "Original source imported with absolute dependency specifiers; Three.js/GLTFLoader reused from installed Kestrel worktree. No Atlas source edits.",
+  "baselineBounds": {
+    "min": [
+      -17.855575561523438,
+      0,
+      -30.88530731201172
+    ],
+    "max": [
+      17.855575561523438,
+      14.618500030541327,
+      30.901958465576172
+    ],
+    "size": [
+      35.711151123046875,
+      14.618500030541327,
+      61.78726577758789
+    ],
+    "vertices": 635968
+  },
+  "nominalBounds": {
+    "min": [
+      -18,
+      0,
+      -32
+    ],
+    "max": [
+      18,
+      16,
+      32
+    ]
+  },
+  "named": [
+    {
+      "name": "RampFront",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        0,
+        2.5999999046325684,
+        -24
+      ],
+      "worldPosition": [
+        0,
+        2.5999999046325684,
+        -24
+      ],
+      "worldQuaternion": [
+        0.7071068882942235,
+        0,
+        0,
+        0.7071066740788552
+      ],
+      "scale": [
+        1,
+        0.9999999657714758,
+        0.9999999657714758
+      ],
+      "localBounds": {
+        "min": [
+          -6.079999923706055,
+          -0.5712490081787073,
+          -6.099998474121092
+        ],
+        "max": [
+          6.079999923706055,
+          0.6999978059528797,
+          0.1600017547607426
+        ],
+        "size": [
+          12.15999984741211,
+          1.2712468141315871,
+          6.260000228881834
+        ],
+        "vertices": 11464
+      },
+      "metadata": {
+        "name": "RampFront",
+        "role": "loading-ramp",
+        "rampId": "front",
+        "closedAngle": 1.5707963267948966,
+        "openAngle": -0.3310117280892945
+      }
+    },
+    {
+      "name": "RampFrontTip",
+      "parent": "RampFront",
+      "localPosition": [
+        0,
+        0.17999914288520813,
+        -6
+      ],
+      "worldPosition": [
+        0,
+        8.599999644731078,
+        -23.81999904559829
+      ],
+      "worldQuaternion": [
+        -0.7071066431702306,
+        0,
+        0,
+        0.7071069192028374
+      ],
+      "scale": [
+        1,
+        0.9999999657714795,
+        0.9999999657714795
+      ],
+      "localBounds": {
+        "min": [
+          -5.800000190734863,
+          -0.5199986696243285,
+          -1.9849994182586668
+        ],
+        "max": [
+          5.800000190734863,
+          0.17750164866447446,
+          -0.014999449253082274
+        ],
+        "size": [
+          11.600000381469727,
+          0.697500318288803,
+          1.9699999690055845
+        ],
+        "vertices": 3240
+      },
+      "metadata": {
+        "name": "RampFrontTip",
+        "role": "folding-ramp-tip"
+      }
+    },
+    {
+      "name": "RampAft",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        0,
+        2.5999999046325684,
+        24
+      ],
+      "worldPosition": [
+        0,
+        2.5999999046325684,
+        24
+      ],
+      "worldQuaternion": [
+        -0.7071068882942235,
+        0,
+        0,
+        0.7071066740788552
+      ],
+      "scale": [
+        1,
+        0.9999999657714758,
+        0.9999999657714758
+      ],
+      "localBounds": {
+        "min": [
+          -6.079999923706055,
+          -0.5712490081787073,
+          -0.1600017547607426
+        ],
+        "max": [
+          6.079999923706055,
+          0.6999951333578325,
+          6.099998474121092
+        ],
+        "size": [
+          12.15999984741211,
+          1.2712441415365396,
+          6.260000228881834
+        ],
+        "vertices": 11464
+      },
+      "metadata": {
+        "name": "RampAft",
+        "role": "loading-ramp",
+        "rampId": "aft",
+        "closedAngle": -1.5707963267948966,
+        "openAngle": 0.3310117280892945
+      }
+    },
+    {
+      "name": "RampAftTip",
+      "parent": "RampAft",
+      "localPosition": [
+        0,
+        0.17999914288520813,
+        6
+      ],
+      "worldPosition": [
+        0,
+        8.599999644731078,
+        23.81999904559829
+      ],
+      "worldQuaternion": [
+        0.7071067049874782,
+        0,
+        0,
+        0.7071068573856086
+      ],
+      "scale": [
+        1,
+        0.9999999657714795,
+        0.9999999657714795
+      ],
+      "localBounds": {
+        "min": [
+          -5.800000190734863,
+          -0.5199958221837768,
+          0.015000104904174805
+        ],
+        "max": [
+          5.800000190734863,
+          0.1775044514015427,
+          1.9850001335144043
+        ],
+        "size": [
+          11.600000381469727,
+          0.6975002735853195,
+          1.9700000286102295
+        ],
+        "vertices": 3240
+      },
+      "metadata": {
+        "name": "RampAftTip",
+        "role": "folding-ramp-tip"
+      }
+    },
+    {
+      "name": "CrewElevator",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        5.5,
+        2.5999999046325684,
+        -4
+      ],
+      "worldPosition": [
+        5.5,
+        2.5999999046325684,
+        -4
+      ],
+      "worldQuaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "localBounds": {
+        "min": [
+          -1.399999976158142,
+          -0.3199998438358307,
+          -1.7999999523162842
+        ],
+        "max": [
+          1.399999976158142,
+          1.320000171661377,
+          1.7999999523162842
+        ],
+        "size": [
+          2.799999952316284,
+          1.6400000154972076,
+          3.5999999046325684
+        ],
+        "vertices": 4191
+      },
+      "metadata": {
+        "name": "CrewElevator",
+        "role": "crew-elevator",
+        "lowerDeck": 2.6,
+        "upperDeck": 9.5
+      }
+    },
+    {
+      "name": "LiftGateLower",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        4.199999809265137,
+        2.5999999046325684,
+        -4
+      ],
+      "worldPosition": [
+        4.199999809265137,
+        2.5999999046325684,
+        -4
+      ],
+      "worldQuaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "localBounds": {
+        "min": [
+          -0.06381750106811523,
+          0.8300000503659248,
+          -0.75
+        ],
+        "max": [
+          0.06381750106811523,
+          1.0700000450015068,
+          0.75
+        ],
+        "size": [
+          0.12763500213623047,
+          0.23999999463558197,
+          1.5
+        ],
+        "vertices": 530
+      },
+      "metadata": {
+        "name": "LiftGateLower",
+        "role": "lift-landing-gate"
+      }
+    },
+    {
+      "name": "LiftGateUpper",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        4.199999809265137,
+        9.5,
+        -4
+      ],
+      "worldPosition": [
+        4.199999809265137,
+        9.5,
+        -4
+      ],
+      "worldQuaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "localBounds": {
+        "min": [
+          -0.06381750106811523,
+          0.8299998119473457,
+          -0.75
+        ],
+        "max": [
+          0.06381750106811523,
+          1.0699998065829277,
+          0.75
+        ],
+        "size": [
+          0.12763500213623047,
+          0.23999999463558197,
+          1.5
+        ],
+        "vertices": 504
+      },
+      "metadata": {
+        "name": "LiftGateUpper",
+        "role": "lift-landing-gate"
+      }
+    },
+    {
+      "name": "Mount_S3_DorsalPort",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        -11.199999809265137,
+        8.899999618530273,
+        -9
+      ],
+      "worldPosition": [
+        -11.199999809265137,
+        8.899999618530273,
+        -9
+      ],
+      "worldQuaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "localBounds": {
+        "min": [
+          -0.9250001907348633,
+          -0.5,
+          -0.9250001907348633
+        ],
+        "max": [
+          0.9250001907348633,
+          0.018500602745916694,
+          0.9250001907348633
+        ],
+        "size": [
+          1.8500003814697266,
+          0.5185006027459167,
+          1.8500003814697266
+        ],
+        "vertices": 3548
+      },
+      "metadata": {
+        "name": "Mount_S3_DorsalPort",
+        "mountSize": 3,
+        "mountId": "dorsal-port",
+        "standardVersion": 1,
+        "role": "weapon-mount"
+      }
+    },
+    {
+      "name": "Mount_S3_DorsalStarboard",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        11.199999809265137,
+        8.899999618530273,
+        -9
+      ],
+      "worldPosition": [
+        11.199999809265137,
+        8.899999618530273,
+        -9
+      ],
+      "worldQuaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "localBounds": {
+        "min": [
+          -0.9250001907348633,
+          -0.5,
+          -0.9250001907348633
+        ],
+        "max": [
+          0.9250001907348633,
+          0.018500602745916694,
+          0.9250001907348633
+        ],
+        "size": [
+          1.8500003814697266,
+          0.5185006027459167,
+          1.8500003814697266
+        ],
+        "vertices": 3548
+      },
+      "metadata": {
+        "name": "Mount_S3_DorsalStarboard",
+        "mountSize": 3,
+        "mountId": "dorsal-starboard",
+        "standardVersion": 1,
+        "role": "weapon-mount"
+      }
+    },
+    {
+      "name": "Mount_S3_Aft",
+      "parent": "AtlasMarkII",
+      "localPosition": [
+        0,
+        14.600000381469727,
+        19.5
+      ],
+      "worldPosition": [
+        0,
+        14.600000381469727,
+        19.5
+      ],
+      "worldQuaternion": [
+        0,
+        0.9999999999999991,
+        0,
+        -4.37113882867378e-8
+      ],
+      "scale": [
+        1.0000000000000038,
+        1,
+        1.0000000000000038
+      ],
+      "localBounds": {
+        "min": [
+          -0.925000011920929,
+          -0.5000000000000018,
+          -0.9249992370605469
+        ],
+        "max": [
+          0.925000011920929,
+          0.018499649071598512,
+          0.9249992370605469
+        ],
+        "size": [
+          1.850000023841858,
+          0.5184996490716003,
+          1.8499984741210938
+        ],
+        "vertices": 3548
+      },
+      "metadata": {
+        "name": "Mount_S3_Aft",
+        "mountSize": 3,
+        "mountId": "aft-defence",
+        "standardVersion": 1,
+        "role": "weapon-mount"
+      }
+    },
+    {
+      "name": "PilotMFD_01",
+      "parent": "InteriorBridge",
+      "localPosition": [
+        -2.9700000286102295,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldPosition": [
+        -2.9700000286102295,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldQuaternion": [
+        -0.09983340003586497,
+        0,
+        0,
+        0.9950041669446813
+      ],
+      "scale": [
+        1,
+        1.0000000003986858,
+        1.0000000003986858
+      ],
+      "localBounds": {
+        "min": [
+          -0.3100000023841849,
+          -0.21250000596046448,
+          -0.07000117376446369
+        ],
+        "max": [
+          0.3100000023841867,
+          0.21250000596046448,
+          0.05599822103977204
+        ],
+        "size": [
+          0.6200000047683716,
+          0.42500001192092896,
+          0.12599939480423572
+        ],
+        "vertices": 1296
+      },
+      "metadata": {
+        "name": "PilotMFD_01",
+        "role": "pilot-mfd",
+        "screenWidth": 0.52,
+        "screenHeight": 0.325
+      }
+    },
+    {
+      "name": "PilotMFD_02",
+      "parent": "InteriorBridge",
+      "localPosition": [
+        -2.390000104904175,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldPosition": [
+        -2.390000104904175,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldQuaternion": [
+        -0.09983340003586497,
+        0,
+        0,
+        0.9950041669446813
+      ],
+      "scale": [
+        1,
+        1.0000000003986858,
+        1.0000000003986858
+      ],
+      "localBounds": {
+        "min": [
+          -0.31000000238418535,
+          -0.21250000596046448,
+          -0.07000117376446369
+        ],
+        "max": [
+          0.31000000238418624,
+          0.21250000596046448,
+          0.05599822103977204
+        ],
+        "size": [
+          0.6200000047683716,
+          0.42500001192092896,
+          0.12599939480423572
+        ],
+        "vertices": 1296
+      },
+      "metadata": {
+        "name": "PilotMFD_02",
+        "role": "pilot-mfd",
+        "screenWidth": 0.52,
+        "screenHeight": 0.325
+      }
+    },
+    {
+      "name": "PilotMFD_03",
+      "parent": "InteriorBridge",
+      "localPosition": [
+        -1.809999942779541,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldPosition": [
+        -1.809999942779541,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldQuaternion": [
+        -0.09983340003586497,
+        0,
+        0,
+        0.9950041669446813
+      ],
+      "scale": [
+        1,
+        1.0000000003986858,
+        1.0000000003986858
+      ],
+      "localBounds": {
+        "min": [
+          -0.31000000238418557,
+          -0.21250000596046448,
+          -0.07000117376446369
+        ],
+        "max": [
+          0.310000002384186,
+          0.21250000596046448,
+          0.05599822103977204
+        ],
+        "size": [
+          0.6200000047683716,
+          0.42500001192092896,
+          0.12599939480423572
+        ],
+        "vertices": 1296
+      },
+      "metadata": {
+        "name": "PilotMFD_03",
+        "role": "pilot-mfd",
+        "screenWidth": 0.52,
+        "screenHeight": 0.325
+      }
+    },
+    {
+      "name": "PilotMFD_04",
+      "parent": "InteriorBridge",
+      "localPosition": [
+        -1.2300000190734863,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldPosition": [
+        -1.2300000190734863,
+        10.819999694824219,
+        -22.799999237060547
+      ],
+      "worldQuaternion": [
+        -0.09983340003586497,
+        0,
+        0,
+        0.9950041669446813
+      ],
+      "scale": [
+        1,
+        1.0000000003986858,
+        1.0000000003986858
+      ],
+      "localBounds": {
+        "min": [
+          -0.3100000023841858,
+          -0.21250000596046448,
+          -0.07000117376446369
+        ],
+        "max": [
+          0.3100000023841858,
+          0.21250000596046448,
+          0.05599822103977204
+        ],
+        "size": [
+          0.6200000047683716,
+          0.42500001192092896,
+          0.12599939480423572
+        ],
+        "vertices": 1296
+      },
+      "metadata": {
+        "name": "PilotMFD_04",
+        "role": "pilot-mfd",
+        "screenWidth": 0.52,
+        "screenHeight": 0.325
+      }
+    }
+  ],
+  "socketFrames": [
+    {
+      "name": "Mount_S3_DorsalPort",
+      "size": 3,
+      "normal": [
+        0,
+        1,
+        0
+      ],
+      "bore": [
+        0,
+        0,
+        -1
+      ],
+      "metadata": {
+        "name": "Mount_S3_DorsalPort",
+        "mountSize": 3,
+        "mountId": "dorsal-port",
+        "standardVersion": 1,
+        "role": "weapon-mount"
+      }
+    },
+    {
+      "name": "Mount_S3_DorsalStarboard",
+      "size": 3,
+      "normal": [
+        0,
+        1,
+        0
+      ],
+      "bore": [
+        0,
+        0,
+        -1
+      ],
+      "metadata": {
+        "name": "Mount_S3_DorsalStarboard",
+        "mountSize": 3,
+        "mountId": "dorsal-starboard",
+        "standardVersion": 1,
+        "role": "weapon-mount"
+      }
+    },
+    {
+      "name": "Mount_S3_Aft",
+      "size": 3,
+      "normal": [
+        0,
+        1,
+        0
+      ],
+      "bore": [
+        8.742277657347553e-8,
+        0,
+        0.9999999999999964
+      ],
+      "metadata": {
+        "name": "Mount_S3_Aft",
+        "mountSize": 3,
+        "mountId": "aft-defence",
+        "standardVersion": 1,
+        "role": "weapon-mount"
+      }
+    }
+  ],
+  "cargoLaneProbe": [
+    {
+      "origin": [
+        0,
+        3,
+        -5.1
+      ],
+      "direction": [
+        1,
+        0,
+        0
+      ],
+      "maxX": 4,
+      "hit": {
+        "position": [
+          3.4200000762939453,
+          3,
+          -5.1
+        ],
+        "mesh": "AtlasMarkII_dark",
+        "distance": 3.4200000762939453
+      }
+    },
+    {
+      "origin": [
+        0,
+        3.92,
+        -5.1
+      ],
+      "direction": [
+        1,
+        0,
+        0
+      ],
+      "maxX": 4,
+      "hit": {
+        "position": [
+          3.2750000953674316,
+          3.92,
+          -5.1
+        ],
+        "mesh": "AtlasMarkII_steel",
+        "distance": 3.2750000953674316
+      }
+    },
+    {
+      "origin": [
+        0,
+        3.93,
+        -5.005
+      ],
+      "direction": [
+        1,
+        0,
+        0
+      ],
+      "maxX": 4,
+      "hit": {
+        "position": [
+          3.3499999046325684,
+          3.93,
+          -5.005
+        ],
+        "mesh": "AtlasMarkII_mint",
+        "distance": 3.3499999046325684
+      }
+    }
+  ],
+  "sharedMountSizes": [
+    1,
+    3
+  ],
+  "gearNamedNodes": [],
+  "animationClipCount": 0,
+  "floorSamples": {
+    "cargo": [
+      {
+        "x": -3.7,
+        "z": -23,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -21,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -19,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -17,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -15,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -13,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -11,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -9,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -7,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -5,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -3,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": -1,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 1,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 3,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 5,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 7,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 9,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 11,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 13,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 15,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 17,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 19,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 21,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": -3.7,
+        "z": 23,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 0,
+        "z": -23,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -21,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -19,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -17,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -15,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -13,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -11,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -9,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -7,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -5,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -3,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": -1,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 1,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 3,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 13,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 15,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 17,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 19,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 21,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 0,
+        "z": 23,
+        "expected": 2.6,
+        "visibleY": 2.569999933242798,
+        "error": -0.030000066757202237,
+        "node": "ExteriorStructure_dark"
+      },
+      {
+        "x": 3.7,
+        "z": -23,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -21,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -19,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -17,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -15,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -13,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -11,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -9,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -7,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -5,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -3,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": -1,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 1,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 3,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 5,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 7,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 9,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 11,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 13,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 15,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 17,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 19,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 21,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      },
+      {
+        "x": 3.7,
+        "z": 23,
+        "expected": 2.6,
+        "visibleY": 2.6000001430511475,
+        "error": 1.4305114737211966e-7,
+        "node": "ExteriorStructure_deck"
+      }
+    ],
+    "upperCorridor": [
+      {
+        "x": -0.7,
+        "z": -11,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": -9,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": -7,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": -5,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": -3,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": -1,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 1,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 3,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 5,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 7,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 9,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 11,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 13,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 15,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": -0.7,
+        "z": 17,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": -11,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": -9,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": -7,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": -5,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": -3,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": -1,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 1,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 3,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 5,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 7,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 9,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 11,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 13,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 15,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0,
+        "z": 17,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": -11,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": -9,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": -7,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": -5,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": -3,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": -1,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 1,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 3,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 5,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 7,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 9,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 11,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 13,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 15,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      },
+      {
+        "x": 0.7,
+        "z": 17,
+        "expected": 9.5,
+        "visibleY": 9.527999939396977,
+        "error": 0.027999939396977425,
+        "node": "Upper_central_corridor_runner"
+      }
+    ],
+    "ramps": [
+      {
+        "ramp": "front",
+        "fraction": 0.03,
+        "x": -3.7,
+        "z": -24.226971363832533,
+        "expected": 2.5220000000000002,
+        "visibleY": 2.585444357019709,
+        "error": 0.06344435701970896,
+        "node": "RampFront_steel",
+        "runtimeFloor": 2.5220000000000002
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.15,
+        "x": -3.7,
+        "z": -25.134856819162664,
+        "expected": 2.21,
+        "visibleY": 2.273444215211035,
+        "error": 0.06344421521103483,
+        "node": "RampFront_steel",
+        "runtimeFloor": 2.21
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.33,
+        "x": -3.7,
+        "z": -26.49668500215786,
+        "expected": 1.7420000000000002,
+        "visibleY": 1.7922255472225725,
+        "error": 0.05022554722257233,
+        "node": "RampFront_deck",
+        "runtimeFloor": 1.7420000000000004
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.5,
+        "x": -3.7,
+        "z": -27.78285606387555,
+        "expected": 1.3000000000000003,
+        "visibleY": 1.3502255472225717,
+        "error": 0.05022554722257144,
+        "node": "RampFront_deck",
+        "runtimeFloor": 1.2999999999999996
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.67,
+        "x": -3.7,
+        "z": -29.069027125593234,
+        "expected": 0.8580000000000001,
+        "visibleY": 0.908225547222572,
+        "error": 0.05022554722257189,
+        "node": "RampFront_deck",
+        "runtimeFloor": 0.8580000000000001
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.82,
+        "x": -3.7,
+        "z": -30.203883944755898,
+        "expected": 0.4680000000000004,
+        "visibleY": 0.5182268983441063,
+        "error": 0.050226898344105875,
+        "node": "RampFrontTip_deck",
+        "runtimeFloor": 0.4680000000000004
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.97,
+        "x": -3.7,
+        "z": -31.338740763918562,
+        "expected": 0.07800000000000029,
+        "visibleY": 0.14144513696741834,
+        "error": 0.06344513696741805,
+        "node": "RampFrontTip_steel",
+        "runtimeFloor": 0.07800000000000029
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.03,
+        "x": 0,
+        "z": -24.226971363832533,
+        "expected": 2.5220000000000002,
+        "visibleY": 2.585444357019709,
+        "error": 0.06344435701970896,
+        "node": "RampFront_steel",
+        "runtimeFloor": 2.5220000000000002
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.15,
+        "x": 0,
+        "z": -25.134856819162664,
+        "expected": 2.21,
+        "visibleY": 2.273444215211035,
+        "error": 0.06344421521103483,
+        "node": "RampFront_steel",
+        "runtimeFloor": 2.21
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.33,
+        "x": 0,
+        "z": -26.49668500215786,
+        "expected": 1.7420000000000002,
+        "visibleY": 1.7420010548584808,
+        "error": 0.0000010548584805647465,
+        "node": "RampFront_dark",
+        "runtimeFloor": 1.7420000000000004
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.5,
+        "x": 0,
+        "z": -27.78285606387555,
+        "expected": 1.3000000000000003,
+        "visibleY": 1.3000010548584797,
+        "error": 0.0000010548584794545235,
+        "node": "RampFront_dark",
+        "runtimeFloor": 1.2999999999999996
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.67,
+        "x": 0,
+        "z": -29.069027125593234,
+        "expected": 0.8580000000000001,
+        "visibleY": 0.85800105485848,
+        "error": 0.0000010548584798986127,
+        "node": "RampFront_dark",
+        "runtimeFloor": 0.8580000000000001
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.82,
+        "x": 0,
+        "z": -30.203883944755898,
+        "expected": 0.4680000000000004,
+        "visibleY": 0.46800039308466745,
+        "error": 3.9308466703857903e-7,
+        "node": "RampFrontTip_dark",
+        "runtimeFloor": 0.4680000000000004
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.97,
+        "x": 0,
+        "z": -31.338740763918562,
+        "expected": 0.07800000000000029,
+        "visibleY": 0.14144513696741834,
+        "error": 0.06344513696741805,
+        "node": "RampFrontTip_steel",
+        "runtimeFloor": 0.07800000000000029
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.03,
+        "x": 3.7,
+        "z": -24.226971363832533,
+        "expected": 2.5220000000000002,
+        "visibleY": 2.585444357019709,
+        "error": 0.06344435701970896,
+        "node": "RampFront_steel",
+        "runtimeFloor": 2.5220000000000002
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.15,
+        "x": 3.7,
+        "z": -25.134856819162664,
+        "expected": 2.21,
+        "visibleY": 2.273444215211035,
+        "error": 0.06344421521103483,
+        "node": "RampFront_steel",
+        "runtimeFloor": 2.21
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.33,
+        "x": 3.7,
+        "z": -26.49668500215786,
+        "expected": 1.7420000000000002,
+        "visibleY": 1.7922255472225725,
+        "error": 0.05022554722257233,
+        "node": "RampFront_deck",
+        "runtimeFloor": 1.7420000000000004
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.5,
+        "x": 3.7,
+        "z": -27.78285606387555,
+        "expected": 1.3000000000000003,
+        "visibleY": 1.3502255472225717,
+        "error": 0.05022554722257144,
+        "node": "RampFront_deck",
+        "runtimeFloor": 1.2999999999999996
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.67,
+        "x": 3.7,
+        "z": -29.069027125593234,
+        "expected": 0.8580000000000001,
+        "visibleY": 0.908225547222572,
+        "error": 0.05022554722257189,
+        "node": "RampFront_deck",
+        "runtimeFloor": 0.8580000000000001
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.82,
+        "x": 3.7,
+        "z": -30.203883944755898,
+        "expected": 0.4680000000000004,
+        "visibleY": 0.5182268983441063,
+        "error": 0.050226898344105875,
+        "node": "RampFrontTip_deck",
+        "runtimeFloor": 0.4680000000000004
+      },
+      {
+        "ramp": "front",
+        "fraction": 0.97,
+        "x": 3.7,
+        "z": -31.338740763918562,
+        "expected": 0.07800000000000029,
+        "visibleY": 0.14144513696741834,
+        "error": 0.06344513696741805,
+        "node": "RampFrontTip_steel",
+        "runtimeFloor": 0.07800000000000029
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.03,
+        "x": -3.7,
+        "z": 24.226971363832533,
+        "expected": 2.5220000000000002,
+        "visibleY": 2.585444357019709,
+        "error": 0.06344435701970896,
+        "node": "RampAft_steel",
+        "runtimeFloor": 2.5220000000000002
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.15,
+        "x": -3.7,
+        "z": 25.134856819162664,
+        "expected": 2.21,
+        "visibleY": 2.273444215211035,
+        "error": 0.06344421521103483,
+        "node": "RampAft_steel",
+        "runtimeFloor": 2.21
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.33,
+        "x": -3.7,
+        "z": 26.49668500215786,
+        "expected": 1.7420000000000002,
+        "visibleY": 1.7922255472225725,
+        "error": 0.05022554722257233,
+        "node": "RampAft_deck",
+        "runtimeFloor": 1.7420000000000004
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.5,
+        "x": -3.7,
+        "z": 27.78285606387555,
+        "expected": 1.3000000000000003,
+        "visibleY": 1.3502255472225717,
+        "error": 0.05022554722257144,
+        "node": "RampAft_deck",
+        "runtimeFloor": 1.2999999999999996
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.67,
+        "x": -3.7,
+        "z": 29.069027125593234,
+        "expected": 0.8580000000000001,
+        "visibleY": 0.908225547222572,
+        "error": 0.05022554722257189,
+        "node": "RampAft_deck",
+        "runtimeFloor": 0.8580000000000001
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.82,
+        "x": -3.7,
+        "z": 30.203883944755898,
+        "expected": 0.4680000000000004,
+        "visibleY": 0.518229956503329,
+        "error": 0.05022995650332862,
+        "node": "RampAftTip_deck",
+        "runtimeFloor": 0.4680000000000004
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.97,
+        "x": -3.7,
+        "z": 31.338740763918562,
+        "expected": 0.07800000000000029,
+        "visibleY": 0.14144833693531533,
+        "error": 0.06344833693531504,
+        "node": "RampAftTip_steel",
+        "runtimeFloor": 0.07800000000000029
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.03,
+        "x": 0,
+        "z": 24.226971363832533,
+        "expected": 2.5220000000000002,
+        "visibleY": 2.585444357019709,
+        "error": 0.06344435701970896,
+        "node": "RampAft_steel",
+        "runtimeFloor": 2.5220000000000002
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.15,
+        "x": 0,
+        "z": 25.134856819162664,
+        "expected": 2.21,
+        "visibleY": 2.273444215211035,
+        "error": 0.06344421521103483,
+        "node": "RampAft_steel",
+        "runtimeFloor": 2.21
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.33,
+        "x": 0,
+        "z": 26.49668500215786,
+        "expected": 1.7420000000000002,
+        "visibleY": 1.7420010548584808,
+        "error": 0.0000010548584805647465,
+        "node": "RampAft_dark",
+        "runtimeFloor": 1.7420000000000004
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.5,
+        "x": 0,
+        "z": 27.78285606387555,
+        "expected": 1.3000000000000003,
+        "visibleY": 1.3000010548584797,
+        "error": 0.0000010548584794545235,
+        "node": "RampAft_dark",
+        "runtimeFloor": 1.2999999999999996
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.67,
+        "x": 0,
+        "z": 29.069027125593234,
+        "expected": 0.8580000000000001,
+        "visibleY": 0.85800105485848,
+        "error": 0.0000010548584798986127,
+        "node": "RampAft_dark",
+        "runtimeFloor": 0.8580000000000001
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.82,
+        "x": 0,
+        "z": 30.203883944755898,
+        "expected": 0.4680000000000004,
+        "visibleY": 0.4680034354873708,
+        "error": 0.0000034354873703623667,
+        "node": "RampAftTip_dark",
+        "runtimeFloor": 0.4680000000000004
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.97,
+        "x": 0,
+        "z": 31.338740763918562,
+        "expected": 0.07800000000000029,
+        "visibleY": 0.14144833693531533,
+        "error": 0.06344833693531504,
+        "node": "RampAftTip_steel",
+        "runtimeFloor": 0.07800000000000029
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.03,
+        "x": 3.7,
+        "z": 24.226971363832533,
+        "expected": 2.5220000000000002,
+        "visibleY": 2.585444357019709,
+        "error": 0.06344435701970896,
+        "node": "RampAft_steel",
+        "runtimeFloor": 2.5220000000000002
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.15,
+        "x": 3.7,
+        "z": 25.134856819162664,
+        "expected": 2.21,
+        "visibleY": 2.273444215211035,
+        "error": 0.06344421521103483,
+        "node": "RampAft_steel",
+        "runtimeFloor": 2.21
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.33,
+        "x": 3.7,
+        "z": 26.49668500215786,
+        "expected": 1.7420000000000002,
+        "visibleY": 1.7922255472225725,
+        "error": 0.05022554722257233,
+        "node": "RampAft_deck",
+        "runtimeFloor": 1.7420000000000004
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.5,
+        "x": 3.7,
+        "z": 27.78285606387555,
+        "expected": 1.3000000000000003,
+        "visibleY": 1.3502255472225717,
+        "error": 0.05022554722257144,
+        "node": "RampAft_deck",
+        "runtimeFloor": 1.2999999999999996
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.67,
+        "x": 3.7,
+        "z": 29.069027125593234,
+        "expected": 0.8580000000000001,
+        "visibleY": 0.908225547222572,
+        "error": 0.05022554722257189,
+        "node": "RampAft_deck",
+        "runtimeFloor": 0.8580000000000001
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.82,
+        "x": 3.7,
+        "z": 30.203883944755898,
+        "expected": 0.4680000000000004,
+        "visibleY": 0.518229956503329,
+        "error": 0.05022995650332862,
+        "node": "RampAftTip_deck",
+        "runtimeFloor": 0.4680000000000004
+      },
+      {
+        "ramp": "aft",
+        "fraction": 0.97,
+        "x": 3.7,
+        "z": 31.338740763918562,
+        "expected": 0.07800000000000029,
+        "visibleY": 0.14144833693531533,
+        "error": 0.06344833693531504,
+        "node": "RampAftTip_steel",
+        "runtimeFloor": 0.07800000000000029
+      }
+    ],
+    "lift": [
+      {
+        "sample": 0,
+        "y": 2.6,
+        "carry": 0,
+        "gateZ": [
+          -2.375,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 2.6,
+        "visibleY": 2.6500000957399608,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 10,
+        "y": 2.6,
+        "carry": 0,
+        "gateZ": [
+          -3.625,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 2.6,
+        "visibleY": 2.6500000957399608,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 20,
+        "y": 3.0375,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 3.0375,
+        "visibleY": 3.0875000957399608,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 30,
+        "y": 3.6625,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 3.6625,
+        "visibleY": 3.7125000957399608,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 40,
+        "y": 4.2875,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 4.2875,
+        "visibleY": 4.33750009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 50,
+        "y": 4.9125,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 4.9125,
+        "visibleY": 4.96250009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 60,
+        "y": 5.5375,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 5.5375,
+        "visibleY": 5.58750009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 70,
+        "y": 6.1625,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 6.1625,
+        "visibleY": 6.21250009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 80,
+        "y": 6.7875,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 6.7875,
+        "visibleY": 6.83750009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 90,
+        "y": 7.4125,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 7.4125,
+        "visibleY": 7.46250009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 100,
+        "y": 8.0375,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 8.0375,
+        "visibleY": 8.08750009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 110,
+        "y": 8.6625,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 8.6625,
+        "visibleY": 8.71250009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 120,
+        "y": 9.2875,
+        "carry": 0.0625,
+        "gateZ": [
+          -4,
+          -4
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 9.2875,
+        "visibleY": 9.33750009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 130,
+        "y": 9.5,
+        "carry": 0,
+        "gateZ": [
+          -4,
+          -3.25
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 9.5,
+        "visibleY": 9.55000009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      },
+      {
+        "sample": 139,
+        "y": 9.5,
+        "carry": 0,
+        "gateZ": [
+          -4,
+          -2.25
+        ],
+        "x": 5.5,
+        "z": -4,
+        "expected": 9.5,
+        "visibleY": 9.55000009573996,
+        "error": 0.05000009573996067,
+        "node": "Lift_nonslip_inset"
+      }
+    ]
+  },
+  "floorSummary": {
+    "cargo": {
+      "samples": 72,
+      "missing": 0,
+      "minError": -0.030000066757202237,
+      "maxError": 1.4305114737211966e-7
+    },
+    "upperCorridor": {
+      "samples": 45,
+      "missing": 0,
+      "minError": 0.027999939396977425,
+      "maxError": 0.027999939396977425
+    },
+    "ramps": {
+      "samples": 42,
+      "missing": 0,
+      "minError": 3.9308466703857903e-7,
+      "maxError": 0.06344833693531504
+    },
+    "lift": {
+      "samples": 15,
+      "missing": 0,
+      "minError": 0.05000009573996067,
+      "maxError": 0.05000009573996067
+    }
+  },
+  "selectedRoutes": [
+    {
+      "name": "walking through lower lift call pedestal currently has no collider",
+      "from": [
+        3.5,
+        4.35,
+        -6
+      ],
+      "to": [
+        3.5,
+        4.35,
+        -4.5
+      ],
+      "result": [
+        3.5,
+        4.35,
+        -4.5
+      ],
+      "allowed": true
+    },
+    {
+      "name": "galley doorway",
+      "from": [
+        0,
+        11.25,
+        2.8
+      ],
+      "to": [
+        2.5,
+        11.25,
+        2.8
+      ],
+      "result": [
+        2.5,
+        11.25,
+        2.8
+      ],
+      "allowed": true
+    },
+    {
+      "name": "galley to hygiene",
+      "from": [
+        2.5,
+        11.25,
+        2.8
+      ],
+      "to": [
+        2.5,
+        11.25,
+        12.2
+      ],
+      "result": [
+        2.5,
+        11.25,
+        12.2
+      ],
+      "allowed": true
+    },
+    {
+      "name": "hygiene return to corridor",
+      "from": [
+        2.5,
+        11.25,
+        12.2
+      ],
+      "to": [
+        0,
+        11.25,
+        12.2
+      ],
+      "result": [
+        0,
+        11.25,
+        12.2
+      ],
+      "allowed": true
+    },
+    {
+      "name": "crew doorway",
+      "from": [
+        0,
+        11.25,
+        2.8
+      ],
+      "to": [
+        -2.5,
+        11.25,
+        2.8
+      ],
+      "result": [
+        -2.5,
+        11.25,
+        2.8
+      ],
+      "allowed": true
+    },
+    {
+      "name": "crew desk blocks a straight line on its inboard side",
+      "from": [
+        -2.5,
+        11.25,
+        2.8
+      ],
+      "to": [
+        -2.5,
+        11.25,
+        15.5
+      ],
+      "result": [
+        -2.5,
+        11.25,
+        2.8
+      ],
+      "allowed": false
+    },
+    {
+      "name": "crew aisle past the desk",
+      "from": [
+        -3.1,
+        11.25,
+        3
+      ],
+      "to": [
+        -3.1,
+        11.25,
+        16.2
+      ],
+      "result": [
+        -3.1,
+        11.25,
+        16.2
+      ],
+      "allowed": true
+    }
+  ],
+  "finalSystemsSnapshot": {
+    "ramps": [
+      {
+        "id": "front",
+        "node": "RampFront",
+        "pivot": [
+          0,
+          2.6,
+          -24
+        ],
+        "angle": -0.3310117280892945,
+        "target": -0.3310117280892945,
+        "progress": 1,
+        "moving": false,
+        "tipAngle": 0
+      },
+      {
+        "id": "aft",
+        "node": "RampAft",
+        "pivot": [
+          0,
+          2.6,
+          24
+        ],
+        "angle": 0.3310117280892945,
+        "target": 0.3310117280892945,
+        "progress": 1,
+        "moving": false,
+        "tipAngle": 0
+      }
+    ],
+    "elevator": {
+      "id": "crew",
+      "node": "CrewElevator",
+      "centre": [
+        5.5,
+        -4
+      ],
+      "y": 9.5,
+      "target": 9.5,
+      "moving": false,
+      "waitingForGates": false,
+      "gates": [
+        {
+          "node": "LiftGateLower",
+          "deck": 2.6,
+          "z": -4,
+          "target": -4,
+          "moving": false
+        },
+        {
+          "node": "LiftGateUpper",
+          "deck": 9.5,
+          "z": -2.25,
+          "target": -2.25,
+          "moving": false
+        }
+      ]
+    }
+  }
+}

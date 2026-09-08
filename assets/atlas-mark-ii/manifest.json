@@ -1,67 +1,90 @@
 {
-  "version": 1,
+  "version": 2,
+  "stage": "silhouette-iteration",
+  "contactBake": true,
   "source": "assets/atlas-mark-ii/build_atlas.py",
   "layout": "assets/atlas-mark-ii/layout.json",
   "lods": [
     {
       "level": 0,
-      "triangles": 412988,
-      "meshes": 168,
+      "triangles": 59443,
+      "meshes": 241,
       "bounds": {
         "min": [
-          -17.855575561523438,
-          0.0,
-          -30.88530731201172
+          -17.767484664916992,
+          -8.754432201385498e-08,
+          -30.88584327697754
         ],
         "max": [
-          17.855575561523438,
-          14.618499755859375,
-          30.901958465576172
+          17.767486572265625,
+          14.943105697631836,
+          30.903568267822266
         ]
       },
       "file": "public/models/atlas-mark-ii/atlas-mark-ii.glb",
-      "bytes": 38037892,
-      "sha256": "a3b6e095060b965fbc51bb7e87dea4f985521d114efeaf5493d18bfe9ea434aa"
+      "bytes": 3859404,
+      "sha256": "f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e",
+      "geometryPacking": {
+        "inputBytes": 5616524,
+        "outputBytes": 3859404,
+        "maximumPositionErrorMetres": 0.0006256581983971282,
+        "maximumNormalErrorDegrees": 0.3789709727396361,
+        "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
+      }
     },
     {
       "level": 1,
-      "triangles": 133848,
-      "meshes": 168,
+      "triangles": 37400,
+      "meshes": 241,
       "bounds": {
         "min": [
-          -17.855575561523438,
-          0.0,
-          -30.88530731201172
+          -17.767484664916992,
+          -8.754432201385498e-08,
+          -30.88584327697754
         ],
         "max": [
-          17.855575561523438,
-          14.618499755859375,
-          30.901958465576172
+          17.767486572265625,
+          14.943105697631836,
+          30.903568267822266
         ]
       },
       "file": "public/models/atlas-mark-ii/atlas-mark-ii-lod1.glb",
-      "bytes": 13909084,
-      "sha256": "cd32ac7041c346c07d1d9527bbb2d98662ea046e062bce51bfc9ef69fd65e50d"
+      "bytes": 2294168,
+      "sha256": "ae24bdaaa05c8a2b4e0673fcb03553f92de3d6036a8c45171a4123deef70a2aa",
+      "geometryPacking": {
+        "inputBytes": 3389628,
+        "outputBytes": 2294168,
+        "maximumPositionErrorMetres": 0.0006175912578993483,
+        "maximumNormalErrorDegrees": 0.37806075248309534,
+        "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
+      }
     },
     {
       "level": 2,
-      "triangles": 43340,
-      "meshes": 168,
+      "triangles": 23150,
+      "meshes": 241,
       "bounds": {
         "min": [
-          -17.86054229736328,
-          0.008209634572267532,
-          -30.883995056152344
+          -17.767484664916992,
+          -8.754432201385498e-08,
+          -30.88136100769043
         ],
         "max": [
-          17.860488891601562,
-          14.618499755859375,
-          30.903654098510742
+          17.767486572265625,
+          14.93288516998291,
+          30.915977478027344
         ]
       },
       "file": "public/models/atlas-mark-ii/atlas-mark-ii-lod2.glb",
-      "bytes": 4216528,
-      "sha256": "1d22c5ef0a86c29659f0ef224285358753fc8db51fe1fb71c10c83809e78dc39"
+      "bytes": 1462120,
+      "sha256": "6a7274b296c5657252301ce4f8572234bcdb8d148777651ed61c4d362d38d1d3",
+      "geometryPacking": {
+        "inputBytes": 2125464,
+        "outputBytes": 1462120,
+        "maximumPositionErrorMetres": 0.0006350490554101976,
+        "maximumNormalErrorDegrees": 0.3654868362282267,
+        "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
+      }
     }
   ]
 }

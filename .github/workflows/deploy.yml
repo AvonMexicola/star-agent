@@ -1,0 +1,35 @@
+name: Deploy to staragent.site (play + homepage)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency: { group: deploy-play, cancel-in-progress: true }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: npx vite build
+      - name: Upload release (restricted rsync-only key)
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          KNOWN: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && echo "$KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy && echo "$KNOWN" >> ~/.ssh/known_hosts
+          # Release layout: public/ = game client (dist), site/ = homepage (repo site/, if present)
+          mkdir -p release/public release/site
+          rsync -a dist/ release/public/
+          [ -d site ] && rsync -a site/ release/site/ || true
+          echo "$GITHUB_SHA" > release/RELEASE
+          # RELEASE last: the server's path unit promotes atomically when it appears
+          rsync -az --delete --exclude RELEASE -e "ssh -i ~/.ssh/deploy" release/ staragent@$HOST:/
+          rsync -az -e "ssh -i ~/.ssh/deploy" release/RELEASE staragent@$HOST:/
+      - name: Verify
+        run: |
+          sleep 15
+          curl -fsS --max-time 20 https://play.staragent.site/ | grep -q "Star Agent" && echo "live" || (echo "not live yet (DNS/TLS pending?)"; exit 0)

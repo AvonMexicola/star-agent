@@ -1,0 +1,52 @@
+{
+  "browser": "Chromium",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "samples": {
+    "baseline": {
+      "hidden": {
+        "publications": 150,
+        "durationMs": 42.900000005960464,
+        "created": 13950,
+        "replaced": 300,
+        "retainedFocus": true
+      },
+      "open": {
+        "publications": 150,
+        "durationMs": 34.30000001192093,
+        "created": 13950,
+        "replaced": 300,
+        "retainedFocus": false
+      },
+      "contents": {
+        "inventory": "Laser riflepack: 1 × · ship: 0 × · station: 0 ×Pack to shipShip to packStation to shipShip to stationDrop from packEquipLaser rifle chargespack: 60 × · ship: 0 × · station: 0 ×Pack to shipShip to packStation to shipShip to stationDrop from packBandagepack: 2 × · ship: 1 × · station: 0 ×Pack to shipShip to packStation to shipShip to stationDrop from packBasalt concentratepack: 0.00 kg · ship: 0.00 kg · station: 100.00 kgPack to shipShip to packStation to shipShip to stationDrop from packWater icepack: 2.00 kg · ship: 20.00 kg · station: 0.00 kgPack to shipShip to packStation to shipShip to stationDrop from packHolsterPick up 1 × Bandage",
+        "summary": "Revision 4 · Health 100 · Pack 6.7 / 20 kg · Ship 20.1 / 120 kg",
+        "roster": "Pilot_0YouPilot_1walkPilot_2walkPilot_3walkPilot_4walkPilot_5walkPilot_6walkPilot_7walkPilot_8walkPilot_9walk"
+      }
+    },
+    "candidate": {
+      "hidden": {
+        "publications": 150,
+        "durationMs": 2.0999999940395355,
+        "created": 0,
+        "replaced": 0,
+        "retainedFocus": true
+      },
+      "open": {
+        "publications": 150,
+        "durationMs": 1.600000023841858,
+        "created": 0,
+        "replaced": 0,
+        "retainedFocus": true
+      },
+      "contents": {
+        "inventory": "Laser riflepack: 1 × · ship: 0 × · station: 0 ×Pack to shipShip to packStation to shipShip to stationDrop from packEquipLaser rifle chargespack: 60 × · ship: 0 × · station: 0 ×Pack to shipShip to packStation to shipShip to stationDrop from packBandagepack: 2 × · ship: 1 × · station: 0 ×Pack to shipShip to packStation to shipShip to stationDrop from packBasalt concentratepack: 0.00 kg · ship: 0.00 kg · station: 100.00 kgPack to shipShip to packStation to shipShip to stationDrop from packWater icepack: 2.00 kg · ship: 20.00 kg · station: 0.00 kgPack to shipShip to packStation to shipShip to stationDrop from packHolsterPick up 1 × Bandage",
+        "summary": "Revision 4 · Health 100 · Pack 6.7 / 20 kg · Ship 20.1 / 120 kg",
+        "roster": ""
+      }
+    }
+  },
+  "errors": []
+}

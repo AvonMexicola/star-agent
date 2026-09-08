@@ -1,0 +1,72 @@
+[
+  {
+    "family": "Barlow Condensed",
+    "weight": "400",
+    "url": "https://fonts.gstatic.com/s/barlowcondensed/v13/HTx3L3I-JCGChYJ8VI-L6OO_au7B2xY.ttf",
+    "file": "barlow-condensed-400.woff2",
+    "source": "assets/fonts/barlow-condensed-400.ttf"
+  },
+  {
+    "family": "Barlow Condensed",
+    "weight": "500",
+    "url": "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B4-Lw_3E.ttf",
+    "file": "barlow-condensed-500.woff2",
+    "source": "assets/fonts/barlow-condensed-500.ttf"
+  },
+  {
+    "family": "Barlow Condensed",
+    "weight": "600",
+    "url": "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B4873_3E.ttf",
+    "file": "barlow-condensed-600.woff2",
+    "source": "assets/fonts/barlow-condensed-600.ttf"
+  },
+  {
+    "family": "Barlow Condensed",
+    "weight": "700",
+    "url": "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2_3E.ttf",
+    "file": "barlow-condensed-700.woff2",
+    "source": "assets/fonts/barlow-condensed-700.ttf"
+  },
+  {
+    "family": "DM Sans",
+    "weight": "400",
+    "url": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAopxhTg.ttf",
+    "file": "dm-sans-400.woff2",
+    "source": "assets/fonts/dm-sans-400.ttf"
+  },
+  {
+    "family": "DM Sans",
+    "weight": "500",
+    "url": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAkJxhTg.ttf",
+    "file": "dm-sans-500.woff2",
+    "source": "assets/fonts/dm-sans-500.ttf"
+  },
+  {
+    "family": "DM Sans",
+    "weight": "600",
+    "url": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAfJthTg.ttf",
+    "file": "dm-sans-600.woff2",
+    "source": "assets/fonts/dm-sans-600.ttf"
+  },
+  {
+    "family": "DM Sans",
+    "weight": "700",
+    "url": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwARZthTg.ttf",
+    "file": "dm-sans-700.woff2",
+    "source": "assets/fonts/dm-sans-700.ttf"
+  },
+  {
+    "family": "Space Mono",
+    "weight": "400",
+    "url": "https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRUEY.ttf",
+    "file": "space-mono-400.woff2",
+    "source": "assets/fonts/space-mono-400.ttf"
+  },
+  {
+    "family": "Space Mono",
+    "weight": "700",
+    "url": "https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZYFI.ttf",
+    "file": "space-mono-700.woff2",
+    "source": "assets/fonts/space-mono-700.ttf"
+  }
+]

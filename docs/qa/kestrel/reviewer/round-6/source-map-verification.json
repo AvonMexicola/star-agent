@@ -1,0 +1,291 @@
+{
+  "sourceRecord": {
+    "version": 1,
+    "provider": "Meshy",
+    "model": "Meshy 7",
+    "requestedResolution": "2K",
+    "pbrEnabled": true,
+    "prompt": "../meshy-prompt.txt",
+    "displayedCredits": 10,
+    "sourceFile": "Meshy_AI_kestrel_meshy_clean_0906215631_texture.glb",
+    "sourceSha256": "41684db25a765f3dcabfa6b8a7af09e56309bd65bfee64eff1a21ea02436343b",
+    "sourceBytes": 9428476,
+    "uploadSha256": "8ae571172e149a8c0a831abc743c35aea24f0f6b4352c4a2f639e3407d8b8282",
+    "uvLayoutSha256": "91899f96b0de0221e206455e5c46659f0768a3d9a9e71c78bc674d6e80389b6d",
+    "uvVerification": {
+      "matchedVertices": 47024,
+      "totalVertices": 47024,
+      "maxError": 1.2516975402832031e-06,
+      "restoredPositionScale": 6.750524044036865,
+      "restoredPositionCenter": [
+        0.0,
+        1.5994133949279785,
+        -0.0005240440368652344
+      ],
+      "flipV": false
+    },
+    "sourceMaps": {
+      "basecolor.jpg": {
+        "sha256": "22edba65ca3fc6638f62c6cf05eca3b8c990c688489ccdcad4135567cf2815a1",
+        "bytes": 2703085,
+        "resolution": [
+          2048,
+          2048
+        ]
+      },
+      "metallic-roughness.jpg": {
+        "sha256": "5714f861d9899a65ac8538054ad4131458c2c05b38c9d02058fa013c4134eb1c",
+        "bytes": 1904165,
+        "resolution": [
+          2048,
+          2048
+        ]
+      },
+      "normal.jpg": {
+        "sha256": "cc558fe9bc28c6dc28a9ab6268b254eec3fb460ab92925bd8b7cc2afff0f6aec",
+        "bytes": 2144863,
+        "resolution": [
+          2048,
+          2048
+        ]
+      }
+    },
+    "importedResolution": [
+      1024,
+      1024
+    ],
+    "scope": "Generated PBR maps only; Blender rig and authored UV layout preserved"
+  },
+  "packingProvenance": {
+    "version": 2,
+    "uvLayoutSha256": "91899f96b0de0221e206455e5c46659f0768a3d9a9e71c78bc674d6e80389b6d",
+    "basecolorSource": "Authored material regions with filtered Meshy wear",
+    "packedChannels": {
+      "R": "Blender contact AO",
+      "G": "Material-specific roughness with Meshy variation",
+      "B": "Material-specific metalness with Meshy variation"
+    },
+    "normalSource": "Authored bevel normal with attenuated Meshy tangent detail",
+    "resolution": [
+      1024,
+      1024
+    ],
+    "sources": {
+      "procedural-basecolor.png": {
+        "sha256": "36d2a8972d781610519ae482faf250cf0fb2d0c3c8cf17e7ee171710d6e0532e",
+        "bytes": 687314
+      },
+      "procedural-normal.png": {
+        "sha256": "3028dd7a03f13086d6d07c63873f36913383a58c7f6650cfa1b7c3bb236f4cc4",
+        "bytes": 479637
+      },
+      "procedural-roughness.png": {
+        "sha256": "172537379958bc09289d3b72fed084e985184f98a348d6095b210e24c1787224",
+        "bytes": 585765
+      },
+      "procedural-metallic.png": {
+        "sha256": "215ed6396f1c6ad4b4c9b0008e235054a5ee39ea11c8865cb325c3127f6f53e6",
+        "bytes": 140440
+      },
+      "procedural-ao.png": {
+        "sha256": "f91ffdc35a8796f2dea55ed67e4c892c1d0eba2416768f15225e167c69dd5436",
+        "bytes": 508952
+      },
+      "meshy-basecolor.png": {
+        "sha256": "53f7fe757e5b65b32e1249b948f36384475c1d962f89bd0c6b86197f53732fc4",
+        "bytes": 1428468
+      },
+      "meshy-normal.png": {
+        "sha256": "071513f5b15f49839e2965d762cb335785456885e0d671d798ae9695ef7cbb85",
+        "bytes": 1204949
+      },
+      "meshy-roughness.png": {
+        "sha256": "103318bc6c0891c3f489be554c479145cac7c88b2730098d0115f3123db3ad22",
+        "bytes": 662218
+      },
+      "meshy-metallic.png": {
+        "sha256": "743f6f6e00620af66a57613ee39984c05c380a08a7078cd052a5dca97cf8d1cf",
+        "bytes": 685839
+      }
+    },
+    "materialRegions": {
+      "uvLayoutSha256": "91899f96b0de0221e206455e5c46659f0768a3d9a9e71c78bc674d6e80389b6d",
+      "coveredTexels": 439328,
+      "marginTexels": 2,
+      "regions": {
+        "Armour |": 340316,
+        "Structure |": 159353,
+        "Mechanism |": 82065,
+        "Cockpit |": 6652,
+        "Cavity |": 25652,
+        "Warning |": 3835,
+        "Decal |": 766,
+        "Livery |": 7107
+      }
+    },
+    "finishRecipe": {
+      "source": "blender/pack_fighter_textures.py",
+      "materialParameters": {
+        "Armour |": [
+          [
+            0.72,
+            0.76,
+            0.73
+          ],
+          0.43,
+          0.08,
+          0.28
+        ],
+        "Structure |": [
+          [
+            0.026,
+            0.038,
+            0.04
+          ],
+          0.56,
+          0.04,
+          0.25
+        ],
+        "Mechanism |": [
+          [
+            0.27,
+            0.31,
+            0.32
+          ],
+          0.31,
+          0.88,
+          0.48
+        ],
+        "Cockpit |": [
+          [
+            0.019,
+            0.025,
+            0.028
+          ],
+          0.79,
+          0.0,
+          0.18
+        ],
+        "Cavity |": [
+          [
+            0.005,
+            0.009,
+            0.011
+          ],
+          0.82,
+          0.02,
+          0.12
+        ],
+        "Warning |": [
+          [
+            0.9,
+            0.36,
+            0.06
+          ],
+          0.49,
+          0.08,
+          0.12
+        ],
+        "Decal |": [
+          [
+            0.012,
+            0.025,
+            0.027
+          ],
+          0.52,
+          0.02,
+          0.1
+        ],
+        "Livery |": [
+          [
+            0.1,
+            0.28,
+            0.24
+          ],
+          0.47,
+          0.08,
+          0.22
+        ]
+      },
+      "meshGeometryChanged": false,
+      "uvLayoutChanged": false,
+      "rawGeneratedMaps": "meshy-source/"
+    }
+  },
+  "checks": [
+    {
+      "file": "assets/kestrel/textures/meshy-source/basecolor.jpg",
+      "sha256": "22edba65ca3fc6638f62c6cf05eca3b8c990c688489ccdcad4135567cf2815a1",
+      "bytes": 2703085,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/meshy-source/metallic-roughness.jpg",
+      "sha256": "5714f861d9899a65ac8538054ad4131458c2c05b38c9d02058fa013c4134eb1c",
+      "bytes": 1904165,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/meshy-source/normal.jpg",
+      "sha256": "cc558fe9bc28c6dc28a9ab6268b254eec3fb460ab92925bd8b7cc2afff0f6aec",
+      "bytes": 2144863,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/procedural-basecolor.png",
+      "sha256": "36d2a8972d781610519ae482faf250cf0fb2d0c3c8cf17e7ee171710d6e0532e",
+      "bytes": 687314,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/procedural-normal.png",
+      "sha256": "3028dd7a03f13086d6d07c63873f36913383a58c7f6650cfa1b7c3bb236f4cc4",
+      "bytes": 479637,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/procedural-roughness.png",
+      "sha256": "172537379958bc09289d3b72fed084e985184f98a348d6095b210e24c1787224",
+      "bytes": 585765,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/procedural-metallic.png",
+      "sha256": "215ed6396f1c6ad4b4c9b0008e235054a5ee39ea11c8865cb325c3127f6f53e6",
+      "bytes": 140440,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/procedural-ao.png",
+      "sha256": "f91ffdc35a8796f2dea55ed67e4c892c1d0eba2416768f15225e167c69dd5436",
+      "bytes": 508952,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/meshy-basecolor.png",
+      "sha256": "53f7fe757e5b65b32e1249b948f36384475c1d962f89bd0c6b86197f53732fc4",
+      "bytes": 1428468,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/meshy-normal.png",
+      "sha256": "071513f5b15f49839e2965d762cb335785456885e0d671d798ae9695ef7cbb85",
+      "bytes": 1204949,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/meshy-roughness.png",
+      "sha256": "103318bc6c0891c3f489be554c479145cac7c88b2730098d0115f3123db3ad22",
+      "bytes": 662218,
+      "matchesRecorded": true
+    },
+    {
+      "file": "assets/kestrel/textures/meshy-metallic.png",
+      "sha256": "743f6f6e00620af66a57613ee39984c05c380a08a7078cd052a5dca97cf8d1cf",
+      "bytes": 685839,
+      "matchesRecorded": true
+    }
+  ],
+  "allFileChecksMatch": true,
+  "generatedMeshUvCorrespondenceRerun": false
+}

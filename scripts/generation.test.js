@@ -43,6 +43,7 @@ test('terrain worker uses the same seed and geometry as main-thread collision qu
     assert.deepEqual(actual.positions, expected.positions);
     assert.deepEqual(actual.colors, expected.colors);
     assert.deepEqual(actual.heights, expected.heights);
+    assert.deepEqual(actual.rockReliefs, expected.rockReliefs);
     assert.deepEqual(actual.field, expected.field);
     for (const field of ['parentPositions','parentWaterPositions','parentNormals','parentColors','parentHeights']) {
       assert.deepEqual(actual[field], expected[field], `worker transfers deterministic ${field}`);
@@ -73,19 +74,20 @@ test('regular flight crosses the atmosphere, lands and climbs back to space with
   const d = new THREE.Vector3(...findDestinations().forest);
   nav.position.copy(d).multiplyScalar(RADIUS + terrainHeight(...d) + 180000);
   nav.orientToward(new THREE.Vector3(), new THREE.Vector3(0,1,0));
-  nav.transit = nav.orbit = () => assert.fail('continuous flight invoked a teleport');
+  nav.combatMode=false;nav.transit = nav.orbit = () => assert.fail('continuous flight invoked a teleport');
   nav.keys.add('KeyW');
   let previous = nav.position.clone(), layers = new Set();
   for (let frame = 0; frame < 60 * 600 && nav.mode === 'flight'; frame++) {
+    nav.speedScale=Math.max(.05,Math.min(1,Math.sqrt(18*Math.max(0,nav.altitude-500))/nav.cruiseSpeedProfile.limit));
     nav.update(1/60);
     const distance = nav.position.distanceTo(previous);
     assert.ok(distance < 3000, `continuous step: ${distance}m`);
     previous.copy(nav.position);
-    if(nav.mode==='flight'&&nav.altitude<100&&!nav.autoland){nav.keys.clear();nav.landOrLaunch();}
+    if(nav.mode==='flight'&&nav.altitude<1000&&!nav.autoland){nav.keys.clear();if(nav.speed>=9)nav.keys.add('KeyX');else nav.landOrLaunch();}
     for (const threshold of [70000,10000,1500,100]) if (nav.altitude < threshold) layers.add(threshold);
   }
   assert.equal(nav.mode, 'landed'); assert.equal(layers.size, 4);
-  nav.keys.clear(); nav.landOrLaunch(); nav.toggleGear(); nav.keys.add('Space'); nav.keys.add('ShiftLeft');
+  nav.keys.clear(); nav.speedScale=1;nav.landOrLaunch(); nav.toggleGear(); nav.keys.add('Space'); nav.keys.add('ShiftLeft');
   for (let frame = 0; frame < 60 * 600 && nav.altitude < 100000; frame++) nav.update(1/60);
   assert.equal(nav.mode, 'flight'); assert.ok(nav.altitude > 70000);
 });
@@ -98,11 +100,14 @@ test('flight can cross between forest and coast coordinates using steering and t
   setPlanetSeed(DEFAULT_SEED);
   const destinations=findDestinations(), nav=new Navigation({addEventListener(){}},()=>{});
   nav.position.set(...destinations.forest).multiplyScalar(RADIUS+100000);
-  nav.transit=nav.orbit=()=>assert.fail('zone flight invoked a teleport');
+  nav.combatMode=false;nav.transit=nav.orbit=()=>assert.fail('zone flight invoked a teleport');
   nav.keys.add('KeyW');nav.keys.add('ShiftLeft');
   const target=new THREE.Vector3(...destinations.coast);
   let angle=Infinity;
-  for(let frame=0;frame<60*120;frame++){
+  // Seeded outcrops can change which safe forest site wins the destination search.
+  // Budget for the actual arc length instead of assuming the old pair of sites.
+  const travelSeconds=120+nav.normal.angleTo(target)*RADIUS/10000;
+  for(let frame=0;frame<60*travelSeconds;frame++){
     const normal=nav.normal;
     angle=normal.angleTo(target);
     if(angle<.001)break;

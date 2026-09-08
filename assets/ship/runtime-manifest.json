@@ -1,0 +1,36 @@
+{
+  "bytes": 3413568,
+  "beforeBytes": 4260428,
+  "triangles": 57628,
+  "images": 4,
+  "sha256": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+  "maxNormalComponentError": 1.5257199217244555e-05,
+  "maxUVError": 7.629510948348184e-06,
+  "positionAndIndexBuffers": "unchanged",
+  "scope": "runtime packing only; authored texture/painting UVs retained in Blender",
+  "meshPrimitives": 23,
+  "materials": [
+    "Nomad / cabin manufactured PBR",
+    "Caution / amber",
+    "Drive / ion blue",
+    "Nomad / hull manufactured PBR",
+    "Position / ice"
+  ],
+  "rigRoots": [
+    "Gear_Port_Aft",
+    "Gear_Port_Fore",
+    "Gear_Starboard_Aft",
+    "Gear_Starboard_Fore",
+    "HP_Weapon_Port",
+    "HP_Weapon_Starboard"
+  ],
+  "coordinateSystem": {
+    "units": "metres",
+    "up": "+Y",
+    "nose": "-Z",
+    "origin": "Hull datum at deployed foot contact plane"
+  },
+  "builder": "assets/ship/build_ship.py",
+  "collisionAuthority": "src/boarding.js",
+  "runtimeAssembly": "src/ship-walkable.js adds the working hatch, folding ramp, MFDs and live cargo screen; its complete cost is measured separately"
+}

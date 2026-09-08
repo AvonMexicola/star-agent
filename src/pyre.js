@@ -1,3 +1,4 @@
+import { attachRockMaterial } from './rock-material.js';
 import * as THREE from 'three';
 import { PYRE_RADIUS, PYRE_POSITION, PYRE_GENERATOR_VERSION, pyreFrame } from './pyre-world.js';
 import { PyreTerrain } from './pyre-terrain.js';
@@ -50,6 +51,7 @@ export class Pyre {
           uniform sampler2D pyreColor;uniform sampler2D pyreOrbitalNormal;uniform sampler2D pyreCracks;uniform sampler2D pyreMaps;uniform float pyreMapsReady;uniform mat3 pyreFrame;
           varying vec3 vPyreNormal;varying vec3 vPyreDirection;varying vec3 vPyrePoint;varying vec4 vPyreData;
           vec4 pyTri(sampler2D t,vec3 p,vec3 w){return texture2D(t,p.yz)*w.x+texture2D(t,p.xz)*w.y+texture2D(t,p.xy)*w.z;}
+          vec4 pyOrbit(sampler2D tex,vec2 uv){vec2 dx=dFdx(uv),dy=dFdy(uv);dx.x-=floor(dx.x+.5);dy.x-=floor(dy.x+.5);return textureGrad(tex,uv,dx,dy);}
           vec3 pyEmissive;float pyRough;float pyRelief;float pyOrbitalFade;vec3 pyOrbitalN;`)
         .replace('#include <color_fragment>', `#include <color_fragment>
           vec3 pyD=normalize(vPyreDirection),pyN=normalize(vPyreNormal);
@@ -67,10 +69,10 @@ export class Pyre {
           float pyActivity=vPyreData.x,pyFresh=vPyreData.y,pySulphur=vPyreData.z;
           vec3 pyB=pyreFrame*pyD;
           vec2 pyUv=vec2(atan(pyB.x,pyB.z)/6.28318530718+.5,asin(clamp(pyB.y,-1.0,1.0))/3.14159265359+.5);
-          vec4 pyMaps=texture2D(pyreMaps,pyUv)*pyreMapsReady;
+          vec4 pyMaps=pyOrbit(pyreMaps,pyUv)*pyreMapsReady;
           pyOrbitalFade=smoothstep(60000.0,200000.0,pyRange)*pyreMapsReady;
-          diffuseColor.rgb=mix(diffuseColor.rgb,texture2D(pyreColor,pyUv).rgb,pyOrbitalFade);
-          vec3 bodyNormal=normalize(texture2D(pyreOrbitalNormal,pyUv).xyz*2.0-1.0);
+          diffuseColor.rgb=mix(diffuseColor.rgb,pyOrbit(pyreColor,pyUv).rgb,pyOrbitalFade);
+          vec3 bodyNormal=normalize(pyOrbit(pyreOrbitalNormal,pyUv).xyz*2.0-1.0);
           pyOrbitalN=normalize(vec3(dot(pyreFrame[0],bodyNormal),dot(pyreFrame[1],bodyNormal),dot(pyreFrame[2],bodyNormal)));
           // Mid-scale plate mottling carried to 40 km: no dead plastic band between detail and orbit.
           diffuseColor.rgb*=mix(1.0,.74+pyMacro.b*.48,pyMid*.7)*mix(1.0,.78+pyPlates.b*.44,pyMid);
@@ -109,6 +111,7 @@ export class Pyre {
           normal=normalize(mix(normal,mat3(viewMatrix)*pyOrbitalN,pyOrbitalFade));`);
     };
     this.material.customProgramCacheKey = () => `pyre-terrain-v${PYRE_GENERATOR_VERSION}`;
+    this.releaseRockMaterial=attachRockMaterial(this.material,{pointAttribute:'pyrePoint',tint:[.72,.65,.57]});
     this.terrain = new PyreTerrain(this.group, this.material, { sync, onMaps: data => {
       const texture = new THREE.DataTexture(data.data, data.width, data.height); texture.wrapS = THREE.RepeatWrapping;
       texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter; texture.generateMipmaps = true; texture.needsUpdate = true;
@@ -128,5 +131,5 @@ export class Pyre {
   get state() {
     return { position: this.worldPosition.toArray(), radius: PYRE_RADIUS, distance: this.distance ?? null, visible: this.group.visible, patches: this.terrain.visibleCount, lod: this.terrain.maxLevel, pending: this.terrain.pending, builds: this.terrain.buildsLastFrame, morphing:this.terrain.morphing,error:this.terrain.error,mapsReady: this.mapsReady.value === 1, generatorVersion: PYRE_GENERATOR_VERSION };
   }
-  dispose() { this.terrain.dispose(); this.cracks.dispose(); this.maps.dispose();this.orbitalColor.dispose();this.orbitalNormal.dispose(); this.material.dispose(); this.scene.remove(this.group); }
+  dispose() { this.releaseRockMaterial(); this.terrain.dispose(); this.cracks.dispose(); this.maps.dispose();this.orbitalColor.dispose();this.orbitalNormal.dispose(); this.material.dispose(); this.scene.remove(this.group); }
 }

@@ -228,11 +228,24 @@ test('PostgreSQL migrations, uniqueness races, reset locking and durable state',
   const schema = `auth_test_${process.pid}_${Date.now()}`;
   const admin = new pg.Pool({ connectionString: process.env.TEST_DATABASE_URL });
   let pool;
+  const stores = [];
   try {
     await admin.query(`CREATE SCHEMA ${schema}`);
     pool = new pg.Pool({ connectionString: process.env.TEST_DATABASE_URL, options: `-c search_path=${schema}` });
     const store = await createPostgresStore({ pool });
+    stores.push(store);
     await Promise.all([store.migrate(), store.migrate()]);
+    // The same established SQL schema remains readable through Prisma, with no
+    // password rehash, account-ID replacement or pattern-based email matching.
+    const legacyId = '99a2fbee-7189-441d-b550-d176b4792d40';
+    await pool.query('INSERT INTO accounts (id,email,callsign,password_hash) VALUES ($1,$2,$3,$4)',
+      [legacyId, 'literal_%@example.test', 'Legacy_Pilot', 'retained-salted-hash']);
+    await store.migrate();
+    assert.equal((await store.findAccountByEmail('LITERAL_%@EXAMPLE.TEST')).id, legacyId);
+    assert.equal((await store.findAccountByEmail('literal_%@example.test')).passwordHash, 'retained-salted-hash');
+    assert.equal(await store.findAccountByEmail('%@example.test'), null);
+    await assert.rejects(store.savePlayerState(legacyId, []), /must be an object/);
+    await assert.rejects(store.savePlayerState(legacyId, { large: 'x'.repeat(1024 * 1024) }), /exceeds/);
     const { auth, messages, now } = fixture({ store });
     const registrations = await Promise.all([register(auth, { email: 'PILOT@example.com', callsign: 'First' }), register(auth, { callsign: 'Second' })]);
     assert.deepEqual(registrations.map(r => r.status).sort(), [201, 409]);
@@ -241,6 +254,7 @@ test('PostgreSQL migrations, uniqueness races, reset locking and durable state',
     await assert.rejects(store.createAccount({ email: 'other@example.com', callsign: account.callsign.toLowerCase(), passwordHash: account.passwordHash }), { code: 'ACCOUNT_CONFLICT' });
     await store.savePlayerState(account.id, { inventory: { ore: 8 }, credits: 17 });
     const reopened = await createPostgresStore({ pool });
+    stores.push(reopened);
     await reopened.migrate();
     assert.deepEqual(await reopened.loadPlayerState(account.id), { inventory: { ore: 8 }, credits: 17 });
     assert.equal((await reopened.findSession(digest(cookieOf(registered).split('=')[1]), now())).id, account.id);
@@ -257,6 +271,7 @@ test('PostgreSQL migrations, uniqueness races, reset locking and durable state',
     assert.equal((await pool.query('SELECT count(*)::int AS count FROM password_resets')).rows[0].count, 0);
     await store.pruneExpired(now());
   } finally {
+    await Promise.all(stores.map(store => store.close()));
     if (pool) await pool.end();
     await admin.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);
     await admin.end();

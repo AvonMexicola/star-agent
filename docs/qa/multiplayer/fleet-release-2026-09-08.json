@@ -1,0 +1,63 @@
+{
+  "at": "2026-09-07T23:23:08.124Z",
+  "origin": "https://multiplayer.staragent.site",
+  "metadata": {
+    "source": "623430d106155f3f5b7f669f81e0975d8d47e89c",
+    "base": "5f63893e9d88184696ad897ec664e3a2a94b9951",
+    "development": "c99736f",
+    "multiplayerVersion": 5,
+    "maxPlayers": 20,
+    "seed": 7291,
+    "devTools": true
+  },
+  "results": [
+    {
+      "path": "index.html",
+      "bytes": 23343,
+      "sha256": "ab3c6aad24fc69ae5073e3b093b977ca3b6f68bb0312c2c8b34f90e87d5c64fa",
+      "status": 200
+    },
+    {
+      "path": "release.json",
+      "bytes": 195,
+      "sha256": "df1f487f86fdd02360abb7eaafdb0dfcefd98f305083ec19842c889f2762b572",
+      "status": 200
+    },
+    {
+      "path": "assets/main-B34-nHt2.js",
+      "bytes": 904843,
+      "sha256": "3093798701f641c5ffa5be6b37f936949fe4a16997a8e997594aab8adc5a472e",
+      "status": 200
+    },
+    {
+      "path": "models/atlas-mark-ii/atlas-mark-ii.glb",
+      "bytes": 3859404,
+      "sha256": "f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e",
+      "status": 200
+    },
+    {
+      "path": "models/mining-rover.glb",
+      "bytes": 2175556,
+      "sha256": "831b9569633efda11652e3827057d2f4bc3f47d20f23a47df152fa437cb29468",
+      "status": 200
+    },
+    {
+      "path": "models/station.glb",
+      "bytes": 3804976,
+      "sha256": "59c4e38845f2ce6d93e25bc7e7f5ac2eb709591a06a1fdeac464ad2dde03863d",
+      "status": 200
+    },
+    {
+      "path": "models/station-exterior.glb",
+      "bytes": 2600828,
+      "sha256": "5b39b183030d529a710de0b2dad308a36a8e597b067d3061d82f01bb721b76e6",
+      "status": 200
+    },
+    {
+      "path": "models/station-defense.glb",
+      "bytes": 948632,
+      "sha256": "8d0dcbb6395479ad083cd609217833b97c74008acdd15b72ed9182ced46b64ae",
+      "status": 200
+    }
+  ]
+}

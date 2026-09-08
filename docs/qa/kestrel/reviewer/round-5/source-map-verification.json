@@ -1,0 +1,80 @@
+{
+  "sourceRecord": {
+    "version": 1,
+    "provider": "Meshy",
+    "model": "Meshy 7",
+    "requestedResolution": "2K",
+    "pbrEnabled": true,
+    "prompt": "../meshy-prompt.txt",
+    "displayedCredits": 10,
+    "sourceFile": "Meshy_AI_kestrel_meshy_clean_0906215631_texture.glb",
+    "sourceSha256": "41684db25a765f3dcabfa6b8a7af09e56309bd65bfee64eff1a21ea02436343b",
+    "sourceBytes": 9428476,
+    "uploadSha256": "8ae571172e149a8c0a831abc743c35aea24f0f6b4352c4a2f639e3407d8b8282",
+    "uvLayoutSha256": "91899f96b0de0221e206455e5c46659f0768a3d9a9e71c78bc674d6e80389b6d",
+    "uvVerification": {
+      "matchedVertices": 47024,
+      "totalVertices": 47024,
+      "maxError": 1.2516975402832031e-06,
+      "restoredPositionScale": 6.750524044036865,
+      "restoredPositionCenter": [
+        0.0,
+        1.5994133949279785,
+        -0.0005240440368652344
+      ],
+      "flipV": false
+    },
+    "sourceMaps": {
+      "basecolor.jpg": {
+        "sha256": "22edba65ca3fc6638f62c6cf05eca3b8c990c688489ccdcad4135567cf2815a1",
+        "bytes": 2703085,
+        "resolution": [
+          2048,
+          2048
+        ]
+      },
+      "metallic-roughness.jpg": {
+        "sha256": "5714f861d9899a65ac8538054ad4131458c2c05b38c9d02058fa013c4134eb1c",
+        "bytes": 1904165,
+        "resolution": [
+          2048,
+          2048
+        ]
+      },
+      "normal.jpg": {
+        "sha256": "cc558fe9bc28c6dc28a9ab6268b254eec3fb460ab92925bd8b7cc2afff0f6aec",
+        "bytes": 2144863,
+        "resolution": [
+          2048,
+          2048
+        ]
+      }
+    },
+    "importedResolution": [
+      1024,
+      1024
+    ],
+    "scope": "Generated PBR maps only; Blender rig and authored UV layout preserved"
+  },
+  "independentFileHashChecks": [
+    {
+      "name": "basecolor.jpg",
+      "sha256": "22edba65ca3fc6638f62c6cf05eca3b8c990c688489ccdcad4135567cf2815a1",
+      "bytes": 2703085,
+      "matchesRecordedSource": true
+    },
+    {
+      "name": "metallic-roughness.jpg",
+      "sha256": "5714f861d9899a65ac8538054ad4131458c2c05b38c9d02058fa013c4134eb1c",
+      "bytes": 1904165,
+      "matchesRecordedSource": true
+    },
+    {
+      "name": "normal.jpg",
+      "sha256": "cc558fe9bc28c6dc28a9ab6268b254eec3fb460ab92925bd8b7cc2afff0f6aec",
+      "bytes": 2144863,
+      "matchesRecordedSource": true
+    }
+  ],
+  "generatedUvAlignment": "Builder source record inspected; generated-mesh correspondence not independently rerun. Original animated-rig mesh/UV/animation identity independently verified in rig-comparison.json."
+}

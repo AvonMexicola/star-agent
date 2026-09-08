@@ -1,8 +1,9 @@
 # Pyre: volcanic inner world
 
+Pyre is a 1,200 km radius volcanic planet, 10 million km from the star, with 7.6 m/s² surface gravity and a thin 45 km atmosphere. Its authored quadrature position stays fixed during play, placing the Aeon approach above the twilight line. The epoch anchors the orbital helper rather than changing the initial view. The body frame keeps the same hemisphere facing the star.
 Pyre is a 1,200 km radius volcanic planet, 10 million km from the star, with 7.6 m/s² surface gravity and a thin 45 km atmosphere. Its circular Keplerian orbit has a 30.36-day period, is evaluated when the page loads and stays fixed during that session. `?epoch=1788000000000` pins the position for reproduction. The body frame keeps the same hemisphere facing the star.
 
-Open **Controls (H) → Quick transit → Pyre** for a 1,800 km arrival above the dusk terminator, or select Pyre in the **system map (M)** to use the travel drive. Normal descent crosses the atmosphere continuously. **L** lands, **F** leaves the chair or operates the hatch, and **W/S** walk along the cabin and ramp. Return to the chair with **F**, then **L** launches.
+Open **Controls (H) → Quick transit → Pyre** for a 1,800 km arrival above the twilight line, or select Pyre in the **system map (M)** for continuous travel to the same approach altitude. Sunlight is on the left and the night side on the right when approaching from Aeon. Normal descent crosses the atmosphere continuously. **L** lands, **F** leaves the chair or operates the hatch, and **W/S** walk along the cabin and ramp. Return to the chair with **F**, then **L** launches.
 
 ## Geography and appearance
 
@@ -12,13 +13,15 @@ The worker bakes orbital colour, relief-normal and activity maps from the same t
 
 ## Resource layer
 
-`pyreSurface(direction).resources` and `pyreResources(direction)` expose `{ids, weights, dominant, province}`. The normalized basalt/oxide/sulphur composition drives both colour and the local survey HUD. It is independent of camera altitude and terrain LOD. This follows Selene's shared geology contract, with Pyre-specific minerals. It does **not** yet expose mineable volumes, excavation, collected inventory or tools on Pyre. Hull heat is a visual warning; thermal damage is not implemented.
+`pyreSurface(direction).resources` and `pyreResources(direction)` expose `{ids, weights, dominant, province}`. The normalized basalt/oxide/sulphur composition drives both colour and the local survey HUD. It is independent of camera altitude and terrain LOD. This follows Selene's shared geology contract, with Pyre-specific minerals. It does **not** yet expose mineable volumes, excavation, collected inventory or tools on Pyre. Pyre surface heat is a visual warning. The separate stellar approach has thermal ship damage; Pyre lava does not yet damage the ship.
 
 ## Integration and provenance
 
 This branch continues Fable's Pyre commit `a18cf81` and recovered working changes. It reuses the patch surface and resolution modules from the orbit-to-ground work (`d69b57e`), and the composable morph helper from terrain transitions (`fce612b`). It implements resource composition using the contract documented by the Selene expedition work (`c3ef10c`). These helpers and the Aeon/Selene graphics, vegetation and mining work are now combined in the main integration candidate (PR34).
 
 Generator version 2 also replaces a correlated noise hash, warps mineral province boundaries to avoid a visible orbital lattice, and includes both sides of seed cells when sampling lava blisters so the collision floor stays continuous.
+
+Generator version 3 brings the named lava fields onto the Aeon-facing hemisphere and adds the toxic satellite [Miasma](miasma.md). The older screenshots below record the version 2 geography; current arrival evidence is in the Miasma document.
 
 ## Verification
 

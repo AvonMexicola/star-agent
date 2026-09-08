@@ -1,23 +1,27 @@
+import {createBaseSites} from './base-sites.js';
 import { createServer as createHTTPServer, STATUS_CODES } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { WebSocket, WebSocketServer } from 'ws';
 import { createAuth, SESSION_COOKIE } from './auth.js';
 import { createMemoryStore, createPostgresStore } from './database.js';
 import { createSMTPMailer } from './mail.js';
+import { MAX_PLAYERS } from '../src/multiplayer/protocol.js';
+import { createSocialService } from './social.js';
+import { CHAT_POLICY, createChatModerator } from './chat-moderation.js';
 
 const MAX_BODY = 16 * 1024;
 const MAX_BUFFERED = 256 * 1024;
 const POST_ACTIONS = new Set(['register', 'login', 'logout', 'forgot', 'reset']);
 const httpError = (status, message) => Object.assign(new Error(message), { status });
 const errorMessage = error => ({
-  ROOM_FULL: 'This universe has ten players. Try joining again when a place is free.',
+  ROOM_FULL: `All ${MAX_PLAYERS} player slots are occupied. Try joining again when a place is free.`,
   ACCOUNT_CONNECTED: 'This account is already connected to the universe.',
 })[error?.code] ?? 'The multiplayer request could not be completed.';
 
-function readJSON(req) {
+function readJSON(req, maximum = MAX_BODY) {
   if (!/^application\/json(?:\s*;|$)/i.test(req.headers['content-type'] ?? '')) throw httpError(415, 'Use application/json.');
   if (req.headers['content-encoding'] && req.headers['content-encoding'] !== 'identity') throw httpError(415, 'Compressed request bodies are not supported.');
-  if (Number(req.headers['content-length']) > MAX_BODY) throw httpError(413, 'Request body exceeds 16 KiB.');
+  if (Number(req.headers['content-length']) > maximum) throw httpError(413, 'Request body exceeds the size limit.');
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0, settled = false;
@@ -25,7 +29,7 @@ function readJSON(req) {
     req.on('data', chunk => {
       if (settled) return;
       size += chunk.length;
-      if (size > MAX_BODY) { fail(httpError(413, 'Request body exceeds 16 KiB.')); return; }
+      if (size > maximum) { fail(httpError(413, 'Request body exceeds the size limit.')); return; }
       chunks.push(chunk);
     });
     req.on('end', () => {
@@ -60,14 +64,16 @@ function cookieValue(cookie) {
 
 /** Owns supplied room/store/mail lifecycle. Mount /api and /ws behind the same origin as the game. */
 export async function createServer({ store, mail, room, publicOrigin, secureCookies = false,
-  trustProxy = false, heartbeatIntervalMs = 30000, logger = console } = {}) {
+  trustProxy = false, heartbeatIntervalMs = 30000, logger = console, chatPolicy = CHAT_POLICY } = {}) {
   if (!room || !store) throw new Error('An explicit room and account store are required.');
   if (!Number.isFinite(heartbeatIntervalMs) || heartbeatIntervalMs < 10) throw new Error('Heartbeat interval must be at least 10 ms.');
+  const bases=store.mutateBaseSites?createBaseSites({store}):null;
   const origin = new URL(publicOrigin).origin;
   const limit = createRequestLimiter();
   const peers = new Map(), tasks = new Set(), upgradeSockets = new Set();
   let closing = false, closePromise;
   const diagnostic = code => { try { logger.error?.(code); } catch { /* logging must not crash the server */ } };
+  const social = createSocialService({ store, onError: diagnostic, moderate: createChatModerator(chatPolicy) });
   function track(task) {
     const promise = Promise.resolve(task).catch(() => diagnostic('ROOM_OPERATION_FAILED'));
     tasks.add(promise); promise.finally(() => tasks.delete(promise)); return promise;
@@ -82,6 +88,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
     else if (ws.readyState === WebSocket.CONNECTING) ws.terminate();
   }
   function leavePeer(peer) {
+    social.leave(peer.social);
     if (peer.id === null || peer.leaveStarted) return;
     peer.leaveStarted = true;
     track(peer.receiveChain.then(() => room.leave(peer.id)));
@@ -107,6 +114,13 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
       if ((req.headers.origin && req.headers.origin !== origin) || (req.method === 'POST' && req.headers.origin !== origin)) throw httpError(403, 'A same-origin request is required.');
       const path = new URL(req.url, origin).pathname;
       if (path === '/api/health' && req.method === 'GET') { respond(res, 200, { ok: true }); return; }
+      if(path==='/api/bases'&&bases){
+        const account=await auth.authenticate(ctx);if(!account)throw httpError(401,'Sign in to save bases on the server.');
+        if(!['GET','POST'].includes(req.method))throw httpError(405,'Use GET or POST.');
+        const command=req.method==='GET'?{action:'read'}:await readJSON(req,2*1024*1024);
+        if(req.method==='POST'&&command.accountId!==account.id)throw httpError(409,'Account changed. Reconnect base saves with the owning account.');
+        const state=await bases.command(account.id,command);respond(res,200,{...state,accountId:account.id});return;
+      }
       const match = /^\/api\/auth\/([a-z]+)$/.exec(path);
       if (!match || (!POST_ACTIONS.has(match[1]) && match[1] !== 'session')) throw httpError(404, 'Not found.');
       const action = match[1];
@@ -182,25 +196,36 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
           let message;
           try { message = JSON.parse(data.toString()); if (!message || typeof message !== 'object' || Array.isArray(message)) throw new Error(); }
           catch { endPeer(ws, 1007, 'Send a valid JSON object.'); return; }
-          if (peer.id === null) return; // admission sends welcome before accepting game commands
           peer.pendingMessages++;
           peer.receiveChain = peer.receiveChain.then(async () => {
-            if (!peer.closed && ws.readyState === WebSocket.OPEN) await room.receive(peer.id, message);
+            // The room can send welcome before social storage finishes loading.
+            // Keep early commands in the same bounded queue until admission is
+            // complete; never silently drop a request the client will await.
+            await peer.admission;
+            if (!peer.closed && peer.id !== null && peer.social && ws.readyState === WebSocket.OPEN) {
+              if (message.type === 'social') await social.receive(peer.social, message);
+              else await room.receive(peer.id, message);
+            }
           }).catch(() => { diagnostic('ROOM_MESSAGE_REJECTED'); endPeer(ws, 1008, 'Invalid multiplayer command.'); })
             .finally(() => { peer.pendingMessages--; });
           track(peer.receiveChain);
         });
-        track((async () => {
+        peer.admission = (async () => {
           try {
             peer.id = await room.join(account, send);
+            if (!peer.closed && !closing) peer.social = await social.join(account, send, (code, reason) => {
+              peer.closed = true; endPeer(ws, code, reason); leavePeer(peer);
+            });
             if (peer.closed || closing) leavePeer(peer);
           } catch (error) {
             const known = error?.code === 'ROOM_FULL' || error?.code === 'ACCOUNT_CONNECTED';
             if (!known) diagnostic('ROOM_JOIN_FAILED');
             send({ type: 'error', code: known ? error.code : 'JOIN_FAILED', message: errorMessage(error) });
             endPeer(ws, error?.code === 'ROOM_FULL' ? 1013 : 1008, errorMessage(error).slice(0, 120));
+            if (peer.id !== null) leavePeer(peer);
           }
-        })());
+        })();
+        track(peer.admission);
       });
     })().catch(() => { diagnostic('WEBSOCKET_UPGRADE_FAILED'); rejectUpgrade(socket, 400, 'WebSocket upgrade failed.'); }));
   });
@@ -220,7 +245,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
     }
   }, heartbeatIntervalMs);
   heartbeat.unref();
-  const pruning = setInterval(() => { track(Promise.resolve().then(() => store.pruneExpired?.(Date.now()))); }, 60000);
+  const pruning = setInterval(() => { track(Promise.resolve().then(() => store.pruneExpired?.(Date.now())).then(()=>bases?.sweep())); }, 60000);
   pruning.unref();
   return {
     server, wss,
@@ -242,7 +267,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
         await Promise.all([...peers.values()].map(peer => peer.receiveChain));
         while (tasks.size) await Promise.all([...tasks]);
         const failures = [];
-        for (const release of [() => room.close(), () => mail?.close?.(), () => store.close?.()]) {
+        for (const release of [() => social.close(), () => room.close(), () => mail?.close?.(), () => store.close?.()]) {
           try { await release(); } catch (error) { failures.push(error); }
         }
         await httpClosed;

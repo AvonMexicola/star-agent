@@ -1,0 +1,7 @@
+{
+  "runtimeSHA256": "78598117a9a47bbc0eebedd708a8248a1a1e4a61b5923e9bb6e7640a16f41bb9",
+  "runtimeBytes": 978832,
+  "secondBuildIdenticalRuntimeBytes": true,
+  "method": "Full separate --skip-renders rebuild compared against pre-rebuild SHA256; all exporter, source-preservation and dense deformation assertions rerun. Studio metadata retained only after identical runtime identity comparison.",
+  "scope": "CPU Blender5.2 export; editableBlend timestamps/filehash and studio stochastic output not claimed byte-reproducible."
+}

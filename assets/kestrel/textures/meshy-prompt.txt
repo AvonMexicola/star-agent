@@ -1,0 +1,6 @@
+SUBMITTED 2026-09-06. Meshy 7, Text Input, Generate PBR Maps enabled, 2K.
+The UI displayed 10 credits. Uploaded model: kestrel-meshy-clean.
+Downloaded output and UV correspondence verified. Raw maps are in meshy-source/.
+Final material mixing and independent review are recorded in docs/qa/kestrel/.
+
+Preserve the original UVs and panel layout. A maintained single-seat interceptor: ivory ceramic armour, graphite polymer cockpit and belly, brushed titanium engines and hardware. Pale-mint identification bands and small stencils: KESTREL, KS-134, NO STEP, service arrows and panel numbers; no real brands. Subtle panel roughness variation, directional metal brushing, fine paint grain, contact grime at fasteners and vents, light scuffs on service edges and ladder treads. Dark rubber grips and seat, metallic pedals. Keep broad armour planes clean. Add nozzle heat tint and restrained service streaks. Respect physical recesses; no invented geometry. PBR colour, roughness, metalness and normal; no baked light, shadows or glare.

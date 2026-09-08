@@ -1,0 +1,309 @@
+{
+  "file": "/home/cees/projects/star-agent-station-exterior/public/models/station-exterior.glb",
+  "sha256": "079f7262e992ffaadd56c4ad16c201b69bb23f0664cf19ff2e692312444334a8",
+  "bytes": 3697952,
+  "storedTriangles": 68772,
+  "assembledTriangles": 96660,
+  "storedPrimitives": 15,
+  "assembledPrimitives": 22,
+  "authoredMaterials": 7,
+  "images": 0,
+  "extensions": [
+    "KHR_materials_emissive_strength",
+    "KHR_mesh_quantization"
+  ],
+  "fixedBounds": {
+    "min": [
+      -1257,
+      -227,
+      -508
+    ],
+    "max": [
+      1257,
+      142.9935912108034,
+      508.00412179113493
+    ],
+    "size": [
+      2514,
+      369.9935912108034,
+      1016.0041217911349
+    ]
+  },
+  "ringBounds": {
+    "min": [
+      -117,
+      -1494.050048828125,
+      -1494.050048828125
+    ],
+    "max": [
+      116.98336766613258,
+      1494.050048828125,
+      1494.050048828125
+    ],
+    "size": [
+      233.98336766613258,
+      2988.10009765625,
+      2988.10009765625
+    ]
+  },
+  "assembledBoundsAtZeroRotation": {
+    "min": [
+      -1257,
+      -1494.050048828125,
+      -1494.050048828125
+    ],
+    "max": [
+      1257,
+      1494.050048828125,
+      1494.050048828125
+    ],
+    "size": [
+      2514,
+      2988.10009765625,
+      2988.10009765625
+    ]
+  },
+  "parts": [
+    {
+      "name": "FixedStructure_Detail_ExteriorMint Geometry",
+      "assembly": "FixedStructure",
+      "material": "ExteriorMint",
+      "triangles": 24,
+      "min": [
+        -45,
+        -94.55000305175781,
+        -126.30000305175781
+      ],
+      "max": [
+        45.000917715985196,
+        -93.45149077984964,
+        126.30000305175781
+      ]
+    },
+    {
+      "name": "FixedStructure_Detail_ExteriorSteel Geometry",
+      "assembly": "FixedStructure",
+      "material": "ExteriorSteel",
+      "triangles": 576,
+      "min": [
+        -457.57501220703125,
+        -136.22999572753906,
+        -192
+      ],
+      "max": [
+        457.57501220703125,
+        -136.00656701935833,
+        192.00412789139097
+      ]
+    },
+    {
+      "name": "FixedStructure_ExteriorDark Geometry",
+      "assembly": "FixedStructure",
+      "material": "ExteriorDark",
+      "triangles": 3384,
+      "min": [
+        -999.9373779296875,
+        -206.08621215820312,
+        -508
+      ],
+      "max": [
+        999.9373779296875,
+        9.693362094969103,
+        508.00412179113493
+      ]
+    },
+    {
+      "name": "FixedStructure_ExteriorIvory Geometry",
+      "assembly": "FixedStructure",
+      "material": "ExteriorIvory",
+      "triangles": 10708,
+      "min": [
+        -1219,
+        -137.59999084472656,
+        -496.5
+      ],
+      "max": [
+        1219,
+        136.98424658565415,
+        496.48231479362175
+      ]
+    },
+    {
+      "name": "FixedStructure_ExteriorOchre Geometry",
+      "assembly": "FixedStructure",
+      "material": "ExteriorOchre",
+      "triangles": 7416,
+      "min": [
+        -1210,
+        -141,
+        -486.5
+      ],
+      "max": [
+        1210,
+        141.0102235446708,
+        486.4851224536508
+      ]
+    },
+    {
+      "name": "FixedStructure_ExteriorPetrol Geometry",
+      "assembly": "FixedStructure",
+      "material": "ExteriorPetrol",
+      "triangles": 1848,
+      "min": [
+        -923,
+        -149,
+        -496
+      ],
+      "max": [
+        923,
+        -13.990035858701447,
+        495.9978942549782
+      ]
+    },
+    {
+      "name": "FixedStructure_ExteriorSteel Geometry",
+      "assembly": "FixedStructure",
+      "material": "ExteriorSteel",
+      "triangles": 16884,
+      "min": [
+        -1257,
+        -227,
+        -492.4554748535156
+      ],
+      "max": [
+        1257,
+        142.9935912108034,
+        492.4678485614535
+      ]
+    },
+    {
+      "name": "HubShellDetail_Detail_ExteriorPetrol Geometry",
+      "assembly": "HubShellDetail",
+      "material": "ExteriorPetrol",
+      "triangles": 44,
+      "min": [
+        -22,
+        -8,
+        -19
+      ],
+      "max": [
+        22,
+        1.0000762951094835,
+        18.99972533760586
+      ]
+    },
+    {
+      "name": "RingTemplate_Detail_ExteriorMint Geometry",
+      "assembly": "RingTemplate",
+      "material": "ExteriorMint",
+      "triangles": 576,
+      "min": [
+        -41.5,
+        -1494.050048828125,
+        -1494.050048828125
+      ],
+      "max": [
+        41.48378237177653,
+        1494.050048828125,
+        1494.050048828125
+      ]
+    },
+    {
+      "name": "RingTemplate_Detail_ExteriorWindow Geometry",
+      "assembly": "RingTemplate",
+      "material": "ExteriorWindow",
+      "triangles": 1152,
+      "min": [
+        -59.70000076293945,
+        -1460,
+        -1460
+      ],
+      "max": [
+        59.71100099184807,
+        1460,
+        1460
+      ]
+    },
+    {
+      "name": "RingTemplate_ExteriorDark Geometry",
+      "assembly": "RingTemplate",
+      "material": "ExteriorDark",
+      "triangles": 7520,
+      "min": [
+        -117,
+        -1475,
+        -1475
+      ],
+      "max": [
+        116.98336766613258,
+        1475,
+        1475
+      ]
+    },
+    {
+      "name": "RingTemplate_ExteriorIvory Geometry",
+      "assembly": "RingTemplate",
+      "material": "ExteriorIvory",
+      "triangles": 6096,
+      "min": [
+        -59,
+        -1490.5,
+        -1490
+      ],
+      "max": [
+        58.993652246890974,
+        1490.5,
+        1489.999282825971
+      ]
+    },
+    {
+      "name": "RingTemplate_ExteriorOchre Geometry",
+      "assembly": "RingTemplate",
+      "material": "ExteriorOchre",
+      "triangles": 1552,
+      "min": [
+        -114,
+        -1492.5999755859375,
+        -1297.2794189453125
+      ],
+      "max": [
+        81.00482171308153,
+        1492.5999755859375,
+        1297.2731715605064
+      ]
+    },
+    {
+      "name": "RingTemplate_ExteriorPetrol Geometry",
+      "assembly": "RingTemplate",
+      "material": "ExteriorPetrol",
+      "triangles": 744,
+      "min": [
+        -56,
+        -1489.05224609375,
+        -1489.05224609375
+      ],
+      "max": [
+        57.01664564080738,
+        1489.05224609375,
+        1489.05224609375
+      ]
+    },
+    {
+      "name": "RingTemplate_ExteriorSteel Geometry",
+      "assembly": "RingTemplate",
+      "material": "ExteriorSteel",
+      "triangles": 10248,
+      "min": [
+        -112,
+        -1493,
+        -1493
+      ],
+      "max": [
+        111.9898680094606,
+        1493,
+        1493
+      ]
+    }
+  ],
+  "scope": "Independent resource and decoded vertex audit including KHR_mesh_quantization node transforms. Geometry checkpoint only; no final material or flight collision certification."
+}

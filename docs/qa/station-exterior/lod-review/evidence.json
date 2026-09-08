@@ -1,0 +1,361 @@
+{
+  "variant": "authored",
+  "browser": "151.0.7922.173",
+  "timestampUTC": "2026-09-07T10:48:19.086Z",
+  "console": [],
+  "captures": [
+    {
+      "name": "overview-quarter",
+      "eyeComplexLocal": [
+        -4484,
+        2484.3,
+        -4956
+      ],
+      "targetComplexLocal": [
+        0,
+        -35,
+        0
+      ],
+      "wholeStation": true,
+      "cameraFixtureVerified": true,
+      "lodProof": {
+        "level": "lod1",
+        "lodGroupVisible": true,
+        "heroFixedVisible": false,
+        "heroRingVisibility": [
+          false,
+          false
+        ],
+        "lodRingVisibility": [
+          true,
+          true
+        ],
+        "onBeforeRenderCalls": {
+          "hero": 0,
+          "lod1": 506
+        }
+      },
+      "mode": "walk",
+      "shipVisible": false,
+      "camera": {
+        "world": [
+          675281.6462243681,
+          443090.1341561196,
+          1490479.731956966
+        ],
+        "complexLocal": [
+          -4483.999999999985,
+          2484.2999999999997,
+          -4955.999999999982
+        ],
+        "quaternion": [
+          0.3231292541763783,
+          0.6756683721013621,
+          0.6235270395061836,
+          0.22421812380351194
+        ],
+        "navigationQuaternion": [
+          0.3231292541763783,
+          0.6756683721013621,
+          0.6235270395061836,
+          0.22421812380351194
+        ],
+        "fov": 52,
+        "aspect": 1.6,
+        "mode": "first-person"
+      },
+      "complex": {
+        "centre": [
+          670253.2412756407,
+          438115.93859729124,
+          1491381.09797815
+        ],
+        "quaternion": [
+          0.33066365435299605,
+          -0.4309292642292187,
+          -0.5111281885580781,
+          0.6661152241032511
+        ],
+        "ringRotationX": [
+          0.000344969999999996,
+          -0.000344969999999996
+        ]
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "renderScale": 1,
+      "drawingBuffer": [
+        1440,
+        900
+      ],
+      "drawCalls": 126,
+      "triangles": 319806,
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorDetail": "lod1",
+        "exteriorError": null,
+        "exteriorLodError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.000344969999999996,
+          -0.000344969999999996
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 0.44466775108740214,
+        "distance": 6246.557731262809,
+        "local": [
+          -3628.999999999998,
+          2484.299999999904,
+          -4435.999999999964
+        ],
+        "deckClearance": 2492.299999999904,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "heroPods": [],
+      "lodBatches": 26,
+      "projectedConservativeStationEnvelope": [
+        [
+          -0.0011761426458090447,
+          -0.739931037831491,
+          0.999972274611378
+        ],
+        [
+          0.32759169320163684,
+          -0.3389049228779063,
+          0.9999796243576712
+        ],
+        [
+          -0.0014402254195699004,
+          0.31521669240707717,
+          0.9999660493478908
+        ],
+        [
+          0.3786112645627058,
+          0.45542677122185826,
+          0.9999764510275024
+        ],
+        [
+          -0.3445545085663615,
+          -0.3964723337201647,
+          0.9999785692995374
+        ],
+        [
+          0.0007109027904953723,
+          -0.14152649195477765,
+          0.9999832417814174
+        ],
+        [
+          -0.4014533490443444,
+          0.43627583767856476,
+          0.9999750302888746
+        ],
+        [
+          0.0007995133646222383,
+          0.5188066355270423,
+          0.999981152950844
+        ]
+      ]
+    },
+    {
+      "name": "overview-ring-face",
+      "eyeComplexLocal": [
+        -5600,
+        1100,
+        -1800
+      ],
+      "targetComplexLocal": [
+        0,
+        -35,
+        0
+      ],
+      "wholeStation": true,
+      "cameraFixtureVerified": true,
+      "lodProof": {
+        "level": "lod1",
+        "lodGroupVisible": true,
+        "heroFixedVisible": false,
+        "heroRingVisibility": [
+          false,
+          false
+        ],
+        "lodRingVisibility": [
+          true,
+          true
+        ],
+        "onBeforeRenderCalls": {
+          "hero": 0,
+          "lod1": 792
+        }
+      },
+      "mode": "walk",
+      "shipVisible": false,
+      "camera": {
+        "world": [
+          671736.4712806143,
+          443809.82417412277,
+          1490290.3662098881
+        ],
+        "complexLocal": [
+          -5599.999999999984,
+          1099.9999999999502,
+          -1800.000000000005
+        ],
+        "quaternion": [
+          0.22146572652269314,
+          0.7344487612172151,
+          0.6410931102423215,
+          -0.02318562317688454
+        ],
+        "navigationQuaternion": [
+          0.22146572652269314,
+          0.7344487612172151,
+          0.6410931102423215,
+          -0.02318562317688454
+        ],
+        "fov": 52,
+        "aspect": 1.6,
+        "mode": "first-person"
+      },
+      "complex": {
+        "centre": [
+          670253.2412756407,
+          438115.93859729124,
+          1491381.09797815
+        ],
+        "quaternion": [
+          0.33066365435299605,
+          -0.4309292642292187,
+          -0.5111281885580781,
+          0.6661152241032511
+        ],
+        "ringRotationX": [
+          0.0003749850000000013,
+          -0.0003749850000000013
+        ]
+      },
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "renderScale": 1,
+      "drawingBuffer": [
+        1440,
+        900
+      ],
+      "drawCalls": 163,
+      "triangles": 393406,
+      "station": {
+        "exterior": "geometry-review",
+        "exteriorDetail": "lod1",
+        "exteriorError": null,
+        "exteriorLodError": null,
+        "finish": "ready",
+        "finishMaterials": {
+          "replacedMeshes": 394,
+          "generatedUVs": 70,
+          "materialCount": 16,
+          "textureCount": 3,
+          "estimatedTextureBytes": 7077888
+        },
+        "pods": 20,
+        "lodBatches": 26,
+        "activePod": 1,
+        "parkedPod": 1,
+        "location": "hangar",
+        "rings": [
+          0.0003749850000000013,
+          -0.0003749850000000013
+        ],
+        "elevator": 0,
+        "ready": true,
+        "error": null,
+        "doorsOpen": 0.269467745563972,
+        "distance": 5036.211373641857,
+        "local": [
+          -4744.999999999995,
+          1099.999999999854,
+          -1279.999999999986
+        ],
+        "deckClearance": 1107.999999999854,
+        "docked": false,
+        "lifting": false,
+        "canDock": false
+      },
+      "heroPods": [],
+      "lodBatches": 26,
+      "projectedConservativeStationEnvelope": [
+        [
+          -0.2854901077986907,
+          -0.7961344555522264,
+          0.9999648782209113
+        ],
+        [
+          0.43235096623929997,
+          -0.5992771176697781,
+          0.9999706797446943
+        ],
+        [
+          -0.3261873286416338,
+          0.605100962937503,
+          0.9999598715365706
+        ],
+        [
+          0.48261918450211616,
+          0.5664747242183463,
+          0.9999672707617784
+        ],
+        [
+          -0.333262253597598,
+          -0.3712612610601629,
+          0.9999773995318725
+        ],
+        [
+          0.16296062688367127,
+          -0.2846462983432561,
+          0.9999799521355579
+        ],
+        [
+          -0.36235413621821577,
+          0.5238985203399058,
+          0.9999754266405652
+        ],
+        [
+          0.17545625663052772,
+          0.5082989428705952,
+          0.9999784148887267
+        ]
+      ]
+    }
+  ],
+  "served": {
+    "/models/station.glb": {
+      "bytes": 3804976,
+      "sha256": "59c4e38845f2ce6d93e25bc7e7f5ac2eb709591a06a1fdeac464ad2dde03863d"
+    },
+    "/models/station_lod1.glb": {
+      "bytes": 250796,
+      "sha256": "adb8019a1c76b2bd684c4c46997718b793a61f7ba7cd214300e082227d54ce3b"
+    },
+    "/models/station-exterior.glb": {
+      "bytes": 2600828,
+      "sha256": "5b39b183030d529a710de0b2dad308a36a8e597b067d3061d82f01bb721b76e6"
+    },
+    "/models/station-exterior-lod1.glb": {
+      "bytes": 1206036,
+      "sha256": "ec98e225e57bbadb18c4c4567614bab2c5a23694e16effeeba99a4ce0b5ffdcb"
+    }
+  },
+  "scope": "Scoped independent final-LOD overview follow-up. Two exact prior cameras with verified actual LOD rendering. Original art scores and materials-pending disposition remain unchanged. No FPS, gameplay or final acceptance claim."
+}

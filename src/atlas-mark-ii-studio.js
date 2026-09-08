@@ -8,6 +8,8 @@ import { AtlasMarkIISystems } from './atlas-mark-ii-systems.js';
 import { createShipMFDs } from './ship-mfd.js';
 import { atlasInspectionPages, describeAtlasControl } from './atlas-mark-ii-controls.js';
 import { createProjectedActionLabel } from './projected-action-label.js';
+import { shipManufacturer } from './ship-manufacturers.js';
+import {loadShipWeaponKit,attachShipWeapons} from './ship-weapons.js';
 
 const MODEL_URL = '/models/atlas-mark-ii/atlas-mark-ii.glb';
 const WALK_SPEED = 4.2;
@@ -22,6 +24,9 @@ const VIEW_LABELS = {
 };
 
 const body = document.body;
+const manufacturer = shipManufacturer('atlas');
+document.querySelector('[data-manufacturer-name]').textContent = manufacturer.name.toUpperCase();
+document.querySelector('[data-manufacturer-emblem]').src = manufacturer.emblemURL;
 const canvas = document.querySelector('#viewport');
 const loading = document.querySelector('#loading');
 const loadingDetail = document.querySelector('#loading-detail');
@@ -317,15 +322,20 @@ function updateDynamicShadows() {
     || systems.elevator?.moving
     || systems.elevator?.gates?.some(gate => gate.moving)
     || systems.gates?.some(gate => gate.moving)
+    || systems.gear?.moving
   );
   if (moving || dynamicShadowsActive) renderer.shadowMap.needsUpdate = true;
   dynamicShadowsActive = moving;
 }
 
-const assetPromise = new GLTFLoader().loadAsync(MODEL_URL).then((gltf) => {
+const weaponKit=loadShipWeaponKit().then(kit=>({kit}),error=>({error}));
+const assetPromise = new GLTFLoader().loadAsync(MODEL_URL).then(async (gltf) => {
   model = gltf.scene;
   model.name = 'AtlasMarkII';
   bindSystems(model);
+  const weapons=await weaponKit;
+  try{if(weapons.error)throw weapons.error;attachShipWeapons(model,'atlas-mark-ii',weapons.kit);}
+  catch(error){console.warn('Atlas weapon fitting unavailable:',error);}
   collectStats(model);
   model.add(mfds);
   scene.add(model);
@@ -692,4 +702,10 @@ window.atlasMarkIIStudio = {
   mfds,
   get control() { return describeAtlasControl(systems, walker.position, seated); },
   get camera() { return camera; },
+  inspectCamera(position, target) {
+    if (mode !== 'inspect') return false;
+    viewTransition = null;
+    camera.position.fromArray(position);controls.target.fromArray(target);
+    controls.update();return true;
+  },
 };

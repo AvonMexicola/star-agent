@@ -96,6 +96,13 @@ or a mesh. Retain single-mesh contracts such as the measured `LandingDeck` unles
 the consumer and its tests are deliberately updated together. Do not flatten
 animation pivots, collider exclusions or attachment transforms while batching.
 
+Print anchors carry a complete transform, including orientation and any paper
+tilt. Apply that transform once and inspect the resulting face and corners
+against actual backing triangles. Assembly bounds alone cannot establish that a
+poster is in front of a wall. Leave measured clearance for substrate thickness
+and the full cloth displacement envelope; test the finished print, not merely an
+empty anchor.
+
 ## 4. Build manufactured geometry and retain its source
 
 Use a rebuildable Blender script for hard surfaces, in accordance with
@@ -116,6 +123,18 @@ and contact points; uniform dirt does not replace construction. Keep low props
 outside circulation routes. Props fitted over inherited geometry need explicit
 overlap inspection: a new box can conceal an old face while still intersecting
 a cart or blocking a player.
+
+Enclosed rooms need visible structural closure at their own wall height. A high
+outer hull roof can leave low retail walls looking open to space. Build ceiling
+skins, panel thickness, beams and wall-to-roof overlaps; inspect upward and
+oblique entry rays and retain full walking headroom. Budget these real assemblies
+and their collision boxes without enclosing the accessible room in one solid box.
+
+Vary merchandise by purpose and human-scale construction. Use distinct sidearms,
+longarms, handled cases and repair/component silhouettes with deliberate rack
+arrangements; scaling one rifle or repeating one canister does not create a
+finished inventory display. Printed rack categories must match the visible stock.
+Keep decorative merchandise distinct from the actual supported purchase catalogue.
 
 Export a manifest with measured assembly bounds, triangles, runtime bytes,
 materials, draw primitives, coordinate convention, builder and placement. Group
@@ -215,6 +234,12 @@ frustum and altered bias/intensity must restore their previous values on exit.
 Transparent panes and painted signs must not become opaque shadow cards.
 Actual equipment and frame contact shadows should remain.
 
+Recheck lighting whenever authored ceilings or partitions change. Fixtures and
+their useful light paths must sit below an opaque shop ceiling and reach the
+counter and stock. Record the underside height and light placement together;
+verify actual shadows and readable walking-height views after integration.
+Increasing light intensity cannot repair an emitter hidden above an opaque roof.
+
 ## 7. Reconcile the current game rather than replacing it
 
 Before final review, compare the candidate against the actual target branch.
@@ -264,6 +289,13 @@ inspection. State that fact. A services fixture beginning in a side aisle is not
 proof of a complete flight and boarding journey; retain a separate real journey.
 Wait for terrain/resource readiness and stable LOD before visual captures.
 
+Use motion evidence for walking, moving doors, travel fades and UI transitions.
+Retain the original video, candidate, capture time, exact event timestamps and
+extraction commands. Select windows that include the complete event and label
+contact-sheet samples with source video times and sampling interval. Sampled
+stills cannot rule out defects between samples; video cadence cannot establish
+CPU or GPU frame time. Record unobserved transitions as pending.
+
 When a test fails, record the observed behavior first. Distinguish runtime bugs
 from test synchronization defects. The hangar's controller helper required a
 button state to span actual gamepad polling frames; a fixed short wall-clock
@@ -276,6 +308,12 @@ Keep concept, Blender studio, isolated material fixture and actual game images
 distinct in filenames or captions. Only the actual game establishes integration
 with its renderer, exposure, shadows, camera and geometry. Preserve an instructive
 first pass or rejected view when it explains a correction.
+
+Use a unique output directory for every run, identified by candidate and a run
+identifier or timestamp, plus distinct per-test/per-view paths. Record the served
+bundle and capture environment in the evidence manifest. Reused global `/tmp`
+paths can silently replace another run's screenshots, and a recent file timestamp
+alone does not prove which candidate rendered the image.
 
 Follow the current `QUALITY.md` viewpoint and review requirements. At the time
 this standard was recorded, these included seed 7291, fixed orbit/coast/forest/
@@ -309,6 +347,12 @@ flags and update order before changing code. Preserve the report while recording
 any correction to its diagnosis separately. After a new base, export or visual
 fix, label old test counts and review scores as historical and obtain acceptance
 for the revised candidate.
+
+An explicitly authorized reviewer substitution does not waive the scoring bar.
+Record who authorized the substitution and who actually reviewed. Keep the failed
+candidate's report alongside subsequent corrections, and leave follow-up pending
+until that reviewer has assessed the revised artifact. Author screenshots and
+successful collision tests do not constitute independent visual acceptance.
 
 ## 10. Deliver the record with the asset
 
@@ -398,3 +442,43 @@ empty hub and frame rate. It preserves an actual before/after CPU/GPU profile,
 material-batched original Blender assets, explicit walking collision, a compatible
 transactional save migration and physical shop journeys. Its validation and review
 status are stated separately; improved measurements alone do not certify the art.
+
+The [retail identity continuation](qa/station-shop-branding-record.md) applies
+the standard to original campaign imagery, deterministic typography, A5 print
+fixtures, banners and worn textiles. It also records aspect-ratio corrections,
+optional-image fallbacks, per-test screenshot isolation and alternating GPU
+comparisons under variable background load. Retain those corrections and actual
+review status when using this as the next asset's reference.
+
+The [Astra review of `435f116`](qa/station-shop-branding-astra-review.md)
+rejected the affected station/shop presentation at 3.50/5. The
+[enclosure correction at `29885c9`](qa/station-shop-enclosure-record.md) adds
+physical low shop ceilings, places lights below them and replaces repeated stock
+with category-specific manufactured items. Preserve both records: independent
+follow-up was pending when this lesson was added. The
+[motion evidence record](qa/station-shop-motion.md) separately tracks timestamped
+walking, door, travel and UI evidence; its prepared capture procedure is not a
+completed motion review.
+
+The final shop review also caught shadow banding that the first author pass
+missed. Inspect pale printed faces and mounting tiles at full size, then check
+rack-shadow contact after any bias change. Bias alone cleared the paper but left
+coarse shadow edges; the accepted candidate must be evaluated with its actual
+map resolution and measured again if that resolution changes. Preserve the
+failed images and reviewer finding. Do not treat a pre-change motion recording
+as evidence of post-change shadow stability.
+
+Final receipt: independent Astra review of025e587 scores the affected shops4.00/5 (all six criteria4). The broader PR remains unapproved due to inherited world/performance concerns. See docs/qa/station-shop-enclosure-astra-review.md for exact evidence and bounded motion limitations.
+
+
+## GPT reference to Meshy correction — 2026-09-07
+
+Cees rejected the first text-to-3D soft-prop pair and specified this replacement
+method: GPT image first, one isometric item on white without shadows, then import
+that image into Meshy Image to 3D. See the
+[soft-prop production record](qa/station-soft-props-record.md). Save the actual
+reference, prompt and hash; confirm the uploaded image and inspect whether the
+reconstruction preserves its silhouette and materials. Retain the failed
+text-to-3D receipts rather than presenting them as accepted reference assets.
+A strong source image improves the direction but does not waive exported-geometry,
+UV, PBR, scale, performance or actual game visual review.

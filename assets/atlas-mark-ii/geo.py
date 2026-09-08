@@ -44,7 +44,7 @@ def finish(obj,name,mat,bevel=0,parent=None):
     if mat is not None: obj.data.materials.append(mat)
     if bevel:
         mod=obj.modifiers.new('Manufactured edge radii','BEVEL')
-        mod.width=bevel;mod.segments=2;mod.limit_method='ANGLE'
+        mod.width=bevel;mod.segments=1;mod.limit_method='ANGLE'
         normal=obj.modifiers.new('Weighted surface normals','WEIGHTED_NORMAL')
         normal.keep_sharp=True;normal.weight=50
         if DEFER_MODIFIERS:mod.show_viewport=False;normal.show_viewport=False
@@ -60,9 +60,13 @@ def box(name,p,size,mat,bevel=.04,parent=None):
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces);mesh.update()
     obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
     obj.matrix_world=Matrix.Translation(Vector(xyz(p)))
-    return finish(obj,name,mat,min(bevel,min(size)*.24) if bevel else 0,parent)
+    # One chamfer carries the light-catching edge. Millimetre-thin plates and
+    # small stock retain their authored thickness without a dense rounded rim.
+    edge=min(bevel,min(size)*.24) if bevel>=.03 and min(size)>=.08 else 0
+    return finish(obj,name,mat,edge,parent)
 
 def rod(name,a,b,radius,mat,vertices=12,parent=None):
+    vertices=min(vertices,6 if radius<.08 else 8 if radius<.25 else 12 if radius<1 else 16)
     va,vb=Vector(xyz(a)),Vector(xyz(b));normal=(vb-va).normalized()
     reference=Vector((0,0,1)) if abs(normal.z)<.9 else Vector((0,1,0))
     u=normal.cross(reference).normalized();v=normal.cross(u)
@@ -72,7 +76,7 @@ def rod(name,a,b,radius,mat,vertices=12,parent=None):
     mesh=bpy.data.meshes.new(name);mesh.from_pydata(points,[],faces);mesh.update()
     obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
     for face in mesh.polygons:face.use_smooth=len(face.vertices)==4
-    return finish(obj,name,mat,min(.015,radius*.12),parent)
+    return finish(obj,name,mat,0,parent)
 
 def panel(name,points,mat,thickness=.03,bevel=.02,parent=None):
     mesh=bpy.data.meshes.new(name)
@@ -94,7 +98,7 @@ def prism(name,points,bottom,top,mat,bevel=.04,parent=None):
     return finish(obj,name,mat,bevel,parent)
 
 def ring(name,p,radius,tube,mat,axis='y',parent=None):
-    bpy.ops.mesh.primitive_torus_add(major_segments=32,minor_segments=8,major_radius=radius,minor_radius=tube,location=xyz(p))
+    bpy.ops.mesh.primitive_torus_add(major_segments=16 if radius>.3 else 8,minor_segments=4,major_radius=radius,minor_radius=tube,location=xyz(p))
     obj=bpy.context.object
     if axis=='z':obj.rotation_euler.x=math.pi/2
     if axis=='x':obj.rotation_euler.y=math.pi/2
@@ -109,7 +113,7 @@ def rotate_game(obj,angles):
 def text(name,words,p,size,mat,rotation=(0,0,0),parent=None):
     bpy.ops.object.text_add(location=xyz(p))
     obj=bpy.context.object;obj.name=name;obj.data.body=words;obj.data.size=size
-    obj.data.align_x='CENTER';obj.data.align_y='CENTER';obj.data.extrude=.0005
+    obj.data.align_x='CENTER';obj.data.align_y='CENTER';obj.data.extrude=0
     obj.data.resolution_u=2;obj.data.space_character=1.1;obj.data.materials.append(mat)
     # Text starts flat on deck, baseline toward +X, glyph tops toward nose -Z.
     r=CONVERSION @ Euler(rotation,'XYZ').to_matrix() @ CONVERSION.inverted()

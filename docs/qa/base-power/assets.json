@@ -1,0 +1,37 @@
+{
+  "browser": "151.0.7922.173",
+  "viewport": "1440x900",
+  "stats": [
+    {
+      "name": "solar-array",
+      "draws": 7,
+      "triangles": 5606,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "wind-turbine",
+      "draws": 8,
+      "triangles": 2042,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "battery",
+      "draws": 7,
+      "triangles": 1826,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "uranium-generator",
+      "draws": 7,
+      "triangles": 1826,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    },
+    {
+      "name": "helium-generator",
+      "draws": 7,
+      "triangles": 1826,
+      "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)"
+    }
+  ],
+  "errors": []
+}

@@ -1,7 +1,10 @@
+import { PYRE_ARRIVAL_ALTITUDE } from './pyre-world.js';
+import { MIASMA_ARRIVAL_ALTITUDE } from './miasma-world.js';
+import { Vector3 } from 'three';
+import { SUN_STANDOFF, SUN_EXCLUSION } from './stellar-world.js';
+import { AEON, SELENE, PYRE, MIASMA, STAR } from './celestial.js';
 import { MOON_MAX_HEIGHT, constrainMoonStep } from './moon-world.js';
 import { PYRE_MAX_HEIGHT } from './pyre-world.js';
-import { Vector3 } from 'three';
-import { AEON, SELENE, PYRE } from './celestial.js';
 import { shipHandling } from './ship-handling.js';
 import { GEAR_FLIGHT } from './gear-flight.js';
 
@@ -26,7 +29,9 @@ const targetFrom = (body, exclusion, arrival) => Object.freeze({
 export const TRAVEL_TARGETS = Object.freeze([
   targetFrom(AEON, 100_000, 150_000),
   targetFrom(SELENE, 20_000, 50_000),
-  targetFrom(PYRE, 40_000, 90_000),
+  targetFrom(PYRE, 55_000, PYRE_ARRIVAL_ALTITUDE),
+  targetFrom(MIASMA, 40_000, MIASMA_ARRIVAL_ALTITUDE),
+  targetFrom(STAR, SUN_EXCLUSION-STAR.radius, SUN_STANDOFF-STAR.radius),
 ]);
 
 const BODY_TARGETS = TRAVEL_TARGETS;

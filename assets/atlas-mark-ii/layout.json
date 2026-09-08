@@ -109,7 +109,12 @@
       "tipNode": "RampFrontTip",
       "hingeLength": 6,
       "tipLength": 2,
-      "tipHingeHeight": 0.18
+      "tipHingeHeight": 0.18,
+      "headerSeal": {
+        "node": "RampFrontHeaderSeal",
+        "closedY": 8.74,
+        "openY": 9.0
+      }
     },
     {
       "id": "aft",
@@ -132,7 +137,12 @@
       "tipNode": "RampAftTip",
       "hingeLength": 6,
       "tipLength": 2,
-      "tipHingeHeight": 0.18
+      "tipHingeHeight": 0.18,
+      "headerSeal": {
+        "node": "RampAftHeaderSeal",
+        "closedY": 8.74,
+        "openY": 9.0
+      }
     }
   ],
   "elevator": {
@@ -150,7 +160,15 @@
     "gateNodes": [
       "LiftGateLower",
       "LiftGateUpper"
-    ]
+    ],
+    "callPanel": {
+      "centre": [
+        4.45,
+        -6.3
+      ],
+      "touchHeight": 1.33,
+      "touchOffsetZ": 0.095
+    }
   },
   "mounts": [
     {
@@ -358,5 +376,244 @@
       "width": 0.52,
       "height": 0.325
     }
-  ]
+  ],
+  "landingGear": {
+    "duration": 4.5,
+    "legs": [
+      {
+        "id": "port-forward",
+        "node": "GearPortForward",
+        "footNode": "GearPortForwardPad",
+        "bayNode": "GearPortForwardBay",
+        "pivot": [
+          -9.6,
+          4.3,
+          -21
+        ],
+        "foldSign": 1,
+        "pocketZ": [
+          -22.9,
+          -14.9
+        ],
+        "doors": [
+          {
+            "node": "GearPortForwardDoorLeft",
+            "pivot": [
+              -11.28,
+              3.62,
+              -18.9
+            ],
+            "inward": 1,
+            "openAngle": -2.6179938779914944
+          },
+          {
+            "node": "GearPortForwardDoorRight",
+            "pivot": [
+              -7.92,
+              3.62,
+              -18.9
+            ],
+            "inward": -1,
+            "openAngle": 1.5707963267948966
+          }
+        ],
+        "padPivotY": 0.56
+      },
+      {
+        "id": "port-middle",
+        "node": "GearPortMiddle",
+        "footNode": "GearPortMiddlePad",
+        "bayNode": "GearPortMiddleBay",
+        "pivot": [
+          -9.6,
+          4.3,
+          3
+        ],
+        "foldSign": 1,
+        "pocketZ": [
+          1.1,
+          9.1
+        ],
+        "doors": [
+          {
+            "node": "GearPortMiddleDoorLeft",
+            "pivot": [
+              -11.28,
+              3.62,
+              5.1
+            ],
+            "inward": 1,
+            "openAngle": -2.6179938779914944
+          },
+          {
+            "node": "GearPortMiddleDoorRight",
+            "pivot": [
+              -7.92,
+              3.62,
+              5.1
+            ],
+            "inward": -1,
+            "openAngle": 1.5707963267948966
+          }
+        ],
+        "padPivotY": 0.56
+      },
+      {
+        "id": "port-aft",
+        "node": "GearPortAft",
+        "footNode": "GearPortAftPad",
+        "bayNode": "GearPortAftBay",
+        "pivot": [
+          -9.6,
+          4.3,
+          19
+        ],
+        "foldSign": -1,
+        "pocketZ": [
+          12.9,
+          20.9
+        ],
+        "doors": [
+          {
+            "node": "GearPortAftDoorLeft",
+            "pivot": [
+              -11.28,
+              3.62,
+              16.9
+            ],
+            "inward": 1,
+            "openAngle": -2.6179938779914944
+          },
+          {
+            "node": "GearPortAftDoorRight",
+            "pivot": [
+              -7.92,
+              3.62,
+              16.9
+            ],
+            "inward": -1,
+            "openAngle": 1.5707963267948966
+          }
+        ],
+        "padPivotY": 0.56
+      },
+      {
+        "id": "starboard-forward",
+        "node": "GearStarboardForward",
+        "footNode": "GearStarboardForwardPad",
+        "bayNode": "GearStarboardForwardBay",
+        "pivot": [
+          9.6,
+          4.3,
+          -21
+        ],
+        "foldSign": 1,
+        "pocketZ": [
+          -22.9,
+          -14.9
+        ],
+        "doors": [
+          {
+            "node": "GearStarboardForwardDoorLeft",
+            "pivot": [
+              7.92,
+              3.62,
+              -18.9
+            ],
+            "inward": 1,
+            "openAngle": -1.5707963267948966
+          },
+          {
+            "node": "GearStarboardForwardDoorRight",
+            "pivot": [
+              11.28,
+              3.62,
+              -18.9
+            ],
+            "inward": -1,
+            "openAngle": 2.6179938779914944
+          }
+        ],
+        "padPivotY": 0.56
+      },
+      {
+        "id": "starboard-middle",
+        "node": "GearStarboardMiddle",
+        "footNode": "GearStarboardMiddlePad",
+        "bayNode": "GearStarboardMiddleBay",
+        "pivot": [
+          9.6,
+          4.3,
+          3
+        ],
+        "foldSign": 1,
+        "pocketZ": [
+          1.1,
+          9.1
+        ],
+        "doors": [
+          {
+            "node": "GearStarboardMiddleDoorLeft",
+            "pivot": [
+              7.92,
+              3.62,
+              5.1
+            ],
+            "inward": 1,
+            "openAngle": -1.5707963267948966
+          },
+          {
+            "node": "GearStarboardMiddleDoorRight",
+            "pivot": [
+              11.28,
+              3.62,
+              5.1
+            ],
+            "inward": -1,
+            "openAngle": 2.6179938779914944
+          }
+        ],
+        "padPivotY": 0.56
+      },
+      {
+        "id": "starboard-aft",
+        "node": "GearStarboardAft",
+        "footNode": "GearStarboardAftPad",
+        "bayNode": "GearStarboardAftBay",
+        "pivot": [
+          9.6,
+          4.3,
+          19
+        ],
+        "foldSign": -1,
+        "pocketZ": [
+          12.9,
+          20.9
+        ],
+        "doors": [
+          {
+            "node": "GearStarboardAftDoorLeft",
+            "pivot": [
+              7.92,
+              3.62,
+              16.9
+            ],
+            "inward": 1,
+            "openAngle": -1.5707963267948966
+          },
+          {
+            "node": "GearStarboardAftDoorRight",
+            "pivot": [
+              11.28,
+              3.62,
+              16.9
+            ],
+            "inward": -1,
+            "openAngle": 2.6179938779914944
+          }
+        ],
+        "padPivotY": 0.56
+      }
+    ]
+  }
 }

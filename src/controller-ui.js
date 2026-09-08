@@ -7,7 +7,7 @@ const controls = dialog => [...dialog.querySelectorAll(selector)].filter(visible
 /** Every native dialog gets the same controller focus/activate/back behavior.
  * Features keep their real click handlers; this never synthesizes keyboard mining.
  */
-export function createControllerUI({ nav, destinations = [], actions = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {}, openEquipment = null, cycleEquipment = () => {}, cycleQuick = () => {}, useQuick = () => {} }) {
+export function createControllerUI({ nav, destinations = [], actions = [], openBackpack = () => nav.openBackpack?.(), toggleTool = () => {}, openEquipment = null, cycleEquipment = () => {}, cycleQuick = () => {}, useQuick = () => {}, openBuild = null, canOpenBuild = () => false, openRecipes = null, buildActive = () => false, handleBuild = () => {} }) {
   const menu = document.createElement('dialog');
   menu.id = 'controller-menu'; menu.setAttribute('aria-labelledby', 'controller-menu-title');
   menu.innerHTML = '<div class="controller-menu-top"><h2 id="controller-menu-title">Command menu</h2><button type="button" data-controller-close aria-label="Close command menu">×</button></div><p>D-pad / left stick · Select &nbsp; A · Confirm &nbsp; B · Back</p><div class="controller-command-list"></div>';
@@ -21,6 +21,8 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
   add('Resume exploration', () => {}, 'resume').setAttribute('data-controller-focus', '');
   add('Backpack', openBackpack, 'backpack');
   if(openEquipment)add('Equipment',openEquipment,'equipment');
+  if(openBuild)add('Build',openBuild,'build')._controllerEnabled=()=>nav.mode==='walk'&&!nav.insideShip;
+  if(openRecipes)add('Field recipes',openRecipes,'recipes');
   add('Equip / holster mining laser', toggleTool, 'tool');
   for (const d of destinations) {
     const b = add(`Quick transit · ${d.label}`, d.activate, `destination-${d.id}`);
@@ -59,8 +61,14 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
         }
         return;
       }
-      if (pad.pressed.has(9)) open();
+      if (pad.pressed.has(9)) (nav.openGameplayMenu??open)();
       else if (pad.pressed.has(8)) openBackpack();
+      else if (buildActive()) handleBuild(pad);
+      else if (openBuild && nav.mode==='walk' && !nav.insideShip && pad.pressed.has(1)) {
+        pad.pressed.clear();pad.brake=false;pad.mine=0;pad.jump=false;
+        if(canOpenBuild())openBuild();
+        else nav.notify('Approach your mainframe claim (64 m; 96 m with a large pad) to build. Menu → Build can establish a new site.');
+      }
       else if (nav.mode === 'walk' || nav.mode === 'eva') {
         if(pad.pressed.has(15))toggleTool();
         else if(pad.pressed.has(14))cycleEquipment();
@@ -78,15 +86,27 @@ export function createControllerUI({ nav, destinations = [], actions = [], openB
     if (!items.includes(document.activeElement)) focus(items.find(el => focusKey && (el.dataset.controllerKey || el.id) === focusKey) || items[Math.min(focusIndex, items.length - 1)], items);
     if (!pad.ui) return;
     if (pad.ui.pressed.has(1) || pad.ui.pressed.has(9)) { dialog.close(); nav.gamepad.suspend(); return; }
-    const next = Math.abs(pad.ui.y) > .5 ? Math.sign(pad.ui.y) : Math.abs(pad.ui.x) > .5 ? Math.sign(pad.ui.x) : 0;
-    repeat -= dt;
-    if (next && (next !== direction || repeat <= 0)) {
-      const index = Math.max(0, items.indexOf(document.activeElement));
-      focus(items[(index + next + items.length) % items.length], items);
-      repeat = next !== direction ? .36 : .13;
+    const tabTarget=dialog.controllerAction?.(pad.ui);
+    if(tabTarget){focus(tabTarget,controls(dialog));direction=0;repeat=0;return;}
+    // Optional spatial selection still uses this shared focus/confirm/back router.
+    const spatial=dialog.controllerNavigation?.(pad.ui);
+    if(spatial&&items.includes(spatial)){
+      if(document.activeElement!==spatial)focus(spatial,items);
+      direction=0;repeat=0;
+    }else{
+      const next = Math.abs(pad.ui.y) > .5 ? Math.sign(pad.ui.y) : Math.abs(pad.ui.x) > .5 ? Math.sign(pad.ui.x) : 0;
+      repeat -= dt;
+      if (next && (next !== direction || repeat <= 0)) {
+        const index = Math.max(0, items.indexOf(document.activeElement));
+        focus(items[(index + next + items.length) % items.length], items);
+        repeat = next !== direction ? .36 : .13;
+      }
+      direction = next;
+      if (pad.ui.scroll) {
+        const scrollTarget=dialog.querySelector('[data-controller-scroll]')??dialog;
+        scrollTarget.scrollTop += pad.ui.scroll * dt * 480;
+      }
     }
-    direction = next;
-    if (pad.ui.scroll) dialog.scrollTop += pad.ui.scroll * dt * 480;
     if (pad.ui.pressed.has(0)) {
       const target = document.activeElement;
       if (items.includes(target) && target.getAttribute('aria-disabled') !== 'true') target.click();

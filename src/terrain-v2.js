@@ -1,3 +1,4 @@
+import { rockFormationHeight } from './rock-formations.js';
 // Terrain v2 — multi-scale procedural relief for the quarter-Earth planet.
 //
 // Design: a chain of band-limited noise terms, each responsible for one octave
@@ -19,9 +20,10 @@
 //
 // hash/noise/fbm/smoothstep/clamp are imported from world.js so the world seed
 // stays shared with everything else in the app.
+import { SEED } from './generation.js';
 import { clamp, smoothstep, hash, noise, fbm } from './world.js';
 
-export const TERRAIN_VERSION = 2;
+export const TERRAIN_VERSION = 3;
 
 /** Continental-field value that maps to sea level; tuned for ~49% ocean. */
 const SEA = 0.5075;
@@ -121,10 +123,11 @@ function terrace(h, size, amount) {
 }
 
 /**
- * Height above sea level, metres, for a unit direction. Deterministic and pure.
+ * Height above sea level and exposed rock relief, in metres, for a unit direction.
+ * Deterministic and pure.
  * Ocean floor continues below 0; highest peaks land near 5 km.
  */
-export function terrainHeight(x, y, z) {
+export function terrainSample(x, y, z) {
   // ---- continents: domain-warped fbm so coastlines are not blobby ----------
   const wx = snoise(x * 2.1 + 11.3, y * 2.1 - 4.7, z * 2.1 + 8.9);
   const wy = snoise(x * 2.1 - 21.7, y * 2.1 + 13.1, z * 2.1 - 3.3);
@@ -209,8 +212,12 @@ export function terrainHeight(x, y, z) {
     h = h * (1 - iceMask) + iceMask * Math.max(h * 0.35 + ice, 45);
   }
 
-  return h;
+  // Keep shorelines and ice sheets intact; outcrops break up inland terrain.
+  const rockRelief=rockFormationHeight(x,y,z,1592750,SEED) * smoothstep(10,70,h) * (1-polar);
+  return {height:h+rockRelief,rockRelief};
 }
+
+export function terrainHeight(x,y,z){return terrainSample(x,y,z).height;}
 
 /** 0..1 humidity. Cheap: 5 noise lookups plus latitude bands. */
 export function moisture(x, y, z) {

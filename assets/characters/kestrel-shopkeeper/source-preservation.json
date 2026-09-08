@@ -1,0 +1,2638 @@
+[
+  {
+    "name": "idle-02",
+    "originalChannelsUnchanged": 66,
+    "correctedChannels": 6,
+    "addedChannels": [
+      "Kestrel_normalized_root.translation"
+    ],
+    "inverseBindSha256": "3a1f6c830ffb99cc34eb3ac8adff5f0b3768d577ae5b428decfe9e1ab45a5737",
+    "tracks": [
+      {
+        "node": "Hips",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "aaa79631e545744a72f13009d7cd023382f644b1605891d8dc57824d67c64bcb",
+        "outputRuntimeSha256": "aaa79631e545744a72f13009d7cd023382f644b1605891d8dc57824d67c64bcb"
+      },
+      {
+        "node": "Hips",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "b7d87add0ce72d361f1350df898555ea21f3900c3ef089e71c41addeec53d891",
+        "outputRuntimeSha256": "b7d87add0ce72d361f1350df898555ea21f3900c3ef089e71c41addeec53d891"
+      },
+      {
+        "node": "Hips",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "e6922530ff8015ef237699fb6d20390d19eead80d1fcb83a01f47de551970609",
+        "outputRuntimeSha256": "e6922530ff8015ef237699fb6d20390d19eead80d1fcb83a01f47de551970609"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "ffcc2d8be4441f9ed30700b618334c1f29142073614d5068d1e7f956b49f80e3",
+        "outputRuntimeSha256": "ffcc2d8be4441f9ed30700b618334c1f29142073614d5068d1e7f956b49f80e3"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "319111223ead4f84002e84357087247c58a6db15689426e521745901dd837699",
+        "outputRuntimeSha256": "319111223ead4f84002e84357087247c58a6db15689426e521745901dd837699"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "b8e50ed153047193549e6ea08561df07296cc67748aae00821fab83dd1590b71",
+        "outputRuntimeSha256": "b8e50ed153047193549e6ea08561df07296cc67748aae00821fab83dd1590b71"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "590062b2c7810ac57601acd479ad37b951920d895715ce075e1fedca3efa1544",
+        "outputRuntimeSha256": "590062b2c7810ac57601acd479ad37b951920d895715ce075e1fedca3efa1544"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "9ca2af83e4bef75a10b811c360db325f8e75385dd36136f07c5a6a1ca680d6a4",
+        "outputRuntimeSha256": "9ca2af83e4bef75a10b811c360db325f8e75385dd36136f07c5a6a1ca680d6a4"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "2069efae0bce92c0bf4a0c7c55ddc593f3fa2332437d1ceaff086923ec9cbf74",
+        "outputRuntimeSha256": "2069efae0bce92c0bf4a0c7c55ddc593f3fa2332437d1ceaff086923ec9cbf74"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "262fe13dc71471b8ad70bb379885741015a6e7f0299c9845e673cd7ac7aa9ffc",
+        "outputRuntimeSha256": "262fe13dc71471b8ad70bb379885741015a6e7f0299c9845e673cd7ac7aa9ffc"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "1eb54ea9a94b53afb5e518dcd5ee391d028ba8d5d03d88c54ed63e39157d80f4",
+        "outputRuntimeSha256": "1eb54ea9a94b53afb5e518dcd5ee391d028ba8d5d03d88c54ed63e39157d80f4"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "a6faf2da77ae588b5616cb9f88c5e31ca8ed03c3171f4f30867c83221a867db4",
+        "outputRuntimeSha256": "a6faf2da77ae588b5616cb9f88c5e31ca8ed03c3171f4f30867c83221a867db4"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "bd6c6115d582e8f7bba90f22220529a99264bf5b9a7316d20558b84ded553a92",
+        "outputRuntimeSha256": "bd6c6115d582e8f7bba90f22220529a99264bf5b9a7316d20558b84ded553a92"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "33c66dd735c12ada8b47724b2f0618dd193ab0971ea69e14415aa796e6f41836",
+        "outputRuntimeSha256": "33c66dd735c12ada8b47724b2f0618dd193ab0971ea69e14415aa796e6f41836"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "d701c231f2d1a6e349aff2910d8d1eadb1a2626aa4c6cc19be45acab12a81782",
+        "outputRuntimeSha256": "d701c231f2d1a6e349aff2910d8d1eadb1a2626aa4c6cc19be45acab12a81782"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "15316b0ec0fe14d7ed971f644e6e6d52c7cbfed998c3a6721383a3c67f3aad88",
+        "outputRuntimeSha256": "15316b0ec0fe14d7ed971f644e6e6d52c7cbfed998c3a6721383a3c67f3aad88"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "eefae291caf1b7701e96a5a74379af11286c3f79dd608947e6888648e526e93c",
+        "outputRuntimeSha256": "eefae291caf1b7701e96a5a74379af11286c3f79dd608947e6888648e526e93c"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "5db9e6adf38dd05f88b0e9319b0e25ca5ba8868ad6df3e12e20b6c9f9d5bcf0a",
+        "outputRuntimeSha256": "5db9e6adf38dd05f88b0e9319b0e25ca5ba8868ad6df3e12e20b6c9f9d5bcf0a"
+      },
+      {
+        "node": "RightLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "de9f0e03b4830c22a383587d2036dfaabaf286f62147ef2da5367b29bcba8cec",
+        "outputRuntimeSha256": "de9f0e03b4830c22a383587d2036dfaabaf286f62147ef2da5367b29bcba8cec"
+      },
+      {
+        "node": "RightLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "41ae8788e5ec8fc18ffadff61296d273eae8f40f8421287943e064421c14fee2",
+        "outputRuntimeSha256": "41ae8788e5ec8fc18ffadff61296d273eae8f40f8421287943e064421c14fee2"
+      },
+      {
+        "node": "RightLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "231ed488b11d095a9bd09912c40114b192dee3919dda15c25ba3acbda6c7567a",
+        "outputRuntimeSha256": "231ed488b11d095a9bd09912c40114b192dee3919dda15c25ba3acbda6c7567a"
+      },
+      {
+        "node": "RightFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "b32e2119487384e10669408a5094cc6347e07f7a2d08d0b51319d7b6ea277322",
+        "outputRuntimeSha256": "b32e2119487384e10669408a5094cc6347e07f7a2d08d0b51319d7b6ea277322"
+      },
+      {
+        "node": "RightFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "e6d3039ec45d20ac44170bdeb1ef0d9abcadc4bcd99634d4f52486e475375400",
+        "outputRuntimeSha256": "e6d3039ec45d20ac44170bdeb1ef0d9abcadc4bcd99634d4f52486e475375400"
+      },
+      {
+        "node": "RightFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "52f1902471175f583e26fd849519a4a76c94594a4d815597b8ee9e3680d98209",
+        "outputRuntimeSha256": "52f1902471175f583e26fd849519a4a76c94594a4d815597b8ee9e3680d98209"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "000fe562faee5c81f0c916726e2f95d8dfa02a7c075afbe3c3399a6350da9a91",
+        "outputRuntimeSha256": "000fe562faee5c81f0c916726e2f95d8dfa02a7c075afbe3c3399a6350da9a91"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "6262c60bbc7edbea85ea1b487ff6773a2b5f1618d43a060b5abfc39c354e831e",
+        "outputRuntimeSha256": "6262c60bbc7edbea85ea1b487ff6773a2b5f1618d43a060b5abfc39c354e831e"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "918fab457c68212d4018b01ae4cd7fe27d11012d108aa1ddd92973142910a2d2",
+        "outputRuntimeSha256": "918fab457c68212d4018b01ae4cd7fe27d11012d108aa1ddd92973142910a2d2"
+      },
+      {
+        "node": "Spine02",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "fdce643861973618bcf12f5157d6375915b990babfb6ae647a8ef42e54038b05",
+        "outputRuntimeSha256": "fdce643861973618bcf12f5157d6375915b990babfb6ae647a8ef42e54038b05"
+      },
+      {
+        "node": "Spine02",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "edeb1e01e9fe245d64b725c7878d7f860abbfa90c296fbc651c952357ce74867",
+        "outputRuntimeSha256": "edeb1e01e9fe245d64b725c7878d7f860abbfa90c296fbc651c952357ce74867"
+      },
+      {
+        "node": "Spine02",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "9c66b1a22796d0f5754f4bf31262a2ed9a72e2d84542c52724cba23f59c19041",
+        "outputRuntimeSha256": "9c66b1a22796d0f5754f4bf31262a2ed9a72e2d84542c52724cba23f59c19041"
+      },
+      {
+        "node": "Spine01",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "e67bf61ed79c6aa72e95b1b4f3db098a70be744592f96e1263eaa458b4804c54",
+        "outputRuntimeSha256": "e67bf61ed79c6aa72e95b1b4f3db098a70be744592f96e1263eaa458b4804c54"
+      },
+      {
+        "node": "Spine01",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "80152cd1f98efdba6af6703497a7291c8c5d81f5deea17b4d61e6943d2b1ef1f",
+        "outputRuntimeSha256": "80152cd1f98efdba6af6703497a7291c8c5d81f5deea17b4d61e6943d2b1ef1f"
+      },
+      {
+        "node": "Spine01",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "8e2bfbd6705493bf6cf00e5db50fbf428ff62878a5b31d65e2f678099bb4394a",
+        "outputRuntimeSha256": "8e2bfbd6705493bf6cf00e5db50fbf428ff62878a5b31d65e2f678099bb4394a"
+      },
+      {
+        "node": "Spine",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "05d1f587687ea3361b25a2996a6f8656bea6ba3dcaff68427b3554310304441a",
+        "outputRuntimeSha256": "05d1f587687ea3361b25a2996a6f8656bea6ba3dcaff68427b3554310304441a"
+      },
+      {
+        "node": "Spine",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "1c38c701b49520896eecda7948b14e0a74ccd3dcce6371245c4a85667503160c",
+        "outputRuntimeSha256": "1c38c701b49520896eecda7948b14e0a74ccd3dcce6371245c4a85667503160c"
+      },
+      {
+        "node": "Spine",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "c28d8ef528c7cea0975dda6c2d9609c88ed11547bea56d61486d1223987a583c",
+        "outputRuntimeSha256": "c28d8ef528c7cea0975dda6c2d9609c88ed11547bea56d61486d1223987a583c"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "a1ff962f2579643fffcf93338c2c2aa7c226eb125dc879fcc1c078c411f9b9a3",
+        "outputRuntimeSha256": "a1ff962f2579643fffcf93338c2c2aa7c226eb125dc879fcc1c078c411f9b9a3"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "d071c3114446fd1123e72926fa8920ddfabd38cec1894acb7b07b92ab75490eb",
+        "outputSourceSha256": "3d46558b63562d63d288b5f94cf3899ffd1de299fdc3ab2a447c6285699f40e4",
+        "outputRuntimeSha256": "0563870062f2d2f674f52177b7b7e72b297d5bed74f58cccbdfad4b1ea666b8f"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "09fcd27129e01ade9f01842ed0dc1d66b11493737a29ee3d1ca92748a846df62",
+        "outputRuntimeSha256": "09fcd27129e01ade9f01842ed0dc1d66b11493737a29ee3d1ca92748a846df62"
+      },
+      {
+        "node": "LeftArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "dfa56d343cebdf1d807b48f4bd1673d716208f9b09499ea2cf9e3409237d91aa",
+        "outputRuntimeSha256": "dfa56d343cebdf1d807b48f4bd1673d716208f9b09499ea2cf9e3409237d91aa"
+      },
+      {
+        "node": "LeftArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "d071c3114446fd1123e72926fa8920ddfabd38cec1894acb7b07b92ab75490eb",
+        "outputSourceSha256": "fd3a974a6c656a7326539661c5c96735be2668d66c52a826ce75df007402e40f",
+        "outputRuntimeSha256": "d87a50b90c1bae8eb5fedbd5c596b8399af9b4a138934658264555f526310678"
+      },
+      {
+        "node": "LeftArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "f54f655f5a3ed2025c3da144f3dcea655a2a480725bfbaf28bae2ccd891b9257",
+        "outputRuntimeSha256": "f54f655f5a3ed2025c3da144f3dcea655a2a480725bfbaf28bae2ccd891b9257"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "6c5c72e49f2ffcbe1c7d5899980ba2712b53aa9055d7d5bcf7954fe250292444",
+        "outputRuntimeSha256": "6c5c72e49f2ffcbe1c7d5899980ba2712b53aa9055d7d5bcf7954fe250292444"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "d071c3114446fd1123e72926fa8920ddfabd38cec1894acb7b07b92ab75490eb",
+        "outputSourceSha256": "101ec0c945dda90af44ac96cc039ba5e8f3bf9d83d5a1497319e8e527afb9f9e",
+        "outputRuntimeSha256": "53abb24836a5761000745feeabb243631df59a147116fe893e17c0e7867c059c"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "1dd0bfa4d431ac9aac250bbecde844480668de36f8752596d34fbffef971ddb5",
+        "outputRuntimeSha256": "1dd0bfa4d431ac9aac250bbecde844480668de36f8752596d34fbffef971ddb5"
+      },
+      {
+        "node": "LeftHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "39fb763510fde6d3cbf14d74fa57c16c5365931b7012023bc55b8abb5a27aebb",
+        "outputRuntimeSha256": "39fb763510fde6d3cbf14d74fa57c16c5365931b7012023bc55b8abb5a27aebb"
+      },
+      {
+        "node": "LeftHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "0ca754402d2af19fcecb4c22521ab32f7da6d655d68d0f83f3b829c61e4facfc",
+        "outputRuntimeSha256": "0ca754402d2af19fcecb4c22521ab32f7da6d655d68d0f83f3b829c61e4facfc"
+      },
+      {
+        "node": "LeftHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "d5ed79568069acbfb5ee28d8c1f10e3f686c6cd2c812d026a51b422d9e882323",
+        "outputRuntimeSha256": "d5ed79568069acbfb5ee28d8c1f10e3f686c6cd2c812d026a51b422d9e882323"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "ffe0789a5c6cd252b9df6a723ffc95d937b8d6d34216ab1800678689044aa30b",
+        "outputRuntimeSha256": "ffe0789a5c6cd252b9df6a723ffc95d937b8d6d34216ab1800678689044aa30b"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "d071c3114446fd1123e72926fa8920ddfabd38cec1894acb7b07b92ab75490eb",
+        "outputSourceSha256": "a6df7e4a91480697bd113bbfb1749478dec9c33a092ca0c4e14751f145bfc12b",
+        "outputRuntimeSha256": "982f5768dc639cfa8055ed9343569429ff5aaf1b7823f50f3a64cb10e7b3f755"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "e9f446770ae7f5e8bf629870e9eeaee09a572ba3f09a2c3213a5ef6dbfd8422b",
+        "outputRuntimeSha256": "e9f446770ae7f5e8bf629870e9eeaee09a572ba3f09a2c3213a5ef6dbfd8422b"
+      },
+      {
+        "node": "RightArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "3093e8b4705f0169aad0c13df2949962f25cb3db3e62be2f93ae28f1e585e544",
+        "outputRuntimeSha256": "3093e8b4705f0169aad0c13df2949962f25cb3db3e62be2f93ae28f1e585e544"
+      },
+      {
+        "node": "RightArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "d071c3114446fd1123e72926fa8920ddfabd38cec1894acb7b07b92ab75490eb",
+        "outputSourceSha256": "747a18f5fc91259e1f0b2fe8c39c855a15ee5e1c3d0b0fe9a281ef7c8ae2d86f",
+        "outputRuntimeSha256": "2a2d060a841df579fc760573a3c9c5d23f5ccf8597f80fe8bd0916f2cfa59eeb"
+      },
+      {
+        "node": "RightArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "df304601751873e33927b179597644e313a5616818ace3534fadb34efb6dfcfe",
+        "outputRuntimeSha256": "df304601751873e33927b179597644e313a5616818ace3534fadb34efb6dfcfe"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "6ff3d5aece81d6239a35f8bfa6061327b1949d6f88513a80f55bb31ff00d699c",
+        "outputRuntimeSha256": "6ff3d5aece81d6239a35f8bfa6061327b1949d6f88513a80f55bb31ff00d699c"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "d071c3114446fd1123e72926fa8920ddfabd38cec1894acb7b07b92ab75490eb",
+        "outputSourceSha256": "5f39a24cceaff446c3b29eb0bafa237a9e7cc59cf442c2e080ca93be254b2544",
+        "outputRuntimeSha256": "36e55c97646b7fe9a92da7bfb2cb876d116bf4005b053bb719f8707f1ec2d177"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "a8b3b486ed79076b185070618bade7ec2070961480d008d0c738063a23f010ca",
+        "outputRuntimeSha256": "a8b3b486ed79076b185070618bade7ec2070961480d008d0c738063a23f010ca"
+      },
+      {
+        "node": "RightHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "dbcca9ba13dab513b9cfcb83d1bee89aea79da37ba6b0d360a3875c75f045039",
+        "outputRuntimeSha256": "dbcca9ba13dab513b9cfcb83d1bee89aea79da37ba6b0d360a3875c75f045039"
+      },
+      {
+        "node": "RightHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "c8b8245ef5f03e6df263d5ae4d6b14861f3653bb8e8a933b416fb07c0b06710f",
+        "outputRuntimeSha256": "c8b8245ef5f03e6df263d5ae4d6b14861f3653bb8e8a933b416fb07c0b06710f"
+      },
+      {
+        "node": "RightHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "427f79679cd1978e89ebaaac746fc6af186c85e6f8f64e2ccbe081e80b2928fa",
+        "outputRuntimeSha256": "427f79679cd1978e89ebaaac746fc6af186c85e6f8f64e2ccbe081e80b2928fa"
+      },
+      {
+        "node": "neck",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "9741e740654ba60615d22bab8bcf832dfbfa0bbd92fad092c62d7d4ef9f70b8e",
+        "outputRuntimeSha256": "9741e740654ba60615d22bab8bcf832dfbfa0bbd92fad092c62d7d4ef9f70b8e"
+      },
+      {
+        "node": "neck",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "e4304c1fc0fccf20ce1d2fc1ea6aad5734c3322668a3116373dc8ace4020e374",
+        "outputRuntimeSha256": "e4304c1fc0fccf20ce1d2fc1ea6aad5734c3322668a3116373dc8ace4020e374"
+      },
+      {
+        "node": "neck",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "37964a89bd007eb7bf7ba0c4121f80e6e168aa5cb62095dfa09cdb42eedc90e2",
+        "outputRuntimeSha256": "37964a89bd007eb7bf7ba0c4121f80e6e168aa5cb62095dfa09cdb42eedc90e2"
+      },
+      {
+        "node": "Head",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "2122ddc5a4a2ad22d899164535f87a0874843884cdcba39694e0bb3bdd7b4d1f",
+        "outputRuntimeSha256": "2122ddc5a4a2ad22d899164535f87a0874843884cdcba39694e0bb3bdd7b4d1f"
+      },
+      {
+        "node": "Head",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "inputRuntimeSha256": "acfca67aa4a8ac12000acffb892ee27bca7f014c249c54c469dd7cd996e66a09",
+        "outputSourceSha256": "ddb9ff3956a18b508dda713951f842b56ca190e6b8017fd76bcfc707b959c5b1",
+        "outputRuntimeSha256": "ddb9ff3956a18b508dda713951f842b56ca190e6b8017fd76bcfc707b959c5b1"
+      },
+      {
+        "node": "Head",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "020252486fdbe8e7a9f6ae8d431602e6944e14c4a02c43f4e219c83312105311",
+        "outputRuntimeSha256": "020252486fdbe8e7a9f6ae8d431602e6944e14c4a02c43f4e219c83312105311"
+      },
+      {
+        "node": "head_end",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "a6ce9001249f37a41fd4b3c8aed07e99b5b3692366a725ccd6c356e8ebcc18e8",
+        "outputRuntimeSha256": "a6ce9001249f37a41fd4b3c8aed07e99b5b3692366a725ccd6c356e8ebcc18e8"
+      },
+      {
+        "node": "head_end",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "039eca04a6bc9fcca2d1b9c04e3773637255b8e5b98fa8c9feced3458f12153c",
+        "outputRuntimeSha256": "039eca04a6bc9fcca2d1b9c04e3773637255b8e5b98fa8c9feced3458f12153c"
+      },
+      {
+        "node": "head_end",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "90591d1c16b22c44d6ba83e06dca497bfbe2cb458c36e794802ea41dc0295e99",
+        "outputRuntimeSha256": "90591d1c16b22c44d6ba83e06dca497bfbe2cb458c36e794802ea41dc0295e99"
+      },
+      {
+        "node": "headfront",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "75cb7738b30f187a04832739eb44366736a7928f35af3406851ddef8559a473c",
+        "outputRuntimeSha256": "75cb7738b30f187a04832739eb44366736a7928f35af3406851ddef8559a473c"
+      },
+      {
+        "node": "headfront",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "c8cd1093bc93a46acb49c2615cb6809c84ac0a672182d768cb78794819f6cd2e",
+        "outputRuntimeSha256": "c8cd1093bc93a46acb49c2615cb6809c84ac0a672182d768cb78794819f6cd2e"
+      },
+      {
+        "node": "headfront",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "inputRuntimeSha256": "3b41b1c1489f12deaaa49db4cd9f34f2dae8b210ac01960f7617f33265bfa38c",
+        "outputSourceSha256": "149238d6c09b42babebf5a99dfbc84084e8b6493529e065b9d28f3a10b4673ac",
+        "outputRuntimeSha256": "149238d6c09b42babebf5a99dfbc84084e8b6493529e065b9d28f3a10b4673ac"
+      }
+    ]
+  },
+  {
+    "name": "idle-03",
+    "originalChannelsUnchanged": 66,
+    "correctedChannels": 6,
+    "addedChannels": [
+      "Kestrel_normalized_root.translation"
+    ],
+    "inverseBindSha256": "3a1f6c830ffb99cc34eb3ac8adff5f0b3768d577ae5b428decfe9e1ab45a5737",
+    "tracks": [
+      {
+        "node": "Hips",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "c4e5c0c925baac3e5e3ddff0e2e09455cb0cac12c293bcb2790ad099ac9ca54e",
+        "outputRuntimeSha256": "c4e5c0c925baac3e5e3ddff0e2e09455cb0cac12c293bcb2790ad099ac9ca54e"
+      },
+      {
+        "node": "Hips",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "257b1763a22902823a0b15abdf7807e0413cc6f12fc5c260cada80ced21b1330",
+        "outputRuntimeSha256": "257b1763a22902823a0b15abdf7807e0413cc6f12fc5c260cada80ced21b1330"
+      },
+      {
+        "node": "Hips",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "76da3ba27ed057adcb325eea1c120398da7b2d18d301fe9613a6082ec66a3948",
+        "outputRuntimeSha256": "76da3ba27ed057adcb325eea1c120398da7b2d18d301fe9613a6082ec66a3948"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "cab5b607b8da2693c24e47c5212165911bff54376c964fbb154a711ab92ce89d",
+        "outputRuntimeSha256": "cab5b607b8da2693c24e47c5212165911bff54376c964fbb154a711ab92ce89d"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "90f6ff81fff8cb49cf45ea0fe8e8b96487e2111a0f71693798a25aad9c1e6987",
+        "outputRuntimeSha256": "90f6ff81fff8cb49cf45ea0fe8e8b96487e2111a0f71693798a25aad9c1e6987"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "ec8145eb34edb59297f5f009bb6fc5e55cc99023be39e27eee039652eece2bba",
+        "outputRuntimeSha256": "ec8145eb34edb59297f5f009bb6fc5e55cc99023be39e27eee039652eece2bba"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "c99f39e031bd05cdc7bb3b3e4a38179e3d4fd4502b045fee6b514e042251ae70",
+        "outputRuntimeSha256": "c99f39e031bd05cdc7bb3b3e4a38179e3d4fd4502b045fee6b514e042251ae70"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "469fe44176ddb425810c044537ef3885970c4b393ff884ccdecc256c0049fab3",
+        "outputRuntimeSha256": "469fe44176ddb425810c044537ef3885970c4b393ff884ccdecc256c0049fab3"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "91f154fa5cb009c1ec7fb1a242f9ed00696682bf86076495e23b22be356fbc9c",
+        "outputRuntimeSha256": "91f154fa5cb009c1ec7fb1a242f9ed00696682bf86076495e23b22be356fbc9c"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "c90a0e3dcf8f2f2cc7e012a647419dadaad2f3166bbfa2a00eec4524cafb8adb",
+        "outputRuntimeSha256": "c90a0e3dcf8f2f2cc7e012a647419dadaad2f3166bbfa2a00eec4524cafb8adb"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "f752093ca5b404573ed5e7ffb295e7fc42e9a52868a655961922964997272de4",
+        "outputRuntimeSha256": "f752093ca5b404573ed5e7ffb295e7fc42e9a52868a655961922964997272de4"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "4f2a0618e7b7d846d5f2ae52140980f82f57cefb7a8221295eda6c5a8ec23b51",
+        "outputRuntimeSha256": "4f2a0618e7b7d846d5f2ae52140980f82f57cefb7a8221295eda6c5a8ec23b51"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "276a8ef4c8b533cfb509a8cb3861e37f522b0ee84a50d78fc4a8f0cd215f653f",
+        "outputRuntimeSha256": "276a8ef4c8b533cfb509a8cb3861e37f522b0ee84a50d78fc4a8f0cd215f653f"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "b896655d5bf363a6a8f9bc81cb4274afb1682973f970ad962b96ac77c1e7a926",
+        "outputRuntimeSha256": "b896655d5bf363a6a8f9bc81cb4274afb1682973f970ad962b96ac77c1e7a926"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "af5a163766ddb9d3820ad21b685764bd6e25bc17f2f3ec1a4cc56bc4fcfd1dae",
+        "outputRuntimeSha256": "af5a163766ddb9d3820ad21b685764bd6e25bc17f2f3ec1a4cc56bc4fcfd1dae"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "9927b221990d32a42be94139f6568477f04886391537776274346b536314b4e2",
+        "outputRuntimeSha256": "9927b221990d32a42be94139f6568477f04886391537776274346b536314b4e2"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "584badd380656d73cf69b6bd7e5011c052e79cff5125fb51ce577f82d03477c6",
+        "outputRuntimeSha256": "584badd380656d73cf69b6bd7e5011c052e79cff5125fb51ce577f82d03477c6"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "e282b0cb5343b4f6fa8ca873aeb251c7cf4add16ab1cb66bf87193b374dc0989",
+        "outputRuntimeSha256": "e282b0cb5343b4f6fa8ca873aeb251c7cf4add16ab1cb66bf87193b374dc0989"
+      },
+      {
+        "node": "RightLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "e4ff9156defd9eb9dda86ec3c891e151727ec861b64cddc926b2b556504a0d9a",
+        "outputRuntimeSha256": "e4ff9156defd9eb9dda86ec3c891e151727ec861b64cddc926b2b556504a0d9a"
+      },
+      {
+        "node": "RightLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "6a27f9eb3b9e11c08f5c2f2eb6216e920b1e17bb06f9a397ce0dea7b148a27fd",
+        "outputRuntimeSha256": "6a27f9eb3b9e11c08f5c2f2eb6216e920b1e17bb06f9a397ce0dea7b148a27fd"
+      },
+      {
+        "node": "RightLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "ce62ab25325a8d7986eb7f201fd8a6b462524710993b4f7ac0a3829e96b49f84",
+        "outputRuntimeSha256": "ce62ab25325a8d7986eb7f201fd8a6b462524710993b4f7ac0a3829e96b49f84"
+      },
+      {
+        "node": "RightFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "01ea4a4ca5bd8dd574155c8232c9ad0e018764d8b76d685464093949ce7a6fb6",
+        "outputRuntimeSha256": "01ea4a4ca5bd8dd574155c8232c9ad0e018764d8b76d685464093949ce7a6fb6"
+      },
+      {
+        "node": "RightFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "8df95056977c1613602010bae66964ff9b92221c97db4c2338a4b7c05481a727",
+        "outputRuntimeSha256": "8df95056977c1613602010bae66964ff9b92221c97db4c2338a4b7c05481a727"
+      },
+      {
+        "node": "RightFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "e985977e6f697fae5250be2bbcb1be0920485484c5b1a9d43aa6ce92c4a1f63d",
+        "outputRuntimeSha256": "e985977e6f697fae5250be2bbcb1be0920485484c5b1a9d43aa6ce92c4a1f63d"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "2f0d60f893b90e4ab314389ee7ed33e84ad715fb84319df3e0f03edb45d66073",
+        "outputRuntimeSha256": "2f0d60f893b90e4ab314389ee7ed33e84ad715fb84319df3e0f03edb45d66073"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "61a3c110f11afef46f9fbc1917b46b15045c149ecd09df4e837decc89ab8a721",
+        "outputRuntimeSha256": "61a3c110f11afef46f9fbc1917b46b15045c149ecd09df4e837decc89ab8a721"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "65a1c2107143d119ddff45eeb33375bbfe4b2525d019c72fe25928830be2a9f9",
+        "outputRuntimeSha256": "65a1c2107143d119ddff45eeb33375bbfe4b2525d019c72fe25928830be2a9f9"
+      },
+      {
+        "node": "Spine02",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "9ce78d6dadd1bd14b05070618b0d333539d51fbd1d1d152a09934f16de8ea67b",
+        "outputRuntimeSha256": "9ce78d6dadd1bd14b05070618b0d333539d51fbd1d1d152a09934f16de8ea67b"
+      },
+      {
+        "node": "Spine02",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "e04e9d8d8d7d43b4f578dfe509741bcf49dcdf141a962e4ecc6e167f94092c4e",
+        "outputRuntimeSha256": "e04e9d8d8d7d43b4f578dfe509741bcf49dcdf141a962e4ecc6e167f94092c4e"
+      },
+      {
+        "node": "Spine02",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "31ce6f98ee60043affd658c0578ba214ee3fb4d0fb2add6f5da5d83918aae72d",
+        "outputRuntimeSha256": "31ce6f98ee60043affd658c0578ba214ee3fb4d0fb2add6f5da5d83918aae72d"
+      },
+      {
+        "node": "Spine01",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "54fbd83997126589f198a37a88f2a01a20e3b230f76483ce791185f21a3ae0b7",
+        "outputRuntimeSha256": "54fbd83997126589f198a37a88f2a01a20e3b230f76483ce791185f21a3ae0b7"
+      },
+      {
+        "node": "Spine01",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "43184dd54dbc72c5a23e6b87053cbb09e4f7bd6626a550934c2b1f2f77fe05dc",
+        "outputRuntimeSha256": "43184dd54dbc72c5a23e6b87053cbb09e4f7bd6626a550934c2b1f2f77fe05dc"
+      },
+      {
+        "node": "Spine01",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "3853ed1d878c9dcae7be941971c608ef67a3e34fd56bdf9c3af776e567aaada5",
+        "outputRuntimeSha256": "3853ed1d878c9dcae7be941971c608ef67a3e34fd56bdf9c3af776e567aaada5"
+      },
+      {
+        "node": "Spine",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "db8a55d708dad6d6ab20ffc1a77d380c07ad00942e2a939eb664414e6b1b70ec",
+        "outputRuntimeSha256": "db8a55d708dad6d6ab20ffc1a77d380c07ad00942e2a939eb664414e6b1b70ec"
+      },
+      {
+        "node": "Spine",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "7b6bd984c7ca3d0768c7cc4d9b21f0f3bfac74afb898a43aac2ab489c0178a44",
+        "outputRuntimeSha256": "7b6bd984c7ca3d0768c7cc4d9b21f0f3bfac74afb898a43aac2ab489c0178a44"
+      },
+      {
+        "node": "Spine",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "fc16a76f05208e6384be15d0f78653482de795e6559c428e904677f616d2cb64",
+        "outputRuntimeSha256": "fc16a76f05208e6384be15d0f78653482de795e6559c428e904677f616d2cb64"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "6bff5f395c8bc398d610cb5faaefb35752de57d3bb78cb6572a1a7b4b8427f0d",
+        "outputRuntimeSha256": "6bff5f395c8bc398d610cb5faaefb35752de57d3bb78cb6572a1a7b4b8427f0d"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "2a4be7ab372d94ea8f05733d7ee3eab4980f4611cb8c1f5eaf3480b3be1e4f5e",
+        "outputSourceSha256": "103f25970b6ba4c3838adbf1ff7c5c78559b9883ff6a626a66cc38a224bf234c",
+        "outputRuntimeSha256": "7505676fb7b69980506394e723725b32f0cbd777582a6d8573ee1d605d92cd81"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "59f0cf8c4b2cf4a9adf6837b9003c92bad1420995e76129b5bcb633360bbdb21",
+        "outputRuntimeSha256": "59f0cf8c4b2cf4a9adf6837b9003c92bad1420995e76129b5bcb633360bbdb21"
+      },
+      {
+        "node": "LeftArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "e803f5a1d6ed823a8eb4a73b3611fe9b0b288c072bf0b2554a321d7a93efdece",
+        "outputRuntimeSha256": "e803f5a1d6ed823a8eb4a73b3611fe9b0b288c072bf0b2554a321d7a93efdece"
+      },
+      {
+        "node": "LeftArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "2a4be7ab372d94ea8f05733d7ee3eab4980f4611cb8c1f5eaf3480b3be1e4f5e",
+        "outputSourceSha256": "30ebb084fc983a094041a7729533868ad68d0f5b62cff2fcec8d1c08eb8d8450",
+        "outputRuntimeSha256": "16ed731c17d2de7511903d6b833682ca046bf6d79d0c1f1aa5b3b32074009ea3"
+      },
+      {
+        "node": "LeftArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "eec8e56b95ba43e85da281d81daceee53bd4d92e5bc27718e378b452f18bead8",
+        "outputRuntimeSha256": "eec8e56b95ba43e85da281d81daceee53bd4d92e5bc27718e378b452f18bead8"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "f4a37c4407a18a4d7a76cdb8602908cf1afa27fc7390f54c417248b9017df318",
+        "outputRuntimeSha256": "f4a37c4407a18a4d7a76cdb8602908cf1afa27fc7390f54c417248b9017df318"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "2a4be7ab372d94ea8f05733d7ee3eab4980f4611cb8c1f5eaf3480b3be1e4f5e",
+        "outputSourceSha256": "00a3458b453bfb1e75f8a0fbd4e09444d3f37fb3a0c63a65d8a07e0872627a09",
+        "outputRuntimeSha256": "a85b151e7f1b095a2ff817ab0cc1fb71610aab5cece09adfc161f8e990f3d861"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "ac42d2d31f4b254cf7512851e0f156a6a0d8bfcddb13ac01a48d91c68610bc6e",
+        "outputRuntimeSha256": "ac42d2d31f4b254cf7512851e0f156a6a0d8bfcddb13ac01a48d91c68610bc6e"
+      },
+      {
+        "node": "LeftHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "ecf9c07ab85bf99c502444a4ec6c27376cc6cd59902c8413c07ee69658c1cff8",
+        "outputRuntimeSha256": "ecf9c07ab85bf99c502444a4ec6c27376cc6cd59902c8413c07ee69658c1cff8"
+      },
+      {
+        "node": "LeftHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "a4085f814a4ebbcb63e1605bbe1e1e677f4b54ae30672f7e001f297e570228ed",
+        "outputRuntimeSha256": "a4085f814a4ebbcb63e1605bbe1e1e677f4b54ae30672f7e001f297e570228ed"
+      },
+      {
+        "node": "LeftHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "15f4f5f95982e427a6f3cddbd2f182f325af859d4baef01a5bb811e9316da886",
+        "outputRuntimeSha256": "15f4f5f95982e427a6f3cddbd2f182f325af859d4baef01a5bb811e9316da886"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "4b58ea256044b44732cd8bd82d68a4fa639dce58f2d19bf290a774c4ba565801",
+        "outputRuntimeSha256": "4b58ea256044b44732cd8bd82d68a4fa639dce58f2d19bf290a774c4ba565801"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "2a4be7ab372d94ea8f05733d7ee3eab4980f4611cb8c1f5eaf3480b3be1e4f5e",
+        "outputSourceSha256": "238a3f8acf7d393120c0938c4c11dff46d8f22ac86b68565ffce2dce4da2d5f9",
+        "outputRuntimeSha256": "efbe511f7584c63a975bb359050fd7cbc58674104d8889e67d735a775e297a0a"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "991682273aee22d025b8e2e01618aacb79f5509a9800253f3bdc8054826663b4",
+        "outputRuntimeSha256": "991682273aee22d025b8e2e01618aacb79f5509a9800253f3bdc8054826663b4"
+      },
+      {
+        "node": "RightArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "47cb9a108492109416093ebe484589c018acd49550841aaeee3b5ad52598707b",
+        "outputRuntimeSha256": "47cb9a108492109416093ebe484589c018acd49550841aaeee3b5ad52598707b"
+      },
+      {
+        "node": "RightArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "2a4be7ab372d94ea8f05733d7ee3eab4980f4611cb8c1f5eaf3480b3be1e4f5e",
+        "outputSourceSha256": "1327bd399de13faf7a7095e57152bd010a1e9b6f6b673a2e118d13d4d57e4ec4",
+        "outputRuntimeSha256": "fadf6ae1498221de98436a4e62882ef56b816d2ab785444a5209df6134e5e1d4"
+      },
+      {
+        "node": "RightArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "c42d923b17068c907083f3ccf790a74f1d06e9ef3d78d7d0e46a8e307d51ded9",
+        "outputRuntimeSha256": "c42d923b17068c907083f3ccf790a74f1d06e9ef3d78d7d0e46a8e307d51ded9"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "bd04c2bc46b9d258231f791d2d150764c46b476030dadf04f3ab5e67805e63d1",
+        "outputRuntimeSha256": "bd04c2bc46b9d258231f791d2d150764c46b476030dadf04f3ab5e67805e63d1"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "2a4be7ab372d94ea8f05733d7ee3eab4980f4611cb8c1f5eaf3480b3be1e4f5e",
+        "outputSourceSha256": "6f1eed9065d7e508f53174fa5093df6ec020d33ee7645b660b5049d56dc68900",
+        "outputRuntimeSha256": "cb6d1e4f11a2c355308f9c2edf712409791f6655d8b54bdb75c9b5319ec5a130"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "e391f83fa475134e42aef6611058e589a6b68cc3c54b78160be665025768b003",
+        "outputRuntimeSha256": "e391f83fa475134e42aef6611058e589a6b68cc3c54b78160be665025768b003"
+      },
+      {
+        "node": "RightHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "aee4757d640c0580a5e9d5ce775eebc3adecbfee19642e5d66ef9c0baee0ca43",
+        "outputRuntimeSha256": "aee4757d640c0580a5e9d5ce775eebc3adecbfee19642e5d66ef9c0baee0ca43"
+      },
+      {
+        "node": "RightHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "393c0102de3e27cd944a3c9dad07eeb5b0653dbab56c4a9d4494490ab56780cd",
+        "outputRuntimeSha256": "393c0102de3e27cd944a3c9dad07eeb5b0653dbab56c4a9d4494490ab56780cd"
+      },
+      {
+        "node": "RightHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "7977ef167cb137c16600ea3e0b30183df9e82409eccbe33412f52c864f0a22b0",
+        "outputRuntimeSha256": "7977ef167cb137c16600ea3e0b30183df9e82409eccbe33412f52c864f0a22b0"
+      },
+      {
+        "node": "neck",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "0fbe224ca5792853dbaf9680105c145e10a7b02563dd741bcc9d1e09495c05a1",
+        "outputRuntimeSha256": "0fbe224ca5792853dbaf9680105c145e10a7b02563dd741bcc9d1e09495c05a1"
+      },
+      {
+        "node": "neck",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "8c3aabd35c1a6710ec772c60425e917a229f3513c8901091add8c168d6df20aa",
+        "outputRuntimeSha256": "8c3aabd35c1a6710ec772c60425e917a229f3513c8901091add8c168d6df20aa"
+      },
+      {
+        "node": "neck",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "fc00b556773a128e8c2e27f2238ad20c4dacf65505c04631bb61cd26d7575284",
+        "outputRuntimeSha256": "fc00b556773a128e8c2e27f2238ad20c4dacf65505c04631bb61cd26d7575284"
+      },
+      {
+        "node": "Head",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "296a74dbabab2da9229235fb1ca9151a8649529407ae2ecc993268856508025c",
+        "outputRuntimeSha256": "296a74dbabab2da9229235fb1ca9151a8649529407ae2ecc993268856508025c"
+      },
+      {
+        "node": "Head",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "1b8f816a98a188bc9ff5398206955ff965fddc0ecf4d0923d847381420309886",
+        "outputRuntimeSha256": "1b8f816a98a188bc9ff5398206955ff965fddc0ecf4d0923d847381420309886"
+      },
+      {
+        "node": "Head",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "142cb84ae7440e286d52ef2f4ea58aa167616d2b4ef99dd67702912753279738",
+        "outputRuntimeSha256": "142cb84ae7440e286d52ef2f4ea58aa167616d2b4ef99dd67702912753279738"
+      },
+      {
+        "node": "head_end",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "517426f40ff7e3a79eba06fc6ea2cbbd86670b14719b54cc206e7dfa77200b64",
+        "outputRuntimeSha256": "517426f40ff7e3a79eba06fc6ea2cbbd86670b14719b54cc206e7dfa77200b64"
+      },
+      {
+        "node": "head_end",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "66728e74979b559162ed22f335abcc02e4e93b479518c45a8477598b21a0332f",
+        "outputRuntimeSha256": "66728e74979b559162ed22f335abcc02e4e93b479518c45a8477598b21a0332f"
+      },
+      {
+        "node": "head_end",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "49524e70a43a36c3ea9ea07d78728056b743f985a6a943d353409c3ed4e94424",
+        "outputRuntimeSha256": "49524e70a43a36c3ea9ea07d78728056b743f985a6a943d353409c3ed4e94424"
+      },
+      {
+        "node": "headfront",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "5d0541208603f4bf0128772b08e1d4f90ed4344ef961bc98be96e5e85707793a",
+        "outputRuntimeSha256": "5d0541208603f4bf0128772b08e1d4f90ed4344ef961bc98be96e5e85707793a"
+      },
+      {
+        "node": "headfront",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "inputRuntimeSha256": "0d9e659ff6aa5c3e90b1b310ae624cc94021843cd77cc744d254969626379f09",
+        "outputSourceSha256": "91243f7888835d6cb9c74ccca4eab46be4e1ad508a5ee5c9ef444fdb649db85a",
+        "outputRuntimeSha256": "91243f7888835d6cb9c74ccca4eab46be4e1ad508a5ee5c9ef444fdb649db85a"
+      },
+      {
+        "node": "headfront",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "inputRuntimeSha256": "89d8b2da0e05808d880865e7de98fc0af834b8ed1105970c41ed610473ed018c",
+        "outputSourceSha256": "fb1a947fe3bff3dcea1abe2a7e4ff7a0df84178e7ab0b20bebdf3cb5b9168a5d",
+        "outputRuntimeSha256": "fb1a947fe3bff3dcea1abe2a7e4ff7a0df84178e7ab0b20bebdf3cb5b9168a5d"
+      }
+    ]
+  },
+  {
+    "name": "idle-11",
+    "originalChannelsUnchanged": 66,
+    "correctedChannels": 6,
+    "addedChannels": [
+      "Kestrel_normalized_root.translation"
+    ],
+    "inverseBindSha256": "3a1f6c830ffb99cc34eb3ac8adff5f0b3768d577ae5b428decfe9e1ab45a5737",
+    "tracks": [
+      {
+        "node": "Hips",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "02a97e6746fedac08e23b3289daf9d2020d110d69a01eeb0c119027d23561f62",
+        "outputRuntimeSha256": "02a97e6746fedac08e23b3289daf9d2020d110d69a01eeb0c119027d23561f62"
+      },
+      {
+        "node": "Hips",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "fb07b99d73db3ad2248144225fc5b12f616bc15c1f8b6b51fa8dcc43f51fc824",
+        "outputRuntimeSha256": "fb07b99d73db3ad2248144225fc5b12f616bc15c1f8b6b51fa8dcc43f51fc824"
+      },
+      {
+        "node": "Hips",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "2d4fc8ae18905fa87b359941adfc7a3ab5119444f6a34fba9f4156935b621863",
+        "outputRuntimeSha256": "2d4fc8ae18905fa87b359941adfc7a3ab5119444f6a34fba9f4156935b621863"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "46d69fc7e0e898a1c870fb69692e1c3f3245fcd9295a550d56e1654421565bc6",
+        "outputRuntimeSha256": "46d69fc7e0e898a1c870fb69692e1c3f3245fcd9295a550d56e1654421565bc6"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "3861de575466f0c2b1d45ee184c25d06d76b0ef583e253746cb8dbc3f47455fd",
+        "outputRuntimeSha256": "3861de575466f0c2b1d45ee184c25d06d76b0ef583e253746cb8dbc3f47455fd"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "336f0db091faa03e66d80cd4f9fadbabf498341375c5e2817151a5d37be5af73",
+        "outputRuntimeSha256": "336f0db091faa03e66d80cd4f9fadbabf498341375c5e2817151a5d37be5af73"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "fb83b8b98b918373cea91d45b9a4ce78ba80c8feb20ca6eef89e53f17c22b729",
+        "outputRuntimeSha256": "fb83b8b98b918373cea91d45b9a4ce78ba80c8feb20ca6eef89e53f17c22b729"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "5386d88a8b6c76edcb44d610493f6f19a6b832d6245758f6adb613140034ac56",
+        "outputRuntimeSha256": "5386d88a8b6c76edcb44d610493f6f19a6b832d6245758f6adb613140034ac56"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "c45ac496bb2b94f444b015dbd432d9e93f4ebc34aee9e01fc0d1a9e5895a0fe5",
+        "outputRuntimeSha256": "c45ac496bb2b94f444b015dbd432d9e93f4ebc34aee9e01fc0d1a9e5895a0fe5"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "142ca5ab82b152b2467120cf27b82c8a693c46c89e8c352bd324f3cd77e23e97",
+        "outputRuntimeSha256": "142ca5ab82b152b2467120cf27b82c8a693c46c89e8c352bd324f3cd77e23e97"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "2c1eed4d0f1fbef9f3bf43f180b6ef89c567f94c1981babc7c08e40b7cd6ca4c",
+        "outputRuntimeSha256": "2c1eed4d0f1fbef9f3bf43f180b6ef89c567f94c1981babc7c08e40b7cd6ca4c"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "29db536a370fea3b194fe0d9828cd5f1d84448c55c92cd9560d8baa7167b5077",
+        "outputRuntimeSha256": "29db536a370fea3b194fe0d9828cd5f1d84448c55c92cd9560d8baa7167b5077"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "0a24f2a1490ffdecd9b98176cbd42c67398893ca34cc0b60fd2f8cfbb92f9ec4",
+        "outputRuntimeSha256": "0a24f2a1490ffdecd9b98176cbd42c67398893ca34cc0b60fd2f8cfbb92f9ec4"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "4837f9b12948306bab5ce3552541f3dbdf201637f9a2283b57ab241b4b771666",
+        "outputRuntimeSha256": "4837f9b12948306bab5ce3552541f3dbdf201637f9a2283b57ab241b4b771666"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "0c9d7a13cbf9554f307894a35dcfe2e25f23a0ffeb0f916d96745a68e4fd8e99",
+        "outputRuntimeSha256": "0c9d7a13cbf9554f307894a35dcfe2e25f23a0ffeb0f916d96745a68e4fd8e99"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "d3689a48eb5bb5504adb54f895830990c0a2c79a487160bb1357e121da610856",
+        "outputRuntimeSha256": "d3689a48eb5bb5504adb54f895830990c0a2c79a487160bb1357e121da610856"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "e2fbdbae8e58815e4f7d83360146ce2bc38e7d614e3a49e5d910adaf4fac2005",
+        "outputRuntimeSha256": "e2fbdbae8e58815e4f7d83360146ce2bc38e7d614e3a49e5d910adaf4fac2005"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "36a3255ae59f46648cc892f8ca45dd57936d452c4f931829af6cc108c1a6f499",
+        "outputRuntimeSha256": "36a3255ae59f46648cc892f8ca45dd57936d452c4f931829af6cc108c1a6f499"
+      },
+      {
+        "node": "RightLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "2b6482ec8d5c2616a0ab15222bcba90466d6a550d627800bd6e26e705d5200fd",
+        "outputRuntimeSha256": "2b6482ec8d5c2616a0ab15222bcba90466d6a550d627800bd6e26e705d5200fd"
+      },
+      {
+        "node": "RightLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "6e8929d9f5e99b8b7bbf930de393958c44c7b12530d3cba669d5b96f4d0a06e2",
+        "outputRuntimeSha256": "6e8929d9f5e99b8b7bbf930de393958c44c7b12530d3cba669d5b96f4d0a06e2"
+      },
+      {
+        "node": "RightLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "4c4a58fe85321dab90ebccfe59b9ce620e132cef3e3edf0a1bf5fef4dc142bb2",
+        "outputRuntimeSha256": "4c4a58fe85321dab90ebccfe59b9ce620e132cef3e3edf0a1bf5fef4dc142bb2"
+      },
+      {
+        "node": "RightFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "2bb52b0ec7256861d0cbd40dad652b2e276620acac5a01d02e30556621b2f1c4",
+        "outputRuntimeSha256": "2bb52b0ec7256861d0cbd40dad652b2e276620acac5a01d02e30556621b2f1c4"
+      },
+      {
+        "node": "RightFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "38bb316ad88fb832fd90c13519a77d40ae4f2bc910a38bcf05f1d9c3788b87ca",
+        "outputRuntimeSha256": "38bb316ad88fb832fd90c13519a77d40ae4f2bc910a38bcf05f1d9c3788b87ca"
+      },
+      {
+        "node": "RightFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "63ad26f5a411fd74a060db7081565524f7a7ad9d5db7cd1e98f37aa08149ddf2",
+        "outputRuntimeSha256": "63ad26f5a411fd74a060db7081565524f7a7ad9d5db7cd1e98f37aa08149ddf2"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "dedb263c2659df60257b0846e2d468a0f5496b091a0c2b26fe2a28deeae3d77f",
+        "outputRuntimeSha256": "dedb263c2659df60257b0846e2d468a0f5496b091a0c2b26fe2a28deeae3d77f"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "5e22b5dca94f30be89ce06facc311275f197bea6cec44a99de73ab9668dde90d",
+        "outputRuntimeSha256": "5e22b5dca94f30be89ce06facc311275f197bea6cec44a99de73ab9668dde90d"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "00cb211f0cc1aa3adadb05ded1f70685774da6789ac2354cc60693c0363d3dd1",
+        "outputRuntimeSha256": "00cb211f0cc1aa3adadb05ded1f70685774da6789ac2354cc60693c0363d3dd1"
+      },
+      {
+        "node": "Spine02",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "5225271c167b2cc6ff8cb15788c14fc5b6fecd02069ab844098ad8f32cec745c",
+        "outputRuntimeSha256": "5225271c167b2cc6ff8cb15788c14fc5b6fecd02069ab844098ad8f32cec745c"
+      },
+      {
+        "node": "Spine02",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "cebc03ed5394eb239db5891b532fcb8ab89002af885e5cb46754486fc32a24cb",
+        "outputRuntimeSha256": "cebc03ed5394eb239db5891b532fcb8ab89002af885e5cb46754486fc32a24cb"
+      },
+      {
+        "node": "Spine02",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "92e5589d16bf479e08a8e834528f253c3d38fe2444e5e82bd6a6866fe1d46e73",
+        "outputRuntimeSha256": "92e5589d16bf479e08a8e834528f253c3d38fe2444e5e82bd6a6866fe1d46e73"
+      },
+      {
+        "node": "Spine01",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "859f227281a555071c5cc75e645a35eb3d20e96391a301039eb1046e9d50613a",
+        "outputRuntimeSha256": "859f227281a555071c5cc75e645a35eb3d20e96391a301039eb1046e9d50613a"
+      },
+      {
+        "node": "Spine01",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "48eb1f5839edde7d7d1432543bd591e9607a56dc845539c2f72a02129e94eccb",
+        "outputRuntimeSha256": "48eb1f5839edde7d7d1432543bd591e9607a56dc845539c2f72a02129e94eccb"
+      },
+      {
+        "node": "Spine01",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "8a44d98c8a1c64e8ce14d27cb62b3e83f4a929a91d2ef3124f6386c0c3b601b2",
+        "outputRuntimeSha256": "8a44d98c8a1c64e8ce14d27cb62b3e83f4a929a91d2ef3124f6386c0c3b601b2"
+      },
+      {
+        "node": "Spine",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "fdae0ac1993758507c8a3300505db496dfa81f508a0041a97caa5a360c08ed09",
+        "outputRuntimeSha256": "fdae0ac1993758507c8a3300505db496dfa81f508a0041a97caa5a360c08ed09"
+      },
+      {
+        "node": "Spine",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "f31e8d7eb7bd7df678f9b36573e04efd9576d51aab894fd88c20dd5738c4ae43",
+        "outputRuntimeSha256": "f31e8d7eb7bd7df678f9b36573e04efd9576d51aab894fd88c20dd5738c4ae43"
+      },
+      {
+        "node": "Spine",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "be3df0afd416390a208eb5096848a437837da376da39f9bebb2ea0b136c33f63",
+        "outputRuntimeSha256": "be3df0afd416390a208eb5096848a437837da376da39f9bebb2ea0b136c33f63"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "145fa6e7fac34f178a35b832a4a261046127d56fe955fdf3359ae16e4cf655af",
+        "outputRuntimeSha256": "145fa6e7fac34f178a35b832a4a261046127d56fe955fdf3359ae16e4cf655af"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "2f5c02222fa91dee214d3ddc91ee3704693e1b797329d94517f56b4b686f5c25",
+        "outputSourceSha256": "0cd3dec4943911712a780e0e8e438f7ce5af9ac5f8be5bf49a9d75e270da5aba",
+        "outputRuntimeSha256": "fddd82c41f5e84172c9ac8fa519c3e23c4db0fff41346be0087a14d8a71220ec"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "eb3d67ba7d8021875172a5536a71c2708cc52e57c5395e3d634bf699a7f4fc3d",
+        "outputRuntimeSha256": "eb3d67ba7d8021875172a5536a71c2708cc52e57c5395e3d634bf699a7f4fc3d"
+      },
+      {
+        "node": "LeftArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "625f0ed685fd903873b81a0ae8eee619b33079dfb1f6c6bafbed67b5ac8cdbd7",
+        "outputRuntimeSha256": "625f0ed685fd903873b81a0ae8eee619b33079dfb1f6c6bafbed67b5ac8cdbd7"
+      },
+      {
+        "node": "LeftArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "2f5c02222fa91dee214d3ddc91ee3704693e1b797329d94517f56b4b686f5c25",
+        "outputSourceSha256": "84824f0ff1fba70513d1f06003f273900acf1a3235823f12634a9184856c811b",
+        "outputRuntimeSha256": "e5dcc814aef44c7dda3f2f1c3bf46174e34ceacedf2cecdb00c2cafd70d30612"
+      },
+      {
+        "node": "LeftArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "0300e9d8d019b840371d657a9138661f8b2d0eb214e9f91f32b1c7796b272404",
+        "outputRuntimeSha256": "0300e9d8d019b840371d657a9138661f8b2d0eb214e9f91f32b1c7796b272404"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "30a55e77b58e5fcf45a4044812f1eac5b0d40f8741e323d69ab9dd41b39ded37",
+        "outputRuntimeSha256": "30a55e77b58e5fcf45a4044812f1eac5b0d40f8741e323d69ab9dd41b39ded37"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "2f5c02222fa91dee214d3ddc91ee3704693e1b797329d94517f56b4b686f5c25",
+        "outputSourceSha256": "6d51f8a3e7e4ec1cb5c54972a177384438c38fd88f72fdfe64566d70879dd7c4",
+        "outputRuntimeSha256": "46362aa8493e1ee67c0cc611bbd896b88adca89526c7a7e8059bfa846239842e"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "6f7da20818f959f425411d9f0428cffdbf14888fe4574567ab9fd71d95dc2f71",
+        "outputRuntimeSha256": "6f7da20818f959f425411d9f0428cffdbf14888fe4574567ab9fd71d95dc2f71"
+      },
+      {
+        "node": "LeftHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "f3bcf96ab9c080b6c73afdac6f5d336ef8e798afa1f043dd6cfb8aced0096394",
+        "outputRuntimeSha256": "f3bcf96ab9c080b6c73afdac6f5d336ef8e798afa1f043dd6cfb8aced0096394"
+      },
+      {
+        "node": "LeftHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "b87000b895a1d8992edbd1e19235d77b2618b8d7f6aa045cc76fd30cabe9b934",
+        "outputRuntimeSha256": "b87000b895a1d8992edbd1e19235d77b2618b8d7f6aa045cc76fd30cabe9b934"
+      },
+      {
+        "node": "LeftHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "ba48aa78ba382af1eb8a8e6fc1c5004768b2e03a74ed6037d38798f1acbf8f86",
+        "outputRuntimeSha256": "ba48aa78ba382af1eb8a8e6fc1c5004768b2e03a74ed6037d38798f1acbf8f86"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "36ae2442da5b1a6dcd183a865e6db16947db0acba7b1521ce721d70a4adff274",
+        "outputRuntimeSha256": "36ae2442da5b1a6dcd183a865e6db16947db0acba7b1521ce721d70a4adff274"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "2f5c02222fa91dee214d3ddc91ee3704693e1b797329d94517f56b4b686f5c25",
+        "outputSourceSha256": "1adbcc0b6175dd062281d6bdd03a4d54b0881be97f7b8b5f4e306919bf275517",
+        "outputRuntimeSha256": "726e822213cb48810ecc941ca4b43a9670071ec3a305627f79db46bf5800d7db"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "07136d15ac0e71f1b61023b4624a1775e246f67659ea285a89265b15fac44ac6",
+        "outputRuntimeSha256": "07136d15ac0e71f1b61023b4624a1775e246f67659ea285a89265b15fac44ac6"
+      },
+      {
+        "node": "RightArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "1dd357f4a271d5fb422e4ef2ba4cf653747426d9288aa40f12850a0eafe229a8",
+        "outputRuntimeSha256": "1dd357f4a271d5fb422e4ef2ba4cf653747426d9288aa40f12850a0eafe229a8"
+      },
+      {
+        "node": "RightArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "2f5c02222fa91dee214d3ddc91ee3704693e1b797329d94517f56b4b686f5c25",
+        "outputSourceSha256": "4568b32d270c3dae195846f2bac8920b85883523734b6aa6150a408b1db5dbd1",
+        "outputRuntimeSha256": "175a0464a5045c598cede0ad21d7f2230a31f9162e8baf6c36e381a612d6e5ce"
+      },
+      {
+        "node": "RightArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "cbfa53ed6e73984e12aa9a332752f871d39cbbd59681a11c4d94d08c55042d39",
+        "outputRuntimeSha256": "cbfa53ed6e73984e12aa9a332752f871d39cbbd59681a11c4d94d08c55042d39"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "083c1a28510860d0a6f2c31bf724c41014f91124044295a6c0c1f929ff078e07",
+        "outputRuntimeSha256": "083c1a28510860d0a6f2c31bf724c41014f91124044295a6c0c1f929ff078e07"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "2f5c02222fa91dee214d3ddc91ee3704693e1b797329d94517f56b4b686f5c25",
+        "outputSourceSha256": "c48088be276603359bae1ebb2c7908026239d2f53fe2221405bdc21f1b44c88e",
+        "outputRuntimeSha256": "2a55f533b39831ed0a74d4c41f04dd9c72b1b3ff646a4dd3330ca99765f205b9"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "31a9ed3946fbdfb0b1be17539337c2374e474fb1e78da953bff67508ee779c4b",
+        "outputRuntimeSha256": "31a9ed3946fbdfb0b1be17539337c2374e474fb1e78da953bff67508ee779c4b"
+      },
+      {
+        "node": "RightHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "fa531775d0da3be118149553661f0cdcd6d8baead1af40feee18dcb0bd34349d",
+        "outputRuntimeSha256": "fa531775d0da3be118149553661f0cdcd6d8baead1af40feee18dcb0bd34349d"
+      },
+      {
+        "node": "RightHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "4d074b2e72d9b186e12ed630412f93a5ea8d14be111f1c6d23ed02af252e11bf",
+        "outputRuntimeSha256": "4d074b2e72d9b186e12ed630412f93a5ea8d14be111f1c6d23ed02af252e11bf"
+      },
+      {
+        "node": "RightHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "0806a6b3dd55837d4408e0e005406650c32215a2eceb3f62aef461a5955b47e4",
+        "outputRuntimeSha256": "0806a6b3dd55837d4408e0e005406650c32215a2eceb3f62aef461a5955b47e4"
+      },
+      {
+        "node": "neck",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "894e902996d17d1309924ba56835a5934e5644a31eff88d140fd1be12bae4bf8",
+        "outputRuntimeSha256": "894e902996d17d1309924ba56835a5934e5644a31eff88d140fd1be12bae4bf8"
+      },
+      {
+        "node": "neck",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "49a7adc95a440e3ed3f2440fc056649d67531c041737eef5788cd3167c1f6658",
+        "outputRuntimeSha256": "49a7adc95a440e3ed3f2440fc056649d67531c041737eef5788cd3167c1f6658"
+      },
+      {
+        "node": "neck",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "f0a978231921214196e865c9ca8a4fe5f20028b65850e8c7c82963da26eb7082",
+        "outputRuntimeSha256": "f0a978231921214196e865c9ca8a4fe5f20028b65850e8c7c82963da26eb7082"
+      },
+      {
+        "node": "Head",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "7c236f403f1d38e6996d95d86d5c0f5e74d93013f45c17bd9cb2e31f3f7a8027",
+        "outputRuntimeSha256": "7c236f403f1d38e6996d95d86d5c0f5e74d93013f45c17bd9cb2e31f3f7a8027"
+      },
+      {
+        "node": "Head",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "inputRuntimeSha256": "6e4b6a70a5fc321ad20d775a80b23938af0f6bdb76512ab2a6852d74b2692edf",
+        "outputSourceSha256": "07a596814364777c23e25337cfc0e7c2433a72197f036c0d9ddab31d3e890204",
+        "outputRuntimeSha256": "07a596814364777c23e25337cfc0e7c2433a72197f036c0d9ddab31d3e890204"
+      },
+      {
+        "node": "Head",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "943a18f89b0c0e101cbe632b0234d3f934e330e560299b5d91da7451da4e42f2",
+        "outputRuntimeSha256": "943a18f89b0c0e101cbe632b0234d3f934e330e560299b5d91da7451da4e42f2"
+      },
+      {
+        "node": "head_end",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "b197bec4c575ab73e4988ccfcfbc668d9ab31f1273045d23f92fd438ca043469",
+        "outputRuntimeSha256": "b197bec4c575ab73e4988ccfcfbc668d9ab31f1273045d23f92fd438ca043469"
+      },
+      {
+        "node": "head_end",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "e7959a7e6b46bbe211699864bdde378da51765970fb7e29f5bbe5f369a89853a",
+        "outputRuntimeSha256": "e7959a7e6b46bbe211699864bdde378da51765970fb7e29f5bbe5f369a89853a"
+      },
+      {
+        "node": "head_end",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "5600fd5a8859681f00172d1e8455cc97b154ee1f765e3d10f940a59538d35fd3",
+        "outputRuntimeSha256": "5600fd5a8859681f00172d1e8455cc97b154ee1f765e3d10f940a59538d35fd3"
+      },
+      {
+        "node": "headfront",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "2e1286bd07c45433ffbca278e893cab5e4e1a663ecb5aeba3b0d225f07f5277d",
+        "outputRuntimeSha256": "2e1286bd07c45433ffbca278e893cab5e4e1a663ecb5aeba3b0d225f07f5277d"
+      },
+      {
+        "node": "headfront",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "6052fc806515dfdd40b99e38ad9b202521c0c0056744a0acdd6692a02b5212b7",
+        "outputRuntimeSha256": "6052fc806515dfdd40b99e38ad9b202521c0c0056744a0acdd6692a02b5212b7"
+      },
+      {
+        "node": "headfront",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "inputRuntimeSha256": "2fd187e006dc17caa000b03307bd521ca9f859b5d18779c2d5c88a516e2c8cbb",
+        "outputSourceSha256": "c2a7a5a2e360f06de1ce77e5834fd1fa75da51afb64a33e0770771701ffe6438",
+        "outputRuntimeSha256": "c2a7a5a2e360f06de1ce77e5834fd1fa75da51afb64a33e0770771701ffe6438"
+      }
+    ]
+  },
+  {
+    "name": "idle-12",
+    "originalChannelsUnchanged": 66,
+    "correctedChannels": 6,
+    "addedChannels": [
+      "Kestrel_normalized_root.translation"
+    ],
+    "inverseBindSha256": "3a1f6c830ffb99cc34eb3ac8adff5f0b3768d577ae5b428decfe9e1ab45a5737",
+    "tracks": [
+      {
+        "node": "Hips",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "c5034bf0d3b6f1a6e13040676881b24a844b6401b1b74768d3996ba51910c530",
+        "outputRuntimeSha256": "c5034bf0d3b6f1a6e13040676881b24a844b6401b1b74768d3996ba51910c530"
+      },
+      {
+        "node": "Hips",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "e7d562067b29a418e97afc578995dac1df66bf80f6bd359d2f8671bfae1f0296",
+        "outputRuntimeSha256": "e7d562067b29a418e97afc578995dac1df66bf80f6bd359d2f8671bfae1f0296"
+      },
+      {
+        "node": "Hips",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "8b12d0cbba5b55670a2c5039d41f1c0f7ec20cec11a234b89f8960af33166e02",
+        "outputRuntimeSha256": "8b12d0cbba5b55670a2c5039d41f1c0f7ec20cec11a234b89f8960af33166e02"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "a80c5f49eebf7fb47cf470e8deba4f14570b3d79ca54da682d485a1ee45c593e",
+        "outputRuntimeSha256": "a80c5f49eebf7fb47cf470e8deba4f14570b3d79ca54da682d485a1ee45c593e"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "752f23acaab91bfad5ede9aba0e73067cdc8121f896bc18b55dadb7eb3b7ba90",
+        "outputRuntimeSha256": "752f23acaab91bfad5ede9aba0e73067cdc8121f896bc18b55dadb7eb3b7ba90"
+      },
+      {
+        "node": "LeftUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "50f9f7e277b97ee2f62a1d26feca6c0f90d0d18ba7f7486febe980a2f392efbf",
+        "outputRuntimeSha256": "50f9f7e277b97ee2f62a1d26feca6c0f90d0d18ba7f7486febe980a2f392efbf"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "d83eb982f28653da26293b89b965bda49fbb61036af951e127af1d1b54abfb35",
+        "outputRuntimeSha256": "d83eb982f28653da26293b89b965bda49fbb61036af951e127af1d1b54abfb35"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "185650acc855b25a44550d28544bf9b6e1641ac9fe18e1a81cfddc6c1719aa39",
+        "outputRuntimeSha256": "185650acc855b25a44550d28544bf9b6e1641ac9fe18e1a81cfddc6c1719aa39"
+      },
+      {
+        "node": "LeftLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "d03e5e68cba28460d14af70a4397344482df69df4fa7aecb3887e124ca77c459",
+        "outputRuntimeSha256": "d03e5e68cba28460d14af70a4397344482df69df4fa7aecb3887e124ca77c459"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "0f2c0efd7630a5a22f1c8511fc516b77ee206523a3303250e7723946403ab345",
+        "outputRuntimeSha256": "0f2c0efd7630a5a22f1c8511fc516b77ee206523a3303250e7723946403ab345"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "57609dbf7db846df7d9bc780199112db66d7aa0f7a2d10d9a5d14ac03253dc33",
+        "outputRuntimeSha256": "57609dbf7db846df7d9bc780199112db66d7aa0f7a2d10d9a5d14ac03253dc33"
+      },
+      {
+        "node": "LeftFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "61e2d4c969ace106fc29b62f6275997561fda5f45dadaf94202651d7354c0c4b",
+        "outputRuntimeSha256": "61e2d4c969ace106fc29b62f6275997561fda5f45dadaf94202651d7354c0c4b"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "b74667a12d2bb3de15bd88d6b96a9675cef86e4efe4310c25b1d6151339473dc",
+        "outputRuntimeSha256": "b74667a12d2bb3de15bd88d6b96a9675cef86e4efe4310c25b1d6151339473dc"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "2cf43a58918d45ddbb89ccf23b71ff3767ada6d5b7887f7368cdf8cf01fd67cc",
+        "outputRuntimeSha256": "2cf43a58918d45ddbb89ccf23b71ff3767ada6d5b7887f7368cdf8cf01fd67cc"
+      },
+      {
+        "node": "LeftToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "d8c8110942c4ecb375a6b19a6fd225abffbeacfef696b9bdae893133febd3eca",
+        "outputRuntimeSha256": "d8c8110942c4ecb375a6b19a6fd225abffbeacfef696b9bdae893133febd3eca"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "b02aee8cb23b5e1e1149797b1144e8906d95f41fff4e391946e2be8d8b2dfd82",
+        "outputRuntimeSha256": "b02aee8cb23b5e1e1149797b1144e8906d95f41fff4e391946e2be8d8b2dfd82"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "6bd1fb544ee25c1542bb724e779b01ec1afcfeff5c9a207dd801d403c361e497",
+        "outputRuntimeSha256": "6bd1fb544ee25c1542bb724e779b01ec1afcfeff5c9a207dd801d403c361e497"
+      },
+      {
+        "node": "RightUpLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "c1fc4e1999b6cb13b26de0eba26a2c08b1066c85d32a6eaa70b31a77749f270d",
+        "outputRuntimeSha256": "c1fc4e1999b6cb13b26de0eba26a2c08b1066c85d32a6eaa70b31a77749f270d"
+      },
+      {
+        "node": "RightLeg",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "d1fca5992cd30bffbd304cc0d40c79f00d9c7f7dcb9cb9e6955a5c69f645c3c0",
+        "outputRuntimeSha256": "d1fca5992cd30bffbd304cc0d40c79f00d9c7f7dcb9cb9e6955a5c69f645c3c0"
+      },
+      {
+        "node": "RightLeg",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "2ae2529d9f9423ea53057e018ee913aa47181f24c6190535233e1a18c2a6fc28",
+        "outputRuntimeSha256": "2ae2529d9f9423ea53057e018ee913aa47181f24c6190535233e1a18c2a6fc28"
+      },
+      {
+        "node": "RightLeg",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "94dd81ed0cb0319fb6a5165fb95ebdd20953e5380f5a2d641115d9ff17133b27",
+        "outputRuntimeSha256": "94dd81ed0cb0319fb6a5165fb95ebdd20953e5380f5a2d641115d9ff17133b27"
+      },
+      {
+        "node": "RightFoot",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "0c35b7b6a2b4750ff799b8077260d9af4daf48541af32118bb089a79b2cecce7",
+        "outputRuntimeSha256": "0c35b7b6a2b4750ff799b8077260d9af4daf48541af32118bb089a79b2cecce7"
+      },
+      {
+        "node": "RightFoot",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "22cd6ee652bbbec3930c2e44275dc9c5ae6d04683f1c4123eb2aac8f8daa2dea",
+        "outputRuntimeSha256": "22cd6ee652bbbec3930c2e44275dc9c5ae6d04683f1c4123eb2aac8f8daa2dea"
+      },
+      {
+        "node": "RightFoot",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "24982050b16c74cfff91c2f254a0a52be1a7714f344421ec554e9876b20f173b",
+        "outputRuntimeSha256": "24982050b16c74cfff91c2f254a0a52be1a7714f344421ec554e9876b20f173b"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "6236824568c96df82dcc3c8addb7b4e9b90fbb8d9a5bce7c421098deddc704c5",
+        "outputRuntimeSha256": "6236824568c96df82dcc3c8addb7b4e9b90fbb8d9a5bce7c421098deddc704c5"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "3b637a4f3b6edec70fe905c7c207569d5fd88e5b81bb031b4c17494d3c263010",
+        "outputRuntimeSha256": "3b637a4f3b6edec70fe905c7c207569d5fd88e5b81bb031b4c17494d3c263010"
+      },
+      {
+        "node": "RightToeBase",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "937281b858a5c6dc52b5c16d743ff4ccf2b8139343b6df5103ad91e449aecd97",
+        "outputRuntimeSha256": "937281b858a5c6dc52b5c16d743ff4ccf2b8139343b6df5103ad91e449aecd97"
+      },
+      {
+        "node": "Spine02",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "14d7a78454ec07e2fec69c4ad890c755a02fff83fd63abcbe13cca78523a5b5f",
+        "outputRuntimeSha256": "14d7a78454ec07e2fec69c4ad890c755a02fff83fd63abcbe13cca78523a5b5f"
+      },
+      {
+        "node": "Spine02",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "e427cf7fd11767ac02471b63257dab88b35b03a6691c4a211c4acbdf3695c648",
+        "outputRuntimeSha256": "e427cf7fd11767ac02471b63257dab88b35b03a6691c4a211c4acbdf3695c648"
+      },
+      {
+        "node": "Spine02",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "e2242790c4e709675475261e2baeeb4fbe4841a49627bf96729c3641a2218636",
+        "outputRuntimeSha256": "e2242790c4e709675475261e2baeeb4fbe4841a49627bf96729c3641a2218636"
+      },
+      {
+        "node": "Spine01",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "ebbe1b375b7568b5b57237f380d80bfed5346fcedd987c76e578589693fa9ea3",
+        "outputRuntimeSha256": "ebbe1b375b7568b5b57237f380d80bfed5346fcedd987c76e578589693fa9ea3"
+      },
+      {
+        "node": "Spine01",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "93da49ed000a8eced2833e24625a3594b7e6cd33b984cebff408696a8ce05d6e",
+        "outputRuntimeSha256": "93da49ed000a8eced2833e24625a3594b7e6cd33b984cebff408696a8ce05d6e"
+      },
+      {
+        "node": "Spine01",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "08998c70d8ad85b37f79a74a0bfe85ea7d419dc966399bf93d79a64b916a5608",
+        "outputRuntimeSha256": "08998c70d8ad85b37f79a74a0bfe85ea7d419dc966399bf93d79a64b916a5608"
+      },
+      {
+        "node": "Spine",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "7e449a162a709ceb90e7a8fc7c6c6ed874e2e0b2a365ad0e5237142c5090b5fa",
+        "outputRuntimeSha256": "7e449a162a709ceb90e7a8fc7c6c6ed874e2e0b2a365ad0e5237142c5090b5fa"
+      },
+      {
+        "node": "Spine",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "5035f4ff3da5c63ca19066363f51d55e934199bce16f3659670d61354bab7a37",
+        "outputRuntimeSha256": "5035f4ff3da5c63ca19066363f51d55e934199bce16f3659670d61354bab7a37"
+      },
+      {
+        "node": "Spine",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "c522096e96eca89d7b048ef0fa5cbb709f245c93480bdbe42613ef1fc57ca971",
+        "outputRuntimeSha256": "c522096e96eca89d7b048ef0fa5cbb709f245c93480bdbe42613ef1fc57ca971"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "0cf1b500d515589fe7634c4bcef39025dc343dd8c495e2cc7fb5366aa994fb0a",
+        "outputRuntimeSha256": "0cf1b500d515589fe7634c4bcef39025dc343dd8c495e2cc7fb5366aa994fb0a"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "7be69b2338234ba86caa09c9089e3a574620af70aee479ad538f2ee372596db8",
+        "outputSourceSha256": "ce21e8bd3260251266f109774bc1880b5658a80daeceef28ad76c889e1813062",
+        "outputRuntimeSha256": "d6048ce659ce12b46649575f60a5c1f7c82a0ca547ca503dd41f449586c81bdd"
+      },
+      {
+        "node": "LeftShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "6a6088e99631276b61ce8f56d3d318de94ed3b536c93e2cb36f60f8a487468a2",
+        "outputRuntimeSha256": "6a6088e99631276b61ce8f56d3d318de94ed3b536c93e2cb36f60f8a487468a2"
+      },
+      {
+        "node": "LeftArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "6e02ccf43f9e67bf778f021970391696374f4171a133e46497674a9331494d5e",
+        "outputRuntimeSha256": "6e02ccf43f9e67bf778f021970391696374f4171a133e46497674a9331494d5e"
+      },
+      {
+        "node": "LeftArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "7be69b2338234ba86caa09c9089e3a574620af70aee479ad538f2ee372596db8",
+        "outputSourceSha256": "66e227d1ba89cec4ccc609e7e1459b0cf6176e09b00eeb155bc2b6cc000fc334",
+        "outputRuntimeSha256": "268023eed0ffa202bff23326d54fa9c61669c0437af22617f4fee27feeeb9c59"
+      },
+      {
+        "node": "LeftArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "e6ee3f99770f83480c5eebb9dca0c2e7751c88557f5c779ca0b9c96e107136df",
+        "outputRuntimeSha256": "e6ee3f99770f83480c5eebb9dca0c2e7751c88557f5c779ca0b9c96e107136df"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "00addbb309c8839315b03dbcb2debc8b2e35f274d7aa1fd13878cee56b1fec04",
+        "outputRuntimeSha256": "00addbb309c8839315b03dbcb2debc8b2e35f274d7aa1fd13878cee56b1fec04"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "7be69b2338234ba86caa09c9089e3a574620af70aee479ad538f2ee372596db8",
+        "outputSourceSha256": "e2f2f34106f58cb62e78c2fa34c80c9221a4d4e79c1a3012871b878a6a95e3f8",
+        "outputRuntimeSha256": "7b1dcc752ffc5e683b879be6547ddfacf264a9ae6d06cf156e8b24de4ebac8e3"
+      },
+      {
+        "node": "LeftForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "ce50d0d7d1bb8ddbb4d0860dc9522ccc2cf9d6906dc8d8bb8711498894917949",
+        "outputRuntimeSha256": "ce50d0d7d1bb8ddbb4d0860dc9522ccc2cf9d6906dc8d8bb8711498894917949"
+      },
+      {
+        "node": "LeftHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "fdbb366865a0ec06407133457221c1ce6e9b5a1657522505df22d0626f2d3c67",
+        "outputRuntimeSha256": "fdbb366865a0ec06407133457221c1ce6e9b5a1657522505df22d0626f2d3c67"
+      },
+      {
+        "node": "LeftHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "6a34ab7602f78b9191bf01b643930a27f56541c92272e00edf149113d4b4d35a",
+        "outputRuntimeSha256": "6a34ab7602f78b9191bf01b643930a27f56541c92272e00edf149113d4b4d35a"
+      },
+      {
+        "node": "LeftHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "4f51bcd5825c9a5e46e56d290ccfce5c560ece0f75904cb4a420e1426be2e15a",
+        "outputRuntimeSha256": "4f51bcd5825c9a5e46e56d290ccfce5c560ece0f75904cb4a420e1426be2e15a"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "c348432f9e3f461a8a4d11dfd2f19f465e6b47574b5ee8996bf20d0561d2c242",
+        "outputRuntimeSha256": "c348432f9e3f461a8a4d11dfd2f19f465e6b47574b5ee8996bf20d0561d2c242"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "7be69b2338234ba86caa09c9089e3a574620af70aee479ad538f2ee372596db8",
+        "outputSourceSha256": "98dd35aacda4d03ff6f132c7a0bb216d423cafe5dc0f1d55f93802f160679ab3",
+        "outputRuntimeSha256": "1dce203a4317b83401598dd2eb8e4b340d80b86b47812d4464a133ad60cba89d"
+      },
+      {
+        "node": "RightShoulder",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "e10d9eb750f5aed2751bb37256dcda087e43cd35efd3c655f86933d30196b147",
+        "outputRuntimeSha256": "e10d9eb750f5aed2751bb37256dcda087e43cd35efd3c655f86933d30196b147"
+      },
+      {
+        "node": "RightArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "b0a7507ff41960800d56e1166941828b9a44b1e1626ab14095ec853414095c49",
+        "outputRuntimeSha256": "b0a7507ff41960800d56e1166941828b9a44b1e1626ab14095ec853414095c49"
+      },
+      {
+        "node": "RightArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "7be69b2338234ba86caa09c9089e3a574620af70aee479ad538f2ee372596db8",
+        "outputSourceSha256": "20182b75d49b3ffe2856135ea57d027c822c9747287d6e584d4ca224519f2f7c",
+        "outputRuntimeSha256": "b0310f14a5030eef832cdf4193d7c84fb45ac6fc8ac2a0dbbbd6a5bde2b1602c"
+      },
+      {
+        "node": "RightArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "f407ba43562edd0fe84591ec654fc2d1caab856b11d6cd6312c50111c605f082",
+        "outputRuntimeSha256": "f407ba43562edd0fe84591ec654fc2d1caab856b11d6cd6312c50111c605f082"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "736bf5ea2a0f64cdfbdbb5535c3b594f29d0a1c8e428cc223ad1dbfbb771359a",
+        "outputRuntimeSha256": "736bf5ea2a0f64cdfbdbb5535c3b594f29d0a1c8e428cc223ad1dbfbb771359a"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "rotation",
+        "status": "corrected resting-arm rotation",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "7be69b2338234ba86caa09c9089e3a574620af70aee479ad538f2ee372596db8",
+        "outputSourceSha256": "7fae335b30cb6c2a00eff70e0f78480439c10b314abfb0ccc75f61be2baecb0a",
+        "outputRuntimeSha256": "5b3a684e9d1665ac1277b1604fe77f915734e06571187c02adb30435ba6321a8"
+      },
+      {
+        "node": "RightForeArm",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "b72a703ed8c082e384b81496292102cc7393744440465f080ff685cb089af07c",
+        "outputRuntimeSha256": "b72a703ed8c082e384b81496292102cc7393744440465f080ff685cb089af07c"
+      },
+      {
+        "node": "RightHand",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "b4030839b5fc51bea655a9d6088142b4b22895978dc3ec5efbdce69936a690d2",
+        "outputRuntimeSha256": "b4030839b5fc51bea655a9d6088142b4b22895978dc3ec5efbdce69936a690d2"
+      },
+      {
+        "node": "RightHand",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "17d9fb0f3d1bfccdce30f61f9d6a8bf56812d396d9ba838403dbd488dec1c03f",
+        "outputRuntimeSha256": "17d9fb0f3d1bfccdce30f61f9d6a8bf56812d396d9ba838403dbd488dec1c03f"
+      },
+      {
+        "node": "RightHand",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "a81f9984fa76a6e9f70b7fed169cced0037bcc762d95c69205fd59a2c24ba1f5",
+        "outputRuntimeSha256": "a81f9984fa76a6e9f70b7fed169cced0037bcc762d95c69205fd59a2c24ba1f5"
+      },
+      {
+        "node": "neck",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "a4c46fe58082db9479e90fe4d40b4a2d9cf8e17d0874032ba8212deed7d4c935",
+        "outputRuntimeSha256": "a4c46fe58082db9479e90fe4d40b4a2d9cf8e17d0874032ba8212deed7d4c935"
+      },
+      {
+        "node": "neck",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "504c916dc6042425b22a9df107a0561571628cf732b75f273a82e0e57d86d525",
+        "outputRuntimeSha256": "504c916dc6042425b22a9df107a0561571628cf732b75f273a82e0e57d86d525"
+      },
+      {
+        "node": "neck",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "969c6b6b95a105aca1288352d35e76d1619e7f0c2fc6ec8f58caee0b8223f13d",
+        "outputRuntimeSha256": "969c6b6b95a105aca1288352d35e76d1619e7f0c2fc6ec8f58caee0b8223f13d"
+      },
+      {
+        "node": "Head",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "ae133e773709a34bd35e2f1c2f94ca410ccc3d8f4985e27c127a453791018cd5",
+        "outputRuntimeSha256": "ae133e773709a34bd35e2f1c2f94ca410ccc3d8f4985e27c127a453791018cd5"
+      },
+      {
+        "node": "Head",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "inputRuntimeSha256": "de996ede313f3f768bc02e95aa5e2175d38e46366a474fff4fb568b7f3035bcc",
+        "outputSourceSha256": "392b66a227f5d5a152fb13c5252bbe8ac979a778ce35d30d8ff25f264c1a558b",
+        "outputRuntimeSha256": "392b66a227f5d5a152fb13c5252bbe8ac979a778ce35d30d8ff25f264c1a558b"
+      },
+      {
+        "node": "Head",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "568f0ab5dddc36f04d70ee91890605d38390a59d7fc5cca179f380cce2d602a6",
+        "outputRuntimeSha256": "568f0ab5dddc36f04d70ee91890605d38390a59d7fc5cca179f380cce2d602a6"
+      },
+      {
+        "node": "head_end",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "b5a8ba35d386c6fbee354f9d688991be9833dabba5e422b4ab741cfcc54f4eea",
+        "outputRuntimeSha256": "b5a8ba35d386c6fbee354f9d688991be9833dabba5e422b4ab741cfcc54f4eea"
+      },
+      {
+        "node": "head_end",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "b97035dafa66c4090305ada011c933ce43f2a222315ff2e63504afa54f97b128",
+        "outputRuntimeSha256": "b97035dafa66c4090305ada011c933ce43f2a222315ff2e63504afa54f97b128"
+      },
+      {
+        "node": "head_end",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "7ac09d647afbdc00f1c2e1079d47ac2eae16b44f7f2e1df25e989a5986f31193",
+        "outputRuntimeSha256": "7ac09d647afbdc00f1c2e1079d47ac2eae16b44f7f2e1df25e989a5986f31193"
+      },
+      {
+        "node": "headfront",
+        "path": "translation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "7a29ec3f85063f3579244707a2c1c6048cfe3f2309383383af06f116f2231ae4",
+        "outputRuntimeSha256": "7a29ec3f85063f3579244707a2c1c6048cfe3f2309383383af06f116f2231ae4"
+      },
+      {
+        "node": "headfront",
+        "path": "rotation",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "acc2334f37ec517f3bf3efd624353083a5ce9223ac5b3b9003ba147e40fc764d",
+        "outputRuntimeSha256": "acc2334f37ec517f3bf3efd624353083a5ce9223ac5b3b9003ba147e40fc764d"
+      },
+      {
+        "node": "headfront",
+        "path": "scale",
+        "status": "byte-identical",
+        "inputSourceSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "inputRuntimeSha256": "7ef321089eb8ec2490c6c79a136cd3c734fe0d065790ae19f025f2e958d0efe0",
+        "outputSourceSha256": "0c32bbd8294d6d81e166627ed2d44b67a78f1d26b857cf3335a0b4871a0cd0f0",
+        "outputRuntimeSha256": "0c32bbd8294d6d81e166627ed2d44b67a78f1d26b857cf3335a0b4871a0cd0f0"
+      }
+    ]
+  }
+]

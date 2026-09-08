@@ -24,7 +24,8 @@ test('standard axes, analog triggers and action edges remain independent', () =>
   button(pad, 2, true); button(pad, 4, true); button(pad, 10, true);
   const state = input.poll();
   assert.ok(state.forward > 0 && state.strafe > 0 && state.pitch > 0 && state.yaw < 0);
-  assert.ok(Math.abs(state.vertical - .5) < 1e-9);
+  assert.ok(Math.abs(state.fire - .5) < 1e-9);
+  assert.equal(state.vertical, 0, 'RT firing cannot create vertical thrust');
   assert.equal(state.roll, -1); assert.equal(state.boost, true);
   assert.equal(state.pressed.has(2), true);
   assert.equal(input.poll().pressed.size, 0, 'held actions do not repeat');
@@ -181,4 +182,23 @@ test('unarmed Graphics chord cannot open the ordinary menu instead', () => {
   const result=input.poll();assert.equal(result.shortcuts.size,0);assert.equal(result.pressed.has(9),false);
   for(const i of [4,5,9])button(pad,i,false);input.poll();
   button(pad,9,true);assert.equal(input.poll({enabled:false}).pressed.has(9),true,'plain Menu still works in paused help');
+});
+
+
+test('ship fire, vertical thrust and braking are independent with safe neutral arming', () => {
+  for(const interruption of ['modal','focus','disconnect','replacement']){
+    const pad=controller();let pads=[pad];const input=new GamepadInput(()=>pads);input.poll();
+    button(pad,7,true);assert.equal(input.poll().fire,1);
+    if(interruption==='modal')input.poll({ui:true,enabled:false});
+    if(interruption==='focus')input.poll({focused:false});
+    if(interruption==='disconnect'){pads=[];input.poll();pads=[pad];}
+    if(interruption==='replacement')pad.id='replacement';
+    assert.equal(input.poll().fire,0,interruption);
+    button(pad,7,false);input.poll();button(pad,0,true);
+    let state=input.poll();assert.equal(state.vertical,1);assert.equal(state.fire,0);
+    button(pad,0,false);button(pad,1,true);state=input.poll();
+    assert.equal(state.vertical,-1);assert.equal(state.brake,false);
+    button(pad,1,false);button(pad,6,true);button(pad,7,true);state=input.poll();
+    assert.equal(state.brake,true);assert.equal(state.fire,1);assert.equal(state.vertical,0);
+  }
 });

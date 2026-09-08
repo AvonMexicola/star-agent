@@ -1,0 +1,30 @@
+{
+  "kind": "Inherited builder captures independently inspected by reviewer; no reviewer browser capture",
+  "sourceDirectory": "/tmp/atlas-refresh-shape-01",
+  "files": [
+    {
+      "file": "exterior.png",
+      "sha256": "24f570b3a40f7276cfa3277d97310b25ae72d9e51183e9d07f93f4a0377015d2"
+    },
+    {
+      "file": "side.png",
+      "sha256": "239c9afe2f573a0b95439e9d1827e7de7ef58732d778ce9968add9faee53d725"
+    },
+    {
+      "file": "plan.png",
+      "sha256": "2c9313555ea3e647acb2740385dac81ec2d783ef68cf679ea07eb27aed72d72a"
+    },
+    {
+      "file": "bow.png",
+      "sha256": "262b5dcefeca6644242c1a84b62d31b8054d67c46ca00a872ef40ff236ba6707"
+    },
+    {
+      "file": "aft.png",
+      "sha256": "6a58d205adf492f1e83bac50fe898204d3341fd0165bc3a437dbe6c24f832ff3"
+    },
+    {
+      "file": "evidence.json",
+      "sha256": "5bf9604027ea37d85c88a36c1028c17e9ed4aa9fc424785b7957f5cdf60965cd"
+    }
+  ]
+}

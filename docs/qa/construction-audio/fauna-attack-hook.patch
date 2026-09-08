@@ -1,0 +1,49 @@
+--- a/src/fauna/hostile-simulation.js
++++ b/src/fauna/hostile-simulation.js
+@@ -39,7 +39,7 @@
+  * cancels windups (cabins/stations/online); menus should pass dt=0 to pause.
+  */
+ export function createHostileSimulation({ sampleGround, canMove = () => true,
+-  lineOfSight = () => true, onBite = () => {} } = {}) {
++  lineOfSight = () => true, onBite = () => {}, onAttack = () => {} } = {}) {
+   if (typeof sampleGround !== 'function') throw new TypeError('Canonical fauna ground callback required');
+   const live = new Map(), defeated = new Set(), wounds = new Map();
+   let steps = 0, totalBites = 0, totalHits = 0, droppedTime = 0, paused = true;
+@@ -132,6 +132,7 @@
+           face(entity, sub(p, entity.position));
+           if (visible && biteReach(entity, p, config) && entity.cooldown === 0) {
+             entity.state = 'windup'; entity.timer = config.windup;
++            onAttack({type:'creature-attack',species:entity.species,position:[...entity.position],id:entity.id});
+           } else move(entity, p, config.speed, step);
+         } else if (entity.state === 'windup') {
+           face(entity, sub(p, entity.position));
+--- a/src/fauna/hostile-fauna.js
++++ b/src/fauna/hostile-fauna.js
+@@ -15,7 +15,7 @@
+ // Replaced from the measured manifests before an actor becomes damageable.
+ const DEFAULT_DIMENSIONS={pyrebear:{width:2.02,height:1.732,length:2.981},suloher:{width:1,height:1,length:2}};
+ const v=a=>new THREE.Vector3(...a);
+-export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false}){
++export function createHostileFauna({scene,nav,loadout,seed=7291,online=()=>false,onSound=()=>{}}){
+   const group=new THREE.Group();group.name='Hostile wildlife';scene.add(group);
+   const medical=createPyrebearMedical({nav,loadout,enabled:()=>!online()});
+   const assets=new Map(),actors=new Map(),dimensions=structuredClone(DEFAULT_DIMENSIONS);
+@@ -36,6 +36,7 @@
+     return false;
+   }
+   const simulation=createHostileSimulation({sampleGround,
++    onAttack:event=>onSound({...event,point:v(event.position)}),
+     canMove:(from,to,entity)=>{const up=v(entity.normal),a=v(from).addScaledVector(up,.65),b=v(to).addScaledVector(up,.65);return !blocked(a.toArray(),b.toArray(),entity.species==='pyrebear'?.8:.4);},
+     lineOfSight:(from,to)=>!blocked(from,to),
+     onBite:(damage,attacker)=>{const result=medical.applyBite(damage,attacker);if(result.ok)nav.notify(`${attacker.creatureName} bite · Suit ${loadout.state.health}% · Use a quick-slot medical item`);return result;},
+--- a/src/main.js
++++ b/src/main.js
+@@ -166,7 +166,7 @@
+   const mining=new MiningField(scene,localInventoryStorage,moon.rings);nav.surfaceObstacles=mining;
+   const effects=new EnergyEffects(scene,{onSound:event=>audio.gameplay?.event(event,nav),capacity:1024,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});
+   const loadout=new Loadout(mining.store);
+-  const fauna=createHostileFauna({scene,nav,loadout,seed:SEED,online:()=>multiplayer.connected});
++  const fauna=createHostileFauna({scene,nav,loadout,seed:SEED,online:()=>multiplayer.connected,onSound:event=>audio.gameplay?.event(event,nav)});
+   nav.faunaRaycast=fauna.raycast;nav.onFaunaWeaponHit=fauna.weaponHit;
+   nav.parkedShipRaycast=(start,direction,range)=>nav.mode==='walk'||nav.mode==='eva'?parkedShipHit(nav,start,direction,range):null;
+   const miningTool=createMiningTool({scene,camera,canvas,nav,rock:mining,effects,loadout,character,thirdPerson:()=>shipCamera.active});

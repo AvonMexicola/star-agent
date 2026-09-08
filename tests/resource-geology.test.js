@@ -42,10 +42,10 @@ test('local geological landmarks use the same dominant-resource rule as the orbi
   }
 });
 
-test('resource-color additions leave canonical relief and the landing shelf unchanged',()=>{
+test('seeded outcrops preserve underlying lunar relief and the landing shelf',()=>{
   const fixtures=[[[1,0,0],-1394.7719236376001],[[0,1,0],1237.7681080309915],[[0,0,1],939.5199512000491],[[-1,0,0],-1028.3357188712673],[[0,-1,0],-1995.1689189401268],[[0,0,-1],2995.1987666297655],
     [local(0,0),-716.7986014786122],[local(20,0),-716.7986014786122],[local(-220,0),-1527.6682165549526],[local(2600,-3400),-1915.311644741505],[local(5400,11500),2951.374534354154],[local(-7600,-5300),5814.414570477]];
-  for(const [d,height] of fixtures)assert.equal(moonSurface(...d).height,height);
+  for(const [d,height] of fixtures){const sample=moonSurface(...d);assert.ok(Math.abs(sample.height-sample.rockRelief-height)<1e-9);}
   const patch=generateMoonPatch({face:4,level:2,ix:2,iy:2});
   for(let y=0;y<=MOON_GRID;y+=4)for(let x=0;x<=MOON_GRID;x+=4){
     const index=(y*(MOON_GRID+1)+x)*3,d=cubeDirection(4,x*.5/MOON_GRID,y*.5/MOON_GRID),surface=moonSurface(...d);

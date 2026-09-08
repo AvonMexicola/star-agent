@@ -5,7 +5,8 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {installLandingGear,createUtilityLights} from '../src/ship-utilities.js';
 import {SHIP_LAYOUT} from '../src/boarding.js';
-for(const id of ['nomad','atlas'])test(`${id} authored gear retracts within the existing hull envelope and returns to the landing plane`,async()=>{
+// Nomad 02 uses the native folding rig checked in nomad-utility.test.js.
+for(const id of ['atlas'])test(`${id} authored gear retracts within the existing hull envelope and returns to the landing plane`,async()=>{
   const data=await readFile(new URL(`../public/models/${id}.glb`,import.meta.url));
   const {scene:model}=await new GLTFLoader().parseAsync(data.buffer.slice(data.byteOffset,data.byteOffset+data.byteLength),'');
   const ship=new THREE.Group();ship.add(model);ship.readyPromise=Promise.resolve(model);installLandingGear(ship);await ship.readyPromise;

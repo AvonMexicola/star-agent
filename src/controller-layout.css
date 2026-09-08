@@ -1,0 +1,21 @@
+#controller-layout{width:min(1020px,calc(100vw - 32px));max-width:1020px;max-height:calc(100dvh - 32px);padding:28px;color:#e9f1f3;background:var(--dialog-solid);border:1px solid var(--line);overflow:auto}
+#controller-layout::backdrop{background:#03070ccc}
+#controller-layout header{display:flex;justify-content:space-between;align-items:center;gap:16px}
+#controller-layout h2{font:500 36px/1.1 var(--font-display);margin:0}
+#controller-layout header p{margin:8px 0;color:var(--muted);font-size:13px}
+#controller-layout button{min-height:44px;padding:10px 16px;border-radius:3px}
+#controller-layout nav{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 16px}
+#controller-layout [aria-pressed="true"]{background:var(--mint);color:#10241f;border-color:var(--mint)}
+#controller-layout .layout-note{font-size:14px;line-height:1.6;max-width:80ch;margin:0 0 22px;color:#c7d7dc;min-height:44px}
+.layout-board{display:grid;grid-template-columns:minmax(170px,1fr) minmax(260px,1.65fr) minmax(170px,1fr);align-items:center;gap:18px}
+.layout-board dl{margin:0;align-self:start}
+.layout-board dl>div{padding:10px 0;border-top:1px solid var(--line);min-height:62px}
+.layout-board dt{font:11px/1.6 var(--mono);color:var(--mint)}
+.layout-board dd{font-size:13px;line-height:1.5;margin:3px 0 0}
+.layout-art svg{width:100%;display:block;overflow:visible}
+.layout-art p{text-align:center;color:var(--muted);font-size:11px;line-height:1.6}
+.pad-shell{fill:#23313a;stroke:#a4c2ce;stroke-width:1.5}.pad-shell .pad-inset{fill:#101c24;stroke:#607780}
+.pad-letter{fill:#e9f1f3;font:14px var(--mono);text-anchor:middle}.pad-letter .pad-fire{fill:var(--mint)}.pad-letter .pad-y{fill:var(--warning)}.pad-letter .pad-b{fill:#efaaa3}
+.pad-guides{stroke:#80979f;fill:var(--mint);stroke-width:1}
+#controller-layout footer{border-top:1px solid var(--line);padding-top:16px;margin-top:22px;font:11px/1.8 var(--mono);color:var(--muted)}
+@media(max-width:700px){#controller-layout{padding:20px;width:calc(100vw - 24px);max-height:calc(100dvh - 24px)}#controller-layout h2{font-size:29px}#controller-layout nav{gap:6px;margin-top:20px}#controller-layout nav button{flex:1 0 42%;font-size:13px;padding:10px 8px}.layout-board{grid-template-columns:1fr 1fr;gap:16px}.layout-art{grid-column:1/-1;grid-row:1;width:min(290px,100%);margin:auto}.layout-board dl>div{min-height:79px}.layout-board dt{font-size:10px}.layout-board dd{font-size:12px}#controller-layout .layout-note{font-size:13px;margin-bottom:8px}}

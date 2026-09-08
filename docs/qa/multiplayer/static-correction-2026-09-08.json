@@ -1,0 +1,180 @@
+{
+  "promotion": {
+    "at": "2026-09-08T00:36:17.877879+00:00",
+    "clientSource": "b51fa894b1b1e26784f235b2de1e475ad98d8a5c",
+    "serverSource": "623430d106155f3f5b7f669f81e0975d8d47e89c",
+    "staticRoot": "/opt/staragent/multiplayer-static-releases/b51fa894b1b1e26784f235b2de1e475ad98d8a5c/dist",
+    "backup": "/opt/staragent/backups/multiplayer-static-before-b51fa89",
+    "atomicMethod": "renameat2 RENAME_EXCHANGE",
+    "verifiedBuildFiles": 223,
+    "retainedHashedAssets": [
+      "assets/forest.worker-DG1cQmdV.js",
+      "assets/ui-Cc_roSNi.css",
+      "assets/atlas-mark-ii-controls-BaRu-Ivb.js",
+      "assets/miasma.worker-DqqBNw8L.js",
+      "assets/audio-RfU_cJgx.js",
+      "assets/OrbitControls-BJ19Gv91.js",
+      "assets/main-CNTOm4sK.css",
+      "assets/GLTFLoader-BfuKMbhm.js",
+      "assets/main-B34-nHt2.js",
+      "assets/audioStudio-7WV6-b6T.js",
+      "assets/dev-atlas-meadow-tQ8zIr19.js",
+      "assets/world-BTV-j31y.js",
+      "assets/terrain.worker-D-Nd-Rwr.js",
+      "assets/pyre.worker-Prubtkwn.js",
+      "assets/orbital-surface.worker-B6759_Ga.js",
+      "assets/modulepreload-polyfill-B5Qt9EMX.js",
+      "assets/kestrel-CD0WuxoE.css",
+      "assets/kestrel-0dxTR8hQ.glb",
+      "assets/particles-Ck7kF3vc.js",
+      "assets/nomad-Zoo117fq.js",
+      "assets/ship-handling-Dl859w-W.js",
+      "assets/nomad-D9k62bzE.css",
+      "assets/three.module-beLWIIse.js",
+      "assets/kestrel-DaRtx1kZ.js",
+      "assets/landmark.worker-CAG5tWZ3.js",
+      "assets/asteroid-material-a1g1yKiV.js",
+      "assets/boarding-CHOVCBAK.js",
+      "assets/weapon-mounts-suw1CNwe.js",
+      "assets/RoomEnvironment-B7KeKLX8.js",
+      "assets/kestrel-B8ut3bhm.js",
+      "assets/worker-Be6BzszI.js",
+      "assets/lighting-F-Co4r42.js",
+      "assets/identity-CN1gaYHM.js",
+      "assets/effects-DP2Mp5db.css",
+      "assets/social-ui-syEZUXNO.css",
+      "assets/effects-CzrQhAVc.js",
+      "assets/moon-terrain.worker-BDIPdh9O.js"
+    ],
+    "apiPID": 19466,
+    "apiHealth": {
+      "ok": true
+    },
+    "apiStartUnchanged": true,
+    "environmentUnchanged": true,
+    "runtimeCodeFilesUnchanged": 442,
+    "databaseAccessed": false,
+    "serverRestarted": false
+  },
+  "http": {
+    "at": "2026-09-08T00:37:08.753353+00:00",
+    "origin": "https://multiplayer.staragent.site",
+    "metadata": {
+      "source": "b51fa894b1b1e26784f235b2de1e475ad98d8a5c",
+      "clientSource": "b51fa894b1b1e26784f235b2de1e475ad98d8a5c",
+      "serverSource": "623430d106155f3f5b7f669f81e0975d8d47e89c",
+      "correctionSource": "c885f5cecb79246d291612bf52088f8576e79e00",
+      "base": "5f63893e9d88184696ad897ec664e3a2a94b9951",
+      "development": "c99736f",
+      "multiplayerVersion": 5,
+      "maxPlayers": 20,
+      "seed": 7291,
+      "devTools": true,
+      "clientOnly": true
+    },
+    "apiHealth": {
+      "ok": true
+    },
+    "results": [
+      {
+        "path": "index.html",
+        "url": "https://multiplayer.staragent.site/index.html",
+        "bytes": 23343,
+        "sha256": "b25c7025bd2508bed24054956223b5a05b7758dc6df8a8c91296c4b51a72a042",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "release.json",
+        "url": "https://multiplayer.staragent.site/release.json",
+        "bytes": 391,
+        "sha256": "36d174c484f345a67e23952673c36a760a19a8677e66c485e2561b5b602524bc",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "assets/main-CcHQYLAx.js",
+        "url": "https://multiplayer.staragent.site/assets/main-CcHQYLAx.js",
+        "bytes": 916211,
+        "sha256": "6df500809616ce8636a5da9944d0ee85d7f81e9ce15f0433bb51d4e4a23729a6",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "models/nomad.glb",
+        "url": "https://multiplayer.staragent.site/models/nomad.glb?v=33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+        "bytes": 3413568,
+        "sha256": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "models/station.glb",
+        "url": "https://multiplayer.staragent.site/models/station.glb?v=59c4e38845f2ce6d93e25bc7e7f5ac2eb709591a06a1fdeac464ad2dde03863d",
+        "bytes": 3804976,
+        "sha256": "59c4e38845f2ce6d93e25bc7e7f5ac2eb709591a06a1fdeac464ad2dde03863d",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "models/station_lod1.glb",
+        "url": "https://multiplayer.staragent.site/models/station_lod1.glb?v=adb8019a1c76b2bd684c4c46997718b793a61f7ba7cd214300e082227d54ce3b",
+        "bytes": 250796,
+        "sha256": "adb8019a1c76b2bd684c4c46997718b793a61f7ba7cd214300e082227d54ce3b",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "models/station-props.glb",
+        "url": "https://multiplayer.staragent.site/models/station-props.glb?v=8bb03f3fc13f75e7797e43fb3fcfeccf3b5d694d283eac4b00b8b2fd7253692b",
+        "bytes": 2564192,
+        "sha256": "8bb03f3fc13f75e7797e43fb3fcfeccf3b5d694d283eac4b00b8b2fd7253692b",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "models/atlas-mark-ii/atlas-mark-ii.glb",
+        "url": "https://multiplayer.staragent.site/models/atlas-mark-ii/atlas-mark-ii.glb?v=f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e",
+        "bytes": 3859404,
+        "sha256": "f61dfd26570635436ffd05a4243b38be11a891a28dada35f758ae789ed2b396e",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "models/mining-rover.glb",
+        "url": "https://multiplayer.staragent.site/models/mining-rover.glb?v=831b9569633efda11652e3827057d2f4bc3f47d20f23a47df152fa437cb29468",
+        "bytes": 2175556,
+        "sha256": "831b9569633efda11652e3827057d2f4bc3f47d20f23a47df152fa437cb29468",
+        "status": 200,
+        "cacheControl": null
+      },
+      {
+        "path": "assets/main-B34-nHt2.js",
+        "bytes": 904843,
+        "sha256": "3093798701f641c5ffa5be6b37f936949fe4a16997a8e997594aab8adc5a472e",
+        "status": 200,
+        "url": "https://multiplayer.staragent.site/assets/main-B34-nHt2.js",
+        "retained": true,
+        "cacheControl": null
+      }
+    ]
+  },
+  "validation": {
+    "focusedTests": {
+      "pass": 49,
+      "fail": 0,
+      "skip": 0
+    },
+    "build": {
+      "command": "env -u VITE_SOLO_BUILD -u VITE_MULTIPLAYER_ENTRY VITE_DEV_TOOLS=1 npm run build",
+      "pass": true,
+      "seconds": 5.05,
+      "main": "assets/main-CcHQYLAx.js"
+    },
+    "repository": true,
+    "whitespace": true,
+    "newBrowserRun": false,
+    "newAuthenticatedFixture": false,
+    "parentCheckedSource": "c885f5cecb79246d291612bf52088f8576e79e00"
+  }
+}

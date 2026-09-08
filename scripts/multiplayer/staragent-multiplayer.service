@@ -1,5 +1,5 @@
 [Unit]
-Description=Star Agent ten-player multiplayer preview
+Description=Star Agent twenty-player multiplayer preview
 After=network-online.target postgresql.service
 Wants=network-online.target
 

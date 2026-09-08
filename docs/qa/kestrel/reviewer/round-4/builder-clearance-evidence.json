@@ -1,0 +1,134 @@
+{
+  "sourceSha256": "ceff0e979f27d0f58e9520949910b2054ebbf1faba80c7f9d4ccf4a429f3e053",
+  "method": "Every Blender export frame, moving mesh edges vs static triangulated ship; 2 mm endpoint tolerance; intended sill contact and open canopy excluded.",
+  "frames": 55,
+  "testedEdges": 69960,
+  "poses": [
+    {
+      "frame": 0,
+      "rotations": {
+        "Ladder": [
+          0.0,
+          0.0,
+          1.5707963705062866
+        ],
+        "Ladder_Upper": [
+          0.0,
+          1.5707963705062866,
+          0.0
+        ],
+        "Ladder_Middle": [
+          0.0,
+          3.1415927410125732,
+          0.0
+        ],
+        "Ladder_Lower": [
+          0.0,
+          3.1415927410125732,
+          0.0
+        ]
+      }
+    },
+    {
+      "frame": 15,
+      "rotations": {
+        "Ladder": [
+          0.0,
+          0.0,
+          0.01764059066772461
+        ],
+        "Ladder_Upper": [
+          0.0,
+          1.5707963705062866,
+          0.0
+        ],
+        "Ladder_Middle": [
+          0.0,
+          3.1415927410125732,
+          0.0
+        ],
+        "Ladder_Lower": [
+          0.0,
+          3.1415927410125732,
+          0.0
+        ]
+      }
+    },
+    {
+      "frame": 30,
+      "rotations": {
+        "Ladder": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Upper": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Middle": [
+          0.0,
+          3.1415927410125732,
+          0.0
+        ],
+        "Ladder_Lower": [
+          0.0,
+          3.1415927410125732,
+          0.0
+        ]
+      }
+    },
+    {
+      "frame": 45,
+      "rotations": {
+        "Ladder": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Upper": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Middle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Lower": [
+          0.0,
+          3.0536282062530518,
+          0.0
+        ]
+      }
+    },
+    {
+      "frame": 54,
+      "rotations": {
+        "Ladder": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Upper": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Middle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Ladder_Lower": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ],
+  "intersections": []
+}

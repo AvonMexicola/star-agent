@@ -12,6 +12,22 @@ Cees's asset workflow reference now lives in
 [complete hangar production record](docs/qa/hangar-production-record.md).
 Use those alongside this ship-specific memory and the current `QUALITY.md`.
 
+## Permanent cockpit visibility rule
+
+Cees explicitly requested on 2026-09-08: never add another central strut across
+the pilot or driver's view. Ships and ground vehicles must keep the main forward
+windscreen, aiming sightline and usable display faces free of centre pillars,
+mullions and opaque braces. Put structural framing around the edges; retain the
+closed cabin glazing and working mechanisms.
+
+Design around the actual seated eye before detailing the hull. Inspect the
+exported geometry from that eye and capture the settled cockpit in the game
+renderer at desktop and phone sizes. An exterior view, a shifted camera, or
+hiding the obstructing mesh at runtime does not establish a clear driving view.
+Apply this rule to the Stratum and Gannet already in production and future ships
+and rovers. It records the requested design constraint; it does not certify every
+existing cockpit as already checked.
+
 ## Start here
 
 The proven route is:

@@ -1,0 +1,39 @@
+{
+  "status": "kestrel-reviewed-ready-for-integration-jacket-not-downloaded",
+  "method": "Built-in GPT image generation -> visual inspection -> Meshy Image to 3D -> topology/PBR finishing -> local intake and actual game review",
+  "userDirection": "Isometric item on a white background with no shadows, then import that image into Meshy.",
+  "prompts": {
+    "watchkeep-folded-protective-jacket": "Use case: product-mockup. Create one high-quality photorealistic isometric reference image for image-to-3D reconstruction of a single folded technical work jacket for an orbital station security outfitter. Pure solid white background, no cast shadow, no contact shadow, no grey floor, no vignette, no horizon. One object only, centered with ample white margin, fully visible. Orthographic three-quarter isometric camera looking down about 35 degrees, showing the top, front folded edge and right side thickness; no perspective distortion. The jacket is carefully folded into a compact flat rectangular retail bundle, roughly 38 cm wide, 52 cm long and 10 cm thick. Sleeves tucked beneath the body, short practical stand collar visible at the far edge, neatly aligned layered hem at the near edge. It must unmistakably read as a folded modern work jacket, not a robe, bathrobe, armour shell or pile of crumpled cloth. Dominant deep petrol-blue matte heavy technical woven fabric, restrained warm ivory shoulder reinforcement panels, charcoal collar lining and zipper binding. Believable seam construction, fine double stitching, soft compressed broad cloth folds and textile thickness, subtle abrasion on raised folds and restrained wear. No excessive tiny wrinkles. Realistic high-end manufactured garment with tactile material definition and a clear simple silhouette. Flat stable underside. Uniform neutral shadowless diffuse illumination, base colors clear and accurate, subtle surface relief only, no dramatic shading or baked directional highlights. No lettering, logos, tags, price labels, mannequin, human, hands, hanger, stand, weapons, loose separate pieces, extra views, diagram, border or watermark.",
+    "kestrel-maintenance-roll": "Use case: product-mockup. Create one high-quality photorealistic isometric reference image for image-to-3D reconstruction of a single compact partially rolled closed canvas maintenance tool kit for an orbital station trade counter. Pure solid white background, no cast shadow, no contact shadow, no grey floor, no vignette, no horizon. One connected object only, centered with ample white margin and fully visible. Orthographic three-quarter isometric camera looking down about 35 degrees, showing top and two sides; no perspective distortion. A squat flat-bottomed roll/bundle approximately 32 cm wide, 46 cm long and 13 cm high. Heavy warm ochre woven canvas outer fabric folds over the tools into a broad gently curved lid, one short layered rolled edge visible at the side, compressed cloth folds at the corners. The tool contents are enclosed and only softly suggested beneath the canvas. Two broad charcoal woven webbing retaining straps lie snugly around the bundle, each with one small dull brushed dark metal rectangular buckle; no dangling straps. Precise manufactured construction: substantial stitched hems, double seam lines, reinforced corners, thick fabric edges, subtle canvas weave and restrained oily wear at seams. Clearly tactile rough fabric rather than smooth glossy leather or plastic. Practical, used, carefully maintained equipment, simple coherent silhouette. Flat stable underside. Uniform neutral shadowless diffuse illumination, base colors clear and accurate, subtle surface relief only, no dramatic shading or baked directional highlights. No open tool rack, exposed tool heads, scattered contents, text, logos, human, hand, stand, background props, extra views, diagram, border or watermark."
+  },
+  "generationTool": "Built-in image_gen.imagegen (GPT image)",
+  "images": [
+    {
+      "prop": "watchkeep-folded-protective-jacket",
+      "path": "jacket-reference-v1.png",
+      "sha256": "746353c2191173dc6c2d91e96e639841ef5f950dcbba035a471ed3cfe0029e7d",
+      "bytes": 1894418,
+      "pixels": [
+        1347,
+        1168
+      ],
+      "review": "Root inspected the displayed generated image. One complete object in an elevated three-quarter view on white; clear cloth construction, coherent silhouette, no scene props or broad cast shadow. Surface self-shading remains. Jacket has slight grey directly at the lower edge; not certified as a mathematically shadow-free albedo image. Reference selection is for trying reconstruction, not runtime asset acceptance."
+    },
+    {
+      "prop": "kestrel-maintenance-roll",
+      "path": "roll-reference-v1.png",
+      "sha256": "ac84a456acf6b4cdf71df86c5322a1f36571281cdd1fb9e2a542bcfd08e9b47a",
+      "bytes": 1899905,
+      "pixels": [
+        1402,
+        1122
+      ],
+      "review": "Root inspected the displayed generated image. One complete object in an elevated three-quarter view on white; clear cloth construction, coherent silhouette, no scene props or broad cast shadow. Surface self-shading remains. Jacket has slight grey directly at the lower edge; not certified as a mathematically shadow-free albedo image. Reference selection is for trying reconstruction, not runtime asset acceptance."
+    }
+  ],
+  "meshyReceipt": "meshy-recovery-receipt.json",
+  "priorBlockedMeshyReceipt": "meshy-receipt.json",
+  "firstPostPermissionReceipt": "meshy-after-file-permission-receipt.json",
+  "exportReceipt": "export-receipt.json",
+  "manualImportReceipt": "manual-import-receipt.json"
+}

@@ -2,13 +2,13 @@ import * as THREE from 'three';
 import { RADIUS, ATMOSPHERE_HEIGHT, SUN_ANGULAR_RADIUS, SUN_RADIUS } from './world.js';
 import { createCloudNoise, cloudShader } from './cloud-volume.js';
 import { EnergyBloom } from './effects/bloom.js';
+import { surfaceWeatherShader } from './surface-weather.js';
 
 // Single-scattering integration in body-radius units. Rayleigh + Henyey-Greenstein
 // Mie scattering, exponential density, sunlight extinction and planet shadow.
-// Two atmosphere slots: 0 is Aeon (the former hard-coded constants, plus clouds),
-// 1 is any other body. A slot is skipped when the camera is more than
+// Atmosphere slots: 0 Aeon, 1 Pyre, 2 Miasma. A slot is skipped when the camera is more than
 // ATMOSPHERE_RANGE body radii away; distant bodies are painted as points instead.
-export const ATMOSPHERE_SLOTS = 2, POINT_BODIES = 2, ATMOSPHERE_RANGE = 400;
+export const ATMOSPHERE_SLOTS = 3, POINT_BODIES = 2, ATMOSPHERE_RANGE = 400;
 export const AEON_ATMOSPHERE = Object.freeze({
   height: ATMOSPHERE_HEIGHT, scaleHeight: 8000, mieScaleHeight: 1200,
   betaR: Object.freeze([5.802e-6, 13.558e-6, 33.100e-6]), betaM: Object.freeze([3.996e-6, 3.996e-6, 3.996e-6]), g: .76, gain: 11,
@@ -31,6 +31,8 @@ uniform sampler2D bloomMid;
 uniform sampler2D bloomWide;
 uniform float bloomStrength;
 uniform float sunAngularRadius;
+uniform float sunDisk;
+uniform int atmoOrder[${ATMOSPHERE_SLOTS}];
 uniform vec3 atmoCamera[${ATMOSPHERE_SLOTS}];
 uniform float atmoRadius[${ATMOSPHERE_SLOTS}];
 uniform float atmoOuter[${ATMOSPHERE_SLOTS}];
@@ -58,6 +60,7 @@ vec3 stars(vec3 rd){
 }
 vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.0,1.0);}
 ${cloudShader}
+${surfaceWeatherShader}
 // One body's single-scattering contribution along the view ray (body-radius units).
 vec3 scatter(vec3 color,vec3 ro,vec3 rd,float distanceToScene,float bodyRadius,float outer,vec3 betaR,vec3 betaM,vec2 scale,vec2 phase){
   vec2 hit=sphere(ro,rd,outer);
@@ -113,7 +116,7 @@ void main(){
   float sunDot=dot(rd,sunDirection);
   // A 240,000-km stellar radius: 0.0096 rad from Aeon, larger from the inner planet.
   float disk=smoothstep(cos(sunAngularRadius*1.0417),cos(sunAngularRadius*.9583),sunDot);
-  if(!ground)color+=vec3(18.0,15.5,12.5)*disk*skyCoverage;
+  if(!ground)color+=vec3(18.0,15.5,12.5)*disk*sunDisk*skyCoverage;
   // Distant worlds as bright points with a soft halo; extinguished by the air like the star.
   if(!ground)for(int i=0;i<${POINT_BODIES};i++){
     if(pointSize[i]<=0.0)continue;
@@ -123,14 +126,16 @@ void main(){
     color+=pointColor[i]*(core+halo)*skyCoverage;
   }
   for(int i=0;i<${ATMOSPHERE_SLOTS};i++){
-    if(atmoEnabled[i]<.5)continue;
-    float bodyDistance=ground?sceneMetres/atmoRadius[i]:1e9;
-    color=scatter(color,atmoCamera[i],rd,bodyDistance,atmoRadius[i],atmoOuter[i],atmoBetaR[i],atmoBetaM[i],atmoScale[i],atmoPhase[i]);
+    int j=atmoOrder[i];
+    if(atmoEnabled[j]<.5)continue;
+    float bodyDistance=ground?sceneMetres/atmoRadius[j]:1e9;
+    color=scatter(color,atmoCamera[j],rd,bodyDistance,atmoRadius[j],atmoOuter[j],atmoBetaR[j],atmoBetaM[j],atmoScale[j],atmoPhase[j]);
   }
   if(atmoEnabled[0]>=.5){
     vec4 clouds=cloudRadiance(cameraPlanet,rd,distanceToScene,sunDot);
     color=color*(1.0-clouds.a)+clouds.rgb;
   }
+  color=surfaceWeather(color,rd,ground?sceneMetres:1e9);
   color+=bloomStrength*(texture2D(bloomNear,vUv).rgb*.35+texture2D(bloomMid,vUv).rgb*.4+texture2D(bloomWide,vUv).rgb*.5);
   color=aces(color*exposure);
   color=pow(color,vec3(1.0/2.2));
@@ -146,8 +151,8 @@ export class Atmosphere {
     this.target=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,depthBuffer:true});
     this.target.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
     const slots=n=>Array.from({length:n});
-    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08},sunAngularRadius:{value:SUN_ANGULAR_RADIUS},
-      atmoCamera:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoRadius:{value:slots(ATMOSPHERE_SLOTS).map(()=>RADIUS)},atmoOuter:{value:slots(ATMOSPHERE_SLOTS).map(()=>1)},
+    this.material=new THREE.ShaderMaterial({depthWrite:false,depthTest:false,uniforms:{sceneColor:{value:this.target.texture},sceneDepth:{value:this.target.depthTexture},inverseProjection:{value:new THREE.Matrix4()},cameraRotation:{value:new THREE.Matrix3()},cameraPlanet:{value:new THREE.Vector3()},sunDirection:{value:new THREE.Vector3()},resolution:{value:new THREE.Vector2()},logFar:{value:1},radius:{value:RADIUS},atmosphereRadius:{value:1+ATMOSPHERE_HEIGHT/RADIUS},exposure:{value:1.08},sunAngularRadius:{value:SUN_ANGULAR_RADIUS},sunDisk:{value:1},
+      atmoOrder:{value:[0,1,2]},atmoCamera:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoRadius:{value:slots(ATMOSPHERE_SLOTS).map(()=>RADIUS)},atmoOuter:{value:slots(ATMOSPHERE_SLOTS).map(()=>1)},
       atmoBetaR:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoBetaM:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector3())},atmoScale:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector2(8000,1200))},atmoPhase:{value:slots(ATMOSPHERE_SLOTS).map(()=>new THREE.Vector2(.76,11))},atmoEnabled:{value:slots(ATMOSPHERE_SLOTS).map(()=>0)},
       pointDirection:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3(0,0,1))},pointColor:{value:slots(POINT_BODIES).map(()=>new THREE.Vector3())},pointSize:{value:slots(POINT_BODIES).map(()=>0)}},
       vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}',fragmentShader});
@@ -169,18 +174,22 @@ export class Atmosphere {
   setPoint(index,direction,color,size){
     const u=this.material.uniforms;u.pointDirection.value[index].copy(direction);u.pointColor.value[index].fromArray(color);u.pointSize.value[index]=size;
   }
+  setSun(sun){this.material.uniforms.sunDisk.value=sun.diskWeight;}
   resize(w,h){this.target.setSize(w,h);this.bloom.resize(w,h);this.material.uniforms.resolution.value.set(w,h);}
   render(scene,camera,worldPosition,sunDirection,elapsed=0,sunDistance=null){
     camera.updateMatrixWorld();const u=this.material.uniforms;
     u.cloudTime.value=elapsed;
     u.inverseProjection.value.copy(camera.projectionMatrixInverse);u.cameraRotation.value.setFromMatrix4(camera.matrixWorld);u.cameraPlanet.value.copy(worldPosition).multiplyScalar(1/RADIUS);u.sunDirection.value.copy(sunDirection);u.logFar.value=Math.log2(camera.far+1);
-    u.sunAngularRadius.value=sunDistance?Math.asin(Math.min(1,SUN_RADIUS/sunDistance)):SUN_ANGULAR_RADIUS;
+    u.sunAngularRadius.value=sunDistance?Math.asin(Math.min(1,SUN_RADIUS/Math.max(SUN_RADIUS,sunDistance))):SUN_ANGULAR_RADIUS;
     for(let i=0;i<ATMOSPHERE_SLOTS;i++){
       const body=this.bodies[i];
       if(!body){u.atmoEnabled.value[i]=0;continue;}
       u.atmoCamera.value[i].copy(worldPosition).sub(body.center).multiplyScalar(1/body.radius);
       u.atmoEnabled.value[i]=u.atmoCamera.value[i].length()<ATMOSPHERE_RANGE?1:0;
     }
+    // Distinct non-overlapping atmospheres composite from far to near, including
+    // Miasma seen through Pyre's foreground air and Pyre seen from Miasma.
+    u.atmoOrder.value.sort((a,b)=>u.atmoCamera.value[b].length()*u.atmoRadius.value[b]-u.atmoCamera.value[a].length()*u.atmoRadius.value[a]);
     this.renderer.setRenderTarget(this.target);this.renderer.setClearColor(0x000000,0);this.renderer.clear();this.renderer.render(scene,camera);
     this.bloom.render(this.target.texture);u.bloomStrength.value=this.bloom.enabled?.65:0;
     this.renderer.setRenderTarget(null);this.renderer.render(this.scene,this.camera);

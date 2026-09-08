@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked-browser-download-permission",
+  "provider": "Meshy",
+  "operator": {
+    "family": "GPT",
+    "browserIntegration": "OpenAI configured Chrome via cua_repl",
+    "delegated": false,
+    "launcherModel": "gpt-6-astra"
+  },
+  "startedAt": "2026-09-06T20:49:15.413435+00:00",
+  "updatedAt": "2026-09-06T21:07:14.212889+00:00",
+  "scope": "Two native provider sources only. Blender cleanup, runtime integration, budgets, placement, tests and Astra review remain parent work.",
+  "accountCheck": {
+    "observedAt": "2026-09-06T20:49:15.413435+00:00",
+    "signedIn": true,
+    "evidence": "Account menu displayed PRO and Log Out; a sufficient credit balance was shown.",
+    "personalIdentifiersRecorded": false
+  },
+  "props": [
+    {
+      "id": "kestrel-maintenance-roll",
+      "exactPrompt": "One isolated compact maintenance tool roll, partially rolled closed, for an inhabited orbital station trade counter. Heavy ochre waxed canvas with charcoal fabric pockets, a few short enclosed tool silhouettes under the cloth, two restrained dark webbing straps and small brushed-metal buckles. Clearly readable rolled textile shape, compressed folds, stitched hems, softened corners, seam grime and restrained oil-dark wear where hands and work surfaces touch. Practical manufactured everyday equipment, realistic human scale. Flat stable underside. No loose trailing straps, no scattered tools, no surrounding scene, no stand, no human, no lettering, logos or emissive parts. PBR game prop with clear cloth versus metal roughness; neutral unbaked lighting.",
+      "status": "generated-uv-complete-export-blocked",
+      "provider": "Meshy",
+      "observedSettings": {
+        "workflow": "Text to 3D",
+        "model": "Meshy T1",
+        "providerModelNote": "Legacy model",
+        "modelType": "Smart Topology",
+        "topology": "Triangle",
+        "pose": "None",
+        "license": "Private (pre-existing selection)",
+        "generationCount": "Smart Topology exposed no count control. After one submission per exact prompt, each completed geometry batch displayed x4; only the default candidate of each batch was inspected and selected for UV preparation.",
+        "numericTriangleTarget": "No numeric target exposed at generation stage.",
+        "textLogosToggle": "Not exposed; exact prompts explicitly prohibit lettering/logos.",
+        "textureStage": "Not submitted. Roll UV finished after the export blocker; jacket UV failed.",
+        "realisticPbr": "Requested verbatim in the exact saved prompt. No separate realism/PBR toggle was exposed before UV preparation; no textured/PBR result was produced in this session.",
+        "creationFormAfterReload": "The blank creation form reset to High Detail / Meshy 6. No generation was submitted with those reset settings; the two submitted geometry jobs used Meshy T1 / Smart Topology."
+      },
+      "jobs": [
+        {
+          "stage": "geometry",
+          "status": "completed",
+          "submittedBy": "2026-09-06T20:50:53.588305+00:00",
+          "timestampNote": "Recorded after visible submission; not exact server submission timestamp.",
+          "sourceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+          "jobId": null,
+          "completionObservedBy": "2026-09-06T21:05:26.514Z",
+          "visibleJobId": null,
+          "jobIdAvailability": "No provider job ID or unique source permalink was exposed by the inspected UI. DOM element IDs were not treated as provider job IDs.",
+          "providerAutomaticCandidates": 4,
+          "selectedCandidate": "Default candidate displayed when opening the completed batch; no candidate cycling or reroll."
+        },
+        {
+          "stage": "uv-unwrap",
+          "status": "completed-result-card-observed",
+          "sourceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+          "jobId": null,
+          "visibleJobId": null,
+          "displayedCost": 5,
+          "observationRecordedBy": "2026-09-06T21:05:26.514Z",
+          "evidence": "Progress reached 90%, then the filtered library showed a dated standalone completed result card with no progress or failure label. The UV result itself was not inspected."
+        }
+      ],
+      "creditEvents": [
+        {
+          "stage": "geometry",
+          "displayedCost": 20,
+          "observedAt": "2026-09-06T20:50:53.588305+00:00"
+        },
+        {
+          "stage": "uv-unwrap",
+          "displayedCost": 5,
+          "observationRecordedBy": "2026-09-06T21:05:26.514Z"
+        }
+      ],
+      "sourceFiles": [],
+      "previewAssessment": {
+        "status": "source-candidate-only; not acceptance or runtime readiness",
+        "method": "Visual inspection of the actual Meshy browser preview, including a dragged oblique view.",
+        "observedBy": "2026-09-06T21:05:26.514Z",
+        "viewerScreenshotSizePixels": [
+          781,
+          807
+        ],
+        "topology": "Triangle",
+        "displayedFaces": 22431,
+        "displayedVertices": 11245,
+        "recognizableIsolatedTextile": true,
+        "clothFolds": "Visible compressed pocket and rolled-side fabric folds.",
+        "obviousFloatingOrDisconnectedPieces": "None observed in the inspected views; this does not establish mesh watertightness or full underside integrity.",
+        "scenicBackdropOrModelStand": "None observed on either generated prop.",
+        "briefMismatches": [
+          "Reads more like an open-pocket tool pouch than a compact partially closed roll.",
+          "Several exposed tool-head shapes contrast with the requested enclosed tool silhouettes.",
+          "Required ochre/charcoal material appearance is not established because only untextured geometry was inspected."
+        ],
+        "budgetAssessment": "Displayed source triangle count exceeds the <=8,000 target. No numeric triangle budget was exposed in the selected generation workflow. Parent cleanup and validation remain required.",
+        "sourceThumbnailOrRenderLocalPaths": [],
+        "thumbnailLimitation": "Previews were inspected through browser screenshots but no native thumbnail/render file was downloaded or saved."
+      },
+      "failures": [
+        {
+          "stage": "uv-confirmation-control",
+          "kind": "browser-control-transient",
+          "message": "Confirmation action returned Playwright selector deadline exceeded / no matching Confirm button.",
+          "outcome": "Subsequent UI inspection confirmed exactly one 5-credit deduction and a new UV job. The stage was not submitted again."
+        },
+        {
+          "stage": "export",
+          "kind": "browser-download-permission-denied",
+          "details": "The attempted roll GLB download was rejected by automatic browser approval review. Further exports, including the jacket, were stopped."
+        }
+      ],
+      "expectedRawDirectory": "assets/station-shop/soft-props/raw/kestrel-maintenance-roll",
+      "localExport": {
+        "status": "not-downloaded",
+        "path": null,
+        "sha256": null,
+        "fileBytes": null,
+        "reason": "Browser download permission denied; no alternate download method attempted."
+      },
+      "providerSourceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d"
+    },
+    {
+      "id": "watchkeep-folded-protective-jacket",
+      "exactPrompt": "One isolated neatly folded but well-used protective work jacket, laid flat as a compact retail sample. Petrol-blue heavy technical textile with restrained ivory reinforcement patches and matte charcoal trim, padded seams, double stitched hems, folded tucked-in sleeves, a short folded collar, compressed fabric layers and natural asymmetric creases. Practical orbital station security supplier equipment, believable cloth thickness and human scale. Subtle abrasion at raised folds, darker grime in seams, no exaggerated damage. Flat stable underside. No person, mannequin, hanger, armour shell, weapon, surrounding scene, lettering, logos or glowing parts. PBR game prop with soft cloth material response and neutral unbaked lighting.",
+      "status": "generated-uv-failed-export-blocked",
+      "provider": "Meshy",
+      "observedSettings": {
+        "workflow": "Text to 3D",
+        "model": "Meshy T1",
+        "providerModelNote": "Legacy model",
+        "modelType": "Smart Topology",
+        "topology": "Triangle",
+        "pose": "None",
+        "license": "Private (pre-existing selection)",
+        "generationCount": "Smart Topology exposed no count control. After one submission per exact prompt, each completed geometry batch displayed x4; only the default candidate of each batch was inspected and selected for UV preparation.",
+        "numericTriangleTarget": "No numeric target exposed at generation stage.",
+        "textLogosToggle": "Not exposed; exact prompts explicitly prohibit lettering/logos.",
+        "textureStage": "Not submitted. Roll UV finished after the export blocker; jacket UV failed.",
+        "realisticPbr": "Requested verbatim in the exact saved prompt. No separate realism/PBR toggle was exposed before UV preparation; no textured/PBR result was produced in this session.",
+        "creationFormAfterReload": "The blank creation form reset to High Detail / Meshy 6. No generation was submitted with those reset settings; the two submitted geometry jobs used Meshy T1 / Smart Topology."
+      },
+      "jobs": [
+        {
+          "stage": "geometry",
+          "status": "completed",
+          "submittedBy": "2026-09-06T20:50:53.588305+00:00",
+          "timestampNote": "Recorded after visible submission; not exact server submission timestamp.",
+          "sourceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+          "jobId": null,
+          "completionObservedBy": "2026-09-06T21:05:26.514Z",
+          "visibleJobId": null,
+          "jobIdAvailability": "No provider job ID or unique source permalink was exposed by the inspected UI. DOM element IDs were not treated as provider job IDs.",
+          "providerAutomaticCandidates": 4,
+          "selectedCandidate": "Default candidate displayed when opening the completed batch; no candidate cycling or reroll."
+        },
+        {
+          "stage": "uv-unwrap",
+          "status": "failed",
+          "sourceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+          "jobId": null,
+          "visibleJobId": null,
+          "displayedCost": 5,
+          "observationRecordedBy": "2026-09-06T21:05:26.514Z",
+          "evidence": "The previously progressing UV job changed to Generating failed and Credits Refunded. No retry was submitted."
+        }
+      ],
+      "creditEvents": [
+        {
+          "stage": "geometry",
+          "displayedCost": 20,
+          "observedAt": "2026-09-06T20:50:53.588305+00:00"
+        },
+        {
+          "stage": "uv-unwrap",
+          "displayedCost": 5,
+          "observationRecordedBy": "2026-09-06T21:05:26.514Z"
+        },
+        {
+          "stage": "uv-unwrap-refund",
+          "observedRefund": 5,
+          "observedAt": "2026-09-06T21:05:26.514Z"
+        }
+      ],
+      "sourceFiles": [],
+      "previewAssessment": {
+        "status": "source-candidate-only; not acceptance or runtime readiness",
+        "method": "Visual inspection of the actual Meshy browser preview, including a dragged oblique view.",
+        "observedBy": "2026-09-06T21:05:26.514Z",
+        "viewerScreenshotSizePixels": [
+          781,
+          807
+        ],
+        "topology": "Triangle",
+        "displayedFaces": 25244,
+        "displayedVertices": 12866,
+        "recognizableIsolatedTextile": true,
+        "clothFolds": "Visible collar, folded/crossed sleeves, compressed fabric layers and asymmetric creases.",
+        "obviousFloatingOrDisconnectedPieces": "None observed in the inspected views; this does not establish mesh watertightness or full underside integrity.",
+        "scenicBackdropOrModelStand": "None observed on either generated prop.",
+        "briefMismatches": [
+          "The crossed-sleeve fold and deep collar read somewhat like a folded robe/workcoat.",
+          "Required petrol-blue/ivory material appearance is not established because only untextured geometry was inspected."
+        ],
+        "budgetAssessment": "Displayed source triangle count exceeds the <=8,000 target. No numeric triangle budget was exposed in the selected generation workflow. Parent cleanup and validation remain required.",
+        "sourceThumbnailOrRenderLocalPaths": [],
+        "thumbnailLimitation": "Previews were inspected through browser screenshots but no native thumbnail/render file was downloaded or saved."
+      },
+      "failures": [
+        {
+          "stage": "uv-confirmation-control",
+          "kind": "browser-control-transient",
+          "message": "Confirmation action returned Node is detached from document.",
+          "outcome": "Subsequent UI inspection confirmed exactly one 5-credit deduction and a new UV job. The stage was not submitted again."
+        },
+        {
+          "stage": "uv-unwrap",
+          "kind": "provider-generation-failure",
+          "visibleMessage": "Generating failed; Credits Refunded",
+          "retried": false
+        },
+        {
+          "stage": "export",
+          "kind": "browser-download-permission-denied",
+          "details": "The attempted roll GLB download was rejected by automatic browser approval review. Further exports, including the jacket, were stopped."
+        }
+      ],
+      "expectedRawDirectory": "assets/station-shop/soft-props/raw/watchkeep-folded-protective-jacket",
+      "localExport": {
+        "status": "not-downloaded",
+        "path": null,
+        "sha256": null,
+        "fileBytes": null,
+        "reason": "Browser download permission denied; no alternate download method attempted."
+      },
+      "providerSourceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d"
+    }
+  ],
+  "limitations": [
+    "No local model, texture, thumbnail or render exports exist. Source paths, SHA256 and bytes are null/empty because no download is confirmed.",
+    "Provider job IDs and unique source permalinks were not exposed by the inspected visible controls. Exact prompts, source workspace URLs, date labels, candidate geometry counts and recovery steps are preserved instead.",
+    "Each Smart Topology submission automatically yielded x4 candidates, although no count setting was exposed. There were exactly two geometry submissions and no rerolls; only one default candidate per prop was used for the two normal UV workflows.",
+    "Both inspected geometry candidates exceed the <=8k triangle goal. No numeric triangle target was exposed in the selected initial workflow.",
+    "The jacket UV stage failed and its five credits were refunded. The roll UV result completed, but was not inspected or textured after the export blocker.",
+    "Realistic PBR was requested through the exact prompts, but no textured PBR output was produced or verified.",
+    "No other download capability, raw browser protocol, hidden authentication state, provider API endpoint or alternate browser surface was used to bypass the denial.",
+    "No game code, existing project record, git history, other assets, shared user configuration, account setting, license, subscription or purchase was changed by this operator.",
+    "Blender cleanup, scale/origin/material/texture budgets, placement, game tests and independent Astra review remain parent work."
+  ],
+  "stoppedAt": "2026-09-06T21:07:14.212889+00:00",
+  "timestampConvention": "ISO 8601 UTC. Observation/recording times are not claimed as exact provider submission or completion times; server timestamps were not exposed.",
+  "generationSummary": {
+    "geometrySubmissions": 2,
+    "exactSavedPromptsUsed": true,
+    "rerolls": 0,
+    "providerAutomaticCandidatesPerSubmission": 4,
+    "selectedCandidatesPerProp": 1,
+    "uvUnwrapSubmissions": 2,
+    "textureGenerationSubmissions": 0,
+    "confirmedLocalModelExports": 0,
+    "runtimeReady": false
+  },
+  "creditSummary": {
+    "finalObservedAt": "2026-09-06T21:05:26.514Z",
+    "observedNetDeduction": 45,
+    "geometryCharges": 40,
+    "uvUnwrapCharges": 10,
+    "observedRefund": 5,
+    "refundEvidence": "Jacket UV job displayed Generating failed and Credits Refunded; a five-credit refund was observed.",
+    "purchaseOrTopUpPerformed": false
+  },
+  "creditLedger": [
+    {
+      "stage": "geometry",
+      "propId": "kestrel-maintenance-roll",
+      "displayedCost": 20
+    },
+    {
+      "stage": "geometry",
+      "propId": "watchkeep-folded-protective-jacket",
+      "displayedCost": 20
+    },
+    {
+      "stage": "uv-unwrap",
+      "propId": "watchkeep-folded-protective-jacket",
+      "displayedCost": 5
+    },
+    {
+      "stage": "uv-unwrap",
+      "propId": "kestrel-maintenance-roll",
+      "displayedCost": 5
+    },
+    {
+      "stage": "uv-unwrap-refund",
+      "propId": "watchkeep-folded-protective-jacket",
+      "observedRefund": 5
+    }
+  ],
+  "exportBlocker": {
+    "stage": "native-glb-export",
+    "status": "blocked",
+    "sourceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d",
+    "attemptedFormat": "glb",
+    "resizeEnabled": false,
+    "mechanism": "Documented OpenAI Chrome playwright.waitForEvent(download) with the visible Download action prepared. The browser permission rejection interrupted the call and reset the browser REPL; the export settings remained open afterward.",
+    "reviewReason": "Browser security policy rejected the download. The tool reported: The user declined permission for this action.",
+    "downloadSucceeded": false,
+    "localPath": null,
+    "sha256": null,
+    "fileBytes": null,
+    "alternateDownloadRouteAttempted": false,
+    "userActionRequired": "Allow Meshy file downloads in the configured OpenAI browser integration before resuming exports of these existing sources. Do not submit new geometry jobs."
+  },
+  "handoff": {
+    "sourceWorkspaceUrl": "https://www.meshy.ai/workspace?model-tab=text-to-3d&sidebar=assets",
+    "existingTabPreserved": true,
+    "recoveryInstructions": [
+      "Open My Assets > Models in the preserved Meshy tab.",
+      "Search the exact prompt prefix for the desired prop. Both geometry batches show the date 09/06/2026 and x4.",
+      "The inspected default roll candidate shows Triangle, 22,431 faces, 11,245 vertices. The inspected default jacket candidate shows Triangle, 25,244 faces, 12,866 vertices.",
+      "The roll has a completed separate UV result; the jacket UV result failed and displayed Credits Refunded.",
+      "Resume only the remaining normal workflow on these existing sources after resolving the export permission blocker; no geometry rerolls were authorized."
+    ]
+  },
+  "verification": {
+    "exactPromptsCheckedAgainstBrief": true,
+    "receiptJsonParsed": true,
+    "rawFilesPresent": false,
+    "gameTestsRun": false,
+    "gameTestsReason": "Only a generation receipt and empty destination directories were created; no game/runtime changes or downloaded mesh were available to test."
+  },
+  "publicRecordNote": "Remaining account balances omitted; operation charges/refunds and outcomes retained. Original operator receipt preserved locally under /tmp, outside version control."
+}

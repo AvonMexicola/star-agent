@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RADIUS, terrainHeight, moisture, hash } from './world.js';
+import { RADIUS, terrainHeight, terrainSample, moisture, hash } from './world.js';
 import { SHIP_LAYOUT } from './boarding.js';
 
 export const MEADOW_RANGE = 10;
@@ -235,9 +235,9 @@ export class Meadow {
     this.vegetation.scatter(center,MEADOW_PRELOAD,MEADOW_SPACING,4817,(x,y,z,col,row,a,b)=>{
       const key=`${col}/${row}`;
       let record=this.cache.get(key);
-      if(!record){const h=terrainHeight(x,y,z);record={x,y,z,h,a,b,m:moisture(x,y,z)};}
+      if(!record){const {height:h,rockRelief}=terrainSample(x,y,z);record={x,y,z,h,rockRelief,a,b,m:moisture(x,y,z)};}
       nextCache.set(key,record);
-      if(tufts>=CAPACITY||!meadowHabitat(y,record.h)||this.vegetation.isExcluded(x,y,z))return;
+      if(record.rockRelief>.12||tufts>=CAPACITY||!meadowHabitat(y,record.h)||this.vegetation.isExcluded(x,y,z))return;
       const patch=.5+.5*Math.sin(x*RADIUS*.33+Math.sin(z*RADIUS*.24)*2)*Math.cos(y*RADIUS*.27);
       // Wet grasslands form a thick sward; dry ground has shorter straw and gaps.
       const wet=THREE.MathUtils.clamp((record.m-.28)/.2,0,1);

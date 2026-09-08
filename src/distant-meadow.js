@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RADIUS, terrainHeight, moisture, hash } from './world.js';
+import { RADIUS, terrainHeight, terrainSample, moisture, hash } from './world.js';
 
 const CAPACITY=85000, SPACING=1.1, MARGIN=20, UP=new THREE.Vector3(0,1,0);
 /** Cheap crossed clusters: 32 tapered blades encoded in one reusable colored alpha mask.
@@ -115,9 +115,9 @@ export class DistantMeadow {
         const r=next.value;count++;
         if(hash(r.col,r.row,5913)>this.density||this.vegetation.isExcluded(r.x,r.y,r.z))continue;
         const key=`${r.col}/${r.row}`;let value=this.cache.get(key);
-        if(!value)value={...r,h:terrainHeight(r.x,r.y,r.z),wet:THREE.MathUtils.clamp((moisture(r.x,r.y,r.z)-.28)/.2,0,1)};
+        if(!value){const {height:h,rockRelief}=terrainSample(r.x,r.y,r.z);value={...r,h,rockRelief,wet:THREE.MathUtils.clamp((moisture(r.x,r.y,r.z)-.28)/.2,0,1)};}
         job.cache.set(key,value);
-        if(value.h<=12||value.h>=2200||job.count>=this.capacity)continue;
+        if(value.rockRelief>.12||value.h<=12||value.h>=2200||job.count>=this.capacity)continue;
         const v=value;p.set(v.x,v.y,v.z);q.setFromUnitVectors(UP,p);yaw.setFromAxisAngle(UP,v.a*Math.PI*2);q.multiply(yaw);
         p.multiplyScalar(RADIUS+v.h-.035).sub(job.origin);const width=this.medium?.8+v.b*.6:1;scale.set(width,(.315+v.a*.33)*(.75+v.wet*.25),width);matrix.compose(p,q,scale);
         matrix.toArray(job.matrices,job.count*16);job.phases[job.count]=((v.x*.61+v.y*.23+v.z*.17)*RADIUS)%(Math.PI*2)+v.b*Math.PI*2*.35;

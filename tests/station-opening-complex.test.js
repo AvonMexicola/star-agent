@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { StationComplex } from '../src/station-complex.js';
 import { stationQuaternion } from '../src/station.js';
 import { POD_LAYOUT } from '../src/station-architecture.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
 import { FREIGHTER_LAYOUT } from '../src/freighter-layout.js';
 import { RADIUS } from '../src/world.js';
+import { PLAYABLE_STATION_OPTIONS, FLEET_HANGAR } from '../src/station-fleet-hangar.js';
+import { readGLBGeometry } from './helpers/gltf-geometry.js';
 
 const DIRECTION = new THREE.Vector3(.23, .91, .34).normalize();
 const TILT = stationQuaternion(DIRECTION, new THREE.Quaternion()).multiply(
@@ -16,22 +16,30 @@ const TILT = stationQuaternion(DIRECTION, new THREE.Quaternion()).multiply(
 ).normalize();
 const SUN = new THREE.Vector3(1, 0, 0);
 async function assets() {
-  return Promise.all(['station', 'station_lod1'].map(async name => {
-    const bytes = await readFile(new URL(`../public/models/${name}.glb`, import.meta.url));
-    return new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
-  }));
+  return Promise.all(['station', 'station_lod1', 'station-exterior', 'station-exterior-lod1']
+    .map(name => readGLBGeometry(new URL(`../public/models/${name}.glb`, import.meta.url))));
 }
 async function create(options = {}, beforeReady = () => {}) {
-  const [gltf, lod] = await assets();
-  const station = new StationComplex(new THREE.Scene(), { gltf, lod, direction: DIRECTION, orientation: TILT, ...options });
+  const [gltf, lod, exteriorGltf, exteriorLodGltf] = await assets();
+  const station = new StationComplex(new THREE.Scene(), { ...PLAYABLE_STATION_OPTIONS,
+    gltf, lod, exteriorGltf, exteriorLodGltf, direction: DIRECTION, orientation: TILT, ...options });
   beforeReady(station);
   await station.readyPromise;
+  assert.equal(station.exteriorStatus,'geometry-review','the collision fixture uses the current authored exterior');
+  assert.ok(station.pods.every(pod=>pod.padLocal.distanceTo(new THREE.Vector3(...FLEET_HANGAR.pad))<1e-6));
   return station;
 }
 function nearVector(actual, expected, message, tolerance = 1e-8) {
   assert.ok(actual.distanceTo(expected) < tolerance, `${message}: ${actual.toArray()} != ${expected.toArray()}`);
 }
 const world = (station, point) => station.toWorld(new THREE.Vector3(...point), new THREE.Vector3());
+function pilotAt(pod,layout,clearance=0,rootZ=pod.padLocal.z){
+  const attitude=pod.inverseQuaternion.clone().multiply(pod.padQuaternion);
+  const point=new THREE.Vector3(...layout.seatEye).applyQuaternion(attitude)
+    .add(new THREE.Vector3(pod.padLocal.x,pod.interiorBox.min.y+clearance,rootZ));
+  return pod.toWorld(point,new THREE.Vector3());
+}
+const outsideRoot=(pod,layout)=>pod.openingZ-Math.max(Math.abs(layout.flightBounds.min[2]),Math.abs(layout.flightBounds.max[2]))-8;
 
 test('twenty bays and hub share the supplied tilted opening frame without rotating pod offsets by berth yaw', async () => {
   const direction = DIRECTION.clone(), orientation = TILT.clone(), altitude = 123456;
@@ -78,7 +86,8 @@ test('opening delegates retain one bay and deterministic door collision until ci
   for (let door = 0; door < collisionPose.length; door++) for (let axis = 0; axis < 6; axis++) {
     assert.ok(Math.abs(rebasedPose[door][axis] - collisionPose[door][axis]) < 1e-8, 'rebasing preserves the controlled local collision pose');
   }
-  const start = world(station, [0, -4.8, -60]), end = world(station, [0, -4.8, 2]);
+  const start = pilotAt(introPod,SHIP_LAYOUT,3.2,outsideRoot(introPod,SHIP_LAYOUT));
+  const end = pilotAt(introPod,SHIP_LAYOUT,3.2);
   station.setOpeningProgress(0);
   assert.equal(introPod.constrainStep(start, end, introPod.padQuaternion).hit, true);
   station.setOpeningProgress(1);
@@ -102,11 +111,11 @@ test('physical player selects the berth while the cinematic camera controls LOD,
   assert.equal(station.activeIndex, 0);
   assert.ok(station.active.cameraDistance > 900, 'LOD uses the final camera rather than physical player position');
   nearVector(station.active.group.position, station.active.worldPosition.clone().sub(camera), 'camera-relative render position');
-  const seatZ = station.padLocal.z + FREIGHTER_LAYOUT.seatEye[2];
-  const hover = world(station, [0, -1.45, seatZ]);
-  assert.equal(station.canDock(hover, FREIGHTER_LAYOUT, station.quaternion), true, 'complete Atlas envelope fits the tilted bay');
-  const onDeck = world(station, [0, -8 + FREIGHTER_LAYOUT.seatEye[1], seatZ]);
-  assert.equal(station.active.constrainStep(hover, onDeck, station.quaternion, false, FREIGHTER_LAYOUT).hit, false, 'Atlas can descend along the tilted deck normal');
+  const pod=station.active,hover=pilotAt(pod,FREIGHTER_LAYOUT,1),onDeck=pilotAt(pod,FREIGHTER_LAYOUT);
+  assert.equal(station.canDock(hover, FREIGHTER_LAYOUT, pod.padQuaternion), true, 'complete Atlas envelope fits the tilted bay');
+  const landed=station.active.constrainStep(hover,onDeck,pod.padQuaternion,false,FREIGHTER_LAYOUT);
+  assert.equal(landed.hit,false,'Atlas can descend along the tilted deck normal');
+  nearVector(landed.point,onDeck,'full pilot offset lands on the real pad');
 });
 
 test('exterior and pod render horizon follows the camera while hidden station collision and hub location remain intact', async () => {
@@ -141,14 +150,22 @@ test('exterior and pod render horizon follows the camera while hidden station co
 
 test('one-metre departures clear all twenty tilted berths for Nomad and Atlas',async()=>{
   const station=await create();
+  let journeys=0;
   for(const pod of station.pods){
-    pod.openDoors();pod.doorMixer.update(6);pod.updateDoorColliders();
     for(const layout of [SHIP_LAYOUT,FREIGHTER_LAYOUT]){
-      const eye=layout.seatEye[1],z=pod.padLocal.z+layout.seatEye[2];
-      const point=(height,depth)=>pod.toWorld(new THREE.Vector3(pod.padLocal.x,pod.interiorBox.min.y+height,depth),new THREE.Vector3());
-      const dock=point(eye,z),hover=point(eye+1,z),outside=point(eye+1,-120);
-      assert.equal(station.constrainStep(dock,hover,pod.padQuaternion,false,layout).hit,false,`berth ${pod.id} launch clears complete station`);
-      assert.equal(station.constrainStep(hover,outside,pod.padQuaternion,false,layout).hit,false,`berth ${pod.id} departure clears complete station`);
+      const name=layout===SHIP_LAYOUT?'Nomad':'Atlas';
+      const dock=pilotAt(pod,layout),hover=pilotAt(pod,layout,1),outside=pilotAt(pod,layout,1,outsideRoot(pod,layout));
+      pod.beginOpening();pod.setOpeningProgress(0);
+      assert.equal(station.constrainStep(outside,hover,pod.padQuaternion,false,layout).hit,true,`berth ${pod.id} closed door blocks ${name}`);
+      pod.setOpeningProgress(1);
+      assert.equal(pod.canDock(hover,layout,pod.padQuaternion),true,`berth ${pod.id} fits the complete ${name}`);
+      for(const [from,to,phase] of [[dock,hover,'launch'],[hover,outside,'departure'],[outside,hover,'approach'],[hover,dock,'landing']]){
+        const result=station.constrainStep(from,to,pod.padQuaternion,false,layout);
+        assert.equal(result.hit,false,`berth ${pod.id} ${name} ${phase} clears the complete station`);
+        nearVector(result.point,to,`berth ${pod.id} ${name} reaches ${phase} endpoint`);
+      }
+      journeys++;
     }
   }
+  assert.equal(journeys,40,'both full hulls use every tilted berth');
 });

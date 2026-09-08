@@ -4,25 +4,27 @@ Press **I**, click the persistent **Backpack** button, or use the controller Vie
 button when the controller router is installed. Mined basalt, copper and ice
 appear beside expedition supplies in the backpack. Select an item stack, choose a
 nearby container and transfer one unit or a complete stack. The Nomad cargo view
-also offers **Stow all minerals**.
+also offers **Deposit all resources** beside the storage selectors. It moves all
+raw and processed materials together while retaining gear, ammunition and supplies.
+The inventory also shows saved mining level and progress.
 
 The same renderer serves backpacks, ships, station lockers and registered base
 containers. Ship storage is available aboard the ship. Aeon orbital storage is
 available while docked. A base or surface crate must be registered with an actual
 proximity callback; this module does not create a base building.
 
-Every box adds eight stack slots and 12 kg mineral capacity. Mineral stacks hold
-4 kg; rations stack to ten; equipment occupies one slot each. The backpack has two
+Every box adds eight stack slots and 48 kg mineral capacity. Material stacks hold
+16 kg; rations stack to ten; equipment occupies one slot each. The backpack has two
 box mounts, other containers eight. Attaching an empty box is free in this
-prototype. Existing supply weight limits remain 20 kg backpack / 120 kg ship;
-box additions expand mineral storage and stack slots. Item use, crafting and
-buying boxes are not implemented.
+prototype. Supply weight limits remain separate: 20 kg in the backpack and the current
+ship manifest limit aboard. Box additions expand material storage and stack slots.
+Field construction recipes and equipment use are implemented; buying boxes is later work.
 
 ## Integration
 
 `createInventoryUI(nav, ship, manifest, miningStore)` returns:
 
-- `openPack()`, `openContainer(id)`, `open`, `update()`, `state`, `dispose()`.
+- `openPack()`, `openContainer(id)`, `openStorage(id)`, `openEquipment()`, `open`, `update()`, `state`, `dispose()`.
 - `registerContainer({ id, name, kind, boxes, available })`, where `available` is
   a function checked before opening and transferring. Example:
 
@@ -56,13 +58,14 @@ again after the unified save exists.
 Rejected capacity checks, stale rock revisions and failed writes publish neither
 inventory changes nor the corresponding terrain cut. Invalid saves remain on
 disk and pause mutations. Supply and mineral transfers use this same transaction;
-there is no separate reward write. Saves are local to this browser, without
-concurrent-tab or multiplayer coordination.
+there is no separate reward write. Accepted ore awards mining XP in that same
+transaction. Saves are local to this browser; stale-tab writes are rejected.
+Multiplayer coordination remains future work.
 
 `getRock(id, initialField)` returns `{ field, revision }`; `commitRock(id, result,
 revision)` saves that field and credits the shared backpack atomically. The
-primary Selene rock retains its original API. At most eight additional space
-rocks can be saved. `canEditRock(id)` reports whether a new deposit can be edited;
+primary Selene rock retains its original API. At most 16 additional
+rock fields can be saved alongside the original deposit. `canEditRock(id)` reports whether a new deposit can be edited;
 already saved deposits remain editable at the cap. `releaseRock(id)` drops an
 unsaved runtime initial field when a streamed rock is evicted; it never deletes a
 saved edit. Encoded immutable fields are cached to avoid re-encoding every saved
