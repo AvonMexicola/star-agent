@@ -16,6 +16,8 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
   const physics=createRoverPhysics({position,quaternion,layout:L,sampleSupport,referenceUp,constrain});
   const seats=Object.fromEntries(Object.keys(L.seats).map(role=>[role,{id:null,phase:'empty',door:0,routeIndex:0,returning:false,armed:false,minSequence:-1}]));
   const state={id,ownerId,health:L.hull,destroyed:false,yaw:0,pitch:0,charge:1,depleted:false,controllerId:null,armed:false,shots:0,lastShot:null,lastHit:null,controlEpoch:0,requiredSequence:-1,carrier:null};
+  // Security receives this live hull target, including its actual crew. Keep
+  // the seat reference out of object spreads; snapshot() supplies a deep copy.
   Object.defineProperty(state,'seats',{value:seats,enumerable:false});
   let anchor=null,cooldown=0,time=0,inputs={},drive={throttle:0,steer:0,brake:1};
   const world=p=>v(p).applyQuaternion(physics.state.quaternion).add(physics.state.position);

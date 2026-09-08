@@ -20,13 +20,13 @@ export function createSentries({players,world,send,impact,security,broadcast,can
   }
   function hit(shooter,roverId,damage,point,event,id){
     const rover=vehicles.get(roverId);if(!rover||rover.state.health<=0||!Number.isFinite(damage)||damage<=0)return;
-    const victim=[...Object.values(rover.seats).map(s=>players.get(s.id)),players.get(rover.state.ownerId)].find(p=>p&&p.id!==shooter.id&&p.health>0&&p.shipHealth>0);
+    const victims=[...new Set([...Object.values(rover.seats).map(s=>players.get(s.id)),players.get(rover.state.ownerId)])].filter(p=>p&&p.id!==shooter.id&&p.health>0&&p.shipHealth>0),victim=victims[0];
     const resolve=result=>{
       if(!result.accepted)return;
       if(rover.state.health<=0){rover.state.destroyed=true;rover.state.charge=0;for(const s of Object.values(rover.seats))if(s.id)rover.release(s.id);}
       broadcast({...event,kind:'vehicle',targetId:rover.id,damage:result.damage,hull:rover.state.health});
     };
-    if(victim)security.submit({id,attacker:shooter,victim,kind:'vehicle',vehicle:rover.state,cause:'shot',damage,point},resolve);
+    if(victim)security.submit({id,attacker:shooter,victim,vehicleVictims:victims,kind:'vehicle',vehicle:rover.state,cause:'shot',damage,point},resolve);
     else{const applied=Math.min(damage,rover.state.health);rover.state.health-=applied;resolve({accepted:true,damage:applied});}
   }
   function fire(poses,shooterId,sequence,rover){

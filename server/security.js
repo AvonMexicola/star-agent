@@ -16,6 +16,9 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
         !['shot','ram'].includes(cause) || !Number.isFinite(damage) || damage <= 0 ||
         !point?.isVector3 || !point.toArray().every(Number.isFinite) || !alive(attacker) || !alive(victim)) return {accepted:false,damage:0};
     if(kind==='vehicle'&&(!vehicle||!Number.isFinite(vehicle.health)||vehicle.health<=0||vehicle.ownerId!==victim.id&&!Object.values(vehicle.seats??{}).some(s=>s.id===victim.id)))return {accepted:false,damage:0};
+    const victims=kind==='vehicle'?[...new Set([victim,...(attack.vehicleVictims??[])])]:[victim];
+    if(victims.length>10||victims.some(p=>!alive(p)||p===attacker||kind==='vehicle'&&vehicle.ownerId!==p.id&&!Object.values(vehicle.seats??{}).some(s=>s.id===p.id)))return {accepted:false,damage:0};
+    const victimLives=victims.map(p=>p.nav);
     const attackerLife = attacker.nav, victimLife = victim.nav;
     let incidents = seen.get(attacker);
     if (!incidents || incidents.life !== attackerLife) { incidents = {life:attackerLife,ids:new Set()}; seen.set(attacker,incidents); }
@@ -24,11 +27,13 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
     // Room IDs are monotonic; retain a bounded recent set, never a durable ledger.
     if (incidents.ids.size > 256) incidents.ids.delete(incidents.ids.values().next().value);
     const station = protectionAt(stations,point);
-    let friend = false;
+    let friend = false,protectedVictim=victim;
     if (station) {
       try {
-        friend = await areFriends(attacker.account.id,victim.account.id);
-        if (typeof friend !== 'boolean') throw new Error('Friend authority did not return a boolean.');
+        const relationships=await Promise.all(victims.map(p=>areFriends(attacker.account.id,p.account.id)));
+        if(relationships.some(value=>typeof value!=='boolean'))throw new Error('Friend authority did not return a boolean.');
+        friend=relationships.every(Boolean);
+        protectedVictim=victims.find((p,i)=>!relationships[i])??victim;
       } catch (error) {
         onError(error);
         // Neither damage nor retaliation is guessed when relationships cannot
@@ -38,7 +43,7 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
     } else await Promise.resolve(); // admit simultaneous contacts before applying either hit
     // A delayed query cannot hit a respawn or a different victim life. Ordinary
     // movement is permitted: the original validated impact point owns the zone.
-    if (attacker.nav !== attackerLife || victim.nav !== victimLife) return {accepted:false,damage:0};
+    if (attacker.nav !== attackerLife || victim.nav !== victimLife || victims.some((p,i)=>p.nav!==victimLives[i])) return {accepted:false,damage:0};
     const key = kind === 'ship' ? 'shipHealth' : 'health',target=kind==='vehicle'?vehicle:victim;
     const applied = Math.min(Math.max(0,target[key]),damage);
     target[key] = Math.max(0,target[key] - applied);
@@ -52,9 +57,9 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
       attacker.nav.angularVelocity?.set(0,0,0); attacker.nav.shipAngularVelocity?.set(0,0,0);
       attacker.nav.travel = null; attacker.nav.cabinFlight = false; attacker.nav.mode = 'crashed';
       if (pose) strike = {type:'event',event:'stationStrike',id:`${station.id}:${++sequence}`,stationId:station.id,
-        attackerId:attacker.id,victimId:victim.id,cause,mountId:pose.mountId,barrel:pose.barrel,
+        attackerId:attacker.id,victimId:protectedVictim.id,cause,mountId:pose.mountId,barrel:pose.barrel,
         yaw:pose.yaw,pitch:pose.pitch,origin:pose.origin.toArray(),direction:pose.direction.toArray(),target:pose.target.toArray()};
-      await onStrike(attacker,victim,strike);
+      await onStrike(attacker,protectedVictim,strike);
     }
     return {accepted:true,damage:applied,protected:Boolean(station),friend,strike};
   }
@@ -67,7 +72,7 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
       // Both accounts participate in this pending mutation. A victim's leave,
       // reconnect or respawn must wait just as the attacker's does, otherwise a
       // late callback could persist the old object over a newly joined account.
-      const participants = [...new Set([attack.attacker,attack.victim].filter(Boolean))];
+      const participants = [...new Set([attack.attacker,attack.victim,...(attack.kind==='vehicle'?attack.vehicleVictims??[]:[])].filter(Boolean))];
       const task = resolve(attack).then(result => { onResolved(result); return result; }).catch(error => { onError(error); return {accepted:false,damage:0}; });
       for (const player of participants) {
         let pending = tasks.get(player);

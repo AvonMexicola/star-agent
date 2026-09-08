@@ -132,3 +132,24 @@ test('a nonfriend hull shot retaliates against the shooter without damaging the 
   const hp=owner.shipHealth;f.input(attacker,{fire:true});f.advance(1/30);await f.room.security.settle(attacker);
   assert.equal(r.state.health,L.hull-25);assert.equal(owner.shipHealth,hp);assert.equal(owner.health,100);assert.equal(attacker.health,0);
 });
+
+for(const ownerDisconnected of [false,true])test(`non-owner crew remains a valid hull victim with owner ${ownerDisconnected?'disconnected':'elsewhere'}`,async t=>{
+  const f=await fixture(t,3),[owner,gunner,attacker]=f.players,r=await f.deploy();await f.board(gunner,r,'gunner');
+  if(ownerDisconnected)await f.room.leave(owner.id);
+  f.store.areFriends=async()=>true;
+  const target=r.world([0,1.8,1.4]),up=new THREE.Vector3(0,1,0).applyQuaternion(r.physics.state.quaternion);
+  attacker.nav.mode='eva';attacker.nav.position.copy(r.world([-4,1.8,1.4]));attacker.nav.orientation.setFromRotationMatrix(new THREE.Matrix4().lookAt(attacker.nav.position,target,up));attacker.nav.velocity.set(0,0,0);
+  f.input(attacker,{fire:true});f.advance(1/30);await f.room.security.settle(attacker);
+  assert.equal(r.state.health,L.hull-25);assert.equal(gunner.health,100);assert.equal(attacker.health,100);
+});
+
+test('one hull debit checks every real crew relationship; a friendly pilot cannot shield a nonfriend gunner',async t=>{
+  const f=await fixture(t,3),[pilot,gunner,attacker]=f.players,r=await f.deploy();await f.board(pilot,r,'pilot');await f.board(gunner,r,'gunner');
+  const relationships=[];f.store.areFriends=async(a,b)=>{relationships.push([a,b]);return b===pilot.id;};
+  const target=r.world([0,1.8,1.4]),up=new THREE.Vector3(0,1,0).applyQuaternion(r.physics.state.quaternion);
+  attacker.nav.mode='eva';attacker.nav.position.copy(r.world([-4,1.8,1.4]));attacker.nav.orientation.setFromRotationMatrix(new THREE.Matrix4().lookAt(attacker.nav.position,target,up));attacker.nav.velocity.set(0,0,0);
+  f.input(attacker,{fire:true});f.advance(1/30);await f.room.security.settle(attacker);
+  assert.equal(r.state.health,L.hull-25,'one validated shot debits the hull once');assert.equal(attacker.health,0);assert.equal(pilot.health,100);assert.equal(gunner.health,100);
+  assert.deepEqual(relationships.map(x=>x[1]).sort(),[pilot.id,gunner.id].sort());
+  assert.equal(f.messages.get(attacker.id).findLast(e=>e.event==='stationStrike').victimId,gunner.id);
+});
