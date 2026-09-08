@@ -625,3 +625,12 @@ The terrain ramp fixes and clear Burrow windscreen are included in the preset's
 fleet dependency. Cees manually verified driving aboard and flying away with the
 rover; this records local solo gameplay, not multiplayer rover replication.
 See [scene verification](qa/atlas-meadow-launcher.md) for checks and limitations.
+
+
+## Burrow concept cabin checkpoint
+
+The Burrow upgrade follows the approved exterior/interior concepts with five flat LCARS-style instrument faces, fitted ivory cabin panels, warmer coves, deeper tyre tread and manufactured shell details. The steering wheel, column and pedals are removed; the clear windshield and physical boarding route remain. Screens show actual cutter reserve, ore and driving state. Existing keyboard/controller/phone controls still operate the vehicle.
+
+Use **F2 → Burrow mining — Selene surface** for the explicit seated developer start; F / controller X exits and physically reboards. WASD / left stick drives, arrows / right stick aims, T / RT mines, X / LT brakes, and I / View opens ore bins. Select **Gannet → Selene** for the full pilot-to-rover elevator journey. The [production record](qa/burrow-concept/production-record.md) separates passing gameplay checks from pending independent art/hardware/performance acceptance. This remains a local development checkpoint.
+
+Burrow concept runtime is locally integrated at `ab418ca` (2026-09-08), with final controller, keyboard and native-touch evidence. Refresh the preview to load the new GLB; independent art and hardware/performance acceptance are still pending. [Draft PR92](https://github.com/AvonMexicola/star-agent/pull/92) preserves Cees’s review gate.
