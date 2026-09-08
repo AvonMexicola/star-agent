@@ -1,12 +1,20 @@
 # Medium ships integration record
 
-Status on 2026-09-08: isolated implementation with all six complete input journeys
-passing on their recorded source/model versions.
-Stratum Art04 now passes independent studio review (4.12 overall, silhouette 4.5).
-Gannet Art13 passes native inspection and awaits its independent score. Final-model
-gameplay checks and shared development integration are underway; deployment has
-not occurred. The dated checkpoints below preserve earlier
-failures and the exact source tested at each stage.
+Status on 2026-09-08: the isolated **3cf80ad** runtime is ready for shared local
+integration. All six complete keyboard/controller/native-touch journeys pass on
+their recorded source/model versions. Both final assets pass independent studio
+review: Stratum Art04 **4.12**, Gannet Art13 **4.10**, both with silhouette **4.5**
+and no waived threshold. Both final models pass actual-game controller routes.
+
+The final display/effect correction passes **1,113/1,113 normal tests**, both
+build configurations, an independent source audit and fresh complete Stratum
+keyboard / Gannet controller routes. Independent current-game follow-ups pass
+**4.02 / 4.04**, closing the incorrect access/cargo labels and cockpit-bound
+collection effects. [Correction evidence](display-corrections.md) preserves exact
+versions, native screenshots and the Stratum completed-PASS/outer-wrapper143
+discrepancy. Shared integration and public release are separate; deployment has
+not occurred. The dated checkpoints below preserve earlier failures and the
+exact source tested at each stage.
 
 Stratum is an 18 m medium miner with two actual articulated barrel origins, a
 40 m cutting range, a 120-second battery and 30-second recharge. Accepted voxel

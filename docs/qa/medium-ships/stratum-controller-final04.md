@@ -38,6 +38,13 @@ Log: `/tmp/star-agent-stratum-controller-final04.log`.
 GPU released at 03:26:49 UTC. Earlier controller03 and all keyboard/touch routes
 are retained at their original recorded source/model versions.
 
+The later [independent actual-game review](stratum-game-review-final04.md)
+requests changes at 3.82 overall: the deployed ramp marker incorrectly says
+CLOSED, and collected-mineral particles approach the pilot and cover right MFDs.
+These are display/effect defects, distinct from the passing physical/mining route
+and the accepted studio geometry. Original evidence remains retained while the
+bounded corrections receive new source and native checks.
+
 ```sh
 STRATUM_OUTPUT=/home/cees/projects/.medium-ships-qa/stratum-controller-final04 \
 STRATUM_URL=http://127.0.0.1:5582 \

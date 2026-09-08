@@ -11,7 +11,9 @@ with Burrow and complete gear retraction/deployment pass. The fixed pilot eye,
 60-degree lens, real MFD vertices and inspection controls outside the canvas
 remain unchanged. Root inspected the original exterior and cabin images: the
 previous bright floor lattice and shiny upholstery edges are visibly reduced.
-Independent art scoring remains separate from this successful fixture result.
+The [independent Art13 review](gannet-native-review-13.md) separately passes at
+4.10 overall, silhouette 4.5 and lowest criterion 3.8. Plain broad finishes and
+faint tire/platform contact remain scored limitations. No threshold is waived.
 
 Chromium 151.0.7922.173 uses ANGLE/OpenGL ES 3.2 on AMD Radeon 860M, DPR 1,
 1440×900 and a resized 390×844 page. This is pointer-operated studio inspection,
