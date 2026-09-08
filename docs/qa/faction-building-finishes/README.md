@@ -1,8 +1,9 @@
 # Faction building finishes — development record
 
 Parent authors paint/print/UI and four corporate sites; delegated Pirate003 owns
-Miasma and both enclosed entrances. Base cc1e749. Current implementation is private,
-not yet browser-validated or locally integrated. No public deployment.
+Miasma and both enclosed entrances. Base cc1e749. Combined candidate65814dc
+is private; full pirate gameplay/rendering checks pass, with final combined paint
+journey still queued. No shared integration or public deployment yet.
 
 Original deterministic 512×768 Canvas prints are authored in src/factions/graphics.js;
 all eight texts/colours are in src/factions/catalog.js. Meridian paths are copied
@@ -93,3 +94,24 @@ are not a pixel/performance comparison. Corporate and pirate art views supply
 unobstructed site review. The palette and inventory suppress scene draws to zero;
 03 sandbox scene was497–499 draws/1.13–1.14M triangles on AMD860M ANGLE gl at
 1440×900, scale1. These snapshots are not frame-time acceptance.
+
+
+Combined candidate65814dc privately merges the explicitly offered piratecc6b035
+with the final appearance guards and fixture corrections. All161 registered normal
+test files pass65.57s with two workers and disk TMPDIR. The new scenery file is
+registered in package.json. Repository checking passes217 cumulative paths against
+origin/dev/all-features; the suggested plan and diff checks pass. A nested sandbox
+build first failed with EROFS writing the shared symlinked Vite cache. The existing
+authorized standalone `npm run build` then passed12.57s (390 modules,
+main-CB1vqLdl.js), without changing source or configuration. Raw combined CPU and
+check receipts are in test-results/faction-combined-{units,checks}-02.
+
+Pirate renderer02 passes all three focused cases in5.1m oncc6b035. Parent inspected
+its repaired Veil deck/entrance, rigid interior, Hush overview, native390 airlock
+and matching Verdigris entrance: structures and access are clear, prints are flush,
+and the phone door action no longer overlaps movement controls. Actual instance
+checks retain surrounding colonies with zero canopy/fragment footprint overlaps.
+The rendered burst changes shield180 to126 and leaves hull240; retreat stops fire.
+The full6.1m physical controller route from01 remains passed on unchanged gameplay.
+See the separate pirate record for exact poses, source boundaries and failures.
+This parent integration review does not substitute for independent art scoring.
