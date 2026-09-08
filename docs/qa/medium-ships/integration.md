@@ -1,7 +1,7 @@
 # Medium ships integration record
 
-Status on 2026-09-08: isolated implementation with five complete input journeys
-passing. Stratum native touch is being rechecked after a confirmed capture fix.
+Status on 2026-09-08: isolated implementation with all six complete input journeys
+passing on their recorded source/model versions.
 Both final art reviews still request changes. Shared development integration
 and deployment have not occurred. The dated checkpoints below preserve earlier
 failures and the exact source tested at each stage.
@@ -333,3 +333,22 @@ mechanism/framing case. Its [independent review](gannet-native-review-12.md) sti
 requests changes at3.97 overall /4.4 silhouette, including a newly visible floor
 grid. Art13 and Stratum Art04 remain isolated authoring work; these records do
 not waive either art threshold.
+
+[Stratum native-touch03](stratum-touch-03.md) closes the final input route on
+`60bdd67` / build13: full physical landing/ramp/return, real flight/gear/twin
+mining,0.436672854kg visible basalt transfer and dialog/focus fresh-release
+gates pass in3.0minutes, runner exit0. All four landed MFD looks and walking
+controls pass [independent presentation review](stratum-touch-review-03.md).
+Expanded flight controls still cover part of physical MFD3; the visible mining
+HUD retains the needed charge/ore/state. Clipped on-foot hints and device-copy
+limits remain recorded. All six full input routes now pass; no new hardware,
+reload-persistence or multiplayer conclusion follows.
+
+[Stratum Art04 native inspection](stratum-native-04.md) passes2/2 on frozen
+`1c07b8f`, exact1f5cae2a/59,224triangles/3,867,188bytes. Its independent art
+review is pending. Gannet Art13 is closing CPU export checks after correcting
+the Art12 atlas-filtering lattice. Both budgets and independent scores remain
+mandatory. The [Gannet Art12 payload review](gannet-payload-review-12.md)
+independently reproduces84,932/207,260 raw assembly triangles for both128SBU
+configurations, with exact body-inset, label, visual-contact and nominal-memory
+limits. It is not a full game/GPU/FPS measurement.
