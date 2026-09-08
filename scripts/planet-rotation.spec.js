@@ -36,6 +36,9 @@ async function receipt(page,browser,name,errors,extra={}){
   await writeFile(`${out}/${name}.json`,JSON.stringify({browser:browser.version(),renderer,viewport:{width:1440,height:900},errors,...extra,state:await state(page)},null,2));
 }
 test.beforeEach(async()=>mkdir(out,{recursive:true}));
+test.afterEach(async({page},info)=>{
+  if(info.status!==info.expectedStatus&&!page.isClosed())await writeFile(`${out}/failure-state.json`,JSON.stringify({test:info.title,status:info.status,state:await state(page).catch(()=>null)},null,2));
+});
 
 test('inertial orbital views render rotating geography on all four worlds',async({page,browser})=>{
   const errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
