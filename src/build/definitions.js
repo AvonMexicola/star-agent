@@ -38,7 +38,7 @@ export const PIECES = Object.freeze({
   'foundation-pad-medium':padSlab('foundation-pad-medium','Medium pad foundation',32,40,{concrete:960,'metal-stock':80},'M'),
   'foundation-pad-large':padSlab('foundation-pad-large','Large pad foundation · Atlas',48,72,{concrete:2592,'metal-stock':216},'L'),
   rack:{id:'rack',label:'Storage rack',category:'utility',cost:{'metal-stock':10},footprint:[2.4,1],height:2.4,storageBoxes:8,colliders:[box([-1.2,0,-.5],[1.2,2.4,.5])]},
-  terminal:{id:'terminal',label:'Inventory terminal',category:'utility',cost:{'metal-stock':5,conductor:3,glass:2},footprint:[1.4,.8],height:1.5,colliders:[box([-.7,0,-.4],[.7,1.5,.4])]},
+  terminal:{id:'terminal',label:'Storage & trade terminal',category:'utility',cost:{'metal-stock':5,conductor:3,glass:2},footprint:[1.4,.8],height:1.5,colliders:[box([-.7,0,-.4],[.7,1.5,.4])]},
   'hangar-door':{id:'hangar-door',label:'Nomad hangar door',category:'wall',cost:{concrete:48,'metal-stock':32,conductor:4},footprint:[16,.6],height:6,colliders:[box([-8,0,-.3],[-7.3,6,.3]),box([7.3,0,-.3],[8,6,.3]),box([-7.3,5.4,-.3],[7.3,6,.3])],door:[{...box([-7.29,0,-.12],[7.29,5.39,.12],'door'),collapse:.96}]},
   'ceiling-light':{id:'ceiling-light',label:'Ceiling light · 50 W',category:'utility',mount:'ceiling',light:true,cost:{'metal-stock':1,conductor:.5,glass:.5},footprint:[.8,.8],height:.12,colliders:[box([-.4,-.12,-.4],[.4,0,.4])]},
   'roof-flat':roofTile('roof-flat','Flat roof tile'),

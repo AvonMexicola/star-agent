@@ -246,7 +246,7 @@ test('a large pad is aimed from its near edge and expands its claim only with an
 
 test('aiming at the terminal takes precedence over a slightly nearer rack beside it',()=>{
  const f=setup(),c=f.core();c.pieces.push({id:'build-piece-3',type:'rack',position:[0,.3,2],rotation:0,doorOpen:false},{id:'build-piece-4',type:'terminal',position:[3,.3,2],rotation:0,doorOpen:false});f.system.cancel();
- f.nav.position.copy(f.system.toWorld(v([1.4,2.05,4]),c));const target=f.system.toWorld(v([3,1.1,2]),c);f.nav.orientation.setFromRotationMatrix(new Matrix4().lookAt(f.nav.position,target,f.nav.normal));assert.equal(f.system.nearbyInteraction().p.type,'terminal');assert.match(f.system.interaction,/Inventory terminal/);
+ f.nav.position.copy(f.system.toWorld(v([1.4,2.05,4]),c));const target=f.system.toWorld(v([3,1.1,2]),c);f.nav.orientation.setFromRotationMatrix(new Matrix4().lookAt(f.nav.position,target,f.nav.normal));assert.equal(f.system.nearbyInteraction().p.type,'terminal');assert.match(f.system.interaction,/Storage & trade terminal/);
 });
 
 test('square roof rotation retains trigger quarter turns after socket selection',()=>{

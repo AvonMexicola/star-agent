@@ -1,3 +1,4 @@
+import { registerBase } from './base-site.js';
 import { emptyCommerce,ensureAccount,normalizeCommerce,commerceCommand } from './model.js';
 import { POST_COST,tradeSite } from './sites.js';
 import * as THREE from 'three';
@@ -22,9 +23,12 @@ export class LocalTrading {
   command(m,ctx){
     if(this.error||this.store.blocked)throw new Error(this.error||this.store.warning);
     const s=structuredClone(this.state);s.accounts[LOCAL_TRADER].credits=this.store.state.economy.credits;
-    const result=commerceCommand(s,LOCAL_TRADER,m,ctx);if(result.replayed)return result;
+    const result=commerceCommand(s,LOCAL_TRADER,m,{...ctx,registerBase:(state,owner,command)=>registerBase(state,owner,command,{nav:ctx.nav,getContainer:id=>this.store.container(id)})});if(result.replayed)return result;
     let next={...this.store.state,commerce:result.state,economy:{...this.store.state.economy,credits:result.state.accounts[LOCAL_TRADER].credits}};
     if(result.resourceDelta){const items=this.store.container(m.source??'pack').items;next=this.store.withItems(next,m.source??'pack',{...items,[result.resource]:items[result.resource]+result.resourceDelta});}
+    if(['base-deposit','base-withdraw','buy'].includes(m.op)){
+      const t=result.state.terminals[m.terminal];if(t?.base&&!t.base.shared)for(const [id,c]of Object.entries(t.base.storage))next=this.store.withItems(next,id,{...c.items});
+    }
     if(!this.store.write(next))throw new Error(this.store.warning);return result;
   }
   deploy(nav){
