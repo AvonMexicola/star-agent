@@ -37,6 +37,7 @@ export function createTradingUI(api,nav){
     }
     const content=$('.trade-content');content.replaceChildren();let totalPages=1;
     if(view==='buy'||view==='pack'){
+      if(view==='buy'&&t?.base&&(!t.base.open||api.baseActive?.(t)===false)){const status=document.createElement('p');status.className='trade-reason';status.textContent=!t.base.open?'Shop closed. Stock is retained until the owner reopens.':'Shop unpowered. Restore base power to trade.';content.append(status);}
       totalPages=Math.ceil(TRADE_RESOURCES.length/3);page=Math.min(page,totalPages-1);
       if(view==='pack'){const sources=api.sources();selection.append(button(`Source: ${sources.find(x=>x.id===source)?.name??source} · change`,'choose-source',()=>{source=sources[(sources.findIndex(x=>x.id===source)+1)%sources.length]?.id??'pack';render();},sources.length<2));}
       for(const res of TRADE_RESOURCES.slice(page*3,page*3+3)){
@@ -81,10 +82,10 @@ export function createTradingUI(api,nav){
           await run({op:'base-register',claim,terminalPiece,revision:s.revision});const created=api.snapshot().terminals.find(t=>t.base?.claim.id===claim.id&&t.owner===api.snapshot().owner);if(created){terminal=created.id;view='stock';page=0;render();}
         },busy));
       }
-      const baseNote=document.createElement('p');baseNote.textContent=s.online?'Register at your constructed terminal. Shared registration validates and commissions the layout with empty server storage; deposit cargo from your ship. Shared layouts remain fixed and doors stay open.':'Build an inventory terminal and designate a landing pad. Link the terminal here to choose which local goods to sell.';content.append(baseNote);
+      const baseNote=document.createElement('p');baseNote.textContent=s.online?'Track your base plan on the map, walk to its terminal location, then register here for 500 CR. Registration builds the checked layout with empty storage. Deposit ship cargo, then choose what to sell. Shared layouts are fixed, self-powered and doors stay open.':'Build an inventory terminal and designate a landing pad. Link the terminal here to choose which local goods to sell.';content.append(baseNote);
       const p=document.createElement('p');p.textContent=`Build a trade terminal with a 36 × 36 m landing pad for ${POST_COST} CR. Stand on flat ground and look toward the site. The pad centre will be 22 m ahead. Four pads per owner; keep 100 m between sites.`;content.append(p);
       content.append(button(`Build terminal & pad · ${POST_COST} CR`,'deploy-trade',async()=>{if(busy)return;busy=true;try{message=(await api.deploy()).message;}catch(e){message=e.message;}finally{busy=false;render();}},busy||nav.mode!=='walk'||nav.insideShip||nav.dockedAtStation));
-      const small=document.createElement('p');small.textContent=s.online?'Shared stock and credits save on the server. Visitors can buy while the owner is away.':'Solo cargo saves with your mining inventory. Join Comms to build a shared trading pad.';content.append(small);
+      const small=document.createElement('p');small.textContent=s.online?'Shared stock and credits save on the server. Visitors can buy while the owner is away.':'Solo cargo saves with your mining inventory. Join Comms to register a shared base or build a trading pad.';content.append(small);
     }
     const pages=$('.trade-pages');pages.replaceChildren(button('Previous','previous-page',()=>{page--;render();},page<=0),document.createTextNode(` ${page+1} / ${totalPages} `),button('Next','next-page',()=>{page++;render();},page>=totalPages-1));
     $('.trade-feedback').textContent=message||s.error|| (s.online?'Aeon exchanges share stock and prices':'Cargo saved with this browser’s mining inventory');

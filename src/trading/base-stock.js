@@ -68,10 +68,11 @@ export function reconcileLocalBaseStock(next){
   }
   if(commerce)commerce.revision++;return commerce?{...next,commerce}:next;
 }
+export const basePadSummary=t=>t.base?`Landing pads: ${[...new Set(t.base.claim.pieces.filter(p=>p.landingPad).map(p=>PIECES[p.type]?.label).filter(Boolean))].join(', ')}`:'';
 export function publicBaseTerminal(t,owner,{near=false}={}){
   if(!t.base||t.owner===owner)return t;
   const {storage,offers,claim,...base}=t.base;
-  return {...t,base:{...base,claim:near?claim:{id:claim.id,name:claim.name,body:claim.body,origin:claim.origin,quaternion:claim.quaternion,anchor:claim.anchor,radius:claim.radius,pieces:[]}}};
+  return {...t,padSummary:basePadSummary(t),base:{...base,claim:near?claim:{id:claim.id,name:claim.name,body:claim.body,origin:claim.origin,quaternion:claim.quaternion,anchor:claim.anchor,radius:claim.radius,pieces:[]}}};
 }
 export function tradeSummary(t){
   const goods=TRADE_RESOURCES.filter(r=>(t.stock[r.id]??0)>0);

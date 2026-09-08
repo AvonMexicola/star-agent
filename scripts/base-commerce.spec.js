@@ -17,6 +17,16 @@ async function walk(page,target){
  await page.evaluate(target=>{window.tradeWalkDone=false;window.tradeWalk=setInterval(()=>{const n=window.starAgent.navigation,d=n.position.clone().fromArray(target).sub(n.position).projectOnPlane(n.normal);if(d.length()<.25){window.tradePad.axes.fill(0);window.tradeWalkDone=true;clearInterval(window.tradeWalk);return;}d.applyQuaternion(n.orientation.clone().invert());window.tradePad.axes=[Math.max(-1,Math.min(1,d.x)),Math.max(-1,Math.min(1,d.z)),0,0];},30);},target);
  try{await page.waitForFunction(()=>window.tradeWalkDone,null,{timeout:30000});}finally{await page.evaluate(()=>{clearInterval(window.tradeWalk);window.tradePad.axes.fill(0);});}await frames(page);
 }
+async function focusInterruption(page){
+ const context=page.context(),blank=await context.newPage(),game=await context.newCDPSession(page),other=await context.newCDPSession(blank);
+ try{
+  await blank.goto('about:blank');await game.send('Emulation.setFocusEmulationEnabled',{enabled:false});await other.send('Emulation.setFocusEmulationEnabled',{enabled:false});
+  await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&window.starAgent.state.focused);await press(page,7,true);
+  await blank.bringToFront();await page.waitForFunction(()=>!window.starAgent.state.focused);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+  await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&window.starAgent.state.focused);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+  await press(page,7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ }finally{await game.send('Emulation.setFocusEmulationEnabled',{enabled:true});await other.send('Emulation.setFocusEmulationEnabled',{enabled:true});await game.detach();await other.detach();await blank.close();await page.bringToFront();}
+}
 const shipPoint=(page,p)=>page.evaluate(p=>window.starAgent.navigation.fromShipLocal(window.starAgent.navigation.position.clone().fromArray(p)).toArray(),p);
 async function setup(page,entries=[]){
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});await mkdir(out,{recursive:true});
@@ -44,7 +54,7 @@ test('controller lands, walks to constructed terminal, selects part of local sto
  await expect(page.locator('.base-stock-row')).toContainText('For sale: 3 SBU (48 kg)');await expect(page.locator('.base-stock-row')).toContainText('Kept: 32.0 kg');await expect(page.locator('.base-stock-row')).toContainText('53 CR');
  for(const size of [{width:1440,height:900},{width:390,height:844}]){await page.setViewportSize(size);await frames(page);await fit(page);await page.screenshot({path:`${out}/owner-stock-${size.width}.png`});}
  await press(page,7,true);await tap(page,1);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await press(page,7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
- await press(page,7,true);await page.evaluate(()=>window.tradePad.connected=false);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await page.evaluate(()=>window.tradePad.connected=true);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await press(page,7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ await focusInterruption(page);await press(page,7,true);await page.evaluate(()=>window.tradePad.connected=false);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await page.evaluate(()=>window.tradePad.connected=true);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await press(page,7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
   await tap(page,9);await choose(page,'tab-map');await expect(page.locator('#system-map')).toBeVisible();
  // Marker data is read-only evidence; selection uses the normal controller list.
  await choose(page,'map-view-signals');const id=await page.evaluate(()=>window.starAgent.state.trading.terminals.find(t=>t.base).id);for(let i=0;i<20&&!await page.locator(`[data-controller-key="map-signal-trade-${id}"]`).isVisible();i++)await choose(page,'nav-page-next');await choose(page,`map-signal-trade-${id}`);await expect(page.locator('#map-target-kind')).toContainText('Copper ore');await page.screenshot({path:`${out}/base-map.png`});await tap(page,1);
@@ -67,15 +77,16 @@ test('controller discovers a shared base, lands and purchases real cargo while t
  const room=createRoom({store,world}),app=await createServer({store,room,publicOrigin:'http://127.0.0.1:5610'});await app.listen(8610);
  try{
   const response=await context.request.post('/api/auth/register',{headers:{Origin:'http://127.0.0.1:5610'},data:{email:'buyer@example.test',callsign:'Ore_Buyer',password:'base commerce test password'}});expect(response.status()).toBe(201);const buyer=(await response.json()).account;
-  const errors=await setup(page);await page.goto('/?debug&intro=0');await page.waitForFunction(()=>window.starAgent?.state.ready,null,{timeout:120000});
-  if(await page.locator('#dev-launcher').isVisible()){await choose(page,'tab-comms');await choose(page,'comms-flight');await choose(page,'comms-account');}
+  const errors=await setup(page);await page.goto('/?dev=1&ship=nomad&start=moon&intro=0&debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&window.starAgent.state.controller.armed&&!window.starAgent.state.transiting,null,{timeout:120000});
+  await tap(page,9);await choose(page,'tab-comms');await choose(page,'comms-flight');await choose(page,'comms-account');
   await expect(page.locator('#multiplayer-account-dialog')).toBeVisible();await choose(page,'join-multiplayer');await page.waitForFunction(()=>window.starAgent.state.multiplayer.connected);await tap(page,1);await page.waitForFunction(()=>window.starAgent.state.controller.armed&&window.starAgent.state.enabled);
   await tap(page,9);await choose(page,'tab-map');await choose(page,'map-view-signals');for(let i=0;i<20&&!await page.locator(`[data-controller-key="map-signal-trade-${id}"]`).isVisible();i++)await choose(page,'nav-page-next');await choose(page,`map-signal-trade-${id}`);await expect(page.locator('#map-target-kind')).toContainText('Copper ore');await page.screenshot({path:`${out}/buyer-map.png`});await tap(page,1);
   await tap(page,3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',null,{timeout:45000});await leaveShip(page);
   await walk(page,fixture.build.toWorld(new Vector3(14,2.25,14),fixture.claim).toArray());await aim(page,fixture.build.toWorld(new Vector3(14,1.65,12),fixture.claim).toArray());await tap(page,2);await expect(page.locator('#trading-dialog')).toBeVisible();
   await choose(page,'purchase-copper');await expect.poll(async()=>((await store.loadCommerce()).ships[`${buyer.id}:nomad`].crates.length)).toBe(1);
   await choose(page,'view-cargo');await expect(page.locator('#trading-dialog')).toContainText('Copper ore');await page.screenshot({path:`${out}/buyer-cargo.png`});await tap(page,1);
+  await walk(page,await shipPoint(page,[0,1.75,13.5]));await walk(page,await shipPoint(page,[0,2.75,3]));await walk(page,await shipPoint(page,[0,2.75,-1.7]));await tap(page,2);await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await tap(page,3);await page.waitForFunction(()=>window.starAgent.state.mode==='flight'&&window.starAgent.state.altitude>15,null,{timeout:30000});await page.screenshot({path:`${out}/buyer-departure.png`});
   const saved=await store.loadCommerce();expect(saved.terminals[id].stock.copper).toBe(0);expect(saved.terminals[id].base.storage['build-crate-5'].items.copper).toBe(16);expect(saved.accounts[seller.id].credits).toBe(1053);expect(saved.accounts[buyer.id].credits).toBe(1447);expect(errors).toEqual([]);
-  await writeFile(`${out}/buyer.json`,JSON.stringify({browser:browser.version(),physicalController:false,fixture:'Existing server base and stock; initial spawn 180 m above its pad. Actual controller map selection, landing, cabin exit, terminal access, purchase, manifest and return. No pose mutation after join.',saved,errors},null,2));
+  await writeFile(`${out}/buyer.json`,JSON.stringify({browser:browser.version(),physicalController:false,fixture:'Existing server base and stock; initial spawn 180 m above its pad. Actual controller map selection, landing, cabin exit, terminal access, purchase, manifest, physical reboarding and departure with cargo. No pose mutation after join.',saved,errors},null,2));
  }finally{await app.close();fixture.build.dispose();}
 });

@@ -1,15 +1,15 @@
 # SA-TRADE-001 — Find a player base, buy its stock, fly home
 
-Status: proposed; source investigation complete, implementation and acceptance pending.
+Status: implemented on the feature branch; controller browser journeys validated; local integration in progress. See [delivery record](../qa/base-commerce.md) for actual scope and evidence.
 Roadmap milestone: M0
-Human sponsor: Cees. Requested next implementation: Astra; no agent assignment or acceptance implied.
+Human sponsor: Cees. Implementation owner: Codex, following the explicit implementation request.
 Reviewer and integration steward: to be assigned by Cees/current steward.
 Brief branch: `feat/base-commerce-beacons`, based on `dev/all-features` at `40a0fb4`.
 Dependencies: existing SBU commerce and navigation; checked base-power delivery
 `8969536` / PR #71 and the current fleet/station integration must be reconciled
 before implementation. Do not replace newer shared hooks with that branch.
-Brief-only ownership: this file and `project/tasks/SA-TRADE-001.json`.
-No runtime dependencies or preview ports required for the brief.
+Implementation ownership is recorded in `project/tasks/SA-TRADE-001.json`.
+Isolated preview 5610 / in-memory test API 8610; no new dependencies.
 
 ## Problem and result
 
