@@ -79,8 +79,11 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
       if(hit&&nav.buildingRaycast?.(aimOrigin,direction,aimOrigin.distanceTo(hit.point)))hit=null;
       recoil*=Math.exp(-dt*18);
       const compact=equipment.equipped==='sidearm-pistol'||isBuilding;
-      const portraitBuilder=isBuilding&&camera.aspect<.75;
-      mount.position.set(portraitBuilder?.10:compact?.25:.29,portraitBuilder?-.005:compact?-.25:-.35,(portraitBuilder?-1:-.47)+recoil).applyQuaternion(nav.orientation);mount.position.add(nav.position.clone().sub(origin));mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
+      const portrait=camera.aspect<.75;
+      if(portrait&&isBuilding)mount.position.set(.10,-.005,-1+recoil);
+      else if(portrait&&isMining)mount.position.set(.12,-.25,-.65+recoil);
+      else mount.position.set(compact?.25:.29,compact?-.25:-.35,-.47+recoil);
+      mount.position.applyQuaternion(nav.orientation);mount.position.add(nav.position.clone().sub(origin));mount.quaternion.copy(nav.orientation);mount.updateMatrixWorld(true);
       const gesture=character?.gestureActive==='wave'||character?.state==='dead';
       equipment.setRenderOrigin(origin);equipment.holster(!active||!selected||gesture);
       const weaponRange=equipment.equipped==='rifle-laser'?1200:450;
