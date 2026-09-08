@@ -15,8 +15,10 @@ Tab shortcut.
 
 ## Actual checks
 
-- `npm test`: **1,140 passed**, zero failures/skips,in the final runtime run (see `unit-final.log`). Focused gamepad/space-combat
-  files also passed. HUD behavior is established by the browser journey below.
+- `npm test`: **149 test files passed** in the final runtime run, zero failures/skips,
+  26.08 s (`unit-final.log`). The initial run reported 1,140 individual cases
+  passed. Focused gamepad/space-combat files also passed. HUD behavior is
+  established by the browser journey below.
 - `npm run build`: passed 347 modules, 4.60 s. Final runtime also built successfully
   for the production browser run. The inherited large-chunk warning remains.
 - `npm run check:repo`: passed. Both required `plan:checks` against remote

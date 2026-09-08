@@ -7,7 +7,7 @@ Runtime `ad32435` / browser harness `9a3910d`, isolated `/tmp/star-agent-hud`,
 stacked on foundationPR93. Tab cycles Everything → Markers and reticle → No HUD;
 Settings exposes the same action to controller/touch and two-finger touch restores
 Everything. Native menus retain Tab focus; hostile selection remains Next target /
-Menu → Ship. No asset/dependency/server/protocol change. Full1,140units/build/repo
+Menu → Ship. No asset/dependency/server/protocol change. Final full unit suite (149 test files), build and repo checks
 pass; final production keyboard/controller/native-touch3/3 pass2.2min with zero
 app errors/warnings. Chromium151/AMD860M/ANGLE GL at1440×900 and390×844. Failed
 routing guard and fixture timing attempts retained; see [QA](docs/qa/hud-display.md).
