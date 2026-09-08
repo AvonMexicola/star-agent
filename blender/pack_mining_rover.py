@@ -9,7 +9,8 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'blender'))
 from pack_rigid_geometry import pack_geometry
-path=ROOT/'public/models/mining-rover.glb'
+sentry='--sentry' in sys.argv
+path=ROOT/('public/models/burrow-sentry.glb' if sentry else 'public/models/mining-rover.glb')
 packing=pack_geometry(path,maximum_error=.001)
 b=path.read_bytes();jn=struct.unpack_from('<I',b,12)[0]
 j=json.loads(b[20:20+jn]);binary=bytearray(b[28+jn:])
@@ -48,13 +49,15 @@ js=json.dumps(j,separators=(',',':')).encode()
 js+=b' '*((-len(js))%4)
 data=struct.pack('<III',0x46546c67,2,28+len(js)+len(packed))+struct.pack('<II',len(js),0x4e4f534a)+js+struct.pack('<II',len(packed),0x004e4942)+packed
 path.write_bytes(data)
-manifest_path=ROOT/'assets/mining-rover/manifest.json'
+manifest_path=ROOT/('assets/burrow-sentry/manifest.json' if sentry else 'assets/mining-rover/manifest.json')
 m=json.loads(manifest_path.read_text())
-m.update({'asset':'public/models/mining-rover.glb','sha256':hashlib.sha256(data).hexdigest(),
+m.update({'asset':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(data).hexdigest(),
           'bytes':len(data),'triangles':sum(j['accessors'][p['indices']]['count']//3 for mesh in j['meshes'] for p in mesh['primitives']),
           'meshPrimitives':sum(len(mesh['primitives']) for mesh in j['meshes']),
           'nodes':len(j['nodes']),'materials':len(j.get('materials',[])),
           'packing':packing,'textureFormat':'WebP: three original 1024x1024 PBR swatches and approved 512x512 Meridian emblem (RGBA)',
           'textures':len(j.get('images',[]))})
+if sentry:
+    m.update(name='Burrow Sentry S-04',stage='author candidate; runtime and independent review pending',builder='blender/build_mining_rover.py -- --sentry',source='assets/burrow-sentry/burrow-sentry.blend',layout='src/sentry/layout.js',movingParts=['CabinDoor','GunnerDoor','SentryYaw','SentryPitch']+[w['node'] for w in json.loads((ROOT/'assets/mining-rover/layout.json').read_text())['wheels']])
 manifest_path.write_text(json.dumps(m,indent=2)+'\n')
 print(json.dumps({k:m[k] for k in ['bytes','triangles','textures','sha256']}))

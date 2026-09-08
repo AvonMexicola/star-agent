@@ -2,7 +2,9 @@
 // Version 5 retains the version 4 tractor ledger and adds the full-size Atlas
 // ramp/crew-lift snapshot, the authored station/bay collision profile, passenger
 // hub/defense state and finite markets in the same durable cargo ledger.
-export const MULTIPLAYER_VERSION=6;
+// Version 8 adds server-owned Sentry vehicle poses, physical seats and turret authority.
+// Integrate after the pending Transport protocol-7 candidate; paired refresh required.
+export const MULTIPLAYER_VERSION=8;
 export const WORLD_SEED=7291;
 export const MAX_PLAYERS=10;
 export const SUIT_COLORS=Object.freeze(['#ff724f','#52d6ff','#ffd45b','#8ce06c','#bd8cff','#ff80bd','#45dcc6','#eee9dd','#688bff','#c99d69']);
@@ -10,7 +12,7 @@ export const INPUT_AXES=Object.freeze(['forward','strafe','vertical','yaw','pitc
 export function cleanInput(value={}){
   if(!value||typeof value!=='object'||Array.isArray(value))value={};
   const result={};for(const key of INPUT_AXES)result[key]=Number.isFinite(value[key])?Math.max(-1,Math.min(1,value[key])):0;
-  for(const key of ['boost','brake','jump','fire'])result[key]=value[key]===true;
+  for(const key of ['boost','brake','jump','fire','vehicleReady'])result[key]=value[key]===true;
   result.mouseYaw=Number.isFinite(value.mouseYaw)?Math.max(-.5,Math.min(.5,value.mouseYaw)):0;
   result.mousePitch=Number.isFinite(value.mousePitch)?Math.max(-.5,Math.min(.5,value.mousePitch)):0;
   return result;

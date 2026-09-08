@@ -11,10 +11,11 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
   let sequence = 0;
 
   async function resolve(attack) {
-    const {attacker,victim,kind,cause,damage,point,id} = attack;
-    if (!attacker || !victim || attacker === victim || !['player','ship'].includes(kind) ||
+    const {attacker,victim,kind,cause,damage,point,id,vehicle} = attack;
+    if (!attacker || !victim || attacker === victim || !['player','ship','vehicle'].includes(kind) ||
         !['shot','ram'].includes(cause) || !Number.isFinite(damage) || damage <= 0 ||
         !point?.isVector3 || !point.toArray().every(Number.isFinite) || !alive(attacker) || !alive(victim)) return {accepted:false,damage:0};
+    if(kind==='vehicle'&&(!vehicle||!Number.isFinite(vehicle.health)||vehicle.health<=0||vehicle.ownerId!==victim.id&&!Object.values(vehicle.seats??{}).some(s=>s.id===victim.id)))return {accepted:false,damage:0};
     const attackerLife = attacker.nav, victimLife = victim.nav;
     let incidents = seen.get(attacker);
     if (!incidents || incidents.life !== attackerLife) { incidents = {life:attackerLife,ids:new Set()}; seen.set(attacker,incidents); }
@@ -38,9 +39,9 @@ export function createStationSecurity({world,areFriends = async () => false,onSt
     // A delayed query cannot hit a respawn or a different victim life. Ordinary
     // movement is permitted: the original validated impact point owns the zone.
     if (attacker.nav !== attackerLife || victim.nav !== victimLife) return {accepted:false,damage:0};
-    const key = kind === 'ship' ? 'shipHealth' : 'health';
-    const applied = Math.min(Math.max(0,victim[key]),damage);
-    victim[key] = Math.max(0,victim[key] - applied);
+    const key = kind === 'ship' ? 'shipHealth' : 'health',target=kind==='vehicle'?vehicle:victim;
+    const applied = Math.min(Math.max(0,target[key]),damage);
+    target[key] = Math.max(0,target[key] - applied);
     let strike = null;
     if (station && !friend && alive(attacker)) {
       const target = pointOf(attacker,attacker.nav.mode === 'flight' || attacker.nav.cabinFlight ? 'ship' : 'player').clone();
