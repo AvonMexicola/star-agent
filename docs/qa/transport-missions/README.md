@@ -16,8 +16,13 @@ Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`
   database rollback, reconnect, server drive integration, concurrent issuance,
   restart and single-use destination payment. Unit poses are explicit fixtures,
   not controller flight evidence.
-- Earlier build passes 9.11s at `/tmp/transport-build01.log`; later source changes
-  require a new build before browser validation. Existing Vite chunk advisory.
+- Combined runtime `c9d1561` retains settlement, HUD, foundation, rover and
+  floodlight updates. All 154 normal test files pass, zero skips, 26.89s
+  (`/tmp/transport-final-unit01.log`). The combined production development build
+  passes in 4.03s (`/tmp/transport-build04.log`), with the existing chunk advisory.
+- Combined multiplayer suite passes 193 individual cases, with two existing
+  optional skips, in 22.55s (`/tmp/transport-multiplayer02.log`). Includes the
+  new actual-room and isolated SQL transport cases.
 - Repository checks and whitespace checks pass on the implementation checkpoint.
 
 ## Original failures and corrections
@@ -33,6 +38,32 @@ Owned worktree `.worktrees/transport-missions`, branch `feat/transport-missions`
   store initialization fails. Only the orphaned private test PostgreSQL1107727
   was stopped with SIGINT. `/tmp/transport-server-tests05.log` retains the failure;
   corrected SQL06 passes. No production or shared preview SQL was changed.
+- The broad multiplayer run initially passed 192 cases and failed its existing
+  legacy commerce fixture: it deleted all markets while retaining the newly
+  initialized settlement-version marker. A real pre-market fixture must omit
+  both initialization markers. Corrected that fixture; malformed versioned saves
+  still fail closed. The full corrected suite above passes.
+- A sandbox build could not write Vite's temporary config into the linked shared
+  dependency directory. The approved build path passes; no dependency changes.
+- Browser01 reached the game but settlement assets failed before entry. The
+  recorder reported EDQUOT, and its trace contains no network events. `/tmp` had
+  a user quota despite filesystem free space. Another owner's guard also allowed
+  an overlapping browser under memory pressure. The original PNG/state remain
+  in `/tmp/star-agent-transport-attempt01`; no gameplay pass is claimed.
+- Browser02 moved profiles/evidence onto the project disk, but the deeply nested
+  temporary path exceeded Chromium's Unix socket limit. Chromium1531804 aborted
+  before a page existed, with an explicit `process_singleton_posix.cc:313`
+  socket-path error; coredump metadata confirms SIGABRT. This is distinct from
+  the known Crashpad startup restriction. The launcher now uses the short ignored
+  project `.browser-cache/t` path; no browser flags or runtime code changed.
+- Browser03 loaded all assets, accepted without creating cargo, physically landed
+  and reached Greenbank's terminal, ordered one crate and locked the tractor.
+  The fixture then raised the crate into the hatch header while walking uphill
+  with a fixed aim angle; the cargo slot correctly refused it. Original captures
+  and video were inspected. Test-only `e3e77c9` stays behind the ramp and guides
+  the actual crate through its clear centre before securing. No collision rule
+  was weakened. Browser02/03 originals are in the ignored worktree
+  `test-results/transport-attempt02` and `transport-attempt03` directories.
 
 ## Scope and pending evidence
 

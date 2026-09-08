@@ -12,6 +12,18 @@ async function steerTarget(page,id){
  await page.evaluate(id=>{window.transportSteer=setInterval(()=>{const n=window.starAgent.navigation,t=window.starAgent.state.navigationTargets.targets.find(t=>t.id===id),p=window.transportPad;if(!t)return;const local=n.position.clone().fromArray(t.center).sub(n.position).applyQuaternion(n.orientation.clone().invert()),yaw=Math.atan2(local.x,-local.z),pitch=Math.atan2(local.y,Math.hypot(local.x,local.z));const axis=x=>Math.abs(x)<.002?0:Math.sign(x)*Math.min(1,.18+Math.abs(x)*2.5);p.axes=[0,0,axis(yaw),axis(-pitch)];},30);},id);
  try{await page.waitForFunction(id=>{const n=window.starAgent.state.navigationTargets;return n.aimedId===id&&n.ready;},id,{timeout:45000});}finally{await page.evaluate(()=>{clearInterval(window.transportSteer);window.transportPad.axes=[0,0,0,0];});}
 }
+async function levelForPad(page,site){
+ // Atmospheric vertical thrust follows gravity. Level and brake using the
+ // actual look/roll controls before steering the descent in that frame.
+ await page.evaluate(site=>{window.transportLevelDone=false;window.transportLevel=setInterval(()=>{
+  const n=window.starAgent.navigation,p=window.transportPad,s=window.starAgent.state.settlements.sites.find(s=>s.id===site),q=n.orientation.clone().fromArray(s.quaternion),inverse=n.orientation.clone().invert();
+  const forward=n.position.clone().set(0,0,-1).applyQuaternion(q).applyQuaternion(inverse),up=n.normal.clone().applyQuaternion(inverse),yaw=Math.atan2(forward.x,-forward.z),pitch=Math.atan2(forward.y,Math.hypot(forward.x,forward.z)),roll=Math.atan2(up.x,up.y);
+  const axis=x=>Math.abs(x)<.012?0:Math.sign(x)*Math.min(1,.18+Math.abs(x)*2);
+  p.axes=[0,0,axis(yaw),axis(-pitch)];p.buttons[4]={pressed:roll<-.03,value:roll<-.03?1:0};p.buttons[5]={pressed:roll>.03,value:roll>.03?1:0};p.buttons[6]={pressed:true,value:1};
+  if(Math.abs(yaw)<.025&&Math.abs(pitch)<.025&&Math.abs(roll)<.04){window.transportLevelDone=true;clearInterval(window.transportLevel);}
+ },30);},site);
+ try{await page.waitForFunction(()=>window.transportLevelDone,undefined,{timeout:45000});}finally{await page.evaluate(()=>{clearInterval(window.transportLevel);window.transportPad.axes=[0,0,0,0];for(const i of [4,5,6])window.transportPad.buttons[i]={pressed:false,value:0};});}
+}
 async function flyToPad(page,site){
  // Actual stick-controlled cruise descent. Desired speed falls with stopping
  // distance; orientation aligns to the pad frame before landing assist.
@@ -66,7 +78,7 @@ test('controller accepts, orders only at Aeon, physically loads, flies to Pyre a
  await tap(14);await choose('map-breadcrumb-star');await choose('map-body-pyre');await choose('map-view-locations');await choose('map-signal-settlement-pyre');await tap(1);await steerTarget(page,'settlement-pyre');
  await page.evaluate(()=>{window.freightFlightSamples=[];window.freightFlightTimer=setInterval(()=>{const s=window.starAgent.state;window.freightFlightSamples.push({position:s.position,phase:s.travel?.phase,speed:s.speed,crate:s.trading.ships.find(s=>s.hull==='nomad').crates[0]?.id});},100);});
  await button(4,true);await button(5,true);await tap(12);await button(5,false);await button(4,false);await page.waitForFunction(()=>Boolean(window.starAgent.state.travel));await page.waitForFunction(()=>!window.starAgent.state.travel&&window.starAgent.state.body==='pyre',undefined,{timeout:45000});await page.evaluate(()=>clearInterval(window.freightFlightTimer));await capture(page,'pyre-orbital-arrival');
- await flyToPad(page,'settlement-pyre');await brake(page,button);await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',undefined,{timeout:120000});await exitAndTerminal(page,tap);await choose('view-freight');await capture(page,'destination-terminal');
+ await levelForPad(page,'settlement-pyre');await flyToPad(page,'settlement-pyre');await brake(page,button);await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',undefined,{timeout:120000});await exitAndTerminal(page,tap);await choose('view-freight');await capture(page,'destination-terminal');
  const credits=(await state(page)).trading.account.credits;await choose('transport-deposit');await expect(page.locator('.trade-feedback')).toContainText('Transport complete');const complete=(await state(page)).trading;expect(complete.account.credits).toBe(credits+800);expect(complete.account.transport.completed).toBe(1);expect(complete.ships.find(s=>s.hull==='nomad').crates).toHaveLength(0);
  await page.setViewportSize({width:390,height:844});await frames(page);await capture(page,'phone-completion');expect(await page.locator('#trading-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);await page.setViewportSize({width:1440,height:900});
  await button(7,true);await tap(1);expect((await state(page)).controller.armed).toBe(false);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);await focusInterruption(page,button);
