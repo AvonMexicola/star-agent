@@ -2,8 +2,9 @@
 // Version 5 retains the version 4 tractor ledger and adds the full-size Atlas
 // ramp/crew-lift snapshot, the authored station/bay collision profile, passenger
 // hub/defense state and finite markets in the same durable cargo ledger.
+// Version 7 adds shared canonical settlements and owner-private sealed freight.
 // Version 8 adds server-owned Sentry vehicle poses, physical seats and turret authority.
-// Integrate after the pending Transport protocol-7 candidate; paired refresh required.
+// Requires a paired server/browser refresh; no persistence schema change.
 export const MULTIPLAYER_VERSION=8;
 export const WORLD_SEED=7291;
 export const MAX_PLAYERS=10;
