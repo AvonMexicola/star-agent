@@ -1,6 +1,7 @@
 """Stratum adapter of pack_rigid_geometry.py (existing Burrow/Gannet workflow).
 
-Only static opaque batches are encoded; protected mesh attributes stay exact.
+Only static opaque batches are encoded; protected geometry attributes stay exact.
+An all-white COLOR_0 may be omitted: glTF's default vertex color is exactly white.
 Loss-bounded integer storage for static rigid mesh batches.
 
 No topology reduction, decoder download or new runtime dependency. The existing
@@ -16,6 +17,67 @@ FORMATS={5120:'b',5121:'B',5122:'h',5123:'H',5125:'I',5126:'f'}
 COUNTS={'SCALAR':1,'VEC2':2,'VEC3':3,'VEC4':4,'MAT4':16}
 
 
+def compact_identical_static_vertices(doc, binary, protected_meshes):
+    """Lossless vertex indexing after quantization, before GLB serialization.
+
+    Only complete byte-identical attribute tuples are merged. Index order and
+    every rendered triangle corner stay unchanged, including UV/normal/color
+    seams. Named moving rigs, glazing and display buffers remain untouched.
+    """
+    references={}
+    for mesh in doc['meshes']:
+        for primitive in mesh['primitives']:
+            for index in [primitive['indices'],*primitive['attributes'].values()]:
+                references[index]=references.get(index,0)+1
+    replacements={};merged=[]
+    for mi,mesh in enumerate(doc['meshes']):
+        if mi in protected_meshes:continue
+        for primitive in mesh['primitives']:
+            attributes=list(primitive['attributes'].values())
+            owned=[primitive['indices'],*attributes]
+            if primitive.get('targets') or any(references[i]!=1 for i in owned):continue
+            count=doc['accessors'][attributes[0]]['count'];streams=[]
+            for index in attributes:
+                a=doc['accessors'][index];view=doc['bufferViews'][a['bufferView']]
+                if a['count']!=count or a.get('sparse'):raise ValueError('Nonparallel vertex attributes')
+                width=struct.calcsize('<'+FORMATS[a['componentType']]*COUNTS[a['type']])
+                stride=view.get('byteStride',width);start=view.get('byteOffset',0)+a.get('byteOffset',0)
+                streams.append((index,start,stride,width))
+            unique={};keep=[];mapping=[]
+            for i in range(count):
+                key=b''.join(binary[start+i*stride:start+i*stride+width] for _,start,stride,width in streams)
+                new_index=unique.get(key)
+                if new_index is None:
+                    new_index=len(keep);unique[key]=new_index;keep.append(i)
+                mapping.append(new_index)
+            if len(keep)==count:continue
+            for index,start,stride,width in streams:
+                a=doc['accessors'][index]
+                replacements[a['bufferView']]=b''.join(binary[start+i*stride:start+(i+1)*stride] for i in keep)
+                a['count']=len(keep)
+            a=doc['accessors'][primitive['indices']];view=doc['bufferViews'][a['bufferView']]
+            if a['type']!='SCALAR' or a['componentType'] not in (5121,5123,5125):raise ValueError('Invalid triangle index encoding')
+            fmt='<'+FORMATS[a['componentType']];width=struct.calcsize(fmt);start=view.get('byteOffset',0)+a.get('byteOffset',0)
+            old_indices=[struct.unpack_from(fmt,binary,start+i*width)[0] for i in range(a['count'])]
+            if any(i>=count for i in old_indices):raise ValueError('Out-of-range triangle index')
+            indices=[mapping[i] for i in old_indices]
+            replacements[a['bufferView']]=b''.join(struct.pack(fmt,i) for i in indices)
+            if 'min' in a:a['min']=[min(indices)]
+            if 'max' in a:a['max']=[max(indices)]
+            merged.append({'mesh':mesh.get('name',str(mi)),'verticesBefore':count,'verticesAfter':len(keep),
+                           'triangles':a['count']//3,'exactCompleteAttributeTuples':True})
+    result=bytearray()
+    for i,view in enumerate(doc['bufferViews']):
+        while len(result)%4:result.append(0)
+        old_start=view.get('byteOffset',0)
+        payload=replacements.get(i,binary[old_start:old_start+view['byteLength']])
+        view.update(byteOffset=len(result),byteLength=len(payload));result.extend(payload)
+    doc['buffers']=[{'byteLength':len(result)}]
+    return result,{'meshes':len(merged),'verticesRemoved':sum(x['verticesBefore']-x['verticesAfter'] for x in merged),
+                   'bufferBytesSaved':len(binary)-len(result),'details':merged,
+                   'proof':'Every final encoded attribute byte at every ordered triangle corner is unchanged; protected meshes excluded'}
+
+
 def pack_geometry(path, maximum_error=.001, protected_meshes=()):
     data=path.read_bytes();json_size=struct.unpack_from('<I',data,12)[0]
     doc=json.loads(data[20:20+json_size]);binary=data[28+json_size:]
@@ -28,6 +90,24 @@ def pack_geometry(path, maximum_error=.001, protected_meshes=()):
         if isinstance(value,dict):return value.get('texCoord',0)>0 or any(uses_secondary(v) for v in value.values())
         if isinstance(value,list):return any(uses_secondary(v) for v in value)
         return False
+    neutral_colours={}
+    for mi,mesh in enumerate(doc['meshes']):
+        for primitive in mesh['primitives']:
+            index=primitive['attributes'].get('COLOR_0')
+            if index is None or primitive.get('targets'):continue
+            a=doc['accessors'][index]
+            if a.get('sparse') or a['type'] not in ('VEC3','VEC4'):continue
+            if a['componentType'] not in (5121,5123,5126):continue
+            view=doc['bufferViews'][a['bufferView']]
+            fmt='<'+FORMATS[a['componentType']]*COUNTS[a['type']]
+            size=struct.calcsize(fmt);stride=view.get('byteStride',size)
+            start=view.get('byteOffset',0)+a.get('byteOffset',0)
+            one={5121:255,5123:65535,5126:1}[a['componentType']]
+            if a['componentType']!=5126 and not a.get('normalized'):continue
+            # Exact equality, including alpha; no nearly-white approximation.
+            if all(all(v==one for v in struct.unpack_from(fmt,binary,start+k*stride)) for k in range(a['count'])):
+                primitive['attributes'].pop('COLOR_0')
+                neutral_colours[index]={'vertices':a['count'],'sourceBytes':a['count']*stride}
     if not uses_secondary(doc.get('materials',[])):
         # Blender joins font UVMap and manufactured UVs into a second unused
         # layer. Its absence is checked from every textureInfo before removal.
@@ -35,13 +115,13 @@ def pack_geometry(path, maximum_error=.001, protected_meshes=()):
             for p in mesh['primitives']:
                 for name in list(p['attributes']):
                     if name.startswith('TEXCOORD_') and name!='TEXCOORD_0':p['attributes'].pop(name)
-        used=sorted({i for mesh in doc['meshes'] for p in mesh['primitives'] for i in [p['indices'],*p['attributes'].values()]})
-        mapping={old:new for new,old in enumerate(used)}
-        doc['accessors']=[doc['accessors'][i] for i in used]
-        for mesh in doc['meshes']:
-            for p in mesh['primitives']:
-                p['indices']=mapping[p['indices']]
-                p['attributes']={k:mapping[v] for k,v in p['attributes'].items()}
+    used=sorted({i for mesh in doc['meshes'] for p in mesh['primitives'] for i in [p['indices'],*p['attributes'].values()]})
+    mapping={old:new for new,old in enumerate(used)}
+    doc['accessors']=[doc['accessors'][i] for i in used]
+    for mesh in doc['meshes']:
+        for p in mesh['primitives']:
+            p['indices']=mapping[p['indices']]
+            p['attributes']={k:mapping[v] for k,v in p['attributes'].items()}
     old_views=doc['bufferViews'];old_accessors=doc['accessors']
     def read(index):
         a=old_accessors[index]
@@ -120,10 +200,14 @@ def pack_geometry(path, maximum_error=.001, protected_meshes=()):
     for field in ('extensionsUsed','extensionsRequired'):
         doc[field]=sorted(set(doc.get(field,[])+['KHR_mesh_quantization']))
     doc['bufferViews']=views;doc['accessors']=accessors;doc['buffers']=[{'byteLength':len(result)}]
+    result,identical_vertices=compact_identical_static_vertices(doc,result,protected_meshes)
     doc['asset']['generator']+='; Star Agent rigid mesh packer 1'
     encoded=json.dumps(doc,separators=(',',':')).encode();encoded+=b' '*((-len(encoded))%4)
     result+=b'\0'*((-len(result))%4)
     packed=struct.pack('<III',0x46546c67,2,28+len(encoded)+len(result))
     packed+=struct.pack('<II',len(encoded),0x4e4f534a)+encoded+struct.pack('<II',len(result),0x004e4942)+result
     path.write_bytes(packed)
-    return {'inputBytes':len(data),'outputBytes':len(packed),'maximumPositionErrorMetres':max_position_error,'maximumNormalErrorDegrees':max_normal_degrees,'protectedMeshCount':len(protected_meshes),'method':'Static opaque batches only; KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding'}
+    return {'inputBytes':len(data),'outputBytes':len(packed),'maximumPositionErrorMetres':max_position_error,'maximumNormalErrorDegrees':max_normal_degrees,'protectedMeshCount':len(protected_meshes),
+            'identicalStaticVertices':identical_vertices,
+            'neutralColorsOmitted':{'accessors':len(neutral_colours),'sourceBytes':sum(v['sourceBytes'] for v in neutral_colours.values()),'proof':'Every component including alpha equals the exact glTF default white; no geometry/normal/UV/index change'},
+            'method':'Static opaque batches only; KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged per-corner UVs and triangle order; uniform mesh leaf decoding; exact neutral vertex colors omitted; complete identical encoded static vertex tuples indexed once'}

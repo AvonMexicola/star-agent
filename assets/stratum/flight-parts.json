@@ -1,5 +1,5 @@
 {
-  "assetSha256": "22bbf0296e349e24f1a9bd636745511bf31b9291f1a305814f13d4a45cac4d08",
+  "assetSha256": "1f5cae2a4901a2618d7cff36f1713a19777b45d586022614b9bc5449560cb75b",
   "units": "metres",
   "convention": "Closed access only; conservative all-gear/all-boom envelope. Individual ground-reaching gear volumes, not a full-width floor box.",
   "paddingMetres": 0.02,
@@ -7,13 +7,13 @@
     {
       "id": "pressure-body",
       "min": [
-        -2.784054536819458,
+        -2.710000057220459,
         1.0022625732421875,
         -9.02
       ],
       "max": [
-        2.784054775238037,
-        5.4559998703002925,
+        2.710000057220459,
+        5.5260000419616695,
         7.262499828338623
       ],
       "source": "evaluated static source meshes"
@@ -26,8 +26,8 @@
         -4.639999885559082
       ],
       "max": [
-        -2.7064626026153564,
-        4.937401313781738,
+        -2.7294137287139892,
+        4.548024196624755,
         7.73999979019165
       ],
       "source": "evaluated static source meshes"
@@ -35,13 +35,13 @@
     {
       "id": "drive-starboard",
       "min": [
-        2.7064626026153564,
+        2.7294137287139892,
         1.629999976158142,
         -4.639999885559082
       ],
       "max": [
         5.932499904632568,
-        4.937401313781738,
+        4.548024673461914,
         7.73999979019165
       ],
       "source": "evaluated static source meshes"

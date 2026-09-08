@@ -125,12 +125,13 @@ def material(name,color,rough=.5,metal=0,normal=.3,emission=0,alpha=1):
     return mat
 
 
-ivory=material('Stratum | ivory enamel',(.67,.705,.65),.68,0,.35)
+ivory=material('Stratum | ivory enamel',(.67,.705,.65),.58,0,.28)
 structure=material('Stratum | graphite frame',(.025,.037,.039),.73,.05,.22)
 petrol=material('Stratum | petrol service',(.026,.115,.116),.72,.08,.32)
 metal=material('Stratum | brushed mechanisms',(.27,.32,.325),.64,.78,.60)
 trim=material('Stratum | anodized trim',(.13,.17,.18),.72,.55,.42)
-lining=material('Stratum | cabin composite',(.12,.16,.155),.84,.02,.35)
+lining=material('Stratum | cabin composite',(.12,.16,.155),.88,.02,.14)
+joint=material('Stratum | recessed panel joint',(.095,.125,.122),.86,.03,.14)
 rubber=material('Stratum | soft interior',(.034,.045,.049),.96,0,.18)
 cavity=material('Stratum | bore interior',(.005,.009,.011),.92,.08,.35)
 amber=material('Stratum | amber hazard',(.94,.40,.055),.60,0,.20)
@@ -159,6 +160,51 @@ def shell_panel(name,points,mat,thickness,root,bevel=.012):
     return obj
 
 
+def contact_box(name,position,size,mat,root,axis=1,side=-1,pitch=.24,bevel=.004):
+    """One occupied broad face gets local contact samples, within exact bounds.
+
+    A four-corner AO value can interpolate across a four-metre ceiling panel.
+    This closed slab has a regular face grid and a matching boundary skirt;
+    contact remains local to actual nearby fittings, not a giant triangle wash.
+    """
+    axes=[i for i in range(3) if i!=axis]
+    nu=max(1,math.ceil(size[axes[0]]/pitch));nv=max(1,math.ceil(size[axes[1]]/pitch))
+    points=[]
+    for v in range(nv+1):
+        for u in range(nu+1):
+            p=list(position);p[axis]+=side*size[axis]/2
+            p[axes[0]]+=(u/nu-.5)*size[axes[0]];p[axes[1]]+=(v/nv-.5)*size[axes[1]]
+            points.append(tuple(p))
+    stride=nu+1;faces=[]
+    for v in range(nv):
+        for u in range(nu):
+            a=v*stride+u;faces.append((a,a+1,a+stride+1,a+stride))
+    edge=list(range(stride))+[v*stride+nu for v in range(1,nv+1)]
+    edge+=list(range(nv*stride+nu-1,nv*stride-1,-1))+[v*stride for v in range(nv-1,0,-1)]
+    start=len(points)
+    for i in edge:
+        p=list(points[i]);p[axis]-=side*size[axis];points.append(tuple(p))
+    center=len(points);p=list(position);p[axis]-=side*size[axis]/2;points.append(tuple(p))
+    for i,a in enumerate(edge):
+        nxt=(i+1)%len(edge);faces.append((a,edge[nxt],start+nxt,start+i));faces.append((start+i,start+nxt,center))
+    obj=g.mesh(name,points,faces,mat,min(bevel,min(size)*.18),root)
+    for mod in obj.modifiers:
+        if mod.type=='BEVEL':mod.limit_method='ANGLE'
+    obj['contactGridMetres']=pitch
+    return obj
+
+
+def formed_bin(name,x,root):
+    """Chamfered pressure chest with a straight working face and protected feet."""
+    width=.633
+    section=[(-width+.04,2.49),(width-.04,2.49),(width,2.45),(width,1.66),
+             (width-.08,1.49),(-width+.08,1.49),(-width,1.66),(-width,2.45)]
+    points=[(x+dx,y,z) for z in [3.05,4.47] for dx,y in section]
+    faces=[tuple(range(7,-1,-1)),tuple(range(8,16))]
+    faces += [(i,(i+1)%8,(i+1)%8+8,i+8) for i in range(8)]
+    return g.mesh(name,points,faces,petrol,.015,root)
+
+
 def fitted_panel(name,points,mat,root,margin=.030,offset=.048,thickness=.035,datum=(0,2.5,0),backing=None):
     """Metre-sized gasket reveal following the actual (possibly twisted) quad.
 
@@ -181,8 +227,8 @@ def fitted_panel(name,points,mat,root,margin=.030,offset=.048,thickness=.035,dat
             normal=tangent_u.cross(tangent_v).normalized()*sign
             result.append(tuple(point+normal*lift))
         return result
-    shell_panel(name+' fitted gasket',patch(margin*.45,offset),structure,.038,root,.005)
-    obj=shell_panel(name,patch(margin,offset+.026),mat,thickness,root,.009)
+    shell_panel(name+' fitted gasket',patch(margin*.45,offset),joint,.038,root,.005)
+    obj=shell_panel(name,patch(margin,offset+.026),mat,thickness,root,.014)
     obj['fittedOutward']=list(center_normal*sign)
     if backing:obj['fittedBacking']=backing
     return obj
@@ -194,7 +240,7 @@ def armor_cowl(name,stations,root,top_material=None):
     Sections carry the primary silhouette. The panels follow those sections;
     they cannot become an unrelated floating rectangular box or paint stripe.
     """
-    g.loft(name+' pressure backing',stations,structure,root)
+    g.loft(name+' pressure backing',stations,petrol if name.startswith('Drive ') else joint,root)
     rings=[]
     for z,x,w,low,chine,crown in stations:
         rings.append([(x-.6*w,crown,z),(x+.6*w,crown,z),(x+w,chine,z),
@@ -205,7 +251,7 @@ def armor_cowl(name,stations,root,top_material=None):
         for edge in [0,1,5]:
             p=[a[edge],b[edge],b[(edge+1)%6],a[(edge+1)%6]]
             fitted_panel(name+f' fitted skin {i}-{edge}',p,top_material if edge==0 and top_material else ivory,
-                         root,.022,.018,.035,datum,backing=name+' pressure backing')
+                         root,.012,.018,.035,datum,backing=name+' pressure backing')
 
 
 root=g.empty('Stratum_M05',assetId='stratum',manufacturer='meridian-shipworks',model='Stratum M-05')
@@ -217,8 +263,8 @@ g.empty('StandingEye',L['interior']['standingEye'],root)
 # transparent box placed over a solid fuselage. Floor, cheeks, walls and roof
 # are separate thickness-bearing panels with a visibly raked armored bow.
 sections=[(-8.30,1.36,2.08,2.48),(-6.65,2.26,3.22,4.04),
-          (-3.0,2.56,3.62,4.62),(2.7,2.68,3.62,4.62),
-          (5.4,2.45,3.42,4.38),(7.22,2.16,3.34,3.96)]
+          (-3.35,2.54,3.66,4.65),(-1.05,2.60,3.80,4.66),
+          (2.85,2.42,3.65,4.44),(5.4,2.45,3.42,4.38),(7.22,2.16,3.34,3.96)]
 for i in range(len(sections)-1):
     a,b=sections[i:i+2]
     za,wa,sa,ta=a;zb,wb,sb,tb=b
@@ -230,19 +276,19 @@ for i in range(len(sections)-1):
         p=points if side<0 else points[::-1]
         # The bow and glazing remain exact. Only the static pressure-cell skin
         # behind the cockpit receives the explicit thickness convention.
-        (g.panel if i==0 else shell_panel)(f'Hull lower chine {i} {side}',p,ivory if i==0 else structure,.10,static,.025)
-        if i>=1:fitted_panel(f'Hull fitted lower skin {i} {side}',p,ivory,static,.022,.048,.035,
+        (g.panel if i==0 else shell_panel)(f'Hull lower chine {i} {side}',p,ivory if i==0 else joint,.10,static,.025)
+        if i>=1:fitted_panel(f'Hull fitted lower skin {i} {side}',p,ivory,static,.011,.048,.035,
                              backing=f'Hull lower chine {i} {side}')
         if i>=1:
             points=[(side*wa,sa,za),(side*wb,sb,zb),(side*wb*.66,tb,zb),(side*wa*.66,ta,za)]
             p=points if side<0 else points[::-1]
-            shell_panel(f'Hull shoulder {i} {side}',p,structure,.09,static,.025)
-            fitted_panel(f'Hull fitted shoulder skin {i} {side}',p,ivory,static,.025,.048,.035,
+            shell_panel(f'Hull shoulder {i} {side}',p,joint,.09,static,.025)
+            fitted_panel(f'Hull fitted shoulder skin {i} {side}',p,ivory,static,.012,.048,.035,
                          backing=f'Hull shoulder {i} {side}')
     if i>=1:
         p=[(-wa*.66,ta,za),(-wb*.66,tb,zb),(wb*.66,tb,zb),(wa*.66,ta,za)]
-        shell_panel(f'Roof center {i}',p,structure,.10,static,.018)
-        fitted_panel(f'Roof fitted pressure armor {i}',p,ivory,static,.026,.057,.035,
+        shell_panel(f'Roof center {i}',p,joint,.10,static,.018)
+        fitted_panel(f'Roof fitted pressure armor {i}',p,ivory,static,.012,.057,.035,
                      backing=f'Roof center {i}')
 
 g.box('Structural belly',[0,1.15,.32],[4.28,.25,13.56],structure,.06,static)
@@ -298,14 +344,14 @@ for side,label in [(-1,'Port'),(1,'Starboard')]:
     # The extraction root carries into a raised load arch, then steps down into
     # a narrower exposed service waist. This replaces the long white lid.
     armor_cowl('Drive forward load arch '+label,
-        [(-3.44,side*4.20,.56,2.55,2.91,3.10),(-2.63,side*4.07,1.15,2.94,3.70,4.24),
-         (-.79,side*4.23,1.49,3.08,4.33,4.86),(.38,side*4.37,1.42,3.10,4.25,4.72)],static)
+        [(-3.44,side*4.20,.60,2.55,2.95,3.16),(-2.63,side*4.07,1.06,2.88,3.49,3.98),
+         (-1.08,side*4.23,1.30,2.96,3.95,4.47),(.44,side*4.37,1.14,3.08,3.94,4.29)],static)
     # Two large structural webs visibly join the crown to the lower process
     # keel. They sit aft of all yaw/pitch travel, not beside the moving barrel.
     for dx in [-.66,.66]:
         g.loft('Drive load arch web '+label+str(dx),
-            [(-2.44,side*4.07+dx,.10,2.29,3.00,3.42),(-1.69,side*4.14+dx,.15,2.29,3.26,3.88),
-             (-.74,side*4.23+dx,.17,2.33,3.50,4.03)],petrol,static)
+            [(-2.44,side*4.07+dx,.10,2.29,2.90,3.20),(-1.69,side*4.14+dx,.15,2.29,3.02,3.48),
+             (-.74,side*4.23+dx,.17,2.33,3.30,3.68)],petrol,static)
     for rail_x,width in [(3.48,.38),(5.25,.39)]:
         armor_cowl('Drive service waist rail '+label+str(rail_x),
             [(.56,side*rail_x,width,3.34,3.95,4.22),(1.10,side*rail_x,width,3.36,4.02,4.20),
@@ -355,15 +401,18 @@ for side,label in [(-1,'Port'),(1,'Starboard')]:
 # rising fore shoulder and aft compression taper. The canonical ceiling and
 # glazing remain below/forward of it; no brace enters the pilot sightline.
 armor_cowl('Roof raised service assembly',
-    [(-4.96,0,.94,4.20,4.34,4.44),(-3.24,0,1.11,4.61,4.77,4.99),
-     (-1.85,0,1.28,4.70,5.07,5.35),(2.52,0,1.28,4.70,5.07,5.35),
-     (4.66,0,.93,4.52,4.72,4.94)],static,petrol)
-for z in [-1.60,2.28]:
+    [(-4.55,0,.74,4.20,4.37,4.58),(-3.10,0,.88,4.57,4.79,5.08),
+     (-1.65,0,1.12,4.70,5.16,5.42),(-.05,0,1.16,4.70,5.16,5.42),
+     (1.00,0,.98,4.54,4.91,5.17),(4.55,0,.80,4.20,4.52,4.73)],static,petrol)
+for z in [-1.39,-.31]:
     for side in [-1,1]:
-        g.box('Roof service latch backing',[side*.67,5.416,z],[.12,.010,.27],structure,.003,static)
-        g.box('Roof flush latch',[side*.67,5.428,z],[.044,.016,.19],metal,.005,static)
+        g.box('Roof service latch backing',[side*.67,5.486,z],[.12,.010,.27],structure,.003,static)
+        g.box('Roof flush latch',[side*.67,5.498,z],[.044,.016,.19],metal,.005,static)
 for side in [-1,1]:
-    g.box('Roof maintenance tread',[side*1.50,4.731,.90],[.16,.020,2.80],structure,.005,static)
+    za,zb=-.90,.74
+    def tread_y(z):return 4.66+(4.44-4.66)*(z+1.05)/3.90+.108
+    shell_panel('Roof maintenance tread',[(side*1.37,tread_y(za),za),(side*1.37,tread_y(zb),zb),
+        (side*1.51,tread_y(zb),zb),(side*1.51,tread_y(za),za)],structure,.008,static,.003)
 
 # Clear portal side piers and roof lintel; no centre sign or cassette crossing
 # the ramp's rotation or its eventual walking plane.
@@ -388,9 +437,13 @@ for side,label in [(-1,'Port'),(1,'Starboard')]:
     g.box('Berth task light '+label,[side*2.13,2.84,-2.63],[.035,.11,.46],mint,.014,static)
     g.box('Bin floor contact collar '+label,[side*1.46,1.357,3.775],[1.32,.014,1.45],trim,.003,static)
     g.box('Bin base plinth '+label,[side*1.46,1.44,3.775],[1.30,.18,1.45],structure,.025,static)
-    g.box('Bin main '+label,[side*1.477,1.965,3.775],[1.266,1.05,1.45],petrol,.035,static)
-    g.box('Bin lid gasket '+label,[side*1.46,2.485,3.775],[1.30,.03,1.43],structure,.006,static)
-    g.box('Bin fitted sealed lid '+label,[side*1.46,2.526,3.775],[1.23,.038,1.36],ivory,.011,static)
+    formed_bin('Bin formed pressure chest '+label,side*1.477,static)
+    g.box('Bin end service joint '+label,[side*1.477,2.00,4.477],[1.09,.73,.017],joint,.004,static)
+    contact_box('Bin end formed service panel '+label,[side*1.477,2.00,4.487],[1.04,.68,.018],petrol,static,axis=2,side=1,pitch=.20)
+    for dx in [-.42,.42]:
+        g.box('Bin end captive fastener '+label,[side*1.477+dx,2.275,4.498],[.038,.038,.003],metal,.001,static)
+    g.box('Bin lid gasket '+label,[side*1.46,2.495,3.775],[1.30,.03,1.43],structure,.006,static)
+    contact_box('Bin fitted sealed lid '+label,[side*1.46,2.526,3.775],[1.23,.038,1.36],ivory,static,side=1,pitch=.20,bevel=.006)
     for z in [3.19,4.36]:
         g.box('Bin lid latch '+label,[side*.854,2.42,z],[.047,.10,.10],metal,.012,static)
     for z in [3.13,4.42]:
@@ -412,14 +465,14 @@ for side,label in [(-1,'Port'),(1,'Starboard')]:
         g.box('Cabin side rib '+label,[side*2.07,2.54,z],[.13,2.30,.10],trim,.018,static)
         g.box('Cabin rib foot bracket '+label,[side*2.05,1.53,z],[.17,.28,.21],petrol,.015,static)
     for za,zb in [(-3.38,-.31),(-.09,2.69),(2.91,5.54),(5.76,6.67)]:
-        g.box('Cabin fitted wall composite '+label,[side*2.122,2.31,(za+zb)/2],[.030,1.42,zb-za],lining,.012,static)
+        contact_box('Cabin fitted wall composite '+label,[side*2.122,2.31,(za+zb)/2],[.030,1.42,zb-za],lining,static,axis=0,side=-side,pitch=.24)
         g.box('Cabin upper service panel '+label,[side*2.09,3.30,(za+zb)/2],[.06,.29,zb-za-.06],petrol,.010,static)
 
 # A fitted false ceiling gives the inhabited volume its own acoustic liner.
 # Its entire underside remains above the canonical 3.65m standing ceiling.
 g.box('Cabin ceiling service backing',[0,3.827,1.38],[3.74,.055,10.74],structure,.012,static)
 for za,zb in [(-3.93,-1.55),(-1.47,.94),(1.02,3.43),(3.51,5.66),(5.74,6.69)]:
-    g.box('Cabin ceiling acoustic panel',[0,3.791,(za+zb)/2],[3.53,.026,zb-za],lining,.010,static)
+    contact_box('Cabin ceiling acoustic panel',[0,3.791,(za+zb)/2],[3.53,.026,zb-za],lining,static,pitch=.24)
 for side in [-1,1]:
     for z in [-2.55,.22,2.83,5.16]:
         g.box('Cabin ceiling ventilation reveal',[side*1.32,3.773,z],[.27,.010,.50],cavity,.006,static)
@@ -501,13 +554,30 @@ for spec in L['mining']['booms']:
     pitch=g.empty(spec['pitchNode'],spec['pivot'],yaw,kind='mining-pitch',pitchMin=L['mining']['pitchMin'],pitchMax=L['mining']['pitchMax'])
     g.rod('Mining yaw drum '+label,[x,y-.36,z],[x,y+.37,z],.39,metal,yaw,24)
     g.rod('Mining pitch trunnion '+label,[x-.56,y,z],[x+.56,y,z],.28,structure,pitch,22)
-    for dx in [-.30,.30]:
-        g.rod('Mining load rail '+label,[x+dx,y-.03,z-.25],[x+dx,y-.03,z-4.25],.12,metal,pitch,14)
-    g.loft('Mining boom spine '+label,
-       [(z-.15,x,.31,y-.22,y+.05,y+.26),(z-1.1,x,.41,y-.30,y+.13,y+.36),
-        (z-3.76,x,.33,y-.24,y+.15,y+.29),(z-4.60,x,.43,y-.26,y+.09,y+.32)],petrol,pitch)
-    for k in range(3):
-        g.box('Boom armored saddle '+label,[x,y+.36,z-1.1-k*.86],[.76,.11,.31],ivory,.03,pitch)
+    # A deep tapered extraction beam visibly carries the tool load into the
+    # trunnion. Its thin first72cm clears the fixed bearing shoe throughout the
+    # complete pitch/yaw sweep; the deeper section begins forward of that shoe.
+    boom_sections=[(z-.10,x,.30,y-.21,y+.07,y+.26),
+        (z-.72,x,.40,y-.23,y+.19,y+.38),(z-1.35,x,.60,y-.48,y+.40,y+.73),
+        (z-2.55,x,.50,y-.43,y+.30,y+.56),(z-3.65,x,.36,y-.28,y+.14,y+.32),
+        (z-4.38,x,.43,y-.26,y+.09,y+.32)]
+    g.loft('Mining tapered load shell '+label,boom_sections,petrol,pitch)
+    for side in [-1,1]:
+        # Lower tension rails and two diagonal webs form one structural load
+        # path, replacing the long round rods and three identical top blocks.
+        g.rod('Mining lower tension rail '+label,
+            [x+side*.30,y-.12,z-.32],[x+side*.35,y-.26,z-3.78],.070,metal,pitch,12)
+        g.rod('Mining root diagonal web '+label,
+            [x+side*.34,y+.16,z-.62],[x+side*.51,y+.26,z-1.54],.073,trim,pitch,10)
+    # Formed service skins follow the actual structural taper. The
+    # optical hood, open throat, focus lip, emitter and named muzzle below stay exact.
+    # The solid tail ends19cm behind the emitter, never across the optical bore.
+    for a,b in zip(boom_sections[1:4],boom_sections[2:5]):
+        za,xa,wa,la,ca,ta=a;zb,xb,wb,lb,cb,tb=b
+        points=[(xa-.60*wa,ta,za),(xb-.60*wb,tb,zb),
+                (xb+.60*wb,tb,zb),(xa+.60*wa,ta,za)]
+        fitted_panel('Mining formed service cover '+label+str(za),points,ivory,pitch,
+                     .014,.014,.030,datum=(x,y,0),backing='Mining tapered load shell '+label)
     hard_tube('Mining aft isolator '+label,x,y,
         [(z-4.16,.42),(z-4.35,.46),(z-4.44,.46)],structure,pitch,16)
     hard_tube('Mining faceted protective hood '+label,x,y,
@@ -528,8 +598,8 @@ for spec in L['mining']['booms']:
     g.empty(spec['muzzle'],spec['muzzlePosition'],pitch,kind='mining-muzzle',forward=[0,0,-1],toolOnly=True)
 
 # Original fleet markings on planar, appropriate surfaces. No competitor mark.
-g.text('Roof identity','STRATUM',[-.40,5.414,.35],.29,ivory,rotation=(0,0,math.pi/2),root=static)
-g.text('Roof generation','M-05  /  EXTRACTION',[.41,5.414,.35],.135,ivory,rotation=(0,0,-math.pi/2),root=static)
+g.text('Roof identity','STRATUM',[-.35,5.484,-.85],.29,ivory,rotation=(0,0,math.pi/2),root=static)
+g.text('Roof generation','M-05  /  EXTRACTION',[.38,5.484,-.85],.135,ivory,rotation=(0,0,-math.pi/2),root=static)
 g.text('Rear maker','MERIDIAN',[0,3.81,7.206],.15,ivory,root=static)
 g.text('Rear port ID','M-05',[-1.61,2.78,7.217],.22,petrol,root=static)
 
@@ -545,7 +615,7 @@ for bank in L['storage']['freight']['banks']:
 # The inherited clear glass, gear, ramp, MFDs and original rim stay untouched.
 compact_prefixes=('Drive ','Hull fitted','Roof fitted','Roof raised','Roof service','Roof removable','Roof flush',
                   'Cabin fitted','Cabin upper','Cabin ceiling','Cabin rib foot','Bin ',
-                  'Berth fitted','Berth flush','Berth mattress welt','Mining focus guard','Mining focus hazard')
+                  'Berth fitted','Berth flush','Berth mattress welt','Mining focus guard','Mining focus hazard','Mining tapered','Mining formed')
 for obj in bpy.context.scene.objects:
     if obj.name.startswith(compact_prefixes):
         for mod in obj.modifiers:
@@ -620,7 +690,10 @@ def bake_contact_visibility():
                 total+=1;minimum=min(minimum,value);darkened+=int(value<.995)
     return {'method':'12 deterministic cosine-hemisphere CPU BVH rays per source corner against other static fittings; 22cm distance falloff; base-color contact visibility',
             'distanceMetres':.22,'maximumAttenuation':.24,'sourceCorners':total,'darkenedCorners':darkened,
-            'rays':ray_count,'selfHitsSkipped':self_hits_skipped,'minimumLinearFactor':minimum,'dynamicMechanisms':'white; no pose-dependent bake',
+            'rays':ray_count,'selfHitsSkipped':self_hits_skipped,'minimumLinearFactor':minimum,
+            'contactGridObjects':sum(1 for obj in opaque if obj.get('contactGridMetres')),
+            'maximumContactGridMetres':max((obj.get('contactGridMetres',0) for obj in opaque),default=0),
+            'dynamicMechanisms':'white; no pose-dependent bake',
             'lightingBaked':False}
 
 
@@ -788,7 +861,7 @@ def pack_glb(path):
     output=struct.pack('<4sII',b'glTF',2,12+8+len(encoded)+8+len(packed))+struct.pack('<II',len(encoded),0x4e4f534a)+encoded+struct.pack('<II',len(packed),0x004e4942)+packed
     out=ROOT/'public/models/stratum.glb';out.write_bytes(output)
     triangles=sum(doc['accessors'][p['indices']]['count']//3 for m in doc['meshes'] for p in m['primitives'])
-    manifest={'id':'stratum','version':1,'stage':'art revision 03; Art02 failed and retained; native gate pending',
+    manifest={'id':'stratum','version':1,'stage':'art revision 04; Art03 failed and retained; native gate pending',
        'sha256':hashlib.sha256(output).hexdigest(),'bytes':len(output),'triangles':triangles,
        'meshCount':len(doc['meshes']),'primitiveCount':sum(len(m['primitives']) for m in doc['meshes']),
        'nodeCount':len(doc['nodes']),'source':'assets/stratum/stratum.blend','builder':'blender/build_stratum.py',
@@ -800,9 +873,9 @@ def pack_glb(path):
        'contactOcclusion':contact_occlusion,'fittedSkinVisibility':skin_visibility,
        'packing':packing,'packingHelperSha256':hashlib.sha256((ROOT/'blender/stratum_pack.py').read_bytes()).hexdigest(),
        'budgets':{'bytes':4000000,'triangles':60000,'maxTextureSize':1024},
-       'review':{'nativeRenderer':'revision 03 not run; Art02 native capture passed, independent art failed',
+       'review':{'nativeRenderer':'revision 04 not run; Art03 native capture passed, independent art failed',
                  'physicalGame':'root-owned integration; this asset revision not yet rendered in game',
-                 'independentArt':'revision 03 pending; Art02 static mean 3.84, silhouette 4.0; original mean 3.26, silhouette 3.4'}}
+                 'independentArt':'revision 04 pending; Art03 mean 3.9667, silhouette 4.2; previous failures retained'}}
     (ASSET/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     assert triangles<=60000,triangles
     assert len(output)<=4000000,len(output)
@@ -817,11 +890,14 @@ provenance={'authoring':'Original scripted hard-surface Stratum geometry; reusab
     'channels':{'basecolor':'Subtle seven-bit reflectance grain, lossless WebP; no shadows/highlights','normal':'Independent filtered isotropic micro-height gradient, slopes bounded to0.01; no91-cycle directional stripe and not luminance-derived','orm':'R=1 (no baked AO); G=filtered process roughness without a dominant directional stripe; B=1, scaled by material metalness'},
     'contactVisibility':contact_occlusion,
     'fittedSkinVisibility':skin_visibility,
-    'packingSource':'Stratum-scoped adapter of existing blender/pack_rigid_geometry.py; same position/normal codec, protected moving/glass/MFD meshes and unused-UV pruning',
+    'packingSource':'Stratum-scoped adapter of existing blender/pack_rigid_geometry.py; same position/normal codec, protected moving/glass/MFD geometry, unused-UV pruning, exact-neutral-color omission and complete byte-identical encoded static tuple indexing',
     'previousNativeReviews':[
         {'assetSha256':'78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827','staticMean':3.26,'silhouette':3.4,'status':'failed; retained, not superseded by CPU checks'},
-        {'assetSha256':'b2660a8e400c7ae64ed75cf3e4166d66f1953f0fb6dcbcce5357b1edaa37eb3e','staticMean':3.84,'silhouette':4.0,'reportSha256':'b1ea9d2548255ce612bac5612f71b0994e409ee2c08ad2663dfadf276a319255','status':'Art02 failed; original images and report retained'}],
+        {'assetSha256':'b2660a8e400c7ae64ed75cf3e4166d66f1953f0fb6dcbcce5357b1edaa37eb3e','staticMean':3.84,'silhouette':4.0,'reportSha256':'b1ea9d2548255ce612bac5612f71b0994e409ee2c08ad2663dfadf276a319255','status':'Art02 failed; original images and report retained'},
+        {'assetSha256':'22bbf0296e349e24f1a9bd636745511bf31b9291f1a305814f13d4a45cac4d08','mean':3.9666666666666663,'staticMean':3.96,'silhouette':4.2,'reportSha256':'558d1a40e1d6d74bbd37b61bab869a3eafc0af264c34177b1e2896dfd0252fcd','status':'Art03 failed; original images, motions and report retained'}],
     'retainedBudgetRejection':{'stage':'Art03a','sha256':'4ea18bcc3d351a075aefc8c01112e057452b30b49ecc06b010e055908d8970a6','bytes':4044832,'limitBytes':4000000,'triangles':51346,'correction':'Seven-bit basecolor grain; measured preflight maximum1/255 channel change; no geometry or normal/ORM change'},
+    'art04BudgetRejection':{'stage':'Art04a','sha256':'fdff87fdb7e8ddfd6b26be41e3654790529ef6913b508b6a641001dcac05f119','bytes':4104316,'triangles':59224,'limitBytes':4000000,'correction':'Lossless reindexing of complete identical encoded static position/normal/UV/color tuples; triangle order/winding and every rendered corner unchanged; protected rig/glass/display buffers excluded'},
+    'art04OpticalCorrection':'Art04a new solid load shell crossed the internal optical path; final tail stops19cm behind the retained emitter. Original failure and exact final bore-ray closure retained in QA.',
     'materialRecipes':finish,'files':{},'blenderVersion':bpy.app.version_string}
 for path in sorted(TEX.glob('stratum-*')):
     provenance['files'][path.name]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'bytes':path.stat().st_size}

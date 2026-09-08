@@ -1,8 +1,10 @@
 # Stratum M-05 asset checkpoint
 
 Original Meridian extraction craft, built from the current medium-ship brief.
-This is an authored geometry/material/rig candidate. It is **not yet a playable
-flight/mining ship or an independently accepted finished asset**.
+Art04 is an authored geometry/material/rig candidate. Its independent visual
+acceptance is pending. Flight, mining, inventory and networking integration are
+owned by the separate gameplay lane; this asset record describes only the
+authored source, exported geometry and normalized mechanism API.
 
 The canonical physical layout is `layout.json`. Units are local metres, +Y up,
 −Z bow. The closed-flight allocation is 18×13×5.6m; `measurements.json` records
@@ -32,8 +34,26 @@ The PNG finish sources and lossless 1024² WebP runtime maps are in `textures/`.
 Basecolor contains bounded reflectance grain, the tangent normal is generated
 independently from surface slopes, and ORM has no baked AO (R=1). Roughness and
 metalness retain material-specific factors. No light or shadow is painted into
-the maps. The GLB uses the standard derivative normal-map path without stored
-tangents to stay within 4MB. A real renderer check remains required.
+the maps. The GLB uses the standard derivative normal-map path without stored tangents.
+Static opaque geometry uses the existing supported integer codec, with at most
+0.206mm position and 0.373° normal error. Complete byte-identical encoded static
+vertex tuples share indices; every ordered triangle corner, UV seam and contact
+color is preserved. Exact all-white vertex colors use the glTF white default.
+Moving mechanisms, glass and MFD geometry retain their unquantized buffers.
+
+Art04 exports 59,224 triangles in 3,867,188 bytes with three lossless 1024² WebP
+maps. `manifest.json` records the final artifact hash. Its nested
+`packing.outputBytes` measures the geometry-packed intermediate with embedded
+source PNGs; the top-level `bytes` includes final WebP replacement and is the
+4MB budget measurement. The rejected 4,104,316-byte Art04a export is retained
+in the external QA record. Its budget correction reindexes identical static
+tuples and does not reduce texture resolution or triangle count.
+
+The original Art03 and Art04a solid tool tail crossed the internal optical path.
+Art04 stops that tail behind the existing emitter. Both complete optical hoods,
+isolators, machined lips, dark throats and emitters retain their actual triangles,
+and all 18 emitter-to-lip rays clear the final opaque geometry. A native image
+review remains required; CPU identity and clearance checks are not art scores.
 
 ## Adapter contract
 
@@ -77,12 +97,14 @@ node node_modules/vite/bin/vite.js preview --config scripts/stratum-vite.config.
 
 Reserved page: `http://127.0.0.1:5580/public/dev/stratum.html`. The production
 build is in `dist/stratum/`; do not commit it. Keyboard, touch buttons and standard
-gamepad focus/activation are authored, with release-to-rearm after blur. They
-have not yet been exercised in a browser in this checkpoint.
+gamepad focus/activation are authored, with release-to-rearm after blur. The Art03 studio was exercised with native browser controls; this Art04
+asset retains the identical studio files for a comparable next capture.
 
 After acquiring the shared GPU queue, `scripts/stratum-studio.config.js` drives
 actual view/mechanism controls and records 1440×900/390×844 images/video and backend.
-No browser was launched by the builder for this checkpoint. Independent silhouette
-review (target 4.5), final native PBR/motion review, complete flight/boarding/mining
-integration, persistent ledgers, server registration and actual three-input-mode
-gameplay journeys remain pending and root-owned where the brief assigns them.
+No browser was launched by the builder for this Art04 revision. Art03
+independent review failed at mean3.9667 and silhouette4.2; that report and its
+native evidence remain retained. Art04 needs independent silhouette review
+(target4.5), QUALITY mean≥4.0 with no item<3, and actual native PBR/motion
+evidence. Gameplay journeys and persistence acceptance remain with the
+integration owner and are reported separately against their exact source/asset.

@@ -1,13 +1,13 @@
 {
   "id": "stratum",
   "version": 1,
-  "stage": "art revision 03; Art02 failed and retained; native gate pending",
-  "sha256": "22bbf0296e349e24f1a9bd636745511bf31b9291f1a305814f13d4a45cac4d08",
-  "bytes": 3932512,
-  "triangles": 51346,
-  "meshCount": 66,
-  "primitiveCount": 66,
-  "nodeCount": 110,
+  "stage": "art revision 04; Art03 failed and retained; native gate pending",
+  "sha256": "1f5cae2a4901a2618d7cff36f1713a19777b45d586022614b9bc5449560cb75b",
+  "bytes": 3867188,
+  "triangles": 59224,
+  "meshCount": 69,
+  "primitiveCount": 69,
+  "nodeCount": 114,
   "source": "assets/stratum/stratum.blend",
   "builder": "blender/build_stratum.py",
   "layout": "assets/stratum/layout.json",
@@ -15,46 +15,166 @@
     1024,
     1024
   ],
-  "sourceSha256": "ac4651d67f346266b0c8209d4277560e972d43ceeef7c4987b2110e60c8668f0",
-  "builderSha256": "793d2324cfc84054047bb303d533cbf95369153a374ef62b8a5f7355d57f6dc8",
+  "sourceSha256": "eacabaf625e5a614d55841b0ab2597f068634782fa05c0fdfd7fd4e108ef2b31",
+  "builderSha256": "0cf16d4167d5d4f753b08e3e4e7bc6c2071773548773b79c5ab3971cc65bafdb",
   "geometryHelperSha256": "9ee3f65cbb5fff71d7a8e91304f12e18c4845ab68bb1fe26dcf8cbbd6d7f07e7",
   "layoutSha256": "a17f9159a02de736fc1463da132a4a709d95135ca5fcb93647e762d6abe5ff44",
   "contactOcclusion": {
     "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner against other static fittings; 22cm distance falloff; base-color contact visibility",
     "distanceMetres": 0.22,
     "maximumAttenuation": 0.24,
-    "sourceCorners": 24644,
-    "darkenedCorners": 12233,
-    "rays": 233149,
-    "selfHitsSkipped": 7405,
+    "sourceCorners": 34084,
+    "darkenedCorners": 17192,
+    "rays": 344453,
+    "selfHitsSkipped": 7733,
     "minimumLinearFactor": 0.7600378494909125,
+    "contactGridObjects": 17,
+    "maximumContactGridMetres": 0.24,
     "dynamicMechanisms": "white; no pose-dependent bake",
     "lightingBaked": false
   },
   "fittedSkinVisibility": {
-    "panels": 104,
-    "samples": 664,
-    "visibleSamples": 650,
+    "panels": 118,
+    "samples": 944,
+    "visibleSamples": 918,
     "buriedByOwnBacking": 0
   },
   "packing": {
-    "inputBytes": 6008540,
-    "outputBytes": 4283740,
-    "maximumPositionErrorMetres": 0.00020878624044478884,
-    "maximumNormalErrorDegrees": 0.3757517734795842,
-    "protectedMeshCount": 52,
-    "method": "Static opaque batches only; KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding",
-    "unpackedSha256": "62e98348092ae91ad7e2751bb478f059c3ff5d6f6d5b39c335d4d28b4bb4205e"
+    "inputBytes": 6601964,
+    "outputBytes": 4218312,
+    "maximumPositionErrorMetres": 0.00020554536357307707,
+    "maximumNormalErrorDegrees": 0.37272344118323275,
+    "protectedMeshCount": 54,
+    "identicalStaticVertices": {
+      "meshes": 15,
+      "verticesRemoved": 9909,
+      "bufferBytesSaved": 237256,
+      "details": [
+        {
+          "mesh": "MFD_1_Bezel",
+          "verticesBefore": 284,
+          "verticesAfter": 264,
+          "triangles": 108,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "MFD_2_Bezel",
+          "verticesBefore": 272,
+          "verticesAfter": 264,
+          "triangles": 108,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "MFD_3_Bezel",
+          "verticesBefore": 272,
+          "verticesAfter": 264,
+          "triangles": 108,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "MFD_4_Bezel",
+          "verticesBefore": 284,
+          "verticesAfter": 264,
+          "triangles": 108,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Aft lifting socket Port",
+          "verticesBefore": 1064,
+          "verticesAfter": 1056,
+          "triangles": 432,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Drive boom bearing seat Port",
+          "verticesBefore": 9571,
+          "verticesAfter": 9107,
+          "triangles": 4256,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Drive thermal trough backing Port",
+          "verticesBefore": 1992,
+          "verticesAfter": 1856,
+          "triangles": 872,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Walk deck",
+          "verticesBefore": 6885,
+          "verticesAfter": 6755,
+          "triangles": 5130,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Berth fitted plinth panel Port",
+          "verticesBefore": 8501,
+          "verticesAfter": 7189,
+          "triangles": 6254,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Structural belly",
+          "verticesBefore": 7544,
+          "verticesAfter": 7322,
+          "triangles": 3320,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Hull lower chine 0 -1",
+          "verticesBefore": 28357,
+          "verticesAfter": 23931,
+          "triangles": 14780,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Pilot armored cheek",
+          "verticesBefore": 12176,
+          "verticesAfter": 11394,
+          "triangles": 5408,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Portal approach light -1",
+          "verticesBefore": 1916,
+          "verticesAfter": 1776,
+          "triangles": 736,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Hull lower chine 1 -1",
+          "verticesBefore": 23163,
+          "verticesAfter": 20962,
+          "triangles": 7888,
+          "exactCompleteAttributeTuples": true
+        },
+        {
+          "mesh": "Deck central runner",
+          "verticesBefore": 1360,
+          "verticesAfter": 1328,
+          "triangles": 540,
+          "exactCompleteAttributeTuples": true
+        }
+      ],
+      "proof": "Every final encoded attribute byte at every ordered triangle corner is unchanged; protected meshes excluded"
+    },
+    "neutralColorsOmitted": {
+      "accessors": 47,
+      "sourceBytes": 166104,
+      "proof": "Every component including alpha equals the exact glTF default white; no geometry/normal/UV/index change"
+    },
+    "method": "Static opaque batches only; KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged per-corner UVs and triangle order; uniform mesh leaf decoding; exact neutral vertex colors omitted; complete identical encoded static vertex tuples indexed once",
+    "unpackedSha256": "0ff3f4a9d81c8424b493baaaae5ced9df3385aab0211b18d7562445311959c4a"
   },
-  "packingHelperSha256": "d8d229552f7d123f6673c77097b9af4755e54377442b668051e1c9d1486f83b7",
+  "packingHelperSha256": "4dac76cc4c265ef4e8ed20c4b334492755f778dbaecd4ed649eb5a0e32209513",
   "budgets": {
     "bytes": 4000000,
     "triangles": 60000,
     "maxTextureSize": 1024
   },
   "review": {
-    "nativeRenderer": "revision 03 not run; Art02 native capture passed, independent art failed",
+    "nativeRenderer": "revision 04 not run; Art03 native capture passed, independent art failed",
     "physicalGame": "root-owned integration; this asset revision not yet rendered in game",
-    "independentArt": "revision 03 pending; Art02 static mean 3.84, silhouette 4.0; original mean 3.26, silhouette 3.4"
+    "independentArt": "revision 04 pending; Art03 mean 3.9667, silhouette 4.2; previous failures retained"
   }
 }

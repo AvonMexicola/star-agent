@@ -11,21 +11,23 @@
     "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner against other static fittings; 22cm distance falloff; base-color contact visibility",
     "distanceMetres": 0.22,
     "maximumAttenuation": 0.24,
-    "sourceCorners": 24644,
-    "darkenedCorners": 12233,
-    "rays": 233149,
-    "selfHitsSkipped": 7405,
+    "sourceCorners": 34084,
+    "darkenedCorners": 17192,
+    "rays": 344453,
+    "selfHitsSkipped": 7733,
     "minimumLinearFactor": 0.7600378494909125,
+    "contactGridObjects": 17,
+    "maximumContactGridMetres": 0.24,
     "dynamicMechanisms": "white; no pose-dependent bake",
     "lightingBaked": false
   },
   "fittedSkinVisibility": {
-    "panels": 104,
-    "samples": 664,
-    "visibleSamples": 650,
+    "panels": 118,
+    "samples": 944,
+    "visibleSamples": 918,
     "buriedByOwnBacking": 0
   },
-  "packingSource": "Stratum-scoped adapter of existing blender/pack_rigid_geometry.py; same position/normal codec, protected moving/glass/MFD meshes and unused-UV pruning",
+  "packingSource": "Stratum-scoped adapter of existing blender/pack_rigid_geometry.py; same position/normal codec, protected moving/glass/MFD geometry, unused-UV pruning, exact-neutral-color omission and complete byte-identical encoded static tuple indexing",
   "previousNativeReviews": [
     {
       "assetSha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
@@ -39,6 +41,14 @@
       "silhouette": 4.0,
       "reportSha256": "b1ea9d2548255ce612bac5612f71b0994e409ee2c08ad2663dfadf276a319255",
       "status": "Art02 failed; original images and report retained"
+    },
+    {
+      "assetSha256": "22bbf0296e349e24f1a9bd636745511bf31b9291f1a305814f13d4a45cac4d08",
+      "mean": 3.9666666666666663,
+      "staticMean": 3.96,
+      "silhouette": 4.2,
+      "reportSha256": "558d1a40e1d6d74bbd37b61bab869a3eafc0af264c34177b1e2896dfd0252fcd",
+      "status": "Art03 failed; original images, motions and report retained"
     }
   ],
   "retainedBudgetRejection": {
@@ -49,6 +59,15 @@
     "triangles": 51346,
     "correction": "Seven-bit basecolor grain; measured preflight maximum1/255 channel change; no geometry or normal/ORM change"
   },
+  "art04BudgetRejection": {
+    "stage": "Art04a",
+    "sha256": "fdff87fdb7e8ddfd6b26be41e3654790529ef6913b508b6a641001dcac05f119",
+    "bytes": 4104316,
+    "triangles": 59224,
+    "limitBytes": 4000000,
+    "correction": "Lossless reindexing of complete identical encoded static position/normal/UV/color tuples; triangle order/winding and every rendered corner unchanged; protected rig/glass/display buffers excluded"
+  },
+  "art04OpticalCorrection": "Art04a new solid load shell crossed the internal optical path; final tail stops19cm behind the retained emitter. Original failure and exact final bore-ray closure retained in QA.",
   "materialRecipes": {
     "Stratum | ivory enamel": {
       "baseColorFactor": [
@@ -57,9 +76,9 @@
         0.65,
         1
       ],
-      "roughnessFactor": 0.68,
+      "roughnessFactor": 0.58,
       "metallicFactor": 0,
-      "normalScale": 0.35,
+      "normalScale": 0.28,
       "textured": true
     },
     "Stratum | graphite frame": {
@@ -117,9 +136,21 @@
         0.155,
         1
       ],
-      "roughnessFactor": 0.84,
+      "roughnessFactor": 0.88,
       "metallicFactor": 0.02,
-      "normalScale": 0.35,
+      "normalScale": 0.14,
+      "textured": true
+    },
+    "Stratum | recessed panel joint": {
+      "baseColorFactor": [
+        0.095,
+        0.125,
+        0.122,
+        1
+      ],
+      "roughnessFactor": 0.86,
+      "metallicFactor": 0.03,
+      "normalScale": 0.14,
       "textured": true
     },
     "Stratum | soft interior": {
