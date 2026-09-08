@@ -27,6 +27,10 @@ SBU grid, or choose **Cargo** to sell a shipment. Each exchange has independent,
 finite stock and dynamic quotes. Changes save with solo cargo; reloading does not
 restock an exhausted warehouse. Prices and stock create different trade routes.
 
+With fresh stock, try ice from Stillwater to Ember Works, metal stock from Ember
+Works to Verdigris, or copper from Verdigris to Stillwater. Check the current
+quote before buying: previous trades change the margin and available quantity.
+
 Controller entry uses **Menu → Map**, D-pad/A to select a world and settlement,
 then B to return. Land/launch with Y; use X for the pilot, hatch and exchange.
 The trade dialog uses the shared D-pad/A/B controls. Existing keyboard and touch

@@ -26,6 +26,16 @@ async function aim(page,target,frame='ship'){
 }
 async function capture(page,name){await page.screenshot({path:`${out}/${name}.png`});await writeFile(`${out}/${name}.json`,JSON.stringify(await page.evaluate(()=>window.starAgent.state),null,2));}
 async function graphics(page){return page.evaluate(()=>{const canvas=document.querySelector('canvas'),gl=canvas?.getContext('webgl2')||canvas?.getContext('webgl'),debug=gl?.getExtension('WEBGL_debug_renderer_info');return {viewport:{width:innerWidth,height:innerHeight},renderer:debug?gl.getParameter(debug.UNMASKED_RENDERER_WEBGL):gl?.getParameter(gl.RENDERER),vendor:debug?gl.getParameter(debug.UNMASKED_VENDOR_WEBGL):gl?.getParameter(gl.VENDOR)};});}
+async function focusInterruption(page,button){
+ const context=page.context(),blank=await context.newPage(),game=await context.newCDPSession(page),other=await context.newCDPSession(blank);
+ try{
+  await blank.goto('about:blank');await game.send('Emulation.setFocusEmulationEnabled',{enabled:false});await other.send('Emulation.setFocusEmulationEnabled',{enabled:false});
+  await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&window.starAgent.state.focused);await button(7,true);
+  await blank.bringToFront();await page.waitForFunction(()=>!window.starAgent.state.focused);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+  await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&window.starAgent.state.focused);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+  await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ }finally{await game.send('Emulation.setFocusEmulationEnabled',{enabled:true});await other.send('Emulation.setFocusEmulationEnabled',{enabled:true});await game.detach();await other.detach();await blank.close();await page.bringToFront();}
+}
 
 test.afterEach(async({page},info)=>{if(info.status!==info.expectedStatus){try{await capture(page,'failure-'+info.retry);}catch{}}});
 
@@ -51,18 +61,26 @@ test('controller selects settlement, lands, walks to exchange, buys/sells cargo 
  const sold=await page.evaluate(()=>window.starAgent.state.trading);expect(sold.markets['settlement-selene'].stock.ice).toBe(before.stock);expect(sold.account.credits).toBeGreaterThan(after.account.credits);expect(sold.ships.find(s=>s.hull==='nomad').crates).toHaveLength(0);
  await button(7,true);await tap(1);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
  // Held translation cannot replay after focus or disconnect transitions.
- for(const kind of ['focus','disconnect']){await button(7,true);await page.evaluate(kind=>kind==='focus'?window.dispatchEvent(new Event('blur')):window.settlementDisconnected=true,kind);await frames(page);await page.evaluate(kind=>kind==='focus'?window.dispatchEvent(new Event('focus')):window.settlementDisconnected=false,kind);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);}
+ await focusInterruption(page,button);await button(7,true);await page.evaluate(()=>window.settlementDisconnected=true);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await page.evaluate(()=>window.settlementDisconnected=false);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
  await walk(page,[-2,0,-12]);await walk(page,[9,0,-12]);await walk(page,[9,0,30]);await walk(page,[0,1.75,8],'ship');await aim(page,[0,2.75,0]);await walk(page,[0,2.75,3],'ship');await walk(page,[0,2.75,-1.65],'ship');await aim(page,[0,2.75,-3]);await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='flight');
  await capture(page,'returned-to-flight');expect(errors).toEqual([]);await writeFile(`${out}/controller.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,physicalController:false,start:'Explicit development approach at 65 m; all subsequent navigation input from injected standard Gamepad.',state:await page.evaluate(()=>window.starAgent.state)},null,2));
 });
 
-test('all four settlement layouts render in the game and appear on the phone map',async({page,browser})=>{
+test('all four settlement layouts render in the game',async({page,browser})=>{
  const {errors,warnings}=await setup(page,'aeon');
  for(const body of ['aeon','selene','pyre','miasma']){
   if(body!=='aeon'){await page.goto(`/?dev=1&ship=nomad&start=settlement-${body}&intro=0&debug&seed=7291`);await page.waitForFunction(()=>window.starAgent?.state.ready&&!window.starAgent.state.transiting&&window.starAgent.state.settlements.ready&&window.starAgent.state.settlements.rendered>0,undefined,{timeout:90000});}
   // Art-only viewpoint fixture; separate from the controller journey above.
   await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body===n.body.id),q=n.orientation.clone().fromArray(s.quaternion),origin=n.position.clone().fromArray(s.origin),up=n.normal.clone();n.position.copy(n.position.clone().set(83,65,92).applyQuaternion(q).add(origin));n.orientToward(n.position.clone().set(0,5,4).applyQuaternion(q).add(origin),up);n.velocity.set(0,0,0);});await frames(page);await page.waitForTimeout(2500);await capture(page,`${body}-overview`);
  }
- await page.keyboard.press('m');await page.locator('[data-travel-target="pyre"]').click();await page.locator('[data-travel-target="miasma"]').click();await page.setViewportSize({width:390,height:844});await frames(page);await page.locator('[data-map-view="locations"]').click();await page.locator('#nav-page-next').click();await expect(page.locator('[data-nav-target="settlement-miasma"]')).toBeVisible();await capture(page,'map-phone');
  expect(errors).toEqual([]);await writeFile(`${out}/visual-tour.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,viewpointFixture:true},null,2));
+});
+
+// Separate phone closure avoids repeating four expensive cold-world loads for UI QA.
+test('phone map selects the Miasma trade settlement',async({page,browser})=>{
+ const {errors,warnings}=await setup(page,'miasma');
+ // Close art-only look at the real doorway lights, which are distance-capped.
+ await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body==='miasma'),q=n.orientation.clone().fromArray(s.quaternion),origin=n.position.clone().fromArray(s.origin),up=n.normal.clone(),deck=n.position.clone().fromArray(s.pad).sub(origin).applyQuaternion(q.clone().invert()).y;n.mode='walk';n.enabled=false;n.position.copy(n.position.clone().set(-2,deck+1.7,-12).applyQuaternion(q).add(origin));n.orientToward(n.position.clone().fromArray(s.terminal),up);n.velocity.set(0,0,0);});await frames(page);await page.waitForTimeout(2000);await capture(page,'miasma-doorway');
+ await page.keyboard.press('m');await page.locator('[data-travel-target="pyre"]').click();await page.locator('[data-travel-target="miasma"]').click();await page.setViewportSize({width:390,height:844});await frames(page);await page.locator('button[data-map-view="locations"]').click();await page.locator('#nav-page-next').click();await page.locator('[data-nav-target="settlement-miasma"]').click();await expect(page.locator('#map-target-name')).toHaveText('Verdigris Prospect');expect(await page.locator('#system-map').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);await capture(page,'map-phone');
+ expect(errors).toEqual([]);await writeFile(`${out}/phone-map.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,viewpointFixture:true},null,2));
 });
