@@ -1,6 +1,7 @@
 # SA-TRADE-001 — base stock, trade terminals and beacons
 
-Status: feature branch implemented and controller journeys validated; local integration pending.
+Status: implemented, controller journeys validated, integrated into local development.
+Independent review and physical-controller testing remain separate.
 Owner: Codex, no independent reviewer or physical controller acceptance claimed.
 Branch: `feat/base-commerce-beacons`; implementation `debd634`, latest development
 merge `1a90ea4` incorporates `c766544`. Worktree `/tmp/star-agent-base-commerce`. Final base source `4b36b50`;
@@ -129,3 +130,13 @@ Public release and independent approval are not implied by local testing.
 Review screenshots: [owner stock](base-commerce/owner-stock.png), [public map entry](base-commerce/base-map.png), [buyer cargo](base-commerce/buyer-cargo.png).
 
 Final elevator union `f51822f`: 31 focused base/room/SQL/station checks passed in 2.90 s; development production build passed in 3.87 s. The base runtime files match the browser-validated source. The station owner retains its separate keyboard/phone validation limits.
+
+Local integration is **2607fe7**, consuming candidate **65163fa** over **76aa45e**.
+The guarded merge preserved the exact 56,247-byte unrelated HANDOFF suffix;
+receipts are in `/tmp/base-commerce-local-integration`. The existing
+`star-agent-persistent-preview.service` was gracefully restarted using its same
+PostgreSQL cluster and settings. Direct 8087 and proxied 5178 API health return
+`{ok:true}`; the served client protocol module exports version 6. Existing local
+database table counts are identical before/after (all data tables empty, four
+migration rows). This does not claim migrated production data. The local preview
+is http://127.0.0.1:5178/. No public deployment or production database mutation.
