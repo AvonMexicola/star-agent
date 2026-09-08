@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {writeFile} from 'node:fs/promises';
-import {setup,walk,aim,capture,graphics,focusInterruption,frames} from './recovery-helpers.js';
+import {setup,walk,aim,capture,graphics,focusInterruption,frames,controllerChoose} from './recovery-helpers.js';
 import {brake,climb,steerTarget,levelForPad,flyToPad,exitAndTerminal,reboard} from './recovery-flight.js';
 const state=p=>p.evaluate(()=>window.starAgent.state),out=process.env.TRANSPORT_EVIDENCE;
 async function chord(page,tap,key){await page.evaluate(()=>{for(const i of [4,5])window.transportPad.buttons[i]={pressed:true,value:1};});await frames(page);await tap(key);await page.evaluate(()=>{for(const i of [4,5])window.transportPad.buttons[i]={pressed:false,value:0};});await frames(page);}
@@ -39,7 +39,7 @@ async function guide(page,tap,point,frame='wreck'){
 async function approach(page,tap,button,guarded=false){
  await tap(9);await page.waitForFunction(()=>Boolean(document.querySelector('dialog[open]')));
  // Ship panel remains the shared discoverable control for cruise and weapon.
- const choose=async key=>{for(let i=0;i<95;i++){if(await page.evaluate(k=>document.activeElement?.dataset.controllerKey===k,key)){await tap(0);return;}await tap(13);}throw Error('Missing '+key);};
+ const choose=controllerChoose(page,tap);
  await choose('tab-ship');if((await state(page)).combatMode)await choose('combat-mode');if(guarded){if(!await page.locator('dialog[open]').count()){await tap(9);await choose('tab-ship');}await choose('weapon-laser');}if(await page.locator('dialog[open]').count())await tap(1);if((await state(page)).landingGear.target)await chord(page,tap,13);await page.waitForFunction(()=>window.starAgent.state.landingGear.progress<.02);if((await state(page)).altitude<20500)await climb(page,button,20500);await capture(page,'departure');
  await tap(9);await choose('tab-contracts');await choose('recovery-contracts');await choose('recovery-track');if(await page.locator('dialog[open]').count())await tap(1);const m=(await state(page)).trading.account.recovery.active;await travel(page,tap,`wreck-${m.id}`);await capture(page,guarded?'guarded-drive-arrival':'drive-arrival');
  const q=await page.evaluate(()=>{const n=window.starAgent.navigation,m=window.starAgent.state.trading.account.recovery.active;return n.orientation.clone().fromArray(m.quaternion).multiply(n.orientation.clone().setFromAxisAngle(n.position.clone().set(0,1,0),Math.PI)).toArray();});

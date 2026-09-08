@@ -1,6 +1,6 @@
 # Disabled Atlas cargo recovery — development evidence
 
-Status: implementation and CPU checks complete; physical browser acceptance in progress.
+Status: implementation, CPU checks and complete controller recovery/delivery/bonus-sale journey pass. Guarded and native phone acceptance remain in progress.
 No local integration, independent visual acceptance or public deployment claimed yet.
 
 Source: initial recovery `3d7bf94`; private combined `0994b83` consumes checked
@@ -145,3 +145,36 @@ Production build05 PASS4.57s,388modules,main-BFvQqjpN.js, existing chunk advisor
 Repo12changed-path check and explicit-origin/dev suggested plan pass; that plan
 includes207 inherited paths and is not gameplay certification. The revised
 three-case browser batch is ready on the final source below; no pass claimed yet.
+
+
+## Attempt05 — complete revised recovery passes; guarded fixture paging
+
+Frozen runtime6b43092/build05. Full9.3min standard-Gamepad journey **PASS**:
+mission-size notice and named objective, acceptance with no cargo, sampled drive
+(66 positions/phases), actual close flight/parking/cabin/ramp/EVA, both tractor
+transfers through the real hull openings into supported grid slots, physical
+reboarding, sampled inbound drive (53 samples), continuous atmospheric descent,
+landing, terminal walk, required-container-only payment900CR, retained original
+bonus copper container, actual ordinary sale108CR, result inventory, reboard and
+launch. Menu/native tab focus/disconnect/replacement/unsupported held-input checks
+pass. Zero application errors/warnings. Chromium151.0.7922.173, AMD860M ANGLE gl,
+1440×900 plus390×844 completion. Physical-controller hardware was not used.
+
+Original source/state/PNG/three videos and controller-receipt.json remain in
+ignored recovery-05. Selected original images below were inspected and copied
+unchanged. They show the named REQUIRED marker, actual beam/grid, readable size
+notice, retained bonus and terminal receipt. Adaptive renderer scale is not an
+independent FPS/art acceptance.
+
+The second case stopped before departure1.2min: the fixture searched the first
+Ship page for weapon-laser, while the actual Pilot interface correctly put it on
+page2. The final DOM/trace records the real Next ship systems page control. The
+fixture now uses controller input on the actual next/previous arrows for hidden
+Ship actions, including switching Combat mode back on after travel. No runtime
+or renderer change. Native phone case did not run. Total05:1pass/1fail/1unrun,
+10.6min, source hashes unchanged. Narrow06 selects only guarded recovery and
+keyboard/native phone; the passed quiet journey will not be repeated for this
+fixture-only correction.
+
+The two named authenticated actual-room freight/Atlas cargo regressions also
+pass on6b43092 (3.281s). This is not a new full database-suite claim.

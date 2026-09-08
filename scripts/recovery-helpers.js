@@ -2,6 +2,21 @@ import {mkdir,appendFile} from 'node:fs/promises';
 import {frames} from './transport-helpers.js';
 export {walk,aim,capture,graphics,focusInterruption,frames} from './transport-helpers.js';
 const out=process.env.TRANSPORT_EVIDENCE;
+// Follow the real Ship page arrows when an action is on another page.
+export function controllerChoose(page,tap){
+ const choose=async key=>{
+  if(!key.startsWith('page-')&&await page.locator(`#controller-menu[open] .controller-command-list > [data-controller-key="${key}"]`).count()){
+   for(let i=0;i<4&&!await page.locator(`#controller-menu [data-controller-key="${key}"]`).isVisible();i++){
+    const next=await page.locator('[data-controller-key="page-ship systems-next"]').getAttribute('aria-disabled');
+    await choose(next==='true'?'page-ship systems-previous':'page-ship systems-next');
+   }
+  }
+  if(key.startsWith('transport-accept-'))for(let p=0;p<4&&!await page.locator(`[data-controller-key="${key}"]`).count();p++)await choose('next-page');
+  for(let i=0;i<95;i++){if(await page.evaluate(k=>document.activeElement?.dataset.controllerKey===k,key)){await tap(0);return;}await tap(13);}
+  throw Error(`Missing controller action ${key}`);
+ };
+ return choose;
+}
 export async function setup(page,site='orbit'){
  await mkdir(out,{recursive:true});const errors=[],warnings=[];
  page.on('requestfailed',r=>{appendFile(`${out}/requests.log`,`${r.url()} ${JSON.stringify(r.failure())}\n`).catch(()=>{});});
@@ -13,6 +28,6 @@ export async function setup(page,site='orbit'){
  if(site.startsWith('settlement-'))await page.waitForFunction(()=>window.starAgent.state.settlements.ready&&window.starAgent.state.settlements.rendered>0);
  const button=async(i,pressed)=>{await page.evaluate(({i,pressed})=>window.transportPad.buttons[i]={pressed,value:+pressed},{i,pressed});await frames(page);};
  const tap=async i=>{await button(i,true);await button(i,false);};
- const choose=async key=>{if(key.startsWith('transport-accept-')){for(let p=0;p<4&&!await page.locator(`[data-controller-key="${key}"]`).count();p++)await choose('next-page');}for(let i=0;i<95;i++){if(await page.evaluate(k=>document.activeElement?.dataset.controllerKey===k,key)){await tap(0);return;}await tap(13);}throw Error(`Missing controller action ${key}`);};
+ const choose=controllerChoose(page,tap);
  return {tap,button,choose,errors,warnings};
 }
