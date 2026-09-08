@@ -1,3 +1,4 @@
+import { SETTLEMENTS } from '../settlements/catalog.js';
 import { validBaseTerminal } from './base-site.js';
 import { setBaseOffer,consumeBaseOffer,offered } from './base-stock.js';
 import { fitsBox } from '../inventory/containers.js';
@@ -138,4 +139,18 @@ export function commerceCommand(source,owner,m,ctx){
   // Bounded history plus revision validation: old retries cannot execute again.
   const keys=Object.keys(s.receipts);if(keys.length>512)delete s.receipts[keys[0]];
   check(validCommerce(s),'Cargo transaction failed validation.');return {state:s,...receipt};
+}
+
+/** Add each authored solo market once; depletion and old receipts survive reload. */
+export function normalizeSettlementMarkets(source){
+  const normalized=normalizeCommerce(source);
+  const missing=SETTLEMENTS.filter(s=>!Object.hasOwn(normalized.markets,s.id));
+  if(Object.hasOwn(normalized,'settlementVersion')){
+    check(normalized.settlementVersion===1&&!missing.length,'Settlement markets are invalid. Original save retained.');
+    return normalized;
+  }
+  const next={...structuredClone(normalized),settlementVersion:1};
+  for(const site of missing){const market=createMarket(TRADE_RESOURCES,site.id);Object.assign(market.stock,site.stock);next.markets[site.id]=market;}
+  check(validCommerce(next),'Settlement market initialization failed. Original save retained.');
+  return next;
 }

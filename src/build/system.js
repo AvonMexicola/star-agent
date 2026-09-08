@@ -135,6 +135,7 @@ export class BuildSystem {
     if(!this.assetsLoaded)return this.error||'Loading construction models…';
     if(!this.canBuild())return 'Build on foot outside the ship.';
     if(c.owner!==LOCAL_OWNER)return 'Building permission required.';
+    if((this.protectedClaims?.()??[]).some(other=>other.body===c.body&&v(other.origin).distanceTo(v(c.origin))<other.radius+c.radius))return 'Keep your claim clear of the public trade settlement.';
     const body=BODIES.find(b=>b.id===c.body),point=this.toWorld(v(p.position),c),localPlayer=this.toLocal(this.nav.position,c),boxes=getPlacementBoxes(p),bounds=getPlacementBounds(p);
     if(Math.hypot(distanceToPolygon(footprint(p),localPlayer.x,localPlayer.z),Math.max(bounds.min[1]-localPlayer.y,0,localPlayer.y-bounds.max[1]))>12)return 'Move within 12 m of the piece.';
     if(c.pieces.length>=MAX_PIECES)return `Prototype limit: ${MAX_PIECES} pieces per site.`;

@@ -1,0 +1,29 @@
+{
+  "browser": "151.0.7922.173",
+  "graphics": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "vendor": "Google Inc. (AMD)"
+  },
+  "errors": [],
+  "warnings": [],
+  "physicalController": false,
+  "start": "Explicit development approach at 65 m; all subsequent navigation input from injected standard Gamepad.",
+  "runtime": "03a561e",
+  "seed": 7291,
+  "controllerJourney": "PASS",
+  "finalMode": "flight",
+  "finalCredits": 1493,
+  "stock": {
+    "basalt": 1500,
+    "copper": 600,
+    "ice": 2400,
+    "aggregate": 1024,
+    "metal-stock": 1024,
+    "conductor": 1024
+  },
+  "visualTour": "All four captures completed; test then failed an ambiguous phone-map fixture selector; no full visual-case pass claimed."
+}

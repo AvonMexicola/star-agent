@@ -8,7 +8,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   const fixed=staticNavigationTargets(destinations),lock=new NavigationLock();
   let selectedId=null,aimed=null,reason='',lastTargets=fixed,activeTarget=null,lastController=nav.gamepad.id;
   let lastConnected=nav.gamepad.connected;
-  let filters=Object.fromEntries(Object.keys(NAV_FILTERS).map(id=>[id,['bodies','stations','missions','bases'].includes(id)]));
+  let filters=Object.fromEntries(Object.keys(NAV_FILTERS).map(id=>[id,['bodies','stations','missions','bases','trade'].includes(id)]));
   try{const saved=JSON.parse(localStorage.getItem('star-agent-nav-filters'));for(const key of Object.keys(filters))if(typeof saved?.[key]==='boolean')filters[key]=saved[key];}catch{}
   document.body.classList.add('navigation-beacons');
   const markers=document.createElement('div');markers.id='navigation-markers';markers.setAttribute('aria-label','Navigation beacons');parent.append(markers);
