@@ -19,10 +19,14 @@ these fixtures.
 
 Frozen runtime `eda1ba7` passes **42 focused GLB/core/Atlas/security/room cases**
 in 19.00 s and production preview build05 in 9.21 s. The earlier **160 registered
-normal test files** passed in 39.36 s. The full final multiplayer run needs the
-private worktree's generated Prisma client; the exact missing-module finding,
-original native runner failures and deck-contact regression are retained in
-[the failure record](failures.md). Browser acceptance remains pending.
+normal test files** passed in 39.36 s. After generating the missing ignored Prisma client, the parent-owned serialized
+multiplayer05 run passed **210 cases, with two existing opt-in skips**, no
+failures/cancellations, in **65.093 s** on the same authority source. Its TAP is
+`assets/burrow-sentry/.staging/multiplayer05-parent.log`. The missing-module
+finding, original native runner failures and deck-contact regression remain in
+[the failure record](failures.md). The later presentation-only correction guarantees a confirmed pulse reaches one
+rendered frame before aging; build06 passes in 6.78 s. Browser acceptance remains
+pending.
 
 The portable browser runner hashes all relevant Sentry, shared input/render and
 server sources before/after each job, checks actual host process executable and

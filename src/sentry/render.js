@@ -44,7 +44,7 @@ export function createSentryRenderer(scene){
   }
   const api={instances,ready:loadSentryAsset,
     fire(event){
-      const beam=new RoverCuttingBeam(scene);pulses.push({beam,start:v(event.start),end:v(event.end),left:.13,hit:Boolean(event.targetId)});
+      const beam=new RoverCuttingBeam(scene);pulses.push({beam,start:v(event.start),end:v(event.end),left:.13,rendered:false,hit:Boolean(event.targetId)});
       while(pulses.length>20){const old=pulses.shift();old.beam.dispose();}
     },
     update(dt,origin,snapshots){
@@ -61,8 +61,11 @@ export function createSentryRenderer(scene){
         for(const link of L.links){const index=L.wheels.findIndex(w=>w.id===link.wheel),w=s.wheels[index];if(!w)continue;const end=v(link.wheelOffset).applyAxisAngle(up,w.steer).add(v(L.wheels[index].position));end.y+=w.suspension;const delta=end.sub(v(link.anchor)),node=m.getObjectByName(link.node);node.quaternion.setFromUnitVectors(up,delta.clone().normalize());node.scale.y=delta.length()/node.userData.restLength;}
         e.display.update(s);e.object.updateMatrixWorld(true);
       }
-      for(let i=pulses.length-1;i>=0;i--){const p=pulses[i];p.left-=dt;if(p.left<=0){p.beam.dispose();pulses.splice(i,1);}else p.beam.set(p.start,p.end,origin,clock,{hit:p.hit,reducedMotion:false});}
+      // A newly confirmed pulse must reach the renderer once, even when the
+      // current slow frame took longer than its visual lifetime.
+      for(let i=pulses.length-1;i>=0;i--){const p=pulses[i];if(p.rendered)p.left-=dt;else p.rendered=true;if(p.left<=0){p.beam.dispose();pulses.splice(i,1);}else p.beam.set(p.start,p.end,origin,clock,{hit:p.hit,reducedMotion:false});}
     },
+    beamState(){return pulses.map(p=>({visible:p.beam.mesh.visible,start:p.start.toArray(),end:p.end.toArray(),remaining:p.left}));},
     state(){return [...instances.values()].map(e=>({id:e.id,ready:Boolean(e.model),error:e.error}));},
     dispose(){for(const e of instances.values()){e.display?.dispose();for(const m of e.materials)m.dispose();e.object.removeFromParent();}instances.clear();for(const p of pulses)p.beam.dispose();pulses.length=0;},
   };return api;
