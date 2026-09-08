@@ -3,6 +3,7 @@ import {createWeaponTarget} from '../effects/weapon-target.js';
 import {BuildSystem} from '../build/system.js';
 import {emptyBuild} from '../build/state.js';
 import {segmentSphere,SHIP_STATS} from '../combat/simulation.js';
+import {occupiesShip} from '../combat/ship-occupancy.js';
 import {PIRATE_MARKET,PERIMETER as P} from './catalog.js';
 import {PiratePerimeter} from './perimeter.js';
 import {PirateProps} from './props.js';
@@ -46,7 +47,7 @@ export function createPirateCompound({scene,nav,mining,getCombat,enabled=()=>!na
   update(dt,origin){cameraOrigin.copy(origin);const on=enabled(),near=on&&nav.position.distanceTo(v(layout.claim.origin))<2400;if(near!==visible){visible=near;store.state.build={...emptyBuild(),claims:near?claims:[]};}buildings.update(dt,origin);staticKit.update();
    if(on&&nav.position.distanceTo(v(layout.claim.origin))<1000&&!discovered){discovered=true;nav.notify('Hidden signal resolved · Hush Exchange. Amber outer pad is clear; isolate the tower on foot to trade.');}
    const suspended=!on||!nav.enabled||!nav.focused||document.hidden||Boolean(document.querySelector('dialog[open]'))||Boolean(nav.travel)||!tower.ready||!props.ready||collision.blocked;
-   const aircraft=['flight','landed'].includes(nav.mode)||nav.mode==='walk'&&nav.insideShip,ship=nav.mode==='flight'?nav.position:nav.shipPosition??nav.position,targetLocal=local(ship),distance=ship.distanceTo(tower.origin),aligned=!suspended&&aircraft?tower.aim(ship,Math.min(.1,dt)):false;
+   const aircraft=occupiesShip(nav),ship=nav.mode==='flight'?nav.position:nav.shipPosition??nav.position,targetLocal=local(ship),distance=ship.distanceTo(tower.origin),aligned=!suspended&&aircraft?tower.aim(ship,Math.min(.1,dt)):false;
    const start=tower.ready?tower.muzzle(0):tower.origin,delta=ship.clone().sub(start);clearAge-=Math.min(.1,dt);if(!suspended&&near&&aircraft&&distance<P.engage&&delta.length()>1e-6&&clearAge<=0){const wall=obstruction(start,delta.clone().normalize(),origin,delta.length());lineClear=!wall||wall.distance>delta.length()-12;clearAge=.15;}else if(suspended||!aircraft||distance>=P.engage){lineClear=true;clearAge=0;}
    props.update(nav.position,origin,on);
    policy.update(dt,{distance,altitude:targetLocal.y-layout.deck,ship:aircraft,active:!suspended,clear:lineClear,aligned});tower.update(Math.min(.1,dt),origin,{enabled:on,phase:policy.phase});

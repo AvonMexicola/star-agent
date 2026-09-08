@@ -18,11 +18,19 @@ import {normalizePirateMarket} from '../src/pirate-compound/market.js';
 import {SETTLEMENTS,settlementById} from '../src/settlements/catalog.js';
 import {emptyCommerce,normalizeSettlementMarkets,validCommerce} from '../src/trading/model.js';
 import {integrity,damage} from '../src/combat/simulation.js';
+import {occupiesShip} from '../src/combat/ship-occupancy.js';
 import {SELENE,bodySurfacePoint} from '../src/celestial.js';
 import {terminalFrames} from '../src/trading/terminal-frames.js';
 import {getWorldBoxes} from '../src/build/collision.js';
 import {getPieceDefinition} from '../src/build/definitions.js';
 const step=(sim,seconds,context={})=>{for(let i=0;i<Math.ceil(seconds/.05);i++)sim.update(.05,{distance:120,altitude:30,ship:true,...context});};
+test('actual rover cabin flags reset the perimeter without making landed ships immune',()=>{
+ for(const nav of [{mode:'flight'}, {mode:'landed',insideShip:true}, {mode:'walk',insideShip:true}])assert.equal(occupiesShip(nav),true);
+ const rover={mode:'walk',insideShip:true,roverOccupied:true};assert.equal(occupiesShip(rover),false);
+ assert.equal(occupiesShip({mode:'walk',insideShip:false}),false);assert.equal(occupiesShip({mode:'eva',insideShip:true}),false);
+ let shots=0;const policy=new PiratePerimeter({onShot:()=>shots++});step(policy,6.8);const before=shots;assert.ok(before>0);step(policy,30,{ship:occupiesShip(rover)});assert.equal(policy.phase,'idle');assert.equal(shots,before);
+ rover.roverOccupied=false;step(policy,5,{ship:occupiesShip(rover)});assert.equal(shots,before,'Re-entering an aircraft starts a new warning, without queued burst hits.');
+});
 test('actual world collision accepts the pad, blocks walls, opens the door and carries both ramps',()=>{
  const s=pirateLayout(),q=new Quaternion(...s.claim.quaternion),origin=new Vector3(...s.claim.origin),world=a=>new Vector3(...a).applyQuaternion(q).add(origin),nav={position:world(s.approach),orientation:q,layout:SHIP_LAYOUT,mode:'flight'},collision=createPirateCollision(new Scene(),nav,[s.claim,s.outerClaim]);
  try{
