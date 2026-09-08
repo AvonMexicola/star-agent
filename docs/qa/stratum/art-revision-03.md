@@ -10,7 +10,7 @@ A CPU raycast of the old editable source found broad ivory skin faces behind the
 
 The former 91-cycle directional finish signal has been replaced by independent, isotropic filtered roughness and micro-height gradients. Texture grain repeats every four metres and contains no baked lighting. Color remains grayscale reflectance multiplied by the explicit Meridian material recipe; there is no semantic color atlas to invert. Normal and ORM channels are independently validated from decoded runtime WebP bytes and actual UV0 samples.
 
-The contact bake now ignores each source object's own evaluated thickness while retaining nearby fitting contact. A subdivided top face allows the existing deck to carry short-range contact near furniture feet. The support datum remains Y1.35; the seated rubber wear surface rises 6 mm above it. Berth/bin floor collars remain within their existing collision volumes. No central cockpit brace has been introduced.
+The contact bake now ignores each source object's own evaluated thickness while retaining nearby fitting contact. A subdivided top face allows the existing deck to carry short-range contact near furniture feet. The support datum remains Y1.35; the seated rubber wear surface rises 6 mm above it. Berth/bin floor collars remain outside the center passage. No central cockpit brace has been introduced.
 
 The shared geometry and packing helpers, canonical layout, systems, loader, eye/display/beam/nozzle APIs and gameplay sources are unchanged. The measured 14 independent flight solids are refreshed for the new static surfaces. Dynamic ground-reaching geometry remains separate from the pressure body.
 
