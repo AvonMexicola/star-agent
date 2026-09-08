@@ -122,3 +122,9 @@ calibration. Four final Chromium cases pass on equivalent runtime `a50c060`.
 The refreshed local client/API use protocol4 and the same persistent database,
 with no schema migration. [Builder QA and comparison](../qa/handheld-tools.md)
 record asset budgets, failed checks/corrections and acceptance limits.
+
+
+Projected terminals (SA-UI-004) add nearby welcome projections and a native HTML
+exchange dashboard over the existing trade handlers. Stock, needs, cargo and owner
+offers retain their existing authority. See [terminal QA](../qa/projected-terminals/README.md)
+for checked source, browser evidence, local integration and acceptance limits.

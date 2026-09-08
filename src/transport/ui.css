@@ -1,3 +1,7 @@
-.freight-caption{letter-spacing:.06em;color:#b6efd1!important}.trade-content .freight-card{display:block;padding:12px 0}.freight-card p{line-height:1.5}.freight-stage{color:#f3be78!important}.freight-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.trade-content>p{flex-shrink:0;line-height:1.4}.trade-tabs{flex-wrap:wrap}.freight-card h3{line-height:1.3}
-#trading-dialog.gameplay-screen .gameplay-content{max-height:100%;min-height:0;overflow:auto}
-@media(max-width:600px){.trade-tabs button{flex:1 0 28%}.freight-actions button{flex:1 0 40%}.trade-content .freight-card{padding:6px 0}}
+#trading-dialog .freight-caption{letter-spacing:.04em;color:var(--exchange-muted);font-size:12px}
+#trading-dialog .trade-content .freight-card{display:block;padding:12px 0}
+#trading-dialog .freight-card p{line-height:1.5}
+#trading-dialog .trade-content .freight-stage{color:#765022;font-weight:500}
+.freight-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.freight-card h3{line-height:1.3}
+@media(max-width:600px){.freight-actions button{flex:1 0 40%}#trading-dialog .trade-content .freight-card{padding:6px 0}}
