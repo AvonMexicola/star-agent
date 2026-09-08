@@ -688,3 +688,7 @@ the console. The shared Pilot menu, keyboard navigation and phone controls remai
 available. The [terminal QA record](qa/projected-terminals/README.md) separates
 actual gameplay evidence from the owner presentation fixture and physical-device
 acceptance. This is a development feature; no public deployment is included.
+
+Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
+[the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
+The existing API remains healthy; no service restart or save migration was needed.

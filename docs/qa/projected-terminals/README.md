@@ -99,7 +99,11 @@ at each job's end; no other session, security setting or graphics backend change
 ## Acceptance and integration
 
 Implementation, CPU checks and the complete injected-controller journey pass.
-Final phone inspection passes; local integration follows the checked checkpoint. Author inspection is not independent review.
+Final phone inspection passes. Checked checkpoint3bf082b is integrated in local
+dev/all-features. All six runtime files match; served projection, dashboard and
+CSS return HTTP200 and both 5178/8087 API health routes pass. The exact56,247-byte
+unrelated append-only journal was preserved. No service restart was required.
+See [local receipt](local-integration.json). Author inspection is not independent review.
 Physical Gamepad hardware, independent visual rubric and hardware FPS acceptance
 remain separate. No public deployment is included. Existing Transport ownership
 of its Freight tab/online contracts is preserved; only checked source is merged.

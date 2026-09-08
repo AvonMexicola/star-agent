@@ -4065,3 +4065,13 @@ Next: guarded fast-forward to local dev/all-features, retain its append-only
 journal, verify existing 5178/8087 preview and publish a draft review PR. Transport
 retains its unfinished Freight actions; no source copied from that lane. No public
 deployment, schema change or service restart is included.
+
+
+SA-UI-004 LOCAL INTEGRATION COMPLETE, 2026-09-08: checked checkpoint3bf082b
+fast-forwarded from5f8f018 into dev/all-features. Exact56,247-byte unrelated journal
+preserved (SHA2563bf320f0); six runtime files match checked source. Existing5178
+serves projection/dashboard/CSS HTTP200; both5178/8087 /api/health return ok:true.
+No service restart, schema migration or public deployment. Final metadata only
+follows. Receipt docs/qa/projected-terminals/local-integration.json; short disk
+browser cache/evidence retained under ignored test-results. Feature is available
+for local testing; physical-device and independent art/FPS acceptance stay pending.
