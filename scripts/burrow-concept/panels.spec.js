@@ -143,6 +143,9 @@ test('Burrow panels follow actual mining and driving through physical cabin acce
     await input.tap('cargo'); await expect(page.locator('#cargo-dialog')).toBeVisible();
     await wait(page, () => starAgent.state.rover.beaming === 0);
     expect((await state(page)).containers.target).toBe('meridian-rover-bin');
+    // The final cut may still publish after input stops. Inspect the settled
+    // inventory; a replaced pager cannot retain native pointer capture.
+    await wait(page, () => !starAgent.state.mining.pending);
     if (phone) await input.tap('next');
     await expect(page.locator('[data-from="meridian-rover-bin"][data-item]').first()).toBeVisible();
     await shot('04-real-ore-inventory');
@@ -154,11 +157,34 @@ test('Burrow panels follow actual mining and driving through physical cabin acce
     await input.hold(['forward', 'right']); await wait(page, () => starAgent.state.rover.speed > .6);
     await page.waitForTimeout(180); const driving = await note('05-drive-panels'); await shot('05-drive-panels');
     expect(driving.forward).toEqual([233, 178, 116, 255]); expect((await state(page)).rover.controls.steer).toBe(1);
-    await stop(); await input.hold(['reverse']); await wait(page, () => starAgent.state.rover.speed < -.4);
-    await note('06-reverse'); await stop();
+    // Hold reverse directly from forward motion, without inserting a brake or
+    // neutral frame: it must decelerate through zero and keep driving backward.
+    await input.hold(['reverse']); await wait(page, () => starAgent.state.rover.speed < -.4);
+    const reversing = (await state(page)).rover;
+    expect(reversing.controls.throttle).toBe(-1); expect(reversing.controls.brake).toBe(0);
+    await page.waitForTimeout(700);
+    const reversed = (await state(page)).rover;
+    expect(reversed.speed).toBeLessThan(-.4);
+    expect(Math.hypot(...reversed.position.map((n, i) => n - reversing.position[i]))).toBeGreaterThan(.3);
+    await note('06-reverse'); await shot('06-reverse'); await stop();
     const resumed = await note('07-resumed-play'); expect(resumed.forward).toEqual([81, 120, 128, 255]);
     expect((await state(page)).enabled).toBe(true); await shot('07-resumed-play');
     if (!phone) { await page.keyboard.press('Digit4'); await shot('08-surface-exterior'); }
+    await input.hold(['forward']);
+    const contactHandle = await wait(page, () => { const s=starAgent.state; return s.rover.blocked ? s : null; }, null, 18000);
+    const contactState = await contactHandle.jsonValue(); await contactHandle.dispose();
+    const contact = contactState.rover;
+    // Retain the exact blocked frame: the next frame may already be separating
+    // from a glancing contact while the held forward input remains active.
+    milestones.push({name:'09-observed-contact-stop',time:new Date().toISOString(),state:contactState,display:null});
+    await note('09-contact-stop'); await shot('09-contact-stop');
+    expect(contact.controls.brake).toBe(0);
+    await input.hold(['reverse']); await wait(page, () => starAgent.state.rover.speed < -.4);
+    await page.waitForTimeout(700);
+    const escaped = (await state(page)).rover;
+    expect(escaped.blocked).toBe(false);
+    expect(Math.hypot(...escaped.position.map((n, i) => n - contact.position[i]))).toBeGreaterThan(.3);
+    await note('10-reverse-from-contact'); await shot('10-reverse-from-contact'); await stop();
     expect(errors).toEqual([]); expect(requests).toEqual([]);
     if (phone) {
       const touches = await page.evaluate(() => burrowTouches);

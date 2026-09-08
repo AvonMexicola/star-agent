@@ -8,7 +8,7 @@ import { createRoverUI } from './rover-ui.js';
 import { createRoverDisplays } from './rover-display.js';
 import { bodyOffset } from './celestial.js';
 import { MATERIAL_IDS } from './inventory/containers.js';
-import { Plasma } from './effects/energy-effects.js';
+import { RoverCuttingBeam } from './rover-cutting-beam.js';
 import { createWeaponTarget } from './effects/weapon-target.js';
 import { clipTerrainCamera } from './ship-camera.js';
 import { roverSurfaceStart } from './rover-surface-start.js';
@@ -23,7 +23,7 @@ const bounds=points=>({min:[0,1,2].map(i=>Math.min(...points.map(p=>p.getCompone
  * this hook claims its seated/access step and keeps every world pose in doubles. */
 export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip,available=()=>true}){
   const object=new THREE.Group();object.name='Meridian Burrow';object.visible=false;scene.add(object);
-  const touch=new Set(),power=createRoverPower(),beams=[new Plasma(scene),new Plasma(scene)],targetRay=createWeaponTarget({nav,mining});
+  const touch=new Set(),power=createRoverPower(),beams=[new RoverCuttingBeam(scene),new RoverCuttingBeam(scene)],targetRay=createWeaponTarget({nav,mining});
   let model=null,ready=false,error=null,spawned=false,occupied=false,phase='idle',door=0,route=[],routeIndex=0;
   let anchorHull=null,anchor=null,anchorRotation=null,lastLiftY=4,anchorLift=null,aimYaw=0,aimPitch=-.20,held=false,keyHeld=false,trigger=false,time=0;
   let renderedOrigin=new THREE.Vector3(),message='Approach the port door to board.',lastHits=[],sampledBeams=[];
@@ -238,7 +238,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
         const start=c.muzzle.getWorldPosition(new THREE.Vector3()).add(origin),direction=FWD.clone().applyQuaternion(c.muzzle.getWorldQuaternion(new THREE.Quaternion())).normalize();
         let hit=firing?targetRay(start,direction,origin,L.mining.range):null;const wall=firing?shipRay(start,direction,hit?.distance??L.mining.range):null;if(wall)hit=wall;
         const end=hit?.point??start.clone().addScaledVector(direction,L.mining.range);
-        beams[i].mesh.visible=false;if(firing)beams[i].set(start,end,.032,origin,time,.95);
+        beams[i].mesh.visible=false;if(firing)beams[i].set(start,end,origin,time,{hit:Boolean(hit),normal:hit?.normal,reducedMotion:effects.reducedMotion});
         sampledBeams.push({start:start.toArray(),direction:direction.toArray(),end:end.toArray(),active:firing,rock:hit?.rock?.rockId??null});
         if(firing&&hit?.rock){
           mining.onMine({point:hit.point.clone(),normal:hit.normal?.clone(),target:hit.rock,dt,rate:L.mining.cutRatePerBeam,destination:L.cargo.id,direction});lastHits.push(hit.rock.rockId);
@@ -248,7 +248,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       if(!firing)mining.budget=0;
       const survey=toLocal(mining.position),bearing=Math.atan2(survey.x,-survey.z)*180/Math.PI;
       const surveyHint=`${mining.targetName} · ${Math.hypot(survey.x,survey.z).toFixed(0)} m · ${Math.abs(bearing).toFixed(0)}° ${bearing<0?'left':'right'}`;
-      message=phase!=='idle'?'Cabin access moving…':!occupied?'Approach the port door to board.':anchor?`${nav.shipId==='gannet'?'Gannet vehicle bay':'Atlas cargo deck'} · Y / G operates ${carrierControl()}`:physics.state.blocked?`Brake held · ${physics.state.reason==='collision'?'obstacle ahead':physics.state.reason}`:power.state.depleted?'Cutter charge depleted · release trigger to recharge':lastHits.length?'Twin cutters active · ore collected into rover bins':mining.store.freeFor?.(L.cargo.id)<.001?'Ore bins full · View / I opens storage':surveyHint;
+      message=phase!=='idle'?'Cabin access moving…':!occupied?'Approach the port door to board.':anchor?`${nav.shipId==='gannet'?'Gannet vehicle bay':'Atlas cargo deck'} · Y / G operates ${carrierControl()}`:physics.state.blocked?`Drive blocked · ${{collision:'obstacle',unsupported:'no wheel support',slope:'slope too steep',step:'terrain step',suspension:'suspension limit'}[physics.state.reason]??physics.state.reason}`:driveInput.brake?'Brake held · release keyboard X / controller LT to drive':power.state.depleted?'Cutter charge depleted · release trigger to recharge':lastHits.length?'Twin cutters active · ore collected into rover bins':mining.store.freeFor?.(L.cargo.id)<.001?'Ore bins full · View / I opens storage':surveyHint;
       ui.update();document.body.classList.toggle('rover-occupied',occupied);
       displays?.update(dt,api.state);
     },

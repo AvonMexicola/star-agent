@@ -1,10 +1,10 @@
 {
   "id": "SA-VEH-002",
-  "title": "Bring Burrow shell and flat-panel cabin toward approved concepts",
+  "title": "Refine Burrow cabin, cutter cartridges and contact reversal",
   "milestone": "M1",
   "owner": "@AvonMexicola",
   "agent": "Codex Burrow concept upgrade",
-  "status": "integrated",
+  "status": "active",
   "branch": "art/burrow-concept-upgrade",
   "base": "76aa45efc98db4d1db92bfa629a26e362de6804f",
   "updated": "2026-09-08",
@@ -27,7 +27,13 @@
     "docs/qa/burrow-concept/",
     "blender/pack_mining_rover.py",
     "tests/rover-asset.test.js",
-    "src/rover.css"
+    "src/rover.css",
+    "blender/rover_cutters.py",
+    "src/rover-cutting-beam.js",
+    "src/mining/collision.js",
+    "src/rover-ui.js",
+    "tests/mining-rover.test.js",
+    "tests/mining.test.js"
   ],
   "brief": "docs/briefs/burrow-concept-upgrade.md"
 }
