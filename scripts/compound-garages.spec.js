@@ -1,9 +1,10 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 const out=process.env.GARAGE_EVIDENCE;
+const diagnostics=new WeakMap();
 const frames=p=>p.evaluate(async()=>{for(let i=0;i<4;i++)await new Promise(r=>requestAnimationFrame(r));});
 async function setup(page,site='selene'){
- await mkdir(out,{recursive:true});const errors=[],warnings=[];
+ await mkdir(out,{recursive:true});const errors=[],warnings=[];diagnostics.set(page,{errors,warnings});
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());if(m.type()==='warning')warnings.push(m.text());});
  await page.addInitScript(()=>{window.settlementPad={id:'Garage standard Gamepad',mapping:'standard',index:0,connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>window.settlementDisconnected?[]:[window.settlementPad]});});
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
@@ -37,11 +38,11 @@ async function focusInterruption(page,button){
  }finally{await game.send('Emulation.setFocusEmulationEnabled',{enabled:true});await other.send('Emulation.setFocusEmulationEnabled',{enabled:true});await game.detach();await other.detach();await blank.close();await page.bringToFront();}
 }
 
-test.afterEach(async({page},info)=>{if(info.status!==info.expectedStatus){try{await capture(page,'failure-'+info.retry);}catch{}}});
+test.afterEach(async({page},info)=>{if(info.status!==info.expectedStatus){try{await capture(page,'failure-'+info.retry);await writeFile(`${out}/failure-diagnostics.json`,JSON.stringify(diagnostics.get(page)));}catch{}}});
 
 test('controller lands, walks to garage, deploys and physically boards Burrow, drives to terrain, opens ore and returns',async({page,browser})=>{
  const {tap,button,choose,errors,warnings}=await setup(page);
- await button(4,true);await button(5,true);await tap(13);await button(5,false);await button(4,false);
+ await page.evaluate(()=>{for(const i of [4,5])window.settlementPad.buttons[i]={pressed:true,value:1};});await frames(page);await tap(13);await page.evaluate(()=>{for(const i of [4,5])window.settlementPad.buttons[i]={pressed:false,value:0};});await frames(page);
  await page.waitForFunction(()=>window.starAgent.state.landingGear.progress>.98);await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',undefined,{timeout:60000});
  await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
  await walk(page,[0,2.75,3],'ship');await aim(page,[0,2.75,7]);await tap(2);await page.waitForFunction(()=>window.starAgent.state.doorProgress>.98);await walk(page,[0,1.75,8],'ship');
