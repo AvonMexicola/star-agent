@@ -296,3 +296,20 @@ changes, with exact source identity,19 independent CPU cases and six delayed
 readiness probes. [The earlier functional seam review](functional-seam-review.md)
 records the Fleet preparation failure fix and six actual-callback closure cases.
 These bounded reviews do not replace final art or remaining gameplay evidence.
+
+
+The [revised shared access recorder](stratum-access-continuity-review.md) closes
+both the cadence false failure and the independent review's source-switch
+vertical-hop finding. It checks elapsed-time horizontal travel, canonical
+footprint-selected support, exact aft-edge transitions, world/local agreement
+and an independent vertical bound. All original89/64 samples remain unchanged
+and pass the new path analysis;13 portable tests and12 independent negative
+copies pass. Both original browser failure and rejected helper01 stay retained.
+Native keyboard02/touch are still required.
+
+Gannet [Art12](../gannet/art-revision-12.md) is imported at `f3dac82` from checked
+feature `08e7fc3`:55,622triangles/3,290,672bytes. Connected primary hull forms,
+compliant pads, measured fixed contact and studio-only fixture shadows retain
+the physical layout, all66 protected transforms, five exact MFD/glass meshes
+and11 moving envelopes. Fresh native and independent visual review follow;
+Art11's gameplay evidence is not a new Art12 score.

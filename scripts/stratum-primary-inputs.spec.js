@@ -8,6 +8,7 @@ import {shipHandling} from '../src/ship-handling.js';
 import {MiningStore, MINING_KEY} from '../src/mining/store.js';
 import {ROCK_ID} from '../src/mining/volume.js';
 import {MATERIAL_IDS} from '../src/inventory/containers.js';
+import {analyzeStratumAccess} from './stratum-access-continuity.js';
 import {state, wait, frames, clamp, KeyboardInput, TouchInput, installNativeReceipts, nativeFocusNeutral} from './stratum-primary-inputs.js';
 
 const output = process.env.STRATUM_PRIMARY_OUTPUT ?? '/home/cees/projects/.medium-ships-qa/stratum-primary/unconfigured';
@@ -18,8 +19,8 @@ const sourceFiles = ['src/main.js', 'src/navigation.js', 'src/medium-ships.js', 
   'src/nomad-cabin-controls.js', 'src/nomad-cabin-controls.css', 'src/secondary-touch-buttons.js',
   'src/gameplay-menu.js', 'src/controller-ui.js', 'src/ship-inventory-ui.js', 'src/ship-camera.js',
   'src/flight-model.js', 'src/ship-handling.js', 'src/mining/field.js', 'src/mining/rock.js', 'src/mining/store.js', 'src/test-flight.js',
-  'assets/stratum/layout.json', 'public/models/stratum.glb'];
-const fixtureFiles = ['stratum-primary-inputs.spec.js', 'stratum-primary-inputs.config.js', 'stratum-primary-inputs.js'];
+  'assets/stratum/layout.json', 'public/models/stratum.glb', 'src/boarding.js', 'src/celestial.js'];
+const fixtureFiles = ['stratum-primary-inputs.spec.js', 'stratum-primary-inputs.config.js', 'stratum-primary-inputs.js', 'stratum-access-continuity.js'];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
 // Read the actual adapter bytes. These explicit dev-flight journeys use a fresh
@@ -174,21 +175,29 @@ test('Stratum: real landing and ramp → short flight → twin practice-store co
   async function recordAccess(start, id) {
     if (start) {
       await page.evaluate(() => {
-        const a = __stratumPrimary.access = {active: true, points: []};
+        const n = starAgent.navigation;
+        const a = __stratumPrimary.access = {active: true, points: [],
+          shipFrame: {position: n.shipPosition.toArray(), orientation: n.shipOrientation.toArray()}};
         function record(t) {
           if (!a.active) return;
           const n = starAgent.navigation, p = n.toShipLocal(), surface = n.freighter.surfaceAt(p);
-          a.points.push({t, world: n.position.toArray(), local: p.toArray(), source: surface?.source ?? 'terrain', ramp: n.freighter.snapshot.ramp, mode: n.mode});
+          a.points.push({t, world: n.position.toArray(), local: p.toArray(), source: surface?.source ?? 'terrain',
+            floor: surface?.y ?? null, inside: n.insideShip, ramp: n.freighter.snapshot.ramp, mode: n.mode,
+            boost: n.boost, jumpHeight: n.jumpHeight, velocity: n.velocity.toArray()});
           requestAnimationFrame(record);
         }
         requestAnimationFrame(record);
       }); return;
     }
-    const points = await page.evaluate(() => { __stratumPrimary.access.active = false; return __stratumPrimary.access.points; });
-    const maxStep = Math.max(0, ...points.slice(1).map((p, i) => distance(p.world, points[i].world)));
-    accessPaths[id] = {points, maxStep}; expect(points.filter(p => p.source === 'stratum-ramp:aft').length).toBeGreaterThan(10);
-    expect(points.every(p => p.mode === 'walk')).toBe(true); expect(maxStep, 'Continuous access cannot jump between endpoints').toBeLessThan(.75);
+    const {points, shipFrame} = await page.evaluate(() => {
+      const a = __stratumPrimary.access; a.active = false; return {points: a.points, shipFrame: a.shipFrame};
+    });
+    const continuity = analyzeStratumAccess(points, shipFrame);
+    accessPaths[id] = {points, maxStep: continuity.maxStep, shipFrame, continuity};
     await writeFile(dir + '/access-' + id + '.json', JSON.stringify(accessPaths[id], null, 2));
+    expect(points.filter(p => p.source === 'stratum-ramp:aft').length).toBeGreaterThan(10);
+    expect(points.every(p => p.mode === 'walk')).toBe(true);
+    expect(continuity.offenders, 'Actual ramp travel must obey elapsed-time speed and canonical support').toEqual([]);
   }
   async function brake() {
     await input.hold([]); if (phone) await input.warm(['brake']); await input.hold(['brake']);

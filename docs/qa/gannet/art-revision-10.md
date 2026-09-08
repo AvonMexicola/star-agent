@@ -2,7 +2,7 @@
 
 Art10 responds to the failed Geometry09 native art review. Source commit `a58faba` is integrated by `70aa30c`; root verified all 13 delivered file hashes. This is an authored development checkpoint, not visual or gameplay acceptance.
 
-The final GLB SHA256 is `ca49eb995747a9fa665833729b3a370e757bcb0dd0d7e537695603b8705d6303`: **2,251,080 bytes, 41,302 triangles, 33 mesh primitives and four 1024² WebP images**. Canonical layout, pilot eye, displays, access routes and mechanism ranges remain unchanged.
+The final GLB SHA256 is `ca49eb995747a9fa665833729b3a370e757bcb0dd0d7e537695603b8705d6303`: **2,251,080 bytes, 41,302 triangles, 33 mesh primitives and three 1024² PBR WebP maps and one 512² emblem WebP image**. Canonical layout, pilot eye, displays, access routes and mechanism ranges remain unchanged.
 
 ## Changes and reproduced defects
 
