@@ -89,3 +89,15 @@ desired speed toward the point and uses the existing LT brake for deliberate
 stops; only standard Gamepad axes/buttons change. The physical waypoints, reach
 and timeouts are retained. There was no application error/warning or connection
 loss; Vite's reset warning during context teardown is retained in the raw log.
+
+Browser08 (`2026-09-08T23-24-26.349Z`, 5.1 min) completed the corrected physical
+EVA route, both seats, concurrent driving/fire, gunner exit and neutral pilot
+fallback. Maximum sampled access steps were 0.17 m for the pilot and 0.0567 m
+for the gunner. Both clients stayed connected with no server error, and page
+errors/warnings were empty; two aborted music requests remain recorded.
+Occupied controller View then opened local Backpack instead of server inventory.
+The Sentry callback used the local-only `nav.openBackpack`; it now selects the
+existing online-aware `nav.openInventory` when connected. The strict server
+dialog assertion is retained, with an additional actual panel Backpack click
+and connection check. No authority or rate limit changed. Solo/native cases
+did not run, and the original failure and unchanged source hashes are retained.

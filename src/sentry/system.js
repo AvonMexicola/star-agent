@@ -85,7 +85,7 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
     interact(){const c=current(),n=nearest();if(!c&&!n)return false;if(!usable())return true;void request(c?'exit':'board',c?{id:c.id}:{id:n.id,role:n.role});return true;},
     look(y,p){if(!api.occupied)return false;if(api.acceptInput){mouseYaw+=y;mousePitch+=p;}return true;},
     key(e){if(!api.occupied)return false;if(e.code==='KeyF')api.interact();if(e.code==='KeyI'){e.stopImmediatePropagation();api.openCargo();}if(e.code==='KeyT'&&!e.repeat&&api.acceptInput)keyFire=true;return true;},
-    openCargo(){if(!api.occupied)return false;reset();nav.openBackpack?.();return true;},
+    openCargo(){if(!api.occupied)return false;reset();if(multiplayer.connected)nav.openInventory?.();else nav.openBackpack?.();return true;},
     step(dt,pad){
       const c=current();if(!c)return false;
       const role=seatOf(c);nav.roverOccupied=true;nav.insideShip=true;
