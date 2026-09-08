@@ -72,7 +72,7 @@ test('controller-only Settings journey cycles all modes and preserves neutral-in
 });
 
 test('native phone touch can choose each view and restore a hidden HUD without visible controls',async({browser})=>{
-  const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+  const context=await browser.newContext({baseURL:'http://127.0.0.1:5666',viewport:{width:390,height:844},hasTouch:true,isMobile:true,recordVideo:{dir:`${output}/touch-video`}});
   const page=await context.newPage();const finish=await start(page);const cdp=await context.newCDPSession(page);
   const restore=async()=>{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x:150,y:400},{id:2,x:230,y:400}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await mode(page,'full');};
   await capture(page,'phone-full');
