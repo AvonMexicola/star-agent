@@ -1,11 +1,63 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {devLaunchOptions,devLaunchURL,DEV_SHIPS,DEV_LOCATIONS} from '../src/dev-launch-options.js';
+import {devLaunchOptions,flightEntryOptions,devLaunchURL,DEV_SHIPS,DEV_LOCATIONS} from '../src/dev-launch-options.js';
 import {testFlightStorage} from '../src/test-flight.js';
+import {Fleet,FLEET_KEY} from '../src/fleet.js';
 
-test('public entry ignores local launch parameters; invalid choices fall back safely',()=>{
+test('builds without scene tools ignore launch parameters; invalid choices fall back safely',()=>{
   assert.equal(devLaunchOptions('?dev=1&ship=atlas&start=star',false),null);
   assert.deepEqual(devLaunchOptions('?dev=1&ship=unknown&start=missing',true),{ship:'nomad',location:'hangar',autoStart:false});
+});
+test('solo and development defaults enter the Nomad hangar introduction in a temporary session',()=>{
+  for(const search of ['', '?dev=1', '?seed=7291&debug', '?ship=unknown&start=missing']){
+    const entry=flightEntryOptions(search,true);
+    assert.deepEqual(entry.devOptions,{ship:'nomad',location:'hangar',autoStart:false});
+    assert.equal(entry.testFlight,true,'practice inventory stays separate even when the introduction runs');
+    assert.equal(entry.introEnabled,true,'the opening owns the initial shoulder camera and walking spawn');
+    assert.equal(entry.sandboxEnabled,false);
+  }
+});
+test('a default scene session does not replace a saved Atlas outside the practice store',()=>{
+  const saved=JSON.stringify({version:1,active:'atlas',surfaceVisited:true,unlocked:true});
+  const browserStorage=testFlightStorage([[FLEET_KEY,saved]]);
+  const entry=flightEntryOptions('',true);
+  const practice=new Fleet(entry.testFlight?testFlightStorage():browserStorage);
+  practice.active=entry.devOptions.ship;practice.record('selection');
+  assert.equal(practice.active,'nomad');
+  assert.equal(browserStorage.getItem(FLEET_KEY),saved);
+  const normal=flightEntryOptions('',false);
+  assert.equal(normal.devOptions,null,'normal and multiplayer entry do not choose a local scene');
+  assert.equal(normal.testFlight,false);
+  assert.equal(normal.introEnabled,true);
+  assert.equal(new Fleet(browserStorage).active,'atlas');
+});
+test('explicit scene links retain their requested setup and skip the default opening',()=>{
+  for(const ship of DEV_SHIPS)for(const location of DEV_LOCATIONS){
+    const url=new URL(devLaunchURL('https://example.test/',{ship:ship.id,location:location.id}));
+    const entry=flightEntryOptions(url.search,true);
+    assert.equal(entry.devOptions.ship,location.ship??ship.id);
+    assert.equal(entry.devOptions.location,location.id);
+    assert.equal(entry.devOptions.autoStart,true);
+    assert.equal(entry.testFlight,true);
+    assert.equal(entry.introEnabled,false,'practice setup remains authoritative for explicit starts');
+  }
+  assert.equal(flightEntryOptions('?dev=1&start=hangar&intro=1',true).introEnabled,false);
+  assert.equal(flightEntryOptions('?intro=0',true).introEnabled,false,'an explicit intro opt-out remains available');
+  assert.equal(flightEntryOptions('?ship=atlas',true).devOptions.ship,'atlas','an explicit hull request is preserved');
+  assert.equal(flightEntryOptions('?ship=atlas',true).introEnabled,false);
+});
+test('the entry policy preserves construction, legacy Kestrel and shared-flight boundaries',()=>{
+  for(const devTools of [false,true]){
+    const sandbox=flightEntryOptions('?sandbox=build',devTools);
+    assert.equal(sandbox.sandboxEnabled,true);assert.equal(sandbox.introEnabled,false);
+  }
+  const meadow=flightEntryOptions('?dev=1&start=atlas-meadow&sandbox=build',true);
+  assert.equal(meadow.atlasMeadowStart,true);assert.equal(meadow.sandboxEnabled,false);
+  assert.equal(meadow.devOptions.ship,'atlas');assert.equal(meadow.introEnabled,false);
+  const legacy=flightEntryOptions('?ship=kestrel',false);
+  assert.equal(legacy.testFlight,true);assert.equal(legacy.introEnabled,false);
+  const shared=flightEntryOptions('?dev=1&ship=atlas&start=rover-surface',false);
+  assert.equal(shared.devOptions,null);assert.equal(shared.testFlight,false);assert.equal(shared.introEnabled,true);
 });
 test('every local ship and destination survives a shareable URL without dropping its seed',()=>{
   for(const ship of DEV_SHIPS)for(const location of DEV_LOCATIONS){
