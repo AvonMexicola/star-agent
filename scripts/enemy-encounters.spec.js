@@ -110,7 +110,7 @@ for(const [start,region,tier] of routes)test(`${region} ${tier}: controller disp
 
 test('keyboard and native touch select difficulties, abandon and return at phone width',async({page},testInfo)=>{
  await page.addInitScript(()=>Object.defineProperty(navigator,'getGamepads',{value:()=>[]}));
- const evidence=process.env.ENCOUNTER_EVIDENCE?`${output}/interface`:testInfo.outputPath('evidence');await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const evidence=process.env.ENCOUNTER_EVIDENCE?`${output}/interface`:testInfo.outputPath('evidence');await mkdir(evidence,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto('/?dev=1&ship=kestrel&start=orbit&intro=0&debug&seed=7291');
  await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.enabled&&!window.starAgent.state.transiting,{},{timeout:90000});

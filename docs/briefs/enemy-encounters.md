@@ -1,6 +1,6 @@
 # SA-COMBAT-001 — Regional enemy ship encounters
 
-Status: active. Sponsor: Cees / @AvonMexicola. Implementer: Codex mission designer.
+Status: validated; local integration in progress. Sponsor: Cees / @AvonMexicola. Implementer: Codex mission designer.
 Branch: `feat/enemy-encounters`, base `c766544b5c9beb98ec3c66b50595e4c974b461f3`.
 Worktree: `/home/cees/projects/star-agent/.worktrees/enemy-encounters`.
 Preview: 5398. No new dependencies, assets, services or shared main-loop hooks.

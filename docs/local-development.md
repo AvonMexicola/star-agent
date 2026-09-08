@@ -336,18 +336,25 @@ after integration.
 
 ## Space patrol combat
 
-The local integration includes the offline patrol loop from `feat/space-combat`.
-Choose **Nomad 02** or **Kestrel**, start in **Orbit**, then open **Patrol console**
-(on-screen button or controller Menu) and accept. Fly to the amber beacon, brake,
-and fight the Nomad/Kestrel pair. T / RT fires; 1–3 / Menu selects weapons;
-Tab / Menu selects the next hostile. The physical hangar cargo terminal also opens
-the console. File the combat report after both kills, or recover after ship loss.
+The local build offers **15 regional enemy ship sorties**: Easy, Standard and
+Hard contracts around Aeon, Selene, Pyre, Miasma and Selene's asteroid belt. Fly an
+armed Nomad, Kestrel or Atlas to the region and open **Menu → Contracts** (or the
+Patrol console button / station security terminal). Choose a tier, read the
+advertised flight and accept. Follow the nearby amber beacon; surface dispatch
+requires climbing into orbit. Acceptance never teleports the player.
 
-Shields regenerate after six seconds without a hit; docking repairs hull damage.
-Progress resets on reload. This first slice is offline and does not add persistent
-contracts or credit rewards. See [combat controls and scope](space-combat.md) and
-[verification evidence](qa/space-combat.md). The asset studios remain inspection
-surfaces. The offline playable fleet now carries the fitted Meridian gun kit.
+Easy has one weakened contact; Standard has two full-strength ships; Hard has
+five reinforced enemies in two waves, with a ten-second reinforcement warning.
+File the report after clearing every wave, or abandon / recover through the
+console. Controller: D-pad / A select, B resumes, sticks fly/aim, RT fires and
+right stick scrolls the report. Existing ship weapon/target commands remain in
+Menu → Ship; page through that menu to reach the weapons.
+
+This is an offline, session-only development checkpoint. Reports reset on reload;
+there are no currency/cargo rewards or multiplayer NPCs. Five complete regional
+controller journeys plus keyboard/native-phone UI pass; physical-controller and
+independent balance/visual acceptance remain pending. See [encounter guide](space-combat.md)
+and [exact QA, limits and original failures](qa/enemy-encounters.md).
 
 ## Default station and exterior overview
 
