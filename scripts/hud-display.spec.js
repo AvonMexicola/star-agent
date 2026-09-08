@@ -39,7 +39,14 @@ test('Tab cycles full → markers and reticle → none, preserving dialogs and t
   await page.keyboard.press('Tab');await mode(page,'none');
   await page.keyboard.press('Escape');await page.keyboard.press('Tab');await mode(page,'full');
   await page.keyboard.press('KeyH');await page.locator('#seed-input').focus();await page.keyboard.press('Tab');await mode(page,'full');
-  await page.keyboard.press('Escape');await finish('keyboard');
+  await page.keyboard.press('Escape');await frames(page);await page.keyboard.press('KeyF');
+  await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
+  await expect(page.locator('#loadout-bar')).toBeVisible();
+  await page.keyboard.press('Tab');await mode(page,'markers');
+  await expect(page.locator('#loadout-bar')).toBeHidden();await expect(page.locator('#reticle')).toBeVisible();await capture(page,'walking-markers');
+  await page.keyboard.press('Tab');await mode(page,'none');await expect(page.locator('#reticle')).toBeHidden();
+  await page.keyboard.press('Tab');await mode(page,'full');await expect(page.locator('#loadout-bar')).toBeVisible();
+  await finish('keyboard');
 });
 
 test('controller-only Settings journey cycles all modes and preserves neutral-input gates',async({page})=>{
