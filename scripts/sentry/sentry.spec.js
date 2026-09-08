@@ -40,7 +40,11 @@ async function nativeFocusGate(page){
     const stopped=(await state(page)).sentry.current.shots;await page.bringToFront();await wait(page,()=>document.hasFocus()&&starAgent.state.focused);await page.waitForTimeout(550);
     expect((await state(page)).sentry.current.shots).toBe(stopped);report.events=await page.evaluate(()=>sentryFocusEvents);expect(report.events.some(e=>e.type==='blur'&&e.trusted)).toBe(true);expect(report.events.some(e=>e.type==='focus'&&e.trusted)).toBe(true);
     await neutral(page);report.result='PASS';return report;
-  }finally{await game.send('Emulation.setFocusEmulationEnabled',{enabled:true});await other.send('Emulation.setFocusEmulationEnabled',{enabled:true});await page.bringToFront();await blank.close();await game.detach();await other.detach();}
+  }finally{
+    report.events=await page.evaluate(()=>window.sentryFocusEvents??[]).catch(()=>[]);
+    await writeFile(output+'/focus-report.json',JSON.stringify(report,null,2));
+    await game.send('Emulation.setFocusEmulationEnabled',{enabled:true});await other.send('Emulation.setFocusEmulationEnabled',{enabled:true});await page.bringToFront();await game.detach();await other.detach();await blank.close();
+  }
 }
 async function offline(page){
   if(await page.locator('#multiplayer-account-dialog').isVisible()){await choose(page,'account-continue');}
