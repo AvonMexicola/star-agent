@@ -9,6 +9,6 @@ export default defineConfig({
       args: ['--no-sandbox', '--enable-gpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=gl', '--disable-dev-shm-usage']}},
   webServer: [
     {cwd: new URL('..', import.meta.url).pathname, command: 'STAR_AGENT_MEMORY=1 PORT=8654 PUBLIC_ORIGIN=http://127.0.0.1:5654 node server/index.js', url: 'http://127.0.0.1:8654/api/health', reuseExistingServer: false},
-    {command: 'MULTIPLAYER_SERVER=http://127.0.0.1:8654 npm run preview -- --port 5654 --strictPort', url: 'http://127.0.0.1:5654', reuseExistingServer: false},
+    {command: 'VITE_DEV_TOOLS=1 npm run build && MULTIPLAYER_SERVER=http://127.0.0.1:8654 npm run preview -- --port 5654 --strictPort', url: 'http://127.0.0.1:5654', reuseExistingServer: false, timeout: 90000},
   ],
 });

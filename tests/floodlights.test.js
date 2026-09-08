@@ -18,6 +18,7 @@ import {SHIP_LAYOUT} from '../src/boarding.js';
 import {MiningStore} from '../src/mining/store.js';
 import {prepareSandbox} from '../src/build/sandbox.js';
 import {validBuild} from '../src/build/state.js';
+import {updateBaseSites} from '../server/base-sites.js';
 
 const bytes = fs.readFileSync(new URL('../public/models/base/floodlight.glb', import.meta.url));
 const manifest = JSON.parse(fs.readFileSync(new URL('../assets/build-floodlight/manifest.json', import.meta.url)));
@@ -109,6 +110,14 @@ test('600 W operating demand drains real stored energy; on/off persists through 
   assert.ok(Math.abs(powerStep(claim, 3600000, zero).charge - energyOn - .6) < 1e-9);
   assert.equal(store.write({...store.state, build}), true);
   const reload = new MiningStore(storage); assert.equal(reload.state.build.claims[0].pieces.at(-1).lightOn, false);
+  const core = store.container('build-core-1');
+  let cloud = updateBaseSites(undefined, {action: 'save', revision: 0, build,
+    storage: {'build-core-1': {name: core.name, items: core.items, boxes: 2}}}, 0);
+  assert.equal(cloud.build.claims[0].pieces.at(-1).lightOn, false);
+  const serverOn = structuredClone(cloud.build); serverOn.claims[0].pieces.at(-1).lightOn = true;
+  cloud = updateBaseSites(cloud, {action: 'save', revision: cloud.revision, build: serverOn}, 0);
+  cloud = updateBaseSites(cloud, {action: 'read'}, 3600000);
+  assert.ok(Math.abs(cloud.build.claims[0].power.charge - energyOn) < 1e-9, 'server upkeep charges the same operating energy after save');
   const invalid = structuredClone(build); invalid.claims[0].pieces.at(-1).lightOn = 'yes'; assert.equal(validBuild(invalid), false);
 });
 test('all settlement masts have slab support, clear each other and preserve every supported ship approach', () => {
