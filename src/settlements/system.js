@@ -24,7 +24,7 @@ export function createSettlements({scene,nav,enabled=()=>!nav.multiplayer?.conne
     terminalPosition(id){const s=terminal(id);return s?point(s,s.terminalPiece.position).add(new Vector3(0,1.2,0).applyQuaternion(new Quaternion(...s.claim.quaternion))):null;},
     docked(id,pose){
       const s=terminal(id);if(!s||!pose)return false;
-      const local=collision.toLocal(pose.position,s.claim),surface=collision.landingSurface(pose);
+      const local=collision.toLocal(pose.position,s.claim),surface=collision.landingSurface({...pose,orientation:pose.orientation??pose.quaternion});
       return surface&&Math.abs(local.y-s.pad.position[1])<.6&&Math.abs(local.x)<24&&Math.abs(local.z-20)<36;
     },
     beacons(){return active().map(s=>({id:s.id,name:s.name,kind:`Trade settlement · ${s.role} · Large pad`,category:'trade',parent:s.body,body:s.body,surface:true,center:point(s,s.pad.position).toArray(),radius:0}));},
