@@ -1,10 +1,10 @@
 {
   "id": "stratum",
   "version": 1,
-  "stage": "art revision 02; prior native candidate failed; revised native gate pending",
-  "sha256": "b2660a8e400c7ae64ed75cf3e4166d66f1953f0fb6dcbcce5357b1edaa37eb3e",
-  "bytes": 3407756,
-  "triangles": 41048,
+  "stage": "art revision 03; Art02 failed and retained; native gate pending",
+  "sha256": "22bbf0296e349e24f1a9bd636745511bf31b9291f1a305814f13d4a45cac4d08",
+  "bytes": 3932512,
+  "triangles": 51346,
   "meshCount": 66,
   "primitiveCount": 66,
   "nodeCount": 110,
@@ -15,29 +15,36 @@
     1024,
     1024
   ],
-  "sourceSha256": "530bb30c552f909e0968037cee426256cafd4b1c4c27af638df2957b77a58245",
-  "builderSha256": "977bb96165de03ad3378a6794f1acf5844e545d8584d6ffd65d65a1dde32d336",
+  "sourceSha256": "ac4651d67f346266b0c8209d4277560e972d43ceeef7c4987b2110e60c8668f0",
+  "builderSha256": "793d2324cfc84054047bb303d533cbf95369153a374ef62b8a5f7355d57f6dc8",
   "geometryHelperSha256": "9ee3f65cbb5fff71d7a8e91304f12e18c4845ab68bb1fe26dcf8cbbd6d7f07e7",
   "layoutSha256": "a17f9159a02de736fc1463da132a4a709d95135ca5fcb93647e762d6abe5ff44",
   "contactOcclusion": {
-    "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner; 22cm distance falloff; base-color contact visibility",
+    "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner against other static fittings; 22cm distance falloff; base-color contact visibility",
     "distanceMetres": 0.22,
     "maximumAttenuation": 0.24,
-    "sourceCorners": 18244,
-    "darkenedCorners": 7913,
-    "rays": 148944,
-    "minimumLinearFactor": 0.760000001677396,
+    "sourceCorners": 24644,
+    "darkenedCorners": 12233,
+    "rays": 233149,
+    "selfHitsSkipped": 7405,
+    "minimumLinearFactor": 0.7600378494909125,
     "dynamicMechanisms": "white; no pose-dependent bake",
     "lightingBaked": false
   },
+  "fittedSkinVisibility": {
+    "panels": 104,
+    "samples": 664,
+    "visibleSamples": 650,
+    "buriedByOwnBacking": 0
+  },
   "packing": {
-    "inputBytes": 5224680,
-    "outputBytes": 3827036,
-    "maximumPositionErrorMetres": 0.00020794695488759218,
-    "maximumNormalErrorDegrees": 0.36680524259983976,
+    "inputBytes": 6008540,
+    "outputBytes": 4283740,
+    "maximumPositionErrorMetres": 0.00020878624044478884,
+    "maximumNormalErrorDegrees": 0.3757517734795842,
     "protectedMeshCount": 52,
     "method": "Static opaque batches only; KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding",
-    "unpackedSha256": "4ddfe68a9d1d7eaf4dfa456bffb492b018af17907abe154a194aa1c99af54cae"
+    "unpackedSha256": "62e98348092ae91ad7e2751bb478f059c3ff5d6f6d5b39c335d4d28b4bb4205e"
   },
   "packingHelperSha256": "d8d229552f7d123f6673c77097b9af4755e54377442b668051e1c9d1486f83b7",
   "budgets": {
@@ -46,8 +53,8 @@
     "maxTextureSize": 1024
   },
   "review": {
-    "nativeRenderer": "revision 02 not run; prior candidate failed and retained",
+    "nativeRenderer": "revision 03 not run; Art02 native capture passed, independent art failed",
     "physicalGame": "root-owned integration; this asset revision not yet rendered in game",
-    "independentArt": "revision 02 pending; prior static mean 3.26, silhouette 3.4"
+    "independentArt": "revision 03 pending; Art02 static mean 3.84, silhouette 4.0; original mean 3.26, silhouette 3.4"
   }
 }

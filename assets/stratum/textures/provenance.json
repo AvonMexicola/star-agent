@@ -1,29 +1,53 @@
 {
   "authoring": "Original scripted hard-surface Stratum geometry; reusable primitive convention from repository fighter_geometry.py",
-  "textureSource": "Deterministic authored manufactured finish; numpy seed505; quantized band-limited roughness; no generated/downloaded/photographic inputs",
+  "textureSource": "Deterministic authored manufactured finish; numpy seeds505..508; isotropic filtered and quantized roughness; no generated/downloaded/photographic inputs",
   "textureCoordinates": "Planar per-face local metre coordinates, one4m repeat. Display surfaces have unique0..1 UVs.",
   "channels": {
-    "basecolor": "Subtle reflectance grain; no shadows/highlights",
-    "normal": "Independent bounded tangent micro-slope, not luminance-derived",
-    "orm": "R=1 (no baked AO); G=roughness variation; B=1, scaled by material metalness"
+    "basecolor": "Subtle seven-bit reflectance grain, lossless WebP; no shadows/highlights",
+    "normal": "Independent filtered isotropic micro-height gradient, slopes bounded to0.01; no91-cycle directional stripe and not luminance-derived",
+    "orm": "R=1 (no baked AO); G=filtered process roughness without a dominant directional stripe; B=1, scaled by material metalness"
   },
   "contactVisibility": {
-    "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner; 22cm distance falloff; base-color contact visibility",
+    "method": "12 deterministic cosine-hemisphere CPU BVH rays per source corner against other static fittings; 22cm distance falloff; base-color contact visibility",
     "distanceMetres": 0.22,
     "maximumAttenuation": 0.24,
-    "sourceCorners": 18244,
-    "darkenedCorners": 7913,
-    "rays": 148944,
-    "minimumLinearFactor": 0.760000001677396,
+    "sourceCorners": 24644,
+    "darkenedCorners": 12233,
+    "rays": 233149,
+    "selfHitsSkipped": 7405,
+    "minimumLinearFactor": 0.7600378494909125,
     "dynamicMechanisms": "white; no pose-dependent bake",
     "lightingBaked": false
   },
+  "fittedSkinVisibility": {
+    "panels": 104,
+    "samples": 664,
+    "visibleSamples": 650,
+    "buriedByOwnBacking": 0
+  },
   "packingSource": "Stratum-scoped adapter of existing blender/pack_rigid_geometry.py; same position/normal codec, protected moving/glass/MFD meshes and unused-UV pruning",
-  "previousNativeReview": {
-    "assetSha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
-    "staticMean": 3.26,
-    "silhouette": 3.4,
-    "status": "failed; retained, not superseded by CPU checks"
+  "previousNativeReviews": [
+    {
+      "assetSha256": "78e9ffe41bb225a342e5765a504c15ff3ec00a94a9f2ddd0040f5500e137d827",
+      "staticMean": 3.26,
+      "silhouette": 3.4,
+      "status": "failed; retained, not superseded by CPU checks"
+    },
+    {
+      "assetSha256": "b2660a8e400c7ae64ed75cf3e4166d66f1953f0fb6dcbcce5357b1edaa37eb3e",
+      "staticMean": 3.84,
+      "silhouette": 4.0,
+      "reportSha256": "b1ea9d2548255ce612bac5612f71b0994e409ee2c08ad2663dfadf276a319255",
+      "status": "Art02 failed; original images and report retained"
+    }
+  ],
+  "retainedBudgetRejection": {
+    "stage": "Art03a",
+    "sha256": "4ea18bcc3d351a075aefc8c01112e057452b30b49ecc06b010e055908d8970a6",
+    "bytes": 4044832,
+    "limitBytes": 4000000,
+    "triangles": 51346,
+    "correction": "Seven-bit basecolor grain; measured preflight maximum1/255 channel change; no geometry or normal/ORM change"
   },
   "materialRecipes": {
     "Stratum | ivory enamel": {
@@ -173,28 +197,28 @@
   },
   "files": {
     "stratum-basecolor.png": {
-      "sha256": "1da9927fff705520ab16ab2ac41275722472dded0302e87ba7ff3934da97ff6c",
-      "bytes": 430484
+      "sha256": "2905280d5d48f65590cb8612c52b6f019dd7fe305076521b81e960915bd33eac",
+      "bytes": 274854
     },
     "stratum-basecolor.webp": {
-      "sha256": "f63d21c803c73ac8343ea7374d570b8640253cc6744c3c0e82ba05d5baebf849",
-      "bytes": 288972
+      "sha256": "df508237e61b6817b2ba5c103784fc638f84b195bfa3eeb124bbe971dda685e6",
+      "bytes": 176650
     },
     "stratum-normal.png": {
-      "sha256": "bdbbfcc30e63d4c5e304268630ec5456a5bbad6651064417cc599382472e8d2b",
-      "bytes": 26265
+      "sha256": "78b6b7ef50d1f20a9ab71f98997e42c257cb03da54cb16857f3a5b221c4721b0",
+      "bytes": 84463
     },
     "stratum-normal.webp": {
-      "sha256": "ef9231efef93487ebc407f5c0529a243f5b201b9fbce94400684dd675eb6af24",
-      "bytes": 13154
+      "sha256": "644578538a33c1c6339ade2a0b3cae367dbd7146293c8b24831610986de3bdb5",
+      "bytes": 56872
     },
     "stratum-orm.png": {
-      "sha256": "2825b6dd659442b7fb10745a84e10a05e14ee7e546d622f15a9c258833b14681",
-      "bytes": 383339
+      "sha256": "ffefa5eaeac2e4947a21cfab70cf9ac50b4e3d7af4bdffd824f6863afadcc50e",
+      "bytes": 304311
     },
     "stratum-orm.webp": {
-      "sha256": "5bfaf22d59425b0efa59917a34dcacd12426a3e518efde51cb4b705d5aaa5029",
-      "bytes": 311562
+      "sha256": "0763f3bf56f8073235083ff7930dff941d8d8d100235fcd47d3ed16b6ba1a4f2",
+      "bytes": 262306
     }
   },
   "blenderVersion": "5.2.0 LTS"
