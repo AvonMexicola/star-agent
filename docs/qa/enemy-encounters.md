@@ -41,6 +41,11 @@ retained, with three shown. Native controller scrolling reaches the report panel
   `npm run test:browser -- -c scripts/enemy-encounters.config.js --output=/tmp/star-agent-encounters-attempt05 --max-failures=1`.
   Run05 began 2026-09-08 11:40 UTC. **6/6 pass in 13.1 minutes**, runner exit 0.
   One worker, no retries. Log `/tmp/enemy-encounters-attempt05.log`.
+- Final combined source `ad11386`, including settlement delivery metadata:
+  keyboard/native-touch regression **1/1 passes in 44.7s**, case 41.2s,
+  with zero collected page or console errors. Command adds
+  `-g 'keyboard and native touch' --output=/tmp/star-agent-encounters-union-ui06`
+  to the same configuration. Log `/tmp/enemy-encounters-union-ui06.log`.
 
 | Actual route | Result | Case time |
 |---|---|---|
@@ -63,7 +68,8 @@ Every controller case checks report totals, right-stick report scrolling at
 replacement and unsupported mappings. Focus emulation is disabled for both tabs
 and actual document/application focus is asserted. Five controller receipts have
 **zero page errors, console errors or warnings**. The separate keyboard/native-
-touch case collects page errors and has none; it does not collect console output.
+touch case in run05 collects page errors and has none; it does not collect console
+output. The final combined run06 also collects console errors and passes with none.
 
 Chromium **151.0.7922.173**, ANGLE / **AMD Radeon 860M Graphics**, OpenGL ES 3.2,
 1440×900 desktop and 390×844 phone, device scale 1, seed 7291. Injected standard
