@@ -85,6 +85,25 @@ test('controller lands, walks to garage, deploys and physically boards Burrow, d
  expect(errors).toEqual([]);await writeFile(`${out}/journey.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,controller:'Injected standard Gamepad, physical land/walk/board/drive/inventory/return; no pose or save mutation.',physicalDevice:false},null,2));
 });
 
+test('combined garage and pirate interaction routes remain available',async({page,browser})=>{
+ const {tap,choose,errors,warnings}=await setup(page);
+ // Integration fixture only. Complete physical journeys are recorded separately.
+ await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body==='selene'),g=window.starAgent.state.garages.sites.find(s=>s.body==='selene'),q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin),deck=n.position.clone().fromArray(s.pad).sub(o).applyQuaternion(q.clone().invert()).y;n.mode='walk';n.insideShip=false;n.cabinFlight=false;n.enabled=true;n.position.set(23.2,deck+n.layout.eyeHeight,-2).applyQuaternion(q).add(o);n.shipPosition=n.position.clone().fromArray(s.pad);n.shipOrientation.copy(q);n.velocity.set(0,0,0);n.shipVelocity.set(0,0,0);n.orientToward(n.position.clone().fromArray(g.terminal),n.normal);});
+ await frames(page);expect(await page.evaluate(()=>window.starAgent.state.garages.sites.length)).toBe(4);
+ await tap(2);await expect(page.locator('#garage-dialog')).toBeVisible();await capture(page,'combined-garage');await tap(1);await expect(page.locator('#garage-dialog')).not.toBeVisible();
+ await page.goto('/?dev=1&ship=nomad&start=pirate-hush&intro=0&debug&seed=7291&epoch=1788876000000');
+ await page.waitForFunction(()=>window.starAgent?.state.ready&&window.starAgent.state.pirateCompound?.ready&&window.starAgent.state.pirateCompound.rendered>0&&window.starAgent.state.controller.armed,undefined,{timeout:90000});
+ expect(await page.evaluate(()=>window.starAgent.state.garages.sites.length)).toBe(4);
+ await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.pirateCompound.site,q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin);n.mode='walk';n.insideShip=false;n.cabinFlight=false;n.enabled=true;n.position.set(-16,s.deck+n.layout.eyeHeight,-5.5).applyQuaternion(q).add(o);n.orientation.copy(q);n.velocity.set(0,0,0);n.shipPosition=n.position.clone().fromArray(s.pad);n.shipOrientation.copy(q);n.shipVelocity.set(0,0,0);});
+ await frames(page);await tap(2);await expect(page.locator('#pirate-service')).toBeVisible();await choose('hush-isolate');expect(await page.evaluate(()=>window.starAgent.state.pirateCompound.unlocked)).toBe(true);await capture(page,'combined-isolator');await tap(1);await page.waitForFunction(()=>window.starAgent.state.enabled);
+ await page.addStyleTag({content:'body > :not(canvas){visibility:hidden!important}'});
+ for(const [name,eye,look] of [['combined-pirate-yard',[-2,3,24],[-8,1,8]],['combined-pirate-overview',[48,28,61],[0,5,-10]]]){
+  await page.evaluate(({eye,look})=>{const n=window.starAgent.navigation,s=window.starAgent.state.pirateCompound.site,q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin),world=a=>n.position.clone().fromArray([a[0],s.deck+a[1],a[2]]).applyQuaternion(q).add(o);n.enabled=false;n.position.copy(world(eye));n.orientToward(world(look),n.normal);},{eye,look});
+  await page.waitForFunction(()=>window.starAgent.state.moon.pending===0&&window.starAgent.state.moon.effects.settled,undefined,{timeout:60000});await frames(page);await capture(page,name);
+ }
+ expect(errors).toEqual([]);await writeFile(`${out}/combined.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,fixture:true,physicalJourney:false,independentReviewer:'Parent garage agent; pirate scene authored by delegated pirate agent.'},null,2));
+});
+
 for(const body of ['aeon','selene','pyre','miasma'])test(`garage renders on ${body}`,async({page,browser})=>{
  const {errors,warnings}=await setup(page,body);
  await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body===n.body.id),g=window.starAgent.state.garages.sites.find(s=>s.body===n.body.id),q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin),center=n.position.clone().fromArray(g.position).sub(o).applyQuaternion(q.clone().invert());const world=a=>n.position.clone().fromArray(a).applyQuaternion(q).add(o);n.mode='walk';n.enabled=false;n.insideShip=false;n.position.copy(world([72,center.y+24,center.z+44]));n.orientToward(world([32,center.y+2,center.z]),n.normal);n.velocity.set(0,0,0);});
