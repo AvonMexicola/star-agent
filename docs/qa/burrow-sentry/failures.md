@@ -170,3 +170,13 @@ the fixture hull root2m made its intended interception real. Final hit07 passes
 all6 suit/ship/rover boundary cases. No collision allowance was weakened.
 Build11 failed before Vite loaded config because the shared dependency cache
 was read-only in the runner; the bounded host build is recorded separately.
+
+
+Browser10 (`2026-09-09T00-50-23.525Z`) was deliberately stopped after its owner
+found build12 had omitted `VITE_DEV_TOOLS=1 VITE_MULTIPLAYER_ENTRY=1`. The public
+bundle therefore ignored the explicit Sentry surface start. Exact runner PID,
+SIGINT, source hashes and original logs are retained. This is a QA build invocation
+mistake; it is not a gameplay or Chromium failure. The guarded runner now owns
+the flagged production build before each private browser job and records its
+flags, frozen source hashes and actual generated JavaScript/CSS/index hashes.
+No application behavior or server limit changed for this correction.

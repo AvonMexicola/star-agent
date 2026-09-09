@@ -32,12 +32,27 @@ const tmp=process.env.SENTRY_TMPDIR??path.join(root,'test-results','tmp');await 
 await appendFile(journal,`\n\nSA-VEH-003 GPU ${new Date().toISOString()}: ACQUIRED at actual host executable/argv guard, one 5678/API8678 Sentry job, single worker/no retries, disk-backed TMPDIR. Frozen source receipt ${output}. ${selection.join(' ')}\n`);
 console.log('Sentry evidence:',output);
 const log=await import('node:fs').then(fs=>fs.createWriteStream(path.join(output,'runner.log')));
-const child=spawn('npm',['run','test:browser','--','-c','scripts/sentry/sentry.config.js',...selection],{cwd:root,env:{...process.env,SENTRY_OUTPUT:output,TMPDIR:tmp},stdio:['ignore','pipe','pipe'],detached:true});
-for(const stream of [child.stdout,child.stderr])stream.on('data',chunk=>{log.write(chunk);process.stdout.write(chunk);});
-let signal=null;const stop=name=>{signal=name;try{process.kill(-child.pid,'SIGTERM');}catch{}};
+let child=null,signal=null;
+const stop=name=>{signal=name;if(child)try{process.kill(-child.pid,'SIGTERM');}catch{}};
 process.once('SIGINT',()=>stop('SIGINT'));process.once('SIGTERM',()=>stop('SIGTERM'));
-const code=await new Promise(resolve=>{child.once('error',error=>{console.error(error);resolve(1);});child.once('exit',code=>resolve(code??1));});
+async function run(args,extra={}){
+  child=spawn('npm',args,{cwd:root,env:{...process.env,...extra,SENTRY_OUTPUT:output,TMPDIR:tmp},stdio:['ignore','pipe','pipe'],detached:true});
+  for(const stream of [child.stdout,child.stderr])stream.on('data',chunk=>{log.write(chunk);process.stdout.write(chunk);});
+  const code=await new Promise(resolve=>{child.once('error',error=>{console.error(error);resolve(1);});child.once('exit',code=>resolve(code??1));});child=null;return code;
+}
+let code=1,buildReceipt;
+try{
+  // The guarded QA command owns its production entry flags. A prior ordinary
+  // public build must never silently supply this explicit local feature route.
+  const flags={VITE_DEV_TOOLS:'1',VITE_MULTIPLAYER_ENTRY:'1'},started=new Date().toISOString();
+  const buildCode=await run(['run','build'],flags);
+  const files=buildCode===0?['index.html',...(await readdir(path.join(root,'dist/assets'))).filter(name=>/\.(js|css)$/.test(name)).sort().map(name=>'assets/'+name)]:[];
+  const bundles=Object.fromEntries(await Promise.all(files.map(async name=>[name,createHash('sha256').update(await readFile(path.join(root,'dist',name))).digest('hex')])));
+  buildReceipt={started,completed:new Date().toISOString(),code:buildCode,command:'npm run build',flags,node:process.version,source:before,bundles};
+  await writeFile(path.join(output,'build-receipt.json'),JSON.stringify(buildReceipt,null,2));
+  code=buildCode===0&&!signal?await run(['run','test:browser','--','-c','scripts/sentry/sentry.config.js',...selection]):buildCode||1;
+}catch(error){console.error(error);log.write(String(error)+'\n');}
 const after=await hashes(),changed=sourceFiles.filter(name=>before[name]!==after[name]);
-await writeFile(path.join(output,'receipt.json'),JSON.stringify({completed:new Date().toISOString(),code,signal,changed,before,after},null,2));
+await writeFile(path.join(output,'receipt.json'),JSON.stringify({completed:new Date().toISOString(),code,signal,changed,before,after,build:buildReceipt},null,2));
 await appendFile(journal,`\n\nSA-VEH-003 GPU ${new Date().toISOString()}: RELEASED, focused runner exit ${code}; changed sources ${JSON.stringify(changed)}. Original ${output} retained. No automatic repeat.\n`);
 log.end();process.exitCode=code||Number(changed.length>0);
