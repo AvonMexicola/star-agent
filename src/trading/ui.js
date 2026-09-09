@@ -1,3 +1,4 @@
+import {renderRecovery} from '../recovery/ui.js';
 import {renderTransport} from '../transport/ui.js';
 import {terminalIdentity} from './terminal-identity.js';
 import {settlementGoods} from '../settlements/economy.js';
@@ -32,10 +33,10 @@ export function createTradingUI(api,nav){
     $('.terminal-status').textContent=near?(identity.available?'Terminal connected':identity.status):'Remote cargo access';
     $('.terminal-pilot').textContent=s.online?(s.players?.find(p=>p.id===s.owner)?.callsign??'Pilot'):'Local pilot';
     $('.terminal-context').textContent=near?(dock?'Delivery pad linked':'Land your ship to trade'):'Approach an exchange to trade';
-    $('.terminal-view-name').textContent=({buy:site?'Local stock':'Buy supplies',cargo:'Cargo manifest',pack:'Pack resources',stock:'Manage your shop',build:'Establish an exchange',freight:'Freight contracts'})[view]??'Exchange services';
+    $('.terminal-view-name').textContent=({buy:site?'Local stock':'Buy supplies',cargo:'Cargo manifest',pack:'Pack resources',stock:'Manage your shop',build:'Establish an exchange',freight:'Freight contracts',recovery:'Cargo recovery'})[view]??'Exchange services';
     const summary=$('.trade-summary');summary.replaceChildren();
     for(const [label,value] of [['Available credits',`${s.account?.credits??0} CR`],[ship?.hull?`${ship.hull} cargo`:'Ship cargo',`${usedSBU(ship?.crates??[])} / ${capacitySBU(ship?.hull)} SBU`],...(s.account?.carried?[['Carrying',`1 SBU ${resourceById(s.account.carried.resource)?.name??s.account.carried.resource}`]]:[])]){const item=document.createElement('div'),name=document.createElement('span'),amount=document.createElement('strong');name.textContent=label;amount.textContent=value;item.append(name,amount);summary.append(item);}
-    const tabs=$('.trade-tabs');tabs.replaceChildren();for(const [id,label] of [['freight','Freight'],['buy','Buy'],['cargo','Cargo'],['pack','Pack ore'],['stock','My shop'],['build','Build']]){const b=button(site&&id==='buy'?'Local stock':label,`view-${id}`,()=>{view=id;page=0;message='';render();});b.setAttribute('aria-pressed',String(view===id));tabs.append(b);}
+    const tabs=$('.trade-tabs');tabs.replaceChildren();for(const [id,label] of [['freight','Freight'],['recovery','Recovery'],['buy','Buy'],['cargo','Cargo'],['pack','Pack ore'],['stock','My shop'],['build','Build']]){const b=button(site&&id==='buy'?'Local stock':label,`view-${id}`,()=>{view=id;page=0;message='';render();});b.setAttribute('aria-pressed',String(view===id));tabs.append(b);}
     const selection=$('.trade-selection');selection.replaceChildren();
     if(view!=='build'){
       const chosen=ship?`${ship.hull}${ship.owner!==s.owner?' · Other pilot':''}`:'No ship';
@@ -47,7 +48,9 @@ export function createTradingUI(api,nav){
       const sources=Object.entries(t.base.storage).map(([id,c])=>({id,name:c.name}));selection.append(button(`Local storage: ${sources.find(c=>c.id===source)?.name??'Choose'} · change`,'base-source',()=>{source=sources[(sources.findIndex(c=>c.id===source)+1)%sources.length]?.id??'';page=0;render();},busy||sources.length<2));
     }
     const content=$('.trade-content');content.replaceChildren();let totalPages=1;
-    if(view==='freight'){
+    if(view==='recovery'){
+      renderRecovery({content,selection,button,s,api,ship,terminal,near,dock,busy,run,tractor,track:id=>{api.trackRecovery(id);dialog.close();}});
+    }else if(view==='freight'){
       totalPages=renderTransport({content,selection,button,s,api,ship,terminal,near,dock,page,busy,run,tractor});page=Math.min(page,totalPages-1);
     }else if(view==='buy'||view==='pack'){
       if(view==='buy'&&t?.base&&(!t.base.open||api.baseActive?.(t)===false)){const status=document.createElement('p');status.className='trade-reason';status.textContent=!t.base.open?'Shop closed. Stock is retained until the owner reopens.':'Shop unpowered. Restore base power to trade.';content.append(status);}
@@ -67,11 +70,12 @@ export function createTradingUI(api,nav){
       selection.append(button('Equip tractor beam','equip-tractor',tractor,busy||isHandsFree(nav)||Boolean(nav.travel)||!['walk','eva'].includes(nav.mode)||Boolean(s.account?.carried)));
       const crates=ship?.crates??[];totalPages=Math.max(1,Math.ceil(crates.length/3));page=Math.min(page,totalPages-1);
       for(const c of crates.slice(page*3,page*3+3)){
-        const row=document.createElement('article'),text=document.createElement('div'),title=document.createElement('h3');title.textContent=`${c.sbu} SBU · ${c.transport?'SEALED FREIGHT · ':''}${resourceById(c.resource).name}`;text.append(title);
+        const row=document.createElement('article'),text=document.createElement('div'),title=document.createElement('h3');title.textContent=`${c.sbu} SBU · ${c.recovery?(c.recovery.optional?'BONUS LOOT · ':'MISSION CONTAINER · '):c.transport?'SEALED FREIGHT · ':''}${resourceById(c.resource).name}`;text.append(title);
         const sub=document.createElement('p');sub.textContent=`${c.grid} · ${c.sbu*16} kg packed resources`;text.append(sub);const actions=document.createElement('div');actions.className='trade-row-actions';
         actions.append(c.sbu===1?button('Carry',`take-${c.id}`,()=>run({op:'take',crate:c.id}),busy||Boolean(s.account?.carried)||!api.canTake(ship,c)):button('Tractor beam',`tractor-${c.id}`,tractor,busy||isHandsFree(nav)||Boolean(nav.travel)||Boolean(s.account?.carried)||!['walk','eva'].includes(nav.mode)));
         if(c.transport){sub.textContent+=' · Personal transport contract · cannot sell';actions.append(button('Open freight contract',`freight-${c.id}`,()=>{view='freight';page=0;render();}));}
-        if(!c.transport&&near&&dock&&ship.owner===s.owner){
+        if(c.recovery){sub.textContent+=c.recovery.optional?' · Optional recovery loot · yours to sell':' · Required mission container · cannot sell';actions.append(button('Open recovery contract',`recovery-${c.id}`,()=>{view='recovery';page=0;render();}));}
+        if(!c.transport&&(!c.recovery||c.recovery.optional)&&near&&dock&&ship.owner===s.owner){
           const quote=own||t?null:quoteStation(s,terminal,resourceById(c.resource),'sell',c.sbu);
           if(quote)sub.textContent+=site?` · Local stock ${quote.stockBefore} SBU · Needs ${quote.need} SBU${quote.ok?'':' · '+quote.reason}`:` · Exchange stock ${quote.stockBefore??'unavailable'}${quote.ok?'':' · '+quote.reason}`;
           actions.append(button(own?(t.base?'Deposit to base':'List for sale'):quote?.ok?`Sell ${c.sbu} · ${quote.total} CR`:'Sell · unavailable',`sell-${c.id}`,()=>run({op:own?(t.base?'base-deposit':'stock'):'sell',crate:c.id,resource:c.resource,sbu:c.sbu,revision:s.revision}),busy||Boolean(t&&!own)||Boolean(quote&&!quote.ok)));
@@ -103,7 +107,7 @@ export function createTradingUI(api,nav){
       const small=document.createElement('p');small.textContent=s.online?'Shared stock and credits save on the server. Visitors can buy while the owner is away.':'Solo cargo saves with your mining inventory. Join Comms to register a shared base or build a trading pad.';content.append(small);
     }
     const pages=$('.trade-pages');pages.replaceChildren(button('Previous','previous-page',()=>{page--;render();},page<=0),document.createTextNode(` ${page+1} / ${totalPages} `),button('Next','next-page',()=>{page++;render();},page>=totalPages-1));
-    $('.trade-feedback').textContent=message||s.error|| (s.online?'Aeon exchanges share stock and prices':site?'Deliveries fill local needs. Stock and needs persist in your save.':'Cargo saved with this browser’s mining inventory');
+    $('.trade-feedback').textContent=message||s.error|| (view==='recovery'?'Recover marked cargo and deposit at Greenbank Supply.':s.online?'Aeon exchanges share stock and prices':site?'Deliveries fill local needs. Stock and needs persist in your save.':'Cargo saved with this browser’s mining inventory');
     const nextContentKey=`${terminal}:${view}:${page}`;if(contentKey!==nextContentKey){content.scrollTop=0;contentKey=nextContentKey;}
     if(focused)dialog.querySelector(`[data-controller-key="${CSS.escape(focused)}"]`)?.focus({preventScroll:true});
   }
