@@ -3,9 +3,10 @@
 // ramp/crew-lift snapshot, the authored station/bay collision profile, passenger
 // hub/defense state and finite markets in the same durable cargo ledger.
 // Version 7 adds shared canonical settlements and owner-private sealed freight.
-// Version 8 adds server-owned Sentry vehicle poses, physical seats and turret authority.
+// Version 9 adds rotating body-fixed charts and the shared planetary clock.
+// Version 10 adds server-owned Sentry poses, physical seats and turret authority.
 // Requires a paired server/browser refresh; no persistence schema change.
-export const MULTIPLAYER_VERSION=8;
+export const MULTIPLAYER_VERSION=10;
 export const WORLD_SEED=7291;
 export const MAX_PLAYERS=10;
 export const SUIT_COLORS=Object.freeze(['#ff724f','#52d6ff','#ffd45b','#8ce06c','#bd8cff','#ff80bd','#45dcc6','#eee9dd','#688bff','#c99d69']);

@@ -84,7 +84,8 @@ export function reviveTravel(value) {
 export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } = {}) {
   if (!nav || !peer) return false;
   const modeChanged = typeof peer.mode === 'string' && peer.mode !== nav.mode;
-  const frameChanged = (peer.physicsFrame ?? null) !== (nav.authoritativePhysicsFrame ?? null);
+  const planetFrameChanged = nav.rotationClock && (peer.planetFrame??null)!==(nav.rotationFrame?.id??null);
+  const frameChanged = planetFrameChanged || (peer.physicsFrame ?? null) !== (nav.authoritativePhysicsFrame ?? null);
   const hard = snap || modeChanged || frameChanged || Boolean(peer.sentrySeat);
   nav.authoritativePhysicsFrame = peer.physicsFrame ?? null;
   nav.sentrySeat=peer.sentrySeat??null;
@@ -213,6 +214,7 @@ export class MultiplayerClient {
     catch { return null; }
     if (!message || typeof message !== 'object') return null;
     if (message.type === 'welcome') {
+      if(Number.isFinite(message.planetTime))this.nav?.rotationClock?.synchronize(message.planetTime);
       if (message.seed !== WORLD_SEED || (message.version != null && message.version !== MULTIPLAYER_VERSION)) {
         this.socket?.close?.(4001, 'Build mismatch'); this._publish({ error: 'Server world does not match this build.' }); return message;
       }
@@ -226,6 +228,7 @@ export class MultiplayerClient {
       this._publish(patch); this._applyWorld(message, true); return message;
     }
     if (message.type === 'state') {
+      if(Number.isFinite(message.planetTime))this.nav?.rotationClock?.synchronize(message.planetTime);
       const patch = {
         players: Array.isArray(message.players) ? message.players : this.state.players,
         inventory: message.inventory ?? this.state.inventory, commerce: message.commerce?hydrateBaseCommerce(this.state.commerce,message.commerce):this.state.commerce, health: message.health ?? message.inventory?.health ?? this.state.health,

@@ -1,3 +1,5 @@
+import {appearanceFor,appearanceKey,finishById,recolourBuild} from './appearance.js';
+import {printById} from '../factions/catalog.js';
 import {hasMainframe,doorTarget} from './access.js';
 import {adjustableFoundation,foundationDepth,cliffBraces,MAX_FOUNDATION_DEPTH} from './foundations.js';
 import {createFloodlights,floodlightFixture} from './floodlights.js';
@@ -14,7 +16,7 @@ import { bodyAt, bodyAltitude, bodyOffset, bodySurfacePoint, BODIES } from '../c
 import { terrainHeight } from '../world.js';
 import { PIECES, GRID, STOREY } from './definitions.js';
 import { getWorldBoxes, getPlacementBoxes, getPlacementBounds, capsuleIntersectsBox, constrainBuildStep } from './collision.js';
-import { setBuildPowered, createBuildVisual, setDoorOpen, createBuildGhost, setBuildGhostValid, disposeBuildGhost, disposeBuildVisual, setBuildOpacity } from './visuals.js';
+import { setBuildAppearance, setBuildPowered, createBuildVisual, setDoorOpen, createBuildGhost, setBuildGhostValid, disposeBuildGhost, disposeBuildVisual, setBuildOpacity } from './visuals.js';
 import { DoorMotion, buildOpacity, serviceLightFade, nightFactor, nearestServiceLights, MAX_SERVICE_LIGHTS } from './motion.js';
 import { updateMainframeDisplay } from './mainframe-display.js';
 import { withClaimAnchor, restoreBuildAnchors } from './anchors.js';
@@ -27,7 +29,7 @@ const overlap=volumesOverlap;
 const bufferId=(claim,piece)=>piece.type==='mainframe'?`build-core-${claim.id.split('-').at(-1)}`:`build-crate-${piece.id.split('-').at(-1)}`;
 export class BuildSystem {
   constructor({scene,nav,store,render=true,supplySources=()=>[]}){
-    this.supplySources=supplySources;this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.removing=false;this.removalPending=false;this.pieceId='foundation';this.turn=0;this.height=0;this.snap=0;
+    this.supplySources=supplySources;this.scene=scene;this.nav=nav;this.store=store;this.render=render;this.active=false;this.removing=false;this.removalPending=false;this.pieceId='foundation';this.decorating=false;this.finish='mineral';this.graphic='none';this.turn=0;this.height=0;this.snap=0;
     this.doorMotion=new DoorMotion();this.ghostRequest=0;this.ghostModel=null;this.ghostFactory=createBuildGhost;this.ghostDisposer=disposeBuildGhost;this.disposed=false;this.claimVisibility=[];
     this.groups=new Map();this.models=new Map();this.registered=new Set();this.grounded=false;this.error='';this.preview=null;this.revision=0;
     const restored=store.state.build!==undefined&&!validBuild(store.state.build)?{ok:false,message:'Base save is invalid. Original data retained; construction paused.'}:restoreBuildAnchors(store.state.build);
@@ -48,7 +50,7 @@ export class BuildSystem {
   }
   get data(){return this.store.state.build??emptyBuild();}
   get claims(){return this.blocked||this.nav.multiplayer?.connected?[]:this.data.claims;}
-  get state(){return {controllerAvailable:this.controllerAvailable,active:this.active,removing:this.removing,pieceId:this.pieceId,preview:this.preview?{pieceId:this.pieceId,valid:this.preview.valid,reason:this.preview.reason,cost:this.preview.cost,sources:this.preview.sources,rotation:this.preview.piece?.rotation,position:this.preview.position,claimId:this.preview.claim?.id??null}:null,claims:structuredClone(this.claims),pieceCount:this.claims.reduce((s,c)=>s+c.pieces.length,0),error:this.error,grounded:this.grounded,visuals:this.visualDiagnostics,assetsReady:this.models.size>0&&[...this.models.values()].every(m=>m.ready),materials:this.store.container('pack')?.items};}
+  get state(){return {controllerAvailable:this.controllerAvailable,active:this.active,removing:this.removing,decorating:this.decorating,finish:this.finish,graphic:this.graphic,pieceId:this.pieceId,preview:this.preview?{pieceId:this.pieceId,valid:this.preview.valid,reason:this.preview.reason,cost:this.preview.cost,sources:this.preview.sources,rotation:this.preview.piece?.rotation,position:this.preview.position,claimId:this.preview.claim?.id??null}:null,claims:structuredClone(this.claims),pieceCount:this.claims.reduce((s,c)=>s+c.pieces.length,0),error:this.error,grounded:this.grounded,visuals:this.visualDiagnostics,assetsReady:this.models.size>0&&[...this.models.values()].every(m=>m.ready),materials:this.store.container('pack')?.items};}
   get visualDiagnostics(){return {floodlights:this.floodlights?.diagnostics??{active:0,shadows:0,max:6,maxShadows:2,fixtures:[]},doors:[...this.doorMotion.doors].map(([id,d])=>({id,target:Boolean(d.target),fraction:d.fraction,colliderFraction:d.fraction,blocked:d.blocked})),ghost:{pieceId:this.ghost.userData.piece??null,ready:Boolean(this.ghostModel),meshes:this.ghostModel?(()=>{let count=0;this.ghostModel.traverse(o=>{if(o.isMesh)count++;});return count;})():0},claims:this.claimVisibility,lights:{active:this.serviceLights.filter(l=>l.visible).length,fixtures:this.serviceLights.filter(l=>l.visible).map(l=>({id:l.userData.fixtureId,intensity:l.intensity})),max:MAX_SERVICE_LIGHTS,work:this.workLight.visible}};}
   canBuild(){return !this.nav.multiplayer?.connected&&!this.nav.openingActive&&this.nav.mode==='walk'&&!this.nav.insideShip&&!this.nav.dockedAtStation&&!this.nav.travel&&this.nav.altitude<80;}
   get controllerAvailable(){
@@ -56,12 +58,29 @@ export class BuildSystem {
     return true;
   }
   begin(id=this.pieceId){if(!this.canBuild())return {ok:false,message:'Leave the ship and stand on a planetary surface to build.'};if(this.blocked||this.store.blocked)return {ok:false,message:this.error||this.store.warning};this.active=true;this.nav.buildActive=true;this.nav.keys.clear();this.nav.gamepad.suspend();return this.select(id);}
-  select(id){if(!PIECES[id])return {ok:false,message:'Choose a building piece.'};this.removing=false;this.pieceId=id;this.snap=0;this.height=0;this.refreshPreview();return {ok:true};}
+  select(id){if(!PIECES[id])return {ok:false,message:'Choose a building piece.'};this.removing=false;this.decorating=false;this.pieceId=id;this.snap=0;this.height=0;this.refreshPreview();return {ok:true};}
+  setAppearance(finish=this.finish,graphic=this.graphic){
+    if(!finishById(finish)||(graphic!=='none'&&!printById(graphic)))return {ok:false,message:'Choose a listed finish and print.'};
+    this.finish=finish;this.graphic=graphic;this.refreshPreview();return {ok:true,message:`${finishById(finish).label} · ${printById(graphic)?.label??'No print'}`};
+  }
+  beginDecoration(){const result=this.begin(this.pieceId);if(!result.ok)return result;this.decorating=true;this.refreshPreview();return {ok:true};}
+  refreshDecoration(){
+    const hit=this.raycast(this.nav.position,FORWARD.clone().applyQuaternion(this.nav.orientation),12),claim=this.claims.find(c=>c.id===hit?.claimId),piece=claim?.pieces.find(p=>p.id===hit.pieceId);
+    const plan=piece?recolourBuild(this.data,claim.id,piece.id,this.finish,this.graphic):{ok:false,message:'Aim at your building part within 12 m.'};
+    this.preview={decorating:true,pieceId:piece?.type??this.pieceId,piece,claim,position:piece?this.toWorld(v(piece.position),claim).toArray():this.nav.position.toArray(),valid:plan.ok,reason:plan.ok?`Apply ${finishById(this.finish).label} · ${piece.type==='wall'||PIECES[piece.type].padSize?printById(this.graphic)?.label??'No print':'Colour only on this part'}`:plan.message,cost:{},sources:[]};
+    this.updateGhost();return plan;
+  }
+  decorate(){
+    if(!this.active||!this.canBuild()||this.blocked||this.store.blocked)return {ok:false,message:'Construction is unavailable.'};
+    const result=this.refreshDecoration();if(!result.ok)return result;
+    if(!validBuild(result.build)||!this.store.write({...this.store.state,build:result.build}))return {ok:false,message:this.store.warning||'Finish could not be saved.'};
+    this.revision++;this.lastToolAction={kind:'paint',position:[...this.preview.position],revision:this.revision};this.sync();this.refreshPreview();return {ok:true,message:result.message};
+  }
   beginRemoval(){const result=this.begin(this.pieceId);if(!result.ok)return result;this.removing=true;this.refreshPreview();return {ok:true};}
-  cancel(){this.active=false;this.removing=false;this.nav.buildActive=false;this.preview=null;this.ghost.visible=false;this.removeRoot.visible=false;this.boundary.visible=false;this.workLight.visible=false;this.nav.keys.clear();this.nav.toolTrigger=0;this.nav.gamepad.suspend();}
-  rotate(delta){if(this.removing)return;this.turn=((this.turn+delta*(PIECES[this.pieceId].category==='wall'?2:1))%4+4)%4;this.refreshPreview();}
-  cycleSnap(){if(this.removing)return;this.snap++;this.refreshPreview();}
-  adjustHeight(delta){if(this.removing||PIECES[this.pieceId].mount)return;const foundation=PIECES[this.pieceId].category==='foundation';this.height=THREE.MathUtils.clamp(this.height+(foundation?delta:Math.sign(delta)*STOREY),foundation?-.2:0,24);this.refreshPreview();}
+  cancel(){this.active=false;this.removing=false;this.decorating=false;this.nav.buildActive=false;this.preview=null;this.ghost.visible=false;this.removeRoot.visible=false;this.boundary.visible=false;this.workLight.visible=false;this.nav.keys.clear();this.nav.toolTrigger=0;this.nav.gamepad.suspend();}
+  rotate(delta){if(this.removing||this.decorating)return;this.turn=((this.turn+delta*(PIECES[this.pieceId].category==='wall'?2:1))%4+4)%4;this.refreshPreview();}
+  cycleSnap(){if(this.removing||this.decorating)return;this.snap++;this.refreshPreview();}
+  adjustHeight(delta){if(this.removing||this.decorating||PIECES[this.pieceId].mount)return;const foundation=PIECES[this.pieceId].category==='foundation';this.height=THREE.MathUtils.clamp(this.height+(foundation?delta:Math.sign(delta)*STOREY),foundation?-.2:0,24);this.refreshPreview();}
   toLocal(point,c){return point.clone().sub(v(c.origin)).applyQuaternion(q(c.quaternion).invert());}
   toWorld(point,c){return point.clone().applyQuaternion(q(c.quaternion)).add(v(c.origin));}
   nearestClaim(point=this.nav.position){return this.claims.filter(c=>c.body===bodyAt(point).id).map(c=>({c,d:this.toLocal(point,c).length()})).filter(x=>x.d<x.c.radius+15).sort((a,b)=>a.d-b.d)[0]?.c??null;}
@@ -141,13 +160,14 @@ export class BuildSystem {
   refreshPreview(){
     if(!this.active)return;
     if(this.removing)return this.refreshRemoval();
+    if(this.decorating)return this.refreshDecoration();
     const target=this.target();let claim=this.nearestClaim(target);
     if(!claim&&(this.pieceId==='mainframe'||PIECES[this.pieceId].category==='foundation'))claim=this.newClaim(target);
     const newSite=claim&&!this.claims.some(c=>c.id===claim.id);
     if(claim&&PIECES[this.pieceId].padSize==='L')claim={...claim,radius:96};
     const candidates=claim?(this.pieceId==='mainframe'&&newSite?[{position:[0,0,0],rotation:(this.turn+2)%4*Math.PI/2}]:this.candidates(claim,target)):[];
     const candidate=candidates[this.snap%Math.max(1,candidates.length)];
-    const p={type:this.pieceId,id:`build-piece-${this.data.nextId+(newSite?1:0)}`,position:candidate?.position??[0,0,0],rotation:candidate?.rotation??0,doorOpen:false};
+    const p={type:this.pieceId,id:`build-piece-${this.data.nextId+(newSite?1:0)}`,position:candidate?.position??[0,0,0],rotation:candidate?.rotation??0,doorOpen:false,...appearanceFor(this.pieceId,this.finish,this.graphic)};
     if(claim&&adjustableFoundation(p.type))this.fitFoundation(claim,p);
     const actor=claim?this.toLocal(this.nav.position,claim):null;
     const sources=hasMainframe(claim)&&claim.useBuffer&&this.pieceId!=='mainframe'&&Math.hypot(actor.x,actor.z)<=claim.radius?['pack',bufferId(claim,claim.pieces.find(p=>p.type==='mainframe'))]:['pack'];
@@ -226,6 +246,7 @@ export class BuildSystem {
   }
   place(){
     if(this.removing)return this.remove();
+    if(this.decorating)return this.decorate();
     this.refreshPreview();const preview=this.preview;if(!preview?.valid)return {ok:false,message:preview?.reason??'Enter build mode first.'};
     const c=structuredClone(preview.claim),p=structuredClone(preview.piece),data=structuredClone(this.data);
     const paid=planCost(this.store,this.store.state,preview.cost,preview.sources);if(!paid.ok)return paid;
@@ -262,7 +283,7 @@ export class BuildSystem {
           const entry={ready:false,group:null,pieceId:p.id};this.models.set(p.id,entry);
           createBuildVisual(p).then(model=>{if(this.disposed||!this.claims.some(c=>c.pieces.some(p=>p.id===entry.pieceId))){disposeBuildVisual(model);return;}entry.group=model;entry.rotor=model.getObjectByName('TurbineRotor');entry.ready=true;this._syncedData=null;model.position.fromArray(p.position);model.rotation.y=p.rotation;group.add(model);setDoorOpen(model,this.doorFraction(p,c));}).catch(e=>{this.error=`Building asset unavailable: ${e.message}`;});
         }
-        const model=this.models.get(p.id)?.group;if(model){setBuildPowered(model,(!this.power||this.power.status(c).powered)&&(!PIECES[p.type].light||p.lightOn!==false));const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p,c));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
+        const model=this.models.get(p.id)?.group;if(model){setBuildAppearance(model,p);setBuildPowered(model,(!this.power||this.power.status(c).powered)&&(!PIECES[p.type].light||p.lightOn!==false));const markings=model.getObjectByName('LandingPadMarkings');if(markings)markings.visible=Boolean(p.landingPad);setDoorOpen(model,this.doorFraction(p,c));if(p.type==='mainframe')updateMainframeDisplay(model,c);}
         if(['mainframe','crate','rack'].includes(p.type)&&this.onRegisterContainer&&!this.registered.has(p.id)){
           const id=bufferId(c,p),registered=this.onRegisterContainer({id,name:this.store.container(id)?.name??c.name,kind:'base',boxes:PIECES[p.type].storageBoxes??2,available:()=>this.claims.some(c=>c.pieces.some(piece=>piece.id===p.id))&&this.nav.mode==='walk'&&!this.nav.insideShip&&(this.nav.position.distanceTo(this.toWorld(v(p.position),c))<4||this.terminalAccess(c))});
           if(registered!==false)this.registered.add(p.id);
@@ -288,9 +309,9 @@ export class BuildSystem {
   }
   updateGhost(){
     if(!this.render||!this.preview||this.disposed)return;
-    this.removeRoot.visible=this.active&&this.removing&&Boolean(this.preview.piece);
-    if(this.removing){this.ghost.visible=false;this.boundary.visible=false;if(this.preview.piece){const bounds=getPlacementBounds(this.preview.piece);this.removeOutline.box.min.fromArray(bounds.min);this.removeOutline.box.max.fromArray(bounds.max);this.removeOutline.material.color.set(this.preview.valid?0xffa36c:0xf06a74);this.removeRoot.position.fromArray(this.preview.claim.origin).sub(this._origin);this.removeRoot.quaternion.fromArray(this.preview.claim.quaternion);}return;}
-    const key=`${this.pieceId}:${this.preview.piece.supportDepth??''}`;
+    this.removeRoot.visible=this.active&&(this.removing||this.decorating)&&Boolean(this.preview.piece);
+    if(this.removing||this.decorating){this.ghost.visible=false;this.boundary.visible=false;if(this.preview.piece){const bounds=getPlacementBounds(this.preview.piece);this.removeOutline.box.min.fromArray(bounds.min);this.removeOutline.box.max.fromArray(bounds.max);this.removeOutline.material.color.set(this.preview.valid?(this.decorating?finishById(this.finish).swatch:0xffa36c):0xf06a74);this.removeRoot.position.fromArray(this.preview.claim.origin).sub(this._origin);this.removeRoot.quaternion.fromArray(this.preview.claim.quaternion);}return;}
+    const key=`${this.pieceId}:${this.preview.piece.supportDepth??''}:${appearanceKey(this.preview.piece)}`;
     if(this.ghost.userData.shapeKey!==key){
       this.ghost.userData.shapeKey=key;this.ghost.userData.piece=this.pieceId;const request=++this.ghostRequest;
       if(this.ghostModel){this.ghost.remove(this.ghostModel);this.ghostDisposer(this.ghostModel);this.ghostModel=null;}

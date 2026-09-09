@@ -1,3 +1,4 @@
+import {FACTIONS} from '../factions/catalog.js';
 import {Matrix4,Quaternion,Vector3} from 'three';
 import {AEON,SELENE,PYRE,MIASMA,bodySurfacePoint} from '../celestial.js';
 import {MOON_LANDING_DIRECTION} from '../moon-world.js';
@@ -47,9 +48,9 @@ export function surveySettlement(body,direction,fallback=false){
  * Exchange, warehouse and vehicle garage meet the pad at flush thresholds. */
 export function settlementLayout(def,index,site){
   let serial=10000+index*1000;const pieces=[];
-  const put=(type,x,y,z,rotation=0,extra={})=>{const p={id:`build-piece-${++serial}`,type,position:[x,y,z],rotation,doorOpen:false,...extra};pieces.push(p);return p;};
+  const put=(type,x,y,z,rotation=0,extra={})=>{const p={id:`build-piece-${++serial}`,type,position:[x,y,z],rotation,doorOpen:false,finish:FACTIONS[def.faction]?.finish??'mineral',...extra};pieces.push(p);return p;};
   const y=site.deck;
-  put('foundation-pad-large',0,y,20,0,{landingPad:true});
+  put('foundation-pad-large',0,y,20,0,{landingPad:true,graphic:def.faction});
   const room=(cx,cz,doorSide,style)=>{
     const garage=style==='garage',height=garage?6:3;
     put('foundation-pad-small',cx,y,cz);
@@ -94,6 +95,13 @@ export function settlementLayout(def,index,site){
     const mastX=x>0&&z===20?22:x; // Clear the taller garage header.
     put('floodlight',mastX,y,z,Math.atan2(mastX,z-(z===20?-20:20)),{lightOn:true});
   }
+  for(const [x,z] of [[-32,def.wings[0]+8],[32,def.wings[1]+8],[32,def.wings[1]-8],[0,-32]]){
+    const panel=pieces.filter(p=>p.type==='wall'&&p.position[1]===y).sort((a,b)=>Math.hypot(a.position[0]-x,a.position[2]-z)-Math.hypot(b.position[0]-x,b.position[2]-z))[0];
+    if(panel)panel.graphic=def.faction;
+  }
+  // A solid branded panel beside the glazed exchange entrance, preserving its aperture.
+  const entry=pieces.find(p=>p.type==='window'&&p.position[0]===2&&p.position[2]===-16&&p.position[1]===y);
+  if(entry){entry.type='wall';entry.graphic=def.faction;}
   const claim=withClaimAnchor({id:`build-claim-${10000+index*1000}`,body:def.body,name:def.name,owner:'Settlement authority',useBuffer:false,radius:Math.max(96,Math.ceil(Math.hypot(garage.rampEnd[0],garage.rampEnd[2])+8)),origin:site.origin,quaternion:site.quaternion,pieces});
   return {...def,claim,terminalPiece:terminal,garage,pad:pieces[0],terrain:site.terrain};
 }

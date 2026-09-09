@@ -1,3 +1,4 @@
+import { rotationFrameAt, toInertial, planetRotation, inertialSurfacePoint } from './planet-rotation.js';
 import { Vector3 } from 'three';
 import { BODIES, AEON, SELENE, PYRE, MIASMA, bodySurfacePoint } from './celestial.js';
 import { SUN_STANDOFF, SUN_EXCLUSION } from './stellar-world.js';
@@ -29,14 +30,19 @@ export function staticNavigationTargets(destinations) {
 
 /** Near-side surface clearance, or a fixed 20 km stand-off from a signal.
  * Surface sites approach along the local vertical so travel never ends underground. */
-export function navigationEndpoint(start,target) {
-  const from=v(start),center=v(target.center),body=BODIES.find(b=>b.id===target.body);
+export function targetInertialCenter(target,seconds=null) {
+  const point=v(target.center);
+  return seconds===null?point:toInertial(point,rotationFrameAt(point),seconds);
+}
+export function navigationEndpoint(start,target,{rotationTime=null}={}) {
+  const from=v(start),center=targetInertialCenter(target,rotationTime),body=BODIES.find(b=>b.id===target.body);
+  const surface=(radial,b,clearance)=>rotationTime===null?bodySurfacePoint(radial,b,clearance):inertialSurfacePoint(radial,b,rotationTime,clearance);
   if(target.category==='bodies') {
     const radial=from.clone().sub(center).normalize();
     if(!radial.lengthSq())radial.set(1,0,0);
-    return body.star?center.addScaledVector(radial,SUN_STANDOFF):bodySurfacePoint(radial,body,NAV_ARRIVAL);
+    return body.star?center.addScaledVector(radial,SUN_STANDOFF):surface(radial,body,NAV_ARRIVAL);
   }
-  if(target.surface&&body)return bodySurfacePoint(center.sub(v(body.center)).normalize(),body,NAV_ARRIVAL);
+  if(target.surface&&body)return surface(center.sub(v(body.center)).normalize(),body,NAV_ARRIVAL);
   const offset=from.sub(center).normalize();if(!offset.lengthSq())offset.set(1,0,0);
   return center.addScaledVector(offset,NAV_ARRIVAL);
 }
@@ -44,27 +50,46 @@ export function navigationHazards(obstacles=[]) {
   return [...BODIES.map(b=>({id:b.id,name:b.name,center:b.center,radius:b.star?SUN_EXCLUSION:b.radius+envelopes[b.id]+100})),...obstacles];
 }
 /** Validate the complete segment before committing a continuous analytic flight. */
-export function planNavigationTravel(start,target,{obstacles=[]}={}) {
+export function planNavigationTravel(start,target,{obstacles=[],rotationTime=null,spoolSeconds=null}={}) {
   if(!valid(start)||!target||!valid(target.center))return fail('Destination signal unavailable.');
-  const from=v(start),end=navigationEndpoint(from,target);
-  if(from.distanceTo(end)<1000 || (!target.surface&&target.category!=='bodies'&&from.distanceTo(v(target.center))<=NAV_ARRIVAL+1))return fail('Within 20 km. Continue in normal flight.');
-  if(target.category==='bodies'&&from.distanceTo(v(target.center))<=end.distanceTo(v(target.center))+1)return fail(target.id==='star'?'At stellar observation range.':'Within 20 km of the surface. Continue in normal flight.');
-  for(const hazard of navigationHazards(obstacles)) {
+  if(spoolSeconds!==null&&(!Number.isFinite(spoolSeconds)||spoolSeconds<0))return fail('Invalid drive charge.');
+  const from=rotationTime===null?v(start):toInertial(v(start),rotationFrameAt(v(start)),rotationTime);
+  let end=navigationEndpoint(from,target,{rotationTime});
+  const currentCenter=targetInertialCenter(target,rotationTime);
+  if(from.distanceTo(end)<1000 || (!target.surface&&target.category!=='bodies'&&from.distanceTo(currentCenter)<=NAV_ARRIVAL+1))return fail('Within 20 km. Continue in normal flight.');
+  if(target.category==='bodies'&&from.distanceTo(currentCenter)<=end.distanceTo(currentCenter)+1)return fail(target.id==='star'?'At stellar observation range.':'Within 20 km of the surface. Continue in normal flight.');
+  const makePlan=end=>{
+    const plan=createTravelPlan(from,end);
+    return spoolSeconds===null?plan:Object.freeze({...plan,spoolSeconds,duration:plan.duration-plan.spoolSeconds+spoolSeconds});
+  };
+  let plan=makePlan(end);
+  if(rotationTime!==null){
+    // Lead the rotating surface signal through the analytic flight duration.
+    // Iteration converges rapidly because a drive is much faster than the ground.
+    for(let i=0;i<8;i++){
+      const next=navigationEndpoint(from,target,{rotationTime:rotationTime+plan.duration});
+      const error=next.distanceTo(end);end=next;plan=makePlan(end);
+      if(error<.001)break;
+    }
+  }
+  const hazards=obstacles.map(h=>rotationTime===null?h:{...h,center:targetInertialCenter(h,rotationTime).toArray()});
+  for(const hazard of navigationHazards(hazards)) {
     if(!valid(hazard.center)||!Number.isFinite(hazard.radius)||hazard.radius<0)return fail('Invalid navigation obstacle.');
     // A body approach follows one radial all the way to its canonical surface
     // +20 km. A global highest-peak envelope must not reject a deep crater.
     if(target.category==='bodies'&&target.id===hazard.id&&target.id!=='star')continue;
     if(segmentIntersectsSphere(from,end,hazard.center,hazard.radius))return fail(`Route blocked by ${hazard.name}. Climb or fly around its limb.`);
   }
-  return {ok:true,reason:null,plan:createTravelPlan(from,end)};
+  return {ok:true,reason:null,plan:rotationTime===null?plan:Object.freeze({...plan,coordinates:'inertial',departureTime:rotationTime,arrivalTime:rotationTime+plan.duration})};
 }
 /** Nearest ray/sphere entry wins: a hidden moon cannot lock through a planet. */
-export function aimedNavigationTarget(position,orientation,targets,selectedId=null) {
-  const from=v(position),forward=new Vector3(0,0,-1).applyQuaternion(orientation);
+export function aimedNavigationTarget(position,orientation,targets,selectedId=null,{rotationTime=null}={}) {
+  const local=v(position),frame=rotationTime===null?null:rotationFrameAt(local);
+  const from=toInertial(local,frame,rotationTime),forward=new Vector3(0,0,-1).applyQuaternion(orientation).applyQuaternion(planetRotation(frame,rotationTime));
   const candidates=[];
   for(const t of targets) {
     if(!valid(t.center))continue;
-    const offset=v(t.center).sub(from),distance=offset.length();
+    const offset=targetInertialCenter(t,rotationTime).sub(from),distance=offset.length();
     if(distance<1)continue;
     const cosine=offset.dot(forward)/distance;if(cosine<=0)continue;
     const angular=Math.acos(Math.min(1,cosine));
@@ -73,7 +98,7 @@ export function aimedNavigationTarget(position,orientation,targets,selectedId=nu
     if(angular>cone)continue;
     const surfaceDistance=distance-(t.radius||0);
     // Test the sightline itself, with solid radii (not drive exclusions).
-    const sightEnd=t.surface?navigationEndpoint(from,t):v(t.center);
+    const sightEnd=t.surface?navigationEndpoint(from,t,{rotationTime}):targetInertialCenter(t,rotationTime);
     const occluded=BODIES.some(b=>b.id!==t.id&&segmentIntersectsSphere(from,sightEnd,b.center,b.radius));
     if(!occluded)candidates.push({target:t,angular,surfaceDistance});
   }

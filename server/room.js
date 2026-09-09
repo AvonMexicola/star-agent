@@ -30,6 +30,7 @@ export function playerSnapshot(p) {
   s.travel=n.travel?JSON.parse(JSON.stringify(n.travel)):null;s.travelTarget=n.travelTarget;s.crash=n.crash;
   s.freighter=n.freighter?.snapshot??null;
   s.sentrySeat=n.sentrySeat??null;s.sentryFeet=n.sentryFeet??null;s.bodyOrientation=n.sentryBodyOrientation??null;
+  s.planetFrame=n.rotationFrame?.id??null;
   s.physicsFrame=n.physicsFrame??null;
   s.physicsUp=s.physicsFrame?n.stationPhysics.up.toArray():null;
   return s;
@@ -59,7 +60,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   const sentries=createSentries({players,world,send,impact,security,broadcast,now,canFire:p=>hub.canFire(p)&&!security.pending(p)});
   // Only public fields are shared, and only within this synchronous broadcast.
   // Rebuild for every frame/request so a retained snapshot never becomes stale.
-  const publicState=()=>({stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:Array.from(players.values(),playerSnapshot),sentries:sentries.snapshot(),doors:{...doors},defense:world.defense?.snapshot??[]});
+  const publicState=()=>({planetTime:world.rotationClock?.seconds??null,stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:Array.from(players.values(),playerSnapshot),sentries:sentries.snapshot(),doors:{...doors},defense:world.defense?.snapshot??[]});
   function state(p,shared=publicState()){
     const nearby=[];
     for(const d of drops.values())if(p.nav.position.distanceTo(dropPosition.fromArray(d.position))<500)nearby.push({...d});

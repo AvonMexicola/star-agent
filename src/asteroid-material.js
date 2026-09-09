@@ -1,3 +1,4 @@
+import { Matrix3 } from 'three';
 import { MeshStandardMaterial, Vector3 } from 'three';
 
 export const ASTEROID_MATERIAL_VERSION = 2;
@@ -21,12 +22,15 @@ export function createAsteroidMaterial({ originUniform = { value: new Vector3() 
   if (!Number.isFinite(sun.lengthSq()) || sun.lengthSq() < 1e-12) throw new RangeError('A finite sun direction is required');
   sun.normalize();
   const material = new MeshStandardMaterial({ color: 0xffffff, roughness: .9, metalness: .10, envMapIntensity: .22 });
+  material.userData.asteroidSun=sun;
+  material.userData.asteroidFrameInverse={value:new Matrix3()};
   material.onBeforeCompile = shader => {
+    shader.uniforms.asteroidFrameInverse=material.userData.asteroidFrameInverse;
     shader.uniforms.asteroidOrigin = originUniform;
     shader.uniforms.asteroidSun = { value: sun };
     shader.uniforms.asteroidMoonRadius = { value: moonRadius };
     shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>
-      uniform vec3 asteroidOrigin;uniform float asteroidMoonRadius;
+      uniform vec3 asteroidOrigin;uniform float asteroidMoonRadius;uniform mat3 asteroidFrameInverse;
       varying vec3 vAsteroidMoon;varying vec3 vAsteroidPoint;varying vec3 vAsteroidNormal;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         vAsteroidPoint=position;vAsteroidNormal=normal;
@@ -34,7 +38,7 @@ export function createAsteroidMaterial({ originUniform = { value: new Vector3() 
         #ifdef USE_INSTANCING
           asteroidPosition=instanceMatrix*asteroidPosition;
         #endif
-        vAsteroidMoon=((modelMatrix*asteroidPosition).xyz+asteroidOrigin)/asteroidMoonRadius;`);
+        vAsteroidMoon=(asteroidFrameInverse*(modelMatrix*asteroidPosition).xyz+asteroidOrigin)/asteroidMoonRadius;`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       uniform vec3 asteroidSun;varying vec3 vAsteroidMoon;varying vec3 vAsteroidPoint;varying vec3 vAsteroidNormal;
       ${SURFACE_GLSL}`)

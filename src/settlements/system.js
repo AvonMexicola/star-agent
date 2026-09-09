@@ -27,7 +27,7 @@ export function createSettlements({scene,nav,enabled=()=>!nav.multiplayer?.conne
       const local=collision.toLocal(pose.position,s.claim),surface=collision.landingSurface({...pose,orientation:pose.orientation??pose.quaternion});
       return surface&&Math.abs(local.y-s.pad.position[1])<.6&&Math.abs(local.x)<24&&Math.abs(local.z-20)<36;
     },
-    beacons(){return active().map(s=>({id:s.id,name:s.name,kind:`Trade settlement · ${s.role} · Large pad`,category:'trade',parent:s.body,body:s.body,surface:true,center:point(s,s.pad.position).toArray(),radius:0}));},
+    beacons(){return active().map(s=>({id:s.id,name:s.name,kind:`Trade settlement · ${s.operator} · ${s.role} · Large pad`,category:'trade',parent:s.body,body:s.body,surface:true,center:point(s,s.pad.position).toArray(),radius:0}));},
     constrainWalker(a,b){return enabled()?collision.constrainWalker(a,b):{point:b,hit:false,grounded:false};},
     raycast(...args){return enabled()?collision.raycast(...args):null;},
     landingSurface(pose){return enabled()?collision.landingSurface(pose):null;},
@@ -44,7 +44,7 @@ export function createSettlements({scene,nav,enabled=()=>!nav.multiplayer?.conne
       nav.velocity.set(0,0,0);nav.angularVelocity.set(0,0,0);nav.keys.clear();nav.gamepad.suspend();nav.resetSteering();
       return true;
     },
-    get state(){return {available:enabled(),sites:active().map(s=>({id:s.id,name:s.name,body:s.body,origin:s.claim.origin,quaternion:s.claim.quaternion,pad:point(s,s.pad.position).toArray(),terminal:api.terminalPosition(s.id).toArray(),pieces:s.claim.pieces.length,terrain:s.terrain})),error:[buildings.error,...settlementLayoutErrors].filter(Boolean).join(' '),rendered:buildings.models.size,ready:[...buildings.models.values()].every(m=>m.ready)};},
+    get state(){return {available:enabled(),sites:active().map(s=>({id:s.id,name:s.name,body:s.body,operator:s.operator,faction:s.faction,origin:s.claim.origin,quaternion:s.claim.quaternion,pad:point(s,s.pad.position).toArray(),terminal:api.terminalPosition(s.id).toArray(),pieces:s.claim.pieces.length,terrain:s.terrain})),error:[buildings.error,...settlementLayoutErrors].filter(Boolean).join(' '),rendered:buildings.models.size,ready:[...buildings.models.values()].every(m=>m.ready)};},
     dispose(){buildings.dispose();collision.dispose();},
   };
   return api;

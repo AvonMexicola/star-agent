@@ -1,5 +1,48 @@
 # All-features local development
 
+**Spinning planets** are locally integrated at `8f819ac`. Aeon, Selene, Pyre and
+Miasma complete a day in 60 real minutes, with changing sunlight while ground,
+bases and parked ships remain attached. Existing saves and controls are retained.
+Refresh **http://127.0.0.1:5178/**; the paired 5178/API8087 service was gracefully
+refreshed on2026-09-09 with protocol 9 and its existing persistent database.
+The checked faction finishes and Hush/Veil habitats remain included.
+
+Combined 1233 normal tests,204 multiplayer tests (2 existing optional skips), build,
+controller moon drive and two-client shared-clock checks pass. The full ground
+controller/day-night/boarding journey and all-four-world render inspection also
+pass on their recorded sources. [Player guide](planet-rotation.md) and
+[exact evidence/remaining review](qa/planet-rotation/README.md). This is a local
+development checkpoint; physical devices, independent review and performance
+acceptance remain separate, with no public deployment.
+
+
+Checked faction/compound source **e25c7d0** is locally integrated and served on
+5178 with the existing persistent API8087. The paired service refreshed on
+2026-09-09; [the local receipt](qa/faction-building-finishes/local-integration.json)
+records exact source/health checks and preserved shared edits. Refresh the page.
+
+**Faction finishes and Crimson vacuum bases** add **Build → Finishes** for eight
+saved paints and rigid faction/safety prints. Choose a finish before placement,
+or use **Paint existing parts** on an owned part. Four public exchanges now carry
+Verdant Materials, Tidemark Logistics, Cinder Industrial and Vesper Extraction
+identities. Their locations, stock and vehicle garages are preserved.
+
+**Hush Exchange on Selene** and **Veil Exchange on Miasma** have Crimson enclosed
+habitats with rigid roofs and actual interlocked two-door entrances. Both have
+finite salvage trading, supplied Crimson work-yard props, a safe outer landing
+apron and a reduced turret on a cylindrical tower. Follow the amber ground route,
+isolate the tower, then open each airlock door with **F / controller X / the
+visible phone action**. There are no tents; pressure simulation and ground NPC
+combat are separate features.
+
+Use **F2 / Dev → Ship & location** and choose Hush or Veil. Direct local approaches:
+[Selene / Hush](http://127.0.0.1:5178/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291)
+and [Miasma / Veil](http://127.0.0.1:5178/?dev=1&ship=nomad&start=pirate-veil&intro=0&seed=7291).
+Normal play discovers each hidden trade signal independently near the site.
+See [paint controls](building-finishes.md), [pirate route](pirate-vacuum-bases.md),
+and [checked evidence](qa/faction-building-finishes/README.md). The final local
+integration receipt records the served checkpoint; no public deployment is included.
+
 The mission update is also merged into GitHub `dev/all-features` through
 [PR99](https://github.com/AvonMexicola/star-agent/pull/99), merge `966f781`.
 All five required hosted checks pass on `f90f98c`. Its server cleanup now waits
@@ -716,7 +759,7 @@ Ceiling lights remain in **Roofs**. The same normal power and placement rules ap
 Use **F2 → a settlement** to inspect the commissioned lights, or **Build sandbox**
 for construction. The [asset and gameplay record](qa/outdoor-floodlights/README.md)
 contains night before/after views, controller/phone evidence and measured costs.
-Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
+Integrated locally at `8566a43`; the existing 5178 preview/API refreshed together
 and served asset/source checks passed. Refresh the page to load the masts.
 Independent art and hardware/performance acceptance remain pending.
 

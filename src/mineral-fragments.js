@@ -45,9 +45,9 @@ export class MineralFragments {
       mesh.castShadow=mesh.receiveShadow=true;mesh.customDepthMaterial=depth;this.group.add(mesh);return mesh;
     });
   }
-  update(position,origin,altitude,shipPosition){
+  update(position,origin,altitude,shipPosition,scenery=null){
     this.group.visible=altitude>=0&&altitude<70;if(!this.group.visible)return;
-    const local=position.clone().sub(CENTER),normal=local.clone().normalize(),clearing=shipPosition?.toArray().join('/')??null;
+    const local=position.clone().sub(CENTER),normal=local.clone().normalize(),clearing=(shipPosition?.toArray().join('/')??'')+'|'+(scenery?.key??'');
     if(local.distanceToSquared(this.last)>36||clearing!==this.clearing){
       this.last.copy(local);this.anchor.copy(normal).multiplyScalar(MIASMA_RADIUS+miasmaSurface(...normal.toArray()).height);this.clearing=clearing;
       const counts=[0,0,0],matrix=new THREE.Matrix4(),q=new THREE.Quaternion(),yaw=new THREE.Quaternion(),scale=new THREE.Vector3(),color=new THREE.Color();
@@ -55,6 +55,8 @@ export class MineralFragments {
       scatterMinerals(normal,(d,col,row,a,b)=>{
         const surface=miasmaSurface(...d.toArray()),point=d.clone().multiplyScalar(MIASMA_RADIUS+surface.height);
         if(ship&&point.distanceToSquared(ship)<15**2)return;
+        // Maximum authored/scaled horizontal fragment extent is below 0.4 m.
+        if(scenery?.excludes(point,.4))return;
         const variant=Math.floor(hash(col,row,8391)*3),index=counts[variant];if(index>=1600)return;
         const size=.12+hash(col,row,2131)**3*.42;
         q.setFromUnitVectors(UP,d);yaw.setFromAxisAngle(UP,b*TAU);q.multiply(yaw);scale.set(size,size,size*(.6+b*.8));

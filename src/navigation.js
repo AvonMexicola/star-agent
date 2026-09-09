@@ -1,3 +1,5 @@
+import { planetRotation, frameRotation, frameVelocity, velocityBetweenFrames, rotationFrameAt, toInertial, fromInertial, betweenFrames } from './planet-rotation.js';
+import { reframeNavigation, rotationEnvironment, navigationShipFrame, shipOrientationInView } from './navigation-rotation.js';
 import {constrainShipAttachments} from './ship-attachment-collision.js';
 import { MIASMA_ARRIVAL_ALTITUDE, miasmaArrivalDirection, constrainMiasmaStep } from './miasma-world.js';
 import * as THREE from 'three';
@@ -117,7 +119,13 @@ export class Navigation {
     this.flightAssist=!this.flightAssist;this.resetSteering();this.angularVelocity.set(0,0,0);
     this.notify(this.flightAssist?'Fly-by-wire. Thrusters correct drift and brake on release; allow stopping distance.':'Unlocked. Thrust off to coast; turn and fire while drifting. Hold X / LT to brake; V / R3 restores fly-by-wire.');
   }
-  get flightEnvironment(){
+  get rotationTime(){return this.rotationClock?.seconds??0;}
+  get rotationFrame(){return this._rotationStepFrame!==undefined?this._rotationStepFrame:this.rotationClock?rotationFrameAt(this.position):null;}
+  get inertialPosition(){return toInertial(this.position,this.rotationFrame,this.rotationTime);}
+  viewPoint(point){return betweenFrames(point,this.rotationClock?rotationFrameAt(point):null,this.rotationFrame,this.rotationTime);}
+  get inertialOrientation(){return planetRotation(this.rotationFrame,this.rotationTime).multiply(this.orientation);}
+  get flightEnvironment(){return rotationEnvironment(this.localFlightEnvironment,this.position,Boolean(this.rotationClock));}
+  get localFlightEnvironment(){
     const body=this.body;
     if(body.id==='aeon')return environmentAt(this.position,RADIUS);
     const local=bodyOffset(this.position,body),r=Math.max(body.radius,local.length());
@@ -159,8 +167,8 @@ export class Navigation {
     if(this.gearLimited)return {ok:false,reason:'Retract landing gear before engaging the drive: G / LB+RB + D-pad down.'};
     if(!this.powered||this.mode!=='flight'||this.autoland||this.stationLift)return {ok:false,reason:'Launch and leave landing assist with main power on before spooling.'};
     const obstacles=[{name:'the star',center:new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).toArray(),radius:2.5e8}];
-    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:(this.station.centre??this.station.worldPosition).toArray(),radius:2000});
-    return planFreeTravel(this.position,FORWARD.clone().applyQuaternion(this.orientation),{body:this.body,altitude:this.altitude,outsideAtmosphere:this.flightEnvironment.atmosphereFraction===0,obstacles});
+    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:toInertial(this.station.centre??this.station.worldPosition,this.rotationClock?rotationFrameAt(this.station.centre??this.station.worldPosition):null,this.rotationTime).toArray(),radius:2000});
+    return planFreeTravel(this.inertialPosition,FORWARD.clone().applyQuaternion(this.inertialOrientation),{body:this.body,altitude:this.altitude,outsideAtmosphere:this.flightEnvironment.atmosphereFraction===0,obstacles});
   }
   beginFreeTravel(){
     if(this.targeting?.hasTarget)return this.targeting.engage();
@@ -177,8 +185,8 @@ export class Navigation {
     if(!this.travelTarget)return {ok:false,reason:'Select a world on the map (M).',plan:null};
     if(this.mode!=='flight'||this.autoland||this.stationLift)return {ok:false,reason:'Launch and leave landing assist before engaging the drive.',plan:null};
     const obstacles=[];
-    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:(this.station.centre??this.station.worldPosition).toArray(),radius:2000});
-    return planTravel(this.position,this.travelTarget,{obstacles});
+    if(this.station?.ready)obstacles.push({name:'Aeon Orbital',center:toInertial(this.station.centre??this.station.worldPosition,this.rotationClock?rotationFrameAt(this.station.centre??this.station.worldPosition):null,this.rotationTime).toArray(),radius:2000});
+    return planTravel(this.inertialPosition,this.travelTarget,{obstacles,rotationTime:this.rotationTime});
   }
   beginTravel(){
     if(this.targeting)return this.targeting.engage();
@@ -204,6 +212,7 @@ export class Navigation {
   }
   updateTravel(dt){
     const travel=this.travel;
+    this.orientation.copy(this.inertialOrientation);
     travel.elapsed+=Math.max(0,Number.isFinite(dt)?dt:0);
     const sample=sampleTravel(travel.plan,travel.elapsed);
     if(!travel.manual&&travel.plan.direction.lengthSq()>0){
@@ -212,6 +221,11 @@ export class Navigation {
       this.orientation.slerp(aligned,sample.phase==='spooling'?1-Math.exp(-4*dt):1);
     }
     this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
+    if(this.rotationClock){
+      const frame=rotationFrameAt(sample.position),q=planetRotation(frame,this.rotationTime).invert();
+      fromInertial(sample.position,frame,this.rotationTime,this.position);
+      this.velocity.applyQuaternion(q).sub(frameVelocity(this.position,frame));this.orientation.premultiply(q).normalize();
+    }
     if(sample.done){
       if(travel.targeted){this.gamepad.suspend();this.targeting?.reset();}
       this.travel=null;this.keys.clear();this.velocity.set(0,0,0);this.angularVelocity.set(0,0,0);
@@ -221,6 +235,7 @@ export class Navigation {
   }
   startStation(){
     if(!this.station?.ready)throw new Error('Station is not ready for deck spawn.');
+    this._placementRevision=(this._placementRevision??0)+1;delete this._rotationStepFrame;
     if('location' in this.station)this.station.location='hangar';
     if(Number.isInteger(this.station.activeIndex))this.station.parkedPod=this.station.activeIndex;
     this.gearDeployed=true;this.gearProgress=1;
@@ -241,6 +256,7 @@ export class Navigation {
   }
   orbit(){
     if(this.mode==='destroyed'&&this.stellarThermal?.destroyed)return;
+    this._placementRevision=(this._placementRevision??0)+1;delete this._rotationStepFrame;
     this.kestrelAccess?.reset();
     this.crash=null;
     this.freighter?.reset({gearProgress:0});
@@ -292,7 +308,7 @@ export class Navigation {
     // Spacecraft and EVA yaw around their own up axis, so horizontal input
     // always turns the nose sideways even when the nearest moon is overhead.
     // Surface walking and assisted atmospheric flight retain gravity-relative yaw.
-    const normal=this.cabinFlight&&this.insideShip?UP.clone().applyQuaternion(this.shipOrientation):this.mode==='walk'&&this.stationPhysics?this.stationPhysics.up:this.mode==='eva'||this.spaceFlightAttitude?UP.clone().applyQuaternion(this.orientation):this.spaceParked&&this.mode==='walk'?UP.clone().applyQuaternion(this.shipOrientation):this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
+    const normal=this.cabinFlight&&this.insideShip?UP.clone().applyQuaternion(shipOrientationInView(this)):this.mode==='walk'&&this.stationPhysics?this.stationPhysics.up:this.mode==='eva'||this.spaceFlightAttitude?UP.clone().applyQuaternion(this.orientation):this.spaceParked&&this.mode==='walk'?UP.clone().applyQuaternion(shipOrientationInView(this)):this.normal;rotation.setFromAxisAngle(normal,yaw);this.orientation.premultiply(rotation);
     const right=RIGHT.clone().applyQuaternion(this.orientation);rotation.setFromAxisAngle(right,pitch);this.orientation.premultiply(rotation).normalize();
     if(this.mode==='walk'){
       const forward=FORWARD.clone().applyQuaternion(this.orientation);const dot=forward.dot(normal);
@@ -302,23 +318,35 @@ export class Navigation {
   get spaceFlightAttitude(){return this.mode==='flight'&&!this.autoland&&!this.stationLift&&this.flightEnvironment.regime==='SPACE';}
   get body(){return bodyAt(this.position);}
   get normal(){return bodyOffset(this.position,this.body).normalize();}
-  get groundHeight(){return bodyHeight(this.normal,this.body);}
+  get surfacePosition(){return this.rotationClock?betweenFrames(this.position,this.rotationFrame,this.body,this.rotationTime):this.position.clone();}
+  get surfaceDirection(){return bodyOffset(this.surfacePosition,this.body).normalize();}
+  get surfaceSunDirection(){return this.sunDirection.applyQuaternion(frameRotation(this.rotationFrame,this.rotationClock?this.body:null,this.rotationTime));}
+  get groundHeight(){return bodyHeight(this.surfaceDirection,this.body);}
   get altitude(){
     // HUD, camera, flight limits and effects read the same position repeatedly.
     // Reuse only an exact-position scalar; movement (including substeps and
     // authoritative corrections) invalidates it without quantizing the terrain.
-    const {x,y,z}=this.position,body=this.body,cached=this._altitudeSample;
-    if(cached&&cached.x===x&&cached.y===y&&cached.z===z&&cached.body===body&&cached.seed===SEED)return cached.value;
-    const value=Math.max(0,bodyAltitude(this.position,body));
-    if(cached){cached.x=x;cached.y=y;cached.z=z;cached.body=body;cached.seed=SEED;cached.value=value;}
-    else this._altitudeSample={x,y,z,body,seed:SEED,value};
+    const {x,y,z}=this.position,body=this.body,cached=this._altitudeSample,phase=this.rotationClock&&this.rotationFrame!==body?this.rotationTime:0;
+    if(cached&&cached.x===x&&cached.y===y&&cached.z===z&&cached.body===body&&cached.seed===SEED&&cached.phase===phase)return cached.value;
+    const value=Math.max(0,bodyAltitude(this.surfacePosition,body));
+    if(cached){cached.x=x;cached.y=y;cached.z=z;cached.body=body;cached.seed=SEED;cached.phase=phase;cached.value=value;}
+    else this._altitudeSample={x,y,z,body,seed:SEED,phase,value};
     return value;
   }
   get speed(){return this.velocity.length();}
   get debrisSpeedLimit(){return debrisSpeedLimit(this.position);}
-  get sunDirection(){return new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).sub(this.position).normalize();}
-  toShipLocal(point=this.position){return this.shipPosition?point.clone().sub(this.shipPosition).applyQuaternion(this.shipOrientation.clone().invert()):null;}
-  fromShipLocal(point){return point.clone().applyQuaternion(this.shipOrientation).add(this.shipPosition);}
+  get sunDirection(){return new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE).sub(this.inertialPosition).normalize().applyQuaternion(planetRotation(this.rotationFrame,this.rotationTime).invert());}
+  toShipLocal(point=this.position){
+    if(!this.shipPosition)return null;
+    const frame=navigationShipFrame(this);
+    const local=this.rotationClock?betweenFrames(point,this.rotationFrame,frame,this.rotationTime):point.clone();
+    return local.sub(this.shipPosition).applyQuaternion(this.shipOrientation.clone().invert());
+  }
+  fromShipLocal(point){
+    const local=point.clone().applyQuaternion(this.shipOrientation).add(this.shipPosition);
+    const frame=navigationShipFrame(this);
+    return this.rotationClock?betweenFrames(local,frame,this.rotationFrame,this.rotationTime):local;
+  }
   shipInteraction(local){return this.kestrelAccess?(this.kestrelAccess.reachable(this)?'ladder':null):this.freighter?this.freighter.interaction(local):interactionAt(local,this.doorOpen);}
   get landingClearance(){return this.layout.landingClearance??Math.max(3.2,this.layout.seatEye[1]+.35);}
   get interaction(){
@@ -330,7 +358,7 @@ export class Navigation {
     const cargoInteraction=this.cargoInteraction?.();if(cargoInteraction)return cargoInteraction;
     const baseInteraction=this.baseInteraction?.();if(baseInteraction)return baseInteraction;
     if(this.mode==='flight')return this.autoland||this.stationLift||this.travel?'FINISH MANEUVER TO LEAVE SEAT':'F · LEAVE PILOT SEAT';
-    if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.position.distanceTo(this.shipPosition))+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
+    if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.toShipLocal().length())+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
     if(this.mode==='landed')return 'F · LEAVE PILOT SEAT';
     if(this.mode!=='walk'||!this.shipPosition)return '';
     if(this.berthTransition)return this.berthRest?'SETTLING INTO BERTH':'LEAVING BERTH';
@@ -494,7 +522,7 @@ export class Navigation {
       else this.notify(this.kestrelAccess?'Return to the ground beside the port ladder to board. Thrust toward terrain before disabling suit thrusters.':'Return through the open rear ramp to board. Thrust toward terrain before disabling suit thrusters.');
     }
   }
-  get evaState(){return {active:this.mode==='eva',spaceParked:this.spaceParked,braking:this.evaBraking,shipDistance:this.shipPosition?this.position.distanceTo(this.shipPosition):null,speed:this.speed};}
+  get evaState(){return {active:this.mode==='eva',spaceParked:this.spaceParked,braking:this.evaBraking,shipDistance:this.shipPosition?this.toShipLocal().length():null,speed:this.speed};}
   get stationPhysics(){return stationPhysicsAt(this.station,this.position);}
   get physicsFrame(){return ['walk','eva'].includes(this.mode)?this.stationPhysics?.id??null:null;}
   enterStationGravity(grid){
@@ -527,12 +555,17 @@ export class Navigation {
       this.shipVelocity.copy(this.velocity);this.shipAngularVelocity.copy(this.angularVelocity);this.cruiseVelocity.copy(this.velocity);
       this.spaceParked=this.altitude>120&&this.speed<=2;
       this.cabinFlight=true;this.mode='landed';this.doorOpen=false;this.doorProgress=0;
+      if(this.rotationClock&&this.spaceParked){
+        const from=this.rotationFrame,to=rotationFrameAt(toInertial(this.shipPosition,from,this.rotationTime));
+        betweenFrames(this.shipPosition,from,to,this.rotationTime,this.shipPosition);
+        this.shipOrientation.premultiply(frameRotation(from,to,this.rotationTime));
+      }
     }
     if(this.mode==='eva'){this.notify('Approach the open ramp slowly at deck height to board.');return;}
     if(this.mode==='landed'){
       this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.stand)));
       this.mode='walk';this.insideShip=true;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
-      this.orientation.copy(this.shipOrientation).multiply(new THREE.Quaternion().setFromAxisAngle(UP,Math.PI));
+      this.orientation.copy(shipOrientationInView(this)).multiply(new THREE.Quaternion().setFromAxisAngle(UP,Math.PI));
       this.keys.clear();this.boost=false;
       this.notify(this.cabinFlight?'Standing in the cabin. Ship continues flying; return to the chair with F.':this.freighter?(this.freighter.boardingHint??'Standing on the upper deck. Walk aft to the starboard crew lift for the cargo deck and ramps.'):'Standing in the cabin. Walk aft; F opens the hatch and lowers the ramp.');
     }else{
@@ -552,9 +585,11 @@ export class Navigation {
       }else if(hit==='berth'){
         this.useBerth(true);
       }else if(hit==='seat'){
-        this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.seatEye)));this.orientation.copy(this.shipOrientation);
+        const frame=this.rotationFrame,shipFrame=navigationShipFrame(this),seat=this.fromShipLocal(new THREE.Vector3(...this.layout.seatEye));
+        const inherited=this.rotationClock?velocityBetweenFrames(this.shipVelocity,betweenFrames(seat,frame,shipFrame,this.rotationTime),shipFrame,frame,this.rotationTime):this.shipVelocity;
+        const look=shipOrientationInView(this);this.position.copy(seat);this.orientation.copy(look);
         this.mode=this.cabinFlight||this.spaceParked?'flight':'landed';this.insideShip=!this.cabinFlight;this.keys.clear();this.boost=false;
-        if(this.cabinFlight){this.velocity.copy(this.shipVelocity);this.angularVelocity.copy(this.shipAngularVelocity);this.cabinFlight=false;this.spaceParked=false;this.shipPosition=null;this.doorOpen=false;this.doorProgress=0;}
+        if(this.cabinFlight){this.velocity.copy(inherited);this.angularVelocity.copy(this.shipAngularVelocity);this.cabinFlight=false;this.spaceParked=false;this.shipPosition=null;this.doorOpen=false;this.doorProgress=0;}
         else {this.velocity.set(0,0,0);if(this.spaceParked){this.spaceParked=false;this.shipPosition=null;this.doorOpen=false;this.doorProgress=0;this.insideShip=false;}}
         this.notify('Pilot seat engaged. P main power · F stand · B land / launch.');
       }else this.notify(this.interaction||'Approach the ship’s rear hatch.');
@@ -569,7 +604,7 @@ export class Navigation {
     const target=new THREE.Vector3(...(rest?berth.eye:berth.stand));
     const targetLook=rest?new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(target,new THREE.Vector3(...berth.lookAt),UP)):new THREE.Quaternion().setFromAxisAngle(UP,Math.PI);
     this.berthRest=rest;
-    this.berthTransition={from,target,look:this.shipOrientation.clone().invert().multiply(this.orientation),targetLook,elapsed:0};
+    this.berthTransition={from,target,look:shipOrientationInView(this).invert().multiply(this.orientation),targetLook,elapsed:0};
     this.keys.clear();this.velocity.set(0,0,0);this.jumpHeight=0;this.jumpVelocity=0;this.boost=false;this.toolTrigger=0;
     this.gamepad.suspend();
     this.notify(rest?`Resting in the berth. F / interact to stand.${this.cabinFlight?' Ship continues its current course.':''}`:'Standing beside the berth.');
@@ -583,7 +618,7 @@ export class Navigation {
       transition.elapsed+=Math.max(0,dt);
       const t=clamp(transition.elapsed/.65,0,1),smooth=t*t*(3-2*t);
       this.position.copy(this.fromShipLocal(transition.from.clone().lerp(transition.target,smooth)));
-      this.orientation.copy(this.shipOrientation).multiply(transition.look.clone().slerp(transition.targetLook,smooth));
+      this.orientation.copy(shipOrientationInView(this)).multiply(transition.look.clone().slerp(transition.targetLook,smooth));
       if(t===1)this.berthTransition=null;
     }else this.position.copy(this.fromShipLocal(new THREE.Vector3(...this.layout.berth.eye)));
     return true;
@@ -710,6 +745,12 @@ export class Navigation {
       // Assisted travel and inertial flight share the same swept collision path.
   }
   update(dt){
+    const frame=this.rotationFrame,travel=Boolean(this.travel),placement=this._placementRevision;
+    this._rotationStepFrame=frame;
+    try{Navigation.prototype.updateLocal.call(this,dt);}finally{delete this._rotationStepFrame;}
+    if(this.rotationClock&&!travel&&placement===this._placementRevision)reframeNavigation(this,frame,this.rotationTime);
+  }
+  updateLocal(dt){
     this.engineAcceleration.set(0,0,0);
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(document.querySelector('dialog[open]'))});
     this.controllerShortcutModifier=Boolean(pad.shortcutModifier);
@@ -787,8 +828,8 @@ export class Navigation {
         const local=this.toShipLocal();local.y=(this.freighter?this.freighter.floorAt(local):shipFloorAt(local.x,local.z,true))+this.layout.eyeHeight;
         this.position.copy(this.fromShipLocal(local));this.mode='walk';this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
         // Magnetic boots align the suit with the deck without moving to the chair.
-        const direction=FORWARD.clone().applyQuaternion(this.orientation),up=UP.clone().applyQuaternion(this.shipOrientation);
-        direction.projectOnPlane(up);if(direction.lengthSq()<.001)direction.set(0,0,-1).applyQuaternion(this.shipOrientation);
+        const direction=FORWARD.clone().applyQuaternion(this.orientation),up=UP.clone().applyQuaternion(shipOrientationInView(this));
+        direction.projectOnPlane(up);if(direction.lengthSq()<.001)direction.set(0,0,-1).applyQuaternion(shipOrientationInView(this));
         this.orientToward(this.position.clone().add(direction),up);this.notify('Boots attached to the ramp. Walk through the hatch to the pilot chair.');
       }else if(bodyAltitude(this.position,this.body)<SHIP_LAYOUT.eyeHeight){
         this.position.copy(bodySurfacePoint(this.normal,this.body,SHIP_LAYOUT.eyeHeight));this.mode='walk';this.jumpHeight=0;this.jumpVelocity=0;this.velocity.set(0,0,0);
@@ -799,7 +840,7 @@ export class Navigation {
     if(this.mode==='walk'){
       const localBefore=this.toShipLocal();
       const atlasRampWalk=this.freighter?.rampSurfaceAt&&!this.cabinFlight&&!this.spaceParked&&!stationGrid;
-      const shipUp=stationGrid?.up??(localBefore&&localBefore.length()<50?UP.clone().applyQuaternion(this.shipOrientation):oldNormal);
+      const shipUp=stationGrid?.up??(localBefore&&localBefore.length()<50?UP.clone().applyQuaternion(shipOrientationInView(this)):oldNormal);
       const magnitude=Math.min(1,input.length());input.projectOnPlane(shipUp);if(input.lengthSq()>0)input.setLength(magnitude);input.multiplyScalar(this.insideShip?2.3:this.boost?9:4.5);
       this.velocity.lerp(input,1-Math.exp(-12*dt));
       let proposed=this.position.clone().addScaledVector(this.velocity,dt);
@@ -853,7 +894,7 @@ export class Navigation {
         this.velocity.set(0,0,0);return;
       }
       if(this.spaceParked&&floor===null&&localBefore&&localBefore.length()<35&&!stationGrid){
-        this.position.copy(proposed);this.mode='eva';this.insideShip=false;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.projectOnPlane(UP.clone().applyQuaternion(this.shipOrientation));
+        this.position.copy(proposed);this.mode='eva';this.insideShip=false;this.jumpHeight=0;this.jumpVelocity=0;this.velocity.projectOnPlane(UP.clone().applyQuaternion(shipOrientationInView(this)));
         this.notify('EVA. Release thrust to coast; X / LT brakes. Return slowly to the open ramp.');return;
       }
       const dir=bodyOffset(proposed,this.body).normalize(),h=this.body.water?terrainHeight(dir.x,dir.y,dir.z):0;

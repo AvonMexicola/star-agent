@@ -34,6 +34,7 @@ export class Pyre {
   constructor(scene, { sync = false } = {}) {
     this.scene = scene; this.worldPosition = new THREE.Vector3(...PYRE_POSITION);
     this.group = new THREE.Group(); this.group.name = 'Pyre'; scene.add(this.group);
+    this.sunDirection={value:new THREE.Vector3(...pyreFrame().z)};
     this.cracks = crackTexture();
     this.maps = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1); this.maps.needsUpdate = true;
     this.orbitalColor=new THREE.DataTexture(new Uint8Array([32,24,20,255]),1,1);this.orbitalNormal=new THREE.DataTexture(new Uint8Array([128,128,255,255]),1,1);
@@ -42,13 +43,14 @@ export class Pyre {
     const f = pyreFrame(); this.frameUniform = { value: new THREE.Matrix3().set(f.x[0], f.x[1], f.x[2], f.y[0], f.y[1], f.y[2], f.z[0], f.z[1], f.z[2]) };
     this.material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .92, metalness: 0, envMapIntensity: .35, side: THREE.DoubleSide });
     this.material.onBeforeCompile = shader => {
+      shader.uniforms.pyreSunDirection=this.sunDirection;
       shader.uniforms.pyreCracks = { value: this.cracks }; shader.uniforms.pyreMaps = this.mapsUniform; shader.uniforms.pyreMapsReady = this.mapsReady; shader.uniforms.pyreFrame = this.frameUniform;shader.uniforms.pyreColor=this.colorUniform;shader.uniforms.pyreOrbitalNormal=this.normalUniform;
       shader.vertexShader = shader.vertexShader
         .replace('#include <common>', '#include <common>\nattribute vec3 pyreDirection;attribute vec3 pyrePoint;attribute vec4 pyreData;varying vec3 vPyreNormal;varying vec3 vPyreDirection;varying vec3 vPyrePoint;varying vec4 vPyreData;')
         .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPyreNormal=normal;vPyreDirection=pyreDirection;vPyrePoint=pyrePoint;vPyreData=pyreData;');
       shader.fragmentShader = shader.fragmentShader
         .replace('#include <common>', `#include <common>
-          uniform sampler2D pyreColor;uniform sampler2D pyreOrbitalNormal;uniform sampler2D pyreCracks;uniform sampler2D pyreMaps;uniform float pyreMapsReady;uniform mat3 pyreFrame;
+          uniform vec3 pyreSunDirection;uniform sampler2D pyreColor;uniform sampler2D pyreOrbitalNormal;uniform sampler2D pyreCracks;uniform sampler2D pyreMaps;uniform float pyreMapsReady;uniform mat3 pyreFrame;
           varying vec3 vPyreNormal;varying vec3 vPyreDirection;varying vec3 vPyrePoint;varying vec4 vPyreData;
           vec4 pyTri(sampler2D t,vec3 p,vec3 w){return texture2D(t,p.yz)*w.x+texture2D(t,p.xz)*w.y+texture2D(t,p.xy)*w.z;}
           vec4 pyOrbit(sampler2D tex,vec2 uv){vec2 dx=dFdx(uv),dy=dFdy(uv);dx.x-=floor(dx.x+.5);dy.x-=floor(dy.x+.5);return textureGrad(tex,uv,dx,dy);}
@@ -82,7 +84,7 @@ export class Pyre {
           float pyCrack=pyTex.r*(.6+.4*pyPlates.r)*smoothstep(.05,.35,pyTex.b*.6+pyPlates.b*.4);
           diffuseColor.rgb*=1.0-pyCrack*.6*pyDetail;
           // Lava: night side glows 3x, the day side is washed out by the star.
-          float pyNight=1.0-smoothstep(-.06,.22,pyB.z);
+          float pyNight=1.0-smoothstep(-.06,.22,dot(pyD,pyreSunDirection));
           float pyStrength=mix(.7,3.2,pyNight);
           vec3 pyLava=vec3(1.0,.21,.035);
           // Which plates are still hot: activity gated per plate so only part of the crust glows.
@@ -122,7 +124,8 @@ export class Pyre {
       this.maps.dispose(); this.maps = texture; this.mapsUniform.value = texture; this.mapsReady.value = 1;
     } });
   }
-  update(worldPosition, origin) {
+  update(worldPosition, origin, sunDirection=null) {
+    if(sunDirection)this.sunDirection.value.copy(sunDirection);
     this.distance = worldPosition.distanceTo(this.worldPosition);
     this.group.visible = this.distance < PYRE_MESH_RANGE;
     if (this.group.visible) this.terrain.update(worldPosition, origin);
