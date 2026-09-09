@@ -26,6 +26,6 @@
     "src/nomad-cabin-controls.js"
   ],
   "brief": "docs/briefs/step-by-step-player-guide.md",
-  "validation": "Runtime 981852a integrated at 5347648. 166 normal source files, final focused guide regressions, build and repository checks pass. Keyboard05 full opening/drive/arrival and controller04 plus native focus/dialog/disconnection guards pass. Phone04 physically boarded/launched; remaining full touch fixture rerun is queued and not claimed as passed. Public release explicitly requested afterward; publication remains separate.",
+  "validation": "Runtime 981852a integrated at 5347648, docs alongside character at 37d1f59. 166 normal source files, final focused guide regressions, build/repo and both explicit public builds pass. Keyboard05 opening/drive/arrival; controller04 plus native focus/dialog/device guards; touch06 physical opening/boarding/launch/paged gear/flight/contracts all pass with no app errors. Public promotion explicitly requested; combined PR113 0cff955 is blocked by GitHub billing and has not deployed.",
   "evidence": "docs/qa/player-guide/README.md"
 }

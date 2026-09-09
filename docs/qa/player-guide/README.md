@@ -41,7 +41,7 @@ arrival; suit thrusters require keyboard/controller in the existing interface.
 
 ## Retained failed checks
 
-Raw runs remain under `/tmp/star-agent-player-guide-{01,02,03,04,05}`. An
+Raw runs remain under `/tmp/star-agent-player-guide-{01,02,03,04,05,06}`. An
 independent pirate browser overlapped run04; no performance/FPS claim is made.
 Outer process inspection confirmed guide05 was the only Playwright job at
 09:19:45 UTC.
@@ -64,9 +64,8 @@ while the guide taught landing. The correction hides its drive instructions duri
 arrival and initial destination choice, retaining the beacon name and distance.
 Run05 verifies the arrival correction on keyboard. Its phone walker again
 reached the adjacent cargo rack; a touch-only fixture now centres in the aisle
-with short native contacts and requires the visible Close hatch button. That
-remaining rerun is queued behind other GPU owners, so the complete phone route
-is not claimed as passed. Phone04 did physically board and launch before stopping
+with short native contacts and requires the visible Close hatch button. Run06 passes the complete native phone route in 1.4 min (1.5 min total),
+with zero keyboard input, trusted touch events and no application errors. Phone04 did physically board and launch before stopping
 at the paged-gear fixture assumption. Transient
 notifications are layered above telemetry so their text remains readable.
 
@@ -89,3 +88,23 @@ artifacts and repository gate status are recorded separately.
 ![Nomad boarding guide](boarding.png)
 
 ![Arrival retains the destination without conflicting drive instructions](arrival.png)
+
+## Final phone acceptance and release gate
+
+Touch06 physically completes opening, walking around the hull, hatch/ramp boarding,
+closing the hatch, chair entry, Launch, paged Ship-menu gear retraction, forward
+flight, braking, Contracts acceptance and return to the objective guide. Final
+390×844 pixels were inspected; the guide and actual controls remain visible.
+The fixture uses native CDP touch contacts and no keyboard/gameplay-state mutation.
+
+![Phone guidance and flight controls](phone.png)
+
+Both explicit standalone release builds at `7961a46` pass, including 47 packaged
+viewer references per channel and 18 homepage assets. Initial sandbox Git metadata
+subprocess EPERM failures were retained; the approved outer build runs completed.
+Artifacts/hashes: `/tmp/star-agent-player-guide-release/artifacts.json`.
+Standalone PR115 is draft/superseded by the coordinated combined PR113 candidate
+`0cff955`, which includes the same guide runtime plus character turning. The
+required verify job 102412240865 on PR115 refused to start because account payments
+failed or the spending limit needs attention; the combined candidate has the same
+hosted failure. No protection exception or public promotion occurred in this lane.
