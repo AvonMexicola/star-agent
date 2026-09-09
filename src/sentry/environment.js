@@ -12,7 +12,7 @@ import {sentryFrame,sentryPoseFrame,sentryPoseInFrame} from './frames.js';
 const UP=new THREE.Vector3(0,1,0),v=p=>new THREE.Vector3(...p);
 /** Support is always supplied by the existing canonical terrain, carrier or
  * authored station deck. This adapter is identical in the browser and room. */
-export function createSentryEnvironment({station=null,getCarriers=()=>[],getRovers=()=>[],getWalkers=()=>[],getHulls=()=>[],getObstacles=()=>null,buildingRaycast=()=>null,getFrame=null,getTime=()=>0,carrierGuards=new WeakSet()}={}){
+export function createSentryEnvironment({station=null,construction=null,getCarriers=()=>[],getRovers=()=>[],getWalkers=()=>[],getHulls=()=>[],getObstacles=()=>null,buildingRaycast=()=>null,getFrame=null,getTime=()=>0,carrierGuards=new WeakSet()}={}){
   const guarded=carrierGuards;
   const frameAt=point=>getFrame?.(point)??null;
   const poseAt=(pose,from,point)=>getFrame?sentryPoseInFrame(pose,from,frameAt(point),getTime()):pose;
@@ -39,14 +39,15 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
       const floor=stationDeckPoint(grid,canonical,0);
       if(floor&&Math.abs(canonical.clone().sub(floor).dot(grid.up))<.4)return {point:getFrame?betweenFrames(floor,rotationFrameAt(canonical),frameAt(point),getTime()):floor,normal:getFrame?grid.up.clone().applyQuaternion(frameRotation(rotationFrameAt(canonical),frameAt(point),getTime())):grid.up.clone(),source:grid.id};
     }
-    const hit=sampleRoverSupport(canonical);if(!hit||!getFrame)return hit;
+    const hit=sampleRoverSupport(canonical,{construction:construction?.sample});if(!hit||!getFrame)return hit;
     return {...hit,point:betweenFrames(hit.point,rotationFrameAt(canonical),frameAt(point),getTime()),normal:hit.normal.clone().applyQuaternion(frameRotation(rotationFrameAt(canonical),frameAt(point),getTime()))};
   }
-  function ray(a,b,{carrier=true}={}){
+  const canonicalPose=pose=>getFrame?sentryPoseInFrame(pose,frameAt(pose.position),rotationFrameAt(pose.position),getTime()):pose;
+  function ray(a,b,{carrier=true,buildings=true}={}){
     const queryFrame=frameAt(a),canonicalFrame=rotationFrameAt(a);
     const ca=getFrame?betweenFrames(a,queryFrame,canonicalFrame,getTime()):a,cb=getFrame?betweenFrames(b,queryFrame,canonicalFrame,getTime()):b;
     const d=cb.clone().sub(ca),distance=d.length();if(distance<1e-6)return false;
-    const direction=d.divideScalar(distance),worldHit=buildingRaycast(ca,direction,distance);
+    const direction=d.divideScalar(distance),worldHit=buildings&&buildingRaycast(ca,direction,distance);
     if(worldHit)return true;
     const obstacles=getObstacles();if(obstacles?.constrainWalker?.(ca,cb)?.hit)return true;
     for(const frame of station?.pods??[]){
@@ -86,15 +87,17 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
       if([0,1,2].every(i=>Math.min(...points.map(p=>p.getComponent(i)))<hull.bounds.max[i]&&Math.max(...points.map(p=>p.getComponent(i)))>hull.bounds.min[i]))return false;
     }
     const pose={position,quaternion};
+    if(construction&&!construction.clearPose(canonicalPose(pose),undefined,{layout:L}))return false;
     for(const c of carriers())if(!roverCarrierClear({previous:pose,proposed:pose},c.systems,carrierFrame(c,position),{layout:L,cargoConstrain:c.cargoConstrain}))return false;
     // Rays cross the actual occupied chassis/cabin area and the turret's
     // complete sweep. No invented bounding-floor collision is introduced.
-    for(const x of [-.83,0,.83])for(const y of [.50,1.10,1.8,2.35,3.02])if(ray(world([x,y,-1.7]),world([x,y,2.15]),{carrier:false}))return false;
+    for(const x of [-.83,0,.83])for(const y of [.50,1.10,1.8,2.35,3.02])if(ray(world([x,y,-1.7]),world([x,y,2.15]),{carrier:false,buildings:!construction}))return false;
     return true;
   }
   return {support,ray,clearPose,peersClear,carriers,
     up:point=>support(point)?.normal??bodyOffset(point).normalize(),
     constrain({previous,proposed,previousCorners,corners},ownId){
+      if(construction&&!construction.clearPose(canonicalPose(previous),canonicalPose(proposed),{layout:L}))return false;
       for(const carrier of carriers())if(!roverCarrierClear({previous,proposed,previousCorners,corners},carrier.systems,carrierFrame(carrier,proposed.position),{layout:L,cargoConstrain:carrier.cargoConstrain}))return false;
       if(!clearPose(proposed.position,proposed.quaternion,ownId))return false;
       const a=roverFootprint(previous.position,previous.quaternion,{layout:L}),b=roverFootprint(proposed.position,proposed.quaternion,{layout:L});
@@ -102,7 +105,7 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
       // floor contact belongs to sampleSupport, so sweep lower side samples
       // 15 cm above the chassis root; keep upper clearance at the true top.
       const raise=(p,pose)=>{const up=UP.clone().applyQuaternion(pose.quaternion),height=p.clone().sub(pose.position).dot(up);return p.addScaledVector(up,Math.max(0,.15-height));};
-      return a.every((p,i)=>!ray(raise(p,previous),raise(b[i],proposed),{carrier:false}));
+      return a.every((p,i)=>!ray(raise(p,previous),raise(b[i],proposed),{carrier:false,buildings:!construction}));
     },
     accessClear:(a,b)=>!ray(a,b),
   };

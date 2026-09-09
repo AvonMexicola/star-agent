@@ -99,6 +99,11 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
       const nav=player?.nav??player;if(!nav||nav.mode!=='walk'||nav.sentrySeat||nav.roverOccupied||nav.carryingCargo)return null;
       return Object.keys(seats).map(role=>({role,point:ground(role)})).filter(s=>s.point&&eye(nav).distanceTo(s.point)<1.25).sort((a,b)=>eye(nav).distanceTo(a.point)-eye(nav).distanceTo(b.point))[0]?.role??null;
     },
+    relocate({position,quaternion}){
+      if(api.occupied||api.busy||anchor||Math.abs(physics.state.speed)>.1)throw new Error('Park and unload the empty Sentry before retrieval.');
+      if(state.destroyed||state.health<=0)throw new Error('This Sentry is destroyed.');
+      physics.setPose(position,quaternion);state.planetFrame=rotationFrameAt(position)?.id??null;stop();
+    },
     request(playerId,role){
       if(state.health<=0)throw new Error('This Sentry is destroyed. Deploy a replacement with empty seats.');
       const p=getPlayer(playerId),nav=p?.nav??p;if(!nav||p.health<=0)throw new Error('A living pilot is required.');

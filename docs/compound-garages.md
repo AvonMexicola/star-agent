@@ -33,3 +33,14 @@ beyond it still affect driving. The four default-seed routes have outbound and
 reverse wheel-physics checks; this does not promise a clear road across a planet.
 See [the current verification record](qa/compound-garages/README.md) for browser
 acceptance and local integration status.
+
+
+## Burrow Sentry choice
+
+At any civilian garage terminal, choose **Burrow · Mining** or **Burrow Sentry ·
+Lasers**, then Deploy/Retrieve. Move the first rover out of the bay before asking
+for the other. Both retain their existing condition; retrieval is not a repair.
+The Sentry pilot boards at the port door and its gunner uses the aft ladder.
+D-pad/A and native pointer/touch use the same choices. This garage service remains
+solo; connected multiplayer has its existing separate Sentry deployment action.
+See [the checked journey and limitations](qa/compound-vehicle-choice/README.md).
