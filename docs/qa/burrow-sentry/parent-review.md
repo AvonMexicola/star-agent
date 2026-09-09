@@ -259,3 +259,34 @@ no message payload or account identity is logged. Limits, close reason and
 queue scheduling are unchanged. The actual HTTP/socket suite passes all 16
 cases again (`server-http05.log`), including the expected counters and bounded
 set of diagnostic fields.
+
+
+## Final frame source review
+
+Parent consumed and reviewed `6334b984f20e2bb38d94c9fce70b4bb523f6d523`, which
+retains both parent cargo and socket corrections. Sentry roots and pulses carry
+explicit frame tags. Camera, boarding, collision, shots and carrier anchors use
+the existing rotation conversions; support still comes from canonical terrain,
+the authored station or the actual carrier. A shared carrier-guard registry
+prevents duplicate wrappers during replacement. The existing Navigation
+placement revision marks an already converted seat and prevents the enclosing
+local update from converting it twice. No Navigation input or frame algorithm
+was replaced.
+
+Actual-room regressions hit suit, parked-ship and Sentry-hull targets across both
+sides of the chart boundary. The Atlas test checks both real Navigation riders,
+feet/body orientation, wheel support and cargo-relative pose through all four
+world boundaries, including a local Navigation update enclosing the Sentry tick.
+Collision and repeated guard-registration cases also pass. Their fixture-only
+null-frame and hull-height mistakes are retained in the feature failure record.
+
+On exact `6334b98`, the complete normal suite passes 1,256 cases/164 files in
+62.895 s (`unit05.log`). Serialized multiplayer passes 226 cases with two existing
+opt-in skips in 63.211 s (`multiplayer07.log`). Repository checks pass for 336
+changed paths and the suggested plan ran. Owner production build12 passes in
+5.52 s (`main-CgxwxzD0`); the later diagnostic enrichment changes only the direct
+server source and needs no browser bundle rebuild. Final dedicated browser
+acceptance remains pending, queued after the actual Recovery08 job. The fixture
+now saves failed access samples in finally and records bounded passive outbound
+traffic plus incoming notices/acknowledgements. No disconnect fix is inferred
+from the passing CPU suites.
