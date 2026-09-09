@@ -51,14 +51,14 @@ export class MoonIce {
     }
     this.geometry.attributes.position.needsUpdate=true;this.geometry.attributes.phase.needsUpdate=true;this.geometry.setDrawRange(0,this.descriptors.length);
   }
-  update(worldPosition,origin,elapsed,enabled=true){
+  update(worldPosition,origin,elapsed,enabled=true,sunDirection=new THREE.Vector3(...SUN_DIRECTION)){
     const local=worldPosition.clone().sub(new THREE.Vector3(...MOON_POSITION)),radius=local.length(),up=local.clone().normalize();
     const altitude=radius-MOON_RADIUS-moonSurface(up.x,up.y,up.z).height;
     this.points.visible=enabled&&altitude<100&&altitude>=0;
     if(!this.points.visible)return;
     const key=local.toArray().map(v=>Math.floor(v/CELL)).join('/');if(key!==this.key)this.rebuild(local);
     this.points.position.copy(this.anchor).add(new THREE.Vector3(...MOON_POSITION)).sub(origin);
-    const u=this.material.uniforms;u.time.value=elapsed;u.up.value.copy(up);u.sunlight.value=THREE.MathUtils.smoothstep(up.dot(new THREE.Vector3(...SUN_DIRECTION)),0,.3);
+    const u=this.material.uniforms;u.time.value=elapsed;u.up.value.copy(up);u.sunlight.value=THREE.MathUtils.smoothstep(up.dot(sunDirection),0,.3);
     u.viewportHeight.value=globalThis.innerHeight||800;
   }
   dispose(){this.scene.remove(this.points);this.geometry.dispose();this.material.dispose();}

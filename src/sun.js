@@ -1,3 +1,4 @@
+import { toInertial, frameRelative, planetRotation } from './planet-rotation.js';
 import * as THREE from 'three';
 import { SUN_RADIUS, SUN_DISTANCE, SUN_ANGULAR_RADIUS, clamp, smoothstep } from './world.js';
 import { SUN_POSITION, SUN_AXIS, SUN_SPHERE_RANGE, SUN_EXCLUSION, CORONA_EXTENT, PROMINENCE_COUNT, DEFAULT_OCCLUDERS, sunAngularRadius, sunDiskWeight, sunRotationAngle, sunHeat, sunVisibility, flareCurve } from './stellar-world.js';
@@ -212,8 +213,8 @@ export class Sun {
   }
   /** Weight for the atmosphere pass's own sun disk at the current distance. */
   get diskWeight() { return sunDiskWeight(this.distance); }
-  update(worldPosition, camera, dt, elapsed, { atmosphereFraction = 0 } = {}) {
-    const toSun = this.worldPosition.clone().sub(worldPosition), distance = toSun.length();
+  update(worldPosition, camera, dt, elapsed, { atmosphereFraction = 0, frame = null, rotationTime = 0 } = {}) {
+    const toSun = frameRelative(this.worldPosition,null,worldPosition,frame,rotationTime), distance = toSun.length();
     this.distance = distance; this.heat = sunHeat(distance); this.angularRadius = sunAngularRadius(distance);
     this.rotation = sunRotationAngle(elapsed);
     const near = distance < SUN_SPHERE_RANGE;
@@ -221,7 +222,7 @@ export class Sun {
     if (near) {
       this.sphere.position.copy(toSun);
       this.sphere.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), this.axis)
-        .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.rotation));
+        .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.rotation)).premultiply(planetRotation(frame,rotationTime).invert());
       const u = this.photosphere.uniforms;
       u.time.value = elapsed;
       // Far away the disk is a few pixels: match the atmosphere disk's white so the hand-off does not pop.
@@ -239,7 +240,7 @@ export class Sun {
     }
     // Glare: star position in NDC, visibility through planet/moon occlusion, size by angular radius.
     const view = toSun.clone().applyMatrix4(camera.matrixWorldInverse);
-    this.visibility = view.z < 0 ? sunVisibility(worldPosition, this.occluders) : 0;
+    this.visibility = view.z < 0 ? sunVisibility(toInertial(worldPosition,frame,rotationTime), this.occluders) : 0;
     const g = this.glareMaterial.uniforms;
     if (this.visibility > 0) {
       const ndc = toSun.clone().project(camera);

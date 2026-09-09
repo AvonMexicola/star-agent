@@ -193,3 +193,26 @@ the already-authorized build succeeded. No browser had started for that failure.
 Explicit-origin/dev repository check passes271 paths and the suggested plan runs.
 These are combined CPU/build checks, not another full quiet gameplay pass.
 Narrow06 remains guarded flight and keyboard/native390 actions on this build.
+
+
+## Attempt06 — guarded flight setup under fire; rotation composition
+
+Frozenf9d4bd6/build06. Ship page selection,69-sample actual drive, wreck arrival,
+real NPCs/open ramps/alarm lights and owner-marked required/bonus cargo rendered.
+4.9min case failed: fixture completed a cruise braking waypoint at1000m while
+actual guards had already engaged. The guarded-wreck receipt has hull108/shield0,
+incoming10/shots0; after selecting Combat mode it was destroyed incoming14/shots0
+before aiming settled. No application error was recorded. Original06 JSON/PNG/
+trace/video retained; phone case did not run. Sources unchanged. No difficulty,
+health, authority, spawn threshold or gameplay input was changed to pass the case.
+The fixture now completes cruise approach at1350m, checks no incoming hits, selects
+real Combat mode, then flies into the1100m contact area with standard controls.
+
+During06, checked planet rotation8f819ac was integrated into shared development.
+Recovery composes that committed source privately, retaining protocol9, rotation
+render/input hooks, faction clearing and the full test inventory. Mission wreck
+and loose cargo remain outside the rotation domains in fixed inertial space;
+surface destination uses the existing canonical settlement/terminal. Fixture
+steering reads nav.viewPoint; drive records include inertial and chart positions.
+Combined07 will rerun complete delivery as well as guarded and native journeys.
+Earlier05 full pass remains scoped to its prior stationary-world source.

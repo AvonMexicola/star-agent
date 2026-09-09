@@ -6,7 +6,7 @@ export async function climb(page,button,altitude){
  try{await page.waitForFunction(altitude=>window.starAgent.state.altitude>=altitude,altitude,{timeout:180000});await brake(page,button);}finally{await page.evaluate(()=>{clearInterval(window.transportClimb);window.transportPad.buttons[0]={pressed:false,value:0};});}
 }
 export async function steerTarget(page,id){
- await page.evaluate(id=>{window.transportSteer=setInterval(()=>{const n=window.starAgent.navigation,t=window.starAgent.state.navigationTargets.targets.find(t=>t.id===id),p=window.transportPad;if(!t)return;const local=n.position.clone().fromArray(t.center).sub(n.position).applyQuaternion(n.orientation.clone().invert()),yaw=Math.atan2(local.x,-local.z),pitch=Math.atan2(local.y,Math.hypot(local.x,local.z));const axis=x=>Math.abs(x)<.002?0:Math.sign(x)*Math.min(1,.18+Math.abs(x)*2.5);p.axes=[0,0,axis(yaw),axis(-pitch)];},30);},id);
+ await page.evaluate(id=>{window.transportSteer=setInterval(()=>{const n=window.starAgent.navigation,t=window.starAgent.state.navigationTargets.targets.find(t=>t.id===id),p=window.transportPad;if(!t)return;const point=n.position.clone().fromArray(t.center),local=n.viewPoint(point).sub(n.position).applyQuaternion(n.orientation.clone().invert()),yaw=Math.atan2(local.x,-local.z),pitch=Math.atan2(local.y,Math.hypot(local.x,local.z));const axis=x=>Math.abs(x)<.002?0:Math.sign(x)*Math.min(1,.18+Math.abs(x)*2.5);p.axes=[0,0,axis(yaw),axis(-pitch)];},30);},id);
  try{await page.waitForFunction(id=>{const n=window.starAgent.state.navigationTargets;return n.aimedId===id&&n.ready;},id,{timeout:45000});}finally{await page.evaluate(()=>{clearInterval(window.transportSteer);window.transportPad.axes=[0,0,0,0];});}
 }
 export async function levelForPad(page,site){

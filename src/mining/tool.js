@@ -50,6 +50,7 @@ export function createMiningTool({scene,camera,canvas,nav,rock,effects=null,load
     get pose(){const held=!isHandsFree(nav)&&(!nav.buildActive||equipment.equipped===BUILDER_ITEM)&&(nav.mode==='walk'||nav.mode==='eva')&&!nav.openingActive&&(!nav.insideShip||nav.tractorActive)&&nav.enabled&&nav.focused&&!document.querySelector('dialog[open]');return {aiming:held?equipment.aimingInput():'none',firing:held&&equipment.firingInput()};},
     toggle(){select(loadout?(loadout.active==='tool'?null:'tool'):(selected?null:'tool'));},
     update(dt,origin){
+      const frame=nav.rotationFrame?.id??null;mount.userData.planetFrame=frame;equipment.vfx.userData.planetFrame=frame;builder.root.userData.planetFrame=frame;
       const build=getBuild(),isBuilding=Boolean(nav.buildActive&&build?.active);
       if(isBuilding&&!buildBefore)selectedBeforeBuild=selected;
       if(!isBuilding&&buildBefore&&!loadout)selected=selectedBeforeBuild;

@@ -1,3 +1,4 @@
+import { toInertial, fromInertial, planetRotation, rotationFrameAt } from '../src/planet-rotation.js';
 /** Peer contact in authoritative world doubles. Existing Navigation still owns
  * terrain/station collision; these hulls come from its canonical flight bounds. */
 import * as THREE from 'three';
@@ -205,6 +206,11 @@ export function capturePeerMotion(players) {
     // shipPose is also used by immediate raycasts and exposes the live attitude.
     // Motion history must own its quaternion across the next Navigation step.
     if(hull)hull.rotation=hull.rotation.clone();
+    if(p.nav.rotationClock){
+      const frame=p.nav.rotationFrame,time=p.nav.rotationTime,rotation=planetRotation(frame,time);
+      if(hull){toInertial(hull.position,hull.frame,time,hull.position);hull.rotation.premultiply(planetRotation(hull.frame,time));}
+      if(suit){toInertial(suit.position,frame,time,suit.position);suit.up.applyQuaternion(rotation);}
+    }
     result.set(p.id,{player:p,life:p.nav,hull,suit});
   }
   return result;
@@ -214,6 +220,31 @@ function stopHull(entry,after,time) {
   const n=entry.player.nav,a=entry.hull,b=after.hull;
   const travel=a.position.distanceTo(b.position)+radiusOf(a.bounds)*a.rotation.angleTo(b.rotation),safe=Math.max(0,time-SKIN/Math.max(SKIN,travel));
   const pose=lerpPose(a,b,safe);
+  if(n.rotationClock){
+    const seconds=n.rotationTime;
+    if(n.shipPosition){
+      const local=n.inertialPosition.sub(b.position).applyQuaternion(b.rotation.clone().invert());
+      const look=b.rotation.clone().invert().multiply(n.inertialOrientation);
+      const eye=local.applyQuaternion(pose.rotation).add(pose.position),eyeFrame=rotationFrameAt(eye);
+      const movingCabin=n.cabinFlight&&!n.spaceParked;
+      // An occupied moving hull shares the eye's chart even if its root lies
+      // across the boundary. A parked hull keeps its own chart; an outside suit
+      // does not become its passenger just because cabinFlight remains set.
+      const shipFrame=movingCabin?eyeFrame:rotationFrameAt(pose.position);
+      fromInertial(pose.position,shipFrame,seconds,n.shipPosition);
+      n.shipOrientation.copy(planetRotation(shipFrame,seconds).invert()).multiply(pose.rotation);n.shipVelocity.set(0,0,0);
+      if(movingCabin||n.insideShip){
+        fromInertial(eye,eyeFrame,seconds,n.position);
+        n.orientation.copy(planetRotation(eyeFrame,seconds).invert()).multiply(pose.rotation).multiply(look);n.velocity.set(0,0,0);
+      }
+    }else{
+      const eye=pose.position.clone().add(new THREE.Vector3(...n.layout.seatEye).applyQuaternion(pose.rotation));
+      const eyeFrame=rotationFrameAt(eye);fromInertial(eye,eyeFrame,seconds,n.position);
+      n.orientation.copy(planetRotation(eyeFrame,seconds).invert()).multiply(pose.rotation);n.velocity.set(0,0,0);
+    }
+    n.angularVelocity?.set(0,0,0);n.shipAngularVelocity?.set(0,0,0);n.travel=null;
+    return;
+  }
   if(n.shipPosition) {
     const inverse=b.rotation.clone().invert(),local=n.position.clone().sub(b.position).applyQuaternion(inverse),orientation=inverse.clone().multiply(n.orientation);
     n.shipPosition.copy(pose.position);n.shipOrientation.copy(pose.rotation);n.shipVelocity.set(0,0,0);
@@ -282,7 +313,11 @@ export function createRammingResolver() {
       // Admit every contact from the same captured motion interval before a
       // callback can publish death or change a participant's live pose. Security
       // validates each submission synchronously, then yields before damage.
-      for(const impact of impacts)onImpact(impact);
+      for(const impact of impacts){
+        const n=impact.victim.nav;
+        if(n.rotationClock)fromInertial(impact.point,impact.kind==='ship'?shipPose(impact.victim)?.frame??null:n.rotationFrame,n.rotationTime,impact.point);
+        onImpact(impact);
+      }
     },
   };
 }
