@@ -250,3 +250,21 @@ changes. This gives the direct delivery journey a repeatable visible destination
 final assertion compares actual elapsed seconds with rotation progress. Runtime,
 build and completed guarded/native cases are unchanged. The guide explains
 navigating around Aeon when a live route is occluded.
+
+
+## Attempt08 — loaded return and descent pass; final stick dead zone
+
+Frozene4f9283, same runtime/build07. Epoch begins before boot and advances normally.
+Actual66-sample outbound drive, physical EVA/both tractor/grid hauls, held safety,
+reboard and54-sample return to rotating Aeon all complete. Continuous normal
+flight descends to70.637m altitude above Greenbank. The final approach helper then
+settles at6.057757m from its65m pad waypoint, speed≈0; its required threshold is6m.
+It sends an uncorrected small horizontal stick vector inside the shared0.16 radial
+dead zone, so no further correction arrives. The200s wait expires;9.8min total.
+No application error or cargo loss. Gear remains up, no landing action was issued.
+Original08 state/trace/two videos/images and unchanged-source receipt retained.
+
+09 changes only fixture input: apply the same inverse radial dead-zone mapping
+already used by the successful close-flight/EVA helper. Keep the same waypoint,
+6m tolerance, flight model, controls, landing and full delivery requirements. No
+runtime or rebuild. Guarded07/native07 remain passed;09 reruns only full quiet.
