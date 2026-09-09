@@ -11,7 +11,7 @@ import { combatSpeed } from './combat/flight-policy.js';
 import { ringPathIntervals } from './ring-world.js';
 import { stepEVA, constrainEVAShip, canAttachRamp } from './eva.js';
 import { stationPhysicsAt, stationDeckPoint } from './station-physics.js';
-import { GamepadInput } from './gamepad.js';
+import { GamepadInput, KEYBOARD_LOOK_RATE, controllerLookRate } from './gamepad.js';
 import { MOON_LANDING_DIRECTION, constrainMoonStep } from './moon-world.js';
 import { PYRE_ARRIVAL_ALTITUDE, pyreArrivalDirection, pyreLandingDirection, constrainPyreStep, pyreFrame } from './pyre-world.js';
 import { SEED, RADIUS, SUN_DISTANCE, SUN_DIRECTION, terrainHeight, latLonDirection, clamp } from './world.js';
@@ -786,8 +786,9 @@ export class Navigation {
     if(this.cabinFlight&&!this.spaceParked)this.updateCabinFlight(dt);
     if(this.mode==='crashed'||this.mode==='destroyed')return;
     const oldBody=this.body,oldNormal=this.normal,spaceFlight=this.spaceFlightAttitude;
-    const yaw=turn*dt*.85;
-    const pitch=tilt*dt*.85;
+    const lookRate=controllerLookRate(this.mode);
+    const yaw=clamp(axis('ArrowLeft','ArrowRight')*KEYBOARD_LOOK_RATE+pad.yaw*lookRate,-lookRate,lookRate)*dt;
+    const pitch=clamp(axis('ArrowUp','ArrowDown')*KEYBOARD_LOOK_RATE+pad.pitch*lookRate,-lookRate,lookRate)*dt;
     const inertial=this.mode==='flight'&&(!this.powered||!this.flightAssist)&&!this.autoland&&!this.stationLift&&!brakeFlight;
     if(!inertial&&(yaw||pitch))this.look(yaw,pitch,brakeFlight);
     // Rest is a supported ship-local posture, never a flight mode or teleport.

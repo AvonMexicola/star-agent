@@ -9,6 +9,7 @@ import { RADIUS, terrainHeight, findDestinations, latLonDirection } from '../src
 import { SELENE, bodySurfacePoint, bodyAltitude } from '../src/celestial.js';
 import { MOON_RADIUS, MOON_POSITION, MOON_LANDING_DIRECTION } from '../src/moon-world.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
+import {navigationInput} from '../src/multiplayer/client.js';
 
 class EventSurface {
   constructor() { this.listeners = new Map(); }
@@ -224,6 +225,25 @@ function attachController(navigation) {
   const press=index=>{button(index,true);navigation.update(0);button(index,false);navigation.update(0);};
   return {pad,button,press};
 }
+
+test('character stick turns faster while keyboard and shared normalized intent retain their rates',t=>{
+  const {navigation:nav,keyDown,keyUp}=setup(t);const {pad}=attachController(nav);
+  // Capture the public look call while exercising the real input update. This
+  // isolates rates from gravity-relative yaw and walking pitch limits.
+  const turns=[];nav.look=(yaw,pitch)=>turns.push([yaw,pitch]);
+  for(const mode of ['walk','eva','flight']){
+    nav.orbit();nav.mode=mode;nav.insideShip=false;pad.axes.fill(0);
+    pad.axes[2]=1;nav.update(.1);near(turns.at(-1)[0],mode==='flight'?-.085:-.15);
+    pad.axes[2]=.58;nav.update(.1);near(turns.at(-1)[0],mode==='flight'?-.0425:-.075);
+    pad.axes.fill(0);keyDown('ArrowLeft');nav.update(.1);near(turns.at(-1)[0],.085);keyUp('ArrowLeft');
+    for(const [keyboard,analog] of [[false,1],[false,.5],[true,0],[true,.5],[true,-1]]){
+      nav.keys.clear();if(keyboard)nav.keys.add('ArrowLeft');
+      const packet=navigationInput(nav,{yaw:analog}),rate=mode==='flight'?.85:1.5;
+      near(packet.yaw*rate,Math.max(-rate,Math.min(rate,(keyboard?.85:0)+analog*rate)));
+    }
+    nav.keys.clear();
+  }
+});
 
 test('controller preserves analog assisted thrust, steering, roll and keyboard fallback', t=>{
   const {navigation:nav,advance,keyDown,keyUp}=setup(t);

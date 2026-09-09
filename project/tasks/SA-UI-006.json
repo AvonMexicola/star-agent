@@ -1,0 +1,25 @@
+{
+  "id": "SA-UI-006",
+  "title": "Increase character controller look speed",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "active",
+  "branch": "fix/character-controller-turn",
+  "base": "7a2305090c719f3ba2417e245efb178c3545d1bb",
+  "updated": "2026-09-09",
+  "areas": [
+    "flight",
+    "interface",
+    "multiplayer"
+  ],
+  "claims": [
+    "src/gamepad.js",
+    "src/navigation.js",
+    "src/multiplayer/client.js",
+    "tests/navigation.test.js",
+    "scripts/character-turn.spec.js",
+    "scripts/character-turn.config.js"
+  ],
+  "brief": "docs/briefs/character-controller-turn.md"
+}
