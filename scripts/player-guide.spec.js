@@ -137,7 +137,9 @@ test.describe('touch guidance',()=>{
     await move('right',()=>starAgent.state.shipLocal[0]>6.7);await move('backward',()=>starAgent.state.shipLocal[2]>7.8);
     await move('left',()=>starAgent.state.shipLocal[0]<.6);await move('forward',()=>starAgent.state.shipLocal[2]<5.5);
     await check('open-hatch');await input.tap('interact');await page.waitForFunction(()=>starAgent.state.doorProgress===1);
-    await move('forward',()=>starAgent.state.shipLocal[2]<3.1);await check('close-hatch');await input.tap('interact');await page.waitForFunction(()=>starAgent.state.doorProgress===0);
+    await move('forward',()=>starAgent.state.shipLocal[2]<3.1);await check('close-hatch');
+    if(!/CLOSE HATCH/.test(await page.locator('#state-text').innerText()))await move('right',()=>starAgent.state.shipLocal[0]>.25);
+    await expect(page.locator('[data-cabin-interact]')).toHaveText('Close hatch');await input.tap('interact');await page.waitForFunction(()=>starAgent.state.doorProgress===0);
     await move('forward',()=>starAgent.state.shipLocal[2]<-1.5);await check('sit');await input.tap('interact');
     await check('launch');await expect(page.locator('#player-guide')).toContainText('Tap Launch');await page.screenshot({path:`${folder}/02-launch.png`});
     await input.tap('land');await page.waitForFunction(()=>starAgent.state.mode==='flight'&&!starAgent.state.station.lifting);
