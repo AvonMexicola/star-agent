@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {setupNavigation,frames} from '../tests/browser/navigation-helpers.js';
-const evidence='/tmp/star-agent-focused-arrows';
+const evidence=process.env.NAV_EVIDENCE||'/tmp/star-agent-focused-arrows';
 const markerIds=page=>page.locator('.navigation-marker').evaluateAll(nodes=>nodes.map(n=>n.dataset.id).sort());
 async function capture(page,name){await mkdir(evidence,{recursive:true});await page.screenshot({path:`${evidence}/${name}.png`});}
 
