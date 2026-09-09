@@ -1,0 +1,76 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "steps": [
+    {
+      "id": "find-hatch",
+      "text": "BOARDING\nGo to the back of your Nomad\n\nUse W/A/S/D to walk; drag the view or use the arrow keys to look. Go around the outside of the hull to the rear ramp, behind the engines."
+    },
+    {
+      "id": "open-hatch",
+      "text": "BOARDING\nOpen your Nomad's rear hatch\n\nPress F to open the hatch and lower the ramp."
+    },
+    {
+      "id": "board-ramp",
+      "text": "BOARDING\nWalk up the rear ramp\n\nUse W/A/S/D to walk; drag the view or use the arrow keys to look. Enter the cabin before closing the hatch."
+    },
+    {
+      "id": "close-hatch",
+      "text": "BOARDING\nClose the hatch behind you\n\nPress F to close the hatch and raise the ramp."
+    },
+    {
+      "id": "find-seat",
+      "text": "BOARDING\nWalk forward to the pilot chair\n\nUse W/A/S/D to walk; drag the view or use the arrow keys to look. Follow the clear centre aisle to the front of the cabin."
+    },
+    {
+      "id": "sit",
+      "text": "BOARDING\nSit in the pilot chair\n\nPress F to take the controls."
+    },
+    {
+      "id": "launch",
+      "text": "DEPARTURE\nLift off from the station pad\n\nPress B to take off. Wait for the short automatic lift."
+    },
+    {
+      "id": "retract-gear",
+      "text": "DEPARTURE\nRetract your landing gear\n\nPress G to stow the legs. Gear down limits you to maneuvering speed."
+    },
+    {
+      "id": "leave-bay",
+      "text": "DEPARTURE\nFly out through the hangar doors\n\nHold W to move out of the bay. Keep the ship level until you are clear of the station."
+    },
+    {
+      "id": "choose",
+      "text": "YOUR NEXT JOURNEY\nChoose what to do next\n\nPress M to select a destination, or press Tab to choose a contract."
+    },
+    {
+      "id": "choose",
+      "text": "YOUR NEXT JOURNEY\nChoose what to do next\n\nPress M to select a destination, or press Tab to choose a contract."
+    },
+    {
+      "id": "manual-approach",
+      "text": "APPROACH\nFly toward Patrol signal\n\nDrag the view or use the arrow keys to centre its marker. Hold W to approach; hold X to slow down near it."
+    },
+    {
+      "id": "clear-route",
+      "text": "NAVIGATION\nReach a clear drive approach\n\nRoute blocked by Aeon Orbital. Move to a clear approach. Hold W to fly farther away from the station. Keep Coastal landing selected."
+    },
+    {
+      "id": "engage",
+      "text": "NAVIGATION\nEngage the drive to Coastal landing\n\nPress N or J. The ship will brake automatically on arrival."
+    },
+    {
+      "id": "travel",
+      "text": "EN ROUTE\nTravelling to Coastal landing\n\nHold X to abort if needed. Arrival braking is automatic."
+    },
+    {
+      "id": "landing-gear",
+      "text": "ARRIVAL\nLower your landing gear\n\nPress G to deploy the legs before your approach."
+    },
+    {
+      "id": "descend",
+      "text": "ARRIVAL\nDescend toward Coastal landing\n\nDrag the view or use the arrow keys to keep the marker ahead. Hold C to descend. Brake as you approach 12 km altitude."
+    }
+  ],
+  "errors": [],
+  "input": "Native keyboard; no gameplay state mutation"
+}

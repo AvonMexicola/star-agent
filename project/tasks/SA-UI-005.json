@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex",
-  "status": "active",
+  "status": "integrated",
   "branch": "feat/step-by-step-player-guide",
   "base": "c5eb5197e1394920ea75ff0fb6664b1d7ff4b19a",
   "updated": "2026-09-09",
@@ -25,5 +25,7 @@
     "scripts/player-guide.config.js",
     "src/nomad-cabin-controls.js"
   ],
-  "brief": "docs/briefs/step-by-step-player-guide.md"
+  "brief": "docs/briefs/step-by-step-player-guide.md",
+  "validation": "Runtime 981852a integrated at 5347648. 166 normal source files, final focused guide regressions, build and repository checks pass. Keyboard05 full opening/drive/arrival and controller04 plus native focus/dialog/disconnection guards pass. Phone04 physically boarded/launched; remaining full touch fixture rerun is queued and not claimed as passed. Public release explicitly requested afterward; publication remains separate.",
+  "evidence": "docs/qa/player-guide/README.md"
 }

@@ -1,5 +1,13 @@
 # All-features local development
 
+**Step-by-step Flight guide, 9 September 2026:** `981852a` adds persistent next-action
+guidance from the first walk around the Nomad through hatch, chair, launch, gear,
+Map/Contracts selection, drive and arrival. Departure no longer asks you to dock
+again. **Tab** opens Contracts; **Shift+Tab** cycles HUD visibility. Turn guidance
+off in **Menu → Settings → Flight guide**. Nomad touch controls now expose Launch,
+thrust and Brake. Refresh **http://127.0.0.1:5178/** to use the integrated guide.
+[Checks and limits](qa/player-guide/README.md). Public sites remain separate.
+
 **Station wheel collision, 9 September 2026:** `8a2a12f` removes invisible walls
 along the diagonal spokes. Collision now checks the actual triangle surfaces
 inside the existing broad-phase bounds. The Nomad controller flight passes

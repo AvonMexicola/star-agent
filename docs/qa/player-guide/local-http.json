@@ -1,0 +1,60 @@
+{
+  "checks": [
+    {
+      "path": "src/player-guide.js",
+      "status": 200,
+      "sha256": "9db513c69eac6e47d8ae1657ed620d28646cb8d46886be4d29497b830931ee0a"
+    },
+    {
+      "path": "src/player-guide-ui.js",
+      "status": 200,
+      "sha256": "5e83dddef8a1e751553f8a5137e0073f1221df2dbe5e9f6413b90df54d2e07b6"
+    },
+    {
+      "path": "src/player-guide.css",
+      "status": 200,
+      "sha256": "9156bab3d21353738dc888309ca8000a642ab3091c4544a2c7fc921a0b83c7a5"
+    },
+    {
+      "path": "src/main.js",
+      "status": 200,
+      "sha256": "eb3ee7fc812a26883605329e73ff19ef9f5d7d110d47962e4fab5f003b463d9a"
+    },
+    {
+      "path": "src/nomad-cabin-controls.js",
+      "status": 200,
+      "sha256": "31c5f8e92b1420be1b15da399727d361af1452c18c1366427e637d6611eca4ad"
+    },
+    {
+      "path": "src/gameplay-menu.js",
+      "status": 200,
+      "sha256": "5eff39afa196b71ae14160ea0b67bcf799f27ff249878da405cb730789b90976"
+    },
+    {
+      "path": "src/hud-display.js",
+      "status": 200,
+      "sha256": "6ab8527a137577443f180cfdcc4398be1684047325c0b607569a08382e03ea13"
+    },
+    {
+      "path": "src/opening-sequence.js",
+      "status": 200,
+      "sha256": "ae2d458b0e2aa117fb87591eefcb593707ec15454e85818b8d4e2e027c316fe7"
+    },
+    {
+      "url": "http://127.0.0.1:5178/api/health",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "url": "http://127.0.0.1:8087/api/health",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    }
+  ],
+  "service": "ActiveState=active\nMainPID=131464",
+  "serviceRestartedByGuide": false
+}
