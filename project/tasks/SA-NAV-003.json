@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex planetary drive",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/planetary-drive-routing",
   "base": "b99658ba9bf48a3f7d5d51df5cb1404e7127153a",
   "updated": "2026-09-09",
@@ -27,6 +27,6 @@
     "src/cargo/tractor-tool.js"
   ],
   "brief": "docs/briefs/planetary-drive.md",
-  "validation": "Full configured165-file unit suite PASS; final six affected suites PASS; development build PASS;25 transport/rotation/client tests plus isolated PostgreSQL restart PASS. Production browser05 PASS1.4min with complete injected-controller coast-to-polar selection, charge gates, immediate LT abort, re-engagement,35km arrival, manual flight and native phone map. No page errors/request failures. Physical devices, independent review and public deployment unclaimed.",
+  "validation": "Full configured165-file unit suite PASS; final six affected suites PASS; development build PASS;25 transport/rotation/client tests plus isolated PostgreSQL restart PASS. Production browser05 PASS1.4min with complete injected-controller coast-to-polar selection, charge gates, immediate LT abort, re-engagement,35km arrival, manual flight and native phone map. No page errors/request failures. Physical devices, independent review and public deployment unclaimed. Locally integrated at bcb71c9; managed5178/API8087 refreshed with persistent local database retained. Six served module checks and both API health routes PASS.",
   "evidence": "docs/qa/planetary-drive.md"
 }

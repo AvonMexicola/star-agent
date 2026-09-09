@@ -1,0 +1,38 @@
+{
+  "/src/navigation-targets.js": {
+    "status": 200,
+    "contentMatches": true
+  },
+  "/src/travel-route.js": {
+    "status": 200,
+    "contentMatches": true
+  },
+  "/src/travel-model.js": {
+    "status": 200,
+    "contentMatches": true
+  },
+  "/src/navigation.js": {
+    "status": 200,
+    "contentMatches": true
+  },
+  "/src/system-map.js": {
+    "status": 200,
+    "contentMatches": true
+  },
+  "/src/cargo/tractor-tool.js": {
+    "status": 200,
+    "contentMatches": true
+  },
+  "http://127.0.0.1:8087/api/health": {
+    "status": 200,
+    "health": {
+      "ok": true
+    }
+  },
+  "http://127.0.0.1:5178/api/health": {
+    "status": 200,
+    "health": {
+      "ok": true
+    }
+  }
+}

@@ -1,6 +1,7 @@
 # All-features local development
 
-**Planetary drive routing,9 September2026:** select a planet/moon in Map, then
+**Planetary drive routing,9 September2026:** runtime `bcb71c9` is locally
+integrated. Select a planet/moon in Map, then
 **Locations** and a surface destination. Aim at its tracked marker, charge, then
 press N/J or LB+RB+D-pad up. Hidden surface/world targets route around blocking
 worlds with35km terrain clearance; surface sites arrive35km above the location.
