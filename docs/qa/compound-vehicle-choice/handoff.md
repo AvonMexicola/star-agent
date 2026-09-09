@@ -1,7 +1,7 @@
 # SA-GARAGE-002 — checked feature handoff, 2026-09-09
 
-Status: author validated; root retains parent integration and authorized public
-release. Isolated feat/compound-vehicle-choice from3ea6b07, private5688/API8688;
+Status: integrated through PR108 / `4077761`; published as paired `ea234d2`
+to play and multiplayer on 9 September 2026. [Final receipt](../compounds-release/README.md). Isolated feat/compound-vehicle-choice from3ea6b07, private5688/API8688;
 all owned browser jobs stopped. Source and tests are bounded to garage choice,
 Sentry placement/construction adapter, cached rover kit queries and one main hook.
 No asset, dependency, protocol, seed or database schema changes.
@@ -19,7 +19,6 @@ adapter to garages. Garage interactions still install before pirate interactions
 Complete-body collision uses the supplied layout; ordinary Burrow retains its
 default. Keep the4.02m turret envelope, original kit support floor and live doors.
 
-Next: merge the committed checked feature with the release/public entry branch,
-run full checks, fast-forward shared dev with its entire dirty journal unchanged,
-then stage/promote the paired public client/server and verify actual release IDs.
-No publication is claimed by this handoff alone.
+Delivery is complete. Preserve the solo/offline garage boundary, occupied/bay
+checks and existing multiplayer Sentry authority. Full combined checks, public
+entry and private restore rehearsal are recorded in the linked release receipt.

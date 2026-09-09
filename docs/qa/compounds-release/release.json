@@ -1,0 +1,511 @@
+{
+  "status": "deployed",
+  "source": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+  "devMerge": "407776121f76cef91cafe3736bd8a9b14cdbad7e",
+  "pr": "https://github.com/AvonMexicola/star-agent/pull/108",
+  "hostedChecks": {
+    "run": 34302418979,
+    "plan": "pass",
+    "source": "pass",
+    "multiplayer": "pass",
+    "browser": "pass",
+    "verify": "pass"
+  },
+  "promotedAt": "2026-09-09T02:25:56Z",
+  "publicServicePID": 34057,
+  "connectionsBeforeRestart": 0,
+  "local": {
+    "at": "2026-09-09T02:23:39.127620+00:00",
+    "before": "3ea6b07d50d7a0e91acaf3c5047b5d56d06aadba",
+    "after": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+    "handoffBytes": 527435,
+    "handoffSHA256": "e339d6e389000c80b704df79c433760f95181e4b83e155e94e1a06d621679620",
+    "entireJournalPreserved": true,
+    "remoteMerge": "407776121f76cef91cafe3736bd8a9b14cdbad7e",
+    "sharedHead": "407776121f76cef91cafe3736bd8a9b14cdbad7e",
+    "servicePID": 2566413,
+    "directAndProxyHealth": "200",
+    "servedProtocol": 10,
+    "servedCapacity": 20
+  },
+  "https": {
+    "at": "2026-09-09T02:27:29.606710+00:00",
+    "release": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+    "channels": {
+      "solo": {
+        "metadata": {
+          "channel": "solo",
+          "commit": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+          "builtAt": "2026-09-09T02:12:41.465Z",
+          "multiplayerVersion": 10,
+          "maxPlayers": 20,
+          "seed": 7291,
+          "devTools": true
+        },
+        "indexMatches": true,
+        "assets": {
+          "/assets/main-CkCzjxom.js": {
+            "status": 200,
+            "sha256": "1b95c24ff75cc3cd15b4a87c9c135b4ae1e6d76c64b54d1e1f15bb9121273f21"
+          },
+          "/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+            "status": 200,
+            "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+          },
+          "/assets/preload-helper-PPVm8Dsz.js": {
+            "status": 200,
+            "sha256": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4"
+          },
+          "/assets/three.core-Ck4SErS6.js": {
+            "status": 200,
+            "sha256": "c5f1304b4f600dd70e8460252f29f99cfdaeb5532a91572cc5ca3cd956d39dc4"
+          },
+          "/assets/three.module-D_w7MhBc.js": {
+            "status": 200,
+            "sha256": "c18c6c51d8e431da9980c1fa941da03dfb772014b9db38eaffc5ae7ea18d3d4e"
+          },
+          "/assets/GLTFLoader-B3PefPde.js": {
+            "status": 200,
+            "sha256": "35aa6b5c9307d3a13c4820d71bc104a97307debbd062cf83da35b3cd50a65529"
+          },
+          "/assets/generation-COTNAE7W.js": {
+            "status": 200,
+            "sha256": "9ae025cc7f4d823d5eb011a6fdc4da7113697cc6966edd18c4a7e87afbbae4d2"
+          },
+          "/assets/moon-world-2gvwGEh_.js": {
+            "status": 200,
+            "sha256": "5aafc30554cfb7aa5d869082f7bffffd9a0dfe387b4078415aa6fa8a35af8bf6"
+          },
+          "/assets/world-BOT08nOo.js": {
+            "status": 200,
+            "sha256": "4bb4a83e1426809cf5d063eef9852ef569d940da9723512f54694b7be20dade1"
+          },
+          "/assets/stellar-world-Dis_VipK.js": {
+            "status": 200,
+            "sha256": "e828dbe55525e0d99e7293ebfa93c5a25d45bf61c0e13d9ec29ae1047e7ce50a"
+          },
+          "/assets/ship-mfd-Dftku3UG.js": {
+            "status": 200,
+            "sha256": "2588f98d46e1d5bd243f6a9c1a2622485ee899b849e4e69bad321a881e3592a0"
+          },
+          "/assets/boarding-CHOVCBAK.js": {
+            "status": 200,
+            "sha256": "9f8452537dfbc524e9e973e80f787f67087e7645b1ba86812294ac4683551a90"
+          },
+          "/assets/weapon-mounts-Brg6wUlE.js": {
+            "status": 200,
+            "sha256": "b441a9ded2e6dd89aebae5cbdf470d06c884b995a530767c96fb28623b195fab"
+          },
+          "/assets/particles-F88UJnSF.js": {
+            "status": 200,
+            "sha256": "e9f6002847a7ce301c45dc00b080684579ce03af1866461779d7f2640c8681d1"
+          },
+          "/assets/ship-weapons-CJgqK7xS.js": {
+            "status": 200,
+            "sha256": "9b3205e691e93adbab8da9cd4c52b18fef9f0b03deef508dde7960af5f038467"
+          },
+          "/assets/celestial-BOX9c2um.js": {
+            "status": 200,
+            "sha256": "8c4b55311d5196601c8d44d3cd24b518caadb5e8e31fb8b4ec827061f72aa6f7"
+          },
+          "/assets/ship-handling-DTrMfeK7.js": {
+            "status": 200,
+            "sha256": "5145dbd2e498a0f19e7928a7e4b119a18540faeed0ef91260bf168243f22de98"
+          },
+          "/assets/asteroid-material-B25WWGyz.js": {
+            "status": 200,
+            "sha256": "c9cdf274b87edc37f5fc0cbc71fc4d735833719dca979a151654e07c8695071c"
+          },
+          "/assets/definitions-BXp_sQzX.js": {
+            "status": 200,
+            "sha256": "f0bdf12860afbd77f449ec6d1fe7da2891ce127cf2e55624e6914ec1834ed32e"
+          },
+          "/assets/identity-CcXQJlKR.js": {
+            "status": 200,
+            "sha256": "3d02adb48e7067873af6a44eb0f76b747bd83497eb7f18a083d40b0924fe53e3"
+          },
+          "/assets/visuals-Dr8XM38q.js": {
+            "status": 200,
+            "sha256": "694a5814e52d3de0afab4bdf5e0f023f56198a600e84bf1ecad9a20ea49125d9"
+          },
+          "/assets/stratum-flight-parts-BQunyEJJ.js": {
+            "status": 200,
+            "sha256": "425834719b61180d685776505a7cd4a0bcbc8df5fb8903827d6ec72fea1ef647"
+          },
+          "/assets/gear-flight-BEVbqRj-.js": {
+            "status": 200,
+            "sha256": "3ae429290d4f5f2430f245892fe2b2caf16030e2be558676351cb4d62e449682"
+          },
+          "/assets/gannet-systems-D-wkj_dB.js": {
+            "status": 200,
+            "sha256": "a11a9f40b0f0de5d7c53a49be4466a7f655c8f3d78e671382be8c37928fe43b4"
+          },
+          "/assets/kestrel-2aOAP5Db.js": {
+            "status": 200,
+            "sha256": "33d03b32c4a0e2302927e26e70a2b682b8c938135e0fd5f08b5eb567265f7218"
+          },
+          "/assets/terrain-maps-x2cAchnN.js": {
+            "status": 200,
+            "sha256": "9f9f660a634690afced4f432d723d815681e0fc4a19236ccc8a94f12d84ccd14"
+          },
+          "/assets/surface-materials-CrEJe_ac.js": {
+            "status": 200,
+            "sha256": "468de333fe9e14550dc4f6b082809596ff80d46987f37acba03b29526f288afa"
+          },
+          "/assets/vegetation-CD-iDYvs.js": {
+            "status": 200,
+            "sha256": "224da005c3bb752b32a2097725d92ab5e7ddfbe46be8dcdee0d9c4235920c94b"
+          },
+          "/assets/character-RdSM7ay-.js": {
+            "status": 200,
+            "sha256": "7f1dd47901598bcfebbd85ddc7655a040087e6c585f5f15657c5c85d35c56f48"
+          },
+          "/assets/player-avatar-D5mpJPEk.js": {
+            "status": 200,
+            "sha256": "bda92f1e16bb51bf6179df83b81576d90261bdeea9283c8457cc3adef50124fb"
+          },
+          "/assets/ground-textures-DxxutQmp.js": {
+            "status": 200,
+            "sha256": "3068ba336567bfb6a36da6e25a15801ae1c9829736c4d86a5fec306464304591"
+          },
+          "/assets/equipment-CjT38_Xk.js": {
+            "status": 200,
+            "sha256": "71ad4698ffaf152b5cf8c675b71095712ae9104838006313986b9d7986a390cf"
+          },
+          "/assets/audio-Ddw3WQm9.js": {
+            "status": 200,
+            "sha256": "129ccf9bf008636ee259e758468d3b7826ed094ed5a61d6203bbf2cabec99965"
+          },
+          "/assets/lighting-Dk-1yht8.js": {
+            "status": 200,
+            "sha256": "07e87449e92503d8ff8abd6bdfb17f92dad176e42c3a21a2ef9d895ecc0073d8"
+          },
+          "/assets/main-Ca93UdTg.css": {
+            "status": 200,
+            "sha256": "75971d666da85c88594227afbe73d9ae12bb573e4c3fa67bcdc0f1e098a6e7a3"
+          },
+          "/assets/viewer-style-CsRXElqD.css": {
+            "status": 200,
+            "sha256": "f6b2219bf84f3d020e30cc81fd4d0ee9b3ff521eb86be71c0b7340e9a7e0f1ce"
+          },
+          "/models/nomad.glb": {
+            "status": 200,
+            "sha256": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da"
+          },
+          "/models/station.glb": {
+            "status": 200,
+            "sha256": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14"
+          },
+          "/models/mining-rover.glb": {
+            "status": 200,
+            "sha256": "85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e"
+          },
+          "/models/burrow-sentry.glb": {
+            "status": 200,
+            "sha256": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387"
+          },
+          "/models/gannet.glb": {
+            "status": 200,
+            "sha256": "8da0bc2e3da7c8c2a2db7b29957b226fab0ba30eb0155f98d82a3f82c3995e6f"
+          },
+          "/models/stratum.glb": {
+            "status": 200,
+            "sha256": "1f5cae2a4901a2618d7cff36f1713a19777b45d586022614b9bc5449560cb75b"
+          }
+        }
+      },
+      "multiplayer": {
+        "metadata": {
+          "channel": "multiplayer",
+          "commit": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+          "builtAt": "2026-09-09T02:12:46.091Z",
+          "multiplayerVersion": 10,
+          "maxPlayers": 20,
+          "seed": 7291,
+          "devTools": true
+        },
+        "indexMatches": true,
+        "assets": {
+          "/assets/main-CsXYpPDL.js": {
+            "status": 200,
+            "sha256": "19db49966071bf16717deccda880ef7d2aed66fdb7c8458e1d9569df8ff04cbf"
+          },
+          "/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+            "status": 200,
+            "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+          },
+          "/assets/preload-helper-PPVm8Dsz.js": {
+            "status": 200,
+            "sha256": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4"
+          },
+          "/assets/three.core-Ck4SErS6.js": {
+            "status": 200,
+            "sha256": "c5f1304b4f600dd70e8460252f29f99cfdaeb5532a91572cc5ca3cd956d39dc4"
+          },
+          "/assets/three.module-D_w7MhBc.js": {
+            "status": 200,
+            "sha256": "c18c6c51d8e431da9980c1fa941da03dfb772014b9db38eaffc5ae7ea18d3d4e"
+          },
+          "/assets/GLTFLoader-B3PefPde.js": {
+            "status": 200,
+            "sha256": "35aa6b5c9307d3a13c4820d71bc104a97307debbd062cf83da35b3cd50a65529"
+          },
+          "/assets/generation-COTNAE7W.js": {
+            "status": 200,
+            "sha256": "9ae025cc7f4d823d5eb011a6fdc4da7113697cc6966edd18c4a7e87afbbae4d2"
+          },
+          "/assets/moon-world-2gvwGEh_.js": {
+            "status": 200,
+            "sha256": "5aafc30554cfb7aa5d869082f7bffffd9a0dfe387b4078415aa6fa8a35af8bf6"
+          },
+          "/assets/world-BOT08nOo.js": {
+            "status": 200,
+            "sha256": "4bb4a83e1426809cf5d063eef9852ef569d940da9723512f54694b7be20dade1"
+          },
+          "/assets/stellar-world-Dis_VipK.js": {
+            "status": 200,
+            "sha256": "e828dbe55525e0d99e7293ebfa93c5a25d45bf61c0e13d9ec29ae1047e7ce50a"
+          },
+          "/assets/ship-mfd-Dftku3UG.js": {
+            "status": 200,
+            "sha256": "2588f98d46e1d5bd243f6a9c1a2622485ee899b849e4e69bad321a881e3592a0"
+          },
+          "/assets/boarding-CHOVCBAK.js": {
+            "status": 200,
+            "sha256": "9f8452537dfbc524e9e973e80f787f67087e7645b1ba86812294ac4683551a90"
+          },
+          "/assets/weapon-mounts-Brg6wUlE.js": {
+            "status": 200,
+            "sha256": "b441a9ded2e6dd89aebae5cbdf470d06c884b995a530767c96fb28623b195fab"
+          },
+          "/assets/particles-F88UJnSF.js": {
+            "status": 200,
+            "sha256": "e9f6002847a7ce301c45dc00b080684579ce03af1866461779d7f2640c8681d1"
+          },
+          "/assets/ship-weapons-CJgqK7xS.js": {
+            "status": 200,
+            "sha256": "9b3205e691e93adbab8da9cd4c52b18fef9f0b03deef508dde7960af5f038467"
+          },
+          "/assets/celestial-BOX9c2um.js": {
+            "status": 200,
+            "sha256": "8c4b55311d5196601c8d44d3cd24b518caadb5e8e31fb8b4ec827061f72aa6f7"
+          },
+          "/assets/ship-handling-DTrMfeK7.js": {
+            "status": 200,
+            "sha256": "5145dbd2e498a0f19e7928a7e4b119a18540faeed0ef91260bf168243f22de98"
+          },
+          "/assets/asteroid-material-B25WWGyz.js": {
+            "status": 200,
+            "sha256": "c9cdf274b87edc37f5fc0cbc71fc4d735833719dca979a151654e07c8695071c"
+          },
+          "/assets/definitions-BXp_sQzX.js": {
+            "status": 200,
+            "sha256": "f0bdf12860afbd77f449ec6d1fe7da2891ce127cf2e55624e6914ec1834ed32e"
+          },
+          "/assets/identity-CcXQJlKR.js": {
+            "status": 200,
+            "sha256": "3d02adb48e7067873af6a44eb0f76b747bd83497eb7f18a083d40b0924fe53e3"
+          },
+          "/assets/visuals-Dr8XM38q.js": {
+            "status": 200,
+            "sha256": "694a5814e52d3de0afab4bdf5e0f023f56198a600e84bf1ecad9a20ea49125d9"
+          },
+          "/assets/stratum-flight-parts-BQunyEJJ.js": {
+            "status": 200,
+            "sha256": "425834719b61180d685776505a7cd4a0bcbc8df5fb8903827d6ec72fea1ef647"
+          },
+          "/assets/gear-flight-BEVbqRj-.js": {
+            "status": 200,
+            "sha256": "3ae429290d4f5f2430f245892fe2b2caf16030e2be558676351cb4d62e449682"
+          },
+          "/assets/gannet-systems-D-wkj_dB.js": {
+            "status": 200,
+            "sha256": "a11a9f40b0f0de5d7c53a49be4466a7f655c8f3d78e671382be8c37928fe43b4"
+          },
+          "/assets/kestrel-2aOAP5Db.js": {
+            "status": 200,
+            "sha256": "33d03b32c4a0e2302927e26e70a2b682b8c938135e0fd5f08b5eb567265f7218"
+          },
+          "/assets/terrain-maps-x2cAchnN.js": {
+            "status": 200,
+            "sha256": "9f9f660a634690afced4f432d723d815681e0fc4a19236ccc8a94f12d84ccd14"
+          },
+          "/assets/surface-materials-CrEJe_ac.js": {
+            "status": 200,
+            "sha256": "468de333fe9e14550dc4f6b082809596ff80d46987f37acba03b29526f288afa"
+          },
+          "/assets/vegetation-CD-iDYvs.js": {
+            "status": 200,
+            "sha256": "224da005c3bb752b32a2097725d92ab5e7ddfbe46be8dcdee0d9c4235920c94b"
+          },
+          "/assets/character-RdSM7ay-.js": {
+            "status": 200,
+            "sha256": "7f1dd47901598bcfebbd85ddc7655a040087e6c585f5f15657c5c85d35c56f48"
+          },
+          "/assets/player-avatar-D5mpJPEk.js": {
+            "status": 200,
+            "sha256": "bda92f1e16bb51bf6179df83b81576d90261bdeea9283c8457cc3adef50124fb"
+          },
+          "/assets/ground-textures-DxxutQmp.js": {
+            "status": 200,
+            "sha256": "3068ba336567bfb6a36da6e25a15801ae1c9829736c4d86a5fec306464304591"
+          },
+          "/assets/equipment-CjT38_Xk.js": {
+            "status": 200,
+            "sha256": "71ad4698ffaf152b5cf8c675b71095712ae9104838006313986b9d7986a390cf"
+          },
+          "/assets/audio-Ddw3WQm9.js": {
+            "status": 200,
+            "sha256": "129ccf9bf008636ee259e758468d3b7826ed094ed5a61d6203bbf2cabec99965"
+          },
+          "/assets/lighting-Dk-1yht8.js": {
+            "status": 200,
+            "sha256": "07e87449e92503d8ff8abd6bdfb17f92dad176e42c3a21a2ef9d895ecc0073d8"
+          },
+          "/assets/main-Ca93UdTg.css": {
+            "status": 200,
+            "sha256": "75971d666da85c88594227afbe73d9ae12bb573e4c3fa67bcdc0f1e098a6e7a3"
+          },
+          "/assets/viewer-style-CsRXElqD.css": {
+            "status": 200,
+            "sha256": "f6b2219bf84f3d020e30cc81fd4d0ee9b3ff521eb86be71c0b7340e9a7e0f1ce"
+          },
+          "/models/nomad.glb": {
+            "status": 200,
+            "sha256": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da"
+          },
+          "/models/station.glb": {
+            "status": 200,
+            "sha256": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14"
+          },
+          "/models/mining-rover.glb": {
+            "status": 200,
+            "sha256": "85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e"
+          },
+          "/models/burrow-sentry.glb": {
+            "status": 200,
+            "sha256": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387"
+          },
+          "/models/gannet.glb": {
+            "status": 200,
+            "sha256": "8da0bc2e3da7c8c2a2db7b29957b226fab0ba30eb0155f98d82a3f82c3995e6f"
+          },
+          "/models/stratum.glb": {
+            "status": 200,
+            "sha256": "1f5cae2a4901a2618d7cff36f1713a19777b45d586022614b9bc5449560cb75b"
+          }
+        }
+      }
+    },
+    "multiplayerHealth": true,
+    "https://staragent.site": {
+      "status": 200,
+      "indexMatches": true
+    },
+    "https://www.staragent.site": {
+      "status": 200,
+      "indexMatches": true
+    }
+  },
+  "wss": {
+    "publicHTTPSRegistration": true,
+    "authenticatedWSS": true,
+    "hangarAssignment": true,
+    "multiplayerVersion": 10,
+    "maxPlayers": 20,
+    "seed": 7291
+  },
+  "backup": {
+    "startedAt": "2026-09-09T02:23:04.814Z",
+    "release": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+    "productionMutated": false,
+    "backup": {
+      "path": "/opt/staragent/backups/compounds-20260909022304812/production.dump",
+      "bytes": 17760,
+      "sha256": "149e060f44ea2868330a29017ec5c598e8aa959310e9343998cf9f6629c6a580"
+    },
+    "originalRestoreMatches": true,
+    "sanitizedRestoreMatches": true,
+    "prismaRead": true,
+    "migrateTwiceUnchanged": true,
+    "tableCounts": {
+      "accounts": 2,
+      "base_sites": 0,
+      "commerce_state": 1,
+      "friendships": 0,
+      "password_resets": 0,
+      "player_state": 2,
+      "schema_migrations": 4,
+      "sessions": 2,
+      "social_blocks": 0
+    },
+    "productionUnchanged": true,
+    "finishedAt": "2026-09-09T02:23:05.985Z",
+    "disposableDatabaseRemoved": true
+  },
+  "manifests": {
+    "public.sha256": "c1842d68e315f6463f42b0222bd1f7d3fe3b0e5871dc44419114e8a5dfd04f34",
+    "multiplayer.sha256": "b2eb11af903d2b094e9152c84084503c954254a41e4a4d805504854fee7245f7"
+  },
+  "manifestFiles": {
+    "public": 300,
+    "multiplayer": 1008
+  },
+  "browser": {
+    "prepublication": {
+      "directory": "test-results/release-entry-20260909T021338Z",
+      "passed": 2,
+      "sourceUnchanged": true
+    },
+    "public": {
+      "directory": "test-results/public-entry-20260909T022609Z",
+      "passed": 2,
+      "sourceUnchanged": true,
+      "solo": {
+        "browser": "151.0.7922.173",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "assets": [
+          {
+            "path": "/models/station.glb",
+            "revision": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14",
+            "status": 200
+          },
+          {
+            "path": "/models/nomad.glb",
+            "revision": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+            "status": 200
+          }
+        ],
+        "documents": [
+          "https://play.staragent.site/?seed=7291&debug",
+          "https://play.staragent.site/?seed=7291&debug=&dev=1&intro=0&ship=kestrel&start=hangar"
+        ],
+        "errors": [],
+        "api": [],
+        "controller": "Injected W3C standard Gamepad; no physical hardware test"
+      },
+      "multiplayer": {
+        "browser": "151.0.7922.173",
+        "metadata": {
+          "channel": "multiplayer",
+          "commit": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+          "builtAt": "2026-09-09T02:12:46.091Z",
+          "multiplayerVersion": 10,
+          "maxPlayers": 20,
+          "seed": 7291,
+          "devTools": true
+        },
+        "errors": [],
+        "controller": "Injected standard Gamepad; native pointer Continue offline; physical device untested"
+      }
+    }
+  },
+  "limits": [
+    "Garage service remains solo/offline; online Burrow mining and garage authority are not added.",
+    "Five ground-pirate NPC/Lizzy lane remains author validation in progress and excluded.",
+    "No new physical-device, formal art/performance, twenty-human soak or SMTP delivery certification."
+  ]
+}
