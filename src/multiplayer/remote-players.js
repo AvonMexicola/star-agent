@@ -333,6 +333,8 @@ export class RemotePlayers {
       animation.speed = peer.mode === 'eva' ? 0 : Math.hypot(...(peer.velocity || [0, 0, 0]));
       animation.health = peer.health / 100;
       animation.dead = peer.mode === 'dead';
+      animation.seated=peer.sentrySeat?.phase==='seated';
+      animation.crouching=Boolean(peer.sentrySeat&&!animation.seated);
       const gear = THREE.MathUtils.clamp(peer.gearProgress ?? 1, 0, 1);
       const eased = gear * gear * (3 - 2 * gear);
       entry.gearScale = .08 + .92 * eased;
@@ -345,7 +347,7 @@ export class RemotePlayers {
       if (changedColor && entry.character.model) tintCharacterSuit(entry.character.model, this.palette[peer.colorIndex] || this.palette[0]);
       this._setShipTarget(entry);
       this._applyAtlas(entry);
-      const weapon = HELD_ITEMS.includes(peer.weapon) && (peer.mode === 'walk' || peer.mode === 'eva') ? peer.weapon : null;
+      const weapon = !peer.sentrySeat && HELD_ITEMS.includes(peer.weapon) && (peer.mode === 'walk' || peer.mode === 'eva') ? peer.weapon : null;
       if (entry.equipment.equipped !== weapon) {
         if (weapon) entry.equipment.equip(weapon);
         else entry.equipment.unequip();
@@ -391,6 +393,7 @@ export class RemotePlayers {
         this._up.copy(UP).applyQuaternion(this._bodyRotation);
       }
       this._feet.copy(entry.position).addScaledVector(this._up, -this.eyeHeight);
+      if(peer.sentryFeet)this._feet.fromArray(peer.sentryFeet);
       // The wire orientation is the view orientation. A separate bodyQuaternion
       // can be supplied when the sender is pitched independently of its torso.
       character.setWorldPose(this._feet, this._bodyRotation);

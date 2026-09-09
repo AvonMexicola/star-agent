@@ -12,7 +12,9 @@ sys.path.insert(0,str(ROOT/'blender'))
 import fighter_geometry as g
 from rover_cabin import build_cabin, build_shell_details
 from rover_cutters import build_cutters
-SOURCE=ROOT/'assets/mining-rover'; OUT=ROOT/'public/models/mining-rover.glb'
+SOURCE=ROOT/'assets/mining-rover'; SENTRY='--sentry' in sys.argv
+DEST=ROOT/'assets/burrow-sentry' if SENTRY else SOURCE
+OUT=ROOT/('public/models/burrow-sentry.glb' if SENTRY else 'public/models/mining-rover.glb')
 L=json.loads((SOURCE/'layout.json').read_text())
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 
@@ -226,33 +228,37 @@ for piece in parts[seatPartsStart:]:
     piece.location+=Vector(g.xyz((-.10,0,-.46)))
 build_cabin(g=g, box=box, rod=rod, panel=panel, text=text, plain=plain, root=root, door=door, parts=parts)
 
-# Split sealed ore cassettes and service spine, readable from behind.
-cargoPartsStart=len(parts)
-for s in (-1,1):
-    box('Mineral cassette',(s*.43,1.075,1.365),(.79,.71,1.18),4,.055)
-    box('Mineral cassette lid',(s*.43,1.465,1.365),(.80,.07,1.20),0,.020)
-    box('Cassette lid seal',(s*.43,1.419,1.365),(.795,.025,1.185),1,.009)
-    for z in (.85,1.88):box('Cassette armored end',(s*.43,1.08,z),(.70,.58,.10),0,.030)
-    for z in (.86,1.87):box('Cassette retaining latch',(s*.827,1.24,z),(.033,.16,.10),2,.010)
-    for z in (.90,1.81):box('Ore cassette strap',(s*.43,1.508,z),(.75,.015,.05),2)
-    box('Cassette rear armor',(s*.43,1.13,1.982),(.65,.43,.05),0)
-    box('Ore status recess',(s*.43,1.18,2.014),(.41,.13,.018),1)
-    box('Ore status light',(s*.43,1.18,2.029),(.27,.026,.01),mat=amber)
-    rod('Cassette pull grip',(s*.43-.13,.915,2.042),(s*.43+.13,.915,2.042),.023,2)
-    for z in (.99,1.18,1.37,1.56,1.75):box('Cassette side flute',(s*.841,1.04,z),(.014,.35,.035),1,.003)
-box('Battery spine',(0,1.62,1.30),(.19,.23,1.30),1)
-for i in range(9):box('Battery cooling fin',(0,1.765,.80+i*.115),(.17,.026,.027),2,.003)
-box('Roof scanner',(0,2.48,.53),(.31,.04,.28),4)
+if SENTRY:
+    from build_burrow_sentry import build_turret
+    build_turret(g=g, box=box, rod=rod, panel=panel, ring=ring, text=text, root=root, light=light, amber=amber, glass=glass)
+else:
+    # Split sealed ore cassettes and service spine, readable from behind.
+    cargoPartsStart=len(parts)
+    for s in (-1,1):
+        box('Mineral cassette',(s*.43,1.075,1.365),(.79,.71,1.18),4,.055)
+        box('Mineral cassette lid',(s*.43,1.465,1.365),(.80,.07,1.20),0,.020)
+        box('Cassette lid seal',(s*.43,1.419,1.365),(.795,.025,1.185),1,.009)
+        for z in (.85,1.88):box('Cassette armored end',(s*.43,1.08,z),(.70,.58,.10),0,.030)
+        for z in (.86,1.87):box('Cassette retaining latch',(s*.827,1.24,z),(.033,.16,.10),2,.010)
+        for z in (.90,1.81):box('Ore cassette strap',(s*.43,1.508,z),(.75,.015,.05),2)
+        box('Cassette rear armor',(s*.43,1.13,1.982),(.65,.43,.05),0)
+        box('Ore status recess',(s*.43,1.18,2.014),(.41,.13,.018),1)
+        box('Ore status light',(s*.43,1.18,2.029),(.27,.026,.01),mat=amber)
+        rod('Cassette pull grip',(s*.43-.13,.915,2.042),(s*.43+.13,.915,2.042),.023,2)
+        for z in (.99,1.18,1.37,1.56,1.75):box('Cassette side flute',(s*.841,1.04,z),(.014,.35,.035),1,.003)
+    box('Battery spine',(0,1.62,1.30),(.19,.23,1.30),1)
+    for i in range(9):box('Battery cooling fin',(0,1.765,.80+i*.115),(.17,.026,.027),2,.003)
+    box('Roof scanner',(0,2.48,.53),(.31,.04,.28),4)
 
-for piece in parts[cargoPartsStart:]:
-    if piece.name!='Roof scanner':piece.location+=Vector(g.xyz((0,.40,0)))
+    for piece in parts[cargoPartsStart:]:
+        if piece.name!='Roof scanner':piece.location+=Vector(g.xyz((0,.40,0)))
 
-build_cutters(layout=L, g=g, box=box, rod=rod, ring=ring, root=root, light=light)
+    build_cutters(layout=L, g=g, box=box, rod=rod, ring=ring, root=root, light=light)
 
 # Restrained manufacturer plate / chevron motif, readable physical orientation.
-text('Forehead identity','BURROW  M-04',(0,2.397,-1.197),.092,(math.pi/2,0,math.pi))
+text('Forehead identity','BURROW SENTRY' if SENTRY else 'BURROW  M-04',(0,2.397,-1.197),.092,(math.pi/2,0,math.pi))
 text('Rear manufacturer','MERIDIAN',(0,2.20,.786),.09,(math.pi/2,0,0))
-text('Roof identity','M-04',(0,2.497,-.30),.29,(0,0,0))
+text('Roof identity','S-04' if SENTRY else 'M-04',(0,2.497,-.30),.29,(0,0,0))
 for s in (-1,1):
     rod('Meridian rising mark',(s*.20,2.403,-1.195),(s*.06,2.466,-1.155),.011,4)
     box('Forward work lamp',(s*.72,1.50,-1.69),(.20,.045,.022),mat=light)
@@ -289,7 +295,7 @@ for (par,mat),objects in batches.items():
 # Fixed anti-slip stair treads: no cabin-door sweep overlap.
 bpy.context.view_layer.update()
 bpy.context.preferences.filepaths.save_version=0
-bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/'mining-rover.blend'),compress=True)
+bpy.ops.wm.save_as_mainfile(filepath=str(DEST/('burrow-sentry.blend' if SENTRY else 'mining-rover.blend')),compress=True)
 bpy.ops.export_scene.gltf(filepath=str(OUT),export_format='GLB',export_extras=True,export_yup=True,export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_materials='EXPORT')
-(SOURCE/'manifest.json').write_text(json.dumps({'stage':'cutter follow-up 13a; see production record for current acceptance','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original Blender geometry and procedural PBR maps; approved ChatGPT Image concepts in assets/mining-rover/design inform design only.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard'],'limitations':['Closed geometric cabin; no pressure simulation','Concept upgrade review pending; previous candidate reviews remain historical','Flat panel instruments mirror shared controls; pressure and hand IK are not simulated']},indent=2)+'\n')
+(DEST/'manifest.json').write_text(json.dumps({'stage':'cutter follow-up 13a; see production record for current acceptance','name':L['name'],'manufacturer':L['manufacturer'],'units':'metres','builder':'blender/build_mining_rover.py','textureBuilder':'blender/rover_textures.py','source':'assets/mining-rover/mining-rover.blend','provenance':'Original Blender geometry and procedural PBR maps; approved ChatGPT Image concepts in assets/mining-rover/design inform design only.','layout':'assets/mining-rover/layout.json','movingParts':[w['node'] for w in L['wheels']]+['CabinDoor','Cutter_Port','Cutter_Starboard'],'limitations':['Closed geometric cabin; no pressure simulation','Concept upgrade review pending; previous candidate reviews remain historical','Flat panel instruments mirror shared controls; pressure and hand IK are not simulated']},indent=2)+'\n')
 print('Rover source and export written. Run pack_mining_rover.py.')

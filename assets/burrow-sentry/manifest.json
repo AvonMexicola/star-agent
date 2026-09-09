@@ -1,0 +1,42 @@
+{
+  "stage": "runtime verified by author; independent art review pending",
+  "name": "Burrow Sentry S-04",
+  "manufacturer": "Meridian Shipworks",
+  "units": "metres",
+  "builder": "blender/build_mining_rover.py -- --sentry",
+  "textureBuilder": "blender/rover_textures.py",
+  "source": "assets/burrow-sentry/burrow-sentry.blend",
+  "provenance": "Original Blender geometry and procedural PBR maps; approved ChatGPT Image concepts in assets/mining-rover/design inform design only.",
+  "layout": "src/sentry/layout.js",
+  "movingParts": [
+    "CabinDoor",
+    "GunnerDoor",
+    "SentryYaw",
+    "SentryPitch",
+    "Wheel_FrontPort",
+    "Wheel_FrontStarboard",
+    "Wheel_RearPort",
+    "Wheel_RearStarboard"
+  ],
+  "limitations": [
+    "Closed geometric cabin; no pressure simulation",
+    "Concept upgrade review pending; previous candidate reviews remain historical",
+    "Flat panel instruments mirror shared controls; pressure and hand IK are not simulated"
+  ],
+  "asset": "public/models/burrow-sentry.glb",
+  "sha256": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387",
+  "bytes": 2469344,
+  "triangles": 25998,
+  "meshPrimitives": 46,
+  "nodes": 127,
+  "materials": 9,
+  "packing": {
+    "inputBytes": 3862772,
+    "outputBytes": 3350204,
+    "maximumPositionErrorMetres": 5.714433150688138e-05,
+    "maximumNormalErrorDegrees": 0.3687926033562305,
+    "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
+  },
+  "textureFormat": "WebP: three original 1024x1024 PBR swatches and approved 512x512 Meridian emblem (RGBA)",
+  "textures": 4
+}

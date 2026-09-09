@@ -1,6 +1,6 @@
 # Verified development status
 
-**Latest local checkpoint: 2026-09-09, disabled Atlas recovery at `d3cbde3`.** Named
+**Latest local checkpoint: 2026-09-09, Burrow Sentry at `bdf053c`, including checked Atlas recovery and planet rotation.** Named
 older checkpoints below retain their own evidence scope. This page states
 capabilities and gaps; [ROADMAP](../../ROADMAP.md) states ambitions. New governance
 and tooling changes do not certify the entire game as finished.
@@ -20,6 +20,7 @@ and tooling changes do not certify the entire game as finished.
 | Deep-space recovery | Locally integrated `d3cbde3`: three disabled Atlas contracts with open ramps/alarm lights, one named2SBU objective, optional bonus loot, actual tractor recovery and terminal payment; full controller haul/delivery/sale/relaunch, guarded combat and native-phone UI pass | Solo only; full guarded delivery, other hulls, physical devices and independent art/performance review remain open. [Evidence](../qa/deep-space-recovery/README.md) |
 | Characters | Expedition suit is the default local/remote model, with corrected leg rig, calibrated palms,26clips and an animation studio | Final art/motion and whole-scene performance acceptance remain open |
 | Rover | Ground Selene and Atlas/Burrow Aeon meadow starts, real aft-ramp carriage and clear windscreen; full ground controller and Gannet carrier keyboard/controller/native-touch routes pass; Cees manually tested Atlas loading/flight | Broader terrain and performance acceptance, physical-device testing and multiplayer replication remain open |
+| Burrow Sentry | Locally integrated `bdf053c`: separate two-seat rear laser variant, physical boarding, authoritative crew priority/pilot fallback, hull damage and Atlas carriage; complete solo, keyboard/native touch and two-client control/inventory/return journeys verified | Session vehicles; no purchase fleet, pressure simulation or full ship-gun/ram parity. Earlier intermittent socket rejection remains unexplained and did not recur in final evidence. Physical hardware, formal art and performance acceptance remain open. [Evidence](../qa/burrow-sentry/README.md) |
 | Multiplayer | Ten-player prototype, persistent PostgreSQL/Prisma accounts and inventory, comms-assigned hangars, authoritative hits, assigned remote suit colors | Local database survives restarts; no SMTP; online Nomad/Atlas cargo hulls, with remaining fleet parity open; live ten-person soak not established here |
 | Social | Server chat, persistent mutual friends, presence, blocking and private session kicks; complete controller/keyboard/touch and ten-pilot fixture checks | Small English-first moderation rules; no direct messages, offline delivery, chat archive, reports inbox or permanent bans |
 | Combat | Fifteen offline regional Nomad/Kestrel sorties across planets, moons and belt; Easy/Standard/Hard, reinforcement waves, shield/hull damage, recovery and session reports; five full regional controller routes pass | Regional patrols have no credits/loot or durable contracts; no multiplayer NPC authority; physical-device testing and independent human difficulty tuning remain pending |
