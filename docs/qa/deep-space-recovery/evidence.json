@@ -1,0 +1,161 @@
+{
+  "checkedHead": "d3cbde3dc47d35fa0bf5e106c5a456e19277e1c9",
+  "build": "build07/main-CUl4EEh6.js",
+  "receipts": {
+    "controller": {
+      "attempt": "recovery-09",
+      "receipt": {
+        "browser": "151.0.7922.173",
+        "graphics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+          "vendor": "Google Inc. (AMD)"
+        },
+        "errors": [],
+        "warnings": [],
+        "physicalController": false,
+        "rotation": {
+          "start": 38.12,
+          "end": 564.108,
+          "realSeconds": 526.0660999999642,
+          "fixture": "Initial epoch set before boot; normal real-time rotation throughout, no mid-flight clock or pose changes."
+        },
+        "route": "Supported Aeon orbit start; every later gameplay action is standard Gamepad, navigation is read only for feedback.",
+        "accepted": {
+          "id": "recovery-1",
+          "job": "silent-atlas",
+          "phase": "accepted",
+          "cleared": true,
+          "crates": [],
+          "loot": [],
+          "position": [
+            111145.89938568503,
+            4605152.192333007,
+            6036256.458966656
+          ],
+          "quaternion": [
+            0.4435539590541393,
+            0.008250192656508079,
+            -0.004083244817573716,
+            0.8962003943540134
+          ]
+        },
+        "complete": {
+          "version": 1,
+          "active": null,
+          "completed": 1,
+          "earned": 900,
+          "history": [
+            {
+              "id": "recovery-1",
+              "job": "silent-atlas",
+              "paid": 900
+            }
+          ]
+        },
+        "bonusKept": [
+          {
+            "id": "sbu-3",
+            "sbu": 2,
+            "resource": "copper",
+            "grid": "aft-starboard",
+            "cell": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "bonusSaleCredits": 108,
+        "flights": [
+          {
+            "id": "wreck-recovery-1",
+            "samples": 66
+          },
+          {
+            "id": "settlement-aeon",
+            "samples": 54
+          }
+        ]
+      }
+    },
+    "guarded": {
+      "attempt": "recovery-07",
+      "receipt": {
+        "browser": "151.0.7922.173",
+        "graphics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+          "vendor": "Google Inc. (AMD)"
+        },
+        "errors": [],
+        "warnings": [],
+        "physicalController": false,
+        "report": {
+          "id": 1,
+          "contractId": "recovery-1",
+          "title": "Raider claim \u00b7 defending flight",
+          "region": "Deep space",
+          "difficulty": "Standard",
+          "kills": 2,
+          "waves": 1,
+          "seconds": 51,
+          "shots": 21,
+          "hits": 16,
+          "incomingHits": 2,
+          "hull": 240,
+          "ship": "nomad"
+        },
+        "mission": {
+          "id": "recovery-1",
+          "job": "raider-claim",
+          "phase": "recover",
+          "cleared": true,
+          "crates": [
+            "sbu-2"
+          ],
+          "loot": [
+            "sbu-3"
+          ],
+          "position": [
+            1925478.4630071041,
+            5211638.617371324,
+            6798077.674756272
+          ],
+          "quaternion": [
+            0.4435539590541393,
+            0.008250192656508079,
+            -0.004083244817573716,
+            0.8962003943540134
+          ]
+        }
+      }
+    },
+    "keyboardTouch": {
+      "attempt": "recovery-07",
+      "receipt": {
+        "browser": "151.0.7922.173",
+        "graphics": {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+          "vendor": "Google Inc. (AMD)"
+        },
+        "errors": [],
+        "warnings": [],
+        "nativeTouch": true,
+        "keyboardContractEntry": true,
+        "scope": "Contract actions only; full flight and hauling use the separate controller journey.",
+        "physicalController": false
+      }
+    }
+  }
+}
