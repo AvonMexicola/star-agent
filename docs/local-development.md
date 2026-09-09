@@ -1,5 +1,25 @@
 # All-features local development
 
+**Current integration: PR108 / `4077761`, 9 September 2026.** All completed
+updates through Burrow Sentry, planet rotation, transport/recovery, terminals,
+Stratum/Gannet, updated mining Burrow, tall foundations and faction compounds
+are included. The four civilian garage terminals now offer **Burrow · Mining**
+or **Burrow Sentry · Lasers**. Walk to a garage terminal, choose the vehicle and
+retrieve it into the clear bay. Cargo and condition survive; occupied/busy
+vehicles and an overlapping other rover are refused. Pirate compounds have no
+garage service. [Controls and checked journeys](qa/compound-vehicle-choice/README.md).
+
+Refresh **http://127.0.0.1:5178/**. The managed5178/API8087 pair was refreshed at
+02:23:39UTC with protocol10, twenty slots and the existing persistent database.
+Both health routes pass and the entire unrelated journal was preserved.
+[Public play](https://play.staragent.site) and
+[multiplayer](https://multiplayer.staragent.site) now serve the paired checked
+`ea234d2` release. Refresh existing public tabs for protocol10. Garages retain
+their solo/offline scope; the unfinished ground-pirate NPC/Lizzy lane is excluded.
+[Release evidence and limits](qa/compounds-release/README.md).
+
+The named checkpoints below retain their original validation and deployment scope.
+
 **Burrow Sentry S-04** is locally integrated at `bdf053c`, including the checked
 Recovery and rotating-world updates. Refresh the
 [Sentry surface start](http://127.0.0.1:5178/?dev=1&intro=0&ship=nomad&start=sentry-surface&seed=7291)

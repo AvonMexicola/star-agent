@@ -1,5 +1,10 @@
 # Public entry points and frozen releases
 
+Current deployment: **`ea234d2`, 9 September 2026**, on both play and multiplayer.
+[The release receipt](qa/compounds-release/README.md) records PR108 integration,
+complete development scope, exact hashes, backup/restore and live browser/API/WSS
+checks. Garage selection remains solo/offline. Existing tabs must refresh.
+
 `staragent.site` and `www.staragent.site` serve `site/`: the project introduction,
 real game screenshots, two short ambient captures and three user-operated films, plus
 links to solo, multiplayer, source and contribution guides. Motion is optional,
@@ -21,18 +26,18 @@ imports instead of scraping Vite's transformed source at runtime.
 
 Solo CPU/GPU simulation runs on the visitor's machine. Hosting serves HTML,
 JavaScript, models, textures and optional films; transfer bandwidth and the first
-asset download are the main server costs. Assets total about 117 MB on disk, but
+asset download are the main server costs. Each current game artifact totals about 141 MB on disk, but
 are loaded by the relevant scenes/tools, not all by the homepage. This is browser
 play, not video streaming or a hosted GPU session. It is not a service-worker
 installation and does not promise uncached play without an internet connection.
 
 `multiplayer.staragent.site` remains the existing dedicated authoritative server,
-PostgreSQL database and account system. The public capacity release is separately
-branched from the exact deployed `f7a30ef` revision. It increases admission to 20,
-extends the suit palette to 20 distinct colours and reports the full-room limit
-correctly. Twenty physical hangars already exist. Player 21 is rejected; a freed
-slot can be reused. Client/server protocol and database schema are unchanged.
-The more recent local shared-world protocol/economy changes are separate releases.
+PostgreSQL database and account system. The current client and server advance together from protocol5 to protocol10,
+including completed shared settlement, economy, rotating-clock and Sentry updates.
+The existing twenty-player capacity, twenty suit colours and twenty physical
+hangars are retained. Player21 is rejected; a freed slot can be reused. All four
+SQL migration files match the preceding deployed server: account/session/inventory
+data stays in the same database. Installation generates the Prisma client.
 
 Twenty is a capacity limit, not a performance guarantee. The room currently
 simulates at 30 Hz and sends whole-room snapshots at 15 Hz. All-to-all snapshot

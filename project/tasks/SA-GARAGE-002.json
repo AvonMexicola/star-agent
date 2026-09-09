@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex integration steward",
-  "status": "review",
+  "status": "released",
   "branch": "feat/compound-vehicle-choice",
   "base": "3ea6b07d50d7a0e91acaf3c5047b5d56d06aadba",
   "updated": "2026-09-09",
@@ -29,6 +29,6 @@
     "scripts/compound-garages.config.js"
   ],
   "brief": "docs/briefs/compound-vehicle-choice.md",
-  "evidence": "docs/qa/compound-vehicle-choice/README.md",
-  "validation": "37 focused cases; Burrow01 controller2.5m and final Sentry03 controller2.7m pass, keyboard/native390 retrieval, empty diagnostics; final source hashes unchanged. Full integration and public release follow separately."
+  "evidence": "docs/qa/compounds-release/README.md",
+  "validation": "Feature37/normal1283/serialized multiplayer227+2optional skips/entry41 pass; full Burrow and Sentry controller/native journeys pass. PR108/4077761 integrated; paired ea234d2 published to play/multiplayer, exact HTTPS hashes, two live browser cases, real authenticated WSS and sanitized restore pass. Garage service remains solo/offline; physical devices and broader acceptance unclaimed."
 }
