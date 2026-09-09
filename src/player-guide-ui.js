@@ -37,7 +37,7 @@ export function createPlayerGuide({nav,opening,targeting,combat,shipName}){
     current=guide.update(s);
     root.hidden=!enabled||!current||s.openingActive||!nav.enabled||!nav.focused||Boolean(document.querySelector('dialog[open]'));
     if(current){
-      root.dataset.step=current.id;
+      root.dataset.step=current.id;root.dataset.section=current.section;
       for(const [selector,value] of [['small',current.section],['strong',current.title],['p',current.detail]]){
         const node=root.querySelector(selector);if(node.textContent!==value)node.textContent=value;
       }

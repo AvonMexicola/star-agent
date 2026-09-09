@@ -54,7 +54,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   if(controller)await button(6,true);else await page.keyboard.down('x');
   await page.waitForFunction(()=>starAgent.state.speed<.2);
   if(controller)await button(6,false);else await page.keyboard.up('x');
-  await check('choose');await page.screenshot({path:`${folder}/04-choose.png`});
+  await check('choose');await expect(page.locator('#navigation-lock span')).toBeHidden();await page.screenshot({path:`${folder}/04-choose.png`});
   if(!controller){
     await page.setViewportSize({width:390,height:844});await frames(page);await page.screenshot({path:`${folder}/05-phone.png`});
     const box=await page.locator('#player-guide').boundingBox();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(390);
@@ -98,7 +98,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   await check('travel');await page.waitForFunction(()=>!starAgent.state.travel,null,{timeout:90000});
   await check('landing-gear');
   if(controller){await button(4,true);await button(5,true);await tap(13);await button(5,false);await button(4,false);}else await page.keyboard.press('g');
-  await check('descend');await page.screenshot({path:`${folder}/08-arrival.png`});
+  await check('descend');await expect(page.locator('#navigation-lock span')).toBeHidden();await expect(page.locator('#navigation-lock strong')).toContainText('Coastal landing');await page.screenshot({path:`${folder}/08-arrival.png`});
   if(controller){
     // The guide shares the existing focus/device neutral gates; holding a stick
     // cannot resume movement merely by reconnecting or returning to the view.

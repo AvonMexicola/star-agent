@@ -12,3 +12,10 @@ body:has(#player-guide:not([hidden])) #toast{top:calc(var(--player-guide-bottom,
   body:has(#player-guide:not([hidden])) .telemetry,
   body:has(#player-guide:not([hidden])) #combat-hud{top:calc(var(--player-guide-bottom,185px) + 14px)}
 }
+
+/* Keep the selected beacon visible while arrival guidance owns the next action.
+   The generic drive card otherwise asks for gear retraction during landing. */
+body:has(#player-guide:not([hidden])[data-section="ARRIVAL"]) #navigation-lock span,
+body:has(#player-guide:not([hidden])[data-section="ARRIVAL"]) #navigation-lock small,
+body:has(#player-guide:not([hidden])[data-step="choose"]) #navigation-lock span,
+body:has(#player-guide:not([hidden])[data-step="choose"]) #navigation-lock small{display:none}
