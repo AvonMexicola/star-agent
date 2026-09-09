@@ -17,10 +17,10 @@ async function setup(t,count=1){
   let requestId=0;
   return {room,store,world,accounts,errors,messages,advance(seconds){for(let i=0;i<seconds*30;i++){time+=1000/30;room.tick();}},async request(id,m){await room.receive(id,{type:'request',requestId:String(++requestId),...m});return messages.get(id).findLast(m=>m.type==='ack');}};
 }
-test('ten simultaneous joins reserve distinct hangars and spawn on the deck beside their ships',async t=>{
-  const {room,store,accounts,world,advance,messages,errors}=await setup(t,10);
-  assert.equal(new Set([...room.players.values()].map(p=>p.colorIndex)).size,10);
-  assert.equal(new Set([...room.players.values()].map(p=>p.hangarId)).size,10);
+test('twenty simultaneous joins reserve distinct hangars and spawn on the deck beside their ships',async t=>{
+  const {room,store,accounts,world,advance,messages,errors}=await setup(t,20);
+  assert.equal(new Set([...room.players.values()].map(p=>p.colorIndex)).size,20);
+  assert.equal(new Set([...room.players.values()].map(p=>p.hangarId)).size,20);
   advance(5);
   for(const p of room.players.values()){
     const pod=world.pods[p.hangarId-1],local=pod.toLocal(p.nav.position,new THREE.Vector3());
@@ -38,9 +38,9 @@ test('ten simultaneous joins reserve distinct hangars and spawn on the deck besi
   await assert.rejects(room.join(extra,()=>{}),{code:'ROOM_FULL'});
 });
 test('concurrent comms reservations open unique physical doors and release on disconnect',async t=>{
-  const {room,accounts,request,advance,world,errors}=await setup(t,10);
+  const {room,accounts,request,advance,world,errors}=await setup(t,20);
   const replies=await Promise.all(accounts.map(a=>request(a.id,{action:'hangar'})));
-  assert.ok(replies.every(a=>a.ok));assert.equal(room.leases.size,10);
+  assert.ok(replies.every(a=>a.ok));assert.equal(room.leases.size,20);
   advance(3.5);
   for(const p of room.players.values()){assert.equal(world.pods[p.hangarId-1].doorsOpen,1);assert.deepEqual(room.state(p).hangar.pad,world.pods[p.hangarId-1].padWorldPosition.toArray());}
   const id=accounts[0].id,berth=room.players.get(id).hangarId;await room.leave(id);advance(3.5);

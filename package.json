@@ -22,7 +22,9 @@
     "db:local": "node scripts/database.mjs local",
     "db:migrate": "node scripts/database.mjs migrate",
     "test:database": "node --test tests/dev-database.test.js",
-    "test:social:database": "node scripts/social-database.mjs"
+    "test:social:database": "node scripts/social-database.mjs",
+    "build:solo": "node scripts/build-release.mjs solo",
+    "build:multiplayer": "node scripts/build-release.mjs multiplayer"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.9.1",

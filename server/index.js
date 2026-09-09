@@ -5,6 +5,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { createAuth, SESSION_COOKIE } from './auth.js';
 import { createMemoryStore, createPostgresStore } from './database.js';
 import { createSMTPMailer } from './mail.js';
+import { MAX_PLAYERS } from '../src/multiplayer/protocol.js';
 import { createSocialService } from './social.js';
 import { CHAT_POLICY, createChatModerator } from './chat-moderation.js';
 
@@ -13,7 +14,7 @@ const MAX_BUFFERED = 256 * 1024;
 const POST_ACTIONS = new Set(['register', 'login', 'logout', 'forgot', 'reset']);
 const httpError = (status, message) => Object.assign(new Error(message), { status });
 const errorMessage = error => ({
-  ROOM_FULL: 'This universe has ten players. Try joining again when a place is free.',
+  ROOM_FULL: `All ${MAX_PLAYERS} player slots are occupied. Try joining again when a place is free.`,
   ACCOUNT_CONNECTED: 'This account is already connected to the universe.',
 })[error?.code] ?? 'The multiplayer request could not be completed.';
 
