@@ -1,7 +1,7 @@
 # Deep-space cargo recovery
 
-Development candidate; complete browser acceptance and local integration are
-still pending. These contracts run in solo flight.
+Locally integrated at `d3cbde3`; refresh http://127.0.0.1:5178/.
+These contracts run in solo flight.
 
 Open **Menu → Contracts → Cargo recovery** (or **Trade → Recovery**), choose your
 cargo ship and accept a contract. The grid requirement is a planning notice; a

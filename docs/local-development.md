@@ -1,5 +1,19 @@
 # All-features local development
 
+**Disabled Atlas cargo recovery** is locally integrated at `d3cbde3`. Refresh
+**http://127.0.0.1:5178/** and open **Menu → Contracts → Cargo recovery** in solo
+flight. Three contracts offer a quiet wreck or two levels of ship protection.
+Each needs one named **2SBU container (0.6 × 0.6 × 1.2m)**; other crates are optional
+loot. Acceptance shows required space, then fly to the open-ramp Atlas, tractor
+cargo aboard and deliver the objective through Greenbank Supply's terminal.
+
+The complete controller recovery/delivery/bonus-sale/return route, guarded combat,
+keyboard/native-phone UI,163 normal test files and production build pass. Six
+served modules and both API health routes are verified. The existing5178/API8087
+service remains running with protocol9 and its database; no restart or public
+deployment was needed. [Player guide](deep-space-recovery.md) and
+[exact evidence/remaining limits](qa/deep-space-recovery/README.md).
+
 **Spinning planets** are locally integrated at `8f819ac`. Aeon, Selene, Pyre and
 Miasma complete a day in 60 real minutes, with changing sunlight while ground,
 bases and parked ships remain attached. Existing saves and controls are retained.

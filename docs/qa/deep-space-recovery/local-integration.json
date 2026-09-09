@@ -1,0 +1,97 @@
+{
+  "time": "2026-09-09T01:15:10.833680+00:00",
+  "before": "1da9b0e52d1f1c30f8190d5a06182a457499d19e",
+  "target": "d3cbde3dc47d35fa0bf5e106c5a456e19277e1c9",
+  "journalBytes": 522928,
+  "journalSha256": "2e9a33e2393f54a4cb8cd593b1cbc696178719c387411b02a489f6e93231fc04",
+  "suffixBytes": 58497,
+  "suffixSha256": "2a9aaa35967b67b4468df9570428d5300f790929d08c664f300f89501e90db7b",
+  "sourceMatch": {
+    "src/cargo/tractor-ledger.js": "7c4d634fa31dca1ebc67bbfbbebf1c7230ca5dedf315da7dd9f0e95d21c8913f",
+    "src/cargo/tractor-tool.js": "7ce01dd3b4bc7c0b356cf828cdfcc0ee958fa1b79549877c6ea54704de171930",
+    "src/combat/space-combat.js": "63fa716cf43e05acb9c10ec3ba6271cb150f41a4cedf5b93c43a4dc2dbaac370",
+    "src/main.js": "ce0a0f976574cdbfe1a6b7479120684fe98dbdcafad3cd73b73bbb8b10024729",
+    "src/recovery/catalog.js": "5957d29ba6f04e0e09f8d121c1ee8e08998709ceda413837e70c14a36bc68abf",
+    "src/recovery/geometry.js": "a9d6cdf6df72eebf0ac2045293ec9e34ad3aa3695ffadabfb714e9503172e682",
+    "src/recovery/model.js": "051a6b065960729304fb7542334fa94dede9cd5ec71a6c4370f3fb051ca3f6b9",
+    "src/recovery/system.js": "764f20f49b9e906bbdce2d4427384bb06e357d0c9a919ebaf54ca5e1cb46d22e",
+    "src/recovery/ui.js": "7f1d1fff1a0a6c96aa1da00b476c702bf103c08980124cc293b103d3b3ba25f0",
+    "src/trading/model.js": "b09a919d97a18744b094076516f8c569774015122ac71f914705c55a1bad4d36",
+    "src/trading/system.js": "0022298b120ccfb5c4e246097d62cbfab0922cedbf782fcaef5957c46eca6a49",
+    "src/trading/ui.js": "a1bb66b6dc7809c9f66f2463cc1182049898224de0fc96ae935b0c41a9248ab7",
+    "src/transport/catalog.js": "b2330229a33436d2b971169e77d3bcfb82ebf10fa2d356e9aa14a712203a6fe0"
+  },
+  "journalPreserved": true,
+  "verifiedAt": "2026-09-09T01:19:12.892357+00:00",
+  "preview": "http://127.0.0.1:5178/",
+  "served": [
+    {
+      "path": "src/recovery/catalog.js",
+      "http": 200,
+      "markers": [
+        "RECOVERY_JOBS",
+        "Atlas flight recorder",
+        "Navigation archive",
+        "Convoy data vault"
+      ],
+      "sha256": "c677782c3e1951ed6c67ffa65ebc5b7e02b8d5802ba2da4ef1c821dee3726a5d"
+    },
+    {
+      "path": "src/recovery/system.js",
+      "http": 200,
+      "markers": [
+        "createRecoverySystem",
+        "recovery-arrive",
+        "beginRecoveryEncounter"
+      ],
+      "sha256": "9483ffe58f4f422856cfe8e951a0e121ad8d4093f975f33da322c7f97dc0ebfc"
+    },
+    {
+      "path": "src/recovery/ui.js",
+      "http": 200,
+      "markers": [
+        "Required grid:",
+        "Deposit mission cargo",
+        "Optional loot"
+      ],
+      "sha256": "2a2a9cd239bd01b6b71cd33cbc6fa14568b3e54dce8fc91ac391a0206a8dacf8"
+    },
+    {
+      "path": "src/main.js",
+      "http": 200,
+      "markers": [
+        "createRecoverySystem",
+        "recovery.update",
+        "rotationClock.tick"
+      ],
+      "sha256": "047fd63fa652f20ae670cb49b0a185821995260683bc531201c3399b45b5819f"
+    },
+    {
+      "path": "src/trading/ui.js",
+      "http": 200,
+      "markers": [
+        "renderRecovery"
+      ],
+      "sha256": "81f3701cb5a4e8adf4679eed8d3a7a55975aee5a8c8eccd291bc8d4e9445521c"
+    },
+    {
+      "path": "src/combat/space-combat.js",
+      "http": 200,
+      "markers": [
+        "beginRecoveryEncounter",
+        "Cargo recovery"
+      ],
+      "sha256": "0b1d866e937cd75920eb2cf612a4e9c07765abbb447307e1734ee99cee7545af"
+    }
+  ],
+  "health": {
+    "proxy5178": 200,
+    "direct8087": 200
+  },
+  "protocol": 9,
+  "serviceMainPid": 2330283,
+  "serviceRestarted": false,
+  "databaseChanged": false,
+  "publicDeployment": false,
+  "probeCorrection": "Initial main probe guessed planetTime; corrected to observed rotationClock.tick without changing source."
+}
