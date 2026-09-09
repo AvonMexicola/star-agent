@@ -1,0 +1,22 @@
+{
+  "id": "SA-NAV-005",
+  "title": "Keep Greenbank drive targeting on the selected settlement",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "active",
+  "branch": "fix/greenbank-drive-target",
+  "base": "e06f04f4fec51802580b7d1f28ba2b2f5e580f38",
+  "updated": "2026-09-09",
+  "areas": [
+    "flight",
+    "interface"
+  ],
+  "claims": [
+    "src/navigation-targets.js",
+    "tests/navigation-targets.test.js",
+    "scripts/greenbank-drive.config.js",
+    "scripts/greenbank-drive.spec.js"
+  ],
+  "brief": "docs/briefs/greenbank-drive.md"
+}

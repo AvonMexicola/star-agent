@@ -7,6 +7,8 @@ import {createAvoidanceRoute,routePartClearance} from '../src/travel-route.js';
 import {createTravelPlan,sampleTravel,abortTravel} from '../src/travel-model.js';
 import {navigationObjectiveIds} from '../src/navigation-objectives.js';
 import {TRANSPORT_ROUTES} from '../src/transport/catalog.js';
+import {createSettlementLayouts} from '../src/settlements/layout.js';
+import {SEED,setPlanetSeed} from '../src/generation.js';
 const v=p=>new Vector3(...p),forward=new Vector3(0,0,-1);
 const orientation=(start,end)=>new Quaternion().setFromUnitVectors(forward,end.clone().sub(start).normalize());
 const moon=NAV_BODIES.find(b=>b.id==='selene');
@@ -140,4 +142,26 @@ test('two blocking worlds produce a cleared path and cloned network paths sample
   const a=sampleTravel(plan,plan.duration*i/100),b=sampleTravel(clone,plan.duration*i/100);
   assert.ok(a.position.distanceTo(b.position)<1e-8);assert.ok(a.direction.distanceTo(b.direction)<1e-8);
  }
+});
+
+test('Greenbank signal wins over Aeon and an explicit bearing cannot silently switch destinations',()=>{
+ const previousSeed=SEED;setPlanetSeed(7291);
+ try{
+  const site=createSettlementLayouts().find(s=>s.id==='settlement-aeon');
+  const center=v(site.pad.position).applyQuaternion(new Quaternion(...site.claim.quaternion)).add(v(site.claim.origin));
+  const target={id:site.id,name:site.name,category:'trade',body:site.body,parent:site.body,surface:true,center:center.toArray(),radius:0};
+  const normal=center.clone().normalize(),axis=normal.clone().cross(new Vector3(0,1,0)).normalize();
+  const start=normal.clone().applyAxisAngle(axis,.55).multiplyScalar(AEON.radius*3),targets=[...NAV_BODIES,target];
+  const wrong=planNavigationTravel(start,NAV_BODIES.find(t=>t.id==='aeon'));
+  assert.ok(wrong.ok,wrong.reason);
+  assert.ok(wrong.plan.end.distanceTo(center)>870_000&&wrong.plan.end.distanceTo(center)<872_000,'reproduce the reported planet-approach miss');
+  const acquired=aimedNavigationTarget(start,orientation(start,center),targets);
+  assert.equal(acquired?.id,'settlement-aeon','pointing at Greenbank must acquire the settlement without a map selection');
+  const correct=planNavigationTravel(start,acquired);assert.ok(correct.ok,correct.reason);
+  assert.ok(Math.abs(correct.plan.end.distanceTo(center)-NAV_SURFACE_CLEARANCE)<10,'arrive above the actual raised settlement pad');
+  assert.equal(aimedNavigationTarget(start,orientation(start,new Vector3()),targets,target.id),null,'turning toward Aeon must not replace the tracked settlement');
+  assert.equal(aimedNavigationTarget(start,orientation(start,new Vector3()),targets)?.id,'aeon','clearing the target restores ordinary world acquisition');
+  assert.equal(aimedNavigationTarget(start,orientation(start,center),targets,'missing-signal'),null,'a missing explicit signal never falls back to another destination');
+  assert.equal(aimedNavigationTarget(start,orientation(start,center),targets,'aeon')?.id,'aeon','an explicitly selected world remains available behind a point beacon');
+ }finally{setPlanetSeed(previousSeed);}
 });

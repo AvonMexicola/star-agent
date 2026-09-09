@@ -103,6 +103,9 @@ export function aimedNavigationTarget(position,orientation,targets,selectedId=nu
   const from=toInertial(local,frame,rotationTime),forward=new Vector3(0,0,-1).applyQuaternion(orientation).applyQuaternion(planetRotation(frame,rotationTime));
   const candidates=[];
   for(const t of targets) {
+    // A tracked destination stays selected when its marker leaves the aim cone.
+    // Never charge a different world behind it while the pilot lines up.
+    if(selectedId!==null&&t.id!==selectedId)continue;
     if(!valid(t.center))continue;
     const offset=targetInertialCenter(t,rotationTime).sub(from),distance=offset.length();
     if(distance<1)continue;
@@ -117,8 +120,10 @@ export function aimedNavigationTarget(position,orientation,targets,selectedId=nu
     const occluded=BODIES.some(b=>b.id!==t.id&&segmentIntersectsSphere(from,sightEnd,b.center,b.radius));
     if(!occluded || t.id===selectedId&&(t.surface||t.category==='bodies'))candidates.push({target:t,angular,surfaceDistance});
   }
-  candidates.sort((a,b)=>a.surfaceDistance-b.surfaceDistance);
-  return candidates.find(c=>c.target.id===selectedId)?.target??candidates[0]?.target??null;
+  // A point signal within the narrow aim cone outranks a world's broad disk.
+  // Otherwise Aeon's nearer surface steals an exactly aimed settlement bearing.
+  candidates.sort((a,b)=>Number(a.target.category==='bodies')-Number(b.target.category==='bodies')||a.surfaceDistance-b.surfaceDistance);
+  return candidates[0]?.target??null;
 }
 
 export class NavigationLock {

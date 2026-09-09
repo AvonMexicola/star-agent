@@ -46,6 +46,11 @@ arrival position leads planetary rotation for that flight. X/LT aborts with
 controlled braking along the same cleared route.
 With no aimed or selected destination, N retains the existing free heading drive.
 
+A settlement or other point signal under the nose takes priority over the broad
+planet disk behind it. A selected destination stays selected while you line up;
+the drive will not silently switch to another world. Use **Clear target** in the
+map to return to automatic acquisition, or select a different destination.
+
 General targeted travel runs offline. Shared flight permits the active freight
 pickup/delivery routes through the same server-validated planner; shared pilots
 remain trackable. Navigation does not grant
