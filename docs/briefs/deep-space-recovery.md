@@ -1,9 +1,10 @@
 # SA-RECOVERY-001 — Disabled Atlas cargo recovery
 
-Status: active. Cees requests deep-space cargo recovery from a disabled Atlas with
+Status: locally integrated at `d3cbde3` on2026-09-09. Cees requests deep-space cargo recovery from a disabled Atlas with
 alarm lights and open ramps, including enemy-guarded variants. Base `f1ef821`,
 branch `feat/deep-space-recovery`, isolated `.worktrees/deep-space-recovery`.
-Private preview5680 / optional test API8680; no shared services or GPU reserved.
+Private preview5680 QA is complete and released. Shared5178 serves the checked
+solo feature; API8087/protocol9 and its database are preserved.
 
 ## Playable scope
 
@@ -50,3 +51,12 @@ New jobs require one named 2 SBU container; other wreck containers are optional
 loot which the player can keep or sell. Missing optional cargo never blocks the
 mission reward. Maintain original-container identity, accepting-pilot privacy,
 guard clearance, real tractor/grid movement and physical terminal delivery.
+
+
+## Delivery evidence
+
+All163 combined normal test files and build07 pass. Complete controller09, guarded
+controller07 and keyboard/native-phone07 pass with empty application diagnostics.
+The exact source, original screenshots, retained failures and local HTTP verification
+are in [the QA record](../qa/deep-space-recovery/README.md). PR105 remains a draft
+for independent review; local integration is separate from public deployment.

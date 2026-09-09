@@ -1,3 +1,57 @@
+# SA-RECOVERY-001 — local delivery at 2026-09-09T01:20:19.836167+00:00
+
+Status: implemented, validated and locally integrated; independent review pending.
+Branch `feat/deep-space-recovery`, initial base `f1ef821`, checked source `d3cbde3`;
+draft PR105 stacks on checked World PR104/`1da9b0e`. Isolated worktree
+`.worktrees/deep-space-recovery`; private5680 QA released, no own server left running.
+
+## What changed and what remains
+
+Three solo disabled64m Atlas recovery contracts, ramps open and amber alarms,
+quiet/standard/hard guards. One original2SBU objective is required; other crates
+are optional loot. Grid fit is disclosed before acceptance without a capacity gate.
+Cargo appears only at the accepting pilot's wreck arrival, travels by real tractor
+and cargo grid, and pays through Greenbank's physical terminal. Secured bonus
+remains/sells normally. Exact identity, reload, cleanup and atomic payment are covered.
+
+Owned recovery modules/tests/fixtures and narrow main, combat, cargo and trade
+hooks preserve checked faction/Pirate/rotation work. Pending Sentry source is not
+included. Online recovery, all-hull/full-guarded-delivery journeys, physical hardware,
+independent art/performance review and public release remain separate.
+
+## Validation
+
+Combined02d431a: all163 normal test files pass31.397s, build07 pass19.00s;
+36 named recovery/freight/tractor cases pass on unchanged recovery runtime.
+Frozen d3cbde3 controller09 pass9.4min/runner0: actual outbound drive, EVA/both
+tractor hauls, held dialog/focus/disconnect gates, secured loaded return drive,
+continuous descent, terminal900CR, retained bonus108CR sale, inventory/relaunch.
+Real-time rotation advances525.988s over526.066s after only pre-boot epoch setup.
+Guarded07 pass3.9min with21shots/16hits/2kills; keyboard/native390×844 UI07 pass50s.
+Chromium151/AMD860M ANGLE gl,1440×900, app errors/warnings empty; injected Gamepad,
+not physical hardware. Original failed attempts and corrections remain recorded.
+All five hosted checks pass e4f9283; later documentation/fixture head is separate.
+See [complete QA and receipts](docs/qa/deep-space-recovery/README.md).
+
+## Integration and operations
+
+Shared `dev/all-features` fast-forwarded1da9b0e→d3cbde3, all13 changed runtime
+files exact, existing522,928B dirty journal and58,497B appended suffix preserved.
+Six5178 served modules and direct8087/proxy5178 health200 pass. Existing Vite
+serves the solo client additions; no API/schema/protocol/dependency change or
+service restart, database mutation or public deployment. Protocol9 is retained.
+Documentation/evidence follow-up preserves the same runtime; the root journal
+records its final exact local head.
+
+## Resume here
+
+Cees can refresh5178 and choose Contracts → Cargo recovery in solo play. PR105
+retains independent review and release decisions; no further required runtime or
+GPU work remains in this lane. Any next integrator must preserve recovery hooks,
+rotation frames and the shared append-only journal.
+
+---
+
 # SA-TRANSPORT-001 — handoff at 2026-09-08
 
 Status: locally integrated at `f294a98` and developer-validated. Owner: Cees /

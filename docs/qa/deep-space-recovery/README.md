@@ -1,14 +1,50 @@
 # Disabled Atlas cargo recovery — development evidence
 
-Status: implementation, CPU checks and complete controller recovery/delivery/bonus-sale journey pass. Guarded and native phone acceptance remain in progress.
-No local integration, independent visual acceptance or public deployment claimed yet.
+Status: **implemented, validated and locally integrated at `d3cbde3`** on
+2026-09-09. Complete controller haul/delivery/bonus-sale/return journey09,
+guarded controller07 and keyboard/native-phone07 pass. These are solo contracts;
+physical devices and independent visual/performance acceptance remain pending.
+No public deployment is included.
 
-Source: initial recovery `3d7bf94`; private combined `0994b83` consumes checked
-Garage/Pirate002 `cc1e749`. The merge preserves Pirate external damage, interaction
-ordering and the union of both test inventories. Pending Sentry/rotation work is
-not copied. No dependency, authored asset, SQL schema or protocol change.
+The checked composition includes Garage/Pirate002, faction/Pirate003 and planetary
+rotation `1da9b0e`, preserving protocol9, canonical surface coordinates and inertial
+wreck positions. Pending Sentry source is not included. Recovery adds no dependency,
+authored asset, SQL schema or wire-protocol change. Runtime/build07 is unchanged
+since `02d431a`; later corrections affect only fixtures, evidence and documents.
+See [compact browser receipts](evidence.json), [local served-source receipt](local-integration.json)
+and [player guide](../../deep-space-recovery.md).
 
-## Checks so far
+## Final acceptance
+
+- `npm test`: all163 test files pass, zero failures/skips,31.397s on combined
+  `02d431a`. A separate named recovery/freight/tractor run passes36 cases.
+- `npm run build`: pass19.00s,398modules, `main-CUl4EEh6.js` (build07).
+- Final `check:repo` passes (327 changed paths including inherited work);
+  `plan:checks -- --base origin/dev/all-features` generates the suggested plan
+  and `git diff --check` passes. These helpers do not certify manual gameplay.
+- Controller09: pass9.4min / runner0, frozen `d3cbde3`, source unchanged. Accept
+  without cargo issuance, actual66-sample outbound drive, physical EVA, both real
+  tractor hauls, held menu/focus/disconnect gates, grid securing, physical reboard,
+  loaded54-sample return drive, continuous atmospheric descent, landing and terminal
+  approach. Deposit consumes only the original objective for900CR; secured bonus
+  remains, sells for108CR, then inventory and physical reboard/relaunch pass.
+- Rotation advances38.120→564.108s over526.066 real seconds. Only the initial
+  epoch is selected before boot; no mid-flight clock, pose or ledger mutations.
+- Guarded07: pass3.9min, real21shots/16hits/2kills and saved clearance; keyboard
+  plus native390×844 touch actions pass50s. Their scope is recorded below.
+- All three final browser receipts have empty application errors/warnings.
+  Chromium151.0.7922.173, AMD Radeon860M, ANGLE OpenGL ES3.2,1440×900 desktop.
+  This is injected standard Gamepad and native browser touch, not physical hardware.
+- All five hosted checks pass on `e4f9283` (run34296050560). Final fixture/evidence
+  publication is a later head and is not attributed that historical result.
+
+The six quiet-journey PNGs here are unchanged originals from09, visually inspected
+for the grid notice, real open Atlas ramp, tractor/grid fit, exact-objective deposit
+and retained bonus. Three guarded/phone originals remain from07. Raw01–09 failures,
+traces, videos and state receipts remain in ignored `test-results`; historical
+attempt descriptions below retain their exact earlier source and result scopes.
+
+## Historical checks
 
 | Check | Source | Result |
 | --- | --- | --- |
@@ -278,3 +314,25 @@ probe/receipt are ignored test-results/recovery-approach-probe.*. Initial option
 probe could not spawn git inside the runner; the standalone version reconstructs
 the observed old formula without a subprocess. This is a CPU diagnosis, not full
 browser or physical-controller acceptance;09 remains required.
+
+
+## Attempt09 and local delivery — complete
+
+`npm run test:browser -- -c scripts/recovery-missions.config.js --grep 'controller recovers'`
+passes1/1 in9.5min total (9.4min case), wrapper exit0. Actual guard acquired
+00:58:44UTC and released01:08:11UTC, source digest unchanged. The corrected
+fixture reaches the same6m approach criterion and completes actual landing,
+terminal deposit, bonus sale and return to play; no runtime change was required
+after08. No additional GPU run is needed for documentation changes.
+
+Standing local integration fast-forwards shared `dev/all-features` from `1da9b0e`
+to checked `d3cbde3`. All13 changed runtime files match exactly. The existing
+522,928-byte shared journal and58,497-byte appended suffix are preserved. Six
+served modules expose recovery entry, catalog and gameplay hooks; both5178
+proxy and8087 direct health endpoints return200/ok. The existing managed runner
+PID2330283 remains active. Vite loads the client source normally; no service
+restart, database action, protocol change or public release is performed. An
+initial read-only probe guessed the wrong rotation symbol; corrected to the actual
+`rotationClock.tick` without touching source. The private5680 browser/preview
+finished with its owned runner. Documentation/evidence follow in a separate local
+fast-forward; raw journal backups and served responses stay ignored.
