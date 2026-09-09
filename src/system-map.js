@@ -78,8 +78,8 @@ export function createSystemMap(nav,targets) {
     if(selected){
       const route=targets.route(selected),end=route.plan?.end??navigationEndpoint(nav.inertialPosition,selected,{rotationTime:nav.rotationClock?nav.rotationTime:null});
       el('map-target-name').textContent=selected.name;el('map-target-kind').textContent=[selected.kind,selected.summary,selected.sales].filter(Boolean).join(' · ');
-      el('map-distance').textContent=formatRange(nav.inertialPosition.distanceTo(end));el('map-approach').textContent=selected.id==='star'?'500,000 km':'20 km';
-      el('map-route-status').textContent=nav.travel?'Drive held. Close the map to resume.':route.ok?'Aim at the marker. Hold for charge, then N / J or LB + RB + ↑.':route.reason;
+      el('map-distance').textContent=formatRange(route.plan?.distance??nav.inertialPosition.distanceTo(end));el('map-approach').textContent=selected.id==='star'?'500,000 km':selected.surface?'35 km':'20 km';
+      el('map-route-status').textContent=nav.travel?'Drive held. Close the map to resume.':route.ok?`${route.plan.path?.some(p=>p.kind==='arc')?'Route around world · at least 35 km terrain clearance. ':''}Aim at the marker. Hold for charge, then N / J or LB + RB + ↑.`:route.reason;
     }else{el('map-target-name').textContent='Choose a destination';el('map-target-kind').textContent='Navigation target';el('map-distance').textContent='—';el('map-route-status').textContent='Select a body or signal, then aim at its marker in flight.';}
   }
   function close(){if(dialog.open){nav.enabled=wasEnabled;dialog.close();}}

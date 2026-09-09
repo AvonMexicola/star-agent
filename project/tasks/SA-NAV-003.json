@@ -1,0 +1,32 @@
+{
+  "id": "SA-NAV-003",
+  "title": "Curved relativistic routes to planetary surface locations",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex planetary drive",
+  "status": "review",
+  "branch": "feat/planetary-drive-routing",
+  "base": "b99658ba9bf48a3f7d5d51df5cb1404e7127153a",
+  "updated": "2026-09-09",
+  "areas": [
+    "flight",
+    "interface"
+  ],
+  "claims": [
+    "src/travel-route.js",
+    "src/travel-model.js",
+    "src/navigation-targets.js",
+    "src/navigation.js",
+    "src/system-map.js",
+    "src/transport/ui.js",
+    "tests/navigation-targets.test.js",
+    "tests/planet-rotation.test.js",
+    "tests/travel-navigation.test.js",
+    "scripts/planetary-drive.config.js",
+    "scripts/planetary-drive.spec.js",
+    "src/cargo/tractor-tool.js"
+  ],
+  "brief": "docs/briefs/planetary-drive.md",
+  "validation": "Full configured165-file unit suite PASS; final six affected suites PASS; development build PASS;25 transport/rotation/client tests plus isolated PostgreSQL restart PASS. Production browser05 PASS1.4min with complete injected-controller coast-to-polar selection, charge gates, immediate LT abort, re-engagement,35km arrival, manual flight and native phone map. No page errors/request failures. Physical devices, independent review and public deployment unclaimed.",
+  "evidence": "docs/qa/planetary-drive.md"
+}

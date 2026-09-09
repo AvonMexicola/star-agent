@@ -1,0 +1,22 @@
+# Planetary drive verification — 9 September 2026
+
+Scope: existing surface sites, bases and settlements can be selected for relativistic travel around worlds. Circular detours stay outside each world’s maximum terrain envelope plus35km; approach is35km above the canonical selected surface. Departure from below that shell climbs radially first. World-disk approaches and other space signals retain their20km arrival. The star and station exclusions remain enforced. Map-only selection does not engage; selected hidden surface/world bearings can charge, while unselected sight acquisition retains occlusion.
+
+Implemented in the isolated `feat/planetary-drive-routing` branch, based on `724ab12`. No new dependencies, assets, bindings, save schema or authority grants. The path accepts serialized vectors for existing authoritative freight and snapshot sampling.
+
+Checks:
+
+- Full configured `npm test`:165 test files pass. Targeted tests additionally exercise all four far-side surface routes and their aborts, exact line/arc clearance, two blocking spheres, selected/hidden acquisition, station rejection, serialized path sampling and charged/uncharged rotating arrivals.
+- Development-enabled production build passes; inherited large-chunk warning remains. Repository and diff whitespace checks pass.
+- Transport/rotation/client server checks:25 pass initially; the isolated PostgreSQL case initially failed because a fresh worktree lacked generated Prisma client. After `npm run prisma:generate`, that database restart/persistence case passes. Temporary test database only.
+- Browser attempt01 reached the actual map successfully, but the chosen polar site was visible from the launcher’s2867km altitude, so the expected detour label was absent. No runtime fix was needed. The corrected journey first flies to the coast’s35km approach, then selects the polar site beyond the limb. Original failure/trace retained under `/tmp/star-agent-planetary-drive-results-01`.
+
+Browser attempt02 completed the route but missed the expected abort and was interrupted while waiting; attempt03 added bounded diagnostics. It confirmed that the inactive tractor tool holstered on drive entry and globally disarmed the controller, suppressing LT. The correction only holsters an active tractor or outstanding lease; its own restricted-state trigger gate remains enforced. These failures are retained under `/tmp/star-agent-planetary-drive-results-02` and `-03`.
+
+Attempt04 passed controller selection, focus/device gates, immediate LT abort, re-engagement, the curved flight,35km arrival and manual flight. Its final phone tap failed because the test locator also matched the dialog’s `data-map-view` attribute; the locator was narrowed to the actual button. Runtime stayed unchanged. Attempt04 evidence remains under `/tmp/star-agent-planetary-drive-evidence-04` and the matching results directory.
+
+Final browser05 PASS,1.4minutes, Chromium151.0.7922.173, ANGLE/OpenGL ES3.2 on AMD Radeon860M,1440×900 desktop and390×844 phone. Injected standard controller completed actual coast approach, map selection of the polar site beyond the limb, aim/charge, held shortcut suppression across modal/focus/disconnect/replacement, LT abort, re-engagement, curved flight and return to manual thrust/braking. Native touch selected the phone Locations tab; this is not a complete touch flight. Zero page/console errors and failed requests. Arrival altitude35000.055m, speed0, radial error0.00000295rad; the lowest recorded final-approach sample was34999.812m owing to the live rotating chart/clock timing. Detour geometry itself reserves35km above the maximum terrain envelope. No hardware FPS claim.
+
+Retained final [journey receipt](planetary-drive/journey.json), [desktop route](planetary-drive/desktop-route.png), [charged hidden location](planetary-drive/far-side-ready.png), [arrival](planetary-drive/surface-arrival.png), and [phone map](planetary-drive/phone-location.png). Full trace/failures stay in the named `/tmp` evidence directories. Final runtime build is `main-BY09tOrC.js`; the tractor correction passed the six affected source suites and final production build.
+
+Local integration is recorded in the shared handoff and local development guide. Physical controller/hardware touch, independent review and public deployment are not claimed.

@@ -215,12 +215,13 @@ export class Navigation {
     this.orientation.copy(this.inertialOrientation);
     travel.elapsed+=Math.max(0,Number.isFinite(dt)?dt:0);
     const sample=sampleTravel(travel.plan,travel.elapsed);
-    if(!travel.manual&&travel.plan.direction.lengthSq()>0){
-      matrix.lookAt(new THREE.Vector3(),travel.plan.direction,travel.targetId==='pyre'||travel.targetId==='miasma'?new THREE.Vector3(...pyreFrame().y):UP);
+    const direction=sample.direction??travel.plan.direction;
+    if(!travel.manual&&direction.lengthSq()>0){
+      matrix.lookAt(new THREE.Vector3(),direction,travel.targetId==='pyre'||travel.targetId==='miasma'?new THREE.Vector3(...pyreFrame().y):UP);
       const aligned=new THREE.Quaternion().setFromRotationMatrix(matrix);
       this.orientation.slerp(aligned,sample.phase==='spooling'?1-Math.exp(-4*dt):1);
     }
-    this.position.copy(sample.position);this.velocity.copy(travel.plan.direction).multiplyScalar(sample.speed);
+    this.position.copy(sample.position);this.velocity.copy(direction).multiplyScalar(sample.speed);
     if(this.rotationClock){
       const frame=rotationFrameAt(sample.position),q=planetRotation(frame,this.rotationTime).invert();
       fromInertial(sample.position,frame,this.rotationTime,this.position);

@@ -1,0 +1,7 @@
+# Planetary relativistic drive
+
+Cees requests drive targeting of planetary locations, including locations on the far side of a moon or planet and moons hidden by a foreground planet. Select an existing surface site, base or settlement in Map, aim at its tracked marker and use the existing charged-drive command. An explicit selection may acquire through a limb; sight-only body acquisition still respects occlusion.
+
+Plan continuous tangent legs and circular arcs around blocking worlds with at least 35 km above their conservative terrain envelopes. Low departure and final approach use a local vertical corridor. Surface destinations arrive 35 km above their canonical terrain; ordinary world/space-signal approaches retain 20 km and the star retains its thermal exclusion. Arrival leads the rotating site. The ship follows the route tangent, and abort braking stays on the validated route. Station obstacles still reject unsafe routes. No new dependency, input mapping or save change. Shared flight retains its current authorization restrictions; active freight uses the same planner.
+
+Owner scope is the SA-NAV-003 registry claim in isolated planetary-drive worktree, preview port5694, no new dependency. Validate geometry, rotation, abort and authoritative cloned plans, then the real injected-controller selection/aim/drive/arrival/return journey and phone map. Physical device and independent acceptance remain separately reported.

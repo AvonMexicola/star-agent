@@ -7,6 +7,7 @@ import { MOON_MAX_HEIGHT, constrainMoonStep } from './moon-world.js';
 import { PYRE_MAX_HEIGHT } from './pyre-world.js';
 import { shipHandling } from './ship-handling.js';
 import { GEAR_FLIGHT } from './gear-flight.js';
+import { sampleRoute } from './travel-route.js';
 
 export const LIGHT_SPEED = 299_792_458;
 export const TRAVEL = Object.freeze({
@@ -108,7 +109,7 @@ export function segmentIntersectsSphere(start, end, center, radius) {
 }
 
 function makePlan({ start, end, direction, distance, peakSpeed, accelerationSeconds,
-  cruiseSeconds, decelerationSeconds, spoolSeconds, exitSeconds, startSpeed = 0, kind = 'travel' }) {
+  cruiseSeconds, decelerationSeconds, spoolSeconds, exitSeconds, startSpeed = 0, kind = 'travel', path = null, pathOffset = 0 }) {
   const motionSeconds = accelerationSeconds + cruiseSeconds + decelerationSeconds;
   return Object.freeze({
     kind,
@@ -126,22 +127,23 @@ function makePlan({ start, end, direction, distance, peakSpeed, accelerationSeco
     decelerationSeconds,
     motionSeconds,
     startSpeed,
+    ...(path ? {path,pathOffset} : {}),
   });
 }
 
 /** Construct an elapsed-time travel plan. Inputs are cloned and never mutated. */
-export function createTravelPlan(start, end) {
+export function createTravelPlan(start, end, {path = null} = {}) {
   const from = vectorFrom(start, 'Travel start');
   const to = vectorFrom(end, 'Travel end');
   const offset = to.clone().sub(from);
-  const distance = offset.length();
+  const distance = path ? path.reduce((sum,part)=>sum+part.distance,0) : offset.length();
   if (!Number.isFinite(distance)) throw new RangeError('Travel distance must be finite.');
   if (distance === 0) return makePlan({
     start: from, end: to, direction: new Vector3(), distance: 0, peakSpeed: 0,
     accelerationSeconds: 0, cruiseSeconds: 0, decelerationSeconds: 0,
     spoolSeconds: 0, exitSeconds: 0,
   });
-  const direction = offset.divideScalar(distance);
+  const direction = path ? sampleRoute(path,0).direction : offset.divideScalar(distance);
   const unconstrainedPeak = Math.sqrt(distance * TRAVEL.acceleration);
   const peakSpeed = Math.min(TRAVEL.maxSpeed, unconstrainedPeak);
   const accelerationSeconds = peakSpeed / TRAVEL.acceleration;
@@ -149,7 +151,7 @@ export function createTravelPlan(start, end) {
   const cruiseDistance = Math.max(0, distance - accelerationDistance * 2);
   const cruiseSeconds = cruiseDistance / peakSpeed;
   return makePlan({
-    start: from, end: to, direction, distance, peakSpeed,
+    start: from, end: to, direction, distance, peakSpeed, path,
     accelerationSeconds, cruiseSeconds, decelerationSeconds: accelerationSeconds,
     spoolSeconds: TRAVEL.spoolSeconds, exitSeconds: TRAVEL.exitSeconds,
   });
@@ -164,13 +166,13 @@ export function sampleTravel(plan, elapsed) {
   if (invalidPlan(plan)) throw new TypeError('A valid travel plan is required.');
   const time = elapsed === Infinity ? plan.duration : clamp(finiteOr(elapsed, 0), 0, plan.duration);
   if (plan.distance === 0 || time >= plan.duration) return {
-    position: plan.end.clone(), speed: 0, phase: 'done', remaining: 0, progress: 1, done: true,
+    position: plan.end.clone(), direction: plan.path ? sampleRoute(plan.path,plan.pathOffset+plan.distance).direction : plan.direction.clone(), speed: 0, phase: 'done', remaining: 0, progress: 1, done: true,
   };
   if (time < plan.spoolSeconds) return {
-    position: plan.start.clone(), speed: 0, phase: 'spooling', remaining: plan.distance, progress: 0, done: false,
+    position: plan.start.clone(), direction: plan.direction.clone(), speed: 0, phase: 'spooling', remaining: plan.distance, progress: 0, done: false,
   };
   if (time >= plan.spoolSeconds + plan.motionSeconds) return {
-    position: plan.end.clone(), speed: 0, phase: 'cooldown', remaining: 0, progress: 1, done: false,
+    position: plan.end.clone(), direction: plan.path ? sampleRoute(plan.path,plan.pathOffset+plan.distance).direction : plan.direction.clone(), speed: 0, phase: 'cooldown', remaining: 0, progress: 1, done: false,
   };
 
   const motionTime = time - plan.spoolSeconds;
@@ -197,7 +199,7 @@ export function sampleTravel(plan, elapsed) {
   travelled = clamp(travelled, 0, plan.distance);
   const progress = travelled / plan.distance;
   return {
-    position: plan.start.clone().addScaledVector(plan.direction, travelled),
+    ...(plan.path ? sampleRoute(plan.path,plan.pathOffset+travelled) : {position:plan.start.clone().addScaledVector(plan.direction,travelled),direction:plan.direction.clone()}),
     speed,
     phase,
     remaining: plan.distance - travelled,
@@ -216,9 +218,10 @@ export function abortTravel(plan, elapsed) {
   });
   const brakingSeconds = sample.speed / TRAVEL.acceleration;
   const brakingDistance = sample.speed * brakingSeconds * .5;
-  const end = sample.position.clone().addScaledVector(plan.direction, brakingDistance);
+  const pathOffset=(plan.pathOffset??0)+plan.distance-sample.remaining;
+  const end = plan.path ? sampleRoute(plan.path,pathOffset+brakingDistance).position : sample.position.clone().addScaledVector(plan.direction, brakingDistance);
   return makePlan({
-    start: sample.position, end, direction: plan.direction, distance: brakingDistance,
+    start: sample.position, end, direction: sample.direction??plan.direction, distance: brakingDistance, path:plan.path, pathOffset,
     peakSpeed: sample.speed, startSpeed: sample.speed,
     accelerationSeconds: 0, cruiseSeconds: 0, decelerationSeconds: brakingSeconds,
     spoolSeconds: 0, exitSeconds: TRAVEL.exitSeconds, kind: 'abort',

@@ -1,5 +1,13 @@
 # All-features local development
 
+**Planetary drive routing,9 September2026:** select a planet/moon in Map, then
+**Locations** and a surface destination. Aim at its tracked marker, charge, then
+press N/J or LB+RB+D-pad up. Hidden surface/world targets route around blocking
+worlds with35km terrain clearance; surface sites arrive35km above the location.
+LT/X brakes along the route. The inactive tractor no longer disarms controller
+abort on drive entry. Refresh **http://127.0.0.1:5178/**. Source/build, server/SQL
+and the actual controller/phone browser check pass; [evidence and limits](qa/planetary-drive.md).
+
 **Focused location arrows, 9 September 2026:** runtime `b99658b` is locally
 integrated. HUD arrows now show the selected POI, each active contract’s next
 objective, and your deployed ships/vehicles. All other destinations stay on the

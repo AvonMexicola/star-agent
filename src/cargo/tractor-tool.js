@@ -59,7 +59,10 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
     update(dt,origin){
       const blocked=restricted(),physicalHeld=Boolean(physicalPointers.size||nav.physicalKeys?.has('KeyT')||nav.toolTrigger>.1);
       const triggerReady=hubGate.update(blocked,physicalHeld,++inputSequence);
-      if(blocked&&!restrictedLast)holster();restrictedLast=blocked;
+      // An inactive tool must not disarm a pilot's LT abort as drive starts.
+      // Active tools/leases still holster; the local trigger gate blocks cargo
+      // actions throughout the restricted state regardless of controller arming.
+      if(blocked&&!restrictedLast&&(nav.tractorActive||held()))holster();restrictedLast=blocked;
       time+=dt;elapsed+=dt;const s=api.snapshot(),all=ships(),items=loose(),c=held(),active=live();
       if(lastOwner!==null&&lastOwner!==s.owner){nav.tractorActive=false;clear();}lastOwner=s.owner;
       panel.hidden=!active;

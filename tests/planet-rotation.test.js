@@ -76,7 +76,7 @@ test('clock survives reload and can share a server phase without frame accumulat
   assert.equal(first.synchronize(NaN),false);
 });
 
-test('drive leads a rotating surface site and arrives 20 km above its actual future terrain',()=>{
+test('drive leads a rotating surface site and arrives 35 km above its actual future terrain',()=>{
   const seconds=917,body=PYRE,direction=new Vector3(.7,.1,.5).normalize();
   const target=surfaceTarget('test-pyre','Test site',body,direction);
   // Start on the near side in inertial space, beyond the rotating chart.
@@ -87,7 +87,7 @@ test('drive leads a rotating surface site and arrives 20 km above its actual fut
   assert.equal(route.ok,true,route.reason);
   const arrival=seconds+route.plan.duration;
   const actual=fromInertial(route.plan.end,body,arrival);
-  near(actual,bodySurfacePoint(direction,body,20_000),.001);
+  near(actual,bodySurfacePoint(direction,body,35_000),.001);
   assert.equal(route.plan.coordinates,'inertial');
   if(spoolSeconds===0)assert.equal(route.plan.spoolSeconds,0);
   }
@@ -133,4 +133,17 @@ test('a controller nose in a rotated local frame locks the actual foreign world 
   const inertialLook=new Quaternion().setFromUnitVectors(new Vector3(0,0,-1),moon.sub(physical).normalize());
   const localLook=planetRotation(AEON,seconds).invert().multiply(inertialLook);
   assert.equal(aimedNavigationTarget(position,localLook,NAV_BODIES,null,{rotationTime:seconds})?.id,'selene');
+});
+
+
+test('far-side routes lead rotating sites on every world with charged and uncharged starts',()=>{
+ for(const body of ROTATING_BODIES)for(const spoolSeconds of [0,null]){
+  const seconds=917,direction=new Vector3(.7,.1,.5).normalize();
+  const target=surfaceTarget('far','Far side',body,direction);
+  const start=bodySurfacePoint(direction.clone().negate(),body,100_000);
+  const route=planNavigationTravel(start,target,{rotationTime:seconds,spoolSeconds});
+  assert.ok(route.ok,route.reason);assert.ok(route.plan.path.some(p=>p.kind==='arc'));
+  const arrival=seconds+route.plan.duration;
+  near(fromInertial(route.plan.end,body,arrival),bodySurfacePoint(direction,body,35_000),.001);
+ }
 });
