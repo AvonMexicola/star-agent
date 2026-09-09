@@ -656,7 +656,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     if(systemMap.open&&!gameplayMenu.active){systemMap.controllerInput(pad.ui);return;}
     // Account dialogs pause the intro but still need the shared modal router.
     if(document.querySelector('dialog[open]')){controllerUI.update(pad,dt);return;}
-    if(nav.openingActive){if(pad.pressed.has(9)){if(devLauncher&&!multiplayer.connected)devLauncher.open();else if(!soloBuild)multiplayerUI.openAccount();}return;}
+    if(nav.openingActive){if(pad.pressed.has(9)){if(multiplayerEntry)multiplayerUI.openAccount();else if(devLauncher&&!multiplayer.connected)devLauncher.open();else if(!soloBuild)multiplayerUI.openAccount();}return;}
     if(pad.pressed.has(14)&&nav.mode==='flight'){systemMap.openMap();return;}
     if((rover?.occupied||sentry.occupied)&&!pad.shortcuts?.size){
       if(pad.pressed.has(9))gameplayMenu.open();
@@ -920,7 +920,8 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
               }
             }).catch(error=>{nav.enabled=true;notify('Test start failed: '+error.message);});
           }
-        }else if(multiplayerEntry)multiplayerUI.openAccount();
+        }
+        if(multiplayerEntry&&!sandboxEnabled&&!devOptions?.autoStart)multiplayerUI.openAccount();
       }
     }
     if(planet.error)stopGraphics(planet.error);

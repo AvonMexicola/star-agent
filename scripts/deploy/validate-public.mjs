@@ -9,15 +9,20 @@ const release=JSON.parse(await readFile('dist/solo/release.json','utf8'));if(rel
 console.log(`Public site and solo assets verified (${local.size} site files).`);
 
 // Standalone tool pages must use real static output, not Vite-only source URLs.
-let viewerReferences = 0;
-for (const name of await readdir('dist/solo/dev')) {
-  if (!name.endsWith('.html')) continue;
-  const html = await readFile(`dist/solo/dev/${name}`, 'utf8');
-  for (const [, url] of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+)["']/g)) {
-    if (/^(?:data:|https?:)/.test(url)) continue;
-    const path = posix.resolve('/dev', url);
-    if (!(await stat(`dist/solo${path}`)).isFile()) throw Error(`Missing viewer dependency: ${name}: ${url}`);
-    viewerReferences++;
+for (const channel of ['solo', ...(process.argv.includes('--multiplayer') ? ['multiplayer'] : [])]) {
+  const root = `dist/${channel}`;
+  const metadata = JSON.parse(await readFile(`${root}/release.json`, 'utf8'));
+  if (metadata.channel !== channel) throw Error(`Wrong release channel: ${channel}`);
+  let viewerReferences = 0;
+  for (const name of await readdir(`${root}/dev`)) {
+    if (!name.endsWith('.html')) continue;
+    const html = await readFile(`${root}/dev/${name}`, 'utf8');
+    for (const [, url] of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+)["']/g)) {
+      if (/^(?:data:|https?:)/.test(url)) continue;
+      const path = posix.resolve('/dev', url);
+      if (!(await stat(`${root}${path}`)).isFile()) throw Error(`Missing viewer dependency: ${channel}: ${name}: ${url}`);
+      viewerReferences++;
+    }
   }
+  console.log(`${channel}: packaged viewer references verified (${viewerReferences}).`);
 }
-console.log(`Packaged viewer references verified (${viewerReferences}).`);
