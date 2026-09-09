@@ -191,7 +191,12 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
           if (peer.closed || ws.readyState !== WebSocket.OPEN) return;
           if (isBinary) { endPeer(ws, 1003, 'Send JSON text messages.'); return; }
           if (Date.now() - peer.messageWindow >= 1000) { peer.messageWindow = Date.now(); peer.messages = 0; }
-          if (++peer.messages > 120 || peer.pendingMessages >= 64) { endPeer(ws, 1008, 'Too many messages.'); return; }
+          if (++peer.messages > 120 || peer.pendingMessages >= 64) {
+            // Keep the public rejection and both bounds unchanged, but distinguish
+            // an input burst from commands waiting on admission or room storage.
+            diagnostic(peer.messages > 120 ? 'WEBSOCKET_MESSAGE_RATE_LIMIT' : 'WEBSOCKET_PENDING_MESSAGE_LIMIT');
+            endPeer(ws, 1008, 'Too many messages.'); return;
+          }
           let message;
           try { message = JSON.parse(data.toString()); if (!message || typeof message !== 'object' || Array.isArray(message)) throw new Error(); }
           catch { endPeer(ws, 1007, 'Send a valid JSON object.'); return; }

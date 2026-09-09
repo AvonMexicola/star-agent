@@ -778,3 +778,28 @@ journey, native phone commerce and repaired floodlight HDR check. Checked source
 verifies the combined hooks, all five new GLBs and healthy APIs. Refresh the
 [Hush approach](http://127.0.0.1:5178/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291)
 to try it. No public deployment is included.
+
+## Burrow Sentry
+
+The Meridian S-04 is the armed two-seat Burrow variant. A sealed rear operator
+pod and twin laser turret replace the mining bins. The pilot drives while a
+second player aims and fires; the pilot controls the turret whenever the gunner
+seat is empty. The standard mining Burrow is still a separate vehicle.
+
+Choose **Dev → Ship & location → Burrow Sentry — Selene surface** for the solo
+start on foot beside its port door. Online, walk outside your ship onto clear
+supported ground and select **Menu → Ship → Deploy Sentry**. Use the port door
+for the pilot or the aft ladder for the gunner, then press **X / F** and let the
+physical boarding movement finish.
+
+**Left stick / WASD** drives and reverses, **LT / X** brakes, **right stick /
+arrow keys** aims, and **RT / T** fires. **View / I** opens the backpack; **B /
+Escape** returns to play. Brake before exiting with **X / F**. Release fire
+after changing seats, closing a menu or reconnecting a controller. Phone buttons
+provide the same vehicle actions and leave room for walking after you exit.
+
+The final candidate is undergoing its dedicated browser journeys before local
+integration. Its [verification record](qa/burrow-sentry/README.md) and
+[player guide](burrow-sentry.md) distinguish automated input, physical devices,
+art review and performance acceptance. Online support requires matching client
+and server versions; session vehicles do not add a persistent purchase economy.

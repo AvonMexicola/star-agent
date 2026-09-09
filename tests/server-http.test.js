@@ -185,6 +185,41 @@ test('message floods and async room failures close sockets without unhandled rej
   assert.equal((await floodClosed)[0], 1008);
 });
 
+test('WebSocket diagnostics distinguish a message-rate burst from an async command backlog', async t => {
+  const rate = await fixture(t);
+  const rateAccount = await rate.register();
+  const burst = rate.connect(rateAccount.cookie);
+  await once(burst, 'open'); await until(() => burst.messages.length);
+  // Drain each batch so the rate ceiling, rather than the pending queue, fires.
+  for (let batch = 0; batch < 3; batch++) {
+    for (let i = 0; i < 40; i++) burst.send(JSON.stringify({ type: 'input', sequence: batch * 40 + i }));
+    await until(() => rate.room.received.length === (batch + 1) * 40);
+  }
+  const rateClosed = once(burst, 'close');
+  burst.send(JSON.stringify({ type: 'input', sequence: 120 }));
+  const [rateCode, rateReason] = await rateClosed;
+  assert.equal(rateCode, 1008); assert.equal(rateReason.toString(), 'Too many messages.');
+  assert.deepEqual(rate.diagnostics, ['WEBSOCKET_MESSAGE_RATE_LIMIT']);
+
+  let release, started = false;
+  const blocked = new Promise(resolve => { release = resolve; });
+  const room = fakeRoom();
+  room.receive = async () => { started = true; await blocked; };
+  const pending = await fixture(t, { room });
+  try {
+    const pendingAccount = await pending.register();
+    const backlog = pending.connect(pendingAccount.cookie);
+    await once(backlog, 'open'); await until(() => backlog.messages.length);
+    backlog.send(JSON.stringify({ type: 'input', sequence: 0 }));
+    await until(() => started);
+    const pendingClosed = once(backlog, 'close');
+    for (let i = 1; i <= 64; i++) backlog.send(JSON.stringify({ type: 'input', sequence: i }));
+    const [pendingCode, pendingReason] = await pendingClosed;
+    assert.equal(pendingCode, 1008); assert.equal(pendingReason.toString(), 'Too many messages.');
+    assert.deepEqual(pending.diagnostics, ['WEBSOCKET_PENDING_MESSAGE_LIMIT']);
+  } finally { release(); }
+});
+
 test('heartbeat rechecks session validity and terminates clients that do not answer pings', async t => {
   const { connect, register, store, room } = await fixture(t, { heartbeatIntervalMs: 50 });
   const { cookie } = await register();

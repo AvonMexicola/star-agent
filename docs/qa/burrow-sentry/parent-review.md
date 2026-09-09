@@ -1,12 +1,12 @@
 # Burrow Sentry parent review
 
-Status: private integration review in progress; full browser acceptance and local
-delivery remain pending. Cees retains product and release acceptance. This record
+Status: [draft PR106](https://github.com/AvonMexicola/star-agent/pull/106) is open;
+full browser acceptance and local delivery remain pending. Cees retains product and release acceptance. This record
 does not claim an independent visual score or physical-controller testing.
 
 The parent integration agent reviewed the delegated Sentry implementation, its
 authority and collision contracts, and the actual first browser captures. The
-parent authored only merge composition and delivery work. The Sentry owner retains
+parent authored merge composition, socket diagnostics and delivery work. The Sentry owner retains
 the asset, simulation, input adapters and feature acceptance fixtures.
 
 ## Source and composition
@@ -69,8 +69,8 @@ in [the asset production record](../../../assets/burrow-sentry/README.md).
 - Browser04 reached the real two-player station/EVA approach, both seats,
   simultaneous drive/gunner fire, held-trigger suppression during exit and
   neutral pilot fallback. Opening inventory then disconnected the pilot with
-  `Too many messages.` The visible local backpack was a fallback after that
-  disconnect, not the requested server inventory. Parent traced repeated
+  `Too many messages.` The visible local backpack did not establish requested
+  server inventory access. Parent traced repeated
   Sentry suspension calls to immediate neutral network sends every frame;
   `fd43bd0` now sends the immediate stop once per suspension boundary and leaves
   the ordinary 20 Hz client clock running. Parent reviewed both the adapter and
@@ -137,5 +137,74 @@ complete journey, hardware/FPS result or independent scored art acceptance.
 Review the final corrected source, completed controller/two-client/native-touch
 journeys and actual laser images. Preserve the exact shared dirty HANDOFF during
 local integration, then refresh the existing managed preview with matching
-protocol 8 and its existing persistent database. Record served source/model/health
-verification and open a draft PR stacked on the checked compound dependency.
+protocol and its existing persistent database. Record served source/model/health
+verification and update the existing draft PR stacked on the checked compound
+dependency.
+
+All five hosted checks pass on `860ffde`, run `34288992299`, and on the later
+inventory fix `fc835cd`, run `34291190384`: plan, source, multiplayer, browser and
+verify. They also pass on the final phone/game runtime `9d31320`, run
+`34292125734`. The PR body edit superseded run `34291159220`, whose cancelled jobs and
+resulting verify failure are retained; the named replacement run is the actual
+complete pass. The generic hosted browser job does not replace the dedicated
+Sentry journeys.
+
+While browser08 was running on frozen `860ffde` / runtime `fd43bd0`, parent source
+review found another inventory path to correct: Sentry's `openCargo()` called the
+local `nav.openBackpack`, while the connected wrapper is `nav.openInventory`.
+Both the visible Sentry Backpack button and the occupied-controller View route
+reach this adapter. Keyboard I and the generic Pilot menu have separate online
+wrappers. Browser08 reproduced the local-dialog failure while both clients stayed
+connected, proving an independent routing defect alongside the earlier rate
+flood. It completed the corrected EVA route, both seats and neutral pilot fallback
+with rendered access steps of 0.17 m / 0.056667 m. The 5.1-minute failure retains
+unchanged source hashes, zero application errors/warnings and two aborted music
+requests. Parent inspected its exterior and gunner images; both beams emerge
+from their barrels and the central sight remains unobstructed.
+
+Parent reviewed and consumed the owned one-line fix `fc835cd`: connected Sentry
+inventory now invokes the existing live server-aware callback, while solo keeps
+the local backpack. Its 38 relevant input/inventory cases pass in 0.602 s and its
+fresh production build passes in 4.27 s. Server, model and simulation source are
+unchanged. The strict connected-controller dialog check remains, with an
+additional native pointer panel check explicitly distinguished in the report.
+Complete connected, solo and native browser acceptance remains required.
+
+Before browser09, parent also found that the phone's fixed Sentry panel shares
+the walking pad's lower-right area after exiting. The existing mining Burrow
+already moves its unoccupied panel above that pad. Owner correction `9d31320`
+applies the same positioning convention only to Sentry and tracks its occupied
+state; desktop layout and shared cabin controls are unchanged. Its fresh build10
+passes in 8.09 s, with repository/syntax checks complete. The native journey now
+records disjoint bounds and actual hit targets before boarding and after exit,
+then uses real touch input to walk away. This was a source-review finding before
+the phone journey, not a fabricated failed browser capture. Its rendered
+acceptance remains pending.
+
+The shared queue exposed a launch-signature race between other owners. Sentry
+did not launch into that overlap. Parent found its own guard could miss the
+`.bin/playwright` CLI and Chromium's single space-joined command line. The
+`a77953d` guard recognizes those observed forms, both official CLI paths and
+`workerMain` / `workerProcessEntry`. Read-only host probes at 23:52:56 and
+23:54:53 UTC detected the actual running Faction CLI, browser and worker and
+returned busy/exit 2 without launching anything. Browser/backend/security
+settings and the `9d31320` game build are unchanged. Original failed and
+superseded evidence is retained.
+
+Browser09 on frozen `a77953d` / runtime `9d31320` stopped after 6.4 minutes during
+gunner boarding. The pilot remained connected; the gunner disconnected with
+`Too many messages.` Both physical approaches completed, and the original video
+shows the gunner's reserved seat and moving cabin access before disconnection.
+The server rate ceiling and pending-command ceiling share that public message;
+the cause is not yet established. No application errors/warnings were recorded;
+three aborted music requests and the teardown WebSocket reset remain retained.
+Source hashes were unchanged. Solo and native cases were not run.
+
+Parent traced the actual on-foot interaction, input adapter, frame loop, client,
+room and socket queue without finding another demonstrated input flood. A narrow
+server diagnostic now distinguishes the rate ceiling from the pending queue,
+preserving both limits and the public close reason. All 16 actual HTTP/socket
+cases pass in 2.931 s (`server-http04.log`), including separate wire-level rate
+and deliberately blocked-command cases. The next fixture persists failed access
+samples and passive WebSocket timings. This instrumentation is not a gameplay fix
+or acceptance evidence for the unresolved disconnect.
