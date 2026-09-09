@@ -1,9 +1,10 @@
 # Faction building finishes — development record
 
 Parent authors paint/print/UI and four corporate sites; delegated Pirate003 owns
-Miasma and both enclosed entrances. Base cc1e749. Combined candidate65814dc
-is private; full pirate gameplay/rendering checks pass, with final combined paint
-journey still queued. No shared integration or public deployment yet.
+Miasma and both enclosed entrances. Base cc1e749. Combined runtime65814dc is checked for local development integration: all161
+normal files, build, complete controller and native phone journeys pass. The
+local-integration receipt below records the actual preview state when delivered.
+No public deployment or formal art/hardware/performance acceptance is claimed.
 
 Original deterministic 512×768 Canvas prints are authored in src/factions/graphics.js;
 all eight texts/colours are in src/factions/catalog.js. Meridian paths are copied
@@ -115,3 +116,43 @@ The rendered burst changes shield180 to126 and leaves hull240; retreat stops fir
 The full6.1m physical controller route from01 remains passed on unchanged gameplay.
 See the separate pirate record for exact poses, source boundaries and failures.
 This parent integration review does not substitute for independent art scoring.
+
+
+## Final combined journey and image review
+
+Frozen dff87d9 (runtime65814dc) browser05 passes all6 automated cases in10.3 minutes,
+with unchanged clean source before/after. The complete3.6-minute controller route
+uses normal Menu → Ship sandbox entry, real aim/placement/repainting, held modal,
+native focus, disconnect/replacement/unsupported-device guards, result inventory,
+reload persistence and actual Return to regular game. Regular save is unchanged;
+placement spends8 concrete, repainting spends0. Native390×844 phone38.9 s passes
+colour/print selection, one real placement, exit and keyboard B/Escape regression.
+Every case reports empty application error/warning arrays. The exact receipts,
+renderer/resolution, scene metrics and curated image hashes are in [evidence.json](evidence.json).
+All five hosted checks pass on the same runtime65814dc, run34291630275.
+
+Author reviewed all four stable corporate entrance images: [Aeon](aeon-entrance.png),
+[Selene](selene-entrance.png), [Pyre](pyre-entrance.png) and
+[Miasma](miasma-entrance.png). Each retains authored kit detail, clear doorway and
+flush original company print. The [desktop](finishes-desktop.png) and
+[phone](finishes-phone.png) palettes show distinct marks and visible selection.
+[Before](wall-before-repaint.png) and [after](wall-after-repaint.png) actual paint
+captures retain different physical tool shadows; they are gameplay evidence.
+The separate [pirate review](../pirate-miasma/README.md) supplies valid complete
+habitat, yard, apron and matching Verdigris overview views.
+
+Four first overview captures are explicitly rejected as art evidence despite the
+automated case pass: the fixture moved its camera while the developer transit
+still owned navigation. Its eventual release re-enabled walking and the camera
+fell onto real terrain. Each subsequent entrance pose was stable and accepted.
+Original failed overview images/state remain in faction-05. The capture helper
+now waits for enabled/not-transiting before positioning and asserts the fixed
+pose; these additional fixture assertions have syntax/list validation, not a new
+browser-run claim. This does not alter application behaviour or the passing
+controller/phone journey. No eight-view art acceptance is inferred.
+
+The first launch briefly overlapped World08 because the process guard omitted
+its @playwright/test/cli.js spelling. That owner stopped only its own job and
+released23:50:39; our guard now recognizes the missing spelling. Final scene
+samples are diagnostics, with no performance acceptance from this run. Independent
+art scoring, physical controller/phone and performance acceptance remain pending.
