@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import {createRoverPhysics} from '../rover-physics.js';
 import {SENTRY_LAYOUT as L} from './layout.js';
+import {betweenFrames,rotationFrameAt,frameRotation} from '../planet-rotation.js';
+import {sentryFrame,sentryPointForNavigation,sentryPoseInFrame} from './frames.js';
 
 const UP=new THREE.Vector3(0,1,0),FWD=new THREE.Vector3(0,0,-1),clamp=THREE.MathUtils.clamp;
 const v=p=>new THREE.Vector3(...p),rotation=(y,p)=>new THREE.Quaternion().setFromEuler(new THREE.Euler(p,y,0,'YXZ'));
@@ -12,16 +14,22 @@ function neutral(i){return !i.fire&&[i.forward,i.strafe,i.yaw,i.pitch,i.mouseYaw
  * caller owns characters, support, collision and hit authority. Network input
  * cannot set a pose, choose a victim or change the damage/charge constants. */
 export function createSentrySimulation({id,ownerId,position,quaternion,sampleSupport,referenceUp,
-  constrain=()=>true,accessClear=()=>true,getPlayer=()=>null,getInput=()=>neutralSentryInput(),onFire=()=>{},onSeat=()=>{},canFire=()=>true,getCarriers=()=>[]}={}){
+  constrain=()=>true,accessClear=()=>true,getPlayer=()=>null,getInput=()=>neutralSentryInput(),onFire=()=>{},onSeat=()=>{},canFire=()=>true,getCarriers=()=>[],getTime=()=>0,planetFrame=position?rotationFrameAt(position.isVector3?position:v(position))?.id??null:null}={}){
   const physics=createRoverPhysics({position,quaternion,layout:L,sampleSupport,referenceUp,constrain});
   const seats=Object.fromEntries(Object.keys(L.seats).map(role=>[role,{id:null,phase:'empty',door:0,routeIndex:0,returning:false,armed:false,minSequence:-1}]));
-  const state={id,ownerId,health:L.hull,destroyed:false,yaw:0,pitch:0,charge:1,depleted:false,controllerId:null,armed:false,shots:0,lastShot:null,lastHit:null,controlEpoch:0,requiredSequence:-1,carrier:null};
+  const state={id,ownerId,health:L.hull,destroyed:false,yaw:0,pitch:0,charge:1,depleted:false,controllerId:null,armed:false,shots:0,lastShot:null,lastHit:null,controlEpoch:0,requiredSequence:-1,carrier:null,planetFrame};
   // Security receives this live hull target, including its actual crew. Keep
   // the seat reference out of object spreads; snapshot() supplies a deep copy.
   Object.defineProperty(state,'seats',{value:seats,enumerable:false});
   let anchor=null,cooldown=0,time=0,inputs={},drive={throttle:0,steer:0,brake:1};
   const world=p=>v(p).applyQuaternion(physics.state.quaternion).add(physics.state.position);
   const local=p=>p.clone().sub(physics.state.position).applyQuaternion(physics.state.quaternion.clone().invert());
+  const eye=nav=>nav.rotationClock?betweenFrames(nav.position,nav.rotationFrame,sentryFrame(state.planetFrame),nav.rotationTime):nav.position.clone();
+  const put=(nav,point)=>{const result=sentryPointForNavigation(point,sentryFrame(state.planetFrame),nav);if(nav.rotationClock&&result.frame!==nav.rotationFrame){
+      // This seat placement already changed chart. Tell Navigation's existing
+      // placement boundary not to convert the same point again after its step.
+      nav._placementRevision=(nav._placementRevision??0)+1;delete nav._rotationStepFrame;
+    }nav.position.copy(result.point);return result.rotation;};
   const occupant=playerId=>Object.keys(seats).find(role=>seats[role].id===playerId)??null;
   function ground(role){
     const point=world(L.seats[role].ground),up=UP.clone().applyQuaternion(physics.state.quaternion),hit=sampleSupport(point.clone().addScaledVector(up,-1.75));
@@ -38,18 +46,21 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
     const nav=player.nav??player;
     nav.mode='walk';nav.roverOccupied=true;nav.sentrySeat={id,role,phase:seat.phase};nav.insideShip=true;
     nav.velocity.set(0,0,0);nav.angularVelocity?.set(0,0,0);nav.jumpHeight=0;nav.jumpVelocity=0;
-    nav.sentryBodyOrientation=physics.state.quaternion.toArray();
-    nav.sentryFeet=seat.phase==='seated'?world(L.seats[role].feet).toArray():null;
+    const chart=nav.rotationClock?frameRotation(sentryFrame(state.planetFrame),nav.rotationFrame,nav.rotationTime):new THREE.Quaternion();
+    nav.sentryBodyOrientation=chart.clone().multiply(physics.state.quaternion).toArray();
+    nav.sentryFeet=seat.phase==='seated'?(nav.rotationClock?betweenFrames(world(L.seats[role].feet),sentryFrame(state.planetFrame),nav.rotationFrame,nav.rotationTime):world(L.seats[role].feet)).toArray():null;
     if(seat.phase==='seated'){
-      nav.position.copy(world(L.seats[role].eye));
-      nav.orientation.copy(physics.state.quaternion);if(role==='gunner'||!seats.gunner.id)nav.orientation.multiply(rotation(state.yaw,state.pitch));
-      if(role==='pilot')nav.velocity.copy(FWD).applyQuaternion(physics.state.quaternion).multiplyScalar(physics.state.speed);
+      const chart=put(nav,world(L.seats[role].eye));
+      nav.orientation.copy(chart).multiply(physics.state.quaternion);
+      nav.sentryBodyOrientation=chart.clone().multiply(physics.state.quaternion).toArray();
+      nav.sentryFeet=world(L.seats[role].feet);if(nav.rotationClock)betweenFrames(nav.sentryFeet,sentryFrame(state.planetFrame),nav.rotationFrame,nav.rotationTime,nav.sentryFeet);nav.sentryFeet=nav.sentryFeet.toArray();if(role==='gunner'||!seats.gunner.id)nav.orientation.multiply(rotation(state.yaw,state.pitch));
+      if(role==='pilot')nav.velocity.copy(FWD).applyQuaternion(physics.state.quaternion).applyQuaternion(chart).multiplyScalar(physics.state.speed);
     }
   }
   function clearSeat(role,{place=true}={}){
     const seat=seats[role],player=getPlayer(seat.id),nav=player?.nav??player,old=seat.id;
     if(nav){
-      if(place){const point=ground(role);if(point)nav.position.copy(point);}
+      if(place){const point=ground(role);if(point)put(nav,point);}
       nav.roverOccupied=false;nav.sentrySeat=null;nav.sentryBodyOrientation=null;nav.sentryFeet=null;nav.insideShip=false;
       nav.velocity.set(0,0,0);nav.keys?.clear?.();nav.gamepad?.suspend?.();
     }
@@ -72,13 +83,13 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
     }
     const points=s.returning?[...L.seats[role].route.slice(0,-1).reverse().map(world),ground(role)]:route(role);
     const target=points[s.routeIndex];if(!target)return;
-    const delta=target.clone().sub(nav.position),distance=delta.length();
+    const previous=eye(nav),delta=target.clone().sub(previous),distance=delta.length();
     if(distance<.003){
       if(++s.routeIndex>=points.length){if(s.returning)clearSeat(role,{place:false});else s.phase='closing';}return;
     }
-    const next=nav.position.clone().addScaledVector(delta,Math.min(distance,dt*.85)/distance);
-    if(!accessClear(nav.position,next,role))return;
-    nav.position.copy(next);nav.orientation.slerp(physics.state.quaternion,1-Math.exp(-dt*4));
+    const next=previous.clone().addScaledVector(delta,Math.min(distance,dt*.85)/distance);
+    if(!accessClear(previous,next,role))return;
+    const chart=put(nav,next);nav.orientation.slerp(chart.multiply(physics.state.quaternion),1-Math.exp(-dt*4));
   }
   const api={id,physics,seats,state,world,local,ground,occupant,
     get busy(){return Object.values(seats).some(s=>!['empty','seated'].includes(s.phase));},
@@ -86,7 +97,7 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
     get controls(){return {...drive};},
     nearest(player){
       const nav=player?.nav??player;if(!nav||nav.mode!=='walk'||nav.sentrySeat||nav.roverOccupied||nav.carryingCargo)return null;
-      return Object.keys(seats).map(role=>({role,point:ground(role)})).filter(s=>s.point&&nav.position.distanceTo(s.point)<1.25).sort((a,b)=>nav.position.distanceTo(a.point)-nav.position.distanceTo(b.point))[0]?.role??null;
+      return Object.keys(seats).map(role=>({role,point:ground(role)})).filter(s=>s.point&&eye(nav).distanceTo(s.point)<1.25).sort((a,b)=>eye(nav).distanceTo(a.point)-eye(nav).distanceTo(b.point))[0]?.role??null;
     },
     request(playerId,role){
       if(state.health<=0)throw new Error('This Sentry is destroyed. Deploy a replacement with empty seats.');
@@ -97,7 +108,7 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
       const seat=seats[role];if(seat.id||seat.phase!=='empty')throw new Error('That seat is occupied or its door is moving.');
       if(Math.abs(physics.state.speed)>.2||api.busy)throw new Error('Wait for the rover to stop and cabin access to finish.');
       if(api.nearest(p)!==role)throw new Error('Approach the '+role+' door to board.');
-      const waypoints=[nav.position.clone(),...route(role)];
+      const waypoints=[eye(nav),...route(role)];
       if(waypoints.some((point,i)=>i&& !accessClear(waypoints[i-1],point,role)))throw new Error('The boarding route is obstructed.');
       Object.assign(seat,{id:playerId,phase:'opening',returning:false,routeIndex:0,armed:false,minSequence:p.sequence??getInput(playerId)?.sequence??-1});
       stop();setController();nav.keys?.clear?.();nav.gamepad?.suspend?.();pose(role);onSeat(playerId,role);return true;
@@ -106,7 +117,7 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
       const role=occupant(playerId);if(!role)throw new Error('You are not in this rover.');
       const s=seats[role];if(!['seated','opening'].includes(s.phase))throw new Error('Wait for cabin access to finish.');
       if(Math.abs(physics.state.speed)>.2)throw new Error('Brake to a stop before leaving the rover.');
-      const points=[(getPlayer(playerId).nav??getPlayer(playerId)).position.clone(),...L.seats[role].route.slice(0,-1).reverse().map(world),ground(role)];
+      const points=[eye(getPlayer(playerId).nav??getPlayer(playerId)),...L.seats[role].route.slice(0,-1).reverse().map(world),ground(role)];
       if(!points.at(-1)||points.some((point,i)=>i&&!accessClear(points[i-1],point,role)))throw new Error('Clear the exit route before opening the cabin.');
       Object.assign(s,{phase:'opening',returning:true,routeIndex:0});stop();return true;
     },
@@ -135,11 +146,11 @@ export function createSentrySimulation({id,ownerId,position,quaternion,sampleSup
       if(driver.enabled===false||seats.pilot.phase!=='seated'||api.busy){if(seats.pilot.armed){seats.pilot.armed=false;seats.pilot.minSequence=driver.sequence??-1;}}
       else if(!seats.pilot.armed&&neutral(driver)&&Number.isSafeInteger(driver.sequence)&&driver.sequence>seats.pilot.minSequence)seats.pilot.armed=true;
       const carriers=getCarriers(),carried=anchor&&carriers.find(c=>c.id===anchor.id);
-      if(carried){const lift=carried.systems.lifts?.find(l=>l.id===anchor.lift);if(lift){anchor.position.y+=lift.y-anchor.liftY;anchor.liftY=lift.y;}physics.setPose(anchor.position.clone().applyQuaternion(carried.frame.quaternion).add(carried.frame.position),carried.frame.quaternion.clone().multiply(anchor.quaternion),{preserveMotion:true});}
+      if(carried){state.planetFrame=Object.hasOwn(carried,'planetFrame')?carried.planetFrame:rotationFrameAt(carried.frame.position)?.id??null;const lift=carried.systems.lifts?.find(l=>l.id===anchor.lift);if(lift){anchor.position.y+=lift.y-anchor.liftY;anchor.liftY=lift.y;}physics.setPose(anchor.position.clone().applyQuaternion(carried.frame.quaternion).add(carried.frame.position),carried.frame.quaternion.clone().multiply(anchor.quaternion),{preserveMotion:true});}
       if(seats.pilot.phase==='seated'&&seats.pilot.armed&&!api.busy&&driver.enabled!==false&&!carried?.inFlight&&!carried?.systems.moving)drive={throttle:finite(driver.forward),steer:finite(driver.strafe)*1.5,brake:Boolean(driver.brake)};
       physics.step(dt,drive);
       const carrier=carriers.find(c=>physics.state.wheels.every(w=>w.source?.startsWith('carrier:'+c.id+':')));
-      if(carrier){const inverse=carrier.frame.quaternion.clone().invert(),lift=carrier.systems.lifts?.find(l=>physics.state.wheels.every(w=>w.source.endsWith('-lift:'+l.id)));anchor={id:carrier.id,position:physics.state.position.clone().sub(carrier.frame.position).applyQuaternion(inverse),quaternion:inverse.multiply(physics.state.quaternion),lift:lift?.id??null,liftY:lift?.y??0};}else anchor=null;state.carrier=anchor?.id??null;
+      if(carrier){const pose=sentryPoseInFrame(physics.state,sentryFrame(state.planetFrame),Object.hasOwn(carrier,'planetFrame')?sentryFrame(carrier.planetFrame):rotationFrameAt(carrier.frame.position),getTime()),inverse=carrier.frame.quaternion.clone().invert(),lift=carrier.systems.lifts?.find(l=>physics.state.wheels.every(w=>w.source.endsWith('-lift:'+l.id)));anchor={id:carrier.id,position:pose.position.clone().sub(carrier.frame.position).applyQuaternion(inverse),quaternion:inverse.multiply(pose.quaternion),lift:lift?.id??null,liftY:lift?.y??0};}else anchor=null;state.carrier=anchor?.id??null;
       if(available&&state.armed){
         state.yaw=THREE.MathUtils.euclideanModulo(state.yaw+(finite(control.yaw)*L.turret.turnRate*dt+clamp(control.mouseYaw??0,-.5,.5))+Math.PI,Math.PI*2)-Math.PI;
         state.pitch=clamp(state.pitch+finite(control.pitch)*L.turret.turnRate*dt+clamp(control.mousePitch??0,-.5,.5),L.turret.pitchMin,L.turret.pitchMax);

@@ -134,3 +134,39 @@ that actual form. A host `--guard-only` check at `2026-09-08T23-52-56.066Z`
 correctly returned busy (exit 2) for Faction CLI 2275526 and its Chromium processes,
 including 2276141. No Sentry browser or server launched. The raw private process
 receipt is retained; this is guard validation, not a gameplay attempt or pass.
+
+
+Dedicated09 (`2026-09-09T00-00-52.733Z`, frozen `a77953d` / runtime
+`9d31320`) reached physical EVA and the rear gunner door, admitted the gunner
+seat and began its access animation. The gunner then disconnected with
+`Too many messages.` while the pilot remained connected. This is an unresolved
+socket rejection, not a selector or travel failure. The application reported
+no console errors or warnings; three aborted music requests and teardown WebSocket
+reset are retained. Solo/native cases did not run. No rate limit was changed.
+
+Parent diagnostics distinguish the existing rate and pending-message limits.
+The next fixture passively records sent WebSocket message types, timestamps and
+per-second counts, retains failed access samples in `finally`, and orders solo,
+keyboard/phone, then the two-client diagnostic. Two actual-adapter CPU probes
+(on original `a77953d` / `9d31320`, then checked rotating-world composition plus
+the Sentry frame changes) exercised real Navigation, GamepadInput,
+MultiplayerClient, Sentry system and room snapshots with renderer/UI stubs only.
+At 20/60/144/240 rendered frames per second, boarding generated exactly one
+interact action; pending exit generated one request; modal/focus/held controls
+stayed bounded. Peak rolling-second outbound counts were 23/24/24/24. These
+memory-transport diagnostics did not reproduce09 and do not replace its socket
+or browser acceptance.
+
+Rotating-world integration required explicit carrier, renderer and beam chart
+tags, foreign suit/hull ray conversions, and physical seat/chart conversion.
+The Sentry placement uses Navigation's existing placement-revision convention
+so a chart transition already applied by the seat is not applied again by
+Navigation's enclosing step. Focused tests use that actual enclosing update.
+Carrier02/03 initially failed because the new fixture used a nullish fallback
+that replaced the valid inertial `null` frame with Selene; preserving explicit
+null fixed the fixture. Carrier04 and final08 pass. Focused06 passed40/42 but
+the two new ship-ray fixtures aimed0.2m below the authored hull's minY=0; lowering
+the fixture hull root2m made its intended interception real. Final hit07 passes
+all6 suit/ship/rover boundary cases. No collision allowance was weakened.
+Build11 failed before Vite loaded config because the shared dependency cache
+was read-only in the runner; the bounded host build is recorded separately.

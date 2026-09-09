@@ -44,7 +44,7 @@ export function createSentryRenderer(scene){
   }
   const api={instances,ready:loadSentryAsset,
     fire(event){
-      const beam=new RoverCuttingBeam(scene);pulses.push({beam,start:v(event.start),end:v(event.end),left:.13,rendered:false,hit:Boolean(event.targetId)});
+      const beam=new RoverCuttingBeam(scene);beam.mesh.userData.planetFrame=event.planetFrame??null;pulses.push({beam,start:v(event.start),end:v(event.end),left:.13,rendered:false,hit:Boolean(event.targetId)});
       while(pulses.length>20){const old=pulses.shift();old.beam.dispose();}
     },
     update(dt,origin,snapshots){
@@ -52,7 +52,7 @@ export function createSentryRenderer(scene){
       for(const [id,e]of instances)if(!keep.has(id)){e.display?.dispose();for(const m of e.materials)m.dispose();e.object.removeFromParent();instances.delete(id);}
       for(const s of snapshots){
         if(!instances.has(s.id)){void instance(s.id);continue;}
-        const e=instances.get(s.id);e.object.position.fromArray(s.position).sub(origin);e.object.quaternion.fromArray(s.quaternion);
+        const e=instances.get(s.id);e.object.userData.planetFrame=s.planetFrame??null;e.object.position.fromArray(s.position).sub(origin);e.object.quaternion.fromArray(s.quaternion);
         const m=e.model;if(!m)continue;
         if(s.destroyed&&!e.destroyed){e.destroyed=true;for(const material of e.materials){material.color?.multiplyScalar(.24);material.emissive?.set(0);}}
         m.getObjectByName('CabinDoor').rotation.y=s.seats.pilot.door*1.65;m.getObjectByName('GunnerDoor').rotation.y=-s.seats.gunner.door*1.6;

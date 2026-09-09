@@ -206,3 +206,28 @@ test('actual room access positions follow the bounded physical route at every se
   }
   assert.equal(r.seats.pilot.phase,'seated');assert.ok(max>.02);assert.ok(phases.has('traversing'));assert.ok(phases.has('closing'));assert.ok(p.nav.position.distanceTo(r.world(L.seats.pilot.eye))<1e-8);
 });
+
+for(const targetKind of ['suit','ship'])for(const sign of [-1,1])test(`Sentry lasers hit a ${targetKind} in the other planetary chart (${sign})`,async t=>{
+  const {AEON}=await import('../src/celestial.js'),{ROTATION_DOMAIN_RADII,ROTATION_EPOCH_MS,rotationFrameAt,fromInertial,toInertial,planetRotation}=await import('../src/planet-rotation.js');
+  const f=await fixture(t),[pilot,victim]=f.players,r=await f.deploy();await f.board(pilot,r,'pilot');
+  const clock=f.world.rotationClock,oldNow=clock.now,seconds=900;clock.now=()=>ROTATION_EPOCH_MS+seconds*1000;clock.tick();t.after(()=>{clock.now=oldNow;clock.tick();});
+  // Isolate the authoritative ray at the boundary. Actual entry/access/drive
+  // are covered above and in the browser; clients cannot upload these poses.
+  const root=new THREE.Vector3(AEON.radius*ROTATION_DOMAIN_RADII+sign*10,0,0),frame=rotationFrameAt(root),direction=new THREE.Vector3(-sign,0,0),look=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,-1),direction);
+  r.state.planetFrame=frame?.id??null;r.physics.setPose(fromInertial(root,frame,seconds),planetRotation(frame,seconds).invert().multiply(look));
+  const muzzle=r.muzzlePoses()[0],eye=toInertial(muzzle.start,frame,seconds).addScaledVector(direction,20).add(new THREE.Vector3(0,.2,0)),targetFrame=rotationFrameAt(eye);
+  assert.notEqual(frame,targetFrame);victim.nav.mode='eva';victim.nav.insideShip=false;fromInertial(eye,targetFrame,seconds,victim.nav.position);victim.nav.orientation.copy(planetRotation(targetFrame,seconds).invert()).multiply(look);victim.nav.velocity.set(0,0,0);
+  if(targetKind==='ship'){victim.nav.shipPosition=fromInertial(eye.clone().add(new THREE.Vector3(0,-2,0)),targetFrame,seconds);victim.nav.shipOrientation.copy(victim.nav.orientation);}
+  f.input(pilot,{});f.advance(.1);f.input(pilot,{fire:true});f.advance(1/30);await f.room.security.settle(pilot);
+  assert.ok((targetKind==='ship'?victim.shipHealth:victim.health)<100);assert.ok(f.messages.get(pilot.id).some(m=>m.event==='sentryFire'&&m.targetId===victim.id&&m.kind===(targetKind==='ship'?'ship':'player')&&m.planetFrame===r.state.planetFrame));
+});
+
+for(const sign of [-1,1])test(`room handheld rays hit a Sentry hull in the other planetary chart (${sign})`,async t=>{
+  const {AEON}=await import('../src/celestial.js'),{ROTATION_DOMAIN_RADII,ROTATION_EPOCH_MS,rotationFrameAt,fromInertial,toInertial,planetRotation}=await import('../src/planet-rotation.js');
+  const f=await fixture(t),[owner,attacker]=f.players,r=await f.deploy(),clock=f.world.rotationClock,oldNow=clock.now,seconds=900;clock.now=()=>ROTATION_EPOCH_MS+seconds*1000;clock.tick();t.after(()=>{clock.now=oldNow;clock.tick();});
+  const root=new THREE.Vector3(AEON.radius*ROTATION_DOMAIN_RADII+sign*10,0,0),frame=rotationFrameAt(root);r.state.planetFrame=frame?.id??null;r.physics.setPose(fromInertial(root,frame,seconds),planetRotation(frame,seconds).invert());
+  const target=toInertial(r.world([0,1.8,0]),frame,seconds),eye=target.clone().add(new THREE.Vector3(-sign*20,0,0)),shooterFrame=rotationFrameAt(eye),look=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,-1),target.clone().sub(eye).normalize());
+  assert.notEqual(frame,shooterFrame);attacker.nav.mode='eva';attacker.nav.insideShip=false;fromInertial(eye,shooterFrame,seconds,attacker.nav.position);attacker.nav.orientation.copy(planetRotation(shooterFrame,seconds).invert()).multiply(look);attacker.nav.velocity.set(0,0,0);
+  const shipHealth=owner.shipHealth;f.input(attacker,{fire:true});f.advance(1/30);await f.room.security.settle(attacker);
+  assert.equal(r.state.health,L.hull-25);assert.equal(owner.shipHealth,shipHealth);assert.equal(f.messages.get(attacker.id).findLast(m=>m.event==='fire').targetId,r.id);
+});

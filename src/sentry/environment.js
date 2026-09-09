@@ -6,49 +6,58 @@ import {bodyOffset} from '../celestial.js';
 import {stationPhysicsAt,stationDeckPoint} from '../station-physics.js';
 import {constrainStationSweep} from '../station-collision.js';
 import {SENTRY_LAYOUT as L} from './layout.js';
+import {betweenFrames,frameRotation,rotationFrameAt} from '../planet-rotation.js';
+import {sentryFrame,sentryPoseFrame,sentryPoseInFrame} from './frames.js';
 
 const UP=new THREE.Vector3(0,1,0),v=p=>new THREE.Vector3(...p);
 /** Support is always supplied by the existing canonical terrain, carrier or
  * authored station deck. This adapter is identical in the browser and room. */
-export function createSentryEnvironment({station=null,getCarriers=()=>[],getRovers=()=>[],getWalkers=()=>[],getHulls=()=>[],getObstacles=()=>null,buildingRaycast=()=>null}={}){
-  const guarded=new WeakSet();
+export function createSentryEnvironment({station=null,getCarriers=()=>[],getRovers=()=>[],getWalkers=()=>[],getHulls=()=>[],getObstacles=()=>null,buildingRaycast=()=>null,getFrame=null,getTime=()=>0,carrierGuards=new WeakSet()}={}){
+  const guarded=carrierGuards;
+  const frameAt=point=>getFrame?.(point)??null;
+  const poseAt=(pose,from,point)=>getFrame?sentryPoseInFrame(pose,from,frameAt(point),getTime()):pose;
+  const carrierFrame=(carrier,point)=>poseAt(carrier.frame,sentryFrame(carrier.planetFrame),point);
   function carriers(){
     const list=getCarriers();
     for(const c of list)if(!guarded.has(c.systems)){
       guarded.add(c.systems);
       guardRoverCarrier(c.systems,()=>getRovers().map(r=>{
-        const s=r.physics?.state??r,frame=getCarriers().find(x=>x.systems===c.systems)?.frame??c.frame;
-        return {spawned:true,busy:Boolean(r.busy),layout:L,frame,state:{...s,position:s.position.isVector3?s.position:v(s.position),quaternion:s.quaternion.isQuaternion?s.quaternion:new THREE.Quaternion(...s.quaternion),wheels:s.wheels.map(w=>({...w,source:w.source?.replace('carrier:'+c.id+':','')}))}};
+        const s=r.physics?.state??r,carrier=getCarriers().find(x=>x.systems===c.systems)??c,frame=carrier.frame,pose=getFrame?sentryPoseInFrame(s,sentryPoseFrame(r),sentryFrame(carrier.planetFrame),getTime()):s;
+        return {spawned:true,busy:Boolean(r.busy),layout:L,frame,state:{...s,position:pose.position.isVector3?pose.position:v(pose.position),quaternion:pose.quaternion.isQuaternion?pose.quaternion:new THREE.Quaternion(...pose.quaternion),wheels:s.wheels.map(w=>({...w,source:w.source?.replace('carrier:'+c.id+':','')}))}};
       }));
     }
     return list;
   }
   function support(point){
     for(const c of carriers()){
-      const hit=sampleRoverSupport(point,{freighter:c.systems,frame:c.frame});
+      const hit=sampleRoverSupport(point,{freighter:c.systems,frame:carrierFrame(c,point)});
       if(hit?.source!=='terrain'&&hit)return {...hit,source:'carrier:'+c.id+':'+hit.source};
     }
-    const grid=stationPhysicsAt(station,point.clone().addScaledVector(station?.up??UP,1));
+    const canonical=getFrame?betweenFrames(point,frameAt(point),rotationFrameAt(point),getTime()):point;
+    const grid=stationPhysicsAt(station,canonical.clone().addScaledVector(station?.up??UP,1));
     if(grid&&grid.id!=='station:hub'){
-      const floor=stationDeckPoint(grid,point,0);
-      if(floor&&Math.abs(point.clone().sub(floor).dot(grid.up))<.4)return {point:floor,normal:grid.up.clone(),source:grid.id};
+      const floor=stationDeckPoint(grid,canonical,0);
+      if(floor&&Math.abs(canonical.clone().sub(floor).dot(grid.up))<.4)return {point:getFrame?betweenFrames(floor,rotationFrameAt(canonical),frameAt(point),getTime()):floor,normal:getFrame?grid.up.clone().applyQuaternion(frameRotation(rotationFrameAt(canonical),frameAt(point),getTime())):grid.up.clone(),source:grid.id};
     }
-    return sampleRoverSupport(point);
+    const hit=sampleRoverSupport(canonical);if(!hit||!getFrame)return hit;
+    return {...hit,point:betweenFrames(hit.point,rotationFrameAt(canonical),frameAt(point),getTime()),normal:hit.normal.clone().applyQuaternion(frameRotation(rotationFrameAt(canonical),frameAt(point),getTime()))};
   }
   function ray(a,b,{carrier=true}={}){
-    const d=b.clone().sub(a),distance=d.length();if(distance<1e-6)return false;
-    const direction=d.divideScalar(distance),worldHit=buildingRaycast(a,direction,distance);
+    const queryFrame=frameAt(a),canonicalFrame=rotationFrameAt(a);
+    const ca=getFrame?betweenFrames(a,queryFrame,canonicalFrame,getTime()):a,cb=getFrame?betweenFrames(b,queryFrame,canonicalFrame,getTime()):b;
+    const d=cb.clone().sub(ca),distance=d.length();if(distance<1e-6)return false;
+    const direction=d.divideScalar(distance),worldHit=buildingRaycast(ca,direction,distance);
     if(worldHit)return true;
-    const obstacles=getObstacles();if(obstacles?.constrainWalker?.(a,b)?.hit)return true;
+    const obstacles=getObstacles();if(obstacles?.constrainWalker?.(ca,cb)?.hit)return true;
     for(const frame of station?.pods??[]){
-      if(a.distanceTo(frame.padWorldPosition)>160&&b.distanceTo(frame.padWorldPosition)>160)continue;
-      const x=frame.toLocal(a,new THREE.Vector3()),y=frame.toLocal(b,new THREE.Vector3());
+      if(ca.distanceTo(frame.padWorldPosition)>160&&cb.distanceTo(frame.padWorldPosition)>160)continue;
+      const x=frame.toLocal(ca,new THREE.Vector3()),y=frame.toLocal(cb,new THREE.Vector3());
       const result=constrainStationSweep(frame.colliders,frame.doorBoxes??[],x,y,new THREE.Vector3(-.04,-.04,-.04),new THREE.Vector3(.04,.04,.04));
       if(result.hit)return true;
     }
     for(const c of carrier?carriers():[]){
-      if(a.distanceTo(c.frame.position)>55&&b.distanceTo(c.frame.position)>55)continue;
-      const inverse=c.frame.quaternion.clone().invert(),x=a.clone().sub(c.frame.position).applyQuaternion(inverse),y=b.clone().sub(c.frame.position).applyQuaternion(inverse);
+      const frame=carrierFrame(c,a);if(a.distanceTo(frame.position)>55&&b.distanceTo(frame.position)>55)continue;
+      const inverse=frame.quaternion.clone().invert(),x=a.clone().sub(frame.position).applyQuaternion(inverse),y=b.clone().sub(frame.position).applyQuaternion(inverse);
       const r=c.systems.constrain?.(x,y);if(r?.hit||r?.isVector3&&r.distanceTo(y)>.08||r?.point&&r.point.distanceTo(y)>.08)return true;
     }
     return false;
@@ -56,14 +65,14 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
   function peersClear(position,quaternion,ownId){
     const points=roverFootprint(position,quaternion,{layout:L});
     for(const r of getRovers()){
-      if(r.id===ownId)continue;const s=r.physics?.state??r,root=s.position.isVector3?s.position:v(s.position),q=s.quaternion.isQuaternion?s.quaternion:new THREE.Quaternion(...s.quaternion),inverse=q.clone().invert();
+      if(r.id===ownId)continue;const s=poseAt(r.physics?.state??r,sentryPoseFrame(r),position),root=s.position.isVector3?s.position:v(s.position),q=s.quaternion.isQuaternion?s.quaternion:new THREE.Quaternion(...s.quaternion),inverse=q.clone().invert();
       const local=points.map(p=>p.clone().sub(root).applyQuaternion(inverse));
       if([0,1,2].every(i=>Math.min(...local.map(p=>p.getComponent(i)))<L.bounds.max[i]+.05&&Math.max(...local.map(p=>p.getComponent(i)))>L.bounds.min[i]-.05))return false;
     }
     const inverse=quaternion.clone().invert();
     for(const walker of getWalkers()){
       const n=walker.nav??walker;if(!['walk','eva'].includes(n.mode)||n.sentrySeat?.id===ownId||n.roverOccupied)continue;
-      const eye=n.position.clone().sub(position).applyQuaternion(inverse);
+      const eye=(getFrame?betweenFrames(n.position,n.rotationFrame,frameAt(position),getTime()):n.position.clone()).sub(position).applyQuaternion(inverse);
       if(eye.x>L.bounds.min[0]-.3&&eye.x<L.bounds.max[0]+.3&&eye.z>L.bounds.min[2]-.3&&eye.z<L.bounds.max[2]+.3&&eye.y>L.bounds.min[1]-.2&&eye.y-1.75<L.bounds.max[1])return false;
     }
     return true;
@@ -71,12 +80,13 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
   function clearPose(position,quaternion,ownId){
     if(!peersClear(position,quaternion,ownId))return false;
     const world=p=>v(p).applyQuaternion(quaternion).add(position);
-    for(const hull of getHulls()){
+    for(const raw of getHulls()){
+      const hull={...raw,...poseAt(raw,raw.planetFrame===undefined?raw.frame:sentryFrame(raw.planetFrame),position)};
       const inverse=hull.quaternion.clone().invert(),points=roverFootprint(position,quaternion,{layout:L}).map(p=>p.sub(hull.position).applyQuaternion(inverse));
       if([0,1,2].every(i=>Math.min(...points.map(p=>p.getComponent(i)))<hull.bounds.max[i]&&Math.max(...points.map(p=>p.getComponent(i)))>hull.bounds.min[i]))return false;
     }
     const pose={position,quaternion};
-    for(const c of carriers())if(!roverCarrierClear({previous:pose,proposed:pose},c.systems,c.frame,{layout:L,cargoConstrain:c.cargoConstrain}))return false;
+    for(const c of carriers())if(!roverCarrierClear({previous:pose,proposed:pose},c.systems,carrierFrame(c,position),{layout:L,cargoConstrain:c.cargoConstrain}))return false;
     // Rays cross the actual occupied chassis/cabin area and the turret's
     // complete sweep. No invented bounding-floor collision is introduced.
     for(const x of [-.83,0,.83])for(const y of [.50,1.10,1.8,2.35,3.02])if(ray(world([x,y,-1.7]),world([x,y,2.15]),{carrier:false}))return false;
@@ -85,7 +95,7 @@ export function createSentryEnvironment({station=null,getCarriers=()=>[],getRove
   return {support,ray,clearPose,peersClear,carriers,
     up:point=>support(point)?.normal??bodyOffset(point).normalize(),
     constrain({previous,proposed,previousCorners,corners},ownId){
-      for(const carrier of carriers())if(!roverCarrierClear({previous,proposed,previousCorners,corners},carrier.systems,carrier.frame,{layout:L,cargoConstrain:carrier.cargoConstrain}))return false;
+      for(const carrier of carriers())if(!roverCarrierClear({previous,proposed,previousCorners,corners},carrier.systems,carrierFrame(carrier,proposed.position),{layout:L,cargoConstrain:carrier.cargoConstrain}))return false;
       if(!clearPose(proposed.position,proposed.quaternion,ownId))return false;
       const a=roverFootprint(previous.position,previous.quaternion,{layout:L}),b=roverFootprint(proposed.position,proposed.quaternion,{layout:L});
       // The conservative tyre suspension envelope extends below the deck. Its

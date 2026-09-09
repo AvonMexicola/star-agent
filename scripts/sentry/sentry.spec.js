@@ -4,6 +4,7 @@ import {evaWaypointInput} from './eva-feedback.mjs';
 const output=process.env.SENTRY_OUTPUT??'test-results/sentry-manual';
 const state=page=>page.evaluate(()=>starAgent.state);
 const wait=(page,fn,arg=null,timeout=30000)=>page.waitForFunction(fn,arg,{timeout,polling:80});
+const pageDelay=(page,ms)=>page.waitForTimeout(ms);
 const frames=page=>page.evaluate(async()=>{for(let i=0;i<3;i++)await new Promise(requestAnimationFrame);});
 async function pad(page){
   await page.addInitScript(()=>{
@@ -24,7 +25,15 @@ async function choose(page,key){
 async function chase(page){await page.evaluate(()=>{for(const i of [4,5])sentryPad.buttons[i]={pressed:true,value:1};});await frames(page);await tap(page,15);await page.evaluate(()=>{for(const i of [4,5])sentryPad.buttons[i]={pressed:false,value:0};});await frames(page);}
 async function stop(page){await axes(page,[0,0,0,0]);await button(page,6,true);await wait(page,()=>Math.abs(starAgent.state.sentry.current?.speed??starAgent.state.speed)<.07);await button(page,6,false);await neutral(page);}
 async function boot(page,url,errors){
-  errors.warnings??=[];errors.requests??=[];
+  errors.warnings??=[];errors.requests??=[];errors.network??=[];
+  page.on('websocket',socket=>{
+    const trace={url:socket.url(),opened:Date.now(),closed:null,seconds:{},sent:[],events:[]};errors.network.push(trace);
+    socket.on('framesent',({payload})=>{let m;try{m=JSON.parse(String(payload));}catch{return;}const time=Date.now(),second=Math.floor(time/1000),bucket=trace.seconds[second]??={total:0,input:0,action:0,request:0,other:0};bucket.total++;bucket[Object.hasOwn(bucket,m.type)?m.type:'other']++;
+      trace.sent.push({time,type:m.type,action:m.action,command:m.command,op:m.op,sequence:m.sequence,requestId:m.requestId,input:m.type==='input'?m.input:undefined});if(trace.sent.length>2000)trace.sent.shift();
+    });
+    socket.on('framereceived',({payload})=>{let m;try{m=JSON.parse(String(payload));}catch{return;}if(m.type==='welcome')trace.ownId=m.id;if(m.type==='event'||m.type==='ack'){trace.events.push({time:Date.now(),type:m.type,event:m.event,message:m.message,requestId:m.requestId,ok:m.ok,error:m.error});if(trace.events.length>300)trace.events.shift();}});
+    socket.on('close',()=>trace.closed=Date.now());
+  });
   page.on('pageerror',e=>errors.push('page: '+e.message));page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text());});
   page.on('console',m=>{if(m.type()==='warning')errors.warnings.push(m.text());});page.on('requestfailed',r=>errors.requests.push({url:r.url(),error:r.failure()?.errorText}));
   await page.goto(url);await wait(page,()=>window.starAgent?.state.ready,null,120000);
@@ -72,7 +81,7 @@ async function walk(page,target,{reach=.32,eva=false,timeout=45000}={}){
     window.sentryWalk={target,reach,eva:false,done:false,samples:[],active:true};
     function update(){
       const task=sentryWalk;if(!task.active)return;
-      const n=starAgent.navigation,d=n.position.clone().fromArray(task.target).sub(n.position).applyQuaternion(n.orientation.clone().invert()),distance=Math.hypot(d.x,d.z);
+      const n=starAgent.navigation,d=n.viewPoint(n.position.clone().fromArray(task.target)).sub(n.position).applyQuaternion(n.orientation.clone().invert()),distance=Math.hypot(d.x,d.z);
       task.samples.push({position:n.position.toArray(),mode:n.mode,distance});if(task.samples.length>3000)task.samples.shift();
       if(distance<task.reach){sentryPad.axes=[0,0,0,0];sentryPad.buttons[0]=sentryPad.buttons[1]={pressed:false,value:0};task.done=true;task.active=false;return;}
       const rate=Math.min(.65,Math.max(.20,distance*.18)),planar=Math.hypot(d.x,d.z),scale=planar?rate/planar:0;
@@ -88,7 +97,7 @@ async function walkEVA(page,target,{reach,timeout}){
   const end=Date.now()+timeout;
   try{
     while(Date.now()<end){
-      const sample=await page.evaluate(target=>{const n=starAgent.navigation,q=n.orientation.clone().invert(),delta=n.position.clone().fromArray(target).sub(n.position).applyQuaternion(q),velocity=n.velocity.clone().applyQuaternion(q),sample={time:performance.now(),position:n.position.toArray(),mode:n.mode,distance:delta.length(),delta:delta.toArray(),velocity:velocity.toArray()};sentryWalk.samples.push(sample);return sample;},target);
+      const sample=await page.evaluate(target=>{const n=starAgent.navigation,q=n.orientation.clone().invert(),delta=n.viewPoint(n.position.clone().fromArray(target)).sub(n.position).applyQuaternion(q),velocity=n.velocity.clone().applyQuaternion(q),sample={time:performance.now(),position:n.position.toArray(),mode:n.mode,distance:delta.length(),delta:delta.toArray(),velocity:velocity.toArray()};sentryWalk.samples.push(sample);return sample;},target);
       const input=evaWaypointInput(sample.delta,sample.velocity,reach);
       await page.evaluate(input=>{sentryPad.axes=input.axes;for(const [i,on]of [[0,input.up],[1,input.down],[6,input.brake]])sentryPad.buttons[i]={pressed:on,value:+on};sentryWalk.done=input.done;},input);
       if(input.done){await neutral(page);return;}
@@ -99,8 +108,10 @@ async function walkEVA(page,target,{reach,timeout}){
 }
 async function board(page,role){
   await neutral(page);expect((await state(page)).sentry.near?.role).toBe(role);
+  const who=(await state(page)).multiplayer.ownId??'solo';
   await page.evaluate(()=>{window.sentryAccess=[];window.sentryRecord=true;const frame=()=>{if(!sentryRecord)return;const s=starAgent.state,peer=s.multiplayer.players.find(p=>p.id===s.multiplayer.ownId);sentryAccess.push({time:performance.now(),position:s.position,seat:s.sentry.current?.seats[s.sentry.role]?.phase??null,peer:peer?{position:peer.position,seat:peer.sentrySeat,frame:peer.physicsFrame}:null});requestAnimationFrame(frame);};frame();});
-  await tap(page,2);await wait(page,role=>{const s=starAgent.state.sentry;return s.role===role&&s.current?.seats[role].phase==='seated';},role,40000);
+  try{await tap(page,2);await wait(page,role=>{const s=starAgent.state.sentry;return s.role===role&&s.current?.seats[role].phase==='seated';},role,40000);}
+  finally{const samples=await page.evaluate(()=>{sentryRecord=false;return sentryAccess;}).catch(()=>[]);await writeFile(output+'/access-'+who+'-'+role+'.json',JSON.stringify({samples},null,2));}
   const samples=await page.evaluate(()=>{sentryRecord=false;return sentryAccess;}),steps=samples.slice(1).map((p,i)=>({distance:Math.hypot(...p.position.map((n,j)=>n-samples[i].position[j])),elapsed:(p.time-samples[i].time)/1000,before:samples[i],after:p})),largest=steps.reduce((a,b)=>a.distance>b.distance?a:b,{distance:0}),maxStep=largest.distance;
   await writeFile(output+'/access-'+((await state(page)).multiplayer.ownId??'solo')+'-'+role+'.json',JSON.stringify({largest,samples},null,2));
   expect.soft(maxStep,'Maximum rendered access step; timestamped authority samples retained').toBeLessThan(.6);
@@ -119,44 +130,6 @@ async function register(page,index,errors){
 const podPoint=(page,id,{x=10,y=1.75,z=-40}={})=>page.evaluate(({id,x,y,z})=>{
   const n=starAgent.navigation,pod=n.station.pods.find(p=>p.id===id),p=n.position.clone().set(x,pod.interiorBox.min.y+y,pod.openingZ+z);return pod.toWorld(p,p).toArray();
 },{id,x,y,z});
-
-test('two real connected players reach one rover physically and hand gunner authority back to its driving pilot',async({browser})=>{
-  const a=await browser.newContext({viewport:{width:1280,height:800},recordVideo:{dir:output+'/video',size:{width:1280,height:800}}}),b=await browser.newContext({viewport:{width:1280,height:800},recordVideo:{dir:output+'/video',size:{width:1280,height:800}}}),pilot=await a.newPage(),gunner=await b.newPage(),errors=[],report={input:'Desktop account text; then injected standard Gamepad for deploy, physical station/EVA approach, both seats, drive/aim/fire/backpack/exit. Additional native pointer click tests the panel Backpack after the controller inventory route. No physical pad or debug pose writes.'};
-  try{
-    await register(pilot,1,errors);console.log('Sentry MP: pilot account connected');await register(gunner,2,errors);console.log('Sentry MP: both accounts connected');
-    report.focus=await Promise.all([pilot,gunner].map(page=>page.evaluate(()=>({focused:document.hasFocus(),hidden:document.hidden}))));
-    if(report.focus.some(p=>!p.focused||p.hidden)){report.focusEmulation=true;for(const page of [pilot,gunner]){const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setFocusEmulationEnabled',{enabled:true});await cdp.detach();}}
-    await pilot.bringToFront();await neutral(pilot);await tap(pilot,9);await choose(pilot,'tab-ship');await choose(pilot,'sentry-deploy');await wait(pilot,()=>starAgent.state.sentry.vehicles.length===1);
-    if(await pilot.locator('dialog[open]').count())await tap(pilot,1);
-    const initial=await state(pilot),id=initial.sentry.vehicles[0].id,hangar=initial.multiplayer.hangar.id;
-    console.log('Sentry MP: rover deployed; walking around aft-port corner');
-    await walk(pilot,await roverPoint(pilot,[0,1.75,3.5],id));await walk(pilot,await roverPoint(pilot,[-2.5,1.75,3.5],id));await walk(pilot,await roverPoint(pilot,[-2.5,1.75,-.1],id));report.pilotAccess=await board(pilot,'pilot');console.log('Sentry MP: pilot physically seated');
-    await gunner.bringToFront();await neutral(gunner);const own=(await state(gunner)).multiplayer.hangar.id;
-    // Both berths open onto free space. Fly outside their actual doors, above
-    // the station facade, then return through the pilot's physical hangar mouth.
-    console.log('Sentry MP: walking out of gunner berth');await walk(gunner,await podPoint(gunner,own,{x:10,z:-12}),{timeout:60000});await wait(gunner,()=>starAgent.state.mode==='eva');
-    await walk(gunner,await podPoint(gunner,own,{x:10,y:9,z:-45}),{eva:true,timeout:90000});
-    console.log('Sentry MP: outside own berth, EVA to pilot berth');await walk(gunner,await podPoint(gunner,hangar,{x:10,y:9,z:-45}),{eva:true,timeout:90000});
-    await walk(gunner,await podPoint(gunner,hangar,{x:10,z:5}),{eva:true,timeout:90000});await wait(gunner,()=>starAgent.state.mode==='walk');
-    await walk(gunner,await roverPoint(gunner,[2.1,1.75,3.45],id));await walk(gunner,await roverPoint(gunner,[0,1.75,3.45],id));report.gunnerAccess=await board(gunner,'gunner');console.log('Sentry MP: gunner physically seated');
-    await wait(pilot,()=>starAgent.state.sentry.current?.seats.gunner.phase==='seated');await neutral(pilot);await neutral(gunner);
-    const before=(await state(pilot)).sentry.current;await button(pilot,7,true);await pageDelay(pilot,350);expect((await state(pilot)).sentry.current.shots).toBe(before.shots);
-    await axes(gunner,[0,0,.65,-.12]);await axes(pilot,[0,-.22,0,0]);await button(gunner,7,true);
-    await wait(gunner,n=>starAgent.state.sentry.current.shots>n,before.shots);await wait(pilot,n=>starAgent.state.sentry.current.distance>n+.4,before.distance);
-    report.crewed={pilot:(await state(pilot)).sentry.current,gunner:(await state(gunner)).sentry.current};
-    expect(report.crewed.pilot.controllerId).toBe((await state(gunner)).multiplayer.ownId);
-    await chase(pilot);await pilot.screenshot({path:output+'/05-two-crew-driving.png'});await gunner.screenshot({path:output+'/06-two-crew-gunner.png'});
-    await button(gunner,7,false);await neutral(gunner);await stop(pilot);await button(pilot,7,true);
-    await tap(gunner,2);await wait(gunner,()=>!starAgent.state.sentry.occupied,null,45000);
-    await wait(pilot,()=>!starAgent.state.sentry.current?.busy);const held=(await state(pilot)).sentry.current.shots;await pageDelay(pilot,600);expect((await state(pilot)).sentry.current.shots).toBe(held);
-    await neutral(pilot);await button(pilot,7,true);await wait(pilot,n=>starAgent.state.sentry.current.shots>n,held);await button(pilot,7,false);
-    console.log('Sentry MP: gunner exited; neutral pilot fallback fires');report.fallback=(await state(pilot)).sentry.current;expect((await state(pilot)).multiplayer.connected).toBe(true);await neutral(pilot);await tap(pilot,8);await expect(pilot.locator('#multiplayer-inventory-dialog')).toBeVisible();
-    await pageDelay(pilot,1600);expect((await state(pilot)).multiplayer.connected).toBe(true);expect((await state(gunner)).multiplayer.connected).toBe(true);report.inventory=(await state(pilot)).multiplayer.inventory;await pilot.screenshot({path:output+'/09-two-crew-server-inventory.png'});await tap(pilot,1);await expect(pilot.locator('dialog[open]')).toHaveCount(0);await neutral(pilot);expect((await state(pilot)).multiplayer.connected).toBe(true);
-    await pilot.locator('#sentry-panel [data-action="pack"]').click();await expect(pilot.locator('#multiplayer-inventory-dialog')).toBeVisible();await pageDelay(pilot,600);expect((await state(pilot)).multiplayer.connected).toBe(true);report.panelInventory=(await state(pilot)).multiplayer.inventory;await tap(pilot,1);await expect(pilot.locator('dialog[open]')).toHaveCount(0);await neutral(pilot);
-    await tap(pilot,2);await wait(pilot,()=>!starAgent.state.sentry.occupied,null,45000);expect((await state(pilot)).multiplayer.connected).toBe(true);expect([...errors]).toEqual([]);console.log('Sentry MP: controller and panel server inventory and physical return complete');
-  }finally{report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;report.renderer=await rendererInfo(pilot).catch(()=>null);report.pilot=await state(pilot).catch(()=>null);report.gunner=await state(gunner).catch(()=>null);report.walks=await Promise.all([pilot,gunner].map(p=>p.evaluate(()=>window.sentryWalk).catch(()=>null)));await pilot.screenshot({path:output+'/last-pilot.png'}).catch(()=>{});await gunner.screenshot({path:output+'/last-gunner.png'}).catch(()=>{});await writeFile(output+'/multiplayer-report.json',JSON.stringify(report,null,2));await a.close();await b.close();}
-});
-const pageDelay=(page,ms)=>page.waitForTimeout(ms);
 
 test('controller physically boards both Sentry seats, drives/reverses, fires, inspects backpack and suppresses held inputs',async({page,browser})=>{
   await mkdir(output,{recursive:true});const errors=[],report={browser:browser.version(),input:'Injected standard Gamepad only after the explicit development start. No physical controller.'};await pad(page);
@@ -227,4 +200,41 @@ test('keyboard and native phone controls board, aim, fire and leave the Sentry',
     }finally{report[mobile?'phoneLast':'keyboardLast']=await state(page).catch(()=>null);report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;await writeFile(output+'/native-input-report.json',JSON.stringify(report,null,2));await context.close();}
   }
   report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;await writeFile(output+'/native-input-report.json',JSON.stringify(report,null,2));expect([...errors]).toEqual([]);
+});
+
+test('two real connected players reach one rover physically and hand gunner authority back to its driving pilot',async({browser})=>{
+  const a=await browser.newContext({viewport:{width:1280,height:800},recordVideo:{dir:output+'/video',size:{width:1280,height:800}}}),b=await browser.newContext({viewport:{width:1280,height:800},recordVideo:{dir:output+'/video',size:{width:1280,height:800}}}),pilot=await a.newPage(),gunner=await b.newPage(),errors=[],report={input:'Desktop account text; then injected standard Gamepad for deploy, physical station/EVA approach, both seats, drive/aim/fire/backpack/exit. Additional native pointer click tests the panel Backpack after the controller inventory route. No physical pad or debug pose writes.'};
+  try{
+    await register(pilot,1,errors);console.log('Sentry MP: pilot account connected');await register(gunner,2,errors);console.log('Sentry MP: both accounts connected');
+    report.focus=await Promise.all([pilot,gunner].map(page=>page.evaluate(()=>({focused:document.hasFocus(),hidden:document.hidden}))));
+    if(report.focus.some(p=>!p.focused||p.hidden)){report.focusEmulation=true;for(const page of [pilot,gunner]){const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setFocusEmulationEnabled',{enabled:true});await cdp.detach();}}
+    await pilot.bringToFront();await neutral(pilot);await tap(pilot,9);await choose(pilot,'tab-ship');await choose(pilot,'sentry-deploy');await wait(pilot,()=>starAgent.state.sentry.vehicles.length===1);
+    if(await pilot.locator('dialog[open]').count())await tap(pilot,1);
+    const initial=await state(pilot),id=initial.sentry.vehicles[0].id,hangar=initial.multiplayer.hangar.id;
+    console.log('Sentry MP: rover deployed; walking around aft-port corner');
+    await walk(pilot,await roverPoint(pilot,[0,1.75,3.5],id));await walk(pilot,await roverPoint(pilot,[-2.5,1.75,3.5],id));await walk(pilot,await roverPoint(pilot,[-2.5,1.75,-.1],id));report.pilotAccess=await board(pilot,'pilot');console.log('Sentry MP: pilot physically seated');
+    await gunner.bringToFront();await neutral(gunner);const own=(await state(gunner)).multiplayer.hangar.id;
+    // Both berths open onto free space. Fly outside their actual doors, above
+    // the station facade, then return through the pilot's physical hangar mouth.
+    console.log('Sentry MP: walking out of gunner berth');await walk(gunner,await podPoint(gunner,own,{x:10,z:-12}),{timeout:60000});await wait(gunner,()=>starAgent.state.mode==='eva');
+    await walk(gunner,await podPoint(gunner,own,{x:10,y:9,z:-45}),{eva:true,timeout:90000});
+    console.log('Sentry MP: outside own berth, EVA to pilot berth');await walk(gunner,await podPoint(gunner,hangar,{x:10,y:9,z:-45}),{eva:true,timeout:90000});
+    await walk(gunner,await podPoint(gunner,hangar,{x:10,z:5}),{eva:true,timeout:90000});await wait(gunner,()=>starAgent.state.mode==='walk');
+    await walk(gunner,await roverPoint(gunner,[2.1,1.75,3.45],id));await walk(gunner,await roverPoint(gunner,[0,1.75,3.45],id));report.gunnerAccess=await board(gunner,'gunner');console.log('Sentry MP: gunner physically seated');
+    await wait(pilot,()=>starAgent.state.sentry.current?.seats.gunner.phase==='seated');await neutral(pilot);await neutral(gunner);
+    const before=(await state(pilot)).sentry.current;await button(pilot,7,true);await pageDelay(pilot,350);expect((await state(pilot)).sentry.current.shots).toBe(before.shots);
+    await axes(gunner,[0,0,.65,-.12]);await axes(pilot,[0,-.22,0,0]);await button(gunner,7,true);
+    await wait(gunner,n=>starAgent.state.sentry.current.shots>n,before.shots);await wait(pilot,n=>starAgent.state.sentry.current.distance>n+.4,before.distance);
+    report.crewed={pilot:(await state(pilot)).sentry.current,gunner:(await state(gunner)).sentry.current};
+    expect(report.crewed.pilot.controllerId).toBe((await state(gunner)).multiplayer.ownId);
+    await chase(pilot);await pilot.screenshot({path:output+'/05-two-crew-driving.png'});await gunner.screenshot({path:output+'/06-two-crew-gunner.png'});
+    await button(gunner,7,false);await neutral(gunner);await stop(pilot);await button(pilot,7,true);
+    await tap(gunner,2);await wait(gunner,()=>!starAgent.state.sentry.occupied,null,45000);
+    await wait(pilot,()=>!starAgent.state.sentry.current?.busy);const held=(await state(pilot)).sentry.current.shots;await pageDelay(pilot,600);expect((await state(pilot)).sentry.current.shots).toBe(held);
+    await neutral(pilot);await button(pilot,7,true);await wait(pilot,n=>starAgent.state.sentry.current.shots>n,held);await button(pilot,7,false);
+    console.log('Sentry MP: gunner exited; neutral pilot fallback fires');report.fallback=(await state(pilot)).sentry.current;expect((await state(pilot)).multiplayer.connected).toBe(true);await neutral(pilot);await tap(pilot,8);await expect(pilot.locator('#multiplayer-inventory-dialog')).toBeVisible();
+    await pageDelay(pilot,1600);expect((await state(pilot)).multiplayer.connected).toBe(true);expect((await state(gunner)).multiplayer.connected).toBe(true);report.inventory=(await state(pilot)).multiplayer.inventory;await pilot.screenshot({path:output+'/09-two-crew-server-inventory.png'});await tap(pilot,1);await expect(pilot.locator('dialog[open]')).toHaveCount(0);await neutral(pilot);expect((await state(pilot)).multiplayer.connected).toBe(true);
+    await pilot.locator('#sentry-panel [data-action="pack"]').click();await expect(pilot.locator('#multiplayer-inventory-dialog')).toBeVisible();await pageDelay(pilot,600);expect((await state(pilot)).multiplayer.connected).toBe(true);report.panelInventory=(await state(pilot)).multiplayer.inventory;await tap(pilot,1);await expect(pilot.locator('dialog[open]')).toHaveCount(0);await neutral(pilot);
+    await tap(pilot,2);await wait(pilot,()=>!starAgent.state.sentry.occupied,null,45000);expect((await state(pilot)).multiplayer.connected).toBe(true);expect([...errors]).toEqual([]);console.log('Sentry MP: controller and panel server inventory and physical return complete');
+  }finally{report.errors=[...errors];report.warnings=errors.warnings;report.requests=errors.requests;report.network=errors.network;report.renderer=await rendererInfo(pilot).catch(()=>null);report.pilot=await state(pilot).catch(()=>null);report.gunner=await state(gunner).catch(()=>null);report.walks=await Promise.all([pilot,gunner].map(p=>p.evaluate(()=>window.sentryWalk).catch(()=>null)));await pilot.screenshot({path:output+'/last-pilot.png'}).catch(()=>{});await gunner.screenshot({path:output+'/last-gunner.png'}).catch(()=>{});await writeFile(output+'/multiplayer-report.json',JSON.stringify(report,null,2));await a.close();await b.close();}
 });

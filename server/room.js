@@ -244,7 +244,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
         const fireAllowed=hub.canFire(p);
         if(p.input.fire&&!p.busy&&fireAllowed&&!p.nav.carryingCargo&&!p.nav.sentrySeat){
-          const event=shoot({shooter:p,players,world,now:t,deferDamage:true,vehicleHit:sentries.vehicleHit});
+          const event=shoot({shooter:p,players,world,now:t,deferDamage:true,vehicleHit:(origin,direction,range)=>sentries.vehicleHit(origin,direction,range,p.nav)});
           if(event){
             const packet={type:'event',event:'fire',peerId:p.id,...event},victim=players.get(event.targetId);
             if(event.kind==='vehicle'&&event.damage>0)sentries.hit(p,event.targetId,event.damage,new THREE.Vector3(...event.origin).addScaledVector(new THREE.Vector3(...event.direction),event.distance),packet,`shot:${p.inventory.revision}`);
