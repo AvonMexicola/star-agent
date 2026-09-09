@@ -3,6 +3,7 @@
 import WebSocket from 'ws';
 import pg from 'pg';
 import {randomBytes} from 'node:crypto';
+import {MULTIPLAYER_VERSION,MAX_PLAYERS,WORLD_SEED} from '../../src/multiplayer/protocol.js';
 const origin=process.env.PUBLIC_ORIGIN;
 if(!origin||!process.env.DATABASE_URL)throw new Error('PUBLIC_ORIGIN and DATABASE_URL are required.');
 const suffix=randomBytes(5).toString('hex'),email=`qa-${suffix}@example.test`,callsign=`QA_${suffix}`;
@@ -18,13 +19,13 @@ try{
     ws.on('message',raw=>{
       const m=JSON.parse(raw);
       if(m.type==='welcome'){
-        if(m.maxPlayers!==20||m.seed!==7291){clearTimeout(timeout);reject(new Error('Unexpected world contract.'));return;}
+        if(m.maxPlayers!==MAX_PLAYERS||m.seed!==WORLD_SEED||m.version!==MULTIPLAYER_VERSION){clearTimeout(timeout);reject(new Error('Unexpected world contract.'));return;}
         ws.send(JSON.stringify({type:'request',requestId:'probe',action:'hangar'}));
       }
       if(m.type==='ack'&&m.requestId==='probe'){clearTimeout(timeout);m.ok?resolve():reject(new Error('Hangar request rejected.'));}
     });
   });
-  console.log('Public HTTPS registration, secure cookie, authenticated WSS and hangar assignment passed.');
+  console.log(JSON.stringify({publicHTTPSRegistration:true,authenticatedWSS:true,hangarAssignment:true,multiplayerVersion:MULTIPLAYER_VERSION,maxPlayers:MAX_PLAYERS,seed:WORLD_SEED}));
 }finally{
   if(ws&&ws.readyState!==WebSocket.CLOSED)await new Promise(resolve=>{ws.once('close',resolve);ws.close();setTimeout(()=>{ws.terminate();resolve();},2000).unref();});
   // Let the server finish its departure checkpoint before deleting the fixture.

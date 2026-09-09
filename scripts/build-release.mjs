@@ -3,11 +3,12 @@ import { execFileSync } from 'node:child_process';
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { resolve, posix } from 'node:path';
 import config from '../vite.config.js';
+import {MULTIPLAYER_VERSION,MAX_PLAYERS,WORLD_SEED} from '../src/multiplayer/protocol.js';
 
 const channel = process.argv[2];
 if (!['solo', 'multiplayer'].includes(channel)) throw new Error('Choose solo or multiplayer.');
 process.env.VITE_SOLO_BUILD = channel === 'solo' ? '1' : '0';
-process.env.VITE_DEV_TOOLS = channel === 'solo' ? '1' : '0';
+process.env.VITE_DEV_TOOLS = '1';
 process.env.VITE_MULTIPLAYER_ENTRY = channel === 'multiplayer' ? '1' : '0';
 const outDir = `dist/${channel}`;
 const input = { ...config.build.rollupOptions.input };
@@ -46,4 +47,4 @@ if (channel === 'solo') {
 }
 await writeFile(`${outDir}/release.json`, JSON.stringify({ channel,
   commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-  builtAt: new Date().toISOString() }) + '\n');
+  builtAt: new Date().toISOString(), multiplayerVersion: MULTIPLAYER_VERSION, maxPlayers: MAX_PLAYERS, seed: WORLD_SEED, devTools: true }) + '\n');
