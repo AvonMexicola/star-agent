@@ -1,0 +1,29 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "physicalController": false,
+  "rates": [
+    {
+      "mode": "walk",
+      "amount": 1,
+      "rate": 1.5273101384205396
+    },
+    {
+      "mode": "walk",
+      "amount": 0.58,
+      "rate": 0.7569513099346884
+    },
+    {
+      "mode": "eva",
+      "amount": 1,
+      "rate": 1.5235045392371136
+    },
+    {
+      "mode": "eva",
+      "amount": 0.58,
+      "rate": 0.7595796130948855
+    }
+  ],
+  "finalMode": "flight",
+  "errors": []
+}

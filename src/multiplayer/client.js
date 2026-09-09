@@ -1,6 +1,7 @@
 import { hydrateBaseCommerce } from '../trading/base-stock.js';
 import * as THREE from 'three';
 import { cleanInput, MAX_PLAYERS, MULTIPLAYER_VERSION, WORLD_SEED } from './protocol.js';
+import { KEYBOARD_LOOK_RATE, controllerLookRate } from '../gamepad.js';
 
 const OPEN = 1;
 const SEND_INTERVAL = 1 / 20;
@@ -22,14 +23,18 @@ export function navigationInput(nav, pad = {}, { mouseYaw = 0, mousePitch = 0, f
   const keys = nav.keys;
   const eva = nav.mode === 'eva';
   const walking = nav.mode === 'walk';
+  // The server receives normalized turn intent through its pad adapter. Scale
+  // keyboard intent so the faster character stick does not accelerate arrows.
+  const keyboardLook=KEYBOARD_LOOK_RATE/controllerLookRate(nav.mode);
+  const lookAxis=(positive,negative,analog=0)=>clamp(axis(keys,positive,negative)*keyboardLook+(Number.isFinite(analog)?analog:0));
   return cleanInput({
     forward: axis(keys, 'KeyW', 'KeyS', pad.forward),
     strafe: axis(keys, 'KeyD', 'KeyA', pad.strafe),
     vertical: eva
       ? axis(keys, 'Space', 'KeyC', pad.evaVertical)
       : walking ? 0 : axis(keys, 'Space', 'KeyC', pad.vertical),
-    yaw: axis(keys, 'ArrowLeft', 'ArrowRight', pad.yaw),
-    pitch: axis(keys, 'ArrowUp', 'ArrowDown', pad.pitch),
+    yaw: lookAxis('ArrowLeft', 'ArrowRight', pad.yaw),
+    pitch: lookAxis('ArrowUp', 'ArrowDown', pad.pitch),
     roll: axis(keys, 'KeyE', 'KeyQ', pad.roll),
     boost: Boolean(keys?.has?.('ShiftLeft') || keys?.has?.('ShiftRight') || pad.boost),
     brake: Boolean(keys?.has?.('KeyX') || (eva ? pad.evaBrake : pad.brake)),

@@ -1,5 +1,12 @@
 # All-features local development
 
+**Character controller turning, 9 September 2026:** `66dc1da` increases right-stick
+look speed on foot and in EVA by about 76%, to 1.5 rad/s. Gentle stick movement
+remains proportional; keyboard, mouse and ship handling retain their rates.
+Refresh **http://127.0.0.1:5178/**. Five affected test files, build and actual
+controller hatch/EVA/return journey pass; the managed client/API pair was refreshed
+with the existing database. [Checks](qa/character-controller-turn/README.md).
+
 **Step-by-step Flight guide, 9 September 2026:** `981852a` adds persistent next-action
 guidance from the first walk around the Nomad through hatch, chair, launch, gear,
 Map/Contracts selection, drive and arrival. Departure no longer asks you to dock
