@@ -149,6 +149,7 @@ schema: its expression indexes/checks and deployed migration history are retaine
 | Textured, mineable Aeon stones for aggregate/binder/concrete | `feat/aeon-mineable-stones` at `554cb17` (PR #54) |
 | Rare large Aeon landmarks, overhangs and stone bridges with physical contact | `feat/landmark-rocks` at `b4efa8f` ([PR #63](https://github.com/AvonMexicola/star-agent/pull/63)) |
 | Layered landmark grain, relief and seeded weathering/mineral variation | `art/landmark-weathering` runtime `4f9d472`, reviewed images `f88c497` |
+| Sparser giant landmarks with quieter, cheaper stone shading (supersedes the first weathering pass) | `art/landmark-restraint` runtime `bb75c4c`, checked source `92dadad`, locally combined at `6e548ad`; [images and measured limits](qa/landmark-restraint/README.md) |
 | Six local soundtrack variants with scene transitions | `feat/suno-soundtrack` at `f29c30d` |
 | Footsteps, weapons, mining, thrust-responsive engines and spatial flybys | `feat/gameplay-audio` at `5a128f3`, construction/fauna audio through `6d3abb0` |
 | Expedition character, corrected hips, hands, animations and studio | Preserved owner checkpoint `0bb6a6a`; combined local/remote binding in `3bd7d61` |
@@ -334,3 +335,13 @@ Moving rifle pulses and ship lasers follow the actual muzzle. Ballistic shots
 inherit launch velocity; collision and lead prediction use that trajectory.
 [Momentum QA](qa/combat-momentum.md) records the exact checked source, failures,
 evidence and limits. This is a local development checkpoint, not release approval.
+
+
+## Cargo tractor follow-up
+
+Checked on `feat/cargo-tractor` (runtime70fcaad), pending the next shared local
+promotion. Menu → Trade → Cargo → Equip tractor beam; hold RT / T to guide a
+crate and X / F to secure its compatible grid. Phone controls support a second
+finger while the first powers the beam. All SBU sizes work; only1SBU is hand
+carriable. This follow-up requires matching protocol4 client/API; no new SQL
+migration. See [controls](cargo-tractor.md) and [actual QA](qa/cargo-tractor.md).

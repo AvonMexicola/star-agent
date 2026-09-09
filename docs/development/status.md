@@ -70,3 +70,11 @@ identifier and artifact hash before making a deployment claim.
 
 Do not replace these states with a single green tick. A local integration or an
 independent art score is not evidence of durable server behavior or public deployment.
+
+
+Tractor follow-up (SA-CARGO-002): runtime70fcaad is checked on
+`feat/cargo-tractor`, pending shared local promotion. Physical1–64SBU tractor
+movement, persisted detached crates/leases and compatible grid securing replace
+the instant handler. Complete Nomad controller and Atlas keyboard/native-touch
+journeys pass; see [tractor QA](../qa/cargo-tractor.md). No physical-device or
+independent final art acceptance is claimed.

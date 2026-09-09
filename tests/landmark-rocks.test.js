@@ -14,7 +14,7 @@ import {nearbyAeonStones} from '../src/mining/aeon-stones.js';
 const site=()=>bodySurfacePoint(new Vector3(...findDestinations().forest),AEON,2);
 test('landmarks reconstruct seed and cell identity without moving canonical terrain',()=>{
   setPlanetSeed(7291);const origin=site(),height=terrainHeight(...origin.clone().normalize().toArray()),list=nearbyLandmarks(origin,1600);
-  assert.ok(list.length>2&&list.length<18);
+  assert.ok(list.length>0&&list.length<4,'landmarks stay occasional at the forest arrival');
   for(const d of list){
     assert.deepEqual(landmarkDescriptor(d.row,d.column),d);
     assert.equal(landmarkDescriptor(d.row,d.column+landmarkColumns(d.row)).id,d.id);
@@ -30,6 +30,25 @@ test('landmarks reconstruct seed and cell identity without moving canonical terr
     const cells=landmarkCells(new Vector3(...direction),1000);
     assert.equal(new Set(cells.map(c=>`${c.row}/${c.column}`)).size,cells.length);assert.ok(cells.length<180);
   }
+});
+
+test('sparser population keeps retained identity and leaves removed bedrock clear',()=>{
+  setPlanetSeed(7291);
+  const retained=landmarkDescriptor(9734,2027);
+  assert.equal(retained.id,'aeon-landmark-v1-7291-9734-2027');
+  assert.deepEqual(retained.position.toArray(),[1336156.9179494902,598238.0775358921,628286.1741116086]);
+  assert.deepEqual(retained.quaternion.toArray(),[.4614596298064275,.420766947367982,-.31511134596331103,.7146432856374818]);
+  assert.equal(retained.scale,.9709826811032796);assert.equal(retained.variant,6);
+  const count=nearbyLandmarks(site(),9000).length;
+  assert.ok(count>20&&count<65,'a broad forest view must not return to the previous 202 formations');
+  const removed=new Vector3(1336784.7446096854,596197.4209141518,629136.0343264169);
+  assert.equal(landmarkDescriptor(9727,2030),null);
+  assert.equal(landmarkExcludes(...removed.clone().normalize().toArray()),false);
+  const authority=new LandmarkRocks(new Scene(),{render:false});
+  try{
+    assert.equal(authority.candidates(removed,removed.clone().addScaledVector(removed.clone().normalize(),100)).length,0,
+      'a removed visible formation must not leave an invisible authoritative obstacle');
+  }finally{authority.dispose();}
 });
 
 test('large geometry has bounded LODs and genuine shelter/bridge undersides',()=>{
@@ -53,7 +72,7 @@ test('large geometry has bounded LODs and genuine shelter/bridge undersides',()=
 });
 
 test('forest, grass exclusion and new loose stones leave landmark footprints clear',()=>{
-  const d=nearbyLandmarks(site(),1200)[0];let count=0;
+  const d=nearbyLandmarks(site(),2000)[0];let count=0;
   for(const tile of forestTilesAround(d.direction,d.footprint+80)){
     const {records}=buildForestTile(tile);
     for(let i=0;i<records.length;i+=FOREST_RECORD_STRIDE){
@@ -93,7 +112,7 @@ test('landmark contact composes with existing building/mining obstacles and acti
 });
 
 test('restored outpost clearings suppress both landmark rendering and physical contact',()=>{
-  const d=nearbyLandmarks(site(),1200)[0],rocks=new LandmarkRocks(new Scene(),{clearings:[{position:d.position.toArray(),radius:100}]});
+  const d=nearbyLandmarks(site(),2000)[0],rocks=new LandmarkRocks(new Scene(),{clearings:[{position:d.position.toArray(),radius:100}]});
   try{
     for(let i=0;i<20;i++)rocks.update(d.position);
     assert.equal(rocks.descriptors.has(d.id),false);
