@@ -428,7 +428,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   resourceLegend.innerHTML='<strong>SELENE · SURFACE RESOURCES</strong><div><span class="resource-swatch ice">Ice</span><span class="resource-swatch copper">Copper</span><span class="resource-swatch basalt">Basalt</span></div><p></p><small>Menu · Choose a resource survey</small>';document.body.append(resourceLegend);
   let course=null;
   const travelEffects=new TravelEffects();
-  const navigationTargets=createNavigationTargeting({nav,camera,destinations,station,build,multiplayer,combat});
+  const navigationTargets=createNavigationTargeting({nav,camera,destinations,station,build,multiplayer,combat,vehicleTargets:()=>[...(rover?.navigationTargets??[]),...sentry.navigationTargets]});
   const systemMap=createSystemMap(nav,navigationTargets);nav.recoveryTrack=id=>navigationTargets.select(id);
   function setCourse(name){
     const navigationId=({moon:'selene',station:'station-aeon',coast:'site-coast',forest:'site-forest',mountain:'site-mountain',polar:'site-polar'})[name]??name;

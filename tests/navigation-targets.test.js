@@ -4,9 +4,30 @@ import {Vector3,Quaternion} from 'three';
 import {AEON,SELENE,bodySurfacePoint,bodyAltitude} from '../src/celestial.js';
 import {NAV_BODIES,NAV_ARRIVAL,NavigationLock,aimedNavigationTarget,navigationEndpoint,planNavigationTravel,surfaceTarget} from '../src/navigation-targets.js';
 import {sampleTravel,abortTravel} from '../src/travel-model.js';
+import {navigationObjectiveIds} from '../src/navigation-objectives.js';
+import {TRANSPORT_ROUTES} from '../src/transport/catalog.js';
 const v=p=>new Vector3(...p),forward=new Vector3(0,0,-1);
 const orientation=(start,end)=>new Quaternion().setFromUnitVectors(forward,end.clone().sub(start).normalize());
 const moon=NAV_BODIES.find(b=>b.id==='selene');
+
+test('freight guidance follows pickup, loose cargo, carrying and delivery, then clears',()=>{
+ const route=TRANSPORT_ROUTES[0],mission={route:route.id,phase:'accepted',crate:'sealed'},s={owner:'pilot',account:{transport:{active:mission}},ships:[],loose:[]};
+ assert.deepEqual(navigationObjectiveIds(s),[route.from]);
+ mission.phase='issued';s.loose=[{id:'sealed'}];assert.deepEqual(navigationObjectiveIds(s),['freight-crate-sealed']);
+ s.loose=[];s.account.carried={id:'sealed'};assert.deepEqual(navigationObjectiveIds(s),['your-ship']);
+ delete s.account.carried;s.ships=[{owner:'other',crates:[{id:'sealed'}]}];assert.deepEqual(navigationObjectiveIds(s),[]);
+ s.ships[0].owner='pilot';assert.deepEqual(navigationObjectiveIds(s),[route.to]);
+ s.account.transport.active=null;assert.deepEqual(navigationObjectiveIds(s),[]);
+});
+test('recovery guidance advances required cargo only and removes completed wreck guidance',()=>{
+ const mission={id:'recovery-1',job:'silent-atlas',phase:'accepted',cleared:false,crates:[]},s={owner:'pilot',account:{recovery:{active:mission}},ships:[],loose:[]};
+ assert.deepEqual(navigationObjectiveIds(s),['wreck-recovery-1']);
+ mission.phase='recover';mission.crates=['required'];s.loose=[{id:'bonus'},{id:'required'}];
+ assert.deepEqual(navigationObjectiveIds(s),['wreck-recovery-1']);
+ mission.cleared=true;assert.deepEqual(navigationObjectiveIds(s),['recovery-crate-required']);
+ s.loose=[{id:'bonus'}];s.ships=[{owner:'pilot',crates:[{id:'required'}]}];assert.deepEqual(navigationObjectiveIds(s),['settlement-aeon']);
+ s.account.recovery.active=null;assert.deepEqual(navigationObjectiveIds(s),[]);
+});
 
 test('targeted world arrivals end 20 km above the canonical surface in world doubles',()=>{
  for(const target of NAV_BODIES.filter(b=>b.id!=='star')){

@@ -4,7 +4,7 @@ import { staticNavigationTargets, NAV_FILTERS, NavigationLock, aimedNavigationTa
 import { projectShipMarker, markerDistance } from './ship-marker-projection.js';
 import './navigation-targeting.css';
 
-export function createNavigationTargeting({nav,camera,destinations,station,build,multiplayer,combat,parent=document.body}) {
+export function createNavigationTargeting({nav,camera,destinations,station,build,multiplayer,combat,vehicleTargets=()=>[],parent=document.body}) {
   const fixed=staticNavigationTargets(destinations),lock=new NavigationLock();
   let selectedId=null,aimed=null,reason='',lastTargets=fixed,activeTarget=null,lastController=nav.gamepad.id;
   let lastConnected=nav.gamepad.connected;
@@ -18,7 +18,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   // Touch players can use the same command without synthesizing keyboard events.
   const engageButton=document.createElement('button');engageButton.id='navigation-engage';engageButton.textContent='Engage relativistic drive';engageButton.hidden=true;parent.append(engageButton);
   function targets(){
-    const values=[...fixed,...(nav.tradeBeacons?.()??[])];
+    const values=[...fixed,...(nav.tradeBeacons?.()??[]),...vehicleTargets()];
     if(station.ready)values.push({id:'station-aeon',name:'Aeon Orbital',kind:'Space station',category:'stations',parent:'aeon',body:'aeon',center:(station.centre??station.worldPosition).toArray(),radius:2000});
     if(nav.shipPosition&&['walk','eva'].includes(nav.mode))values.push({id:'your-ship',name:'Your ship',kind:'Recovery beacon',category:'ships',parent:nav.body.id,center:nav.shipPosition.toArray(),radius:0});
     for(const claim of build.claims??[])if(!values.some(t=>t.localClaimId===claim.id))values.push({id:`base-${claim.id}`,name:claim.name||'Your base',kind:'Surface base',category:'bases',parent:claim.body,body:claim.body,surface:true,center:[...claim.origin],radius:0});
@@ -74,7 +74,10 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
       ring.querySelector('small').textContent=reason?(reason.startsWith('Within')||reason.startsWith('At stellar')?'Arrival zone · manual flight':'Keep flying to a clear approach'):lock.ready?(nav.controllerActive?'LB + RB + ↑ · Engage':'N / J · Engage'):`Hold nose on target · ${Math.floor(lock.charge*100)}%`;}
     engageButton.hidden=!lock.ready||!enabled;
     markers.hidden=modal||Boolean(nav.travel)||!['flight','walk','eva'].includes(nav.mode);
-    const shown=lastTargets.filter(t=>t.id!=='your-ship'&&!t.id.startsWith('hostile-')&&(filters[t.category]||t.id===selectedId)).sort((a,b)=>(b.id===selectedId)-(a.id===selectedId)||nav.position.distanceTo(nav.viewPoint(new Vector3(...a.center)))-nav.position.distanceTo(nav.viewPoint(new Vector3(...b.center)))).slice(0,16);
+    const objectives=new Set(nav.navigationObjectiveIds?.()??[]);
+    if(!nav.recoveryActive?.()&&['transit','engage'].includes(combat.state.phase))objectives.add('mission-patrol');
+    // Map filters control discovery/aiming. HUD bearings only show the player's current interests.
+    const shown=lastTargets.filter(t=>t.id!=='your-ship'&&!t.id.startsWith('hostile-')&&(t.id===selectedId||objectives.has(t.id)||t.owned)).sort((a,b)=>(b.id===selectedId)-(a.id===selectedId)||nav.position.distanceTo(nav.viewPoint(new Vector3(...a.center)))-nav.position.distanceTo(nav.viewPoint(new Vector3(...b.center))));
     const ids=new Set(shown.map(t=>t.id));for(const [id,node] of nodes)if(!ids.has(id)){node.remove();nodes.delete(id);}
     const placed=[];
     for(const target of shown){

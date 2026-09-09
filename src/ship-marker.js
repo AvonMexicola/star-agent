@@ -14,7 +14,7 @@ export function createShipMarker({nav,camera,entryLocal,shipName='Nomad',parent=
   return {
     setShip(values){shipName=values.shipName;entryLocal=values.entryLocal;accessLabel=values.accessLabel;},
     update(width,height){
-      const visible=Boolean(nav.shipPosition)&&!nav.insideShip&&(nav.mode==='eva'||nav.mode==='walk');
+      const visible=Boolean(nav.shipPosition)&&(!nav.insideShip||nav.roverOccupied)&&(nav.mode==='eva'||nav.mode==='walk');
       element.hidden=!visible;
       element.dataset.mode=nav.mode;
       if(!visible){state={visible:false};return;}
