@@ -268,3 +268,13 @@ Original08 state/trace/two videos/images and unchanged-source receipt retained.
 already used by the successful close-flight/EVA helper. Keep the same waypoint,
 6m tolerance, flight model, controls, landing and full delivery requirements. No
 runtime or rebuild. Guarded07/native07 remain passed;09 reruns only full quiet.
+
+
+A separate CPU diagnostic replays the retained08 failure pose through actual
+Navigation/GamepadInput and the approach helper at20/60/144Hz. The observed old
+stick formula reproduces the200s stall at6.057757m in all three; corrected input
+reaches the unchanged threshold in0.150/0.117/0.111s, allthreePASS. The standalone
+probe/receipt are ignored test-results/recovery-approach-probe.*. Initial optional
+probe could not spawn git inside the runner; the standalone version reconstructs
+the observed old formula without a subprocess. This is a CPU diagnosis, not full
+browser or physical-controller acceptance;09 remains required.
