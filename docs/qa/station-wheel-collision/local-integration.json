@@ -1,0 +1,10 @@
+{
+  "runtime": "8a2a12f",
+  "sourceSHA256": "d56ad9e424643e50ea601f742cdc67022dffe55ac6716d02603bf2384b2bf1c4",
+  "servedTriangleNarrowPhase": true,
+  "apiHealth": true,
+  "proxyHealth": true,
+  "servicePID": 131464,
+  "database": "existing persistent local database retained",
+  "public": "unchanged; local delivery only"
+}

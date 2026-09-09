@@ -1,5 +1,13 @@
 # All-features local development
 
+**Station wheel collision, 9 September 2026:** `8a2a12f` removes invisible walls
+along the diagonal spokes. Collision now checks the actual triangle surfaces
+inside the existing broad-phase bounds. The Nomad controller flight passes
+through a rotating wheel and back; visible spokes/rims and doors remain solid.
+Refresh **http://127.0.0.1:5178/**. Client and API use the corrected collider;
+the existing database is retained. [Verification and cost](qa/station-wheel-collision/README.md).
+This correction is local only; frozen public candidate `c5eb519` remains separate.
+
 **Greenbank drive fix, 9 September 2026:** `421ea55` corrects the reported 870 km
 miss caused by acquiring Aeon instead of the settlement. Refresh
 **http://127.0.0.1:5178/**, open **Map → Aeon → Locations**, advance to Greenbank

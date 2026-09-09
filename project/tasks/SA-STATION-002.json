@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex",
-  "status": "active",
+  "status": "integrated",
   "branch": "fix/station-wheel-collision",
   "base": "c5eb5197e1394920ea75ff0fb6664b1d7ff4b19a",
   "updated": "2026-09-09",
@@ -21,5 +21,7 @@
     "scripts/station-wheel.config.js",
     "tests/server-station-hub.test.js"
   ],
-  "brief": "docs/briefs/station-wheel-collision.md"
+  "brief": "docs/briefs/station-wheel-collision.md",
+  "validation": "Runtime 8a2a12f locally integrated. Full 165 unit files, six focused station files, 40 selected server cases including isolated PostgreSQL restart, production build and actual controller wheel pass/return browser01 PASS 2.1m. Initial generated-Prisma setup failure retained; no runtime change for it. Served collider and direct/proxied API health PASS after managed preview refresh; database retained. Public deployment and physical-device/independent acceptance unclaimed.",
+  "evidence": "docs/qa/station-wheel-collision/README.md"
 }
