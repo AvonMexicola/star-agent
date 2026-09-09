@@ -117,6 +117,13 @@ local frame; sweep points are transformed through the current ring rotation.
 Fixed spine and pod collision remain separate. Flight sweeps check all bays,
 so changing the active berth cannot make other hulls non-solid.
 
+Wheel correction `8a2a12f`: triangle bounds are broad phase only. Retain the actual
+triangle at each BVH leaf and use continuous box/triangle SAT for contact; diagonal
+spoke bounds alone fill hundreds of metres of open space. Explicit door/furniture
+boxes remain solid. The shared module also governs server flight and shot occlusion.
+See [wheel collision evidence](docs/qa/station-wheel-collision/README.md) for actual
+asset gaps, solid contacts, controller flight and the added triangle-memory cost.
+
 World origins are JavaScript doubles around the planet. Pod offsets and ring
 geometry are local metres. `station.rebase(origin)` updates every group's
 camera-relative position. Never restore main.js's former single-group rebase,
