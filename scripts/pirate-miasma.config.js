@@ -1,0 +1,5 @@
+import {defineConfig} from '@playwright/test';
+process.env.TMPDIR='/home/cees/projects/star-agent/.browser-cache/p3';
+export default defineConfig({testDir:'.',testMatch:'pirate-miasma.spec.js',timeout:480000,workers:1,retries:0,maxFailures:1,reporter:'list',outputDir:`${process.env.PIRATE_EVIDENCE||'test-results/miasma-01'}/runner-artifacts`,
+ use:{baseURL:'http://127.0.0.1:5686',viewport:{width:1440,height:900},hasTouch:true,actionTimeout:12000,video:'retain-on-failure',launchOptions:{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--enable-gpu','--ignore-gpu-blocklist','--use-gl=angle','--use-angle=gl','--disable-dev-shm-usage']}},
+ webServer:[{cwd:new URL('..',import.meta.url).pathname,command:'STAR_AGENT_MEMORY=1 PORT=8686 PUBLIC_ORIGIN=http://127.0.0.1:5686 node server/index.js',url:'http://127.0.0.1:8686/api/health',reuseExistingServer:false},{command:'VITE_DEV_TOOLS=1 npm run build && MULTIPLAYER_SERVER=http://127.0.0.1:8686 npm run preview -- --port 5686 --strictPort',url:'http://127.0.0.1:5686',reuseExistingServer:false,timeout:90000}]});

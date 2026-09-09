@@ -549,7 +549,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     else if(name==='grazer-habitat')nav.transit(AEON_GRAZER_QA.direction,35);
     else if(name==='miasma-surface')nav.transitMiasma(180);
     else if(name==='station'){const target=station.transitParams(180,6);nav.transit(target.direction,target.altitude);nav.orientToward(target.lookAt,target.up);}
-    else if(name==='pirate-hush')pirateCompound.approach();
+    else if(pirateCompound.layouts.some(site=>site.id===name))pirateCompound.approach(name);
     else if(name.startsWith('settlement-'))settlements.approach(name);
     else if(name==='orbit')nav.orbit();else nav.transit(destinations[name],name==='mountain'?700:name==='polar'?90:95);
     for(const b of document.querySelectorAll('.destination'))b.classList.toggle('active',b===button);
@@ -817,7 +817,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     moon.update(nav.position,origin,elapsed,!nav.insideShip,nav.shipPosition);
     landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);settlements.update(dt,origin);garages.update(origin);fauna.update(dt,origin);shipMiningInput.beforeUpdate();miningTool.update(dt,origin);trading.update(origin,dt);recovery.update(dt,origin);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
     pyre.update(origin,origin);
-    miasma.update(origin,origin,elapsed,nav.shipPosition);
+    miasma.update(origin,origin,elapsed,nav.shipPosition,[...build.claims,...settlements.claims].filter(claim=>claim.body==='miasma'));
     // Distant worlds as bright points: Pyre from Aeon and Selene, Aeon from Pyre.
     const pyreDistance=pyre.distance,aeonDistance=nav.position.length();
     pyreDirection.copy(pyre.worldPosition).sub(nav.position).normalize();aeonDirection.copy(nav.position).negate().normalize();
