@@ -26,7 +26,7 @@ export class MiningStore {
     this.state = {
       id: ROCK_ID, version: ROCK_VERSION, revision: 0, field: createDensity(), pack: [0, 0, 0], ship: [0, 0, 0],
       economy: {credits:legacy.credits,shopStock:structuredClone(legacy.shopStock)},
-      boxes: { pack: 1, ship: 4, station: 2 }, supplies: oldSupplies, loadout: defaultLoadout(),
+      boxes: { pack: 1, ship: 4, station: 2 }, supplies: {...oldSupplies,pack:{...oldSupplies.pack,'tractor-beam-tool':1}}, loadout: defaultLoadout(),
       materials: { pack: {}, ship: {} }, progression: defaultMiningProgression(), starterConstruction: defaultStarterConstruction(),
       remote: { station: { name: 'Aeon orbital locker', kind: 'station', items: emptyItems() } }, rocks: {},
     };

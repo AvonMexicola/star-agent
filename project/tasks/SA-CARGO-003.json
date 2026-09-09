@@ -1,0 +1,37 @@
+{
+  "id": "SA-CARGO-003",
+  "title": "Cargo tractor in the starter loadout",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex starter tractor",
+  "status": "review",
+  "branch": "feat/starter-tractor",
+  "base": "70a2db591ada3310b41390cda058db08ba85a02b",
+  "updated": "2026-09-09",
+  "areas": [
+    "industry",
+    "multiplayer",
+    "interface"
+  ],
+  "claims": [
+    "src/inventory/containers.js",
+    "src/mining/store.js",
+    "src/mining/tool.js",
+    "src/cargo/tractor-tool.js",
+    "src/trading/system.js",
+    "src/main.js",
+    "src/multiplayer/ui.js",
+    "server/inventory.js",
+    "server/room.js",
+    "server/trading.js",
+    "tests/loadout.test.js",
+    "tests/medium-ship-inventory.test.js",
+    "tests/server-room.test.js",
+    "tests/server-cargo.test.js",
+    "tests/browser/cargo-tractor.spec.js",
+    "scripts/starter-tractor.config.js"
+  ],
+  "brief": "docs/briefs/starter-tractor.md",
+  "validation": "Full configured165-file unit suite PASS; focused63 multiplayer/database/tool cases PASS, including isolated PostgreSQL. Production injected-controller tractor journey PASS1.1m, zero page/console errors, real2SBU cargo movement and return to mining. Final combined build main-z4xFCVwp and five integration test files PASS. No physical-device, independent acceptance or public deployment claim.",
+  "evidence": "docs/qa/starter-tractor/README.md"
+}

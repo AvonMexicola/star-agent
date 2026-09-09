@@ -282,7 +282,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   const flightEffects=createFlightEffects({effects,nav,mining,camera,getShip:()=>ship,onFire:(...args)=>{if(combat.state.phase!=='engage')return false;combat.fire(...args);return true;}});
   inventoryUI.registerContainer?.({id:'crescent-cache',name:'Crescent field cache',kind:'base',boxes:2,available:()=>nav.mode==='walk'&&!nav.insideShip&&nav.position.distanceTo(mining.fieldCache.position)<4});
   bindStationLedger(inventory,mining.store);
-  let recovery;const trading=createTradingSystem({scene,nav,station,store:mining.store,multiplayer,getShip:()=>ship,build,settlements,mining,remotePlayers,getMuzzle:()=>miningTool.equipment.muzzleWorldPosition(),extraShips:()=>recovery?.ships??[],extraBeacons:()=>recovery?.beacons??[],missionContext:()=>({recovery:recovery?.context})});
+  let recovery;const trading=createTradingSystem({scene,nav,station,store:mining.store,loadout,multiplayer,getShip:()=>ship,build,settlements,mining,remotePlayers,getMuzzle:()=>miningTool.equipment.muzzleWorldPosition(),extraShips:()=>recovery?.ships??[],extraBeacons:()=>recovery?.beacons??[],missionContext:()=>({recovery:recovery?.context})});
   recovery=createRecoverySystem({scene,nav,trading,combat,settlements});
   if(mediumSystems[fleet.active]&&!trading.registerHull(fleet.active))notify(mining.store.warning||'Ship cargo registration unavailable.');
   if(testFlight&&fleet.active==='kestrel')inventory.transferAll('ship','station');

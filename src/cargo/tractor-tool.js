@@ -8,13 +8,13 @@ import './tractor.css';
 
 /** Presentation/input only. All custody, collision and movement commits go
  * through the same local/server cargo command API. */
-export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
+export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle,loadout=null}){
   const models=new Map(),beams=new Map(),panel=document.createElement('aside');panel.id='tractor-panel';panel.hidden=true;
   panel.innerHTML='<small>FIELD MULTITOOL / TRACTOR</small><strong class="tractor-target">Aim at an SBU crate</strong><p class="tractor-status" role="status"></p><div class="tractor-controls"><button data-tractor="near">↑ Pull closer</button><button data-tractor="far">↓ Push away</button><button data-tractor="align">← Align to ship</button><button data-tractor="stow">X · Secure grid</button><button data-tractor="power">HOLD RT / T · TRACTOR</button><button data-tractor="exit">→ Holster tractor</button></div>';
   document.body.append(panel);const $=s=>panel.querySelector(s),power=$('[data-tractor="power"]');
   const ghost=new THREE.BoxHelper(new THREE.Mesh(new THREE.BoxGeometry(1,1,1)),0xb6efd1);ghost.name='Tractor compatible grid slot';ghost.visible=false;scene.add(ghost);
   let busy=false,pendingOp=null,queued=null,key=false,pointer=false,pointerId=null,distance=2,elapsed=0,message='',target=null,slot=null,time=0,triggerBefore=false,requireRelease=false,lastOwner=null;
-  let restrictedLast=false,inputSequence=0,lastExpired='';
+  let restrictedLast=false,inputSequence=0,lastExpired='',lastLoadoutItem;
   const hubGate=createHubFireGate(),physicalPointers=new Set();
   const loose=()=>api.snapshot().loose??[],held=()=>loose().find(c=>c.holder===api.snapshot().owner&&c.until>Date.now());
   const restricted=()=>isHandsFree(nav)||Boolean(nav.travel);
@@ -30,11 +30,11 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
     finally{busy=false;pendingOp=null;if(queued){const next=queued;queued=null;void command(next.op,next.fields);}}
   }
   async function release(){const c=held();if(c)await command('tractor-release',{crate:c.id});}
-  function holster(){nav.tractorActive=false;clear();void release();}
+  function holster({clearLoadout=true}={}){nav.tractorActive=false;clear();void release();if(clearLoadout&&loadout?.item==='tractor-beam-tool')Promise.resolve(loadout.select(null)).catch(e=>nav.notify(e.message));}
   async function equip(){
     if(restricted())throw new Error(isHandsFree(nav)?HANDS_FREE_REASON:'Stop transit before equipping the tractor.');
     if(!['walk','eva'].includes(nav.mode)||api.snapshot().account?.carried)throw new Error('Stand with empty hands before equipping the tractor.');
-    await api.equipTractor?.();if(restricted())throw new Error(isHandsFree(nav)?HANDS_FREE_REASON:'Stop transit before equipping the tractor.');
+    if(loadout?.item!=='tractor-beam-tool')await api.equipTractor?.();if(restricted())throw new Error(isHandsFree(nav)?HANDS_FREE_REASON:'Stop transit before equipping the tractor.');
     nav.tractorActive=true;clear();message='Aim at a crate. Release controls, then hold RT / T to lock.';
   }
   function secure(){const c=held();if(!live()||!hubGate.armed||!c||!slot||busy&&pendingOp!=='tractor-move')return false;requireRelease=true;key=false;pointer=false;pointerId=null;void command('tractor-stow',{crate:c.id,ship:slot.ship.id});return true;}
@@ -57,6 +57,13 @@ export function createCargoTractor({scene,nav,api,ships,worldClear,getMuzzle}){
     get state(){return {active:Boolean(nav.tractorActive),held:held()?.id??null,target:target?.id??null,slot:slot?{ship:slot.ship.id,position:slot.position.toArray()}:null,distance,busy,message,beam:[...beams.values()].some(b=>b.mesh.visible),loose:models.size};},
     controller(pad){if(!nav.tractorActive||!live())return;for(const [index,action]of [[12,()=>adjust(-.5)],[13,()=>adjust(.5)],[14,align],[15,holster]])if(pad.pressed.has(index)){pad.pressed.delete(index);action();}},
     update(dt,origin){
+      // The existing Tool slot owns its selection; Cargo's utility shortcut
+      // remains available to older saves that do not own a standalone tractor.
+      const item=loadout?.item;
+      if(loadout&&item!==lastLoadoutItem&&item!=='tractor-beam-tool'&&nav.tractorActive)holster({clearLoadout:false});
+      lastLoadoutItem=item;
+      if(item==='tractor-beam-tool'&&!nav.tractorActive&&!restricted()&&['walk','eva'].includes(nav.mode)&&!api.snapshot().account?.carried)
+        void equip().catch(e=>nav.notify(e.message));
       const blocked=restricted(),physicalHeld=Boolean(physicalPointers.size||nav.physicalKeys?.has('KeyT')||nav.toolTrigger>.1);
       const triggerReady=hubGate.update(blocked,physicalHeld,++inputSequence);
       // An inactive tool must not disarm a pilot's LT abort as drive starts.

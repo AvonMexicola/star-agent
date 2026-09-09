@@ -29,7 +29,7 @@ import { createCargoTractor } from '../cargo/tractor-tool.js';
 import { tractorContext } from '../cargo/tractor-context.js';
 import { tractorWorldClear,constrainLooseCargo } from '../cargo/tractor-physics.js';
 import { isHandsFree } from '../station-hub-policy.js';
-export function createTradingSystem({scene,nav,station,store,multiplayer,getShip,build,mining,remotePlayers,getMuzzle,settlements,stationMarket=marketIdForTerminal,extraShips=()=>[],extraBeacons=()=>[],missionContext=()=>({})}){
+export function createTradingSystem({scene,nav,station,store,loadout,multiplayer,getShip,build,mining,remotePlayers,getMuzzle,settlements,stationMarket=marketIdForTerminal,extraShips=()=>[],extraBeacons=()=>[],missionContext=()=>({})}){
   const resolveMarket=id=>settlementMarketId(id)||stationMarket(id);
   const settlementIds=()=>settlements?.beacons().map(s=>s.id)??[];
   const miningClient=bindCargoMining({multiplayer,mining,nav});
@@ -52,7 +52,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   const worldClear=tractorWorldClear(nav,station,(a,d,r)=>nav.buildingRaycast?.(a,d,r)?.distance);
   const transportAvailable=r=>settlementIds().includes(r.from)&&settlementIds().includes(r.to);
   const api={nav,transportAvailable,localBases:()=>store.state.build?.claims??[],baseActive:t=>!t.base||t.base.shared||!build.power||Boolean(build.claims.find(c=>c.id===t.base?.claim.id)&&build.power.status(build.claims.find(c=>c.id===t.base.claim.id)).powered),callShip:hull=>multiplayer.request('cargoHull',{hull}),snapshot,atTerminal,nearestTerminal,docked,canTake,canStow,sources,
-    equipTractor:()=>multiplayer.connected?multiplayer.request('equip',{weapon:'mining-laser-tool'}):Promise.resolve(),
+    equipTractor:()=>multiplayer.connected?multiplayer.request('equip',{weapon:multiplayer.state.inventory?.containers.pack['tractor-beam-tool']?'tractor-beam-tool':'mining-laser-tool'}):Promise.resolve(),
     loose:(source,id)=>multiplayer.connected?((multiplayer.state.inventory?.containers.pack[id]??0)+(snapshot().account?.resources?.[id]??0)):(sources().some(s=>s.id===source)?store.container(source)?.items[id]??0:0),
     async command(m){
       const fields={...m,commandId:`cargo-${Date.now()}-${++serial}`,revision:m.revision??snapshot().revision};
@@ -61,7 +61,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
     },
     async deploy(){if(multiplayer.connected){await multiplayer.request('cargo',{op:'deploy',revision:snapshot().revision,commandId:`cargo-${Date.now()}-${++serial}`});return {message:'Shared trading pad built.'};}return local.deploy(nav);},
   };
-  const tractor=createCargoTractor({scene,nav,api,ships:physicalShips,worldClear,getMuzzle});api.tractor=tractor;
+  const tractor=createCargoTractor({scene,nav,api,ships:physicalShips,worldClear,getMuzzle,loadout:loadout?{get item(){return loadout.item;},select:id=>multiplayer.connected?multiplayer.request('equip',{weapon:null}):loadout.select(id)}:null});api.tractor=tractor;
   const ui=createTradingUI(api,nav),pads=createTradingPads(scene,()=>snapshot().terminals.filter(t=>!t.base));
   nav.transportDriveAvailable=id=>transportDestination(snapshot().account,id);
   nav.navigationObjectiveIds=()=>navigationObjectiveIds(snapshot());

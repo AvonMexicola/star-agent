@@ -143,7 +143,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       }else if(m.action==='equip'){
         if(m.weapon!==null&&(p.health<=0||p.shipHealth<=0))throw new Error('Respawn before equipping tools or weapons.');
         if(m.weapon!==null&&hub.isHandsFree(p.nav))throw new Error(HANDS_FREE_REASON);
-        if(m.weapon!==null&&(typeof m.weapon!=='string'||!Object.hasOwn(WEAPON_RULES,m.weapon)&&m.weapon!=='mining-laser-tool'||!p.inventory.containers.pack[m.weapon]))throw new Error('That item is not in your pack.');
+        if(m.weapon!==null&&(typeof m.weapon!=='string'||!Object.hasOwn(WEAPON_RULES,m.weapon)&&!['mining-laser-tool','tractor-beam-tool'].includes(m.weapon)||!p.inventory.containers.pack[m.weapon]))throw new Error('That item is not in your pack.');
         await persist(p,p.inventory,{weapon:m.weapon});
         if(m.weapon!==null&&(p.health<=0||p.shipHealth<=0||hub.isHandsFree(p.nav))){
           p.weapon=null;await persist(p);throw new Error(p.health<=0||p.shipHealth<=0?'Respawn before equipping tools or weapons.':HANDS_FREE_REASON);
@@ -279,7 +279,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         const p={id:account.id,account:{id:account.id,callsign:account.callsign},send:sendFn,colorIndex:slot,spawnPod:slot+1,hangarId:null,inventory:saved?restoreInventory(saved.inventory):initialInventory(),health:100,shipHealth:100,weapon:saved?.weapon??'rifle-laser',sequence:0,input:cleanInput(),lastInput:now(),lookYaw:0,lookPitch:0,lastShotAt:-Infinity,busy:false,messages:0,rateStart:now()};
         pendingPlayer=p;
         if(saved){p.health=Math.max(0,Math.min(100,Number.isFinite(saved.health)?saved.health:100));p.shipHealth=Math.max(0,Math.min(100,Number.isFinite(saved.shipHealth)?saved.shipHealth:100));}
-        if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&p.weapon!=='mining-laser-tool')p.weapon=null;
+        if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&!['mining-laser-tool','tractor-beam-tool'].includes(p.weapon))p.weapon=null;
         const spawnSlot=reserveSpawn(p);p.spawnPod=p.hangarId;
         p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));if(saved?.hull==='atlas'){setHull(p,'atlas');p.nav.startStation();}attach(p);await persist(p);await trading.join(p);
         if(closed)throw failure('Server restarting.','ROOM_CLOSED');

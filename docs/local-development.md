@@ -919,3 +919,14 @@ The checked vehicle is locally integrated at `bdf053c`. Its
 [player guide](burrow-sentry.md) distinguish automated input, physical devices,
 art review and performance acceptance. Online support requires matching client
 and server versions; session vehicles do not add a persistent purchase economy.
+
+
+## Starter cargo tractor
+
+Fresh solo and multiplayer backpacks now include one cargo tractor. Open
+**Menu → Loadout → Tool → Cargo tractor**, then draw it if your hands were empty.
+The mining laser moves into your backpack. **RT / T** tractors an SBU crate;
+**X / F** secures it to a compatible cargo grid. Swap back through the same Tool
+slot. Existing saves keep their contents; **Trade → Cargo → Equip tractor** remains
+available for those profiles. See the [verification record](qa/starter-tractor/README.md)
+for finite-inventory, server, controller and local-delivery checks.

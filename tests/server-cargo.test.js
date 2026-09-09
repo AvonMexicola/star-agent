@@ -125,7 +125,7 @@ test('hub and passenger restrictions stop tractor authority, retain private snap
  a.nav.position.copy(a.nav.fromShipLocal(new THREE.Vector3(0,2.75,2.7)));
  a.nav.orientation.setFromUnitVectors(new THREE.Vector3(0,0,-1),point.clone().sub(a.nav.position).normalize());
  const berthEye=a.nav.position.clone();
- assert.equal((await f.request(a.id,{action:'equip',weapon:'mining-laser-tool'})).ok,true);
+ assert.equal((await f.request(a.id,{action:'equip',weapon:'tractor-beam-tool'})).ok,true);
  assert.equal((await f.request(a.id,{op:'tractor-grab',ship,crate:crate.id})).ok,true);
  const before=structuredClone(f.room.trading.state);
  a.nav.position.copy(f.world.station.hub.toWorld(new THREE.Vector3(0,-6.25,0),new THREE.Vector3()));
@@ -139,7 +139,7 @@ test('hub and passenger restrictions stop tractor authority, retain private snap
  assert.notEqual(own.commerce.account,other.commerce.account);assert.notEqual(own.inventory,other.inventory);
  assert.equal((await f.request(a.id,{op:'tractor-release',crate:crate.id})).ok,true,'stowing equipment never strands a lease');
  a.nav.position.copy(berthEye);
- assert.equal((await f.request(a.id,{action:'equip',weapon:'mining-laser-tool'})).ok,true);
+ assert.equal((await f.request(a.id,{action:'equip',weapon:'tractor-beam-tool'})).ok,true);
  f.room.receive(a.id,{type:'input',sequence:2,input:{fire:true}});
  assert.equal((await f.request(a.id,{op:'tractor-grab',ship,crate:crate.id})).ok,false,'held input stays blocked after arrival');
  a.input.fire=false;

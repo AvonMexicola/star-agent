@@ -21,15 +21,30 @@ async function shipment(page,hull,size){
  const {MiningStore}=await import('../../src/mining/store.js'),{emptyCommerce,ensureAccount}=await import('../../src/trading/model.js'),{placeCrate}=await import('../../src/cargo/grid.js');
  const values=new Map(),storage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v)},store=new MiningStore(storage),s=emptyCommerce();ensureAccount(s,'local-player');s.ships[`local-player:${hull}`].crates.push(placeCrate(hull,[],{id:'tractor-fixture',resource:'copper',sbu:size}));store.write({...store.state,commerce:s});await page.addInitScript(entries=>{window.__starAgentCargoTestSeed=entries;},[...values]);
 }
-test('controller physically reaches2SBU, equips tractor, moves, safely interrupts and secures it',async({page,browser})=>{
+test('controller equips starter tractor from Loadout, physically moves2SBU, safely interrupts and secures it',async({page,browser})=>{
  await shipment(page,'nomad',2);const {tap,button,choose,errors}=await setup(page,'nomad',true);
- await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');await walk(page,[0,2.75,2.6]);await aim(page,[1.24,1.3,2.76]);await tap(9);await choose('tab-trade');await choose('view-cargo');await fit(page);await choose('equip-tractor');await page.waitForFunction(()=>window.starAgent.state.trading.tractor.active&&window.starAgent.state.controller.armed);
+ await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');await walk(page,[0,2.75,2.6]);await aim(page,[1.24,1.3,2.76]);await tap(9);await choose('tab-loadout');await choose('equipment-tool');
+ expect(await page.evaluate(()=>window.starAgent.state.containers.containers.find(c=>c.id==='pack').items['tractor-beam-tool'])).toBe(1);
+ await choose('assign-tool-pack-tractor-beam-tool');await page.waitForFunction(()=>window.starAgent.state.loadout.slots.tool.item==='tractor-beam-tool');
+ await page.screenshot({path:`${evidence}/starter-loadout.png`});await tap(1);await page.waitForFunction(()=>window.starAgent.state.trading.tractor.active&&window.starAgent.state.controller.armed);
  await button(7,true);await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held&&window.starAgent.state.trading.tractor.beam,undefined,{timeout:12000});
  const initial=await page.evaluate(()=>window.starAgent.state.trading.loose[0].position);await tap(12);await page.waitForFunction(initial=>Math.hypot(...window.starAgent.state.trading.loose[0].position.map((v,i)=>v-initial[i]))>.3,initial,{timeout:6000});
  expect(await page.evaluate(()=>window.starAgent.state.mining.tool.item)).toBe('tractor-beam-tool');await page.screenshot({path:`${evidence}/nomad-tractor.png`});expect(await page.evaluate(()=>window.starAgent.state.trading.account.carried)).toBe(null);expect(await page.evaluate(()=>window.starAgent.state.mining.tool.beaming)).toBe(false);
  await tap(9);await expect(page.locator('dialog[open]')).toBeVisible();await page.waitForFunction(()=>!window.starAgent.state.trading.loose[0].holder);const stopped=await page.evaluate(()=>window.starAgent.state.trading.loose[0].position);
  await button(7,false);await page.waitForFunction(()=>window.starAgent.navigation.gamepad.uiArmed);await button(7,true);await tap(1);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);expect(await page.evaluate(()=>window.starAgent.state.trading.loose[0].position)).toEqual(stopped);await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ for(const kind of ['focus','disconnect','replacement']){
+  await button(7,true);
+  await page.evaluate(kind=>{if(kind==='focus')window.dispatchEvent(new Event('blur'));if(kind==='disconnect')window.cargoPad.connected=false;if(kind==='replacement')window.cargoPad.id+=' replacement';},kind);await frames(page);
+  await page.evaluate(()=>{window.cargoPad.connected=true;window.dispatchEvent(new Event('focus'));});await frames(page);
+  await page.waitForFunction(()=>!window.starAgent.state.trading.loose[0].holder);
+  expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);
+  await button(7,false);await page.waitForFunction(()=>window.starAgent.state.controller.armed);
+ }
  const local=await page.evaluate(()=>window.starAgent.navigation.toShipLocal(window.starAgent.navigation.position.clone().fromArray(window.starAgent.state.trading.loose[0].position)).toArray());await aim(page,local);await button(7,true);await page.waitForFunction(()=>window.starAgent.state.trading.tractor.held&&window.starAgent.state.trading.tractor.slot);await tap(2);await page.waitForFunction(()=>window.starAgent.state.trading.loose.length===0);expect(await page.evaluate(()=>window.starAgent.state.trading.ships.find(s=>s.hull==='nomad').crates[0].sbu)).toBe(2);await button(7,false);await tap(15);expect(await page.evaluate(()=>window.starAgent.state.trading.tractor.active)).toBe(false);
+ expect(await page.evaluate(()=>window.starAgent.state.loadout.active)).toBe(null);
+ await tap(9);await choose('tab-loadout');await choose('equipment-tool');await choose('assign-tool-pack-mining-laser-tool');await choose('draw-tool');await tap(1);
+ await page.waitForFunction(()=>window.starAgent.state.controller.armed);expect(await page.evaluate(()=>window.starAgent.state.trading.tractor.active)).toBe(false);
+ expect(await page.evaluate(()=>window.starAgent.state.containers.containers.find(c=>c.id==='pack').items['tractor-beam-tool'])).toBe(1);
  await tap(9);await choose('tab-trade');await choose('view-cargo');await page.setViewportSize({width:390,height:844});await fit(page);await page.screenshot({path:`${evidence}/tractor-cargo-phone.png`});await tap(1);expect(errors).toEqual([]);await writeFile(`${evidence}/controller.json`,JSON.stringify({browser:browser.version(),errors,fixture:'2SBU shipment preloaded; all subsequent equipment, movement and UI use standard Gamepad',physicalController:false,state:await page.evaluate(()=>window.starAgent.state)},null,2));
 });
 test('Atlas64SBU tractor is visible, moves physically, and touch can release/relock/secure it',async({page,browser})=>{
