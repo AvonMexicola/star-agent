@@ -1,0 +1,199 @@
+{
+  "source": "f70eab95407f0fa4127b260774924ee8410193d3",
+  "pr": 113,
+  "merge": "006c6aee5b44615d6f2d769071974a9d4acce768",
+  "ciRun": 34336716635,
+  "files": {
+    "public": 300,
+    "multiplayer": 1383
+  },
+  "builtChannels": {
+    "solo": {
+      "channel": "solo",
+      "commit": "f70eab95407f0fa4127b260774924ee8410193d3",
+      "builtAt": "2026-09-09T09:49:25.987Z",
+      "multiplayerVersion": 11,
+      "maxPlayers": 20,
+      "seed": 7291,
+      "devTools": true
+    },
+    "multiplayer": {
+      "channel": "multiplayer",
+      "commit": "f70eab95407f0fa4127b260774924ee8410193d3",
+      "builtAt": "2026-09-09T09:49:08.493Z",
+      "multiplayerVersion": 11,
+      "maxPlayers": 20,
+      "seed": 7291,
+      "devTools": true
+    }
+  },
+  "status": "deployed",
+  "promotion": {
+    "source": "f70eab95407f0fa4127b260774924ee8410193d3",
+    "previous": "d63fab0d595424e622c073cdb576d01124094736",
+    "promotedAt": "2026-09-09T10:01:24Z",
+    "connectionsBeforeRestart": 0,
+    "servicePID": 41754,
+    "health": true,
+    "packagingCorrection": "Generated omitted Prisma client using unchanged pinned schema/dependencies"
+  },
+  "https": {
+    "at": "2026-09-09T10:02:05.174093+00:00",
+    "source": "f70eab95407f0fa4127b260774924ee8410193d3",
+    "channels": {
+      "solo": {
+        "metadata": {
+          "channel": "solo",
+          "commit": "f70eab95407f0fa4127b260774924ee8410193d3",
+          "builtAt": "2026-09-09T09:49:25.987Z",
+          "multiplayerVersion": 11,
+          "maxPlayers": 20,
+          "seed": 7291,
+          "devTools": true
+        },
+        "indexMatches": true,
+        "assets": {
+          "assets/GLTFLoader-DfnYuQr2.js": "831ad057910611d4ff0ca762df46bb18119ca8d0980b9b85c047bf7255ca77e0",
+          "assets/asteroid-material-DnqOZ_F9.js": "048c267a9e11031559d060e542ddfbc63489c786eca5711e8f866eacb2dc0935",
+          "assets/audio-B5hJm14G.js": "bc93a695bcd8062b40b850ec104e64e585714234ff12628e38b1a6d033b6c494",
+          "assets/boarding-CHOVCBAK.js": "9f8452537dfbc524e9e973e80f787f67087e7645b1ba86812294ac4683551a90",
+          "assets/celestial-BArUeUlS.js": "1e956d73b17669025db40c1648015cc548674b24951f522d94793247a9afc695",
+          "assets/character-D-Tcwlxd.js": "1ae68902a984bc4d1863d65e657d32e86b848e354adcea9c0b0cc3bdc872d31c",
+          "assets/definitions-BXp_sQzX.js": "f0bdf12860afbd77f449ec6d1fe7da2891ce127cf2e55624e6914ec1834ed32e",
+          "assets/equipment-DGCaQogW.js": "6b71314b5497a1d259b6f86fadb938af93a9b98a075bae8dd4ea1746e1774365",
+          "assets/gannet-systems-G6i53cSl.js": "df647aae4cb84ab7067842ff227305a3281b33ed585a407f2fa4b867da868c59",
+          "assets/gear-flight-BEVbqRj-.js": "3ae429290d4f5f2430f245892fe2b2caf16030e2be558676351cb4d62e449682",
+          "assets/generation-COTNAE7W.js": "9ae025cc7f4d823d5eb011a6fdc4da7113697cc6966edd18c4a7e87afbbae4d2",
+          "assets/ground-textures--fyYbECk.js": "3236e747c27d890cd67aed35b49bc11ea6987de1935cfc1f26e5a85a774baef3",
+          "assets/identity-jKBeEGq3.js": "e0fb7a2d30b8de14cda44a1f77de15d276f16e7ae8d230288c1b7101256569e7",
+          "assets/kestrel-0dxTR8hQ.glb": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+          "assets/kestrel-BZMkwa6A.js": "eecfbcf7cc5354ef3abbedfc6e821a1d9f651b2e279b108e6b3d6abff0212611",
+          "assets/lighting-BNty5kiN.js": "ada47dcbf419c77d3a5a6d79d3b30b721d76ea72d93ec82e811569d36ad67ac5",
+          "assets/main-8599aaf5.css": "1b2c6112549b9dd4fea064ec8408ca567c1cdc21b73ddcc62d068a9a047c9ffb",
+          "assets/main-CoRoRLcw.js": "39deba548d080557910c2a8a98eba5fea0779151b61e94eed1109eb60b86d1c3",
+          "assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0",
+          "assets/moon-world-0Vn5dIT4.js": "3c28c7c7409d0a3a7a945d294fb0ca86ca09ac170e77280ccbda55169750b6a3",
+          "assets/particles-yvoU0Cpi.js": "91e538d7c0423c321fa3b6c29e4cbe2fa3978e5d8aa34b2f58d68325e5bb244a",
+          "assets/player-avatar-D5mpJPEk.js": "bda92f1e16bb51bf6179df83b81576d90261bdeea9283c8457cc3adef50124fb",
+          "assets/preload-helper-PPVm8Dsz.js": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4",
+          "assets/ship-handling-DTrMfeK7.js": "5145dbd2e498a0f19e7928a7e4b119a18540faeed0ef91260bf168243f22de98",
+          "assets/ship-mfd-wIijmOkv.js": "a327944ae61b503c77ed774ccda50960f424d5623f3151c082251c13bf8e5332",
+          "assets/ship-weapons-bFuOlg2N.js": "537d281fc8ed98afd4ea21ee733b7e494ae9dbd7dbd1da3ab877e72096b1fac5",
+          "assets/stellar-world-BXu_I_E0.js": "b21b3321779cdcb813776a7444ca144908095e97c4c572a3afc6e386afa6987c",
+          "assets/stratum-flight-parts-D7fasYdG.js": "bcd8d7abbc6edb28bc28365a70868d8ba726c7bab03363d8d9b033f93758d731",
+          "assets/surface-materials-DRGDAiW_.js": "461bf0af3644e1589645418d0f2593fe4b167dcbb9eba4ea8b7a196b14207e4e",
+          "assets/terrain-maps-BOVMvab7.js": "895dc23244556caf9fde03a62aee28f1d47bb20f01c4586475a25dacc44fde15",
+          "assets/three.core-CJy9TXFq.js": "01c91240d4913d014f3d51e75fc33a72c5135ad667dd91e6b6b66e9fc5ac6f98",
+          "assets/three.module-DxlRtJu0.js": "99917c298cf61269f3b6b7ebe0f1dc205eefa67b44dffbc68aa656efea22bce5",
+          "assets/vegetation-4oLsY58x.js": "6ac15feadfa424e6811f9badefa66c6df54364c5ada1ac820b1f56c679481423",
+          "assets/viewer-style-CsRXElqD.css": "f6b2219bf84f3d020e30cc81fd4d0ee9b3ff521eb86be71c0b7340e9a7e0f1ce",
+          "assets/visuals-BEHhneu1.js": "f7d023ba7b121893ba13fc95b17425d0e5845f4b72abb312c1a96e4dd24f8e53",
+          "assets/weapon-mounts-Brg6wUlE.js": "b441a9ded2e6dd89aebae5cbdf470d06c884b995a530767c96fb28623b195fab",
+          "assets/world-kivAPjcU.js": "91851ec0e7ed17847a0cf6c12f11cd3e724da392405162d3c56b72c822626c06",
+          "models/burrow-sentry.glb": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387",
+          "models/mining-rover.glb": "85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e",
+          "models/nomad.glb": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+          "models/props/tractor-beam-tool.glb": "ce83cf842ab9e014ce8c52551c16679a3b976fb5c2302fd0bfb13e06971c66eb",
+          "models/station.glb": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14"
+        }
+      },
+      "multiplayer": {
+        "metadata": {
+          "channel": "multiplayer",
+          "commit": "f70eab95407f0fa4127b260774924ee8410193d3",
+          "builtAt": "2026-09-09T09:49:08.493Z",
+          "multiplayerVersion": 11,
+          "maxPlayers": 20,
+          "seed": 7291,
+          "devTools": true
+        },
+        "indexMatches": true,
+        "assets": {
+          "assets/GLTFLoader-DfnYuQr2.js": "831ad057910611d4ff0ca762df46bb18119ca8d0980b9b85c047bf7255ca77e0",
+          "assets/asteroid-material-DnqOZ_F9.js": "048c267a9e11031559d060e542ddfbc63489c786eca5711e8f866eacb2dc0935",
+          "assets/audio-B5hJm14G.js": "bc93a695bcd8062b40b850ec104e64e585714234ff12628e38b1a6d033b6c494",
+          "assets/boarding-CHOVCBAK.js": "9f8452537dfbc524e9e973e80f787f67087e7645b1ba86812294ac4683551a90",
+          "assets/celestial-BArUeUlS.js": "1e956d73b17669025db40c1648015cc548674b24951f522d94793247a9afc695",
+          "assets/character-D-Tcwlxd.js": "1ae68902a984bc4d1863d65e657d32e86b848e354adcea9c0b0cc3bdc872d31c",
+          "assets/definitions-BXp_sQzX.js": "f0bdf12860afbd77f449ec6d1fe7da2891ce127cf2e55624e6914ec1834ed32e",
+          "assets/equipment-DGCaQogW.js": "6b71314b5497a1d259b6f86fadb938af93a9b98a075bae8dd4ea1746e1774365",
+          "assets/gannet-systems-G6i53cSl.js": "df647aae4cb84ab7067842ff227305a3281b33ed585a407f2fa4b867da868c59",
+          "assets/gear-flight-BEVbqRj-.js": "3ae429290d4f5f2430f245892fe2b2caf16030e2be558676351cb4d62e449682",
+          "assets/generation-COTNAE7W.js": "9ae025cc7f4d823d5eb011a6fdc4da7113697cc6966edd18c4a7e87afbbae4d2",
+          "assets/ground-textures--fyYbECk.js": "3236e747c27d890cd67aed35b49bc11ea6987de1935cfc1f26e5a85a774baef3",
+          "assets/identity-jKBeEGq3.js": "e0fb7a2d30b8de14cda44a1f77de15d276f16e7ae8d230288c1b7101256569e7",
+          "assets/kestrel-0dxTR8hQ.glb": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+          "assets/kestrel-BZMkwa6A.js": "eecfbcf7cc5354ef3abbedfc6e821a1d9f651b2e279b108e6b3d6abff0212611",
+          "assets/lighting-BNty5kiN.js": "ada47dcbf419c77d3a5a6d79d3b30b721d76ea72d93ec82e811569d36ad67ac5",
+          "assets/main-8599aaf5.css": "1b2c6112549b9dd4fea064ec8408ca567c1cdc21b73ddcc62d068a9a047c9ffb",
+          "assets/main-CZrPq5UE.js": "b5b046d0fa5b32c348255f3bef0b80cff752e8a533e465e77ee588d3f5f6e29f",
+          "assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0",
+          "assets/moon-world-0Vn5dIT4.js": "3c28c7c7409d0a3a7a945d294fb0ca86ca09ac170e77280ccbda55169750b6a3",
+          "assets/particles-yvoU0Cpi.js": "91e538d7c0423c321fa3b6c29e4cbe2fa3978e5d8aa34b2f58d68325e5bb244a",
+          "assets/player-avatar-D5mpJPEk.js": "bda92f1e16bb51bf6179df83b81576d90261bdeea9283c8457cc3adef50124fb",
+          "assets/preload-helper-PPVm8Dsz.js": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4",
+          "assets/ship-handling-DTrMfeK7.js": "5145dbd2e498a0f19e7928a7e4b119a18540faeed0ef91260bf168243f22de98",
+          "assets/ship-mfd-wIijmOkv.js": "a327944ae61b503c77ed774ccda50960f424d5623f3151c082251c13bf8e5332",
+          "assets/ship-weapons-bFuOlg2N.js": "537d281fc8ed98afd4ea21ee733b7e494ae9dbd7dbd1da3ab877e72096b1fac5",
+          "assets/stellar-world-BXu_I_E0.js": "b21b3321779cdcb813776a7444ca144908095e97c4c572a3afc6e386afa6987c",
+          "assets/stratum-flight-parts-D7fasYdG.js": "bcd8d7abbc6edb28bc28365a70868d8ba726c7bab03363d8d9b033f93758d731",
+          "assets/surface-materials-DRGDAiW_.js": "461bf0af3644e1589645418d0f2593fe4b167dcbb9eba4ea8b7a196b14207e4e",
+          "assets/terrain-maps-BOVMvab7.js": "895dc23244556caf9fde03a62aee28f1d47bb20f01c4586475a25dacc44fde15",
+          "assets/three.core-CJy9TXFq.js": "01c91240d4913d014f3d51e75fc33a72c5135ad667dd91e6b6b66e9fc5ac6f98",
+          "assets/three.module-DxlRtJu0.js": "99917c298cf61269f3b6b7ebe0f1dc205eefa67b44dffbc68aa656efea22bce5",
+          "assets/vegetation-4oLsY58x.js": "6ac15feadfa424e6811f9badefa66c6df54364c5ada1ac820b1f56c679481423",
+          "assets/viewer-style-CsRXElqD.css": "f6b2219bf84f3d020e30cc81fd4d0ee9b3ff521eb86be71c0b7340e9a7e0f1ce",
+          "assets/visuals-BEHhneu1.js": "f7d023ba7b121893ba13fc95b17425d0e5845f4b72abb312c1a96e4dd24f8e53",
+          "assets/weapon-mounts-Brg6wUlE.js": "b441a9ded2e6dd89aebae5cbdf470d06c884b995a530767c96fb28623b195fab",
+          "assets/world-kivAPjcU.js": "91851ec0e7ed17847a0cf6c12f11cd3e724da392405162d3c56b72c822626c06",
+          "models/burrow-sentry.glb": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387",
+          "models/mining-rover.glb": "85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e",
+          "models/nomad.glb": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+          "models/props/tractor-beam-tool.glb": "ce83cf842ab9e014ce8c52551c16679a3b976fb5c2302fd0bfb13e06971c66eb",
+          "models/station.glb": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14"
+        }
+      }
+    },
+    "homepageHostsMatch": true,
+    "multiplayerHealth": true
+  },
+  "apiWss": {
+    "anonymousSessionAPI": true,
+    "anonymousWSSStatus": 401,
+    "authenticationRequired": true,
+    "accountsCreated": 0
+  },
+  "checks": {
+    "plan": "pass",
+    "source": "pass",
+    "multiplayer": "pass",
+    "browser": "pass",
+    "verify": "pass",
+    "run": 34336716635
+  },
+  "staging": {
+    "publicFiles": 300,
+    "multiplayerTrackedAndBuiltFiles": 1383,
+    "generatedPrismaFiles": 21,
+    "publicManifestSHA256": "03ea8054eca27c2616d3212add88a073faf404451db63ed8f5e04d830611708f",
+    "multiplayerManifestSHA256": "b1e774c454843fc1417902a4c861ee229cc73b1755bdc3c91dc3cf1b50b3a841",
+    "generatedManifestSHA256": "291c877622ef5deb04cb0ab78958d8c08c7f9a717b72ed829a08b963fe368a38",
+    "allHashesVerified": true
+  },
+  "packagingCorrection": "Initial deployment omitted ignored server/generated/prisma. Multiplayer could not start, so solo promotion stopped. Generated Prisma 7.9.1 from unchanged pinned schema/dependencies, verified import as service user, restarted successfully, then promoted solo. No database reset or schema change. Original failure logs retained.",
+  "compatibility": {
+    "protocol": 11,
+    "previousProtocol": 10,
+    "maxPlayers": 20,
+    "seed": 7291,
+    "schemaAndMigrationsUnchanged": true,
+    "dependenciesUnchanged": true,
+    "databasePreserved": true,
+    "rollback": "Preserve new tractor catalog after new player saves; use catalog-compatible paired rollback or forward repair, never reset PostgreSQL."
+  },
+  "liveBrowser": {
+    "status": "initially deferred",
+    "reason": "Shared GPU occupied by foreign pirate-camp and menu browser jobs; no competing job launched. Guide keyboard/controller/touch journeys and hosted browser checks passed before release."
+  },
+  "apiProbeExecution": "Assertions and receipt passed; original WebSocket rejection probe left a handle open and its owned process was terminated. Public service remained healthy."
+}
