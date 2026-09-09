@@ -263,11 +263,11 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
   nav.buildingRaycast=(...args)=>[build.raycast(...args),settlements.raycast(...args)].filter(Boolean).sort((a,b)=>a.distance-b.distance)[0]??null;
   const roverConstruction=createRoverBuildSupport({claims:()=>[...build.claims,...settlements.claims],doorFraction:(claim,piece)=>build.claims.includes(claim)?build.doorFraction(piece,claim):piece.doorOpen});
   const roverTerrainObstacles=createLandmarkObstacles(mining,landmarks,nav);
-  const sentry=createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,multiplayer,enabled:sentryStart});
+  const sentry=createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,multiplayer,enabled:sentryStart,construction:roverConstruction,terrainObstacles:roverTerrainObstacles});
   const vehicleRouter=sentryVehicleRouter(sentry,()=>rover);nav.vehicle=vehicleRouter;nav.sentryNetworkInput=input=>sentry.networkInput(input);
   const ensureRover=()=>{if(!rover)rover=createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip:()=>ship,available:()=>!multiplayer.connected,construction:roverConstruction,terrainObstacles:roverTerrainObstacles});nav.vehicle=vehicleRouter;rover.bindCarrier();return rover;};
   if(surfaceRoverStart||atlasMeadowStart||fleet.active==='gannet'||(devOptions?.ship==='atlas'&&new URLSearchParams(location.search).get('rover')==='1'))ensureRover();
-  const garages=createGarageSystem({scene,nav,settlements,ensureRover,getRover:()=>rover});
+  const garages=createGarageSystem({scene,nav,settlements,ensureRover,getRover:()=>rover,sentry});
   nav.baseAction=()=>garages.interact()||build.interact();nav.baseInteraction=()=>garages.interaction||build.interaction;
   pirateCompound.attachInteractions();
   const ensureMediumStorage=id=>id!=='stratum'||inventoryUI.registerContainer({id:'stratum-ore',name:'Stratum dedicated ore bin',kind:'ship',boxes:8,available:()=>nav.shipId==='stratum'&&!multiplayer.connected&&(nav.insideShip||['flight','landed'].includes(nav.mode)||nav.shipPosition&&nav.position.distanceTo(nav.shipPosition)<50)});

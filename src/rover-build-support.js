@@ -1,8 +1,9 @@
 import {Box3, Quaternion, Ray, Vector3} from 'three';
 import {getWorldBoxes} from './build/collision.js';
 import {getPieceDefinition} from './build/definitions.js';
-import {contains, boxPolygon} from './build/polygons.js';
+import {contains, boxPolygon, rayPrism} from './build/polygons.js';
 import {roverFootprint, roverSweptBounds} from './rover-physics.js';
+import {ROVER_LAYOUT} from './rover-layout.js';
 
 const UP = new Vector3(0, 1, 0), v = a => new Vector3(...a);
 const overlaps = (a, b) => a.min.x < b.max[0] - .002 && a.max.x > b.min[0] + .002 &&
@@ -24,8 +25,8 @@ export function createRoverBuildSupport({claims, doorFraction = (c, p) => p.door
     entry = {pieces: claim.pieces, rotation, inverse: rotation.clone().invert(), origin: v(claim.origin), boxes, doors};
     cache.set(claim, entry); return entry;
   }
-  function nearby(point) {
-    return claims().filter(c => v(c.origin).distanceToSquared(point) < (c.radius + 30) ** 2).map(c => ({claim: c, ...geometry(c)}));
+  function nearby(point, range = 30) {
+    return claims().filter(c => v(c.origin).distanceToSquared(point) < (c.radius + range) ** 2).map(c => ({claim: c, ...geometry(c)}));
   }
   function sample(point) {
     let best = null;
@@ -39,12 +40,29 @@ export function createRoverBuildSupport({claims, doorFraction = (c, p) => p.door
     }
     return best;
   }
-  function clearPose(previous, proposed = previous) {
+  /** Short vehicle/boarding rays use the exact kit prisms, with cached static
+   * boxes and a cheap segment broadphase. Door geometry remains live. */
+  function rayBlocked(start, direction, range) {
+    if (!(range > 0)) return false;
+    for (const g of nearby(start, range + 30)) {
+      const local = start.clone().sub(g.origin).applyQuaternion(g.inverse), dir = direction.clone().applyQuaternion(g.inverse);
+      const ray = new Ray(local, dir), box = new Box3(), hit = new Vector3();
+      const solids = [...g.boxes, ...g.doors.flatMap(p => getWorldBoxes(p, doorFraction(g.claim, p)))];
+      for (const solid of solids) {
+        box.min.fromArray(solid.min); box.max.fromArray(solid.max);
+        if (!box.containsPoint(local) && (!ray.intersectBox(box, hit) || hit.distanceToSquared(local) > range * range)) continue;
+        const distance = rayPrism(local, dir, solid);
+        if (distance !== null && distance <= range) return true;
+      }
+    }
+    return false;
+  }
+  function clearPose(previous, proposed = previous, {layout = ROVER_LAYOUT} = {}) {
     for (const g of nearby(proposed.position)) {
       const local = pose => pose.position.clone().sub(g.origin).applyQuaternion(g.inverse);
-      const a = local(previous), b = local(proposed), corners = pose => roverFootprint(pose.position, pose.quaternion).map(p => p.sub(g.origin).applyQuaternion(g.inverse));
+      const a = local(previous), b = local(proposed), corners = pose => roverFootprint(pose.position, pose.quaternion, {layout}).map(p => p.sub(g.origin).applyQuaternion(g.inverse));
       const oldBox = new Box3().setFromPoints(corners(previous)), nextBox = new Box3().setFromPoints(corners(proposed));
-      const bounds = roverSweptBounds();
+      const bounds = roverSweptBounds(layout);
       const floorCeiling = Math.max(...[previous, proposed].flatMap(pose => [bounds.min[0], bounds.max[0]].flatMap(x => [bounds.min[2], bounds.max[2]].map(z => new Vector3(x, 0, z).applyQuaternion(pose.quaternion).add(pose.position).sub(g.origin).applyQuaternion(g.inverse).y)))) + .26;
       const solids = [...g.boxes, ...g.doors.flatMap(p => getWorldBoxes(p, doorFraction(g.claim, p)))];
       const delta = b.clone().sub(a), distance = delta.length();
@@ -63,5 +81,5 @@ export function createRoverBuildSupport({claims, doorFraction = (c, p) => p.door
     }
     return true;
   }
-  return {sample, clearPose};
+  return {sample, clearPose, rayBlocked};
 }

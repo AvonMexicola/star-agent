@@ -12,3 +12,5 @@
 #garage-dialog .garage-status{min-height:3em;color:#d8e7dc}#garage-dialog .garage-instructions{color:#b1c5c6;font-size:13px}#garage-dialog footer{font-size:12px;color:#96b6b8}
 #garage-touch{position:fixed;bottom:150px;right:20px;z-index:8;padding:12px 18px;background:#172e36;color:#dcebe3;border:1px solid #a9c8b8;min-height:44px;font:14px sans-serif}#garage-touch[hidden]{display:none}
 @media(max-width:600px){#garage-dialog{padding:18px}#garage-dialog h2{font-size:23px}#garage-dialog article{padding:16px 0}#garage-touch{bottom:170px;right:14px}}
+
+#garage-dialog .garage-choices{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}#garage-dialog .garage-choices button{flex:1 1 180px}#garage-dialog .garage-choices [aria-pressed=true]{border-color:#fff2ad;background:#355754}#garage-dialog [data-name]{font-size:clamp(26px,6vw,40px);letter-spacing:.04em}

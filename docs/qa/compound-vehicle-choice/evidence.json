@@ -1,0 +1,102 @@
+{
+  "status": "author validated; integration and publication follow separately",
+  "sourceBase": "3ea6b07d50d7a0e91acaf3c5047b5d56d06aadba",
+  "finalSourceHashes": {
+    "scripts/compound-garages.config.js": "15f8fed044e87e224179e4a82bc4e8222e368a9e919db709f8dc760a51b976fa",
+    "scripts/compound-garages.spec.js": "a3afcf3bccd2226076c3572892ef3299329a0217b4367b4a053d8de24591d844",
+    "src/main.js": "abd197fc8e7681610ffad32e5b4d67745717b5a046c631b477e27aceb0135bed",
+    "src/rover-build-support.js": "7b349fa1c851f195cafdeb1ba854f040a2599bb8d3a4aa615ae42fbb77004a72",
+    "src/sentry/environment.js": "a7d0b166b78f1bbfb5dee2ebffdd82c049b38db08aaee95373e3403127c10579",
+    "src/sentry/simulation.js": "d31480fd9c38e8a423c50f6eabb200f7f398f1df73e6daa937b1c74f2df22d15",
+    "src/sentry/system.js": "df9d4dfc63d8d846b19b31936e3324ceff59fb29ecb373ef1c6baa58cdf8cd1c",
+    "src/settlements/garage-policy.js": "2d0bcb149640a98d2719965ccde3acf86765766bae6e93de2647956be43c00ba",
+    "src/settlements/garage-system.js": "7d159b839c3eb3ab21c0318e1335423f9f5bc3a1c864afec9a43173b7d5236ef",
+    "src/settlements/garage-ui.js": "d04da0576ef47a3a18394eec03f7d43a596070a3410c796b9a7364981f640df9",
+    "src/settlements/garage.css": "8565500711d0111af5399f90cfcabcca844e7a70e7c54c4c76bda94d42e0bac6",
+    "tests/compound-garages.test.js": "5e89e88a2e9d03f83e9894e2eaa14643decdadd5ff584cf1201ddcebca8e70b5",
+    "tests/sentry.test.js": "24702519735f40cdde1523d588775203a8045ee0bb46510801b0a5cd8dc40834"
+  },
+  "sourceUnchanged": true,
+  "normalVehicleChecks": {
+    "pass": 37,
+    "fail": 0,
+    "seconds": 5.48
+  },
+  "burrowJourney": {
+    "pass": true,
+    "minutes": 2.5,
+    "source": "before cached collision adapter",
+    "receipt": {
+      "browser": "151.0.7922.173",
+      "graphics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "vendor": "Google Inc. (AMD)",
+        "drawCalls": 2422,
+        "triangles": 2355892,
+        "renderResolution": {
+          "automatic": true,
+          "fullscreen": false,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 390,
+          "height": 844
+        },
+        "fpsSample": 31,
+        "performanceAcceptance": false
+      },
+      "errors": [],
+      "warnings": [],
+      "controller": "Injected standard Gamepad, physical land/walk/board/drive/inventory/return; no pose or save mutation.",
+      "physicalDevice": false
+    }
+  },
+  "sentryJourney": {
+    "pass": true,
+    "minutes": 2.7,
+    "receipt": {
+      "browser": "151.0.7922.173",
+      "graphics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "vendor": "Google Inc. (AMD)",
+        "drawCalls": 2404,
+        "triangles": 2322816,
+        "renderResolution": {
+          "automatic": true,
+          "fullscreen": false,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 390,
+          "height": 844
+        },
+        "fpsSample": 25,
+        "performanceAcceptance": false
+      },
+      "errors": [],
+      "warnings": [],
+      "controller": "Injected standard Gamepad, physical landing/walk/garage selection/pilot/drive/aim/fire/backpack/gunner/return; keyboard entry and native phone retrieval afterwards. No pose or save mutation.",
+      "physicalDevice": false
+    }
+  },
+  "failures": [
+    "01: Sentry walking fixture aimed through rear corner; source diagnostics empty. Corrected port route to garage z minus2.4m. Burrow full journey passed.",
+    "02: Sentry boarded and drove all tyres to terrain, but full kit ray regeneration caused severe slowdown and exceeded drive bound. Corrected cached construction queries and complete-body floor handling.",
+    "CPU expanded all-frame uncached geometry-ray trial stopped; static/boarding equivalence and final cached full ramps cover this concern.",
+    "CPU03 exposed suspension/foundation false contacts on Aeon/Pyre/Miasma; whole Sentry envelope now queries original kit step/support policy.",
+    "CPU04 roof fixture used nonexistent ceiling ID; corrected to actual floor/flat-roof part.",
+    "Repository02 rejected in-progress status; corrected to registry active enum."
+  ],
+  "scope": "Four civilian solo garages. Pirate compounds excluded. Existing online Sentry authority remains separate.",
+  "limitations": [
+    "Injected standard Gamepad only; physical devices not tested",
+    "No independent art or measured performance acceptance",
+    "Publication of both builds does not make solo garages an authoritative online Burrow feature"
+  ]
+}

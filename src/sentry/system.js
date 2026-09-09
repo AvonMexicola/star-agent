@@ -13,13 +13,14 @@ import {createSentryInputSuspension} from './input-suspension.js';
 import {navigationShipFrame} from '../navigation-rotation.js';
 import {betweenFrames,rotationFrameAt} from '../planet-rotation.js';
 import {sentryFrame,sentryPoseInFrame} from './frames.js';
+import {sentryRetrievalStatus} from '../settlements/garage-policy.js';
 
 const UP=new THREE.Vector3(0,1,0),FWD=new THREE.Vector3(0,0,-1),v=p=>new THREE.Vector3(...p),clamp=THREE.MathUtils.clamp;
 /** Input adapter and presentation. Online simulation lives exclusively in the
  * room; solo uses exactly the same drive/seat/turret machine locally. */
-export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,multiplayer,enabled=false}){
+export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,multiplayer,enabled=false,construction=null,terrainObstacles=null}){
   const renderer=createSentryRenderer(scene),carrierGuards=new WeakSet(),touch=new Set(),localId='solo',player={id:localId,health:100,nav};
-  const environmentFor=getFrame=>createSentryEnvironment({carrierGuards,getFrame:nav.rotationClock?getFrame:null,getTime:()=>nav.rotationTime,station:nav.station,getRovers:()=>snapshots(),getHulls:()=>nav.shipPosition&&!nav.freighter?[{position:nav.shipPosition,quaternion:nav.shipOrientation,bounds:nav.layout.flightBounds,planetFrame:navigationShipFrame(nav)?.id??null}]:[],getCarriers:()=>nav.freighter?[{id:nav.shipId,systems:nav.freighter,planetFrame:navigationShipFrame(nav)?.id??null,frame:{position:nav.shipPosition??nav.position.clone().sub(v(nav.layout.seatEye).applyQuaternion(nav.orientation)),quaternion:nav.shipPosition?nav.shipOrientation:nav.orientation},inFlight:nav.mode==='flight'||nav.cabinFlight||nav.spaceParked,cargoConstrain:nav.cargoConstrain}]:[],getObstacles:()=>nav.surfaceObstacles,buildingRaycast:(...args)=>nav.buildingRaycast?.(...args)});
+  const environmentFor=getFrame=>createSentryEnvironment({construction,carrierGuards,getFrame:nav.rotationClock?getFrame:null,getTime:()=>nav.rotationTime,station:nav.station,getRovers:()=>snapshots(),getHulls:()=>nav.shipPosition&&!nav.freighter?[{position:nav.shipPosition,quaternion:nav.shipOrientation,bounds:nav.layout.flightBounds,planetFrame:navigationShipFrame(nav)?.id??null}]:[],getCarriers:()=>nav.freighter?[{id:nav.shipId,systems:nav.freighter,planetFrame:navigationShipFrame(nav)?.id??null,frame:{position:nav.shipPosition??nav.position.clone().sub(v(nav.layout.seatEye).applyQuaternion(nav.orientation)),quaternion:nav.shipPosition?nav.shipOrientation:nav.orientation},inFlight:nav.mode==='flight'||nav.cabinFlight||nav.spaceParked,cargoConstrain:nav.cargoConstrain}]:[],getObstacles:()=>terrainObstacles??nav.surfaceObstacles,buildingRaycast:(...args)=>construction?.rayBlocked?construction.rayBlocked(...args):nav.buildingRaycast?.(...args)});
   const environment=environmentFor(point=>rotationFrameAt(point));
   const ray=createWeaponTarget({nav,mining});
   let sequence=0,local=null,origin=new THREE.Vector3(),input=neutralSentryInput(),mouseYaw=0,mousePitch=0,keyFire=false,pointerFire=false,pending=false,error=null,wasOnline=false,lastRole=null,lastEpoch=-1;
@@ -80,6 +81,29 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
       }
       nav.notify('No clear, supported space nearby for both boarding routes.');return false;
     },
+    /** Garage placement moves only the parked vehicle, after async reach and
+     * bay checks. Health, charge and turret state survive retrieval. */
+    async deployAt({position,quaternion,validate=()=>true}){
+      if(pending)return {ok:false,message:'A vehicle request is already in progress.'};
+      pending=true;reset();
+      try{
+        await renderer.ready();
+        if(multiplayer.connected||!validate())return {ok:false,message:'Return to the garage terminal.'};
+        const policy=sentryRetrievalStatus(local?.snapshot());if(!policy.ok)return policy;
+        if(!environment.clearPose(position,quaternion,'solo-sentry'))return {ok:false,message:'Garage bay obstructed. Clear the vehicle and boarding lanes.'};
+        const candidate=createLocal({position,quaternion});candidate.physics.step(1/30,{brake:1});
+        if(!candidate.physics.state.supported||candidate.physics.state.blocked)return {ok:false,message:'The garage needs clear four-wheel support.'};
+        for(const role of Object.keys(L.seats)){
+          const ground=candidate.ground(role);if(!ground)return {ok:false,message:'Clear both Sentry boarding routes.'};
+          const route=[ground,...L.seats[role].route.map(candidate.world)];
+          if(route.some((point,i)=>i&&!environment.accessClear(route[i-1],point)))return {ok:false,message:'Clear both Sentry boarding routes.'};
+        }
+        if(!validate())return {ok:false,message:'Garage request cancelled. Return to the terminal.'};
+        if(local)local.relocate(candidate.physics.state);else local=candidate;
+        reset();return {ok:true,message:'Burrow Sentry is ready in the bay. Port door: pilot. Aft ladder: gunner.'};
+      }finally{pending=false;reset();}
+    },
+    get garageState(){return local?.snapshot()??null;},
     async spawnSurface(target){
       await renderer.ready();const pose=roverSurfaceStart(target,{isClear:({position,quaternion})=>environment.clearPose(position,quaternion)});if(!pose)return false;
       local=createLocal(pose);local.physics.step(1/30,{brake:1});if(!local.physics.state.supported)return false;

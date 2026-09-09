@@ -156,3 +156,15 @@ test('physical entry eye clearance for both doors and the unobstructed gunner di
     face.removeFromParent();face.geometry.dispose();material.dispose();
   }finally{scene.getObjectByName('CabinDoor').rotation.y=scene.getObjectByName('GunnerDoor').rotation.y=0;scene.updateMatrixWorld(true);}
 });
+
+
+test('garage relocation retains damaged hull, charge and turret aim and never moves an occupant',()=>{
+  const f=fixture(),r=f.rover;
+  Object.assign(r.state,{health:73,charge:.31,yaw:.4,pitch:.12,shots:19});
+  r.relocate({position:v([20,0,5]),quaternion:new THREE.Quaternion()});
+  assert.deepEqual(r.physics.state.position.toArray(),[20,0,5]);
+  for(const [key,value] of Object.entries({health:73,charge:.31,yaw:.4,pitch:.12,shots:19}))assert.equal(r.state[key],value);
+  f.board('pilot','pilot');const before=f.players.get('pilot').nav.position.toArray();
+  assert.throws(()=>r.relocate({position:v([0,0,0]),quaternion:new THREE.Quaternion()}),/Park/);
+  assert.deepEqual(f.players.get('pilot').nav.position.toArray(),before);
+});

@@ -11,7 +11,7 @@ test('local preview serves checked garages and the paired healthy API',async({re
   ['http://127.0.0.1:5178/src/main.js','createGarageSystem'],
   ['http://127.0.0.1:5178/src/settlements/garage-system.js','createGarageSystem'],
   ['http://127.0.0.1:5178/src/mining-rover.js','deployAt'],
-  ['http://127.0.0.1:5178/src/multiplayer/protocol.js','PROTOCOL_VERSION'],
+  ['http://127.0.0.1:5178/src/multiplayer/protocol.js','MULTIPLAYER_VERSION'],
  ]){
   const response=await request.get(url);expect(response.status()).toBe(200);const content=await response.text();if(needle)expect(content).toContain(needle);
   checks.push({url,status:response.status(),bytes:Buffer.byteLength(content)});
@@ -109,4 +109,42 @@ for(const body of ['aeon','selene','pyre','miasma'])test(`garage renders on ${bo
  await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body===n.body.id),g=window.starAgent.state.garages.sites.find(s=>s.body===n.body.id),q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin),center=n.position.clone().fromArray(g.position).sub(o).applyQuaternion(q.clone().invert());const world=a=>n.position.clone().fromArray(a).applyQuaternion(q).add(o);n.mode='walk';n.enabled=false;n.insideShip=false;n.position.copy(world([72,center.y+24,center.z+44]));n.orientToward(world([32,center.y+2,center.z]),n.normal);n.velocity.set(0,0,0);});
  await page.addStyleTag({content:'body > :not(canvas){visibility:hidden!important}'});await page.waitForFunction(()=>{const s=window.starAgent.state;return s.body==='aeon'?s.terrainLod.settled:s.body==='selene'?s.moon.pending===0&&s.moon.effects.settled:s[s.body].pending===0&&s[s.body].morphing===0;},undefined,{timeout:60000});await page.waitForTimeout(1000);await capture(page,`${body}-compound`);
  await page.evaluate(()=>{const n=window.starAgent.navigation,s=window.starAgent.state.settlements.sites.find(s=>s.body===n.body.id),q=n.orientation.clone().fromArray(s.quaternion),o=n.position.clone().fromArray(s.origin),deck=n.position.clone().fromArray(s.pad).sub(o).applyQuaternion(q.clone().invert()).y,world=a=>n.position.clone().fromArray(a).add(n.position.clone().set(0,deck,0)).applyQuaternion(q).add(o);n.position.copy(world([70,42,92]));n.orientToward(world([0,2,12]),n.normal);});await frames(page);await page.waitForTimeout(1000);await capture(page,`${body}-approach`);expect(errors).toEqual([]);await writeFile(`${out}/${body}-art.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,artPoseOnly:true},null,2));
+});
+
+
+test('controller chooses Sentry at a civilian garage, drives from the deck and returns through both seats and inventory',async({page,browser})=>{
+ const {tap,button,choose,errors,warnings}=await setup(page);
+ await page.evaluate(()=>{for(const i of [4,5])window.settlementPad.buttons[i]={pressed:true,value:1};});await frames(page);await tap(13);await page.evaluate(()=>{for(const i of [4,5])window.settlementPad.buttons[i]={pressed:false,value:0};});await frames(page);
+ await page.waitForFunction(()=>window.starAgent.state.landingGear.progress>.98);await tap(3);await page.waitForFunction(()=>window.starAgent.state.mode==='landed',undefined,{timeout:60000});
+ await tap(2);await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
+ await walk(page,[0,2.75,3],'ship');await aim(page,[0,2.75,7]);await tap(2);await page.waitForFunction(()=>window.starAgent.state.doorProgress>.98);await walk(page,[0,1.75,8],'ship');
+ await walk(page,[10,0,30]);await walk(page,[18,0,-2]);await walk(page,[23.2,0,-2]);
+ const terminal=await page.evaluate(()=>window.starAgent.state.garages.sites.find(s=>s.body==='selene').terminal);await aim(page,terminal,'world');await capture(page,'garage-entry');
+
+ await tap(2);await expect(page.locator('#garage-dialog')).toBeVisible();await choose('garage-sentry');await choose('garage-retrieve');
+ await expect(page.locator('.garage-status')).toContainText('Burrow Sentry is ready',{timeout:30000});await capture(page,'sentry-garage-deployed');
+ await choose('garage-burrow');await choose('garage-retrieve');await expect(page.locator('.garage-status')).toContainText('Move the other rover');
+ expect(await page.evaluate(()=>window.starAgent.state.sentry.vehicles.length)).toBe(1);
+ await button(0,true);await button(0,false);await tap(1);await frames(page);
+ await walk(page,[23.2,0,1.6]);await walk(page,[28,0,1.6]);await walk(page,[32.1,0,1.6]);
+ await page.waitForFunction(()=>window.starAgent.state.sentry.near?.role==='pilot');await tap(2);
+ await page.waitForFunction(()=>window.starAgent.state.sentry.current?.seats.pilot.phase==='seated',undefined,{timeout:30000});await frames(page);await capture(page,'sentry-garage-cockpit');
+ await page.evaluate(()=>window.settlementPad.axes=[0,-.5,0,0]);
+ try{await page.waitForFunction(()=>{const s=window.starAgent.state,n=window.starAgent.navigation,site=s.settlements.sites.find(s=>s.body==='selene');return n.position.clone().fromArray(s.sentry.current.position).sub(n.position.clone().fromArray(site.origin)).applyQuaternion(n.orientation.clone().fromArray(site.quaternion).invert()).x>79;},undefined,{timeout:30000});}finally{await page.evaluate(()=>window.settlementPad.axes.fill(0));}
+ await button(6,true);await page.waitForFunction(()=>Math.abs(window.starAgent.state.sentry.current.speed)<.01);await button(6,false);
+ expect(await page.evaluate(()=>window.starAgent.state.sentry.current.wheels.every(w=>w.source==='terrain'))).toBe(true);
+ await page.evaluate(()=>window.settlementPad.axes=[0,0,.45,-.1]);await page.waitForTimeout(650);await page.evaluate(()=>window.settlementPad.axes.fill(0));await frames(page);
+ await button(7,true);await page.waitForFunction(()=>window.starAgent.state.sentry.current.shots>2);await button(7,false);await capture(page,'sentry-garage-surface');
+ await tap(8);await expect(page.locator('#cargo-dialog')).toBeVisible();await frames(page);const shots=await page.evaluate(()=>window.starAgent.state.sentry.current.shots);
+ await button(7,true);await tap(1);await page.waitForTimeout(400);expect(await page.evaluate(()=>window.starAgent.state.sentry.current.shots)).toBe(shots);await button(7,false);await frames(page);
+ await focusInterruption(page,button);await button(7,true);await page.evaluate(()=>window.settlementDisconnected=true);await frames(page);const stopped=await page.evaluate(()=>window.starAgent.state.sentry.current.shots);
+ await page.evaluate(()=>window.settlementDisconnected=false);await frames(page);expect(await page.evaluate(()=>window.starAgent.state.controller.armed)).toBe(false);expect(await page.evaluate(()=>window.starAgent.state.sentry.current.shots)).toBe(stopped);await button(7,false);await frames(page);
+ await tap(2);await page.waitForFunction(()=>!window.starAgent.state.sentry.occupied&&!window.starAgent.state.sentry.vehicles[0].busy,undefined,{timeout:30000});
+ const roverLocal=await page.evaluate(()=>{const s=window.starAgent.state,n=window.starAgent.navigation,site=s.settlements.sites.find(s=>s.body==='selene');return n.position.clone().fromArray(s.sentry.vehicles[0].position).sub(n.position.clone().fromArray(site.origin)).applyQuaternion(n.orientation.clone().fromArray(site.quaternion).invert()).toArray();});
+ await walk(page,[roverLocal[0]-3.5,0,roverLocal[2]-2.5]);await walk(page,[roverLocal[0]-3.5,0,roverLocal[2]]);await page.waitForFunction(()=>window.starAgent.state.sentry.near?.role==='gunner');await tap(2);await page.waitForFunction(()=>window.starAgent.state.sentry.current?.seats.gunner.phase==='seated',undefined,{timeout:30000});await frames(page);
+ await button(7,true);await page.waitForFunction(n=>window.starAgent.state.sentry.current.shots>n,stopped);await button(7,false);await capture(page,'sentry-garage-gunner');await tap(2);await page.waitForFunction(()=>!window.starAgent.state.sentry.occupied&&!window.starAgent.state.sentry.vehicles[0].busy,undefined,{timeout:30000});
+ await walk(page,[70,0,2.5]);await walk(page,[44,0,2.5]);await walk(page,[28,0,2.5]);await walk(page,[23.2,0,2.5]);await walk(page,[23.2,0,-2]);await aim(page,terminal,'world');
+ await page.keyboard.press('f');await expect(page.locator('#garage-dialog')).toBeVisible();await page.setViewportSize({width:390,height:844});await page.locator('[data-vehicle="sentry"]').tap();await capture(page,'sentry-garage-phone');expect(await page.locator('#garage-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+2)).toBe(true);
+ await page.locator('[data-controller-key="garage-retrieve"]').tap();await expect(page.locator('.garage-status')).toContainText('Burrow Sentry is ready');expect(await page.evaluate(()=>window.starAgent.state.sentry.vehicles.length)).toBe(1);await page.locator('[data-controller-key="garage-close"]').tap();await page.waitForFunction(()=>window.starAgent.state.enabled);
+ expect(errors).toEqual([]);await writeFile(`${out}/sentry-journey.json`,JSON.stringify({browser:browser.version(),graphics:await graphics(page),errors,warnings,controller:'Injected standard Gamepad, physical landing/walk/garage selection/pilot/drive/aim/fire/backpack/gunner/return; keyboard entry and native phone retrieval afterwards. No pose or save mutation.',physicalDevice:false},null,2));
 });
