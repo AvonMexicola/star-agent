@@ -1,0 +1,71 @@
+{
+  "source": "0ea21d23f319070f3f7c5754f046d31a9ec28777",
+  "pullRequest": "https://github.com/AvonMexicola/star-agent/pull/113",
+  "unit": {
+    "testFiles": 165,
+    "passed": 165
+  },
+  "multiplayer": {
+    "passed": 228,
+    "failed": 0,
+    "optInSkipped": 2
+  },
+  "stagedBrowsers": {
+    "passed": 2,
+    "duration": "2.5m",
+    "journeys": [
+      "far-side drive/charge/abort/arrival/return",
+      "starter tractor equip/move/interruption/secure/return"
+    ]
+  },
+  "artifacts": {
+    "unprivilegedWorldStartup": true,
+    "isolatedMemoryStore": true,
+    "starterTractor": true,
+    "protocol": 11,
+    "publicManifestFiles": 300,
+    "multiplayerManifestFiles": 1401
+  },
+  "githubChecks": [
+    {
+      "name": "plan",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/AvonMexicola/star-agent/actions/runs/34325494291/job/102381673247"
+    },
+    {
+      "name": "source",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/AvonMexicola/star-agent/actions/runs/34325494291/job/102381672996"
+    },
+    {
+      "name": "multiplayer",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/AvonMexicola/star-agent/actions/runs/34325494291/job/102381849361"
+    },
+    {
+      "name": "browser",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/AvonMexicola/star-agent/actions/runs/34325494291/job/102381849207"
+    },
+    {
+      "name": "verify",
+      "status": "COMPLETED",
+      "conclusion": "FAILURE",
+      "url": "https://github.com/AvonMexicola/star-agent/actions/runs/34325494291/job/102383967401"
+    }
+  ],
+  "publication": "blocked pending GitHub billing resolution or explicit owner authorization of admin merge",
+  "gateFailure": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+  "liveEntryChecks": "pending promotion",
+  "recovery": {
+    "previousCatalogUnderstandsStandaloneTractor": false,
+    "unchangedSQLMigrations": true,
+    "unchangedDependencies": true,
+    "recoveryRule": "After new tractor saves exist, do not restore the prior unmodified application catalog: retain the new tractor catalog entry in any rollback candidate, or roll forward a fix. Never reset or restore the database to reverse an application release.",
+    "preCutoverTargets": "Read actual current symlinks immediately before guarded cutover."
+  }
+}

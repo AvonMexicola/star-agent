@@ -1,0 +1,21 @@
+{
+  "time": "2026-09-09T07:57:45.411679+00:00",
+  "localHead": "ccb2ed0349df9a612bb277c2f087e03d3d0c9e82",
+  "5178": {
+    "status": 200,
+    "health": {
+      "ok": true
+    }
+  },
+  "8087": {
+    "status": 200,
+    "health": {
+      "ok": true
+    }
+  },
+  "servedProtocol": 11,
+  "service": [
+    "ActiveState=active",
+    "MainPID=92155"
+  ]
+}

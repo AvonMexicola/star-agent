@@ -36,3 +36,34 @@ browser journeys. Only the exact synthetic test account may be removed.
 
 Status: frozen candidate preparation; checked build IDs, hosted merge and live
 receipts will be appended after each succeeds. Private staging ports5696/5697/API8697.
+
+## Checked candidate and current gate
+
+Frozen source `0ea21d23f319070f3f7c5754f046d31a9ec28777` has passed165 configured
+unit files;228 serialized multiplayer tests with two existing opt-in skips; both
+explicit channel builds and47 viewer references per channel; all300 staged public
+and1401 staged multiplayer file hashes; unprivileged server/memory-store startup;
+and two release-artifact controller feature journeys in2.5minutes. The frozen
+source remains clean. [Validation receipt](validation.json), [tractor selection](starter-loadout.png)
+and [curved route](curved-route.png). Screenshots inspected; the jobs used
+Chromium151/ANGLE GL with one worker,1440×900 and390×844, no page/console errors.
+
+[PR113](https://github.com/AvonMexicola/star-agent/pull/113) source, multiplayer,
+browser and plan jobs all passed. GitHub refused to start the final `verify` job:
+its annotation cites failed account payments or a spending limit. It has no
+runner, steps or application failure. Publication has not occurred: resolving
+billing/re-running that job or explicit owner authorization of an admin merge
+is required before proceeding. Both sites retain marker release `d63fab0`.
+The prior operator completed and released its public/GPU window.
+
+Local development includes the exact frozen runtime at `ccb2ed0`, while retaining
+newer marker delivery records. Its managed preview/API was refreshed; served
+protocol11 and both5178/8087 health routes pass. All539174 previous shared HANDOFF
+bytes were preserved. [Local receipt](local-integration.json). The temporary
+browser/API/preview jobs have exited; public entry checks remain pending cutover.
+
+Recovery qualification: older catalogs reject the new tractor item in a saved
+inventory. Once such saves exist, a rollback must retain the new catalog entry
+or use a forward repair; do not point at an unmodified older inventory parser.
+Do not reset or restore production data to reverse this application release.
+SQL migrations and dependency lockfile remain byte-identical to the preceding release.

@@ -940,3 +940,6 @@ available for those profiles. See the [verification record](qa/starter-tractor/R
 for finite-inventory, server, controller and local-delivery checks.
 
 Checked runtime `1c29454` is integrated locally and the managed preview/API is refreshed.
+
+The paired drive/tractor release now runs locally at `ccb2ed0` with protocol11.
+Public promotion is staged in PR113; GitHub billing blocked its final aggregate check despite passing test jobs.
