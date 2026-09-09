@@ -930,3 +930,5 @@ The mining laser moves into your backpack. **RT / T** tractors an SBU crate;
 slot. Existing saves keep their contents; **Trade → Cargo → Equip tractor** remains
 available for those profiles. See the [verification record](qa/starter-tractor/README.md)
 for finite-inventory, server, controller and local-delivery checks.
+
+Checked runtime `1c29454` is integrated locally and the managed preview/API is refreshed.

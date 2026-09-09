@@ -16,3 +16,12 @@ Validation:
 The isolated feature was advanced over locally integrated marker styling `d3f8a06` without overlapping runtime edits. The tractor journey ran before that unrelated marker merge; final combined build and focused integration tests are recorded with local delivery below. Physical-controller/hardware-touch testing, independent acceptance and public deployment are not claimed.
 
 Final combined production build passes (`main-z4xFCVwp.js`,4.49s; inherited large-chunk warning). Five affected source test files pass after the marker merge. Repository and whitespace checks pass.
+
+Runtime `1c29454` is integrated into local `dev/all-features`. The existing managed
+preview/API service was refreshed with its persistent database configuration.
+Six served module checks, ten tested-file byte comparisons and both5178/8087
+API health routes pass; [local receipt](local-integration.json). An initial served
+probe expected a space after `clearLoadout:`; the source intentionally preserves
+its compact formatting. Correcting only the probe passed. Original534183-byte
+shared HANDOFF was preserved exactly before the delivery append. Owned private
+browser/preview processes have exited. No public deployment.
