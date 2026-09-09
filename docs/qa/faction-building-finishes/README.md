@@ -156,3 +156,14 @@ its @playwright/test/cli.js spelling. That owner stopped only its own job and
 released23:50:39; our guard now recognizes the missing spelling. Final scene
 samples are diagnostics, with no performance acceptance from this run. Independent
 art scoring, physical controller/phone and performance acceptance remain pending.
+
+
+## Local integration
+
+Checked sourcee25c7d0 was fast-forwarded into local dev/all-features on2026-09-09.
+The existing managed5178/API8087 pair restarted gracefully at00:03:17 UTC with
+its persistent PostgreSQL and protocol7. Nine live source routes and both health
+endpoints return200 and pass expected-code checks. The sole dirty shared HANDOFF
+remains byte-identical (520678 bytes). No schema, save reset, public/main merge or
+public deployment. See [the exact local receipt](local-integration.json).
+Refresh [the preview](http://127.0.0.1:5178/?dev=1) to load this checkpoint.

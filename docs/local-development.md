@@ -1,6 +1,11 @@
 # All-features local development
 
 
+Checked faction/compound source **e25c7d0** is locally integrated and served on
+5178 with the existing persistent API8087. The paired service refreshed on
+2026-09-09; [the local receipt](qa/faction-building-finishes/local-integration.json)
+records exact source/health checks and preserved shared edits. Refresh the page.
+
 **Faction finishes and Crimson vacuum bases** add **Build → Finishes** for eight
 saved paints and rigid faction/safety prints. Choose a finish before placement,
 or use **Paint existing parts** on an owned part. Four public exchanges now carry

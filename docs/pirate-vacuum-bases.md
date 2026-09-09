@@ -1,6 +1,6 @@
 # Pirate vacuum bases
 
-Development candidate: Hush Exchange on Selene and Veil Exchange on Miasma.
+Locally integrated at e25c7d0: Hush Exchange on Selene and Veil Exchange on Miasma.
 Both are solo Crimson Pact trade compounds with rigid enclosed habitats, sealed
 kit roofs and a two-door entrance. The doors interlock mechanically; the game
 does not simulate pressure or breathable habitat air. Exterior work yards use
