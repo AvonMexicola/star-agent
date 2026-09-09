@@ -1,6 +1,6 @@
 # SA-BUILD-003 — faction paint and rigid site graphics
 
-Active; Cees requests different building colours, faction posters/decorations,
+Locally integrated at e25c7d0; Cees requests different building colours, faction posters/decorations,
 corporate landing sites and crimson pirate bases on Selene and Miasma. Both pirate
 bases must be vacuum architecture: rigid enclosed habitats, roofs and airlocks;
 no tents. Base `cc1e749`, isolated `feat/faction-building-finishes`, 5684/API8684.
