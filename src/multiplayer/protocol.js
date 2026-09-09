@@ -5,8 +5,9 @@
 // Version 7 adds shared canonical settlements and owner-private sealed freight.
 // Version 9 adds rotating body-fixed charts and the shared planetary clock.
 // Version 10 adds server-owned Sentry poses, physical seats and turret authority.
+// Version 11 adds curved travel plans and the standalone starter cargo tractor.
 // Requires a paired server/browser refresh; no persistence schema change.
-export const MULTIPLAYER_VERSION=10;
+export const MULTIPLAYER_VERSION=11;
 export const WORLD_SEED=7291;
 export const MAX_PLAYERS=20;
 export const SUIT_COLORS=Object.freeze(['#ff724f','#52d6ff','#ffd45b','#8ce06c','#bd8cff','#ff80bd','#45dcc6','#eee9dd','#688bff','#c99d69','#ecaaa5','#a7b8ff','#d0e77d','#db7b43','#65ab7d','#edc6ec','#41a9a5','#b9c6d5','#976bc1','#e9d2a1']);

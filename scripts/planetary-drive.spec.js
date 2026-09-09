@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {setupNavigation,frames,fits} from '../tests/browser/navigation-helpers.js';
 import {mkdir,writeFile} from 'node:fs/promises';
-const out='/tmp/star-agent-planetary-drive-evidence';
+const out=process.env.PLANETARY_DRIVE_OUT||'/tmp/star-agent-planetary-drive-evidence';
 async function aim(page,id){
  await page.evaluate(id=>{window.routePilot=setInterval(()=>{
   const n=window.starAgent.navigation,t=n.targeting?window.starAgent.state.navigationTargets.targets.find(t=>t.id===id):null;
