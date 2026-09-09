@@ -5,6 +5,7 @@ import {createWorld} from '../server/world.js';
 import {createRoom} from '../server/room.js';
 import {createMemoryStore} from '../server/database.js';
 import {SENTRY_LAYOUT as L} from '../src/sentry/layout.js';
+import {analyzeSentryAccess} from '../scripts/sentry/access-evidence.mjs';
 
 const worldPromise=createWorld();
 async function fixture(t,count=2){
@@ -195,16 +196,33 @@ test('authoritative driving stops before a walker and another Sentry without pha
 });
 
 
-test('actual room access positions follow the bounded physical route at every server tick',async t=>{
+for(const role of ['pilot','gunner'])test(`actual room ${role} access remains continuous at every tick and across delayed render samples`,async t=>{
   const f=await fixture(t),[p]=f.players,r=await f.deploy();
-  p.nav.position.copy(r.world([-2.5,1.75,.2]));p.nav.velocity.set(0,0,0);
-  assert.equal((await f.request(p,{command:'board',id:r.id,role:'pilot'})).ok,true);
-  let previous=p.nav.position.clone(),max=0;const phases=new Set();
-  for(let i=0;i<500&&r.seats.pilot.phase!=='seated';i++){
+  p.nav.position.copy(role==='pilot'?r.world([-2.5,1.75,.2]):r.ground(role));p.nav.velocity.set(0,0,0);
+  assert.equal((await f.request(p,{command:'board',id:r.id,role})).ok,true);
+  let previous=p.nav.position.clone(),max=0;const phases=new Set(),samples=[];
+  for(let i=0;i<500&&r.seats[role].phase!=='seated';i++){
     f.advance(1/30);const delta=p.nav.position.distanceTo(previous);max=Math.max(max,delta);
-    assert.ok(delta<=.85/30+.004,JSON.stringify({delta,phase:r.seats.pilot.phase}));previous.copy(p.nav.position);phases.add(r.seats.pilot.phase);
+    assert.ok(delta<=.85/30+.004,JSON.stringify({delta,phase:r.seats[role].phase}));previous.copy(p.nav.position);phases.add(r.seats[role].phase);
+    if(i%2===0){const peer=f.room.state(p).players.find(x=>x.id===p.id);samples.push({time:i*1000/30,position:[...peer.position],seat:r.seats[role].phase,peer});}
   }
-  assert.equal(r.seats.pilot.phase,'seated');assert.ok(max>.02);assert.ok(phases.has('traversing'));assert.ok(phases.has('closing'));assert.ok(p.nav.position.distanceTo(r.world(L.seats.pilot.eye))<1e-8);
+  assert.equal(r.seats[role].phase,'seated');assert.ok(max>.02);assert.ok(phases.has('traversing'));assert.ok(phases.has('closing'));assert.ok(p.nav.position.distanceTo(r.world(L.seats[role].eye))<1e-8);
+  assert.deepEqual(analyzeSentryAccess(samples).violations,[]);
+  // Use the real room route for a one-second missed-render window. Repeated
+  // reads of its old snapshot must not reset that snapshot's observed age.
+  let largest={distance:0};
+  for(let i=0;i+15<samples.length;i++){
+    const a=samples[i],b=samples[i+15],distance=Math.hypot(...b.position.map((v,j)=>v-a.position[j]));
+    if(a.seat==='traversing'&&b.seat==='traversing'&&distance>largest.distance)largest={index:i,distance};
+  }
+  assert.ok(largest.distance>.6,'actual access traverses more than the old per-render cap during a missed second');
+  const i=largest.index,stale=samples[i],next=samples[i+15];
+  const delayed=[...samples.slice(0,i+1),{...stale,time:stale.time+280},{...stale,time:stale.time+350},...samples.slice(i+15)];
+  const review=analyzeSentryAccess(delayed);assert.deepEqual(review.violations,[]);assert.ok(review.maximumRenderedStep>.6);assert.ok(review.maximumRenderGap>.6);
+  // The same real path displacement in 20 ms must still fail; this is a speed
+  // check, not a relaxed arbitrary distance cap or ignored long-step assertion.
+  const jumped=[...samples.slice(0,i+1),{...next,time:stale.time+20},...samples.slice(i+16)];
+  assert.ok(analyzeSentryAccess(jumped).violations.some(x=>x.reason.includes('physical route speed')));
 });
 
 for(const targetKind of ['suit','ship'])for(const sign of [-1,1])test(`Sentry lasers hit a ${targetKind} in the other planetary chart (${sign})`,async t=>{

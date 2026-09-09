@@ -192,3 +192,43 @@ stopped with SIGTERM; the retained verified-cleanup receipt reports no survivors
 The portable runner now cleans only such uniquely owned fixture children after
 each job, including interruption. It never reuses an existing server or treats a
 port number as process ownership. No game source or server rate limit changed.
+
+Browser12 (`2026-09-09T01-09-55.235Z`, frozen `d051d9b`, application `6334b98`)
+built the correct flagged bundle in 4.21 s. Complete solo controller passed in
+1.5 minutes; keyboard/native portrait touch passed in 1.6 minutes, including
+walking after exit and reachable on-foot controls. Both have empty errors,
+warnings and failed-request lists. All two-account gameplay assertions also
+completed: physical station/EVA approach, both seats, concurrent drive/fire,
+gunner exit, held/neutral fallback, controller and panel server inventory, and
+the pilot's physical return. Both clients remained connected; passive fixed
+one-second message buckets peaked at 23/24. This did not reproduce or explain09.
+
+The deferred gunner raw-render distance assertion failed at **0.7282097 m**,
+so the original runner remains **exit 1**, with two passed tests and one failed
+test. Its sampled frame gap was 668.5 ms; that same authoritative pose had first
+been observed 976.2 ms before the next distinct pose. Both endpoints match the
+received peer position. A fixed distance cap per observed frame mistakes delayed
+sampling for one simulation step. The original report, videos, hashes and empty
+owned-process cleanup receipt remain unchanged. Two aborted music requests and
+Vite's context-close `ECONNRESET` are retained; application errors/warnings were
+empty, and no socket rate/pending diagnostic fired.
+
+The QA-only `access-evidence.mjs` instead bounds motion by the authored 0.85 m/s
+route speed, elapsed time from the first observation of the previous distinct
+pose, one 15 Hz publication interval and the existing 4 mm room-test tolerance.
+Door phase changes reset unchanged-pose waiting time; ordinary predicted walker
+poses before admission are not compared as seated authority. Both real-room
+pilot and gunner routes now check every 30 Hz tick, actual published poses, a
+missed-render window and rejection of the same displacement compressed to 20 ms.
+
+The first checker attempt (`access-continuity13-host.log`) caught an overly old
+door-wait timestamp in its short-jump rejection; `access-reanalysis12-01.json`
+also caught two pre-admission predicted walker samples. Both originals remain.
+With those evidence boundaries corrected, `access-continuity14-host.log` passes
+2/2 cases in 2.103 s. Retained-input reanalysis `access-reanalysis12-02.json`
+passes both original online traces: the largest gunner motion is 0.7282097 m
+over 0.9762 s against a 0.8904367 m speed/cadence bound. The checker SHA-256 is
+`6a96748b74ad80a134fae83c07f30bc0a6b1b79a817e167b43d1789d61e3d308`.
+No application, server rate limit or authored physical route was changed. This
+is a reviewed analysis of the completed original gameplay evidence, not a newly
+green browser runner or a retrospective explanation of09.

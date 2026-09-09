@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {evaWaypointInput} from './eva-feedback.mjs';
+import {analyzeSentryAccess} from './access-evidence.mjs';
 const output=process.env.SENTRY_OUTPUT??'test-results/sentry-manual';
 const state=page=>page.evaluate(()=>starAgent.state);
 const wait=(page,fn,arg=null,timeout=30000)=>page.waitForFunction(fn,arg,{timeout,polling:80});
@@ -113,9 +114,11 @@ async function board(page,role){
   try{await tap(page,2);await wait(page,role=>{const s=starAgent.state.sentry;return s.role===role&&s.current?.seats[role].phase==='seated';},role,40000);}
   finally{const samples=await page.evaluate(()=>{sentryRecord=false;return sentryAccess;}).catch(()=>[]);await writeFile(output+'/access-'+who+'-'+role+'.json',JSON.stringify({samples},null,2));}
   const samples=await page.evaluate(()=>{sentryRecord=false;return sentryAccess;}),steps=samples.slice(1).map((p,i)=>({distance:Math.hypot(...p.position.map((n,j)=>n-samples[i].position[j])),elapsed:(p.time-samples[i].time)/1000,before:samples[i],after:p})),largest=steps.reduce((a,b)=>a.distance>b.distance?a:b,{distance:0}),maxStep=largest.distance;
-  await writeFile(output+'/access-'+((await state(page)).multiplayer.ownId??'solo')+'-'+role+'.json',JSON.stringify({largest,samples},null,2));
-  expect.soft(maxStep,'Maximum rendered access step; timestamped authority samples retained').toBeLessThan(.6);
-  await neutral(page);return {maxStep,samples:samples.length,largest};
+  const authorityReview=who==='solo'?null:analyzeSentryAccess(samples);
+  await writeFile(output+'/access-'+who+'-'+role+'.json',JSON.stringify({largest,samples,authorityReview},null,2));
+  if(authorityReview)expect.soft(authorityReview.violations,'Received physical seat motion within route speed and snapshot cadence').toEqual([]);
+  else expect.soft(maxStep,'Maximum local rendered access step').toBeLessThan(.6);
+  await neutral(page);return {maxStep,samples:samples.length,largest,authorityReview};
 }
 
 async function register(page,index,errors){
