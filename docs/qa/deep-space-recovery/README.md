@@ -178,3 +178,18 @@ fixture-only correction.
 
 The two named authenticated actual-room freight/Atlas cargo regressions also
 pass on6b43092 (3.281s). This is not a new full database-suite claim.
+
+
+## Checked local-base composition before06
+
+Private61c4f08 merges only checked local faction/Pirate003 e25c7d0;
+8bb82f3 retains its final delivery metadata2a6e405. The only runtime overlap was
+two additive main hooks; recovery, cargo, trading and combat bytes are unchanged.
+The package conflict preserves all162 registered normal test files. Full combined
+`npm test -- --test-concurrency=2` passes all162 files, zero failed/skipped,
+71.945s. Production build06 passes6.11s,395modules,main-Cl0jsdm5.js. The initial
+sandbox build could not write Vite configuration in the shared node_modules;
+the already-authorized build succeeded. No browser had started for that failure.
+Explicit-origin/dev repository check passes271 paths and the suggested plan runs.
+These are combined CPU/build checks, not another full quiet gameplay pass.
+Narrow06 remains guarded flight and keyboard/native390 actions on this build.
