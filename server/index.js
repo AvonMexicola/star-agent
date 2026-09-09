@@ -5,6 +5,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { createAuth, SESSION_COOKIE } from './auth.js';
 import { createMemoryStore, createPostgresStore } from './database.js';
 import { createSMTPMailer } from './mail.js';
+import { MAX_PLAYERS } from '../src/multiplayer/protocol.js';
 import { createSocialService } from './social.js';
 import { CHAT_POLICY, createChatModerator } from './chat-moderation.js';
 
@@ -13,7 +14,7 @@ const MAX_BUFFERED = 256 * 1024;
 const POST_ACTIONS = new Set(['register', 'login', 'logout', 'forgot', 'reset']);
 const httpError = (status, message) => Object.assign(new Error(message), { status });
 const errorMessage = error => ({
-  ROOM_FULL: 'This universe has ten players. Try joining again when a place is free.',
+  ROOM_FULL: `All ${MAX_PLAYERS} player slots are occupied. Try joining again when a place is free.`,
   ACCOUNT_CONNECTED: 'This account is already connected to the universe.',
 })[error?.code] ?? 'The multiplayer request could not be completed.';
 
@@ -71,7 +72,10 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
   const limit = createRequestLimiter();
   const peers = new Map(), tasks = new Set(), upgradeSockets = new Set();
   let closing = false, closePromise;
-  const diagnostic = code => { try { logger.error?.(code); } catch { /* logging must not crash the server */ } };
+  const diagnostic = (code, details) => {
+    try { if (details === undefined) logger.error?.(code); else logger.error?.(code, details); }
+    catch { /* logging must not crash the server */ }
+  };
   const social = createSocialService({ store, onError: diagnostic, moderate: createChatModerator(chatPolicy) });
   function track(task) {
     const promise = Promise.resolve(task).catch(() => diagnostic('ROOM_OPERATION_FAILED'));
@@ -173,7 +177,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
       wss.handleUpgrade(req, socket, head, ws => {
         upgradeSockets.delete(socket);
         const peer = { account, context: ctx, id: null, closed: false, alive: true, checking: false,
-          messageWindow: Date.now(), messages: 0, pendingMessages: 0, receiveChain: Promise.resolve() };
+          messageWindow: Date.now(), messages: 0, pendingMessages: 0, receiveStartedAt: null, receiveChain: Promise.resolve() };
         peers.set(ws, peer);
         const send = message => {
           if (ws.readyState !== WebSocket.OPEN) return;
@@ -191,12 +195,22 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
           if (peer.closed || ws.readyState !== WebSocket.OPEN) return;
           if (isBinary) { endPeer(ws, 1003, 'Send JSON text messages.'); return; }
           if (Date.now() - peer.messageWindow >= 1000) { peer.messageWindow = Date.now(); peer.messages = 0; }
-          if (++peer.messages > 120 || peer.pendingMessages >= 64) { endPeer(ws, 1008, 'Too many messages.'); return; }
+          if (++peer.messages > 120 || peer.pendingMessages >= 64) {
+            // Keep the public rejection and both bounds unchanged, but distinguish
+            // an input burst from commands waiting on admission or room storage.
+            diagnostic(peer.messages > 120 ? 'WEBSOCKET_MESSAGE_RATE_LIMIT' : 'WEBSOCKET_PENDING_MESSAGE_LIMIT', {
+              messages: peer.messages, pending: peer.pendingMessages,
+              windowMs: Date.now() - peer.messageWindow, admitted: Boolean(peer.social),
+              processingMs: peer.receiveStartedAt === null ? null : Date.now() - peer.receiveStartedAt,
+            });
+            endPeer(ws, 1008, 'Too many messages.'); return;
+          }
           let message;
           try { message = JSON.parse(data.toString()); if (!message || typeof message !== 'object' || Array.isArray(message)) throw new Error(); }
           catch { endPeer(ws, 1007, 'Send a valid JSON object.'); return; }
           peer.pendingMessages++;
           peer.receiveChain = peer.receiveChain.then(async () => {
+            peer.receiveStartedAt = Date.now();
             // The room can send welcome before social storage finishes loading.
             // Keep early commands in the same bounded queue until admission is
             // complete; never silently drop a request the client will await.
@@ -206,7 +220,7 @@ export async function createServer({ store, mail, room, publicOrigin, secureCook
               else await room.receive(peer.id, message);
             }
           }).catch(() => { diagnostic('ROOM_MESSAGE_REJECTED'); endPeer(ws, 1008, 'Invalid multiplayer command.'); })
-            .finally(() => { peer.pendingMessages--; });
+            .finally(() => { peer.pendingMessages--; peer.receiveStartedAt = null; });
           track(peer.receiveChain);
         });
         peer.admission = (async () => {

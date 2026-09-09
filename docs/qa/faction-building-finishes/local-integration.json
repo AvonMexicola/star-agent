@@ -1,0 +1,143 @@
+{
+  "previousHead": "cc1e74933791a3abdf36e65bdad732b4985994a9",
+  "integratedHead": "e25c7d0508c0b864a7692c747be4bd23ab4b3bd7",
+  "sharedWorktree": "/home/cees/projects/star-agent-dev",
+  "branch": "dev/all-features",
+  "dirtyJournalPreserved": true,
+  "journalBytes": 520678,
+  "journalSHA256": "2f201781af25958b2287a4e28a4a172a83f4b77b143bcd0c93b53edf4bc45823",
+  "served": {
+    "verifiedAt": "2026-09-09T00:03:35.382353+00:00",
+    "head": "e25c7d0508c0b864a7692c747be4bd23ab4b3bd7",
+    "method": "Read-only curl of live local source and both health endpoints",
+    "checks": [
+      {
+        "path": "src/main.js",
+        "status": 200,
+        "sha256": "57e034b08327b7a9dc729b577b8bae911e661b19be2d16f331ae0296b225da02",
+        "bytes": 475344,
+        "expectedFragments": {
+          "pirateCompound.layouts.some": true,
+          "miasma.update": true,
+          "createGarageSystem": true,
+          "createSettlements": true
+        }
+      },
+      {
+        "path": "src/build/appearance.js",
+        "status": 200,
+        "sha256": "1051c602438c0a0e14863af00cc0226d58de4afb3d86ada0ffe66e212f4863a4",
+        "bytes": 14028,
+        "expectedFragments": {
+          "BUILD_FINISHES": true,
+          "recolourBuild": true,
+          "typeof id": true
+        }
+      },
+      {
+        "path": "src/build/state.js",
+        "status": 200,
+        "sha256": "00419a200983371d5a3b93d67f0efe6d510811f394414f6688efc770b7c7f209",
+        "bytes": 21724,
+        "expectedFragments": {
+          "validAppearance": true
+        }
+      },
+      {
+        "path": "src/build/ui.js",
+        "status": 200,
+        "sha256": "d23f01cb2308fc0f7375dc212d29a87fa8cc15e9b1e8b60247fa2cd26afe4ead",
+        "bytes": 117426,
+        "expectedFragments": {
+          "Finishes": true,
+          "build-finish-": true,
+          "build-paint-tool": true
+        }
+      },
+      {
+        "path": "src/factions/catalog.js",
+        "status": 200,
+        "sha256": "253752491e4252cc3d0122c07c86a0997266d17be3a867453d78e28d5778a820",
+        "bytes": 11447,
+        "expectedFragments": {
+          "Crimson Pact": true,
+          "Vesper Extraction": true,
+          "Tidemark Logistics": true,
+          "Cinder Industrial": true,
+          "Verdant Materials": true
+        }
+      },
+      {
+        "path": "src/pirate-compound/catalog.js",
+        "status": 200,
+        "sha256": "590a9deff871175dd42c13e7720f6c4a3cfb0cd19e757e6d1943f3a6e2730d1f",
+        "bytes": 9228,
+        "expectedFragments": {
+          "pirate-veil": true
+        }
+      },
+      {
+        "path": "src/pirate-compound/airlock.js",
+        "status": 200,
+        "sha256": "056e288185a6f67afcd1253bda9246d724897daa3456af183ea896a599291e89",
+        "bytes": 12513,
+        "expectedFragments": {
+          "PirateAirlock": true,
+          "opposite door closes": true
+        }
+      },
+      {
+        "path": "src/scenery-clearance.js",
+        "status": 200,
+        "sha256": "47f33f1e4957379b7c27ce012ede7e6d6f96409d0716d343d82b0701419a1ae6",
+        "bytes": 8015,
+        "expectedFragments": {
+          "SceneryClearance": true,
+          "getPlacementBounds": true
+        }
+      },
+      {
+        "path": "src/dev-launch-options.js",
+        "status": 200,
+        "sha256": "9e21a3493d4b859cfec9b2fd14e500798e7c974a54ee6e1e1a677a3b3c47b856",
+        "bytes": 25783,
+        "expectedFragments": {
+          "pirate-veil": true
+        }
+      },
+      {
+        "port": 5178,
+        "status": 200,
+        "json": {
+          "ok": true
+        }
+      },
+      {
+        "port": 8087,
+        "status": 200,
+        "json": {
+          "ok": true
+        }
+      }
+    ],
+    "publicDeployment": false
+  },
+  "service": {
+    "name": "star-agent-persistent-preview.service",
+    "restartCommand": "systemctl --user restart star-agent-persistent-preview.service",
+    "restartExitCode": 0,
+    "active": "active/running",
+    "previousPID": 1923002,
+    "newPID": 2303707,
+    "startedAt": "2026-09-09T00:03:17Z",
+    "killMode": "mixed",
+    "persistentDatabase": "Existing scripts/dev-all.mjs managed local PostgreSQL; no schema/data reset or configuration change",
+    "protocol": 7
+  },
+  "verificationScope": "Live source fragments/hashes and both health endpoints. Production gameplay was tested separately on identical runtime; no newly rendered shared-browser journey or cloud-account mutation is claimed.",
+  "publicDeployment": false,
+  "integrationWindow": {
+    "claimedAt": "2026-09-09T00:02:56.029303Z",
+    "verifiedAt": "2026-09-09T00:03:35.382353+00:00"
+  }
+}

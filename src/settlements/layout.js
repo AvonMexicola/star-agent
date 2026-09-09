@@ -1,3 +1,4 @@
+import {FACTIONS} from '../factions/catalog.js';
 import {Matrix4,Quaternion,Vector3} from 'three';
 import {AEON,SELENE,PYRE,MIASMA,bodySurfacePoint} from '../celestial.js';
 import {MOON_LANDING_DIRECTION} from '../moon-world.js';
@@ -7,6 +8,7 @@ import {withClaimAnchor} from '../build/anchors.js';
 import {findDestinations} from '../world.js';
 import {SEED} from '../generation.js';
 import {SETTLEMENTS} from './catalog.js';
+import {addGarageAccess} from './garage-layout.js';
 const v=a=>new Vector3(...a);
 const bodies={aeon:AEON,selene:SELENE,pyre:PYRE,miasma:MIASMA};
 
@@ -43,49 +45,65 @@ export function surveySettlement(body,direction,fallback=false){
 }
 
 /** Every solid comes from the player's existing 4 m kit, including pad piers.
- * Three enclosed buildings meet the large pad at flush, accessible thresholds. */
+ * Exchange, warehouse and vehicle garage meet the pad at flush thresholds. */
 export function settlementLayout(def,index,site){
   let serial=10000+index*1000;const pieces=[];
-  const put=(type,x,y,z,rotation=0,extra={})=>{const p={id:`build-piece-${++serial}`,type,position:[x,y,z],rotation,doorOpen:false,...extra};pieces.push(p);return p;};
+  const put=(type,x,y,z,rotation=0,extra={})=>{const p={id:`build-piece-${++serial}`,type,position:[x,y,z],rotation,doorOpen:false,finish:FACTIONS[def.faction]?.finish??'mineral',...extra};pieces.push(p);return p;};
   const y=site.deck;
-  put('foundation-pad-large',0,y,20,0,{landingPad:true});
+  put('foundation-pad-large',0,y,20,0,{landingPad:true,graphic:def.faction});
   const room=(cx,cz,doorSide,style)=>{
+    const garage=style==='garage',height=garage?6:3;
     put('foundation-pad-small',cx,y,cz);
+    if(garage)for(const side of [-1,1])put('hangar-door',cx+side*8,y,cz,Math.PI/2,{doorOpen:true});
     for(let a=-6;a<=6;a+=4){
       put(doorSide==='south'&&a===-2?'doorway':style==='glazed'?'window':'wall',cx+a,y,cz+8,0,{doorOpen:true});
       put(style==='glazed'?'window':'wall',cx+a,y,cz-8);
-      put(doorSide==='west'&&a===-2?'doorway':'window',cx-8,y,cz+a,Math.PI/2,{doorOpen:true});
-      put(doorSide==='east'&&a===-2?'doorway':'wall',cx+8,y,cz+a,Math.PI/2,{doorOpen:true});
+      if(garage){put('wall',cx+a,y+3,cz+8);put('wall',cx+a,y+3,cz-8);}
+      else{
+        put(doorSide==='west'&&a===-2?'doorway':'window',cx-8,y,cz+a,Math.PI/2,{doorOpen:true});
+        put(doorSide==='east'&&a===-2?'doorway':'wall',cx+8,y,cz+a,Math.PI/2,{doorOpen:true});
+      }
     }
     for(let x=-6;x<=6;x+=4)for(let z=-6;z<=6;z+=4){
-      put('floor',cx+x,y+3,cz+z);
+      put('floor',cx+x,y+height,cz+z);
       // Rounded perimeter makes the three roofs read as finished kit buildings.
-      put(Math.abs(x)===6&&Math.abs(z)===6?'roof-corner':Math.abs(z)===6||Math.abs(x)===6?'roof-edge':'roof-flat',cx+x,y+3.006,cz+z,z===-6?Math.PI:x===6?Math.PI/2:x===-6?-Math.PI/2:0);
+      put(Math.abs(x)===6&&Math.abs(z)===6?'roof-corner':Math.abs(z)===6||Math.abs(x)===6?'roof-edge':'roof-flat',cx+x,y+height+.006,cz+z,z===-6?Math.PI:x===6?Math.PI/2:x===-6?-Math.PI/2:0);
     }
-    for(const [x,z]of [[-6,-6],[2,2]])put('ceiling-light',cx+x,y+2.82,cz+z,0,{lightOn:true});
+    for(const [x,z]of [[-6,-6],[2,2]])put('ceiling-light',cx+x,y+height-.18,cz+z,0,{lightOn:true});
   };
   room(0,-24,'south','glazed');
   room(-32,def.wings[0],'east',def.body==='aeon'?'glazed':'solid');
-  room(32,def.wings[1],'west',def.body==='miasma'?'glazed':'solid');
+  room(32,def.wings[1],'west','garage');
   // Terminal at the front of the exchange; the central aisle stays unobstructed.
   const terminal=put('terminal',-2,y,-22,Math.PI);
   put('mainframe',5,y,-29,Math.PI);
-  for(const [cx,cz] of [[-32,def.wings[0]],[32,def.wings[1]]]){
+  for(const [cx,cz] of [[-32,def.wings[0]]]){
     for(const x of [-5,0,5])put('rack',cx+x,y,cz-6,0);
     for(const x of [-5,5])put('crate',cx+x,y,cz+5);
   }
+  put('rack',37,y,def.wings[1]-6);
+  put('crate',37,y,def.wings[1]+6);
+  const garage=addGarageAccess(put,site,def.wings[1],({aeon:4,miasma:5})[def.body]??0);
   for(const x of [-6,2,6])put('solar-array',x,y+3.62,-26);
   put('battery',6,y,-18,Math.PI/2);
   put(def.body==='selene'?'helium-generator':'uranium-generator',-6,y,-28);
-  if(def.body==='aeon'||def.body==='miasma')put('wind-turbine',32,y+3.62,def.wings[1]);
-  else put('solar-array',32,y+3.62,def.wings[1]);
+  if(def.body==='aeon'||def.body==='miasma')put('wind-turbine',32,y+6.62,def.wings[1]);
+  else put('solar-array',32,y+6.62,def.wings[1]);
   // Corner masts wash the pad; the middle pair also picks out the exchange.
   // Feet stay outside the Atlas' 36 × 64 m envelope on the actual support slab.
   for(const x of [-22.5,22.5])for(const z of [-14.5,20,54.5]){
-    put('floodlight',x,y,z,Math.atan2(x,z-(z===20?-20:20)),{lightOn:true});
+    const mastX=x>0&&z===20?22:x; // Clear the taller garage header.
+    put('floodlight',mastX,y,z,Math.atan2(mastX,z-(z===20?-20:20)),{lightOn:true});
   }
-  const claim=withClaimAnchor({id:`build-claim-${10000+index*1000}`,body:def.body,name:def.name,owner:'Settlement authority',useBuffer:false,radius:96,origin:site.origin,quaternion:site.quaternion,pieces});
-  return {...def,claim,terminalPiece:terminal,pad:pieces[0],terrain:site.terrain};
+  for(const [x,z] of [[-32,def.wings[0]+8],[32,def.wings[1]+8],[32,def.wings[1]-8],[0,-32]]){
+    const panel=pieces.filter(p=>p.type==='wall'&&p.position[1]===y).sort((a,b)=>Math.hypot(a.position[0]-x,a.position[2]-z)-Math.hypot(b.position[0]-x,b.position[2]-z))[0];
+    if(panel)panel.graphic=def.faction;
+  }
+  // A solid branded panel beside the glazed exchange entrance, preserving its aperture.
+  const entry=pieces.find(p=>p.type==='window'&&p.position[0]===2&&p.position[2]===-16&&p.position[1]===y);
+  if(entry){entry.type='wall';entry.graphic=def.faction;}
+  const claim=withClaimAnchor({id:`build-claim-${10000+index*1000}`,body:def.body,name:def.name,owner:'Settlement authority',useBuffer:false,radius:Math.max(96,Math.ceil(Math.hypot(garage.rampEnd[0],garage.rampEnd[2])+8)),origin:site.origin,quaternion:site.quaternion,pieces});
+  return {...def,claim,terminalPiece:terminal,garage,pad:pieces[0],terrain:site.terrain};
 }
 let cached,cachedSeed;
 export const settlementLayoutErrors=[];

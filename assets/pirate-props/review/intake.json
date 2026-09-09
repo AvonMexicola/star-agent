@@ -1,0 +1,78 @@
+[
+  {
+    "index": 1,
+    "file": "Meshy_AI__0908191353_texture.glb",
+    "sourceSha256": "cb5507328931f1f78d35f8c8fae2df3d3e58d0c353aa36d73c3dd326ef7886ec",
+    "sourceBytes": 7386512,
+    "boundsBlenderZUp": {
+      "min": [
+        -0.5,
+        -0.34375,
+        -0.3828119933605194
+      ],
+      "max": [
+        0.5,
+        0.34375,
+        0.38085898756980896
+      ]
+    },
+    "displayScale": 3.6
+  },
+  {
+    "index": 2,
+    "file": "Meshy_AI_Industrial_Tripod_Wor_0908191206_texture.glb",
+    "sourceSha256": "fae06d6a55d89255924802b5102c37bb6566724b38793bf53a89fdb6546232e2",
+    "sourceBytes": 7495008,
+    "boundsBlenderZUp": {
+      "min": [
+        -0.5,
+        -0.5,
+        -0.5006890296936035
+      ],
+      "max": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "displayScale": 3.597521201069095
+  },
+  {
+    "index": 3,
+    "file": "Meshy_AI__0908191153_texture.glb",
+    "sourceSha256": "b881fe5f0bcaf2509a5ca11994290244fb7e92035ff9a4b23e3d544a09343a6c",
+    "sourceBytes": 6583564,
+    "boundsBlenderZUp": {
+      "min": [
+        -0.5,
+        -0.30273398756980896,
+        -0.28710898756980896
+      ],
+      "max": [
+        0.5,
+        0.3046880066394806,
+        0.2851560115814209
+      ]
+    },
+    "displayScale": 3.6
+  },
+  {
+    "index": 4,
+    "file": "Meshy_AI_Crimson_Skull_Crate_0908191136_texture.glb",
+    "sourceSha256": "b06222a938d1cf302fac0a3f0bb29685c9130bfc74b8dc5b58ba178c1fe083c4",
+    "sourceBytes": 8316244,
+    "boundsBlenderZUp": {
+      "min": [
+        -0.5,
+        -0.33398398756980896,
+        -0.27148398756980896
+      ],
+      "max": [
+        0.5,
+        0.33789101243019104,
+        0.2695310115814209
+      ]
+    },
+    "displayScale": 3.6
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "id": "SA-PIRATE-002",
+  "title": "Secret Hush trading compound and reduced perimeter turret",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex pirate compound (parent garage integration)",
+  "status": "integrated",
+  "branch": "feat/pirate-trade-compound",
+  "base": "23ca6199d2b5f0ee5cbfa9f914612320e8d8e684",
+  "updated": "2026-09-09",
+  "areas": [
+    "assets",
+    "industry",
+    "combat"
+  ],
+  "claims": [
+    "src/pirate-compound/",
+    "blender/build_pirate_tower.py",
+    "assets/pirate-tower/",
+    "public/models/pirate-tower.glb",
+    "tests/pirate-compound.test.js",
+    "scripts/pirate-compound.spec.js",
+    "scripts/pirate-compound.config.js",
+    "assets/pirate-props/",
+    "public/models/pirate-props/",
+    "src/build/floodlights.js",
+    "src/trading/terminal-frames.js",
+    "src/trading/local.js",
+    "src/settlements/catalog.js",
+    "src/combat/space-combat.js",
+    "src/main.js",
+    "src/dev-launch-options.js",
+    "src/combat/ship-occupancy.js"
+  ],
+  "brief": "docs/briefs/pirate-compound.md",
+  "validation": "Checked runtime2c2f2fb:15 focused invariants PASS; parent private159-file suite PASS; full physical controller approach/isolate/buy/sell/return and focus/device gates PASS; keyboard/native phone PASS; repaired-normal HDR comparison PASS0 vs102 invalid samples. Parent combined hooks/own captures PASS. Formal art/hardware/performance acceptance pending; integrated locally at c7b09ab with served source, five model hashes and both API health routes verified. Local integration receipt cc1e749 is present; formal art acceptance remains pending and does not make source ownership active.",
+  "evidence": "docs/qa/pirate-compound/README.md"
+}

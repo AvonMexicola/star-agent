@@ -1,0 +1,48 @@
+# Frozen public snapshot. The legacy main deploy path cannot overwrite these roots.
+play.staragent.site {
+    encode zstd gzip
+    header X-Content-Type-Options nosniff
+    header Referrer-Policy strict-origin-when-cross-origin
+    @server path /api/* /ws*
+    respond @server "Solo runs on your machine. Multiplayer is at multiplayer.staragent.site." 404
+    root * /opt/staragent/public-current/solo
+    file_server
+    header /assets/* Cache-Control "public, max-age=86400"
+    header /models/* Cache-Control "public, max-age=86400"
+}
+
+staragent.site, www.staragent.site {
+    encode zstd gzip
+    header X-Content-Type-Options nosniff
+    header Referrer-Policy strict-origin-when-cross-origin
+    root * /opt/staragent/public-current/site
+    file_server
+    header /fonts/* Cache-Control "public, max-age=31536000, immutable"
+    header /media/* Cache-Control "public, max-age=86400"
+}
+
+# Existing consolidation preview retained.
+next.staragent.site {
+    encode zstd gzip
+    root * /opt/staragent/next
+    try_files {path} /index.html
+    file_server
+}
+
+# Existing account database and authoritative server retained.
+multiplayer.staragent.site {
+    encode zstd gzip
+    header Referrer-Policy no-referrer
+    header X-Content-Type-Options nosniff
+    handle /ws {
+        reverse_proxy 127.0.0.1:8084
+    }
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8084
+    }
+    handle {
+        root * /opt/staragent/multiplayer-candidate/dist
+        try_files {path} /index.html
+        file_server
+    }
+}

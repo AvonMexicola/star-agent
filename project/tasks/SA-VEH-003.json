@@ -1,0 +1,36 @@
+{
+  "id": "SA-VEH-003",
+  "title": "Burrow Sentry rear laser turret with shared gunner and pilot control",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex delegated Sentry owner",
+  "status": "integrated",
+  "branch": "feat/burrow-sentry",
+  "base": "23ca6199d2b5f0ee5cbfa9f914612320e8d8e684",
+  "updated": "2026-09-09",
+  "areas": [
+    "assets",
+    "flight",
+    "combat",
+    "multiplayer",
+    "interface"
+  ],
+  "claims": [
+    "src/sentry/",
+    "server/sentry.js",
+    "assets/burrow-sentry/",
+    "public/models/burrow-sentry.glb",
+    "blender/build_burrow_sentry.py",
+    "tests/sentry.test.js",
+    "tests/server-sentry.test.js",
+    "scripts/sentry/",
+    "docs/briefs/burrow-sentry.md",
+    "docs/qa/burrow-sentry/",
+    "docs/decisions/sentry-authority.md",
+    "tests/sentry-carrier.test.js",
+    "docs/burrow-sentry.md"
+  ],
+  "brief": "docs/briefs/burrow-sentry.md",
+  "evidence": "docs/qa/burrow-sentry/README.md",
+  "validation": "Locally integrated bdf053c with checked Recovery2b28036/rotation, paired5178/API8087 protocol10 and existing database; source/model/health/journal verified. Combined1274 normal,226 serialized multiplayer plus2 existing opt-in skips, build/repo/plan pass; expanded both-seat continuity2/2 pass. Complete controller/native/two-client gameplay verified from12, preserving original rendered-step failure and independently checked timestamp-aware reanalysis. Earlier09 socket rejection remains unresolved/not reproduced; physical devices, formal art and performance acceptance separate."
+}

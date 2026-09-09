@@ -1,0 +1,34 @@
+{
+  "id": "SA-GARAGE-002",
+  "title": "Civilian garage choice between Burrow and Burrow Sentry",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex integration steward",
+  "status": "review",
+  "branch": "feat/compound-vehicle-choice",
+  "base": "3ea6b07d50d7a0e91acaf3c5047b5d56d06aadba",
+  "updated": "2026-09-09",
+  "areas": [
+    "industry",
+    "flight",
+    "interface"
+  ],
+  "claims": [
+    "src/settlements/garage-system.js",
+    "src/settlements/garage-ui.js",
+    "src/settlements/garage-policy.js",
+    "src/settlements/garage.css",
+    "src/sentry/system.js",
+    "src/sentry/environment.js",
+    "src/sentry/simulation.js",
+    "src/main.js",
+    "src/rover-build-support.js",
+    "tests/compound-garages.test.js",
+    "tests/sentry.test.js",
+    "scripts/compound-garages.spec.js",
+    "scripts/compound-garages.config.js"
+  ],
+  "brief": "docs/briefs/compound-vehicle-choice.md",
+  "evidence": "docs/qa/compound-vehicle-choice/README.md",
+  "validation": "37 focused cases; Burrow01 controller2.5m and final Sentry03 controller2.7m pass, keyboard/native390 retrieval, empty diagnostics; final source hashes unchanged. Full integration and public release follow separately."
+}

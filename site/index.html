@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071019">
+  <title>Star Agent — A universe we build together</title>
+  <meta name="description" content="An open, seamless space sim built by coding agents and the community. Explore solo in your browser, test the development tools, or join the 20-player multiplayer experiment.">
+  <link rel="canonical" href="https://staragent.site/">
+  <meta property="og:title" content="Star Agent — A universe we build together">
+  <meta property="og:description" content="Bring your curiosity. Bring your agent. Help build an open, seamless space sim — and fly what we have today.">
+  <meta property="og:image" content="https://staragent.site/media/orbit.webp">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://staragent.site/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/site.css">
+  <script src="/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#choose">Skip to play options</a>
+  <header class="navigation wrap">
+    <a class="wordmark" href="/" aria-label="Star Agent home"><span aria-hidden="true">✧</span> Star Agent</a>
+    <nav aria-label="Main navigation"><a href="#captures">In the universe</a><a href="#community">Build with us</a><a class="nav-play" href="#choose">Choose your flight</a></nav>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-image" src="/media/orbit.webp" width="1600" height="900" alt="Aeon's blue atmosphere and cloud-covered surface seen from orbit in Star Agent" fetchpriority="high">
+      <div class="hero-shade"></div>
+      <div class="hero-content wrap">
+        <p class="intro">An open spaceflight experiment</p>
+        <h1 id="hero-title">A universe<br>we build<br>together.</h1>
+        <p class="hero-description">From an orbital hangar to the ground beneath your boots. We’re building a seamless space sim with coding agents and the community. Come fly it. Help shape what comes next.</p>
+        <a class="hero-link" href="#choose">Find your way in <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-caption wrap"><span>Actual in-engine capture · Aeon orbit</span><span>Open source. In active development.</span></div>
+    </section>
+
+    <section class="choose wrap" id="choose" aria-labelledby="choose-title">
+      <div class="section-heading"><h2 id="choose-title">Two ways into the universe.</h2><button class="motion-toggle" type="button" aria-pressed="false" hidden>Pause motion</button></div>
+      <div class="flight-options">
+        <a class="flight-tile solo" href="https://play.staragent.site/">
+          <div class="tile-image"><img src="/media/nomad-approach.webp" alt="A Nomad closing on Aeon during relativistic travel" width="1280" height="800" loading="lazy"><video muted loop playsinline preload="none" data-loop="/media/nomad-approach.mp4" aria-hidden="true" tabindex="-1"></video></div>
+          <div class="tile-top"><span class="tile-tag">Your machine. Your expedition.</span><span class="tile-symbol" aria-hidden="true">↗</span></div>
+          <div class="tile-content"><h3>Fly solo</h3><p>Explore at your own pace. Pick a ship and a location, open the dev tools, and see how this universe works.</p><div class="tile-bottom"><span>No account · Browser saves · Dev tools</span><strong>Launch solo</strong></div></div>
+        </a>
+        <a class="flight-tile shared" href="https://multiplayer.staragent.site/">
+          <div class="tile-image"><img src="/media/hangar.webp" alt="A Nomad ship inside an illuminated orbital hangar" width="1440" height="900" loading="lazy"><video muted loop playsinline preload="none" data-loop="/media/hangar.mp4" aria-hidden="true" tabindex="-1"></video></div>
+          <div class="tile-top"><span class="tile-tag">A shared world. Up to 20 pilots.</span><span class="tile-symbol" aria-hidden="true">↗</span></div>
+          <div class="tile-content"><h3>Meet your rivals</h3><p>Claim your callsign, request a hangar, and cross paths with other pilots. Put the first shared server through its paces.</p><div class="tile-bottom"><span>Account required · Multiplayer alpha</span><strong>Join multiplayer</strong></div></div>
+        </a>
+      </div>
+      <div class="flight-notes"><p><strong>Solo is a development snapshot.</strong> The game runs in your browser on your computer. Use F2 or the Dev menu to choose a test start and browse the tools. Fresh test flights keep your regular save separate.</p><p><strong>Multiplayer starts small.</strong> Twenty concurrent players, server-controlled movement and on-foot weapon hits. Shared systems are still catching up with solo; this is an early playtest, not a finished competitive game.</p></div>
+    </section>
+
+    <section class="captures wrap" id="captures" aria-labelledby="captures-title">
+      <div class="section-heading"><div><p class="intro">Captured in the game</p><h2 id="captures-title">One universe. A change of perspective.</h2></div><p>Ships you can board. Worlds you can approach.<br>Places worth getting out to explore.</p></div>
+      <div class="films">
+      <figure class="reel"><video controls playsinline preload="none" poster="/media/nomad-aeon-arrival.webp" aria-label="A continuous Nomad flight to Aeon: relativistic drive arrival, atmospheric descent and landing, with time compression"><source src="/media/nomad-aeon-arrival.mp4" type="video/mp4"></video><figcaption><span>Nomad → Aeon · From relativistic travel to touchdown</span><span>Continuous game capture · Up to 6× speed · No audio</span></figcaption></figure>
+      <figure class="reel"><video controls playsinline preload="none" poster="/media/burrow-atlas.webp" aria-label="Local development footage: mining with the Burrow rover, driving into the Atlas cargo bay and taking off"><source src="/media/burrow-atlas.mp4" type="video/mp4"></video><figcaption><span>Burrow + Atlas · Mine. Load. Lift off.</span><span>Local development capture · 2 min 55 sec · No audio</span></figcaption></figure>
+      <figure class="reel"><video controls playsinline preload="none" poster="/media/base-building.webp" aria-label="Local development footage of building walls and floors for a base on Selene"><source src="/media/base-building.mp4" type="video/mp4"></video><figcaption><span>Base building · Make a place of your own.</span><span>Local development capture · 48 sec · No audio</span></figcaption></figure>
+      </div>
+      <div class="gallery">
+        <figure><a href="/media/aeon-expedition.png" aria-label="View full screenshot of a Kestrel landed on Aeon"><img src="/media/aeon-expedition.png" width="2560" height="1508" loading="lazy" alt="A Kestrel with its canopy and ladder open among Aeon’s green meadows"></a><figcaption><strong>Aeon</strong><span>Touch down. Step outside.</span></figcaption></figure>
+        <figure><a href="/media/selene-expedition.png" aria-label="View full screenshot of Selene"><img src="/media/selene-expedition.png" width="2560" height="1600" loading="lazy" alt="A Nomad on the rocky surface of Selene beneath the sun"></a><figcaption><strong>Selene</strong><span>A quiet moment on Selene</span></figcaption></figure>
+        <figure><a href="/media/hangar.webp" aria-label="View full screenshot of the orbital hangar"><img src="/media/hangar.webp" width="1440" height="900" loading="lazy" alt="A Nomad parked on the lit deck of an orbital hangar"></a><figcaption><strong>Your departure point</strong><span>Physical hangars and walkable ships</span></figcaption></figure>
+      </div>
+      <p class="capture-note">Screenshots and footage show development builds. Visuals and available systems will change as the project grows.</p>
+    </section>
+
+    <section class="community wrap" id="community" aria-labelledby="community-title">
+      <div><p class="intro">Humans + coding agents</p><h2 id="community-title">Bring your agent.<br>Leave your mark.</h2></div>
+      <div class="community-copy"><p>The ambition is an awesome, seamless space sim that a community can build together. The source is open, and the world is already playable.</p><p>Explore and report what breaks. Improve a ship, a landscape, or a system. Bring a coding agent into the work, or contribute yourself. Small, working improvements move the whole universe forward.</p><div class="community-links"><a href="https://github.com/AvonMexicola/star-agent">Explore the source</a><a href="https://github.com/AvonMexicola/star-agent/blob/dev/all-features/CONTRIBUTING.md">Start contributing</a><a href="https://github.com/AvonMexicola/star-agent/issues">Report a discovery or bug</a></div></div>
+    </section>
+    <section class="practical wrap" aria-label="Before you fly"><h2>Before you fly</h2><div><p><strong>Bring a capable browser.</strong> A desktop or laptop with WebGL 2 and a modern graphics driver is the best place to start. Keyboard, mouse and standard controller support are available. Lower the graphics settings if needed.</p><p><strong>Your browser does the heavy lifting.</strong> The first visit downloads the game and its assets. Solo saves live in this browser on this device; clearing site data removes them. Multiplayer uses a separate account and server save.</p></div></section>
+  </main>
+  <footer class="wrap"><a class="wordmark" href="/">✧ Star Agent</a><p>Bring your agent, build a universe.</p><a href="https://github.com/AvonMexicola/star-agent/blob/main/LICENSE">Open source license</a></footer>
+</body>
+</html>

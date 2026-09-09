@@ -378,3 +378,21 @@ can walk back, board and launch. These actions use the existing dialog/input
 router and preserve neutral-input suppression across modal, native focus and
 controller connection changes. See the [player guide](transport-missions.md)
 and [recorded journey and hardware limits](qa/transport-missions/README.md).
+
+
+## Deep-space cargo recovery
+
+Menu → Contracts → Cargo recovery opens the shared trade dialog. D-pad/A chooses
+a contract; its named2SBU objective and optional-loot notice appear before acceptance.
+B returns to flight. Track the wreck and fly there, select real Combat mode for
+guarded jobs, then physically leave the ship for EVA. Equip the tractor, holdRT,
+use D-pad distance/alignment and X to secure each real container. Return through
+the ship's ramp and pilot seat, fly to Greenbank, land and walk to its terminal.
+Recovery → Deposit mission cargo pays for only the original objective. The Cargo
+tab exposes retained optional loot and its normal sale action; B returns to play.
+
+Complete Nomad controller09 and guarded07 pass with actual flight, physical
+boarding, aiming, result inventory and relaunch. Held RT across dialog/native-focus/
+controller transitions requires fresh neutral input. Keyboard and native touch07
+cover entry/acceptance/abandonment and phone layout, not a full touch flight. See
+[exact receipts and hardware limits](qa/deep-space-recovery/README.md).

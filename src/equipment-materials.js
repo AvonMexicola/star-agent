@@ -9,7 +9,7 @@ export function shareHandheldTextures(root) {
       if (material.userData.handheldFinish !== 1) continue;
       for (const slot of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) {
         const texture = material[slot];
-        if (!texture?.name?.startsWith('HandheldAtlas-v1-')) continue;
+        if (!/^(HandheldAtlas|FieldCutterAtlas)-v1-/.test(texture?.name||'')) continue;
         texture.anisotropy = 4; // Keep physical service plates legible at oblique aim angles.
         const key = `${texture.name}:${texture.colorSpace}`;
         if (!atlases.has(key)) atlases.set(key, texture);

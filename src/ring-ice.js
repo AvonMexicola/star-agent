@@ -1,3 +1,5 @@
+import { rotationMatrix } from './planet-render-frames.js';
+import { Matrix3, Quaternion } from 'three';
 import { AdditiveBlending, BufferAttribute, BufferGeometry, DynamicDrawUsage, Points, ShaderMaterial, Vector3 } from 'three';
 import { MOON_POSITION, MOON_RADIUS } from './moon-world.js';
 import { SUN_DIRECTION } from './world.js';
@@ -71,17 +73,17 @@ export class RingIce {
     this.geometry.setDrawRange(0, 0);
     this.material = new ShaderMaterial({
       transparent: true, depthWrite: false, depthTest: true, blending: AdditiveBlending,
-      uniforms: { iceTime: { value: 0 }, iceSun: { value: new Vector3(...SUN_DIRECTION).normalize() }, iceSunlight: { value: 1 } },
+      uniforms: { iceFrame: {value:new Matrix3()},iceTime: { value: 0 }, iceSun: { value: new Vector3(...SUN_DIRECTION).normalize() }, iceSunlight: { value: 1 } },
       vertexShader: `#include <common>
         #include <logdepthbuf_pars_vertex>
         attribute vec4 iceParameters;
-        uniform float iceTime;uniform vec3 iceSun;uniform float iceSunlight;
+        uniform mat3 iceFrame;uniform float iceTime;uniform vec3 iceSun;uniform float iceSunlight;
         varying float vIceOpacity;varying float vIceGlint;varying float vIceAngle;varying float vIceCoverage;varying float vIcePhaseLight;
         void main(){
           vec4 worldPoint=modelMatrix*vec4(position,1.0),viewPoint=viewMatrix*worldPoint;
           gl_Position=projectionMatrix*viewPoint;
           float phase=iceParameters.x,spin=phase+iceTime*iceParameters.z;
-          vec3 facet=normalize(vec3(sin(spin),cos(spin*.79+phase),sin(spin*.61+phase*1.31)));
+          vec3 facet=iceFrame*normalize(vec3(sin(spin),cos(spin*.79+phase),sin(spin*.61+phase*1.31)));
           vec3 viewDirection=normalize(cameraPosition-worldPoint.xyz),halfDirection=normalize(iceSun+viewDirection+vec3(.00001));
           vIceGlint=pow(abs(dot(facet,halfDirection)),72.0)*iceSunlight;
           vIcePhaseLight=pow(max(dot(viewDirection,-iceSun),0.0),5.0)*iceSunlight;
@@ -110,7 +112,10 @@ export class RingIce {
     this.points = new Points(this.geometry, this.material); this.points.name = 'Sunlit ring micro-ice'; this.points.frustumCulled = false; this.points.visible = false;
     scene.add(this.points);
   }
-  update(worldOrigin, elapsed = performance.now() / 1000) {
+  update(worldOrigin, elapsed = performance.now() / 1000,sunDirection=null,rotation=new Quaternion()) {
+    const bodySun=sunDirection??new Vector3(...SUN_DIRECTION);
+    this.material.uniforms.iceSun.value.copy(bodySun).applyQuaternion(rotation);
+    rotationMatrix(rotation,this.material.uniforms.iceFrame.value);
     this.presence = ringIcePresence(worldOrigin);
     if (this.presence <= 0) { this.points.visible = false; this.count = 0; this.geometry.setDrawRange(0, 0); return; }
     const key = iceCellAt(worldOrigin).join(':');
@@ -126,7 +131,7 @@ export class RingIce {
     this.geometry.attributes.position.needsUpdate = true; this.geometry.attributes.iceParameters.needsUpdate = true;
     this.geometry.setDrawRange(0, this.count); this.points.visible = this.count > 0;
     this.material.uniforms.iceTime.value = elapsed;
-    const moonPoint = worldOrigin.clone().sub(center), along = moonPoint.dot(this.material.uniforms.iceSun.value), miss = moonPoint.clone().addScaledVector(this.material.uniforms.iceSun.value, -along).length();
+    const moonPoint = worldOrigin.clone().sub(center), along = moonPoint.dot(bodySun), miss = moonPoint.clone().addScaledVector(bodySun, -along).length();
     this.material.uniforms.iceSunlight.value = along < 0 ? smooth(MOON_RADIUS * .995, MOON_RADIUS * 1.01, miss) : 1;
   }
   get state() { return { count: this.count, capacity: ICE_MAX_PARTICLES, radius: ICE_RADIUS, presence: this.presence, cell: this.cell, sunlight: this.material.uniforms.iceSunlight.value }; }

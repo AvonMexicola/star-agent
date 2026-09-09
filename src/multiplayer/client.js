@@ -84,9 +84,14 @@ export function reviveTravel(value) {
 export function applyAuthoritativePeer(nav, peer, { blend = .38, snap = false } = {}) {
   if (!nav || !peer) return false;
   const modeChanged = typeof peer.mode === 'string' && peer.mode !== nav.mode;
-  const frameChanged = (peer.physicsFrame ?? null) !== (nav.authoritativePhysicsFrame ?? null);
-  const hard = snap || modeChanged || frameChanged;
+  const planetFrameChanged = nav.rotationClock && (peer.planetFrame??null)!==(nav.rotationFrame?.id??null);
+  const frameChanged = planetFrameChanged || (peer.physicsFrame ?? null) !== (nav.authoritativePhysicsFrame ?? null);
+  const hard = snap || modeChanged || frameChanged || Boolean(peer.sentrySeat);
   nav.authoritativePhysicsFrame = peer.physicsFrame ?? null;
+  nav.sentrySeat=peer.sentrySeat??null;
+  nav.sentryFeet=nav.sentrySeat&&finiteArray(peer.sentryFeet,3)?[...peer.sentryFeet]:null;
+  nav.sentryBodyOrientation=nav.sentrySeat&&finiteArray(peer.bodyOrientation,4)?[...peer.bodyOrientation]:null;
+  if(nav.sentrySeat)nav.roverOccupied=true;else if(nav.multiplayer?.connected)nav.roverOccupied=false;
   nav.position = setVector(nav.position, peer.position, blend, hard);
   nav.orientation = setQuaternion(nav.orientation, peer.orientation, blend, hard);
   nav.velocity = setVector(nav.velocity, peer.velocity, 1, true);
@@ -118,7 +123,7 @@ function publicState(account = null) {
   return {
     connected: false, account, ownId: null, players: [], maxPlayers: MAX_PLAYERS,
     hangar: null, inventory: null, commerce: null, health: null, doors: null, drops: [], error: null,
-    stationFrame: null, hub: null, defense: [],
+    stationFrame: null, hub: null, defense: [], sentries: [],
     social: null, chat: [], moderation: null,
   };
 }
@@ -183,7 +188,7 @@ export class MultiplayerClient {
         clearTimeout(timeout); if (!settled) fail(new Error(event.reason || 'The multiplayer connection closed.'));
         if (this.socket === socket) {
           const wasConnected = this.connected; this.socket = null; this._rejectPending('The multiplayer connection closed.'); this._clearWorld();
-          this._publish({ connected: false, ownId: null, players: [], hangar: null, inventory: null, commerce: null, health: null, hub: null, defense: [], social: null, chat: [], error: event.reason || 'Connection lost.' });
+          this._publish({ connected: false, ownId: null, players: [], hangar: null, inventory: null, commerce: null, health: null, hub: null, defense: [], sentries: [], social: null, chat: [], error: event.reason || 'Connection lost.' });
           if (wasConnected) { if (this.nav) { this.nav.enabled = false; this.nav.keys?.clear?.(); } this._emit({ type: 'event', event: 'disconnect', message: event.reason || 'Multiplayer connection lost.' }); }
         }
       });
@@ -209,6 +214,7 @@ export class MultiplayerClient {
     catch { return null; }
     if (!message || typeof message !== 'object') return null;
     if (message.type === 'welcome') {
+      if(Number.isFinite(message.planetTime))this.nav?.rotationClock?.synchronize(message.planetTime);
       if (message.seed !== WORLD_SEED || (message.version != null && message.version !== MULTIPLAYER_VERSION)) {
         this.socket?.close?.(4001, 'Build mismatch'); this._publish({ error: 'Server world does not match this build.' }); return message;
       }
@@ -216,17 +222,18 @@ export class MultiplayerClient {
         connected: true, ownId: message.id, maxPlayers: message.maxPlayers ?? MAX_PLAYERS,
         players: Array.isArray(message.players) ? message.players : [], inventory: message.inventory ?? null, commerce: hydrateBaseCommerce(null,message.commerce) ?? null,
         health: message.health ?? message.inventory?.health ?? null, doors: message.doors ?? null,
-        hangar: message.hangar ?? null, stationFrame: message.stationFrame ?? null, hub: message.hub ?? null, defense: message.defense ?? [],
+        hangar: message.hangar ?? null, stationFrame: message.stationFrame ?? null, hub: message.hub ?? null, defense: message.defense ?? [], sentries: message.sentries ?? [],
         drops: Array.isArray(message.drops) ? message.drops : [], error: null,
       };
       this._publish(patch); this._applyWorld(message, true); return message;
     }
     if (message.type === 'state') {
+      if(Number.isFinite(message.planetTime))this.nav?.rotationClock?.synchronize(message.planetTime);
       const patch = {
         players: Array.isArray(message.players) ? message.players : this.state.players,
         inventory: message.inventory ?? this.state.inventory, commerce: message.commerce?hydrateBaseCommerce(this.state.commerce,message.commerce):this.state.commerce, health: message.health ?? message.inventory?.health ?? this.state.health,
         doors: message.doors ?? this.state.doors, hangar: message.hangar === undefined ? this.state.hangar : message.hangar,
-        stationFrame: message.stationFrame ?? this.state.stationFrame, hub: message.hub ?? this.state.hub, defense: message.defense ?? this.state.defense,
+        stationFrame: message.stationFrame ?? this.state.stationFrame, hub: message.hub ?? this.state.hub, defense: message.defense ?? this.state.defense, sentries: message.sentries ?? this.state.sentries,
         drops: Array.isArray(message.drops) ? message.drops : this.state.drops,
       };
       this._publish(patch); this._applyWorld(message, false); return message;
@@ -362,7 +369,8 @@ export class MultiplayerClient {
     this.accumulator += Math.max(0, Number.isFinite(dt) ? dt : 0);
     if (this.accumulator < SEND_INTERVAL) return;
     this.accumulator %= SEND_INTERVAL;
-    const input = navigationInput(this.nav, this.lastPad, { mouseYaw: this.mouseYaw, mousePitch: this.mousePitch, fire: this.keyFire || this.pointerFire });
+    let input = navigationInput(this.nav, this.lastPad, { mouseYaw: this.mouseYaw, mousePitch: this.mousePitch, fire: this.keyFire || this.pointerFire });
+    input=this.nav.sentryNetworkInput?.(input)??input;
     if(this.nav.carryingCargo||this.nav.tractorActive)input.fire=false;
     this.mouseYaw = 0; this.mousePitch = 0; this._sendInput(input);
   }

@@ -34,8 +34,10 @@ function fakeRoom(options = {}) {
 }
 async function fixture(t, options = {}) {
   const room = options.room ?? fakeRoom(), store = options.store ?? createMemoryStore();
-  const diagnostics = [], mails = [];
-  const app = await createServer({ store, room, publicOrigin: ORIGIN, logger: { error: code => diagnostics.push(code) },
+  const diagnostics = [], diagnosticDetails = [], mails = [];
+  const app = await createServer({ store, room, publicOrigin: ORIGIN, logger: { error(code, details) {
+    diagnostics.push(code); if (details !== undefined) diagnosticDetails.push(details);
+  } },
     mail: { async sendPasswordReset(mail) { mails.push(mail); } }, ...options });
   const address = await app.listen();
   const base = `http://127.0.0.1:${address.port}`;
@@ -61,7 +63,7 @@ async function fixture(t, options = {}) {
     ws.on('error', () => {});
     return ws;
   }
-  return { app, room, store, diagnostics, mails, base, request, register, connect };
+  return { app, room, store, diagnostics, diagnosticDetails, mails, base, request, register, connect };
 }
 
 test('HTTP register/login/session/logout use cookies and return no account email or credential fields', async t => {
@@ -183,6 +185,49 @@ test('message floods and async room failures close sockets without unhandled rej
   const floodClosed = once(flood, 'close');
   for (let i = 0; i < 150; i++) flood.send(JSON.stringify({ type: 'input', sequence: i }));
   assert.equal((await floodClosed)[0], 1008);
+});
+
+test('WebSocket diagnostics distinguish a message-rate burst from an async command backlog', async t => {
+  const rate = await fixture(t);
+  const rateAccount = await rate.register();
+  const burst = rate.connect(rateAccount.cookie);
+  await once(burst, 'open'); await until(() => burst.messages.length);
+  // Drain each batch so the rate ceiling, rather than the pending queue, fires.
+  for (let batch = 0; batch < 3; batch++) {
+    for (let i = 0; i < 40; i++) burst.send(JSON.stringify({ type: 'input', sequence: batch * 40 + i }));
+    await until(() => rate.room.received.length === (batch + 1) * 40);
+  }
+  const rateClosed = once(burst, 'close');
+  burst.send(JSON.stringify({ type: 'input', sequence: 120 }));
+  const [rateCode, rateReason] = await rateClosed;
+  assert.equal(rateCode, 1008); assert.equal(rateReason.toString(), 'Too many messages.');
+  assert.deepEqual(rate.diagnostics, ['WEBSOCKET_MESSAGE_RATE_LIMIT']);
+  assert.equal(rate.diagnosticDetails[0].messages, 121);
+  assert.ok(rate.diagnosticDetails[0].pending < 64);
+  assert.equal(rate.diagnosticDetails[0].admitted, true);
+
+  let release, started = false;
+  const blocked = new Promise(resolve => { release = resolve; });
+  const room = fakeRoom();
+  room.receive = async () => { started = true; await blocked; };
+  const pending = await fixture(t, { room });
+  try {
+    const pendingAccount = await pending.register();
+    const backlog = pending.connect(pendingAccount.cookie);
+    await once(backlog, 'open'); await until(() => backlog.messages.length);
+    backlog.send(JSON.stringify({ type: 'input', sequence: 0 }));
+    await until(() => started);
+    const pendingClosed = once(backlog, 'close');
+    for (let i = 1; i <= 64; i++) backlog.send(JSON.stringify({ type: 'input', sequence: i }));
+    const [pendingCode, pendingReason] = await pendingClosed;
+    assert.equal(pendingCode, 1008); assert.equal(pendingReason.toString(), 'Too many messages.');
+    assert.deepEqual(pending.diagnostics, ['WEBSOCKET_PENDING_MESSAGE_LIMIT']);
+    const details = pending.diagnosticDetails[0];
+    assert.deepEqual(Object.keys(details).sort(), ['admitted', 'messages', 'pending', 'processingMs', 'windowMs']);
+    assert.equal(details.pending, 64); assert.equal(details.messages, 65);
+    assert.equal(details.admitted, true);
+    assert.equal(typeof details.processingMs, 'number'); assert.ok(details.processingMs >= 0);
+  } finally { release(); }
 });
 
 test('heartbeat rechecks session validity and terminates clients that do not answer pings', async t => {

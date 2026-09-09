@@ -256,9 +256,9 @@ export function pyreSurfaceBody(x, y, z) {
 /** World-frame sampler: rendering, contact and walking all use this one. */
 export function pyreSurface(x, y, z) { return pyreSurfaceBody(...toPyreBody(x, y, z)); }
 export function pyreResources(x,y,z){return pyreSurface(x,y,z).resources;}
-export function pyreRegion(x, y, z) {
-  const b = toPyreBody(x, y, z);
-  return `${b[2] > .04 ? 'DAY SIDE' : b[2] < -.04 ? 'NIGHT SIDE' : 'TERMINATOR'} · ${pyreSurfaceBody(...b).region}`;
+export function pyreRegion(x, y, z, sunDirection=null) {
+  const b = toPyreBody(x, y, z),light=sunDirection?x*sunDirection.x+y*sunDirection.y+z*sunDirection.z:b[2];
+  return `${light > .04 ? 'DAY SIDE' : light < -.04 ? 'NIGHT SIDE' : 'TERMINATOR'} · ${pyreSurfaceBody(...b).region}`;
 }
 
 export function pyreOffset(position) { return position.clone().sub(new Vector3(...PYRE_POSITION)); }

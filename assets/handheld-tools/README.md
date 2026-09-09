@@ -1,5 +1,11 @@
 # Handheld tool source
 
+The current articulated mining cutter has its own [source pipeline](../field-cutter/README.md).
+The commands below preserve its delegated manifest entry and do not overwrite its
+moving head or yellow texture. The original cutter `.blend` remains historical
+provenance. Normal/ORM maps are shared, while the new yellow basecolor has its own
+cache identity and adds approximately 5.33 MiB including mipmaps.
+
 Four original manufactured tools, authored in Blender 5.2 from the existing
 `blender/build_gear.py` construction helpers. The rifle retains the 0.36 rear-stock
 fit from `fit-rifle-stock.mjs`; its grips and barrel are unchanged. The tractor
