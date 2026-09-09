@@ -10,6 +10,7 @@ export const DEV_SHIPS = Object.freeze([
 ]);
 export const DEV_LOCATIONS = Object.freeze([
   {id:'pirate-hush',name:'Hush Exchange · secret Selene compound',detail:'Outer landing apron · isolate the anti-ship tower on foot · salvage trade'},
+  {id:'pirate-veil',name:'Veil Exchange · Miasma pirate habitat',detail:'Crimson Pact · protected outer apron · interlocked rigid airlock and salvage trade'},
   ...SETTLEMENTS.map(s=>({id:s.id,name:`${s.name} · ${s.body}`,detail:`65 m above trade pad · ${s.role}`})),
   {id:'hangar',name:'Station hangar',detail:'Parked · boarding, cabins and departure'},
   {id:'rover-surface',name:'Burrow mining — Selene surface',detail:'Seated in the ground rover · nearby outcrop · ready to drive and mine'},

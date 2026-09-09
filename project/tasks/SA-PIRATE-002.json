@@ -33,6 +33,6 @@
     "src/combat/ship-occupancy.js"
   ],
   "brief": "docs/briefs/pirate-compound.md",
-  "validation": "Checked runtime2c2f2fb:15 focused invariants PASS; parent private159-file suite PASS; full physical controller approach/isolate/buy/sell/return and focus/device gates PASS; keyboard/native phone PASS; repaired-normal HDR comparison PASS0 vs102 invalid samples. Parent combined hooks/own captures PASS. Formal art/hardware/performance acceptance pending; integrated locally at c7b09ab with served source, five model hashes and both API health routes verified.",
+  "validation": "Checked runtime2c2f2fb:15 focused invariants PASS; parent private159-file suite PASS; full physical controller approach/isolate/buy/sell/return and focus/device gates PASS; keyboard/native phone PASS; repaired-normal HDR comparison PASS0 vs102 invalid samples. Parent combined hooks/own captures PASS. Formal art/hardware/performance acceptance pending; integrated locally at c7b09ab with served source, five model hashes and both API health routes verified. Local integration receipt cc1e749 is present; formal art acceptance remains pending and does not make source ownership active.",
   "evidence": "docs/qa/pirate-compound/README.md"
 }

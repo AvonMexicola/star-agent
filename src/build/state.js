@@ -1,3 +1,4 @@
+import {validAppearance} from './appearance.js';
 import {mountReason} from './mounts.js';
 import {adjustableFoundation,validFoundationDepth} from './foundations.js';
 import {validPower} from './power.js';
@@ -22,7 +23,7 @@ export function validBuild(state){
     if(c.power!==undefined&&!validPower(c.power))return false;
     ids.add(c.id);
     for(const p of c.pieces){
-      if(!validFoundationDepth(p)||!id(p.id)||ids.has(p.id)||typeof p.type!=='string'||!Object.hasOwn(PIECES,p.type)||!vector(p.position,3)||Math.hypot(p.position[0],p.position[2])>c.radius||p.position[1]<-2||p.position[1]>CLAIM_HEIGHT||!Number.isFinite(p.rotation)||Math.abs(p.rotation/(Math.PI/6)-Math.round(p.rotation/(Math.PI/6)))>1e-5||typeof p.doorOpen!=='boolean'||p.landingPad!==undefined&&(typeof p.landingPad!=='boolean'||!PIECES[p.type].padSize))return false;
+      if(!validAppearance(p)||!validFoundationDepth(p)||!id(p.id)||ids.has(p.id)||typeof p.type!=='string'||!Object.hasOwn(PIECES,p.type)||!vector(p.position,3)||Math.hypot(p.position[0],p.position[2])>c.radius||p.position[1]<-2||p.position[1]>CLAIM_HEIGHT||!Number.isFinite(p.rotation)||Math.abs(p.rotation/(Math.PI/6)-Math.round(p.rotation/(Math.PI/6)))>1e-5||typeof p.doorOpen!=='boolean'||p.landingPad!==undefined&&(typeof p.landingPad!=='boolean'||!PIECES[p.type].padSize))return false;
       ids.add(p.id);
       const bounds=getPlacementBounds(p);
       if(bounds.min[1]<(PIECES[p.type].padSize||adjustableFoundation(p.type)?-16:-2)||bounds.max[1]>CLAIM_HEIGHT||[bounds.min[0],bounds.max[0]].some(x=>[bounds.min[2],bounds.max[2]].some(z=>Math.hypot(x,z)>c.radius)))return false;

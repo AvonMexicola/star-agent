@@ -14,14 +14,15 @@ import {GANNET_LAYOUT} from '../src/gannet-layout.js';
 import {STRATUM_LAYOUT} from '../src/stratum-layout.js';
 import {createFloodlights} from '../src/build/floodlights.js';
 import {PiratePerimeter} from '../src/pirate-compound/perimeter.js';
-import {PIRATE_MARKET,PERIMETER as P} from '../src/pirate-compound/catalog.js';
+import {PirateAirlock} from '../src/pirate-compound/airlock.js';
+import {PIRATE_MARKET,PIRATE_MARKETS,PERIMETER as P} from '../src/pirate-compound/catalog.js';
 import {pirateLayout} from '../src/pirate-compound/layout.js';
 import {normalizePirateMarket} from '../src/pirate-compound/market.js';
 import {SETTLEMENTS,settlementById} from '../src/settlements/catalog.js';
 import {emptyCommerce,normalizeSettlementMarkets,validCommerce} from '../src/trading/model.js';
 import {integrity,damage} from '../src/combat/simulation.js';
 import {occupiesShip} from '../src/combat/ship-occupancy.js';
-import {SELENE,bodySurfacePoint} from '../src/celestial.js';
+import {SELENE,MIASMA,bodySurfacePoint} from '../src/celestial.js';
 import {terminalFrames} from '../src/trading/terminal-frames.js';
 import {getWorldBoxes} from '../src/build/collision.js';
 import {getPieceDefinition} from '../src/build/definitions.js';
@@ -49,11 +50,12 @@ test('actual rover cabin flags reset the perimeter without making landed ships i
  rover.roverOccupied=false;step(policy,5,{ship:occupiesShip(rover)});assert.equal(shots,before,'Re-entering an aircraft starts a new warning, without queued burst hits.');
 });
 test('actual world collision accepts the pad, blocks walls, opens the door and carries both ramps',()=>{
- const s=pirateLayout(),q=new Quaternion(...s.claim.quaternion),origin=new Vector3(...s.claim.origin),world=a=>new Vector3(...a).applyQuaternion(q).add(origin),nav={position:world(s.approach),orientation:q,layout:SHIP_LAYOUT,mode:'flight'},collision=createPirateCollision(new Scene(),nav,[s.claim,s.outerClaim]);
+ const s=structuredClone(pirateLayout()),q=new Quaternion(...s.claim.quaternion),origin=new Vector3(...s.claim.origin),world=a=>new Vector3(...a).applyQuaternion(q).add(origin),nav={position:world(s.approach),orientation:q,layout:SHIP_LAYOUT,mode:'flight'},collision=createPirateCollision(new Scene(),nav,[s.claim,s.outerClaim]);
  try{
   assert.equal(collision.blocked,false);assert.equal(collision.error,'');assert.equal(collision.claims.length,2);
   for(const layout of [SHIP_LAYOUT,KESTREL_LAYOUT,FREIGHTER_LAYOUT,GANNET_LAYOUT,STRATUM_LAYOUT]){nav.layout=layout;const surface=collision.landingSurface({position:world(s.pad.position),orientation:q});assert.equal(surface?.size,'L',layout.id??'nomad');assert.ok(surface.point.distanceTo(world(s.pad.position))<1e-6);}nav.layout=SHIP_LAYOUT;
   const eye=SHIP_LAYOUT.eyeHeight,wall=collision.constrainWalker(world([20,s.deck+eye,0]),world([24,s.deck+eye-.1,0]));assert.equal(wall.hit,true);assert.ok(collision.toLocal(wall.point,s.claim).x<22);
+  const closed=collision.constrainWalker(world([6,s.deck+eye,-10]),world([6,s.deck+eye-.1,-14]));assert.ok(collision.toLocal(closed.point,s.claim).z> -12);s.claim.pieces.find(piece=>piece.airlock==='inner').doorOpen=true;
   const door=collision.constrainWalker(world([6,s.deck+eye,-10]),world([6,s.deck+eye-.1,-14]));assert.ok(collision.toLocal(door.point,s.claim).z< -13.8);assert.equal(door.grounded,true);
   for(const claim of [s.claim,s.outerClaim]){const ramps=claim.pieces.filter(p=>p.type==='foundation-ramp'),first=ramps[0],last=ramps.at(-1),point=a=>collision.toWorld(new Vector3(...a),claim);let previous=point([first.position[0],first.position[1]+eye,first.position[2]-2]);
    for(let z=first.position[2]-1.9;z<last.position[2]+1.9;z+=.1){const local=collision.toLocal(previous,claim),result=collision.constrainWalker(previous,point([first.position[0],local.y-.06,z]));assert.ok(collision.toLocal(result.point,claim).z>z-.02,`${claim.name} ramp blocked at${z}`);assert.equal(result.grounded,true,`${claim.name} ramp lacks real support at${z}`);previous=result.point;}
@@ -128,4 +130,48 @@ test('ramp supporting foundations reach sampled terrain without protruding throu
 });
 test('locked exchange projection directs players to the isolator',()=>{
  const s=pirateLayout(),frames=terminalFrames({snapshot:{terminals:[]},settlements:{claims:[s.claim],layouts:[s],terminalStatus:()=>({status:'Isolate perimeter tower',available:false})},station:null});assert.equal(frames.length,1);assert.equal(frames[0].status,'Isolate perimeter tower');assert.equal(frames[0].available,false);
+});
+
+test('two finite pirate markets migrate old Hush stock without refill or cross-site aliasing',()=>{
+ const previous=normalizePirateMarket(normalizeSettlementMarkets(emptyCommerce()));previous.markets['pirate-hush'].stock.ice=0;
+ const old=structuredClone(previous);old.pirateMarketVersion=1;delete old.markets['pirate-veil'];const original=structuredClone(old),next=normalizePirateMarket(old);
+ assert.deepEqual(old,original);assert.equal(next.pirateMarketVersion,2);assert.equal(next.markets['pirate-hush'].stock.ice,0);assert.equal(next.markets['pirate-veil'].stock.ice,64);
+ next.markets['pirate-veil'].stock.ice=0;assert.equal(normalizePirateMarket(next),next);assert.equal(next.markets['pirate-hush'].stock.ice,0);assert.equal(SETTLEMENTS.length,4);
+ for(const site of PIRATE_MARKETS)assert.equal(settlementById(site.id),site);
+ const broken=structuredClone(next);delete broken.markets['pirate-veil'];assert.throws(()=>normalizePirateMarket(broken),/Original save retained/);
+});
+
+test('both vacuum habitats have rigid enclosure, deliberate graphics and interlocked swept-safe doors',()=>{
+ for(const market of PIRATE_MARKETS){
+  const s=structuredClone(pirateLayout(market.id)),q=new Quaternion(...s.claim.quaternion),origin=new Vector3(...s.claim.origin),world=a=>new Vector3(...a).applyQuaternion(q).add(origin),nav={position:world([6,s.deck+SHIP_LAYOUT.eyeHeight,-1.5]),orientation:q,layout:SHIP_LAYOUT,mode:'walk',insideShip:false,keys:new Set(),gamepad:{suspend(){}},notify(){}},collision=createPirateCollision(new Scene(),nav,[s.claim,s.outerClaim]),airlock=new PirateAirlock(s,nav,collision,collision);
+  try{
+   const {pieces}=s.claim,outer=pieces.find(p=>p.airlock==='outer'),inner=pieces.find(p=>p.airlock==='inner');assert.ok(outer&&inner);assert.equal(outer.position[2]-inner.position[2],8);assert.ok(pieces.filter(p=>p.type==='roof-flat').length>=18);assert.ok(pieces.filter(p=>p.graphic==='airlock'||p.graphic==='helmet').every(p=>p.type==='wall'));assert.ok(pieces.filter(p=>p.type==='wall').every(p=>p.finish==='crimson'));assert.equal(s.pad.graphic,'crimson');
+   const advance=()=>{airlock.update();for(const door of airlock.doors)collision.doorMotion.update(door.id,door.doorOpen,.05,(a,b)=>collision.canCloseDoor(s.claim,door,a,b));assert.ok(!(airlock.fraction(inner)>.001&&airlock.fraction(outer)>.001));};
+   assert.equal(airlock.interact(),true);for(let i=0;i<12;i++)advance();assert.equal(airlock.fraction(outer),1);assert.equal(airlock.fraction(inner),0);
+   const crossed=collision.constrainWalker(world([6,s.deck+SHIP_LAYOUT.eyeHeight,-1.5]),world([6,s.deck+SHIP_LAYOUT.eyeHeight-.1,-8]));assert.ok(collision.toLocal(crossed.point,s.claim).z< -7.8);
+   nav.position.copy(world([6,s.deck+SHIP_LAYOUT.eyeHeight,-9.5]));assert.equal(airlock.interact(),true);
+   // A person stepping into the opposite leaf's sweep blocks closing and entry.
+   nav.position.copy(world([6,s.deck+SHIP_LAYOUT.eyeHeight,-4]));for(let i=0;i<20;i++)advance();assert.equal(airlock.fraction(inner),0);assert.ok(airlock.fraction(outer)>0);assert.equal(collision.doorMotion.doors.get(outer.id).blocked,true);
+   nav.position.copy(world([6,s.deck+SHIP_LAYOUT.eyeHeight,-8]));for(let i=0;i<24;i++)advance();assert.equal(airlock.fraction(outer),0);assert.equal(airlock.fraction(inner),1);
+   const entered=collision.constrainWalker(world([6,s.deck+SHIP_LAYOUT.eyeHeight,-9.5]),world([6,s.deck+SHIP_LAYOUT.eyeHeight-.1,-14]));assert.ok(collision.toLocal(entered.point,s.claim).z< -13.8);
+   assert.equal(pirateLayout(market.id).claim.pieces.find(p=>p.airlock==='outer').doorOpen,false,'Runtime targets never mutate cached authored layout.');
+  }finally{collision.dispose();}
+ }
+});
+
+test('Miasma pads, every ramp step and routed canonical ground approach are physically supported',()=>{
+ const s=pirateLayout('pirate-veil'),q=new Quaternion(...s.claim.quaternion),origin=new Vector3(...s.claim.origin),up=new Vector3(0,1,0).applyQuaternion(q),world=a=>new Vector3(...a).applyQuaternion(q).add(origin),nav={position:world(s.approach),orientation:q,layout:SHIP_LAYOUT,mode:'flight'},collision=createPirateCollision(new Scene(),nav,[s.claim,s.outerClaim]);
+ try{
+  assert.equal(s.body,'miasma');assert.ok(s.terrain.core.range<=6.8&&s.terrain.pad.range<=6.8);assert.ok(s.terrain.routeSlope<=.8);assert.ok(s.claim.origin.some(value=>Math.abs(value)>1e10));
+  for(const layout of [SHIP_LAYOUT,KESTREL_LAYOUT,FREIGHTER_LAYOUT,GANNET_LAYOUT,STRATUM_LAYOUT]){nav.layout=layout;assert.equal(collision.landingSurface({position:world(s.pad.position),orientation:q})?.size,'L');}nav.layout=SHIP_LAYOUT;
+  for(const claim of [s.claim,s.outerClaim]){const ramps=claim.pieces.filter(p=>p.type==='foundation-ramp'),first=ramps[0],last=ramps.at(-1),point=a=>collision.toWorld(new Vector3(...a),claim);let previous=point([17,first.position[1]+SHIP_LAYOUT.eyeHeight,first.position[2]-2]);
+   for(let z=first.position[2]-1.9;z<last.position[2]+1.9;z+=.1){const local=collision.toLocal(previous,claim),result=collision.constrainWalker(previous,point([17,local.y-.06,z]));assert.ok(collision.toLocal(result.point,claim).z>z-.02);assert.equal(result.grounded,true);previous=result.point;}
+   assert.ok(claim.pieces.every(piece=>Math.hypot(piece.position[0],piece.position[2])<claim.radius));
+  }
+  const height=(x,z)=>bodySurfacePoint(world([x,0,z]).sub(new Vector3(...MIASMA.center)).normalize(),MIASMA).sub(origin).dot(up);
+  for(let i=1;i<s.groundRoute.length;i++){const a=s.groundRoute[i-1],b=s.groundRoute[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(length*2);let before=height(...a);
+   for(let j=1;j<=n;j++){const p=b.map((value,k)=>a[k]+(value-a[k])*j/n),next=height(...p);assert.ok(Math.abs(next-before)/(length/n)<=.8001);assert.ok(!(p[1]>=222&&p[1]<=298&&p[0]<28.999));before=next;}
+  }
+  const hush=pirateLayout();assert.ok([...s.claim.pieces,...s.outerClaim.pieces].every(piece=>![...hush.claim.pieces,...hush.outerClaim.pieces].some(other=>piece.id===other.id)));
+ }finally{collision.dispose();}
 });

@@ -555,7 +555,7 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     else if(name==='grazer-habitat')nav.transit(AEON_GRAZER_QA.direction,35);
     else if(name==='miasma-surface')nav.transitMiasma(180);
     else if(name==='station'){const target=station.transitParams(180,6);nav.transit(target.direction,target.altitude);nav.orientToward(target.lookAt,target.up);}
-    else if(name==='pirate-hush')pirateCompound.approach();
+    else if(pirateCompound.layouts.some(site=>site.id===name))pirateCompound.approach(name);
     else if(name.startsWith('settlement-'))settlements.approach(name);
     else if(name==='orbit')nav.orbit();else nav.transit(destinations[name],name==='mountain'?700:name==='polar'?90:95);
     for(const b of document.querySelectorAll('.destination'))b.classList.toggle('active',b===button);
@@ -827,7 +827,8 @@ if(atlasMeadowStart&&SEED!==ATLAS_MEADOW_SEED){
     moon.update(moonOrigin,moonOrigin,elapsed,!nav.insideShip,nav.shipPosition?betweenFrames(nav.shipPosition,navigationShipFrame(nav),SELENE,nav.rotationTime):null,rotationFrames.sunFor(SELENE,sun.worldPosition),moonGroup.quaternion);
     landmarks.update(origin,camera);mining.update(origin);basePower.update();baseCloud.update(dt);build.update(dt,origin);settlements.update(dt,origin);garages.update(origin);fauna.update(dt,origin);shipMiningInput.beforeUpdate();miningTool.update(dt,origin);trading.update(origin,dt);rover?.update(dt,origin);inventoryUI.update?.();loadoutBar.update();buildUI.update();
     pyre.update(pyreOrigin,pyreOrigin,rotationFrames.sunFor(PYRE,sun.worldPosition));
-    miasma.update(miasmaOrigin,miasmaOrigin,elapsed,nav.shipPosition?betweenFrames(nav.shipPosition,navigationShipFrame(nav),MIASMA,nav.rotationTime):null);
+    // Claims remain canonical, matching Miasma's camera and parked-hull frame.
+    miasma.update(miasmaOrigin,miasmaOrigin,elapsed,nav.shipPosition?betweenFrames(nav.shipPosition,navigationShipFrame(nav),MIASMA,nav.rotationTime):null,[...build.claims,...settlements.claims].filter(claim=>claim.body==='miasma'));
     // Distant worlds as bright points: Pyre from Aeon and Selene, Aeon from Pyre.
     const pyreDistance=pyre.distance,aeonDistance=nav.position.length();
     pyreDirection.copy(rotationFrames.directionTo(pyre.worldPosition));aeonDirection.copy(rotationFrames.directionTo(new THREE.Vector3()));

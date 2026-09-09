@@ -1,0 +1,322 @@
+{
+  "runtime": "65814dc112f5fdabafa7ba00126b630734dc3bc0",
+  "browserRun": {
+    "startedAt": "2026-09-08T23:49:28.196286+00:00",
+    "head": "dff87d95fdef12ef74b7fb602b375a1c781956de",
+    "status": "",
+    "command": [
+      "npm",
+      "run",
+      "test:browser",
+      "--",
+      "-c",
+      "scripts/faction-building-finishes.config.js",
+      "--grep",
+      "."
+    ],
+    "browser": "/usr/bin/chromium",
+    "backend": "ANGLE gl",
+    "publicDeployment": false,
+    "finishedAt": "2026-09-08T23:59:46.208646+00:00",
+    "headAfter": "dff87d95fdef12ef74b7fb602b375a1c781956de",
+    "statusAfter": "",
+    "exitCode": 0
+  },
+  "normalSuite": {
+    "head": "65814dc112f5fdabafa7ba00126b630734dc3bc0",
+    "startedAt": "2026-09-08T23:36:09.367671+00:00",
+    "fileCount": 161,
+    "exitCode": 0,
+    "seconds": 65.93355982599314,
+    "finishedAt": "2026-09-08T23:37:15.302133+00:00"
+  },
+  "checks": {
+    "head": "65814dc112f5fdabafa7ba00126b630734dc3bc0",
+    "at": "2026-09-08T23:36:11.327421+00:00",
+    "checks": [
+      {
+        "name": "build",
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "exitCode": 1,
+        "seconds": 0.28565269097452983
+      },
+      {
+        "name": "repo",
+        "command": [
+          "npm",
+          "run",
+          "check:repo",
+          "--",
+          "--base",
+          "origin/dev/all-features"
+        ],
+        "exitCode": 0,
+        "seconds": 0.41460330999689177
+      },
+      {
+        "name": "plan",
+        "command": [
+          "npm",
+          "run",
+          "plan:checks",
+          "--",
+          "--base",
+          "origin/dev/all-features"
+        ],
+        "exitCode": 0,
+        "seconds": 0.1394795710220933
+      },
+      {
+        "name": "diff",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exitCode": 0,
+        "seconds": 0.005863127007614821
+      }
+    ],
+    "standaloneBuildFollowup": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "seconds": 12.57,
+      "modules": 390,
+      "mainAsset": "main-CB1vqLdl.js",
+      "reason": "Initial nested sandbox process could not write shared symlinked Vite cache (EROFS); already-authorized standalone build passed, no source/configuration change."
+    }
+  },
+  "browserCases": {
+    "automated": "6 passed (10.3 minutes)",
+    "controller": {
+      "browser": "151.0.7922.173",
+      "browserGraphics": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "viewport": [
+        1440,
+        900
+      ],
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 1440,
+        "height": 900
+      },
+      "draws": 577,
+      "triangles": 867792,
+      "physicalDevice": false,
+      "errors": [],
+      "warnings": [],
+      "fixture": "Only standard Gamepad writes after normal game start; actual sandbox entry, aim/placement/repainting, save and inventory. No pose, save or action injection.",
+      "beforeCount": 10,
+      "afterCount": 11,
+      "concreteSpent": 8,
+      "paintCost": 0
+    },
+    "phone": {
+      "browser": "151.0.7922.173",
+      "browserGraphics": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "viewport": [
+        390,
+        844
+      ],
+      "resolution": {
+        "automatic": true,
+        "fullscreen": true,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 390,
+        "height": 844
+      },
+      "draws": 406,
+      "triangles": 1007242,
+      "physicalDevice": false,
+      "errors": [],
+      "warnings": [],
+      "fixture": "Native mobile/touch from supported sandbox; keyboard B/Escape regression. No pose/save mutation."
+    },
+    "corporate": [
+      {
+        "browser": "151.0.7922.173",
+        "browserGraphics": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "viewport": [
+          1440,
+          900
+        ],
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 0.8,
+          "pixelRatio": 1,
+          "width": 1152,
+          "height": 720
+        },
+        "draws": 2290,
+        "triangles": 1969394,
+        "physicalDevice": false,
+        "errors": [],
+        "warnings": [],
+        "warm": {
+          "durationMs": 5021.099999964237,
+          "samples": 155,
+          "medianMs": 30.299999952316284,
+          "p95Ms": 42.80000001192093,
+          "acceptance": false
+        },
+        "fixture": "Fixed art camera only; corporate exterior/pad sign review, no traversal claim"
+      },
+      {
+        "browser": "151.0.7922.173",
+        "browserGraphics": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "viewport": [
+          1440,
+          900
+        ],
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 0.8,
+          "pixelRatio": 1,
+          "width": 1152,
+          "height": 720
+        },
+        "draws": 2298,
+        "triangles": 2339010,
+        "physicalDevice": false,
+        "errors": [],
+        "warnings": [],
+        "warm": {
+          "durationMs": 5000.300000011921,
+          "samples": 142,
+          "medianMs": 34.89999997615814,
+          "p95Ms": 40,
+          "acceptance": false
+        },
+        "fixture": "Fixed art camera only; corporate exterior/pad sign review, no traversal claim"
+      },
+      {
+        "browser": "151.0.7922.173",
+        "browserGraphics": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "viewport": [
+          1440,
+          900
+        ],
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 1440,
+          "height": 900
+        },
+        "draws": 2088,
+        "triangles": 1425578,
+        "physicalDevice": false,
+        "errors": [],
+        "warnings": [],
+        "warm": {
+          "durationMs": 5039,
+          "samples": 122,
+          "medianMs": 37.30000001192093,
+          "p95Ms": 54.90000003576279,
+          "acceptance": false
+        },
+        "fixture": "Fixed art camera only; corporate exterior/pad sign review, no traversal claim"
+      },
+      {
+        "browser": "151.0.7922.173",
+        "browserGraphics": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "viewport": [
+          1440,
+          900
+        ],
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 0.8,
+          "pixelRatio": 1,
+          "width": 1152,
+          "height": 720
+        },
+        "draws": 2685,
+        "triangles": 5011594,
+        "physicalDevice": false,
+        "errors": [],
+        "warnings": [],
+        "warm": {
+          "durationMs": 5026,
+          "samples": 123,
+          "medianMs": 40.30000001192093,
+          "p95Ms": 45.90000003576279,
+          "acceptance": false
+        },
+        "fixture": "Fixed art camera only; corporate exterior/pad sign review, no traversal claim"
+      }
+    ]
+  },
+  "imageReview": {
+    "accepted": "Four stable corporate entrance images, phone/desktop palettes and actual repaint gameplay. Pirate02 includes valid Hush/Veil and Verdigris overview evidence.",
+    "excluded": "Four first overview captures ran before developer transit released navigation; camera fell to real ground. Original images/states retained in ignored faction-05. Corrected fixture waits for enabled and not transiting and asserts pose stability; new assertions are not claimed rerun.",
+    "limits": "Author/parent review only. Held tool shadows differ across repaint captures. No pixel comparison, physical hardware, formal independent art or performance acceptance.",
+    "scheduling": "World08 and Faction05 briefly overlapped during launch/preload because guard missed @playwright/test/cli.js. World stopped its own job at23:50:39; guard spelling fixed. No performance acceptance from this job."
+  },
+  "hosted": {
+    "head": "65814dc",
+    "run": 34291630275,
+    "allFive": "pass",
+    "note": "Earlier34291553970 was superseded by PR metadata edit; source/multiplayer/browser cancelled and verify reported cancellation, not an application failure."
+  },
+  "artifacts": [
+    {
+      "path": "aeon-entrance.png",
+      "sha256": "44046c6115fd59ab6fc05972e643de3537d978ebf6d9b6ca74c6a602daeb17b4",
+      "source": "faction-05/aeon-entrance.png"
+    },
+    {
+      "path": "selene-entrance.png",
+      "sha256": "cc802445e0f01b8921f56c786aa5feb2cf40dcdba1e5b7ebcbe4df91a8c7b29c",
+      "source": "faction-05/selene-entrance.png"
+    },
+    {
+      "path": "pyre-entrance.png",
+      "sha256": "d0ee805b4e676230acc757298cc940f161582449bbc1cb7c8964a9c26ba6d5fd",
+      "source": "faction-05/pyre-entrance.png"
+    },
+    {
+      "path": "miasma-entrance.png",
+      "sha256": "3c435c03092c534aeeef4f047adc1bc130c7e9ef54913cd51cd46a1505b91354",
+      "source": "faction-05/miasma-entrance.png"
+    },
+    {
+      "path": "finishes-desktop.png",
+      "sha256": "6fe3cee35f2f09f31accc1d03407c1155ee18d65eee62e0e927e317bc43330e8",
+      "source": "faction-05/finishes-desktop.png"
+    },
+    {
+      "path": "finishes-phone.png",
+      "sha256": "fc0f669e617f91b69abf49880d37092ec84fcd3a2f3c03a983896ca9773d798d",
+      "source": "faction-05/finishes-phone.png"
+    },
+    {
+      "path": "wall-before-repaint.png",
+      "sha256": "bb990d953b7f4176d678490a672384dcaa4d292ceda9a91e8f33c5937b7dd748",
+      "source": "faction-05/wall-before-repaint.png"
+    },
+    {
+      "path": "wall-after-repaint.png",
+      "sha256": "6878fecc544280124ee5d17edc193a678f09fe7fe7845edc6864072ae8c17ea9",
+      "source": "faction-05/wall-after-repaint.png"
+    },
+    {
+      "path": "phone-built.png",
+      "sha256": "5dfca76c9ec729643bc93784ecd205d7fc1ceb46b151db6100ecc12c74443023",
+      "source": "faction-05/phone-built.png"
+    }
+  ],
+  "publicDeployment": false
+}

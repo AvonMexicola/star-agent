@@ -1,0 +1,32 @@
+{
+  "id": "SA-BUILD-003",
+  "title": "Faction paints, rigid posters and corporate landing sites",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex faction building finishes",
+  "status": "review",
+  "branch": "feat/faction-building-finishes",
+  "base": "cc1e74933791a3abdf36e65bdad732b4985994a9",
+  "updated": "2026-09-09",
+  "areas": [
+    "industry",
+    "assets",
+    "interface"
+  ],
+  "claims": [
+    "src/factions/",
+    "src/build/appearance.js",
+    "src/build/visuals.js",
+    "src/build/system.js",
+    "src/build/state.js",
+    "src/build/ui.js",
+    "src/build/build.css",
+    "src/build/handheld.js",
+    "src/settlements/catalog.js",
+    "src/settlements/layout.js",
+    "src/settlements/system.js"
+  ],
+  "brief": "docs/briefs/faction-building-finishes.md",
+  "validation": "Runtime65814dc all161 normal files PASS65.57s/build12.57s; frozen dff87d9 all6browsercases PASS10.3min including completecontroller3.6min/nativephone38.9s, zero app errors. Four stable corporate entrances accepted; mistimed first overviews excluded. Pirate fullcontroller and corrected native/art pass. Hosted runtime allfivePASS34291630275. Local integration follows; formal art/hardware/performance pending.",
+  "evidence": "docs/qa/faction-building-finishes/README.md"
+}
