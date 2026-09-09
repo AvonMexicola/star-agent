@@ -1,5 +1,12 @@
 # All-features local development
 
+**Marker release, 9 September 2026:** focused arrows and subtle marker shapes/colors
+are integrated remotely through PR112 / `8838927` and published to
+[play](https://play.staragent.site) and [multiplayer](https://multiplayer.staragent.site)
+as exact source `d63fab0`. Refresh existing tabs. Server/schema/protocol and assets
+are unchanged; [checks and release receipt](qa/navigation-markers-release/README.md).
+The separate planetary-drive and starter-tractor changes remain local development.
+
 **Focused location arrows, 9 September 2026:** runtime `b99658b` is locally
 integrated. HUD arrows now show the selected POI, each active contract’s next
 objective, and your deployed ships/vehicles. All other destinations stay on the
@@ -21,8 +28,9 @@ Refresh **http://127.0.0.1:5178/**. The managed5178/API8087 pair was refreshed a
 02:23:39UTC with protocol10, twenty slots and the existing persistent database.
 Both health routes pass and the entire unrelated journal was preserved.
 [Public play](https://play.staragent.site) and
-[multiplayer](https://multiplayer.staragent.site) now serve the paired checked
-`ea234d2` release. Refresh existing public tabs for protocol10. Garages retain
+[multiplayer](https://multiplayer.staragent.site) received the paired checked
+`ea234d2` release at this checkpoint (superseded by the marker release above).
+Garages retain
 their solo/offline scope; the unfinished ground-pirate NPC/Lizzy lane is excluded.
 [Release evidence and limits](qa/compounds-release/README.md).
 
