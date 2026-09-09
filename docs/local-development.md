@@ -1,5 +1,33 @@
 # All-features local development
 
+
+Checked faction/compound source **e25c7d0** is locally integrated and served on
+5178 with the existing persistent API8087. The paired service refreshed on
+2026-09-09; [the local receipt](qa/faction-building-finishes/local-integration.json)
+records exact source/health checks and preserved shared edits. Refresh the page.
+
+**Faction finishes and Crimson vacuum bases** add **Build → Finishes** for eight
+saved paints and rigid faction/safety prints. Choose a finish before placement,
+or use **Paint existing parts** on an owned part. Four public exchanges now carry
+Verdant Materials, Tidemark Logistics, Cinder Industrial and Vesper Extraction
+identities. Their locations, stock and vehicle garages are preserved.
+
+**Hush Exchange on Selene** and **Veil Exchange on Miasma** have Crimson enclosed
+habitats with rigid roofs and actual interlocked two-door entrances. Both have
+finite salvage trading, supplied Crimson work-yard props, a safe outer landing
+apron and a reduced turret on a cylindrical tower. Follow the amber ground route,
+isolate the tower, then open each airlock door with **F / controller X / the
+visible phone action**. There are no tents; pressure simulation and ground NPC
+combat are separate features.
+
+Use **F2 / Dev → Ship & location** and choose Hush or Veil. Direct local approaches:
+[Selene / Hush](http://127.0.0.1:5178/?dev=1&ship=nomad&start=pirate-hush&intro=0&seed=7291)
+and [Miasma / Veil](http://127.0.0.1:5178/?dev=1&ship=nomad&start=pirate-veil&intro=0&seed=7291).
+Normal play discovers each hidden trade signal independently near the site.
+See [paint controls](building-finishes.md), [pirate route](pirate-vacuum-bases.md),
+and [checked evidence](qa/faction-building-finishes/README.md). The final local
+integration receipt records the served checkpoint; no public deployment is included.
+
 The mission update is also merged into GitHub `dev/all-features` through
 [PR99](https://github.com/AvonMexicola/star-agent/pull/99), merge `966f781`.
 All five required hosted checks pass on `f90f98c`. Its server cleanup now waits

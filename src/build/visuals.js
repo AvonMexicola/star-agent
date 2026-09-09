@@ -1,6 +1,8 @@
 import { CanvasTexture, Mesh, PlaneGeometry, MeshStandardMaterial, TextureLoader, RepeatWrapping, SRGBColorSpace, EdgesGeometry, LineBasicMaterial, LineSegments, Color, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { getPieceDefinition } from './definitions.js';
+import {finishById,appearanceKey} from './appearance.js';
+import {createWallPrint,drawPadIdentity} from '../factions/graphics.js';
 import {adjustableFoundation,foundationDepth,cliffBraces} from './foundations.js';
 const loader=new GLTFLoader(), templates=new Map();
 let finish;
@@ -37,6 +39,7 @@ export function setBuildOpacity(root,opacity) {
 
 /** Dispose instance materials only: GLTF geometry and finish textures are cached. */
 export function disposeBuildVisual(root) {
+  removeWallPrint(root);
   for(const geometry of root.userData.foundationGeometry??[])geometry.dispose();
   for(const material of root.userData.buildFinish?.materials.values()??[])material.dispose();
   const display=root.userData.statusDisplay;
@@ -90,21 +93,50 @@ export async function createBuildVisual(piece) {
   setBuildOpacity(root,1);
   if(def.padSize){
     const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1024;const ctx=canvas.getContext('2d');
+    const drawPad=graphic=>{ctx.clearRect(0,0,1024,1024);
     ctx.strokeStyle='#b6efd1';ctx.fillStyle='#b6efd1';ctx.lineWidth=8;ctx.setLineDash([36,20]);ctx.strokeRect(45,45,934,934);ctx.setLineDash([]);
     ctx.lineWidth=12;ctx.strokeRect(270,270,484,484);ctx.font='bold 72px sans-serif';ctx.textAlign='center';for(const x of [120,904])for(const y of [145,940])ctx.fillText(def.padSize,x,y);ctx.font='bold 210px sans-serif';ctx.textAlign='center';ctx.fillText(def.padSize,512,570);
     ctx.font='bold 46px sans-serif';ctx.fillText(`${def.padSize==='S'?'NOMAD':def.padSize==='M'?'ATLAS':'HEAVY'} · ${def.footprint.join(' × ')} M`,512,675);
     for(const z of [120,840])for(const x of [150,512,874]){ctx.beginPath();ctx.moveTo(x-25,z+40);ctx.lineTo(x,z);ctx.lineTo(x+25,z+40);ctx.stroke();}
+    drawPadIdentity(ctx,graphic);};drawPad(piece?.graphic);
     const map=new CanvasTexture(canvas);map.colorSpace=SRGBColorSpace;const markings=new Mesh(new PlaneGeometry(...def.footprint),new MeshStandardMaterial({map,transparent:true,depthWrite:false,roughness:.8,emissive:0xb6efd1,emissiveMap:map,emissiveIntensity:.4}));
-    markings.name='LandingPadMarkings';markings.rotation.x=-Math.PI/2;markings.position.y=.009;markings.visible=Boolean(piece?.landingPad);root.add(markings);root.userData.padMap=map;
+    markings.name='LandingPadMarkings';markings.rotation.x=-Math.PI/2;markings.position.y=.009;markings.visible=Boolean(piece?.landingPad);root.add(markings);root.userData.padMap=map;root.userData.drawPad=drawPad;
   }
+  setBuildAppearance(root,piece);
   setDoorOpen(root,Number(piece?.doorOpen??0));
   return root;
+}
+
+function removeWallPrint(root){
+  const print=root.userData.wallPrint;if(!print)return;
+  const materials=root.userData.buildFinish?.materials;
+  const faded=materials?.get(print.material);if(faded){faded.dispose();materials.delete(print.material);}
+  print.group.removeFromParent();print.dispose();delete root.userData.wallPrint;
+}
+/** Palette changes touch private materials only; GLB resources and functional lights stay shared. */
+export function setBuildAppearance(root,piece){
+  const key=appearanceKey(piece??{});if(root.userData.appearance===key)return;
+  const finish=finishById(piece?.finish??'mineral')??finishById('mineral');
+  const originals=root.userData.originalPaint??=new Map();
+  for(const material of root.userData.buildFinish?.materials.values()??[]){
+    const role=material.name==='MineralConcrete'?'concrete':material.name==='WhiteArmour'?'armour':null;
+    if(!role)continue;
+    if(!originals.has(material))originals.set(material,material.color.clone());
+    if(finish[role])material.color.set(finish[role]);else material.color.copy(originals.get(material));
+  }
+  const graphic=piece?.graphic??'none';
+  if(root.userData.wallPrint?.id!==graphic){removeWallPrint(root);if(root.userData.pieceType==='wall'){
+    const print=createWallPrint(graphic);if(print){root.userData.wallPrint=print;root.add(print.group);setBuildOpacity(root,root.userData.buildFinish.uniform.value);}
+  }}
+  if(root.userData.drawPad){root.userData.drawPad(graphic);root.userData.padMap.needsUpdate=true;}
+  root.userData.appearance=key;
 }
 
 /** The same authored mesh, pivots, glass and textures that placement will create. */
 export async function createBuildGhost(piece) {
   const root=await createBuildVisual(piece);
   root.userData.ghostEdges=[];
+  root.userData.ghostPalette=new Map([...root.userData.buildFinish.materials.values()].map(m=>[m,{color:m.color.clone(),emissive:m.emissive?.clone(),intensity:m.emissiveIntensity}]));
   const meshes=[];root.traverse(mesh=>{if(mesh.isMesh)meshes.push(mesh);});
   for(const mesh of meshes){
     mesh.castShadow=false;mesh.receiveShadow=false;
@@ -126,8 +158,9 @@ export async function createBuildGhost(piece) {
 export function setBuildGhostValid(root,valid) {
   const color=valid?MINT:WARNING;
   for(const material of root.userData.buildFinish?.materials.values()??[]){
-    material.color.copy(color);
-    if(material.emissive){material.emissive.copy(color);material.emissiveIntensity=.48;}
+    const original=root.userData.ghostPalette?.get(material);
+    material.color.copy(valid&&original?original.color:color);
+    if(material.emissive){material.emissive.copy(valid&&original?.emissive?original.emissive:color);material.emissiveIntensity=valid&&original?original.intensity:.48;}
   }
   for(const edge of root.userData.ghostEdges??[])edge.material.color.copy(color);
 }

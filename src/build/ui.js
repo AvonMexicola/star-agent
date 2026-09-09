@@ -1,3 +1,6 @@
+import {BUILD_FINISHES} from './appearance.js';
+import {PRINTS} from '../factions/catalog.js';
+import {drawFactionPrint} from '../factions/graphics.js';
 import {MAX_PIECES} from './state.js';
 import { shipCargoAccess, shipCargoLabel } from '../inventory/ship-access.js';
 import './build.css';
@@ -55,6 +58,25 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
       if(build.beginRemoval)content.append(button('Remove tool · no material refund','build-remove-tool',()=>{const result=build.beginRemoval();if(!result.ok){report(result);return;}dialog.close();suspend();update();}));
       const note=document.createElement('p');note.className='build-wheel-note';note.textContent=sandbox?'Sandbox supply bank · Refill from Sandbox supplies.':'Start with foundations. Add a mainframe on the deck to secure doors. Supplies: backpack or nearby ship.';content.append(note);
       if(!sandbox&&onSandbox)content.append(button('Open supplied build sandbox','sandbox-enter',onSandbox));
+    } else if (tab === 'finishes') {
+      description.textContent='Choose paint for new parts, or repaint your existing base. Posters fit solid walls; pad emblems appear on designated landing pads. Cosmetic changes use no materials.';
+      const change=(finish,graphic)=>{const key=document.activeElement?.dataset.controllerKey;report(build.setAppearance(finish,graphic));render();content.querySelector(`[data-controller-key="${key}"]`)?.focus();};
+      const apply=button('Paint existing parts','build-paint-tool',()=>{const result=build.beginDecoration();if(!result.ok){report(result);return;}dialog.close();suspend();update();});
+      apply.className='build-paint-action';content.append(apply);
+      const paints=document.createElement('section');paints.className='build-paints';paints.setAttribute('aria-label','Building paint');
+      const title=document.createElement('h3');title.textContent='Paint';paints.append(title);
+      for(const finish of Object.values(BUILD_FINISHES)){
+        const el=button(finish.label,`build-finish-${finish.id}`,()=>change(finish.id,build.graphic));el.className='build-paint';el.style.setProperty('--paint',finish.swatch);el.setAttribute('aria-pressed',String(build.finish===finish.id));paints.append(el);
+      }
+      content.append(paints);
+      const prints=document.createElement('section');prints.className='build-prints';prints.setAttribute('aria-label','Faction and safety prints');
+      const heading=document.createElement('h3');heading.textContent='Faction posters & safety signs';prints.append(heading);
+      const clear=button('No print / remove print','build-graphic-none',()=>change(build.finish,'none'));clear.setAttribute('aria-pressed',String(build.graphic==='none'));clear.className='build-print-none';prints.append(clear);
+      for(const print of Object.values(PRINTS)){
+        const el=button(print.label,`build-graphic-${print.id}`,()=>change(build.finish,print.id));el.className='build-print';el.setAttribute('aria-pressed',String(build.graphic===print.id));
+        const canvas=document.createElement('canvas');canvas.width=128;canvas.height=192;canvas.setAttribute('aria-hidden','true');const ctx=canvas.getContext('2d');ctx.scale(.25,.25);drawFactionPrint(ctx,print.id);el.prepend(canvas);prints.append(el);
+      }
+      content.append(prints);
     } else if (tab === 'recipes') {
       lastMaterials = JSON.stringify(store.container('pack')?.items);
       description.textContent = 'Immediate manual field batches. Ingredients and output: backpack. Each separation consumes its entire input batch. No electricity or imported materials required.';
@@ -124,12 +146,12 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
   }
   const tabs = dialog.querySelector('.build-tabs');
   tabs.title='LB / RB · Switch tabs';
-  for (const [id,label] of [['pieces','Blocks'],['shapes','Shapes'],['facilities','Facilities'],['power','Power'],['roofs','Roofs'],['recipes','Resources']]) tabs.append(button(label,`build-tab-${id}`,()=>{tab=id;render();}));
+  for (const [id,label] of [['pieces','Blocks'],['shapes','Shapes'],['facilities','Facilities'],['power','Power'],['roofs','Roofs'],['finishes','Finishes'],['recipes','Resources']]) tabs.append(button(label,`build-tab-${id}`,()=>{tab=id;render();}));
   if(sandbox)tabs.append(button('Sandbox supplies','build-tab-sandbox',()=>{tab='sandbox';render();}));
   const mainframeTab = button('Mainframe','build-tab-mainframe',()=>{tab='mainframe';render();}); mainframeTab.hidden = true; tabs.append(mainframeTab);
   dialog.addEventListener('close', () => { suspend(); nav.enabled = !document.querySelector('dialog[open]'); update(); });
   const touch = hud.querySelector('.build-touch');
-  for (const [label,key,action] of [['Place','place',place],['↶','rotate-left',()=>build.rotate(-1)],['↷','rotate-right',()=>build.rotate(1)],['Snap','snap',()=>build.cycleSnap()],['Height +','height-up',()=>build.adjustHeight(.25)],['Height −','height-down',()=>build.adjustHeight(-.25)],['Pieces','pieces',()=>open()],['Exit','exit',cancel]]) touch.append(button(label,`build-hud-${key}`,action));
+  for (const [label,key,action] of [['Place','place',place],['↶','rotate-left',()=>build.rotate(-1)],['↷','rotate-right',()=>build.rotate(1)],['Snap','snap',()=>build.cycleSnap()],['Height +','height-up',()=>build.adjustHeight(.25)],['Height −','height-down',()=>build.adjustHeight(-.25)],['Pieces','pieces',()=>open()],['Finishes','finishes',()=>open('finishes')],['Exit','exit',cancel]]) touch.append(button(label,`build-hud-${key}`,action));
   touch.querySelector('[data-controller-key="build-hud-rotate-left"]').setAttribute('aria-label','Rotate left');
   touch.querySelector('[data-controller-key="build-hud-rotate-right"]').setAttribute('aria-label','Rotate right');
   function update() {
@@ -143,15 +165,15 @@ export function createBuildUI({nav, build, store, sandbox=null, onSandbox=null, 
     if(dialog.open)dialog.querySelector('.build-scroll-hint').hidden=content.scrollHeight<=content.clientHeight+2||content.scrollTop+content.clientHeight>=content.scrollHeight-2;
     hud.querySelector('.build-ship-link').textContent = sandbox?'SANDBOX · Supplies / refill in the piece palette':shipCargoLabel(shipCargoAccess(nav));
     const preview = build.preview || {}, piece = PIECES[preview.pieceId || build.pieceId];
-    const snapshot = JSON.stringify([build.removing,piece?.id,preview.valid,preview.reason,preview.cost,preview.sources]);
+    const snapshot = JSON.stringify([build.removing,build.decorating,build.finish,build.graphic,piece?.id,preview.valid,preview.reason,preview.cost,preview.sources]);
     if (snapshot !== lastPreview) {
-      lastPreview = snapshot; hud.querySelector('.build-selected').textContent = build.removing?'REMOVE TOOL':piece?.label || 'Choose a piece';
+      lastPreview = snapshot; hud.querySelector('.build-selected').textContent = build.decorating?'PAINT TOOL':build.removing?'REMOVE TOOL':`${piece?.label || 'Choose a piece'} · ${BUILD_FINISHES[build.finish??'mineral'].label}`;
       hud.querySelector('.build-placement').textContent = preview.reason || (preview.valid ? 'Ready to place' : 'Aim at a valid site');
       hud.dataset.valid = String(Boolean(preview.valid));
-      hud.querySelector('.build-cost').textContent = build.removing?'Single piece only · Empty storage and remove supported equipment first':`${amounts(preview.cost || piece?.cost)} · ${sandbox ? 'Sandbox supply bank' : Array.isArray(preview.sources) ? preview.sources.map(id=>store.container(id)?.name ?? id).join(', ') : preview.sources || 'Backpack'}`;
-    hud.querySelector('.build-hints').innerHTML=build.removing?'A / Enter · Remove one piece permanently<br>B / P · Build wheel · X / Esc · Exit · RB / Space · Jump':'A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap '+(PIECES[build.pieceId]?.mount?'':'&nbsp; ↑ ↓ · Height')+'<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump';
-    touch.querySelector('[data-controller-key="build-hud-place"]').textContent=build.removing?'Remove':'Place';
-    for(const key of ['rotate-left','rotate-right','snap','height-up','height-down'])touch.querySelector(`[data-controller-key="build-hud-${key}"]`).hidden=Boolean(build.removing||key.startsWith('height-')&&PIECES[build.pieceId]?.mount);
+      hud.querySelector('.build-cost').textContent = build.decorating?'Colour and print only · No material cost':build.removing?'Single piece only · Empty storage and remove supported equipment first':`${amounts(preview.cost || piece?.cost)} · ${sandbox ? 'Sandbox supply bank' : Array.isArray(preview.sources) ? preview.sources.map(id=>store.container(id)?.name ?? id).join(', ') : preview.sources || 'Backpack'}`;
+    hud.querySelector('.build-hints').innerHTML=build.decorating?'A / Enter · Apply finish once<br>B / P · Build menu · X / Esc · Exit · RB / Space · Jump':build.removing?'A / Enter · Remove one piece permanently<br>B / P · Build wheel · X / Esc · Exit · RB / Space · Jump':'A / Enter · Place once &nbsp; LT RT / Q E · Rotate<br>LB / T · Next snap '+(PIECES[build.pieceId]?.mount?'':'&nbsp; ↑ ↓ · Height')+'<br>B / P · Build wheel &nbsp; X / Esc · Exit &nbsp; RB / Space · Jump';
+    touch.querySelector('[data-controller-key="build-hud-place"]').textContent=build.decorating?'Paint':build.removing?'Remove':'Place';
+    for(const key of ['rotate-left','rotate-right','snap','height-up','height-down'])touch.querySelector(`[data-controller-key="build-hud-${key}"]`).hidden=Boolean(build.removing||build.decorating||key.startsWith('height-')&&PIECES[build.pieceId]?.mount);
     }
     const materials = JSON.stringify(store.container('pack')?.items);
     if (dialog.open && tab === 'recipes' && materials !== lastMaterials) { lastMaterials = materials; render(); }
