@@ -25,10 +25,10 @@ test('inspect physical boarding and planet rendering',async({page})=>{
   await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
   expect(await page.evaluate(()=>window.starAgent.state.insideShip)).toBe(false);
   await page.evaluate(()=>{const n=window.starAgent.navigation;n.look(Math.PI,0);});
-  await page.keyboard.press('Tab');await page.waitForTimeout(500);
+  await page.keyboard.press('Shift+Tab');await page.waitForTimeout(500);
   await page.screenshot({path:'/tmp/star-agent-ramp-outside.png'});
   // From the outside, closing the hatch physically blocks re-entry.
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await page.keyboard.down('KeyW');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<2.5);await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
   await page.keyboard.press('KeyF');
   expect(await page.evaluate(()=>window.starAgent.state.doorOpen)).toBe(false);

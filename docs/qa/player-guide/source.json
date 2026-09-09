@@ -1,0 +1,18 @@
+{
+  "runtime": "981852a33519e1b4bb5a1fb58e9fd0a588eddf96",
+  "guideFiles": {
+    "src/player-guide.js": "9db513c69eac6e47d8ae1657ed620d28646cb8d46886be4d29497b830931ee0a",
+    "src/player-guide-ui.js": "5e83dddef8a1e751553f8a5137e0073f1221df2dbe5e9f6413b90df54d2e07b6",
+    "src/player-guide.css": "9156bab3d21353738dc888309ca8000a642ab3091c4544a2c7fc921a0b83c7a5",
+    "src/main.js": "eb3ee7fc812a26883605329e73ff19ef9f5d7d110d47962e4fab5f003b463d9a",
+    "src/opening-sequence.js": "ae2d458b0e2aa117fb87591eefcb593707ec15454e85818b8d4e2e027c316fe7",
+    "src/gameplay-menu.js": "5eff39afa196b71ae14160ea0b67bcf799f27ff249878da405cb730789b90976",
+    "src/hud-display.js": "6ab8527a137577443f180cfdcc4398be1684047325c0b607569a08382e03ea13",
+    "src/nomad-cabin-controls.js": "31c5f8e92b1420be1b15da399727d361af1452c18c1366427e637d6611eca4ad",
+    "index.html": "8b2fe734fbcc903fbf8902567c0ec37f1a28c76afa4f3e0ec4104e47ddf82f03",
+    "package.json": "5793266a9323d21b787b4a6f50b74195c92dfdc6c9fc42a4e96b82bfb83690f2"
+  },
+  "buildLog": "/tmp/star-agent-player-guide-final-build04.log",
+  "fullUnitLog": "/tmp/star-agent-player-guide-final-unit.log",
+  "focusedLog": "/tmp/star-agent-player-guide-final-focused02.log"
+}

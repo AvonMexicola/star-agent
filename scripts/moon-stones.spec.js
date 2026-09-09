@@ -6,7 +6,7 @@ const district=(x,z)=>{const d=MOON_LANDING_DIRECTION.map((v,i)=>v+(LANDING_FRAM
 test('Selene pebbles and fractured rocks render on the landing shelf and copper ejecta',async({page,browser})=>{
  const path='/tmp/star-agent-moon-stones',errors=[],states=[];await mkdir(path,{recursive:true});
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Tab');
+ await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Shift+Tab');
  for(const shot of [{name:'landing-shelf',direction:MOON_LANDING_DIRECTION},{name:'copper-ejecta',direction:district(2600,-3400)}]){
   await page.evaluate(({direction})=>{
    const s=window.starAgent,n=s.navigation;n.transitMoon(1.75,direction);n.enabled=false;s.setRenderScale(.5);

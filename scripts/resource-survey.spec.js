@@ -19,7 +19,7 @@ test('orbital resource colors and non-overlapping desktop/mobile action controls
   await page.waitForFunction(()=>window.starAgent.state.moon.lod>=3&&window.starAgent.state.moon.effects.terrainBuilds===0);
   await page.waitForTimeout(1500);await expect(page.locator('#resource-survey')).toBeVisible();
   await page.screenshot({path:`${evidence}/orbit-resource-legend.png`});
-  await page.keyboard.press('Tab');await page.waitForTimeout(250);
+  await page.keyboard.press('Shift+Tab');await page.waitForTimeout(250);
   const image=await page.screenshot({path:`${evidence}/orbit-resource-colors.png`});
   // Decode the rendered screenshot in the browser: no external PNG package or
   // density/palette data stands in for the pixels actually visible to players.
@@ -36,7 +36,7 @@ test('orbital resource colors and non-overlapping desktop/mobile action controls
     }
     return {sampled,copper,ice,classification:'Rendered orange/rust and blue/white pixel masks; these are visual color classes, not mineral quantities.'};
   },image.toString('base64'));
-  await page.keyboard.press('Tab');await page.waitForTimeout(150);
+  await page.keyboard.press('Shift+Tab');await page.waitForTimeout(150);
   const layouts=[];
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
     await page.setViewportSize(viewport);await page.waitForTimeout(400);

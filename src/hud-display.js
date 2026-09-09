@@ -17,15 +17,14 @@ export function createHUDDisplay({body,canvas,canChange}) {
     body.classList.toggle('photo-mode',mode.id==='none');
     for(const button of buttons){
       button.textContent=`HUD · ${mode.label}`;
-      button.title=`Tab: Everything → Markers and reticle → No HUD`;
+      button.title=`Shift+Tab: Everything → Markers and reticle → No HUD`;
     }
     return mode.id;
   }
   const cycle=()=>set((index+1)%HUD_MODES.length);
   body.ownerDocument.addEventListener('keydown',event=>{
-    // Navigation prevents Tab's browser focus movement before this handler;
-    // that does not consume the HUD action. Modal/editable guards own routing.
-    if(event.code!=='Tab'||event.repeat||event.altKey||event.ctrlKey||event.metaKey||!canChange())return;
+    // Plain Tab opens Contracts. Shift+Tab remains normal reverse focus in dialogs.
+    if(event.code!=='Tab'||!event.shiftKey||event.repeat||event.altKey||event.ctrlKey||event.metaKey||!canChange())return;
     if(event.target?.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"]),dialog'))return;
     event.preventDefault();cycle();
   });

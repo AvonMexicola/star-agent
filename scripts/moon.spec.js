@@ -23,7 +23,7 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   await page.goto('/?intro=0&debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   await mkdir(evidence,{recursive:true});
-  await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/orbit.png`});await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');await page.screenshot({path:`${evidence}/orbit.png`});await page.keyboard.press('Shift+Tab');
   const before=await page.evaluate(()=>window.starAgent.state.position);
   await chooseDestination(page,'moon',['Shift']);
   await expect(page.locator('#course-guidance')).toContainText('Selene');
@@ -46,7 +46,7 @@ test('Selene landing, ramp exploration, lunar jump, reboarding and launch render
   const outside=await page.evaluate(()=>window.starAgent.state);
   expect(outside.moon.effects.ringAsteroids).toBe(14_336);expect(outside.moon.effects.iceParticles).toBeGreaterThan(0);expect(outside.insideShip).toBe(false);expect(outside.altitude).toBeCloseTo(1.75,5);
   await expect(page.locator('#mode-label')).toHaveText('LUNAR EXPLORATION');
-  await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/surface.png`});
+  await page.keyboard.press('Shift+Tab');await page.screenshot({path:`${evidence}/surface.png`});
   await page.keyboard.down('Space');await page.waitForFunction(()=>window.starAgent.navigation.jumpHeight>.1);await page.keyboard.up('Space');
   await page.waitForFunction(()=>window.starAgent.navigation.jumpHeight>2);
   await page.waitForFunction(()=>window.starAgent.navigation.jumpHeight===0,null,{timeout:60000});
@@ -73,7 +73,7 @@ test('lunar rings, crater slopes and sunlit ice render from orbit and the surfac
   page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.8));await mkdir(evidence,{recursive:true});
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await page.evaluate(()=>{
     const nav=window.starAgent.navigation,center=nav.position.clone().fromArray(window.starAgent.state.moon.position);
     const direction=nav.position.clone().set(.45,.22,.87).normalize();nav.orbit();
