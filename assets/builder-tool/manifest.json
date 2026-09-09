@@ -1,0 +1,74 @@
+{
+  "name": "builder-tool",
+  "builder": "assets/builder-tool/build.py",
+  "source": "assets/builder-tool/builder-tool.blend",
+  "provenance": "Original Blender geometry; existing original handheld PBR atlases. No generated or borrowed image.",
+  "units": "metres",
+  "up": "+Y",
+  "barrel": "-X",
+  "origin": "Right palm; sidearm calibration",
+  "bounds": {
+    "min": [
+      -0.207,
+      -0.0854,
+      -0.052
+    ],
+    "max": [
+      0.068,
+      0.1423,
+      0.052
+    ]
+  },
+  "muzzle": [
+    -0.191,
+    0.076,
+    0
+  ],
+  "screenMetres": [
+    0.076,
+    0.043
+  ],
+  "sourceTriangles": 4700,
+  "maps": {
+    "normal": {
+      "path": "assets/handheld-tools/textures/normal.webp",
+      "sha256": "0e5f12de0b8f696ef52e092fc70c9c375a432164872c52e6c55573bdce03e607",
+      "bytes": 64170,
+      "size": 1024
+    },
+    "basecolor": {
+      "path": "assets/handheld-tools/textures/basecolor.webp",
+      "sha256": "2ab9bcfca6e365302e52abb90a33b6dfc97ab7dba51062175fc055af92a635c9",
+      "bytes": 20220,
+      "size": 1024
+    },
+    "orm": {
+      "path": "assets/handheld-tools/textures/orm.webp",
+      "sha256": "0ec0bff38b0ce9fe8927b3fc4b6d358774a2f3b52bb1fef4640516c7f7585050",
+      "bytes": 26948,
+      "size": 1024
+    }
+  },
+  "triangles": 4700,
+  "drawPrimitives": 3,
+  "bytes": 513804,
+  "sha256": "ff62545afa3a7ed57b018eccf1f307f3861f706be1ce4a0c998a2b55c58e3f27",
+  "nodes": 6,
+  "materials": [
+    "Glass",
+    "HandheldFinish",
+    "Mint"
+  ],
+  "textures": 3,
+  "runtimeScreen": {
+    "size": [
+      256,
+      128
+    ],
+    "bytesRGBA": 131072,
+    "draws": 1
+  },
+  "sourceSHA256": "7cb01839c939dd8da7ccdd1bb65b96219b980c307584c999df8c25bcf303c94e",
+  "textureSharing": "Existing three HandheldAtlas-v1 maps shared by equipment loader; one private live screen",
+  "lod": "Held hero prop; hidden when not in use"
+}

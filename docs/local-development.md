@@ -1,5 +1,15 @@
 # All-features local development
 
+**Ground pirate camps**: the current isolated candidate adds three Red Wake
+pirates on Aeon and two Vacuum Jackals on Selene, with ranged combat, cover and
+finite salvage. Menu → Contracts → Ground pirate camps offers both approaches;
+land and leave the ship physically. **C / R3** crouches while walking outside,
+including forward/backward and both strafes. The phone camp status has a crouch
+button. [Player route](pirate-encounters.md) and
+[validation/asset record](qa/pirates/README.md) distinguish the checked paths,
+pending final integration and independent acceptance. Lizzy's prepared guide
+model can be viewed at `/dev/pirates.html?guide=1`; the tutorial itself is pending.
+
 **Personal transport missions** are locally integrated at `f294a98`. The paired
 5178/8087 preview was gracefully refreshed with protocol7 on2026-09-08, keeping
 its existing persistent PostgreSQL cluster; both health routes and served source
@@ -606,6 +616,32 @@ both weapons and cargo securing. At that delivery, the four served GLB hashes an
 eight source modules matched the checked candidate. This is builder-tested local development;
 independent visual and physical-controller acceptance remain separate.
 
+## Compact builder and K-17 rotating cutter
+
+The compact Meridian field builder has a
+live piece/status display and a brief projection from its emitter after a
+successful placement or removal. On foot outside the ship, open **Menu → Build**
+on a controller, **B** on a keyboard or the visible **Build** button. Choose a
+piece, then **A / Enter / Place** confirms it; **X / Esc / Exit** restores the
+previous equipment. Existing recipes, material costs and placement rules apply.
+The supplied construction sandbox is available from the development launcher.
+
+The yellow **K-17 Mk1** replaces the handheld mining cutter. Its three-pod head
+spins up with the actual beam and coasts down when released or cooling; its
+central lens and muzzle remain fixed. Equip with **D-pad right / 3**, then hold
+**RT / T / Hold to mine** within 8 m of a mineable surface. **View / I** opens
+the collected-material inventory. Only Mk1 is playable; the common cartridge
+mount prepares later heads, without adding tier bonuses or an upgrade menu.
+
+Editable sources and reproduction scripts are in `assets/builder-tool/` and
+`assets/field-cutter/`. The supplied bandage and injector have normalized native
+models in the prop library; medical equip/use animations are still pending.
+See the [builder record](qa/builder-tool/README.md) and
+[cutter record](qa/field-cutter/README.md) for source and acceptance status.
+The complete controller/keyboard/native-touch journeys and final phone framing
+pass. Local integration is the remaining delivery step; physical-device and
+independent art acceptance remain separate.
+
 ## Fleet audio, merchants, roofs and power in the candidate
 
 Nomad, Kestrel and Atlas consume actual acceleration, boost, power and hull pose
@@ -703,3 +739,21 @@ acceptance. This is a development feature; no public deployment is included.
 Checked terminal checkpoint `3bf082b` is integrated locally. Refresh
 [the development preview](http://127.0.0.1:5178/?dev=1) to load the new interface.
 The existing API remains healthy; no service restart or save migration was needed.
+
+
+## Compound vehicle garages
+
+Four trade settlements now have a drive-through garage candidate. Land, walk to
+its **Garage** console and press **F / controller X**, then choose **Deploy Burrow**.
+Board at the port-side door and drive down the outer ramp. **Retrieve Burrow**
+returns the same parked solo vehicle with its ore and cutter charge retained.
+Occupied, moving, carried or obstructed vehicles cannot be retrieved.
+
+Use **F2 → Stillwater Exchange** for the tested Selene route. The complete injected
+controller journey, keyboard/native390 retrieval and all four world views pass
+on `9b6a7de` (runtime `2e686db`), including checked freight `f294a98`.
+The [garage record](qa/compound-garages/README.md) retains original failures,
+performance and night-view limitations. The [player guide](compound-garages.md)
+explains session-only vehicle pose/charge. Source is locally integrated at `e098947`; the [local receipt](qa/compound-garages/local-integration.json)
+records pending served-preview verification. This is not a public release or final
+art/hardware/performance acceptance.

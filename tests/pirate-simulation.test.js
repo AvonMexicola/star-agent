@@ -1,0 +1,15 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {createPirateSquad} from '../src/pirates/simulation.js';
+const site={id:'test',models:['aeon-leader','aeon-raider','aeon-flanker']};
+const player=()=>({x:0,z:24,y:1.75,eye:1.75,health:100,active:true});
+function run(sim,seconds,p=player(),fps=60){for(let i=0;i<seconds*fps;i++)sim.update(1/fps,p);return sim.state;}
+test('three tactical roles and frame-rate-independent windup/shot results',()=>{const a=createPirateSquad(site),b=createPirateSquad(site);assert.equal(new Set(a.entities.map(e=>e.role)).size,3);run(a,8,player(),30);run(b,8,player(),60);assert.equal(a.state.shots,b.state.shots);for(let i=0;i<3;i++)assert.ok(Math.hypot(a.entities[i].x-b.entities[i].x,a.entities[i].z-b.entities[i].z)<1e-5);});
+test('no damage before aim windup; opaque cover blocks all shots',()=>{const a=createPirateSquad(site);run(a,1);assert.equal(a.state.shots,0);const b=createPirateSquad(site,{visible:()=>false});run(b,15);assert.equal(b.state.shots,0);assert.equal(b.state.damage,0);});
+test('paused modal/focus gates freeze state and outside-ship gate prevents attacks',()=>{const a=createPirateSquad(site);run(a,5);const state=JSON.stringify(a.state);run(a,4,{...player(),paused:true});assert.equal(JSON.stringify(a.state),state);const b=createPirateSquad(site);run(b,12,{...player(),active:false});assert.equal(b.state.shots,0);});
+test('a locked aim point can be dodged before discharge',()=>{let hits=0;const s=createPirateSquad({id:'solo',models:['aeon-leader']},{onDamage:()=>hits++});s.entities[0].x=0;s.entities[0].z=0;const p=player();run(s,2.1,p);assert.equal(s.entities[0].state,'aim');p.x=5;run(s,1.3,p);assert.equal(hits,0);assert.ok(s.state.shots>0);});
+test('damage wakes squad, death is sticky, invalid/repeated hits cannot add kills',()=>{const s=createPirateSquad(site);const id=s.entities[0].id;assert.equal(s.hit(id,NaN).ok,false);assert.equal(s.hit(id,-3).ok,false);assert.equal(s.hit(id,200).killed,true);assert.equal(s.state.kills,1);assert.equal(s.hit(id,200).ok,false);run(s,10);assert.equal(s.entities[0].state,'dead');assert.equal(s.state.kills,1);assert.ok(s.entities.slice(1).every(e=>e.alert));});
+test('actors never cross an obstacle callback or chase beyond the camp leash',()=>{const s=createPirateSquad(site,{canMove:()=>false});const before=s.entities.map(e=>[e.x,e.z]);run(s,15);assert.deepEqual(s.entities.map(e=>[e.x,e.z]),before);run(s,15,{...player(),x:500});assert.ok(s.entities.every(e=>e.state==='patrol'));});
+
+test('a muzzle obstruction vetoes damage after a clear eye-level sight line',()=>{const s=createPirateSquad(site,{onShot:()=>false});run(s,15);assert.ok(s.state.shots>0);assert.equal(s.state.damage,0);});
+
+test('captains rise to aim over waist-height cover and crouch while reloading',()=>{const s=createPirateSquad({id:'cover',models:['aeon-leader']},{visible:(e,p,crouch)=>!crouch});s.entities[0].alert=true;run(s,2.2);assert.equal(s.entities[0].state,'aim');assert.equal(s.entities[0].crouching,false);run(s,10);assert.ok(s.state.shots>0);});

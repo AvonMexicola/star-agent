@@ -1,0 +1,17 @@
+{
+  "identity": "Newest rigged Trailblazer download, treated as user-named Lizzy; identification was requested in conversation",
+  "sources": [
+    {
+      "path": "assets/characters/lizzy/source-walk.glb",
+      "sha256": "93dfcc728e384c5d0a7678b3993eb7ea53389a27cd52a3b1fc8983768a6d7f14",
+      "download": "Meshy_AI_Trailblazer_T_Pose_biped.zip",
+      "clip": "Walking"
+    },
+    {
+      "path": "assets/characters/lizzy/source-run.glb",
+      "sha256": "d654f9cf50e2a22ab119fd5cbbe68c8b878c14e6cceb67f1d562a3a55c53125a",
+      "download": "Meshy_AI_Trailblazer_T_Pose_biped.zip",
+      "clip": "Running"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "builder": "assets/field-cutter/textures.py",
+  "source": "Original handheld atlas; bounded yellow recolour and deterministic new print",
+  "reference": "User supplied mining-tool-mk1.png informs appearance only",
+  "font": "JetBrainsMonoNerdFont-Regular.ttf",
+  "size": 1024,
+  "channels": {
+    "basecolor": "sRGB",
+    "orm": "linear; G roughness/B metallic",
+    "normal": "linear OpenGL +Y"
+  },
+  "files": {
+    "basecolor.png": "0980fdfe872f1740b295a2d5a61a9beec63c4cffcad9c65a722ee8b2a9cc3a44",
+    "basecolor.webp": "3bdf999f27502e263e0c8be0a9ec02748815b93d7d871133fc7504b26db1670c",
+    "orm.png": "d13e40507bace742ae546263ff1789bbdc058401add1e827014dab49934cba53",
+    "orm.webp": "0ec0bff38b0ce9fe8927b3fc4b6d358774a2f3b52bb1fef4640516c7f7585050",
+    "normal.png": "a3b9cf946909d5a779bc6322c18cc82117b092f2a9b49d1fdb797490bd986de6",
+    "normal.webp": "0e5f12de0b8f696ef52e092fc70c9c375a432164872c52e6c55573bdce03e607"
+  },
+  "fontFamily": "JetBrains Mono"
+}

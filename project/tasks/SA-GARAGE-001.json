@@ -1,0 +1,26 @@
+{
+  "id": "SA-GARAGE-001",
+  "title": "Compound garages and Burrow retrieval",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex compound garages",
+  "status": "integrated",
+  "branch": "feat/compound-garages",
+  "base": "23ca6199d2b5f0ee5cbfa9f914612320e8d8e684",
+  "updated": "2026-09-08",
+  "areas": [
+    "industry",
+    "flight"
+  ],
+  "claims": [
+    "src/settlements/garage-layout.js",
+    "src/settlements/garage-system.js",
+    "src/settlements/garage-ui.js",
+    "src/settlements/garage.css",
+    "src/rover-build-support.js",
+    "tests/compound-garages.test.js",
+    "scripts/compound-garages.spec.js",
+    "scripts/compound-garages.config.js"
+  ],
+  "brief": "docs/briefs/compound-garages.md"
+}

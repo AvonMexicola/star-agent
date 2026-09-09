@@ -1,0 +1,13 @@
+{
+  "path": "public/models/guides/lizzy.glb",
+  "bytes": 1171008,
+  "sha256": "6296661e307fc6fa90757f00db6bee6980f01c68d03155fd9a86b0c4c910e223",
+  "triangles": 17999,
+  "clips": [
+    "walk",
+    "run",
+    "idle",
+    "wave"
+  ],
+  "method": "Supplied gait, reduced shoulder abduction, authored relaxed idle and greeting; original skin retained"
+}

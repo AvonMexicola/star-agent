@@ -31,7 +31,7 @@ export function debrisSpeedLimit(position){return ringPathIntervals(position,pos
 export class Navigation {
   constructor(canvas,notify){
     this.canvas=canvas;this.notify=notify;this.position=new THREE.Vector3();this.orientation=new THREE.Quaternion();this.velocity=new THREE.Vector3();
-    this.gamepad=new GamepadInput();this.controllerActive=false;this.focused=true;
+    this.gamepad=new GamepadInput();this.controllerActive=false;this.focused=true;this.crouching=false;
     this.physicalKeys=new Set();this.keys=new Set();this.mode='flight';this.autoland=false;this.locked=false;this.speedScale=1;this.shipPosition=null;this.shipOrientation=new THREE.Quaternion();this.jumpVelocity=0;this.jumpHeight=0;this.rampJumpSupport=null;this.boost=false;this.enabled=true;
     this.doorOpen=false;this.doorProgress=0;this.insideShip=false;
     this.shipId='nomad';this.pendingLook=new THREE.Vector2();this.frameLook=new THREE.Vector2();this.assistedTurn=new THREE.Vector3();this.layout=SHIP_LAYOUT;this.freighter=null;
@@ -67,6 +67,7 @@ export class Navigation {
       if(e.code==='KeyP'){this.togglePower();return;}
       if(e.code==='KeyJ'){this.travel?this.cancelTravel():this.beginTravel();return;}
       if(this.travel){if(e.code==='KeyX')this.cancelTravel();return;}
+      if(e.code==='KeyC'&&this.mode==='walk'){this.toggleCrouch();return;}
       if(e.code==='KeyV')this.toggleFlightAssist();
       if(e.code==='KeyZ')this.toggleCombatMode();
       if(e.code==='KeyB')this.landOrLaunch();if(e.code==='KeyF')this.embark();
@@ -328,6 +329,7 @@ export class Navigation {
     if(this.kestrelAccess&&this.mode==='landed')return 'F · OPEN CANOPY & DESCEND PORT LADDER';
     if(this.buildActive)return 'BUILD MODE · SELECT A PIECE OR EXIT TO INTERACT';
     const cargoInteraction=this.cargoInteraction?.();if(cargoInteraction)return cargoInteraction;
+    const pirateInteraction=this.pirateInteraction?.();if(pirateInteraction)return pirateInteraction;
     const baseInteraction=this.baseInteraction?.();if(baseInteraction)return baseInteraction;
     if(this.mode==='flight')return this.autoland||this.stationLift||this.travel?'FINISH MANEUVER TO LEAVE SEAT':'F · LEAVE PILOT SEAT';
     if(this.mode==='eva')return `EVA · ${this.shipPosition?Math.round(this.position.distanceTo(this.shipPosition))+' M TO SHIP · ':''}G / Y · SUIT THRUSTERS`;
@@ -516,6 +518,7 @@ export class Navigation {
     if(this.buildActive)return;
     if(['walk','eva'].includes(this.mode)&&this.cargoAction?.())return;
     if(this.carryingCargo){this.notify('Stow the carried crate before using ship controls.');return;}
+    if(this.mode==='walk'&&!this.insideShip&&this.pirateAction?.())return;
     if(this.mode==='walk'&&!this.insideShip&&this.baseAction?.())return;
     if(this.mode==='walk'&&!this.cabinFlight&&this.stationAction?.())return;
     if(this.kestrelAccess){this.kestrelAccess.interact(this);return;}
@@ -709,6 +712,13 @@ export class Navigation {
       }
       // Assisted travel and inertial flight share the same swept collision path.
   }
+  get walkEyeHeight(){return this.crouching&&this.mode==='walk'&&!this.insideShip?1.08:this.layout.eyeHeight;}
+  toggleCrouch(){
+    if(this.mode!=='walk'||this.insideShip||this.stationPhysics||this.buildActive||this.carryingCargo||this.jumpHeight>0||this.canCrouch?.()===false)return false;
+    const before=this.walkEyeHeight;this.crouching=!this.crouching;
+    this.position.addScaledVector(this.normal,this.walkEyeHeight-before);this.velocity.set(0,0,0);
+    this.notify(this.crouching?'Crouched · C / R3 to stand · RT fires':'Standing · C / R3 to crouch');return true;
+  }
   update(dt){
     this.engineAcceleration.set(0,0,0);
     const pad=this.gamepad.poll({focused:this.focused&&!document.hidden,enabled:this.enabled&&!document.querySelector('dialog[open]'),ui:Boolean(document.querySelector('dialog[open]'))});
@@ -728,7 +738,8 @@ export class Navigation {
     this.updateLandingGear(dt);
     if(Math.hypot(pad.strafe,pad.forward)>.1)this.onTakeControl?.();
     if(this.travel){const before=this.position.clone();this.resetSteering();if(pad.brake)this.cancelTravel();this.updateTravel(dt);this.updateStellarThermal(dt,before);return;}
-    if(pad.pressed.has(11))this.toggleFlightAssist();
+    if(this.mode!=='walk')this.crouching=false;
+    if(pad.pressed.has(11)){if(this.mode==='walk')this.toggleCrouch();else this.toggleFlightAssist();}
     if(pad.pressed.has(3)){if(this.mode==='eva'||(this.mode==='walk'&&!this.insideShip))this.toggleEVA();else this.landOrLaunch();}
     if(pad.pressed.has(2))this.embark();
     // Interactions may open a modal and disable navigation in this same frame.
@@ -800,7 +811,7 @@ export class Navigation {
       const localBefore=this.toShipLocal();
       const atlasRampWalk=this.freighter?.rampSurfaceAt&&!this.cabinFlight&&!this.spaceParked&&!stationGrid;
       const shipUp=stationGrid?.up??(localBefore&&localBefore.length()<50?UP.clone().applyQuaternion(this.shipOrientation):oldNormal);
-      const magnitude=Math.min(1,input.length());input.projectOnPlane(shipUp);if(input.lengthSq()>0)input.setLength(magnitude);input.multiplyScalar(this.insideShip?2.3:this.boost?9:4.5);
+      const magnitude=Math.min(1,input.length());input.projectOnPlane(shipUp);if(input.lengthSq()>0)input.setLength(magnitude);input.multiplyScalar(this.insideShip?2.3:this.crouching?1.2:this.boost?9:4.5);
       this.velocity.lerp(input,1-Math.exp(-12*dt));
       let proposed=this.position.clone().addScaledVector(this.velocity,dt);
       const previous=this.position.clone();
@@ -860,14 +871,14 @@ export class Navigation {
       if(floor!==null||stationGrid||h>=0||Math.abs(dir.y)>.86)this.position.copy(proposed);
       else{this.velocity.set(0,0,0);if(!this.shoreNotice||performance.now()-this.shoreNotice>4000){this.notify('Waterline reached. Swimming is outside this prototype.');this.shoreNotice=performance.now();}}
       this.insideShip=floor!==null&&(this.freighter?this.freighter.contains(local):local.z<=4);
-      if(!landedOnRamp&&(stationGrid||!this.spaceParked)&&(this.keys.has('Space')||pad.jump)&&(this.jumpHeight===0||this.surfaceObstacles?.grounded)&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=Math.max(.001,this.jumpHeight);}
+      if(!this.crouching&&!landedOnRamp&&(stationGrid||!this.spaceParked)&&(this.keys.has('Space')||pad.jump)&&(this.jumpHeight===0||this.surfaceObstacles?.grounded)&&!this.insideShip){this.jumpVelocity=4.5;this.jumpHeight=Math.max(.001,this.jumpHeight);}
       this.jumpVelocity-=(stationGrid?.gravity??this.body.gravity)*dt;this.jumpHeight=Math.max(0,this.jumpHeight+this.jumpVelocity*dt);if(this.jumpHeight===0)this.jumpVelocity=0;
-      if(floor!==null){local.y=floor+this.layout.eyeHeight+this.jumpHeight;this.position.copy(this.fromShipLocal(local));}
+      if(floor!==null){this.crouching=false;local.y=floor+this.layout.eyeHeight+this.jumpHeight;this.position.copy(this.fromShipLocal(local));}
       else if(stationGrid){
         const deck=stationDeckPoint(stationGrid,this.position,this.layout.eyeHeight+this.jumpHeight);
         if(deck)this.position.copy(deck);
       }
-      else{this.position.copy(bodySurfacePoint(this.normal,this.body,this.layout.eyeHeight+this.jumpHeight));}
+      else{this.position.copy(bodySurfacePoint(this.normal,this.body,this.walkEyeHeight+this.jumpHeight));}
       if(stationGrid){
         const result=this.station.constrainStep(previous,this.position,this.orientation,true);
         this.position.copy(result.point);
@@ -877,12 +888,14 @@ export class Navigation {
         }
       }
       if(floor===null&&!stationGrid&&this.surfaceObstacles){
-        const result=this.surfaceObstacles.constrainWalker(previous,this.position);
-        this.position.copy(result.point);
-        if(result.hit){this.jumpHeight=Math.max(0,bodyAltitude(this.position,this.body)-SHIP_LAYOUT.eyeHeight);if(result.grounded&&this.jumpVelocity<0)this.jumpVelocity=0;}
+        const offset=this.layout.eyeHeight-this.walkEyeHeight,up=this.normal;
+        const result=this.surfaceObstacles.constrainWalker(previous.clone().addScaledVector(up,offset),this.position.clone().addScaledVector(up,offset));
+        this.position.copy(result.point).addScaledVector(up,-offset);
+        if(result.hit){this.jumpHeight=Math.max(0,bodyAltitude(this.position,this.body)-this.walkEyeHeight);if(result.grounded&&this.jumpVelocity<0)this.jumpVelocity=0;}
       }
       const cargoStep=this.cargoWalk?.(previous,this.position);if(cargoStep){this.position.copy(cargoStep.point);if(cargoStep.grounded){this.jumpHeight=Math.max(0,(stationGrid?this.deckClearance:bodyAltitude(this.position,this.body))-this.layout.eyeHeight);if(this.jumpVelocity<0)this.jumpVelocity=0;}}
       if(this.vehicle)this.position.copy(this.vehicle.constrainWalker(previous,this.position));
+      if(!this.insideShip&&this.pirateConstrainWalker)this.position.copy(this.pirateConstrainWalker(previous,this.position).point);
       this.rampJumpSupport=atlasRampWalk&&floor!==null&&this.jumpHeight>0?this.freighter:null;
       this.velocity.copy(this.position).sub(previous).divideScalar(Math.max(dt,.001));
     }else{

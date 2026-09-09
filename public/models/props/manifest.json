@@ -32,8 +32,8 @@
     ],
     "credits": 35,
     "concept": "assets/character/expedition-v2/concept.png",
-    "file_mb": 8.496328,
-    "sha256": "04f849bafe513f8e2a817895307a2751ebed85f76d4ef81cd0ae793ddc5911fa",
+    "file_mb": 8.686516,
+    "sha256": "c25a0a4cf7b554b2151c5333572603c1216a7b7e575308efa83fa52ba959a133",
     "animations": [
       {
         "name": "idle",
@@ -50,10 +50,6 @@
       {
         "name": "jump",
         "seconds": 1.9333332777023315
-      },
-      {
-        "name": "crouch-walk",
-        "seconds": 1.1666666269302368
       },
       {
         "name": "sit-down",
@@ -108,6 +104,14 @@
         "seconds": 6.0333333015441895
       },
       {
+        "name": "rest-pose",
+        "seconds": 1
+      },
+      {
+        "name": "climb-idle",
+        "seconds": 1
+      },
+      {
         "name": "aim-rifle",
         "seconds": 1
       },
@@ -120,27 +124,59 @@
         "seconds": 1
       },
       {
-        "name": "rest-pose",
-        "seconds": 1
-      },
-      {
-        "name": "climb-idle",
-        "seconds": 1
-      },
-      {
         "name": "fire-rifle",
-        "seconds": 0.3
+        "seconds": 0.30000001192092896
       },
       {
         "name": "fire-pistol",
-        "seconds": 0.3
+        "seconds": 0.30000001192092896
       },
       {
         "name": "reload-pistol",
-        "seconds": 3.7
+        "seconds": 3.700000047683716
+      },
+      {
+        "name": "crouch-strafe-left",
+        "seconds": 1.2999999523162842
+      },
+      {
+        "name": "crouch-strafe-right",
+        "seconds": 1.2999999523162842
+      },
+      {
+        "name": "walk-backward",
+        "seconds": 1.0666667222976685
+      },
+      {
+        "name": "crouch-idle",
+        "seconds": 1
+      },
+      {
+        "name": "crouch-walk",
+        "seconds": 1
+      },
+      {
+        "name": "crouch-backward",
+        "seconds": 1
+      },
+      {
+        "name": "stand-to-crouch",
+        "seconds": 0.2800000011920929
+      },
+      {
+        "name": "crouch-to-stand",
+        "seconds": 0.2800000011920929
+      },
+      {
+        "name": "strafe-left",
+        "seconds": 1
+      },
+      {
+        "name": "strafe-right",
+        "seconds": 1
       }
     ],
-    "notes": "Expedition suit v2. Meshy 7 + humanoid rig; UV-matched 2K color and PBR maps; 26 normalized/derived clips. Build and provenance: assets/character/expedition-v2. User-requested fidelity increase supersedes the previous 20k/1K character target; final visual acceptance recorded separately.",
+    "notes": "Expedition suit v2. Meshy 7 + humanoid rig; UV-matched 2K color and PBR maps; 26 normalized/derived clips. Build and provenance: assets/character/expedition-v2. User-requested fidelity increase supersedes the previous 20k/1K character target; final visual acceptance recorded separately. Pirate motion extension: assets/pirates/README.md.",
     "morph_targets": [
       "GripRight",
       "GripLeft"
@@ -457,22 +493,22 @@
     "name": "mining-laser-tool",
     "file": "mining-laser-tool.glb",
     "category": "gear",
-    "tris": 7868,
+    "tris": 9444,
     "textures": 3,
     "texture_size": 1024,
     "texture_format": "webp",
-    "height_m": 0.4042,
+    "height_m": 0.34140000000000004,
     "footprint_m": [
-      0.8125,
-      0.197
+      0.802,
+      0.2318
     ],
     "credits": 0,
     "concept": null,
-    "file_mb": 0.77198,
-    "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock.",
+    "file_mb": 0.9158,
+    "notes": "K-17 Mk1: fixed optical bore, rotating three-lobed head. User reference and editable Blender source in assets/field-cutter.",
     "source": "blender/build_gear.py",
     "origin": "rear pistol-grip palm point; emitter axis -X at y=0.14; muzzle (-0.60, 0.14, 0); leftGrip (-0.30, 0.01, 0)",
-    "sha256": "acaa2f44f0f8a946c19e4625351f71c758341d03d4bba387090d0604c33fdb43"
+    "sha256": "dc078fe73e0d46d32bbdf8a63db82f41231454178297ae6104d62db0cbece967"
   },
   {
     "name": "rifle-laser",
@@ -661,5 +697,88 @@
       0.182
     ],
     "notes": "Original Blender handheld finish; assets/handheld-tools/{build.py,manifest.json}. UV PBR, contact AO, calibrated grips and fitted rifle stock."
+  },
+  {
+    "name": "builder-tool",
+    "file": "builder-tool.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 4700,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.513804,
+    "sha256": "ff62545afa3a7ed57b018eccf1f307f3861f706be1ce4a0c998a2b55c58e3f27",
+    "height_m": 0.2277,
+    "footprint_m": [
+      0.275,
+      0.104
+    ],
+    "notes": "Original compact Meridian builder; editable source and measured contract in assets/builder-tool."
+  },
+  {
+    "name": "bandage-medical",
+    "file": "bandage-medical.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 762,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.75724,
+    "sha256": "658ff570e40273bef0ab352d0517a5d3037c904afc6847717a100fd0da672119",
+    "height_m": 0.059296822547912596,
+    "footprint_m": [
+      0.0816406774520874,
+      0.11
+    ],
+    "bounds": {
+      "min": [
+        -0.0408203387260437,
+        0,
+        -0.055
+      ],
+      "max": [
+        0.0408203387260437,
+        0.059296822547912596,
+        0.055
+      ]
+    },
+    "sourceScale": 0.11,
+    "notes": "Cees-supplied Meshy medical model. Original geometry/UV/PBR preserved, 1K WebP and metre scale. Prop library asset; no new healing mechanics or use animation."
+  },
+  {
+    "name": "med-stim",
+    "file": "med-stim.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 534,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.635812,
+    "sha256": "044363ff5d972aea28649761b37738ea9d64d77e607e93d5b493ca9b8ece5841",
+    "height_m": 0.16,
+    "footprint_m": [
+      0.03226559996604919,
+      0.027421920299530028
+    ],
+    "bounds": {
+      "min": [
+        -0.016249920129776,
+        0,
+        -0.013671840429306031
+      ],
+      "max": [
+        0.016015679836273194,
+        0.16,
+        0.013750079870223999
+      ]
+    },
+    "sourceScale": 0.16,
+    "notes": "Cees-supplied Meshy medical model. Original geometry/UV/PBR preserved, 1K WebP and metre scale. Prop library asset; no new healing mechanics or use animation."
   }
 ]

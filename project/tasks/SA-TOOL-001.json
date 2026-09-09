@@ -1,0 +1,36 @@
+{
+  "id": "SA-TOOL-001",
+  "title": "Compact Meridian handheld builder",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex handheld builder",
+  "status": "review",
+  "branch": "art/rotating-mining-tool",
+  "base": "5f8f01870b3cd3e408a1ef60231134883c9363f3",
+  "updated": "2026-09-08",
+  "areas": [
+    "assets",
+    "industry",
+    "rendering"
+  ],
+  "claims": [
+    "assets/builder-tool",
+    "src/build/handheld.js",
+    "src/build/system.js",
+    "src/main.js",
+    "public/models/props/builder-tool.glb",
+    "public/models/props/equipment-sockets.json",
+    "tests/builder-tool.test.js",
+    "scripts/builder-tool.config.js",
+    "scripts/builder-tool.spec.js",
+    "tests/equipment.test.js",
+    "tests/build-state.test.js",
+    "public/dev/avatar-studio.html"
+  ],
+  "brief": "docs/briefs/handheld-builder.md",
+  "dependencies": [
+    "SA-ART-001",
+    "SA-BUILD-002"
+  ],
+  "qa": "docs/qa/builder-tool/README.md"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "downloadName": "Meshy_AI_Futuristic_Medical_Ba_0908181433_texture.glb",
+    "source": "assets/medical-items/source/bandage-original.glb",
+    "bytes": 7751316,
+    "sha256": "c97b98503b037a16634c0f03d40bf47bd47d858b76bd48595cc747a5386fbdcd",
+    "providedBy": "Cees",
+    "receivedUTC": "2026-09-08T18:56:44.597733+00:00"
+  },
+  {
+    "downloadName": "Meshy_AI_Med_Injector_0908181134_texture.glb",
+    "source": "assets/medical-items/source/stim-original.glb",
+    "bytes": 7039584,
+    "sha256": "66ab63e515180872cbbf543db14d86409667650646365894a91c250eac590878",
+    "providedBy": "Cees",
+    "receivedUTC": "2026-09-08T18:56:44.607628+00:00"
+  }
+]

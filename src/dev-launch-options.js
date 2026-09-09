@@ -9,6 +9,8 @@ export const DEV_SHIPS = Object.freeze([
   {id:'atlas',name:'Atlas',detail:'64 m freighter · loading ramps & crew lift'},
 ]);
 export const DEV_LOCATIONS = Object.freeze([
+  {id:'aeon-pirates',name:'Aeon · Red Wake pirates',detail:'35 m · land, disembark and fight a three-person salvage crew'},
+  {id:'selene-pirates',name:'Selene · Vacuum Jackal pirates',detail:'35 m · armoured captain and adjutant guarding a salvage cache'},
   ...SETTLEMENTS.map(s=>({id:s.id,name:`${s.name} · ${s.body}`,detail:`65 m above trade pad · ${s.role}`})),
   {id:'hangar',name:'Station hangar',detail:'Parked · boarding, cabins and departure'},
   {id:'rover-surface',name:'Burrow mining — Selene surface',detail:'Seated in the ground rover · nearby outcrop · ready to drive and mine'},

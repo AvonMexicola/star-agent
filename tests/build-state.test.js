@@ -39,16 +39,21 @@ test('core placement consumes exact ingredients and atomically creates one empty
  f.fund({...PIECES.mainframe.cost,basalt:1});f.system.begin('mainframe');
  assert.equal(f.system.state.preview.valid,true,f.system.state.preview.reason);
  const placed=f.system.place();assert.equal(placed.ok,true,placed.message);
+ assert.equal(f.system.lastToolAction.kind,'place');
+ assert.ok(f.system.lastToolAction.position.every(Number.isFinite));
+ const confirmed=f.system.lastToolAction;
  const items=f.store.container('pack').items;assert.equal(itemMass(items),1);assert.equal(items.basalt,1);
  const c=f.system.claims[0];assert.equal(c.useBuffer,false);assert.equal(c.pieces.length,1);assert.equal(f.system.data.nextId,3);assert.equal(validBuild(f.system.data),true);
  assert.equal(itemMass(f.store.container('build-core-1').items),0);assert.deepEqual(f.store.state.loadout,beforeLoadout);assert.equal(f.store.state.field,beforeField);
  const before=f.store.state;assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before,'duplicate activation neither allocates IDs nor consumes cargo');
+ assert.equal(f.system.lastToolAction,confirmed,'failed placement cannot acknowledge another construction');
  const reload=new MiningStore(f.disk),restored=new BuildSystem({scene:new Scene(),nav:f.nav,store:reload,render:false});assert.equal(restored.blocked,false);assert.deepEqual(restored.data,f.system.data);
 });
 test('failed core write rolls back materials, piece IDs, claims and remote storage together',()=>{
  const f=setup();f.fund(PIECES.mainframe.cost);f.system.begin('mainframe');
  const before=f.store.state,raw=f.disk.getItem(MINING_KEY);f.disk.setItem=()=>{throw Error('quota');};
  assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);assert.equal(f.disk.getItem(MINING_KEY),raw);assert.equal(f.system.data.nextId,1);assert.equal(f.system.claims.length,0);assert.equal(f.store.container('build-core-1'),null);
+ assert.equal(f.system.lastToolAction,undefined,'failed durable write cannot pulse the builder');
  assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);
 });
 test('buffer requires explicit nearby opt-in, combines sources once and persists its choice',()=>{

@@ -11,7 +11,7 @@ test('four real GLBs render before/after and keep calibrated hands in motion',as
     await page.screenshot({path:`${out}/${item}-before.png`});
     await page.unroute(`**/models/props/${item}.glb`);
     await page.goto(`/tests/handheld-tools/fixture.html?item=${item}`);await page.waitForFunction(()=>window.toolReady);
-    const meta=await page.evaluate(()=>window.toolQA.meta());expect(meta.textures).toBe(3);expect(meta.textured).toBeGreaterThan(0);expect(meta.calls).toBeLessThanOrEqual(4);
+    const meta=await page.evaluate(()=>window.toolQA.meta());expect(meta.textures).toBe(3);expect(meta.textured).toBeGreaterThan(0);expect(meta.calls).toBeLessThanOrEqual(item==='mining-laser-tool'?6:4);
     views.push({item,...meta});await page.screenshot({path:`${out}/${item}-after.png`});
   }
   await page.goto('/dev/avatar-studio.html');await page.waitForFunction(()=>window.avatarStudio?.state.ready);
@@ -28,7 +28,7 @@ test('four real GLBs render before/after and keep calibrated hands in motion',as
     await page.getByLabel('Movement',{exact:true}).selectOption('idle');
   }
   const shared=await page.evaluate(()=>{const groups=[...window.avatarStudio.equipment._items.values()],maps=new Set();for(const e of groups)e.root.traverse(o=>{if(o.isMesh)for(const m of [o.material].flat())if(m.userData.handheldFinish===1)for(const k of ['map','normalMap','roughnessMap','metalnessMap'])maps.add(m[k]);});return maps.size;});
-  expect(shared).toBe(3);
+  expect(shared).toBe(4); // Mk1 yellow basecolor; normal/ORM remain shared.
   await page.setViewportSize({width:390,height:844});await page.screenshot({path:`${out}/tractor-rig-phone.png`});
   expect(errors).toEqual([]);await writeFile(`${out}/materials-and-rig.json`,JSON.stringify({browser:browser.version(),views,errors,warnings,sharedMaps:shared,physicalController:false},null,2));
 });
