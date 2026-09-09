@@ -12,7 +12,7 @@ import {isHandsFree,HANDS_FREE_REASON} from '../station-hub-policy.js';
 import {createSentryInputSuspension} from './input-suspension.js';
 import {navigationShipFrame} from '../navigation-rotation.js';
 import {betweenFrames,rotationFrameAt} from '../planet-rotation.js';
-import {sentryFrame,sentryPoseInFrame} from './frames.js';
+import {sentryFrame,sentryPoseInFrame,sentryPointForNavigation} from './frames.js';
 import {sentryRetrievalStatus} from '../settlements/garage-policy.js';
 
 const UP=new THREE.Vector3(0,1,0),FWD=new THREE.Vector3(0,0,-1),v=p=>new THREE.Vector3(...p),clamp=THREE.MathUtils.clamp;
@@ -63,6 +63,7 @@ export function createSentrySystem({scene,canvas,nav,mining,effects,inventoryUI,
       }});return rover;
   }
   const api={touch,renderer,
+    get navigationTargets(){return snapshots().filter(s=>s.ownerId===ownId()&&!s.destroyed&&!seatOf(s)).map(s=>({id:`your-sentry-${s.id}`,name:'Your Burrow Sentry',kind:'Laser rover',category:'ships',owned:true,parent:s.planetFrame??'star',center:sentryPointForNavigation(v(s.position),sentryFrame(s.planetFrame),nav).point.toArray(),radius:0}));},
     get acceptInput(){const c=current(),role=c&&seatOf(c);return Boolean(c&&role&&c.seats[role].phase==='seated'&&usable()&&!pending);},
     get occupied(){return Boolean(current());},get busy(){return pending||Boolean(current()?.busy);},
     get interaction(){const c=current(),n=nearest();return c?'BURROW SENTRY · X / F LEAVE '+seatOf(c).toUpperCase():n?'X / F · '+(n.occupied?'OCCUPIED ':'BOARD SENTRY ')+n.role.toUpperCase():'';},

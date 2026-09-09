@@ -1,11 +1,14 @@
 #ship-marker{position:fixed;z-index:12;pointer-events:none;transform:translate(-50%,-14px);width:188px;text-align:center;color:#b6efd1;font:10px var(--mono);text-shadow:0 1px 4px #000,0 0 8px #000;filter:drop-shadow(0 1px 2px #000)}
 #ship-marker[hidden],body.photo-mode #ship-marker{display:none}
-#ship-marker .ship-marker-symbol{display:block;height:28px;font-size:28px;line-height:28px}
-#ship-marker strong{display:block;width:fit-content;max-width:188px;margin:4px auto 0;padding:4px 7px;background:#04141ce6;border:1px solid #b6efd177;border-radius:3px;font-size:10px;font-weight:500;letter-spacing:.6px}
+#ship-marker .ship-marker-symbol{display:flex;align-items:center;justify-content:center;height:28px;line-height:28px}
+#ship-marker .ship-marker-symbol>.navigation-type-icon{width:26px;height:26px}
+#ship-marker strong{display:flex;align-items:center;gap:5px;width:fit-content;max-width:188px;margin:4px auto 0;padding:4px 7px;background:#04141ce6;border:1px solid #b6efd177;border-radius:3px;font-size:10px;font-weight:500;letter-spacing:.6px}
+#ship-marker strong .navigation-type-icon{display:none;flex:none;width:13px;height:13px}
 #ship-marker small{display:block;font-size:8px;letter-spacing:.3px;margin-top:4px}
 #ship-marker .ship-marker-arrow{display:none;font-size:23px}
 #ship-marker[data-edge="true"] .ship-marker-arrow{display:inline-block}
-#ship-marker[data-edge="true"] .ship-marker-diamond{display:none}
+#ship-marker[data-edge="true"] .ship-marker-symbol>.navigation-type-icon{display:none}
+#ship-marker[data-edge="true"] strong .navigation-type-icon{display:block}
 @media(max-width:700px){#ship-marker{width:174px}#ship-marker strong{font-size:9px}#ship-marker small{font-size:7px}}
 
 /* EVA has no flight-state action here; keep the recovery beacon unobstructed. */

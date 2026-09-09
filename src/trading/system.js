@@ -1,4 +1,5 @@
 import {bodyAt} from '../celestial.js';
+import {navigationObjectiveIds} from '../navigation-objectives.js';
 import {transportDestination} from '../transport/travel.js';
 import {transportPickup} from '../transport/sites.js';
 import {terminalFrames} from './terminal-frames.js';
@@ -63,6 +64,7 @@ export function createTradingSystem({scene,nav,station,store,multiplayer,getShip
   const tractor=createCargoTractor({scene,nav,api,ships:physicalShips,worldClear,getMuzzle});api.tractor=tractor;
   const ui=createTradingUI(api,nav),pads=createTradingPads(scene,()=>snapshot().terminals.filter(t=>!t.base));
   nav.transportDriveAvailable=id=>transportDestination(snapshot().account,id);
+  nav.navigationObjectiveIds=()=>navigationObjectiveIds(snapshot());
   nav.transportDrive=id=>api.command({op:'transport-drive',target:id}).catch(e=>nav.notify(e.message));
   nav.openTransport=()=>ui.openView('freight');nav.openRecovery=()=>ui.openView('recovery');api.trackRecovery=id=>nav.recoveryTrack?.(id);
   nav.openBaseTrade=claimId=>{const t=snapshot().terminals.find(t=>t.base?.claim.id===claimId&&t.owner===snapshot().owner);return ui.openView(t?'stock':'build',t?.id);};

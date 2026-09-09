@@ -1,0 +1,18 @@
+{
+  "source": "shared dev/all-features d2202c1 before integration",
+  "markers": [
+    "settlement-aeon",
+    "aeon",
+    "pirate-hush-signal",
+    "settlement-selene",
+    "selene",
+    "pyre",
+    "settlement-pyre",
+    "settlement-miasma",
+    "pirate-veil-signal",
+    "miasma",
+    "star",
+    "station-aeon"
+  ],
+  "errors": []
+}

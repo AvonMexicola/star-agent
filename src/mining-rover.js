@@ -6,7 +6,7 @@ import { sampleRoverSupport } from './rover-support.js';
 import { createRoverPower } from './rover-power.js';
 import { createRoverUI } from './rover-ui.js';
 import { createRoverDisplays } from './rover-display.js';
-import { bodyOffset } from './celestial.js';
+import { bodyAt, bodyOffset } from './celestial.js';
 import { MATERIAL_IDS } from './inventory/containers.js';
 import { RoverCuttingBeam } from './rover-cutting-beam.js';
 import { createWeaponTarget } from './effects/weapon-target.js';
@@ -135,6 +135,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
     const hit=rays.intersectObjects(meshes,false)[0];return hit?{point:start.clone().addScaledVector(direction,hit.distance),distance:hit.distance}:null;
   }
   const api={object,physics,power,touch,
+    get navigationTargets(){return spawned&&ready&&available()&&!occupied&&phase==='idle'?[{id:'your-burrow',name:'Your Burrow',kind:'Mining rover',category:'ships',owned:true,parent:bodyAt(physics.state.position).id,center:physics.state.position.toArray(),radius:0}]:[];},
     get acceptInput(){return occupied&&phase==='idle'&&usable();},get occupied(){return occupied;},get busy(){return phase!=='idle';},
     get interaction(){return phase!=='idle'?'BURROW · CABIN ACCESS MOVING':occupied?`BURROW · X / F EXIT${anchor?' · Y / G '+carrierControl().toUpperCase():''}`:nearby()?'X / F · BOARD BURROW CABIN':'';},
     async spawn(){

@@ -53,7 +53,7 @@ export function createSystemMap(nav,targets) {
         const slots=[[50,50],[23,29],[80,69],[76,22],[22,78]],pos=slots[i]??[50,85];b.style.left=`${pos[0]}%`;b.style.top=`${pos[1]}%`;orbitNodes.append(b);
       });
       q('.nav-chart-caption').textContent=`You: ${nav.body.name} · ${formatRange(nav.altitude)} altitude. ${children.length?'Select a world to explore it.':'No charted satellites.'}`;
-      el('nav-list-title').textContent=view==='filters'?'Show navigation markers':view==='signals'?'Tracked signals':`${central.name} · surface locations`;
+      el('nav-list-title').textContent=view==='filters'?'Browse navigation signals':view==='signals'?'Tracked signals':`${central.name} · surface locations`;
       q('.nav-map-list').replaceChildren();q('.nav-map-filters').replaceChildren();q('.nav-map-empty').textContent='';
       q('.nav-map-filters').hidden=view!=='filters';q('.nav-map-list').hidden=view==='filters';
       if(view==='filters'){
@@ -61,7 +61,7 @@ export function createSystemMap(nav,targets) {
           const count=all.filter(t=>t.category===id).length;
           const b=button(`${label} · ${count}`,`map-filter-${id}`,()=>{targets.setFilter(id,!targets.filters[id]);render(true);});b.dataset.navFilter=id;b.setAttribute('aria-pressed',String(targets.filters[id]));q('.nav-map-filters').append(b);
         }
-        q('.nav-map-empty').textContent='Friends / pilots shows the live Comms roster. Empty categories gain markers when signals exist.';
+        q('.nav-map-empty').textContent='Filters choose signals to browse and acquire. HUD arrows show your selected destination, next objectives and vehicles.';
       }else{
         const values=listValues(all),size=compact()?3:4,pages=Math.max(1,Math.ceil(values.length/size));page=Math.min(page,pages-1);
         for(const t of values.slice(page*size,(page+1)*size)){
