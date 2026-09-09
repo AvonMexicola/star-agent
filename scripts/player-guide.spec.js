@@ -135,10 +135,14 @@ test.describe('touch guidance',()=>{
     await expect(page.locator('#player-guide')).toContainText('walking arrows');
     await page.screenshot({path:`${folder}/01-walking.png`});
     await move('right',()=>starAgent.state.shipLocal[0]>6.7);await move('backward',()=>starAgent.state.shipLocal[2]>7.8);
-    await move('left',()=>starAgent.state.shipLocal[0]<.6);await move('forward',()=>starAgent.state.shipLocal[2]<5.5);
+    await move('left',()=>starAgent.state.shipLocal[0]<.6);
+    // Native touch release can lag a walking frame. Centre in the clear aisle
+    // with short real contacts before committing to the rear ramp.
+    for(let i=0;i<12;i++){const x=await page.evaluate(()=>starAgent.state.shipLocal[0]);if(x>=.05&&x<=.55)break;await input.hold([x<.05?'right':'left']);await page.waitForTimeout(40);await input.reset();}
+    const aisleX=await page.evaluate(()=>starAgent.state.shipLocal[0]);expect(aisleX).toBeGreaterThanOrEqual(.05);expect(aisleX).toBeLessThanOrEqual(.55);
+    await move('forward',()=>starAgent.state.shipLocal[2]<5.5);
     await check('open-hatch');await input.tap('interact');await page.waitForFunction(()=>starAgent.state.doorProgress===1);
     await move('forward',()=>starAgent.state.shipLocal[2]<3.1);await check('close-hatch');
-    if(!/CLOSE HATCH/.test(await page.locator('#state-text').innerText()))await move('right',()=>starAgent.state.shipLocal[0]>.25);
     await expect(page.locator('[data-cabin-interact]')).toHaveText('Close hatch');await input.tap('interact');await page.waitForFunction(()=>starAgent.state.doorProgress===0);
     await move('forward',()=>starAgent.state.shipLocal[2]<-1.5);await check('sit');await input.tap('interact');
     await check('launch');await expect(page.locator('#player-guide')).toContainText('Tap Launch');await page.screenshot({path:`${folder}/02-launch.png`});
