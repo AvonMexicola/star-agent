@@ -46,5 +46,7 @@ The runtime loads through the shared GLTF/model-revision manager. Each vehicle
 owns cloned materials and live screen textures; cached source geometry/maps stay
 shared. Pulse beams retain logarithmic depth. Asset production and gameplay
 acceptance, including failed attempts, are recorded in
-[the QA record](../../docs/qa/burrow-sentry/README.md). Renderer/independent art
-acceptance remains pending until that record has actual screenshots and results.
+[the QA record](../../docs/qa/burrow-sentry/README.md). The author verified the
+actual game renderer and complete gameplay journeys;
+the QA record preserves the original sampling failure and its checked analysis.
+Independent scored art review remains pending.

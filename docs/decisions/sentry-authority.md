@@ -8,8 +8,8 @@ calls that core locally; `server/sentry.js` calls it for every online rover.
 
 The client submits deploy/board/exit requests and bounded control intent. It does
 not submit rover transforms, muzzle origins, hit targets, damage, health, charge
-or seat ownership. Protocol **8** adds authoritative Sentry snapshots and a
-received-input readiness bit on top of checked Transport protocol 7. Browser and
+or seat ownership. Protocol **10** retains checked rotating-world protocol 9
+and adds authoritative Sentry snapshots with a received-input readiness bit. Browser and
 server must be refreshed together. There is no schema change or stored fleet.
 
 A physical request within 1.25 m reserves one vacant seat. The door opens, the
@@ -26,12 +26,15 @@ replaced controller, reconnect or held fallback cannot arm a new epoch. The
 shared controller router still owns Gamepad polling. Input older than 500 ms
 brakes and disarms the online rover. Only a stationary rover permits normal exit.
 
-Snapshots carry world-double chassis position/quaternion, speed, distance,
+Snapshots carry double-precision chassis position/quaternion and an explicit
+`planetFrame` body identifier (or inertial `null`), speed, distance,
 support/collision reason, wheel spin/steer/suspension/support source, both door
 and seat phases, turret angles, capacitor/depletion, controller and neutral epoch,
 shot/hit sequence, carrier identity, hull health and destruction. Player snapshots
-also carry actual seated eye, feet and body orientation. Rendering follows those
-values; it does not grant interaction or damage authority.
+also carry actual seated eye, feet and body orientation in that peer’s chart.
+Rover and beam roots carry their own frame tags for the shared renderer. Foreign
+ships, suits, rovers and walker collision queries are converted into the query
+frame before testing. Rendering grants no interaction or damage authority.
 
 Both barrel sockets define the authoritative pulse origins. Each barrel deals
 18 damage at a 0.20 s interval, to 400 m. The 24 s reserve recharges over 12 s;
@@ -51,9 +54,13 @@ the last physical exit closes. The room caps vehicles at ten and one per owner.
 
 Atlas carry uses real wheel support to acquire a carrier-frame anchor. Position,
 rotation and lift movement follow that frame in doubles; drive/fire stop in
-flight. Physical ramp and full-envelope guards remain active. The taller turret
-fails Gannet's ceiling clearance and is deliberately refused. Terrain and
-station decks remain canonical; no secondary ground or raised construction
+flight. The anchor is stored in the carrier’s actual chart and both seat poses
+are converted to each Navigation rider’s chart at domain boundaries. Seat
+placement uses Navigation’s existing placement revision so its enclosing update
+does not transform the same position twice. Physical ramp and full-envelope
+guards remain active, with one shared guard registry across redeployments.
+The taller turret fails Gannet's ceiling clearance and is deliberately refused.
+Terrain and station decks remain canonical; no secondary ground or raised construction
 floor is invented.
 
 These changes do not add authoritative ship-gun fire or a ship-versus-Sentry ram

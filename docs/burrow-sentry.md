@@ -2,8 +2,9 @@
 
 The Sentry is the armed two-seat Burrow variant. Its rear operator pod and twin
 laser turret replace the mining storage; the standard mining Burrow remains
-available separately. This candidate is awaiting complete browser acceptance
-and local integration. See [the verification record](qa/burrow-sentry/README.md).
+available separately. Author gameplay verification is complete; the checked
+local integration remains pending.
+See [the verification record](qa/burrow-sentry/README.md).
 
 Use Dev → Ship & location → **Burrow Sentry — Selene surface** for a solo test.
 The explicit start places you on foot beside the port pilot door. Online, walk
