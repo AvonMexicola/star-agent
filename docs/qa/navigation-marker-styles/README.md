@@ -36,3 +36,9 @@ Inspected captures: [desktop POI and objective](objective-and-selected-poi.png),
 [mint ship badge](driving-ship-bearing.png), and [blue rover badge](parked-burrow-and-ship.png).
 At the sampled parked pose the ship label falls beneath the existing loadout bar;
 the driving capture shows it unobstructed. Marker positions are unchanged.
+
+Local integration: runtime `c7adec1` fast-forwarded into `dev/all-features`,
+preserving all533,066bytes of the unrelated HANDOFF journal and the checked
+planetary-drive source. All five runtime files match the tested source and are
+served on5178; both5178/8087 API health checks pass. No service/database restart
+or public deployment was needed.

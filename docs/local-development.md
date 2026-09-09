@@ -1,5 +1,12 @@
 # All-features local development
 
+**Marker types, 9 September 2026:** `c7adec1` adds subtle symbols and colors:
+amber objective diamonds, white POI pins, mint ship outlines and pale-blue rover
+icons. Edge-arrow labels retain a small type icon. Refresh
+**http://127.0.0.1:5178/**. Build, focused source tests and both browser journeys
+pass; [visual evidence](qa/navigation-marker-styles/README.md). The existing
+preview/API and persistent database remain running.
+
 **Planetary drive routing,9 September2026:** runtime `bcb71c9` is locally
 integrated. Select a planet/moon in Map, then
 **Locations** and a surface destination. Aim at its tracked marker, charge, then
