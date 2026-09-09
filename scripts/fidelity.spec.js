@@ -47,7 +47,7 @@ test('seeded planet renders orbit, ground materials, foliage, cabin and shadows'
   await page.waitForFunction(() => window.starAgent.state.shipLocal[2] > 10);
   await page.keyboard.up('KeyW'); await page.keyboard.press('KeyX');
   expect(await page.evaluate(() => window.starAgent.state.insideShip)).toBe(false);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await capture('forest-ground');
   await page.evaluate(() => window.starAgent.navigation.look(Math.PI, -.15));
   await capture('ship-exterior');
@@ -67,7 +67,7 @@ test('inspect coast material from low flight',async({page})=>{
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
   await page.evaluate(()=>window.starAgent.transit('coast'));
   await expect.poll(()=>page.locator('#transit').evaluate(element=>Number(getComputedStyle(element).opacity))).toBeLessThan(.02);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await page.evaluate(async()=>{window.starAgent.setRenderScale(1);await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});
   await page.screenshot({path:'/tmp/star-agent-fidelity/coast.png'});
   expect(errors).toEqual([]);

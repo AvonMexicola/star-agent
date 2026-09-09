@@ -25,31 +25,31 @@ async function mode(page,value){
 }
 async function capture(page,name){await frames(page);await page.screenshot({path:`${output}/${name}.png`});}
 
-test('Tab cycles full → markers and reticle → none, preserving dialogs and target selection',async({page})=>{
+test('Shift+Tab cycles full → markers and reticle → none, preserving dialogs and target selection',async({page})=>{
   const finish=await start(page);
   await mode(page,'full');await expect(page.locator('.telemetry')).toBeVisible();await capture(page,'desktop-full');
   const target=await page.evaluate(()=>window.starAgent.state.combat.targetId);
-  await page.keyboard.down('Tab');await mode(page,'markers');
-  await page.keyboard.down('Tab');await mode(page,'markers');await page.keyboard.up('Tab');
+  await page.keyboard.down('Shift');await page.keyboard.down('Tab');await mode(page,'markers');
+  await page.keyboard.down('Tab');await mode(page,'markers');await page.keyboard.up('Tab');await page.keyboard.up('Shift');
   await expect(page.locator('.telemetry')).toBeHidden();await expect(page.locator('#reticle')).toBeVisible();
   await expect(page.locator('#navigation-markers')).toBeVisible();await capture(page,'desktop-markers');
-  await page.keyboard.press('Tab');await mode(page,'none');await expect(page.locator('#reticle')).toBeHidden();
+  await page.keyboard.press('Shift+Tab');await mode(page,'none');await expect(page.locator('#reticle')).toBeHidden();
   const overlays=await page.evaluate(()=>[...document.body.children].filter(e=>!e.matches('canvas,dialog,script,style,link,#loading,#transit,#stellar-loss,#crash-panel')&&e.getClientRects().length&&getComputedStyle(e).display!=='none').map(e=>e.id||e.tagName));
   expect(overlays).toEqual([]);await capture(page,'desktop-none');
   expect(await page.evaluate(()=>window.starAgent.state.combat.targetId)).toBe(target);
   await page.keyboard.press('Escape');await expect(page.locator('dialog[open]')).toBeVisible();
   await page.locator('dialog[open] [data-tab="settings"]').click();await expect(page.locator('#hud-display-button')).toContainText('No HUD');
-  await page.keyboard.press('Tab');await mode(page,'none');
+  await page.keyboard.press('Shift+Tab');await mode(page,'none');
   await page.keyboard.press('Escape');await page.waitForFunction(()=>window.starAgent.state.enabled&&!document.querySelector('dialog[open]'));
-  await page.keyboard.press('Tab');await mode(page,'full');
-  await page.keyboard.press('KeyH');await page.locator('#seed-input').focus();await page.keyboard.press('Tab');await mode(page,'full');
+  await page.keyboard.press('Shift+Tab');await mode(page,'full');
+  await page.keyboard.press('KeyH');await page.locator('#seed-input').focus();await page.keyboard.press('Shift+Tab');await mode(page,'full');
   await page.keyboard.press('Escape');await frames(page);await page.keyboard.press('KeyF');
   await page.waitForFunction(()=>window.starAgent.state.mode==='walk');
   await expect(page.locator('#loadout-bar')).toBeVisible();
-  await page.keyboard.press('Tab');await mode(page,'markers');
+  await page.keyboard.press('Shift+Tab');await mode(page,'markers');
   await expect(page.locator('#loadout-bar')).toBeHidden();await expect(page.locator('#reticle')).toBeVisible();await capture(page,'walking-markers');
-  await page.keyboard.press('Tab');await mode(page,'none');await expect(page.locator('#reticle')).toBeHidden();
-  await page.keyboard.press('Tab');await mode(page,'full');await expect(page.locator('#loadout-bar')).toBeVisible();
+  await page.keyboard.press('Shift+Tab');await mode(page,'none');await expect(page.locator('#reticle')).toBeHidden();
+  await page.keyboard.press('Shift+Tab');await mode(page,'full');await expect(page.locator('#loadout-bar')).toBeVisible();
   await finish('keyboard');
 });
 

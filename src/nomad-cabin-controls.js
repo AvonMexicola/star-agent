@@ -13,17 +13,18 @@ export function createNomadCabinControls(nav) {
   const release = id => { const key = held.get(id);if (key) nav.keys.delete(key);held.delete(id); };
   const cancel = () => { for (const id of held.keys()) release(id); };
   const medium = () => ['stratum','gannet'].includes(nav.shipId);
+  const flightControls = () => nav.shipId === 'nomad' || medium();
   const available = () => nav.enabled && nav.focused && !document.hidden && !document.querySelector('dialog[open]') && !nav.openingActive && !nav.travel;
   for (const button of root.querySelectorAll('[data-cabin-key]')) {
     button.addEventListener('pointerdown', event => {
-      if (!available() || !(nav.mode === 'walk' || medium() && nav.mode === 'flight' && nav.powered) || nav.berthRest || nav.berthTransition) return;
+      if (!available() || !(nav.mode === 'walk' || flightControls() && nav.mode === 'flight' && nav.powered) || nav.berthRest || nav.berthTransition) return;
       event.preventDefault();button.setPointerCapture(event.pointerId);
       nav.onTakeControl?.();nav.controllerActive = false;held.set(event.pointerId, button.dataset.cabinKey);nav.keys.add(button.dataset.cabinKey);
     });
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(type, event => release(event.pointerId));
   }
   action.addEventListener('click', () => { if (available()) { cancel();nav.onTakeControl?.();nav.controllerActive = false;nav.embark(); } });
-  root.querySelector('[data-cabin-land]').addEventListener('click', () => { if (available() && medium()) { cancel();nav.onTakeControl?.();nav.controllerActive = false;nav.landOrLaunch(); } });
+  root.querySelector('[data-cabin-land]').addEventListener('click', () => { if (available() && flightControls()) { cancel();nav.onTakeControl?.();nav.controllerActive = false;nav.landOrLaunch(); } });
   root.querySelector('[data-cabin-menu]').addEventListener('click', () => { if (available()) { cancel();nav.openCommands?.(); } });
   secondaryTouchButtons(root,'[data-cabin-interact],[data-cabin-menu],[data-cabin-land]');
   window.addEventListener('blur', cancel);
@@ -34,10 +35,10 @@ export function createNomadCabinControls(nav) {
     const next = `${nav.shipId}:${nav.mode}:${nav.powered}:${nav.berthRest}:${Boolean(nav.berthTransition)}:${usable}`;
     if (next !== context) { cancel();context = next; }
     root.hidden = !usable;root.setAttribute('aria-label',nav.mode==='walk'&&nav.stationPhysics&&!nav.insideShip?'Station walking controls':`${SHIPS[nav.shipId]?.name??'Ship'} cabin controls`);
-    const walking = nav.mode === 'walk', flying = medium() && nav.mode === 'flight';
+    const walking = nav.mode === 'walk', flying = flightControls() && nav.mode === 'flight';
     pad.hidden = !(walking || flying) || nav.berthRest || Boolean(nav.berthTransition);
     root.querySelector('.medium-flight-pad').hidden = !flying;
-    const landing = root.querySelector('[data-cabin-land]');landing.hidden = !medium() || walking;landing.disabled = !nav.powered;
+    const landing = root.querySelector('[data-cabin-land]');landing.hidden = !flightControls() || walking;landing.disabled = !nav.powered;
     landing.textContent = nav.mode === 'landed' ? 'Launch' : nav.autoland ? 'Cancel landing' : 'Land';
     for (const [key,label] of [['KeyW','forward'],['KeyS','backward'],['KeyA','left'],['KeyD','right']])
       pad.querySelector(`[data-cabin-key="${key}"]`).setAttribute('aria-label',`${walking?'Walk':'Thrust'} ${label}`);

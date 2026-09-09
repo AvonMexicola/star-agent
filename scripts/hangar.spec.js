@@ -69,7 +69,7 @@ test('the complete orbital port renders and its enormous rings rotate',async({pa
     const n=starAgent.navigation,s=n.station;n.enabled=false;n.velocity.set(0,0,0);
     n.position.copy(s.centre).add(n.position.clone().set(3500,2000,-3900).applyQuaternion(s.baseQuaternion));n.orientToward(s.centre,s.up);
   });
-  await page.keyboard.press('Tab');await screenshot(page,'exterior');
+  await page.keyboard.press('Shift+Tab');await screenshot(page,'exterior');
   const before=await page.evaluate(()=>starAgent.state.station.rings);
   await page.waitForTimeout(1000);const after=await page.evaluate(()=>starAgent.state.station.rings);
   expect(after[0]).toBeGreaterThan(before[0]);expect(after[1]).toBeLessThan(before[1]);expect(errors).toEqual([]);

@@ -30,7 +30,7 @@ test('capture one continuous Nomad drive arrival, atmospheric descent and landin
   await page.keyboard.press('KeyM');
   await page.locator('[data-travel-target="aeon"]').click();
   await page.locator('#map-engage').click();
-  await page.keyboard.press('Digit4');await page.keyboard.press('Tab');
+  await page.keyboard.press('Digit4');await page.keyboard.press('Shift+Tab');
   await page.waitForTimeout(5000);
   console.log('LOCK DIAGNOSTIC',await page.evaluate(()=>{const s=starAgent,n=s.navigation;return {enabled:n.enabled,focused:n.focused,hidden:document.hidden,modal:document.querySelector('dialog[open]')?.id,mode:n.mode,powered:n.powered,gear:[n.gearDeployed,n.gearProgress],position:n.position.toArray(),orientation:n.orientation.toArray(),targets:(({targets,...state})=>state)(s.state.navigationTargets)};}));
   await page.waitForFunction(()=>window.starAgent.state.navigationTargets.ready&&window.starAgent.state.navigationTargets.aimedId==='aeon',null,{timeout:30000});

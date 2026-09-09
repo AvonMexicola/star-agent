@@ -1,0 +1,14 @@
+#player-guide{position:fixed;z-index:13;top:58px;left:50%;transform:translateX(-50%);width:440px;max-width:calc(100vw - 32px);padding:13px 18px 14px;background:#07151ded;border:1px solid #b6efd14d;border-left:2px solid var(--mint);border-radius:4px;pointer-events:none;box-shadow:0 8px 26px #0003}
+#player-guide[hidden]{display:none}
+#player-guide small{display:block;margin-bottom:6px;color:var(--mint);font:9px var(--mono);letter-spacing:.13em}
+#player-guide strong{display:block;font-size:15px;line-height:1.35;font-weight:600;color:var(--text,#e4efed)}
+#player-guide p{margin:7px 0 0;color:#becfce;font-size:12px;line-height:1.55}
+body:has(#player-guide:not([hidden])) #toast{top:calc(var(--player-guide-bottom,180px) + 10px)}
+#player-guide-setting{min-height:44px;padding:12px 20px;margin:10px}
+@media(max-width:750px){
+  #player-guide{top:54px;padding:10px 13px;width:calc(100vw - 24px)}
+  #player-guide strong{font-size:14px}
+  #player-guide p{font-size:11px;line-height:1.5}
+  body:has(#player-guide:not([hidden])) .telemetry,
+  body:has(#player-guide:not([hidden])) #combat-hud{top:calc(var(--player-guide-bottom,185px) + 14px)}
+}

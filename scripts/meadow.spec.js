@@ -5,7 +5,7 @@ import {latLonDirection} from '../src/world.js';
 test('dense meadow renders wind, flowers and walking contact without shader errors',async({page,browser})=>{
  const path='/tmp/star-agent-meadow',errors=[],states=[];await mkdir(path,{recursive:true});
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Tab');
+ await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Shift+Tab');
  await page.evaluate(direction=>{
   const s=window.starAgent,n=s.navigation;n.transit(direction,1.75);n.enabled=false;
   const up=n.normal,east=up.clone().set(0,1,0).cross(up).normalize();
