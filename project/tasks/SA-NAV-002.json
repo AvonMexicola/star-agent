@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex",
-  "status": "review",
+  "status": "integrated",
   "branch": "fix/focused-location-arrows",
   "base": "d2202c1ab7d8dba0a60ecdd6812f3efb82a8d6dc",
   "updated": "2026-09-09",

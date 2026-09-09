@@ -29,7 +29,7 @@ are at `/tmp/star-agent-focused-arrows`. An initial before-capture attempt found
 the usual local preview stopped (connection refused); its normal development
 entry point was started with its existing persistent local database.
 
-Curated captures: [startup](startup-after.png),
+Curated captures: [startup before](startup-before.png), [startup after](startup-after.png),
 [phone POI and objective](phone-objective-and-poi.png),
 [parked Burrow and ship](parked-burrow-and-ship.png).
 The [browser receipt](navigation.json) records the actual renderer and input.
@@ -37,3 +37,9 @@ The [browser receipt](navigation.json) records the actual renderer and input.
 No new dependency, input binding, inventory mutation, schema or protocol change.
 Local integration and preview availability are recorded in the shared HANDOFF;
 this task does not include a public deployment.
+
+Runtime `b99658b` is fast-forwarded into local `dev/all-features`. The existing
+530,509-byte unrelated HANDOFF journal was preserved byte for byte. Before
+integration the unselected startup rendered 12 location markers; the checked
+new startup renders none. The default local preview is running again on5178
+with API8087 and its existing persistent PostgreSQL database.

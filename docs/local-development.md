@@ -1,6 +1,14 @@
 # All-features local development
 
-**Current integration: PR108 / `4077761`, 9 September 2026.** All completed
+**Focused location arrows, 9 September 2026:** runtime `b99658b` is locally
+integrated. HUD arrows now show the selected POI, each active contract’s next
+objective, and your deployed ships/vehicles. All other destinations stay on the
+map. Refresh **http://127.0.0.1:5178/**. The stopped preview was restarted with
+its existing persistent local database. Focused source/build and both browser
+checks pass; [evidence and limits](qa/focused-location-arrows/README.md).
+
+
+**Previous release integration: PR108 / `4077761`, 9 September 2026.** All completed
 updates through Burrow Sentry, planet rotation, transport/recovery, terminals,
 Stratum/Gannet, updated mining Burrow, tall foundations and faction compounds
 are included. The four civilian garage terminals now offer **Burrow · Mining**
