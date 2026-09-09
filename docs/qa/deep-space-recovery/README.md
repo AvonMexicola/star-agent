@@ -216,3 +216,37 @@ surface destination uses the existing canonical settlement/terminal. Fixture
 steering reads nav.viewPoint; drive records include inertial and chart positions.
 Combined07 will rerun complete delivery as well as guarded and native journeys.
 Earlier05 full pass remains scoped to its prior stationary-world source.
+
+
+## Attempt07 — defended/native pass; occluded return route
+
+Frozende97408/runtime02d431a, build07 main-CUl4EEh6.js. All163 combined normal
+files PASS31.397s, production build PASS19.00s/398modules, repo317paths and plan
+pass. Recovery/trading/cargo/combat bytes remain6b43092; rotation hooks are retained.
+All five hosted checks pass on de97408, run34294806003 (browser6m36s,
+multiplayer2m57s, source4m58s, plan42s, verify5s); generic CI is separate from07.
+
+Guarded controller case **PASS3.9min**: real75-sample outbound drive,1350m cruise
+approach with zero incoming hits, actual Combat mode and flight into contact,
+21shots/16hits/two kills, two incoming hits, hull240,51-second report and persisted
+recovery clearance. Native keyboard/390touch case **PASS50.0s**: private acceptance,
+abandon, hard contract acceptance with size notice/no early cargo, no-award abandon
+and return to play. Both receipts have zero app errors/warnings; original images
+inspected. No physical-controller hardware.
+
+Quiet07 reached real EVA, both complete tractor/grid transfers, held interruption
+checks and physical reboarding, then stopped6.8min aiming for Greenbank. At actual
+rotation time88445s the site was behind Aeon: selected Greenbank, aimed Aeon,
+planet charge ready. The game's occlusion filter correctly excluded the hidden
+surface target; the direct-route fixture waited45s. Cargo/ledger remained intact,
+no app error. Retain original07 state/trace/videos. Batch2PASS/1FAIL11.8min;
+sources unchanged. Shared capture name departure is reused by the quiet case;
+case-specific guard captures/receipt/video remain retained.
+
+08 runs only quiet delivery. Its starting Date.now epoch is set before boot,
+using the same clock-injection approach as the rotation harness, then advances at
+normal real speed with performance.now. No mid-flight time, pose or authority
+changes. This gives the direct delivery journey a repeatable visible destination;
+final assertion compares actual elapsed seconds with rotation progress. Runtime,
+build and completed guarded/native cases are unchanged. The guide explains
+navigating around Aeon when a live route is occluded.

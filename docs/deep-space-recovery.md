@@ -32,7 +32,8 @@ shape as well as showing free SBU.
    secures an available grid slot. Haul the required container through the opening; take any optional loot you want.
    Load bonus cargo below the mission container so it remains supported at delivery. D-pad
    right holsters the tractor. Return slowly to your ramp and walk to the chair.
-5. Track Greenbank Supply on Aeon, land the loaded ship on its pad, walk to the
+5. Track Greenbank Supply on Aeon. If Aeon blocks the route, navigate around the
+   planet before engaging the delivery drive. Land the loaded ship on its pad, walk to the
    terminal and choose **Recovery → Deposit mission cargo**. The specific original mission container
    must be secured aboard the selected ship. The terminal removes only required
    mission cargo and pays once. Bonus loot cannot replace the objective; leaving

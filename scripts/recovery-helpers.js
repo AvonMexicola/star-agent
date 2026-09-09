@@ -1,3 +1,4 @@
+import {ROTATION_EPOCH_MS} from '../src/planet-rotation.js';
 import {mkdir,appendFile} from 'node:fs/promises';
 import {frames} from './transport-helpers.js';
 export {walk,aim,capture,graphics,focusInterruption,frames} from './transport-helpers.js';
@@ -17,10 +18,12 @@ export function controllerChoose(page,tap){
  };
  return choose;
 }
-export async function setup(page,site='orbit'){
+export async function setup(page,site='orbit',{rotationAtEpoch=false}={}){
  await mkdir(out,{recursive:true});const errors=[],warnings=[];
  page.on('requestfailed',r=>{appendFile(`${out}/requests.log`,`${r.url()} ${JSON.stringify(r.failure())}\n`).catch(()=>{});});
  page.on('pageerror',e=>{errors.push(e.message);appendFile(`${out}/diagnostics.log`,e.message+'\n').catch(()=>{});});page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());appendFile(`${out}/diagnostics.log`,m.text()+'\n').catch(()=>{});}if(m.type()==='warning')warnings.push(m.text());});
+ // Set the starting phase before boot; the clock then advances at real speed.
+ if(rotationAtEpoch)await page.addInitScript(epoch=>{const began=performance.now();Date.now=()=>Math.floor(epoch+performance.now()-began);},ROTATION_EPOCH_MS);
  await page.addInitScript(()=>{window.transportPad={id:'Settlement standard Gamepad',mapping:'standard',index:0,connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>window.transportDisconnected?[]:[window.transportPad]});});
  await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
  await page.goto(`/?dev=1&ship=nomad&start=${site}&intro=0&debug&seed=7291`);

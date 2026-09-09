@@ -9,10 +9,13 @@ Private preview5680 / optional test API8680; no shared services or GPU reserved.
 
 Three solo recovery contracts: unguarded, raider guard and heavier blockade.
 Accepting marks a fixed deep-space distress site without moving the player. Fly
-there, defeat any guards, EVA to the open64m Atlas, tractor its two or three sealed
-2SBU crates through the open cargo bay into the player’s own hold, return to
-Greenbank Supply and deposit all original crates at its terminal for one payment.
-Cargo is private to the accepting pilot; no duplicate issue, substitution or resale.
+there, defeat any guards, EVA to the open64m Atlas and tractor the named2SBU
+mission container through the open bay into the player’s own hold. Other containers
+are optional bonus loot. Return to Greenbank Supply and deposit only the original
+required container at its terminal for one payment. The mission shows the required
+0.6 × 0.6 × 1.2m grid space; a full hold does not block acceptance. Required cargo
+is private and cannot be substituted or sold. Secured bonus loot can be sold and
+remains after mission completion or abandonment.
 Save/reload and abandonment preserve exact crate/payment state. Guarded sorties
 reuse existing solo ship-combat authority; online recovery is explicitly unavailable.
 Existing online transport remains intact. No shared NPC/protocol extension is claimed.
@@ -24,12 +27,13 @@ Small explicit hooks in existing commerce, crate seal preservation, main, naviga
 collision and combat encounter entry. Reuse unchanged authored Atlas GLB, canonical
 Atlas systems/ramps/EVA geometry, existing SBU assets, tractor and ship weapons.
 No new dependencies, authored ship geometry, terrain, global lighting or input loop.
-Main/combat hooks coordinate with pending Pirate/Sentry owners; preserve their
-separate APIs and protocol8 work. No unfinished owner source is copied.
+Checked Pirate/faction/rotation integrations are composed. Main/combat hooks
+preserve their separate APIs, canonical surface coordinates, fixed deep-space
+poses and protocol9. Pending Sentry source is not copied.
 
 ## Verification
 
-Meaningful model tests for exact multi-crate identities, ownership, clearance,
+Meaningful model tests for exact required identity, optional bonus handling, ownership, clearance,
 deposit/removal stacks, atomic payout, reload/failed-save and rollback. Geometry
 checks for true open ramp sweeps, hull/beam occlusion, origin precision and flight
 collision. Actual standard-Gamepad mission entry/flight/EVA/tractor/loading/
