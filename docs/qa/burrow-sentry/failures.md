@@ -180,3 +180,15 @@ mistake; it is not a gameplay or Chromium failure. The guarded runner now owns
 the flagged production build before each private browser job and records its
 flags, frozen source hashes and actual generated JavaScript/CSS/index hashes.
 No application behavior or server limit changed for this correction.
+
+
+Browser11 (`2026-09-09T00-55-15.842Z`) correctly built the flagged bundle in4.30s
+and recorded main-C7yzYpq9 plus its actual hashes. Before opening a browser,
+Playwright refused the occupied8678 API port. The interrupted10 runner had left
+its detached memory API and preview children alive. Their exact Node executable,
+argv, worktree, unique SENTRY_OUTPUT token, process start ticks and listening ports
+identified PIDs2402624 and2402664 as10's owned leftovers. They were gracefully
+stopped with SIGTERM; the retained verified-cleanup receipt reports no survivors.
+The portable runner now cleans only such uniquely owned fixture children after
+each job, including interruption. It never reuses an existing server or treats a
+port number as process ownership. No game source or server rate limit changed.
