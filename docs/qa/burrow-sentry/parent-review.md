@@ -208,3 +208,45 @@ cases pass in 2.931 s (`server-http04.log`), including separate wire-level rate
 and deliberately blocked-command cases. The next fixture persists failed access
 samples and passive WebSocket timings. This instrumentation is not a gameplay fix
 or acceptance evidence for the unresolved disconnect.
+
+
+## Checked shared world composition
+
+Private `c358541461b6a2bab9256aae25439e5c73a0c361` consumes only the released
+shared `1da9b0e` rotation delivery, including checked faction and vacuum-base
+`2a6e405`. The merge preserves planetary time and peer frames, all Sentry seat
+fields, exact access reconciliation, Miasma canonical claims and the complete
+164-file test inventory. Protocol 10 combines delivered rotation protocol 9
+with Sentry authority; final client/API refresh must be paired. This private
+composition has not been integrated or served.
+
+All 1,252 normal cases pass in 59.879 s (`unit04.log`). The serialized multiplayer
+suite passes 220 cases with two existing opt-in skips in 55.185 s
+(`multiplayer06.log`). Explicit-base repository checks cover 335 paths; the
+suggested plan and branch inventory ran. These results belong to `c358541`,
+before any subsequent Sentry frame adaptation; no final combined browser/build
+pass is inferred.
+
+Parent reviewed the retained actual-adapter CPU diagnostic on old runtime
+`9d31320` / head `a77953d`. Real Navigation, GamepadInput, MultiplayerClient,
+Sentry system and authoritative room snapshots completed boarding at
+20/60/144/240 Hz, with one interaction and peak rolling-second outbound counts
+23/24/24/24. Modal/focus held-input gates, delayed exit acknowledgement and the
+inactive panel remained bounded. Presentation was stubbed, transport was in
+memory, and initial door positions were fixture setup. This rules out the tested
+adapter cycles; it does not identify the native WebSocket failure or replace a
+physical browser journey. The original script, JSON and log remain in the
+feature owner's private `.staging/adapter-probe01.*`.
+
+
+Parent then reproduced a carrier-cargo boundary defect: a rover rider 49.99 m
+from a parked Atlas was denied because the query subtracted coordinates in
+different rotation charts. The new regression uses actual Navigation getters
+and `fromShipLocal`, both boundary directions and all four worlds, also refusing
+50.01 m. The original host failure is retained in `cargo-frame-before-host.log`;
+the first sandbox test process failed before named cases and is retained
+separately. The helper now obtains the hull root through Navigation's existing
+frame conversion; the 50 m limit and rover cabin classification remain unchanged.
+All 13 cargo-access and ship-inventory cases pass in 0.160 s
+(`cargo-frame-after.log`). This is a CPU boundary regression, not an Atlas
+loading/flight browser acceptance claim.
