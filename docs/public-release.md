@@ -1,12 +1,11 @@
 # Public entry points and frozen releases
 
-Current deployment: **`d63fab0`, 9 September 2026**, on both play and multiplayer.
-[The marker release receipt](qa/navigation-markers-release/README.md) records
-PR112 / `8838927`, focused arrows, distinct marker types, exact hashes and live
-browser/API/WSS checks. This advances the preceding `ea234d2` release without
-server, schema, protocol or asset changes. Garage selection remains solo/offline.
-Existing tabs must refresh. Separate planetary-drive and starter-tractor work
-remains local development.
+Current deployment: **`f70eab9`, 9 September 2026**, on both play and multiplayer.
+[The combined release receipt](qa/combined-guide-release/README.md) records
+protected PR113 / `006c6aee`, step-by-step Nomad guidance, curved planetary drive,
+starter tractor, Greenbank, command wheel and character controller tuning.
+Focused arrows and distinct marker types remain included. Both channel artifacts
+and the matching protocol11 server are live; existing tabs must refresh.
 
 `staragent.site` and `www.staragent.site` serve `site/`: the project introduction,
 real game screenshots, two short ambient captures and three user-operated films, plus
@@ -35,12 +34,15 @@ play, not video streaming or a hosted GPU session. It is not a service-worker
 installation and does not promise uncached play without an internet connection.
 
 `multiplayer.staragent.site` remains the existing dedicated authoritative server,
-PostgreSQL database and account system. The current client and server advance together from protocol5 to protocol10,
-including completed shared settlement, economy, rotating-clock and Sentry updates.
+PostgreSQL database and account system. The current client and server use protocol11, including curved planetary drive,
+starter tractor and completed shared settlement, economy, rotating-clock and Sentry updates.
 The existing twenty-player capacity, twenty suit colours and twenty physical
 hangars are retained. Player21 is rejected; a freed slot can be reused. All four
 SQL migration files match the preceding deployed server: account/session/inventory
-data stays in the same database. Installation generates the Prisma client.
+data stays in the same database. Installation must generate the Prisma client
+with `npm run prisma:generate` and verify the service user can import
+`server/generated/prisma/index.js` before cutover; a memory-store startup alone
+does not verify production database packaging.
 
 Twenty is a capacity limit, not a performance guarantee. The room currently
 simulates at 30 Hz and sends whole-room snapshots at 15 Hz. All-to-all snapshot
