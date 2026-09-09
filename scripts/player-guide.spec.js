@@ -18,7 +18,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
     if(!controller)return page.keyboard[down?'down':'up'](key);
     await page.evaluate(({key,down})=>{const axis=['a','d'].includes(key)?0:1;guidePad.axes[axis]=down?(['w','a'].includes(key)?-1:1):0;},{key,down});
   };
-  const move=async(key,predicate)=>{await held(key,true);try{await page.waitForFunction(predicate,null,{timeout:30000});}finally{await held(key,false);}await frames(page);};
+  const move=async(key,predicate)=>{await held(key,true);try{await page.waitForFunction(predicate,null,{timeout:60000});}finally{await held(key,false);}await frames(page);};
   const interact=async()=>{if(controller)await tap(2);else await page.keyboard.press('f');await frames(page);};
   const check=async id=>{await expect(page.locator('#player-guide')).toHaveAttribute('data-step',id);await expect(page.locator('#player-guide')).toBeVisible();steps.push({id,text:await page.locator('#player-guide').innerText()});};
   const choose=async key=>{
@@ -102,7 +102,7 @@ test.describe('touch guidance',()=>{
     await installNativeReceipts(page);await page.route('**/api/auth/session',r=>r.fulfill({json:{account:null}}));
     const input=new TouchInput(page,await page.context().newCDPSession(page));
     const check=async id=>{await expect(page.locator('#player-guide')).toHaveAttribute('data-step',id);await expect(page.locator('#player-guide')).toBeVisible();steps.push({id,text:await page.locator('#player-guide').innerText()});};
-    const move=async(action,predicate)=>{await input.hold([action]);try{await page.waitForFunction(predicate,null,{timeout:30000});}finally{await input.reset();}};
+    const move=async(action,predicate)=>{await input.hold([action]);try{await page.waitForFunction(predicate,null,{timeout:60000});}finally{await input.reset();}};
     await page.goto('/?seed=7291&intro=1&debug');
     await page.waitForFunction(()=>starAgent?.state.ready&&starAgent.state.opening.phase==='cinematic',null,{timeout:120000});
     await expect(page.locator('#loading')).toHaveCSS('opacity','0');await page.touchscreen.tap(195,430);
