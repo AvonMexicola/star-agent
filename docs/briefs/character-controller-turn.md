@@ -10,4 +10,5 @@ Own fix/character-controller-turn from 7a23050: gamepad rate constants,
 navigation input rates, multiplayer normalization and focused regression/browser
 checks. Private preview 5702, queued behind the active player-guide GPU owner.
 Integrate checked source locally while preserving that separate guide work,
-station wheel correction and all journal bytes. No public deployment requested.
+station wheel correction and all journal bytes. User subsequently requested release to play and multiplayer; prepare the paired
+candidate while retaining the existing protected-check billing gate.

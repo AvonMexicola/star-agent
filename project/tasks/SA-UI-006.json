@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex",
-  "status": "active",
+  "status": "integrated",
   "branch": "fix/character-controller-turn",
   "base": "7a2305090c719f3ba2417e245efb178c3545d1bb",
   "updated": "2026-09-09",
@@ -21,5 +21,7 @@
     "scripts/character-turn.spec.js",
     "scripts/character-turn.config.js"
   ],
-  "brief": "docs/briefs/character-controller-turn.md"
+  "brief": "docs/briefs/character-controller-turn.md",
+  "validation": "Runtime66dc1da locally integrated, preserving player-guide work. Five affected files, production build, repository checks and actual controller turn/hatch/EVA/return journey PASS1.5m. Full/half stick walk1.527/.757 and EVA1.524/.760rad/s, zero app errors. Served modules and both API health routes pass after managed refresh; existing database retained. Physical hardware and public delivery unclaimed.",
+  "evidence": "docs/qa/character-controller-turn/README.md"
 }

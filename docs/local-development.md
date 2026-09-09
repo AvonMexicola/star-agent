@@ -1,5 +1,12 @@
 # All-features local development
 
+**Character controller turning, 9 September 2026:** `66dc1da` increases right-stick
+look speed on foot and in EVA by about 76%, to 1.5 rad/s. Gentle stick movement
+remains proportional; keyboard, mouse and ship handling retain their rates.
+Refresh **http://127.0.0.1:5178/**. Five affected test files, build and actual
+controller hatch/EVA/return journey pass; the managed client/API pair was refreshed
+with the existing database. [Checks](qa/character-controller-turn/README.md).
+
 **Station wheel collision, 9 September 2026:** `8a2a12f` removes invisible walls
 along the diagonal spokes. Collision now checks the actual triangle surfaces
 inside the existing broad-phase bounds. The Nomad controller flight passes
