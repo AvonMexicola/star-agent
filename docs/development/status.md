@@ -1,12 +1,14 @@
 # Verified development status
 
-**Snapshot: 2026-09-08, medium ships integrated locally at `b793921` (runtime `3cf80ad`).** This page states
+**Latest local checkpoint: 2026-09-09, planetary rotation at `8f819ac`.** Named
+older checkpoints below retain their own evidence scope. This page states
 capabilities and gaps; [ROADMAP](../../ROADMAP.md) states ambitions. New governance
 and tooling changes do not certify the entire game as finished.
 
 | Area | Evidence-backed development state | Material gaps |
 | --- | --- | --- |
 | Worlds | Seeded Aeon, Selene, Pyre, Miasma, stellar encounter and canonical rock relief integrated; actual five-world browser tour | Broad visual/performance acceptance, hydrology, caves, shared dynamic weather |
+| Planetary rotation | Locally integrated `8f819ac`: all four landable worlds spin on 60-minute days, with stable canonical terrain/building/parked-hull anchors, changing sunlight and shared protocol 9 time; controller ground/drive and two-client clock checks pass | Fixed body centres and existing assisted/EVA semantics; physical devices, independent domain/art and release performance acceptance pending. [Evidence](../qa/planet-rotation/README.md) |
 | Flight | Continuous flight, targeted/heading drive, gear limits, finite-thrust momentum, combat/cruise modes, differentiated handling, crashes and moving cabins | Complete fleet/server parity and deeper engineering |
 | Ships | Flyable Nomad 02, Kestrel, current 64 m Atlas, 18 m Stratum miner and 24 m Gannet rover transport; physical boarding, mining and loaded-flight journeys pass | Medium hulls are solo/development only; broad fleet performance, final Atlas materials and Kestrel ladder animation remain open |
 | Station | Authored exterior and enlarged 20-berth station are default; physical community hub, finite market, defense and animated shopkeepers integrated | Final exterior materials, broad firing arcs and wider multi-user acceptance remain open |

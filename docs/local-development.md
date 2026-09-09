@@ -1,5 +1,20 @@
 # All-features local development
 
+**Spinning planets** are locally integrated at `8f819ac`. Aeon, Selene, Pyre and
+Miasma complete a day in 60 real minutes, with changing sunlight while ground,
+bases and parked ships remain attached. Existing saves and controls are retained.
+Refresh **http://127.0.0.1:5178/**; the paired 5178/API8087 service was gracefully
+refreshed on2026-09-09 with protocol 9 and its existing persistent database.
+The checked faction finishes and Hush/Veil habitats remain included.
+
+Combined 1233 normal tests,204 multiplayer tests (2 existing optional skips), build,
+controller moon drive and two-client shared-clock checks pass. The full ground
+controller/day-night/boarding journey and all-four-world render inspection also
+pass on their recorded sources. [Player guide](planet-rotation.md) and
+[exact evidence/remaining review](qa/planet-rotation/README.md). This is a local
+development checkpoint; physical devices, independent review and performance
+acceptance remain separate, with no public deployment.
+
 
 Checked faction/compound source **e25c7d0** is locally integrated and served on
 5178 with the existing persistent API8087. The paired service refreshed on
@@ -744,7 +759,7 @@ Ceiling lights remain in **Roofs**. The same normal power and placement rules ap
 Use **F2 → a settlement** to inspect the commissioned lights, or **Build sandbox**
 for construction. The [asset and gameplay record](qa/outdoor-floodlights/README.md)
 contains night before/after views, controller/phone evidence and measured costs.
-Integrated locally at `8566a43`; the existing5178 preview/API refreshed together
+Integrated locally at `8566a43`; the existing 5178 preview/API refreshed together
 and served asset/source checks passed. Refresh the page to load the masts.
 Independent art and hardware/performance acceptance remain pending.
 

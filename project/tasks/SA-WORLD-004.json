@@ -4,7 +4,7 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex planet rotation",
-  "status": "active",
+  "status": "integrated",
   "branch": "feat/planet-rotation",
   "base": "f1ef821a1e24a0724c22b14e30efd6d5092ba0fd",
   "updated": "2026-09-09",
@@ -56,9 +56,10 @@
     "src/water.js",
     "tests/planet-rotation.test.js",
     "tests/server-planet-rotation.test.js",
-    "tests/server-transport.test.js"
+    "tests/server-transport.test.js",
+    "docs/development/status.md"
   ],
   "brief": "docs/briefs/planet-rotation.md",
-  "validation": "Combined58a73af:1216 normal PASS,201 multiplayer PASS/2existingoptinskips, build/repository PASS; four-world orbital and full ground controller04 PASS. Targeting6366b2d focused23PASS; six real-room/frame cases PASS. Final two-client/drive browser and shared integration pending; independent review/hardware/performance not claimed.",
+  "validation": "Locally integrated8f819ac after checked2a6e405; combined1233normal PASS/162files,204multiplayer PASS/2existingoptinskips, build/repo/plan PASS. Four-world phase04 and full groundcontroller06 PASS; combined09 visible-moon controllerdrive and two authenticated skewed-clock station clients both PASS. Managed5178/API8087 refreshed protocol9; nine served routes, both healths and unchanged existing DB counts PASS. Dirty journal preserved exactly. Independent domain/art/hardware/performance remain pending; no public deployment.",
   "evidence": "docs/qa/planet-rotation/README.md"
 }
