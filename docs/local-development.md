@@ -1,5 +1,15 @@
 # All-features local development
 
+**Greenbank drive fix, 9 September 2026:** `421ea55` corrects the reported 870 km
+miss caused by acquiring Aeon instead of the settlement. Refresh
+**http://127.0.0.1:5178/**, open **Map → Aeon → Locations**, advance to Greenbank
+Supply and select it. Close the map and charge the Greenbank ring; the drive
+arrives about **35 km above its pad**, then descend in normal flight. Selection
+stays fixed when you look away; **Clear target** restores automatic acquisition.
+Full unit/build and actual controller approach/arrival checks pass;
+[evidence](qa/greenbank-drive/README.md). The paired public release remains blocked
+by the GitHub billing check, and its old staged candidate is superseded.
+
 **Marker release, 9 September 2026:** focused arrows and subtle marker shapes/colors
 are integrated remotely through PR112 / `8838927` and published to
 [play](https://play.staragent.site) and [multiplayer](https://multiplayer.staragent.site)

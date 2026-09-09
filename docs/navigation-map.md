@@ -73,3 +73,7 @@ physical controller or independent acceptance.
 
 `npm run test:browser -- -c scripts/planetary-drive.config.js` checks the planetary
 location journey. See [planetary drive evidence](qa/planetary-drive.md).
+
+`npm run test:browser -- -c scripts/greenbank-drive.config.js` checks automatic
+settlement priority, explicit bearing retention and the real Greenbank approach.
+See the [Greenbank regression record](qa/greenbank-drive/README.md).

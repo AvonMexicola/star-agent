@@ -1,5 +1,10 @@
 # Planetary drive and starter tractor — paired release
 
+**Superseded candidate:** the later [Greenbank acquisition correction](../greenbank-drive/README.md)
+fixes an 871 km wrong-world arrival in `0ea21d2`. Do not promote that staged
+artifact. Its temporary promotion command is disabled. Prepare the updated exact
+PR head before continuing through the existing protected release gate.
+
 Cees explicitly requested “merge to dev, play and multiplayer” on9September2026,
 authorizing this promotion. Candidate `release/planetary-drive-tractor-20260909`
 combines checked planetary drive `bcb71c9`, starter tractor `1c29454`, their local
