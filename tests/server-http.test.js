@@ -34,8 +34,10 @@ function fakeRoom(options = {}) {
 }
 async function fixture(t, options = {}) {
   const room = options.room ?? fakeRoom(), store = options.store ?? createMemoryStore();
-  const diagnostics = [], mails = [];
-  const app = await createServer({ store, room, publicOrigin: ORIGIN, logger: { error: code => diagnostics.push(code) },
+  const diagnostics = [], diagnosticDetails = [], mails = [];
+  const app = await createServer({ store, room, publicOrigin: ORIGIN, logger: { error(code, details) {
+    diagnostics.push(code); if (details !== undefined) diagnosticDetails.push(details);
+  } },
     mail: { async sendPasswordReset(mail) { mails.push(mail); } }, ...options });
   const address = await app.listen();
   const base = `http://127.0.0.1:${address.port}`;
@@ -61,7 +63,7 @@ async function fixture(t, options = {}) {
     ws.on('error', () => {});
     return ws;
   }
-  return { app, room, store, diagnostics, mails, base, request, register, connect };
+  return { app, room, store, diagnostics, diagnosticDetails, mails, base, request, register, connect };
 }
 
 test('HTTP register/login/session/logout use cookies and return no account email or credential fields', async t => {
@@ -200,6 +202,9 @@ test('WebSocket diagnostics distinguish a message-rate burst from an async comma
   const [rateCode, rateReason] = await rateClosed;
   assert.equal(rateCode, 1008); assert.equal(rateReason.toString(), 'Too many messages.');
   assert.deepEqual(rate.diagnostics, ['WEBSOCKET_MESSAGE_RATE_LIMIT']);
+  assert.equal(rate.diagnosticDetails[0].messages, 121);
+  assert.ok(rate.diagnosticDetails[0].pending < 64);
+  assert.equal(rate.diagnosticDetails[0].admitted, true);
 
   let release, started = false;
   const blocked = new Promise(resolve => { release = resolve; });
@@ -217,6 +222,11 @@ test('WebSocket diagnostics distinguish a message-rate burst from an async comma
     const [pendingCode, pendingReason] = await pendingClosed;
     assert.equal(pendingCode, 1008); assert.equal(pendingReason.toString(), 'Too many messages.');
     assert.deepEqual(pending.diagnostics, ['WEBSOCKET_PENDING_MESSAGE_LIMIT']);
+    const details = pending.diagnosticDetails[0];
+    assert.deepEqual(Object.keys(details).sort(), ['admitted', 'messages', 'pending', 'processingMs', 'windowMs']);
+    assert.equal(details.pending, 64); assert.equal(details.messages, 65);
+    assert.equal(details.admitted, true);
+    assert.equal(typeof details.processingMs, 'number'); assert.ok(details.processingMs >= 0);
   } finally { release(); }
 });
 

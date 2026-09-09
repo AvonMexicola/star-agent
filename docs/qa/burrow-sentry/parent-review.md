@@ -250,3 +250,12 @@ frame conversion; the 50 m limit and rover cabin classification remain unchanged
 All 13 cargo-access and ship-inventory cases pass in 0.160 s
 (`cargo-frame-after.log`). This is a CPU boundary regression, not an Atlas
 loading/flight browser acceptance claim.
+
+
+The socket diagnostic also records only numeric rate/pending counters, whether
+admission completed, and elapsed active-command time. This distinguishes an
+awaited operation from a batch received before the serialized queue starts;
+no message payload or account identity is logged. Limits, close reason and
+queue scheduling are unchanged. The actual HTTP/socket suite passes all 16
+cases again (`server-http05.log`), including the expected counters and bounded
+set of diagnostic fields.
