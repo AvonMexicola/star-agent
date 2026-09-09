@@ -50,6 +50,13 @@ Aeon's radius is 1,592,750 m; the sun is 25,000,000,000 m away. Subtract the
 camera origin **before** writing Float32 positions, instance matrices or shader
 data. Geometry remains local to its object or patch.
 
+[Planetary rotation](docs/decisions/planet-rotation.md) retains body-fixed gameplay
+charts inside disjoint three-radius domains and inertial coordinates in deep
+space. Terrain and saved anchors never rotate numerically. Convert between charts
+with `src/planet-rotation.js`; compare physical points in one chart and subtract
+doubles before GPU upload. The 60-minute clock is shared online using protocol9.
+This development architecture has pending independent domain review.
+
 Seed equality alone is insufficient across generator changes. Persist/exchange
 the seed and generator/protocol version. A changed generator must define how old
 saves, resources, structures and authoritative collision remain compatible or

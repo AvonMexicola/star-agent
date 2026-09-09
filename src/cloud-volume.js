@@ -23,6 +23,7 @@ precision highp sampler3D;
 uniform sampler3D cloudNoise;
 uniform float cloudTime;
 float cloudDensity(vec3 point) {
+  point=cloudFrame*point;
   float height = (length(point)-1.0)*radius;
   float layer = (height-1800.0)/2800.0;
   if(layer<=0.0 || layer>=1.0) return 0.0;

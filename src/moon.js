@@ -114,9 +114,9 @@ export class Moon {
     this.rings=new MoonRings(scene);this.ice=new MoonIce(scene);this.stones=new MoonStones(scene,this.grain);
     this.sun=new THREE.Vector3(...SUN_DIRECTION).multiplyScalar(SUN_DISTANCE);
   }
-  update(worldPosition,origin,elapsed=0,outside=true,shipPosition=null) {
+  update(worldPosition,origin,elapsed=0,outside=true,shipPosition=null,sunDirection=null,rotation=new THREE.Quaternion()) {
     if(worldPosition.distanceTo(this.worldPosition)<MOON_RADIUS*12)this.orbitalSurface.start();
-    this.rings.update(origin,elapsed);this.ice.update(worldPosition,origin,elapsed,outside);
+    this.rings.update(origin,elapsed,sunDirection,rotation);this.ice.update(worldPosition,origin,elapsed,outside,sunDirection??undefined);
     this.terrain.update(worldPosition,origin);this.stones.update(worldPosition,origin,shipPosition);
     // Eclipse the moon when Aeon blocks its direct sunlight. The small ambient
     // component keeps the disk readable without giving it a self-lit texture.

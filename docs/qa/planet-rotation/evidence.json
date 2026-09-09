@@ -1,0 +1,129 @@
+{
+  "task": "SA-WORLD-004",
+  "localIntegration": {
+    "at": "2026-09-09T00:13:49.013978+00:00",
+    "previous": "2a6e405ee75705f314454c7968ac52d10871d6fc",
+    "integrated": "8f819ac8a4ad5380259188796a97df76a85b7ee7",
+    "journalBytes": 520678,
+    "journalSha256": "2f201781af25958b2287a4e28a4a172a83f4b77b143bcd0c93b53edf4bc45823",
+    "journalPreserved": true
+  },
+  "servedPreview": {
+    "at": "2026-09-09T00:15:12.600Z",
+    "checks": [
+      {
+        "name": "frontend health",
+        "url": "http://127.0.0.1:5178/api/health",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "API health",
+        "url": "http://127.0.0.1:8087/api/health",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "rotation clock",
+        "url": "http://127.0.0.1:5178/src/planet-rotation.js",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "rotation frames",
+        "url": "http://127.0.0.1:5178/src/planet-render-frames.js",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "paired protocol",
+        "url": "http://127.0.0.1:5178/src/multiplayer/protocol.js",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "main composition",
+        "url": "http://127.0.0.1:5178/src/main.js",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "hull frame",
+        "url": "http://127.0.0.1:5178/src/navigation-rotation.js",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "launcher",
+        "url": "http://127.0.0.1:5178/src/dev-launch-options.js",
+        "status": 200,
+        "expectedSource": true
+      },
+      {
+        "name": "scenery",
+        "url": "http://127.0.0.1:5178/src/scenery-clearance.js",
+        "status": 200,
+        "expectedSource": true
+      }
+    ],
+    "databaseCountsUnchanged": true,
+    "correction": "Initial probe guessed PROTOCOL_VERSION and pirate-miasma names. Actual declared exports are MULTIPLAYER_VERSION=9 and pirate-veil; only probe assertions changed."
+  },
+  "normal": {
+    "pass": 1233,
+    "fail": 0,
+    "files": 162,
+    "seconds": 31.053
+  },
+  "multiplayer": {
+    "pass": 204,
+    "fail": 0,
+    "existingOptionalSkips": 2,
+    "seconds": 37.593
+  },
+  "buildSeconds": 20.21,
+  "browser": {
+    "version": "151.0.7922.173",
+    "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "viewport": [
+      1440,
+      900
+    ],
+    "scale": 1,
+    "seed": 7291,
+    "orbital": "04 all four worlds at two phases pass; explicit inspection poses",
+    "ground": {
+      "run": "06",
+      "runtime": "a4d07d4",
+      "completeControllerJourney": true,
+      "sunBefore": 0.6470211567401892,
+      "sunAfter": -0.4635273855628827,
+      "groundDriftMetres": 0.0036093717792549,
+      "parkedHullDriftMetres": 0,
+      "finalMode": "flight"
+    },
+    "final": {
+      "run": "09",
+      "source": "8f819ac",
+      "pass": 2,
+      "seconds": 162,
+      "driveSamples": 129,
+      "activeDriveSamples": 113,
+      "frames": [
+        "aeon",
+        "inertial",
+        "selene"
+      ],
+      "arrivalAltitudeMetres": 20000.01592576707,
+      "sharedOsClockSkewSeconds": 420,
+      "clockDifferenceBoundSeconds": 0.5,
+      "controllerWalkMetres": 2.7964285641784685,
+      "standingDriftMetres": 7.0373519423192435e-09,
+      "inertialRotationMovementMetres": 9338.97876455702,
+      "peerConvergenceBoundMetres": 0.15,
+      "applicationErrors": []
+    },
+    "physicalDevice": "not tested",
+    "independentArtPerformanceAcceptance": "pending"
+  }
+}
