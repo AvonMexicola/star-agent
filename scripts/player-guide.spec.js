@@ -141,7 +141,7 @@ test.describe('touch guidance',()=>{
     await move('forward',()=>starAgent.state.shipLocal[2]<-1.5);await check('sit');await input.tap('interact');
     await check('launch');await expect(page.locator('#player-guide')).toContainText('Tap Launch');await page.screenshot({path:`${folder}/02-launch.png`});
     await input.tap('land');await page.waitForFunction(()=>starAgent.state.mode==='flight'&&!starAgent.state.station.lifting);
-    await check('retract-gear');await input.tap('commands');await input.choose('tab-ship');await input.choose('gear');await page.waitForFunction(()=>starAgent.state.enabled&&!document.querySelector('dialog[open]'));
+    await check('retract-gear');await input.tap('commands');await input.choose('tab-ship');for(let i=0;i<4&&!await page.locator('dialog[open] [data-controller-key="gear"]').isVisible();i++)await input.choose('page-ship systems-next');await input.choose('gear');await page.waitForFunction(()=>starAgent.state.enabled&&!document.querySelector('dialog[open]'));
     await page.waitForFunction(()=>starAgent.state.landingGear.progress===0);await check('leave-bay');
     await move('forward',()=>starAgent.state.station.distance>550);await move('brake',()=>starAgent.state.speed<.2);
     await check('choose');await expect(page.locator('#player-guide')).toContainText('Commands → Map');await page.screenshot({path:`${folder}/03-choose.png`});

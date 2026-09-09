@@ -27,7 +27,7 @@ export function playerGuideStep(s,journey={}){
   const move=command('Use W/A/S/D to walk; drag the view or use the arrow keys to look.','Use the left stick to walk and the right stick to look.','Hold the walking arrows; drag the view to look.');
   const forward=command('Hold W','Push the left stick forward','Hold the forward flight control');
   const brake=command('Hold X','Hold LT / L2','Hold Brake');
-  const gear=command('Press G','Hold LB + RB and press D-pad down','Open Commands → Ship → Landing gear');
+  const gear=command('Press G','Hold LB + RB and press D-pad down','Open Commands → Ship → Landing gear (use the page arrows if needed)');
   const contracts=command('Press Tab','Open Menu → Contracts','Open Commands → Contracts');
   const map=command('Press M','Press D-pad left','Open Commands → Map');
   const land=command('Press B','Press Y / △',s.mode==='landed'?'Tap Launch':'Tap Land');
@@ -98,11 +98,11 @@ export function playerGuideStep(s,journey={}){
   }
   if(s.combatPhase==='complete')return step('report','File your combat report',`${contracts}, then choose File combat report to finish the patrol.`,'CONTRACT');
   if(!target)return step('choose','Choose what to do next',`${map} to select a destination, or ${contracts.replace(/^Press/, 'press').replace(/^Open/, 'open')} to choose a contract.`,'YOUR NEXT JOURNEY');
-  if(s.targetDistance<21000&&!target.surface&&target.category!=='bodies')return step('manual-approach',`Fly toward ${target.name}`,`${aim} to centre its marker. ${forward} to approach; ${brake.toLowerCase()} to slow down near it.`,'APPROACH');
+  if(s.targetDistance<21000&&!target.surface&&target.category!=='bodies')return step('manual-approach',`Fly toward ${target.name}`,`${aim} to centre its marker. ${forward} to approach; ${brake.replace(/^Hold/,'hold')} to slow down near it.`,'APPROACH');
   if(s.altitude<19990&&s.atmosphereFraction>0)return step('climb','Climb before engaging the drive',`${command('Hold Space','Hold A / ✕','Hold the up flight control')} to climb above 20 km. Keep the destination selected.`,'NAVIGATION');
   if(s.aimedId!==target.id)return step('aim',`Aim at ${target.name}`,`${aim} until the nose reticle lines up with its ${s.objective?'amber objective':'selected destination'} marker.`,'NAVIGATION');
   if(s.routeReason){
-    if(s.sharedDriveUnavailable)return step('shared-route',`Fly toward ${target.name}`,`${forward} to travel in normal flight; ${brake.toLowerCase()} to slow down. ${contracts} for freight routes that support the shared targeted drive.`,'NAVIGATION');
+    if(s.sharedDriveUnavailable)return step('shared-route',`Fly toward ${target.name}`,`${forward} to travel in normal flight; ${brake.replace(/^Hold/,'hold')} to slow down. ${contracts} for freight routes that support the shared targeted drive.`,'NAVIGATION');
     return step('clear-route','Reach a clear drive approach',`${s.routeReason} ${s.stationDistance<3000?`${forward} to fly farther away from the station. `:''}Keep ${target.name} selected.`,'NAVIGATION');
   }
   if(!s.driveReady)return step('charge','Hold your nose on the marker','Keep the reticle steady until the drive ring fills.','NAVIGATION');

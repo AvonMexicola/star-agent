@@ -3,7 +3,7 @@
 #player-guide small{display:block;margin-bottom:6px;color:var(--mint);font:9px var(--mono);letter-spacing:.13em}
 #player-guide strong{display:block;font-size:15px;line-height:1.35;font-weight:600;color:var(--text,#e4efed)}
 #player-guide p{margin:7px 0 0;color:#becfce;font-size:12px;line-height:1.55}
-body:has(#player-guide:not([hidden])) #toast{top:calc(var(--player-guide-bottom,180px) + 10px)}
+body:has(#player-guide:not([hidden])) #toast{z-index:14;top:calc(var(--player-guide-bottom,180px) + 10px)}
 #player-guide-setting{min-height:44px;padding:12px 20px;margin:10px}
 @media(max-width:750px){
   #player-guide{top:54px;padding:10px 13px;width:calc(100vw - 24px)}
