@@ -2,6 +2,7 @@ import { Vector3 } from 'three';
 import { BODIES } from './celestial.js';
 import { staticNavigationTargets, NAV_FILTERS, NavigationLock, aimedNavigationTarget, planNavigationTravel } from './navigation-targets.js';
 import { projectShipMarker, markerDistance } from './ship-marker-projection.js';
+import { navigationMarkerType, navigationMarkerIcon } from './navigation-marker-style.js';
 import './navigation-targeting.css';
 
 export function createNavigationTargeting({nav,camera,destinations,station,build,multiplayer,combat,vehicleTargets=()=>[],parent=document.body}) {
@@ -58,6 +59,8 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
   engageButton.addEventListener('click',engage);
   function update(dt,{width=innerWidth,height=innerHeight,origin=nav.position,orientation=camera.quaternion}={}){
     lastTargets=targets();
+    const objectives=new Set(nav.navigationObjectiveIds?.()??[]);
+    if(!nav.recoveryActive?.()&&['transit','engage'].includes(combat.state.phase))objectives.add('mission-patrol');
     if(lastConnected!==nav.gamepad.connected||lastController!==nav.gamepad.id){reset();lastConnected=nav.gamepad.connected;lastController=nav.gamepad.id;}
     if(selectedId&&!lastTargets.some(t=>t.id===selectedId)){selectedId=null;nav.travelTarget=null;reset();}
     const modal=Boolean(document.querySelector('dialog[open]'));
@@ -66,7 +69,7 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
     const planned=aimed?route(aimed):null;reason=planned?.reason??'';
     lock.update(dt,aimed,enabled&&planned?.ok);
     document.body.classList.toggle('navigation-acquired',Boolean(aimed));
-    ring.hidden=!aimed;ring.dataset.ready=String(lock.ready);fill.style.strokeDashoffset=String(1-lock.charge);
+    ring.hidden=!aimed;ring.dataset.ready=String(lock.ready);ring.dataset.markerType=aimed?navigationMarkerType(aimed,objectives.has(aimed.id)):'poi';fill.style.strokeDashoffset=String(1-lock.charge);
     const nose=origin.clone().addScaledVector(new Vector3(0,0,-1).applyQuaternion(nav.orientation),100_000);
     const p=projectShipMarker(origin,orientation,nose,{width,height,fov:camera.getEffectiveFOV()});ring.style.left=`${p.x}px`;ring.style.top=`${p.y}px`;
     if(aimed){ring.querySelector('strong').textContent=`${aimed.name} · ${markerDistance(nav.position.distanceTo(nav.viewPoint(new Vector3(...aimed.center)))-(aimed.radius||0))}`;
@@ -74,19 +77,19 @@ export function createNavigationTargeting({nav,camera,destinations,station,build
       ring.querySelector('small').textContent=reason?(reason.startsWith('Within')||reason.startsWith('At stellar')?'Arrival zone · manual flight':'Keep flying to a clear approach'):lock.ready?(nav.controllerActive?'LB + RB + ↑ · Engage':'N / J · Engage'):`Hold nose on target · ${Math.floor(lock.charge*100)}%`;}
     engageButton.hidden=!lock.ready||!enabled;
     markers.hidden=modal||Boolean(nav.travel)||!['flight','walk','eva'].includes(nav.mode);
-    const objectives=new Set(nav.navigationObjectiveIds?.()??[]);
-    if(!nav.recoveryActive?.()&&['transit','engage'].includes(combat.state.phase))objectives.add('mission-patrol');
     // Map filters control discovery/aiming. HUD bearings only show the player's current interests.
     const shown=lastTargets.filter(t=>t.id!=='your-ship'&&!t.id.startsWith('hostile-')&&(t.id===selectedId||objectives.has(t.id)||t.owned)).sort((a,b)=>(b.id===selectedId)-(a.id===selectedId)||nav.position.distanceTo(nav.viewPoint(new Vector3(...a.center)))-nav.position.distanceTo(nav.viewPoint(new Vector3(...b.center))));
     const ids=new Set(shown.map(t=>t.id));for(const [id,node] of nodes)if(!ids.has(id)){node.remove();nodes.delete(id);}
     const placed=[];
     for(const target of shown){
-      let node=nodes.get(target.id);if(!node){node=document.createElement('div');node.className='navigation-marker';node.innerHTML='<i></i><strong></strong>';markers.append(node);nodes.set(target.id,node);}
+      let node=nodes.get(target.id);if(!node){node=document.createElement('div');node.className='navigation-marker';markers.append(node);nodes.set(target.id,node);}
+      const type=navigationMarkerType(target,objectives.has(target.id));
+      if(node.dataset.markerType!==type){const icon=navigationMarkerIcon(type);node.dataset.markerType=type;node.innerHTML=`<span class="navigation-marker-symbol" aria-hidden="true">${icon}<i>➤</i></span><strong>${icon}<span></span></strong>`;}
       const projected=projectShipMarker(origin,orientation,nav.viewPoint(new Vector3(...target.center)),{width,height,fov:camera.getEffectiveFOV(),bounds:{left:Math.min(350,width*.26),right:width-Math.min(350,width*.26),top:height*.25,bottom:height*.65}});
       let y=projected.y;for(const prev of placed)if(Math.abs(projected.x-prev.x)<155&&Math.abs(y-prev.y)<28)y=Math.min(height*.72,prev.y+29);placed.push({x:projected.x,y});
       node.dataset.id=target.id;node.dataset.edge=String(!projected.onScreen);node.dataset.selected=String(target.id===selectedId);node.dataset.category=target.category;
-      node.style.left=`${projected.x}px`;node.style.top=`${y}px`;node.querySelector('i').textContent=projected.onScreen?'◇':'➤';node.querySelector('i').style.transform=projected.onScreen?'':`rotate(${projected.angle}deg)`;
-      node.querySelector('strong').textContent=`${target.name} · ${markerDistance(projected.distance-(target.radius||0))}`;
+      node.style.left=`${projected.x}px`;node.style.top=`${y}px`;node.querySelector('i').style.transform=`rotate(${projected.angle}deg)`;
+      node.querySelector('strong span').textContent=`${target.name} · ${markerDistance(projected.distance-(target.radius||0))}`;
       node.hidden=aimed?.id===target.id;
     }
   }

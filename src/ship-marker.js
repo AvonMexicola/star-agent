@@ -1,5 +1,6 @@
 import './ship-marker.css';
 import {markerDistance,projectShipMarker} from './ship-marker-projection.js';
+import {navigationMarkerIcon} from './navigation-marker-style.js';
 
 /** Automatic recovery beacon. Call with the current hull pose every frame so a
  * future moving-ship integration cannot leave the marker at the EVA exit point. */
@@ -7,9 +8,10 @@ export function createShipMarker({nav,camera,entryLocal,shipName='Nomad',parent=
   let accessLabel='REAR RAMP';
   const element=document.createElement('aside');element.id='ship-marker';element.hidden=true;
   element.setAttribute('aria-label','Your ship recovery beacon');
-  element.innerHTML='<span class="ship-marker-symbol" aria-hidden="true"><span class="ship-marker-diamond">◇</span><span class="ship-marker-arrow">➤</span></span><strong></strong><small></small>';
+  const icon=navigationMarkerIcon('ship');
+  element.innerHTML=`<span class="ship-marker-symbol" aria-hidden="true">${icon}<span class="ship-marker-arrow">➤</span></span><strong>${icon}<span></span></strong><small></small>`;
   parent.append(element);
-  const title=element.querySelector('strong'),detail=element.querySelector('small'),arrow=element.querySelector('.ship-marker-arrow');
+  const title=element.querySelector('strong span'),detail=element.querySelector('small'),arrow=element.querySelector('.ship-marker-arrow');
   let state={visible:false};
   return {
     setShip(values){shipName=values.shipName;entryLocal=values.entryLocal;accessLabel=values.accessLabel;},

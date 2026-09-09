@@ -1,0 +1,24 @@
+{
+  "id": "SA-NAV-004",
+  "title": "Subtle shapes and colors for navigation marker types",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "review",
+  "branch": "fix/navigation-marker-styles",
+  "base": "70a2db591ada3310b41390cda058db08ba85a02b",
+  "updated": "2026-09-09",
+  "areas": [
+    "interface"
+  ],
+  "claims": [
+    "src/navigation-targeting.js",
+    "src/navigation-targeting.css",
+    "src/navigation-marker-style.js",
+    "src/ship-marker.js",
+    "src/ship-marker.css",
+    "scripts/focused-location-arrows.spec.js",
+    "scripts/focused-location-arrows.config.js"
+  ],
+  "brief": "docs/briefs/navigation-marker-styles.md"
+}
