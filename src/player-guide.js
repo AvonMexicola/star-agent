@@ -38,11 +38,11 @@ export function playerGuideStep(s,journey={}){
   if(s.mode==='crashed'||s.mode==='destroyed')return step('recover','Recover your ship','Use the recovery screen to return to play.');
   if(s.buildActive||s.roverOccupied)return null; // Their contextual control panels own these activities.
   if(s.berthRest)return step('leave-berth','Get out of the berth',`${interact} to stand up, then return to the cabin aisle.`);
-  if(s.travel)return step('travel',s.travel.aborting?'Wait for the ship to stop':`Travelling to ${s.travel.targetName||'your destination'}`,s.travel.aborting?'The drive is braking. You will regain manual flight when it stops.':`${brake} to abort if needed. Arrival braking is automatic.`,'EN ROUTE');
+  if(s.travel)return step('travel',s.travel.aborting?'Wait for the ship to stop':`Travelling to ${s.travel.targetName||'your destination'}`,s.travel.aborting?'The drive is braking. You will regain manual flight when it stops.':touch?'Arrival braking is automatic. Wait for normal flight to resume.':`${brake} to abort if needed. Arrival braking is automatic.`,'EN ROUTE');
 
   if(s.mode==='walk'||s.mode==='eva'){
     if(s.cabinFlight&&!s.spaceParked)return step('return-seat','Return to the pilot chair',`${move} ${interact} when the chair prompt appears; your ship is still in flight.`);
-    if(s.mode==='eva')return step('eva','Follow the mint ship marker home',`${move} ${command('Space / C moves up / down; X brakes.','A / B moves up / down; LT brakes.','Use the suit movement controls.')} Approach the open hatch to board.`);
+    if(s.mode==='eva')return step('eva','Follow the mint ship marker home',`${move} ${command('Space / C moves up / down; X brakes.','A / B moves up / down; LT brakes.','Use a keyboard or controller for suit thrusters.')} Approach the open hatch to board.`);
     if(s.service)return step('service','Use the nearby terminal',`${interact} to open it. Follow the terminal's available actions, then return to your ship.`,'ON FOOT');
     if(s.shipId!=='nomad')return step('other-ship',s.insideShip?'Find the pilot controls':`Board your ${ship}`,s.accessHint||`${move} ${interact} at a highlighted ramp, ladder or lift.`,'BOARDING');
     const exiting=journey.disembarking&&!journey.leftShip;
@@ -83,7 +83,7 @@ export function playerGuideStep(s,journey={}){
   const localSurface=(target?.surface||target?.category==='bodies'&&target.id===s.bodyId&&!s.bodyStar)&&s.targetDistance<40000;
   if(localSurface){
     if(!s.gearDeployed)return step('landing-gear','Lower your landing gear',`${gear} to deploy the legs before your approach.`,'ARRIVAL');
-    if(s.altitude>=12000)return step('descend',`Descend toward ${target.name}`,`${aim} to keep the marker ahead. ${command('Hold C to descend.','Hold B / ○ to descend.','Hold the down flight control.')} Brake as you approach 12 km altitude.`,'ARRIVAL');
+    if(s.altitude>=12000)return step('descend',`Descend toward ${target.name}`,`${aim} to keep the marker ahead. ${s.atmosphereFraction>0?command('Hold C to descend.','Hold B / ○ to descend.','Hold the down flight control.'): `${forward} to descend toward the marker.`} Brake as you approach 12 km altitude.`,'ARRIVAL');
     if(!s.dryGround)return step('dry-ground','Find dry ground for landing','Move away from open water. Follow the destination marker toward land.','ARRIVAL');
     if(s.speed>=10)return step('land-brake','Brake for landing',`${brake} until speed falls below 10 m/s.`,'ARRIVAL');
     return step('land','Start landing assist',`${land} to land. The ship will lower itself to the surface.`,'ARRIVAL');

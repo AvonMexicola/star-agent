@@ -22,6 +22,7 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   const interact=async()=>{if(controller)await tap(2);else await page.keyboard.press('f');await frames(page);};
   const check=async id=>{await expect(page.locator('#player-guide')).toHaveAttribute('data-step',id);await expect(page.locator('#player-guide')).toBeVisible();steps.push({id,text:await page.locator('#player-guide').innerText()});};
   const choose=async key=>{
+    await expect(page.locator(`dialog[open] [data-controller-key="${key}"]`)).toBeVisible();
     for(let i=0;i<100;i++){
       if(await page.evaluate(k=>document.activeElement?.dataset.controllerKey===k,key)){if(controller)await tap(0);else await page.keyboard.press('Enter');await frames(page);return;}
       if(controller)await tap(13);else await page.keyboard.press('Tab');
@@ -79,17 +80,41 @@ for(const controller of [false,true])test(`${controller?'controller':'keyboard'}
   await page.screenshot({path:`${folder}/07-destination.png`});
   if(controller)await tap(9);else await page.keyboard.press('Escape');await choose('tab-settings');await choose('player-guide');
   if(controller)await tap(1);else await page.keyboard.press('Escape');await expect(page.locator('#player-guide')).toBeHidden();
+  await page.waitForFunction(()=>starAgent.state.enabled&&!document.querySelector('dialog[open]'));await frames(page);
   if(controller)await tap(9);else await page.keyboard.press('Escape');await choose('player-guide');
-  if(controller)await tap(1);else await page.keyboard.press('Escape');await check(destinationStep);
+  if(controller)await tap(1);else await page.keyboard.press('Escape');await expect(page.locator('#player-guide')).toBeVisible();
   // Already facing the coastal signal after leaving the default hangar. Clear
   // the real station exclusion zone, charge and engage with normal input.
   await move('w',()=>starAgent.state.station.distance>3500);
+  for(let i=0;i<400;i++){
+    const bearing=await page.evaluate(()=>{const n=starAgent.navigation,t=starAgent.state.navigationTargets.targets.find(t=>t.id==='site-coast'),p=n.viewPoint(n.position.clone().fromArray(t.center)).sub(n.position).applyQuaternion(n.orientation.clone().invert());return {x:Math.atan2(p.x,-p.z),y:-Math.atan2(p.y,Math.hypot(p.x,p.z)),ready:starAgent.state.navigationTargets.ready};});
+    if(controller)await page.evaluate(b=>{const v=x=>Math.abs(x)<.008?0:Math.sign(x)*Math.max(.24,Math.min(.6,Math.abs(x)*1.8));guidePad.axes[2]=v(b.x);guidePad.axes[3]=v(b.y);},bearing);
+    else for(const [key,down] of [['ArrowRight',bearing.x>.018],['ArrowLeft',bearing.x<-.018],['ArrowDown',bearing.y>.018],['ArrowUp',bearing.y<-.018]])await page.keyboard[down?'down':'up'](key);
+    if(bearing.ready&&Math.hypot(bearing.x,bearing.y)<.025)break;await page.waitForTimeout(50);
+  }
+  if(controller)await page.evaluate(()=>{guidePad.axes[2]=0;guidePad.axes[3]=0;});else for(const key of ['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'])await page.keyboard.up(key);
   await page.waitForFunction(()=>starAgent.state.navigationTargets.ready,null,{timeout:15000});await check('engage');
   if(controller){await button(4,true);await button(5,true);await tap(12);await button(5,false);await button(4,false);}else await page.keyboard.press('n');
   await check('travel');await page.waitForFunction(()=>!starAgent.state.travel,null,{timeout:90000});
   await check('landing-gear');
   if(controller){await button(4,true);await button(5,true);await tap(13);await button(5,false);await button(4,false);}else await page.keyboard.press('g');
   await check('descend');await page.screenshot({path:`${folder}/08-arrival.png`});
+  if(controller){
+    // The guide shares the existing focus/device neutral gates; holding a stick
+    // cannot resume movement merely by reconnecting or returning to the view.
+    await held('w',true);await page.waitForFunction(()=>starAgent.state.speed>1);
+    await page.evaluate(()=>{guidePad.connected=false;});await page.waitForFunction(()=>!starAgent.state.controller.connected);
+    await page.evaluate(()=>{guidePad.connected=true;});await frames(page);expect(await page.evaluate(()=>starAgent.state.controller.armed)).toBe(false);
+    await held('w',false);await page.waitForFunction(()=>starAgent.state.controller.armed);
+    const blank=await page.context().newPage(),gameSession=await page.context().newCDPSession(page),otherSession=await page.context().newCDPSession(blank);
+    try{
+      await blank.goto('about:blank');await gameSession.send('Emulation.setFocusEmulationEnabled',{enabled:false});await otherSession.send('Emulation.setFocusEmulationEnabled',{enabled:false});
+      await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&starAgent.state.focused&&starAgent.state.controller.armed);
+      await held('w',true);await frames(page);await blank.bringToFront();await page.waitForFunction(()=>!document.hasFocus()&&!starAgent.state.focused);await expect(page.locator('#player-guide')).toBeHidden();
+      await page.bringToFront();await page.waitForFunction(()=>document.hasFocus()&&starAgent.state.focused);expect(await page.evaluate(()=>starAgent.state.controller.armed)).toBe(false);
+      await held('w',false);await page.waitForFunction(()=>starAgent.state.controller.armed);await check('descend');
+    }finally{await blank.close();}
+  }
   const renderer=await page.evaluate(()=>{const gl=document.querySelector('#viewport').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):'unknown';});
   await writeFile(`${folder}/receipt.json`,JSON.stringify({browser:browser.version(),renderer,steps,errors,input:controller?'Injected standard Gamepad; no physical-device test':'Native keyboard; no gameplay state mutation'},null,2));expect(errors).toEqual([]);
 });
@@ -116,7 +141,7 @@ test.describe('touch guidance',()=>{
     await move('forward',()=>starAgent.state.shipLocal[2]<-1.5);await check('sit');await input.tap('interact');
     await check('launch');await expect(page.locator('#player-guide')).toContainText('Tap Launch');await page.screenshot({path:`${folder}/02-launch.png`});
     await input.tap('land');await page.waitForFunction(()=>starAgent.state.mode==='flight'&&!starAgent.state.station.lifting);
-    await check('retract-gear');await input.tap('commands');await input.choose('tab-ship');await input.choose('gear');await input.choose('gameplay-resume');
+    await check('retract-gear');await input.tap('commands');await input.choose('tab-ship');await input.choose('gear');await page.waitForFunction(()=>starAgent.state.enabled&&!document.querySelector('dialog[open]'));
     await page.waitForFunction(()=>starAgent.state.landingGear.progress===0);await check('leave-bay');
     await move('forward',()=>starAgent.state.station.distance>550);await move('brake',()=>starAgent.state.speed<.2);
     await check('choose');await expect(page.locator('#player-guide')).toContainText('Commands → Map');await page.screenshot({path:`${folder}/03-choose.png`});

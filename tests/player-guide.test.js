@@ -86,3 +86,10 @@ test('unsupported shared routes do not ask the pilot to charge or clear a physic
   const s={...base,mode:'flight',stationDistance:8000,gearDeployed:false,gearProgress:0,target:{id:'selene',name:'Selene',category:'bodies'},targetDistance:25000000,aimedId:'selene',routeReason:'Shared targeted drive supports freight routes.',sharedDriveUnavailable:true};
   assert.equal(playerGuideStep(s).id,'shared-route');assert.match(playerGuideStep(s).detail,/normal flight/);
 });
+
+test('airless descent uses the forward thrust axis aimed at the site',()=>{
+  const s={...base,mode:'flight',stationDistance:9000,target:{id:'site-selene',name:'Selene landing region',surface:true},targetDistance:35000,altitude:35000,atmosphereFraction:0};
+  assert.match(playerGuideStep(s).detail,/Hold W to descend toward the marker/);
+  s.atmosphereFraction=.5;assert.match(playerGuideStep(s).detail,/Hold C to descend/);
+  s.travel={targetName:'Selene'};s.input='touch';assert.doesNotMatch(playerGuideStep(s).detail,/Hold Brake/);
+});
