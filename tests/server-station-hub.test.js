@@ -10,6 +10,19 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {readFile} from 'node:fs/promises';
 
 const worldPromise=createWorld();
+
+test('authoritative wheel collision and weapon occlusion preserve the visible spoke gaps',async()=>{
+  const world=await worldPromise,station=world.station;
+  for(const ring of station.exterior.rings){
+    const point=(x,y,z)=>new THREE.Vector3(x,y,z).applyQuaternion(ring.quaternion).add(ring.position).applyQuaternion(station.baseQuaternion).add(station.centre);
+    const start=point(-160,800*Math.cos(Math.PI/6),400),end=point(160,800*Math.cos(Math.PI/6),400);
+    assert.equal(station.constrainStep(start,end,station.baseQuaternion).hit,false,'the server does not restore the invisible spoke wall');
+    assert.equal(world.occludes(start,end.clone().sub(start).normalize(),start.distanceTo(end)),null,'a shot through that open gap is also unobstructed');
+    const a=point(-160,224,0),b=point(160,224,0);
+    assert.equal(station.constrainStep(a,b,station.baseQuaternion).hit,true,'visible spoke root remains solid');
+    assert.ok(world.occludes(a,b.clone().sub(a).normalize(),a.distanceTo(b))<320,'visible spoke root still blocks shots');
+  }
+});
 async function setup(count=1){
   const world=await worldPromise,players=new Map(),messages=[];
   for(const frame of [...world.pods,world.station.hub]){frame.lift.open=false;frame.lift.progress=0;updateElevator(frame.lift,0);}

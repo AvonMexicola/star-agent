@@ -7,12 +7,67 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createAuthoredExterior } from '../src/station-exterior.js';
 import { StationComplex } from '../src/station-complex.js';
 import { POD_LAYOUT } from '../src/station-architecture.js';
-import { buildStationColliders, constrainStationSweep } from '../src/station-collision.js';
+import { buildStationColliders, constrainStationSweep, sweepBox, sweepTriangle } from '../src/station-collision.js';
 
 const bytes = await readFile(new URL('../public/models/station-exterior.glb', import.meta.url));
 const manifest = JSON.parse(await readFile(new URL('../assets/station/exterior/manifest.json', import.meta.url)));
 const parse = data => new GLTFLoader().parseAsync(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength), '');
 const load = async name => parse(await readFile(new URL(`../public/models/${name}.glb`, import.meta.url)));
+
+test('continuous triangle collision rejects empty diagonal bounds but catches high-speed and edge contacts',()=>{
+  const v=(x,y,z)=>new THREE.Vector3(x,y,z),lo=v(-.5,-.5,-.5),hi=v(.5,.5,.5);
+  const triangle=new THREE.Triangle(v(0,0,0),v(0,100,0),v(0,0,100));
+  const bounds=new THREE.Box3().setFromPoints([triangle.a,triangle.b,triangle.c]);
+  assert.notEqual(sweepBox(v(-1000,80,80),v(1000,80,80),bounds,lo,hi),null,'old triangle bounds falsely fill the empty half');
+  assert.equal(sweepTriangle(v(-1000,80,80),v(1000,80,80),triangle,lo,hi),null);
+  for(const [start,end] of [[v(-1000,40,40),v(1000,40,40)],[v(1000,40,40),v(-1000,40,40)]]){
+    assert.ok(Math.abs(sweepTriangle(start,end,triangle,lo,hi)-.49975)<1e-12,'swept contact, even when both endpoints miss');
+  }
+  assert.notEqual(sweepTriangle(v(-10,50.4,50.4),v(10,50.4,50.4),triangle,lo,hi),null,'box corner can touch the diagonal edge while its centre ray misses');
+  assert.equal(sweepTriangle(v(-10,50.6,50.6),v(10,50.6,50.6),triangle,lo,hi),null);
+  assert.equal(sweepTriangle(v(.5,20,20),v(2,20,20),triangle,lo,hi),null,'separating from a contact is allowed');
+  assert.equal(sweepTriangle(v(.5,20,20),v(-2,20,20),triangle,lo,hi),0,'moving into a touching face is blocked');
+  assert.notEqual(sweepTriangle(v(0,-5,30),v(0,30,30),triangle,lo,hi),null,'motion parallel to the face still hits its edge');
+  const door=new THREE.Box3(v(-1,-1,-1),v(1,1,1));
+  assert.equal(constrainStationSweep(null,[door],v(-10,0,0),v(10,0,0),lo,hi).hit,true,'explicit solid door boxes retain their contract');
+});
+
+test('real wheel gaps stay open beside diagonal spokes while solid structure and rotated frames still collide',async()=>{
+  const [gltf,lod,exteriorGltf]=await Promise.all([load('station'),load('station_lod1'),parse(bytes)]);
+  const station=new StationComplex(new THREE.Scene(),{gltf,lod,exteriorGltf});await station.readyPromise;
+  const toWorld=p=>p.clone().applyQuaternion(station.baseQuaternion).add(station.centre);
+  const lo=new THREE.Vector3(-10,-10,-10),hi=lo.clone().negate();
+  for(const [i,ring] of station.exterior.rings.entries()){
+    const tree=station.ringColliders[i];
+    for(const rotation of [0,.31,-1.7]){
+      ring.rotation.x=rotation;
+      for(let gap=0;gap<6;gap++){
+        const angle=(gap+.5)*Math.PI/3,y=800*Math.cos(angle),z=800*Math.sin(angle);
+        const start=new THREE.Vector3(-160,y,z),end=new THREE.Vector3(160,y,z);
+        const corridor=new THREE.Box3(new THREE.Vector3(-160,y-100,z-100),new THREE.Vector3(160,y+100,z+100));
+        let overlaps=0,boundsOnlyHit=false;
+        const inspect=node=>{if(node.boxes)for(const box of node.boxes){
+          if(corridor.intersectsTriangle(box.triangle))overlaps++;
+          if(sweepBox(start,end,box,lo,hi)!==null)boundsOnlyHit=true;
+        }else{inspect(node.left);inspect(node.right);}};inspect(tree);
+        assert.equal(overlaps,0,'a 200 m corridor independently misses all rendered physical triangles');
+        if(gap===0)assert.equal(boundsOnlyHit,true,'reproduce invisible walls from the old broad-phase-only test');
+        assert.equal(constrainStationSweep(tree,[],start,end,lo,hi).hit,false);
+        for(const [a,b] of [[start,end],[end,start]]){
+          const world=p=>toWorld(p.clone().applyQuaternion(ring.quaternion).add(ring.position));
+          assert.equal(station.constrainStep(world(a),world(b),station.baseQuaternion).hit,false,`ring ${i}, rotation ${rotation}, gap ${gap}: actual Nomad path`);
+        }
+      }
+      for(const [y,z] of [[224,0],[1450,0]]){
+        const world=x=>toWorld(new THREE.Vector3(x,y,z).applyQuaternion(ring.quaternion).add(ring.position));
+        assert.equal(station.constrainStep(world(-160),world(160),station.baseQuaternion).hit,true,'visible root armour and outer rim remain solid');
+      }
+    }
+  }
+  station.rebase(station.centre.clone().addScalar(1e9));
+  const ring=station.exterior.rings[0],world=x=>toWorld(new THREE.Vector3(x,800*Math.cos(Math.PI/6),400).applyQuaternion(ring.quaternion).add(ring.position));
+  assert.equal(station.constrainStep(world(-160),world(160),station.baseQuaternion).hit,false,'render-origin changes cannot move the clear corridor');
+});
 
 test('actual exterior export matches its manifest, batching and shared-ring budgets', async () => {
   const exterior = createAuthoredExterior(await parse(bytes));

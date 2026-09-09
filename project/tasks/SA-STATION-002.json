@@ -1,0 +1,25 @@
+{
+  "id": "SA-STATION-002",
+  "title": "Match station wheel collision to its visible spokes and rim",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "active",
+  "branch": "fix/station-wheel-collision",
+  "base": "c5eb5197e1394920ea75ff0fb6664b1d7ff4b19a",
+  "updated": "2026-09-09",
+  "areas": [
+    "station",
+    "flight",
+    "multiplayer"
+  ],
+  "claims": [
+    "src/station-collision.js",
+    "tests/station-exterior.test.js",
+    "tests/station.test.js",
+    "scripts/station-wheel.spec.js",
+    "scripts/station-wheel.config.js",
+    "tests/server-station-hub.test.js"
+  ],
+  "brief": "docs/briefs/station-wheel-collision.md"
+}
