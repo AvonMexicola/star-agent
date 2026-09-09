@@ -54,6 +54,9 @@ export class OpeningSequence {
         this.requestControl(code);
       }
     };
+    nav.canvas.addEventListener('pointerdown',event=>{
+      if(event.pointerType==='touch'&&this.phase==='cinematic')this.requestControl('KeyW',true);
+    });
     openingUI(true);
   }
   get active(){return this.phase==='loading'||this.phase==='cinematic'||this.phase==='blend';}
@@ -110,13 +113,14 @@ export class OpeningSequence {
         this.blendElapsed+=dt;
         document.body.style.setProperty('--opening-hud',String(Math.min(1,this.blendElapsed/OPENING.blendSeconds)));
         if(this.blendElapsed>=OPENING.blendSeconds){
-          this.nav.notify(this.nav.shipId==='atlas'?'Use the forward ramp call panel, then walk onto the cargo deck. F operates the crew lift to the bridge.':'Walk around to the rear hatch. F opens it; walk up the ramp to the pilot chair.');
+          if(!this.nav.playerGuideEnabled)this.nav.notify(this.nav.shipId==='atlas'?'Use the forward ramp call panel, then walk onto the cargo deck. F operates the crew lift to the bridge.':'Walk around to the rear hatch. F opens it; walk up the ramp to the pilot chair.');
           this.phase='playing';this.nav.openingActive=false;this.character.setVisible(false);
           this.nav.keys.add(this.bufferedKey);this.bufferRemaining=.12;
           openingUI(false);document.body.style.removeProperty('--opening-hud');
         }
       }
       this.hint.classList.toggle('visible',this.phase==='cinematic'&&this.elapsed>=OPENING.hintSeconds);
+      this.hint.textContent=this.nav.controllerActive?'MOVE THE LEFT STICK TO START WALKING':'PRESS W TO START WALKING · OR TAP THE VIEW';
     }else if(this.bufferRemaining>0){
       this.bufferRemaining-=dt;
       if(this.bufferRemaining<=0&&!this.nav.physicalKeys.has(this.bufferedKey))this.nav.keys.delete(this.bufferedKey);

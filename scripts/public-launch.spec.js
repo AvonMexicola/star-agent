@@ -43,12 +43,12 @@ test('solo static release: real controller launcher, no API connection, captures
   // The location list is paginated: choose the coast on its first page.
   await page.locator('[data-location="coast"]').click();await page.locator('.dev-launch').click();
   await page.waitForURL(/start=coast/);await ready(page);await page.waitForFunction(()=>!window.starAgent.state.transiting&&window.starAgent.state.mode==='flight',null,{timeout:30000});console.log('Coast launch passed');
-  await page.keyboard.press('Digit4');await page.keyboard.press('Tab');await page.keyboard.down('KeyW');await page.waitForTimeout(1800);
+  await page.keyboard.press('Digit4');await page.keyboard.press('Shift+Tab');await page.keyboard.down('KeyW');await page.waitForTimeout(1800);
   await frames(page,30);await poster(page,'flight');await record(page,'flight');await page.keyboard.up('KeyW');
   const gl=await page.evaluate(()=>{const gl=document.querySelector('#viewport').getContext('webgl2'),e=gl.getExtension('WEBGL_debug_renderer_info');return{renderer:gl.getParameter(e?e.UNMASKED_RENDERER_WEBGL:gl.RENDERER),state:window.starAgent.state};});
   await page.goto(`${root}/?debug&seed=7291&dev=1&intro=0&ship=nomad&start=hangar`);
   await ready(page);await page.waitForFunction(()=>!window.starAgent.state.transiting,null,{timeout:30000});console.log('Hangar launch passed');
-  await page.keyboard.press('Digit4');await page.keyboard.press('Tab');await frames(page,30);await poster(page,'hangar');
+  await page.keyboard.press('Digit4');await page.keyboard.press('Shift+Tab');await frames(page,30);await poster(page,'hangar');
   await page.keyboard.down('ArrowRight');await record(page,'hangar');await page.keyboard.up('ArrowRight');
   await exec('ffmpeg',['-v','error','-y','-i','site/media/flight.mp4','-i','site/media/hangar.mp4','-filter_complex','[0:v][1:v]concat=n=2:v=1:a=0[v]','-map','[v]','-an','-c:v','libx264','-preset','fast','-crf','23','-pix_fmt','yuv420p','-movflags','+faststart','site/media/field-notes.mp4']);
   await page.goto(`${root}/dev/equipment.html?rig=player-expedition&item=rifle-laser&view=hand`);

@@ -1,0 +1,24 @@
+{
+  "id": "SA-NAV-005",
+  "title": "Keep Greenbank drive targeting on the selected settlement",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "integrated",
+  "branch": "fix/greenbank-drive-target",
+  "base": "e06f04f4fec51802580b7d1f28ba2b2f5e580f38",
+  "updated": "2026-09-09",
+  "areas": [
+    "flight",
+    "interface"
+  ],
+  "claims": [
+    "src/navigation-targets.js",
+    "tests/navigation-targets.test.js",
+    "scripts/greenbank-drive.config.js",
+    "scripts/greenbank-drive.spec.js"
+  ],
+  "brief": "docs/briefs/greenbank-drive.md",
+  "validation": "Runtime 421ea55 locally integrated. Full 165 unit files and final 14 navigation cases, production build, repo and controller browser 02 PASS. Actual Greenbank arrival 34.996 km, speed zero; zero app/request errors. Local 5178 serves correction and direct/proxied API health passes. First browser fixture altitude-tolerance failure retained. Public promotion remains billing-gated; old staged candidate superseded.",
+  "evidence": "docs/qa/greenbank-drive/README.md"
+}

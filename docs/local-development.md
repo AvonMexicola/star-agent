@@ -1,5 +1,61 @@
 # All-features local development
 
+**Character controller turning, 9 September 2026:** `66dc1da` increases right-stick
+look speed on foot and in EVA by about 76%, to 1.5 rad/s. Gentle stick movement
+remains proportional; keyboard, mouse and ship handling retain their rates.
+Refresh **http://127.0.0.1:5178/**. Five affected test files, build and actual
+controller hatch/EVA/return journey pass; the managed client/API pair was refreshed
+with the existing database. [Checks](qa/character-controller-turn/README.md).
+
+**Step-by-step Flight guide, 9 September 2026:** `981852a` adds persistent next-action
+guidance from the first walk around the Nomad through hatch, chair, launch, gear,
+Map/Contracts selection, drive and arrival. Departure no longer asks you to dock
+again. **Tab** opens Contracts; **Shift+Tab** cycles HUD visibility. Turn guidance
+off in **Menu → Settings → Flight guide**. Nomad touch controls now expose Launch,
+thrust and Brake. Refresh **http://127.0.0.1:5178/** to use the integrated guide.
+[Checks and limits](qa/player-guide/README.md). Public sites remain separate.
+
+**Station wheel collision, 9 September 2026:** `8a2a12f` removes invisible walls
+along the diagonal spokes. Collision now checks the actual triangle surfaces
+inside the existing broad-phase bounds. The Nomad controller flight passes
+through a rotating wheel and back; visible spokes/rims and doors remain solid.
+Refresh **http://127.0.0.1:5178/**. Client and API use the corrected collider;
+the existing database is retained. [Verification and cost](qa/station-wheel-collision/README.md).
+This correction is local only; frozen public candidate `c5eb519` remains separate.
+
+**Greenbank drive fix, 9 September 2026:** `421ea55` corrects the reported 870 km
+miss caused by acquiring Aeon instead of the settlement. Refresh
+**http://127.0.0.1:5178/**, open **Map → Aeon → Locations**, advance to Greenbank
+Supply and select it. Close the map and charge the Greenbank ring; the drive
+arrives about **35 km above its pad**, then descend in normal flight. Selection
+stays fixed when you look away; **Clear target** restores automatic acquisition.
+Full unit/build and actual controller approach/arrival checks pass;
+[evidence](qa/greenbank-drive/README.md). The paired public release remains blocked
+by the GitHub billing check, and its old staged candidate is superseded.
+
+**Marker release, 9 September 2026:** focused arrows and subtle marker shapes/colors
+are integrated remotely through PR112 / `8838927` and published to
+[play](https://play.staragent.site) and [multiplayer](https://multiplayer.staragent.site)
+as exact source `d63fab0`. Refresh existing tabs. Server/schema/protocol and assets
+are unchanged; [checks and release receipt](qa/navigation-markers-release/README.md).
+The separate planetary-drive and starter-tractor changes remain local development.
+
+**Marker types, 9 September 2026:** `c7adec1` adds subtle symbols and colors:
+amber objective diamonds, white POI pins, mint ship outlines and pale-blue rover
+icons. Edge-arrow labels retain a small type icon. Refresh
+**http://127.0.0.1:5178/**. Build, focused source tests and both browser journeys
+pass; [visual evidence](qa/navigation-marker-styles/README.md). The existing
+preview/API and persistent database remain running.
+
+**Planetary drive routing,9 September2026:** runtime `bcb71c9` is locally
+integrated. Select a planet/moon in Map, then
+**Locations** and a surface destination. Aim at its tracked marker, charge, then
+press N/J or LB+RB+D-pad up. Hidden surface/world targets route around blocking
+worlds with35km terrain clearance; surface sites arrive35km above the location.
+LT/X brakes along the route. The inactive tractor no longer disarms controller
+abort on drive entry. Refresh **http://127.0.0.1:5178/**. Source/build, server/SQL
+and the actual controller/phone browser check pass; [evidence and limits](qa/planetary-drive.md).
+
 **Focused location arrows, 9 September 2026:** runtime `b99658b` is locally
 integrated. HUD arrows now show the selected POI, each active contract’s next
 objective, and your deployed ships/vehicles. All other destinations stay on the
@@ -21,8 +77,9 @@ Refresh **http://127.0.0.1:5178/**. The managed5178/API8087 pair was refreshed a
 02:23:39UTC with protocol10, twenty slots and the existing persistent database.
 Both health routes pass and the entire unrelated journal was preserved.
 [Public play](https://play.staragent.site) and
-[multiplayer](https://multiplayer.staragent.site) now serve the paired checked
-`ea234d2` release. Refresh existing public tabs for protocol10. Garages retain
+[multiplayer](https://multiplayer.staragent.site) received the paired checked
+`ea234d2` release at this checkpoint (superseded by the marker release above).
+Garages retain
 their solo/offline scope; the unfinished ground-pirate NPC/Lizzy lane is excluded.
 [Release evidence and limits](qa/compounds-release/README.md).
 
@@ -131,10 +188,10 @@ features integrated here as they become coherent commits. It is separate from
 main's production review/deployment process. Use an isolated worktree; do not
 switch or overwrite another agent's dirty feature worktree.
 
-**HUD display**: press **Tab** during gameplay to cycle **Everything → Markers and
+**HUD display**: press **Shift+Tab** during gameplay to cycle **Everything → Markers and
 reticle → No HUD**. Controller and touch use **Menu → Settings → HUD**. A two-finger
 tap on the view restores Everything on touch screens. Tab still moves focus inside
-menus. Next hostile is available through **Next target / Menu → Ship**. The display
+menus; plain Tab opens Contracts during play. Next hostile is available through **Next target / Menu → Ship**. The display
 choice affects screen overlays; physical cockpit instruments remain visible.
 See [the checked source and browser evidence](qa/hud-display.md).
 
@@ -903,3 +960,19 @@ The checked vehicle is locally integrated at `bdf053c`. Its
 [player guide](burrow-sentry.md) distinguish automated input, physical devices,
 art review and performance acceptance. Online support requires matching client
 and server versions; session vehicles do not add a persistent purchase economy.
+
+
+## Starter cargo tractor
+
+Fresh solo and multiplayer backpacks now include one cargo tractor. Open
+**Menu → Loadout → Tool → Cargo tractor**, then draw it if your hands were empty.
+The mining laser moves into your backpack. **RT / T** tractors an SBU crate;
+**X / F** secures it to a compatible cargo grid. Swap back through the same Tool
+slot. Existing saves keep their contents; **Trade → Cargo → Equip tractor** remains
+available for those profiles. See the [verification record](qa/starter-tractor/README.md)
+for finite-inventory, server, controller and local-delivery checks.
+
+Checked runtime `1c29454` is integrated locally and the managed preview/API is refreshed.
+
+The paired drive/tractor release now runs locally at `ccb2ed0` with protocol11.
+Public promotion is staged in PR113; GitHub billing blocked its final aggregate check despite passing test jobs.

@@ -30,7 +30,7 @@ test('hard impact destroys ship, renders crash effects, blocks controls and reco
   const stopped=await page.evaluate(()=>window.starAgent.state);
   expect(stopped.mode).toBe('crashed');expect(stopped.speed).toBe(0);expect(stopped.position).toEqual(impact.position);
   // Recovery remains available with the HUD hidden and at phone width.
-  await page.keyboard.press('Tab');await page.setViewportSize({width:390,height:844});
+  await page.keyboard.press('Shift+Tab');await page.setViewportSize({width:390,height:844});
   await expect(page.locator('#crash-recover')).toBeVisible();
   const bounds=await page.locator('#crash-panel').boundingBox();expect(bounds.x).toBeGreaterThanOrEqual(0);expect(bounds.x+bounds.width).toBeLessThanOrEqual(390);
   await page.screenshot({path:'/tmp/star-agent-crash/mobile-recovery.png'});

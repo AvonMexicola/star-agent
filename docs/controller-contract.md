@@ -14,8 +14,9 @@ to play without a mouse or keyboard. Xbox labels refer to the browser's W3C stan
 mapping, not operating-system Bluetooth status.
 
 HUD display: **Menu → Settings → HUD** cycles Everything, Markers and reticle,
-then No HUD. The menu remains reachable in every mode; B resumes play. Tab does
-the same during keyboard gameplay and retains normal focus navigation in dialogs.
+then No HUD. The menu remains reachable in every mode; B resumes play. Shift+Tab
+cycles HUD during keyboard gameplay; plain Tab opens Contracts. Both retain normal
+focus navigation in dialogs.
 On touch screens, a two-finger tap on the view restores Everything.
 
 ## Shared bindings

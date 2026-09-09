@@ -1,9 +1,11 @@
 # Verified development status
 
-**Latest integration: 2026-09-09, PR108 / `4077761`; public play and multiplayer
-serve the checked `ea234d2` release.** Civilian garages now offer Burrow/Burrow
-Sentry in solo/offline mode. All completed development updates are included; the
-unfinished ground-pirate NPC lane is excluded. [Exact release checks and limits](../qa/compounds-release/README.md). Named
+**Latest public integration: 2026-09-09, PR112 / `8838927`; play and multiplayer
+serve the checked `d63fab0` marker release.** HUD arrows show selected POIs,
+next objectives and owned ships/vehicles, with subtle type shapes and colors.
+Separate planetary-drive and starter-tractor changes remain local development;
+the unfinished ground-pirate NPC lane remains excluded.
+[Exact release checks and limits](../qa/navigation-markers-release/README.md). Named
 older checkpoints below retain their own evidence scope. This page states
 capabilities and gaps; [ROADMAP](../../ROADMAP.md) states ambitions. New governance
 and tooling changes do not certify the entire game as finished.

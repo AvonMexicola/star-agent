@@ -9,6 +9,7 @@ export const CATALOG = Object.freeze([
   { id: 'rifle-laser', name: 'Laser rifle', detail: 'Solar laser beam · uses laser rifle charges', category: 'weapon', ammo: 'carbine-charge', mass: 3.6, unit: 'item', stack: 1, color: '#eab16c' },
   { id: 'sidearm-pistol', name: 'Energy sidearm', detail: 'Compact energy weapon · sidearm charges', category: 'weapon', ammo: 'sidearm-charge', mass: 1.1, unit: 'item', stack: 1, color: '#e88c8e' },
   { id: 'mining-laser-tool', name: 'Mining laser', detail: 'Rechargeable cutter · heat limited', category: 'tool', mass: 3, unit: 'item', stack: 1, color: '#9be8c6' },
+  { id: 'tractor-beam-tool', name: 'Cargo tractor', detail: 'Move SBU cargo crates · hold RT / T to pull, X / F to secure', category: 'tool', mass: 3, unit: 'item', stack: 1, color: '#9be8c6' },
   { id: 'backpack-life-support', name: 'Life-support backpack', detail: 'Field storage · two box mounts', category: 'backpack', mass: 4, unit: 'item', stack: 1, color: '#8acaca' },
   { id: 'carbine-charge', name: 'Laser rifle charges', detail: 'One charge per laser rifle shot', category: 'ammo', mass: .015, unit: 'item', stack: 90, color: '#eab16c' },
   { id: 'sidearm-charge', name: 'Sidearm charges', detail: 'One charge per sidearm pulse', category: 'ammo', mass: .01, unit: 'item', stack: 48, color: '#e88c8e' },

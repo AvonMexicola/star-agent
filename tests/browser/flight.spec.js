@@ -50,7 +50,7 @@ test('orbital view, terrain streaming, landing, walking, boarding and launch',as
   await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>9);
   await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
   expect(await page.evaluate(()=>window.starAgent.state.insideShip)).toBe(false);
-  await page.keyboard.press('Tab');await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');await page.keyboard.press('Shift+Tab');
   await page.screenshot({path:'test-results/forest-walk.png'});
   await page.keyboard.press('KeyF');
   expect(await page.evaluate(()=>window.starAgent.state.mode)).toBe('walk');
@@ -63,7 +63,7 @@ test('orbital view, terrain streaming, landing, walking, boarding and launch',as
   await page.waitForFunction(()=>window.starAgent.state.mode==='flight');
   await page.keyboard.down('Space');await page.waitForTimeout(700);await page.keyboard.up('Space');
   expect(await page.evaluate(()=>window.starAgent.state.altitude)).toBeGreaterThan(10);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await chooseDestination(page,'polar');
   await page.waitForFunction(()=>!window.starAgent.state.transiting,{},{timeout:60000});
   await page.screenshot({path:'test-results/polar.png'});

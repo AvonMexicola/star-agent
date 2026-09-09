@@ -1,9 +1,12 @@
 # Public entry points and frozen releases
 
-Current deployment: **`ea234d2`, 9 September 2026**, on both play and multiplayer.
-[The release receipt](qa/compounds-release/README.md) records PR108 integration,
-complete development scope, exact hashes, backup/restore and live browser/API/WSS
-checks. Garage selection remains solo/offline. Existing tabs must refresh.
+Current deployment: **`d63fab0`, 9 September 2026**, on both play and multiplayer.
+[The marker release receipt](qa/navigation-markers-release/README.md) records
+PR112 / `8838927`, focused arrows, distinct marker types, exact hashes and live
+browser/API/WSS checks. This advances the preceding `ea234d2` release without
+server, schema, protocol or asset changes. Garage selection remains solo/offline.
+Existing tabs must refresh. Separate planetary-drive and starter-tractor work
+remains local development.
 
 `staragent.site` and `www.staragent.site` serve `site/`: the project introduction,
 real game screenshots, two short ambient captures and three user-operated films, plus

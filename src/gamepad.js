@@ -2,6 +2,8 @@
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const finite = value => Number.isFinite(value) ? value : 0;
 export const STICK_DEADZONE = .16;
+export const KEYBOARD_LOOK_RATE = .85;
+export const controllerLookRate = mode => mode === 'walk' || mode === 'eva' ? 1.5 : KEYBOARD_LOOK_RATE;
 const UTILITY_SHORTCUTS = new Map([[12,'free-drive'],[13,'gear'],[14,'lights'],[15,'camera-view'],[9,'graphics']]);
 
 export function stick(x, y) {

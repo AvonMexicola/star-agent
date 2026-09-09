@@ -1,0 +1,11 @@
+{
+  "src/gamepad.js": "a797602ad4237bb598259c77e4a4f9776dac738086956159520d2b091ec0bb21",
+  "src/navigation.js": "15b104bdc9ce3c268cd602a29a94e7f8801195e985d28bfc16e8199d139a5a31",
+  "src/multiplayer/client.js": "5eb73e2480525a008255213dfbfeeef1b9683b1c2f6ec651d7868ad864a6dc57",
+  "5178Health": true,
+  "8087Health": true,
+  "servicePID": 175402,
+  "runtime": "66dc1da",
+  "database": "existing persistent local database retained",
+  "public": "unchanged; release gate pending"
+}

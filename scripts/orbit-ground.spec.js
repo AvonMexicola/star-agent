@@ -29,7 +29,7 @@ for(const body of ['aeon','selene'])test(`${body}: recognizable terrain from orb
     };
   });
   await page.goto('/?debug=1&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   for(const altitude of (body==='aeon'?[2000000,80000,20000,5000,500,5]:[900000,80000,5000,500,5])){
     if(selectedAltitudes&&!selectedAltitudes.includes(altitude))continue;
     const moon=body==='selene',radius=moon?MOON_RADIUS:RADIUS,direction=moon?LOCAL_CRATERS[0].direction:peak;

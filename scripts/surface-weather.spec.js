@@ -17,7 +17,7 @@ test('ground wisps and particles render on all four worlds, then clear in orbit'
   await page.goto('/?intro=0&debug&seed=7291');
   await page.waitForFunction(() => window.starAgent?.state.ready);
   expect(errors).toEqual([]);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   for (const c of cases) {
     await page.evaluate(c => {
       const s = window.starAgent, n = s.navigation;

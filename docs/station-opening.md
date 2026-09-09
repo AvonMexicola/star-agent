@@ -72,7 +72,14 @@ standing body and planted feet are retained; only the idle's arm rotations chang
 Taking control with W or the left stick dismisses the launcher header, promotional
 panel and footer. They stay dismissed when the mouse is released, when menus are
 closed and after quick transit. Flight telemetry, interaction guidance and the
-cockpit MFDs remain available. Tab still toggles the whole HUD for screenshots.
+cockpit MFDs remain available. Shift+Tab cycles HUD visibility for screenshots; Tab opens Contracts.
+
+The optional **Flight guide** stays on one observed step: start walking, go to the
+Nomad’s rear hatch, open it, board and close it, reach the pilot chair, take off,
+retract gear, then choose a destination or contract. It continues through drive
+charge, approach and landing. **Menu → Settings → Flight guide** turns it off.
+Controls follow keyboard, standard controller or touch input. Touch players can
+tap the opening view and use the Nomad’s walk, launch, thrust and brake buttons.
 
 Press H or controller Menu/Options for settings. **Quick transit** is a collapsed
 dropdown there: selecting a location uses an optional teleport; Shift + click sets

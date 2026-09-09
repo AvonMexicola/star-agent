@@ -12,13 +12,13 @@ test('star renders at observation distance, damages the hull and permits explici
  await page.evaluate(()=>{const s=window.starAgent,n=s.navigation;n.transitPyre();n.orientToward(n.position.clone().addScaledVector(n.sunDirection,10000000),n.normal);});
  await page.waitForFunction(()=>window.starAgent.state.body==='pyre');await page.waitForTimeout(1500);
  expect(await page.evaluate(()=>window.starAgent.state.sun.angularRadius)).toBeGreaterThan(aeonAngle*2.4);
- await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/from-pyre.png`});await page.keyboard.press('Tab');
+ await page.keyboard.press('Shift+Tab');await page.screenshot({path:`${evidence}/from-pyre.png`});await page.keyboard.press('Shift+Tab');
  await page.keyboard.press('h');await page.locator('#quick-transit-menu > summary').click();await page.locator('[data-destination="star"]').click();
  await page.waitForFunction(()=>window.starAgent.state.body==='star'&&!window.starAgent.state.transiting,null,{timeout:120000});
  await page.evaluate(async()=>{window.starAgent.setRenderScale(1);for(let i=0;i<4;i++)await new Promise(r=>requestAnimationFrame(r));});
  let s=await page.evaluate(()=>window.starAgent.state);states.push(s);expect(s.sun.clearance).toBeCloseTo(500000000,-1);expect(s.stellarThermal.hull).toBe(100);expect(s.sun.sphereVisible).toBe(true);expect(errors).toEqual([]);
- await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/observation.png`});
- await page.waitForTimeout(3000);await page.screenshot({path:`${evidence}/observation-later.png`});await page.keyboard.press('Tab');
+ await page.keyboard.press('Shift+Tab');await page.screenshot({path:`${evidence}/observation.png`});
+ await page.waitForTimeout(3000);await page.screenshot({path:`${evidence}/observation-later.png`});await page.keyboard.press('Shift+Tab');
  await page.locator('#viewport').click();await page.waitForFunction(()=>window.starAgent.state.mfds[2].values.some(v=>v.includes('SHIELD TEMPERATURE')));
  await page.screenshot({path:`${evidence}/cockpit.png`});await page.keyboard.press('Escape');
  await page.evaluate(()=>{const n=window.starAgent.navigation;n.updateStellarThermal(120);});
@@ -49,7 +49,7 @@ test('the system drive continuously reaches the stellar observation point',async
  const during=await page.evaluate(()=>window.starAgent.state);expect(during.position).not.toEqual(start);expect(during.travel.progress).toBeGreaterThan(0);expect(during.travel.progress).toBeLessThan(1);
  await page.waitForFunction(()=>!window.starAgent.state.travel&&window.starAgent.state.body==='star',null,{timeout:240000});
  const arrived=await page.evaluate(()=>window.starAgent.state);expect(arrived.sun.clearance).toBeCloseTo(500000000,-1);expect(arrived.stellarThermal.hull).toBe(100);
- await page.keyboard.press('Tab');await page.screenshot({path:`${evidence}/drive-arrival.png`});
+ await page.keyboard.press('Shift+Tab');await page.screenshot({path:`${evidence}/drive-arrival.png`});
  // Retreat is normal thrust and must increase the actual distance from the star.
  await page.keyboard.down('Space');await page.keyboard.down('Shift');
  await page.waitForFunction(d=>window.starAgent.state.sun.distance>d+1000000,arrived.sun.distance,{timeout:30000});
@@ -60,7 +60,7 @@ test('the system drive continuously reaches the stellar observation point',async
 
 test('stellar composite preserves Aeon, Selene and Pyre rendering',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto('/?intro=0&debug&epoch=1788000000000');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Tab');
+ await page.goto('/?intro=0&debug&epoch=1788000000000');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Shift+Tab');
  await page.evaluate(()=>window.starAgent.setRenderScale(.5));
  for(const body of ['aeon','selene','pyre']){
   await page.evaluate(body=>{const s=window.starAgent,n=s.navigation;if(body==='aeon')n.orbit();else if(body==='selene'){n.transitMoon(1000000);n.orientToward(n.position.clone().addScaledVector(n.normal,-1000000),n.normal.clone().set(0,1,0));}else n.transitPyre();},body);

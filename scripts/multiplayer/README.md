@@ -34,4 +34,4 @@ and `NODE_ENV=test`; memory-based unit fixtures intentionally fail under the
 production guard. The PostgreSQL test uses a temporary isolated schema and cleans
 it up. A successful test run is not evidence of SMTP delivery.
 
-Current paired public release and rollback identities: [9 September receipt](../../docs/qa/compounds-release/README.md).
+Current paired public release and rollback identities: [9 September marker receipt](../../docs/qa/navigation-markers-release/README.md).

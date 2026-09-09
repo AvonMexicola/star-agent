@@ -198,3 +198,22 @@ test('combat mode is server-owned and full braking retains momentum across room 
  for(let i=0;i<240;i++){await room.receive(p.id,{type:'input',sequence:i+2,input:{brake:true}});advance(1/30);}
  assert.ok(p.nav.speed<.01);
 });
+
+
+test('starter tractor equips, persists without refilling, and never fires ammunition',async t=>{
+  const {room,accounts,request,store,advance,messages}=await setup(t),account=accounts[0];
+  let p=room.players.get(account.id);
+  assert.equal(p.inventory.containers.pack['tractor-beam-tool'],1);
+  assert.equal((await request(p.id,{action:'equip',weapon:'tractor-beam-tool'})).ok,true);
+  const before=structuredClone(p.inventory);
+  room.receive(p.id,{type:'input',sequence:1,input:{fire:true}});advance(.5);
+  assert.deepEqual(p.inventory,before);
+  assert.equal((await store.loadPlayerState(p.id)).weapon,'tractor-beam-tool');
+  await room.leave(p.id);await room.join(account,m=>messages.get(account.id).push(m));p=room.players.get(account.id);
+  assert.equal(p.weapon,'tractor-beam-tool');assert.equal(p.inventory.containers.pack['tractor-beam-tool'],1);
+  assert.equal((await request(p.id,{action:'transfer',from:'pack',to:'ship',item:'tractor-beam-tool',quantity:1,revision:p.inventory.revision})).ok,true);
+  assert.equal((await request(p.id,{action:'equip',weapon:'tractor-beam-tool'})).ok,false);
+  await room.leave(p.id);await room.join(account,()=>{});p=room.players.get(account.id);
+  assert.equal(p.inventory.containers.pack['tractor-beam-tool']??0,0);
+  assert.equal(p.inventory.containers.ship['tractor-beam-tool'],1);assert.notEqual(p.weapon,'tractor-beam-tool');
+});

@@ -1,0 +1,279 @@
+{
+  "browser": "151.0.7922.173",
+  "errors": [],
+  "fixture": "2SBU shipment preloaded; all subsequent equipment, movement and UI use standard Gamepad",
+  "physicalController": false,
+  "date": "2026-09-09",
+  "viewport": {
+    "desktop": [
+      1440,
+      900
+    ],
+    "phone": [
+      390,
+      844
+    ]
+  },
+  "duration": "1.1m journey / 1.4m including build",
+  "checks": [
+    "starter backpack has exactly one tractor",
+    "Tool assignment swaps mining laser to backpack",
+    "physical walk from Nomad seat to cargo",
+    "RT locks and D-pad moves real2SBU crate",
+    "modal, focus, disconnect and replacement require neutral",
+    "X secures same2SBU cargo",
+    "D-pad right holsters and clears active slot",
+    "Loadout swaps mining laser back and retains one tractor in backpack",
+    "phone cargo view fits; B returns to play"
+  ],
+  "state": {
+    "enabled": true,
+    "focused": true,
+    "mode": "walk",
+    "loadout": {
+      "version": 1,
+      "active": "tool",
+      "quickIndex": 0,
+      "health": 100,
+      "bleeding": false,
+      "slots": {
+        "weapon1": {
+          "item": "rifle-laser",
+          "quantity": 1
+        },
+        "weapon2": {
+          "item": "sidearm-pistol",
+          "quantity": 1
+        },
+        "tool": {
+          "item": "mining-laser-tool",
+          "quantity": 1
+        },
+        "backpack": {
+          "item": "backpack-life-support",
+          "quantity": 1
+        },
+        "ammo1": {
+          "item": "carbine-charge",
+          "quantity": 60
+        },
+        "ammo2": {
+          "item": "sidearm-charge",
+          "quantity": 36
+        },
+        "quick1": {
+          "item": "bandage",
+          "quantity": 3
+        },
+        "quick2": {
+          "item": "healing-stim",
+          "quantity": 2
+        },
+        "quick3": null,
+        "quick4": null
+      }
+    },
+    "controller": {
+      "id": "SBU standard Gamepad replacement",
+      "connected": true,
+      "active": true,
+      "armed": true,
+      "status": "Controller ready \u00b7 Menu / Options opens the command menu."
+    },
+    "containers": {
+      "open": false,
+      "view": "equipment",
+      "target": null,
+      "shipAccess": {
+        "available": true,
+        "aboard": true,
+        "distance": 0,
+        "range": 50
+      },
+      "containers": [
+        {
+          "id": "pack",
+          "name": "Backpack",
+          "kind": "backpack",
+          "boxes": 1,
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "tractor-beam-tool": 1,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 0,
+            "metal-stock": 0,
+            "conductor": 0,
+            "glass": 0,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          }
+        },
+        {
+          "id": "ship",
+          "name": "Nomad cargo",
+          "kind": "ship",
+          "boxes": 4,
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "tractor-beam-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 80,
+            "metal-stock": 16,
+            "conductor": 3,
+            "glass": 4,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          }
+        },
+        {
+          "id": "station",
+          "name": "Aeon orbital locker",
+          "kind": "station",
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "tractor-beam-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 0,
+            "metal-stock": 0,
+            "conductor": 0,
+            "glass": 0,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        },
+        {
+          "id": "crescent-cache",
+          "name": "Crescent field cache",
+          "kind": "base",
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "tractor-beam-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 0,
+            "metal-stock": 0,
+            "conductor": 0,
+            "glass": 0,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        }
+      ],
+      "saved": true,
+      "warning": ""
+    }
+  },
+  "cargo": {
+    "tractor": {
+      "active": false,
+      "held": null,
+      "target": null,
+      "slot": null,
+      "distance": 1.4387165960176707,
+      "busy": false,
+      "message": "2 SBU secured on nomad's cargo grid.",
+      "beam": false,
+      "loose": 0
+    },
+    "loose": [],
+    "ships": [
+      {
+        "id": "local-player:nomad",
+        "owner": "local-player",
+        "hull": "nomad",
+        "crates": [
+          {
+            "id": "tractor-fixture",
+            "sbu": 2,
+            "resource": "copper",
+            "grid": "aft-starboard",
+            "cell": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "id": "local-player:atlas",
+        "owner": "local-player",
+        "hull": "atlas",
+        "crates": []
+      }
+    ]
+  }
+}

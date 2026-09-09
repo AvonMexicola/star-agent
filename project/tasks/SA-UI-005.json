@@ -1,0 +1,31 @@
+{
+  "id": "SA-UI-005",
+  "title": "Continuous step-by-step player flight guide",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "integrated",
+  "branch": "feat/step-by-step-player-guide",
+  "base": "c5eb5197e1394920ea75ff0fb6664b1d7ff4b19a",
+  "updated": "2026-09-09",
+  "areas": [
+    "interface",
+    "flight"
+  ],
+  "claims": [
+    "src/player-guide.js",
+    "src/player-guide-ui.js",
+    "src/player-guide.css",
+    "src/main.js",
+    "src/opening-sequence.js",
+    "src/gameplay-menu.js",
+    "src/hud-display.js",
+    "tests/player-guide.test.js",
+    "scripts/player-guide.spec.js",
+    "scripts/player-guide.config.js",
+    "src/nomad-cabin-controls.js"
+  ],
+  "brief": "docs/briefs/step-by-step-player-guide.md",
+  "validation": "Runtime 981852a integrated at 5347648, docs alongside character at 37d1f59. 166 normal source files, final focused guide regressions, build/repo and both explicit public builds pass. Keyboard05 opening/drive/arrival; controller04 plus native focus/dialog/device guards; touch06 physical opening/boarding/launch/paged gear/flight/contracts all pass with no app errors. Public promotion explicitly requested; combined PR113 0cff955 is blocked by GitHub billing and has not deployed.",
+  "evidence": "docs/qa/player-guide/README.md"
+}

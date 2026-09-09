@@ -1,59 +1,85 @@
 # Focused navigation markers — paired release
 
-Status: authorized candidate; deployment and final artifact receipts follow validation.
-Cees explicitly requested “merge to dev, play and multiplayer” on 9 September 2026.
-Operator: Codex in that session. Promotion targets protected `dev/all-features`,
-`https://play.staragent.site` and `https://multiplayer.staragent.site`.
+Deployed **9 September 2026, 07:47:38 UTC** to
+[play](https://play.staragent.site) and [multiplayer](https://multiplayer.staragent.site).
+Exact tested source: `d63fab0d595424e622c073cdb576d01124094736` on frozen
+`release/navigation-markers-20260909`. Protected [PR112](https://github.com/AvonMexicola/star-agent/pull/112)
+merged into `dev/all-features` as `88389274efe9608fde8db9ac500fb0951b4ae5b0`.
+Cees explicitly requested “merge to dev, play and multiplayer”; Codex operated
+that authorized release. [Machine-readable receipt](release.json).
 
-The frozen `release/navigation-markers-20260909` branch combines focused arrow
-runtime `b99658b`, delivery `724ab12`, and marker styling `3fbfc74` (the clean export
-of `c7adec1`). The promotion PR records the exact final candidate SHA. Startup
-arrows now show the selected POI, next active contract objectives and owned
-vehicles/ship. Amber objective diamonds, white POI pins, mint ship outlines and
-blue rover outlines distinguish their roles on and off screen.
+HUD arrows now show the selected POI, each active contract's next objective, and
+owned ships/vehicles. Amber objective diamonds, white POI pins, mint ship outlines
+and pale-blue rover outlines distinguish their roles on and off screen.
+The release combines focused arrow runtime `b99658b`, delivery `724ab12`, and
+marker styling `3fbfc74` (the clean export of `c7adec1`). PR110 is merged; PR111's
+exact head is included through PR112 and its redundant review was closed.
 
-Only these two marker changes advance from the preceding public runtime
-`ea234d2cb71cb26b53c3671a3a6db962a0da5273`. Separately integrated planetary-drive
-routing remains local; unfinished ground-pirate work remains excluded.
-Server, dependencies, SQL migrations, save formats, world generation and assets
-are unchanged. Protocol 10, capacity 20 and seed 7291 remain compatible with
-existing clients and data. Existing tabs need refreshing to receive new markers.
+Only these marker changes advance from the preceding `ea234d2` public runtime.
+Separate planetary-drive and starter-tractor changes remain local; unfinished
+ground-pirate work remains excluded. Server, dependencies, SQL migrations, save
+formats, world generation and assets are unchanged. Protocol 10, capacity 20 and
+seed 7291 remain compatible with existing clients/data. Refresh existing tabs.
 
-## Evidence and validation
+## Checks and actual evidence
 
-[Focused arrow evidence](../focused-location-arrows/README.md) records objective
-progression tests and two production browser journeys. [Marker styling evidence](../navigation-marker-styles/README.md)
-records the unchanged controller/keyboard journey, desktop/phone captures and zero
-page/console errors. These are author checks, not independent or physical-device
-acceptance, a new graphics benchmark, or multiplayer population/SMTP certification.
+- All 165 configured source test files pass; both explicit channel builds and
+  packaged-viewer validation pass. Existing chunk-size advisories remain.
+- [Required hosted run34324823917](https://github.com/AvonMexicola/star-agent/actions/runs/34324823917)
+  passes plan44s, source5m6s, multiplayer3m23s, browser7m52s and verify3s.
+- Four exact-artifact browser cases pass in5.1m: solo Nomad opening, unchanged
+  saved fleet and scene launcher; multiplayer account/Continue offline/neutral
+  controller flow; complete controller POI/patrol selection, change, clear,
+  abandon and saved all-filters reload; keyboard rover exit and parked Burrow/Sentry
+  bearings. Desktop1440×900 and phone390×844 captures were directly inspected.
+- Chromium151.0.7922.173, AMD Radeon860M, ANGLE/OpenGL ES3.2; one GPU worker.
+  Injected standard Gamepad and keyboard. The two public HTTPS entry cases pass
+  after promotion with zero page/console errors. This is not physical-device,
+  independent art acceptance, new performance or multiplayer population testing.
+- All300 public and1010 multiplayer staged files match SHA256 manifests. Pinned
+  `npm ci` reports0 vulnerabilities, generates Prisma, and the world initializes
+  as unprivileged `staragent` with an isolated memory store. Server, schema and
+  dependency files match the preceding active release.
+- HTTPS release IDs, HTML and41 entry/model paths per channel match the local
+  artifacts. Both homepage hosts match. Public API health, synthetic registration,
+  authenticated WSS welcome and hangar assignment pass; the exact probe account
+  was deleted. Service logs show a normal graceful restart and the existing
+  `SMTP_NOT_CONFIGURED` warning, with no new application errors.
 
-The release harness `scripts/navigation-release.config.js` runs the same marker
-journeys plus actual solo and multiplayer account entry against `dist/solo` and
-`dist/multiplayer`. `NAV_RELEASE_LIVE=1` and
-`MULTIPLAYER_RELEASE_ORIGIN=https://multiplayer.staragent.site` repeat those checks
-over public HTTPS. `DIRECT_ENTRY_OUT`, `NAV_EVIDENCE` and `COMPOUNDS_RELEASE_OUT`
-select separate evidence directories. One Chromium/ANGLE GL worker uses injected
-standard Gamepad input and keyboard, with 1440×900 and 390×844 marker captures.
-Hosted required checks and exact artifact hashes will be recorded after completion.
+[Focused arrow evidence](../focused-location-arrows/README.md) and
+[marker style evidence](../navigation-marker-styles/README.md) retain the original
+source checks, visual references and known positioning limits. The inherited ship
+label can be covered by an existing panel at the sampled parked pose; the driving
+capture shows its mint badge clearly. No marker-position change is claimed.
+Raw release logs, screenshots and receipts: `/tmp/star-agent-navigation-release`.
+Curated actual public pages: [solo](public-solo.png), [multiplayer](public-multiplayer.png).
 
-## Promotion and recovery
+The first solo bundling succeeded but the sandbox denied its Git revision subprocess
+with EPERM; the unchanged build passed with approved escalation. Initial local
+staging hard links crossed filesystems, so copies were used. The first final staging
+assertion expected `client.ts`, while Prisma generates `client.js`; installation
+and hashes had passed, and the correct file plus world startup were then verified.
+These execution corrections required no application change; original logs remain.
 
-Build the committed candidate with `npm run build:solo` and
-`npm run build:multiplayer`, validate with
-`node scripts/deploy/validate-public.mjs --multiplayer`, then stage immutable
-release directories and verify every transferred file against local SHA256 hashes.
-The protected promotion PR must pass `verify` before merge and publication.
+## Deployment and recovery
 
-Both current rollback symlinks resolve to the preceding `ea234d2` release above:
-`/opt/staragent/public-current` and `/opt/staragent/multiplayer-candidate`.
-Keep those immutable directories. Switch the symlinks atomically; gracefully
-restart only `staragent-multiplayer` after checking active sessions. Preserve
-`/etc/staragent/multiplayer.env`, existing PostgreSQL and Caddy/DNS configuration.
-The four unchanged migrations and previous same-schema backup/restore rehearsal
-are recorded in the [preceding release receipt](../compounds-release/README.md);
-this client presentation update requires no SQL migration or database rollback.
+Both symlinks atomically switched to the exact release above. Multiplayer restarted
+with **0 connected clients**, preserving graceful account checkpoints and the
+existing database; service PID39010 became healthy before the solo switch.
+No environment, Caddy, DNS, schema or database contents were replaced.
 
-Verify public release IDs and entry asset hashes, actual rendered pages, API
-health and a synthetic authenticated WSS hangar request, deleting only the exact
-probe account. Check service logs. On failure restore the preceding symlinks,
-restart the service and repeat health/entry checks; retain database contents.
+Rollback both `/opt/staragent/public-current` and
+`/opt/staragent/multiplayer-candidate` to their retained respective release directories
+for `ea234d2cb71cb26b53c3671a3a6db962a0da5273`, gracefully restart only
+`staragent-multiplayer`, then repeat HTTPS/API/WSS checks. Preserve PostgreSQL.
+The four identical migrations and same-schema backup/restore rehearsal are retained
+in the [preceding release receipt](../compounds-release/README.md). This presentation
+update requires no SQL migration or database rollback. Existing SMTP limitations
+remain unchanged.
+
+Reproduce the four artifact journeys with `scripts/navigation-release.config.js`.
+Set `DIRECT_ENTRY_OUT`, `NAV_EVIDENCE`, `COMPOUNDS_RELEASE_OUT` to separate evidence
+folders. For public entry checks add `NAV_RELEASE_LIVE=1`,
+`MULTIPLAYER_RELEASE_ORIGIN=https://multiplayer.staragent.site` and
+`--grep 'one initial load|dedicated multiplayer'`. The frozen source and exact
+build metadata remain unchanged after those checks.

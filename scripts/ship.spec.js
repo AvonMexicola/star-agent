@@ -12,12 +12,12 @@ test('Blender ship: physical cargo access, persistent transfers, live MFDs and b
   await page.waitForFunction(() => window.starAgent.state.mode === 'landed', null, { timeout: 90000 });
   await page.waitForFunction(() => window.starAgent.state.mfds.every(screen => screen.values.length === 3));
   expect(await page.evaluate(() => window.starAgent.state.mfds.map(screen => screen.title))).toEqual(['FLIGHT', 'NAVIGATION', 'SYSTEMS', 'CARGO']);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await page.evaluate(() => window.starAgent.setRenderScale(1));
   await page.waitForTimeout(800);
   await page.screenshot({ path: '/tmp/nomad-game-cockpit.png' });
   await page.evaluate(() => window.starAgent.setRenderScale(.4));
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await page.keyboard.press('KeyF');
   await page.keyboard.down('KeyW');
   await page.waitForFunction(() => window.starAgent.state.shipLocal[2] > .9);
@@ -51,10 +51,10 @@ test('Blender ship: physical cargo access, persistent transfers, live MFDs and b
   await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');
   expect(await page.evaluate(() => window.starAgent.state.insideShip)).toBe(false);
   await page.evaluate(() => window.starAgent.navigation.look(Math.PI, 0));
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await page.evaluate(() => window.starAgent.setRenderScale(1));await page.waitForTimeout(800);
   await page.screenshot({ path: '/tmp/nomad-game-exterior.png' });
-  await page.evaluate(() => window.starAgent.setRenderScale(.4));await page.keyboard.press('Tab');
+  await page.evaluate(() => window.starAgent.setRenderScale(.4));await page.keyboard.press('Shift+Tab');
   await page.keyboard.down('KeyW');await page.waitForFunction(() => window.starAgent.state.shipLocal[2] < 2.4);
   await page.keyboard.up('KeyW');await page.keyboard.press('KeyX');await page.keyboard.press('KeyF');
   expect(await page.evaluate(() => window.starAgent.state.doorOpen)).toBe(false);

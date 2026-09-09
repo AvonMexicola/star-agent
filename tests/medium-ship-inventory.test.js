@@ -38,7 +38,7 @@ test('medium MFD totals include committed ore, fuel byproduct, construction and 
   assert.equal(store.claimStarterConstruction().ok, true);
   assert.equal(legacy.mass('pack'), 1, 'legacy manifest omits the accepted half-kilogram resource gain');
   assert.equal(legacy.mass('ship'), 33, 'legacy manifest omits the 103 kg construction grant');
-  assert.equal(display.mass('pack'), 1.5);
+  assert.ok(Math.abs(display.mass('pack') - 4.5) < 1e-9);
   assert.equal(display.mass('ship'), 136);
   assert.ok(store.container('pack').items['helium-3-regolith'] > 0);
   assert.deepEqual(store.limits('pack'), { resources: 48, supplies: 20 });
@@ -47,14 +47,14 @@ test('medium MFD totals include committed ore, fuel byproduct, construction and 
   const state = store.state, saved = f.disk.getItem(MINING_KEY), writes = f.writes();
   mfd.update(.2, nav, display);
   assert.ok(mfd.snapshot()[3].values.includes('SHIP STORAGE: 136.0 kg'));
-  assert.ok(mfd.snapshot()[3].values.includes('BACKPACK: 1.5 kg'));
+  assert.ok(mfd.snapshot()[3].values.includes('BACKPACK: 4.5 kg'));
   assert.equal(store.state, state); assert.equal(f.disk.getItem(MINING_KEY), saved); assert.equal(f.writes(), writes, 'display reads do not write the ledger');
 
   assert.equal(store.transfer('basalt', 'pack', 'ship', .25).ok, true);
   assert.equal(store.write(store.withItems(store.state, 'pack', { ...store.container('pack').items, bandage: 2 })), true);
   mfd.update(.2, nav, display);
   assert.equal(display.mass('ship'), 136.25);
-  assert.ok(Math.abs(display.mass('pack') - 1.45) < 1e-9, 'same adapter reads subsequent commits and catalog item masses');
+  assert.ok(Math.abs(display.mass('pack') - 4.45) < 1e-9, 'same adapter reads subsequent commits and catalog item masses');
   assert.equal(display.mass('pack'), itemMass(store.container('pack').items));
   assert.ok(mfd.snapshot()[3].values.includes(`BACKPACK: ${display.mass('pack').toFixed(1)} kg`));
 });

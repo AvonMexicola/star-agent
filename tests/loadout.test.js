@@ -46,7 +46,7 @@ test('quick items heal and stop bleeding atomically, retain full-health items an
 });
 test('backpack removal requires empty contents, disables gathering, and preserves box mounts on re-equip',()=>{
   const {store,gear,disk}=setup();assert.equal(gear.stow('backpack','ship').ok,false);assert.equal(gear.stow('backpack','pack').ok,false);
-  assert.equal(store.transfer('ration','pack','ship',2).ok,true);store.addBox('pack');assert.equal(gear.stow('backpack','ship').ok,true);
+  assert.equal(store.transfer('ration','pack','ship',2).ok,true);assert.equal(store.transfer('tractor-beam-tool','pack','ship',1).ok,true);store.addBox('pack');assert.equal(gear.stow('backpack','ship').ok,true);
   assert.equal(store.capacity,0);assert.equal(store.addBox('pack').ok,false);assert.equal(store.transfer('ration','ship','pack',1).ok,false);
   assert.equal(store.commit({field:store.state.field,yieldVolume:[.01,0,0]},0),false);
   assert.equal(new MiningStore(disk).blocked,undefined);assert.equal(gear.assign('backpack','backpack-life-support','ship').ok,true);assert.equal(store.capacity,96);
@@ -66,4 +66,24 @@ test('late weapon model loads cannot reattach after switching, and denied fire e
   assert.equal(e.equipped,'sidearm-pistol');assert.equal(e.itemObject('rifle-laser').parent,null);
   e.setRenderOrigin(new THREE.Vector3());let attempts=0;e.update(.5,{firing:true,authorizeFire:()=>{attempts++;return false;}});assert.equal(attempts,1);assert.equal(e.firingInput(),false);
   e.update(.5,{firing:true,authorizeFire:()=>true});assert.equal(e.firingInput(),true);e.dispose();
+});
+
+
+test('starter backpack includes one tractor that swaps with the cutter and never refills on reload',()=>{
+ const {store,gear,disk}=setup();
+ assert.equal(store.container('pack').items['tractor-beam-tool'],1);
+ assert.equal(gear.item,'mining-laser-tool');assert.equal(validLoadout(gear.state),true);
+ assert.equal(gear.assign('tool','tractor-beam-tool').ok,true);assert.equal(gear.item,'tractor-beam-tool');
+ assert.equal(store.container('pack').items['mining-laser-tool'],1);
+ const loaded=new MiningStore(disk);assert.equal(total(loaded,'tractor-beam-tool'),1);assert.equal(loaded.container('pack').items['tractor-beam-tool'],0);
+ const restored=new Loadout(loaded);assert.equal(restored.assign('tool','mining-laser-tool').ok,true);
+ assert.equal(restored.stow('tool','ship').ok,true);assert.equal(loaded.transfer('tractor-beam-tool','pack','ship',1).ok,true);
+ assert.equal(new MiningStore(disk).container('pack').items['tractor-beam-tool'],0);
+ assert.equal(total(new MiningStore(disk),'tractor-beam-tool'),1);
+});
+
+test('saved backpacks remain unchanged when they predate the starter tractor',()=>{
+ const {store,disk}=setup();const old=structuredClone(store.state);delete old.supplies.pack['tractor-beam-tool'];assert.equal(store.write(old),true);
+ const raw=disk.getItem(MINING_KEY),reload=new MiningStore(disk);
+ assert.equal(reload.container('pack').items['tractor-beam-tool'],0);assert.equal(disk.getItem(MINING_KEY),raw);
 });

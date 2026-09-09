@@ -24,7 +24,7 @@ export function renderTransport({content,selection,button,s,api,ship,terminal,ne
       actions.append(button(`Deposit crate · ${r.reward} CR`,'transport-deposit',()=>run({op:'transport-deposit',mission:m.id,crate:m.crate,revision:s.revision}),busy||!near||!dock||terminal!==r.to||!crate||!canRemoveCrate(ship.hull,ship.crates,m.crate)));
     }
     actions.append(button('Abandon contract','transport-abandon',()=>run({op:'transport-abandon',mission:m.id,revision:s.revision}),busy));card.append(actions);content.append(card);
-    if(m.phase==='accepted'&&(!near||terminal!==r.from))content.append(para('Order is available only at your contracted pickup terminal. Use Map → Locations to track the settlement. Climb to 20 km, aim at its marker, then engage the drive. If the world blocks the route, fly around its limb.','trade-reason'));
+    if(m.phase==='accepted'&&(!near||terminal!==r.from))content.append(para('Order is available only at your contracted pickup terminal. Use Map → Locations to track the settlement. Climb to 20 km, aim at its marker, then engage the drive. The drive routes around blocking worlds and arrives 35 km above the site.','trade-reason'));
     else if(m.phase==='issued'&&terminal!==r.to)content.append(para('Deposit is available only at your contracted destination terminal, with the crate aboard your parked ship.','trade-reason'));
     else if(!dock)content.append(para('Land the selected cargo ship on this site’s pad.','trade-reason'));
     if(f.history.length)content.append(para(`Last delivery: ${transportRoute(f.history[0].route).name} · ${f.history[0].paid} CR paid.`));

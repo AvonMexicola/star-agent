@@ -1,0 +1,33 @@
+{
+  "browser": "151.0.7922.173",
+  "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+  "physicalController": false,
+  "automatic": {
+    "selectedId": null,
+    "aimedId": "settlement-aeon"
+  },
+  "away": {
+    "selectedId": "settlement-aeon",
+    "aimedId": null,
+    "charge": 0
+  },
+  "arrival": {
+    "altitude": 35000.22160286312,
+    "speed": 0,
+    "distance": 34996.13415359596,
+    "radialError": 0.00002654353593311472,
+    "target": "settlement-aeon",
+    "position": [
+      23875.935807009693,
+      987445.0880350056,
+      1294337.9604348824
+    ],
+    "pad": [
+      23320.461108655814,
+      966220.7728855942,
+      1266518.016150351
+    ]
+  },
+  "errors": [],
+  "requests": []
+}

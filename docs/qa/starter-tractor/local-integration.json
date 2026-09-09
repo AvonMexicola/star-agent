@@ -1,0 +1,68 @@
+{
+  "time": "2026-09-09T07:36:23.171205+00:00",
+  "runtime": "1c294540d6372968867f1b5991180dc038dfea15",
+  "modules": {
+    "/src/inventory/containers.js": {
+      "status": 200,
+      "contentMatches": true,
+      "testedBytesMatch": true
+    },
+    "/src/mining/store.js": {
+      "status": 200,
+      "contentMatches": true,
+      "testedBytesMatch": true
+    },
+    "/src/cargo/tractor-tool.js": {
+      "status": 200,
+      "contentMatches": true,
+      "testedBytesMatch": true
+    },
+    "/src/mining/tool.js": {
+      "status": 200,
+      "contentMatches": true,
+      "testedBytesMatch": true
+    },
+    "/src/trading/system.js": {
+      "status": 200,
+      "contentMatches": true,
+      "testedBytesMatch": true
+    },
+    "/src/multiplayer/ui.js": {
+      "status": 200,
+      "contentMatches": true,
+      "testedBytesMatch": true
+    },
+    "server/inventory.js": {
+      "testedBytesMatch": true,
+      "sha256": "cc0ed4a3c06c19098816c0e9c6a37b2d50dae5cf428772987e58473e0f3498a4"
+    },
+    "server/room.js": {
+      "testedBytesMatch": true,
+      "sha256": "62c22e8ff5c0d445cfa53646c37da9cfa6468ee5549c5309c97995937d1015a2"
+    },
+    "server/trading.js": {
+      "testedBytesMatch": true,
+      "sha256": "4e039ea8fa8b67fc6ac0772470cec67224ec2f32bd131eeeb69dbcf81733e2f1"
+    },
+    "src/main.js": {
+      "testedBytesMatch": true,
+      "sha256": "3cbee2f977e96bb643c8c507a3d16955da15e9cef853c38ce8bf0d53b50af1c8"
+    }
+  },
+  "8087": {
+    "status": 200,
+    "health": {
+      "ok": true
+    }
+  },
+  "5178": {
+    "status": 200,
+    "health": {
+      "ok": true
+    }
+  },
+  "service": [
+    "ActiveState=active",
+    "MainPID=63216"
+  ]
+}
