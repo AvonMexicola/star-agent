@@ -1,9 +1,10 @@
-# SA-VEH-003 — Burrow Sentry checked offer
+# SA-VEH-003 — Burrow Sentry local delivery
 
 Implemented and author-validated; parent independently reviewed source and the
-corrected final evidence. **Parent owns local integration, the protocol-10
-paired preview refresh and PR106.** No shared service or public deployment was
-changed by this feature worktree.
+corrected final evidence. **Parent integrated `bdf053c` and verified the protocol-10
+5178/API8087 pair at 01:32 UTC on 2026-09-09.** Its existing database is retained.
+[Local receipt](local-integration.json) records delivery. PR106 remains for Cees’s
+review; no public deployment was performed.
 
 The application is **6334b98**, preserving checked shared **1da9b0e** and parent
 composition **e9ea4ab**. QA head **c31d9ee** changes only evidence analysis/tests
@@ -85,9 +86,9 @@ runtime 6334, run 34296422473. Parent has separately composed later checked
 Recovery source/records at **b46eda1**, runtime composition **bdc4bd5**, with
 1274 normal cases, build and 226 multiplayer/two opt-in skips passing. Those
 composition receipts are parent-owned; the feature browser evidence stays
-labeled 6334. Parent consumes this metadata offer, updates local guide/task/
-review, preserves the shared journal and uses the existing managed service for
-a paired browser/API refresh. No schema or persistent fleet is added.
+labeled 6334. Parent consumed this metadata offer, updated the local guide/task/
+review, preserved the 525,934-byte shared journal and used the existing managed
+service for a paired browser/API refresh. No schema or persistent fleet is added.
 
 Scope limits: no economy, pressure simulation, hand IK, Gannet fit, general
 construction/garage deployment, pending Pirate enemy adapter, new authoritative

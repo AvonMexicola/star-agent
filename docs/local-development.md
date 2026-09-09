@@ -1,5 +1,20 @@
 # All-features local development
 
+**Burrow Sentry S-04** is locally integrated at `bdf053c`, including the checked
+Recovery and rotating-world updates. Refresh the
+[Sentry surface start](http://127.0.0.1:5178/?dev=1&intro=0&ship=nomad&start=sentry-surface&seed=7291)
+to board at the port pilot door or rear gunner ladder. The pilot drives; a second
+player controls the twin lasers, with pilot fallback when the rear seat is empty.
+
+The managed 5178/API8087 pair was gracefully refreshed at 01:32 UTC on 2026-09-09,
+with matching protocol 10, its existing database and verified source/model bytes.
+Combined 1,274 normal cases, 226 multiplayer cases (two existing optional skips)
+and build pass. Complete controller, keyboard/native-touch and two-client journeys
+are verified; the original failed rendered-step measurement and its checked
+time-based analysis remain recorded. [Controls](burrow-sentry.md),
+[evidence and limits](qa/burrow-sentry/README.md) and
+[local receipt](qa/burrow-sentry/local-integration.json).
+
 **Disabled Atlas cargo recovery** is locally integrated at `d3cbde3`. Refresh
 **http://127.0.0.1:5178/** and open **Menu → Contracts → Cargo recovery** in solo
 flight. Three contracts offer a quiet wreck or two levels of ship protection.
@@ -10,7 +25,7 @@ cargo aboard and deliver the objective through Greenbank Supply's terminal.
 The complete controller recovery/delivery/bonus-sale/return route, guarded combat,
 keyboard/native-phone UI,163 normal test files and production build pass. Six
 served modules and both API health routes are verified. The existing5178/API8087
-service remains running with protocol9 and its database; no restart or public
+service used protocol9 and its database at that checkpoint; no restart or public
 deployment was needed. [Player guide](deep-space-recovery.md) and
 [exact evidence/remaining limits](qa/deep-space-recovery/README.md).
 
@@ -855,8 +870,8 @@ Escape** returns to play. Brake before exiting with **X / F**. Release fire
 after changing seats, closing a menu or reconnecting a controller. Phone buttons
 provide the same vehicle actions and leave room for walking after you exit.
 
-The final candidate is undergoing its dedicated browser journeys before local
-integration. Its [verification record](qa/burrow-sentry/README.md) and
+The checked vehicle is locally integrated at `bdf053c`. Its
+[verification record](qa/burrow-sentry/README.md) and
 [player guide](burrow-sentry.md) distinguish automated input, physical devices,
 art review and performance acceptance. Online support requires matching client
 and server versions; session vehicles do not add a persistent purchase economy.

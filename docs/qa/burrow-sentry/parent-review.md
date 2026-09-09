@@ -1,7 +1,7 @@
 # Burrow Sentry parent review
 
 Status: [draft PR106](https://github.com/AvonMexicola/star-agent/pull/106) is open;
-the complete input journeys are verified and local delivery is pending. Cees retains product and release acceptance. This record
+the complete input journeys are verified and `bdf053c` is locally integrated and served. Cees retains product and release acceptance. This record
 does not claim an independent visual score or physical-controller testing.
 Earlier sections retain their original checkpoint scope; the latest evidence is below.
 
@@ -387,3 +387,14 @@ runs without competing parent checks: all 226 cases pass, two existing optional
 skips, 46.128 s. Original failures remain in `recovery-composition01/`. Repository
 checks cover 367 paths and the suggested plan ran. The subsequent access change
 adds QA/regression coverage only; its two actual-room checks pass separately.
+
+## Local delivery
+
+At 01:32 UTC on 2026-09-09, shared `dev/all-features` fast-forwarded checked
+Recovery `2b28036` to `bdf053c`, preserving all 525,934 bytes of its live journal.
+Only the existing managed 5178/API8087 service pair was gracefully refreshed.
+Both API routes and the frontend return 200; source hashes, the GLB and its Vite
+revision map match the checked candidate. Protocol 10 is paired and the database
+settings are unchanged. No schema/reset command, forced kill or public deployment
+was performed. The [curated receipt](local-integration.json) records the exact
+source and service boundary; later evidence/documentation changes need no restart.

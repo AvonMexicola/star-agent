@@ -1,8 +1,9 @@
 # Burrow Sentry verification
 
 Status: implemented and author-validated on **6334b98**, protocol **10**.
-Local integration is pending the parent’s checked merge and managed preview
-refresh. The completed browser gameplay evidence is attempt 12: **two tests
+Parent locally integrated `bdf053c` with checked Recovery `2b28036` and refreshed
+the managed 5178/API8087 pair at 01:32 UTC, preserving its existing database.
+See [the delivery receipt](local-integration.json). The completed browser gameplay evidence is attempt 12: **two tests
 passed; the multiplayer test completed all gameplay assertions but retained an
 exit-1 deferred sampling assertion**. Its timestamp-aware reanalysis passes,
 as explained below. The original run is not relabeled green.

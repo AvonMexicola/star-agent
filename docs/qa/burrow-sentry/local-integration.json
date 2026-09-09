@@ -1,0 +1,166 @@
+{
+  "time": "2026-09-09T01:32:48.280416+00:00",
+  "sourceHead": "bdf053c579c571590f2aab19803bf76425efa5c7",
+  "base": "2b280363abbdbe70868eb18ac3ab6dcaafdcefbb",
+  "runtimeComposition": "bdc4bd5f945a0425889af8c862b8e19c0bfcf413",
+  "featureRuntime": "6334b984f20e2bb38d94c9fce70b4bb523f6d523",
+  "localBranch": "dev/all-features",
+  "protocol": 10,
+  "preview": "http://127.0.0.1:5178/",
+  "testStart": "http://127.0.0.1:5178/?dev=1&intro=0&ship=nomad&start=sentry-surface&seed=7291",
+  "managedUnit": "star-agent-persistent-preview.service",
+  "oldServiceIds": [
+    2330283,
+    2330318,
+    2330319
+  ],
+  "newRunnerId": 2479568,
+  "health": {
+    "frontend": 200,
+    "proxyAPI": 200,
+    "directAPI": 200
+  },
+  "sameDatabaseSettings": true,
+  "modelRevisionMapCurrent": true,
+  "journalPreservedBytes": 525934,
+  "journalSHA256": "5c15e831354db52fdb3cde88a8845d8eb41cf6daf54dc57e8a08389f67fa2f76",
+  "sourceSHA256": {
+    "src/main.js": "0c5bf2b666e04558e38491fe49bc5897475020fc2e9b677d7d3b56308cca60a5",
+    "src/multiplayer/protocol.js": "a20805e0f07f55774270092e6c8d8521d5cf6a6d4a6fe1ea46e2f0c1978408c5",
+    "src/sentry/system.js": "f722e17d4cd3b73117df7ddf34c9b67d7a197016b8d15f7b065d10a24ec97ee8",
+    "src/sentry/frames.js": "8e88244a347c29192ffdcf127f3ad98d0f23f21a0456e63ce323f25f5a35b812",
+    "src/sentry/simulation.js": "1aeb4620b99358c947022a27b6727857463e2784434676ba059cf3110c99a48c",
+    "src/sentry/environment.js": "5c8dc6643ac550eb071ab0c5d7389e16e538a7fc6be0b730b6ef44ea4aeffec0",
+    "src/sentry/layout.js": "ac56bad7184aaf8d45b5bb1e62da722ddc448daa2960fc4ca07272c5f260be98",
+    "src/sentry/occlusion.js": "2883ddebf8ace77b6881539eaab192f43c59c841a4995ff7410cc6e1848eb652",
+    "src/sentry/input-suspension.js": "64c0df5f176c66b9e6831a7910406a023e27b62ce1ad051cac07862566ac9b72",
+    "src/sentry/ui.js": "99c9617fbdbb7411e96815dc7aeef46d016ed17f232ca3ff1bda7246e38562ba",
+    "src/sentry/ui.css": "cebc5c2f433b6417fc41b641c2f931dd0b96e54a8bdc1d78836c3d8b4395de17",
+    "src/inventory/ship-access.js": "4f5aceeffacb2e1a220e25b56389d97fb5dde8e279516239b639c8f346559a17",
+    "src/sentry/render.js": "844f1965e650f2484fb7604571d1e8ad5d795dbdd06d496e269e9f1709655d94",
+    "src/planet-rotation.js": "c22a4a2ed520022470231057b832bc0aeb3d2ad64531f41f06d494205693bcae",
+    "src/navigation-rotation.js": "00074b096e0dec5af9433d015ee0bdeaddf193bb4b90d954957997a6d8e1f60f",
+    "src/planet-render-frames.js": "f92f7949b3271a91a7dc88e312ed077895f03ed70151849930f7030dc4bc26e8",
+    "src/multiplayer/client.js": "93737d45bea5f9cf5537f66d14e4ea6e3767705cc98bbf8122e09717f152aaf3",
+    "server/index.js": "fb231dd5360561bdf004b6109016f1f36ebc47dcd644dc61bc34edd7c174b046",
+    "server/room.js": "53aff9f9a19561ff66f85090b97307f0a28bc4a4f8bb2499612461f98d9be018",
+    "server/sentry.js": "07a703d57d11f4ffb0caecf79d935d12136a392f94ce8aadf09154730af2a5d1",
+    "server/security.js": "19ba06fb6a48be4b081dd43cadf196337ac152ea70a56083ba621db858ef44fc",
+    "server/combat.js": "8c18bededf7228030127de95acecbca143795c60c14c7f23aefef603b28c8046",
+    "public/models/burrow-sentry.glb": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387"
+  },
+  "schemaOrResetCommand": false,
+  "forcedKill": false,
+  "publicDeployment": false,
+  "validation": {
+    "normal": {
+      "pass": 1274,
+      "files": 165,
+      "seconds": 42.528
+    },
+    "multiplayer": {
+      "pass": 226,
+      "optionalSkips": 2,
+      "seconds": 46.128,
+      "execution": "Serialized; initial concurrent live/social timeouts retained."
+    },
+    "build": {
+      "pass": true,
+      "seconds": 36.49,
+      "mainBundle": "main-B1cWJYXl"
+    },
+    "newAccessCoverage": {
+      "actualRoomCases": 2,
+      "pass": 2,
+      "seconds": 2.103
+    },
+    "browser": {
+      "original": "sentry-2026-09-09T01-09-55.235Z",
+      "runtime": "6334b98",
+      "soloController": "PASS 1.5 min",
+      "keyboardNativeTouch": "PASS 1.6 min",
+      "twoClients": "All gameplay, inventory and physical return assertions completed in 5.0 min; both connected.",
+      "originalRunnerExit": 1,
+      "originalDeferredFailure": "Absolute rendered step cap during a long frame gap.",
+      "acceptance": "Timestamp-aware replay of the unchanged original evidence, independently verified by parent.",
+      "applicationErrors": [],
+      "applicationWarnings": [],
+      "retainedIssues": [
+        "Two aborted music requests and Vite reset during context cleanup.",
+        "Browser09 socket rejection remains unresolved and was not reproduced in12."
+      ],
+      "physicalDevicesTested": false
+    },
+    "accessReanalysis": {
+      "time": "2026-09-09T01:28:44.295Z",
+      "checkerSHA256": "6a96748b74ad80a134fae83c07f30bc0a6b1b79a817e167b43d1789d61e3d308",
+      "results": [
+        {
+          "role": "pilot",
+          "samples": 220,
+          "originalSHA256": "61d8ec5c82e14240211ce8d0e844fa22db1656f7dfe193e73fa524c7f56d5a2d",
+          "largest": {
+            "index": 39,
+            "distance": 0.056666666753772466,
+            "elapsed": 0.05630000001192093,
+            "limit": 0.10852166667679947,
+            "beforeTime": 101888.29999995232,
+            "afterTime": 101944.59999996424
+          },
+          "retainedReplay": "PASS",
+          "compressedLongRouteJumpRejected": true
+        },
+        {
+          "role": "gunner",
+          "samples": 188,
+          "originalSHA256": "9ae77df319d92053b8a911aa6724be23fdc72d619673edc050c3c719f2fad7d6",
+          "largest": {
+            "index": 72,
+            "distance": 0.7282097233934484,
+            "elapsed": 0.976199999988079,
+            "limit": 0.8904366666565339,
+            "beforeTime": 234185.30000001192,
+            "afterTime": 235161.5
+          },
+          "retainedReplay": "PASS",
+          "compressedLongRouteJumpRejected": true
+        }
+      ],
+      "initialProbeCorrection": "The first parent probe compressed one ordinary 0.0567 m pilot snapshot step to 20 ms and wrongly expected rejection despite the explicit one-snapshot allowance. This corrected negative case compresses an actual route displacement over 0.6 m to 20 ms for each role. No checker or runtime change."
+    }
+  },
+  "unchangedOriginalCaptures": {
+    "solo-twin-beams.png": {
+      "original": "02-sentry-firing.png",
+      "sha256": "5f9b5c46377a2943357fb069c94207bdc661007b86bca8fd806634d7983d83ec"
+    },
+    "solo-gunner-sight.png": {
+      "original": "04-sentry-gunner-sight.png",
+      "sha256": "cadf1c46febe3c3cdadd21ae6f3573eea84ecae02025e6f9471d45212c670d69"
+    },
+    "two-crew-barrel-beams.png": {
+      "original": "05-two-crew-driving.png",
+      "sha256": "4369ae8981d388a222db1e3a620a435118c3283caeabc8802555e126c0124a86"
+    },
+    "gunner-sight.png": {
+      "original": "06-two-crew-gunner.png",
+      "sha256": "cc0d7b8dfaa83aa102ff3bab27b262e4f6678fb47c43cb7234cacc6e72fd4851"
+    },
+    "server-inventory.png": {
+      "original": "09-two-crew-server-inventory.png",
+      "sha256": "666bccdd1a0565e566f56c6ad4cfe5403e9e9c353de311638ae4093dcd8ee5fe"
+    },
+    "native-phone.png": {
+      "original": "08-sentry-native-phone.png",
+      "sha256": "50e2b1debd7a96f858c6c083af9957a97ccc373229f00e6e4e383bbcb082b362"
+    },
+    "native-phone-on-foot.png": {
+      "original": "10-sentry-phone-on-foot.png",
+      "sha256": "da387bc3641662e7d35d9fc837656739e652a2d90ca0a3f883f74e77f514ec8e"
+    }
+  },
+  "rawLocalReceiptNames": [
+    "integration-bdf053c579c5-20260909T013227Z/receipt.json",
+    "bdf053c579c5-20260909T013246Z/receipt.json"
+  ]
+}
