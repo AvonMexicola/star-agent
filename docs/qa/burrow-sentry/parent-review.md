@@ -1,8 +1,9 @@
 # Burrow Sentry parent review
 
 Status: [draft PR106](https://github.com/AvonMexicola/star-agent/pull/106) is open;
-full browser acceptance and local delivery remain pending. Cees retains product and release acceptance. This record
+the complete input journeys are verified and local delivery is pending. Cees retains product and release acceptance. This record
 does not claim an independent visual score or physical-controller testing.
+Earlier sections retain their original checkpoint scope; the latest evidence is below.
 
 The parent integration agent reviewed the delegated Sentry implementation, its
 authority and collision contracts, and the actual first browser captures. The
@@ -290,3 +291,99 @@ acceptance remains pending, queued after the actual Recovery08 job. The fixture
 now saves failed access samples in finally and records bounded passive outbound
 traffic plus incoming notices/acknowledgements. No disconnect fix is inferred
 from the passing CPU suites.
+
+
+Hosted run `34296422473` passes all five checks on parent metadata head
+`40677af` / game runtime `6334b98`: source, plan, multiplayer, browser and verify.
+This generic CI result still does not replace the dedicated Sentry journeys.
+
+Sentry10 was stopped at 00:52:38 UTC with SIGINT and unchanged source after the
+owner discovered that the ordinary build12 lacked the explicit QA entry flags.
+That is a build invocation error, not a gameplay failure. Runner correction
+`b63d43b` builds inside the acquired job with `VITE_DEV_TOOLS=1` and
+`VITE_MULTIPLAYER_ENTRY=1`, then hashes the actual HTML/JS/CSS bundle into a build
+receipt. Parent reviewed and consumed it. Sentry11's flagged build passes in
+4.30 s (`main-C7yzYpq9`), but Playwright then refused the already occupied private
+API port 8678 before launching a browser. The original no-browser failure and
+unchanged-source receipt remain retained. Cleanup of the interrupted test's own
+verified services is required before the next journey; no shared preview was
+restarted or another owner's process stopped.
+
+Parent reviewed and consumed QA-only `d051d9b`. Cleanup requires the exact
+worktree, Node executable and command, process start time, and unique test-run
+token before signalling a process. The retained `verified-cleanup.json` identifies
+only Sentry10's memory API and preview; both stopped gracefully and the final
+owned-process list is empty. The runner records this cleanup after each job and
+fails if an owned service survives. Recovery09 acquired the shared browser during
+that repair, so Sentry12 follows its actual release. Game runtime remains
+`6334b98`; no application, rate-limit or shared-service change accompanies this
+harness correction.
+
+
+## Dedicated browser run 12
+
+Run `sentry-2026-09-09T01-09-55.235Z` acquired the shared browser after Recovery09
+released it. The guarded production build passes in 4.21 s with both explicit QA
+entry flags and `main-C7yzYpq9`; its receipt hashes 44 HTML/JS/CSS files. Parent
+compared all 35 frozen source hashes against the integration candidate: all match.
+
+The complete solo controller route passes in 1.5 minutes. Both physical boarding
+routes, driving/reversing, firing, backpack return, held-input suppression,
+controller replacement/disconnection and trusted native blur/focus complete.
+Maximum observed boarding steps are 0.085 m for the pilot and 0.042585 m for the
+gunner; the player finishes on foot. Errors, warnings and request failures are
+empty. Parent inspected the actual exterior, twin-barrel firing and gunner-view
+captures, including the unobstructed central sight.
+
+Keyboard and native Chromium touch pass in 1.6 minutes. The 390×844 phone capture
+and hit tests show all six walking/action buttons reachable before boarding and
+after exit; an actual held touch moves the player after leaving. Both keyboard
+and phone routes finish on foot, with no application errors, warnings or failed
+requests. Parent inspected the phone firing and on-foot screenshots. These are
+injected standard Gamepad and Chromium touch contacts, not physical-device tests.
+Desktop resolution is 1440×900, Chromium 151.0.7922.173, ANGLE AMD Radeon 860M /
+OpenGL ES 3.2. No performance acceptance is inferred.
+
+The five-minute two-client journey completed every gameplay assertion: real
+station/EVA access, both seats, simultaneous drive/gunner fire, neutral pilot
+fallback, controller and panel server inventory, and both physical exits. Both
+clients remain connected at the final snapshots. Parent inspected both crew
+captures. Application errors and warnings are empty; two aborted music requests
+and Vite's connection-reset output during context cleanup remain recorded.
+Passive traffic peaks at 23/24 messages per fixed second. Browser09's earlier
+disconnect did not recur; its cause remains unresolved.
+
+The original runner still reports 2 PASS / 1 FAIL, exit 1, unchanged source and
+no surviving private services. Its sole failed gameplay-test assertion was the
+absolute 0.6 m rendered-step cap: a 0.728210 m step followed a 668.5 ms render gap,
+with 976.2 ms since that previous distinct authoritative pose first arrived.
+QA correction `c31d9ee` measures the actual 0.85 m/s route against that elapsed
+time, one existing 15 Hz publication interval and the existing 4 mm tolerance.
+It does not change game movement or increase a distance cap. Both real-room
+pilot/gunner routes pass per-tick and delayed-render checks; compressing the same
+long displacement to 20 ms is rejected.
+
+Parent independently verified the checker and original trace hashes, replayed
+both full traces and rejected compressed long jumps for both roles. The gunner
+sample is within its 0.890437 m time-based bound. This accepts the retained
+complete journey through corrected evidence analysis; it does not relabel the
+original runner exit or claim a new browser run. The parent audit also retains
+its first negative-probe mistake: one ordinary snapshot step can correctly fit
+the publication allowance even when observed after only 20 ms.
+
+## Final Recovery composition
+
+Checked shared Recovery `d3cbde3` and delivery metadata `2b28036` are consumed in
+private runtime composition `bdc4bd5` / records `b46eda1`. Two main conflicts are
+strictly additive update/state hooks; all 165 normal test files remain registered.
+Sentry modules, navigation, server and GLB runtime bytes remain `6334b98`, with
+protocol 10. No pending owner edits were copied.
+
+All 1,274 normal cases pass in 42.528 s and production build passes in 36.49 s
+(`main-B1cWJYXl`). The first concurrent server run passes 224 cases but times out
+in the live-socket and social fixtures, with two optional skips. The corrected
+serialized invocation puts Node's concurrency flag before the test paths and
+runs without competing parent checks: all 226 cases pass, two existing optional
+skips, 46.128 s. Original failures remain in `recovery-composition01/`. Repository
+checks cover 367 paths and the suggested plan ran. The subsequent access change
+adds QA/regression coverage only; its two actual-room checks pass separately.
