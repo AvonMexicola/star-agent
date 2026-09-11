@@ -55,7 +55,7 @@ test('promenade export fits its per-assembly budgets and measured bounds', async
   const { scene, bytes } = await asset();
   scene.updateMatrixWorld(true);
   const manifest = JSON.parse(scene.userData.assetManifest);
-  assert.equal(manifest.length, 29, 'every storefront, fixture and the bulkhead is measured independently');
+  assert.equal(manifest.length, 32, 'every storefront, fixture and the bulkhead is measured independently');
   const allowed = manifest.map(({ bounds }) => new THREE.Box3(vector(bounds.min), vector(bounds.max)).expandByScalar(.002));
   let triangles = 0, meshes = 0;
   const point = new THREE.Vector3();
@@ -76,7 +76,7 @@ test('promenade export fits its per-assembly budgets and measured bounds', async
   }
   assert.ok(bytes <= manifest.reduce((sum, assembly) => sum + assembly.standaloneBytes, 0), 'batching is smaller than the complete individual exports');
   assert.equal(meshes, 10, 'one static draw per physical finish');
-  assert.ok(bytes <= 4_300_000, `promenade download ${bytes}`);
+  assert.ok(bytes <= 4_400_000, `promenade download ${bytes}`);
   // This kit ships no image maps; the station finish generates metre UVs at
   // load, so a second authored UV channel on 150k vertices is not exported.
   assert.ok(!scene.getObjectByProperty('isMesh', true).geometry.hasAttribute('uv'));

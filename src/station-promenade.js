@@ -4,6 +4,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { stationFinishPalette } from './station-finish-palette.js';
 import { assetCollisionBoxes } from './station-concourse.js';
 import { STATION_HUB_PORTAL } from './station-hub-policy.js';
+import { createCosmicChickenGraphics } from './station-cosmic-chicken.js';
 
 /** The retail promenade runs aft from the concourse portal. This module owns the
  * pressurised shell, glazing, suspended gantry and lighting in local metres;
@@ -20,7 +21,7 @@ export const PROMENADE_VOLUMES = Object.freeze([
 ]);
 /** Counter approach points, 0.9 m clear of each customer face. */
 export const PROMENADE_SHOPS = Object.freeze([
-  Object.freeze({ shopId: 'galley', node: 'Galley', name: 'LONGREACH GALLEY', x: -8.6, z: -25.7 }),
+  Object.freeze({ shopId: 'galley', node: 'Galley', name: 'COSMIC CHICKEN', x: -8.6, z: -25.7 }),
   Object.freeze({ shopId: 'outfitter', node: 'Outfitter', name: 'TIDEWELL OUTFITTERS', x: 8.6, z: -25.7 }),
   Object.freeze({ shopId: 'hydroponics', node: 'Hydroponics', name: 'GREENSIDE HYDROPONICS', x: -8.6, z: -38.9 }),
   Object.freeze({ shopId: 'souvenir', node: 'Souvenir', name: 'WAYPOINT SOUVENIRS', x: 8.6, z: -38.9 }),
@@ -54,12 +55,14 @@ export const PROMENADE_SEALED_DOOR = Object.freeze({ z: -48.9, halfWidth: 3.7, a
 export const SEALED_DOOR_LABEL = 'DECK 05 SEALED · HABITAT TERRACES ARE STILL BEING FITTED OUT';
 const SHOP_RADIUS = 1.9;
 
-/** Seen from the concourse, an unlit corridor behind the portal reads as a hole
- * rather than a route, so the three corridor lights follow the hub itself. The
- * four unit lights, which only matter once a storefront is in view, switch on
- * while the player is still short of the portal and cannot see into a side unit,
- * so their light-count change is never a visible pop. */
-const UNIT_LIGHT_Z = -12;
+/** Every promenade light follows the hub itself, on and off together with the
+ * concourse lights. A first version switched the four unit lights on only as the
+ * player neared the portal; that changed Three's light count mid-walk, which
+ * forces every material onto a differently compiled program, and the driver
+ * paid for those compiles as a visible freeze right before the new area. One
+ * light configuration for the whole hub means one compile, at hub entry, where
+ * the concourse lights already cause it. The four extra spots cost the
+ * concourse some fragment work; the freeze cost the player the room. */
 
 export function createPromenade({ sign }) {
   const group = new THREE.Group(); group.name = 'Retail promenade';
@@ -148,19 +151,18 @@ export function createPromenade({ sign }) {
   // concourse spotlights remain the only shadow casters in the occupied hub.
   // A point light this close under a ceiling blows the ceiling out; a cone
   // aimed down lights the floor, fixtures and lower walls instead.
-  const lights = [], corridorLights = [], unitLights = [];
-  for (const [x, y, z, distance, intensity, unit] of [
+  const lights = [];
+  for (const [x, y, z, distance, intensity] of [
     // The aft light stands well clear of the bulkhead: hung any closer it blew
     // out the door's large flat cassettes in the actual game capture.
-    [0, -3.62, -21.5, 30, 360, false], [0, -3.62, -32.3, 34, 400, false], [0, -3.62, -43.6, 30, 250, false],
-    [-8.8, -4.72, -25.7, 22, 230, true], [8.8, -4.72, -25.7, 22, 230, true],
-    [-8.8, -4.72, -38.9, 22, 230, true], [8.8, -4.72, -38.9, 22, 230, true],
+    [0, -3.62, -21.5, 30, 360], [0, -3.62, -32.3, 34, 400], [0, -3.62, -43.6, 30, 250],
+    [-8.8, -4.72, -25.7, 22, 230], [8.8, -4.72, -25.7, 22, 230],
+    [-8.8, -4.72, -38.9, 22, 230], [8.8, -4.72, -38.9, 22, 230],
   ]) {
     const light = new THREE.SpotLight(p.ivory, intensity, distance, 1.45, .6, 2);
     light.position.set(x, y, z); light.target.position.set(x, -8, z);
     light.castShadow = false; light.visible = false;
     group.add(light, light.target); lights.push(light);
-    (unit ? unitLights : corridorLights).push(light);
   }
   const volumes = PROMENADE_VOLUMES.map(({ min, max }) => new THREE.Box3(new THREE.Vector3(...min), new THREE.Vector3(...max)));
   return {
@@ -179,14 +181,13 @@ export function createPromenade({ sign }) {
      * hub at all. */
     update(local) {
       const inHub = Boolean(local);
-      for (const light of corridorLights) light.visible = inHub;
-      for (const light of unitLights) light.visible = inHub && local.z < UNIT_LIGHT_Z;
+      for (const light of lights) light.visible = inHub;
     },
   };
 }
 
 /** Runtime labels for the authored storefronts, counters, directory and door. */
-export function attachPromenade(hub, asset, { sign, materials }) {
+export function attachPromenade(hub, asset, { sign, materials, cosmicChicken }) {
   const promenade = hub.promenade;
   if (!promenade) throw new Error('The hub has no promenade to attach to.');
   const props = asset.scene.clone(true);
@@ -209,6 +210,7 @@ export function attachPromenade(hub, asset, { sign, materials }) {
   if (doorPanel) sign(doorPanel, 'SEALED\nNO ENTRY', [0, 0, 0], .32, .56, 0);
   const notice = props.getObjectByName('SealedDoorNotice');
   if (notice) sign(notice, 'FIT-OUT\nIN PROGRESS\n\nNO PUBLIC\nACCESS', [0, 0, 0], .42, .6, 0);
+  if (cosmicChicken) promenade.group.add(createCosmicChickenGraphics(props, cosmicChicken));
   return props;
 }
 

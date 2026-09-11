@@ -607,13 +607,97 @@ two-box stand-in and toggles it with the hub shell.
 Promenade fixtures use seven shadowless spot lights aimed at the deck. A point
 light hung under a low ceiling blows the ceiling out; a cone aimed down lights
 the floor, fixtures and lower walls. Keep an aft light well clear of the bulkhead
-it faces, or its large flat cassettes blow out at walking distance. The three
-corridor lights follow the hub, because an unlit corridor seen from the concourse
-reads as a hole rather than a route; the four unit lights switch on before the
-portal, where no side unit is in view, so their light-count change is not a pop.
+it faces, or its large flat cassettes blow out at walking distance. **Never
+change the light count while the player walks.** A first version switched the
+four unit lights on near the portal; Three then recompiles every material for
+the new count and the driver pays for it as a freeze at that exact spot. All
+seven follow the hub together, so the only compile is the one hub entry already
+causes.
 
 Take a room with no shadow-casting light back out of shadow casting **after** the
 station finish applies its materials: the finish enables `castShadow` on every
 material it replaces, so the promenade was being drawn into shadow maps it can
 never appear in. Fixing that took its measured cost at the entry pose from +82
 draws / +308,952 triangles to +34 / +78,292 — its own geometry, once.
+
+## Hub walking cost and the tenant fit-out — 2026-09-10
+
+Reported symptom: momentary freezes while walking the promenade, one of them
+always right before the portal. Measure before fixing, and know what the
+measurement can see. `scripts/promenade-profile.spec.js` drives the route from
+inside the page — a Playwright round trip per frame costs tens of milliseconds
+and buries the stall you are hunting — and wraps the WebGL calls that can block.
+
+**A wrapped call cannot see the GPU process.** Chromium's driver runs there; a
+shader compile or an upload that stalls it returns to the page at once and shows
+as a long frame with no event, indistinguishable from a garbage collection. The
+first pass read "zero driver time" as "not the GPU" and went after allocation.
+The 1.1 s frame at the portal was in fact every material in view recompiling,
+because four unit lights switched on at Z −12 and changed Three's light count;
+it repeated at 350–420 ms on every later crossing. Never change the number of
+visible lights while the player is walking: a room's lights follow the hub as
+one configuration, compiled once at hub entry. The profiler now also samples
+Long Tasks and the JS heap per frame — page-thread time and collections — so a
+long frame with neither is the GPU process. With the lights constant, a
+production build on ANGLE D3D11 walks the whole route with nothing at either
+portal crossing.
+
+**Nothing culls what a wall hides, and a program compiles on its first draw.**
+The stall left after the light fix, at the first look into the galley, was five
+programs for the docked ship's and the handhelds' materials — `Nomad / cabin
+manufactured PBR`, the reentry hull shader, the glazing, `Meridian weapon` —
+linking for the hub's light configuration. Facing across the hub sweeps the
+berth ring; the ship enters the frustum a kilometre away behind two walls, is
+drawn, and links there: 105 ms with a warm driver shader cache, two seconds
+with a cold one, and an incognito window is always cold. Record program
+creation per frame (`renderer.info.programs`) and diff each new program's
+cache key against a sibling; it names the material and the parameter that
+changed without guessing. Compile the *scene* for a light configuration the
+moment it applies (`station.onHubLit` → `compileForFrame(scene)`), not a
+subtree the offending object is not in. And bind the frame's render target
+while compiling: Three keys programs on the bound target's colour space and
+tone mapping, the scene renders through the atmosphere's target, and a compile
+against the bare canvas — which the startup `compileAsync` was — prepares
+programs the frame never uses.
+
+Four allocation removals on the walking path, kept because each strictly
+removes work; no frame-time improvement is claimed for them.
+`StationComplex.constrainStep` built a fresh
+collision array by spread every frame for each of twenty-one frames; it now
+refills one buffer. `elevatorBoxes` allocated an array, two boxes and four
+vectors per frame object — 126 objects a frame for two doors — so
+`updateElevatorBoxes` writes into the lift's own pair and the allocating form
+stays for tests. `stationPhysicsAt` allocated a vector for each of twenty berths
+on every query; it now probes with one shared vector and clones only the result
+a caller keeps. Together about 190 allocations a frame.
+
+Do not give collision to geometry a body cannot reach. The suit's eye is 1.75 m,
+its head 1.9 m, and a 4.5 m/s jump under 9.81 m/s² peaks at 1.03 m: nothing above
+3.07 m is touchable. Over half the promenade's authored boxes were ceiling skins,
+beams, downstands and fascias being swept every frame for nothing. The exporter
+now drops any architecture box entirely above 3.1 m, taking the kit from 210
+boxes to 99 and the hub's per-frame sweep list from 287 to 173. The pressurised
+shell above them is separate procedural geometry and still stops a ship.
+
+COSMIC CHICKEN is the galley unit's named tenant. `wall_print` in the promenade
+builder makes a print cassette on any wall — backplate, paper, folded channels,
+fasteners — and `src/station-cosmic-chicken.js` hangs runtime textures on its
+anchors, 2 mm off the paper, as the concourse campaigns do. Three prints, three
+draws, no collider, no shadow caster, and a plain board if an image fails. The
+menu board carries a restrained emissive map so it reads as an illuminated
+board without adding a light. Supplied poster masters had a broken wordmark
+glyph — they read COSAIC — so `scripts/cosmic-chicken-textures.mjs` lifts the
+correct word from the menu master into the derivative and leaves the masters
+untouched. A tenant's decorative menu is not a second economy: the purchase
+catalogue stays in `station-shop.js` and still states what is unimplemented.
+
+Read a kit anchor back through its parent's inverse matrix, never as a raw world
+position. The station finish attaches after the station has been placed and
+rebased, so `anchor.getWorldPosition()` used as a local position put the three
+prints about 2.7 million metres from their cassettes and every board showed bare
+paper — while the unit test passed, because its scene sat at the origin. The
+concourse campaigns already did this correctly (`inverseParent` in
+`station-shop-graphics.js`); the Cosmic Chicken hanger now does the same, and
+its test places the parent at −416, −824, 435 m under the station's base
+rotation before measuring plane-to-anchor distance. Any test of anchored runtime
+geometry needs a moved, rotated parent, or it proves nothing about the game.

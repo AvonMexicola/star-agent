@@ -5,13 +5,17 @@ export const STATION_GRAVITY = 9.81;
 
 /** Station physics uses authored local volumes, independently of berth ownership
  * or the renderer's selected pod. World transforms remain JavaScript doubles. */
+const probe = new THREE.Vector3();
 export function stationPhysicsAt(station, position) {
   if (!station?.ready) return null;
   const frames = station.pods ?? [station];
   for (const frame of frames) {
-    const local = frame.toLocal(position, new THREE.Vector3());
+    // Twenty berths are tested on every query, and this runs more than once a
+    // frame while walking. Probe with one shared vector and only allocate the
+    // result the caller keeps.
+    const local = frame.toLocal(position, probe);
     if (!frame.interiorBox.containsPoint(local)) continue;
-    return { id: `hangar:${frame.id ?? 1}`, frame, local, up: frame.up, gravity: STATION_GRAVITY };
+    return { id: `hangar:${frame.id ?? 1}`, frame, local: local.clone(), up: frame.up, gravity: STATION_GRAVITY };
   }
   return stationHubAt(station,position);
 }

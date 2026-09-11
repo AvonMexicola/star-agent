@@ -139,3 +139,15 @@ export function updateElevator(lift,dt){
 export function elevatorBoxes(lift){
   return lift.leaves.map(leaf=>new THREE.Box3(new THREE.Vector3(leaf.position.x-1.02,lift.floor,lift.z-.065),new THREE.Vector3(leaf.position.x+1.02,lift.floor+3.1,lift.z+.065)));
 }
+/** The same two boxes written into the lift's own pair. Twenty-one frames ask
+ * for these on every walking step; the allocating form above stays for tests
+ * and one-off queries that keep the result. */
+export function updateElevatorBoxes(lift){
+  const cache=lift.boxes??=[new THREE.Box3(),new THREE.Box3()];
+  for(let i=0;i<lift.leaves.length;i++){
+    const leaf=lift.leaves[i];
+    cache[i].min.set(leaf.position.x-1.02,lift.floor,lift.z-.065);
+    cache[i].max.set(leaf.position.x+1.02,lift.floor+3.1,lift.z+.065);
+  }
+  return cache;
+}

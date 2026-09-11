@@ -13,7 +13,7 @@ const frames = (page, n = 3) => page.evaluate(n => new Promise(resolve => {
   requestAnimationFrame(tick);
 }), n);
 const SHOPS = [
-  { id: 'galley', name: 'LONGREACH GALLEY', at: [-8.6, -25.7], lane: [-3.4, -25.7], buy: 'Buy Brew flask for 12 credits', item: 'brew', price: 12 },
+  { id: 'galley', name: 'COSMIC CHICKEN', at: [-8.6, -25.7], lane: [-3.4, -25.7], buy: 'Buy Brew flask for 12 credits', item: 'brew', price: 12 },
   { id: 'outfitter', name: 'TIDEWELL OUTFITTERS', at: [8.6, -25.7], lane: [3.4, -25.7], buy: 'Buy Work gloves for 60 credits', item: 'gloves', price: 60 },
   { id: 'hydroponics', name: 'GREENSIDE HYDROPONICS', at: [-8.6, -38.9], lane: [-3.4, -38.9], buy: 'Buy Culinary herb pot for 45 credits', item: 'herbs', price: 45 },
   { id: 'souvenir', name: 'WAYPOINT SOUVENIRS', at: [8.6, -38.9], lane: [3.4, -38.9], buy: 'Buy Printed system chart for 25 credits', item: 'chart', price: 25 },
@@ -319,27 +319,50 @@ async function keyTurn(page, frame, x, z, limit = 400) {
   }
   throw new Error('Keyboard view did not converge');
 }
+const localPosition = (page, frame) => page.evaluate(frame => {
+  const n = window.starAgent.navigation;
+  return (frame === 'ship' ? n.toShipLocal() : n.stationLocal)?.toArray() ?? null;
+}, frame);
+/** Hold one movement key and report how far the body actually travelled. */
+async function keyProbe(page, frame, key, count) {
+  const from = await localPosition(page, frame);
+  await page.keyboard.down(key); await frames(page, count); await page.keyboard.up(key);
+  const to = await localPosition(page, frame);
+  return from && to ? Math.hypot(to[0] - from[0], to[2] - from[2]) : 0;
+}
 async function keyWalk(page, frame, x, z, label) {
   await focusGame(page);
   const deadline = Date.now() + 180000;
-  let best = Infinity, stalled = 0, side = 1, at;
+  let best = Infinity, stalled = 0, side = 1, recoveries = 0, at;
   while (Date.now() < deadline) {
     at = await keyTurn(page, frame, x, z);
     if (at.d < .35) { await page.keyboard.up('KeyW'); await note(page, `keyboard ${label}`); return at; }
-    if (at.d < best - .1) { best = at.d; stalled = 0; }
+    if (at.d < best - .05) { best = at.d; stalled = 0; recoveries = 0; }
     else if (++stalled > 8) {
-      // Step around station furniture with the strafe keys, as a player would,
-      // alternating sides and backing off a little if one side is also blocked.
-      stalled = 0; side = -side;
-      const key = side > 0 ? 'KeyD' : 'KeyA';
-      await page.keyboard.down('KeyS'); await frames(page, 5); await page.keyboard.up('KeyS');
-      await page.keyboard.down(key); await frames(page, 22); await page.keyboard.up(key);
+      stalled = 0; side = -side; recoveries++;
+      if (recoveries < 3) {
+        // Step around station furniture with the strafe keys, as a player
+        // would, alternating sides and backing off a little first.
+        const key = side > 0 ? 'KeyD' : 'KeyA';
+        await page.keyboard.down('KeyS'); await frames(page, 5); await page.keyboard.up('KeyS');
+        await page.keyboard.down(key); await frames(page, 22); await page.keyboard.up(key);
+      } else {
+        // Wedged in a corner of furniture: a player feels for the open side.
+        // Try each direction briefly, then commit to the one that moved.
+        let open = 'KeyS', moved = 0;
+        for (const key of ['KeyS', 'KeyA', 'KeyD', 'KeyW']) {
+          const travelled = await keyProbe(page, frame, key, 8);
+          if (travelled > moved) { moved = travelled; open = key; }
+        }
+        await page.keyboard.down(open); await frames(page, 30); await page.keyboard.up(open);
+      }
       best = Infinity;
     }
     await page.keyboard.down('KeyW'); await frames(page, 6); await page.keyboard.up('KeyW');
   }
   await page.keyboard.up('KeyW');
-  throw new Error(`Keyboard route blocked at ${label}: ${JSON.stringify(at)}`);
+  const where = await localPosition(page, frame);
+  throw new Error(`Keyboard route blocked at ${label}: ${JSON.stringify({ ...at, where: where?.map(v => +v.toFixed(2)) })}`);
 }
 
 test('keyboard and a phone viewport reach the same storefronts and the sealed door', async ({ page }) => {
@@ -379,7 +402,7 @@ test('keyboard and a phone viewport reach the same storefronts and the sealed do
   await keyWalk(page, 'station', -3.4, -26.4, 'galley frontage');
   await keyWalk(page, 'station', -6.8, -26.6, 'galley aisle');
   await keyWalk(page, 'station', -8.6, -25.7, 'galley counter');
-  expect((await state(page)).interaction).toContain('LONGREACH GALLEY');
+  expect((await state(page)).interaction).toContain('COSMIC CHICKEN');
   await page.keyboard.press('KeyF');
   await expect(page.locator('#station-shop-dialog')).toBeVisible();
   const before = await state(page);

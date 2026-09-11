@@ -7,15 +7,23 @@ submission needs a fork. Work is in a private clone; no shared checkout was
 switched and no server was left running.
 
 Owned files: `blender/build_station_promenade.py`, `public/models/station-promenade.glb`,
-`src/station-promenade.js`, `tests/station-promenade.test.js`,
-`scripts/station-promenade.spec.js`, `scripts/promenade.config.js`,
+`src/station-promenade.js`, `src/station-cosmic-chicken.js`,
+`assets/cosmic-chicken/` (masters, provenance), `public/textures/station/cosmic-chicken-*.webp`,
+`scripts/cosmic-chicken-textures.mjs`, `tests/station-promenade.test.js`,
+`tests/station-cosmic-chicken.test.js`, `scripts/station-promenade.spec.js`,
+`scripts/promenade.config.js`, `scripts/promenade-profile.spec.js`,
+`scripts/promenade-inspect.spec.js`, `scripts/promenade-profile.config.js`,
 `docs/qa/station-promenade/`. Narrow edits to shared modules:
 `src/station-concourse.js` (aft wall portal only), `src/station-hub-policy.js`
-(multi-volume hub frame), `src/station-architecture.js` (`createHub`),
-`src/station-complex.js` (load, attach, interaction, annex shell, lights),
-`src/station-shop.js`, `src/ship-inventory.js`, `src/station-shop.css`,
-`package.json` (one test file), `tests/station-shop-props.test.js` (one fixture
-field), `docs/development/testing.md`, `STATION-PIPELINE-MEMORY.md`.
+(multi-volume hub frame), `src/station-architecture.js` (`createHub`,
+non-allocating `updateElevatorBoxes`), `src/station-physics.js` (shared probe
+vector), `src/station-complex.js` (load, attach, interaction, annex shell,
+lights, reusable sweep buffer), `src/station-shop.js`, `src/ship-inventory.js`,
+`src/station-shop.css`, `src/main.js` (hub-entry scene compile bound to the
+frame's render target, the same binding for the startup compile, and a
+dev-only `renderer` getter beside the existing `navigation` one),
+`package.json` (two test files), `tests/station-shop-props.test.js` (one
+fixture field), `docs/development/testing.md`, `STATION-PIPELINE-MEMORY.md`.
 
 ## What changed and what remains
 
@@ -25,10 +33,30 @@ double sided, 3.09 m clear underneath. Through the portal a 30 m promenade runs
 aft: entry bay, two storefronts, a glazed mid court with seating and planting
 that keeps the station panorama, two more storefronts, and a locked Deck 05
 pressure door that reports itself sealed rather than silently stopping the
-player. Four catalogues — LONGREACH GALLEY, TIDEWELL OUTFITTERS, GREENSIDE
+player. Four catalogues — COSMIC CHICKEN, TIDEWELL OUTFITTERS, GREENSIDE
 HYDROPONICS, WAYPOINT SOUVENIRS — sell eight new items as stored cargo through
 the existing shop modal, dialog router and F/interact action. No combat, ship,
 survival or income effect; finite stock; everyday PG content.
+
+The galley unit is dressed as the COSMIC CHICKEN tenant: three print cassettes
+authored in the kit, with two posters and an illuminated menu board hung on them
+at runtime from contributor-generated artwork (ChatGPT / Imagen 2.5, prompt
+recorded in `assets/cosmic-chicken/README.md`). The board is decoration; the
+catalogue is the honest list of what a purchase delivers.
+
+Three defects found through the contributor's own play-test are fixed and
+covered: the prints rendered as bare paper because the hanger used anchor world
+positions as local ones on an already-placed station (regression test under a
+moved, rotated parent); a freeze just before the portal, caused by four unit
+lights switching on mid-walk and forcing every material onto a recompiled
+program — all promenade lights now follow the hub with the concourse lights; and
+a stall at the first look into a unit, which the profiler's program dump traced
+to the docked ship's and handhelds' materials linking under hub lighting when a
+berth enters the frustum behind the walls — the whole scene is now compiled for
+the hub's configuration at hub entry, with the compile bound to the frame's
+render target (the game's startup compile had been preparing programs the frame
+never used). The walking path also sheds about 190 allocations a frame and 111
+unreachable collision boxes.
 
 The hub frame now owns three walkable volumes instead of one. `hubFrameMethods()`
 replaces `Station`'s single-box `deckPoint`, `deckHeightAt` and `isInsideHangar`
@@ -60,9 +88,10 @@ run; they fail identically without this change. `npm run check:repo` passes
 browser suite's production web server.
 
 Asset rebuild: Blender 5.2.1 LTS, deterministic, `PROMENADE_EXPORT` summary
-emitted, 4,239,556 B / 73,724 triangles / 10 draws / 29 measured assemblies,
-largest 4,480 triangles and 308,596 standalone bytes, all inside the 10k/1 MB
-prop budget the builder itself enforces.
+emitted, 4,318,192 B / 75,420 triangles / 10 draws / 32 measured assemblies /
+99 collision boxes, largest 4,480 triangles and 308,596 standalone bytes, all
+inside the 10k/1 MB prop budget the builder itself enforces. Three runtime
+textures, 819×1024, 819×1024 and 1024×768 WebP, 235 KB together.
 
 `npm run test:browser -- -c scripts/promenade.config.js` against a production
 build, Chromium 151.0.7922.34, ANGLE / AMD Radeon integrated, 1440×900 at render
@@ -72,11 +101,27 @@ storefronts entered, one item bought in each through controller focus and A, eac
 modal closed with B while a stick was held with no player movement, refused at
 the sealed door, then the whole route walked back. **Keyboard and phone journey:
 passed** on the same room with the gamepad removed, including a purchase and a
-390×844 capture of both the corridor and the catalogue. Injected `Gamepad` input
-is not physical hardware and is reported as such.
+390×844 capture of both the corridor and the catalogue; its first attempt on the
+final tree wedged the test walker in the galley's standing-rail corner, the
+walker's recovery was improved and the rerun passed, with the authored collision
+boxes checked against both routes. Injected `Gamepad` input is not physical
+hardware and is reported as such.
 
-Fixed-camera on/off pairs measure the room at +34 draws / +78,292 triangles at
-the promenade entry and +41 / +78,306 from the concourse — its own geometry once.
+Fixed-camera on/off pairs measure the room at +34 draws / +79,988 triangles at
+the promenade entry and +44 / +80,008 from the concourse — its own geometry once,
+plus three print draws.
+
+In-page walk profile, `scripts/promenade-profile.config.js` on a production
+build, ANGLE D3D11, dev server stopped. With the lights fixed: complete route,
+1,839 walking frames, median 49.9 ms, p95 66.7 ms, nothing at any of the four
+portal crossings, one stall left at the first look into the galley (eight
+program links, 105 ms warm and 1,983 ms cold). With the hub-entry scene compile
+as well: complete route, 1,820 walking frames, median 49.9 ms, p95 66.7 ms,
+longest 116.8 ms with nothing attributed, no spike at any of the four portal
+crossings, 162 programs before and after the walk — none created; summary
+committed as `docs/qa/station-promenade/browser/profile/profile-d3d11.json`.
+Before the light fix the route stalled 1.1 s one frame after "before the
+portal" and 350–420 ms at every later crossing.
 Before the shadow-casting correction the same pose measured +82 / +308,952. Two
 defects found by this evidence and fixed: laid floor finishes and threshold
 plates had collision and stopped the player in every shop doorway; one assembly

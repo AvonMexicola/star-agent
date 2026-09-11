@@ -586,6 +586,52 @@ def souvenir_stock(unit):
 
 # ------------------------------------------------------------ shared promenade
 
+def wall_print(name, centre, width, height, axis, facing, colour='Ochre'):
+    """A replaceable print cassette mounted flat on a wall: recessed backplate,
+    paper backing, folded edge channels and captive fasteners. `axis` is the
+    wall's normal axis and `facing` points into the room. The runtime hangs the
+    actual artwork 2 mm off the paper, exactly like the concourse campaigns."""
+    global ASSEMBLY
+    ASSEMBLY = name + 'Frame'
+    cx, cy, cz = centre
+    if axis == 'x':
+        place = lambda d: (cx + facing*d, cy, cz)
+        flat = lambda t, w, h: (t, h, w)
+        rails = [((cx + facing*.03, cy, cz + sv*(width/2 + .03)), (.05, height + .12, .055)) for sv in (-1, 1)]
+        caps = [((cx + facing*.03, cy + sv*(height/2 + .03), cz), (.05, .055, width + .12)) for sv in (-1, 1)]
+        studs = [(cx + facing*.056, cy + sy*(height/2 - .035), cz + sz*(width/2 + .03)) for sy in (-1, 1) for sz in (-1, 1)]
+    else:
+        place = lambda d: (cx, cy, cz + facing*d)
+        flat = lambda t, w, h: (w, h, t)
+        rails = [((cx + sv*(width/2 + .03), cy, cz + facing*.03), (.055, height + .12, .05)) for sv in (-1, 1)]
+        caps = [((cx, cy + sv*(height/2 + .03), cz + facing*.03), (width + .12, .055, .05)) for sv in (-1, 1)]
+        studs = [(cx + sx*(width/2 + .03), cy + sy*(height/2 - .035), cz + facing*.056) for sx in (-1, 1) for sy in (-1, 1)]
+    box('Wall backplate', place(.022), flat(.045, width + .13, height + .13), 'Dark')
+    box('Paper backing', place(.047), flat(.008, width, height), 'Paper', .001)
+    for position, size in rails:
+        box('Folded side channel', position, size, colour, .009)
+    for position, size in caps:
+        box('Top and bottom channel', position, size, 'Steel', .009)
+    for stud in studs:
+        bolt(stud, axis)
+    anchor(name, place(.053))
+
+
+def cosmic_chicken(unit):
+    """Tenant fit-out for the galley unit: a framed print on each party wall and
+    a menu board on the back wall above the service run. Artwork is runtime
+    texture on these physical cassettes, never baked into the geometry."""
+    global ASSEMBLY
+    s, zc = unit['side'], unit['z']
+    poster = (1.05, 1.312)
+    wall_print('CosmicPosterFore', (s*8.6, -6.15, zc + HALF), *poster, 'z', -1)
+    wall_print('CosmicPosterAft', (s*8.6, -6.15, zc - HALF), *poster, 'z', 1)
+    wall_print('CosmicMenuBoard', (s*12.94, -6.05, zc + 1.7), 1.72, 1.29, 'x', -s)
+    # A lit sign rail over the menu, and a service bell pad on the counter end.
+    ASSEMBLY = 'CosmicMenuBoardFrame'
+    box('Menu board hood', (s*12.72, -5.33, zc + 1.7), (.44, .07, 1.92), 'Dark', .012)
+    box('Menu board wash', (s*12.60, -5.38, zc + 1.7), (.05, .025, 1.78), 'Mint', .004)
+
 def bench(x, z, index, length=2.4):
     global ASSEMBLY
     ASSEMBLY = 'PromenadeBench' + str(index)
@@ -724,6 +770,15 @@ def export_asset(filename):
                 # the deck, so a solid box here stops the player at the doorway.
                 if hi[1] <= FLOOR + .06:
                     continue
+                # Nothing above 3.1 m can be touched: the suit's eye is 1.75 m
+                # up, its head 1.9 m, and a 4.5 m/s jump under 9.81 m/s^2 peaks
+                # at 1.03 m. Ceiling skins, cassettes, beams, downstands and the
+                # storefront fascias are more than half of this kit's boxes, and
+                # every one of them is swept against the walking body on every
+                # frame for nothing. The pressurised shell above them is separate
+                # procedural geometry and still stops a ship.
+                if lo[1] >= FLOOR + 3.1:
+                    continue
                 collision_boxes.append({'name': obj.name, 'min': lo, 'max': hi})
         else:
             collision_boxes.append({'name': name, **manifest[-1]['bounds']})
@@ -819,6 +874,7 @@ for unit in UNITS:
 for unit in UNITS:
     counter(unit)
 galley_stock(UNITS[0])
+cosmic_chicken(UNITS[0])
 outfitter_stock(UNITS[1])
 hydroponics_stock(UNITS[2])
 souvenir_stock(UNITS[3])

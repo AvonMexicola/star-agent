@@ -24,9 +24,9 @@ export const STATION_SHOPS = Object.freeze({
   // Retail promenade, Deck 04 aft. Everyday transit-hub trade: nothing here
   // grants combat, ship or survival effects either.
   galley: Object.freeze({
-    name: 'LONGREACH GALLEY',
-    category: 'LONGREACH / FOOD AND DRINK',
-    detail: 'Hot food and drink for the next leg. Everything is stored cargo; eating and drinking are not implemented.',
+    name: 'COSMIC CHICKEN',
+    category: 'COSMIC CHICKEN / HAB RING LOCAL',
+    detail: 'The board menu is dine-in at the counter. What you can carry away is sealed and goes to your station warehouse; eating and drinking are not implemented.',
     offers: Object.freeze([
       Object.freeze({ itemId: 'hotmeal', price: 18, stock: 12 }),
       Object.freeze({ itemId: 'brew', price: 12, stock: 16 }),

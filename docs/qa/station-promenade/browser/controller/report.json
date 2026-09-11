@@ -23,16 +23,16 @@
   {
    "label": "promenade-entry",
    "drawDelta": 34,
-   "triangleDelta": 78292,
-   "frameMsWith": 66.69999999998254,
-   "frameMsWithout": 50
+   "triangleDelta": 79988,
+   "frameMsWith": 50,
+   "frameMsWithout": 49.89999999999418
   },
   {
    "label": "concourse-looking-aft",
-   "drawDelta": 41,
-   "triangleDelta": 78306,
-   "frameMsWith": 50,
-   "frameMsWithout": 33.40000000002328
+   "drawDelta": 44,
+   "triangleDelta": 80008,
+   "frameMsWith": 33.399999999965075,
+   "frameMsWithout": 33.399999999965075
   }
  ],
  "alternation": {
@@ -40,184 +40,184 @@
    {
     "visible": true,
     "drawCalls": 283,
-    "triangles": 952662,
-    "medianFrameMs": 66.69999999998254,
-    "p95FrameMs": 83.39999999999418,
-    "startedFrom": 736
+    "triangles": 952056,
+    "medianFrameMs": 50,
+    "p95FrameMs": 66.69999999999709,
+    "startedFrom": 773
    },
    {
     "visible": false,
     "drawCalls": 249,
-    "triangles": 874370,
+    "triangles": 872068,
+    "medianFrameMs": 50,
+    "p95FrameMs": 100.10000000000582,
+    "startedFrom": 814
+   },
+   {
+    "visible": true,
+    "drawCalls": 283,
+    "triangles": 952056,
+    "medianFrameMs": 50,
+    "p95FrameMs": 66.69999999999709,
+    "startedFrom": 855
+   },
+   {
+    "visible": false,
+    "drawCalls": 249,
+    "triangles": 872068,
+    "medianFrameMs": 49.89999999999418,
+    "p95FrameMs": 66.69999999999709,
+    "startedFrom": 895
+   },
+   {
+    "visible": true,
+    "drawCalls": 283,
+    "triangles": 952056,
+    "medianFrameMs": 50,
+    "p95FrameMs": 66.69999999999709,
+    "startedFrom": 937
+   },
+   {
+    "visible": false,
+    "drawCalls": 249,
+    "triangles": 872068,
+    "medianFrameMs": 33.40000000000873,
+    "p95FrameMs": 50,
+    "startedFrom": 978
+   },
+   {
+    "visible": true,
+    "drawCalls": 283,
+    "triangles": 952056,
     "medianFrameMs": 50,
     "p95FrameMs": 66.70000000001164,
-    "startedFrom": 777
-   },
-   {
-    "visible": true,
-    "drawCalls": 283,
-    "triangles": 952662,
-    "medianFrameMs": 66.69999999998254,
-    "p95FrameMs": 83.40000000002328,
-    "startedFrom": 819
+    "startedFrom": 1019
    },
    {
     "visible": false,
     "drawCalls": 249,
-    "triangles": 874370,
-    "medianFrameMs": 50,
-    "p95FrameMs": 66.69999999998254,
-    "startedFrom": 860
-   },
-   {
-    "visible": true,
-    "drawCalls": 283,
-    "triangles": 952662,
-    "medianFrameMs": 66.70000000001164,
-    "p95FrameMs": 83.40000000002328,
-    "startedFrom": 902
-   },
-   {
-    "visible": false,
-    "drawCalls": 249,
-    "triangles": 874370,
-    "medianFrameMs": 49.90000000002328,
+    "triangles": 872068,
+    "medianFrameMs": 33.40000000000873,
     "p95FrameMs": 50.10000000000582,
-    "startedFrom": 943
+    "startedFrom": 1060
    },
    {
     "visible": true,
     "drawCalls": 283,
-    "triangles": 952662,
-    "medianFrameMs": 66.70000000001164,
-    "p95FrameMs": 100,
-    "startedFrom": 985
+    "triangles": 952056,
+    "medianFrameMs": 50,
+    "p95FrameMs": 66.69999999999709,
+    "startedFrom": 1101
    },
    {
     "visible": false,
     "drawCalls": 249,
-    "triangles": 874370,
-    "medianFrameMs": 50,
-    "p95FrameMs": 50.20000000001164,
-    "startedFrom": 1025
-   },
-   {
-    "visible": true,
-    "drawCalls": 283,
-    "triangles": 952662,
-    "medianFrameMs": 66.69999999998254,
-    "p95FrameMs": 66.70000000001164,
-    "startedFrom": 1067
-   },
-   {
-    "visible": false,
-    "drawCalls": 249,
-    "triangles": 874370,
-    "medianFrameMs": 50,
-    "p95FrameMs": 66.70000000001164,
-    "startedFrom": 1107
+    "triangles": 872068,
+    "medianFrameMs": 49.89999999999418,
+    "p95FrameMs": 50.10000000000582,
+    "startedFrom": 1142
    }
   ],
   "concourse-looking-aft": [
    {
     "visible": true,
-    "drawCalls": 227,
-    "triangles": 814588,
-    "medianFrameMs": 50,
-    "p95FrameMs": 66.70000000001164,
-    "startedFrom": 2526
-   },
-   {
-    "visible": false,
-    "drawCalls": 186,
-    "triangles": 736282,
-    "medianFrameMs": 33.5,
-    "p95FrameMs": 83.29999999998836,
-    "startedFrom": 2568
-   },
-   {
-    "visible": true,
-    "drawCalls": 227,
-    "triangles": 814588,
+    "drawCalls": 222,
+    "triangles": 798884,
     "medianFrameMs": 33.40000000002328,
     "p95FrameMs": 50.100000000034925,
-    "startedFrom": 2610
+    "startedFrom": 2707
    },
    {
     "visible": false,
-    "drawCalls": 186,
-    "triangles": 736282,
-    "medianFrameMs": 33.29999999998836,
+    "drawCalls": 178,
+    "triangles": 718876,
+    "medianFrameMs": 33.300000000046566,
     "p95FrameMs": 50.100000000034925,
-    "startedFrom": 2652
+    "startedFrom": 2748
    },
    {
     "visible": true,
-    "drawCalls": 227,
-    "triangles": 814588,
-    "medianFrameMs": 50,
+    "drawCalls": 222,
+    "triangles": 798884,
+    "medianFrameMs": 33.399999999965075,
     "p95FrameMs": 50.09999999997672,
-    "startedFrom": 2694
+    "startedFrom": 2789
    },
    {
     "visible": false,
-    "drawCalls": 186,
-    "triangles": 736282,
-    "medianFrameMs": 33.40000000002328,
-    "p95FrameMs": 50.100000000034925,
-    "startedFrom": 2736
+    "drawCalls": 178,
+    "triangles": 718876,
+    "medianFrameMs": 33.399999999965075,
+    "p95FrameMs": 50.09999999997672,
+    "startedFrom": 2830
    },
    {
     "visible": true,
-    "drawCalls": 227,
-    "triangles": 814588,
-    "medianFrameMs": 50,
+    "drawCalls": 222,
+    "triangles": 798884,
+    "medianFrameMs": 33.300000000046566,
     "p95FrameMs": 50.100000000034925,
-    "startedFrom": 2778
+    "startedFrom": 2872
    },
    {
     "visible": false,
-    "drawCalls": 186,
-    "triangles": 736282,
-    "medianFrameMs": 33.40000000002328,
+    "drawCalls": 178,
+    "triangles": 718876,
+    "medianFrameMs": 33.399999999965075,
     "p95FrameMs": 50,
-    "startedFrom": 2820
+    "startedFrom": 2913
    },
    {
     "visible": true,
-    "drawCalls": 227,
-    "triangles": 814588,
-    "medianFrameMs": 49.90000000002328,
+    "drawCalls": 222,
+    "triangles": 798884,
+    "medianFrameMs": 33.399999999965075,
     "p95FrameMs": 50.09999999997672,
-    "startedFrom": 2862
+    "startedFrom": 2955
    },
    {
     "visible": false,
-    "drawCalls": 186,
-    "triangles": 736282,
-    "medianFrameMs": 49.899999999965075,
-    "p95FrameMs": 50.100000000034925,
-    "startedFrom": 2904
+    "drawCalls": 178,
+    "triangles": 718876,
+    "medianFrameMs": 33.399999999965075,
+    "p95FrameMs": 50.09999999997672,
+    "startedFrom": 2996
+   },
+   {
+    "visible": true,
+    "drawCalls": 222,
+    "triangles": 798884,
+    "medianFrameMs": 33.399999999965075,
+    "p95FrameMs": 50.09999999997672,
+    "startedFrom": 3038
+   },
+   {
+    "visible": false,
+    "drawCalls": 178,
+    "triangles": 718876,
+    "medianFrameMs": 33.300000000046566,
+    "p95FrameMs": 50,
+    "startedFrom": 3080
    }
   ]
  },
  "steps": [
   {
    "label": "hatch control",
-   "at": "2026-09-11T01:28:34.974Z",
+   "at": "2026-09-11T04:57:06.322Z",
    "state": {
     "interaction": "F · OPEN HATCH & LOWER RAMP",
     "mode": "walk",
     "insideShip": true,
     "position": [
-     670664.156526226,
-     438940.44637878245,
-     1490948.2547447616
+     670664.3271240036,
+     438940.4463787809,
+     1490948.1780750807
     ],
     "stationLocal": [
-     -8.841993803798687e-10,
-     -5.250000000096711,
-     -32.23647750916304
+     7.16129378020014e-10,
+     -5.2500000001964295,
+     -32.4235118420655
     ],
     "stationLocation": "hangar",
     "elevator": 0,
@@ -232,26 +232,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 624,
-    "triangles": 842050
+    "drawCalls": 625,
+    "triangles": 842072
    }
   },
   {
    "label": "outside rear ramp",
-   "at": "2026-09-11T01:28:39.617Z",
+   "at": "2026-09-11T04:57:11.013Z",
    "state": {
     "interaction": "CARGO TERMINAL & CENTRAL HUB · AFT WALL",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670654.0376498083,
-     438940.18755973445,
-     1490951.7433584193
+     670653.949915104,
+     438940.1875597388,
+     1490951.7827879577
     ],
     "stationLocal": [
-     2.1244437320433462e-9,
-     -6.250000000070643,
-     -21.576783681132227
+     -2.3582087393947404e-9,
+     -6.249999999932842,
+     -21.480596016377394
     ],
     "stationLocation": "hangar",
     "elevator": 0,
@@ -266,26 +266,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 583,
-    "triangles": 824866
+    "drawCalls": 582,
+    "triangles": 824864
    }
   },
   {
    "label": "hangar lift call",
-   "at": "2026-09-11T01:28:52.670Z",
+   "at": "2026-09-11T04:57:21.233Z",
    "state": {
     "interaction": "F · CALL ELEVATOR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670616.1908910181,
-     438940.18755973387,
-     1490968.7523662348
+     670615.6731764955,
+     438940.1875597365,
+     1490968.985036366
     ],
     "stationLocal": [
-     2.7656046341917317e-9,
-     -6.249999999926775,
-     19.91639042969358
+     4.1669778738651075e-11,
+     -6.249999999972265,
+     20.483985106289637
     ],
     "stationLocation": "hangar",
     "elevator": 0,
@@ -300,26 +300,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 566,
-    "triangles": 817552
+    "drawCalls": 564,
+    "triangles": 817548
    }
   },
   {
    "label": "inside station lift",
-   "at": "2026-09-11T01:28:55.635Z",
+   "at": "2026-09-11T04:57:23.646Z",
    "state": {
     "interaction": "F · ELEVATOR DESTINATIONS",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670612.3065239432,
-     438940.1875597361,
-     1490970.4980700156
+     670612.3065239431,
+     438940.1875597373,
+     1490970.498070015
     ],
     "stationLocal": [
-     4.805382758377164e-10,
-     -6.249999999908661,
-     24.175003967348438
+     -8.224496639286372e-10,
+     -6.250000000048654,
+     24.175003967263745
     ],
     "stationLocation": "hangar",
     "elevator": 1,
@@ -334,26 +334,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 546,
-    "triangles": 814468
+    "drawCalls": 545,
+    "triangles": 814466
    }
   },
   {
    "label": "central concourse",
-   "at": "2026-09-11T01:29:05.173Z",
+   "at": "2026-09-11T04:57:32.785Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670244.8249990047,
-     438114.32097826066,
-     1491378.2617170957
+     670245.1411403646,
+     438114.32097826037,
+     1491378.1196375352
     ],
     "stationLocal": [
-     -1.330155541268141e-9,
-     -6.249999999919356,
-     6.514006486789661
+     -1.0285123863695844e-9,
+     -6.24999999991809,
+     6.1674059084015065
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -368,17 +368,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 305,
-    "triangles": 956028
+    "drawCalls": 309,
+    "triangles": 957732
    }
   },
   {
    "label": "concourse-gantry-desktop",
-   "at": "2026-09-11T01:29:07.870Z",
+   "at": "2026-09-11T04:57:34.803Z",
    "sceneMetrics": {
-    "drawCalls": 291,
-    "triangles": 940412,
-    "renderedFrames": 530,
+    "drawCalls": 283,
+    "triangles": 921124,
+    "renderedFrames": 563,
     "viewport": [
      1440,
      900
@@ -396,14 +396,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670244.8201713536,
-     438114.3209782603,
-     1491378.263886728
+     670245.1341530569,
+     438114.32097826403,
+     1491378.1227777547
     ],
     "stationLocal": [
-     -1.0090612789781517e-9,
-     -6.250000000070395,
-     6.519299266728924
+     -4.829891153690369e-9,
+     -6.249999999936511,
+     6.175066420599261
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -418,26 +418,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 291,
-    "triangles": 940412
+    "drawCalls": 283,
+    "triangles": 921124
    }
   },
   {
    "label": "approaching the portal",
-   "at": "2026-09-11T01:29:16.023Z",
+   "at": "2026-09-11T04:57:39.696Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670261.6718850886,
-     438114.32104859577,
-     1491370.6904056224
+     670262.1025870017,
+     438114.3207154011,
+     1491370.4969383888
     ],
     "stationLocal": [
-     -0.00007281763944255726,
-     -6.250000000085743,
-     -11.956032174464845
+     0.00027213091164224323,
+     -6.2499999999500515,
+     -12.428190728895512
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -452,17 +452,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 284,
-    "triangles": 939392
+    "drawCalls": 273,
+    "triangles": 920098
    }
   },
   {
    "label": "portal-approach-desktop",
-   "at": "2026-09-11T01:29:18.898Z",
+   "at": "2026-09-11T04:57:42.114Z",
    "sceneMetrics": {
     "drawCalls": 296,
-    "triangles": 953728,
-    "renderedFrames": 663,
+    "triangles": 953122,
+    "renderedFrames": 693,
     "viewport": [
      1440,
      900
@@ -480,14 +480,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670261.6714234971,
-     438114.3210486893,
-     1491370.6906130423
+     670262.115969658,
+     438114.320726124,
+     1491370.4909208345
     ],
     "stationLocal": [
-     -0.00007291446763979526,
-     -6.250000000043806,
-     -11.955526121431914
+     0.0002610297254670435,
+     -6.250000000041047,
+     -12.44286405300694
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -503,25 +503,25 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 296,
-    "triangles": 953728
+    "triangles": 953122
    }
   },
   {
    "label": "inside the promenade",
-   "at": "2026-09-11T01:29:23.096Z",
+   "at": "2026-09-11T04:57:45.984Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670270.5325765613,
-     438114.3209815099,
-     1491366.7082726879
+     670270.6225284771,
+     438114.3209732592,
+     1491366.667849118
     ],
     "stationLocal": [
-     -0.000003365257777332431,
-     -6.250000000060447,
-     -21.67041512364642
+     0.000005176527881900483,
+     -6.249999999951239,
+     -21.769032627960193
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -537,16 +537,16 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 283,
-    "triangles": 952662
+    "triangles": 952056
    }
   },
   {
    "label": "promenade-entry-desktop",
-   "at": "2026-09-11T01:29:24.327Z",
+   "at": "2026-09-11T04:57:47.053Z",
    "sceneMetrics": {
     "drawCalls": 283,
-    "triangles": 952662,
-    "renderedFrames": 735,
+    "triangles": 952056,
+    "renderedFrames": 773,
     "viewport": [
      1440,
      900
@@ -564,14 +564,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670270.5307555624,
-     438114.32098152017,
-     1491366.7090910743
+     670270.6206133842,
+     438114.32097324124,
+     1491366.6687098
     ],
     "stationLocal": [
-     -0.000003375848065090281,
-     -6.250000000002048,
-     -21.668418678406283
+     0.000005195160485804706,
+     -6.249999999906621,
+     -21.76693301970705
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -587,25 +587,25 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 283,
-    "triangles": 952662
+    "triangles": 952056
    }
   },
   {
    "label": "galley frontage",
-   "at": "2026-09-11T01:29:51.461Z",
+   "at": "2026-09-11T04:58:09.799Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670273.612038794,
-     438117.3721773886,
-     1491364.4279721708
+     670273.6637105214,
+     438117.41818277235,
+     1491364.3912351928
     ],
     "stationLocal": [
-     -3.158833780171655,
-     -6.2499999999862865,
-     -25.41400227907998
+     -3.206462058143013,
+     -6.249999999909148,
+     -25.476192434588903
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -621,16 +621,16 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 272,
-    "triangles": 900978
+    "triangles": 900372
    }
   },
   {
    "label": "galley-storefront-desktop",
-   "at": "2026-09-11T01:30:00.736Z",
+   "at": "2026-09-11T04:58:13.584Z",
    "sceneMetrics": {
-    "drawCalls": 376,
-    "triangles": 1029164,
-    "renderedFrames": 1258,
+    "drawCalls": 381,
+    "triangles": 1035474,
+    "renderedFrames": 1273,
     "viewport": [
      1440,
      900
@@ -648,14 +648,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670273.6110900241,
-     438117.3712386359,
-     1491364.4286743377
+     670273.660160061,
+     438117.4145691998,
+     1491364.3938923748
     ],
     "stationLocal": [
-     -3.1578619119112785,
-     -6.2500000000390905,
-     -25.412849052611193
+     -3.202721012581361,
+     -6.250000000072887,
+     -25.471864748067713
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -670,26 +670,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 376,
-    "triangles": 1029164
+    "drawCalls": 381,
+    "triangles": 1035474
    }
   },
   {
    "label": "galley counter",
-   "at": "2026-09-11T01:30:03.640Z",
+   "at": "2026-09-11T04:58:16.368Z",
    "state": {
-    "interaction": "F · LONGREACH GALLEY",
+    "interaction": "F · COSMIC CHICKEN",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670273.3028936922,
-     438122.5065458509,
-     1491363.058608462
+     670273.2973554608,
+     438122.6028949154,
+     1491363.032793435
     ],
     "stationLocal": [
-     -8.474323150635684,
-     -6.249999999919816,
-     -25.693358538785546
+     -8.574071042126143,
+     -6.249999999977611,
+     -25.698889180782885
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -704,17 +704,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 367,
-    "triangles": 965846
+    "drawCalls": 369,
+    "triangles": 972150
    }
   },
   {
    "label": "galley-counter-desktop",
-   "at": "2026-09-11T01:30:06.671Z",
+   "at": "2026-09-11T04:58:19.479Z",
    "sceneMetrics": {
-    "drawCalls": 288,
-    "triangles": 904398,
-    "renderedFrames": 1310,
+    "drawCalls": 289,
+    "triangles": 935780,
+    "renderedFrames": 1337,
     "viewport": [
      1440,
      900
@@ -728,18 +728,18 @@
     "modalOpen": false
    },
    "state": {
-    "interaction": "F · LONGREACH GALLEY",
+    "interaction": "F · COSMIC CHICKEN",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670273.3030233628,
-     438122.504384398,
-     1491363.0591851454
+     670273.29764443,
+     438122.5987613185,
+     1491363.0338778743
     ],
     "stationLocal": [
-     -8.472085449972091,
-     -6.250000000049209,
-     -25.693240418175048
+     -8.56979162772,
+     -6.249999999991649,
+     -25.698708218730616
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -754,17 +754,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 288,
-    "triangles": 904398
+    "drawCalls": 289,
+    "triangles": 935780
    }
   },
   {
    "label": "galley-catalogue-desktop",
-   "at": "2026-09-11T01:30:07.832Z",
+   "at": "2026-09-11T04:58:20.455Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1312,
+    "renderedFrames": 1338,
     "viewport": [
      1440,
      900
@@ -778,18 +778,18 @@
     "modalOpen": true
    },
    "state": {
-    "interaction": "F · LONGREACH GALLEY",
+    "interaction": "F · COSMIC CHICKEN",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670273.3030233599,
-     438122.50438439904,
-     1491363.0591851466
+     670273.2976444282,
+     438122.59876131924,
+     1491363.0338778747
     ],
     "stationLocal": [
-     -8.472085451018081,
-     -6.24999999990475,
-     -25.693240415043224
+     -8.569791628526255,
+     -6.250000000076964,
+     -25.69870821694697
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -810,11 +810,11 @@
   },
   {
    "label": "galley-catalogue-mobile",
-   "at": "2026-09-11T01:30:08.460Z",
+   "at": "2026-09-11T04:58:20.852Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1313,
+    "renderedFrames": 1339,
     "viewport": [
      390,
      844
@@ -828,18 +828,18 @@
     "modalOpen": true
    },
    "state": {
-    "interaction": "F · LONGREACH GALLEY",
+    "interaction": "F · COSMIC CHICKEN",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670273.3030233599,
-     438122.50438439904,
-     1491363.0591851466
+     670273.2976444282,
+     438122.59876131924,
+     1491363.0338778747
     ],
     "stationLocal": [
-     -8.472085451018081,
-     -6.24999999990475,
-     -25.693240415043224
+     -8.569791628526255,
+     -6.250000000076964,
+     -25.69870821694697
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -860,20 +860,20 @@
   },
   {
    "label": "galley back to the corridor",
-   "at": "2026-09-11T01:30:19.492Z",
+   "at": "2026-09-11T04:58:29.092Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670273.8490212744,
-     438117.60565093765,
-     1491364.252881606
+     670273.877481392,
+     438117.3177593421,
+     1491364.324663668
     ],
     "stationLocal": [
-     -3.400543384259594,
-     -6.249999999899533,
-     -25.701932422081516
+     -3.102496072880914,
+     -6.250000000090754,
+     -25.698466347327894
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -889,26 +889,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 300,
-    "triangles": 968320
+    "drawCalls": 301,
+    "triangles": 965580
    }
   },
   {
    "label": "outfitter frontage",
-   "at": "2026-09-11T01:30:22.261Z",
+   "at": "2026-09-11T04:58:32.271Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670274.6108896894,
-     438110.64155272,
-     1491365.9562944064
+     670274.5542555982,
+     438111.1739568287,
+     1491365.825344951
     ],
     "stationLocal": [
-     3.8092216185185865,
-     -6.24999999992183,
-     -25.69857978633059
+     3.2580363263714016,
+     -6.25000000002216,
+     -25.700601890592413
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -924,26 +924,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 310,
-    "triangles": 969578
+    "drawCalls": 311,
+    "triangles": 966672
    }
   },
   {
    "label": "outfitter-storefront-desktop",
-   "at": "2026-09-11T01:30:27.569Z",
+   "at": "2026-09-11T04:58:36.918Z",
    "sceneMetrics": {
-    "drawCalls": 275,
-    "triangles": 910224,
-    "renderedFrames": 1428,
+    "drawCalls": 273,
+    "triangles": 919108,
+    "renderedFrames": 1467,
     "viewport": [
      1440,
      900
     ],
     "drawingBuffer": [
-     1152,
-     720
+     1224,
+     765
     ],
-    "renderScale": 0.8,
+    "renderScale": 0.85,
     "dpr": 1,
     "modalOpen": false
    },
@@ -952,14 +952,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670274.6114423319,
-     438110.6365884619,
-     1491365.9575043654
+     670274.5539616452,
+     438111.1766041496,
+     1491365.8246993676
     ],
     "stationLocal": [
-     3.814360996649506,
-     -6.25000000010195,
-     -25.698587872647387
+     3.2552956181214387,
+     -6.250000000117294,
+     -25.700598409602108
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -975,26 +975,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 275,
-    "triangles": 910224
+    "drawCalls": 273,
+    "triangles": 919108
    }
   },
   {
    "label": "outfitter counter",
-   "at": "2026-09-11T01:30:29.731Z",
+   "at": "2026-09-11T04:58:39.193Z",
    "state": {
     "interaction": "F · TIDEWELL OUTFITTERS",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670275.1854102791,
-     438105.4247745712,
-     1491367.230602744
+     670275.1767125399,
+     438105.50122254423,
+     1491367.2120539052
     ],
     "stationLocal": [
-     9.210027774432657,
-     -6.24999999993028,
-     -25.700243233523917
+     9.130883008914047,
+     -6.249999999938751,
+     -25.699913446888694
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1010,17 +1010,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 265,
-    "triangles": 856776
+    "drawCalls": 263,
+    "triangles": 855788
    }
   },
   {
    "label": "outfitter-counter-desktop",
-   "at": "2026-09-11T01:30:34.191Z",
+   "at": "2026-09-11T04:58:41.295Z",
    "sceneMetrics": {
-    "drawCalls": 271,
-    "triangles": 872264,
-    "renderedFrames": 1495,
+    "drawCalls": 274,
+    "triangles": 881132,
+    "renderedFrames": 1521,
     "viewport": [
      1440,
      900
@@ -1038,14 +1038,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670275.1854102791,
-     438105.4247745712,
-     1491367.230602744
+     670275.1777038366,
+     438105.49219030305,
+     1491367.2142617572
     ],
     "stationLocal": [
-     9.210027774432657,
-     -6.24999999993028,
-     -25.700243233523917
+     9.140233873022815,
+     -6.250000000110362,
+     -25.6999125791923
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1061,17 +1061,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 271,
-    "triangles": 872264
+    "drawCalls": 274,
+    "triangles": 881132
    }
   },
   {
    "label": "outfitter-catalogue-desktop",
-   "at": "2026-09-11T01:30:35.362Z",
+   "at": "2026-09-11T04:58:42.251Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1497,
+    "renderedFrames": 1522,
     "viewport": [
      1440,
      900
@@ -1089,14 +1089,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670275.1854102791,
-     438105.4247745712,
-     1491367.230602744
+     670275.177703835,
+     438105.4921903047,
+     1491367.2142617577
     ],
     "stationLocal": [
-     9.210027774432657,
-     -6.24999999993028,
-     -25.700243233523917
+     9.140233871385547,
+     -6.2499999999236,
+     -25.699912577514826
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1118,11 +1118,11 @@
   },
   {
    "label": "outfitter-catalogue-mobile",
-   "at": "2026-09-11T01:30:35.854Z",
+   "at": "2026-09-11T04:58:42.705Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1498,
+    "renderedFrames": 1523,
     "viewport": [
      390,
      844
@@ -1140,14 +1140,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670275.1854102791,
-     438105.4247745712,
-     1491367.230602744
+     670275.177703835,
+     438105.4921903047,
+     1491367.2142617577
     ],
     "stationLocal": [
-     9.210027774432657,
-     -6.24999999993028,
-     -25.700243233523917
+     9.140233871385547,
+     -6.2499999999236,
+     -25.699912577514826
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1169,20 +1169,20 @@
   },
   {
    "label": "outfitter back to the corridor",
-   "at": "2026-09-11T01:30:47.656Z",
+   "at": "2026-09-11T04:58:52.113Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670274.5438992588,
-     438111.2131749779,
-     1491365.8184783452
+     670274.5925123327,
+     438110.879824749,
+     1491365.894557476
     ],
     "stationLocal": [
-     3.2174347106943033,
-     -6.249999999888618,
-     -25.693970444950732
+     3.562544262356689,
+     -6.250000000092158,
+     -25.7071248194127
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1199,26 +1199,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 287,
-    "triangles": 927924
+    "drawCalls": 288,
+    "triangles": 933796
    }
   },
   {
    "label": "hydroponics frontage",
-   "at": "2026-09-11T01:30:55.141Z",
+   "at": "2026-09-11T04:58:57.055Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670285.9899707191,
-     438117.65932218265,
-     1491358.7807558319
+     670285.8063268705,
+     438117.5701583331,
+     1491358.8894818902
     ],
     "stationLocal": [
-     -3.456107945794896,
-     -6.24999999996076,
-     -39.019087038992325
+     -3.363798736227414,
+     -6.250000000007759,
+     -38.80701247472872
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1235,17 +1235,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 285,
-    "triangles": 938634
+    "drawCalls": 284,
+    "triangles": 935018
    }
   },
   {
    "label": "hydroponics-storefront-desktop",
-   "at": "2026-09-11T01:31:01.309Z",
+   "at": "2026-09-11T04:59:03.054Z",
    "sceneMetrics": {
-    "drawCalls": 358,
-    "triangles": 965488,
-    "renderedFrames": 1686,
+    "drawCalls": 366,
+    "triangles": 972304,
+    "renderedFrames": 1696,
     "viewport": [
      1440,
      900
@@ -1263,14 +1263,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670285.9918776025,
-     438117.6603956917,
-     1491358.7795834846
+     670285.8034081676,
+     438117.5684670761,
+     1491358.8912904398
     ],
     "stationLocal": [
-     -3.4572193241831677,
-     -6.250000000118154,
-     -39.02130691786664
+     -3.3620478181685503,
+     -6.250000000109246,
+     -38.80360890099886
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1287,26 +1287,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 358,
-    "triangles": 965488
+    "drawCalls": 366,
+    "triangles": 972304
    }
   },
   {
    "label": "hydroponics counter",
-   "at": "2026-09-11T01:31:03.362Z",
+   "at": "2026-09-11T04:59:05.499Z",
    "state": {
     "interaction": "F · GREENSIDE HYDROPONICS",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670285.3167122634,
-     438122.7708586334,
-     1491357.5817384042
+     670285.3285972943,
+     438122.70348855114,
+     1491357.5961880486
     ],
     "stationLocal": [
-     -8.747959878557678,
-     -6.250000000003315,
-     -38.89649931972506
+     -8.678213237107537,
+     -6.249999999918742,
+     -38.901416653427134
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1323,17 +1323,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 356,
-    "triangles": 965484
+    "drawCalls": 364,
+    "triangles": 972300
    }
   },
   {
    "label": "hydroponics-counter-desktop",
-   "at": "2026-09-11T01:31:06.191Z",
+   "at": "2026-09-11T04:59:07.769Z",
    "sceneMetrics": {
-    "drawCalls": 278,
-    "triangles": 900710,
-    "renderedFrames": 1737,
+    "drawCalls": 282,
+    "triangles": 908294,
+    "renderedFrames": 1753,
     "viewport": [
      1440,
      900
@@ -1351,14 +1351,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670285.3156812273,
-     438122.7786634853,
-     1491357.579908976
+     670285.3288855596,
+     438122.70036678854,
+     1491357.5969755624
     ],
     "stationLocal": [
-     -8.756040055815465,
-     -6.249999999900853,
-     -38.89630881565208
+     -8.674981350654448,
+     -6.249999999926477,
+     -38.90135676595384
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1375,17 +1375,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 278,
-    "triangles": 900710
+    "drawCalls": 282,
+    "triangles": 908294
    }
   },
   {
    "label": "hydroponics-catalogue-desktop",
-   "at": "2026-09-11T01:31:07.445Z",
+   "at": "2026-09-11T04:59:08.864Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1740,
+    "renderedFrames": 1756,
     "viewport": [
      1440,
      900
@@ -1403,14 +1403,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670285.3156812273,
-     438122.7786634853,
-     1491357.579908976
+     670285.328885557,
+     438122.7003667893,
+     1491357.5969755633
     ],
     "stationLocal": [
-     -8.756040055815465,
-     -6.249999999900853,
-     -38.89630881565208
+     -8.674981351437227,
+     -6.249999999924192,
+     -38.901356763236
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1433,11 +1433,11 @@
   },
   {
    "label": "hydroponics-catalogue-mobile",
-   "at": "2026-09-11T01:31:07.987Z",
+   "at": "2026-09-11T04:59:09.372Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1741,
+    "renderedFrames": 1757,
     "viewport": [
      390,
      844
@@ -1455,14 +1455,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670285.3156812273,
-     438122.7786634853,
-     1491357.579908976
+     670285.328885557,
+     438122.7003667893,
+     1491357.5969755633
     ],
     "stationLocal": [
-     -8.756040055815465,
-     -6.249999999900853,
-     -38.89630881565208
+     -8.674981351437227,
+     -6.249999999924192,
+     -38.901356763236
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1485,57 +1485,20 @@
   },
   {
    "label": "hydroponics back to the corridor",
-   "at": "2026-09-11T01:31:17.437Z",
+   "at": "2026-09-11T04:59:18.213Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670285.9142443207,
-     438117.3468104871,
-     1491358.9065937006
+     670285.8904632067,
+     438117.58308490337,
+     1491358.8478721443
     ],
     "stationLocal": [
-     -3.1325720312744245,
-     -6.249999999889358,
-     -38.89843162676002
-    ],
-    "stationLocation": "hub",
-    "elevator": 1,
-    "finish": "ready",
-    "docked": true,
-    "credits": 1383,
-    "warehouse": {
-     "repair": 12,
-     "ration": 80,
-     "sample": 30,
-     "scanner": 4,
-     "brew": 1,
-     "gloves": 1,
-     "herbs": 1
-    },
-    "controllerArmed": true,
-    "enabled": true,
-    "drawCalls": 281,
-    "triangles": 903304
-   }
-  },
-  {
-   "label": "souvenir frontage",
-   "at": "2026-09-11T01:31:20.429Z",
-   "state": {
-    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
-    "mode": "walk",
-    "insideShip": false,
-    "position": [
-     670286.6625653419,
-     438110.53465281386,
-     1491360.5714600894
-    ],
-    "stationLocal": [
-     3.9198925450221065,
-     -6.249999999903907,
-     -38.89852320253124
+     -3.377181306517322,
+     -6.250000000042185,
+     -38.90081171279477
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1554,25 +1517,62 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 290,
-    "triangles": 910956
+    "triangles": 918532
+   }
+  },
+  {
+   "label": "souvenir frontage",
+   "at": "2026-09-11T04:59:21.381Z",
+   "state": {
+    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670286.6180568679,
+     438110.95762743644,
+     1491360.4672077456
+    ],
+    "stationLocal": [
+     3.4819969933289663,
+     -6.249999999988667,
+     -38.90066156503832
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1383,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4,
+     "brew": 1,
+     "gloves": 1,
+     "herbs": 1
+    },
+    "controllerArmed": true,
+    "enabled": true,
+    "drawCalls": 301,
+    "triangles": 962636
    }
   },
   {
    "label": "souvenir-storefront-desktop",
-   "at": "2026-09-11T01:31:26.317Z",
+   "at": "2026-09-11T04:59:26.330Z",
    "sceneMetrics": {
-    "drawCalls": 256,
-    "triangles": 849384,
-    "renderedFrames": 1852,
+    "drawCalls": 263,
+    "triangles": 867208,
+    "renderedFrames": 1906,
     "viewport": [
      1440,
      900
     ],
     "drawingBuffer": [
-     1152,
-     720
+     1224,
+     765
     ],
-    "renderScale": 0.8,
+    "renderScale": 0.85,
     "dpr": 1,
     "modalOpen": false
    },
@@ -1581,14 +1581,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670286.6625716899,
-     438110.5345955091,
-     1491360.5714740707
+     670286.6180064249,
+     438110.95809017116,
+     1491360.4670944803
     ],
     "stationLocal": [
-     3.9199518712616523,
-     -6.249999999891248,
-     -38.898523261444524
+     3.4815179351035646,
+     -6.2499999999488045,
+     -38.90066198504919
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1606,26 +1606,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 256,
-    "triangles": 849384
+    "drawCalls": 263,
+    "triangles": 867208
    }
   },
   {
    "label": "souvenir counter",
-   "at": "2026-09-11T01:31:29.128Z",
+   "at": "2026-09-11T04:59:28.935Z",
    "state": {
     "interaction": "F · WAYPOINT SOUVENIRS",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670287.1572970059,
-     438106.0427111554,
-     1491361.6686952203
+     670287.1651978536,
+     438105.97042399016,
+     1491361.6863798958
     ],
     "stationLocal": [
-     8.570292747796243,
-     -6.250000000095072,
-     -38.89999595166232
+     8.64512992814236,
+     -6.249999999892685,
+     -38.8999531179463
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1643,17 +1643,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 254,
-    "triangles": 849380
+    "drawCalls": 262,
+    "triangles": 867206
    }
   },
   {
    "label": "souvenir-counter-desktop",
-   "at": "2026-09-11T01:31:31.891Z",
+   "at": "2026-09-11T04:59:31.765Z",
    "sceneMetrics": {
     "drawCalls": 263,
-    "triangles": 867814,
-    "renderedFrames": 1920,
+    "triangles": 869510,
+    "renderedFrames": 1981,
     "viewport": [
      1440,
      900
@@ -1671,14 +1671,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670287.1568749619,
-     438106.04654352786,
-     1491361.6677590765
+     670287.1648174195,
+     438105.9738923598,
+     1491361.685531983
     ],
     "stationLocal": [
-     8.566325183840977,
-     -6.250000000111786,
-     -38.8999947437838
+     8.641539207592572,
+     -6.250000000110549,
+     -38.89995369536627
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1697,16 +1697,16 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 263,
-    "triangles": 867814
+    "triangles": 869510
    }
   },
   {
    "label": "souvenir-catalogue-desktop",
-   "at": "2026-09-11T01:31:32.969Z",
+   "at": "2026-09-11T04:59:32.590Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1921,
+    "renderedFrames": 1982,
     "viewport": [
      1440,
      900
@@ -1724,14 +1724,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670287.1568749604,
-     438106.046543528,
-     1491361.6677590772
+     670287.1648174186,
+     438105.97389236005,
+     1491361.6855319834
     ],
     "stationLocal": [
-     8.566325183732854,
-     -6.250000000065496,
-     -38.89999474211707
+     8.641539207378798,
+     -6.250000000008783,
+     -38.8999536943259
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1755,11 +1755,11 @@
   },
   {
    "label": "souvenir-catalogue-mobile",
-   "at": "2026-09-11T01:31:33.385Z",
+   "at": "2026-09-11T04:59:32.924Z",
    "sceneMetrics": {
     "drawCalls": 0,
     "triangles": 0,
-    "renderedFrames": 1922,
+    "renderedFrames": 1983,
     "viewport": [
      390,
      844
@@ -1777,14 +1777,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670287.1568749604,
-     438106.046543528,
-     1491361.6677590772
+     670287.1648174186,
+     438105.97389236005,
+     1491361.6855319834
     ],
     "stationLocal": [
-     8.566325183732854,
-     -6.250000000065496,
-     -38.89999474211707
+     8.641539207378798,
+     -6.250000000008783,
+     -38.8999536943259
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1808,20 +1808,20 @@
   },
   {
    "label": "souvenir back to the corridor",
-   "at": "2026-09-11T01:31:42.606Z",
+   "at": "2026-09-11T04:59:41.567Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670286.5884876351,
-     438111.1884500004,
-     1491360.4126890379
+     670286.612552405,
+     438111.01246700366,
+     1491360.4535715904
     ],
     "stationLocal": [
-     3.2430318909178855,
-     -6.250000000044226,
-     -38.89603934715515
+     3.42522289566163,
+     -6.249999999903808,
+     -38.901230607872826
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1841,25 +1841,25 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 271,
-    "triangles": 878052
+    "triangles": 879748
    }
   },
   {
    "label": "mid court",
-   "at": "2026-09-11T01:31:46.751Z",
+   "at": "2026-09-11T04:59:44.160Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670280.7106698295,
-     438114.07930065854,
-     1491362.2050536387
+     670279.9211294177,
+     438114.4771377884,
+     1491362.443016446
     ],
     "stationLocal": [
-     0.25020306342937815,
-     -6.250000000092627,
-     -32.80003195253476
+     -0.16166824072608055,
+     -6.249999999946307,
+     -31.982329824503783
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1879,25 +1879,25 @@
     "controllerArmed": true,
     "enabled": true,
     "drawCalls": 280,
-    "triangles": 929942
+    "triangles": 932220
    }
   },
   {
    "label": "mid-court-window-desktop",
-   "at": "2026-09-11T01:31:52.899Z",
+   "at": "2026-09-11T04:59:48.085Z",
    "sceneMetrics": {
-    "drawCalls": 291,
-    "triangles": 953126,
-    "renderedFrames": 2038,
+    "drawCalls": 356,
+    "triangles": 964116,
+    "renderedFrames": 2109,
     "viewport": [
      1440,
      900
     ],
     "drawingBuffer": [
-     1152,
-     720
+     1224,
+     765
     ],
-    "renderScale": 0.8,
+    "renderScale": 0.85,
     "dpr": 1,
     "modalOpen": false
    },
@@ -1906,14 +1906,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670280.7116759054,
-     438114.07879014936,
-     1491362.20475146
+     670279.9198649755,
+     438114.4777949467,
+     1491362.4433916584
     ],
     "stationLocal": [
-     0.25073158143193464,
-     -6.250000000076281,
-     -32.801073484531855
+     -0.16234858112739126,
+     -6.250000000110877,
+     -31.981022693108905
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1932,26 +1932,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 291,
-    "triangles": 953126
+    "drawCalls": 356,
+    "triangles": 964116
    }
   },
   {
    "label": "sealed door approach",
-   "at": "2026-09-11T01:31:58.348Z",
+   "at": "2026-09-11T04:59:52.660Z",
    "state": {
     "interaction": "DECK 05 SEALED · HABITAT TERRACES ARE STILL BEING FITTED OUT",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670292.4655675434,
-     438114.3120787435,
-     1491356.8538110263
+     670292.8894793033,
+     438114.3215677083,
+     1491356.6605099996
     ],
     "stationLocal": [
-     0.009213456781862917,
-     -6.25000000008508,
-     -45.715508227401315
+     -0.0006102424028515685,
+     -6.24999999989044,
+     -46.18140521436746
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -1970,17 +1970,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 354,
-    "triangles": 958732
+    "drawCalls": 344,
+    "triangles": 953160
    }
   },
   {
    "label": "sealed-door-desktop",
-   "at": "2026-09-11T01:32:02.998Z",
+   "at": "2026-09-11T04:59:55.714Z",
    "sceneMetrics": {
-    "drawCalls": 178,
-    "triangles": 749128,
-    "renderedFrames": 2155,
+    "drawCalls": 171,
+    "triangles": 734058,
+    "renderedFrames": 2235,
     "viewport": [
      1440,
      900
@@ -1998,14 +1998,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670292.4644098915,
-     438114.31205610035,
-     1491356.8543379474
+     670292.8802152247,
+     438114.3216706202,
+     1491356.6646432097
     ],
     "stationLocal": [
-     0.009236898667978721,
-     -6.25000000010875,
-     -45.71423631272035
+     -0.0007167846431208602,
+     -6.2499999998914895,
+     -46.17126096393899
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -2024,26 +2024,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 178,
-    "triangles": 749128
+    "drawCalls": 171,
+    "triangles": 734058
    }
   },
   {
    "label": "leaving the aft hall",
-   "at": "2026-09-11T01:32:10.054Z",
+   "at": "2026-09-11T05:00:02.499Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670277.6852380987,
-     438114.32143553323,
-     1491363.493605759
+     670278.2684344054,
+     438114.3208598342,
+     1491363.2316760668
     ],
     "stationLocal": [
-     -0.000473404765869212,
-     -6.250000000039008,
-     -29.512267616352517
+     0.00012260271898067998,
+     -6.250000000063278,
+     -30.15158371348109
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -2062,26 +2062,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 192,
-    "triangles": 760162
+    "drawCalls": 185,
+    "triangles": 745092
    }
   },
   {
    "label": "returning up the corridor",
-   "at": "2026-09-11T01:32:12.696Z",
+   "at": "2026-09-11T05:00:05.880Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670270.2169328952,
-     438114.32099769206,
-     1491366.8501238225
+     670270.9838318012,
+     438114.3209083305,
+     1491366.5054920395
     ],
     "stationLocal": [
-     -0.000020118200797725194,
-     -6.249999999918041,
-     -21.324362138824767
+     0.00007239567641015299,
+     -6.250000000002666,
+     -22.165138564066446
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -2100,26 +2100,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 208,
-    "triangles": 812046
+    "drawCalls": 198,
+    "triangles": 796576
    }
   },
   {
    "label": "back through the portal",
-   "at": "2026-09-11T01:32:15.720Z",
+   "at": "2026-09-11T05:00:09.832Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670261.3627849778,
-     438114.3210789219,
-     1491370.8293118116
+     670262.0079653384,
+     438114.32091803063,
+     1491370.5394035247
     ],
     "stationLocal": [
-     -0.00010421352199263545,
-     -6.249999999933765,
-     -11.617154898996379
+     0.00006235333117010633,
+     -6.250000000112999,
+     -12.32447696899643
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -2138,26 +2138,26 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 219,
-    "triangles": 812928
+    "drawCalls": 211,
+    "triangles": 797856
    }
   },
   {
    "label": "back in the concourse",
-   "at": "2026-09-11T01:32:21.450Z",
+   "at": "2026-09-11T05:00:15.359Z",
    "state": {
     "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670245.5502870153,
-     438114.32082833763,
-     1491377.9358037815
+     670245.4104830497,
+     438114.3209059221,
+     1491377.9986113834
     ],
     "stationLocal": [
-     0.00015521038106225404,
-     -6.250000000024006,
-     5.718857327803577
+     0.00007488905682695446,
+     -6.249999999924006,
+     5.872121619835647
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -2176,17 +2176,17 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 227,
-    "triangles": 814588
+    "drawCalls": 222,
+    "triangles": 798884
    }
   },
   {
    "label": "returned-concourse-desktop",
-   "at": "2026-09-11T01:32:22.643Z",
+   "at": "2026-09-11T05:00:16.320Z",
    "sceneMetrics": {
-    "drawCalls": 227,
-    "triangles": 814588,
-    "renderedFrames": 2526,
+    "drawCalls": 222,
+    "triangles": 798884,
+    "renderedFrames": 2706,
     "viewport": [
      1440,
      900
@@ -2204,14 +2204,14 @@
     "mode": "walk",
     "insideShip": false,
     "position": [
-     670245.5534865656,
-     438114.3208290588,
-     1491377.9343656348
+     670245.416022525,
+     438114.3209069181,
+     1491377.9961215518
     ],
     "stationLocal": [
-     0.00015446377117722676,
-     -6.249999999934562,
-     5.715349424136856
+     0.00007385792923209067,
+     -6.24999999992975,
+     5.866048313633377
     ],
     "stationLocation": "hub",
     "elevator": 1,
@@ -2230,8 +2230,8 @@
     },
     "controllerArmed": true,
     "enabled": true,
-    "drawCalls": 227,
-    "triangles": 814588
+    "drawCalls": 222,
+    "triangles": 798884
    }
   }
  ],
@@ -2240,14 +2240,14 @@
   "mode": "walk",
   "insideShip": false,
   "position": [
-   670245.553486691,
-   438114.32082895597,
-   1491377.9343656087
+   670245.4160227417,
+   438114.3209068201,
+   1491377.9961214832
   ],
   "stationLocal": [
-   0.00015457026560383724,
-   -6.249999999885185,
-   5.715349299086296
+   0.00007395932550302575,
+   -6.250000000015589,
+   5.8660480878679655
   ],
   "stationLocation": "hub",
   "elevator": 1,
@@ -2266,7 +2266,7 @@
   },
   "controllerArmed": true,
   "enabled": true,
-  "drawCalls": 227,
-  "triangles": 814588
+  "drawCalls": 222,
+  "triangles": 798884
  }
 }

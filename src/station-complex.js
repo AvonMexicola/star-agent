@@ -8,13 +8,14 @@ import { createStationFinishGraphics } from './station-finish-graphics.js';
 import { createStationFinishLighting, prepareStationFinishShadows } from './station-finish-lighting.js';
 import { attachConcourse } from './station-concourse.js';
 import { attachPromenade, promenadeInteraction, addPromenadeShell } from './station-promenade.js';
+import { loadCosmicChickenGraphics } from './station-cosmic-chicken.js';
 import { loadStationShopGraphics } from './station-shop-graphics.js';
 import { createStationShopProps, loadStationShopProps } from './station-shop-props.js';
 import { createStationShopkeeper, STATION_SHOPKEEPERS } from './station-shopkeeper.js';
 import { attachPressureElevator } from './station-elevator.js';
 import { SHIP_LAYOUT } from './boarding.js';
 import { buildStationColliders, constrainStationSweep } from './station-collision.js';
-import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
+import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, updateElevatorBoxes, sign } from './station-architecture.js';
 import { createAuthoredExterior, attachExteriorLod, STATION_EXTERIOR_URL, STATION_EXTERIOR_LOD_URL } from './station-exterior.js';
 import { fleetHangarAsset } from './station-fleet-hangar.js';
 import {STATION_HUB_FRAME,hubFrameMethods} from './station-hub-policy.js';
@@ -107,12 +108,12 @@ export class StationComplex {
   }
   async loadFinish(loader){
     try{
-      const [materials,props,concourse,promenade,elevator,shopGraphics,shopProps]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-promenade.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics(),loadStationShopProps()]);
+      const [materials,props,concourse,promenade,elevator,shopGraphics,shopProps,cosmicChicken]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-promenade.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics(),loadStationShopProps(),loadCosmicChickenGraphics()]);
       const graphics=createStationFinishGraphics();
       await graphics.readyPromise;
       const rig=createStationFinishLighting();
       this.finishMaterials=materials;this.finishRig=rig;this.finishStatus='ready';
-      return {materials,props,graphics,concourse,promenade,elevator,shopGraphics,shopProps};
+      return {materials,props,graphics,concourse,promenade,elevator,shopGraphics,shopProps,cosmicChicken};
     }catch(error){this.finishStatus='unavailable';this.finishError=error.message;return null;}
   }
   async load(options){
@@ -140,7 +141,7 @@ export class StationComplex {
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       if(finish){
         attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials,shopGraphics:finish.shopGraphics});
-        attachPromenade(this.hub,finish.promenade,{sign,materials:finish.materials});
+        attachPromenade(this.hub,finish.promenade,{sign,materials:finish.materials,cosmicChicken:finish.cosmicChicken});
         this.hub.shopProps=createStationShopProps(finish.shopProps);
         this.hub.group.add(this.hub.shopProps);
         // Collision for the batched furniture comes from authored assembly boxes.
@@ -311,8 +312,14 @@ export class StationComplex {
     this.exterior.hubShell.visible=!this.hub.group.visible;
     this.exterior.updateDetail?.(cameraDistance);
     this.annexShell.visible=Boolean(this.exterior.hubShell.visible||this.exterior.lod?.hubShell.visible);
-    for(const light of this.hub.lights)light.visible=this.location==='hub'&&position.distanceTo(this.centre)<100;
+    const lit=this.location==='hub'&&position.distanceTo(this.centre)<100;
+    for(const light of this.hub.lights)light.visible=lit;
     this.hub.promenade?.update(this.location==='hub'&&this.hub.group.visible?this.hub.toLocal(position,scratchLocal):null);
+    // Switching the hub's lights on gives every material a new program, and a
+    // program compiles on its first draw, so the first look that swept a berth
+    // paid for the docked ship's materials as a frame stall. Report the change
+    // once; the owner of the renderer compiles the scene for this configuration.
+    if(lit!==this._hubLit){this._hubLit=lit;if(lit)this.onHubLit?.();}
     this.rebase(origin);
   }
   rebase(origin){
@@ -329,7 +336,16 @@ export class StationComplex {
       // assigned hangar. Test those physical frames before selecting a deck.
       for(const frame of [...this.pods,this.hub]){
         const start=frame.toLocal(previous,new THREE.Vector3()),end=frame.toLocal(proposed,new THREE.Vector3());
-        const doors=[...elevatorBoxes(frame.lift),...frame.lift.staticBoxes,...(frame.staticBoxes??[]),...(frame.doorBoxes??[]),...(frame===this.hub?Object.values(this.shopkeepers??{}).flatMap(merchant=>merchant.collisionBoxes):[])];
+        // Refill one array per frame instead of spreading a fresh one every
+        // step. The hub's authored box list grew fourfold with the promenade,
+        // and this runs for all twenty-one frames on every walking substep.
+        const doors=frame._doorScratch??=[];
+        doors.length=0;
+        for(const box of updateElevatorBoxes(frame.lift))doors.push(box);
+        for(const box of frame.lift.staticBoxes)doors.push(box);
+        if(frame.staticBoxes)for(const box of frame.staticBoxes)doors.push(box);
+        if(frame.doorBoxes)for(const box of frame.doorBoxes)doors.push(box);
+        if(frame===this.hub&&this.shopkeepers)for(const merchant of Object.values(this.shopkeepers))for(const box of merchant.collisionBoxes)doors.push(box);
         const result=constrainStationSweep(frame.colliders,doors,start,end,new THREE.Vector3(-.25,-layout.eyeHeight,-.25),new THREE.Vector3(.25,.15,.25));
         frame.toWorld(result.point,result.point);keep(result);
       }
