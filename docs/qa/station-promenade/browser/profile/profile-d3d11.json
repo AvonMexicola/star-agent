@@ -1,0 +1,377 @@
+{
+ "note": "scripts/promenade-profile.spec.js summary, production build, Chromium 151.0.7922.34, ANGLE D3D11 (PROMENADE_ANGLE=d3d11), 1440x900, dev server stopped. Per-frame arrays are not kept; re-run the config to regenerate.",
+ "totalFrames": 2960,
+ "walkingFrames": 1820,
+ "walkingMedianMs": 49.9,
+ "walkingP95Ms": 66.7,
+ "walkingMaxMs": 116.8,
+ "spikeCount": 0,
+ "byKind": {
+  "load:programQuery": {
+   "count": 86,
+   "ms": 19823.8
+  },
+  "load:buffer": {
+   "count": 692,
+   "ms": 16579.9
+  },
+  "load:texture": {
+   "count": 28,
+   "ms": 533.1
+  },
+  "load:draw": {
+   "count": 2,
+   "ms": 2.8
+  },
+  "walking:programQuery": {
+   "count": 3,
+   "ms": 86.1
+  },
+  "walking:buffer": {
+   "count": 2,
+   "ms": 3.5
+  }
+ },
+ "walkingLongTasks": {
+  "count": 468,
+  "ms": 25571
+ },
+ "heapMb": {
+  "start": 493.4,
+  "end": 482
+ },
+ "programs": {
+  "atSettle": 162,
+  "atEnd": 162,
+  "created": []
+ },
+ "route": [
+  [
+   "concourse centre",
+   true
+  ],
+  [
+   "before the portal",
+   true
+  ],
+  [
+   "promenade entry",
+   true
+  ],
+  [
+   "galley lane",
+   true
+  ],
+  [
+   "galley counter",
+   true
+  ],
+  [
+   "galley lane out",
+   true
+  ],
+  [
+   "outfitter lane",
+   true
+  ],
+  [
+   "outfitter counter",
+   true
+  ],
+  [
+   "outfitter lane out",
+   true
+  ],
+  [
+   "mid court",
+   true
+  ],
+  [
+   "hydroponics lane",
+   true
+  ],
+  [
+   "hydroponics counter",
+   true
+  ],
+  [
+   "hydroponics out",
+   true
+  ],
+  [
+   "souvenir lane",
+   true
+  ],
+  [
+   "souvenir counter",
+   true
+  ],
+  [
+   "souvenir out",
+   true
+  ],
+  [
+   "sealed door",
+   true
+  ],
+  [
+   "aft hall out",
+   true
+  ],
+  [
+   "returning",
+   true
+  ],
+  [
+   "back through the portal",
+   true
+  ],
+  [
+   "back in the concourse",
+   true
+  ],
+  [
+   "second entry",
+   true
+  ],
+  [
+   "second aft walk",
+   true
+  ],
+  [
+   "second return",
+   true
+  ]
+ ],
+ "spikes": [],
+ "marks": [
+  {
+   "label": "walk ship hatch",
+   "frame": 675
+  },
+  {
+   "label": "at ship hatch",
+   "frame": 698
+  },
+  {
+   "label": "walk outside ramp",
+   "frame": 723
+  },
+  {
+   "label": "at outside ramp",
+   "frame": 775
+  },
+  {
+   "label": "walk hangar lift",
+   "frame": 775
+  },
+  {
+   "label": "at hangar lift",
+   "frame": 973
+  },
+  {
+   "label": "walk inside lift",
+   "frame": 1018
+  },
+  {
+   "label": "at inside lift",
+   "frame": 1036
+  },
+  {
+   "label": "hub arrival settled",
+   "frame": 1140
+  },
+  {
+   "label": "walk concourse centre",
+   "frame": 1180
+  },
+  {
+   "label": "at concourse centre",
+   "frame": 1228
+  },
+  {
+   "label": "walk before the portal",
+   "frame": 1240
+  },
+  {
+   "label": "at before the portal",
+   "frame": 1334
+  },
+  {
+   "label": "walk promenade entry",
+   "frame": 1346
+  },
+  {
+   "label": "at promenade entry",
+   "frame": 1400
+  },
+  {
+   "label": "walk galley lane",
+   "frame": 1412
+  },
+  {
+   "label": "at galley lane",
+   "frame": 1435
+  },
+  {
+   "label": "walk galley counter",
+   "frame": 1447
+  },
+  {
+   "label": "at galley counter",
+   "frame": 1468
+  },
+  {
+   "label": "walk galley lane out",
+   "frame": 1480
+  },
+  {
+   "label": "at galley lane out",
+   "frame": 1620
+  },
+  {
+   "label": "walk outfitter lane",
+   "frame": 1632
+  },
+  {
+   "label": "at outfitter lane",
+   "frame": 1662
+  },
+  {
+   "label": "walk outfitter counter",
+   "frame": 1674
+  },
+  {
+   "label": "at outfitter counter",
+   "frame": 1698
+  },
+  {
+   "label": "walk outfitter lane out",
+   "frame": 1710
+  },
+  {
+   "label": "at outfitter lane out",
+   "frame": 1745
+  },
+  {
+   "label": "walk mid court",
+   "frame": 1757
+  },
+  {
+   "label": "at mid court",
+   "frame": 1796
+  },
+  {
+   "label": "walk hydroponics lane",
+   "frame": 1808
+  },
+  {
+   "label": "at hydroponics lane",
+   "frame": 1850
+  },
+  {
+   "label": "walk hydroponics counter",
+   "frame": 1862
+  },
+  {
+   "label": "at hydroponics counter",
+   "frame": 1886
+  },
+  {
+   "label": "walk hydroponics out",
+   "frame": 1898
+  },
+  {
+   "label": "at hydroponics out",
+   "frame": 1936
+  },
+  {
+   "label": "walk souvenir lane",
+   "frame": 1948
+  },
+  {
+   "label": "at souvenir lane",
+   "frame": 1983
+  },
+  {
+   "label": "walk souvenir counter",
+   "frame": 1995
+  },
+  {
+   "label": "at souvenir counter",
+   "frame": 2022
+  },
+  {
+   "label": "walk souvenir out",
+   "frame": 2034
+  },
+  {
+   "label": "at souvenir out",
+   "frame": 2069
+  },
+  {
+   "label": "walk sealed door",
+   "frame": 2081
+  },
+  {
+   "label": "at sealed door",
+   "frame": 2120
+  },
+  {
+   "label": "walk aft hall out",
+   "frame": 2132
+  },
+  {
+   "label": "at aft hall out",
+   "frame": 2209
+  },
+  {
+   "label": "walk returning",
+   "frame": 2221
+  },
+  {
+   "label": "at returning",
+   "frame": 2261
+  },
+  {
+   "label": "walk back through the portal",
+   "frame": 2273
+  },
+  {
+   "label": "at back through the portal",
+   "frame": 2327
+  },
+  {
+   "label": "walk back in the concourse",
+   "frame": 2339
+  },
+  {
+   "label": "at back in the concourse",
+   "frame": 2441
+  },
+  {
+   "label": "walk second entry",
+   "frame": 2453
+  },
+  {
+   "label": "at second entry",
+   "frame": 2608
+  },
+  {
+   "label": "walk second aft walk",
+   "frame": 2620
+  },
+  {
+   "label": "at second aft walk",
+   "frame": 2758
+  },
+  {
+   "label": "walk second return",
+   "frame": 2770
+  },
+  {
+   "label": "at second return",
+   "frame": 2945
+  }
+ ]
+}

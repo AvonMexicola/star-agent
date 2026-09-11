@@ -8,7 +8,21 @@ export const ITEMS = Object.freeze([
   Object.freeze({ id: 'sidearm', name: 'Security sidearm', detail: 'Stored weapon · combat and equipping unavailable', mass: 2 }),
   Object.freeze({ id: 'rifle', name: 'Patrol rifle', detail: 'Stored weapon · combat and equipping unavailable', mass: 5 }),
   Object.freeze({ id: 'replacement', name: 'Replacement components', detail: 'Crated ship parts · installation unavailable', mass: 8 }),
+  Object.freeze({ id: 'hotmeal', name: 'Hot meal tray', detail: 'Sealed galley meal · eating unavailable', mass: 1.2 }),
+  Object.freeze({ id: 'brew', name: 'Brew flask', detail: 'Insulated flask of hot brew · drinking unavailable', mass: .9 }),
+  Object.freeze({ id: 'jacket', name: 'Insulated jacket', detail: 'Layered deck jacket · wearing unavailable', mass: 2.4 }),
+  Object.freeze({ id: 'gloves', name: 'Work gloves', detail: 'Reinforced grip gloves · wearing unavailable', mass: .4 }),
+  Object.freeze({ id: 'seedling', name: 'Seedling tray', detail: 'Nine-cell hydroponic starter tray', mass: 3 }),
+  Object.freeze({ id: 'herbs', name: 'Culinary herb pot', detail: 'Live potted herbs in growing medium', mass: 1.6 }),
+  Object.freeze({ id: 'hullmodel', name: 'Scale hull model', detail: 'Desk-scale display hull on a stand', mass: 1.1 }),
+  Object.freeze({ id: 'chart', name: 'Printed system chart', detail: 'Folded Aeon system chart', mass: .2 }),
 ]);
+/** The catalogue a version 3 manifest was first written with. Items and shops
+ * added afterwards are migrated in — zero owned, full shop stock — instead of
+ * failing the integrity check and locking the player out of their own save.
+ * A value that IS present is still validated exactly as strictly as before. */
+export const VERSION3_ITEM_IDS = Object.freeze(['repair', 'ration', 'sample', 'scanner', 'sidearm', 'rifle', 'replacement']);
+export const VERSION3_SHOP_IDS = Object.freeze(['weapons', 'equipment']);
 export const CAPACITY = Object.freeze({ ship: 120, pack: 20, station: 10000 });
 const LEGACY_ITEMS = ITEMS.slice(0, 4);
 const emptyItems = () => Object.fromEntries(ITEMS.map(item => [item.id, 0]));
@@ -35,26 +49,40 @@ export class ShipInventory {
         if (!data || ![1, 2, 3].includes(data.version)) throw Error('Unsupported manifest');
         const containers = data.version === 1 ? ['ship', 'pack'] : ['ship', 'pack', 'station'];
         const items = data.version === 3 ? ITEMS : LEGACY_ITEMS;
-        if (!containers.every(container => items.every(item =>
-          Number.isSafeInteger(data[container]?.[item.id]) && data[container][item.id] >= 0)
+        // A value this manifest predates may be absent; a value it carries must
+        // still be a valid count. `migrated` records that the save was short.
+        let migrated = false;
+        const known = (container, item) => {
+          const saved = data[container]?.[item.id];
+          if (saved !== undefined) return Number.isSafeInteger(saved) && saved >= 0;
+          if (data.version === 3 && !VERSION3_ITEM_IDS.includes(item.id)) { migrated = true; return true; }
+          return false;
+        };
+        if (!containers.every(container => items.every(item => known(container, item))
           && this.massOf({ ...emptyItems(), ...data[container] }) <= (container === 'ship' ? 2400 : CAPACITY[container]))) {
           throw Error('Invalid cargo manifest');
         }
         if (data.version === 3) {
+          const stock = (id, offer) => {
+            const saved = data.shopStock?.[id]?.[offer.itemId];
+            if (saved !== undefined) return Number.isSafeInteger(saved) && saved >= 0 && saved <= offer.stock;
+            if (!VERSION3_SHOP_IDS.includes(id) || !VERSION3_ITEM_IDS.includes(offer.itemId)) { migrated = true; return true; }
+            return false;
+          };
           if (!Number.isSafeInteger(data.credits) || data.credits < 0 || data.credits > 1_000_000_000
-            || !Object.entries(STATION_SHOPS).every(([id, shop]) => shop.offers.every(offer =>
-              Number.isSafeInteger(data.shopStock?.[id]?.[offer.itemId])
-              && data.shopStock[id][offer.itemId] >= 0 && data.shopStock[id][offer.itemId] <= offer.stock))) {
+            || !Object.entries(STATION_SHOPS).every(([id, shop]) => shop.offers.every(offer => stock(id, offer)))) {
             throw Error('Invalid purchase manifest');
           }
           this.credits = data.credits;
           this.shopStock = Object.fromEntries(Object.entries(STATION_SHOPS).map(([id, shop]) =>
-            [id, Object.fromEntries(shop.offers.map(offer => [offer.itemId, data.shopStock[id][offer.itemId]]))]));
+            [id, Object.fromEntries(shop.offers.map(offer => [offer.itemId, data.shopStock?.[id]?.[offer.itemId] ?? offer.stock]))]));
         }
         for (const container of containers) {
-          this.containers[container] = { ...emptyItems(), ...Object.fromEntries(items.map(item => [item.id, data[container][item.id]])) };
+          this.containers[container] = { ...emptyItems(), ...Object.fromEntries(items.map(item => [item.id, data[container][item.id] ?? 0])) };
         }
-        if (data.version === 3) { this.saved = true; return; }
+        // A complete v3 save is never rewritten; only a migrated one is, so a
+        // later session does not repeat the same catalogue reconstruction.
+        if (data.version === 3) { this.saved = true; if (migrated) this.persist(); return; }
       }
       // Save the one-time grant with migration/new cargo; future loads never regrant it.
       this.persist();

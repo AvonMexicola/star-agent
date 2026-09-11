@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { stationFinishPalette } from './station-finish-palette.js';
 import { createStationShopGraphics } from './station-shop-graphics.js';
-import { STATION_HUB_BOUNDS } from './station-hub-policy.js';
+import { STATION_HUB_BOUNDS, STATION_HUB_PORTAL } from './station-hub-policy.js';
 import { HUB_COMMODITY_TERMINALS } from './trading/station-terminals.js';
 
 /** Room architecture is baked into local-metre material batches. The authored
@@ -45,12 +45,32 @@ export function createConcourse({sign}) {
     for(let z=-16;z<=16;z+=2)box([7.15,.004,.025],[0,-7.995,z],dark,true,0);
     for(let z=-17;z<=17;z+=2)box([3,.007,1.96],[side*5.4,-7.994,z],petrol,true,0);
   }
+  // The aft wall carries a walk-through portal onto the retail promenade; only
+  // the forward wall remains continuous. Panels inside the opening are omitted
+  // rather than moved, so the remaining cassette grid still lines through.
   for(const z of [-19,19]){
-    box([44,9.5,.5],[0,-3.25,z],dark);
-    for(const x of [-18,-12,-6,0,6,12,18]){
-      box([5.8,3.6,.14],[x,-5.85,z-Math.sign(z)*.31],ivory);
-      box([5.8,.26,.18],[x,-7.72,z-Math.sign(z)*.32],steel);
-      box([5.75,2.3,.12],[x,-2.8,z-Math.sign(z)*.3],petrol);
+    const portal=z<0,face=z-Math.sign(z)*.31;
+    if(portal){
+      const {halfWidth,head,wallTop}=STATION_HUB_PORTAL,jamb=22-halfWidth;
+      // Two jambs and a header. The cassette grid is re-laid to fit the jamb
+      // rather than leaving half a panel hanging over the opening.
+      for(const side of [-1,1]){
+        box([jamb,9.5,.5],[side*(22-jamb/2),-3.25,z],dark);
+        for(const x of [7.5,13.3,19.1]){
+          box([5.6,3.6,.14],[side*x,-5.85,face],ivory);
+          box([5.6,.26,.18],[side*x,-7.72,face-.01],steel);
+          box([5.55,2.3,.12],[side*x,-2.8,face+.02],petrol);
+        }
+      }
+      box([halfWidth*2,wallTop-head,.5],[0,(wallTop+head)/2,z],dark);
+      box([halfWidth*2-.8,1.5,.12],[0,-1.6,face+.02],petrol);
+    }else{
+      box([44,9.5,.5],[0,-3.25,z],dark);
+      for(const x of [-18,-12,-6,0,6,12,18]){
+        box([5.8,3.6,.14],[x,-5.85,face],ivory);
+        box([5.8,.26,.18],[x,-7.72,face-.01],steel);
+        box([5.75,2.3,.12],[x,-2.8,face+.01],petrol);
+      }
     }
   }
   for(const z of [-18,-9,0,9,18]){
@@ -61,13 +81,9 @@ export function createConcourse({sign}) {
       box([3.8,.025,.09],[side*5.8,.90,z],glow,true,0);
     }
   }
-  // A recessed directory and arrival portal give the far end a destination.
-  box([10,.22,.55],[0,-4.32,-18.38],steel);
-  box([9.8,2.1,.12],[0,-5.5,-18.42],petrol);
-  sign(group,'AEON',[0,-2.65,-18.31],10,1.5,0);
-  sign(group,'ORBITAL TRANSIT / DECK 04',[0,-4.85,-18.33],8,.7,0);
-  sign(group,'ARMORY  ←     /     SHIP COMPONENTS  →',[0,-5.75,-18.32],8,.35,0);
-  sign(group,'CENTRAL CONCOURSE   /   DECK 04',[0,-6.55,-18.32],6,.3,0);
+  // The aft directory is no longer a flat panel on a blank wall: the same
+  // wayfinding now hangs from a gantry in front of the promenade portal, in
+  // src/station-promenade.js, so the far end is a route rather than a dead end.
   sign(group,'BERTH TRANSIT   /   01 — 20',[0,-3.65,14.08],6,.5);
   for(const {mat,detail,parts} of batches.values()){
     const merged=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
