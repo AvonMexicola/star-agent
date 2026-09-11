@@ -36,7 +36,7 @@ export function createSystemMap(nav,targets) {
   }
   function render(force=false){
     const all=targets.targets(),selected=targets.selected;
-    const currentSignature=JSON.stringify({context,view,page,compact:compact(),selected:selected?.id,filters:targets.filters,list:all.map(t=>[t.id,t.name,t.parent]),travel:Boolean(nav.travel)});
+    const currentSignature=JSON.stringify({context,view,page,compact:compact(),selected:selected?.id,filters:targets.filters,list:all.map(t=>[t.id,t.name,t.parent,t.summary,t.sales]),travel:Boolean(nav.travel)});
     if(force||currentSignature!==signature){
       signature=currentSignature;const focusKey=document.activeElement?.dataset.controllerKey;
       dialog.dataset.mapView=view;
@@ -53,7 +53,7 @@ export function createSystemMap(nav,targets) {
         const slots=[[50,50],[23,29],[80,69],[76,22],[22,78]],pos=slots[i]??[50,85];b.style.left=`${pos[0]}%`;b.style.top=`${pos[1]}%`;orbitNodes.append(b);
       });
       q('.nav-chart-caption').textContent=`You: ${nav.body.name} · ${formatRange(nav.altitude)} altitude. ${children.length?'Select a world to explore it.':'No charted satellites.'}`;
-      el('nav-list-title').textContent=view==='filters'?'Show navigation markers':view==='signals'?'Tracked signals':`${central.name} · surface locations`;
+      el('nav-list-title').textContent=view==='filters'?'Browse navigation signals':view==='signals'?'Tracked signals':`${central.name} · surface locations`;
       q('.nav-map-list').replaceChildren();q('.nav-map-filters').replaceChildren();q('.nav-map-empty').textContent='';
       q('.nav-map-filters').hidden=view!=='filters';q('.nav-map-list').hidden=view==='filters';
       if(view==='filters'){
@@ -61,12 +61,12 @@ export function createSystemMap(nav,targets) {
           const count=all.filter(t=>t.category===id).length;
           const b=button(`${label} · ${count}`,`map-filter-${id}`,()=>{targets.setFilter(id,!targets.filters[id]);render(true);});b.dataset.navFilter=id;b.setAttribute('aria-pressed',String(targets.filters[id]));q('.nav-map-filters').append(b);
         }
-        q('.nav-map-empty').textContent='Friends / pilots shows the live Comms roster. Empty categories gain markers when signals exist.';
+        q('.nav-map-empty').textContent='Filters choose signals to browse and acquire. HUD arrows show your selected destination, next objectives and vehicles.';
       }else{
         const values=listValues(all),size=compact()?3:4,pages=Math.max(1,Math.ceil(values.length/size));page=Math.min(page,pages-1);
         for(const t of values.slice(page*size,(page+1)*size)){
           const b=button('',`map-signal-${t.id}`,()=>choose(t.id));b.dataset.navTarget=t.id;b.setAttribute('aria-pressed',String(t.id===selected?.id));b.disabled=Boolean(nav.travel);
-          const name=document.createElement('strong'),detail=document.createElement('small');name.textContent=t.name;detail.textContent=`${t.kind} · ${formatRange(nav.position.distanceTo(new Vector3(...t.center)))}`;b.append(name,detail);q('.nav-map-list').append(b);
+          const name=document.createElement('strong'),detail=document.createElement('small');name.textContent=t.name;detail.textContent=`${t.kind} · ${formatRange(nav.position.distanceTo(nav.viewPoint(new Vector3(...t.center))))}`;b.append(name,detail);if(t.summary){const sales=document.createElement('small');sales.textContent=t.summary;b.append(sales);}q('.nav-map-list').append(b);
         }
         q('.nav-map-pages span').textContent=`${page+1} / ${pages}`;el('nav-page-previous').setAttribute('aria-disabled',String(page===0));el('nav-page-next').setAttribute('aria-disabled',String(page===pages-1));
         if(!values.length)q('.nav-map-empty').textContent=view==='signals'?'No signals in the enabled categories. Open Filters to choose what to track.':'No surface sites here. Select a planet or moon in the chart.';
@@ -76,10 +76,10 @@ export function createSystemMap(nav,targets) {
     }
     el('map-clear').disabled=!selected||Boolean(nav.travel);el('map-engage').disabled=!selected||Boolean(nav.travel);
     if(selected){
-      const route=targets.route(selected),end=route.plan?.end??navigationEndpoint(nav.position,selected);
-      el('map-target-name').textContent=selected.name;el('map-target-kind').textContent=selected.kind;
-      el('map-distance').textContent=formatRange(nav.position.distanceTo(end));el('map-approach').textContent=selected.id==='star'?'500,000 km':'20 km';
-      el('map-route-status').textContent=nav.travel?'Drive held. Close the map to resume.':route.ok?'Aim at the marker. Hold for charge, then N / J or LB + RB + ↑.':route.reason;
+      const route=targets.route(selected),end=route.plan?.end??navigationEndpoint(nav.inertialPosition,selected,{rotationTime:nav.rotationClock?nav.rotationTime:null});
+      el('map-target-name').textContent=selected.name;el('map-target-kind').textContent=[selected.kind,selected.summary,selected.sales].filter(Boolean).join(' · ');
+      el('map-distance').textContent=formatRange(route.plan?.distance??nav.inertialPosition.distanceTo(end));el('map-approach').textContent=selected.id==='star'?'500,000 km':selected.surface?'35 km':'20 km';
+      el('map-route-status').textContent=nav.travel?'Drive held. Close the map to resume.':route.ok?`${route.plan.path?.some(p=>p.kind==='arc')?'Route around world · at least 35 km terrain clearance. ':''}Aim at the marker. Hold for charge, then N / J or LB + RB + ↑.`:route.reason;
     }else{el('map-target-name').textContent='Choose a destination';el('map-target-kind').textContent='Navigation target';el('map-distance').textContent='—';el('map-route-status').textContent='Select a body or signal, then aim at its marker in flight.';}
   }
   function close(){if(dialog.open){nav.enabled=wasEnabled;dialog.close();}}

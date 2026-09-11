@@ -5,10 +5,19 @@ slots, one tool, one backpack, two ammo slots and four quick-item slots. Select 
 slot, then draw, stow or assign an item from your backpack or accessible storage.
 The same dialog and focus system serves the ship, station and field cache.
 
-A finite starter kit contains a laser rifle, sidearm, mining laser, life-support
-backpack, 60 laser rifle charges, 36 sidearm charges, three bandages and two healing
+A finite starter kit contains a laser rifle, sidearm, mining laser, cargo tractor,
+life-support backpack, 60 laser rifle charges, 36 sidearm charges, three bandages and two healing
 stims. Quick slots 3 and 4 start empty. Existing mineral cuts, container contents
 and box mounts are preserved when an older save gains its initial loadout.
+
+The cargo tractor starts in the backpack; the mining laser remains in the Tool
+slot. Open **Menu → Loadout → Tool → Cargo tractor** to swap them, then draw the
+tool if your hands were empty. On foot or in EVA, hold **RT / T** to tractor an SBU
+crate and press **X / F** to secure it to a compatible cargo grid. Holster with
+**D-pad right** or the tractor panel. Swapping back returns the tractor to storage.
+The standalone tractor is included in fresh solo and multiplayer inventories;
+existing saved packs keep their exact contents and can still use the Cargo menu's
+**Equip tractor** utility. Loading never grants another copy of a moved tractor.
 
 ## Controls
 

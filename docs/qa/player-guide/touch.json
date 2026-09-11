@@ -1,0 +1,51 @@
+{
+  "browser": "151.0.7922.173",
+  "steps": [
+    {
+      "id": "find-hatch",
+      "text": "BOARDING\nGo to the back of your Nomad\n\nHold the walking arrows; drag the view to look. Go around the outside of the hull to the rear ramp, behind the engines."
+    },
+    {
+      "id": "open-hatch",
+      "text": "BOARDING\nOpen your Nomad's rear hatch\n\nTap the interaction button to open the hatch and lower the ramp."
+    },
+    {
+      "id": "close-hatch",
+      "text": "BOARDING\nClose the hatch behind you\n\nTap the interaction button to close the hatch and raise the ramp."
+    },
+    {
+      "id": "sit",
+      "text": "BOARDING\nSit in the pilot chair\n\nTap the interaction button to take the controls."
+    },
+    {
+      "id": "launch",
+      "text": "DEPARTURE\nLift off from the station pad\n\nTap Launch to take off. Wait for the short automatic lift."
+    },
+    {
+      "id": "retract-gear",
+      "text": "DEPARTURE\nRetract your landing gear\n\nOpen Commands \u2192 Ship \u2192 Landing gear (use the page arrows if needed) to stow the legs. Gear down limits you to maneuvering speed."
+    },
+    {
+      "id": "leave-bay",
+      "text": "DEPARTURE\nFly out through the hangar doors\n\nHold the forward flight control to move out of the bay. Keep the ship level until you are clear of the station."
+    },
+    {
+      "id": "choose",
+      "text": "YOUR NEXT JOURNEY\nChoose what to do next\n\nOpen Commands \u2192 Map to select a destination, or open Commands \u2192 Contracts to choose a contract."
+    },
+    {
+      "id": "manual-approach",
+      "text": "APPROACH\nFly toward Patrol signal\n\nDrag the view to centre its marker. Hold the forward flight control to approach; hold Brake to slow down near it."
+    }
+  ],
+  "errors": [],
+  "input": "Native CDP touch contacts; no keyboard or gameplay state mutation",
+  "keys": [],
+  "position": [
+    -127785.56390895713,
+    165945.1025438006,
+    1679335.229978425
+  ],
+  "nativeEventCount": 84,
+  "allTouchEventsTrusted": true
+}

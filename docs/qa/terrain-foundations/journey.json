@@ -1,0 +1,79 @@
+{
+  "browser": "151.0.7922.173",
+  "input": "Injected standard Gamepad; no physical device",
+  "setup": "Initial empty sandbox save and finite ordinary supply bank; no runtime pose or gameplay method calls",
+  "pieces": [
+    {
+      "type": "foundation",
+      "id": "build-piece-2",
+      "position": [
+        0,
+        0.3,
+        0
+      ],
+      "rotation": 0,
+      "doorOpen": false,
+      "supportDepth": 0.6
+    },
+    {
+      "type": "doorway",
+      "id": "build-piece-3",
+      "position": [
+        0,
+        0.3,
+        -2
+      ],
+      "rotation": 0,
+      "doorOpen": true
+    },
+    {
+      "type": "mainframe",
+      "id": "build-piece-4",
+      "position": [
+        0.5,
+        0.3,
+        0
+      ],
+      "rotation": 3.141592653589793,
+      "doorOpen": false
+    },
+    {
+      "type": "foundation",
+      "id": "build-piece-5",
+      "position": [
+        -8,
+        4.3,
+        0
+      ],
+      "rotation": 0,
+      "doorOpen": false,
+      "supportDepth": 4.4
+    },
+    {
+      "type": "foundation-strut",
+      "id": "build-piece-6",
+      "position": [
+        8,
+        4.3,
+        0
+      ],
+      "rotation": 0,
+      "doorOpen": false,
+      "supportDepth": 4.3
+    },
+    {
+      "type": "foundation",
+      "id": "build-piece-7",
+      "position": [
+        4,
+        0.3,
+        4.440892098500626e-16
+      ],
+      "rotation": 4.71238898038469,
+      "doorOpen": false,
+      "supportDepth": 0.6
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

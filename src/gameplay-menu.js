@@ -97,10 +97,11 @@ export function createGameplayMenu({nav,screens,dev=false}){
   // Commands already represented by top-level screens are removed from the Ship
   // grid; their real handlers remain available to existing contextual shortcuts.
   const commands=document.querySelector('#controller-menu .controller-command-list');
-  const shipKeys=new Set(['resume','combat-mode','free-drive','gear','lights','camera-view','wave','combat-target','power','fleet','crash-recover','weapon-pulse','weapon-laser','weapon-void','build','build-sandbox','sandbox-exit','recipes','tool']);
+  const shipKeys=new Set(['sentry-deploy','resume','combat-mode','free-drive','gear','lights','camera-view','wave','combat-target','power','fleet','crash-recover','weapon-pulse','weapon-laser','weapon-void','build','build-sandbox','sandbox-exit','recipes','tool']);
   if(commands)for(const button of commands.children)if(!shipKeys.has(button.dataset.controllerKey)){button.dataset.menuExcluded='true';button.hidden=true;}
   document.addEventListener('keydown',event=>{
-    if(event.repeat||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
+    if(event.repeat||event.target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
+    if(event.code==='Tab'&&!event.shiftKey&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!document.querySelector('dialog[open]')&&nav.enabled&&nav.focused&&!nav.openingActive&&nav.mode!=='destroyed'){event.preventDefault();open('contracts');return;}
     if(event.code==='Escape'&&!document.querySelector('dialog[open]')&&nav.enabled&&!nav.openingActive&&nav.mode!=='destroyed'){event.preventDefault();open();return;}
     if(!active()||topDialog()!==active())return;
     if(['BracketLeft','BracketRight'].includes(event.code)){event.preventDefault();step(event.code==='BracketLeft'?-1:1);}

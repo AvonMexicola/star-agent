@@ -1,0 +1,46 @@
+{
+  "browser": "151.0.7922.173",
+  "graphics": {
+    "width": 390,
+    "height": 844,
+    "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "drawCalls": 397,
+    "triangles": 1019338,
+    "fps": 28,
+    "resolution": {
+      "automatic": true,
+      "fullscreen": false,
+      "scale": 1,
+      "pixelRatio": 1,
+      "width": 390,
+      "height": 844
+    },
+    "floodlights": {
+      "max": 6,
+      "maxShadows": 2,
+      "active": 0,
+      "shadows": 0,
+      "fixtures": []
+    }
+  },
+  "input": "Injected standard Gamepad; actual shipped sandbox, no pose or inventory injection. Keyboard/phone closure separately.",
+  "physicalDevice": false,
+  "errors": [],
+  "warnings": [],
+  "lamp": {
+    "type": "floodlight",
+    "id": "build-piece-12",
+    "position": [
+      0,
+      0.3,
+      4
+    ],
+    "rotation": 0,
+    "doorOpen": false
+  },
+  "materialsSpent": {
+    "metal-stock": 8,
+    "conductor": 3,
+    "glass": 2
+  }
+}

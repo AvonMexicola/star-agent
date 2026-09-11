@@ -1,3 +1,5 @@
+import {STRATUM_LAYOUT} from '../stratum-layout.js';
+import {GANNET_LAYOUT} from '../gannet-layout.js';
 /** Ship-local metres, +Y up. Cell volume is 0.216 m³, not a mass unit. */
 export const SBU_METRES = .6;
 export const SBU_SIZES = Object.freeze([1,2,4,8,16,32,64]);
@@ -8,6 +10,8 @@ export const CARGO_GRIDS = Object.freeze({
   // five metres clear through its centre for the Burrow and both loading ramps.
   atlas: [{id:'port-deck',min:[-3.7,2.625,.1],cells:[2,8,16]},{id:'starboard-deck',min:[2.5,2.625,.1],cells:[2,8,16]}],
   kestrel: [],
+  stratum: STRATUM_LAYOUT.storage.freight.banks.map(b=>({id:b.id,min:[...b.min],cells:[2,2,4]})),
+  gannet: GANNET_LAYOUT.cargo.grids,
 });
 export const capacitySBU = hull => (CARGO_GRIDS[hull]??[]).reduce((n,g)=>n+g.cells.reduce((a,b)=>a*b,1),0);
 export const crateSize = sbu => CRATE_CELLS[sbu]?.map(n=>n*SBU_METRES);

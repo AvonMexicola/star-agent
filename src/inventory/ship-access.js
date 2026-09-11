@@ -1,3 +1,6 @@
+import {occupiesShip} from '../combat/ship-occupancy.js';
+import {Vector3} from 'three';
+
 export const SHIP_CARGO_RANGE = 50;
 
 const finitePoint = point => point && ['x', 'y', 'z'].every(axis => Number.isFinite(point[axis]));
@@ -7,11 +10,16 @@ const finitePoint = point => point && ['x', 'y', 'z'].every(axis => Number.isFin
 export function shipCargoAccess(nav) {
   const result = {available: false, aboard: false, distance: null, range: SHIP_CARGO_RANGE};
   if (!nav || nav.shipId === 'kestrel' || ['crashed','destroyed'].includes(nav.mode)) return result;
-  if (nav.insideShip || nav.mode === 'landed' || nav.mode === 'flight') {
+  if (occupiesShip(nav)) {
     return {...result, available: true, aboard: true, distance: 0};
   }
   if (!['walk', 'eva'].includes(nav.mode) || !finitePoint(nav.position) || !finitePoint(nav.shipPosition)) return result;
-  const distance = Math.hypot(...['x', 'y', 'z'].map(axis => nav.position[axis] - nav.shipPosition[axis]));
+  // A parked carrier and a nearby rover/EVA rider can straddle a rotating
+  // chart boundary. Navigation already owns the hull-to-observer conversion.
+  if (nav.rotationClock && typeof nav.fromShipLocal !== 'function') return result;
+  const hullPosition = nav.rotationClock ? nav.fromShipLocal(new Vector3()) : nav.shipPosition;
+  if (!finitePoint(hullPosition)) return result;
+  const distance = Math.hypot(...['x', 'y', 'z'].map(axis => nav.position[axis] - hullPosition[axis]));
   return {...result, distance, available: distance <= SHIP_CARGO_RANGE};
 }
 

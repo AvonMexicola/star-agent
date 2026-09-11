@@ -1,6 +1,7 @@
 /** Remote visuals only. All poses stay in double precision until camera-relative
  * placement; this module never decides damage, movement authority or suit colors. */
 import * as THREE from 'three';
+import { rotationFrameAt } from '../planet-rotation.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 import { Character } from '../character.js';
@@ -322,7 +323,7 @@ export class RemotePlayers {
       if (!entry) { entry = this._create(peer); this.peers.set(peer.id, entry); }
       const changedColor = entry.peer.colorIndex !== peer.colorIndex;
       const changedMode = entry.peer.mode !== peer.mode;
-      const changedFrame = entry.peer.physicsFrame !== peer.physicsFrame;
+      const changedFrame = entry.peer.physicsFrame !== peer.physicsFrame || entry.peer.planetFrame !== peer.planetFrame;
       entry.peer = peer;
       entry.body = BODIES.find(body => body.id === peer.body);
       entry.hasPhysicsUp = Boolean(peer.physicsFrame && Array.isArray(peer.physicsUp)
@@ -332,6 +333,8 @@ export class RemotePlayers {
       animation.speed = peer.mode === 'eva' ? 0 : Math.hypot(...(peer.velocity || [0, 0, 0]));
       animation.health = peer.health / 100;
       animation.dead = peer.mode === 'dead';
+      animation.seated=peer.sentrySeat?.phase==='seated';
+      animation.crouching=Boolean(peer.sentrySeat&&!animation.seated);
       const gear = THREE.MathUtils.clamp(peer.gearProgress ?? 1, 0, 1);
       const eased = gear * gear * (3 - 2 * gear);
       entry.gearScale = .08 + .92 * eased;
@@ -344,7 +347,7 @@ export class RemotePlayers {
       if (changedColor && entry.character.model) tintCharacterSuit(entry.character.model, this.palette[peer.colorIndex] || this.palette[0]);
       this._setShipTarget(entry);
       this._applyAtlas(entry);
-      const weapon = HELD_ITEMS.includes(peer.weapon) && (peer.mode === 'walk' || peer.mode === 'eva') ? peer.weapon : null;
+      const weapon = !peer.sentrySeat && HELD_ITEMS.includes(peer.weapon) && (peer.mode === 'walk' || peer.mode === 'eva') ? peer.weapon : null;
       if (entry.equipment.equipped !== weapon) {
         if (weapon) entry.equipment.equip(weapon);
         else entry.equipment.unequip();
@@ -390,10 +393,16 @@ export class RemotePlayers {
         this._up.copy(UP).applyQuaternion(this._bodyRotation);
       }
       this._feet.copy(entry.position).addScaledVector(this._up, -this.eyeHeight);
+      if(peer.sentryFeet)this._feet.fromArray(peer.sentryFeet);
       // The wire orientation is the view orientation. A separate bodyQuaternion
       // can be supplied when the sender is pitched independently of its torso.
       character.setWorldPose(this._feet, this._bodyRotation);
       character.placeCameraRelative(origin);
+      if(Object.hasOwn(peer,'planetFrame')){
+        character.object.userData.planetFrame=peer.planetFrame;
+        equipment.vfx.userData.planetFrame=peer.planetFrame;
+        entry.ship.userData.planetFrame=peer.mode==='flight'||peer.cabinFlight&&!peer.spaceParked?peer.planetFrame:rotationFrameAt(entry.shipPosition)?.id??null;
+      }
       const onFoot = peer.mode === 'walk' || peer.mode === 'eva' || peer.mode === 'dead';
       character.setVisible(onFoot);
       equipment.setRenderOrigin(origin);

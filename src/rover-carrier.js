@@ -9,6 +9,8 @@ const overlap=(a,b)=>a.min.every((n,i)=>n<b.max[i])&&a.max.every((n,i)=>n>b.min[
 
 /** Park in the authored clear aft cargo lane, facing the loading ramp. */
 export function roverCarrierStart(freighter){
+  const profile=freighter?.carrier;
+  if(profile){const lift=freighter.lifts?.find(l=>l.id===profile.liftId);if(!lift)return null;const position=new Vector3(...profile.park);position.y=lift.y;return {position,quaternion:new Quaternion().setFromAxisAngle(UP,profile.heading),lift:lift.id};}
   const ramp=freighter?.ramps?.find(r=>r.id==='aft'),cargo=freighter?.layout?.cargo;
   if(ramp&&cargo)return {position:new Vector3(ramp.pivot[0],cargo.floor,ramp.pivot[2]-ramp.outward*7),quaternion:new Quaternion().setFromAxisAngle(UP,ramp.outward===1?Math.PI:0),lift:null};
   const lift=freighter?.lifts?.find(l=>l.id==='main');
@@ -18,46 +20,51 @@ export function roverCarrierStart(freighter){
 }
 
 /** Whole rover envelope blocks either direction of the visible ramp sweep. */
-export function roverObstructsRamp(state,ramp,frame,{spawned=true}={}){
+export function roverObstructsRamp(state,ramp,frame,{spawned=true,layout=ROVER_LAYOUT}={}){
   if(!spawned||!ramp)return false;
-  const b=bounds(roverFootprint(state.position,state.quaternion).map(p=>roverShipLocal(p,frame)));
+  const b=bounds(roverFootprint(state.position,state.quaternion,{layout}).map(p=>roverShipLocal(p,frame)));
   const end=ramp.pivot[2]+ramp.outward*ramp.length;
   return overlap(b,{min:[ramp.pivot[0]-ramp.width/2-.35,Math.min(0,ramp.pivot[1]-Math.abs(Math.sin(ramp.openAngle))*ramp.length)-.35,Math.min(ramp.pivot[2],end)-.45],max:[ramp.pivot[0]+ramp.width/2+.35,ramp.pivot[1]+ramp.length+.35,Math.max(ramp.pivot[2],end)+.45]});
 }
 
 /** Compose shared mechanism vetoes. A crew lift keeps its own guard intact. */
 export function guardRoverCarrier(freighter,getRover){
-  if(freighter?.lifts?.some(l=>l.id==='main')){
+  const rovers=()=>{const value=getRover();return Array.isArray(value)?value:[value];};
+  if(freighter?.lifts?.some(l=>l.id===(freighter.carrier?.liftId??'main'))){
     const canMove=freighter.canMove;
-    freighter.canMove=platform=>{
-      const rover=getRover();
-      return canMove?.call(freighter,platform)!==false&&roverLiftMayMove(rover.state,platform,rover.frame,rover);
+    freighter.canMove=(platform,rider)=>{
+      if(canMove?.call(freighter,platform,rider)===false)return false;
+      return rovers().every(rover=>{
+        if(!rover?.spawned)return true;
+        if(platform.kind==='hatch'){const b=bounds(roverFootprint(rover.state.position,rover.state.quaternion,{layout:rover.layout??ROVER_LAYOUT}).map(p=>roverShipLocal(p,rover.frame)));const h=freighter.layout.hatch;return !overlap(b,{min:[h.minX,h.bottom,h.closedZ-.15],max:[h.maxX,h.top+1,h.closedZ+.15]});}
+        return roverLiftMayMove(rover.state,platform,rover.frame,{...rover,carrierId:freighter.carrier?.id??'atlas',ceiling:freighter.carrier?.ceiling??platform.ceiling??9.2});
+      });
     };
   }
   if(freighter?.ramps){
     const obstructed=freighter.rampObstructed;
     freighter.rampObstructed=id=>{
-      const rover=getRover();
-      return obstructed?.call(freighter,id)===true||roverObstructsRamp(rover.state,freighter.ramps.find(r=>r.id===id),rover.frame,rover);
+      return obstructed?.call(freighter,id)===true||rovers().some(rover=>rover?.spawned&&roverObstructsRamp(rover.state,freighter.ramps.find(r=>r.id===id),rover.frame,rover));
     };
   }
 }
 
 /** Use authored cargo props and the same wall/ramp/crew-gate owner as walking.
  * The four-wheel support solver remains the only owner of floor contact. */
-export function roverCarrierClear({previous,proposed,previousCorners,corners},freighter,frame,{cargoConstrain=null}={}){
-  if(!freighter?.ramps||!freighter.constrain)return true;
+export function roverCarrierClear({previous,proposed,previousCorners,corners},freighter,frame,{cargoConstrain=null,layout=ROVER_LAYOUT}={}){
+  if((!freighter?.ramps&&!freighter?.carrier)||!freighter.constrain)return true;
   const a=roverShipLocal(previous.position,frame),b=roverShipLocal(proposed.position,frame);
   if(Math.min(a.length(),b.length())>50)return true;
-  const localBounds=bounds([...(previousCorners??roverFootprint(previous.position,previous.quaternion)),...(corners??roverFootprint(proposed.position,proposed.quaternion))].map(p=>roverShipLocal(p,frame)));
+  const localBounds=bounds([...(previousCorners??roverFootprint(previous.position,previous.quaternion,{layout})),...(corners??roverFootprint(proposed.position,proposed.quaternion,{layout}))].map(p=>roverShipLocal(p,frame)));
   if(freighter.colliders.some(c=>overlap(localBounds,c)))return false;
-  for(const deck of [freighter.layout.cargo,freighter.layout.upper]){
+  const decks=freighter.carrier?[{...freighter.layout.interior,floor:freighter.layout.floorY},{...freighter.lift,floor:freighter.lift.y}]:[freighter.layout.cargo,freighter.layout.upper];
+  for(const deck of decks){
     if(localBounds.min[1]>=deck.floor-.5&&localBounds.min[1]<deck.ceiling&&localBounds.max[1]>deck.ceiling
       &&overlap(localBounds,{min:[deck.minX,deck.floor,deck.minZ],max:[deck.maxX,deck.ceiling,deck.maxZ]}))return false;
   }
   // Sample vertical body edges at two heights, covering its full 2.7 m
   // suspension envelope with the floor owner's 1.75 m walking capsule.
-  const {min,max}=roverSweptBounds(),height=freighter.eyeHeight??1.75;
+  const {min,max}=roverSweptBounds(layout),height=freighter.eyeHeight??1.75;
   for(const x of [min[0],max[0]])for(const z of [min[2],max[2]])for(const y of [min[1]+height,max[1]]){
     const local=new Vector3(x,y,z);
     const from=roverShipLocal(local.clone().applyQuaternion(previous.quaternion).add(previous.position),frame);

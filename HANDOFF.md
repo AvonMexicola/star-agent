@@ -1,4 +1,299 @@
+# SA-PROMENADE-001 — contribution handoff at 2026-09-10
+
+Status: implemented and validated by the builder; **submitted, not reviewed,
+not accepted, not integrated**. Branch `feat/aeon-retail-promenade`, base
+`dev/all-features` `46fdc5c`, two commits. Submitted from the contributor's fork
+`RobleusCaesar/star-agent` as
+[AvonMexicola/star-agent#117](https://github.com/AvonMexicola/star-agent/pull/117)
+on 2026-09-11, since the contributor has pull-only access upstream. Work is in a
+private clone; no shared checkout was switched and no server was left running.
+
+Owned files: `blender/build_station_promenade.py`, `public/models/station-promenade.glb`,
+`src/station-promenade.js`, `src/station-cosmic-chicken.js`,
+`assets/cosmic-chicken/` (masters, provenance), `public/textures/station/cosmic-chicken-*.webp`,
+`scripts/cosmic-chicken-textures.mjs`, `tests/station-promenade.test.js`,
+`tests/station-cosmic-chicken.test.js`, `scripts/station-promenade.spec.js`,
+`scripts/promenade.config.js`, `scripts/promenade-profile.spec.js`,
+`scripts/promenade-inspect.spec.js`, `scripts/promenade-profile.config.js`,
+`docs/qa/station-promenade/`. Narrow edits to shared modules:
+`src/station-concourse.js` (aft wall portal only), `src/station-hub-policy.js`
+(multi-volume hub frame), `src/station-architecture.js` (`createHub`,
+non-allocating `updateElevatorBoxes`), `src/station-physics.js` (shared probe
+vector), `src/station-complex.js` (load, attach, interaction, annex shell,
+lights, reusable sweep buffer), `src/station-shop.js`, `src/ship-inventory.js`,
+`src/station-shop.css`, `src/main.js` (hub-entry scene compile bound to the
+frame's render target, the same binding for the startup compile, and a
+dev-only `renderer` getter beside the existing `navigation` one),
+`package.json` (two test files), `tests/station-shop-props.test.js` (one
+fixture field), `docs/development/testing.md`, `STATION-PIPELINE-MEMORY.md`.
+
+## What changed and what remains
+
+The concourse aft wall at Z -19 gains a 9.2 m walk-through portal. Its flat
+`AEON / ORBITAL TRANSIT` directory now hangs from a transverse gantry at Z -17,
+double sided, 3.09 m clear underneath. Through the portal a 30 m promenade runs
+aft: entry bay, two storefronts, a glazed mid court with seating and planting
+that keeps the station panorama, two more storefronts, and a locked Deck 05
+pressure door that reports itself sealed rather than silently stopping the
+player. Four catalogues — COSMIC CHICKEN, TIDEWELL OUTFITTERS, GREENSIDE
+HYDROPONICS, WAYPOINT SOUVENIRS — sell eight new items as stored cargo through
+the existing shop modal, dialog router and F/interact action. No combat, ship,
+survival or income effect; finite stock; everyday PG content.
+
+The galley unit is dressed as the COSMIC CHICKEN tenant: three print cassettes
+authored in the kit, with two posters and an illuminated menu board hung on them
+at runtime from contributor-generated artwork (ChatGPT / Imagen 2.5, prompt
+recorded in `assets/cosmic-chicken/README.md`). The board is decoration; the
+catalogue is the honest list of what a purchase delivers.
+
+Three defects found through the contributor's own play-test are fixed and
+covered: the prints rendered as bare paper because the hanger used anchor world
+positions as local ones on an already-placed station (regression test under a
+moved, rotated parent); a freeze just before the portal, caused by four unit
+lights switching on mid-walk and forcing every material onto a recompiled
+program — all promenade lights now follow the hub with the concourse lights; and
+a stall at the first look into a unit, which the profiler's program dump traced
+to the docked ship's and handhelds' materials linking under hub lighting when a
+berth enters the frustum behind the walls — the whole scene is now compiled for
+the hub's configuration at hub entry, with the compile bound to the frame's
+render target (the game's startup compile had been preparing programs the frame
+never used). The walking path also sheds about 190 allocations a frame and 111
+unreachable collision boxes.
+
+The hub frame now owns three walkable volumes instead of one. `hubFrameMethods()`
+replaces `Station`'s single-box `deckPoint`, `deckHeightAt` and `isInsideHangar`
+on the hub only; the twenty berths keep theirs. Catalogue growth is an additive
+version 3 save migration, not a format bump: values the save predates are filled
+in at zero owned and full shop stock, everything it carries is validated exactly
+as strictly as before, and only a migrated save is rewritten.
+
+`build_station_concourse.py` and every existing station asset are untouched, so
+the elevator and current concourse stay byte-for-byte. Remaining: independent
+review and product acceptance; no shopkeepers in the new units; the Deck 05 door
+has no animation, interior or unlock path; no physical controller hardware; no
+GPU timer measurement.
+
+## Validation
+
+`npm test` at the delivered tree: **1316 tests, 1315 pass, 1 fail**. The single
+failure is inherited and unrelated (see below); the baseline on `46fdc5c` fails
+the same case and nothing else. The new suite `tests/station-promenade.test.js`
+contributes 10 cases covering export budgets, the opened wall and walkable
+corridor, every unit entrance and counter, the locked bulkhead, opaque unit
+ceilings with measured headroom, the sealed corridor shell, the three hub
+volumes, counter-to-catalogue mapping, display-stock scale and the annex shell.
+
+`npm run test:multiplayer`: 231 tests, 227 pass. The two failures are the
+embedded-PostgreSQL cases, which need a local database this machine does not
+run; they fail identically without this change. `npm run check:repo` passes
+(11 areas, 56 tasks, 44 managed documents). `npm run build` succeeds as the
+browser suite's production web server.
+
+Asset rebuild: Blender 5.2.1 LTS, deterministic, `PROMENADE_EXPORT` summary
+emitted, 4,318,192 B / 75,420 triangles / 10 draws / 32 measured assemblies /
+99 collision boxes, largest 4,480 triangles and 308,596 standalone bytes, all
+inside the 10k/1 MB prop budget the builder itself enforces. Three runtime
+textures, 819×1024, 819×1024 and 1024×768 WebP, 235 KB together.
+
+`npm run test:browser -- -c scripts/promenade.config.js` against a production
+build, Chromium 151.0.7922.34, ANGLE / AMD Radeon integrated, 1440×900 at render
+scale 0.8. **Controller journey: passed**, zero page, console, HTTP and failed
+request entries — ship to elevator to concourse, through the portal, all four
+storefronts entered, one item bought in each through controller focus and A, each
+modal closed with B while a stick was held with no player movement, refused at
+the sealed door, then the whole route walked back. **Keyboard and phone journey:
+passed** on the same room with the gamepad removed, including a purchase and a
+390×844 capture of both the corridor and the catalogue; its first attempt on the
+final tree wedged the test walker in the galley's standing-rail corner, the
+walker's recovery was improved and the rerun passed, with the authored collision
+boxes checked against both routes. Injected `Gamepad` input is not physical
+hardware and is reported as such.
+
+Fixed-camera on/off pairs measure the room at +34 draws / +79,988 triangles at
+the promenade entry and +44 / +80,008 from the concourse — its own geometry once,
+plus three print draws.
+
+In-page walk profile, `scripts/promenade-profile.config.js` on a production
+build, ANGLE D3D11, dev server stopped. With the lights fixed: complete route,
+1,839 walking frames, median 49.9 ms, p95 66.7 ms, nothing at any of the four
+portal crossings, one stall left at the first look into the galley (eight
+program links, 105 ms warm and 1,983 ms cold). With the hub-entry scene compile
+as well: complete route, 1,820 walking frames, median 49.9 ms, p95 66.7 ms,
+longest 116.8 ms with nothing attributed, no spike at any of the four portal
+crossings, 162 programs before and after the walk — none created; summary
+committed as `docs/qa/station-promenade/browser/profile/profile-d3d11.json`.
+Before the light fix the route stalled 1.1 s one frame after "before the
+portal" and 350–420 ms at every later crossing.
+Before the shadow-casting correction the same pose measured +82 / +308,952. Two
+defects found by this evidence and fixed: laid floor finishes and threshold
+plates had collision and stopped the player in every shop doorway; one assembly
+holding two window forms 6 m apart made the floor between them solid. Two
+lighting corrections followed actual captures: point lights under the ceiling
+blew it out and became aimed downlights, and the aft light was moved clear of the
+bulkhead it was washing out. Curated captures and both full `report.json` files
+are in `docs/qa/station-promenade/browser/`; Blender studio images are in
+`docs/qa/station-promenade/studio/` and are studio evidence only.
+
+## Integration and operations
+
+Nothing is integrated. `dev/all-features` is untouched; this branch is merged
+nowhere and is pushed only to the contributor's fork behind #117. Save format
+stays at version 3 with an additive
+migration, so a build without this change still reads a manifest written with it
+and loses only the new items. No database, protocol or generated-schema change.
+No credentials, tokens, private recordings or build output are committed.
+
+## Resume here
+
+First concrete action: an independent reviewer walks the promenade in a real
+build and scores the six QUALITY rubric dimensions, keeping the known gaps in
+scope, in particular whether the deliberately moodier corridor lighting is
+accepted. Cees holds product acceptance; the integration steward holds
+`dev/all-features`. Complete evidence, contracts and limits:
+[the promenade production record](docs/qa/station-promenade/README.md).
+
+One inherited failure on this base is untouched and unrelated: `tests/gannet.test.js`
+fails because `assets/gannet/manifest.json` sha256 does not match the committed
+`public/models/gannet.glb`.
+
+# SA-RECOVERY-001 — local delivery at 2026-09-09T01:20:19.836167+00:00
+
+Status: implemented, validated and locally integrated; independent review pending.
+Branch `feat/deep-space-recovery`, initial base `f1ef821`, checked source `d3cbde3`;
+draft PR105 stacks on checked World PR104/`1da9b0e`. Isolated worktree
+`.worktrees/deep-space-recovery`; private5680 QA released, no own server left running.
+
+## What changed and what remains
+
+Three solo disabled64m Atlas recovery contracts, ramps open and amber alarms,
+quiet/standard/hard guards. One original2SBU objective is required; other crates
+are optional loot. Grid fit is disclosed before acceptance without a capacity gate.
+Cargo appears only at the accepting pilot's wreck arrival, travels by real tractor
+and cargo grid, and pays through Greenbank's physical terminal. Secured bonus
+remains/sells normally. Exact identity, reload, cleanup and atomic payment are covered.
+
+Owned recovery modules/tests/fixtures and narrow main, combat, cargo and trade
+hooks preserve checked faction/Pirate/rotation work. Pending Sentry source is not
+included. Online recovery, all-hull/full-guarded-delivery journeys, physical hardware,
+independent art/performance review and public release remain separate.
+
+## Validation
+
+Combined02d431a: all163 normal test files pass31.397s, build07 pass19.00s;
+36 named recovery/freight/tractor cases pass on unchanged recovery runtime.
+Frozen d3cbde3 controller09 pass9.4min/runner0: actual outbound drive, EVA/both
+tractor hauls, held dialog/focus/disconnect gates, secured loaded return drive,
+continuous descent, terminal900CR, retained bonus108CR sale, inventory/relaunch.
+Real-time rotation advances525.988s over526.066s after only pre-boot epoch setup.
+Guarded07 pass3.9min with21shots/16hits/2kills; keyboard/native390×844 UI07 pass50s.
+Chromium151/AMD860M ANGLE gl,1440×900, app errors/warnings empty; injected Gamepad,
+not physical hardware. Original failed attempts and corrections remain recorded.
+All five hosted checks pass e4f9283; later documentation/fixture head is separate.
+See [complete QA and receipts](docs/qa/deep-space-recovery/README.md).
+
+## Integration and operations
+
+Shared `dev/all-features` fast-forwarded1da9b0e→d3cbde3, all13 changed runtime
+files exact, existing522,928B dirty journal and58,497B appended suffix preserved.
+Six5178 served modules and direct8087/proxy5178 health200 pass. Existing Vite
+serves the solo client additions; no API/schema/protocol/dependency change or
+service restart, database mutation or public deployment. Protocol9 is retained.
+Documentation/evidence follow-up preserves the same runtime; the root journal
+records its final exact local head.
+
+## Resume here
+
+Cees can refresh5178 and choose Contracts → Cargo recovery in solo play. PR105
+retains independent review and release decisions; no further required runtime or
+GPU work remains in this lane. Any next integrator must preserve recovery hooks,
+rotation frames and the shared append-only journal.
+
+---
+
+# SA-TRANSPORT-001 — handoff at 2026-09-08
+
+Status: locally integrated at `f294a98` and developer-validated. Owner: Cees /
+@AvonMexicola; Codex mission designer. Branch `feat/transport-missions`, isolated
+`.worktrees/transport-missions`, initial base `d08f181`, runtime `623d80e`, browser
+fixture `1df4438`. Checked projected-terminal `23ca619` and identical-tree development
+sync `524b729` are retained. New transport modules plus bounded commerce/cargo/
+settlement/navigation hooks; exact registry claims in SA-TRANSPORT-001. Private5662
+browser processes are stopped. No new dependencies, assets, database schema or tables.
+
+## What changed and what remains
+
+Twelve personal one-crate routes between four authored worlds. Acceptance creates
+no crate; the accepting owner orders at A, physically loads and secures the original
+sealed cargo, flies to B and deposits through its terminal for one payment. Server
+identity/reach/ship/seal/position/reward checks prevent remote, foreign or repeated
+issuance/payment. Owner-private snapshots and walking/EVA collision agree. Reload,
+reconnect, abandonment and failed-save behavior preserve cargo/credit invariants.
+See [player guide](docs/transport-missions.md) and [decision](docs/decisions/0002-personal-transport-cargo.md).
+
+## Validation
+
+Final combined155 normal test files pass, no skips;193 multiplayer individual cases
+pass with two existing optional skips. Subsequent private-collision11-case suite
+passes. Model31 and actual-room/two-account plus isolated PostgreSQL2 cases pass.
+Production development build passes4.77s, existing chunk advisory; repository and
+whitespace checks pass. Browser05 passes both cases14.1min: actual12min standard-
+Gamepad accept/order/tractor/continuous22.9Gm flight/land/deposit/+800CR/result/
+reboard/launch; keyboard entry and native390touch order/cancellation1.9min. Native
+focus/dialog/device held-input suppression passes. Chromium151/ANGLE-GL/AMD860M,
+1440×900/390×844, zero application errors/warnings. Original screenshots inspected.
+[Verification record](docs/qa/transport-missions/README.md) retains failures and fixes.
+No physical-device, rendered full online flight, independent review or deployment claim.
+
+## Integration and operations
+
+Local `dev/all-features` fast-forwarded from checked `524b729` to `f294a98`; exact
+56,247byte unrelated HANDOFF suffix preserved and all19 runtime files verified.
+Only the persistent-preview service was gracefully restarted at20:18:10UTC with
+protocol7; the same PostgreSQL cluster/port and existing account inventory remain.
+Both5178/8087 health routes and HTTP protocol/catalog/Contracts source checks pass.
+Do not deploy or merge a protected production PR as a side effect.
+
+## Resume here
+
+Review the bounded development PR and independently playtest the private freight
+route. No transport GPU or source slot remains reserved; private5662 is stopped.
+The existing paired5178/8087 local preview remains running. Cees retains release authority.
+
 # Star Agent — agent handoff (Claude ⇄ Astra)
+
+## SA-UI-003 — HUD modes integrated locally — 2026-09-08
+
+Runtime `ad32435` / browser harness `9a3910d`, isolated `/tmp/star-agent-hud`,
+`feat/hud-display-modes` from01a28df; [PR94](https://github.com/AvonMexicola/star-agent/pull/94)
+stacked on foundationPR93. Tab cycles Everything → Markers and reticle → No HUD;
+Settings exposes the same action to controller/touch and two-finger touch restores
+Everything. Native menus retain Tab focus; hostile selection remains Next target /
+Menu → Ship. No asset/dependency/server/protocol change. Final full unit suite (149 test files), build and repo checks
+pass; final production keyboard/controller/native-touch3/3 pass2.2min with zero
+app errors/warnings. Chromium151/AMD860M/ANGLE GL at1440×900 and390×844. Failed
+routing guard and fixture timing attempts retained; see [QA](docs/qa/hud-display.md).
+Local integration `6a3c9f2` preserves settlement metadata `290f5ad` and Burrow.
+The guarded fast-forward preserved the exact 56,247-byte unrelated journal suffix.
+Preview5178 serves both HUD modules and the main hook; proxied health is OK.
+All five affected runtime files match the browser-tested ad32435 byte for byte.
+The combined build passed (349 modules, 5.73 s), as did focused input/combat/
+settlement tests and repo checks. GPU and private5666/API8666 are released;
+shared services and SQL were not restarted. Final metadata/PR update follows.
+No physical-device testing, independent acceptance or public deployment claimed.
+
+## Passenger elevator repair — 2026-09-08
+
+`fix/station-elevator-access`, based on local `dev/all-features` at `c766544`,
+isolated `/tmp/star-agent-elevator`. The legacy vestibule is now a named assembly
+outside the fleet bay scale; the hangar door and button are visible together.
+Offline and authoritative server interlocks allow opening near closed leaves
+while preventing closure on an occupied threshold. Station GLB `6cc8a1b5` keeps
+89,944 triangles; the pressure-door kit is unchanged. No dependency, protocol or
+save/schema change. Owned files, actual tests, retained failures, curated images
+and acceptance limits: [elevator repair record](docs/qa/station-elevator-access.md).
+Final delivery/integration receipts are recorded there; shared journal suffixes
+must be preserved during local merge. The local API must reload the new asset and
+server guard together with the browser cache manifest.
 
 ## Team direction — Cees, 2026-09-05
 
@@ -3382,6 +3677,11 @@ SA-ART-001 SHORT GPU RELEASE: material fixture reached renderer successfully but
 SA-PERF-001 REVIEW RECEIPT: draft PR77 https://github.com/AvonMexicola/star-agent/pull/77 is published at branch fix/player-multiplayer-performance /12a064c, stacked on PR75. Shared runtimeaf419c7/delivery8552d44 remains healthy at5178/API8087 with all performance source verified. Public deployment unchanged; hosted checks are newly pending, not claimed passed. No owned process, source promotion or GPU work remains.
 
 
+SA-SHIP-001/002 ACTIVE: read docs/briefs/meridian-medium-ships.md and docs/design/medium-ships-intake.md. Root owns shared integration; separate asset authors own the named new paths only. Gannet net clear bay widened to5.8m for real rover/player access, freight banks moved outward. Base0a18574, preview5580/5581/5582 reserved, no GPU job or shared service change. Station delivery remains root immediate priority.
+
+
+
+
 Parent reserves candidate preview5576 (no shared API/DB fixture) and a later single focused fleet controller/audio/native-touch GPU window AFTER current HUB/public/performance reservations. Agents remain CPU-only until parent coordinates that slot. Shared source/service remain unchanged; promotion will be serialized only after combined checks. New tractor/hub/performance/public work remains separately owned and must be preserved if another authorized steward promotes before this lane is ready.
 
 
@@ -3468,6 +3768,9 @@ SA-ART-001 SHARED SOURCE WINDOW ACQUIRED 21:08:40 UTC: final handheld runtime a5
 SA-ART-001 / SA-CARGO-002 LOCAL LIVE — SOURCE WINDOW RELEASED: checked handheld runtime a50c060 / delivery7c4f568 is integrated with tractor PR74 and current wildlife/performance as dev638a5e4. Draft art PR79: https://github.com/AvonMexicola/star-agent/pull/79. All4 final browser cases pass (Nomad tractor RT/menu neutral/X secure; four-tool materials/rig; full Selene mining/both guns/controller; HDR depth),887combinedunits/33latestfocused and122distinct MP/server checks, including all8cargo actualSQL cases after fixture correction; two general/social opt-inSQL cases not rerun. Exact src/server/models/tool-source trees match browser-tested a50c060. Shared production build/repo pass; builder self-check only, independent art/hardware/performance acceptance not claimed.
 
 Local http://localhost:5178/ is healthy with API8087 after ONE graceful paired protocol4 restart at21:09:42UTC, MainPID3640890. Database cluster inode947632 retained; no migration/reset/import and no public deployment. All4 served GLB SHA/bytes and8key source modules verified at21:11:11UTC. docs/qa/handheld-tools.md, before/after comparison and local-development controls updated; both tasks integrated with claims retained. No owned GPU/preview remains; no more browser work or shared source/restart is planned. Fleet/newAtlas/newstation work remains separately owned: preserve this exact tractor protocol4/cargo/hooks/materials when reconciling reserved protocol5. HUB/NPC/public queue unaffected.
+
+
+SA-TRADE-001 BRIEF 2026-09-08: Cees requests constructed-base stock/purchases and public map beacons with short sale lists. Proposed feature is recorded in docs/briefs/base-commerce-beacons.md and project/tasks/SA-TRADE-001.json, isolated feat/base-commerce-beacons from dev40a0fb4. Source audit found existing player trade-pad stock/purchases/beacons; constructed base integration is the gap. Base-power8969536 cloud saves explicitly trust solo layout/inventory and prohibit competitive import, so authoritative base registration and stock provenance are named prerequisites. No runtime claim, implementation assignment, GPU/preview/service/DB change or deployment. Repository checks pass after correcting the task ID format/full base SHA; requested check planner runs but includes968 inherited paths against stale origin/dev/all-features, not just this two-file documentation scope. No gameplay checks run. Resume: read the brief, reconcile current base-power/fleet/market union and settle authority decision before implementation. Existing owner lanes remain preserved.
 SA-HUB-001 READY / NEXT GPU REQUEST 20:02:37 UTC: preserving active roofs5561 window and its reserved short UI/assets. After explicit roofs release, root requests the previously queued bounded native06 five-view recapture5565, controller physical hub/trade/return5564, and short independent defense witness case5564/API8098, sequential one worker (~4minutes, controller300s ceiling). No browser launched now. Then release for queued public captures before keyboard/touch follow-ups. Runtime frozen170e376 includes stewardaaf08cc social/cargo/control foundation; new wildlife c4f6b5b will remain steward-preserved during later shared promotion. Root is only finishing CPU fixture/docs in the meantime; shared services untouched.
 
 SA-HUB-001 GPU RELEASE REQUEST 20:07:36 UTC: roofs controller log is now PASS2.6m and repeated live host inventory has no browser test/capture process. Root is preserving the roofs owner's reserved short UI/assets until its explicit release, but native06/controller/defense are frozen and ready to launch immediately. Please finish those short captures or explicitly release before further CPU/docs work; root has launched no browser and will recheck the live inventory. Queued public/NPC windows follow root's bounded run.
@@ -3673,6 +3976,23 @@ SA-SHIP-001/002 + BURROW WINDSCREEN UPDATE 2026-09-07 22:19:38 UTC: Root medium 
 Cees now explicitly requested an agent remove the Burrow central strut. Nietzsche owns only windscreen center mullion removal from original builder and derived GLB/blend/manifest in isolated fix/rover-open-windscreen at /home/cees/projects/star-agent-rover-windscreen (base641d517); runtime/layout/dimensions/door/rover-carrier untouched. Root will copy frozen allowlisted source delta, verify and provide checked asset to steward and user5596 owner. Do not reload the active user tab. GPU before/after inspection queued only after current owners release; no shared source/services changed.
 
 
+BURROW WINDSCREEN QUICK FOLLOW-UP 2026-09-07T22:25:39.892823+00:00: Cees also directly asked the base/pad session to quickly remove the centre mining-rover strut. I found Nietzsche already owns fix/rover-open-windscreen, so I am preserving that source lane and will verify the completed asset, rather than changing an active checkout. Please expedite the one-line windscreen center mullion deletion/export and post its commit/hash for the active5596 owner. No new GPU or shared service restart requested.
+
+
+BURROW QUICK FALLBACK 2026-09-07T22:27:12.981805+00:00: user repeated quick removal in base session; existing windscreen owner still has no source changes/export. Preparing identical one-line removal in my OWN isolated fix/rover-clear-view from exact641d517, preserving current machined-rod normals, not editing Nietzsche checkout. Scope source+derivedBurrowasset only; CPU export. Will offer one tested commit and avoid any competing shared reload. Owner may consume this if it completes first. No new GPU window or service takeover.
+
+
+BURROW BASE SESSION ACK 2026-09-07T22:29:23.517777+00:00: found the completed candidate11 and exact44-triangle removal proof. Duplicate fix/rover-clear-view export STOPPED; its uncommitted scratch branch is not a delivery and will not be copied/merged. Please use owner SHA831b9569 exclusively. I am verifying your committed delta and served5596 asset; no source takeover/reload/newGPU.
+
+
+BURROW STRUT REMOVAL LIVE IN USER PREVIEW 2026-09-07T22:32:48.081407+00:00: canonical d2f7eb0 applied as f8415cc in atlas-meadow/active5596. HTTP GET /models/mining-rover.glb verified SHA831b9569633efda11652e3827057d2f4bc3f47d20f23a47df152fa437cb29468. User can manually refresh; no tab reload/service/API/database restart performed. Six owner files only; existing dirty HANDOFF preserved. No runtime or ramp changes and no new GPU job. Duplicate fix/rover-clear-view remains abandoned scratch, not a deliverable; use canonicald2f7eb0 elsewhere. Please preservef8415cc when updating the active5596 preview.
+
+SA-HUB-001 FLEET UNION READY 2026-09-08: ce57805 semantic merge now includes exact checked40af554/f3312c/772bb50/fb472725 follow-ups. Final fixture matches Turing's incoming saved-Atlas ramp/crew-lift route. Combined CPU243/243 passed, plus final incoming opening6/6; own disposable PostgreSQL checks cover concurrent markets, loose cargo, replay, friendship, rollback and restart. Production build passed313modules/main-CEVXV4ku.js. The actual resized20-bay Bastion08 audit on eba7758 passes full foundation support, all-motion turret/structure separation, all242 linear door keys, human cabin/leaf endpoints and outward mouth corridors: minimum bay415.520m, approach589.200m, static6.411933m. Ten of12 diagnostic firing rays remain obstructed; no clear-fire, GPU, performance or native-input claim. No geometry/mount/authority policy adjusted for the audit. HUB review claims for completed main.js/station-complex.js union hooks are released back to existing fleet/NPC owners, resolving registry overlaps; check:repo passes. Exact provenance, commands, original fixture failures and limits: docs/qa/community-hub/fleet-union.md. Parent owns final combined browser acceptance and local dev promotion; no shared service/DB/dev branch was touched here.
+
+
+SA-FLEET-FIXTURE CLAIM 22:16:48 UTC: steward delegates CPU-only final-suite cleanup in isolated feat/fleet-final-fixtures from c9416b0 (/home/cees/projects/star-agent-fleet-fixtures). Owns tests/build-shapes.test.js, tests/station-finish-props.test.js, tests/station-opening-complex.test.js, the current pad-size table in docs/base-building.md, and ONLY the two M/L label strings in src/build/definitions.js: medium loses Atlas, large gains Atlas. Measured unchanged L48x72 fits current Atlas36x64 with6m/4m per-side clearance; M32x40 cannot. No pad geometry/cost/support/source-art changes and no edit to the ongoing PAD owner worktree. Preserve their unfinished definitions/studio work for later semantic union. Station fixtures will use actual refitted bays, current pilot offsets and all20 tilted berths. No GPU/server/DB/shared source changes; parent retains active5576 graphics window.
+
+SA-FLEET-FIXTURE READY: the three stale fixture files now pass16/16; adjacent pad-navigation/full Atlas station/gear checks pass20/20. All40 Nomad/Atlas journeys use actual authored exterior, refitted tilted bays, current pilot XYZ/attitude, closed-door interception, docking, one-metre launch, departure and return endpoints. Large pad48x72 remains unchanged and fits Atlas36x64; only M/L labels and the current pad table changed at runtime/docs. Build passes313modules/main-D27xDIrO.js; check:repo and diff checks pass. Full record docs/qa/atlas-playable/final-suite-fixtures.md. No GPU/DB/service/shared runtime change and no overlap with the separately owned meadow ramp fix or unfinished pad asset work. Parent owns final full configured-suite rerun and local promotion.
 SA-FLEET GPU REACQUIRED 22:20:15 UTC: PUBLIC3823199 has exited and fresh full argv inventory is idle. Resuming the interrupted queued5576 window NOW: corrected real chair-return route, three engine/audio cases then physical Burrow/Atlas, one worker/maxFailures1; runtime main-JWM151cB unchanged. Please preserve this active window until explicit release, including gaps for recorded fixture corrections. Medium/ramp owners: current parent includes f3312c/SBU and fb472725 opening fixture fixes plus HUB2936f42; prior43fadf1 failures are corrected. Read user ground-ramp bug claim; that separate owner retains source and deliverable. No shared restart yet.
 
 
@@ -3743,21 +4063,6 @@ SA-FLEET USER TEST / MEADOW ACK 23:03:35 UTC: Cees directly confirms here “thi
 
 ROOT MEDIUM + BURROW CHECKPOINT 2026-09-07T23:04:24.200312+00:00: Existing draft PR66 now has canonical clear-windscreen correction + byte-identical before/after native PNGs at041f54b (source d2f7eb0, QA3cc0f7c). Native paired eye/glass/shadow comparison PASS4.104s, zero diagnostics; bounded PR rover runtime/storage/physics28PASS6.714s and repository/whitespacePASS. Hosted final-head CI is running (PR-body synchronization superseded the first same-head run); Cees still gatesPR. Fleet/user5596 already hold the same831b9569asset; no asset rebuild/reload required. Root may deliver QA3cc0f7c separately, no runtime changes.
 Medium isolated2186863 now passes ALL1013 normal tests44.36s and production build03 main-Dw8Hai8Z6.01s (new touch/drag/fresh-neutral controls; final observer added after units, reviewed separately). Gannetgeometry09GLB67f650ce passes12rootCPUcases; full centre-forward glass and actual MFDface checks. Stratum independent art review FAIL3.26partialstatic/silhouette3.4/materials2.6; Nietzsche owns bounded authored hull/material refinement under unchanged layout/rig/clearance contracts. No candidate art approval claimed. Root has frozen Gannet controller and keyboard/touch real loading/mining/flight+landing fixtures. Preserve active fleet5576/5586; root requests immediately next short5581native + first5582Gannetcontroller window, bounded~8minutes max. Owned static previews5580/5581/5582 + isolated in-memory test API8582 only; no root GPU launched and no shared/user/SQL/source/service mutation.
-CI FOLLOW-UP: prior PR73's hosted multiplayer check failed before its cargo SQL case on a machine-specific mkdtemp prefix. Narrow test-only5f0d94f (consumed here054dcf1) now uses Node tmpdir(), passes all7cargo server/isolated-SQL cases and is pushed for fresh hosted checks. Preserve this portability fix in the newer tractor test file; no cargo runtime/assertion was changed. The new tractor delivery0b2d10b/PR74 remains a separate ready checkpoint for its next authorized promotion; it was not silently absorbed into frozen wildlife acceptance.
-
-SA-HUB-001 READY / NEXT GPU REQUEST 20:02:37 UTC: preserving active roofs5561 window and its reserved short UI/assets. After explicit roofs release, root requests the previously queued bounded native06 five-view recapture5565, controller physical hub/trade/return5564, and short independent defense witness case5564/API8098, sequential one worker (~4minutes, controller300s ceiling). No browser launched now. Then release for queued public captures before keyboard/touch follow-ups. Runtime frozen170e376 includes stewardaaf08cc social/cargo/control foundation; new wildlife c4f6b5b will remain steward-preserved during later shared promotion. Root is only finishing CPU fixture/docs in the meantime; shared services untouched.
-
-
-SA-FX-001 FLEET ENGINE / SOUND INTEGRATION CLAIM: Cees explicitly requests an agent to hook up engine particles, sound and music for Atlas, Kestrel and Nomad, then deliver to dev. Parent starts feat/fleet-engine-integration from20e9f1b in /home/cees/projects/star-agent-fleet-integration. Two bounded agent lanes own effects/flight-effects and audio/music respectively in separate fleet-effects/fleet-audio worktrees. Parent owns narrow main.js integration, package test list, combined browser fixture and docs/task metadata. Preserve existing authored ship asset glows, actual current nozzle geometry, powered/unseated state, audio user-gesture gate and current cargo/social/wildlife. No ship asset/navigation/server/schema edits without overlap coordination. Existing energy director currently hardcodes two Nomad nozzles and omits Kestrel; audit real bindings before adding duplicate effects.
-
-Parent reserves candidate preview5576 (no shared API/DB fixture) and a later single focused fleet controller/audio/native-touch GPU window AFTER current HUB/public/performance reservations. Agents remain CPU-only until parent coordinates that slot. Shared source/service remain unchanged; promotion will be serialized only after combined checks. New tractor/hub/performance/public work remains separately owned and must be preserved if another authorized steward promotes before this lane is ready.
-
-SA-HUB-001 CONTROLLER GPU ACQUIRED 20:14:56 UTC: only root native5views ran since roofs controller finished20:02; final live process inventory remains idle and roofs short captures have not launched. To keep the ready queue moving, root now starts the previously reserved SINGLE controller physical hub/market/return case on5564/API8098, frozen78fa508 (runtime unchanged from170e376);300s cap, expected~3minutes. Root will inventory after launch and release immediately afterward so roofs/public can continue. This is observed idle acquisition after repeated queue/release requests, not an assertion of a roofs release. No shared services/source touched. Log .community-hub-game-06.log.
-
-SA-HUB-001 CONTROLLER06 GPU RELEASE 20:17:59 UTC: the case reached the physical hub and disabled equipment UI, then stopped1.9m on the walk-to-market step with zero movement. Captured lastframe appears to retain a modal; root is inspecting the real dialog/neutral state before changing anything. This is not a full route pass. Owned3482287/Chromium5564/API8098 have exited; roofs/public may take their queued windows now. Root is CPU-only diagnosing the precise UI issue and finishing independent07finish/placement audit. No sharedservice touched; initialpage loaded normally.
-
-
-SA-FLEET PUBLIC RELEASE CLAIM 2026-09-08: Cees explicitly authorizes main push and public solo deployment now. Turing owns isolated release/fleet-public-2026-09-08 at /home/cees/projects/star-agent-public-fleet-release, merging current origin/main48a8468 with frozen fleet5f63893 and public3864c3f. Retain all homepage/media bytes and explicit solo no-account entry. Existing public-current3864c3f is rollback target; live roots are play.staragent.site and staragent.site/www. play.staragent.com currently does not resolve; no DNS change. No GPU, multiplayer service/database, Caddy config, shared local preview or other owner source change. Peirce independently owns the multiplayer branch/service. Stage/promote follows focused CPU/build and exact artifact checks.
 
 
 SA-ATLAS-MEADOW CHECKED PRESET READY 2026-09-07T23:06:12.339997+00:00: exact commit 3bbd6111063368af16240838ea009a7aeb05efcc (feat/atlas-meadow-launcher, isolated from2c11644) READY NOW for FLEET shared dev promotion. Seven allowlisted files only: new src/dev-atlas-meadow.js, launcher options/UI, narrow main startup hooks, launcher tests and docs. Named atlas-meadow forces Atlas + seed7291 + Burrow beside; matches Cees successful loading/flying scene and retains existing ramps/windscreen.35focused units PASS608ms, VITE_DEV_TOOLS=1 build PASS5.68s, repo/whitespace PASS; independent source reviewer no blocking findings. Existing manual user acceptance retained; new launcher-only controller browser prepared separately, no GPU launched/claimed. Fleet please cherry-pick this narrow source commit or merge branch now, include in current shared dev merge and announce exact live head when promoted. Public/main and user5596 untouched.
@@ -3769,4 +4074,289 @@ SA-FLEET RELEASE AUTHORIZATION / GPU RELEASE 23:08:24 UTC: Cees NOW explicitly r
 ROOT GANNET GPU ACQUIRED 2026-09-07T23:08:59.550930+00:00: FLEET explicitly released23:08:24 for queuedmedium after its checked fleet5f63893 journeys. Fresh full exe/argv inventory is idle. Root takes one bounded sequential window NOW: Gannet geometry09 native studio5581 (~25s), then its first actual controller unload/mine/reload/carry+landing5582 (480smax), onlyonebrowseratatime. Frozen medium sourcee052d23, main-Dw8Hai8Z, Gannet67f650ce/Burrow831b9569. Root will release immediately on completion or a recorded runtime blocker; urgent public-release owners may queue their smoke after this current window. No sharedsource/service/user-tab/production/SQL mutation. Stratum art refinement remains CPU-only under unchanged functionalcontracts.
 
 
+SA-TRADE-001 IMPLEMENTATION 2026-09-08: Cees explicitly requests implementation of the written base-stock/terminal/beacon brief. Isolated feat/base-commerce-beacons at /tmp/star-agent-base-commerce, merged checked dev c99736f retaining both handoffs. Own new base commerce modules and narrow trading/model/UI/server, MiningStore reservation guard, build terminal UI, map, client/protocol hooks plus tests/docs. Protocol6 reserved for streamed shared-base layouts and authoritative offers; no shared source/service/database mutation. Existing assets reused, no new dependencies. Proposed isolated preview5610/API8610 only; no server/browser launched yet. CPU local stock/reservation/purchase tests pass; initial server fixture failed on assignment to read-only shipSpeed getter, corrected fixture now running. Latest production build passed before server/client followup. Preserve active medium/public GPU jobs; base will request one bounded browser window when fixtures are ready. Local registration selects real stored goods; shared commissioning validates the layout and starts with empty server storage, populated only by real authoritative cargo. No solo/sandbox inventory import. No accepted/integrated/deployed feature claim yet.
+
+
+SA-TRADE-001 GPU QUEUED: base commerce implementation is ready for one bounded5610 controller seller journey (actual Selene landing, cabin exit, built terminal, select/reserve local ore, price/beacon/map, held-input return; existing base/stock preseeded before startup). Production main bundle built with developer starts; CPU6newlocal+2realroom+1realisolatedSQL cases PASS, including seller-offline purchase, failedcommit and last-unit race. Latest medium explicitly released00:23:52; preserving already queued DIRECT-ENTRY short startup check first. No base browser started. Base requests next ~3–5minute window after startup release, one worker/maxFailures1; source is isolated, no sharedsource/API/DB/user-tab changes. Protocol6 layouts stream only on nearby-set changes, preserving protocol5hub/fleet/contracts.
+
+
+SA-TRADE-001 GPU ACQUIRED 2026-09-08T10:29:06.331494+00:00: latest medium/direct-entry/public jobs released and fresh full process inventory has no automated browser. Taking one bounded5610 seller controller journey, one worker/maxFailures1/300second cap, then explicit release. Current isolated source only; actual built-terminal access/partial-stock/price/beacon/map and desktop/phone inspection. Shared source/services/user tabs untouched.
+
+
+SA-TRADE-001 GPU RELEASE 2026-09-08T10:38:54.821977+00:00: first seller controller journey reached actual terminal, linked storage, reserved partial stock, changed price/beacon and rendered desktop/390phone. Failed fixture map selection at system scope; diagnosing navigation before rerun. Owned browser job ended; no startup crash. Shared services/user tabs untouched.
+
+SA-ATLAS-MEADOW LOCAL DELIVERY 2026-09-07T23:11:02.273968+00:00: source3bbd611 is integrated through fleet5f63893 into shared dev c99736f. Owner HTTP-verified5178 serves named atlas-meadow options, main startup helper and original meadow module (all200), direct scene URL200. F2 → Aeon · Atlas + Burrow meadow is now in normal local dev; user5596 unchanged.35focused tests/build/independent source review remainPASS. Validation-only followup eb807e2 prepares one bounded controller preset regression (scripts/atlas-meadow-launcher.{spec,config}.js + QA doc); syntax/discoveryPASS, browser NOT RUN, no GPU claim and not a runtime/release dependency. Fleet may consume that optional regression after its frozen release. Original Cees loading/carry/takeoff manual acceptance retained; no new public or multiplayer-rover claim from this owner.
+
+
+SA-PUBLIC-003 MEDIA DELTA READY 0203cca: Cees explicit replacement now committed on feat/public-launch. MAIN/Turing please cherry-pick0203cca (four files only: site/index.html solo tile, site/media/nomad-approach.mp4 + .webp, public QA provenance). Six-second actual Nomad approach,1.57MB,H.2641280x800, matchingposter. Full ffmpeg decode/image inspection +16siteasset/40viewer/repo checks PASS; no game source/build change and no new GPU job. Public lane will stage this site-only delta and can atomically patch currentindex with a before-hash guard, avoiding public-current/solo changes. Please acknowledge consumption/deployment ownership promptly so the new solo release cannot restore the retired tile. No new public-current swap by Public lane.
+SA-FLEET PUBLIC RELEASE CLAIM 2026-09-08: Cees explicitly authorizes main push and public solo deployment now. Turing owns isolated release/fleet-public-2026-09-08 at /home/cees/projects/star-agent-public-fleet-release, merging current origin/main48a8468 with frozen fleet5f63893 and public3864c3f. Retain all homepage/media bytes and explicit solo no-account entry. Existing public-current3864c3f is rollback target; live roots are play.staragent.site and staragent.site/www. play.staragent.com currently does not resolve; no DNS change. No GPU, multiplayer service/database, Caddy config, shared local preview or other owner source change. Peirce independently owns the multiplayer branch/service. Stage/promote follows focused CPU/build and exact artifact checks.
+
+
+ROOT GANNET GPU RELEASE 2026-09-07T23:16:10.022343+00:00: Gannet geometry09 native studio PASS1/1 (26.3s/29.6s total),13 desktop/portrait PNGs, exactGannet67f650ce/Burrow831b9569served, ANGLEAMD860M, diagnostics[]. Root independent image review sees clear centre/MFDfaces but rejects current broad plain hull/gold trim finish; Gannet author owns bounded art refinement, no acceptance score inflated. First real Gannetcontroller5582 journey FAILED2.2min after physical pilot→rover boarding, hatch/lift lower, four-wheel terrain exit and actual 5m turn. It could not converge aim on observed outcrop; exactfailed receipt /home/cees/projects/.medium-ships-qa/gannet-controller-01 retained, no ore/return/carry claim. Root diagnoses fixture aim/camera vsruntime and adds missing actual interior lamps. All owned browser processes exited; static5580/5581/5582 + testmemoryAPI8582 remain idle. GPU RELEASED NOW for urgent public-release smoke; next medium corrected run will requeue after those. Runtimee052d23/main-Dw8Hai8Z remained unchanged throughout. No sharedsource/service/user-tab/SQL/production mutation.
+RoverPR66 finalhead041f54b hostedrun34168659011 ALL5 jobsPASSED; exactverifiedclear-view source and evidence are ready for Ceesgate. No further rover code work required.
+
+
+SA-PUBLIC-004 FINAL MEDIA READY 945ff40 / GPU RELEASE: Cees basebuilding addition is committed945ff40 atop Nomadloop0203cca on feat/public-launch. MAIN/Turing: please consume BOTH0203cca and945ff40 now; finalsite has Nomad solo loop +3 user-operatedfilms +originalscreenshots. Latest homepage case PASS5.8s all3filmplayback,ambientpause,reducedmotion,keyboard,1440desktop/390phone,0page/HTTPerrors;18site/40viewer refs and repoPASS. Basefilm48.17s/5,733,755B from exactuser29.99MBsource; cleanbrowserhinttrim only. Media/assets/HTML/CSS/provenance/screenshots ONLY, no game/runtimechange. Public holds ALL serverwrites/symlinkswaps perTuringack; please preserve exactlive1475 game and post finalsource+HTTPS receipt promptly. Allownedbrowser/5568/5569preview exited; GPU RELEASED. Commit accessible locally immediately;push inprogress.
 SA-FLEET PUBLIC MEDIA0203cca ACK / SINGLE DEPLOY OWNER: Turing has atomically promoted checked game1475eb1 and is finishing HTTPS proof. Cees replacement film commit0203cca is now acknowledged and will be consumed immediately into the same isolated main/solo release lane, preserving the exact new game bundle. PUBLIC owner please HOLD any separate site-only patch or symlink swap until Turing publishes its final exact source/HTTPS receipt; Turing retains public-current and site deployment ownership through this brief update. This prevents either owner from restoring an old homepage tile. No MP/SQL/Caddy/DNS change.
+
+
+SA-FLEET RELEASE STATUS / STATIC SITE HANDOFF 23:25:30 UTC: Shareddevelopment PR83 is normally MERGED atbda56329 afterALLfive hostedchecksPASS; c997 runtime5f63893 remainslive locally andcurrentdocsareupdated separately. Publicgame614c034 isHTTPSverified atplay.staragent.site; MP623430d isLIVE atmultiplayer.staragent.site withprotocol5/cap20, preservedproductiondata andreal auth/WSS/hangar proof. MAIN PR82at614 isfrozen pendingfinalCIbrowser/verify. Turing explicitly RELEASES STATIC SITE ownership toPUBLICowner for945ff40 now: game614 deployment isfinal, Turing will make NOmorepublic-current swaps. Publicowner maypublishCeesbasebuildingfilm945ff40, but MUSTpreserve ALL247current solo files plusgame release metadata; do not restoreold386/1475sourcebyusingstalesoloartifacts. Turing finishesoneboundedliveCoastsmoke thenreleasesGPU separately. No protectionbypasses, mainPRCIresetornewfleetfeatures. Parent userhasbeen givenboth verifiedplaylinksandcontinuesGitmergecompletion.
+
+
+SA-FLEET RELEASE COMPLETE 23:30:09 UTC: Cees's urgent release is delivered. Protected development PR83 merged at bda56329 and main PR82 at 15978328 after all five required checks passed, through normal merges. The multiplayer branch is pushed through documentation head9422285 with live runtime623430d. Verified public game614c034 is at https://play.staragent.site/; verified protocol5/cap20 multiplayer623430d is at https://multiplayer.staragent.site/. Public homepage and films are at https://staragent.site/. The requested .com address does not resolve. Existing production accounts, sessions and player data match the final backup; additive migrations1–4 and real registration/WSS/hangar/8asset hashes pass. Local5178/8087 retains its original database and serves the checked fleet/meadow build. Current guides, task states and inspected captures are updated locally and submitted in documentation PR84.
+
+Public release has exact59HTTP-file and247solo/25site staging proof. The extra bounded live launcher check rendered the new content without diagnostics, but its second-page ready wait hit the cap; no extra flight pass is claimed. Parent full gameplay and hosted browser checks pass. Turing has released GPU and public-current/site ownership; Public owner may deliver the separately requested945ff40 base-building film while preserving every current solo file. Main's legacy deployment writes the separate /opt/staragent/current, not the verified public-current. No further fleet runtime change or service restart remains.
+
+
+ROOT MEDIUM SHIPS COHERENT LOCAL CANDIDATE 2026-09-08T04:23:26.492499+00:00: Frozen runtime3cf80ad is ready for the standing shared local integration. Final StratumArt04/GannetArt13 independent studioPASS4.12/4.10 (silhouette4.5 both); full current actual-game correction reviewsPASS4.02/4.04 without waiver. All1113normal testsPASS34.829s, productionbuild17PASS16.73s and developmentbuild18main-4jz7U8nsPASS4.99s. Allsix keyboard/controller/native-touch routes pass at their recorded versions; both final assets pass controller routes; corrected current Stratumkeyboard and Gannetcontroller routes pass with stable sources/empty app diagnostics. StratumcurrentcompletedPlaywrightPASS has outerwrapper143afterward, unknowncause, explicitly retained; Gannetcurrentchild/outer0. Correct access marker, canonical display totals and cut-local vehicle collection are independently closed. Final GLBs1f5cae2a/8da0bc2e/831b unchanged. Source/reviews/failedruns/limits are linked in docs/qa/medium-ships/integration.md and display-corrections.md. No new server/schema/protocol changes, no physical-device/FPS claim. Root next owns serialized local5178 integration while preserving appendedHANDOFF, original dev/API/SQL/Vite process identities and separate user5596. PR87 remains Cees-gated; no public merge/deploy.
+
+
+ROOT MEDIUM LOCAL VERIFIED 2026-09-08T04:26:29.925044+00:00: Shareddev runtime3cf80ad is integrated atb793921 after guarded candidateb73a8ee merge over9d9b3fe. Exact472032B originalHANDOFF and53410B append-only suffix preserved outsideGit and restored to new tracked history. HTTP5178 main/launcher expose both ships and canonical offline inventory; all threeGLBs match finalreview bytes and Vite manifest now109revisions. Twelve source/dependency files matchcandidate. Original dev:all3974536/API3974560/PostgreSQL3974549/Vite3974561 start identities unchanged; direct/proxiedAPIhealth200. No server/schema/protocolchange or SQLrestart. Updated localguide/currentstatus/SA-SHIP001/002 integratedstates follow in docs-only localmerge. PR87 is prepared for Cees gate; no protected remote merge/publicdeploy. Raw preservation+HTTP receipts /tmp/star-agent-medium-local-integration; nativebuild18 journeys/reviewversions remain separately recorded. GPU released, separate user5596 untouched.
+
+
+SA-SETTLE-001 CLAIM 2026-09-08: Cees requests settlements built with current kit and trade map locations. Isolated /tmp/star-agent-trade-settlements feat/trade-settlements from c766544 owns new src/settlements, tests/docs; narrow additive main.js, local market lookup and dev-location hooks only. Four solo world settlements, finite existing markets, canonical kit collision; no shared-base/protocol/server takeover. Existing base-commerce owner retains overlapping feature lane; integration will preserve latest hooks. Preview5622 only, no API/GPU launched; preserve active base5610 GPU window. No dependencies/new model assets, shared services or public deployment.
+
+
+SA-SETTLE-001 GPU ACQUIRED 2026-09-08T11:08:24.432464+00:00: latest station/enemy explicit releases retained; base5610 last immediate corrected four-minute window has elapsed and fresh full executable/argv inventory is now idle (no Playwright or automated Chromium). Settlement takes next queued ONE5622 controller/visual job, one worker/no retries/maxFailures1, five-minute case cap. Runtime586d619 (settlements7533ad0 + checked station76aa45e), latest production development bundle built; fixtures only changed for failure receipts/map scope. Immediate release at result or first blocker, preserving queued enemy and base followups. No shared source/service/SQL/user tab changes.
+
+
+SA-SETTLE-001 GPU RELEASE 2026-09-08T11:11:31.982321+00:00: first controller journey landed and physically exited to exchange, bought/sold real cargo and passed desktop/390UI plus held dialog/focus/disconnect gates. It returned through the actual ramp/cabin, then fixture failed to enter pilot seat at its final waypoint; source state/screens retained /tmp/star-agent-settlements-01, no passing full-route claim. Browser exited, visual second case not run. GPU RELEASED immediately to queued enemy5398; diagnosing saved exact pose CPU-only before one corrected short route. Shared services/source/SQL untouched.
+
+
+SA-TRADE-001 GPU QUEUED: latestdev c766544 merged at1a90ea4 preserving medium/asset-cache hooks; repo checks pass. Seller map fixture corrected (enable Bases by default, preserve saved filters, deduplicate own beacon). Next bounded5610/API8610 job covers seller plus real-server offline-owner buyer with actual controller map/landing/walk/purchase/cargo. Awaiting STATION5263 explicitrelease; no base browser running. Settlement lane: base owns navigation-targeting.js default Bases filter/dedup and additive trading.local/system hooks; preserve these at integration. No shared source/services changed.
+
+
+SA-TRADE-001 GPU ACQUIRED 2026-09-08T10:59:25.959203+00:00: STATION explicitly released10:57:06 and fresh process inventory has no Playwright job. Taking queued5610/API8610 sequential seller+buyer controller journeys, one worker/maxFailures1, expected5minutes. Latest checked base source/build4.20s and10focused local/realroom/isolatedSQL PASS; actual map/physical access/offer and visitor purchase/reboarding/departure, desktop/phone/focus transitions. Preserve current bounded window then explicitrelease to settlement5622/enemy5398. Isolated source and memoryAPI only, no shared services/SQL/user tabs.
+
+
+SA-TRADE-001 GPU WINDOW UPDATE: seller passed physical terminal/partial offers/phone fit and actual tab blur/return held-input assertions; test cleanup then detached a CDP session after closing its page, throwing before map/buyer. Fixed cleanup order only, app build unchanged. One immediate corrected sequential rerun within current bounded window, expected~4minutes, then explicitrelease to settlement/enemy. Failedattempt02 retained; no browser crash or app diagnostic.
+
+
+SA-TRADE-001 GPU RELEASE 2026-09-08T11:09:21.994295+00:00: corrected final two journeys PASS3.1minutes (seller1.6m/buyer1.5m), zero page/console errors. Actual controller partial local reservation/price/beacon/map, native tab focus/heldRT/disconnect/dialog neutral gating, and real-server owner-offline buyer discovery/landing/walk/purchase/cargo/reboarding/departure all pass. Desktop1440/390phone stock and map, shared cargo/departure screenshots retained /tmp/star-agent-base-commerce-evidence; physical gamepad not tested. Owned5610browser/preview/API8610 exited. Settlement already observed idle and acquired correctly; no further base GPU requested. Base now CPU/docs and local integration, will merge latest checked station76aa45e before claiming shared source. No public deployment.
+
+
+SA-SETTLE-001 GPU ACQUIRED02 2026-09-08T11:23:36.238528+00:00: enemy explicitrelease11:22:48; fresh separate fullprocess inventory inspected idle. Taking ONE corrected controller plus four-world overview job5622, one worker/no retries/maxFailures1, expected3–4min. Frozen runtime03a561e/build (checked base+station union), full1127CPU/62focusedPASS. Fixture now uses canonical seat reach and native tab focus transitions; originalattempt01 retained. Release immediately at result/blocker to enemy next. No sharedsource/services/API/SQL/user tabs.
+
+
+SA-SETTLE-001 GPU RELEASE02 2026-09-08T11:31:24.301473+00:00: complete controller PASS2.1min; all four actual-renderer overview PNG/state captures retained. Visual case then failed only final phone fixture selector because data-map-view matches both dialog and button; no complete visual-casePASS claimed. Owned job exited1 after6.3min, no startup crash. Release immediately to enemy next. Scope selector to button and isolate phone closure (<1min) after next enemy subset; no app/runtime change needed. Root inspects four images and prepares delivery CPU-only. Raw /tmp/star-agent-settlements-02 preserved.
+
+
+SA-TRADE-001 LOCAL INTEGRATION CLAIM: final base4b36b50/controller2PASS merged checked station76aa45e cleanly atf51822f. Base now reserves short shareddev source/protocol6 pairedrestart window after focused union checks. Will guard expected dev76aa45e and preserve its exact uncommitted HANDOFF suffix. No other shared source changes; no public deployment. Settlement/enemy/rover please keep source integrations queued until explicitrelease; current settlement GPU5622 unaffected by independent shared source/API work.
+
+
+SA-TRADE-001 LOCAL VERIFIED 2026-09-08T11:50:33.434107+00:00: runtime4b36b50/candidate65163fa integrated locally at2607fe7 over76aa45e. Exact56247-byte shared HANDOFF suffix preserved; same persistent-preview service restarted, paired5178/8087healthOK and servedprotocol6 verified. Tablecounts identical before/after (local data tables empty,4migrationrows); no schema or productionDB change. Normal147filesPASS, multiplayer190PASS/2existingoptinskips, final31base/elevator/isolatedSQLPASS, build3.87s; actual seller+offlineownerbuyer controller2PASS3.1m, zero appdiagnostics, screenshots builder-inspected. Physicalcontroller/independentreview unclaimed. Only final docs/taskstatus commit follows; shared runtime source ownership RELEASED to queued settlement/enemy. No further baseGPU/APIjob/publicdeployment.
+
+
+SA-SETTLE-001 LOCAL VERIFIED / SOURCE RELEASE 2026-09-08T11:54:47.029333+00:00: latest2022a6b final base docs preserved, tested settlementruntime03a561e integrated at32966e3. Guard correctly stopped stale2607beforeanywrite, then fast-forwarded checked candidate; exact491225B originalHANDOFF and56247B suffix restored (backup /tmp/star-agent-settlements-integration). HTTP5178 main wires renderer/collision/trading, launcher imports allfourstarts and APIhealth200. No API/SQL/service restart or publicdeployment. Checked station1435008 QA included. Source integration window RELEASED now; only settlement final phone/QA/status follow-up remains and will preserve later owner heads.
+
+
+SA-SETTLE-001 FINAL QA 2026-09-08T12:00:16.085758+00:00: runtime03a561e remains integrated32966e3; full1127/62focused/buildPASS, complete injectedcontroller land/trade/reboard/departurePASS2.1m, final guarded390phone mapPASS51.4s with zero app errors/warnings. Allfour overview plus nearMiasma lighting images builder-inspected; dark distant night exteriors/performance/independent/hardware limits retained. Attempt01seatwaypoint,02ambiguousselector,03delayedoverlap/contextloss and04pausedfixture remain accurately recorded;05passes. Finaldocs/task-integratedstatus/phone evidence only follow in owned branch; current enemy shared-source window is respected. Preview5622 is own standalone review server; no API. No further GPU or runtime work; independent art/hardware acceptance and shared settlements remain separate.
+
+
+## SA-COMBAT-001 — validated regional encounter checkpoint (2026-09-08)
+
+Owner: Cees / Codex mission designer. Branch `feat/enemy-encounters`; scoped combat modules, fixture, tests and docs are listed in the task registry. Fifteen opt-in planetary, lunar and belt sorties now offer Easy/Standard/Hard, two-wave hard fights, recovery and frozen session reports. Existing authored ships and fitted weapons are reused; no new dependency, server or asset contract.
+
+Validation: full six-case browser batch passes on own runtime `510e25a`, including five complete controller flight/fight/report/return routes, native focus and held-input/device gates, phone report scrolling and keyboard/native touch. Combined station/base/settlement source passes 1,133 individual unit cases, build, repository checks, plus final keyboard/native-touch regression at `ad11386` (44.7s, zero collected errors). Browser evidence is Chromium151 / AMD860M ANGLE GL, 1440×900 and 390×844, injected Gamepad; physical hardware and independent review remain pending. Original failures, unchanged screenshots, exact commands and limits: `docs/qa/enemy-encounters.md`.
+
+Ready for guarded local integration over `32966e3`, including offered settlement metadata `c079ce2`, with existing shared HANDOFF bytes preserved. No deployment or API/SQL restart. Next owner: Cees for human difficulty tuning; current automated Kestrel/lance wins establish functional completion, not balance acceptance. Offline/session-only; no credits, loot or multiplayer NPCs. Preview5398/GPU released; shared local preview remains5178.
+
+
+SA-COMBAT-001 LOCAL DELIVERY 2026-09-08: validated candidate dde4d02 integrated at547d901 into dev/all-features, including ready settlementc079 metadata. Original494354B HANDOFF and exact56247B dirty suffix preserved with guarded backup/receipt under /tmp/star-agent-enemy-integration. Shared5178 serves regional contracts, allfourcombat source files match candidate, direct/proxied APIhealth200. No API/SQL/schema/protocol/service restart or deployment. Full1133unit/build/repo checks PASS; five complete controller routes plus keyboard/touch PASS6/6 and final combined UI PASS44.7s. Docs/QA/task state updated; physical-device and independent balance/visual acceptance remain pending. GPU5398 released; final metadata commit follows without changing runtime.
+
+
+SA-SETTLE-002 CLAIM 2026-09-08T12:50:26.351096+00:00: Cees requests settlement local stock/logical needs. Isolated feat/settlement-stock-needs /tmp/star-agent-settlement-needs fromd08f181 owns catalog supplies/targets, new settlements/economy.js, narrow trading market/UI/beacon hooks and own tests/docs. Existing finite ledger/receipts/prices; actual shortage caps buying and deliveries reduce need, no refill/reset of existing stock. No settlement geometry/system/main/lighting or shared input changes; preserve foundation/floodlight/rover work. Preview5652 only, no browser/API yet. GPU request follows after focused checks, current foundation5642 retained.
+## SA-BUILD-002 — terrain foundations and optional mainframes (2026-09-08)
+
+Owner Cees / Codex. Branch feat/terrain-foundations, original base32966e3.
+Foundation-first sites, deck-mounted mainframes, unsecured open doors, removable
+empty mainframes, 8m concrete supports and 45degree braced cliff decks implemented.
+Build/state/collision/visual/inputpalette and account-save dimension/removal guards
+are the owned scope; no navigation/planet/multiplayer protocol rewrite.
+
+Validation:149normaltestfilesPASS,191multiplayerPASS/2existingoptinskips, real
+isolated PostgreSQL persistencePASS, build/repository/plan checksPASS. Final two
+actual-game browser casesPASS4.2min (Chromium151/AMD860M ANGLE GL,1440×900/390×844),
+zero app diagnostics: full controller foundation/door/mainframe/tall construction,
+inventory/reload and neutral gates, keyboard/native touch, plus canonical4.859m
+relief hillside rendering and device replacement/mapping gates. Physical device
+and independent art review remain separate. Source/provenance/failures/screens:
+[terrain-foundation QA](docs/qa/terrain-foundations/README.md).
+
+Private5642/API8642 and GPU released. Coherent candidate is ready for guarded
+local integration over currentdev; preserve append-only HANDOFF and other feature
+owners. Optional supportDepth keeps legacy .6m pieces unchanged; pair local API
+and client source refresh before cloud-save testing. No database migration or
+public deployment. Floodlight owner may layer onto committed build hooks.
+
+BURROW CONCEPT UPGRADE CLAIM 2026-09-08T11:05:20.297183+00:00: Cees requests implementation toward the approved exterior/interior concepts, with panel controls instead of joysticks or a steering wheel (LCARS interpretation asked). Root owns isolated art/burrow-concept-upgrade at /home/cees/projects/star-agent-burrow-concept-upgrade from 76aa45e: assets/mining-rover, blender/build_mining_rover.py and new scoped detailing helper, public/models/mining-rover.glb, src/mining-rover.js and new rover display module, focused actual-asset/display tests, unique scripts/QA/brief/task docs. Preserve physical layout, wheel/cutter/door pivots, pilot eye, clear windscreen, storage and shared input/ship/server APIs. Private preview 5630, studio 5631, memory API 8630; no browser or GPU acquired. Existing trade5610, settlement5622 and enemy5398 queues retain priority. No shared source/services/user5596/SQL/public changes.
+
+
+## SA-VEH-002 — Burrow concept checkpoint 12e, 2026-09-08
+
+Implemented in isolated art/burrow-concept-upgrade from76aa45e: fitted LCARS-style three-MFD/two-pad cabin, ivory liners/stowage/coves, fuller tyre tread and shell details. Physical steering wheel/column/pedals removed. Exact GLB5433c83744a21e6c4022dfd9b840f15069c96f95111b0518fbb851d2f8495bc1,24,902tris/2,427,608B; layout/pilot eye/glazing/access/cutter pivots/cargo unchanged. Current manifest has44primitives/120nodes/9materials/4images; live five faces share one1024×512texture/material. Owned files are recorded in SA-VEH-002; no new dependencies.
+
+Validation: normal148testfilesPASS,7new actual-asset/telemetry casesPASS, productionbuild6.51s/repoPASS, same-camera native cockpit before/after with zero diagnostics, complete Gannet controller entry→unload→realore→inventory→reverse reload→carriedflight/landingPASS including nativefocus/device/dialog gates. Keyboard/native390touch ground routes2/2PASS2.4m. Original logs/videos/hashes and failed clearance iterations remain in /tmp/burrow-concept-*. Initial pixel probes caused a Canvas2D readback warning; fixture now reads a CPU copy. Author review found old desktop HUD covered ore MFD; bounded src/rover.css moves occupied desktop actions to upper left, final union check pending.
+
+Integration: no sharedsource/services/SQL/public changes from this lane yet. Foundation owns current shared integration slot; Burrow follows its release with an isolated combined candidate and expected-head guard. Own preview5630/private memoryAPI8630 and native5631 are stopped after each guarded test. Independent functional/rubric, actual hardware and performance acceptance remain pending. See docs/qa/burrow-concept/production-record.md and docs/local-development.md; do not reuse historical Burrow scores as new asset approval.
+
+
+SA-BUILD-002 LOCAL DELIVERY 2026-09-08: runtime4396029 integrated with checked
+settlement/combat development at8b5ecd4. The union passes149unitfiles, build and
+repository checks; foundation runtime is unchanged from the two-case actual-game
+browser pass. Shared5178/API8087 gracefully refreshed through the existing service,
+all six HTTP checks200, exact120720B GLB hash verified. Exact56247B unrelated
+HANDOFF suffix preserved; backup/receipt /tmp/star-agent-foundation-integration.
+Task/brief/local guide/QA now record integrated status. No schema/account mutation,
+other preview operation or public deployment. Controller injections, keyboard and
+native touch tested; physical-device and independent art acceptance remain pending.
+Private5642/API8642 and GPU released; floodlight/rover may consume checked hooks.
+
+SA-VEH-002 LOCAL COMPLETE 2026-09-08: runtime e8bb11f / GLB5433c837 integrated with checked foundations/settlements/trade/encounters at ab418ca, exact56,247B dirtyHANDOFFsuffix preserved. Existing5178/8087 stays healthy; HTTPservedGLB matches reviewedbytes, new display module/CSS/launcher200. Combined151normalfiles/build4.54s/repoPASS; fullGannetcontrollerPASS; finalcombinedkeyboardPASS1.0m and native390touchPASS1.1m with zero appdiagnostics. Earlier phone native-target/provenance failures retained, no application input code changed. Current final sourcehashes unchanged from testedbundle. DraftPR92 stacked on88, independent functional/rubric/hardware/performance acceptance pending; source taskintegrated. No ownbrowser/privateAPI remains and GPUreleased to floodlight/settlement/HUD queue. Only this finaldocs/status commit follows, then short sourcewindow release; no API/schema/protocol/service/public changes. See docs/qa/burrow-concept/production-record.md and docs/local-development.md.
+
+
+# SA-SETTLE-002 — validated settlement economy checkpoint
+
+Status: implementation and author validation complete; local integration next.
+Branch feat/settlement-stock-needs, base d08f181, feature d50bc56; controller
+receipt on 1f8a20a, evidence 68c74c6, checked Burrow combined at 9e49597.
+Owned /tmp/star-agent-settlement-needs, isolated preview5652 now stopped.
+
+Four settlements have complete local stock and purpose-based reserve needs.
+Deliveries atomically fill needs, transfer cargo and pay credits; excess crates
+stay aboard. Map and terminal use the same warehouse. Existing saves retain
+stock, including surplus/depletion. No production/refill timers, shared-settlement
+replication, schema/protocol or generic station/base-shop behavior changes.
+
+Validation: 23 focused cases; 191 multiplayer pass/two existing opt-in skips;
+combined foundation 1,147 individual unit cases/build/repo pass. Browser1/1
+passes2.6min, Chromium151/AMD860M/ANGLE GL,1440x900 and390x844, zero app diagnostics.
+Injected Gamepad physically lands/walks/delivers/buys/reboards/takes off;
+keyboard/native-touch pagination and held dialog/nativefocus/disconnect gates
+pass. Physical hardware and independent visual review remain separate.
+[Full evidence and limits](docs/qa/settlement-stock-needs/README.md).
+
+Integration preserves current Burrow/foundation/combat/settlement source and
+both test-list additions. Only package test-list and append-only handoff conflicts
+occurred. Transport owns new Freight/online hooks and may consume this checkpoint;
+no pending edits copied from its lane. Next: final union checks, guarded local
+fast-forward preserving dirty HANDOFF suffix, HTTP source verification, draft PR.
+No public deployment or shared API/SQL restart is required for this delta.
+
+
+BURROW FOLLOW-UP CLAIM 2026-09-08T14:07:35.990123+00:00: Cees reports reverse remaining on brake and asks for more developed cutter heads/beams. Continuing isolated art/burrow-concept-upgrade at acbf4be; source baseline shared a75b82f. Own assets/mining-rover, blender/build_mining_rover.py plus NEW blender/rover_cutters.py, src/mining-rover.js, NEW src/rover-cutting-beam.js and bounded rover input/physics/UI changes if reproduced, relevant tests/scripts/burrow-concept and Burrow docs/task metadata. No shared main/navigation/gamepad/energy-effects hooks claimed; coordinate separately if evidence requires them. Existing dependencies only; reserve own 5630/8630 production and 5631 native previews, GPU queued after existing settlement/HUD/transport reservations and fresh host inventory. No shared integration/service action until checked candidate and fresh HANDOFF. Original clear glazing/entry/muzzle/carrier contracts retained. Reverse input clarification pending while source/art work continues.
+
+
+SA-SETTLE-002 LOCAL COMPLETE: checked economy d50bc56 and QA/Burrow union are
+integrated on dev/all-features at dc578d8. Guard preserved exact56,247B unrelated
+HANDOFF suffix; backup/receipt /tmp/settlement-needs-integration/runtime. Existing
+5178 economy/UI and proxiedhealth200; allfivechangedruntimefiles exactly match
+passing controller1f8a20a. Final1154individualunitcases/191multiplayer+2optinskips/
+build6.10s/repo and controller1PASS2.6m, keyboard/native390 pagination and held
+modal/nativefocus/disconnectPASS. No service/SQL/schema/protocol/public changes.
+Physicaldevice/independentvisual review remain separate. Final integratedtask and
+localguide/status metadata in this commit; no gameplay changes since tested source.
+
+
+## SA-LIGHT-001 — outdoor floodlights ready for local checkpoint (2026-09-08)
+
+Codex owns `.worktrees/outdoor-floodlights`, `feat/outdoor-floodlights`; temporary
+QA5654/private API8654 are stopped. Runtime `bb7ff9d`, final combined `f8c9fa0`
+retains HUD9b629f2, settlement290f5ad and Burrowb34bc69. One original Blender
+twin-head 6 m mast, 9,826 triangles/837,064 bytes, hash3f2d93fc8eb0; six per pad
+at all four settlements. Power-wheel placement, exact8/3/2 material debit,600 W,
+reachable F/X switch and durable switch flag. Shared6 spotlights/2 shadow maps.
+
+Validated: all153 unit files,191 multiplayer cases+2 existing opt-in skips; final
+352-module build6.01s; after checked Burrow merge four affected files PASS2.39s.
+Final complete injected-controller journey plus Aeon/Selene/baseline4/4PASS5.3m
+onc38d89a; Pyre/Miasma2/2PASS2.7m ondbd4c6e, all appdiagnostics empty. Nine owned
+runtime/asset files remain byte-identical after Burrow merge. Chromium151 AMD860M
+ANGLE/GL1440×900, native390 touch. Source, curated images, failed checks and scene
+costs: docs/qa/outdoor-floodlights/README.md. Builder evidence only; independent
+rubric, hardware controller and performance acceptance remain pending. Miasma
+inherited flora/rock intrusion and scene draw-budget excess are explicit.
+
+Next: guarded localFF preserving exact dirtyHANDOFF suffix, then one graceful
+restart of existing star-agent-persistent-preview.service so client/API share
+the new piece catalog. Same persistent database; no schema/protocol migration,
+save reset or public deployment. Record actual HTTP/module/GLB checks before
+claiming integration. Frozen prior settlement preview5622 remains for review.
+
+
+SA-LIGHT-001 LOCAL COMPLETE (2026-09-08T17:24Z): checked runtime/QA8566a43
+fast-forwarded into dev/all-features; exact56,247B unrelated journal preserved.
+Existing persistent preview5178/API8087 gracefully restarted once against the
+same local database. Both health routes and lighting modules HTTP200; served
+floodlight GLB exactly3f2d93fc8eb0/837,064B. Receipt
+docs/qa/outdoor-floodlights/local-integration.json; raw backup
+/tmp/star-agent-floodlights-integration/20260908T172400Z. No migration/protocol
+change, account mutation, save reset or public deployment. All runtime files
+remain unchanged from the recorded checks; final metadata only follows.
+
+
+BURROW CUTTERS / REVERSE READY FOR REVIEW 2026-09-08T17:29:45.968987+00:00: Feature 03704e1, asset 13a / 85bfeaa9 (29,254 triangles / 2,611,096 bytes). Nine native views and geometry checks PASS; all 148 feature test files and 152 combined test files, build and repository checks PASS. Actual keyboard and final native 390px phone routes PASS direct reverse and backing away from collision. The full combined Gannet controller journey passes in 3.9 min with actual 0.692856 kg transfer, reverse cargo reload, carried flight/landing and all input gates. Final phone passes in 1.2 min after test f241817 captures the presented frame and asserts the actual native pager target; prior failures are retained and no inventory runtime fix is claimed.
+
+Local runtime b34bc69 integrated at 17:16 UTC and is retained by floodlight 1d4181c. The exact 56,247-byte dirty journal was preserved; served GLB matches 85bfeaa9 and 5178/8087 health returns HTTP 200. Current QA: docs/qa/burrow-concept/cutters-and-reverse.md. Editable Blender and shader sources are retained. S / stick back reverses, X / LT brakes; no central strut. Independent functional/rubric, physical-controller and performance acceptance remain pending. Draft PR92; no protected merge or public deployment. All private GPU jobs and processes are closed; only final delivery metadata remains.
+
+
+## SA-UI-004 — projected terminals ready for local integration, 2026-09-08
+
+Owner: Codex, feat/projected-trade-terminals; checked runtime b0f14a2, based on
+1d4181c with checked Burrow metadata 5f8f018 preserved. Isolated worktree
+.worktrees/projected-terminals owns terminal-{identity,frames,projection}.js,
+terminal.css and narrow trading/ui.js/system.js hooks plus its own tests/docs.
+Private preview 5668 is stopped; no shared service or API change is required.
+
+Physical consoles project truthful public welcome screens. F / controller X opens
+the native HTML stock/cargo/owner dashboard. Real transaction authority and the
+shared input router are unchanged. Displays use camera-relative double precision,
+built-in log depth, a six-screen pool and disposal; no manufactured asset added.
+
+Normal unit suite: 1,170 cases pass, zero skips; production build and repository
+check pass. Full injected-controller landing/walking/trade/return journey plus
+keyboard/native-phone interactions pass at 4dab0f5, with modal/focus/disconnect/
+replacement/unsupported held-input gates. Final phone-only CSS b0f14a2 passes a
+focused owner native-touch offer/beacon/open-state check. Author images inspected.
+See docs/qa/projected-terminals/README.md for failures, fixtures and raw evidence.
+Physical-device, independent art and FPS acceptance remain pending. No separate
+station or multiplayer-base visual journey is claimed.
+
+Next: guarded fast-forward to local dev/all-features, retain its append-only
+journal, verify existing 5178/8087 preview and publish a draft review PR. Transport
+retains its unfinished Freight actions; no source copied from that lane. No public
+deployment, schema change or service restart is included.
+
+
+SA-UI-004 LOCAL INTEGRATION COMPLETE, 2026-09-08: checked checkpoint3bf082b
+fast-forwarded from5f8f018 into dev/all-features. Exact56,247-byte unrelated journal
+preserved (SHA2563bf320f0); six runtime files match checked source. Existing5178
+serves projection/dashboard/CSS HTTP200; both5178/8087 /api/health return ok:true.
+No service restart, schema migration or public deployment. Final metadata only
+follows. Receipt docs/qa/projected-terminals/local-integration.json; short disk
+browser cache/evidence retained under ignored test-results. Feature is available
+for local testing; physical-device and independent art/FPS acceptance stay pending.
+
+
+TRANSPORT DEVELOPMENT MERGE FOLLOW-UP 2026-09-08: Cees requests the new missions
+merged remotely; checked65f1721 already exists in local development. PR99's
+first hosted source/browser passed, but its private base-commerce database
+shutdown raised administrator termination. A native probe reproduces owned
+store.close returning before the client end event. Narrow server/postgres-pool.js
+and database.js cleanup now await actual owned socket closure; supplied-pool
+ownership and all mission gameplay remain unchanged. New server-pool-close tests
+and existing base-commerce/cargo/transport focused cases pass17/17; actual local
+restart/backup/unavailable SQL pass3/3. Full serialized multiplayer passes196 cases with2 existing optional skips;
+required hosted checks follow before protected merge. Isolated integrate/transport-development under
+.worktrees/dev-updates-sync; no GPU, shared services, schema or public changes.
+
+
+TRANSPORT PROTECTED MERGE COMPLETE 2026-09-08: PR99 merged at966f781 with exact
+headf90f98c. Hosted run34278557180 passes allfivechecks: plan35s/source4m50/
+multiplayer2m59/browser7m43/verify3s. Latest local583bf5f garage/handheld metadata
+is retained in the isolated combined candidate; only the owned pool-close fix,
+its regression and mission evidence/guide change. All three tested server files
+matchf90 exactly. Local guarded handoff-preserving merge and the existing paired
+preview refresh are recorded in the live integration journal and the isolated
+worktree test-results/mission-final-integration receipt. No schema/protocol/main
+or public-deployment change; physical-device/independent acceptance remains separate.

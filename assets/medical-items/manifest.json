@@ -1,0 +1,66 @@
+[
+  {
+    "name": "bandage-medical",
+    "file": "bandage-medical.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 762,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.75724,
+    "sha256": "658ff570e40273bef0ab352d0517a5d3037c904afc6847717a100fd0da672119",
+    "height_m": 0.059296822547912596,
+    "footprint_m": [
+      0.0816406774520874,
+      0.11
+    ],
+    "bounds": {
+      "min": [
+        -0.0408203387260437,
+        0,
+        -0.055
+      ],
+      "max": [
+        0.0408203387260437,
+        0.059296822547912596,
+        0.055
+      ]
+    },
+    "sourceScale": 0.11,
+    "notes": "Cees-supplied Meshy medical model. Original geometry/UV/PBR preserved, 1K WebP and metre scale. Prop library asset; no new healing mechanics or use animation."
+  },
+  {
+    "name": "med-stim",
+    "file": "med-stim.glb",
+    "category": "prop",
+    "credits": 0,
+    "concept": null,
+    "tris": 534,
+    "textures": 3,
+    "texture_size": 1024,
+    "texture_format": "webp",
+    "file_mb": 0.635812,
+    "sha256": "044363ff5d972aea28649761b37738ea9d64d77e607e93d5b493ca9b8ece5841",
+    "height_m": 0.16,
+    "footprint_m": [
+      0.03226559996604919,
+      0.027421920299530028
+    ],
+    "bounds": {
+      "min": [
+        -0.016249920129776,
+        0,
+        -0.013671840429306031
+      ],
+      "max": [
+        0.016015679836273194,
+        0.16,
+        0.013750079870223999
+      ]
+    },
+    "sourceScale": 0.16,
+    "notes": "Cees-supplied Meshy medical model. Original geometry/UV/PBR preserved, 1K WebP and metre scale. Prop library asset; no new healing mechanics or use animation."
+  }
+]

@@ -1,0 +1,72 @@
+{
+  "controllerAndDayCandidate": "c38d89a",
+  "nightCandidate": "dbd4c6e",
+  "combinedCandidate": "f8c9fa0",
+  "floodlightRuntime": "bb7ff9d",
+  "assetSHA256": "3f2d93fc8eb0f236e2cc590cf327cda09e84711a13aceba73fb62560a797240b",
+  "floodlightFilesUnchangedAfterCheckedBurrowMerge": {
+    "src/build/definitions.js": "641105f02f52bdaad7872a559c9b91150903b851881afd4959c15c33bf563b31",
+    "src/build/floodlight-definition.js": "b6a83d94ad78e26750c23a462f0ee60069478c973ea2d9cb7f34f12343e97f6d",
+    "src/build/floodlights.js": "f8a5c22816c8a0cee46ad38eddf781c4b046b1f20f26b513694162a3f4b981c2",
+    "src/build/system.js": "da11e15e6773797a9d6ead8211d36d165a7074c353da8b88e220083a1a03741d",
+    "src/build/power.js": "6528a6514976e38af10f46f168874c757e84836b461e630d5a1ac804170b6d22",
+    "src/build/radial.js": "fa646cf518ee2465a5c7db91923c848cc74e2e9c432e12e40c3e7eb5d75667fa",
+    "src/build/ui.js": "dff819a1797a1fa9f5e6dad769d9037d67a931cff656a7012f92e8027800a5b5",
+    "src/settlements/layout.js": "01d989fc12588d83a5205c80e356f5374da62ed116105cdb8c7600686cbaac66",
+    "public/models/base/floodlight.glb": "3f2d93fc8eb0f236e2cc590cf327cda09e84711a13aceba73fb62560a797240b"
+  },
+  "art": {
+    "seed": 7291,
+    "epoch": 1788876000000,
+    "viewport": [
+      1440,
+      900
+    ],
+    "renderScale": 1,
+    "HUD": "hidden",
+    "posesRelativeToClaimPadDeck": {
+      "approach": {
+        "eye": [
+          70,
+          42,
+          92
+        ],
+        "target": [
+          0,
+          2,
+          12
+        ]
+      },
+      "walk": {
+        "eye": [
+          17,
+          1.75,
+          32
+        ],
+        "target": [
+          0,
+          3,
+          -18
+        ]
+      },
+      "finalMast": {
+        "eye": [
+          17,
+          1.75,
+          10
+        ],
+        "target": [
+          22.5,
+          3,
+          20
+        ]
+      }
+    },
+    "baselineRuntime": "03a561e",
+    "baselinePreview": "http://127.0.0.1:5622",
+    "baselineIsolatedLightingOnlyExperiment": false
+  },
+  "independentReview": false,
+  "physicalController": false,
+  "performanceAcceptance": false
+}

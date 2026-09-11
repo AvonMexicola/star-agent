@@ -45,7 +45,7 @@ export function createFlightEffects({effects,nav,mining,camera,onFire,getShip}){
       const secured=nav.gearProgress<=.001&&!nav.gearDeployed;
       const weaponStatus=shipWeaponStatus(nav);
       const armed=weaponStatus==='WEAPONS READY'&&active&&!nav.multiplayer?.connected&&secured&&armament?.status==='ready';
-      panel.hidden=Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
+      panel.hidden=['stratum','gannet'].includes(nav.shipId)||Boolean(nav.multiplayer?.connected)||nav.mode!=='flight'||Boolean(document.querySelector('dialog[open]'));
       if(!armed)clear();
       else if(!controllerFire)controllerArmed=true;
       for(const b of panel.querySelectorAll('[data-ship-weapon]'))b.setAttribute('aria-pressed',String(b.dataset.shipWeapon===weapon));

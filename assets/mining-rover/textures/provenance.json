@@ -14,12 +14,12 @@
       "sha256": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
     },
     "surface-basecolor.png": {
-      "bytes": 844149,
-      "sha256": "2b23fe411bbe13595110f0bebe5fb1d49ee92753c807f7c982a7e68b78e678af"
+      "bytes": 867418,
+      "sha256": "320dd579248fada2ff3c10981a3a903a86afdc5c07b33ca0d6f0031bd7fb86e0"
     },
     "surface-basecolor.webp": {
-      "bytes": 443882,
-      "sha256": "21132b152d8e5e88e3fd014cde18a0d1a906bc43bc70d2b609a342f6bed4c5cd"
+      "bytes": 535444,
+      "sha256": "23cd4bdc1148ac080f188b04cfbf745068d3c4541ee987d64a78dd038b9de4c4"
     },
     "surface-normal.png": {
       "bytes": 587276,

@@ -16,7 +16,7 @@ test('terrain transitions and layered ground render through descent and coastal 
     window.terrainSamples=[];
     const sample=()=>{window.terrainSamples.push(window.starAgent.state.terrainLod?.morphing||0);requestAnimationFrame(sample);};sample();
   });
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await mkdir('/tmp/star-agent-terrain',{recursive:true});
   const destinations=findDestinations();
   // Find actual shallow water near the coast destination, rather than calling

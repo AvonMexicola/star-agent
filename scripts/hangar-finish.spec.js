@@ -5,7 +5,7 @@ test('finished service corner renders shared materials, props, prints and task s
  await page.goto('/?intro=0&seed=7291&debug=1');await page.waitForFunction(()=>window.starAgent?.state.ready&&starAgent.state.station.ready);
  expect(await page.evaluate(()=>starAgent.state.station.finish)).toBe('ready');
  await page.evaluate(()=>{const n=starAgent.navigation,s=n.station;starAgent.setRenderScale(1);n.enabled=false;n.velocity.set(0,0,0);n.mode='walk';n.dockedAtStation=true;n.insideShip=false;});
- await page.keyboard.press('Tab');
+ await page.keyboard.press('Shift+Tab');
  await mkdir('/tmp/star-agent-hangar-finish-evidence',{recursive:true});
  const records=[];
  for(const [name,position,target] of [

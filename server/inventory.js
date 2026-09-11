@@ -1,7 +1,7 @@
 import { itemById, itemMass, validItems } from '../src/inventory/containers.js';
 export const CAPACITY = Object.freeze({pack:20,ship:120,station:10000});
 export function initialInventory() {
-  return {revision:0,containers:{pack:{'rifle-laser':1,'sidearm-pistol':1,'mining-laser-tool':1,'carbine-charge':60,'sidearm-charge':36,bandage:3},ship:{ration:4},station:{}},capacity:{...CAPACITY}};
+  return {revision:0,containers:{pack:{'rifle-laser':1,'sidearm-pistol':1,'mining-laser-tool':1,'tractor-beam-tool':1,'carbine-charge':60,'sidearm-charge':36,bandage:3},ship:{ration:4},station:{}},capacity:{...CAPACITY}};
 }
 export function restoreInventory(value) {
   if (!value || !Number.isSafeInteger(value.revision) || value.revision<0) return initialInventory();

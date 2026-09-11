@@ -49,6 +49,17 @@ Local full receipt/screenshots: `/tmp/star-agent-direct-entry/`; browser log:
 existing loading overlay fading away. The first preload itself is still required.
 No server, account schema, inventory persistence or multiplayer protocol changed.
 
+The development adaptation was checked separately at **`fc676f9`**, based on
+local development **`3f30ba1`**. It retains the development and multiplayer entry
+boundaries without adding the public-solo flag. The focused entry, model-cache,
+preload, opening-navigation, opening-support and multiplayer-UI suite passed
+**44/44**, zero skips, in 1.12 seconds. `VITE_DEV_TOOLS=1 npm run build` passed in
+4.69 seconds, producing `main-D3_h79YX.js`; repository checks passed. Logs are
+`/home/cees/.cache/star-agent-dev-direct-entry-focused.log` and
+`/home/cees/.cache/star-agent-dev-direct-entry-build.log`.
+No additional browser, SQL or performance pass is claimed for this adaptation;
+the combined source's actual browser coverage is recorded above.
+
 ![Nomad opening immediately after initial preload](direct-entry/nomad-opening.png)
 
 ![Optional scene selection with controller focus](direct-entry/scene-options.png)

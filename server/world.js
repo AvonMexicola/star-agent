@@ -1,3 +1,4 @@
+import { PlanetRotationClock } from '../src/planet-rotation.js';
 import {readFile} from 'node:fs/promises';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -23,6 +24,7 @@ export function installHeadlessEvents(){
   globalThis.window??={addEventListener(){}};
 }
 export async function createWorld(){
+  const rotationClock=new PlanetRotationClock();
   setPlanetSeed(WORLD_SEED);
   const load=async name=>{
     const bytes=await readFile(new URL(`../public/models/${name}.glb`,import.meta.url)),loader=new GLTFLoader();
@@ -47,9 +49,9 @@ export async function createWorld(){
   const defense=new StationDefense(scene,station,{gltf:defenseGltf,render:false});await defense.readyPromise;
   const landmarks=new LandmarkRocks(scene,{render:false});
   const pods=station.pods;for(const pod of pods)pod.beginOpening();
-  return {pods,center:station.centre,scene,station,defense,
+  return {pods,center:station.centre,scene,station,defense,rotationClock,
     createNavigation(slot,notify){
-      const n=new Navigation({addEventListener(){}},notify),pod=pods[slot];
+      const n=new Navigation({addEventListener(){}},notify),pod=pods[slot];n.rotationClock=rotationClock;
       n.surfaceObstacles=createLandmarkObstacles(noSurfaceObjects,landmarks,n);
       n.station=pod;n.startStation();
       n.gamepad.connected=true;n.gamepad.armed=true;return n;
@@ -70,6 +72,7 @@ export async function createWorld(){
       }});
     },
     doors(progress,dt=0){
+      rotationClock.tick();
       defense.update(dt);
       for(const pod of pods)pod.setOpeningProgress(progress[pod.id]??0);
       station.exterior.rings.forEach((ring,i)=>ring.rotation.x=(ring.rotation.x+dt*RING_SPEED*(i===0?1:-1))%(Math.PI*2));

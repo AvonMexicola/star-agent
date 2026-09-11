@@ -7,7 +7,7 @@ export function createWaterMaterial() {
   const material=new THREE.ShaderMaterial({
     side:THREE.DoubleSide,
     uniforms:{
-      sunDirection:{value:new THREE.Vector3(1,0,0)},time:{value:0},altitude:{value:1e6},
+      planetFrameInverse:{value:new THREE.Matrix3()},sunDirection:{value:new THREE.Vector3(1,0,0)},time:{value:0},altitude:{value:1e6},
       terrainMorph:{value:1},waterRotation:{value:WATER_ROTATION},
       waveCells:{value:anchors.cells},waveFractions:{value:anchors.fractions},
     },
@@ -19,13 +19,14 @@ export function createWaterMaterial() {
       attribute vec3 parentPosition;
       attribute float parentHeight;
       uniform float terrainMorph;
+      uniform mat3 planetFrameInverse;
       varying vec3 vDirection, vWorld;
       varying float vFloor;
       void main() {
         vec3 morphed=mix(parentPosition,position,terrainMorph);
         vDirection=direction;
         vFloor=mix(parentHeight,terrainHeight,terrainMorph);
-        vec4 world=modelMatrix*vec4(morphed,1.0); vWorld=world.xyz;
+        vec4 world=modelMatrix*vec4(morphed,1.0); vWorld=planetFrameInverse*world.xyz;
         gl_Position=projectionMatrix*viewMatrix*world;
         #include <logdepthbuf_vertex>
       }`,

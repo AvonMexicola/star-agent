@@ -39,16 +39,21 @@ test('core placement consumes exact ingredients and atomically creates one empty
  f.fund({...PIECES.mainframe.cost,basalt:1});f.system.begin('mainframe');
  assert.equal(f.system.state.preview.valid,true,f.system.state.preview.reason);
  const placed=f.system.place();assert.equal(placed.ok,true,placed.message);
+ assert.equal(f.system.lastToolAction.kind,'place');
+ assert.ok(f.system.lastToolAction.position.every(Number.isFinite));
+ const confirmed=f.system.lastToolAction;
  const items=f.store.container('pack').items;assert.equal(itemMass(items),1);assert.equal(items.basalt,1);
  const c=f.system.claims[0];assert.equal(c.useBuffer,false);assert.equal(c.pieces.length,1);assert.equal(f.system.data.nextId,3);assert.equal(validBuild(f.system.data),true);
  assert.equal(itemMass(f.store.container('build-core-1').items),0);assert.deepEqual(f.store.state.loadout,beforeLoadout);assert.equal(f.store.state.field,beforeField);
  const before=f.store.state;assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before,'duplicate activation neither allocates IDs nor consumes cargo');
+ assert.equal(f.system.lastToolAction,confirmed,'failed placement cannot acknowledge another construction');
  const reload=new MiningStore(f.disk),restored=new BuildSystem({scene:new Scene(),nav:f.nav,store:reload,render:false});assert.equal(restored.blocked,false);assert.deepEqual(restored.data,f.system.data);
 });
 test('failed core write rolls back materials, piece IDs, claims and remote storage together',()=>{
  const f=setup();f.fund(PIECES.mainframe.cost);f.system.begin('mainframe');
  const before=f.store.state,raw=f.disk.getItem(MINING_KEY);f.disk.setItem=()=>{throw Error('quota');};
  assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);assert.equal(f.disk.getItem(MINING_KEY),raw);assert.equal(f.system.data.nextId,1);assert.equal(f.system.claims.length,0);assert.equal(f.store.container('build-core-1'),null);
+ assert.equal(f.system.lastToolAction,undefined,'failed durable write cannot pulse the builder');
  assert.equal(f.system.place().ok,false);assert.equal(f.store.state,before);
 });
 test('buffer requires explicit nearby opt-in, combines sources once and persists its choice',()=>{
@@ -197,13 +202,13 @@ test('placement sound fires once after committed material spend, never for previ
  f.system.sync();assert.equal(sounds.length,1,'reload/sync does not replay placement');
 });
 
-test('controller build shortcut requires on-foot access within an owned mainframe radius',()=>{
- const f=setup();assert.equal(f.system.controllerAvailable,false);const c=f.core(),core=c.pieces.find(p=>p.type==='mainframe');
+test('controller build shortcut permits new sites and still requires safe on-foot access',()=>{
+ const f=setup();assert.equal(f.system.controllerAvailable,true);const c=f.core(),core=c.pieces.find(p=>p.type==='mainframe');
  const center=f.system.toWorld(v(core.position),c);f.nav.position.copy(center).addScaledVector(f.nav.normal,1.65);assert.equal(f.system.controllerAvailable,true);
  for(const mode of ['flight','landed','eva']){f.nav.mode=mode;assert.equal(f.system.controllerAvailable,false);}f.nav.mode='walk';
  f.nav.insideShip=true;assert.equal(f.system.controllerAvailable,false);f.nav.insideShip=false;
  f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),63.9);assert.equal(f.system.controllerAvailable,true);
- f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),64.1);assert.equal(f.system.controllerAvailable,false);
+ f.nav.position.copy(center).addScaledVector(v(LANDING_FRAME.east),64.1);assert.equal(f.system.controllerAvailable,true);
  f.nav.position.copy(center);f.nav.dockedAtStation=true;assert.equal(f.system.controllerAvailable,false);f.nav.dockedAtStation=false;
  f.store.blocked=true;assert.equal(f.system.controllerAvailable,false);
 });
@@ -246,7 +251,7 @@ test('a large pad is aimed from its near edge and expands its claim only with an
 
 test('aiming at the terminal takes precedence over a slightly nearer rack beside it',()=>{
  const f=setup(),c=f.core();c.pieces.push({id:'build-piece-3',type:'rack',position:[0,.3,2],rotation:0,doorOpen:false},{id:'build-piece-4',type:'terminal',position:[3,.3,2],rotation:0,doorOpen:false});f.system.cancel();
- f.nav.position.copy(f.system.toWorld(v([1.4,2.05,4]),c));const target=f.system.toWorld(v([3,1.1,2]),c);f.nav.orientation.setFromRotationMatrix(new Matrix4().lookAt(f.nav.position,target,f.nav.normal));assert.equal(f.system.nearbyInteraction().p.type,'terminal');assert.match(f.system.interaction,/Inventory terminal/);
+ f.nav.position.copy(f.system.toWorld(v([1.4,2.05,4]),c));const target=f.system.toWorld(v([3,1.1,2]),c);f.nav.orientation.setFromRotationMatrix(new Matrix4().lookAt(f.nav.position,target,f.nav.normal));assert.equal(f.system.nearbyInteraction().p.type,'terminal');assert.match(f.system.interaction,/Storage & trade terminal/);
 });
 
 test('square roof rotation retains trigger quarter turns after socket selection',()=>{

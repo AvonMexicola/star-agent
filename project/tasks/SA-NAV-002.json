@@ -1,0 +1,30 @@
+{
+  "id": "SA-NAV-002",
+  "title": "Limit location arrows to objectives, selected POI and owned vehicles",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex",
+  "status": "integrated",
+  "branch": "fix/focused-location-arrows",
+  "base": "d2202c1ab7d8dba0a60ecdd6812f3efb82a8d6dc",
+  "updated": "2026-09-09",
+  "areas": [
+    "interface",
+    "flight",
+    "industry"
+  ],
+  "claims": [
+    "src/navigation-targeting.js",
+    "src/navigation-objectives.js",
+    "src/trading/system.js",
+    "src/system-map.js",
+    "src/ship-marker.js",
+    "src/mining-rover.js",
+    "src/sentry/system.js",
+    "src/main.js",
+    "tests/navigation-targets.test.js",
+    "scripts/focused-location-arrows.spec.js",
+    "scripts/focused-location-arrows.config.js"
+  ],
+  "brief": "docs/briefs/focused-location-arrows.md"
+}

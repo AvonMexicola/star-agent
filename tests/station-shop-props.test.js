@@ -178,6 +178,7 @@ test('station hookup keeps optional props under the hub and a failed prop leaves
         this.finishStatus = 'ready';
         return { materials: { apply() {} }, props: { scene: new THREE.Group() },
           graphics: new THREE.Group(), concourse: { scene: new THREE.Group() },
+          promenade: { scene: new THREE.Group() },
           elevator, shopProps: resources };
       }
     }

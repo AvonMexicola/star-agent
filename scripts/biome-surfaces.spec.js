@@ -7,7 +7,7 @@ const shots=[... [1400,500,100,5].map(altitude=>({name:`meadow-${altitude}m`,dir
 test('biome surfaces stay varied through the meadow descent',async({page,browser},info)=>{
  const path=`/tmp/star-agent-biomes/${info.project.name}`,errors=[],captures=[];await mkdir(path,{recursive:true});
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Tab');
+ await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Shift+Tab');
  for(const shot of shots){
   if(info.project.name==='before'&&!shot.name.startsWith('meadow'))continue;
   await page.evaluate(({direction,altitude})=>{
@@ -31,7 +31,7 @@ test('mixed tree crowns render through their distance transitions',async({page},
  await page.setViewportSize({width:960,height:600});
  const path='/tmp/star-agent-biomes/after',errors=[],states=[];await mkdir(path,{recursive:true});
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Tab');
+ await page.goto('/?debug&seed=7291');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Shift+Tab');
  for(const distance of [450,120,35]){
   await page.evaluate(({direction,distance})=>{
    const nav=window.starAgent.navigation;nav.transit(direction,12);nav.enabled=false;

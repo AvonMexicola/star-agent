@@ -12,6 +12,7 @@ import {createStationHub} from './station-hub.js';
 import {HANDS_FREE_REASON} from '../src/station-hub-policy.js';
 import {createStationSecurity} from './security.js';
 import {capturePeerMotion,createRammingResolver} from './ramming.js';
+import {createSentries} from './sentry.js';
 
 const STEP=1/30, LEASE_MS=180000, DROP_MS=300000;
 const VECTOR_KEYS=['position','velocity','shipVelocity','angularVelocity','shipAngularVelocity'];
@@ -28,6 +29,8 @@ export function playerSnapshot(p) {
   s.parkedShipPosition=n.shipPosition?.toArray()??null;
   s.travel=n.travel?JSON.parse(JSON.stringify(n.travel)):null;s.travelTarget=n.travelTarget;s.crash=n.crash;
   s.freighter=n.freighter?.snapshot??null;
+  s.sentrySeat=n.sentrySeat??null;s.sentryFeet=n.sentryFeet??null;s.bodyOrientation=n.sentryBodyOrientation??null;
+  s.planetFrame=n.rotationFrame?.id??null;
   s.physicsFrame=n.physicsFrame??null;
   s.physicsUp=s.physicsFrame?n.stationPhysics.up.toArray():null;
   return s;
@@ -54,9 +57,10 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       await Promise.all([attacker.publication,victim.publication]);
       await Promise.all([persist(attacker).catch(onError),persist(victim).catch(onError)]);
     }});
+  const sentries=createSentries({players,world,send,impact,security,broadcast,now,canFire:p=>hub.canFire(p)&&!security.pending(p)});
   // Only public fields are shared, and only within this synchronous broadcast.
   // Rebuild for every frame/request so a retained snapshot never becomes stale.
-  const publicState=()=>({stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:Array.from(players.values(),playerSnapshot),doors:{...doors},defense:world.defense?.snapshot??[]});
+  const publicState=()=>({planetTime:world.rotationClock?.seconds??null,stationFrame:world.station?{direction:world.station.direction.toArray(),orientation:world.station.baseQuaternion.toArray(),altitude:world.station.altitude}:null,players:Array.from(players.values(),playerSnapshot),sentries:sentries.snapshot(),doors:{...doors},defense:world.defense?.snapshot??[]});
   function state(p,shared=publicState()){
     const nearby=[];
     for(const d of drops.values())if(p.nav.position.distanceTo(dropPosition.fromArray(d.position))<500)nearby.push({...d});
@@ -100,7 +104,8 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     // Respawn itself waits for defense; it must never enter this dependency.
     if(m.action!=='respawn')p.publication=new Promise(resolve=>{published=resolve;});
     try{
-      if(m.action==='stationHub')hub.request(p,m);
+      if(m.action==='sentry')sentries.request(p,m);
+      else if(m.action==='stationHub')hub.request(p,m);
       else if(m.action==='cargo'){const message=await trading.request(p,m);if(message)send(p,{type:'event',event:'notice',message});}
       else if(m.action==='cargoHull'){
         if(p.health<=0||p.shipHealth<=0||security.pending(p))throw new Error('Cargo ship changes are unavailable during a defense response.');
@@ -138,7 +143,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
       }else if(m.action==='equip'){
         if(m.weapon!==null&&(p.health<=0||p.shipHealth<=0))throw new Error('Respawn before equipping tools or weapons.');
         if(m.weapon!==null&&hub.isHandsFree(p.nav))throw new Error(HANDS_FREE_REASON);
-        if(m.weapon!==null&&(typeof m.weapon!=='string'||!Object.hasOwn(WEAPON_RULES,m.weapon)&&m.weapon!=='mining-laser-tool'||!p.inventory.containers.pack[m.weapon]))throw new Error('That item is not in your pack.');
+        if(m.weapon!==null&&(typeof m.weapon!=='string'||!Object.hasOwn(WEAPON_RULES,m.weapon)&&!['mining-laser-tool','tractor-beam-tool'].includes(m.weapon)||!p.inventory.containers.pack[m.weapon]))throw new Error('That item is not in your pack.');
         await persist(p,p.inventory,{weapon:m.weapon});
         if(m.weapon!==null&&(p.health<=0||p.shipHealth<=0||hub.isHandsFree(p.nav))){
           p.weapon=null;await persist(p);throw new Error(p.health<=0||p.shipHealth<=0?'Respawn before equipping tools or weapons.':HANDS_FREE_REASON);
@@ -161,13 +166,15 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   }
   function setHull(p,hull){const n=p.nav,pod=world.pods[p.hangarId-1];n.shipId=hull;n.layout=hull==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;n.freighter=hull==='atlas'?new FreighterSystems():null;n.gearDeployed=true;n.gearProgress=1;n.shipPosition=pod.padWorldPosition.clone();n.shipOrientation.copy(pod.padQuaternion);n.insideShip=false;n.doorOpen=false;n.doorProgress=0;}
   function attach(p){
-    trading.attach(p);
+    trading.attach(p);sentries.attach(p);
     p.nav.station=world.adapter(p);p.nav.gamepad.poll=()=>({...p.input,mouseYaw:0,mousePitch:0,evaVertical:p.input.vertical,evaBrake:p.input.brake,mine:0,speed:0,scroll:0,shortcutModifier:false,used:true,ui:false,pressed:new Set()});
   }
   function action(p,m){
     if(p.busy||p.health<=0||p.shipHealth<=0||p.nav.stationHubTransit||security.pending(p))return;
     const n=p.nav;
     if(p.nav.carryingCargo&&['interact','land','travel','target'].includes(m.action))return;
+    if(m.action==='interact'&&sentries.interact(p))return;
+    if(n.sentrySeat)return;
     if(m.action==='interact'&&hub.action(p))return;
     const actions={gear:'toggleGear',lights:'toggleLights',power:'togglePower',assist:'toggleFlightAssist',combat:'toggleCombatMode',land:'landOrLaunch',interact:'embark',eva:'toggleEVA',brake:'brake',cancelTravel:'cancelTravel'};
     if(Object.hasOwn(actions,m.action))n[actions[m.action]]();
@@ -226,20 +233,22 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     world.doors(doors,dt);
     hub.tick(dt);
     const before=capturePeerMotion(players);
+    sentries.tick(dt);
     for(const p of players.values()){
       if(t-p.lastInput>500)p.input=cleanInput();
       if(p.health<=0||p.shipHealth<=0){p.nav.velocity.set(0,0,0);p.nav.mode='crashed';p.input=cleanInput();continue;}
       if(security.pending(p)){p.lookYaw=p.lookPitch=0;continue;}
       try{
-        if(!hub.update(p,dt)){p.nav.look(p.lookYaw,p.lookPitch);p.nav.beginFrame(dt);p.nav.update(dt);}
+        if(!hub.update(p,dt)){if(!p.nav.sentrySeat)p.nav.look(p.lookYaw,p.lookPitch);p.nav.beginFrame(dt);p.nav.update(dt);}
         p.lookYaw=p.lookPitch=0;
         if(['crashed','destroyed'].includes(p.nav.mode)){p.health=0;p.shipHealth=0;p.nav.mode='crashed';}
         const fireAllowed=hub.canFire(p);
-        if(p.input.fire&&!p.busy&&fireAllowed&&!p.nav.carryingCargo){
-          const event=shoot({shooter:p,players,world,now:t,deferDamage:true});
+        if(p.input.fire&&!p.busy&&fireAllowed&&!p.nav.carryingCargo&&!p.nav.sentrySeat){
+          const event=shoot({shooter:p,players,world,now:t,deferDamage:true,vehicleHit:(origin,direction,range)=>sentries.vehicleHit(origin,direction,range,p.nav)});
           if(event){
             const packet={type:'event',event:'fire',peerId:p.id,...event},victim=players.get(event.targetId);
-            if(victim&&event.damage>0)impact({id:`shot:${p.inventory.revision}`,attacker:p,victim,kind:event.kind,cause:'shot',damage:event.damage,
+            if(event.kind==='vehicle'&&event.damage>0)sentries.hit(p,event.targetId,event.damage,new THREE.Vector3(...event.origin).addScaledVector(new THREE.Vector3(...event.direction),event.distance),packet,`shot:${p.inventory.revision}`);
+            else if(victim&&event.damage>0)impact({id:`shot:${p.inventory.revision}`,attacker:p,victim,kind:event.kind,cause:'shot',damage:event.damage,
               point:event.kind==='ship'?(shipPose(victim)?.position??victim.nav.position).clone():victim.nav.position.clone()},packet);
             else broadcast(packet);
           }
@@ -253,7 +262,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
   }
   const timer=autoStart?setInterval(()=>{const t=now();accumulator+=Math.min(.25,(t-lastTime)/1000);lastTime=t;while(accumulator>=STEP){tick();accumulator-=STEP;}},10):null;
   timer?.unref();
-  return {players,leases,drops,doors,tick,state,hub,security,trading,
+  return {players,leases,drops,doors,tick,state,hub,security,trading,sentries,
     async join(account,sendFn){
       if(closed)throw failure('Server restarting.','ROOM_CLOSED');
       if(players.has(account.id)||joining.has(account.id))throw failure('This account is already connected.','ACCOUNT_CONNECTED');
@@ -270,7 +279,7 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
         const p={id:account.id,account:{id:account.id,callsign:account.callsign},send:sendFn,colorIndex:slot,spawnPod:slot+1,hangarId:null,inventory:saved?restoreInventory(saved.inventory):initialInventory(),health:100,shipHealth:100,weapon:saved?.weapon??'rifle-laser',sequence:0,input:cleanInput(),lastInput:now(),lookYaw:0,lookPitch:0,lastShotAt:-Infinity,busy:false,messages:0,rateStart:now()};
         pendingPlayer=p;
         if(saved){p.health=Math.max(0,Math.min(100,Number.isFinite(saved.health)?saved.health:100));p.shipHealth=Math.max(0,Math.min(100,Number.isFinite(saved.shipHealth)?saved.shipHealth:100));}
-        if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&p.weapon!=='mining-laser-tool')p.weapon=null;
+        if(typeof p.weapon!=='string'||!p.inventory.containers.pack[p.weapon]||!Object.hasOwn(WEAPON_RULES,p.weapon)&&!['mining-laser-tool','tractor-beam-tool'].includes(p.weapon))p.weapon=null;
         const spawnSlot=reserveSpawn(p);p.spawnPod=p.hangarId;
         p.nav=world.createNavigation(spawnSlot,message=>send(p,{type:'event',event:'notice',message}));if(saved?.hull==='atlas'){setHull(p,'atlas');p.nav.startStation();}attach(p);await persist(p);await trading.join(p);
         if(closed)throw failure('Server restarting.','ROOM_CLOSED');
@@ -292,13 +301,13 @@ export function createRoom({world,store,now=Date.now,autoStart=true,onError=()=>
     },
     leave(id){
       const p=players.get(id);if(!p)return departing.get(id)??Promise.resolve();
-      players.delete(id);release(p);hub.leave(p);
+      sentries.leave(id);players.delete(id);release(p);hub.leave(p);
       const task=(async()=>{await queue;await security.settle(p);try{await persist(p);}catch(error){failedDepartures.set(p.account.id,p);throw error;}})();
       departing.set(p.account.id,task);
       task.finally(()=>{if(departing.get(p.account.id)===task)departing.delete(p.account.id);}).catch(onError);
       return task;
     },
     async revoke(accountId){const p=players.get(accountId);if(p){send(p,{type:'revoked'});await this.leave(p.id);}},
-    async close(){if(closed)return;closed=true;clearInterval(timer);await queue;await security.close();await Promise.allSettled([...departing.values()]);for(const p of players.values())await persist(p).catch(onError);await Promise.allSettled([...writes.values()]);players.clear();leases.clear();drops.clear();},
+    async close(){if(closed)return;closed=true;clearInterval(timer);await queue;await security.close();await Promise.allSettled([...departing.values()]);for(const p of players.values())await persist(p).catch(onError);await Promise.allSettled([...writes.values()]);sentries.clear();players.clear();leases.clear();drops.clear();},
   };
 }

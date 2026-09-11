@@ -1,0 +1,21 @@
+import {test,expect} from '@playwright/test';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {MULTIPLAYER_VERSION,MAX_PLAYERS} from '../src/multiplayer/protocol.js';
+const out=process.env.COMPOUNDS_RELEASE_OUT;
+const multiplayerOrigin=process.env.MULTIPLAYER_RELEASE_ORIGIN||'http://127.0.0.1:5691';
+const frames=p=>p.evaluate(async()=>{for(let i=0;i<5;i++)await new Promise(requestAnimationFrame);});
+test('dedicated multiplayer retains account entry and neutral controller flow with scene tools enabled',async({page,browser})=>{
+ await mkdir(out,{recursive:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ await page.addInitScript(()=>{window.releasePad={id:'Release standard Gamepad',mapping:'standard',index:0,connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>[window.releasePad]});});
+ const button=async(i,down)=>{await page.evaluate(({i,down})=>releasePad.buttons[i]={pressed:down,value:+down},{i,down});await frames(page);},tap=async i=>{await button(i,true);await button(i,false);};
+ await page.goto(`${multiplayerOrigin}/?seed=7291&debug`);await page.waitForFunction(()=>window.starAgent?.state.ready,undefined,{timeout:120000});
+ await expect(page.locator('#multiplayer-account-dialog')).toBeVisible();expect(await page.evaluate(()=>starAgent.state.dev!==null)).toBe(true);await frames(page);
+ await page.screenshot({path:out+'/multiplayer-account.png'});
+ await page.evaluate(()=>releasePad.axes[1]=-.7);await tap(1);await expect(page.locator('#multiplayer-account-dialog')).not.toBeVisible();expect(await page.evaluate(()=>starAgent.state.controller.armed)).toBe(false);
+ await page.evaluate(()=>releasePad.axes.fill(0));await frames(page);await tap(9);await expect(page.locator('#multiplayer-account-dialog')).toBeVisible();await expect(page.locator('#dev-launcher')).not.toBeVisible();await frames(page);
+ await page.getByRole('button',{name:'Continue offline',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('dialog[open]'));await frames(page);
+ await page.evaluate(()=>releasePad.axes[1]=-.6);await page.waitForFunction(()=>starAgent.state.opening.phase==='playing'&&starAgent.state.speed>0);await page.evaluate(()=>releasePad.axes.fill(0));await frames(page);
+ await tap(9);await expect(page.locator('dialog[open]')).toBeVisible();await tap(1);await expect(page.locator('dialog[open]')).toHaveCount(0);await frames(page);
+ const metadata=await (await page.request.get(`${multiplayerOrigin}/release.json`)).json();expect(metadata.multiplayerVersion).toBe(MULTIPLAYER_VERSION);expect(metadata.maxPlayers).toBe(MAX_PLAYERS);expect(metadata.devTools).toBe(true);
+ expect(errors).toEqual([]);await page.screenshot({path:out+'/multiplayer-offline.png'});await writeFile(out+'/multiplayer-entry.json',JSON.stringify({browser:browser.version(),metadata,errors,controller:'Injected standard Gamepad; native pointer Continue offline; physical device untested'},null,2));
+});

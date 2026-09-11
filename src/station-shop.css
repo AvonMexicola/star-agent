@@ -1,5 +1,10 @@
 #station-shop-dialog{--shop-accent:var(--mint);--shop-header:var(--station-petrol);--shop-rule:var(--line);width:min(760px,94vw);max-width:760px}
 #station-shop-dialog[data-shop=equipment]{--shop-accent:var(--station-paper);--shop-header:var(--station-dark);--shop-rule:var(--station-ochre)}
+/* Promenade units reuse their storefront fascia colour as the modal accent. */
+#station-shop-dialog[data-shop=galley]{--shop-accent:var(--station-warm);--shop-header:var(--station-dark);--shop-rule:var(--station-ochre)}
+#station-shop-dialog[data-shop=outfitter]{--shop-accent:var(--station-cool);--shop-header:var(--station-dark);--shop-rule:var(--station-steel)}
+#station-shop-dialog[data-shop=hydroponics]{--shop-accent:var(--mint);--shop-header:var(--station-petrol);--shop-rule:var(--mint)}
+#station-shop-dialog[data-shop=souvenir]{--shop-accent:var(--station-paper);--shop-header:var(--station-petrol);--shop-rule:var(--station-paper)}
 #station-shop-dialog h2{font-family:var(--station-display)}
 .shop-account{display:grid;grid-template-columns:1fr 1fr;gap:20px;border-block:1px solid var(--line);padding:20px 0;margin:22px 0 14px}
 .shop-account span{display:block;font:10px var(--mono);color:var(--muted);letter-spacing:1px}

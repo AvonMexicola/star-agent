@@ -10,7 +10,7 @@ test('seeded forest groves stream, retain trees during movement and render gradu
   await page.goto((process.env.FOREST_BASELINE_URL||'')+'/?seed=7291&debug');
   await page.waitForFunction(()=>window.starAgent?.state.ready);
   await page.evaluate(()=>window.starAgent.setRenderScale(.55));
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   const forest=findDestinations().forest;
   const pose=async altitude=>{
     await page.evaluate(({forest,altitude})=>{

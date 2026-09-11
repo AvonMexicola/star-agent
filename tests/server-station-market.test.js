@@ -129,7 +129,8 @@ test('a transaction failure after command evaluation publishes no stock, money o
 
 test('normalization commits once and neither failed nor corrupt reads replace durable commerce', async () => {
   const fixture = await setup(), [player] = [...fixture.players.values()];
-  const legacy = structuredClone(fixture.trading.state); delete legacy.markets; delete legacy.marketVersion;
+  // A pre-market save has neither station nor settlement initialization markers.
+  const legacy = structuredClone(fixture.trading.state); delete legacy.markets; delete legacy.marketVersion; delete legacy.settlementVersion;
   await fixture.store.transactCommerce(() => ({ state: legacy }));
   const next = createTrading(fixture.options), before = structuredClone(next.state), committed = fixture.store.transactCommerce;
   fixture.store.transactCommerce = fn => committed(async current => { await fn(current); throw Error('disk unavailable'); });

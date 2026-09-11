@@ -26,7 +26,7 @@ test('planet and moon materials render at walking and flight distances', async (
   });
   await page.goto('/?seed=7291&debug=1');
   await page.waitForFunction(() => window.starAgent?.state.ready);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   await mkdir(evidence, { recursive: true });
   const destinations = findDestinations();
   const shots = [

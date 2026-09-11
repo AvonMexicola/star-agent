@@ -1,4 +1,5 @@
 import { attachRockMaterial } from './rock-material.js';
+import {SceneryClearance} from './scenery-clearance.js';
 import { MiasmaFlora } from './miasma-flora.js';
 import { MineralFragments } from './mineral-fragments.js';
 import * as THREE from 'three';
@@ -29,7 +30,7 @@ export class Miasma {
   constructor(scene) {
     this.scene=scene;this.worldPosition=new THREE.Vector3(...MIASMA_POSITION);
     this.group=new THREE.Group();this.group.name='Miasma';scene.add(this.group);
-    this.fragments=new MineralFragments(this.group);this.flora=new MiasmaFlora(this.group);
+    this.fragments=new MineralFragments(this.group);this.flora=new MiasmaFlora(this.group);this.sceneryClearance=new SceneryClearance(MIASMA_POSITION);
     this.time={value:0};this.mapsReady={value:0};
     this.color={value:mapTexture(new Uint8Array([140,140,50,255]),1,1,THREE.SRGBColorSpace)};
     this.normal={value:mapTexture(new Uint8Array([128,128,255,255]),1,1)};
@@ -80,11 +81,11 @@ export class Miasma {
     this.clouds=new THREE.Mesh(new THREE.SphereGeometry(1,128,80),this.cloudMaterial);
     this.clouds.name='Miasma sulphur aerosol clouds';this.clouds.scale.setScalar(MIASMA_RADIUS+5200);this.group.add(this.clouds);
   }
-  update(position,origin,elapsed,shipPosition=null) {
+  update(position,origin,elapsed,shipPosition=null,constructionClaims=[]) {
     this.distance=position.distanceTo(this.worldPosition);this.group.visible=this.distance<3e8;this.time.value=elapsed;
     if(!this.group.visible)return;
-    this.terrain.update(position,origin);this.fragments.update(position,origin,this.terrain.altitude,shipPosition);this.clouds.position.copy(this.worldPosition).sub(origin);
-    this.flora.update(position,origin,this.terrain.altitude,elapsed,shipPosition);
+    this.sceneryClearance.update(constructionClaims);this.terrain.update(position,origin);this.fragments.update(position,origin,this.terrain.altitude,shipPosition,this.sceneryClearance);this.clouds.position.copy(this.worldPosition).sub(origin);
+    this.flora.update(position,origin,this.terrain.altitude,elapsed,shipPosition,this.sceneryClearance);
   }
   get ready(){return this.terrain.ready&&this.mapsReady.value===1;}
   get state(){return {position:this.worldPosition.toArray(),radius:MIASMA_RADIUS,distance:this.distance,visible:this.group.visible,ready:this.ready,mapsReady:this.mapsReady.value===1,patches:this.terrain.visibleCount,lod:this.terrain.maxLevel,pending:this.terrain.pending,morphing:this.terrain.morphing,error:this.terrain.error,fragments:this.fragments.count,flora:this.flora.state,surfaceAltitude:this.terrain.altitude,weatherTime:this.time.value};}

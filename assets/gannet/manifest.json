@@ -1,0 +1,98 @@
+{
+  "model": "Gannet T-06",
+  "builder": "blender/build_gannet.py",
+  "layoutSha256": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
+  "builderSha256": "3860e25349a63fd269a77ea2885e4da01620d6d3069a220037a2ca446308a30c",
+  "geometryHelperSha256": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
+  "inputHashes": {
+    "blender/build_gannet.py": "3860e25349a63fd269a77ea2885e4da01620d6d3069a220037a2ca446308a30c",
+    "blender/fighter_geometry.py": "052e61f37039db3405cb74b59c7591de28063652ec5e8f68f7a7f0728811ecf7",
+    "blender/gannet_textures.py": "4adafd50676c353d833aac040de2790e406c3b635a0814b128ca6eaec16c8981",
+    "assets/gannet/layout.json": "9334ef7470c6aa1c0d4da7a2ce91d42191fedfdde00bd8732f15675ad904adb5",
+    "assets/gannet/textures/surface-basecolor.png": "29fa07d3e608fe387a3826da282599c27c9162d292b045b399d41366cc01387f",
+    "assets/gannet/textures/surface-orm.png": "5a5e98e86cbd3692ba0ac7e3190a4e8c78729bad0eebf3793774a769fdf6ddb6",
+    "assets/gannet/textures/surface-normal.png": "86993e9276b669289b91c2563b704bd0116c0c59af1949f08c79bfc2e2e8ff9b",
+    "assets/gannet/textures/manufacturer.png": "e2cbe81c4fb011ea5981488fae3056bada3101b22708b5451b9cbb54e7283573"
+  },
+  "blenderVersion": "5.2.0 LTS",
+  "sourceBounds": {
+    "min": [
+      -7.846850395202637,
+      0.0,
+      -13.0
+    ],
+    "max": [
+      7.846850395202637,
+      7.1690778732299805,
+      11.0
+    ]
+  },
+  "sourceTriangles": 56490,
+  "sourceMeshes": 33,
+  "materials": [
+    "Gannet / approved Meridian emblem",
+    "Gannet / original Meridian PBR",
+    "Gannet MFD placeholder / replaced with actual telemetry",
+    "Gannet amber access emitters",
+    "Gannet manufacturer lettering",
+    "Gannet pressure glazing",
+    "Gannet restrained mint emitters"
+  ],
+  "vertexAmbientOcclusion": {
+    "method": "Deterministic cosine-hemisphere local vertex AO; actual fixed opaque mesh only",
+    "radiusMetres": 0.42,
+    "originBiasMetres": 0.0035,
+    "raysPerSample": 24,
+    "maximumDarkening": 0.55,
+    "exclusions": [
+      "VehicleLift",
+      "Gear_*",
+      "HatchSlat_*",
+      "glass",
+      "emitters",
+      "rover",
+      "terrain",
+      "world lights"
+    ],
+    "staticObjects": 510,
+    "movingObjects": 46,
+    "staticCorners": 95484,
+    "movingWhiteCorners": 7536,
+    "samples": 89748,
+    "range": [
+      0.4500000000000002,
+      1.0
+    ],
+    "cabinFloor": {
+      "vertices": 1938,
+      "range": [
+        0.452694232039368,
+        1.0
+      ],
+      "maximumInteriorGridMetres": 0.294
+    }
+  },
+  "coordinateSystem": {
+    "units": "metres",
+    "up": "+Y",
+    "forward": "-Z"
+  },
+  "status": "Authored geometry/material checkpoint; runtime visual and physical game acceptance pending",
+  "asset": "public/models/gannet.glb",
+  "bytes": 3169484,
+  "triangles": 56490,
+  "meshPrimitives": 33,
+  "nodes": 98,
+  "images": 4,
+  "textureFormat": "WebP",
+  "sha256": "8da0bc2e3da7c8c2a2db7b29957b226fab0ba30eb0155f98d82a3f82c3995e6f",
+  "sourceSha256": "474bc808ed71179df1acb704f64c3bf1f3c50e6c52c09d7629820f09a78e9d2f",
+  "collisionSha256": "cf4adc2e080ee9e512cdb8c0741a015280c6b4ebc6604a5ac84c5700cfd4366d",
+  "packing": {
+    "inputBytes": 5388880,
+    "outputBytes": 3417068,
+    "maximumPositionErrorMetres": 0.0003105262975675282,
+    "maximumNormalErrorDegrees": 0.3795370599775062,
+    "method": "KHR_mesh_quantization: unsigned-normalized 16-bit positions, signed-normalized 8-bit normals, 8-bit colours; unchanged UVs and indices; uniform mesh leaf decoding"
+  }
+}

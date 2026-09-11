@@ -1,0 +1,39 @@
+{
+  "id": "SA-VEH-002",
+  "title": "Refine Burrow cabin, cutter cartridges and contact reversal",
+  "milestone": "M1",
+  "owner": "@AvonMexicola",
+  "agent": "Codex Burrow concept upgrade",
+  "status": "integrated",
+  "branch": "art/burrow-concept-upgrade",
+  "base": "76aa45efc98db4d1db92bfa629a26e362de6804f",
+  "updated": "2026-09-08",
+  "areas": [
+    "assets",
+    "rendering",
+    "interface"
+  ],
+  "claims": [
+    "assets/mining-rover/",
+    "blender/build_mining_rover.py",
+    "blender/rover_cabin.py",
+    "blender/rover_textures.py",
+    "public/models/mining-rover.glb",
+    "src/mining-rover.js",
+    "src/rover-display.js",
+    "tests/rover-display.test.js",
+    "scripts/burrow-concept/",
+    "docs/briefs/burrow-concept-upgrade.md",
+    "docs/qa/burrow-concept/",
+    "blender/pack_mining_rover.py",
+    "tests/rover-asset.test.js",
+    "src/rover.css",
+    "blender/rover_cutters.py",
+    "src/rover-cutting-beam.js",
+    "src/mining/collision.js",
+    "src/rover-ui.js",
+    "tests/mining-rover.test.js",
+    "tests/mining.test.js"
+  ],
+  "brief": "docs/briefs/burrow-concept-upgrade.md"
+}

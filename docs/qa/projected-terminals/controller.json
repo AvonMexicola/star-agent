@@ -1,0 +1,2190 @@
+{
+  "browser": "151.0.7922.173",
+  "graphics": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+    "vendor": "Google Inc. (AMD)"
+  },
+  "errors": [],
+  "warnings": [],
+  "physicalController": false,
+  "start": "Explicit approach at 65 m with two previously purchased conductor crates and destination reserve 255/256 SBU. All subsequent navigation uses injected standard Gamepad; terminal pagination also checks keyboard and native touch. No pose mutation.",
+  "projections": {
+    "count": 0,
+    "uploads": 3,
+    "textureWidth": 1024,
+    "textureHeight": 640,
+    "ids": [],
+    "draws": 0
+  },
+  "state": {
+    "settlements": {
+      "available": true,
+      "sites": [
+        {
+          "id": "settlement-aeon",
+          "name": "Greenbank Supply",
+          "body": "aeon",
+          "origin": [
+            23320.16460759995,
+            966233.6421031026,
+            1266501.913384316
+          ],
+          "quaternion": [
+            0.4435539590541393,
+            0.008250192656508079,
+            -0.004083244817573716,
+            0.8962003943540134
+          ],
+          "pad": [
+            23320.461108655814,
+            966220.7728855942,
+            1266518.016150351
+          ],
+          "terminal": [
+            23318.010067090396,
+            966254.8946106327,
+            1266493.5388082643
+          ],
+          "pieces": 178,
+          "terrain": {
+            "low": -1.4654729736488692,
+            "high": 4.5503745994133435,
+            "range": 6.015847573062213
+          }
+        },
+        {
+          "id": "settlement-selene",
+          "name": "Stillwater Exchange",
+          "body": "selene",
+          "origin": [
+            -2194559.693877966,
+            93062.59764287288,
+            -23504671.980798528
+          ],
+          "quaternion": [
+            0.6089703558359839,
+            0.1834043515243336,
+            -0.1474463485097745,
+            0.7574810386181743
+          ],
+          "pad": [
+            -2194556.377680234,
+            93043.71417188145,
+            -23504665.53412531
+          ],
+          "terminal": [
+            -2194561.7473969255,
+            93084.9913342765,
+            -23504671.60059111
+          ],
+          "pieces": 178,
+          "terrain": {
+            "low": -2.0120532998064142,
+            "high": 2.5736136755815,
+            "range": 4.585666975387914
+          }
+        },
+        {
+          "id": "settlement-pyre",
+          "name": "Ember Works",
+          "body": "pyre",
+          "origin": [
+            18210336658.72153,
+            7553141571.879898,
+            11673921103.718142
+          ],
+          "quaternion": [
+            0.4304806712593084,
+            -0.5859725564171262,
+            0.6084338939894899,
+            0.31801061529907954
+          ],
+          "pad": [
+            18210336659.054756,
+            7553141551.808043,
+            11673921101.245743
+          ],
+          "terminal": [
+            18210336652.491028,
+            7553141593.357406,
+            11673921101.334482
+          ],
+          "pieces": 178,
+          "terrain": {
+            "low": -1.4313134582535998,
+            "high": 2.567148978650124,
+            "range": 3.998462436903724
+          }
+        },
+        {
+          "id": "settlement-miasma",
+          "name": "Verdigris Prospect",
+          "body": "miasma",
+          "origin": [
+            18212663642.793655,
+            7555970952.414366,
+            11680226099.933958
+          ],
+          "quaternion": [
+            0.49909368454340564,
+            -0.43287068208226787,
+            0.31762748115659006,
+            0.6801773664689524
+          ],
+          "pad": [
+            18212663634.077667,
+            7555970934.474566,
+            11680226104.008286
+          ],
+          "terminal": [
+            18212663643.60957,
+            7555970974.899573,
+            11680226097.34483
+          ],
+          "pieces": 178,
+          "terrain": {
+            "low": -0.3430448188688242,
+            "high": 3.3453874887672264,
+            "range": 3.6884323076360506
+          }
+        }
+      ],
+      "error": "",
+      "rendered": 178,
+      "ready": true
+    },
+    "stationDefense": {
+      "ready": true,
+      "error": null,
+      "strikes": 0,
+      "mounts": [
+        {
+          "mountId": "bastion-1-upper",
+          "yaw": 0,
+          "pitch": 0,
+          "recoil": [
+            0,
+            0
+          ]
+        },
+        {
+          "mountId": "bastion-1-lower",
+          "yaw": 0,
+          "pitch": 0,
+          "recoil": [
+            0,
+            0
+          ]
+        },
+        {
+          "mountId": "bastion-2-upper",
+          "yaw": 0,
+          "pitch": 0,
+          "recoil": [
+            0,
+            0
+          ]
+        },
+        {
+          "mountId": "bastion-2-lower",
+          "yaw": 0,
+          "pitch": 0,
+          "recoil": [
+            0,
+            0
+          ]
+        }
+      ],
+      "lastStrike": null
+    },
+    "trading": {
+      "version": 1,
+      "marketVersion": 1,
+      "revision": 4,
+      "nextId": 4,
+      "accounts": {
+        "local-player": {
+          "credits": 1447,
+          "carried": null,
+          "resources": {}
+        }
+      },
+      "ships": [
+        {
+          "id": "local-player:nomad",
+          "owner": "local-player",
+          "hull": "nomad",
+          "crates": [
+            {
+              "id": "sbu-2",
+              "resource": "conductor",
+              "sbu": 1,
+              "grid": "aft-starboard",
+              "cell": [
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "id": "sbu-3",
+              "resource": "ice",
+              "sbu": 1,
+              "grid": "aft-starboard",
+              "cell": [
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "id": "local-player:atlas",
+          "owner": "local-player",
+          "hull": "atlas",
+          "crates": []
+        }
+      ],
+      "terminals": [],
+      "receipts": {
+        "local-player:fixture-0": {
+          "message": "Loaded 1 SBU of Conductor stock aboard nomad for 59 CR.",
+          "resourceDelta": 0,
+          "resource": "conductor",
+          "quote": {
+            "marketId": "settlement-pyre",
+            "resource": "conductor",
+            "side": "buy",
+            "sbu": 1,
+            "stockBefore": 1800,
+            "stockAfter": 1799,
+            "stockLimit": 4096,
+            "need": 0,
+            "target": 1800,
+            "settlement": true,
+            "ok": true,
+            "total": 59,
+            "unitMin": 59,
+            "unitMax": 59
+          }
+        },
+        "local-player:fixture-1": {
+          "message": "Loaded 1 SBU of Conductor stock aboard nomad for 59 CR.",
+          "resourceDelta": 0,
+          "resource": "conductor",
+          "quote": {
+            "marketId": "settlement-pyre",
+            "resource": "conductor",
+            "side": "buy",
+            "sbu": 1,
+            "stockBefore": 1799,
+            "stockAfter": 1798,
+            "stockLimit": 4096,
+            "need": 1,
+            "target": 1800,
+            "settlement": true,
+            "ok": true,
+            "total": 59,
+            "unitMin": 59,
+            "unitMax": 59
+          }
+        },
+        "local-player:cargo-1788893004267-1": {
+          "message": "Sold 1 SBU of Conductor stock for 80 CR.",
+          "resourceDelta": 0,
+          "resource": "conductor",
+          "quote": {
+            "marketId": "settlement-selene",
+            "resource": "conductor",
+            "side": "sell",
+            "sbu": 1,
+            "stockBefore": 255,
+            "stockAfter": 256,
+            "stockLimit": 4096,
+            "need": 1,
+            "target": 256,
+            "settlement": true,
+            "ok": true,
+            "total": 80,
+            "unitMin": 80,
+            "unitMax": 80
+          }
+        },
+        "local-player:cargo-1788893011984-2": {
+          "message": "Loaded 1 SBU of Water ice aboard nomad for 15 CR.",
+          "resourceDelta": 0,
+          "resource": "ice",
+          "quote": {
+            "marketId": "settlement-selene",
+            "resource": "ice",
+            "side": "buy",
+            "sbu": 1,
+            "stockBefore": 2400,
+            "stockAfter": 2399,
+            "stockLimit": 4096,
+            "need": 0,
+            "target": 2400,
+            "settlement": true,
+            "ok": true,
+            "total": 15,
+            "unitMin": 15,
+            "unitMax": 15
+          }
+        }
+      },
+      "markets": {
+        "aeon-orbital": {
+          "id": "aeon-orbital",
+          "stock": {
+            "basalt": 1024,
+            "copper": 1024,
+            "ice": 1024,
+            "aggregate": 1024,
+            "metal-stock": 1024,
+            "conductor": 1024
+          }
+        },
+        "settlement-aeon": {
+          "id": "settlement-aeon",
+          "stock": {
+            "basalt": 120,
+            "copper": 96,
+            "ice": 96,
+            "aggregate": 1800,
+            "metal-stock": 1600,
+            "conductor": 1200
+          }
+        },
+        "settlement-selene": {
+          "id": "settlement-selene",
+          "stock": {
+            "basalt": 1500,
+            "copper": 600,
+            "ice": 2399,
+            "aggregate": 96,
+            "metal-stock": 64,
+            "conductor": 256
+          }
+        },
+        "settlement-pyre": {
+          "id": "settlement-pyre",
+          "stock": {
+            "basalt": 160,
+            "copper": 96,
+            "ice": 240,
+            "aggregate": 64,
+            "metal-stock": 2200,
+            "conductor": 1798
+          }
+        },
+        "settlement-miasma": {
+          "id": "settlement-miasma",
+          "stock": {
+            "basalt": 1600,
+            "copper": 2400,
+            "ice": 48,
+            "aggregate": 64,
+            "metal-stock": 360,
+            "conductor": 32
+          }
+        }
+      },
+      "settlementVersion": 1,
+      "loose": [],
+      "marketTerminals": {
+        "station:1": "aeon-orbital",
+        "station:2": "aeon-orbital",
+        "station:3": "aeon-orbital",
+        "station:4": "aeon-orbital",
+        "station:5": "aeon-orbital",
+        "station:6": "aeon-orbital",
+        "station:7": "aeon-orbital",
+        "station:8": "aeon-orbital",
+        "station:9": "aeon-orbital",
+        "station:10": "aeon-orbital",
+        "station:11": "aeon-orbital",
+        "station:12": "aeon-orbital",
+        "station:13": "aeon-orbital",
+        "station:14": "aeon-orbital",
+        "station:15": "aeon-orbital",
+        "station:16": "aeon-orbital",
+        "station:17": "aeon-orbital",
+        "station:18": "aeon-orbital",
+        "station:19": "aeon-orbital",
+        "station:20": "aeon-orbital",
+        "station:hub:exchange-north": "aeon-orbital",
+        "station:hub:exchange-south": "aeon-orbital",
+        "settlement-aeon": "settlement-aeon",
+        "settlement-selene": "settlement-selene",
+        "settlement-pyre": "settlement-pyre",
+        "settlement-miasma": "settlement-miasma"
+      },
+      "account": {
+        "credits": 1447,
+        "carried": null,
+        "resources": {}
+      },
+      "owner": "local-player",
+      "online": false,
+      "tractor": {
+        "active": false,
+        "held": null,
+        "target": null,
+        "slot": null,
+        "distance": 2,
+        "busy": false,
+        "message": "",
+        "beam": false,
+        "loose": 0
+      },
+      "projections": {
+        "count": 0,
+        "uploads": 3,
+        "textureWidth": 1024,
+        "textureHeight": 640,
+        "ids": [],
+        "draws": 0
+      },
+      "error": "",
+      "carrying": false,
+      "visuals": [
+        {
+          "id": "local-player:nomad",
+          "objects": 8,
+          "error": null
+        }
+      ],
+      "terminal": null
+    },
+    "fauna": {
+      "count": 0,
+      "alive": 0,
+      "dead": 0,
+      "defeated": 0,
+      "totalBites": 0,
+      "totalHits": 0,
+      "steps": 0,
+      "droppedTime": 0,
+      "paused": true,
+      "maxEntities": 8,
+      "entities": [],
+      "assets": {},
+      "rendered": 0,
+      "shots": 0,
+      "kills": 0,
+      "lastHit": null,
+      "medical": {
+        "downed": false,
+        "locked": false,
+        "open": false,
+        "health": 100,
+        "creatureName": null,
+        "message": ""
+      }
+    },
+    "rover": null,
+    "sandbox": false,
+    "landmarks": {
+      "resident": 0,
+      "visible": 0,
+      "pending": 0,
+      "triangles": 0,
+      "draws": 0,
+      "nearest": null
+    },
+    "navigationTargets": {
+      "selectedId": "settlement-selene",
+      "aimedId": "selene",
+      "charge": 0,
+      "ready": false,
+      "reason": "Retract landing gear before charging.",
+      "filters": {
+        "bodies": true,
+        "stations": true,
+        "ships": false,
+        "bases": true,
+        "trade": true,
+        "friends": false,
+        "missions": true,
+        "locations": false
+      },
+      "targets": [
+        {
+          "id": "aeon",
+          "name": "Aeon",
+          "category": "bodies",
+          "kind": "Planet",
+          "parent": "star",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 1592750,
+          "body": "aeon"
+        },
+        {
+          "id": "selene",
+          "name": "Selene",
+          "category": "bodies",
+          "kind": "Moon",
+          "parent": "aeon",
+          "center": [
+            -2388089.256503974,
+            0,
+            -23880892.565039743
+          ],
+          "radius": 434350,
+          "body": "selene"
+        },
+        {
+          "id": "pyre",
+          "name": "Pyre",
+          "category": "bodies",
+          "kind": "Planet",
+          "parent": "star",
+          "center": [
+            18211405924.80211,
+            7553274721.879522,
+            11674447962.019382
+          ],
+          "radius": 1200000,
+          "body": "pyre"
+        },
+        {
+          "id": "miasma",
+          "name": "Miasma",
+          "category": "bodies",
+          "kind": "Moon",
+          "parent": "pyre",
+          "center": [
+            18212956393.54781,
+            7555869310.70647,
+            11680089252.251915
+          ],
+          "radius": 340000,
+          "body": "miasma"
+        },
+        {
+          "id": "star",
+          "name": "Our star",
+          "category": "bodies",
+          "kind": "Star",
+          "parent": null,
+          "center": [
+            23122269556.77405,
+            8991993716.523241,
+            3082969274.23654
+          ],
+          "radius": 240000000,
+          "body": "star"
+        },
+        {
+          "id": "site-coast",
+          "name": "Coastal landing",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "aeon",
+          "body": "aeon",
+          "surface": true,
+          "center": [
+            630678.9558425823,
+            412247.91717031057,
+            1403324.3193961822
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-forest",
+          "name": "Forest expedition",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "aeon",
+          "body": "aeon",
+          "surface": true,
+          "center": [
+            1336590.4711004735,
+            596818.5876562725,
+            628951.7343085393
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-mountain",
+          "name": "Highland survey",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "aeon",
+          "body": "aeon",
+          "surface": true,
+          "center": [
+            1262216.5140651315,
+            669440.614709164,
+            711222.4539150589
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-polar",
+          "name": "Polar expedition",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "aeon",
+          "body": "aeon",
+          "surface": true,
+          "center": [
+            179240.26672567718,
+            1552749.7820450563,
+            310453.24873107014
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-selene",
+          "name": "Selene landing region",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "selene",
+          "body": "selene",
+          "surface": true,
+          "center": [
+            -2193710.918881322,
+            95029.40950440775,
+            -23505094.44563595
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-pyre",
+          "name": "Twilight landing region",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "pyre",
+          "body": "pyre",
+          "surface": true,
+          "center": [
+            18210337072.74053,
+            7553139539.20183,
+            11673920876.25282
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-miasma-0",
+          "name": "VITRIOL BASIN",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "miasma",
+          "body": "miasma",
+          "surface": true,
+          "center": [
+            18212664408.83389,
+            7555973989.918001,
+            11680225406.960081
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-miasma-1",
+          "name": "THE PALE EYE",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "miasma",
+          "body": "miasma",
+          "surface": true,
+          "center": [
+            18213102387.08946,
+            7555730856.074147,
+            11680363826.16946
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-miasma-2",
+          "name": "VERDIGRIS SEA",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "miasma",
+          "body": "miasma",
+          "surface": true,
+          "center": [
+            18213160528.043503,
+            7556096504.358496,
+            11679940939.85936
+          ],
+          "radius": 0
+        },
+        {
+          "id": "site-miasma-3",
+          "name": "BRIMSTONE CROWN",
+          "category": "locations",
+          "kind": "Surface site",
+          "parent": "miasma",
+          "body": "miasma",
+          "surface": true,
+          "center": [
+            18212803045.8144,
+            7555637041.707093,
+            11679892976.103724
+          ],
+          "radius": 0
+        },
+        {
+          "id": "settlement-aeon",
+          "name": "Greenbank Supply",
+          "kind": "Trade settlement · Construction supplies · Large pad",
+          "category": "trade",
+          "parent": "aeon",
+          "body": "aeon",
+          "surface": true,
+          "center": [
+            23320.461108655814,
+            966220.7728855942,
+            1266518.016150351
+          ],
+          "radius": 0,
+          "summary": "Stocks: Aggregate 1800 SBU, Metal stock 1600 SBU, Conductor stock 1200 SBU",
+          "sales": "Needs: Basalt concentrate 780 SBU, Copper ore 504 SBU, Water ice 416 SBU"
+        },
+        {
+          "id": "settlement-selene",
+          "name": "Stillwater Exchange",
+          "kind": "Trade settlement · Ice and mineral freight · Large pad",
+          "category": "trade",
+          "parent": "selene",
+          "body": "selene",
+          "surface": true,
+          "center": [
+            -2194556.377680234,
+            93043.71417188145,
+            -23504665.53412531
+          ],
+          "radius": 0,
+          "summary": "Stocks: Basalt concentrate 1500 SBU, Copper ore 600 SBU, Water ice 2399 SBU",
+          "sales": "Needs: Metal stock 320 SBU, Aggregate 384 SBU, Water ice 1 SBU"
+        },
+        {
+          "id": "settlement-pyre",
+          "name": "Ember Works",
+          "kind": "Trade settlement · Metal and conductor export · Large pad",
+          "category": "trade",
+          "parent": "pyre",
+          "body": "pyre",
+          "surface": true,
+          "center": [
+            18210336659.054756,
+            7553141551.808043,
+            11673921101.245743
+          ],
+          "radius": 0,
+          "summary": "Stocks: Metal stock 2200 SBU, Conductor stock 1798 SBU",
+          "sales": "Needs: Copper ore 1104 SBU, Aggregate 448 SBU, Basalt concentrate 864 SBU · +2 more"
+        },
+        {
+          "id": "settlement-miasma",
+          "name": "Verdigris Prospect",
+          "kind": "Trade settlement · Copper prospecting · Large pad",
+          "category": "trade",
+          "parent": "miasma",
+          "body": "miasma",
+          "surface": true,
+          "center": [
+            18212663634.077667,
+            7555970934.474566,
+            11680226104.008286
+          ],
+          "radius": 0,
+          "summary": "Stocks: Basalt concentrate 1600 SBU, Copper ore 2400 SBU",
+          "sales": "Needs: Water ice 720 SBU, Conductor stock 352 SBU, Aggregate 448 SBU · +1 more"
+        },
+        {
+          "id": "station-aeon",
+          "name": "Aeon Orbital",
+          "kind": "Space station",
+          "category": "stations",
+          "parent": "aeon",
+          "body": "aeon",
+          "center": [
+            670253.2412756407,
+            438115.93859729124,
+            1491381.09797815
+          ],
+          "radius": 2000
+        }
+      ],
+      "arrivalTarget": null
+    },
+    "combat": {
+      "phase": "idle",
+      "contract": {
+        "id": "aeon-standard",
+        "title": "Outer perimeter patrol",
+        "region": "Aeon orbit",
+        "difficulty": "Standard",
+        "total": 2,
+        "waves": 1
+      },
+      "wave": 0,
+      "reinforcementIn": 0,
+      "reports": [],
+      "point": null,
+      "player": {
+        "hull": 240,
+        "shield": 180,
+        "maxHull": 240,
+        "maxShield": 180,
+        "hitAge": 110.16599999999967,
+        "recharge": 16
+      },
+      "targetId": null,
+      "shots": 0,
+      "hits": 0,
+      "incomingHits": 0,
+      "completed": 0,
+      "projectiles": 0,
+      "enemies": [],
+      "assets": [],
+      "models": 0,
+      "assetError": ""
+    },
+    "surfaceWeather": {
+      "enabled": true,
+      "body": "selene",
+      "profile": "surface dust",
+      "ready": true,
+      "strength": 0.9999999999999999,
+      "particles": 768
+    },
+    "dev": {
+      "ship": "nomad",
+      "location": "settlement-selene",
+      "open": false,
+      "ready": true
+    },
+    "build": {
+      "controllerAvailable": false,
+      "active": false,
+      "removing": false,
+      "pieceId": "foundation",
+      "preview": null,
+      "claims": [],
+      "pieceCount": 0,
+      "error": "",
+      "grounded": false,
+      "visuals": {
+        "floodlights": {
+          "max": 6,
+          "maxShadows": 2,
+          "active": 6,
+          "shadows": 2,
+          "fixtures": [
+            {
+              "id": "build-claim-11000/build-piece-11174",
+              "intensity": 1500,
+              "position": [
+                -25.550610547419637,
+                -5.2272002086101566,
+                -0.9648789539933205
+              ],
+              "target": [
+                -21.882090607192367,
+                8.519506861717673,
+                -12.642849929630756
+              ],
+              "shadow": true
+            },
+            {
+              "id": "build-claim-11000/build-piece-11177",
+              "intensity": 1500,
+              "position": [
+                14.073041038122028,
+                -5.2272002086101566,
+                -21.347463749349117
+              ],
+              "target": [
+                2.4392850981093943,
+                8.519506861717673,
+                -25.15387511253357
+              ],
+              "shadow": true
+            },
+            {
+              "id": "build-claim-11000/build-piece-11173",
+              "intensity": 1500,
+              "position": [
+                -28.842921967618167,
+                27.716104244071175,
+                -7.420213934034109
+              ],
+              "target": [
+                -21.35263011045754,
+                12.166958354631788,
+                -13.817446928471327
+              ],
+              "shadow": false
+            },
+            {
+              "id": "build-claim-11000/build-piece-11176",
+              "intensity": 1500,
+              "position": [
+                10.735906443558633,
+                27.716104244071175,
+                -27.77974148839712
+              ],
+              "target": [
+                1.1758186123333871,
+                12.166958354631788,
+                -25.406182397156954
+              ],
+              "shadow": false
+            },
+            {
+              "id": "build-claim-11000/build-piece-11175",
+              "intensity": 1500,
+              "position": [
+                -22.136391411535442,
+                -38.93660773917509,
+                5.6172507815063
+              ],
+              "target": [
+                -17.53524248674512,
+                -25.77206774627848,
+                -6.396462853997946
+              ],
+              "shadow": false
+            },
+            {
+              "id": "build-claim-11000/build-piece-11178",
+              "intensity": 1500,
+              "position": [
+                17.442436999175698,
+                -38.93660773917509,
+                -14.742276772856712
+              ],
+              "target": [
+                4.993206235580146,
+                -25.77206774627848,
+                -17.985198322683573
+              ],
+              "shadow": false
+            }
+          ]
+        },
+        "doors": [],
+        "ghost": {
+          "pieceId": null,
+          "ready": false,
+          "meshes": 0
+        },
+        "claims": [],
+        "lights": {
+          "active": 0,
+          "fixtures": [],
+          "max": 4,
+          "work": false
+        }
+      },
+      "assetsReady": false,
+      "materials": {
+        "rifle-laser": 0,
+        "sidearm-pistol": 0,
+        "mining-laser-tool": 0,
+        "backpack-life-support": 0,
+        "carbine-charge": 0,
+        "sidearm-charge": 0,
+        "bandage": 0,
+        "healing-stim": 0,
+        "aggregate": 0,
+        "mineral-binder": 0,
+        "concrete": 0,
+        "metal-stock": 0,
+        "conductor": 0,
+        "glass": 0,
+        "uranium-ore": 0,
+        "helium-3-regolith": 0,
+        "repair": 0,
+        "ration": 2,
+        "sample": 0,
+        "scanner": 0,
+        "sidearm": 0,
+        "rifle": 0,
+        "replacement": 0,
+        "basalt": 0,
+        "copper": 0,
+        "ice": 0
+      }
+    },
+    "enabled": true,
+    "focused": true,
+    "manufacturer": "Meridian Shipworks",
+    "testFlight": true,
+    "kestrel": null,
+    "kestrelAccess": null,
+    "rockMaterial": {
+      "ready": true,
+      "error": null
+    },
+    "sun": {
+      "distance": 25004905478.10865,
+      "clearance": 24764905478.10865,
+      "angularRadius": 0.009598264041295062,
+      "sphereVisible": false,
+      "diskWeight": 1,
+      "visibility": 0
+    },
+    "stellarThermal": {
+      "temperature": 309.2390015553088,
+      "hull": 100,
+      "destroyed": false,
+      "reason": null
+    },
+    "multiplayer": {
+      "connected": false,
+      "account": null,
+      "ownId": null,
+      "players": [],
+      "maxPlayers": 10,
+      "hangar": null,
+      "inventory": null,
+      "commerce": null,
+      "health": null,
+      "doors": null,
+      "drops": [],
+      "error": null,
+      "stationFrame": null,
+      "hub": null,
+      "defense": [],
+      "social": null,
+      "chat": [],
+      "moderation": null,
+      "remote": []
+    },
+    "preload": {
+      "phase": "ready",
+      "ready": true,
+      "label": "Ready to explore",
+      "completed": 9,
+      "total": 9,
+      "error": null,
+      "fallbackTasks": [],
+      "orbitalResolution": 4096,
+      "orbitalComplete": true
+    },
+    "reentryHeat": 0,
+    "crash": null,
+    "renderedFrames": 3826,
+    "graphics": {
+      "grassDistance": 80,
+      "grassDensity": 0.75,
+      "resolution": "auto"
+    },
+    "utilities": {
+      "gearDeployed": true,
+      "gearProgress": 1,
+      "gearAssemblies": 4,
+      "ship": false,
+      "suit": false
+    },
+    "miasma": {
+      "position": [
+        18212956393.54781,
+        7555869310.70647,
+        11680089252.251915
+      ],
+      "radius": 340000,
+      "distance": 22931541355.62767,
+      "visible": false,
+      "ready": false,
+      "mapsReady": true,
+      "patches": 0,
+      "lod": 0,
+      "pending": 0,
+      "morphing": 0,
+      "error": null,
+      "fragments": 0,
+      "flora": {
+        "loaded": false,
+        "visible": false,
+        "counts": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "errors": []
+      },
+      "surfaceAltitude": null,
+      "weatherTime": 128.6115000000027,
+      "altitude": 22931199938.323524,
+      "surface": null
+    },
+    "pyre": {
+      "position": [
+        18211405924.80211,
+        7553274721.879522,
+        11674447962.019382
+      ],
+      "radius": 1200000,
+      "distance": 22926576082.248734,
+      "visible": false,
+      "patches": 0,
+      "lod": 0,
+      "pending": 0,
+      "builds": 6,
+      "morphing": 0,
+      "error": null,
+      "mapsReady": true,
+      "generatorVersion": 4,
+      "altitude": 22925376770.36762,
+      "ready": false,
+      "epoch": 1788892896947,
+      "resources": null,
+      "region": null
+    },
+    "heat": 0,
+    "terrainDetail": {
+      "orbitalResolution": 4096,
+      "morphing": 0,
+      "waiting": 0,
+      "merging": 0,
+      "settled": true,
+      "visible": 244,
+      "error": null
+    },
+    "terrainLod": {
+      "morphing": 0,
+      "waiting": 0,
+      "merging": 0,
+      "settled": true,
+      "visible": 244,
+      "error": null
+    },
+    "loadout": {
+      "version": 1,
+      "active": null,
+      "quickIndex": 0,
+      "health": 100,
+      "bleeding": false,
+      "slots": {
+        "weapon1": {
+          "item": "rifle-laser",
+          "quantity": 1
+        },
+        "weapon2": {
+          "item": "sidearm-pistol",
+          "quantity": 1
+        },
+        "tool": {
+          "item": "mining-laser-tool",
+          "quantity": 1
+        },
+        "backpack": {
+          "item": "backpack-life-support",
+          "quantity": 1
+        },
+        "ammo1": {
+          "item": "carbine-charge",
+          "quantity": 60
+        },
+        "ammo2": {
+          "item": "sidearm-charge",
+          "quantity": 36
+        },
+        "quick1": {
+          "item": "bandage",
+          "quantity": 3
+        },
+        "quick2": {
+          "item": "healing-stim",
+          "quantity": 2
+        },
+        "quick3": null,
+        "quick4": null
+      }
+    },
+    "equippedMass": 13.56,
+    "effects": {
+      "engine": {
+        "shipId": "nomad",
+        "state": "maneuvering",
+        "throttle": 0.0456918699139259,
+        "forwardThrottle": 0,
+        "signedForwardDemand": 0,
+        "boost": false,
+        "activeEmitters": 0,
+        "nozzleCount": 2,
+        "activeJets": 0,
+        "particles": 0,
+        "authoredCones": false
+      },
+      "spaceDust": 0,
+      "particles": 0,
+      "capacity": 1024,
+      "boost": 0,
+      "travel": 0,
+      "bolts": 0,
+      "miningContacts": 0,
+      "collectedBursts": 0,
+      "weaponShots": 0,
+      "weaponImpacts": 0,
+      "lastWeapon": "pulse",
+      "lances": 0,
+      "slipstream": 0,
+      "reducedMotion": false,
+      "weapon": "pulse",
+      "controllerFire": false,
+      "armament": {
+        "status": "ready",
+        "shipId": "nomad",
+        "size": 1,
+        "type": "pulse",
+        "shots": 0,
+        "lastShot": null,
+        "mounts": [
+          {
+            "node": "HP_Weapon_Port",
+            "size": 1,
+            "mount": "fixed",
+            "installedWeapon": "pulse-s1"
+          },
+          {
+            "node": "HP_Weapon_Starboard",
+            "size": 1,
+            "mount": "fixed",
+            "installedWeapon": "pulse-s1"
+          }
+        ],
+        "flightParts": [
+          {
+            "name": "HP_Weapon_Port weapons",
+            "min": [
+              -2.5158812298480817,
+              1.169999863586853,
+              -5.680000185966492
+            ],
+            "max": [
+              -2.0699998996530833,
+              1.66999999067437,
+              -3.7800002098083496
+            ]
+          },
+          {
+            "name": "HP_Weapon_Starboard weapons",
+            "min": [
+              2.069999899653084,
+              1.1699999214796106,
+              -5.680000185966492
+            ],
+            "max": [
+              2.515881229848289,
+              1.6699999906743703,
+              -3.7800002098083496
+            ]
+          }
+        ]
+      },
+      "weaponStatus": "WEAPONS READY",
+      "combatMode": true,
+      "engineVisuals": {
+        "shipId": "nomad",
+        "state": "maneuvering",
+        "forwardThrottle": 0,
+        "intensity": 0.14,
+        "authoredCones": 0
+      },
+      "beamVisible": false,
+      "bloom": true
+    },
+    "shipMarker": {
+      "visible": false
+    },
+    "fieldCache": [
+      -2193722.031164278,
+      95037.35990439725,
+      -23505089.8778173
+    ],
+    "containers": {
+      "open": false,
+      "view": "cargo",
+      "target": null,
+      "shipAccess": {
+        "available": true,
+        "aboard": true,
+        "distance": 0,
+        "range": 50
+      },
+      "containers": [
+        {
+          "id": "pack",
+          "name": "Backpack",
+          "kind": "backpack",
+          "boxes": 1,
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 0,
+            "metal-stock": 0,
+            "conductor": 0,
+            "glass": 0,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 0,
+            "ration": 2,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          }
+        },
+        {
+          "id": "ship",
+          "name": "Nomad cargo",
+          "kind": "ship",
+          "boxes": 4,
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 80,
+            "metal-stock": 16,
+            "conductor": 3,
+            "glass": 4,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 3,
+            "ration": 12,
+            "sample": 6,
+            "scanner": 1,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          }
+        },
+        {
+          "id": "station",
+          "name": "Aeon orbital locker",
+          "kind": "station",
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 0,
+            "metal-stock": 0,
+            "conductor": 0,
+            "glass": 0,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        },
+        {
+          "id": "crescent-cache",
+          "name": "Crescent field cache",
+          "kind": "base",
+          "items": {
+            "rifle-laser": 0,
+            "sidearm-pistol": 0,
+            "mining-laser-tool": 0,
+            "backpack-life-support": 0,
+            "carbine-charge": 0,
+            "sidearm-charge": 0,
+            "bandage": 0,
+            "healing-stim": 0,
+            "aggregate": 0,
+            "mineral-binder": 0,
+            "concrete": 0,
+            "metal-stock": 0,
+            "conductor": 0,
+            "glass": 0,
+            "uranium-ore": 0,
+            "helium-3-regolith": 0,
+            "repair": 0,
+            "ration": 0,
+            "sample": 0,
+            "scanner": 0,
+            "sidearm": 0,
+            "rifle": 0,
+            "replacement": 0,
+            "basalt": 0,
+            "copper": 0,
+            "ice": 0
+          },
+          "boxes": 2
+        }
+      ],
+      "saved": true,
+      "warning": ""
+    },
+    "eva": {
+      "active": false,
+      "spaceParked": false,
+      "braking": false,
+      "shipDistance": null,
+      "speed": 0.8866629242532476
+    },
+    "rings": {
+      "population": 14336,
+      "width": 20000,
+      "thickness": 2000,
+      "outerDiameter": 1826896,
+      "families": 6,
+      "variants": 24,
+      "nearby": 0,
+      "rendered": 0,
+      "renderedNear": 0,
+      "renderedMid": 0,
+      "renderedFar": 0,
+      "promoted": 0,
+      "visibleIds": [],
+      "viewDistance": 80000,
+      "nearDistance": 4000,
+      "midDistance": 16000,
+      "ice": {
+        "count": 0,
+        "capacity": 1200,
+        "radius": 104,
+        "presence": 0,
+        "cell": "",
+        "sunlight": 1
+      }
+    },
+    "mining": {
+      "resourceWeights": [
+        0.025000000000000022,
+        0.015,
+        0.96
+      ],
+      "resourceVersion": "1.1",
+      "ready": true,
+      "pending": false,
+      "revision": 0,
+      "position": [
+        -2194417.586622232,
+        93135.50372168983,
+        -23504994.74202841
+      ],
+      "pack": [
+        0,
+        0,
+        0
+      ],
+      "ship": {
+        "eligible": false,
+        "reason": "Cutters unavailable.",
+        "armed": false,
+        "active": false,
+        "charge": 1,
+        "depleted": false,
+        "cutSeconds": 0,
+        "range": 40,
+        "destination": "stratum-ore",
+        "aim": [],
+        "beams": [],
+        "hitIds": [],
+        "mass": 0,
+        "beaming": 0
+      },
+      "saved": true,
+      "error": "",
+      "triangles": 12304,
+      "meshMs": 93.80000001192093,
+      "publishMs": 0.699999988079071,
+      "looseStones": {
+        "stones": 0,
+        "nearInstances": 0,
+        "farInstances": 0,
+        "edited": 0
+      },
+      "inspection": null,
+      "groundRevision": 0,
+      "space": false,
+      "targetName": "Ice outcrop",
+      "activeRock": "selene-deposit-v1-4313-2580",
+      "activeRevision": 0,
+      "activePosition": [
+        -2194417.586622232,
+        93135.50372168983,
+        -23504994.74202841
+      ],
+      "debrisBrake": false,
+      "surfaceRock": null,
+      "nearestRegional": {
+        "id": "selene-deposit-v1-4313-2580",
+        "name": "Ice outcrop",
+        "position": [
+          -2194417.586622232,
+          93135.50372168983,
+          -23504994.74202841
+        ],
+        "direction": [
+          0.4472869007110776,
+          0.2150974937701352,
+          0.8681402517025029
+        ],
+        "dominant": "ice",
+        "resourceWeights": [
+          0.025000000000000022,
+          0.015,
+          0.96
+        ],
+        "distance": 378.65880518137277,
+        "ready": true
+      },
+      "regionalDeposits": [
+        {
+          "id": "selene-deposit-v1-4313-2580",
+          "name": "Ice outcrop",
+          "dominant": "ice",
+          "variant": 2,
+          "distance": 378.65880518137277,
+          "resourceWeights": [
+            0.025000000000000022,
+            0.015,
+            0.96
+          ],
+          "resourceVersion": "1.1",
+          "ready": true,
+          "pending": false,
+          "revision": 0,
+          "position": [
+            -2194417.586622232,
+            93135.50372168983,
+            -23504994.74202841
+          ],
+          "pack": [
+            0,
+            0,
+            0
+          ],
+          "ship": [
+            0,
+            0,
+            0
+          ],
+          "saved": true,
+          "error": "",
+          "triangles": 12304,
+          "meshMs": 93.80000001192093,
+          "publishMs": 0.699999988079071
+        },
+        {
+          "id": "selene-deposit-v1-4312-2580",
+          "name": "Ice outcrop",
+          "dominant": "ice",
+          "variant": 1,
+          "distance": 383.7158684699304,
+          "resourceWeights": [
+            0.025000000000000022,
+            0.015,
+            0.96
+          ],
+          "resourceVersion": "1.1",
+          "ready": true,
+          "pending": false,
+          "revision": 0,
+          "position": [
+            -2194364.630362698,
+            92930.26563736568,
+            -23504964.403318193
+          ],
+          "pack": [
+            0,
+            0,
+            0
+          ],
+          "ship": [
+            0,
+            0,
+            0
+          ],
+          "saved": true,
+          "error": "",
+          "triangles": 14780,
+          "meshMs": 118.39999997615814,
+          "publishMs": 0.800000011920929
+        },
+        {
+          "id": "selene-deposit-v1-4314-2583",
+          "name": "Basalt outcrop",
+          "dominant": "basalt",
+          "variant": 5,
+          "distance": 395.14355841642083,
+          "resourceWeights": [
+            0.965,
+            0.015,
+            0.02
+          ],
+          "resourceVersion": "1.1",
+          "ready": true,
+          "pending": false,
+          "revision": 0,
+          "position": [
+            -2194829.442059307,
+            93318.48055283236,
+            -23504577.275488965
+          ],
+          "pack": [
+            0,
+            0,
+            0
+          ],
+          "ship": [
+            0,
+            0,
+            0
+          ],
+          "saved": true,
+          "error": "",
+          "triangles": 16088,
+          "meshMs": 169.19999998807907,
+          "publishMs": 2
+        }
+      ],
+      "spaceRocks": [],
+      "tool": {
+        "active": false,
+        "muzzleDirection": null,
+        "aimDirection": [
+          -0.0982697267220613,
+          0.9766515991187728,
+          -0.1910358991098679
+        ],
+        "attachment": "first-person",
+        "item": null,
+        "ammo": 0,
+        "hit": null,
+        "heat": 0,
+        "beaming": false,
+        "selected": false,
+        "target": null,
+        "toolError": null
+      }
+    },
+    "fleet": {
+      "surfaceVisited": true,
+      "unlocked": true,
+      "active": "nomad",
+      "saved": true
+    },
+    "shipId": "nomad",
+    "powered": true,
+    "cabinFlight": false,
+    "berthRest": false,
+    "berthTransition": false,
+    "nomadCargo": {
+      "boxes": 4,
+      "stacks": 20,
+      "slots": 32,
+      "minerals": 0,
+      "mineralLimit": 192,
+      "supplies": 136,
+      "supplyLimit": 120
+    },
+    "landingGear": {
+      "progress": 1,
+      "target": true,
+      "visual": 1
+    },
+    "hardpoints": [
+      {
+        "node": "HP_Weapon_Port",
+        "size": 1,
+        "mount": "fixed",
+        "installedWeapon": "pulse-s1"
+      },
+      {
+        "node": "HP_Weapon_Starboard",
+        "size": 1,
+        "mount": "fixed",
+        "installedWeapon": "pulse-s1"
+      }
+    ],
+    "shipSpeed": 0.8866629242532476,
+    "shipVelocity": [
+      0,
+      0,
+      0
+    ],
+    "shipOrientation": [
+      0.6089703558359839,
+      0.18340435152433326,
+      -0.14744634850977478,
+      0.7574810386181743
+    ],
+    "opening": {
+      "phase": "skipped"
+    },
+    "character": {
+      "ready": true,
+      "visible": false,
+      "state": "idle",
+      "position": [
+        -2194556.075028278,
+        93045.35002374116,
+        -23504664.943024263
+      ],
+      "error": null
+    },
+    "camera": {
+      "mode": "cockpit",
+      "shipVisible": true,
+      "selected": false,
+      "obstructed": false,
+      "position": [
+        -2194548.1979682967,
+        93050.51672657728,
+        -23504649.632802684
+      ],
+      "orientation": [
+        0.6089703558359839,
+        0.18340435152433326,
+        -0.14744634850977478,
+        0.7574810386181743
+      ],
+      "fov": 52
+    },
+    "audio": {
+      "created": true,
+      "contextState": "running",
+      "enabled": true,
+      "userMuted": false,
+      "unlocked": true,
+      "suspended": false,
+      "audible": true,
+      "music": {
+        "enabled": true,
+        "scene": "orbit",
+        "file": "blue-horizon-1.mp3",
+        "pending": null,
+        "crossfading": false,
+        "failed": [],
+        "activationRequired": false,
+        "paused": false,
+        "time": 72.149333
+      },
+      "engine": {
+        "shipId": "nomad",
+        "mode": "flight",
+        "active": true,
+        "cabin": false,
+        "load": 0.0456918699139259,
+        "boost": false,
+        "tone": 0.02333550650371659,
+        "turbine": 0.008279372357589925,
+        "exhaust": 0.02559529268192444,
+        "pitch": 75.79242520285585,
+        "turbinePitch": 189.8600251331539,
+        "cutoff": 336.65791869326813,
+        "spool": 0.28
+      },
+      "flyby": {
+        "voices": 0,
+        "passes": []
+      },
+      "effects": {
+        "steps": 97,
+        "shots": 0,
+        "impacts": 0,
+        "placements": 0,
+        "attacks": 0,
+        "last": "metal",
+        "voices": 0,
+        "mining": false,
+        "buffers": 8,
+        "walking": {
+          "active": false,
+          "grounded": true,
+          "metal": false,
+          "dt": 0.08329999999998836,
+          "distance": 0
+        }
+      }
+    },
+    "travel": null,
+    "travelTarget": "settlement-selene",
+    "mapOpen": false,
+    "tunnel": {
+      "visible": false,
+      "intensity": 0
+    },
+    "speedProfile": {
+      "cruise": 250,
+      "boosted": 400,
+      "limit": 35,
+      "speed": 35,
+      "regime": "AIRLESS"
+    },
+    "moon": {
+      "resources": {
+        "weights": [
+          0.965,
+          0.015,
+          0.02
+        ],
+        "dominant": "basalt",
+        "province": "ASH HIGHLANDS"
+      },
+      "resourceProvinces": [
+        {
+          "id": "frostwall-ice-province",
+          "name": "FROSTWALL ICE PROVINCE",
+          "resource": "ice",
+          "direction": [
+            0.5198237065902184,
+            0.49384372586223446,
+            0.6970664878570142
+          ],
+          "radius": 145000
+        },
+        {
+          "id": "copper-ejecta-province",
+          "name": "COPPER EJECTA PROVINCE",
+          "resource": "copper",
+          "direction": [
+            0.6388541507273584,
+            -0.06817686213409602,
+            0.766301043694953
+          ],
+          "radius": 150000
+        },
+        {
+          "id": "north-glass-fields",
+          "name": "NORTH GLASS FIELDS",
+          "resource": "ice",
+          "direction": [
+            -0.3014352341778188,
+            0.833970814558632,
+            -0.4622006924059889
+          ],
+          "radius": 120000
+        },
+        {
+          "id": "far-copper-basins",
+          "name": "FAR COPPER BASINS",
+          "resource": "copper",
+          "direction": [
+            -0.9007773489355771,
+            -0.30708318713712857,
+            0.30708318713712857
+          ],
+          "radius": 135000
+        },
+        {
+          "id": "south-ice-fields",
+          "name": "SOUTH ICE FIELDS",
+          "resource": "ice",
+          "direction": [
+            0.10178149998272808,
+            -0.9872805498324623,
+            0.12213779997927368
+          ],
+          "radius": 95000
+        }
+      ],
+      "effects": {
+        "stones": {
+          "visible": true,
+          "pebbles": 2394,
+          "rocks": 1606,
+          "rebuilds": 108
+        },
+        "orbitalResolution": 2048,
+        "settled": true,
+        "ringAsteroids": 14336,
+        "ringRendered": 0,
+        "terrainBuilds": 0,
+        "iceParticles": 556,
+        "generatorVersion": 5
+      },
+      "position": [
+        -2388089.256503974,
+        0,
+        -23880892.565039743
+      ],
+      "radius": 434350,
+      "altitude": 21.73317856433505,
+      "patches": 684,
+      "lod": 17,
+      "pending": 0,
+      "distance": 433215.0552099195
+    },
+    "controller": {
+      "id": "Replacement standard Gamepad",
+      "connected": true,
+      "active": true,
+      "armed": true,
+      "status": "Controller ready · Menu / Options opens the command menu."
+    },
+    "body": "selene",
+    "seed": 7291,
+    "generatorVersion": 3,
+    "position": [
+      -2194548.1979682967,
+      93050.51672657728,
+      -23504649.632802684
+    ],
+    "altitude": 21.73317856433505,
+    "speed": 0.8866629242532476,
+    "mode": "flight",
+    "autoland": false,
+    "flightAssist": true,
+    "combatMode": true,
+    "flightRegime": "SPACE",
+    "atmosphereFraction": 0,
+    "velocity": [
+      0.396121230923423,
+      0.19044685144675805,
+      0.770057860443648
+    ],
+    "angularVelocity": [
+      0,
+      0,
+      0
+    ],
+    "groundHeight": -1156.6779686448158,
+    "biome": "SELENE · AIRLESS MOON",
+    "sunDistance": 25004905478.10865,
+    "patches": 244,
+    "lod": 3,
+    "pending": 0,
+    "vegetation": {
+      "trees": 0,
+      "grassTufts": 0,
+      "rocks": 0,
+      "rebuilds": 0,
+      "forestGeneratorVersion": 3
+    },
+    "drawCalls": 2225,
+    "triangles": 2144570,
+    "ready": true,
+    "transiting": false,
+    "fps": 26,
+    "shipAsset": "ready",
+    "storageOpen": false,
+    "storageProgress": 0,
+    "inventory": {
+      "ship": {
+        "rifle-laser": 0,
+        "sidearm-pistol": 0,
+        "mining-laser-tool": 0,
+        "backpack-life-support": 0,
+        "carbine-charge": 0,
+        "sidearm-charge": 0,
+        "bandage": 0,
+        "healing-stim": 0,
+        "repair": 3,
+        "ration": 12,
+        "sample": 6,
+        "scanner": 1,
+        "sidearm": 0,
+        "rifle": 0,
+        "replacement": 0
+      },
+      "pack": {
+        "repair": 0,
+        "ration": 2,
+        "sample": 0,
+        "scanner": 0,
+        "sidearm": 0,
+        "rifle": 0,
+        "replacement": 0
+      },
+      "station": {
+        "repair": 12,
+        "ration": 80,
+        "sample": 30,
+        "scanner": 4,
+        "sidearm": 0,
+        "rifle": 0,
+        "replacement": 0
+      },
+      "stationMass": 160,
+      "shipMass": 33,
+      "packMass": 1,
+      "saved": true,
+      "credits": 1447,
+      "shopStock": {
+        "weapons": {
+          "sidearm": 3,
+          "rifle": 2
+        },
+        "equipment": {
+          "repair": 8,
+          "scanner": 3,
+          "sample": 10,
+          "replacement": 4
+        }
+      },
+      "loadError": ""
+    },
+    "mfds": [
+      {
+        "title": "FLIGHT",
+        "values": [
+          "VELOCITY: 0.9 m/s",
+          "ALTITUDE AGL: 21.7 m",
+          "FLIGHT CONTROL: ASSIST ON"
+        ]
+      },
+      {
+        "title": "NAVIGATION",
+        "values": [
+          "COURSE: STILLWATER EXCHANGE",
+          "BEARING: 180 DEG RIGHT",
+          "POSITION: 12.40 / 27.22"
+        ]
+      },
+      {
+        "title": "COMMS",
+        "values": [
+          "LINK: OFFLINE",
+          "PILOTS: 0 / 10",
+          "HANGAR: NO ASSIGNMENT"
+        ]
+      },
+      {
+        "title": "CARGO",
+        "values": [
+          "SHIP STORAGE: 33.0 / 120 kg",
+          "BACKPACK: 1.0 / 20 kg",
+          "ACCESS: AFT RACK / PORT"
+        ]
+      }
+    ],
+    "doorOpen": false,
+    "doorProgress": 0,
+    "insideShip": false,
+    "station": {
+      "shopkeeper": {
+        "status": "idle",
+        "error": null,
+        "visible": false,
+        "position": [
+          -13.35,
+          -8,
+          0
+        ],
+        "currentClip": null,
+        "transitions": 0,
+        "time": 0
+      },
+      "shopkeepers": {
+        "weapons": {
+          "status": "idle",
+          "error": null,
+          "visible": false,
+          "position": [
+            -13.35,
+            -8,
+            0
+          ],
+          "currentClip": null,
+          "transitions": 0,
+          "time": 0
+        },
+        "equipment": {
+          "status": "idle",
+          "error": null,
+          "visible": false,
+          "position": [
+            13.35,
+            -8,
+            0
+          ],
+          "currentClip": null,
+          "transitions": 0,
+          "time": 0
+        }
+      },
+      "exterior": "geometry-review",
+      "exteriorDetail": "lod1",
+      "exteriorError": null,
+      "exteriorLodError": null,
+      "finish": "ready",
+      "finishMaterials": {
+        "replacedMeshes": 397,
+        "generatedUVs": 73,
+        "materialCount": 16,
+        "textureCount": 3,
+        "estimatedTextureBytes": 7077888
+      },
+      "pods": 20,
+      "lodBatches": 26,
+      "activePod": 1,
+      "parkedPod": 1,
+      "location": "hangar",
+      "rings": [
+        0.05743269000000167,
+        -0.05743269000000167
+      ],
+      "elevator": 0,
+      "ready": true,
+      "error": null,
+      "doorsOpen": 0,
+      "distance": 25161671.876765426,
+      "local": [
+        -5870695.44609715,
+        -23246154.99501535,
+        -7632885.729585199
+      ],
+      "deckClearance": -23246146.99501535,
+      "docked": false,
+      "lifting": false,
+      "canDock": false
+    },
+    "interaction": "F · LEAVE PILOT SEAT",
+    "renderScale": 0.85,
+    "renderResolution": {
+      "automatic": true,
+      "fullscreen": true,
+      "scale": 0.85,
+      "pixelRatio": 1,
+      "width": 1224,
+      "height": 765
+    }
+  }
+}

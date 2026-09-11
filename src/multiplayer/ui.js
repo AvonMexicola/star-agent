@@ -359,7 +359,7 @@ export function createMultiplayerUI({ nav, client, onJoin = account => client.co
       addAction('Pack to ship', 'pack-ship', 'pack'); addAction('Ship to pack', 'ship-pack', 'ship');
       addAction('Station to ship', 'station-ship', 'station'); addAction('Ship to station', 'ship-station', 'ship');
       addAction('Drop from pack', 'drop-pack', 'pack');
-      if (['rifle-laser', 'sidearm-pistol', 'mining-laser-tool'].includes(item.id)) {
+      if (['rifle-laser', 'sidearm-pistol', 'mining-laser-tool', 'tractor-beam-tool'].includes(item.id)) {
         const equip = document.createElement('button'); equip.type = 'button'; equip.textContent = 'Equip';
         equip.dataset.inventoryRequest = 'equip'; equip.dataset.weapon = item.id; equip.dataset.controllerKey = `equip-${item.id}`;
         equip.disabled = busy || amounts.pack <= 0 || state.handsFree || state.needsRespawn;

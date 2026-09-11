@@ -21,7 +21,7 @@ test('large ring bodies retain visible geometry through distance bands and cell 
   test.setTimeout(240000);expect(hero,'a deterministic sunlit large foreground body').toBeTruthy();
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await mkdir(evidence,{recursive:true});await page.setViewportSize({width:1440,height:900});await page.goto('/?debug');await page.waitForFunction(()=>window.starAgent?.state.ready);
-  await page.evaluate(()=>window.starAgent.setRenderScale(.8));await page.keyboard.press('Tab');
+  await page.evaluate(()=>window.starAgent.setRenderScale(.8));await page.keyboard.press('Shift+Tab');
   const anchor=new Vector3(...hero.position).add(center),radial=new Vector3(...hero.position).addScaledVector(normal,-new Vector3(...hero.position).dot(normal)).normalize(),tangent=new Vector3().crossVectors(normal,radial).normalize();
   const frames=[];
   // Actual generated geometry; camera placement is a rendering fixture, not a

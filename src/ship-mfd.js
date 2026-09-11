@@ -14,7 +14,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
   const group = new THREE.Group();
   group.name = 'Four rectangular multifunction displays';
   const frameFinish = new THREE.MeshStandardMaterial({ color: 0x111f26, metalness: .65, roughness: .36 });
-  const screenTitles=profile==='kestrel'?['FLIGHT','VESSEL','SYSTEMS','DRIVE']:profile==='kestrel-flight'?['FLIGHT','NAVIGATION','SYSTEMS','VESSEL']:titles;
+  const screenTitles=profile==='stratum'?['FLIGHT','NAVIGATION','MINING','CARGO']:profile==='kestrel'?['FLIGHT','VESSEL','SYSTEMS','DRIVE']:profile==='kestrel-flight'?['FLIGHT','NAVIGATION','SYSTEMS','VESSEL']:titles;
   const screens = screenTitles.map((title, i) => {
     const canvas = document.createElement('canvas');canvas.width = 512;canvas.height = height;
     const ctx = canvas.getContext('2d');
@@ -83,6 +83,8 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     const serverInventory = multiplayer?.connected ? multiplayer.inventory : null;
     const cargoMass = id => serverInventory?.containers?.[id] ? itemMass(serverInventory.containers[id]) : inventory.mass(id);
     const cargoCapacity = id => serverInventory?.capacity?.[id] ?? inventory.capacity?.[id] ?? CAPACITY[id];
+    const totalMassReadout = id => !multiplayer?.connected ? inventory.massReadout?.(id) : undefined;
+    const cargoReadout = id => totalMassReadout(id) ?? `${cargoMass(id).toFixed(1)} / ${cargoCapacity(id)} kg`;
     const combat=nav.combat&&!multiplayer?.connected?nav.combat:null;
     const commsPage=Boolean(multiplayer&&(profile!=='atlas-flight'||multiplayer.connected));
     screens[2].title = combat&&['transit','engage','complete','failed'].includes(combat.phase) ? 'COMBAT' : commsPage ? 'COMMS' : 'SYSTEMS';
@@ -106,7 +108,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     const rawShipSpeed = Number.isFinite(nav.shipSpeed) ? nav.shipSpeed : nav.speed;
     const shipSpeed = Number.isFinite(rawShipSpeed) ? rawShipSpeed : 0;
     if (!powered) {
-      const storage = `${inventory.mass('ship').toFixed(1)} / ${(inventory.capacity?.ship ?? CAPACITY.ship)} kg`;
+      const storage = totalMassReadout('ship') ?? `${inventory.mass('ship').toFixed(1)} / ${(inventory.capacity?.ship ?? CAPACITY.ship)} kg`;
       const pages = [
         [['MAIN POWER', 'OFF'], ['PROPULSION', 'DISABLED'], ['SHIP VELOCITY', `${shipSpeed.toFixed(1)} m/s`]],
         [['MAIN POWER', 'OFF'], ['NAVIGATION', 'STANDBY'], ['FLIGHT CONTROLS', 'UNAVAILABLE']],
@@ -176,7 +178,7 @@ export function createShipMFDs({ mounts = null, includeFrames = true, screenOffs
     } else {
       paint(screens[2], [['ENVIRONMENT', nav.body?.toxic&&env.atmosphereFraction>0?'TOXIC · SUIT SEALED':env.regime], [nav.freighter?'CARGO LIFTS':'HATCH / RAMP', nav.freighter?(nav.freighter.secured?'SECURED':'DEPLOYED'):nav.doorOpen ? nav.doorProgress > .98 ? 'OPEN / DEPLOYED' : 'OPENING' : nav.doorProgress > .02 ? 'CLOSING' : 'SEALED / STOWED'], ['LOCAL VERTICAL', `${localVelocity.y.toFixed(1)} m/s`]], `ATMOSPHERE ${Math.round(env.atmosphereFraction * 100)}%   ${!nav.cabinFlight && nav.boost ? 'BOOST' : 'NOMINAL'}`, 2);
     }
-    paint(screens[3], [['SHIP STORAGE', `${cargoMass('ship').toFixed(1)} / ${cargoCapacity('ship')} kg`], ['BACKPACK', `${cargoMass('pack').toFixed(1)} / ${cargoCapacity('pack')} kg`], ['ACCESS', serverInventory?'SERVER AUTHORITY':nav.freighter?'CARGO DECK':'AFT RACK / PORT']], serverInventory?'OPEN SERVER INVENTORY TO TRANSFER':'ON FOOT: F AT THE CARGO CONTAINER', 3);
+    paint(screens[3], [['SHIP STORAGE', cargoReadout('ship')], ['BACKPACK', cargoReadout('pack')], ['ACCESS', serverInventory?'SERVER AUTHORITY':nav.freighter?'CARGO DECK':'AFT RACK / PORT']], serverInventory?'OPEN SERVER INVENTORY TO TRANSFER':'ON FOOT: F AT THE CARGO CONTAINER', 3);
   };
   group.snapshot = () => screens.map(screen => ({ title: screen.title, values: [...screen.values] }));
   // Asset studios can bind the same bounded-rate canvases to authored glTF quads.

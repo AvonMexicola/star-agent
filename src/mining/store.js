@@ -1,3 +1,4 @@
+import { reconcileLocalBaseStock } from '../trading/base-stock.js';
 import { ROCK_ID, ROCK_VERSION, SIDE, createDensity, encodeDensity, decodeDensity } from './volume.js';
 import { STARTER_CREDITS, STATION_SHOPS, initialShopStock } from '../station-shop.js';
 import { ShipInventory, ITEMS } from '../ship-inventory.js';
@@ -25,7 +26,7 @@ export class MiningStore {
     this.state = {
       id: ROCK_ID, version: ROCK_VERSION, revision: 0, field: createDensity(), pack: [0, 0, 0], ship: [0, 0, 0],
       economy: {credits:legacy.credits,shopStock:structuredClone(legacy.shopStock)},
-      boxes: { pack: 1, ship: 4, station: 2 }, supplies: oldSupplies, loadout: defaultLoadout(),
+      boxes: { pack: 1, ship: 4, station: 2 }, supplies: {...oldSupplies,pack:{...oldSupplies.pack,'tractor-beam-tool':1}}, loadout: defaultLoadout(),
       materials: { pack: {}, ship: {} }, progression: defaultMiningProgression(), starterConstruction: defaultStarterConstruction(),
       remote: { station: { name: 'Aeon orbital locker', kind: 'station', items: emptyItems() } }, rocks: {},
     };
@@ -76,6 +77,7 @@ export class MiningStore {
     return remote ? { id, ...remote, boxes: state.boxes[id], items: { ...emptyItems(), ...remote.items } } : null;
   }
   limits(id, state = this.state) {
+    if(id==='stratum-ore')return {resources:384,supplies:0};
     if(id==='pack'&&!state.loadout.slots.backpack)return {resources:0,supplies:0};
     if(id==='ship'&&this.manifest?.capacity.ship===0)return {resources:0,supplies:0};
     return { resources: state.boxes[id] * MINERAL_CAPACITY_PER_BOX, supplies: id === 'pack' ? 20 : id === 'ship' ? (this.manifest?.capacity.ship??2400) : state.boxes[id] * 30 };
@@ -97,6 +99,7 @@ export class MiningStore {
   }
   write(next, encodedField) {
     if (this.blocked) return false;
+    try { next=reconcileLocalBaseStock(next); } catch(error) { this.warning=error.message; return false; }
     try {
       if (!this.storage) throw Error('Browser storage unavailable');
       const rocks = Object.fromEntries(Object.entries(next.rocks).map(([id, rock]) => [id, { ...rock, field: this.encode(rock.field), encodedField: undefined }]));

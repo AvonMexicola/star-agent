@@ -1,0 +1,599 @@
+{
+ "note": "Trimmed projection of the Playwright harness report: per-step starAgent.state is reduced to the fields this record cites. Re-run scripts/promenade.config.js to regenerate the full dump.",
+ "status": "passed",
+ "browser": "151.0.7922.34",
+ "environment": {
+  "renderer": "ANGLE (ATI Technologies Inc., AMD Radeon (TM) Graphics, OpenGL 4.5.0)",
+  "viewport": [
+   1440,
+   900
+  ],
+  "buffer": [
+   1152,
+   720
+  ],
+  "renderScale": 0.8,
+  "dpr": 1
+ },
+ "errors": [],
+ "warnings": [],
+ "failedRequests": [],
+ "testErrors": [],
+ "steps": [
+  {
+   "label": "keyboard hatch control",
+   "at": "2026-09-11T05:21:47.715Z",
+   "state": {
+    "interaction": "F · OPEN HATCH & LOWER RAMP",
+    "mode": "walk",
+    "insideShip": true,
+    "position": [
+     670664.085235685,
+     438940.32097770047,
+     1490948.3236224812
+    ],
+    "stationLocal": [
+     0.1298247523145477,
+     -5.250000000006805,
+     -32.143217408874825
+    ],
+    "stationLocation": "hangar",
+    "elevator": 0,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 591,
+    "triangles": 875372
+   }
+  },
+  {
+   "label": "keyboard outside rear ramp",
+   "at": "2026-09-11T05:22:04.312Z",
+   "state": {
+    "interaction": "CARGO TERMINAL & CENTRAL HUB · AFT WALL",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670654.3577783387,
+     438940.16515156365,
+     1490951.606069695
+    ],
+    "stationLocal": [
+     0.023198647590255028,
+     -6.250000000108646,
+     -21.92505716383217
+    ],
+    "stationLocation": "hangar",
+    "elevator": 0,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 656,
+    "triangles": 902640
+   }
+  },
+  {
+   "label": "keyboard hangar lift call",
+   "at": "2026-09-11T05:22:26.193Z",
+   "state": {
+    "interaction": "F · CALL ELEVATOR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670615.9205738868,
+     438940.1757563899,
+     1490968.8773189827
+    ],
+    "stationLocal": [
+     0.012219723589760534,
+     -6.2499999999894,
+     20.214173132429504
+    ],
+    "stationLocation": "hangar",
+    "elevator": 0,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 681,
+    "triangles": 954038
+   }
+  },
+  {
+   "label": "keyboard inside station lift",
+   "at": "2026-09-11T05:22:38.007Z",
+   "state": {
+    "interaction": "F · ELEVATOR DESTINATIONS",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670612.4397644041,
+     438940.16721933184,
+     1490970.444164682
+    ],
+    "stationLocal": [
+     0.021057936464030647,
+     -6.2500000000076446,
+     24.031375624788378
+    ],
+    "stationLocation": "hangar",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 706,
+    "triangles": 965148
+   }
+  },
+  {
+   "label": "keyboard inside the promenade",
+   "at": "2026-09-11T05:22:59.823Z",
+   "state": {
+    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670270.8904150865,
+     438114.37849671545,
+     1491366.5305577095
+    ],
+    "stationLocal": [
+     -0.05954748753396988,
+     -6.25000000000594,
+     -22.06965630390856
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 260,
+    "triangles": 861994
+   }
+  },
+  {
+   "label": "keyboard-promenade-desktop",
+   "at": "2026-09-11T05:23:05.261Z",
+   "sceneMetrics": {
+    "drawCalls": 283,
+    "triangles": 954358,
+    "renderedFrames": 2184,
+    "viewport": [
+     1440,
+     900
+    ],
+    "drawingBuffer": [
+     1152,
+     720
+    ],
+    "renderScale": 0.8,
+    "dpr": 1,
+    "modalOpen": false
+   },
+   "state": {
+    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670270.8904149157,
+     438114.3784967385,
+     1491366.5305577796
+    ],
+    "stationLocal": [
+     -0.0595475113734274,
+     -6.249999999916752,
+     -22.069656119407288
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 283,
+    "triangles": 954358
+   }
+  },
+  {
+   "label": "keyboard-promenade-phone",
+   "at": "2026-09-11T05:23:06.371Z",
+   "sceneMetrics": {
+    "drawCalls": 225,
+    "triangles": 854256,
+    "renderedFrames": 2211,
+    "viewport": [
+     390,
+     844
+    ],
+    "drawingBuffer": [
+     390,
+     844
+    ],
+    "renderScale": 1,
+    "dpr": 1,
+    "modalOpen": false
+   },
+   "state": {
+    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670270.8904149076,
+     438114.3784967455,
+     1491366.530557781
+    ],
+    "stationLocal": [
+     -0.059547518655132414,
+     -6.25000000010479,
+     -22.0696561114017
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 225,
+    "triangles": 854256
+   }
+  },
+  {
+   "label": "keyboard galley frontage",
+   "at": "2026-09-11T05:25:02.881Z",
+   "state": {
+    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670274.363811994,
+     438117.6839314093,
+     1491363.998529401
+    ],
+    "stationLocal": [
+     -3.4815852920287593,
+     -6.250000000105109,
+     -26.275748220674558
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 263,
+    "triangles": 877972
+   }
+  },
+  {
+   "label": "keyboard galley aisle",
+   "at": "2026-09-11T05:26:07.824Z",
+   "state": {
+    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670274.3069242224,
+     438120.7770731178,
+     1491363.115438237
+    ],
+    "stationLocal": [
+     -6.6838412254338015,
+     -6.25000000009935,
+     -26.585859148880047
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 366,
+    "triangles": 974094
+   }
+  },
+  {
+   "label": "keyboard galley counter",
+   "at": "2026-09-11T05:26:15.819Z",
+   "state": {
+    "interaction": "F · COSMIC CHICKEN",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670273.1463828225,
+     438122.7028437023,
+     1491363.0712817488
+    ],
+    "stationLocal": [
+     -8.67754564044468,
+     -6.2499999999126175,
+     -25.545406754061176
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1500,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 266,
+    "triangles": 882582
+   }
+  },
+  {
+   "label": "keyboard-catalogue-phone",
+   "at": "2026-09-11T05:26:16.993Z",
+   "sceneMetrics": {
+    "drawCalls": 0,
+    "triangles": 0,
+    "renderedFrames": 5053,
+    "viewport": [
+     390,
+     844
+    ],
+    "drawingBuffer": [
+     390,
+     844
+    ],
+    "renderScale": 1,
+    "dpr": 1,
+    "modalOpen": true
+   },
+   "state": {
+    "interaction": "F · COSMIC CHICKEN",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670273.1463828199,
+     438122.7028437033,
+     1491363.0712817495
+    ],
+    "stationLocal": [
+     -8.677545641519673,
+     -6.250000000101297,
+     -25.5454067513326
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1482,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4,
+     "hotmeal": 1
+    },
+    "controllerArmed": false,
+    "enabled": false,
+    "drawCalls": 0,
+    "triangles": 0
+   }
+  },
+  {
+   "label": "keyboard back to the corridor",
+   "at": "2026-09-11T05:26:57.896Z",
+   "state": {
+    "interaction": "CENTRAL CONCOURSE · ELEVATORS AT REAR",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670277.9686648019,
+     438114.6020887112,
+     1491363.2837825976
+    ],
+    "stationLocal": [
+     -0.29102695486775243,
+     -6.249999999923135,
+     -29.8567981606659
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1482,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4,
+     "hotmeal": 1
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 277,
+    "triangles": 889606
+   }
+  },
+  {
+   "label": "keyboard sealed door",
+   "at": "2026-09-11T05:27:24.046Z",
+   "state": {
+    "interaction": "DECK 05 SEALED · HABITAT TERRACES ARE STILL BEING FITTED OUT",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670293.2129615286,
+     438114.3393737163,
+     1491356.5099005369
+    ],
+    "stationLocal": [
+     -0.019044378405455475,
+     -6.249999999888724,
+     -46.538198147185284
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1482,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4,
+     "hotmeal": 1
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 291,
+    "triangles": 886546
+   }
+  },
+  {
+   "label": "keyboard-sealed-door-desktop",
+   "at": "2026-09-11T05:27:26.748Z",
+   "sceneMetrics": {
+    "drawCalls": 291,
+    "triangles": 886546,
+    "renderedFrames": 6177,
+    "viewport": [
+     1440,
+     900
+    ],
+    "drawingBuffer": [
+     1152,
+     720
+    ],
+    "renderScale": 0.8,
+    "dpr": 1,
+    "modalOpen": false
+   },
+   "state": {
+    "interaction": "DECK 05 SEALED · HABITAT TERRACES ARE STILL BEING FITTED OUT",
+    "mode": "walk",
+    "insideShip": false,
+    "position": [
+     670293.2129615461,
+     438114.3393737021,
+     1491356.5099005331
+    ],
+    "stationLocal": [
+     -0.01904436370114304,
+     -6.249999999886397,
+     -46.53819816474626
+    ],
+    "stationLocation": "hub",
+    "elevator": 1,
+    "finish": "ready",
+    "docked": true,
+    "credits": 1482,
+    "warehouse": {
+     "repair": 12,
+     "ration": 80,
+     "sample": 30,
+     "scanner": 4,
+     "hotmeal": 1
+    },
+    "controllerArmed": false,
+    "enabled": true,
+    "drawCalls": 291,
+    "triangles": 886546
+   }
+  }
+ ],
+ "final": {
+  "interaction": "DECK 05 SEALED · HABITAT TERRACES ARE STILL BEING FITTED OUT",
+  "mode": "walk",
+  "insideShip": false,
+  "position": [
+   670293.2129615482,
+   438114.3393737008,
+   1491356.5099005324
+  ],
+  "stationLocal": [
+   -0.019044362350561173,
+   -6.2500000000185825,
+   -46.538198166943914
+  ],
+  "stationLocation": "hub",
+  "elevator": 1,
+  "finish": "ready",
+  "docked": true,
+  "credits": 1482,
+  "warehouse": {
+   "repair": 12,
+   "ration": 80,
+   "sample": 30,
+   "scanner": 4,
+   "hotmeal": 1
+  },
+  "controllerArmed": false,
+  "enabled": true,
+  "drawCalls": 291,
+  "triangles": 886546
+ }
+}

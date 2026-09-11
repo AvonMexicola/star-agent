@@ -1,17 +1,19 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { ROVER_LAYOUT as L } from './rover-layout.js';
-import { createRoverPhysics, roverFitsPlatform, roverSweptBounds } from './rover-physics.js';
+import { createRoverPhysics, roverFitsPlatform, roverSweptBounds, roverFootprint } from './rover-physics.js';
 import { sampleRoverSupport } from './rover-support.js';
 import { createRoverPower } from './rover-power.js';
 import { createRoverUI } from './rover-ui.js';
-import { bodyOffset } from './celestial.js';
+import { createRoverDisplays } from './rover-display.js';
+import { bodyAt, bodyOffset } from './celestial.js';
 import { MATERIAL_IDS } from './inventory/containers.js';
-import { Plasma } from './effects/energy-effects.js';
+import { RoverCuttingBeam } from './rover-cutting-beam.js';
 import { createWeaponTarget } from './effects/weapon-target.js';
 import { clipTerrainCamera } from './ship-camera.js';
 import { roverSurfaceStart } from './rover-surface-start.js';
 import { roverCarrierStart, roverCarrierClear, guardRoverCarrier } from './rover-carrier.js';
+import {garageRetrievalStatus} from './settlements/garage-policy.js';
 
 const UP=new THREE.Vector3(0,1,0),FWD=new THREE.Vector3(0,0,-1),clamp=THREE.MathUtils.clamp;
 const v=p=>new THREE.Vector3(...p);
@@ -20,26 +22,32 @@ const bounds=points=>({min:[0,1,2].map(i=>Math.min(...points.map(p=>p.getCompone
 
 /** Offline vehicle adapter. Navigation remains the sole owner of the player;
  * this hook claims its seated/access step and keeps every world pose in doubles. */
-export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip,available=()=>true}){
+export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,getShip,available=()=>true,construction=null,terrainObstacles=null}){
   const object=new THREE.Group();object.name='Meridian Burrow';object.visible=false;scene.add(object);
-  const touch=new Set(),power=createRoverPower(),beams=[new Plasma(scene),new Plasma(scene)],targetRay=createWeaponTarget({nav,mining});
+  const touch=new Set(),power=createRoverPower(),beams=[new RoverCuttingBeam(scene),new RoverCuttingBeam(scene)],targetRay=createWeaponTarget({nav,mining});
   let model=null,ready=false,error=null,spawned=false,occupied=false,phase='idle',door=0,route=[],routeIndex=0;
-  let anchor=null,anchorRotation=null,lastLiftY=4,anchorLift=null,aimYaw=0,aimPitch=-.20,held=false,keyHeld=false,trigger=false,time=0;
+  let anchorHull=null,anchor=null,anchorRotation=null,lastLiftY=4,anchorLift=null,aimYaw=0,aimPitch=-.20,held=false,keyHeld=false,trigger=false,time=0;
   let renderedOrigin=new THREE.Vector3(),message='Approach the port door to board.',lastHits=[],sampledBeams=[];
   const wheels=[],cutters=[],rays=new THREE.Raycaster();
+  let driveInput={throttle:0,steer:0,brake:0};
+  let deploying=false;
   const shipPose=()=>({position:nav.shipPosition?.clone()??nav.position.clone().sub(v(nav.layout.seatEye).applyQuaternion(nav.orientation)),quaternion:(nav.shipPosition?nav.shipOrientation:nav.orientation).clone()});
   function shipLocal(p){const s=shipPose();return p.clone().sub(s.position).applyQuaternion(s.quaternion.invert());}
   function fromShip(p){const s=shipPose();return p.clone().applyQuaternion(s.quaternion).add(s.position);}
-  const lift=()=>nav.shipId==='atlas'?nav.freighter?.lifts?.find(l=>l.id==='main'):null;
+  const carrierSystems=()=>nav.shipId==='atlas'||nav.freighter?.carrier?nav.freighter:null;
+  const carrierPrefix=()=>nav.shipId+'-';
+  const lift=()=>carrierSystems()?.lifts?.find(l=>l.id===(carrierSystems()?.carrier?.liftId??'main'))??null;
   const ramp=()=>nav.shipId==='atlas'?nav.freighter?.ramps?.find(r=>r.id==='aft'):null;
-  const carrierControl=()=>ramp()?'Atlas rear ramp':'Atlas lift';
+  const carrierControl=()=>carrierSystems()?.carrier?.controlLabel??(ramp()?'Atlas rear ramp':'Atlas lift');
   function toLocal(p){return p.clone().sub(physics.state.position).applyQuaternion(physics.state.quaternion.clone().invert());}
   function toWorld(p){return p.clone().applyQuaternion(physics.state.quaternion).add(physics.state.position);}
-  const support=point=>sampleRoverSupport(point,{freighter:nav.shipId==='atlas'?nav.freighter:null,frame:nav.shipId==='atlas'?shipPose():null});
+  const support=point=>sampleRoverSupport(point,{freighter:carrierSystems(),frame:carrierSystems()?shipPose():null,construction:construction?.sample});
   function constrain({previous,proposed,previousCorners,corners}){
-    if(nav.shipId==='atlas'&&!roverCarrierClear({previous,proposed,previousCorners,corners},nav.freighter,shipPose(),{cargoConstrain:nav.cargoConstrain}))return false;
+    if(construction&&!construction.clearPose(previous,proposed))return false;
+    if(!carrierSystems()&&nav.shipPosition&&nav.layout.flightBounds&&boxOverlap(bounds(corners.map(shipLocal)),nav.layout.flightBounds))return false;
+    if(carrierSystems()&&!roverCarrierClear({previous,proposed,previousCorners,corners},nav.freighter,shipPose(),{cargoConstrain:nav.cargoConstrain}))return false;
     const l=lift();
-    if(l){
+    if(l&&nav.shipId==='atlas'){
       const b=bounds(corners.map(shipLocal)),near=b.max[2]>-.5&&b.min[2]<10.15&&b.max[0]>-4.1&&b.min[0]<4.1;
       if(near&&b.min[1]<3.5){
         if(b.min[0]<-3.88||b.max[0]>3.88||b.min[2]<.12)return false;
@@ -57,38 +65,39 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
     const delta=proposed.position.clone().sub(previous.position),distance=delta.length();
     if(distance<1e-8)return true;
     const envelope={...roverSweptBounds(),orientation:proposed.quaternion};
-    if(nav.buildingRaycast?.(previous.position,delta.clone().normalize(),distance,envelope))return false;
+    if(!construction&&nav.buildingRaycast?.(previous.position,delta.clone().normalize(),distance,envelope))return false;
     // A grid across the body stops small rocks as well as corner obstructions.
     for(const x of [-1.15,0,1.15])for(const z of [-2.35,0,1.85])for(const height of [1.75,2.4]){
       const p=new THREE.Vector3(x,height,z).applyQuaternion(previous.quaternion).add(previous.position);
       const q=new THREE.Vector3(x,height,z).applyQuaternion(proposed.quaternion).add(proposed.position);
-      if((nav.surfaceObstacles??mining).constrainWalker(p,q).hit)return false;
+      if((terrainObstacles??nav.surfaceObstacles??mining).constrainWalker(p,q).hit)return false;
     }
     return true;
   }
   const physics=createRoverPhysics({sampleSupport:support,referenceUp:point=>{
-    const s=support(point);return s?.source.startsWith('atlas')?UP.clone().applyQuaternion(shipPose().quaternion):bodyOffset(point).normalize();
+    const s=support(point);return s?.source.startsWith(carrierPrefix())?UP.clone().applyQuaternion(shipPose().quaternion):bodyOffset(point).normalize();
   },constrain});
-  function clear(){held=false;keyHeld=false;trigger=false;touch.clear();power.state.active=false;beams.forEach(b=>b.mesh.visible=false);if(occupied)mining.budget=0;}
+  function clear(){driveInput={throttle:0,steer:0,brake:0};held=false;keyHeld=false;trigger=false;touch.clear();power.state.active=false;beams.forEach(b=>b.mesh.visible=false);if(occupied)mining.budget=0;}
   function usable(){return spawned&&ready&&available()&&nav.enabled&&nav.focused&&!document.hidden&&!document.querySelector('dialog[open]')&&!nav.travel;}
   function carrier(){
-    if(!spawned||!anchor||nav.shipId!=='atlas')return;
-    const l=lift();if(anchorLift==='main'&&l){anchor.y+=l.y-lastLiftY;}
+    if(!spawned||!anchor||nav.shipId!==anchorHull||!carrierSystems())return;
+    const l=lift();if(anchorLift===l?.id&&l){anchor.y+=l.y-lastLiftY;}
     lastLiftY=l?.y??0;const s=shipPose();physics.setPose(anchor.clone().applyQuaternion(s.quaternion).add(s.position),s.quaternion.multiply(anchorRotation),{preserveMotion:true});
   }
   function saveAnchor(){
     const ws=physics.state.wheels;
-    if(ws.every(w=>w.source?.startsWith('atlas'))){anchor=shipLocal(physics.state.position);anchorRotation=shipPose().quaternion.invert().multiply(physics.state.quaternion);lastLiftY=lift()?.y??0;}
+    if(ws.every(w=>w.source?.startsWith(carrierPrefix()))){anchorHull=nav.shipId;anchor=shipLocal(physics.state.position);anchorRotation=shipPose().quaternion.invert().multiply(physics.state.quaternion);lastLiftY=lift()?.y??0;}
     else anchor=null;
-    anchorLift=ws.every(w=>w.source==='atlas-lift:main')?'main':null;
+    const l=lift();anchorLift=l&&ws.every(w=>w.source===carrierPrefix()+'lift:'+l.id)?l.id:null;
   }
   function groundEntry(){const p=toWorld(v(L.cabin.entryGround)),probe=p.clone().addScaledVector(UP.clone().applyQuaternion(physics.state.quaternion),-1.75),s=support(probe);return s?s.point.addScaledVector(s.normal,1.75):p;}
   function nearby(){return spawned&&!occupied&&nav.mode==='walk'&&nav.position.distanceTo(groundEntry())<1.15;}
   function posePilot(){nav.position.copy(toWorld(v(L.cabin.pilotEye)));nav.orientation.copy(physics.state.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(aimPitch,aimYaw,0,'YXZ')));nav.velocity.copy(FWD).applyQuaternion(physics.state.quaternion).multiplyScalar(physics.state.speed);nav.insideShip=true;nav.roverOccupied=true;}
-  function accessBlocked(a,b){
-    if(nav.surfaceObstacles?.constrainWalker(a,b).hit)return true;
+  function accessBlocked(a,b,quaternion=physics.state.quaternion){
+    const contact=nav.surfaceObstacles?.constrainWalker(a,b);
+    if(contact?.hit&&(!contact.grounded||contact.point.clone().sub(b).projectOnPlane(UP.clone().applyQuaternion(quaternion)).length()>.02))return true;
     const delta=b.clone().sub(a),distance=delta.length();if(distance<.0001)return false;
-    const direction=delta.divideScalar(distance),up=UP.clone().applyQuaternion(physics.state.quaternion),right=new THREE.Vector3(1,0,0).applyQuaternion(physics.state.quaternion);
+    const direction=delta.divideScalar(distance),up=UP.clone().applyQuaternion(quaternion),right=new THREE.Vector3(1,0,0).applyQuaternion(quaternion);
     return [[0,0],[.12,0],[-.12,0],[0,.12],[0,-.12]].some(([x,y])=>shipRay(a.clone().addScaledVector(right,x).addScaledVector(up,y),direction,distance));
   }
   function updateAccess(dt){
@@ -116,26 +125,57 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       const end=v(link.wheelOffset).applyAxisAngle(UP,w.steer).add(v(L.wheels[index].position));end.y+=w.suspension;
       const delta=end.sub(v(link.anchor)),node=model.getObjectByName(link.node);node.quaternion.setFromUnitVectors(UP,delta.clone().normalize());node.scale.y=delta.length()/node.userData.restLength;
     }
-    model.getObjectByName('SteeringYoke').rotation.z=-physics.state.steer*.5;
     object.updateMatrixWorld(true);
   }
   function shipRay(start,direction,range){
-    if(nav.shipId!=='atlas'||start.distanceTo(shipPose().position)>50)return null;
+    if(start.distanceTo(shipPose().position)>100)return null;
     const ship=getShip();ship.updateWorldMatrix(true,true);
     const a=shipLocal(start).applyMatrix4(ship.matrixWorld),d=direction.clone().applyQuaternion(shipPose().quaternion.invert()).transformDirection(ship.matrixWorld);
     rays.set(a,d);rays.far=range;const meshes=[];ship.traverseVisible(o=>{if(o.isMesh&&o.material?.depthWrite!==false)meshes.push(o);});
     const hit=rays.intersectObjects(meshes,false)[0];return hit?{point:start.clone().addScaledVector(direction,hit.distance),distance:hit.distance}:null;
   }
   const api={object,physics,power,touch,
+    get navigationTargets(){return spawned&&ready&&available()&&!occupied&&phase==='idle'?[{id:'your-burrow',name:'Your Burrow',kind:'Mining rover',category:'ships',owned:true,parent:bodyAt(physics.state.position).id,center:physics.state.position.toArray(),radius:0}]:[];},
     get acceptInput(){return occupied&&phase==='idle'&&usable();},get occupied(){return occupied;},get busy(){return phase!=='idle';},
     get interaction(){return phase!=='idle'?'BURROW · CABIN ACCESS MOVING':occupied?`BURROW · X / F EXIT${anchor?' · Y / G '+carrierControl().toUpperCase():''}`:nearby()?'X / F · BOARD BURROW CABIN':'';},
     async spawn(){
-      await api.readyPromise;if(!ready||nav.shipId!=='atlas'||!available())return false;
+      await api.readyPromise;if(!ready||!carrierSystems()||!available())return false;
       const start=roverCarrierStart(nav.freighter);
       if(!start){nav.notify('This Atlas has no compatible rover deck. Choose Burrow mining — Selene surface in F2.');return false;}
-      clear();anchor=start.position;anchorLift=start.lift;anchorRotation=start.quaternion;lastLiftY=lift()?.y??0;spawned=true;carrier();physics.step(1/60,{brake:1});
+      clear();anchorHull=nav.shipId;anchor=start.position;anchorLift=start.lift;anchorRotation=start.quaternion;lastLiftY=lift()?.y??0;spawned=true;carrier();physics.step(1/60,{brake:1});
       if(physics.state.blocked||!physics.state.supported){spawned=false;anchor=null;nav.notify('Burrow cargo start unavailable: clear the rover parking lane.');return false;}
-      syncModel(renderedOrigin);message=ramp()?'Rover secured on Atlas cargo deck · rear ramp access.':'Rover secured on Atlas belly elevator.';return true;
+      syncModel(renderedOrigin);message=nav.shipId==='gannet'?'Burrow secured on Gannet vehicle elevator.':ramp()?'Rover secured on Atlas cargo deck · rear ramp access.':'Rover secured on Atlas belly elevator.';return true;
+    },
+    /** A garage request places the unoccupied existing vehicle, never its pilot.
+     * The caller revalidates terminal reach after the model finishes loading. */
+    async deployAt({position,quaternion,validate=()=>true}){
+      if(deploying)return {ok:false,message:'A vehicle request is already in progress.'};
+      deploying=true;
+      try{
+        await api.readyPromise;
+        if(!available()||!validate())return {ok:false,message:'Return to the garage terminal to retrieve Burrow.'};
+        const policy=garageRetrievalStatus(api.state);if(!policy.ok)return policy;
+        const pose={position:position.clone(),quaternion:quaternion.clone()};
+        if(nav.shipPosition&&nav.layout.flightBounds&&boxOverlap(bounds(roverFootprint(pose.position,pose.quaternion).map(shipLocal)),nav.layout.flightBounds))return {ok:false,message:'Move the parked ship clear of the garage bay first.'};
+        if(spawned&&physics.state.position.distanceTo(position)<1)return {ok:true,message:'Burrow is already in the bay. Approach its port-side door.'};
+        if(construction&&!construction.clearPose(pose))return {ok:false,message:'Garage bay obstructed. Clear the vehicle lane before retrieval.'};
+        const world=p=>v(p).applyQuaternion(pose.quaternion).add(pose.position),obstacles=terrainObstacles??nav.surfaceObstacles??mining;
+        for(const x of [-1.4,0,1.4])for(const y of [1.75,2.4]){
+          if(obstacles.constrainWalker(world([x,y,2.5]),world([x,y,-3])).hit||shipRay(world([x,y,2.5]),FWD.clone().applyQuaternion(pose.quaternion),5.5))return {ok:false,message:'Garage bay obstructed. Clear rocks, cargo or the parked ship first.'};
+        }
+        const entry=[L.cabin.entryGround,...L.cabin.entryRoute].map(world);
+        if(entry.some((p,i)=>i&&accessBlocked(entry[i-1],p,pose.quaternion)))return {ok:false,message:'Clear the port-side boarding path before retrieval.'};
+        const trial=createRoverPhysics({...pose,sampleSupport:support,referenceUp:p=>bodyOffset(p).normalize(),constrain});
+        trial.step(1/60,{brake:1});
+        if(!trial.state.supported||trial.state.blocked)return {ok:false,message:'Garage bay has no clear four-wheel support.'};
+        if(!validate())return {ok:false,message:'Garage request cancelled. Return to the terminal.'};
+        clear();anchor=null;anchorHull=null;anchorLift=null;anchorRotation=null;
+        physics.setPose(trial.state.position,trial.state.quaternion);physics.step(1/60,{brake:1});
+        spawned=true;phase='idle';door=0;route=[];routeIndex=0;
+        syncModel(renderedOrigin);message='Garage deployment ready · approach the port-side door to board.';
+        nav.keys.clear();nav.gamepad.suspend();
+        return {ok:true,message:'Burrow is ready in the bay. Board at the port-side door, then drive down the outer ramp.'};
+      }finally{deploying=false;}
     },
     /** Explicit dev start only. Ordinary boarding still follows the door/steps. */
     async spawnSurface({target=mining.ground.position}={}){
@@ -168,7 +208,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
         return true;
       }
       if(!occupied&&!nearby())return false;
-      if(nav.cabinFlight||nav.spaceParked){nav.notify('Land Atlas before using its ground vehicle.');return true;}
+      if(nav.cabinFlight||nav.spaceParked){nav.notify('Land the carrier before using its ground vehicle.');return true;}
       if(Math.abs(physics.state.speed)>.2){nav.notify('Brake to a stop before opening the cabin.');return true;}
       const l=lift();if(anchor&&l&&Math.abs(l.y-l.target)>.001){nav.notify('Wait for the cargo lift to stop.');return true;}
       const waypoints=occupied?[nav.position.clone(),...L.cabin.entryRoute.slice(0,-1).reverse().map(p=>toWorld(v(p))),groundEntry()]:[nav.position.clone(),groundEntry(),...L.cabin.entryRoute.map(p=>toWorld(v(p)))];
@@ -182,6 +222,11 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
     key(event){if(!occupied&&phase==='idle')return false;if(event.code==='KeyT'&&api.acceptInput)keyHeld=true;if(event.code==='KeyF')api.interact();if(event.code==='KeyG')api.toggleLift();if(event.code==='KeyI'){event.stopImmediatePropagation();api.openCargo();}return true;},
     toggleLift(){
       if(!spawned||!anchor||!occupied||phase!=='idle'||!usable())return false;
+      if(carrierSystems()?.carrier){
+        if(Math.abs(physics.state.speed)>.1){nav.notify('Brake before operating the vehicle elevator.');return false;}
+        const result=nav.freighter.operate(nav.freighter.carrier.control,null,{powered:nav.powered,inFlight:nav.cabinFlight||nav.spaceParked||!nav.shipPosition});
+        clear();nav.keys.clear();nav.gamepad.suspend();nav.notify(result.reason);return result.ok;
+      }
       if(ramp()){
         if(Math.abs(physics.state.speed)>.1){nav.notify('Brake to a stop before operating the rear ramp.');return false;}
         const result=nav.freighter.operate('ramp:aft',shipLocal(nav.position),{powered:nav.powered,inFlight:nav.cabinFlight||nav.spaceParked||!nav.shipPosition});
@@ -192,7 +237,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       if(Math.abs(physics.state.speed)>.1||!api.fitsLift()){nav.notify('Park the entire rover inside the lift safety lines before moving it.');return false;}
       const moved=nav.freighter.toggle('main',null);clear();nav.keys.clear();nav.gamepad.suspend();nav.notify(moved?'Atlas belly elevator moving. Parking brake engaged.':'Wait for the elevator to stop.');return moved;
     },
-    fitsLift(){const l=lift();return Boolean(l&&roverFitsPlatform(physics.state.position,physics.state.quaternion,{...l,...shipPose(),ceiling:9.2}));},
+    fitsLift(){const l=lift();return Boolean(l&&roverFitsPlatform(physics.state.position,physics.state.quaternion,{...l,...shipPose(),ceiling:carrierSystems()?.carrier?.ceiling??l.ceiling??9.2}));},
     openCargo(){if(spawned&&(occupied||nearby())){clear();inventoryUI.openStorage(L.cargo.id);return true;}return false;},
     step(dt,pad){
       if(!spawned)return false;carrier();
@@ -203,13 +248,14 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       // Occupied navigation returns before the normal walking lift step.
       if(anchor&&nav.freighter&&nav.shipPosition&&nav.powered){nav.freighter.update(dt,null);carrier();}
       if(phase!=='idle'){updateAccess(dt);return true;}
-      const l=lift(),moving=anchor&&(ramp()?.moving||l&&Math.abs(l.y-l.target)>.001);
+      const l=lift(),moving=anchor&&(carrierSystems()?.moving||ramp()?.moving||l&&Math.abs(l.y-l.target)>.001);
       const axis=(a,b,n=0)=>clamp(Number(nav.keys.has(a))-Number(nav.keys.has(b))+n,-1,1);
       // The shared stick is radially normalized. Full diagonal input should
       // still reach the wheel's steering stop while supplying forward drive.
       const throttle=axis('KeyW','KeyS',pad.forward+Number(touch.has('forward'))-Number(touch.has('reverse'))),steer=axis('KeyD','KeyA',pad.strafe*1.5+Number(touch.has('right'))-Number(touch.has('left')));
       api.look((axis('ArrowLeft','ArrowRight',pad.yaw)+Number(touch.has('aimLeft'))-Number(touch.has('aimRight')))*dt*.6,(axis('ArrowUp','ArrowDown',pad.pitch)+Number(touch.has('up'))-Number(touch.has('down')))*dt*.6);
-      physics.step(dt,{throttle:moving?0:throttle,steer:moving?0:steer,brake:moving||pad.brake||nav.keys.has('KeyX')||touch.has('brake')?1:0});saveAnchor();posePilot();
+      driveInput={throttle:moving?0:throttle,steer:moving?0:steer,brake:moving||pad.brake||nav.keys.has('KeyX')||touch.has('brake')?1:0};
+      physics.step(dt,driveInput);saveAnchor();posePilot();
       trigger=Boolean(held||keyHeld||touch.has('mine')||nav.gamepad.armed&&pad.mine>.1);
       return true;
     },
@@ -229,7 +275,7 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
         const start=c.muzzle.getWorldPosition(new THREE.Vector3()).add(origin),direction=FWD.clone().applyQuaternion(c.muzzle.getWorldQuaternion(new THREE.Quaternion())).normalize();
         let hit=firing?targetRay(start,direction,origin,L.mining.range):null;const wall=firing?shipRay(start,direction,hit?.distance??L.mining.range):null;if(wall)hit=wall;
         const end=hit?.point??start.clone().addScaledVector(direction,L.mining.range);
-        beams[i].mesh.visible=false;if(firing)beams[i].set(start,end,.032,origin,time,.95);
+        beams[i].mesh.visible=false;if(firing)beams[i].set(start,end,origin,time,{hit:Boolean(hit),normal:hit?.normal,reducedMotion:effects.reducedMotion});
         sampledBeams.push({start:start.toArray(),direction:direction.toArray(),end:end.toArray(),active:firing,rock:hit?.rock?.rockId??null});
         if(firing&&hit?.rock){
           mining.onMine({point:hit.point.clone(),normal:hit.normal?.clone(),target:hit.rock,dt,rate:L.mining.cutRatePerBeam,destination:L.cargo.id,direction});lastHits.push(hit.rock.rockId);
@@ -239,16 +285,16 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       if(!firing)mining.budget=0;
       const survey=toLocal(mining.position),bearing=Math.atan2(survey.x,-survey.z)*180/Math.PI;
       const surveyHint=`${mining.targetName} · ${Math.hypot(survey.x,survey.z).toFixed(0)} m · ${Math.abs(bearing).toFixed(0)}° ${bearing<0?'left':'right'}`;
-      message=phase!=='idle'?'Cabin access moving…':!occupied?'Approach the port door to board.':anchor?`Atlas cargo deck · Y / G operates ${carrierControl()}`:physics.state.blocked?`Brake held · ${physics.state.reason==='collision'?'obstacle ahead':physics.state.reason}`:power.state.depleted?'Cutter charge depleted · release trigger to recharge':lastHits.length?'Twin cutters active · ore collected into rover bins':mining.store.freeFor?.(L.cargo.id)<.001?'Ore bins full · View / I opens storage':surveyHint;
+      message=phase!=='idle'?'Cabin access moving…':!occupied?'Approach the port door to board.':anchor?`${nav.shipId==='gannet'?'Gannet vehicle bay':'Atlas cargo deck'} · Y / G operates ${carrierControl()}`:physics.state.blocked?`Drive blocked · ${{collision:'obstacle',unsupported:'no wheel support',slope:'slope too steep',step:'terrain step',suspension:'suspension limit'}[physics.state.reason]??physics.state.reason}`:driveInput.brake?'Brake held · release keyboard X / controller LT to drive':power.state.depleted?'Cutter charge depleted · release trigger to recharge':lastHits.length?'Twin cutters active · ore collected into rover bins':mining.store.freeFor?.(L.cargo.id)<.001?'Ore bins full · View / I opens storage':surveyHint;
       ui.update();document.body.classList.toggle('rover-occupied',occupied);
-      if(screen){const ctx=screen.getContext('2d');ctx.fillStyle='#091c20';ctx.fillRect(0,0,512,224);ctx.fillStyle='#b6efd1';ctx.font='20px monospace';ctx.fillText('MERIDIAN / BURROW',18,30);ctx.font='bold 40px monospace';ctx.fillText(`${Math.abs(physics.state.speed).toFixed(1)} m/s`,18,85);ctx.font='23px monospace';ctx.fillText(`CUT ${Math.round(power.state.charge*100)}%`,18,128);ctx.fillText(`ORE ${api.state.mass.toFixed(2)} / 96 kg`,18,172);ctx.font='15px monospace';ctx.fillText(anchor?'ATLAS CARGO / PARKING BRAKE':'SURFACE DRIVE / TWIN CUTTER',18,190);screenTexture.needsUpdate=true;}
+      displays?.update(dt,api.state);
     },
     camera(camera,clipShip){
       if(!occupied&&phase==='idle')return;
       camera.position.copy(nav.position);camera.orientation.copy(nav.orientation);camera.active=false;
       if(phase!=='idle'||!camera.playerExternal)return;
       const up=UP.clone().applyQuaternion(physics.state.quaternion),target=toWorld(new THREE.Vector3(0,1,-.6));
-      let end=toWorld(new THREE.Vector3(3.0,4.0,6.5));if(anchor&&clipShip)end=clipShip(nav.position,end);end=clipTerrainCamera(nav.position,end);
+      let end=toWorld(new THREE.Vector3(3.0,4.0,6.5));if(clipShip)end=clipShip(nav.position,end);end=clipTerrainCamera(nav.position,end);
       if(end.distanceTo(nav.position)<2)return;
       camera.position.copy(end);camera.orientation.setFromRotationMatrix(new THREE.Matrix4().lookAt(end.clone().sub(target),new THREE.Vector3(),up));camera.active=true;
     },
@@ -262,20 +308,21 @@ export function createMiningRover({scene,canvas,nav,mining,effects,inventoryUI,g
       return enter<leave&&leave>0&&enter<1?previous.clone():proposed;
     },
     get audioMining(){const b=sampledBeams.find(b=>b.active);return b?{active:true,start:v(b.start),end:v(b.end),hit:Boolean(b.rock)}:null;},
-    get state(){const container=mining.store.container(L.cargo.id);return {name:L.name,ready,error,spawned,occupied,busy:phase!=='idle',phase,door,near:nearby(),aboard:Boolean(anchor),carrierControl:carrierControl(),fitsLift:spawned&&api.fitsLift(),message,charge:power.state.charge,cutSeconds:power.state.cutSeconds,beaming:sampledBeams.filter(b=>b.active).length,mass:container?MATERIAL_IDS.reduce((s,id)=>s+(container.items[id]??0),0):0,speed:physics.state.speed,position:physics.state.position.toArray(),quaternion:physics.state.quaternion.toArray(),local:spawned?shipLocal(physics.state.position).toArray():null,wheels:physics.state.wheels.map(w=>({...w,contact:w.contact?.toArray(),normal:w.normal?.toArray()})),distance:physics.state.distance,blocked:physics.state.blocked,reason:physics.state.reason,beamPoses:sampledBeams,hitIds:lastHits};},
+    get state(){const container=mining.store.container(L.cargo.id);return {name:L.name,ready,error,spawned,occupied,busy:phase!=='idle',phase,door,near:nearby(),aboard:Boolean(anchor),carrierControl:carrierControl(),fitsLift:spawned&&api.fitsLift(),message,charge:power.state.charge,cutSeconds:power.state.cutSeconds,beaming:sampledBeams.filter(b=>b.active).length,mass:container?MATERIAL_IDS.reduce((s,id)=>s+(container.items[id]??0),0):0,speed:physics.state.speed,controls:{...driveInput},position:physics.state.position.toArray(),quaternion:physics.state.quaternion.toArray(),local:spawned?shipLocal(physics.state.position).toArray():null,wheels:physics.state.wheels.map(w=>({...w,contact:w.contact?.toArray(),normal:w.normal?.toArray()})),distance:physics.state.distance,blocked:physics.state.blocked,reason:physics.state.reason,beamPoses:sampledBeams,hitIds:lastHits};},
   };
-  const ui=createRoverUI(api);let screen=null,screenTexture=null;
+  const ui=createRoverUI(api);let displays=null;
   api.readyPromise=new GLTFLoader().loadAsync('/models/mining-rover.glb').then(gltf=>{
-    model=gltf.scene;const required=['CabinDoor','BoardingSteps','SteeringYoke','RoverDisplay',...L.links.map(l=>l.node),...L.wheels.flatMap(w=>[w.node,'Suspension_'+w.id,w.steer||'Axle_'+w.id]),...L.cutters.flatMap(c=>[c.pivot,c.muzzle])];
+    model=gltf.scene;const required=['CabinDoor','BoardingSteps','RoverDisplay',...L.links.map(l=>l.node),...L.wheels.flatMap(w=>[w.node,'Suspension_'+w.id,w.steer||'Axle_'+w.id]),...L.cutters.flatMap(c=>[c.pivot,c.muzzle])];
     for(const name of required)if(!model.getObjectByName(name))throw new Error('Missing rover mechanism '+name);
     object.add(model);model.traverse(o=>{if(o.isMesh){const materials=Array.isArray(o.material)?o.material:[o.material];o.castShadow=materials.some(m=>!m.transparent||m.alphaTest>0);o.receiveShadow=true;}});
     for(const w of L.wheels){const s=model.getObjectByName('Suspension_'+w.id);wheels.push({spin:model.getObjectByName(w.node),steer:model.getObjectByName(w.steer||'Axle_'+w.id),suspension:s,baseY:s.position.y});}
     for(const c of L.cutters)cutters.push({pivot:model.getObjectByName(c.pivot),muzzle:model.getObjectByName(c.muzzle)});
-    screen=document.createElement('canvas');screen.width=512;screen.height=224;screenTexture=new THREE.CanvasTexture(screen);screenTexture.colorSpace=THREE.SRGBColorSpace;
-    const display=new THREE.Mesh(new THREE.PlaneGeometry(.55,.235),new THREE.MeshBasicMaterial({map:screenTexture}));display.position.z=.008;model.getObjectByName('RoverDisplay').add(display);
+    displays=createRoverDisplays(model);
     ready=true;return model;
   }).catch(e=>{error=e.message;nav.notify('Burrow unavailable: '+error);return null;});
-  guardRoverCarrier(nav.freighter,()=>({state:physics.state,frame:shipPose(),spawned,busy:phase!=='idle'}));
+  const guarded=new WeakSet();
+  api.bindCarrier=()=>{const systems=carrierSystems();if(!systems||guarded.has(systems))return;guarded.add(systems);guardRoverCarrier(systems,()=>({state:physics.state,frame:shipPose(),spawned,busy:phase!=='idle'}));};
+  api.bindCarrier();
   inventoryUI.registerContainer({id:L.cargo.id,name:L.cargo.name,kind:'ship',boxes:L.cargo.boxes,available:()=>spawned&&(occupied||nearby())});
   canvas.addEventListener('pointerdown',e=>{if(e.button===0&&nav.locked&&api.acceptInput)held=true;});
   document.addEventListener('keyup',e=>{if(e.code==='KeyT')keyHeld=false;});

@@ -1,0 +1,22 @@
+{
+  "environment": "v26.7.0",
+  "scope": "one actual hero ring, 360 varied swept paths, 20 repetitions; CPU timing during browser work, not an FPS claim",
+  "before": {
+    "buildMs": 81.84342800000002,
+    "heapBytes": 8856536,
+    "queries": 7200,
+    "hits": 5920,
+    "medianMs": 0.010400000000004184,
+    "p95Ms": 0.02799300000000926,
+    "meanMs": 0.012551875000000214
+  },
+  "after": {
+    "buildMs": 90.91542800000002,
+    "heapBytes": 18607248,
+    "queries": 7200,
+    "hits": 2880,
+    "medianMs": 0.021650999999906162,
+    "p95Ms": 0.042881000000022595,
+    "meanMs": 0.02159025152777704
+  }
+}

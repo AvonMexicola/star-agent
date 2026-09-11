@@ -10,7 +10,7 @@ test('water, ground materials and all forest LODs render without shader errors',
   await page.goto('/?intro=0&seed=7291&debug=1');
   await page.waitForFunction(() => window.starAgent?.state.ready);
   await page.evaluate(() => window.starAgent.setRenderScale(.55));
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
   const backend = await page.evaluate(() => {
     const gl = document.querySelector('canvas').getContext('webgl2');
     const ext = gl.getExtension('WEBGL_debug_renderer_info');

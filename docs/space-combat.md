@@ -1,21 +1,41 @@
 # Space patrol combat
 
-This first combat loop runs offline in the current integrated game. It uses the
+The combat loop runs offline in the current integrated game. It uses the
 existing Nomad 02 and Kestrel GLBs, camera-relative rendering, shared ship weapons
 and controller dialog/input router. No new external services or assets are needed.
 
 ## Play
 
-1. Start in orbit with Nomad, Kestrel or Atlas in the local ship/location launcher.
-2. Open **Patrol console** on screen or **Menu → Contracts**. The physical
-   hangar cargo terminal also has a Security contracts button. Accept the patrol.
-3. Follow the amber signal marker. From open space it is 3 km ahead; at the station
-   dispatch places it 6 km beyond the approach. Regular flight reaches it without
-   teleporting. Contacts activate within 1.1 km of the signal.
-4. Destroy the Nomad raider and Kestrel escort. Both intercept, make firing passes,
-   break away at close range, and return to the patrol area if pulled too far out.
-5. Open the console and **File combat report**. The report lists both kills and
-   increments the session's completed patrols. You can then accept another patrol.
+1. Fly an armed Nomad, Kestrel or Atlas to Aeon, Selene, Pyre, Miasma or
+   Selene's asteroid belt. Ordinary flight and map travel both work. The local
+   launcher also supplies explicit location starts for testing.
+2. Open **Patrol console** or **Menu → Contracts**. Choose **Easy**, **Standard**
+   or **Hard**; the brief shows the actual local enemy roster and wave count.
+3. **Accept patrol**, resume, and follow the amber beacon. In clear orbit it is
+   3 km ahead; surface dispatch puts it 30 km above the local terrain. Climb and
+   align with the marker before accelerating. Station dispatch remains beyond
+   the shipping lanes. Belt dispatch uses a clear lane above the asteroid plane.
+   Acceptance never moves your ship. Contacts activate within 1.1 km.
+4. Destroy the advertised flight. Hard missions bring a second wave after a
+   ten-second warning. Stay within 9 km of the beacon while shields recharge.
+5. Open **Contracts → File combat report**. The report records location,
+   difficulty, kills, waves, active sortie time, shots, hits and hull at completion.
+   The last three reports are shown; twelve are retained for this session.
+
+| Region | Easy · 1 ship | Standard · 2 ships | Hard · 2 + 3 ships |
+|---|---|---|---|
+| Aeon orbit | Shipping lane sweep | Outer perimeter patrol | Orbital blockade |
+| Selene orbit | Lunar picket | Far-side intercept | Silent horizon |
+| Pyre orbit | Ash runner | Cinder patrol | Ember siege |
+| Miasma orbit | Haze watcher | Veiled ambush | Toxic cordon |
+| Selene asteroid belt | Claim jumper | Belt interdiction | Broken ring |
+
+Easy encounters have 65% integrity, slower turns and lower firing pressure.
+Standard uses full ship integrity and normal pilots. Hard uses 120% integrity,
+faster pilots and higher firing pressure. Weapon damage still comes from the
+actual fitted gun size; difficulty changes NPC firing intervals. Selene's pickets
+favor interceptors, Miasma's patrol uses two raiders, and Pyre's standard flight
+uses two Kestrels. Each Hard sortie has its own roster, listed before acceptance.
 
 | Action | Keyboard / pointer | Standard controller |
 |---|---|---|
@@ -26,7 +46,7 @@ and controller dialog/input router. No new external services or assets are neede
 | Fly-by-wire / unlocked | V | R3 |
 | Full braking | Hold X | Hold LT / L2 |
 | Weapon | 1 pulse, 2 solar lance, 3 singularity | Menu → Ship → Ship weapon |
-| Next hostile | Tab or Next target button | Menu → Ship → Next hostile target |
+| Next hostile | Next target button or Esc → Ship | Menu → Ship → Next hostile target |
 | Recover after combat loss | Enter or console recovery button | A / ✕, or Menu → Contracts → Recover |
 | Abandon | Console → Abandon patrol | Same console action |
 
@@ -52,11 +72,11 @@ remain separate from these combat hitpoints.
 Player and NPC hulls carry the [sized Meridian guns](ship-weapons.md). NPC
 mechanisms are stowed; actual barrel poses drive their fixed-bore shots. Raise
 landing gear before player fire. Missiles, squad coordination, component damage,
-wreck salvage, player/NPC ship collisions, mission rewards and persistence are
+wreck salvage, player/NPC ship collisions, NPC asteroid/terrain avoidance, credit or cargo rewards and persistence are
 not implemented. Combat is offline;
 multiplayer keeps server authority and does not run this NPC simulation. Contracts,
 reports and combat integrity reset on reload. Opening a dialog or losing focus
-pauses combat. Leaving the engagement, boarding or engaging travel abandons it.
+pauses combat. Leaving the engagement, boarding or engaging travel abandons it. A ship change, crash or multiplayer connection cancels an active sortie. A completed report keeps the finish state even if you fire, repair or switch ships before filing it.
 
 ## Verification
 
@@ -81,3 +101,11 @@ close-up NPC inspection. Those images are visual fixtures, not controller-route
 evidence. Renderer counters and browser/backend details accompany the captures in
 `/tmp/star-agent-combat-evidence/`. The QA record distinguishes verification from
 independent visual approval.
+
+
+Regional encounter checks use `scripts/enemy-encounters.config.js` on owned port
+5398. Its production-game routes select a difficulty through the real controller
+menu, steer to the beacon, fight, inspect the report and return to flight. The
+fixture reads debug state for feedback; it changes only injected Gamepad inputs.
+Keyboard and native touch cases cover the new selection/accept/abandon controls.
+See [regional encounter QA](qa/enemy-encounters.md) for actual results and limits.

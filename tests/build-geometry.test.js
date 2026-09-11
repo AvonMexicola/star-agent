@@ -109,7 +109,7 @@ test('polished exports retain concrete vertex wear, shared status emitters and b
   }});
   if(concrete){assert.ok(max-min>.05,`${id} spatial wear variation`);if(PIECES[id].roofShape)assert.ok(materials.has('EdgeSteel'),`${id} passive roof coping`);else{assert.ok(materials.has('WhiteArmour'));assert.ok(materials.has('MintStatus'));}}
   if(['mainframe','doorway'].includes(id)){const status=json.materials.find(m=>m.name==='MintStatus');assert.ok(status.emissiveFactor.some(v=>v>0),`${id} authored light diffuser`);}
-  assert.ok(json.materials.length<=6,id);assert.ok(json.meshes.length<=(id==='doorway'?10:5),id);
+  assert.ok(json.materials.length<=6,id);assert.ok(json.meshes.length<=(id==='doorway'?10:id==='foundation-strut'?9:5),id);
  }
 });
 

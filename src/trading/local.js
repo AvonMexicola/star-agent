@@ -1,4 +1,6 @@
-import { emptyCommerce,ensureAccount,normalizeCommerce,commerceCommand } from './model.js';
+import {normalizePirateMarket} from '../pirate-compound/market.js';
+import { registerBase } from './base-site.js';
+import { emptyCommerce,ensureAccount,validCommerce,normalizeSettlementMarkets,commerceCommand,shipKey } from './model.js';
 import { POST_COST,tradeSite } from './sites.js';
 import * as THREE from 'three';
 export const LOCAL_TRADER='local-player';
@@ -9,7 +11,7 @@ export class LocalTrading {
     if(store.blocked){this.error=store.warning;return;}
     try{
       const previous=store.state.commerce;
-      let next=Object.hasOwn(store.state,'commerce')?normalizeCommerce(previous):emptyCommerce();
+      let next=normalizePirateMarket(normalizeSettlementMarkets(Object.hasOwn(store.state,'commerce')?previous:emptyCommerce()));
       if(!next.accounts[LOCAL_TRADER]){next=structuredClone(next);ensureAccount(next,LOCAL_TRADER,store.state.economy.credits);}
       // One normalizing save, including initial stock, before quoting. A read of
       // an exhausted market never creates fresh inventory or writes a new save.
@@ -19,12 +21,23 @@ export class LocalTrading {
   get state(){
     return this.error?this.unavailable:this.store.state.commerce??this.unavailable;
   }
+  registerHull(hull){
+    if(!['stratum','gannet'].includes(hull))return true;
+    if(this.error||this.store.blocked)return false;
+    const id=shipKey(LOCAL_TRADER,hull);if(this.state.ships[id])return true;
+    const s=structuredClone(this.state);s.ships[id]={id,owner:LOCAL_TRADER,hull,crates:[]};
+    if(!validCommerce(s))return false;
+    return this.store.write({...this.store.state,commerce:s});
+  }
   command(m,ctx){
     if(this.error||this.store.blocked)throw new Error(this.error||this.store.warning);
     const s=structuredClone(this.state);s.accounts[LOCAL_TRADER].credits=this.store.state.economy.credits;
-    const result=commerceCommand(s,LOCAL_TRADER,m,ctx);if(result.replayed)return result;
+    const result=commerceCommand(s,LOCAL_TRADER,m,{...ctx,registerBase:(state,owner,command)=>registerBase(state,owner,command,{nav:ctx.nav,getContainer:id=>this.store.container(id)})});if(result.replayed)return result;
     let next={...this.store.state,commerce:result.state,economy:{...this.store.state.economy,credits:result.state.accounts[LOCAL_TRADER].credits}};
     if(result.resourceDelta){const items=this.store.container(m.source??'pack').items;next=this.store.withItems(next,m.source??'pack',{...items,[result.resource]:items[result.resource]+result.resourceDelta});}
+    if(['base-deposit','base-withdraw','buy'].includes(m.op)){
+      const t=result.state.terminals[m.terminal];if(t?.base&&!t.base.shared)for(const [id,c]of Object.entries(t.base.storage))next=this.store.withItems(next,id,{...c.items});
+    }
     if(!this.store.write(next))throw new Error(this.store.warning);return result;
   }
   deploy(nav){

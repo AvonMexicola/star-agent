@@ -73,9 +73,12 @@ export class RockCollision {
       let clearance=Infinity,normal=null;
       for(const triangle of triangles){const closestPair=closest(triangle,a,b);if(closestPair.distance-radius<clearance){clearance=closestPair.distance-radius;normal=closestPair.normal;}}
       if(clearance<.001){
-        hit=true;grounded ||= normal.y>.55;
-        if(++contacts>4)break;
-        const into=motion.dot(normal);if(into<0)motion.addScaledVector(normal,-into);
+        // Contact alone does not obstruct separating or tangent motion. The
+        // rover rejects blocked sweeps instead of adopting the capsule's slide;
+        // reporting every near-contact as a hit trapped it when reversing.
+        const into=motion.dot(normal);hit ||= into<0;grounded ||= normal.y>.55;
+        if(++contacts>4){hit=true;break;}
+        if(into<0)motion.addScaledVector(normal,-into);
         start.addScaledVector(normal,.003-clearance);target.copy(start).add(motion);
       }else{
         const advance=Math.min(length,clearance*.9);start.addScaledVector(motion,advance/length);

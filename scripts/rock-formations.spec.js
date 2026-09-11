@@ -36,7 +36,7 @@ test('seeded formations render during descent and on all four surfaces',async({p
  await page.waitForFunction(()=>window.starAgent.state.rockMaterial.ready);
  expect(await page.evaluate(()=>window.starAgent.state.rockMaterial.error)).toBeNull();
  expect(assets.length).toBe(3);expect(assets.every(a=>a.status===200)).toBe(true);
- await page.keyboard.press('Tab');
+ await page.keyboard.press('Shift+Tab');
  for(const c of cases){
   for(const altitude of (c.body==='miasma'?[350,4]:[4])){
    await page.evaluate(({c,altitude})=>{

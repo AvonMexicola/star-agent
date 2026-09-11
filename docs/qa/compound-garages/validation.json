@@ -1,0 +1,236 @@
+{
+  "runtime": "2e686db",
+  "qa": {
+    "startedAt": "2026-09-08T20:13:21.771453+00:00",
+    "head": "9b6a7dea9bc3c1e67763cf7b265c9cdfdee02c3f",
+    "status": "",
+    "command": [
+      "npm",
+      "run",
+      "test:browser",
+      "--",
+      "-c",
+      "scripts/compound-garages.config.js",
+      "--grep",
+      "."
+    ],
+    "browser": "/usr/bin/chromium",
+    "backend": "ANGLE gl",
+    "publicDeployment": false,
+    "finishedAt": "2026-09-08T20:20:47.756233+00:00",
+    "headAfter": "9b6a7dea9bc3c1e67763cf7b265c9cdfdee02c3f",
+    "statusAfter": "",
+    "exitCode": 0
+  },
+  "journey": {
+    "browser": "151.0.7922.173",
+    "graphics": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "vendor": "Google Inc. (AMD)",
+      "drawCalls": 2404,
+      "triangles": 2328792,
+      "renderResolution": {
+        "automatic": true,
+        "fullscreen": false,
+        "scale": 1,
+        "pixelRatio": 1,
+        "width": 390,
+        "height": 844
+      },
+      "fpsSample": 25,
+      "performanceAcceptance": false
+    },
+    "errors": [],
+    "warnings": [],
+    "controller": "Injected standard Gamepad, physical land/walk/board/drive/inventory/return; no pose or save mutation.",
+    "physicalDevice": false
+  },
+  "retained": {
+    "mass": 0,
+    "charge": 0.9794458333333342
+  },
+  "worlds": [
+    {
+      "body": "aeon",
+      "before": {
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "drawCalls": 2713,
+        "triangles": 1944091,
+        "fps": 32,
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "after": {
+        "browser": "151.0.7922.173",
+        "graphics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+          "vendor": "Google Inc. (AMD)",
+          "drawCalls": 3076,
+          "triangles": 1995205,
+          "renderResolution": {
+            "automatic": true,
+            "fullscreen": true,
+            "scale": 1,
+            "pixelRatio": 1,
+            "width": 1440,
+            "height": 900
+          },
+          "fpsSample": 25,
+          "performanceAcceptance": false
+        },
+        "errors": [],
+        "warnings": [],
+        "artPoseOnly": true
+      }
+    },
+    {
+      "body": "selene",
+      "before": {
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "drawCalls": 2345,
+        "triangles": 2076028,
+        "fps": 27,
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "after": {
+        "browser": "151.0.7922.173",
+        "graphics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+          "vendor": "Google Inc. (AMD)",
+          "drawCalls": 2591,
+          "triangles": 2101744,
+          "renderResolution": {
+            "automatic": true,
+            "fullscreen": true,
+            "scale": 1,
+            "pixelRatio": 1,
+            "width": 1440,
+            "height": 900
+          },
+          "fpsSample": 22,
+          "performanceAcceptance": false
+        },
+        "errors": [],
+        "warnings": [],
+        "artPoseOnly": true
+      }
+    },
+    {
+      "body": "pyre",
+      "before": {
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "drawCalls": 2457,
+        "triangles": 1658168,
+        "fps": 28,
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "after": {
+        "browser": "151.0.7922.173",
+        "graphics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+          "vendor": "Google Inc. (AMD)",
+          "drawCalls": 2639,
+          "triangles": 1691780,
+          "renderResolution": {
+            "automatic": true,
+            "fullscreen": true,
+            "scale": 1,
+            "pixelRatio": 1,
+            "width": 1440,
+            "height": 900
+          },
+          "fpsSample": 28,
+          "performanceAcceptance": false
+        },
+        "errors": [],
+        "warnings": [],
+        "artPoseOnly": true
+      }
+    },
+    {
+      "body": "miasma",
+      "before": {
+        "backend": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "drawCalls": 2841,
+        "triangles": 5120434,
+        "fps": 21,
+        "resolution": {
+          "automatic": true,
+          "fullscreen": true,
+          "scale": 1,
+          "pixelRatio": 1,
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "after": {
+        "browser": "151.0.7922.173",
+        "graphics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+          "vendor": "Google Inc. (AMD)",
+          "drawCalls": 3104,
+          "triangles": 5155382,
+          "renderResolution": {
+            "automatic": true,
+            "fullscreen": true,
+            "scale": 1,
+            "pixelRatio": 1,
+            "width": 1440,
+            "height": 900
+          },
+          "fpsSample": 19,
+          "performanceAcceptance": false
+        },
+        "errors": [],
+        "warnings": [],
+        "artPoseOnly": true
+      }
+    }
+  ],
+  "seed": 7291,
+  "epoch": 1788876000000,
+  "physicalDevice": false,
+  "independentArtAcceptance": false,
+  "performanceAcceptance": false,
+  "rawEvidence": "/home/cees/projects/star-agent/.worktrees/compound-garages/test-results/garage-03"
+}

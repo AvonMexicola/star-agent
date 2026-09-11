@@ -10,6 +10,19 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {readFile} from 'node:fs/promises';
 
 const worldPromise=createWorld();
+
+test('authoritative wheel collision and weapon occlusion preserve the visible spoke gaps',async()=>{
+  const world=await worldPromise,station=world.station;
+  for(const ring of station.exterior.rings){
+    const point=(x,y,z)=>new THREE.Vector3(x,y,z).applyQuaternion(ring.quaternion).add(ring.position).applyQuaternion(station.baseQuaternion).add(station.centre);
+    const start=point(-160,800*Math.cos(Math.PI/6),400),end=point(160,800*Math.cos(Math.PI/6),400);
+    assert.equal(station.constrainStep(start,end,station.baseQuaternion).hit,false,'the server does not restore the invisible spoke wall');
+    assert.equal(world.occludes(start,end.clone().sub(start).normalize(),start.distanceTo(end)),null,'a shot through that open gap is also unobstructed');
+    const a=point(-160,224,0),b=point(160,224,0);
+    assert.equal(station.constrainStep(a,b,station.baseQuaternion).hit,true,'visible spoke root remains solid');
+    assert.ok(world.occludes(a,b.clone().sub(a).normalize(),a.distanceTo(b))<320,'visible spoke root still blocks shots');
+  }
+});
 async function setup(count=1){
   const world=await worldPromise,players=new Map(),messages=[];
   for(const frame of [...world.pods,world.station.hub]){frame.lift.open=false;frame.lift.progress=0;updateElevator(frame.lift,0);}
@@ -83,6 +96,16 @@ test('concurrent travellers cannot share a destination and occupied frame stays 
   world.station.hub.toWorld(new THREE.Vector3(0,-6.25,10),p.nav.position);
   service.request(other,{destination:'hub'});tick(4);
   assert.equal(other.nav.physicsFrame,'station:hub');assert.equal(observer.nav.physicsFrame,'hangar:3');
+});
+
+test('a close approach opens closed passenger doors while occupied doors cannot close',async()=>{
+  const {world,service,p,tick,messages}=await setup(),frame=world.pods[0];
+  frame.toWorld(new THREE.Vector3(0,frame.lift.floor+p.nav.layout.eyeHeight,frame.lift.z-.34),p.nav.position);
+  p.nav.mode='walk';p.nav.insideShip=false;
+  assert.equal(service.action(p),true);assert.equal(frame.lift.open,true);
+  tick(1);assert.equal(frame.lift.progress,1,'the doorway interlock must not stop opening');
+  assert.equal(service.action(p),true);assert.equal(frame.lift.open,true,'the body still prevents closing');
+  assert.match(messages.at(-1).message,/Step clear/);
 });
 
 test('door threshold interlock and disconnect cancel do not crush or strand another passenger',async()=>{

@@ -1,4 +1,6 @@
+import {validAppearance} from './appearance.js';
 import {mountReason} from './mounts.js';
+import {adjustableFoundation,validFoundationDepth} from './foundations.js';
 import {validPower} from './power.js';
 import {supportedPieces} from './structure.js';
 import { BODIES } from '../celestial.js';
@@ -16,15 +18,15 @@ export function validBuild(state){
   const ids=new Set();
   for(const c of state.claims){
     if(!c||typeof c!=='object'||Array.isArray(c)||!Array.isArray(c.pieces)||c.pieces.some(p=>!p||typeof p!=='object'||Array.isArray(p)))return false;
-    if(!id(c.id)||ids.has(c.id)||!BODIES.some(b=>b.id===c.body)||c.owner!==LOCAL_OWNER||typeof c.useBuffer!=='boolean'||!vector(c.origin,3)||c.origin.some(n=>Math.abs(n)>1e12)||!vector(c.quaternion,4)||Math.abs(Math.hypot(...c.quaternion)-1)>1e-5||![CLAIM_RADIUS,96].includes(c.radius)||typeof c.name!=='string'||c.name.length>80||!Array.isArray(c.pieces)||c.pieces.length>MAX_PIECES||c.pieces.filter(p=>p.type==='mainframe').length!==1)return false;
+    if(!id(c.id)||ids.has(c.id)||!BODIES.some(b=>b.id===c.body)||c.owner!==LOCAL_OWNER||typeof c.useBuffer!=='boolean'||!vector(c.origin,3)||c.origin.some(n=>Math.abs(n)>1e12)||!vector(c.quaternion,4)||Math.abs(Math.hypot(...c.quaternion)-1)>1e-5||![CLAIM_RADIUS,96].includes(c.radius)||typeof c.name!=='string'||c.name.length>80||!Array.isArray(c.pieces)||c.pieces.length>MAX_PIECES||c.pieces.length===0||c.pieces.filter(p=>p.type==='mainframe').length>1||c.useBuffer&&!c.pieces.some(p=>p.type==='mainframe'))return false;
     if(c.pieces.some(p=>p.lightOn!==undefined&&(typeof p.lightOn!=='boolean'||!PIECES[p.type]?.light)))return false;
     if(c.power!==undefined&&!validPower(c.power))return false;
     ids.add(c.id);
     for(const p of c.pieces){
-      if(!id(p.id)||ids.has(p.id)||typeof p.type!=='string'||!Object.hasOwn(PIECES,p.type)||!vector(p.position,3)||Math.hypot(p.position[0],p.position[2])>c.radius||p.position[1]<-2||p.position[1]>CLAIM_HEIGHT||!Number.isFinite(p.rotation)||Math.abs(p.rotation/(Math.PI/6)-Math.round(p.rotation/(Math.PI/6)))>1e-5||typeof p.doorOpen!=='boolean'||p.landingPad!==undefined&&(typeof p.landingPad!=='boolean'||!PIECES[p.type].padSize))return false;
+      if(!validAppearance(p)||!validFoundationDepth(p)||!id(p.id)||ids.has(p.id)||typeof p.type!=='string'||!Object.hasOwn(PIECES,p.type)||!vector(p.position,3)||Math.hypot(p.position[0],p.position[2])>c.radius||p.position[1]<-2||p.position[1]>CLAIM_HEIGHT||!Number.isFinite(p.rotation)||Math.abs(p.rotation/(Math.PI/6)-Math.round(p.rotation/(Math.PI/6)))>1e-5||typeof p.doorOpen!=='boolean'||p.landingPad!==undefined&&(typeof p.landingPad!=='boolean'||!PIECES[p.type].padSize))return false;
       ids.add(p.id);
       const bounds=getPlacementBounds(p);
-      if(bounds.min[1]<(PIECES[p.type].padSize?-16:-2)||bounds.max[1]>CLAIM_HEIGHT||[bounds.min[0],bounds.max[0]].some(x=>[bounds.min[2],bounds.max[2]].some(z=>Math.hypot(x,z)>c.radius)))return false;
+      if(bounds.min[1]<(PIECES[p.type].padSize||adjustableFoundation(p.type)?-16:-2)||bounds.max[1]>CLAIM_HEIGHT||[bounds.min[0],bounds.max[0]].some(x=>[bounds.min[2],bounds.max[2]].some(z=>Math.hypot(x,z)>c.radius)))return false;
     }
     // Resolve from grounded foundations outward. Unsupported islands and cycles
     // in a malformed save must not become walkable merely by being reloaded.

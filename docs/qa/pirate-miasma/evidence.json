@@ -1,0 +1,563 @@
+{
+  "task": "SA-PIRATE-003",
+  "status": "Validated development checkpoint offered to parent; not shared-integrated or deployed by this owner",
+  "testedRuntime": "cc6b035",
+  "controllerRuntime": "fabe36b",
+  "base": "cc1e74933791a3abdf36e65bdad732b4985994a9",
+  "appearanceDependency": "48be92e",
+  "seed": 7291,
+  "epoch": 1788876000000,
+  "controller": {
+    "browser": "151.0.7922.173",
+    "graphics": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "vendor": "Google Inc. (AMD)"
+    },
+    "errors": [],
+    "warnings": [],
+    "physicalController": false,
+    "controlledStart": "Explicit developer outer-pad approach; subsequent pose and interactions through injected Gamepad only.",
+    "before": {
+      "stock": 64,
+      "credits": 1500
+    },
+    "after": {
+      "id": "pirate-veil",
+      "stock": {
+        "basalt": 128,
+        "copper": 1440,
+        "ice": 63,
+        "aggregate": 96,
+        "metal-stock": 512,
+        "conductor": 384
+      }
+    }
+  },
+  "blockedClosing": {
+    "blocked": {
+      "requested": null,
+      "doors": [
+        {
+          "id": "build-piece-22060",
+          "side": "inner",
+          "position": [
+            18212668900.851406,
+            7555982533.221102,
+            11680228149.189596
+          ],
+          "open": false,
+          "fraction": 0,
+          "blocked": false
+        },
+        {
+          "id": "build-piece-22104",
+          "side": "outer",
+          "position": [
+            18212668904.33185,
+            7555982533.221102,
+            11680228156.392824
+          ],
+          "open": false,
+          "fraction": 0.5,
+          "blocked": true
+        }
+      ]
+    },
+    "reopened": {
+      "requested": null,
+      "doors": [
+        {
+          "id": "build-piece-22060",
+          "side": "inner",
+          "position": [
+            18212668900.851406,
+            7555982533.221102,
+            11680228149.189596
+          ],
+          "open": false,
+          "fraction": 0,
+          "blocked": false
+        },
+        {
+          "id": "build-piece-22104",
+          "side": "outer",
+          "position": [
+            18212668904.33185,
+            7555982533.221102,
+            11680228156.392824
+          ],
+          "open": true,
+          "fraction": 1,
+          "blocked": false
+        }
+      ]
+    },
+    "controlledPose": false
+  },
+  "phone": {
+    "browser": "151.0.7922.173",
+    "graphics": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "vendor": "Google Inc. (AMD)"
+    },
+    "errors": [],
+    "warnings": [],
+    "doors": [
+      {
+        "requested": null,
+        "doors": [
+          {
+            "side": "inner",
+            "open": false,
+            "fraction": 0,
+            "blocked": false
+          },
+          {
+            "side": "outer",
+            "open": true,
+            "fraction": 0.9967278394080011,
+            "blocked": false
+          }
+        ]
+      },
+      {
+        "requested": null,
+        "doors": [
+          {
+            "side": "inner",
+            "open": true,
+            "fraction": 0.9967278394079983,
+            "blocked": false
+          },
+          {
+            "side": "outer",
+            "open": false,
+            "fraction": 0,
+            "blocked": false
+          }
+        ]
+      },
+      {
+        "requested": null,
+        "doors": [
+          {
+            "side": "inner",
+            "open": true,
+            "fraction": 0.987209435263999,
+            "blocked": false
+          },
+          {
+            "side": "outer",
+            "open": false,
+            "fraction": 0,
+            "blocked": false
+          }
+        ]
+      },
+      {
+        "requested": null,
+        "doors": [
+          {
+            "side": "inner",
+            "open": false,
+            "fraction": 0,
+            "blocked": false
+          },
+          {
+            "side": "outer",
+            "open": true,
+            "fraction": 0.9872841365919978,
+            "blocked": false
+          }
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "action": {
+          "x": 12,
+          "y": 674,
+          "width": 186,
+          "height": 58
+        },
+        "controls": [
+          "\u2191",
+          "\u2190",
+          "\u2193",
+          "\u2192",
+          "Approach a control",
+          "Commands"
+        ],
+        "overlapped": [],
+        "obstructedHitTargets": []
+      },
+      {
+        "action": {
+          "x": 12,
+          "y": 674,
+          "width": 186,
+          "height": 58
+        },
+        "controls": [
+          "\u2191",
+          "\u2190",
+          "\u2193",
+          "\u2192",
+          "Approach a control",
+          "Commands"
+        ],
+        "overlapped": [],
+        "obstructedHitTargets": []
+      },
+      {
+        "action": {
+          "x": 12,
+          "y": 674,
+          "width": 186,
+          "height": 58
+        },
+        "controls": [
+          "\u2191",
+          "\u2190",
+          "\u2193",
+          "\u2192",
+          "Approach a control",
+          "Commands"
+        ],
+        "overlapped": [],
+        "obstructedHitTargets": []
+      },
+      {
+        "action": {
+          "x": 12,
+          "y": 674,
+          "width": 186,
+          "height": 58
+        },
+        "controls": [
+          "\u2191",
+          "\u2190",
+          "\u2193",
+          "\u2192",
+          "Approach a control",
+          "Commands"
+        ],
+        "overlapped": [],
+        "obstructedHitTargets": []
+      }
+    ],
+    "controlledPose": true,
+    "physicalController": false,
+    "rawReceipt": {
+      "path": "test-results/miasma-02/hush-native-phone.json",
+      "sha256": "04c6087bed686ebf04ace0b9748742c7361be8d497ac3006ead72cabe76a18eb"
+    }
+  },
+  "art": [
+    {
+      "site": "pirate-veil",
+      "browser": "151.0.7922.173",
+      "graphics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "vendor": "Google Inc. (AMD)"
+      },
+      "errors": [],
+      "warnings": [],
+      "balance": {
+        "before": {
+          "hull": 240,
+          "shield": 180,
+          "maxHull": 240,
+          "maxShield": 180,
+          "hitAge": 104.7995999999998,
+          "recharge": 16
+        },
+        "after": {
+          "hull": 240,
+          "shield": 126,
+          "maxHull": 240,
+          "maxShield": 180,
+          "hitAge": 0.03329999999999563,
+          "recharge": 16
+        },
+        "retreatShots": 3
+      },
+      "performance": {
+        "durationMs": 3000.199999988079,
+        "samples": 74,
+        "medianMs": 40.5,
+        "p95Ms": 44.69999998807907,
+        "first": {
+          "ms": 37.39999997615814,
+          "draws": 1046,
+          "triangles": 5505761,
+          "scale": 0.85
+        },
+        "last": {
+          "ms": 36.700000047683716,
+          "draws": 1046,
+          "triangles": 5505761,
+          "scale": 0.85
+        },
+        "countsIncludeShadowPasses": true
+      },
+      "fixture": true
+    },
+    {
+      "site": "pirate-hush",
+      "browser": "151.0.7922.173",
+      "graphics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+        "vendor": "Google Inc. (AMD)"
+      },
+      "errors": [],
+      "warnings": [],
+      "balance": null,
+      "performance": {
+        "durationMs": 3009.300000011921,
+        "samples": 74,
+        "medianMs": 39.89999997615814,
+        "p95Ms": 48.80000001192093,
+        "first": {
+          "ms": 43.80000001192093,
+          "draws": 451,
+          "triangles": 1473147,
+          "scale": 1
+        },
+        "last": {
+          "ms": 39.19999998807907,
+          "draws": 541,
+          "triangles": 1514107,
+          "scale": 1
+        },
+        "countsIncludeShadowPasses": true
+      },
+      "fixture": true
+    }
+  ],
+  "scenery": {
+    "veil-overview-scenery": {
+      "floraInstances": 84,
+      "fragmentInstances": 2749,
+      "overlaps": [],
+      "fragmentOverlaps": [],
+      "source": "Actual renderer instance transforms, double camera origin restored; compared with authored construction footprints."
+    },
+    "veil-crimson-work-yard-scenery": {
+      "floraInstances": 70,
+      "fragmentInstances": 2441,
+      "overlaps": [],
+      "fragmentOverlaps": [],
+      "source": "Actual renderer instance transforms, double camera origin restored; compared with authored construction footprints."
+    },
+    "veil-airlock-approach-scenery": {
+      "floraInstances": 71,
+      "fragmentInstances": 2443,
+      "overlaps": [],
+      "fragmentOverlaps": [],
+      "source": "Actual renderer instance transforms, double camera origin restored; compared with authored construction footprints."
+    },
+    "veil-sealed-exchange-scenery": {
+      "floraInstances": 77,
+      "fragmentInstances": 2456,
+      "overlaps": [],
+      "fragmentOverlaps": [],
+      "source": "Actual renderer instance transforms, double camera origin restored; compared with authored construction footprints."
+    },
+    "veil-outer-apron-scenery": {
+      "floraInstances": 97,
+      "fragmentInstances": 2464,
+      "overlaps": [],
+      "fragmentOverlaps": [],
+      "source": "Actual renderer instance transforms, double camera origin restored; compared with authored construction footprints."
+    }
+  },
+  "verdigris": {
+    "browser": "151.0.7922.173",
+    "graphics": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "vendor": "Google Inc. (AMD)"
+    },
+    "errors": [],
+    "warnings": [],
+    "views": [
+      {
+        "name": "approach",
+        "scenery": {
+          "floraInstances": 60,
+          "fragmentInstances": 2954,
+          "overlaps": [],
+          "fragmentOverlaps": [],
+          "source": "Actual renderer instance transforms, double camera origin restored; compared with authored construction footprints."
+        }
+      },
+      {
+        "name": "entrance",
+        "scenery": {
+          "floraInstances": 72,
+          "fragmentInstances": 2249,
+          "overlaps": [],
+          "fragmentOverlaps": [],
+          "source": "Actual renderer instance transforms, double camera origin restored; compared with authored construction footprints."
+        }
+      }
+    ],
+    "fixture": "Same controlled art cameras as parent corporate baseline; no traversal claim."
+  },
+  "signatureCPU": {
+    "iterations": 10000,
+    "totalMs": 449.065797,
+    "meanMs": 0.0449065797,
+    "claims": 3,
+    "pieces": 357,
+    "effectiveFootprints": 79,
+    "keyBytes": 17280,
+    "scope": "Node CPU signature cost only; no FPS claim"
+  },
+  "sourceReceipts": {
+    "miasma-01": {
+      "head": "fabe36bbc80ef33e8247dfe9b29144fff90b5668",
+      "status": "",
+      "command": [
+        "npm",
+        "run",
+        "test:browser",
+        "--",
+        "-c",
+        "scripts/pirate-miasma.config.js",
+        "--grep",
+        "."
+      ],
+      "started": "2026-09-08T23:04:08.396985+00:00",
+      "finished": "2026-09-08T23:14:37.545106+00:00",
+      "trackedFilesUnchanged": true,
+      "rawBeforeSHA256": "42757160f7e91c7f91d790db0d7813bb6844619d4cd00f4535ca74bf11720b9e",
+      "rawAfterSHA256": "8f33281851f569e8989b163e1b1f060262f9a811df1186989f3925b7b2b6a4c4",
+      "rawPath": "test-results/miasma-01"
+    },
+    "miasma-02": {
+      "head": "cc6b035fd51ead60981483c59577f2334c8af8f9",
+      "status": "",
+      "command": [
+        "npm",
+        "run",
+        "test:browser",
+        "--",
+        "-c",
+        "scripts/pirate-miasma.config.js",
+        "--grep",
+        "phone|weaker|Verdigris"
+      ],
+      "started": "2026-09-08T23:32:31.307873+00:00",
+      "finished": "2026-09-08T23:37:41.862586+00:00",
+      "trackedFilesUnchanged": true,
+      "rawBeforeSHA256": "7db3d55022aa310dcd819b7cb49a8f4bad5694204abcb6f91bd703d31eae9b62",
+      "rawAfterSHA256": "cd0c11c97a79c017625d1e0c7e8c4601ab79b46b4f8f3a43da3b7817de7fd0bd",
+      "rawPath": "test-results/miasma-02"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "veil-overview.png",
+      "source": "test-results/miasma-02/veil-overview.png",
+      "sha256": "9b5672e5b46fbbaa73a6fb351cdd61f6ea1aee1a6844219fd4f48148e1cbb0bb"
+    },
+    {
+      "path": "hush-overview.png",
+      "source": "test-results/miasma-02/hush-overview.png",
+      "sha256": "10694e13902236e32783b69b7af563252554a20457dffd848a07d702e2c59dbb"
+    },
+    {
+      "path": "veil-airlock-approach.png",
+      "source": "test-results/miasma-02/veil-airlock-approach.png",
+      "sha256": "a4bd421443b5f2d8fe5c0dcda5bfd234769cfeb6e3b538b73982cb311f754a56"
+    },
+    {
+      "path": "hush-airlock-approach.png",
+      "source": "test-results/miasma-02/hush-airlock-approach.png",
+      "sha256": "ea46083b6934b19320a18f9a564d72abc7f31ac4a832d048b19ec66903b830cb"
+    },
+    {
+      "path": "veil-sealed-exchange.png",
+      "source": "test-results/miasma-02/veil-sealed-exchange.png",
+      "sha256": "bbdcca0c70259edea87aa62a4afd7b04ac9b544d377f6ef35fbc7a666a91282c"
+    },
+    {
+      "path": "hush-sealed-exchange.png",
+      "source": "test-results/miasma-02/hush-sealed-exchange.png",
+      "sha256": "ee199bec492d0a940b0c5e85423a8c27fad9dfc26e7090fe9340a34ced75b1a5"
+    },
+    {
+      "path": "veil-crimson-work-yard.png",
+      "source": "test-results/miasma-02/veil-crimson-work-yard.png",
+      "sha256": "57a617fea23f9d4dc83cea41530e593e3ea16e4a3e674fd50cdff4525a1af389"
+    },
+    {
+      "path": "veil-outer-apron.png",
+      "source": "test-results/miasma-02/veil-outer-apron.png",
+      "sha256": "38dedba270f2c0933b72992c788c8a6d8f56f824db8a4db59c83b84c92652c98"
+    },
+    {
+      "path": "verdigris-entrance.png",
+      "source": "test-results/miasma-02/verdigris-entrance.png",
+      "sha256": "20b91db0f996d9335fd1942064473eee39eeb7985d9f510f8d68b022826e6db4"
+    },
+    {
+      "path": "verdigris-approach.png",
+      "source": "test-results/miasma-02/verdigris-approach.png",
+      "sha256": "303428ec69ecd5b9cc8226ca51a19b2aa68846b3da9e1c0c09cbc74b39ec2048"
+    },
+    {
+      "path": "outer-closing-blocked.png",
+      "source": "test-results/miasma-01/outer-closing-blocked.png",
+      "sha256": "6deb98a0e0313c77726da837fec92c3a54f69109406e5cbc297c7dc40130da91"
+    },
+    {
+      "path": "trade-cargo.png",
+      "source": "test-results/miasma-01/trade-cargo.png",
+      "sha256": "e109c282092266c3fec3b168af56e74b2dc49fc21c944228e8274d672e602652"
+    },
+    {
+      "path": "scenery-before.png",
+      "source": "test-results/miasma-01/veil-overview.png",
+      "sha256": "93cb18959f633ae65015bc4b2bcaa9b982b9e75522fab42b3f902c8cdacc01db"
+    },
+    {
+      "path": "phone-before.png",
+      "source": "test-results/miasma-01/hush-inner-airlock-phone.png",
+      "sha256": "aa8f00fbad6e9c21dc24333c331177aa205b293d1387913967b8ea964c39e355"
+    },
+    {
+      "path": "phone-after.png",
+      "source": "test-results/miasma-02/hush-inner-airlock-phone.png",
+      "sha256": "f592d8981ebf979e9ea59e6259436ac6969284da1e8341434fe16c87b18217cf"
+    }
+  ],
+  "limits": [
+    "Injected standard Gamepad, emulated native coarse phone; no physical devices tested.",
+    "Presentation art/phone/Verdigris poses are explicit fixtures. Full physical route is separate controller case.",
+    "No pressure simulation, new ground NPCs, new terrain/asset derivative, protocol or schema change.",
+    "Warm scene timing exceeds QUALITY targets; no final performance or independent art score.",
+    "Parent privately composed65814dc and reports all161 files/build/repo/plan passed; parent owns final shared integration/export."
+  ]
+}

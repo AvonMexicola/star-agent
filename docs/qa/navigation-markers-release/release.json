@@ -1,0 +1,302 @@
+{
+  "source": {
+    "source": "d63fab0d595424e622c073cdb576d01124094736",
+    "runtimeFiles": {
+      "src/main.js": "93a388fdedf1d0764dc44f6237d82656e47f7b9bd77adff88d971fba06987617",
+      "src/mining-rover.js": "33d8273b651c1856c5b32b75123720546d19110f47ba5411e59a6a3b68914d29",
+      "src/navigation-marker-style.js": "323c26e6bd75030768b99c43446f47f3470ca8ffafd8f4582ac9e20917124ce6",
+      "src/navigation-objectives.js": "3033fc5b074f9c1c389df561e688290325eb2fd3a210dd858242796da9532759",
+      "src/navigation-targeting.css": "cd01eb73c78c3494cc3431b44e5c649a8769c9385c49251d56834dedb2b955e9",
+      "src/navigation-targeting.js": "183a39e29c05c94f005bdf32d9547149180a5492277d41b37f19d539351464f7",
+      "src/sentry/system.js": "5d94d023ae50a8c2f45521f24f8b359666c2e41b7c4c822b7fd8982cc334eb80",
+      "src/ship-marker.css": "43be5414cbad91911227a8fd7dea97a35232251aa174d2250e489c8077f3940d",
+      "src/ship-marker.js": "47e035f6355195a7b0a3e2e03a90cf395db7010c350c13419a3fbb820323a77d",
+      "src/system-map.js": "290a4872b5d336f034180ae785f1b22d216eba76efaf2e7730811f55ac272a0a",
+      "src/trading/system.js": "e0dac82ff6da352fab1a5916251d101a4789194c4b88c5e2aaf399f6b87886f0"
+    },
+    "serverSchemaAssetsDependenciesUnchanged": true,
+    "buildMetadata": {
+      "solo": {
+        "channel": "solo",
+        "commit": "d63fab0d595424e622c073cdb576d01124094736",
+        "builtAt": "2026-09-09T07:36:46.161Z",
+        "multiplayerVersion": 10,
+        "maxPlayers": 20,
+        "seed": 7291,
+        "devTools": true
+      },
+      "multiplayer": {
+        "channel": "multiplayer",
+        "commit": "d63fab0d595424e622c073cdb576d01124094736",
+        "builtAt": "2026-09-09T07:36:50.883Z",
+        "multiplayerVersion": 10,
+        "maxPlayers": 20,
+        "seed": 7291,
+        "devTools": true
+      }
+    }
+  },
+  "staging": {
+    "publicFiles": 300,
+    "multiplayerFiles": 1010,
+    "publicManifestSHA256": "224b25a0661956885ef01c1bc98f66386ca18a1f5b3e275d10e1221b2440a484",
+    "multiplayerManifestSHA256": "b37ecd2b6c82ec0be5bf24c3dd0828ccdbbde3956f748bbdb8874d227c91b803",
+    "allTransferredHashesVerified": true,
+    "npmCI": "179 packages, 0 vulnerabilities; generated Prisma client present",
+    "unprivilegedWorldStartup": true
+  },
+  "local": {
+    "sourceTestFiles": 165,
+    "sourcePass": 165,
+    "browserCases": 4,
+    "browserDuration": "5.1m",
+    "browserExit": 0,
+    "markerJourney": {
+      "browser": "151.0.7922.173",
+      "renderer": "ANGLE (AMD, AMD Radeon 860M Graphics (radeonsi krackan1 ACO), OpenGL ES 3.2)",
+      "errors": [],
+      "input": "Injected standard Gamepad, no gameplay state mutations; storage preference set for migration check."
+    },
+    "multiplayerEntry": {
+      "browser": "151.0.7922.173",
+      "metadata": {
+        "channel": "multiplayer",
+        "commit": "d63fab0d595424e622c073cdb576d01124094736",
+        "builtAt": "2026-09-09T07:36:50.883Z",
+        "multiplayerVersion": 10,
+        "maxPlayers": 20,
+        "seed": 7291,
+        "devTools": true
+      },
+      "errors": [],
+      "controller": "Injected standard Gamepad; native pointer Continue offline; physical device untested"
+    },
+    "soloEntry": {
+      "browser": "151.0.7922.173",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "assets": [
+        {
+          "path": "/models/station.glb",
+          "revision": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14",
+          "status": 200
+        },
+        {
+          "path": "/models/nomad.glb",
+          "revision": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+          "status": 200
+        }
+      ],
+      "documents": [
+        "http://127.0.0.1:5690/?seed=7291&debug",
+        "http://127.0.0.1:5690/?seed=7291&debug=&dev=1&intro=0&ship=kestrel&start=hangar"
+      ],
+      "errors": [],
+      "api": [],
+      "controller": "Injected W3C standard Gamepad; no physical hardware test"
+    }
+  },
+  "retainedExecutionCorrections": [
+    "First solo build bundled successfully but sandbox denied its Git revision subprocess (EPERM); exact unchanged build passed with approved escalation.",
+    "Initial staging used cross-filesystem hard links; replaced with copies before transfer.",
+    "First staging wrapper checked client.ts, while Prisma generates client.js; npm ci and all hashes had passed. Correct generated client.js and unprivileged startup then verified."
+  ],
+  "status": "deployed",
+  "devMerge": {
+    "mergeCommit": {
+      "oid": "88389274efe9608fde8db9ac500fb0951b4ae5b0"
+    },
+    "mergedAt": "2026-09-09T07:47:19Z",
+    "state": "MERGED",
+    "url": "https://github.com/AvonMexicola/star-agent/pull/112"
+  },
+  "hostedChecks": {
+    "run": 34324823917,
+    "plan": "pass",
+    "source": "pass",
+    "multiplayer": "pass",
+    "browser": "pass",
+    "verify": "pass"
+  },
+  "promotion": {
+    "source": "d63fab0d595424e622c073cdb576d01124094736",
+    "previous": "ea234d2cb71cb26b53c3671a3a6db962a0da5273",
+    "promotedAt": "2026-09-09T07:47:38Z",
+    "connectionsBeforeRestart": 0,
+    "servicePID": 39010,
+    "health": true
+  },
+  "https": {
+    "at": "2026-09-09T07:47:59.370996+00:00",
+    "source": "d63fab0d595424e622c073cdb576d01124094736",
+    "channels": {
+      "solo": {
+        "metadata": {
+          "channel": "solo",
+          "commit": "d63fab0d595424e622c073cdb576d01124094736",
+          "builtAt": "2026-09-09T07:36:46.161Z",
+          "multiplayerVersion": 10,
+          "maxPlayers": 20,
+          "seed": 7291,
+          "devTools": true
+        },
+        "indexMatches": true,
+        "assets": {
+          "assets/GLTFLoader-B3PefPde.js": "35aa6b5c9307d3a13c4820d71bc104a97307debbd062cf83da35b3cd50a65529",
+          "assets/asteroid-material-B25WWGyz.js": "c9cdf274b87edc37f5fc0cbc71fc4d735833719dca979a151654e07c8695071c",
+          "assets/audio-Ddw3WQm9.js": "129ccf9bf008636ee259e758468d3b7826ed094ed5a61d6203bbf2cabec99965",
+          "assets/boarding-CHOVCBAK.js": "9f8452537dfbc524e9e973e80f787f67087e7645b1ba86812294ac4683551a90",
+          "assets/celestial-BOX9c2um.js": "8c4b55311d5196601c8d44d3cd24b518caadb5e8e31fb8b4ec827061f72aa6f7",
+          "assets/character-RdSM7ay-.js": "7f1dd47901598bcfebbd85ddc7655a040087e6c585f5f15657c5c85d35c56f48",
+          "assets/definitions-BXp_sQzX.js": "f0bdf12860afbd77f449ec6d1fe7da2891ce127cf2e55624e6914ec1834ed32e",
+          "assets/equipment-CjT38_Xk.js": "71ad4698ffaf152b5cf8c675b71095712ae9104838006313986b9d7986a390cf",
+          "assets/gannet-systems-D-wkj_dB.js": "a11a9f40b0f0de5d7c53a49be4466a7f655c8f3d78e671382be8c37928fe43b4",
+          "assets/gear-flight-BEVbqRj-.js": "3ae429290d4f5f2430f245892fe2b2caf16030e2be558676351cb4d62e449682",
+          "assets/generation-COTNAE7W.js": "9ae025cc7f4d823d5eb011a6fdc4da7113697cc6966edd18c4a7e87afbbae4d2",
+          "assets/ground-textures-DxxutQmp.js": "3068ba336567bfb6a36da6e25a15801ae1c9829736c4d86a5fec306464304591",
+          "assets/identity-CcXQJlKR.js": "3d02adb48e7067873af6a44eb0f76b747bd83497eb7f18a083d40b0924fe53e3",
+          "assets/kestrel-0dxTR8hQ.glb": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+          "assets/kestrel-2aOAP5Db.js": "33d03b32c4a0e2302927e26e70a2b682b8c938135e0fd5f08b5eb567265f7218",
+          "assets/lighting-Dk-1yht8.js": "07e87449e92503d8ff8abd6bdfb17f92dad176e42c3a21a2ef9d895ecc0073d8",
+          "assets/main-BnIijrlm.js": "50eafa9f1a9b341002651ce472b39ad22575b09568eecc6508e05b3a1b9ec7a5",
+          "assets/main-bZX_4uJr.css": "c370fc7216dd8e8951ff1e17dbd4900e1d264d6ae8adfaeac5185b07891c2b9b",
+          "assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0",
+          "assets/moon-world-2gvwGEh_.js": "5aafc30554cfb7aa5d869082f7bffffd9a0dfe387b4078415aa6fa8a35af8bf6",
+          "assets/particles-F88UJnSF.js": "e9f6002847a7ce301c45dc00b080684579ce03af1866461779d7f2640c8681d1",
+          "assets/player-avatar-D5mpJPEk.js": "bda92f1e16bb51bf6179df83b81576d90261bdeea9283c8457cc3adef50124fb",
+          "assets/preload-helper-PPVm8Dsz.js": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4",
+          "assets/ship-handling-DTrMfeK7.js": "5145dbd2e498a0f19e7928a7e4b119a18540faeed0ef91260bf168243f22de98",
+          "assets/ship-mfd-Dftku3UG.js": "2588f98d46e1d5bd243f6a9c1a2622485ee899b849e4e69bad321a881e3592a0",
+          "assets/ship-weapons-CJgqK7xS.js": "9b3205e691e93adbab8da9cd4c52b18fef9f0b03deef508dde7960af5f038467",
+          "assets/stellar-world-Dis_VipK.js": "e828dbe55525e0d99e7293ebfa93c5a25d45bf61c0e13d9ec29ae1047e7ce50a",
+          "assets/stratum-flight-parts-BQunyEJJ.js": "425834719b61180d685776505a7cd4a0bcbc8df5fb8903827d6ec72fea1ef647",
+          "assets/surface-materials-CrEJe_ac.js": "468de333fe9e14550dc4f6b082809596ff80d46987f37acba03b29526f288afa",
+          "assets/terrain-maps-x2cAchnN.js": "9f9f660a634690afced4f432d723d815681e0fc4a19236ccc8a94f12d84ccd14",
+          "assets/three.core-Ck4SErS6.js": "c5f1304b4f600dd70e8460252f29f99cfdaeb5532a91572cc5ca3cd956d39dc4",
+          "assets/three.module-D_w7MhBc.js": "c18c6c51d8e431da9980c1fa941da03dfb772014b9db38eaffc5ae7ea18d3d4e",
+          "assets/vegetation-CD-iDYvs.js": "224da005c3bb752b32a2097725d92ab5e7ddfbe46be8dcdee0d9c4235920c94b",
+          "assets/viewer-style-CsRXElqD.css": "f6b2219bf84f3d020e30cc81fd4d0ee9b3ff521eb86be71c0b7340e9a7e0f1ce",
+          "assets/visuals-Dr8XM38q.js": "694a5814e52d3de0afab4bdf5e0f023f56198a600e84bf1ecad9a20ea49125d9",
+          "assets/weapon-mounts-Brg6wUlE.js": "b441a9ded2e6dd89aebae5cbdf470d06c884b995a530767c96fb28623b195fab",
+          "assets/world-BOT08nOo.js": "4bb4a83e1426809cf5d063eef9852ef569d940da9723512f54694b7be20dade1",
+          "models/burrow-sentry.glb": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387",
+          "models/mining-rover.glb": "85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e",
+          "models/nomad.glb": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+          "models/station.glb": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14"
+        }
+      },
+      "multiplayer": {
+        "metadata": {
+          "channel": "multiplayer",
+          "commit": "d63fab0d595424e622c073cdb576d01124094736",
+          "builtAt": "2026-09-09T07:36:50.883Z",
+          "multiplayerVersion": 10,
+          "maxPlayers": 20,
+          "seed": 7291,
+          "devTools": true
+        },
+        "indexMatches": true,
+        "assets": {
+          "assets/GLTFLoader-B3PefPde.js": "35aa6b5c9307d3a13c4820d71bc104a97307debbd062cf83da35b3cd50a65529",
+          "assets/asteroid-material-B25WWGyz.js": "c9cdf274b87edc37f5fc0cbc71fc4d735833719dca979a151654e07c8695071c",
+          "assets/audio-Ddw3WQm9.js": "129ccf9bf008636ee259e758468d3b7826ed094ed5a61d6203bbf2cabec99965",
+          "assets/boarding-CHOVCBAK.js": "9f8452537dfbc524e9e973e80f787f67087e7645b1ba86812294ac4683551a90",
+          "assets/celestial-BOX9c2um.js": "8c4b55311d5196601c8d44d3cd24b518caadb5e8e31fb8b4ec827061f72aa6f7",
+          "assets/character-RdSM7ay-.js": "7f1dd47901598bcfebbd85ddc7655a040087e6c585f5f15657c5c85d35c56f48",
+          "assets/definitions-BXp_sQzX.js": "f0bdf12860afbd77f449ec6d1fe7da2891ce127cf2e55624e6914ec1834ed32e",
+          "assets/equipment-CjT38_Xk.js": "71ad4698ffaf152b5cf8c675b71095712ae9104838006313986b9d7986a390cf",
+          "assets/gannet-systems-D-wkj_dB.js": "a11a9f40b0f0de5d7c53a49be4466a7f655c8f3d78e671382be8c37928fe43b4",
+          "assets/gear-flight-BEVbqRj-.js": "3ae429290d4f5f2430f245892fe2b2caf16030e2be558676351cb4d62e449682",
+          "assets/generation-COTNAE7W.js": "9ae025cc7f4d823d5eb011a6fdc4da7113697cc6966edd18c4a7e87afbbae4d2",
+          "assets/ground-textures-DxxutQmp.js": "3068ba336567bfb6a36da6e25a15801ae1c9829736c4d86a5fec306464304591",
+          "assets/identity-CcXQJlKR.js": "3d02adb48e7067873af6a44eb0f76b747bd83497eb7f18a083d40b0924fe53e3",
+          "assets/kestrel-0dxTR8hQ.glb": "c48ed4e94b823f1f585e5d389ba8c88776731034025a7620162c8c3a5eb13b8a",
+          "assets/kestrel-2aOAP5Db.js": "33d03b32c4a0e2302927e26e70a2b682b8c938135e0fd5f08b5eb567265f7218",
+          "assets/lighting-Dk-1yht8.js": "07e87449e92503d8ff8abd6bdfb17f92dad176e42c3a21a2ef9d895ecc0073d8",
+          "assets/main-bZX_4uJr.css": "c370fc7216dd8e8951ff1e17dbd4900e1d264d6ae8adfaeac5185b07891c2b9b",
+          "assets/main-r8DthVnm.js": "ecaec0fbceedbcab28fc55edaccbffe54b115b54851bc6497954d52a2ed9a0cb",
+          "assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0",
+          "assets/moon-world-2gvwGEh_.js": "5aafc30554cfb7aa5d869082f7bffffd9a0dfe387b4078415aa6fa8a35af8bf6",
+          "assets/particles-F88UJnSF.js": "e9f6002847a7ce301c45dc00b080684579ce03af1866461779d7f2640c8681d1",
+          "assets/player-avatar-D5mpJPEk.js": "bda92f1e16bb51bf6179df83b81576d90261bdeea9283c8457cc3adef50124fb",
+          "assets/preload-helper-PPVm8Dsz.js": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4",
+          "assets/ship-handling-DTrMfeK7.js": "5145dbd2e498a0f19e7928a7e4b119a18540faeed0ef91260bf168243f22de98",
+          "assets/ship-mfd-Dftku3UG.js": "2588f98d46e1d5bd243f6a9c1a2622485ee899b849e4e69bad321a881e3592a0",
+          "assets/ship-weapons-CJgqK7xS.js": "9b3205e691e93adbab8da9cd4c52b18fef9f0b03deef508dde7960af5f038467",
+          "assets/stellar-world-Dis_VipK.js": "e828dbe55525e0d99e7293ebfa93c5a25d45bf61c0e13d9ec29ae1047e7ce50a",
+          "assets/stratum-flight-parts-BQunyEJJ.js": "425834719b61180d685776505a7cd4a0bcbc8df5fb8903827d6ec72fea1ef647",
+          "assets/surface-materials-CrEJe_ac.js": "468de333fe9e14550dc4f6b082809596ff80d46987f37acba03b29526f288afa",
+          "assets/terrain-maps-x2cAchnN.js": "9f9f660a634690afced4f432d723d815681e0fc4a19236ccc8a94f12d84ccd14",
+          "assets/three.core-Ck4SErS6.js": "c5f1304b4f600dd70e8460252f29f99cfdaeb5532a91572cc5ca3cd956d39dc4",
+          "assets/three.module-D_w7MhBc.js": "c18c6c51d8e431da9980c1fa941da03dfb772014b9db38eaffc5ae7ea18d3d4e",
+          "assets/vegetation-CD-iDYvs.js": "224da005c3bb752b32a2097725d92ab5e7ddfbe46be8dcdee0d9c4235920c94b",
+          "assets/viewer-style-CsRXElqD.css": "f6b2219bf84f3d020e30cc81fd4d0ee9b3ff521eb86be71c0b7340e9a7e0f1ce",
+          "assets/visuals-Dr8XM38q.js": "694a5814e52d3de0afab4bdf5e0f023f56198a600e84bf1ecad9a20ea49125d9",
+          "assets/weapon-mounts-Brg6wUlE.js": "b441a9ded2e6dd89aebae5cbdf470d06c884b995a530767c96fb28623b195fab",
+          "assets/world-BOT08nOo.js": "4bb4a83e1426809cf5d063eef9852ef569d940da9723512f54694b7be20dade1",
+          "models/burrow-sentry.glb": "db8b8d07afd7ad8507b746eefc077553f6996e6189cf623d2dbe60ca7ac48387",
+          "models/mining-rover.glb": "85bfeaa96d5830e1aac752f154fcf37410ffdfd44c5e152dae4ae5cdc862224e",
+          "models/nomad.glb": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+          "models/station.glb": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14"
+        }
+      }
+    },
+    "homepageHostsMatch": true,
+    "multiplayerHealth": true
+  },
+  "publicWSS": {
+    "publicHTTPSRegistration": true,
+    "authenticatedWSS": true,
+    "hangarAssignment": true,
+    "multiplayerVersion": 10,
+    "maxPlayers": 20,
+    "seed": 7291
+  },
+  "publicBrowser": {
+    "cases": 2,
+    "duration": "2.1m",
+    "exit": 0,
+    "solo": {
+      "browser": "151.0.7922.173",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "assets": [
+        {
+          "path": "/models/station.glb",
+          "revision": "6cc8a1b531811944352830dd4bfd201821afde6c67948cf335e6def4c8766a14",
+          "status": 200
+        },
+        {
+          "path": "/models/nomad.glb",
+          "revision": "33a64aba2093e40768862fb130e81382b1900c11a8913080202efe9d89f204da",
+          "status": 200
+        }
+      ],
+      "documents": [
+        "https://play.staragent.site/?seed=7291&debug",
+        "https://play.staragent.site/?seed=7291&debug=&dev=1&intro=0&ship=kestrel&start=hangar"
+      ],
+      "errors": [],
+      "api": [],
+      "controller": "Injected W3C standard Gamepad; no physical hardware test"
+    },
+    "multiplayer": {
+      "browser": "151.0.7922.173",
+      "metadata": {
+        "channel": "multiplayer",
+        "commit": "d63fab0d595424e622c073cdb576d01124094736",
+        "builtAt": "2026-09-09T07:36:50.883Z",
+        "multiplayerVersion": 10,
+        "maxPlayers": 20,
+        "seed": 7291,
+        "devTools": true
+      },
+      "errors": [],
+      "controller": "Injected standard Gamepad; native pointer Continue offline; physical device untested"
+    }
+  }
+}

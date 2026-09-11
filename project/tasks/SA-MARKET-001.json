@@ -4,11 +4,21 @@
   "milestone": "M0",
   "owner": "@AvonMexicola",
   "agent": "Codex station market",
-  "status": "review",
+  "status": "integrated",
   "branch": "feat/aeon-station-market",
   "base": "17769ed26d41dbab52fbc995346da7ab54592c0b",
-  "updated": "2026-09-07",
-  "areas": ["industry", "multiplayer", "interface"],
-  "claims": ["src/trading/market.js", "src/trading/station-terminals.js", "tests/station-market.test.js", "tests/server-station-market.test.js", "tests/browser/station-market-route.js"],
+  "updated": "2026-09-08",
+  "areas": [
+    "industry",
+    "multiplayer",
+    "interface"
+  ],
+  "claims": [
+    "src/trading/market.js",
+    "src/trading/station-terminals.js",
+    "tests/station-market.test.js",
+    "tests/server-station-market.test.js",
+    "tests/browser/station-market-route.js"
+  ],
   "brief": "docs/briefs/aeon-station-market.md"
 }

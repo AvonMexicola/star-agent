@@ -1,0 +1,13 @@
+{
+  "source": "assets/pirate-tower/tower.blend",
+  "builder": "blender/build_pirate_tower.py",
+  "asset": "public/models/pirate-tower.glb",
+  "provenance": "Original deterministic Blender geometry; UV/finish helpers derived from project floodlight builder; no external assets/textures. Existing station battery is reused separately and unchanged at 0.35 scale.",
+  "units": "metres; +Y up; mounting surface y=9; +Z service face",
+  "triangles": 4551,
+  "draws": 4,
+  "bytes": 357384,
+  "sha256": "39799a0d054eecb50c281fc8b6ee12a4a782d9be4382ca20436b236a81148cf9",
+  "textures": 0,
+  "blender": "5.2.0 LTS"
+}

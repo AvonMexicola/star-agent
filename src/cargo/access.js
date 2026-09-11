@@ -1,8 +1,9 @@
+import {STRATUM_GAMEPLAY_LAYOUT,GANNET_GAMEPLAY_LAYOUT} from '../medium-ship-gameplay.js';
 import * as THREE from 'three';
 import { CARGO_GRIDS, crateBounds } from './grid.js';
 import { SHIP_LAYOUT } from '../boarding.js';
 import { FREIGHTER_LAYOUT } from '../freighter-layout.js';
-export const hullLayout=hull=>hull==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;
+export const hullLayout=hull=>hull==='stratum'?STRATUM_GAMEPLAY_LAYOUT:hull==='gannet'?GANNET_GAMEPLAY_LAYOUT:hull==='atlas'?FREIGHTER_LAYOUT:SHIP_LAYOUT;
 export function shipPose(nav){
   const quaternion=nav.shipPosition?nav.shipOrientation:nav.orientation;
   const position=nav.shipPosition??nav.position.clone().sub(new THREE.Vector3(...nav.layout.seatEye).applyQuaternion(quaternion));
@@ -10,7 +11,9 @@ export function shipPose(nav){
 }
 export function localPoint(position,pose){return position.clone().sub(pose.position).applyQuaternion(pose.quaternion.clone().invert());}
 export function aboard(position,pose,hull){
-  const p=localPoint(position,pose),l=hullLayout(hull),b=l.interior;
+  const p=localPoint(position,pose),l=hullLayout(hull);
+  if(hull==='gannet'){const b=l.lift;return p.y>=l.floorY+l.eyeHeight-.3&&p.y<=b.ceiling&&p.x>b.minX&&p.x<b.maxX&&p.z>=l.interior.minZ&&p.z<=b.maxZ;}
+  const b=l.interior;
   return p.x>b.minX&&p.x<b.maxX&&p.z>b.minZ&&p.z<b.maxZ&&p.y>=l.floorY+l.eyeHeight-.3&&p.y<=l.floorY+5;
 }
 export function nearCrate(position,pose,hull,crate,range=2.2){

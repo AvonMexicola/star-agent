@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { Vector3 } from 'three';
 import { Navigation } from '../src/navigation.js';
 import { findDestinations, latLonDirection } from '../src/world.js';
+import { planNavigationTravel, surfaceTarget } from '../src/navigation-targets.js';
+import { AEON, bodyAltitude } from '../src/celestial.js';
 import { TRAVEL_TARGETS, sampleTravel } from '../src/travel-model.js';
 
 class EventSurface {
@@ -210,4 +212,18 @@ test('targeted travel resets held controller input on arrival, leaving active fl
  let suspends=0,resets=0;navigation.gamepad.suspend=()=>suspends++;navigation.targeting={reset:()=>resets++};navigation.travel.targeted=true;
  navigation.updateTravel(.1);assert.equal(suspends,0);assert.equal(resets,0);
  navigation.updateTravel(navigation.travel.plan.duration);assert.equal(navigation.travel,null);assert.equal(suspends,1);assert.equal(resets,1);assert.equal(navigation.speed,0);
+});
+
+
+test('curved navigation follows the sampled tangent and brakes along the same path',t=>{
+ const {navigation:n}=setup(t),start=new Vector3(0,0,AEON.radius+100_000);
+ const route=planNavigationTravel(start,surfaceTarget('far','Far side',AEON,[0,0,-1]));
+ assert.ok(route.ok,route.reason);n.position.copy(start);n.travel={plan:route.plan,elapsed:0,targetId:'far',targeted:true};
+ const time=route.plan.spoolSeconds+route.plan.motionSeconds*.5;
+ n.updateTravel(time);const sample=sampleTravel(route.plan,time);
+ nearVector(n.position,sample.position);nearVector(n.velocity.clone().normalize(),sample.direction);
+ assert.ok(new Vector3(0,0,-1).applyQuaternion(n.orientation).dot(sample.direction)>.999999);
+ const before=n.position.clone();n.cancelTravel();nearVector(n.position,before);
+ n.updateTravel(100);assert.equal(n.travel,null);assert.equal(n.speed,0);
+ assert.ok(bodyAltitude(n.position,AEON)>=35_000-.001);
 });

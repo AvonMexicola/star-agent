@@ -1,0 +1,17 @@
+{
+  "source": "421ea55",
+  "module_sha256": "679f40b3488d781e45de49738ff36a1a72b4e00dedb17524b803f44f0c21bece",
+  "served_target_selection": true,
+  "health": {
+    "http://127.0.0.1:5178/api/health": {
+      "status": 200,
+      "protocolVersion": null,
+      "ok": true
+    },
+    "http://127.0.0.1:8087/api/health": {
+      "status": 200,
+      "protocolVersion": null,
+      "ok": true
+    }
+  }
+}

@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 test('Pyre geography and resources render from orbit to ground without shader errors',async({page,browser})=>{
  const path='/tmp/star-agent-pyre',errors=[],states=[];await mkdir(path,{recursive:true});
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());console.log(m.text().slice(0,1600));}});
- await page.goto('/?intro=0&debug&epoch=1788000000000');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Tab');
+ await page.goto('/?intro=0&debug&epoch=1788000000000');await page.waitForFunction(()=>window.starAgent?.state.ready);await page.keyboard.press('Shift+Tab');
  for(const shot of [{name:'orbit',altitude:900000,site:'field',lod:3},{name:'caldera-5km',altitude:5000,site:'volcano',lod:10},{name:'caldera-700m',altitude:700,site:'volcano',lod:12},{name:'lava-ground',altitude:1.75,site:'field',lod:16}]){
   await page.evaluate(({altitude,site})=>{
    const s=window.starAgent,n=s.navigation,d=site==='field'?s.pyreSites.fields[0].direction:s.pyreSites.volcanoes[0].direction;
@@ -17,7 +17,7 @@ test('Pyre geography and resources render from orbit to ground without shader er
   const state=await page.evaluate(()=>window.starAgent.state);expect(state.pyre.error).toBeNull();expect(state.pyre.morphing).toBe(0);expect(state.body).toBe('pyre');expect(state.pyre.resources.weights.reduce((a,b)=>a+b,0)).toBeCloseTo(1,10);
   states.push({shot,state});await page.screenshot({path:`${path}/${shot.name}.png`});console.log(`Captured ${shot.name}`);
  }
- await page.keyboard.press('Tab');await expect(page.locator('#pyre-survey')).toBeVisible();await expect(page.locator('#pyre-composition')).toContainText('BASALT');await page.screenshot({path:`${path}/resource-survey.png`});
+ await page.keyboard.press('Shift+Tab');await expect(page.locator('#pyre-survey')).toBeVisible();await expect(page.locator('#pyre-composition')).toContainText('BASALT');await page.screenshot({path:`${path}/resource-survey.png`});
  for(const body of ['aeon','selene']){
   await page.evaluate(body=>{const n=window.starAgent.navigation;body==='aeon'?n.orbit():n.transitMoon(180);n.enabled=false;window.starAgent.setRenderScale(.5);},body);
   await page.waitForFunction(body=>window.starAgent.state.body===body,body);await page.waitForTimeout(2000);expect(errors).toEqual([]);
@@ -39,7 +39,7 @@ test('Pyre landing, ramp walk, reboarding and launch use the physical surface',a
  await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.doorProgress===1);
  await page.keyboard.down('w');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]>12);await page.keyboard.up('w');await page.keyboard.press('x');
  const outside=await page.evaluate(()=>window.starAgent.state);expect(outside.insideShip).toBe(false);expect(outside.altitude).toBeCloseTo(1.75,4);expect(outside.body).toBe('pyre');
- await page.evaluate(()=>window.starAgent.setRenderScale(1));await page.keyboard.press('Tab');await page.screenshot({path:'/tmp/star-agent-pyre/walking.png'});
+ await page.evaluate(()=>window.starAgent.setRenderScale(1));await page.keyboard.press('Shift+Tab');await page.screenshot({path:'/tmp/star-agent-pyre/walking.png'});
  await page.evaluate(()=>window.starAgent.setRenderScale(.4));
  await page.keyboard.down('s');await page.waitForFunction(()=>window.starAgent.state.shipLocal[2]<-1.4);await page.keyboard.up('s');await page.keyboard.press('x');
  await page.keyboard.press('f');await page.waitForFunction(()=>window.starAgent.state.mode==='landed');await page.keyboard.press('b');

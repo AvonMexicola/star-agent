@@ -1,5 +1,12 @@
 # Public entry points and frozen releases
 
+Current deployment: **`f70eab9`, 9 September 2026**, on both play and multiplayer.
+[The combined release receipt](qa/combined-guide-release/README.md) records
+protected PR113 / `006c6aee`, step-by-step Nomad guidance, curved planetary drive,
+starter tractor, Greenbank, command wheel and character controller tuning.
+Focused arrows and distinct marker types remain included. Both channel artifacts
+and the matching protocol11 server are live; existing tabs must refresh.
+
 `staragent.site` and `www.staragent.site` serve `site/`: the project introduction,
 real game screenshots, two short ambient captures and three user-operated films, plus
 links to solo, multiplayer, source and contribution guides. Motion is optional,
@@ -21,18 +28,21 @@ imports instead of scraping Vite's transformed source at runtime.
 
 Solo CPU/GPU simulation runs on the visitor's machine. Hosting serves HTML,
 JavaScript, models, textures and optional films; transfer bandwidth and the first
-asset download are the main server costs. Assets total about 117 MB on disk, but
+asset download are the main server costs. Each current game artifact totals about 141 MB on disk, but
 are loaded by the relevant scenes/tools, not all by the homepage. This is browser
 play, not video streaming or a hosted GPU session. It is not a service-worker
 installation and does not promise uncached play without an internet connection.
 
 `multiplayer.staragent.site` remains the existing dedicated authoritative server,
-PostgreSQL database and account system. The public capacity release is separately
-branched from the exact deployed `f7a30ef` revision. It increases admission to 20,
-extends the suit palette to 20 distinct colours and reports the full-room limit
-correctly. Twenty physical hangars already exist. Player 21 is rejected; a freed
-slot can be reused. Client/server protocol and database schema are unchanged.
-The more recent local shared-world protocol/economy changes are separate releases.
+PostgreSQL database and account system. The current client and server use protocol11, including curved planetary drive,
+starter tractor and completed shared settlement, economy, rotating-clock and Sentry updates.
+The existing twenty-player capacity, twenty suit colours and twenty physical
+hangars are retained. Player21 is rejected; a freed slot can be reused. All four
+SQL migration files match the preceding deployed server: account/session/inventory
+data stays in the same database. Installation must generate the Prisma client
+with `npm run prisma:generate` and verify the service user can import
+`server/generated/prisma/index.js` before cutover; a memory-store startup alone
+does not verify production database packaging.
 
 Twenty is a capacity limit, not a performance guarantee. The room currently
 simulates at 30 Hz and sends whole-room snapshots at 15 Hz. All-to-all snapshot

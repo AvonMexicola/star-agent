@@ -1,3 +1,5 @@
+import { navigationShipFrame } from '../src/navigation-rotation.js';
+import { betweenFrames, frameRotation } from '../src/planet-rotation.js';
 /** Authoritative hitscan. Call only with room-owned player/navigation objects;
  * no ray, target, distance or damage from a network message is accepted. */
 import * as THREE from 'three';
@@ -58,7 +60,7 @@ export function shipPose(player) {
   const rotation = nav.shipPosition ? nav.shipOrientation : nav.orientation;
   if (!finiteQuaternion(rotation)) return null;
   const position = nav.shipPosition?.clone() || nav.position.clone().sub(new THREE.Vector3(...layout.seatEye).applyQuaternion(rotation));
-  return { position, rotation, bounds: layout.flightBounds };
+  return { position, rotation, bounds: layout.flightBounds, ...(nav.rotationClock?{frame:navigationShipFrame(nav)}:{}) };
 }
 
 /** Ray/slab intersection, subtracting the world hull root before rotation. A
@@ -109,7 +111,7 @@ function terrainDistance(origin, direction, limit) {
   return Infinity;
 }
 
-function worldDistance(world, origin, direction, range) {
+export function worldDistance(world, origin, direction, range) {
   let distance = range;
   const endpoint = origin.clone().addScaledVector(direction, range);
   const min = new THREE.Vector3(-.004, -.004, -.004), max = min.clone().negate();
@@ -135,7 +137,7 @@ function worldDistance(world, origin, direction, range) {
  * An accepted miss still spends one charge and advances the cooldown. Empty
  * hands/mining tools, missing pack weapons, dead players and pilots cannot fire.
  */
-export function shoot({ shooter, players, world, now, deferDamage = false }) {
+export function shoot({ shooter, players, world, now, deferDamage = false, vehicleHit = () => null }) {
   const nav = shooter?.nav;
   const rules = typeof shooter?.weapon === 'string' && Object.hasOwn(WEAPON_RULES, shooter.weapon) ? WEAPON_RULES[shooter.weapon] : null;
   const pack = shooter?.inventory?.containers?.pack;
@@ -146,11 +148,17 @@ export function shoot({ shooter, players, world, now, deferDamage = false }) {
   const origin = nav.position.clone();
   const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(nav.orientation).normalize();
   let distance = worldDistance(world, origin, direction, rules.range), target = null, kind = null;
+  const vehicle=vehicleHit(origin,direction,distance);
+  if(vehicle&&vehicle.distance<distance){distance=vehicle.distance;if(vehicle.health>0){target=vehicle;kind='vehicle';}}
   const candidates = players instanceof Map ? players.values() : players;
   for (const player of candidates || []) {
     if (!player?.nav || !finiteVector(player.nav.position)) continue;
     const ship = shipPose(player);
     if (ship) {
+      if(nav.rotationClock){
+        betweenFrames(ship.position,ship.frame,nav.rotationFrame,nav.rotationTime,ship.position);
+        ship.rotation=frameRotation(ship.frame,nav.rotationFrame,nav.rotationTime).multiply(ship.rotation);
+      }
       const hit = shipDistance(origin, direction, ship.position, ship.rotation, ship.bounds);
       if (hit < distance) {
         distance = hit;
@@ -160,7 +168,9 @@ export function shoot({ shooter, players, world, now, deferDamage = false }) {
       }
     }
     if (player.id === shooter.id || !['walk', 'eva'].includes(player.nav.mode) || !Number.isFinite(player.health) || !(player.health > 0)) continue;
-    const hit = capsuleDistance(origin, direction, player.nav.position, playerUp(player.nav));
+    const eye=nav.rotationClock?betweenFrames(player.nav.position,player.nav.rotationFrame,nav.rotationFrame,nav.rotationTime):player.nav.position;
+    const up=playerUp(player.nav);if(nav.rotationClock)up.applyQuaternion(frameRotation(player.nav.rotationFrame,nav.rotationFrame,nav.rotationTime));
+    const hit = capsuleDistance(origin, direction, eye, up);
     if (hit < distance) { distance = hit; target = player; kind = 'player'; }
   }
   pack[rules.ammo]--;

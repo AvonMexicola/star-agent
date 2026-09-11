@@ -1,6 +1,7 @@
 import {Vector3,Quaternion} from 'three';
 import {step as stepFlight} from '../flight-model.js';
 import {shipWeaponProfile,SHIP_WEAPON_SIZES} from '../ship-weapon-profiles.js';
+import {encounterContract} from './encounters.js';
 
 export const SHIP_STATS=Object.freeze({
   nomad:{hull:240,shield:180,radius:9,speed:65,turn:.65,recharge:16},
@@ -47,19 +48,34 @@ export function projectileSpan(shot,maximum=8*(shot.profile?.effectScale??1)){
 }
 export class CombatSimulation{
   constructor({onShot=()=>{},onHit=()=>{},obstruction=()=>null}={}){
-    this.onShot=onShot;this.onHit=onHit;this.obstruction=obstruction;this.enemies=[];this.projectiles=[];this.player=integrity();this.shipId='nomad';this.phase='idle';this.targetId=null;this.serial=0;this.time=0;this.shots=0;this.hits=0;this.incomingHits=0;this.completed=0;
+    this.onShot=onShot;this.onHit=onHit;this.obstruction=obstruction;this.enemies=[];this.projectiles=[];this.player=integrity();this.shipId='nomad';this.phase='idle';this.targetId=null;this.serial=0;this.time=0;this.shots=0;this.hits=0;this.incomingHits=0;this.completed=0;this.reports=[];this.wave=0;this.reinforcementIn=0;this.contract=encounterContract();
   }
   setShip(id){if(id!==this.shipId){this.shipId=id;this.player=integrity(id);}}
-  accept(point,orientation){
+  accept(point,orientation,contract=encounterContract()){
     if(['transit','engage','complete'].includes(this.phase))return false;
-    this.point=point.clone();this.heading=orientation.clone();this.enemies=[];this.projectiles=[];this.targetId=null;this.phase='transit';return true;
+    this.point=point.clone();this.heading=orientation.clone();this.contract=contract;this.wave=0;this.reinforcementIn=0;this.sortieStart=this.time;this.sortieShip=this.shipId;this.sortieResult=null;this.sortieCounters={shots:this.shots,hits:this.hits,incomingHits:this.incomingHits};this.enemies=[];this.projectiles=[];this.targetId=null;this.phase='transit';return true;
   }
-  abort(){if(!['transit','engage'].includes(this.phase))return false;this.phase='aborted';this.enemies=[];this.projectiles=[];this.targetId=null;return true;}
-  debrief(){if(this.phase!=='complete')return false;this.completed++;this.phase='debriefed';return true;}
+  abort(){if(!['transit','engage'].includes(this.phase))return false;this.phase='aborted';this.enemies=[];this.projectiles=[];this.targetId=null;this.reinforcementIn=0;return true;}
+  debrief(){
+    if(this.phase!=='complete')return false;
+    this.reports.unshift(Object.freeze({id:++this.completed,...this.sortieResult}));
+    this.reports.length=Math.min(this.reports.length,12);this.phase='debriefed';return true;
+  }
   repair(){this.player=integrity(this.shipId);}
+  recover(){
+    if(this.phase!=='failed')return false;
+    this.repair();this.enemies=[];this.projectiles=[];this.targetId=null;this.wave=0;this.reinforcementIn=0;this.phase='idle';return true;
+  }
   spawn(){
-    this.enemies=['nomad','kestrel'].map((ship,i)=>({id:`hostile-${++this.serial}`,ship,label:ship==='nomad'?'Nomad 02 · Raider':'Kestrel · Interceptor',position:new Vector3((i?1:-1)*160,i*65,-(i?400:150)).applyQuaternion(this.heading).add(this.point),previous:new Vector3(),orientation:this.heading.clone().multiply(new Quaternion().setFromAxisAngle(new Vector3(0,1,0),Math.PI)),velocity:new Vector3(),integrity:integrity(ship),strategy:'intercept',breakTime:0,cooldown:2+i,slot:i}));
-    this.phase='engage';this.targetId=this.enemies[0].id;
+    const roster=this.contract.waves[this.wave];if(!roster)return;
+    const difficulty=this.contract.difficulty;
+    const wave=roster.map((ship,i)=>{
+      const health=integrity(ship);
+      for(const key of ['hull','shield','maxHull','maxShield','recharge'])health[key]*=difficulty.integrity;
+      return {id:`hostile-${++this.serial}`,ship,label:`${ship==='nomad'?'Nomad 02 · Raider':'Kestrel · Interceptor'} ${this.wave+1}-${i+1}`,position:new Vector3(i===2?0:(i?1:-1)*160,i===2?-160:i*65,-(i?400:150)).applyQuaternion(this.heading).add(this.point),previous:new Vector3(),orientation:this.heading.clone().multiply(new Quaternion().setFromAxisAngle(new Vector3(0,1,0),Math.PI)),velocity:new Vector3(),integrity:health,strategy:'intercept',breakTime:0,cooldown:(2+i)/difficulty.pressure,slot:i};
+    });
+    this.enemies.push(...wave);this.wave++;this.reinforcementIn=0;
+    this.phase='engage';this.targetId=wave[0].id;
   }
   get living(){return this.enemies.filter(e=>e.integrity.hull>0);}
   get target(){return this.living.find(e=>e.id===this.targetId)??null;}
@@ -119,6 +135,12 @@ export class CombatSimulation{
     if(this.phase==='transit'&&position.distanceTo(this.point)<1100)this.spawn();
     if(this.phase!=='engage'){this.projectiles=[];return;}
     if(this.player.hull<=0){this.phase='failed';this.projectiles=[];return;}
+    if(this.reinforcementIn>0){
+      this.reinforcementIn=Math.max(0,this.reinforcementIn-dt);
+      if(this.reinforcementIn<1e-6)this.spawn();
+      else return;
+    }
+    const difficulty=this.contract.difficulty;
     for(const e of this.living){
       e.previous.copy(e.position);recharge(e.integrity,dt);const stats=SHIP_STATS[e.ship],distance=e.position.distanceTo(position);
       if(e.position.distanceTo(this.point)>6500){e.strategy='return';}
@@ -132,9 +154,9 @@ export class CombatSimulation{
       let desired=aim.clone().sub(e.position);
       if(e.strategy==='return')desired=this.point.clone().sub(e.position);
       if(e.strategy==='break')desired=e.position.clone().sub(position).add(new Vector3((e.slot?1:-1)*220,100,0).applyQuaternion(orientation));
-      const wanted=new Quaternion().setFromUnitVectors(FORWARD,desired.normalize());e.orientation.rotateTowards(wanted,stats.turn*dt);
+      const wanted=new Quaternion().setFromUnitVectors(FORWARD,desired.normalize());e.orientation.rotateTowards(wanted,stats.turn*difficulty.turn*dt);
       const forward=FORWARD.clone().applyQuaternion(e.orientation);
-      const speed=stats.speed*(e.strategy==='break'?1.35:e.strategy==='attack'?.7:1);
+      const speed=stats.speed*difficulty.speed*(e.strategy==='break'?1.35:e.strategy==='attack'?.7:1);
       e.velocity.copy(stepFlight(e,{shipId:e.ship,assist:true,targetVelocity:forward.clone().multiplyScalar(speed)},{density:0,gravity:new Vector3()},dt).velocity);e.position.addScaledVector(e.velocity,dt);
       e.cooldown-=dt;
       if(e.strategy==='attack'&&distance<1250&&forward.dot(aim.clone().sub(e.position).normalize())>.994&&e.cooldown<=0){
@@ -155,7 +177,7 @@ export class CombatSimulation{
           // Sized hits use the common damage profile. Pulse spacing is 1.5 s
           // for Nomad and 1.75 s for Kestrel, well below the player's fire rate
           // while still applying pressure across the pilots' attack/break passes.
-          e.cooldown=Math.max(pose.profile.interval,pose.profile.damage/(NPC_DAMAGE_PER_SECOND[e.ship]??NPC_DAMAGE_PER_SECOND.nomad));
+          e.cooldown=Math.max(pose.profile.interval,pose.profile.damage/((NPC_DAMAGE_PER_SECOND[e.ship]??NPC_DAMAGE_PER_SECOND.nomad)*difficulty.pressure));
         }
       }
     }
@@ -166,8 +188,15 @@ export class CombatSimulation{
       return shot.remaining>0;
     });
     if(!this.target)this.targetId=this.living[0]?.id??null;
-    if(!this.living.length){this.phase='complete';this.projectiles=[];}
+    if(!this.living.length){
+      this.projectiles=[];
+      if(this.wave<this.contract.waves.length)this.reinforcementIn=this.contract.reinforcementDelay;
+      else{
+        this.phase='complete';
+        this.sortieResult=Object.freeze({contractId:this.contract.id,title:this.contract.title,region:this.contract.region,difficulty:this.contract.difficulty.label,kills:this.enemies.filter(e=>e.integrity.hull===0).length,waves:this.wave,seconds:Math.round(this.time-this.sortieStart),shots:this.shots-this.sortieCounters.shots,hits:this.hits-this.sortieCounters.hits,incomingHits:this.incomingHits-this.sortieCounters.incomingHits,hull:Math.ceil(this.player.hull),ship:this.sortieShip});
+      }
+    }
     if(this.player.hull<=0){this.phase='failed';this.projectiles=[];}
   }
-  get state(){return {phase:this.phase,point:this.point?.toArray()??null,player:{...this.player},targetId:this.targetId,shots:this.shots,hits:this.hits,incomingHits:this.incomingHits,completed:this.completed,projectiles:this.projectiles.length,enemies:this.enemies.map(e=>({id:e.id,ship:e.ship,position:e.position.toArray(),velocity:e.velocity.toArray(),orientation:e.orientation.toArray(),strategy:e.strategy,...e.integrity}))};}
+  get state(){return {phase:this.phase,contract:{id:this.contract.id,title:this.contract.title,region:this.contract.region,difficulty:this.contract.difficulty.label,total:this.contract.total,waves:this.contract.waves.length},wave:this.wave,reinforcementIn:this.reinforcementIn,reports:this.reports.map(r=>({...r})),point:this.point?.toArray()??null,player:{...this.player},targetId:this.targetId,shots:this.shots,hits:this.hits,incomingHits:this.incomingHits,completed:this.completed,projectiles:this.projectiles.length,enemies:this.enemies.map(e=>({id:e.id,ship:e.ship,position:e.position.toArray(),velocity:e.velocity.toArray(),orientation:e.orientation.toArray(),strategy:e.strategy,...e.integrity}))};}
 }
