@@ -1,10 +1,12 @@
 # SA-PROMENADE-001 — contribution handoff at 2026-09-10
 
-Status: implemented and validated by the builder; **not reviewed, not accepted,
-not integrated**. Branch `feat/aeon-retail-promenade`, base `dev/all-features`
-`46fdc5c`. No PR is open: the contributor has pull-only access upstream, so
-submission needs a fork. Work is in a private clone; no shared checkout was
-switched and no server was left running.
+Status: implemented and validated by the builder; **submitted, not reviewed,
+not accepted, not integrated**. Branch `feat/aeon-retail-promenade`, base
+`dev/all-features` `46fdc5c`, two commits. Submitted from the contributor's fork
+`RobleusCaesar/star-agent` as
+[AvonMexicola/star-agent#117](https://github.com/AvonMexicola/star-agent/pull/117)
+on 2026-09-11, since the contributor has pull-only access upstream. Work is in a
+private clone; no shared checkout was switched and no server was left running.
 
 Owned files: `blender/build_station_promenade.py`, `public/models/station-promenade.glb`,
 `src/station-promenade.js`, `src/station-cosmic-chicken.js`,
@@ -134,8 +136,9 @@ are in `docs/qa/station-promenade/browser/`; Blender studio images are in
 
 ## Integration and operations
 
-Nothing is integrated. `dev/all-features` is untouched; this branch is neither
-merged locally nor pushed. Save format stays at version 3 with an additive
+Nothing is integrated. `dev/all-features` is untouched; this branch is merged
+nowhere and is pushed only to the contributor's fork behind #117. Save format
+stays at version 3 with an additive
 migration, so a build without this change still reads a manifest written with it
 and loses only the new items. No database, protocol or generated-schema change.
 No credentials, tokens, private recordings or build output are committed.
