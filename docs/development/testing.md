@@ -18,6 +18,7 @@ The commands below are different levels of evidence, not interchangeable green t
 | `npm run test:browser -- -c scripts/dev-launcher.config.js` | Combined launcher/ships/worlds/controller/touch/audio journeys; requires `npm run dev:all` |
 | `npm run test:browser -- -c scripts/inspect.config.js` | Production physical boarding journey |
 | `npm run test:browser -- -c scripts/controller-gameplay.config.js` | Actual controller mining/boarding journey, distinct from a stub UI fixture |
+| `npm run test:browser -- -c scripts/promenade.config.js` | Retail promenade: controller and keyboard journeys through the hub portal, all four storefronts, a purchase in each and the sealed Deck 05 door, with a fixed-camera on/off cost pair |
 
 Feature-specific configs live under `scripts/`; the [area registry](../../project/areas.json)
 points to relevant guidance. A new test must be reachable from a documented

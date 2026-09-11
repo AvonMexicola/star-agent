@@ -21,6 +21,45 @@ export const STATION_SHOPS = Object.freeze({
       Object.freeze({ itemId: 'replacement', price: 220, stock: 4 }),
     ]),
   }),
+  // Retail promenade, Deck 04 aft. Everyday transit-hub trade: nothing here
+  // grants combat, ship or survival effects either.
+  galley: Object.freeze({
+    name: 'LONGREACH GALLEY',
+    category: 'LONGREACH / FOOD AND DRINK',
+    detail: 'Hot food and drink for the next leg. Everything is stored cargo; eating and drinking are not implemented.',
+    offers: Object.freeze([
+      Object.freeze({ itemId: 'hotmeal', price: 18, stock: 12 }),
+      Object.freeze({ itemId: 'brew', price: 12, stock: 16 }),
+      Object.freeze({ itemId: 'ration', price: 15, stock: 20 }),
+    ]),
+  }),
+  outfitter: Object.freeze({
+    name: 'TIDEWELL OUTFITTERS',
+    category: 'TIDEWELL / DECK CLOTHING',
+    detail: 'Layers for cold decks and long shifts. Clothing is stored cargo; wearing and equipping are not implemented.',
+    offers: Object.freeze([
+      Object.freeze({ itemId: 'jacket', price: 240, stock: 4 }),
+      Object.freeze({ itemId: 'gloves', price: 60, stock: 9 }),
+    ]),
+  }),
+  hydroponics: Object.freeze({
+    name: 'GREENSIDE HYDROPONICS',
+    category: 'GREENSIDE / LIVE PLANTS',
+    detail: 'Station-grown plants and starter trays. Growing, planting and food production are not implemented.',
+    offers: Object.freeze([
+      Object.freeze({ itemId: 'seedling', price: 95, stock: 6 }),
+      Object.freeze({ itemId: 'herbs', price: 45, stock: 10 }),
+    ]),
+  }),
+  souvenir: Object.freeze({
+    name: 'WAYPOINT SOUVENIRS',
+    category: 'WAYPOINT / GIFTS AND PRINTS',
+    detail: 'Something to take home from Aeon. Models and prints are stored cargo with no gameplay effect.',
+    offers: Object.freeze([
+      Object.freeze({ itemId: 'hullmodel', price: 130, stock: 5 }),
+      Object.freeze({ itemId: 'chart', price: 25, stock: 14 }),
+    ]),
+  }),
 });
 export function shopOffer(shopId, itemId) {
   return Object.hasOwn(STATION_SHOPS, shopId)

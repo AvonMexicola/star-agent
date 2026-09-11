@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createConcourse } from './station-concourse.js';
 import { createPressureElevator } from './station-elevator.js';
+import { createPromenade } from './station-promenade.js';
 import { stationFinishPalette } from './station-finish-palette.js';
 
 export const POD_LAYOUT = Object.freeze(Array.from({length:20},(_,i)=>Object.freeze({
@@ -120,7 +121,16 @@ export function createExterior(){
   return {group,rings,hubShell};
 }
 
-export function createHub(){return createConcourse({sign});}
+/** The concourse and the retail promenade share one hub frame: one collision
+ * BVH, one rebase and one set of local metres. The promenade contributes its own
+ * walkable volumes rather than enlarging the concourse box. */
+export function createHub(){
+  const hub=createConcourse({sign});
+  const promenade=createPromenade({sign});
+  hub.group.add(promenade.group);
+  hub.promenade=promenade;hub.volumes=promenade.volumes;
+  return hub;
+}
 export function createElevator(parent,z,floor=-8){return createPressureElevator(parent,z,floor);}
 export function updateElevator(lift,dt){
   lift.progress=THREE.MathUtils.clamp(lift.progress+(lift.open?1:-1)*dt*1.1,0,1);

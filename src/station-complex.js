@@ -7,6 +7,7 @@ import { createStationFinishMaterials } from './station-finish-materials.js';
 import { createStationFinishGraphics } from './station-finish-graphics.js';
 import { createStationFinishLighting, prepareStationFinishShadows } from './station-finish-lighting.js';
 import { attachConcourse } from './station-concourse.js';
+import { attachPromenade, promenadeInteraction, addPromenadeShell } from './station-promenade.js';
 import { loadStationShopGraphics } from './station-shop-graphics.js';
 import { createStationShopProps, loadStationShopProps } from './station-shop-props.js';
 import { createStationShopkeeper, STATION_SHOPKEEPERS } from './station-shopkeeper.js';
@@ -16,8 +17,10 @@ import { buildStationColliders, constrainStationSweep } from './station-collisio
 import { POD_LAYOUT, RING_SPEED, createExterior, createHub, createElevator, updateElevator, elevatorBoxes, sign } from './station-architecture.js';
 import { createAuthoredExterior, attachExteriorLod, STATION_EXTERIOR_URL, STATION_EXTERIOR_LOD_URL } from './station-exterior.js';
 import { fleetHangarAsset } from './station-fleet-hangar.js';
-import {STATION_HUB_FRAME} from './station-hub-policy.js';
+import {STATION_HUB_FRAME,hubFrameMethods} from './station-hub-policy.js';
 import {stationPhysicsAt} from './station-physics.js';
+
+const scratchLocal=new THREE.Vector3();
 
 /** Bake only cloned LOD geometry into the station frame, then merge compatible
  * material/attribute sets. Each moving door stays separate from static parts
@@ -66,16 +69,28 @@ export class StationComplex {
     this.centre=this.direction.clone().multiplyScalar(RADIUS+this.altitude);
     this.exterior=createExterior();scene.add(this.exterior.group);
     this.lodGroup=new THREE.Group();this.lodGroup.name='Instanced distant berths';scene.add(this.lodGroup);this.lodBatches=[];
+    // Distant stand-in for the promenade annex, owned here rather than injected
+    // into either exterior kit: both measure their own assembled geometry.
+    this.annexShell=new THREE.Group();this.annexShell.name='Promenade annex shell';scene.add(this.annexShell);
     this.hub=createHub();scene.add(this.hub.group);
     this.hub.quaternion=this.baseQuaternion.clone();this.hub.inverseQuaternion=this.baseQuaternion.clone().invert();this.hub.worldPosition=this.centre.clone();this.hub.ready=true;
     Object.defineProperty(this.hub,'up',{get:()=>this.up});
-    for(const name of ['toWorld','toLocal','deckPoint','deckHeightAt','isInsideHangar'])this.hub[name]=Station.prototype[name];
+    for(const name of ['toWorld','toLocal'])this.hub[name]=Station.prototype[name];
+    Object.assign(this.hub,hubFrameMethods());
     this.hub.colliders=buildStationColliders(this.hub.group);
     this.hub.lift=createElevator(this.hub.group,14.3);
     Object.assign(this,this.buildExteriorColliders());
+    this.syncAnnexShell();
     this.exteriorStatus='legacy';this.exteriorError=null;this.exteriorLodError=null;
     this.finishStatus='loading';this.finishRig=null;
     this.readyPromise=this.load(options);
+  }
+  /** Reuse whichever hull finish the installed exterior kit is currently using. */
+  syncAnnexShell(){
+    const source=this.exterior?.hubShell?.getObjectByProperty?.('isMesh',true)?.material
+      ??(this.exterior?.hubShell?.isMesh?this.exterior.hubShell.material:null);
+    this.annexShell.clear();
+    if(source)addPromenadeShell(this.annexShell,source);
   }
   buildExteriorColliders(exterior=this.exterior){
     exterior.lod?.group.removeFromParent();
@@ -92,12 +107,12 @@ export class StationComplex {
   }
   async loadFinish(loader){
     try{
-      const [materials,props,concourse,elevator,shopGraphics,shopProps]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics(),loadStationShopProps()]);
+      const [materials,props,concourse,promenade,elevator,shopGraphics,shopProps]=await Promise.all([createStationFinishMaterials(),loader.loadAsync('/models/station-props.glb'),loader.loadAsync('/models/station-concourse.glb'),loader.loadAsync('/models/station-promenade.glb'),loader.loadAsync('/models/station-elevator.glb'),loadStationShopGraphics(),loadStationShopProps()]);
       const graphics=createStationFinishGraphics();
       await graphics.readyPromise;
       const rig=createStationFinishLighting();
       this.finishMaterials=materials;this.finishRig=rig;this.finishStatus='ready';
-      return {materials,props,graphics,concourse,elevator,shopGraphics,shopProps};
+      return {materials,props,graphics,concourse,promenade,elevator,shopGraphics,shopProps};
     }catch(error){this.finishStatus='unavailable';this.finishError=error.message;return null;}
   }
   async load(options){
@@ -119,18 +134,22 @@ export class StationComplex {
             catch(error){this.exteriorLodError=error.message;}
           }
           this.exterior.group.removeFromParent();this.exterior=next;this.scene.add(next.group);
-          Object.assign(this,colliders);this.exteriorStatus='geometry-review';
+          Object.assign(this,colliders);this.syncAnnexShell();this.exteriorStatus='geometry-review';
         }catch(error){this.exteriorError=error.message;}
       }
       if(finish){gltf.scene.add(finish.props.scene,finish.graphics);finish.materials.apply(gltf.scene);if(lod)finish.materials.apply(lod.scene);}else if(this.finishStatus==='loading')this.finishStatus='disabled';
       if(finish){
         attachConcourse(this.hub,finish.concourse,{sign,materials:finish.materials,shopGraphics:finish.shopGraphics});
+        attachPromenade(this.hub,finish.promenade,{sign,materials:finish.materials});
         this.hub.shopProps=createStationShopProps(finish.shopProps);
         this.hub.group.add(this.hub.shopProps);
         // Collision for the batched furniture comes from authored assembly boxes.
         // Keep the room BVH built before these optional props and moving leaves.
         finish.materials.apply(this.hub.group);
         this.hub.group.traverse(mesh=>{if(mesh.isMesh&&(/Detail|Sign_/.test(mesh.name)||mesh.material.transparent))mesh.castShadow=false;});
+        // The finish re-enables casting on every material it replaces; the
+        // promenade has no shadow-casting light, so take it back out again.
+        this.hub.promenade?.disableShadowCasting();
         attachPressureElevator(this.hub.lift,finish.elevator,{sign,materials:finish.materials});
         // Attach after station materials/shadow batching: both characters keep
         // authored skin/clothing materials and load only on hub entry.
@@ -291,12 +310,14 @@ export class StationComplex {
     for(const merchant of Object.values(this.shopkeepers??{}))merchant.update(dt,{visible:this.hub.group.visible&&this.location==='hub',paused:this.nav?.enabled===false||this.nav?.focused===false||(typeof document!=='undefined'&&document.hidden)});
     this.exterior.hubShell.visible=!this.hub.group.visible;
     this.exterior.updateDetail?.(cameraDistance);
+    this.annexShell.visible=Boolean(this.exterior.hubShell.visible||this.exterior.lod?.hubShell.visible);
     for(const light of this.hub.lights)light.visible=this.location==='hub'&&position.distanceTo(this.centre)<100;
+    this.hub.promenade?.update(this.location==='hub'&&this.hub.group.visible?this.hub.toLocal(position,scratchLocal):null);
     this.rebase(origin);
   }
   rebase(origin){
     for(const pod of this.pods){pod.group.position.copy(pod.worldPosition).sub(origin);pod.group.quaternion.copy(pod.quaternion);}
-    for(const group of [this.exterior.group,this.hub.group,this.lodGroup]){group.position.copy(this.centre).sub(origin);group.quaternion.copy(this.baseQuaternion);}
+    for(const group of [this.exterior.group,this.hub.group,this.lodGroup,this.annexShell]){group.position.copy(this.centre).sub(origin);group.quaternion.copy(this.baseQuaternion);}
   }
   constrainStep(previous,proposed,orientation,walking=false,layout=SHIP_LAYOUT){
     if(!this.ready)return {point:proposed.clone(),hit:false};
@@ -337,8 +358,12 @@ export class StationComplex {
     if(this.location==='hangar'&&p.distanceTo(new THREE.Vector3(-12,floor+nav.layout.eyeHeight,20.7))<2.3){
       return this.activeIndex===this.parkedPod?{kind:'cargo',label:'F · CARGO TRANSFER TERMINAL'}:{kind:'unavailable',label:`SHIP PARKED AT BERTH ${this.parkedPod+1}`};
     }
-    if(this.location==='hub')for(const [x,shopId,name] of [[-10.7,'weapons','WATCHKEEP ARMORY'],[10.7,'equipment','KESTREL SHIPWORKS']]){
-      if(Math.hypot(p.x-x,p.z)<1.75)return {kind:'shop',shopId,label:`F · ${name}`};
+    if(this.location==='hub'){
+      for(const [x,shopId,name] of [[-10.7,'weapons','WATCHKEEP ARMORY'],[10.7,'equipment','KESTREL SHIPWORKS']]){
+        if(Math.hypot(p.x-x,p.z)<1.75)return {kind:'shop',shopId,label:`F · ${name}`};
+      }
+      const promenade=promenadeInteraction(p);
+      if(promenade)return promenade;
     }
     const lift=this.lift;
     if(Math.abs(p.x)<1.65&&p.z>lift.z+.65&&p.z<lift.z+3.1)return {kind:'travel',label:'F · ELEVATOR DESTINATIONS'};

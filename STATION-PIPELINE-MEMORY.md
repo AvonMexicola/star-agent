@@ -551,3 +551,69 @@ review are in docs/qa/station-soft-props/ and station-shop-props-review.md.
 Draft integration PR57 contains the source-to-game pipeline. This is the current
 worked example for future small static props; it is not a whole-scene performance
 waiver or proof that every Meshy result will pass.
+
+## Retail promenade annex — 2026-09-10
+
+The concourse's aft wall at Z −19 is no longer solid. A 9.2 m portal (X ±4.6,
+head Y −3.45) opens onto `station-promenade`, a 30 m annex with four storefronts,
+a glazed mid court and a locked Deck 05 pressure door at Z −48.9. The flat
+`AEON / ORBITAL TRANSIT` directory that used to close the wall now hangs from a
+transverse gantry at Z −17, double sided, with 3.09 m of clearance underneath.
+`STATION_HUB_PORTAL` in `station-hub-policy.js` is the shared opening contract;
+`station-concourse.js` omits the wall there and `station-promenade.js` lines it.
+Both sides of a shared plane must change together.
+
+New source boundaries: `src/station-promenade.js` owns the pressurised shell,
+glazing, gantry, portal lining and lighting; `blender/build_station_promenade.py`
+owns the storefronts, fixtures, display stock and the locked door. The concourse
+and elevator builders and their exports are untouched and remain byte-for-byte.
+Full record in [the promenade production record](docs/qa/station-promenade/README.md).
+
+The hub frame now owns **more than one walkable volume**. `hubFrameMethods()`
+replaces `Station`'s single-`interiorBox` `deckPoint`, `deckHeightAt` and
+`isInsideHangar` on the hub only; the twenty berths keep theirs. Author each
+volume 0.3 m larger than its walls, because deck support insets by that margin
+and the suit otherwise loses the floor before collision stops it. Never take the
+bounding box of an L-shaped room: it hands the player a deck out in open space.
+
+Do not give a laid floor finish collision. Threshold plates, shop floors and
+their borders are 3 cm of finish on the deck the body already stands on; as solid
+boxes they stop the player dead in every doorway. The promenade builder skips any
+architecture object whose top is within 6 cm of the floor. Equally, one assembly
+holding two props 6 m apart makes the open floor between them solid — the two
+window forms needed separate assemblies before the unit could be entered.
+
+Build the room BVH from the procedural shell **before** the authored kit attaches,
+exactly as `StationComplex` does. A test that builds it afterwards turns render
+triangles into collision and produces both false passes and false failures.
+
+This kit exports no UV channel (`export_texcoords=False`). It ships no image maps
+and `ensureStationMaterialUVs` already generates metre UVs at load, so the second
+channel cost 8 bytes on each of 150,020 vertices: 5.65 MB became 3.91 MB. Only
+apply this where an asset genuinely has no authored maps.
+
+Catalogue growth is a save-compatibility change. A version 3 manifest validated
+every known item and shop, so four new shops and eight new items would have made
+every existing save unreadable and blocked purchases. The loader now separates a
+value the save predates from a value it carries: `VERSION3_ITEM_IDS` and
+`VERSION3_SHOP_IDS` stay required and strictly validated; later additions migrate
+in at zero owned and full stock, and only a migrated save is rewritten.
+
+Keep the distant annex shell out of both exterior kits. Each asserts its own
+assembled triangle and primitive counts against its own manifest, so runtime
+geometry added to `HubShellDetail` fails those budgets. `StationComplex` owns the
+two-box stand-in and toggles it with the hub shell.
+
+Promenade fixtures use seven shadowless spot lights aimed at the deck. A point
+light hung under a low ceiling blows the ceiling out; a cone aimed down lights
+the floor, fixtures and lower walls. Keep an aft light well clear of the bulkhead
+it faces, or its large flat cassettes blow out at walking distance. The three
+corridor lights follow the hub, because an unlit corridor seen from the concourse
+reads as a hole rather than a route; the four unit lights switch on before the
+portal, where no side unit is in view, so their light-count change is not a pop.
+
+Take a room with no shadow-casting light back out of shadow casting **after** the
+station finish applies its materials: the finish enables `castShadow` on every
+material it replaces, so the promenade was being drawn into shadow maps it can
+never appear in. Fixing that took its measured cost at the entry pose from +82
+draws / +308,952 triangles to +34 / +78,292 — its own geometry, once.

@@ -1,3 +1,113 @@
+# SA-PROMENADE-001 — contribution handoff at 2026-09-10
+
+Status: implemented and validated by the builder; **not reviewed, not accepted,
+not integrated**. Branch `feat/aeon-retail-promenade`, base `dev/all-features`
+`46fdc5c`. No PR is open: the contributor has pull-only access upstream, so
+submission needs a fork. Work is in a private clone; no shared checkout was
+switched and no server was left running.
+
+Owned files: `blender/build_station_promenade.py`, `public/models/station-promenade.glb`,
+`src/station-promenade.js`, `tests/station-promenade.test.js`,
+`scripts/station-promenade.spec.js`, `scripts/promenade.config.js`,
+`docs/qa/station-promenade/`. Narrow edits to shared modules:
+`src/station-concourse.js` (aft wall portal only), `src/station-hub-policy.js`
+(multi-volume hub frame), `src/station-architecture.js` (`createHub`),
+`src/station-complex.js` (load, attach, interaction, annex shell, lights),
+`src/station-shop.js`, `src/ship-inventory.js`, `src/station-shop.css`,
+`package.json` (one test file), `tests/station-shop-props.test.js` (one fixture
+field), `docs/development/testing.md`, `STATION-PIPELINE-MEMORY.md`.
+
+## What changed and what remains
+
+The concourse aft wall at Z -19 gains a 9.2 m walk-through portal. Its flat
+`AEON / ORBITAL TRANSIT` directory now hangs from a transverse gantry at Z -17,
+double sided, 3.09 m clear underneath. Through the portal a 30 m promenade runs
+aft: entry bay, two storefronts, a glazed mid court with seating and planting
+that keeps the station panorama, two more storefronts, and a locked Deck 05
+pressure door that reports itself sealed rather than silently stopping the
+player. Four catalogues — LONGREACH GALLEY, TIDEWELL OUTFITTERS, GREENSIDE
+HYDROPONICS, WAYPOINT SOUVENIRS — sell eight new items as stored cargo through
+the existing shop modal, dialog router and F/interact action. No combat, ship,
+survival or income effect; finite stock; everyday PG content.
+
+The hub frame now owns three walkable volumes instead of one. `hubFrameMethods()`
+replaces `Station`'s single-box `deckPoint`, `deckHeightAt` and `isInsideHangar`
+on the hub only; the twenty berths keep theirs. Catalogue growth is an additive
+version 3 save migration, not a format bump: values the save predates are filled
+in at zero owned and full shop stock, everything it carries is validated exactly
+as strictly as before, and only a migrated save is rewritten.
+
+`build_station_concourse.py` and every existing station asset are untouched, so
+the elevator and current concourse stay byte-for-byte. Remaining: independent
+review and product acceptance; no shopkeepers in the new units; the Deck 05 door
+has no animation, interior or unlock path; no physical controller hardware; no
+GPU timer measurement.
+
+## Validation
+
+`npm test` at the delivered tree: **1316 tests, 1315 pass, 1 fail**. The single
+failure is inherited and unrelated (see below); the baseline on `46fdc5c` fails
+the same case and nothing else. The new suite `tests/station-promenade.test.js`
+contributes 10 cases covering export budgets, the opened wall and walkable
+corridor, every unit entrance and counter, the locked bulkhead, opaque unit
+ceilings with measured headroom, the sealed corridor shell, the three hub
+volumes, counter-to-catalogue mapping, display-stock scale and the annex shell.
+
+`npm run test:multiplayer`: 231 tests, 227 pass. The two failures are the
+embedded-PostgreSQL cases, which need a local database this machine does not
+run; they fail identically without this change. `npm run check:repo` passes
+(11 areas, 56 tasks, 44 managed documents). `npm run build` succeeds as the
+browser suite's production web server.
+
+Asset rebuild: Blender 5.2.1 LTS, deterministic, `PROMENADE_EXPORT` summary
+emitted, 4,239,556 B / 73,724 triangles / 10 draws / 29 measured assemblies,
+largest 4,480 triangles and 308,596 standalone bytes, all inside the 10k/1 MB
+prop budget the builder itself enforces.
+
+`npm run test:browser -- -c scripts/promenade.config.js` against a production
+build, Chromium 151.0.7922.34, ANGLE / AMD Radeon integrated, 1440×900 at render
+scale 0.8. **Controller journey: passed**, zero page, console, HTTP and failed
+request entries — ship to elevator to concourse, through the portal, all four
+storefronts entered, one item bought in each through controller focus and A, each
+modal closed with B while a stick was held with no player movement, refused at
+the sealed door, then the whole route walked back. **Keyboard and phone journey:
+passed** on the same room with the gamepad removed, including a purchase and a
+390×844 capture of both the corridor and the catalogue. Injected `Gamepad` input
+is not physical hardware and is reported as such.
+
+Fixed-camera on/off pairs measure the room at +34 draws / +78,292 triangles at
+the promenade entry and +41 / +78,306 from the concourse — its own geometry once.
+Before the shadow-casting correction the same pose measured +82 / +308,952. Two
+defects found by this evidence and fixed: laid floor finishes and threshold
+plates had collision and stopped the player in every shop doorway; one assembly
+holding two window forms 6 m apart made the floor between them solid. Two
+lighting corrections followed actual captures: point lights under the ceiling
+blew it out and became aimed downlights, and the aft light was moved clear of the
+bulkhead it was washing out. Curated captures and both full `report.json` files
+are in `docs/qa/station-promenade/browser/`; Blender studio images are in
+`docs/qa/station-promenade/studio/` and are studio evidence only.
+
+## Integration and operations
+
+Nothing is integrated. `dev/all-features` is untouched; this branch is neither
+merged locally nor pushed. Save format stays at version 3 with an additive
+migration, so a build without this change still reads a manifest written with it
+and loses only the new items. No database, protocol or generated-schema change.
+No credentials, tokens, private recordings or build output are committed.
+
+## Resume here
+
+First concrete action: an independent reviewer walks the promenade in a real
+build and scores the six QUALITY rubric dimensions, keeping the known gaps in
+scope, in particular whether the deliberately moodier corridor lighting is
+accepted. Cees holds product acceptance; the integration steward holds
+`dev/all-features`. Complete evidence, contracts and limits:
+[the promenade production record](docs/qa/station-promenade/README.md).
+
+One inherited failure on this base is untouched and unrelated: `tests/gannet.test.js`
+fails because `assets/gannet/manifest.json` sha256 does not match the committed
+`public/models/gannet.glb`.
+
 # SA-RECOVERY-001 — local delivery at 2026-09-09T01:20:19.836167+00:00
 
 Status: implemented, validated and locally integrated; independent review pending.
