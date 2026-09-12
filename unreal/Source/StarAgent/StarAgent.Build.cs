@@ -23,6 +23,12 @@ public class StarAgent : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
+		// Editor-only helpers for the remote harness (StarAgentEditorTools).
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.Add("UnrealEd");
+		}
+
 		PublicIncludePaths.AddRange(new string[] {
 			"StarAgent",
 			// WorldGen is engine-free C++ shared with unreal/tools cross-checks.

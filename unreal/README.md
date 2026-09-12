@@ -91,6 +91,24 @@ First run in the editor:
    grass until a real grass layer exists. Place a PlanetActor in the level to edit
    the layers. Epic Fab content lives only here: see THIRD-PARTY-ASSETS.md.
 
+## Driving the editor from a shell
+
+With the editor open, `tools/ue-remote.py` talks to it over the Python plugin's
+local remote-execution socket (enabled in `Config/DefaultEngine.ini`):
+
+```sh
+unreal/tools/ue-remote.py play                 # start Play In Editor
+unreal/tools/ue-remote.py goto 12 -60 3000     # fly pawn to lat 12, lon -60, 3 km above terrain
+unreal/tools/ue-remote.py wait                 # until no patches are pending
+unreal/tools/ue-remote.py shot coast           # HighResShot, prints the PNG path
+unreal/tools/ue-remote.py journey nightly      # orbit -> ground screenshot series
+unreal/tools/ue-remote.py exec "stat unit"     # any console command; SA_Goto, SA_Look, SA_Walk are ours
+unreal/tools/ue-remote.py stop
+```
+
+Screenshots land in `Saved/Screenshots/`. Coordinates follow `world.js`
+`latLonDirection`, so the browser's destinations map one to one.
+
 ## Rules for the world-generation files
 
 - No Unreal headers in `WorldGen/`; the same files compile in the cross-check.

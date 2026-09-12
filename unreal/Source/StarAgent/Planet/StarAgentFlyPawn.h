@@ -64,6 +64,18 @@ public:
 	/** F: put a walking character on the ground below and possess it. */
 	void ToggleWalk();
 
+	/** Console: SA_Goto Lat Lon AltMetres — latitude/longitude in the browser frame (world.js latLonDirection), altitude above terrain. */
+	UFUNCTION(Exec)
+	void SA_Goto(float LatDeg, float LonDeg, float AltitudeMetres);
+
+	/** Console: SA_Look Yaw Pitch — degrees; yaw from local north around local up, pitch down is negative. */
+	UFUNCTION(Exec)
+	void SA_Look(float YawDeg, float PitchDeg);
+
+	/** Console: SA_Walk — same as pressing F. */
+	UFUNCTION(Exec)
+	void SA_Walk();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;

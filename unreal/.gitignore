@@ -18,11 +18,11 @@ Plugins/*/Binaries/
 Plugins/*/Intermediate/
 # cross-check outputs
 tools/build/
-# Fab / Quixel downloads: Epic-licensed, not redistributable, Unreal-only.
-# See THIRD-PARTY-ASSETS.md. Keep the README in Content/Fab.
+# Downloaded content (Fab, Quixel, Megaplants, sample packs) is Epic-licensed,
+# not redistributable and Unreal-only: see THIRD-PARTY-ASSETS.md. Only the
+# project's own folder and the Fab README are tracked.
+Content/*
+!Content/StarAgent/
+!Content/Fab/
 Content/Fab/*
 !Content/Fab/README.md
-Content/Megascans/
-Content/MSPresets/
-Content/Quixel/
-Content/Megaplant_Library/

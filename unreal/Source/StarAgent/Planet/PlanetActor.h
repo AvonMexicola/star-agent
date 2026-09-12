@@ -212,8 +212,13 @@ public:
 	/** Surface gravity, m/s^2, at the base sphere. */
 	double GetSurfaceGravity() const { return 9.81; }
 
-	// Streaming statistics for HUD/debug.
-	int32 VisibleCount = 0, MaxVisibleLevel = 0, PendingCount = 0;
+	// Streaming statistics for HUD, debug and the remote harness (unreal/tools/ue-remote.py).
+	UPROPERTY(VisibleAnywhere, Category = "Streaming")
+	int32 VisibleCount = 0;
+	UPROPERTY(VisibleAnywhere, Category = "Streaming")
+	int32 MaxVisibleLevel = 0;
+	UPROPERTY(VisibleAnywhere, Category = "Streaming")
+	int32 PendingCount = 0;
 
 protected:
 	virtual void BeginPlay() override;

@@ -117,3 +117,34 @@ void AStarAgentFlyPawn::ToggleWalk()
 	SetActorHiddenInGame(true);
 	PC->Possess(Walker);
 }
+
+void AStarAgentFlyPawn::SA_Goto(float LatDeg, float LonDeg, float AltitudeMetres)
+{
+	if (!Planet) return;
+	double D[3];
+	StarAgent::Aeon::LatLonDirection(LatDeg, LonDeg, D);
+	const double H = FMath::Max(0.0, Planet->GetTerrainHeightMetres(D)) + FMath::Max(0.5f, AltitudeMetres);
+	const FVector Location = Planet->GetActorLocation() + StarAgent::ToUnreal(D[0] * (StarAgent::Aeon::Radius + H), D[1] * (StarAgent::Aeon::Radius + H), D[2] * (StarAgent::Aeon::Radius + H));
+	SetActorLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
+	if (UFloatingPawnMovement* Movement = Cast<UFloatingPawnMovement>(GetMovementComponent())) Movement->Velocity = FVector::ZeroVector;
+	SA_Look(0.f, -30.f);
+}
+
+void AStarAgentFlyPawn::SA_Look(float YawDeg, float PitchDeg)
+{
+	if (!Planet) return;
+	double D[3];
+	Planet->GetBodyDirection(GetActorLocation(), D);
+	const FVector Up = StarAgent::ToUnrealDirection(D);
+	// Local north: the direction of increasing latitude, i.e. the browser +Y axis projected onto the tangent plane.
+	FVector North = StarAgent::ToUnrealDirection(0.0, 1.0, 0.0);
+	North = (North - Up * FVector::DotProduct(North, Up)).GetSafeNormal();
+	if (North.IsNearlyZero()) North = FVector::CrossProduct(Up, FVector::RightVector).GetSafeNormal();
+	const FVector Forward = North.RotateAngleAxis(YawDeg, Up);
+	Orientation = FRotationMatrix::MakeFromZX(Up, Forward).ToQuat() * FQuat(FVector::RightVector, FMath::DegreesToRadians(-PitchDeg));
+	Orientation.Normalize();
+	SetActorRotation(Orientation);
+	if (Controller) Controller->SetControlRotation(Orientation.Rotator());
+}
+
+void AStarAgentFlyPawn::SA_Walk() { ToggleWalk(); }
