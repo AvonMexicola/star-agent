@@ -108,6 +108,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 0, ClampMax = 4))
 	float VegetationDensity = 1.f;
 
+	/**
+	 * Default layers use only the canopy species (beech, hornbeam, maple, elder,
+	 * black poplar). Each Megaplant mesh needs a one-time Nanite build of minutes
+	 * on first load; turn this on when you can leave the editor alone for an hour
+	 * to add pine, oaks, greasewood, cherry, ginkgo, spindle and wood anemone.
+	 */
+	UPROPERTY(EditAnywhere, Category = "Vegetation")
+	bool bLoadAllMegaplants = false;
+
 	UPROPERTY(EditAnywhere, Category = "Planet")
 	bool bCreateSkyAtmosphere = true;
 
@@ -226,7 +235,7 @@ private:
 	void StartAlbedoBake();
 	void FinishAlbedoBake();
 	void BuildDefaultVegetationLayers();
-	void OnVegetationAssetsLoaded();
+	void OnVegetationLayerLoaded(int32 LayerIndex);
 	void StartVegetationRefresh();
 	void CollectFinishedVegetationJobs();
 	void AttachVegetation(FPlanetNode* Node, const FVegetationInstances& Instances);
@@ -234,7 +243,7 @@ private:
 	struct FVegetationJob;
 	TArray<TSharedPtr<FVegetationJob>> VegetationJobs;
 	TArray<TArray<FSoftObjectPath>> PendingLayerPaths;  // per default layer, resolved on load
-	TSharedPtr<struct FStreamableHandle> VegetationLoadHandle;
+	TArray<TSharedPtr<struct FStreamableHandle>> VegetationLoadHandles;
 	bool bVegetationReady = false;
 	void AdvanceMorphs(float DeltaSeconds);
 	void ApplyPatchMaterialParameters(FPlanetNode* Node);

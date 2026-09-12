@@ -254,8 +254,9 @@ void APlanetActor::BuildDefaultVegetationLayers()
 			Paths.Add(FSoftObjectPath(FString::Printf(TEXT("/Game/Megaplant_Library/%s/%s/%s_%s.%s_%s"), Folder, Sub, Base, V, Base, V)));
 		return Paths;
 	};
-	auto AddLayer = [&](const TCHAR* Name, EVegetationKind Kind, int32 Biomes, float Density, TArray<FSoftObjectPath> Paths, float ScaleMin = 0.85f, float ScaleMax = 1.25f)
+	auto AddLayer = [&](const TCHAR* Name, EVegetationKind Kind, int32 Biomes, float Density, TArray<FSoftObjectPath> Paths, float ScaleMin = 0.85f, float ScaleMax = 1.25f, bool bExtra = false)
 	{
+		if (bExtra && !bLoadAllMegaplants) return;
 		FVegetationLayer L; L.Name = Name; L.Kind = Kind; L.Biomes = Biomes; L.Density = Density; L.ScaleMin = ScaleMin; L.ScaleMax = ScaleMax;
 		if (Kind == EVegetationKind::Ground) L.bCastShadow = false;
 		VegetationLayers.Add(L);
@@ -271,13 +272,13 @@ void APlanetActor::BuildDefaultVegetationLayers()
 	AddLayer(TEXT("Temperate canopy"), EVegetationKind::Tree, Forest, 0.7f, MoveTemp(Canopy));
 	AddLayer(TEXT("Elder, forest edge"), EVegetationKind::Tree, Forest | Grassland, 0.06f, Species(TEXT("Tree_Elder"), TEXT("Tree_Elder_01"), TEXT("Tree_Elder_01")));
 	AddLayer(TEXT("Black poplar, wet lowland"), EVegetationKind::Tree, Wet | Coast, 0.18f, Species(TEXT("Tree_Black_Poplar"), TEXT("Tree_Black_Poplar_01"), TEXT("Tree_Black_Poplar_01")));
-	AddLayer(TEXT("Aleppo pine, dry"), EVegetationKind::Tree, Dry | Grassland, 0.12f, Species(TEXT("Tree_Aleppo_Pine"), TEXT("Tree_Aleppo_Pine_01"), TEXT("Tree_Aleppo_Pine_01")));
-	AddLayer(TEXT("Huckleberry oak, dry shrub"), EVegetationKind::Shrub, Dry | Grassland | Alpine, 0.25f, Species(TEXT("Shrub_Huckleberry_Oak"), TEXT("Shrub_Huckleberry_Oak_01"), TEXT("Shrub_Huckleberry_Oak_01")));
-	AddLayer(TEXT("Greasewood, tundra and dry"), EVegetationKind::Shrub, Tundra | Dry, 0.2f, Species(TEXT("Shrub_Greasewood"), TEXT("Shrub_Greasewood_01"), TEXT("Shrub_Greasewood_01")));
-	AddLayer(TEXT("Yoshino cherry"), EVegetationKind::Tree, Coast, 0.04f, Species(TEXT("Tree_Yoshino_Cherry"), TEXT("Tree_Yoshino_Cherry_01"), TEXT("Tree_Yoshino_Cherry_01")));
-	AddLayer(TEXT("Ginkgo"), EVegetationKind::Tree, Coast | Grassland, 0.02f, Species(TEXT("Tree_Ginkgo"), TEXT("Tree_Ginkgo_01"), TEXT("Tree_Ginkgo_01")));
-	AddLayer(TEXT("European spindle, forest edge"), EVegetationKind::Shrub, Forest, 0.15f, Species(TEXT("Shrub_European_Spindle"), TEXT("Shrub_European_Spindle_01"), TEXT("Shrub_European_Spindle_01")));
-	AddLayer(TEXT("Wood anemone, forest floor"), EVegetationKind::Ground, Forest, 0.25f, Species(TEXT("Plant_Wood_Anemone"), TEXT("Plant_Wood_Anemone_01"), TEXT("Plant_Wood_Anemone_01")), 0.8f, 1.2f);
+	AddLayer(TEXT("Aleppo pine, dry"), EVegetationKind::Tree, Dry | Grassland, 0.12f, Species(TEXT("Tree_Aleppo_Pine"), TEXT("Tree_Aleppo_Pine_01"), TEXT("Tree_Aleppo_Pine_01")), 0.85f, 1.25f, true);
+	AddLayer(TEXT("Huckleberry oak, dry shrub"), EVegetationKind::Shrub, Dry | Grassland | Alpine, 0.25f, Species(TEXT("Shrub_Huckleberry_Oak"), TEXT("Shrub_Huckleberry_Oak_01"), TEXT("Shrub_Huckleberry_Oak_01")), 0.85f, 1.25f, true);
+	AddLayer(TEXT("Greasewood, tundra and dry"), EVegetationKind::Shrub, Tundra | Dry, 0.2f, Species(TEXT("Shrub_Greasewood"), TEXT("Shrub_Greasewood_01"), TEXT("Shrub_Greasewood_01")), 0.85f, 1.25f, true);
+	AddLayer(TEXT("Yoshino cherry"), EVegetationKind::Tree, Coast, 0.04f, Species(TEXT("Tree_Yoshino_Cherry"), TEXT("Tree_Yoshino_Cherry_01"), TEXT("Tree_Yoshino_Cherry_01")), 0.85f, 1.25f, true);
+	AddLayer(TEXT("Ginkgo"), EVegetationKind::Tree, Coast | Grassland, 0.02f, Species(TEXT("Tree_Ginkgo"), TEXT("Tree_Ginkgo_01"), TEXT("Tree_Ginkgo_01")), 0.85f, 1.25f, true);
+	AddLayer(TEXT("European spindle, forest edge"), EVegetationKind::Shrub, Forest, 0.15f, Species(TEXT("Shrub_European_Spindle"), TEXT("Shrub_European_Spindle_01"), TEXT("Shrub_European_Spindle_01")), 0.85f, 1.25f, true);
+	AddLayer(TEXT("Wood anemone, forest floor"), EVegetationKind::Ground, Forest, 0.25f, Species(TEXT("Plant_Wood_Anemone"), TEXT("Plant_Wood_Anemone_01"), TEXT("Plant_Wood_Anemone_01")), 0.8f, 1.2f, true);
 
 	// Placeholder grass until a real grass pack is assigned; available at once.
 	FVegetationLayer Grass; Grass.Name = TEXT("Placeholder grass"); Grass.Kind = EVegetationKind::Ground; Grass.Biomes = Grassland | Tundra | Coast | Forest; Grass.Density = 1.f; Grass.bCastShadow = false;
@@ -286,35 +287,30 @@ void APlanetActor::BuildDefaultVegetationLayers()
 	VegetationLayers.Add(Grass);
 	PendingLayerPaths.AddDefaulted();
 
-	TArray<FSoftObjectPath> All;
-	for (const TArray<FSoftObjectPath>& Paths : PendingLayerPaths) All.Append(Paths);
-	VegetationLoadHandle = UAssetManager::GetStreamableManager().RequestAsyncLoad(All, FStreamableDelegate::CreateUObject(this, &APlanetActor::OnVegetationAssetsLoaded));
-	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: %d vegetation layers defined, loading %d Megaplant meshes in the background"), VegetationLayers.Num(), All.Num());
+	// Each layer streams on its own and appears as soon as its meshes are built;
+	// the placeholder grass is usable immediately.
+	bVegetationReady = true;
+	int32 Requested = 0;
+	for (int32 li = 0; li < PendingLayerPaths.Num(); li++)
+	{
+		if (PendingLayerPaths[li].Num() == 0) continue;
+		Requested += PendingLayerPaths[li].Num();
+		VegetationLoadHandles.Add(UAssetManager::GetStreamableManager().RequestAsyncLoad(PendingLayerPaths[li], FStreamableDelegate::CreateUObject(this, &APlanetActor::OnVegetationLayerLoaded, li)));
+	}
+	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: %d vegetation layers defined, streaming %d Megaplant meshes in the background (all species: %s)"), VegetationLayers.Num(), Requested, bLoadAllMegaplants ? TEXT("yes") : TEXT("no"));
 }
 
-void APlanetActor::OnVegetationAssetsLoaded()
+void APlanetActor::OnVegetationLayerLoaded(int32 LayerIndex)
 {
+	if (!VegetationLayers.IsValidIndex(LayerIndex) || !PendingLayerPaths.IsValidIndex(LayerIndex)) return;
 	int32 Resolved = 0;
-	for (int32 li = 0; li < VegetationLayers.Num() && li < PendingLayerPaths.Num(); li++)
+	for (const FSoftObjectPath& Path : PendingLayerPaths[LayerIndex])
 	{
-		for (const FSoftObjectPath& Path : PendingLayerPaths[li])
-		{
-			if (USkeletalMesh* M = Cast<USkeletalMesh>(Path.ResolveObject())) { VegetationLayers[li].SkeletalMeshes.Add(M); Resolved++; }
-		}
+		if (USkeletalMesh* M = Cast<USkeletalMesh>(Path.ResolveObject())) { VegetationLayers[LayerIndex].SkeletalMeshes.Add(M); Resolved++; }
 	}
-	PendingLayerPaths.Empty();
-	VegetationLoadHandle.Reset();
-	if (Resolved == 0)
-	{
-		FVegetationLayer Trees; Trees.Name = TEXT("Placeholder trees"); Trees.Kind = EVegetationKind::Tree;
-		Trees.Biomes = (int32)EVegetationBiome::Forest | (int32)EVegetationBiome::Grassland | (int32)EVegetationBiome::Coast; Trees.Density = 0.5f;
-		Trees.StaticMeshes.Add(BuildPlaceholderTreeMesh(this, VegetationMaterial));
-		VegetationLayers.Add(Trees);
-	}
-	VegetationLayers.RemoveAll([](const FVegetationLayer& L) { return L.MeshCount() == 0; });
-	bVegetationReady = true;
-	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: vegetation ready, %d Megaplant meshes resolved, %d layers"), Resolved, VegetationLayers.Num());
-	StartVegetationRefresh();
+	PendingLayerPaths[LayerIndex].Empty();
+	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: vegetation layer '%s' ready with %d meshes"), *VegetationLayers[LayerIndex].Name, Resolved);
+	if (Resolved > 0) StartVegetationRefresh();
 }
 
 void APlanetActor::StartVegetationRefresh()
@@ -327,7 +323,7 @@ void APlanetActor::StartVegetationRefresh()
 	for (auto& Pair : Nodes)
 	{
 		FPlanetNode* Node = Pair.Value.Get();
-		if (!Node->Mesh || Node->Level < Lowest || Node->Vegetation.Num() > 0) continue;
+		if (!Node->Mesh || Node->Level < Lowest) continue;
 		TSharedPtr<FVegetationJob> Job = MakeShared<FVegetationJob>();
 		Job->Node = Node;
 		Job->Request.face = Node->Face; Job->Request.level = Node->Level; Job->Request.ix = Node->Ix; Job->Request.iy = Node->Iy;
@@ -348,7 +344,12 @@ void APlanetActor::CollectFinishedVegetationJobs()
 		TSharedPtr<FVegetationJob> Job = VegetationJobs[i];
 		if (!Job->Task.IsCompleted()) continue;
 		VegetationJobs.RemoveAt(i);
-		if (Job->Node && Job->Node->Mesh && Job->Node->Vegetation.Num() == 0) AttachVegetation(Job->Node, Job->Instances);
+		if (Job->Node && Job->Node->Mesh)
+		{
+			for (UPrimitiveComponent* Veg : Job->Node->Vegetation) if (Veg) Veg->DestroyComponent();
+			Job->Node->Vegetation.Reset();
+			AttachVegetation(Job->Node, Job->Instances);
+		}
 	}
 }
 
@@ -434,7 +435,8 @@ void APlanetActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	ActiveJobs.Empty();
 	for (TSharedPtr<FVegetationJob>& Job : VegetationJobs) { Job->Task.Wait(); Job->Node = nullptr; }
 	VegetationJobs.Empty();
-	if (VegetationLoadHandle.IsValid()) { VegetationLoadHandle->CancelHandle(); VegetationLoadHandle.Reset(); }
+	for (TSharedPtr<FStreamableHandle>& Handle : VegetationLoadHandles) if (Handle.IsValid()) Handle->CancelHandle();
+	VegetationLoadHandles.Empty();
 	Queue.Empty();
 	Super::EndPlay(EndPlayReason);
 }
