@@ -20,6 +20,7 @@
 
 class UDynamicMeshComponent;
 class USkyAtmosphereComponent;
+class UVolumetricCloudComponent;
 class UPostProcessComponent;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
@@ -133,6 +134,13 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Planet")
 	TObjectPtr<UPostProcessComponent> PostProcess;
 
+	/** Volumetric cloud layer wrapped around the planet (cloud-volume.js: a 2.8 km shell from 1.8 km up). */
+	UPROPERTY(VisibleAnywhere, Category = "Planet")
+	TObjectPtr<UVolumetricCloudComponent> Clouds;
+
+	UPROPERTY(EditAnywhere, Category = "Planet")
+	bool bClouds = true;
+
 	// Look tuning. All of these are re-applied when changed, so they can be
 	// edited live on the spawned actor during Play-in-Editor.
 
@@ -163,6 +171,18 @@ public:
 	/** Camera distance (km) beyond which only the baked albedo map is used. */
 	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 1, UIMax = 1000))
 	float AlbedoFadeFarKm = 150.f;
+
+	/** Cloud layer bottom, km above the surface. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 0.2, UIMax = 15))
+	float CloudBottomKm = 1.8f;
+
+	/** Cloud layer thickness, km. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 0.2, UIMax = 15))
+	float CloudHeightKm = 2.8f;
+
+	/** Cloud ray-march sample scale; 1 is the engine default, higher is smoother and slower. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 0.25, UIMax = 4))
+	float CloudSampleScale = 1.f;
 
 	/** Radius of the base sphere in metres (Aeon: 1,592,750). */
 	double GetRadiusMetres() const;
@@ -216,4 +236,5 @@ private:
 	float AppliedExposureMin = -1000.f, AppliedExposureMax = -1000.f, AppliedExposureBias = -1000.f;
 	float AppliedAerialPerspectiveScale = -1.f, AppliedMultiScattering = -1.f;
 	float AppliedFadeNear = -1.f, AppliedFadeFar = -1.f;
+	float AppliedCloudBottom = -1.f, AppliedCloudHeight = -1.f, AppliedCloudSamples = -1.f;
 };

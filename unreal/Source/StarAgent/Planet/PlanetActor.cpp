@@ -11,6 +11,7 @@
 #include "Engine/SkeletalMesh.h"
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/PostProcessComponent.h"
+#include "Components/VolumetricCloudComponent.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Engine/CollisionProfile.h"
 #include "Kismet/GameplayStatics.h"
@@ -72,6 +73,17 @@ APlanetActor::APlanetActor()
 	PostProcess->SetupAttachment(RootComponent);
 	PostProcess->bUnbound = true;
 	PostProcess->Priority = 1.f;
+	// Clouds take the planet centre and radius from the SkyAtmosphere. Tracing
+	// distances are in km and must cover an orbital view: the layer is over
+	// 1,500 km away from two radii out, and a ray can cross hundreds of km of it.
+	Clouds = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("Clouds"));
+	Clouds->SetupAttachment(RootComponent);
+	Clouds->LayerBottomAltitude = CloudBottomKm;
+	Clouds->LayerHeight = CloudHeightKm;
+	Clouds->TracingStartMaxDistance = 8000.f;
+	Clouds->TracingMaxDistanceMode = EVolumetricCloudTracingMaxDistanceMode::DistanceFromCloudLayerEntryPoint;
+	Clouds->TracingMaxDistance = 400.f;
+	Clouds->bUsePerSampleAtmosphericLightTransmittance = true;
 }
 
 void APlanetActor::ApplyLook()
@@ -103,6 +115,13 @@ void APlanetActor::ApplyLook()
 			SkyAtmosphere->SetMultiScatteringFactor(MultiScattering);
 			AppliedMultiScattering = MultiScattering;
 		}
+	}
+	if (Clouds && (CloudBottomKm != AppliedCloudBottom || CloudHeightKm != AppliedCloudHeight || CloudSampleScale != AppliedCloudSamples))
+	{
+		Clouds->SetLayerBottomAltitude(CloudBottomKm);
+		Clouds->SetLayerHeight(CloudHeightKm);
+		Clouds->SetViewSampleCountScale(CloudSampleScale);
+		AppliedCloudBottom = CloudBottomKm; AppliedCloudHeight = CloudHeightKm; AppliedCloudSamples = CloudSampleScale;
 	}
 	if (AlbedoFadeNearKm != AppliedFadeNear || AlbedoFadeFarKm != AppliedFadeFar)
 	{
@@ -170,6 +189,11 @@ void APlanetActor::BeginPlay()
 	{
 		SkyAtmosphere->SetVisibility(false);
 		SkyAtmosphere->Deactivate();
+	}
+	if (!bClouds && Clouds)
+	{
+		Clouds->SetVisibility(false);
+		Clouds->Deactivate();
 	}
 	// Scripts/create_materials.py makes this asset. Loaded here rather than in
 	// the constructor: a constructor-time load runs during engine start-up and
