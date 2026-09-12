@@ -1,0 +1,27 @@
+# Unreal Engine project build products
+Binaries/
+Intermediate/
+DerivedDataCache/
+Saved/
+Build/
+.vs/
+.vscode/
+*.VC.db
+*.opensdf
+*.sdf
+*.sln
+*.suo
+*.xcodeproj
+*.xcworkspace
+*.code-workspace
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+# cross-check outputs
+tools/build/
+# Fab / Quixel downloads: Epic-licensed, not redistributable, Unreal-only.
+# See THIRD-PARTY-ASSETS.md. Keep the README in Content/Fab.
+Content/Fab/*
+!Content/Fab/README.md
+Content/Megascans/
+Content/MSPresets/
+Content/Quixel/
