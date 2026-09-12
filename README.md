@@ -2,6 +2,16 @@
 
 A browser spaceflight experiment: fly continuously around a procedural quarter-Earth planet, descend through its atmosphere, land, and explore on foot. Star Citizen is the visual reference and long-term fidelity target; this prototype does not yet match that production quality.
 
+## Unreal Engine port
+
+An Unreal Engine 5.8 port lives under [`unreal/`](unreal/) on the
+`feat/unreal5-planets` branch: the same seeded planets, verified bit-for-bit
+against this browser generator, rendered with Unreal's atmosphere, water and
+foliage. **⚠️ The Unreal port uses Epic-licensed Fab/Quixel content that must
+never be copied into this browser game.** Read
+[`unreal/THIRD-PARTY-ASSETS.md`](unreal/THIRD-PARTY-ASSETS.md) before touching
+either side.
+
 ## Build with us
 
 Start with [CONTRIBUTING](CONTRIBUTING.md) and the [contributor handbook](docs/development/README.md).
