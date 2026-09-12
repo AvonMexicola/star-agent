@@ -25,7 +25,7 @@ class UMaterialInterface;
 class UMaterialInstanceDynamic;
 class UTexture2D;
 class UStaticMesh;
-class UInstancedStaticMeshComponent;
+class UPrimitiveComponent;
 
 struct FPlanetPatchJob;
 
@@ -41,7 +41,7 @@ struct FPlanetNode
 	TObjectPtr<UMaterialInstanceDynamic> Material = nullptr;  // per patch: TerrainMorph and albedo parameters
 	TObjectPtr<UDynamicMeshComponent> Water = nullptr;        // sea-level surface, only for patches that touch water
 	TObjectPtr<UMaterialInstanceDynamic> WaterMaterialInstance = nullptr;
-	TArray<TObjectPtr<UInstancedStaticMeshComponent>> Trees, Grass;  // one per species, attached to Mesh
+	TArray<TObjectPtr<UPrimitiveComponent>> Vegetation;  // instanced static or skinned components, attached to Mesh
 	TSharedPtr<FPlanetPatchJob> Job;
 	bool bQueued = false, bRefined = false, bWantsSplit = false, bVisible = false;
 	// terrain-lod.js: Progress/Target drive this node's CHILDREN from the parent
@@ -95,102 +95,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Vegetation")
 	bool bVegetation = true;
 
-	/** Tree meshes (species/variations, chosen per cell by seed). Empty = vertex-coloured placeholder built at start. Origin at the base, Z up. */
+	/** Biome layers. Empty = built at start from the Megaplant library when present, else vertex-coloured placeholders. */
 	UPROPERTY(EditAnywhere, Category = "Vegetation")
-	TArray<TObjectPtr<UStaticMesh>> TreeMeshes;
-
-	/** Grass tuft meshes; empty = placeholder. */
-	UPROPERTY(EditAnywhere, Category = "Vegetation")
-	TArray<TObjectPtr<UStaticMesh>> GrassMeshes;
-
-	/** Multiplies the random 0.8..1.4 scale; 1 for real-scale assets, the placeholder is 10 m at 1. */
-	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 0.05, ClampMax = 10))
-	float TreeScale = 1.f;
-
-	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 0.05, ClampMax = 10))
-	float GrassScale = 1.f;
+	TArray<FVegetationLayer> VegetationLayers;
 
 	/** Material for the placeholder meshes (Scripts/create_materials.py makes M_Vegetation). */
 	UPROPERTY(EditAnywhere, Category = "Vegetation")
 	TObjectPtr<UMaterialInterface> VegetationMaterial;
 
-	/** Patch level from which trees are placed (12: patches of ~1.2 km, visible within ~2.2 km). */
-	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 8, ClampMax = 17))
-	int32 TreeLevel = 12;
-
-	/** Patch level from which grass is placed (15: patches of ~150 m, visible within ~270 m). */
-	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 10, ClampMax = 17))
-	int32 GrassLevel = 15;
-
+	/** Multiplies every layer's density. */
 	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 0, ClampMax = 4))
-	float TreeDensity = 1.f;
-
-	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 0, ClampMax = 4))
-	float GrassDensity = 1.f;
-
-	/** Instances fade out at these camera distances (metres). */
-	UPROPERTY(EditAnywhere, Category = "Vegetation")
-	float TreeCullMetres = 2500.f;
-
-	UPROPERTY(EditAnywhere, Category = "Vegetation")
-	float GrassCullMetres = 220.f;
-
-	UPROPERTY(EditAnywhere, Category = "Planet")
-	bool bCreateSkyAtmosphere = true;
-
-	/** Width of the baked orbital albedo map (height is half). 2048 is ~4.9 km per texel at the equator. */
-	UPROPERTY(EditAnywhere, Category = "Planet", meta = (ClampMin = 256, ClampMax = 8192))
-	int32 AlbedoWidth = 2048;
-
-	/** Baked lat/long albedo (rgb) and moisture (a), material parameter "OrbitalAlbedo". */
-	UPROPERTY(VisibleAnywhere, Category = "Planet")
-	TObjectPtr<UTexture2D> OrbitalAlbedo;
-
-	/** Baked colour/scree noise fields, material parameter "OrbitalFields". */
-	UPROPERTY(VisibleAnywhere, Category = "Planet")
-	TObjectPtr<UTexture2D> OrbitalFields;
-
-	/** Seconds for a split or merge to morph between parent and child surfaces (terrain-lod.js: 0.6). */
-	UPROPERTY(EditAnywhere, Category = "Planet", meta = (ClampMin = 0.0, ClampMax = 5.0))
-	float MorphSeconds = 0.6f;
-
-	UPROPERTY(VisibleAnywhere, Category = "Planet")
-	TObjectPtr<USkyAtmosphereComponent> SkyAtmosphere;
-
-	/** Unbound post-process volume carrying the exposure settings below. */
-	UPROPERTY(VisibleAnywhere, Category = "Planet")
-	TObjectPtr<UPostProcessComponent> PostProcess;
-
-	// Look tuning. All of these are re-applied every tick, so they can be edited
-	// live on the spawned actor during Play-in-Editor.
-
-	/** Darkest scene EV100 the eye adapts to. Twilight is about 7; raising this keeps dusk and the night side dark. */
-	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = -10, UIMax = 20))
-	float ExposureMinEV100 = 8.f;
-
-	/** Brightest scene EV100 the eye adapts to. Sunlit ground under a 100,000 lux sun is about 16. */
-	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = -10, UIMax = 20))
-	float ExposureMaxEV100 = 17.f;
-
-	/** Exposure compensation in stops. */
-	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = -5, UIMax = 5))
-	float ExposureBias = -0.5f;
-
-	/** Scales aerial-perspective distance; below 1 thins the haze so continents read from orbit. */
-	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 0.05, UIMax = 2))
-	float AerialPerspectiveScale = 0.4f;
-
-	/** Atmosphere multiple-scattering strength; lowers the milky blue on the day side when reduced. */
-	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 0, UIMax = 2))
-	float MultiScattering = 0.6f;
-
-	/** Camera distance (km) at which the baked albedo map starts replacing vertex colour. */
-	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 1, UIMax = 500))
-	float AlbedoFadeNearKm = 40.f;
-
-	/** Camera distance (km) beyond which only the baked albedo map is used. */
-	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 1, UIMax = 1000))
-	float AlbedoFadeFarKm = 150.f;
+	float VegetationDensity = 1.f;
 
 	/** Radius of the base sphere in metres (Aeon: 1,592,750). */
 	double GetRadiusMetres() const;
@@ -233,6 +148,7 @@ private:
 	void ApplyLook();
 	void StartAlbedoBake();
 	void FinishAlbedoBake();
+	void BuildDefaultVegetationLayers();
 	void AdvanceMorphs(float DeltaSeconds);
 	void ApplyPatchMaterialParameters(FPlanetNode* Node);
 	bool bAlbedoReady = false;

@@ -79,11 +79,16 @@ First run in the editor:
    streaming state. Select the spawned PlanetActor in the Outliner during Play to
    tune the Look (exposure, haze, albedo fade) and Vegetation (densities, cull
    distances, meshes) groups live.
-5. Real trees and grass: place a PlanetActor in the level (so the game mode does
-   not spawn its own) and fill `Tree Meshes` / `Grass Meshes` with static meshes
-   (origin at the base, Z up). Several entries are species/variations chosen per
-   cell by the seed. `Tree Scale` / `Grass Scale` rescale real-size assets. Epic
-   Fab content goes here and nowhere else: see THIRD-PARTY-ASSETS.md.
+5. Vegetation is a list of biome layers on the planet actor (`Vegetation Layers`):
+   each names static and/or skeletal meshes (Quixel Megaplants are skeletal, with
+   Nanite foliage and wind bones, instanced through
+   `UInstancedSkinnedMeshComponent`), the biomes it grows in (coast, grassland,
+   forest, alpine, tundra, dry, wet), a kind (tree / shrub / ground cover, which
+   sets the patch level and cull distance) and a density. When the list is empty
+   the actor builds defaults from `/Game/Megaplant_Library` if the packs are
+   downloaded, otherwise vertex-coloured placeholders, and always adds placeholder
+   grass until a real grass layer exists. Place a PlanetActor in the level to edit
+   the layers. Epic Fab content lives only here: see THIRD-PARTY-ASSETS.md.
 
 ## Rules for the world-generation files
 

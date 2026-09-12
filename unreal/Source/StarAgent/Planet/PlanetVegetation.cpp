@@ -17,6 +17,26 @@ namespace StarAgent {
 // ---------------------------------------------------------------- scatter
 
 static constexpr int32 CELL_LEVEL = 17;
+static constexpr int32 GROUND_PER_CELL = 96;
+
+int32 FVegetationLayer::EffectiveLevel() const
+{
+	if (MinLevel > 0) return MinLevel;
+	return Kind == EVegetationKind::Tree ? 12 : Kind == EVegetationKind::Shrub ? 13 : 15;
+}
+float FVegetationLayer::EffectiveCullMetres() const
+{
+	if (CullMetres > 0) return CullMetres;
+	return Kind == EVegetationKind::Tree ? 2500.f : Kind == EVegetationKind::Shrub ? 800.f : 220.f;
+}
+
+FVegetationLayerRule MakeRule(const FVegetationLayer& L)
+{
+	FVegetationLayerRule R;
+	R.Kind = static_cast<int32>(L.Kind); R.Biomes = L.Biomes; R.MeshCount = L.MeshCount(); R.MinLevel = L.EffectiveLevel();
+	R.Density = L.Density; R.ScaleMin = L.ScaleMin; R.ScaleMax = L.ScaleMax; R.MinHeight = L.MinHeightMetres; R.MaxHeight = L.MaxHeightMetres; R.MaxSlope = L.MaxSlopeRadians;
+	return R;
+}
 
 static FTransform PlaceOnSurface(const double Dir[3], double Height, const double PatchCenter[3], double YawDeg, double Scale)
 {
@@ -27,70 +47,65 @@ static FTransform PlaceOnSurface(const double Dir[3], double Height, const doubl
 	return FTransform(Q, ToUnreal(P), FVector(Scale));
 }
 
-void ScatterPatchVegetation(const Aeon::PatchRequest& R, const double PatchCenter[3], const FVegetationRules& Rules, FVegetationInstances& Out)
+static int32 BiomeFlags(double H, double M, double AbsY)
 {
-	Out.Trees.SetNum(FMath::Max(1, Rules.TreeSpecies)); Out.Grass.SetNum(FMath::Max(1, Rules.GrassSpecies));
-	for (auto& a : Out.Trees) a.Reset();
-	for (auto& a : Out.Grass) a.Reset();
-	const bool bTrees = R.level >= Rules.TreeLevel, bGrass = R.level >= Rules.GrassLevel;
-	if (!bTrees && !bGrass) return;
+	if (H < 2.0 || AbsY > 0.86) return 0;
+	int32 F = 0;
+	if (H < 85.0) F |= static_cast<int32>(EVegetationBiome::Coast);
+	else if (H < 2200.0) F |= static_cast<int32>(M > 0.46 ? EVegetationBiome::Forest : EVegetationBiome::Grassland);
+	if (H >= 1600.0 && H < 2600.0) F |= static_cast<int32>(EVegetationBiome::Alpine);
+	if (AbsY > 0.70 && H < 2600.0) F |= static_cast<int32>(EVegetationBiome::Tundra);
+	if (M < 0.30) F |= static_cast<int32>(EVegetationBiome::Dry);
+	if (M > 0.60) F |= static_cast<int32>(EVegetationBiome::Wet);
+	return F;
+}
+
+void ScatterPatchVegetation(const Aeon::PatchRequest& R, const double PatchCenter[3], const TArray<FVegetationLayerRule>& Rules, FVegetationInstances& Out)
+{
+	Out.Instances.SetNum(Rules.Num());
+	for (int32 i = 0; i < Rules.Num(); i++) { Out.Instances[i].SetNum(FMath::Max(1, Rules[i].MeshCount)); for (auto& a : Out.Instances[i]) a.Reset(); }
 	if (R.level > CELL_LEVEL) return;
+	bool bAny = false;
+	for (const FVegetationLayerRule& Rule : Rules) if (Rule.MeshCount > 0 && R.level >= Rule.MinLevel) bAny = true;
+	if (!bAny) return;
+
 	const int32 CellsPerAxis = 1 << (CELL_LEVEL - R.level);
 	const double CellSize = 2.0 / (1 << CELL_LEVEL);
 	const uint32 Seed = R.seed;
-	const int32 GrassCount = FMath::Clamp(FMath::RoundToInt(Rules.GrassPerCell * Rules.GrassDensity), 0, 512);
 
 	for (int32 cy = 0; cy < CellsPerAxis; cy++) for (int32 cx = 0; cx < CellsPerAxis; cx++)
 	{
 		const double CellX = static_cast<double>(R.ix) * CellsPerAxis + cx, CellY = static_cast<double>(R.iy) * CellsPerAxis + cy;
 		const double FaceSalt = R.face * 1000003.0;
-		// Cell centre decides the biome for everything in the cell (cheap).
 		double D[3];
 		Aeon::CubeDirection(R.face, -1 + (CellX + .5) * CellSize, -1 + (CellY + .5) * CellSize, D);
 		const double H = Aeon::TerrainHeight(D[0], D[1], D[2], Seed);
-		if (H < 2.0 || H > 2200.0 || FMath::Abs(D[1]) > 0.86) continue;
 		const double M = Aeon::Moisture(D[0], D[1], D[2], Seed);
+		const int32 Flags = BiomeFlags(H, M, FMath::Abs(D[1]));
+		if (Flags == 0) continue;
 
-		if (bTrees)
+		for (int32 li = 0; li < Rules.Num(); li++)
 		{
-			double P = 0.0;
-			if (H >= 85.0) P = M > 0.46 ? 0.7 : 0.06;          // temperate forest / grassland
-			else if (H >= 4.0) P = M > 0.40 ? 0.25 : 0.05;     // coastland
-			P *= Rules.TreeDensity;
-			if (Aeon::Hash(CellX, CellY, FaceSalt + 1, Seed ^ 0x7ee5u) < P)
+			const FVegetationLayerRule& Rule = Rules[li];
+			if (Rule.MeshCount == 0 || R.level < Rule.MinLevel || (Rule.Biomes & Flags) == 0) continue;
+			const uint32 LayerSeed = Seed ^ (0x7ee5u + 977u * li);
+			const bool bGround = Rule.Kind == 2;
+			const int32 Candidates = bGround ? FMath::Clamp(FMath::RoundToInt(GROUND_PER_CELL * Rule.Density), 0, 512) : (Rule.Kind == 1 ? 2 : 1);
+			for (int32 k = 0; k < Candidates; k++)
 			{
-				const double U = -1 + (CellX + 0.15 + 0.7 * Aeon::Hash(CellX, CellY, FaceSalt + 2, Seed ^ 0x7ee5u)) * CellSize;
-				const double V = -1 + (CellY + 0.15 + 0.7 * Aeon::Hash(CellX, CellY, FaceSalt + 3, Seed ^ 0x7ee5u)) * CellSize;
-				double TD[3];
-				Aeon::CubeDirection(R.face, U, V, TD);
-				const double TH = Aeon::TerrainHeight(TD[0], TD[1], TD[2], Seed);
-				const double Slope = Aeon::SlopeAt(TD[0], TD[1], TD[2], TH, Seed);
-				if (TH > 3.0 && Slope < 0.5)
-				{
-					const double Yaw = 360.0 * Aeon::Hash(CellX, CellY, FaceSalt + 4, Seed ^ 0x7ee5u);
-					const double Scale = (0.8 + 0.6 * Aeon::Hash(CellX, CellY, FaceSalt + 5, Seed ^ 0x7ee5u)) * Rules.TreeScale;
-					const int32 Species = FMath::Min(Out.Trees.Num() - 1, static_cast<int32>(Aeon::Hash(CellX, CellY, FaceSalt + 6, Seed ^ 0x7ee5u) * Out.Trees.Num()));
-					Out.Trees[Species].Add(PlaceOnSurface(TD, TH, PatchCenter, Yaw, Scale));
-				}
-			}
-		}
-
-		if (bGrass && M > 0.25)
-		{
-			const int32 Count = FMath::RoundToInt(GrassCount * FMath::Clamp((M - 0.2) * 1.6, 0.2, 1.0));
-			for (int32 k = 0; k < Count; k++)
-			{
-				const double Salt = FaceSalt + 100 + k * 7.0;
-				const double U = -1 + (CellX + Aeon::Hash(CellX, CellY, Salt, Seed ^ 0x6a55u)) * CellSize;
-				const double V = -1 + (CellY + Aeon::Hash(CellX, CellY, Salt + 1, Seed ^ 0x6a55u)) * CellSize;
-				double GD[3];
-				Aeon::CubeDirection(R.face, U, V, GD);
-				const double GH = Aeon::TerrainHeight(GD[0], GD[1], GD[2], Seed);
-				if (GH < 2.5) continue;
-				const double Yaw = 360.0 * Aeon::Hash(CellX, CellY, Salt + 2, Seed ^ 0x6a55u);
-				const double Scale = (0.7 + 0.6 * Aeon::Hash(CellX, CellY, Salt + 3, Seed ^ 0x6a55u)) * Rules.GrassScale;
-				const int32 Species = FMath::Min(Out.Grass.Num() - 1, static_cast<int32>(Aeon::Hash(CellX, CellY, Salt + 4, Seed ^ 0x6a55u) * Out.Grass.Num()));
-				Out.Grass[Species].Add(PlaceOnSurface(GD, GH, PatchCenter, Yaw, Scale));
+				const double Salt = FaceSalt + 10.0 + k * 7.0;
+				if (!bGround && Aeon::Hash(CellX, CellY, Salt, LayerSeed) >= Rule.Density) continue;
+				const double U = -1 + (CellX + Aeon::Hash(CellX, CellY, Salt + 1, LayerSeed)) * CellSize;
+				const double V = -1 + (CellY + Aeon::Hash(CellX, CellY, Salt + 2, LayerSeed)) * CellSize;
+				double PD[3];
+				Aeon::CubeDirection(R.face, U, V, PD);
+				const double PH = Aeon::TerrainHeight(PD[0], PD[1], PD[2], Seed);
+				if (PH < Rule.MinHeight || PH > Rule.MaxHeight) continue;
+				if (!bGround && Aeon::SlopeAt(PD[0], PD[1], PD[2], PH, Seed) > Rule.MaxSlope) continue;
+				const double Yaw = 360.0 * Aeon::Hash(CellX, CellY, Salt + 3, LayerSeed);
+				const double Scale = Rule.ScaleMin + (Rule.ScaleMax - Rule.ScaleMin) * Aeon::Hash(CellX, CellY, Salt + 4, LayerSeed);
+				const int32 Mesh = FMath::Min(Rule.MeshCount - 1, static_cast<int32>(Aeon::Hash(CellX, CellY, Salt + 5, LayerSeed) * Rule.MeshCount));
+				Out.Instances[li][Mesh].Add(PlaceOnSurface(PD, PH, PatchCenter, Yaw, Scale));
 			}
 		}
 	}

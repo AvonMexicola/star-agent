@@ -37,7 +37,23 @@ by keeping Epic-licensed content on the Unreal side of this boundary.
 
 | Pack | Source | Licence | Used for | Content path |
 | --- | --- | --- | --- | --- |
-| _(none yet; add rows as packs are adopted)_ | Fab | Fab Standard License | | `/Game/Fab/...` |
+| Quixel Megaplants: European Beech (saplings) | Fab (Quixel Megaplants seller) | Fab Standard License | temperate forest canopy | `/Game/Megaplant_Library/Tree_European_Beech/` |
+| Quixel Megaplants: Hornbeam | Fab (Quixel Megaplants seller) | Fab Standard License | temperate forest canopy | `/Game/Megaplant_Library/Tree_Hornbeam/` |
+| Quixel Megaplants: Norway Maple (saplings) | Fab (Quixel Megaplants seller) | Fab Standard License | temperate forest canopy | `/Game/Megaplant_Library/Tree_Norway_Maple/` |
+| Quixel Megaplants: Elder | Fab (Quixel Megaplants seller) | Fab Standard License | forest edge | `/Game/Megaplant_Library/Tree_Elder/` |
+| Quixel Megaplants: Black Poplar | Fab (Quixel Megaplants seller) | Fab Standard License | wet lowland, coasts | `/Game/Megaplant_Library/Tree_Black_Poplar/` |
+| Quixel Megaplants: Aleppo Pine | Fab (Quixel Megaplants seller) | Fab Standard License | dry warm grassland | `/Game/Megaplant_Library/Tree_Aleppo_Pine/` |
+| Quixel Megaplants: Ginkgo | Fab (Quixel Megaplants seller) | Fab Standard License | ornamental lowland, sparse | `/Game/Megaplant_Library/Tree_Ginkgo/` |
+| Quixel Megaplants: Yoshino Cherry | Fab (Quixel Megaplants seller) | Fab Standard License | ornamental lowland, sparse | `/Game/Megaplant_Library/Tree_Yoshino_Cherry/` |
+| Quixel Megaplants: European Spindle (shrub) | Fab (Quixel Megaplants seller) | Fab Standard License | forest edge | `/Game/Megaplant_Library/Shrub_European_Spindle/` |
+| Quixel Megaplants: Greasewood (shrub) | Fab (Quixel Megaplants seller) | Fab Standard License | dry grassland, tundra | `/Game/Megaplant_Library/Shrub_Greasewood/` |
+| Quixel Megaplants: Huckleberry Oak (shrub) | Fab (Quixel Megaplants seller) | Fab Standard License | dry grassland | `/Game/Megaplant_Library/Shrub_Huckleberry_Oak/` |
+| Quixel Megaplants: Wood Anemone (plant) | Fab (Quixel Megaplants seller) | Fab Standard License | forest floor | `/Game/Megaplant_Library/Plant_Wood_Anemone/` |
+| Quixel shared material functions and parameter collection | Fab | Fab Standard License | Megaplant materials | `/Game/Fab/` |
+
+All Megaplant variations ship as skeletal meshes with Nanite foliage support
+and Dynamic Wind bones (`<Species>_01_A` to `_D`); the planet actor instances
+them with `UInstancedSkinnedMeshComponent`. Downloaded 2026-09-12.
 
 Candidates chosen for the port: Quixel Megaplants (Black Alder, Norway Maple,
 Common Hazel, European Aspen, European Beech; Procedural Vegetation Editor +

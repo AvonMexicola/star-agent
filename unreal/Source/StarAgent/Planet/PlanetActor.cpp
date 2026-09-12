@@ -6,7 +6,9 @@
 #include "StarAgent.h"
 #include "Components/DynamicMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Components/InstancedSkinnedMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/SkeletalMesh.h"
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "Camera/PlayerCameraManager.h"
@@ -48,7 +50,7 @@ struct FPlanetPatchJob
 	UE::Geometry::FDynamicMesh3 Mesh;
 	UE::Geometry::FDynamicMesh3 WaterMesh;  // empty unless the patch touches water
 	bool bWater = false;
-	FVegetationRules VegetationRules;
+	TArray<FVegetationLayerRule> VegetationRules;
 	bool bVegetation = false;
 	FVegetationInstances Vegetation;
 	UE::Tasks::FTask Task;
@@ -184,22 +186,75 @@ void APlanetActor::BeginPlay()
 	{
 		VegetationMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/StarAgent/Materials/M_Vegetation.M_Vegetation"));
 	}
-	if (bVegetation)
-	{
-		TreeMeshes.RemoveAll([](const TObjectPtr<UStaticMesh>& M) { return M == nullptr; });
-		GrassMeshes.RemoveAll([](const TObjectPtr<UStaticMesh>& M) { return M == nullptr; });
-		if (TreeMeshes.Num() == 0) TreeMeshes.Add(BuildPlaceholderTreeMesh(this, VegetationMaterial));
-		if (GrassMeshes.Num() == 0) GrassMeshes.Add(BuildPlaceholderGrassMesh(this, VegetationMaterial));
-	}
-	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: seed %lld, land material %s, water material %s, %d tree meshes (%s), %d grass meshes (%s)"), Seed,
+	if (bVegetation && VegetationLayers.Num() == 0) BuildDefaultVegetationLayers();
+	int32 MeshTotal = 0;
+	for (const FVegetationLayer& Layer : VegetationLayers) MeshTotal += Layer.MeshCount();
+	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: seed %lld, land material %s, water material %s, %d vegetation layers with %d meshes"), Seed,
 		LandMaterial ? *LandMaterial->GetPathName() : TEXT("NONE (vertex-colour debug material)"),
-		WaterMaterial ? *WaterMaterial->GetPathName() : TEXT("NONE (no water)"),
-		TreeMeshes.Num(), TreeMeshes.Num() ? *TreeMeshes[0]->GetName() : TEXT("-"), GrassMeshes.Num(), GrassMeshes.Num() ? *GrassMeshes[0]->GetName() : TEXT("-"));
+		WaterMaterial ? *WaterMaterial->GetPathName() : TEXT("NONE (no water)"), VegetationLayers.Num(), MeshTotal);
 	if (LandMaterial) StartAlbedoBake();
 	ApplyLook();
 	for (int32 Face = 0; Face < 6; Face++) Roots[Face] = GetNode(Face, 0, 0, 0);
 	CameraBody[0] = 0; CameraBody[1] = 0; CameraBody[2] = Aeon::Radius * 2;  // planet.js initial observer
 	Select();
+}
+
+void APlanetActor::BuildDefaultVegetationLayers()
+{
+	// Quixel Megaplants (Fab Standard License, Unreal-only; see THIRD-PARTY-ASSETS.md).
+	// Each species ships four skeletal variations _A.._D. Missing packs are skipped.
+	auto Species = [](const TCHAR* Folder, const TCHAR* Sub, const TCHAR* Base) -> TArray<TObjectPtr<USkeletalMesh>>
+	{
+		TArray<TObjectPtr<USkeletalMesh>> Meshes;
+		for (const TCHAR* V : { TEXT("A"), TEXT("B"), TEXT("C"), TEXT("D") })
+		{
+			const FString Path = FString::Printf(TEXT("/Game/Megaplant_Library/%s/%s/%s_%s.%s_%s"), Folder, Sub, Base, V, Base, V);
+			if (USkeletalMesh* M = LoadObject<USkeletalMesh>(nullptr, *Path)) Meshes.Add(M);
+		}
+		return Meshes;
+	};
+	auto AddLayer = [&](const TCHAR* Name, EVegetationKind Kind, int32 Biomes, float Density, TArray<TObjectPtr<USkeletalMesh>> Meshes, float ScaleMin = 0.85f, float ScaleMax = 1.25f)
+	{
+		if (Meshes.Num() == 0) return;
+		FVegetationLayer L; L.Name = Name; L.Kind = Kind; L.Biomes = Biomes; L.Density = Density; L.SkeletalMeshes = MoveTemp(Meshes); L.ScaleMin = ScaleMin; L.ScaleMax = ScaleMax;
+		if (Kind == EVegetationKind::Ground) L.bCastShadow = false;
+		VegetationLayers.Add(L);
+	};
+	const int32 Coast = (int32)EVegetationBiome::Coast, Grassland = (int32)EVegetationBiome::Grassland, Forest = (int32)EVegetationBiome::Forest;
+	const int32 Alpine = (int32)EVegetationBiome::Alpine, Tundra = (int32)EVegetationBiome::Tundra, Dry = (int32)EVegetationBiome::Dry, Wet = (int32)EVegetationBiome::Wet;
+
+	// Temperate forest canopy and edge.
+	TArray<TObjectPtr<USkeletalMesh>> Canopy;
+	Canopy.Append(Species(TEXT("Tree_European_Beech"), TEXT("Tree_European_Beech_Saplings_01"), TEXT("Tree_European_Beech_Sapling_01")));
+	Canopy.Append(Species(TEXT("Tree_Hornbeam"), TEXT("Tree_Hornbeam_01"), TEXT("Tree_Hornbeam_01")));
+	Canopy.Append(Species(TEXT("Tree_Norway_Maple"), TEXT("Tree_Norway_Maple_Saplings_01"), TEXT("Tree_Norway_Maple_Sapling_01")));
+	AddLayer(TEXT("Temperate canopy"), EVegetationKind::Tree, Forest, 0.7f, MoveTemp(Canopy));
+	AddLayer(TEXT("Elder, forest edge"), EVegetationKind::Tree, Forest | Grassland, 0.06f, Species(TEXT("Tree_Elder"), TEXT("Tree_Elder_01"), TEXT("Tree_Elder_01")));
+	AddLayer(TEXT("Black poplar, wet lowland"), EVegetationKind::Tree, Wet | Coast, 0.18f, Species(TEXT("Tree_Black_Poplar"), TEXT("Tree_Black_Poplar_01"), TEXT("Tree_Black_Poplar_01")));
+	// Dry and warm ground.
+	AddLayer(TEXT("Aleppo pine, dry"), EVegetationKind::Tree, Dry | Grassland, 0.12f, Species(TEXT("Tree_Aleppo_Pine"), TEXT("Tree_Aleppo_Pine_01"), TEXT("Tree_Aleppo_Pine_01")));
+	AddLayer(TEXT("Huckleberry oak, dry shrub"), EVegetationKind::Shrub, Dry | Grassland | Alpine, 0.25f, Species(TEXT("Shrub_Huckleberry_Oak"), TEXT("Shrub_Huckleberry_Oak_01"), TEXT("Shrub_Huckleberry_Oak_01")));
+	AddLayer(TEXT("Greasewood, tundra and dry"), EVegetationKind::Shrub, Tundra | Dry, 0.2f, Species(TEXT("Shrub_Greasewood"), TEXT("Shrub_Greasewood_01"), TEXT("Shrub_Greasewood_01")));
+	// Ornamentals near the coast, sparse.
+	AddLayer(TEXT("Yoshino cherry"), EVegetationKind::Tree, Coast, 0.04f, Species(TEXT("Tree_Yoshino_Cherry"), TEXT("Tree_Yoshino_Cherry_01"), TEXT("Tree_Yoshino_Cherry_01")));
+	AddLayer(TEXT("Ginkgo"), EVegetationKind::Tree, Coast | Grassland, 0.02f, Species(TEXT("Tree_Ginkgo"), TEXT("Tree_Ginkgo_01"), TEXT("Tree_Ginkgo_01")));
+	// Understory.
+	AddLayer(TEXT("European spindle, forest edge"), EVegetationKind::Shrub, Forest, 0.15f, Species(TEXT("Shrub_European_Spindle"), TEXT("Shrub_European_Spindle_01"), TEXT("Shrub_European_Spindle_01")));
+	AddLayer(TEXT("Wood anemone, forest floor"), EVegetationKind::Ground, Forest, 0.25f, Species(TEXT("Plant_Wood_Anemone"), TEXT("Plant_Wood_Anemone_01"), TEXT("Plant_Wood_Anemone_01")), 0.8f, 1.2f);
+
+	const bool bHaveMegaplants = VegetationLayers.Num() > 0;
+	if (!bHaveMegaplants)
+	{
+		FVegetationLayer Trees; Trees.Name = TEXT("Placeholder trees"); Trees.Kind = EVegetationKind::Tree; Trees.Biomes = Forest | Grassland | Coast; Trees.Density = 0.5f;
+		Trees.StaticMeshes.Add(BuildPlaceholderTreeMesh(this, VegetationMaterial));
+		VegetationLayers.Add(Trees);
+	}
+	// Placeholder grass until a real grass pack is assigned: grassland, tundra, coast and forest floor.
+	FVegetationLayer Grass; Grass.Name = TEXT("Placeholder grass"); Grass.Kind = EVegetationKind::Ground; Grass.Biomes = Grassland | Tundra | Coast | Forest; Grass.Density = 1.f; Grass.bCastShadow = false;
+	Grass.ScaleMin = 0.7f; Grass.ScaleMax = 1.3f; Grass.MinHeightMetres = 2.5f;
+	Grass.StaticMeshes.Add(BuildPlaceholderGrassMesh(this, VegetationMaterial));
+	VegetationLayers.Add(Grass);
+	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: default vegetation layers built, Megaplants %s"), bHaveMegaplants ? TEXT("found") : TEXT("not found (placeholders only)"));
 }
 
 void APlanetActor::StartAlbedoBake()
@@ -315,11 +370,15 @@ void APlanetActor::Dispatch()
 		Node->Job = Job;
 		// The task owns a reference; it never touches the actor or the node.
 		const bool bWantWater = bWater;
-		Job->VegetationRules.TreeLevel = TreeLevel; Job->VegetationRules.GrassLevel = GrassLevel;
-		Job->VegetationRules.TreeDensity = TreeDensity; Job->VegetationRules.GrassDensity = GrassDensity;
-		Job->VegetationRules.TreeSpecies = FMath::Max(1, TreeMeshes.Num()); Job->VegetationRules.GrassSpecies = FMath::Max(1, GrassMeshes.Num());
-		Job->VegetationRules.TreeScale = TreeScale; Job->VegetationRules.GrassScale = GrassScale;
-		Job->bVegetation = bVegetation && Node->Level >= FMath::Min(TreeLevel, GrassLevel);
+		int32 LowestLevel = 99;
+		for (const FVegetationLayer& Layer : VegetationLayers)
+		{
+			FVegetationLayerRule Rule = MakeRule(Layer);
+			Rule.Density *= VegetationDensity;
+			Job->VegetationRules.Add(Rule);
+			if (Layer.MeshCount() > 0) LowestLevel = FMath::Min(LowestLevel, Rule.MinLevel);
+		}
+		Job->bVegetation = bVegetation && Node->Level >= LowestLevel;
 		Job->Task = UE::Tasks::Launch(TEXT("StarAgentPatch"), [Job, bWantWater]()
 		{
 			Aeon::BuildPatch(Job->Request, Job->Buffers);
@@ -400,23 +459,45 @@ void APlanetActor::AttachPatch(FPlanetNode* Node, FPlanetPatchJob& Job)
 		Node->Water = WaterComp;
 	}
 
-	auto MakeInstances = [&](UStaticMesh* StaticMesh, const TArray<FTransform>& Transforms, float CullMetres, bool bShadows) -> UInstancedStaticMeshComponent*
+	for (int32 li = 0; li < Job.Vegetation.Instances.Num() && li < VegetationLayers.Num(); li++)
 	{
-		if (!StaticMesh || Transforms.Num() == 0) return nullptr;
-		UInstancedStaticMeshComponent* ISM = NewObject<UInstancedStaticMeshComponent>(this, NAME_None, RF_Transient);
-		ISM->SetStaticMesh(StaticMesh);
-		ISM->SetupAttachment(Comp);
-		ISM->SetCastShadow(bShadows);
-		ISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		ISM->SetCullDistances(FMath::RoundToInt(CullMetres * 70.f), FMath::RoundToInt(CullMetres * 100.f));
-		ISM->RegisterComponent();
-		ISM->AddInstances(Transforms, false, false, false);
-		return ISM;
-	};
-	for (int32 i = 0; i < Job.Vegetation.Trees.Num() && i < TreeMeshes.Num(); i++)
-		if (UInstancedStaticMeshComponent* ISM = MakeInstances(TreeMeshes[i], Job.Vegetation.Trees[i], TreeCullMetres, true)) Node->Trees.Add(ISM);
-	for (int32 i = 0; i < Job.Vegetation.Grass.Num() && i < GrassMeshes.Num(); i++)
-		if (UInstancedStaticMeshComponent* ISM = MakeInstances(GrassMeshes[i], Job.Vegetation.Grass[i], GrassCullMetres, false)) Node->Grass.Add(ISM);
+		const FVegetationLayer& Layer = VegetationLayers[li];
+		const float CullMetres = Layer.EffectiveCullMetres();
+		const int32 StartCull = FMath::RoundToInt(CullMetres * 70.f), EndCull = FMath::RoundToInt(CullMetres * 100.f);
+		const TArray<TArray<FTransform>>& PerMesh = Job.Vegetation.Instances[li];
+		for (int32 mi = 0; mi < PerMesh.Num(); mi++)
+		{
+			const TArray<FTransform>& Transforms = PerMesh[mi];
+			if (Transforms.Num() == 0) continue;
+			if (mi < Layer.StaticMeshes.Num())
+			{
+				UInstancedStaticMeshComponent* ISM = NewObject<UInstancedStaticMeshComponent>(this, NAME_None, RF_Transient);
+				ISM->SetStaticMesh(Layer.StaticMeshes[mi]);
+				ISM->SetupAttachment(Comp);
+				ISM->SetCastShadow(Layer.bCastShadow);
+				ISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				ISM->SetCullDistances(StartCull, EndCull);
+				ISM->RegisterComponent();
+				ISM->AddInstances(Transforms, false, false, false);
+				Node->Vegetation.Add(ISM);
+			}
+			else if (mi - Layer.StaticMeshes.Num() < Layer.SkeletalMeshes.Num())
+			{
+				// Megaplants: skeletal meshes with Nanite foliage and wind bones.
+				UInstancedSkinnedMeshComponent* ISKM = NewObject<UInstancedSkinnedMeshComponent>(this, NAME_None, RF_Transient);
+				ISKM->SetSkinnedAsset(Layer.SkeletalMeshes[mi - Layer.StaticMeshes.Num()]);
+				ISKM->SetupAttachment(Comp);
+				ISKM->SetCastShadow(Layer.bCastShadow);
+				ISKM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				ISKM->SetCullDistances(StartCull, EndCull);
+				ISKM->RegisterComponent();
+				TArray<int32> AnimationIndices;
+				AnimationIndices.Init(0, Transforms.Num());  // stored as uint32; 0 with no animation bank = rest pose (wind comes from the Dynamic Wind plugin)
+				ISKM->AddInstances(Transforms, AnimationIndices, false, false);
+				Node->Vegetation.Add(ISKM);
+			}
+		}
+	}
 }
 
 void APlanetActor::DisposeNode(FPlanetNode* Node)
@@ -431,9 +512,8 @@ void APlanetActor::DisposeNode(FPlanetNode* Node)
 		Node->Water->DestroyComponent();
 		Node->Water = nullptr;
 	}
-	for (UInstancedStaticMeshComponent* ISM : Node->Trees) if (ISM) ISM->DestroyComponent();
-	for (UInstancedStaticMeshComponent* ISM : Node->Grass) if (ISM) ISM->DestroyComponent();
-	Node->Trees.Reset(); Node->Grass.Reset();
+	for (UPrimitiveComponent* Veg : Node->Vegetation) if (Veg) Veg->DestroyComponent();
+	Node->Vegetation.Reset();
 	Node->Material = nullptr;
 	Node->WaterMaterialInstance = nullptr;
 	Node->bRefined = false;
