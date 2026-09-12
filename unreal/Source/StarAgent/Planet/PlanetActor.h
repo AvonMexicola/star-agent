@@ -21,6 +21,7 @@
 class UDynamicMeshComponent;
 class USkyAtmosphereComponent;
 class UVolumetricCloudComponent;
+class USkyLightComponent;
 class UPostProcessComponent;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
@@ -149,6 +150,13 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Planet")
 	bool bClouds = true;
+
+	/** Real-time captured sky light: ambient from the atmosphere and clouds, dark on the night side. */
+	UPROPERTY(VisibleAnywhere, Category = "Planet")
+	TObjectPtr<USkyLightComponent> SkyLight;
+
+	UPROPERTY(EditAnywhere, Category = "Planet")
+	bool bSkyLight = true;
 
 	// Look tuning. All of these are re-applied when changed, so they can be
 	// edited live on the spawned actor during Play-in-Editor.

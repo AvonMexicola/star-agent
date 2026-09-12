@@ -31,7 +31,8 @@ verified by `tools/crosscheck.sh`. Nothing here has been run in the editor.
 | `Source/StarAgent/Planet/PlanetActor.*` | `planet.js` quadtree with the 0.6 s geomorph, worker-thread patch builds, per-patch land/water/tree/grass components, SkyAtmosphere, exposure and haze tuning (Look), orbital albedo bake | runs |
 | `Source/StarAgent/Planet/PlanetGravityComponent.*` | Inverse-square radial gravity; Character Movement gravity direction, or force on physics bodies | not compiled |
 | `Source/StarAgent/Planet/StarAgentSun.*` | Directional light as the atmosphere sun from `SUN_DIRECTION`, 1.10° disc | not compiled |
-| `Source/StarAgent/Planet/StarAgentFlyPawn.*` | Altitude-scaled free flight (assisted mode) | not compiled |
+| `Source/StarAgent/Planet/StarAgentFlyPawn.*` | Six-degree-of-freedom flight, speed by altitude, Q/E roll; F drops a walker onto the ground | runs |
+| `Source/StarAgent/Planet/StarAgentCharacter.*` | On-foot character with radial gravity, mouse look around local up, jump; F returns to flight | not yet run |
 | `Source/StarAgent/Planet/StarAgentGameMode.*` | Spawns planet and sun into an empty level, starts the player in orbit at 2 R | not compiled |
 | `Scripts/` | Asset manifest and editor Python import script for the glTF assets | untested (needs the editor) |
 | `tools/` | JavaScript sample dumps and C++ cross-checks | passing |

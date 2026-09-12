@@ -14,6 +14,7 @@
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "Components/VolumetricCloudComponent.h"
+#include "Components/SkyLightComponent.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Engine/CollisionProfile.h"
 #include "Kismet/GameplayStatics.h"
@@ -96,6 +97,14 @@ APlanetActor::APlanetActor()
 	Clouds->TracingMaxDistanceMode = EVolumetricCloudTracingMaxDistanceMode::DistanceFromCloudLayerEntryPoint;
 	Clouds->TracingMaxDistance = 400.f;
 	Clouds->bUsePerSampleAtmosphericLightTransmittance = true;
+	// Ambient light captured from the sky each frame, so shadows on the day
+	// side are blue-lit and the night side is genuinely dark.
+	SkyLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SkyLight"));
+	SkyLight->SetupAttachment(RootComponent);
+	SkyLight->SetMobility(EComponentMobility::Movable);
+	SkyLight->bRealTimeCapture = true;
+	SkyLight->bLowerHemisphereIsBlack = false;
+	SkyLight->Intensity = 1.f;
 }
 
 void APlanetActor::ApplyLook()
@@ -206,6 +215,11 @@ void APlanetActor::BeginPlay()
 	{
 		Clouds->SetVisibility(false);
 		Clouds->Deactivate();
+	}
+	if (!bSkyLight && SkyLight)
+	{
+		SkyLight->SetVisibility(false);
+		SkyLight->Deactivate();
 	}
 	// Scripts/create_materials.py makes this asset. Loaded here rather than in
 	// the constructor: a constructor-time load runs during engine start-up and

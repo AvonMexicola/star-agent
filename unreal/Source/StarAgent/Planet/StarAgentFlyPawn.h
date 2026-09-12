@@ -61,6 +61,8 @@ public:
 	virtual void AddControllerPitchInput(float Val) override;
 	virtual void AddControllerRollInput(float Val) override;
 	void RollInput(float Val);
+	/** F: put a walking character on the ground below and possess it. */
+	void ToggleWalk();
 
 protected:
 	virtual void BeginPlay() override;
