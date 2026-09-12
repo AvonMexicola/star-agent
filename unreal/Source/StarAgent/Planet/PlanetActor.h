@@ -226,6 +226,16 @@ private:
 	void StartAlbedoBake();
 	void FinishAlbedoBake();
 	void BuildDefaultVegetationLayers();
+	void OnVegetationAssetsLoaded();
+	void StartVegetationRefresh();
+	void CollectFinishedVegetationJobs();
+	void AttachVegetation(FPlanetNode* Node, const FVegetationInstances& Instances);
+	int32 LowestVegetationLevel() const;
+	struct FVegetationJob;
+	TArray<TSharedPtr<FVegetationJob>> VegetationJobs;
+	TArray<TArray<FSoftObjectPath>> PendingLayerPaths;  // per default layer, resolved on load
+	TSharedPtr<struct FStreamableHandle> VegetationLoadHandle;
+	bool bVegetationReady = false;
 	void AdvanceMorphs(float DeltaSeconds);
 	void ApplyPatchMaterialParameters(FPlanetNode* Node);
 	bool bAlbedoReady = false;
