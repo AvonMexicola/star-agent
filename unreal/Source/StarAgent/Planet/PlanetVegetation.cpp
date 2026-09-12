@@ -12,13 +12,7 @@
 
 using namespace UE::Geometry;
 
-namespace StarAgent {
-
-// ---------------------------------------------------------------- scatter
-
-static constexpr int32 CELL_LEVEL = 17;
-static constexpr int32 GROUND_PER_CELL = 96;
-
+// FVegetationLayer is a global USTRUCT; its helpers live outside the namespace.
 int32 FVegetationLayer::EffectiveLevel() const
 {
 	if (MinLevel > 0) return MinLevel;
@@ -29,6 +23,13 @@ float FVegetationLayer::EffectiveCullMetres() const
 	if (CullMetres > 0) return CullMetres;
 	return Kind == EVegetationKind::Tree ? 2500.f : Kind == EVegetationKind::Shrub ? 800.f : 220.f;
 }
+
+namespace StarAgent {
+
+// ---------------------------------------------------------------- scatter
+
+static constexpr int32 CELL_LEVEL = 17;
+static constexpr int32 GROUND_PER_CELL = 96;
 
 FVegetationLayerRule MakeRule(const FVegetationLayer& L)
 {

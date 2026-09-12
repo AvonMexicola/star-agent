@@ -107,6 +107,63 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Vegetation", meta = (ClampMin = 0, ClampMax = 4))
 	float VegetationDensity = 1.f;
 
+	UPROPERTY(EditAnywhere, Category = "Planet")
+	bool bCreateSkyAtmosphere = true;
+
+	/** Width of the baked orbital albedo map (height is half). 2048 is ~4.9 km per texel at the equator. */
+	UPROPERTY(EditAnywhere, Category = "Planet", meta = (ClampMin = 256, ClampMax = 8192))
+	int32 AlbedoWidth = 2048;
+
+	/** Baked lat/long albedo (rgb) and moisture (a), material parameter "OrbitalAlbedo". */
+	UPROPERTY(VisibleAnywhere, Category = "Planet")
+	TObjectPtr<UTexture2D> OrbitalAlbedo;
+
+	/** Baked colour/scree noise fields, material parameter "OrbitalFields". */
+	UPROPERTY(VisibleAnywhere, Category = "Planet")
+	TObjectPtr<UTexture2D> OrbitalFields;
+
+	/** Seconds for a split or merge to morph between parent and child surfaces (terrain-lod.js: 0.6). */
+	UPROPERTY(EditAnywhere, Category = "Planet", meta = (ClampMin = 0.0, ClampMax = 5.0))
+	float MorphSeconds = 0.6f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Planet")
+	TObjectPtr<USkyAtmosphereComponent> SkyAtmosphere;
+
+	/** Unbound post-process volume carrying the exposure settings below. */
+	UPROPERTY(VisibleAnywhere, Category = "Planet")
+	TObjectPtr<UPostProcessComponent> PostProcess;
+
+	// Look tuning. All of these are re-applied when changed, so they can be
+	// edited live on the spawned actor during Play-in-Editor.
+
+	/** Darkest scene EV100 the eye adapts to. Twilight is about 7; raising this keeps dusk and the night side dark. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = -10, UIMax = 20))
+	float ExposureMinEV100 = 8.f;
+
+	/** Brightest scene EV100 the eye adapts to. Sunlit ground under a 100,000 lux sun is about 16. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = -10, UIMax = 20))
+	float ExposureMaxEV100 = 17.f;
+
+	/** Exposure compensation in stops. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = -5, UIMax = 5))
+	float ExposureBias = -0.5f;
+
+	/** Scales aerial-perspective distance; below 1 thins the haze so continents read from orbit. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 0.05, UIMax = 2))
+	float AerialPerspectiveScale = 0.4f;
+
+	/** Atmosphere multiple-scattering strength; lowers the milky blue on the day side when reduced. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 0, UIMax = 2))
+	float MultiScattering = 0.6f;
+
+	/** Camera distance (km) at which the baked albedo map starts replacing the per-pixel surface colour. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 1, UIMax = 500))
+	float AlbedoFadeNearKm = 40.f;
+
+	/** Camera distance (km) beyond which only the baked albedo map is used. */
+	UPROPERTY(EditAnywhere, Category = "Look", meta = (UIMin = 1, UIMax = 1000))
+	float AlbedoFadeFarKm = 150.f;
+
 	/** Radius of the base sphere in metres (Aeon: 1,592,750). */
 	double GetRadiusMetres() const;
 	/** Terrain height above the base sphere for a body-frame unit direction. */
