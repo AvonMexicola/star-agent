@@ -10,6 +10,8 @@
 #include "Engine/StaticMesh.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/AssetManager.h"
+#include "AssetRegistry/IAssetRegistry.h"
+#include "AssetRegistry/AssetData.h"
 #include "Engine/StreamableManager.h"
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/PostProcessComponent.h"
@@ -271,6 +273,7 @@ void APlanetActor::BuildDefaultVegetationLayers()
 	auto AddLayer = [&](const TCHAR* Name, EVegetationKind Kind, int32 Biomes, float Density, TArray<FSoftObjectPath> Paths, float ScaleMin = 0.85f, float ScaleMax = 1.25f, bool bExtra = false)
 	{
 		if (bExtra && !bLoadAllMegaplants) return;
+		if (Paths.Num() == 0) return;
 		FVegetationLayer L; L.Name = Name; L.Kind = Kind; L.Biomes = Biomes; L.Density = Density; L.ScaleMin = ScaleMin; L.ScaleMax = ScaleMax;
 		if (Kind == EVegetationKind::Ground) L.bCastShadow = false;
 		VegetationLayers.Add(L);
@@ -279,11 +282,36 @@ void APlanetActor::BuildDefaultVegetationLayers()
 	const int32 Coast = (int32)EVegetationBiome::Coast, Grassland = (int32)EVegetationBiome::Grassland, Forest = (int32)EVegetationBiome::Forest;
 	const int32 Alpine = (int32)EVegetationBiome::Alpine, Tundra = (int32)EVegetationBiome::Tundra, Dry = (int32)EVegetationBiome::Dry, Wet = (int32)EVegetationBiome::Wet;
 
+	// Classic Quixel Megascans tree packs: static meshes with LODs, no build wait.
+	// Names follow SM_<Species>_<Forest|Field|Sapling|Seedling>_NN; the SimpleWind
+	// folder needs no pivot-painter data. Found through the asset registry so a
+	// pack simply appears in the defaults once it is downloaded.
+	auto PackMeshes = [](const TCHAR* Folder, const TCHAR* Kind) -> TArray<FSoftObjectPath>
+	{
+		TArray<FSoftObjectPath> Paths;
+		if (IAssetRegistry* Registry = IAssetRegistry::Get())
+		{
+			Registry->ScanPathsSynchronous({ FString(Folder) }, false);
+			TArray<FAssetData> Assets;
+			Registry->GetAssetsByPath(FName(Folder), Assets, false);
+			const FString Needle = FString::Printf(TEXT("_%s_"), Kind);
+			for (const FAssetData& A : Assets)
+				if (A.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName() && A.AssetName.ToString().Contains(Needle)) Paths.Add(A.ToSoftObjectPath());
+			Paths.Sort([](const FSoftObjectPath& X, const FSoftObjectPath& Y) { return X.ToString() < Y.ToString(); });
+		}
+		return Paths;
+	};
+	const TCHAR* Hornbeam = TEXT("/Game/EuropeanHornbeam/Geometry/SimpleWind");
+	AddLayer(TEXT("Hornbeam forest (Megascans)"), EVegetationKind::Tree, Forest, 0.35f, PackMeshes(Hornbeam, TEXT("Forest")), 0.9f, 1.15f);
+	AddLayer(TEXT("Hornbeam field (Megascans)"), EVegetationKind::Tree, Grassland | Coast, 0.05f, PackMeshes(Hornbeam, TEXT("Field")), 0.9f, 1.15f);
+	AddLayer(TEXT("Hornbeam saplings (Megascans)"), EVegetationKind::Shrub, Forest | Grassland, 0.2f, PackMeshes(Hornbeam, TEXT("Sapling")), 0.9f, 1.2f);
+	AddLayer(TEXT("Hornbeam seedlings (Megascans)"), EVegetationKind::Ground, Forest, 0.15f, PackMeshes(Hornbeam, TEXT("Seedling")), 0.9f, 1.2f);
+
 	TArray<FSoftObjectPath> Canopy;
 	Canopy.Append(Species(TEXT("Tree_European_Beech"), TEXT("Tree_European_Beech_Saplings_01"), TEXT("Tree_European_Beech_Sapling_01")));
 	Canopy.Append(Species(TEXT("Tree_Hornbeam"), TEXT("Tree_Hornbeam_01"), TEXT("Tree_Hornbeam_01")));
 	Canopy.Append(Species(TEXT("Tree_Norway_Maple"), TEXT("Tree_Norway_Maple_Saplings_01"), TEXT("Tree_Norway_Maple_Sapling_01")));
-	AddLayer(TEXT("Temperate canopy"), EVegetationKind::Tree, Forest, 0.7f, MoveTemp(Canopy));
+	AddLayer(TEXT("Temperate canopy"), EVegetationKind::Tree, Forest, 0.5f, MoveTemp(Canopy));
 	AddLayer(TEXT("Elder, forest edge"), EVegetationKind::Tree, Forest | Grassland, 0.06f, Species(TEXT("Tree_Elder"), TEXT("Tree_Elder_01"), TEXT("Tree_Elder_01")));
 	AddLayer(TEXT("Black poplar, wet lowland"), EVegetationKind::Tree, Wet | Coast, 0.18f, Species(TEXT("Tree_Black_Poplar"), TEXT("Tree_Black_Poplar_01"), TEXT("Tree_Black_Poplar_01")));
 	AddLayer(TEXT("Aleppo pine, dry"), EVegetationKind::Tree, Dry | Grassland, 0.12f, Species(TEXT("Tree_Aleppo_Pine"), TEXT("Tree_Aleppo_Pine_01"), TEXT("Tree_Aleppo_Pine_01")), 0.85f, 1.25f, true);
@@ -320,7 +348,9 @@ void APlanetActor::OnVegetationLayerLoaded(int32 LayerIndex)
 	int32 Resolved = 0;
 	for (const FSoftObjectPath& Path : PendingLayerPaths[LayerIndex])
 	{
-		if (USkeletalMesh* M = Cast<USkeletalMesh>(Path.ResolveObject())) { VegetationLayers[LayerIndex].SkeletalMeshes.Add(M); Resolved++; }
+		UObject* Obj = Path.ResolveObject();
+		if (UStaticMesh* SM = Cast<UStaticMesh>(Obj)) { VegetationLayers[LayerIndex].StaticMeshes.Add(SM); Resolved++; }
+		else if (USkeletalMesh* SK = Cast<USkeletalMesh>(Obj)) { VegetationLayers[LayerIndex].SkeletalMeshes.Add(SK); Resolved++; }
 	}
 	PendingLayerPaths[LayerIndex].Empty();
 	UE_LOG(LogStarAgent, Log, TEXT("PlanetActor: vegetation layer '%s' ready with %d meshes"), *VegetationLayers[LayerIndex].Name, Resolved);

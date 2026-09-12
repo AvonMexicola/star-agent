@@ -18,7 +18,9 @@ public class StarAgent : ModuleRules
 			// Runtime-built placeholder vegetation meshes.
 			"MeshDescription",
 			"StaticMeshDescription",
-			"MeshConversion"
+			"MeshConversion",
+			// Discover downloaded tree packs by content path.
+			"AssetRegistry"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

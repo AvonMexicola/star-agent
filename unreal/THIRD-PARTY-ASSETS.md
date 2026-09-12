@@ -49,6 +49,7 @@ by keeping Epic-licensed content on the Unreal side of this boundary.
 | Quixel Megaplants: Greasewood (shrub) | Fab (Quixel Megaplants seller) | Fab Standard License | dry grassland, tundra | `/Game/Megaplant_Library/Shrub_Greasewood/` |
 | Quixel Megaplants: Huckleberry Oak (shrub) | Fab (Quixel Megaplants seller) | Fab Standard License | dry grassland | `/Game/Megaplant_Library/Shrub_Huckleberry_Oak/` |
 | Quixel Megaplants: Wood Anemone (plant) | Fab (Quixel Megaplants seller) | Fab Standard License | forest floor | `/Game/Megaplant_Library/Plant_Wood_Anemone/` |
+| Quixel Megascans: European Hornbeam tree pack (27 static meshes: forest, field, sapling, seedling; SimpleWind, PivotPainter and impostor materials) | Fab (Quixel) | Fab Standard License | temperate forest canopy, field trees, saplings, seedlings | `/Game/EuropeanHornbeam/` |
 | Quixel shared material functions and parameter collection | Fab | Fab Standard License | Megaplant materials | `/Game/Fab/` |
 
 All Megaplant variations ship as skeletal meshes with Nanite foliage support
