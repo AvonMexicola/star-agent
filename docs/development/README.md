@@ -12,6 +12,7 @@ This handbook is the shared route through the project, including session handove
 | How do agents contribute? | [Agent guide](agents.md), [AGENTS](../../AGENTS.md) |
 | What checks matter? | [Testing](testing.md), [reviews](reviews.md), [quality bar](../../QUALITY.md) |
 | How do we produce assets? | [Asset standard](../asset-production-standard.md), [ship](../../SHIP-PIPELINE-MEMORY.md), [station](../../STATION-PIPELINE-MEMORY.md), [planet](../../PLANET-PIPELINE-MEMORY.md) pipelines |
+| How do we scan and clean model topology? | [Blender scan and cleanup guide](../mesh-cleanup.md), [initial findings](../qa/mesh-scan.md) |
 | How do releases recover? | [Release runbook](releases.md) |
 | What needs admin setup? | [Repository settings](repository-settings.md) |
 | Which branches are integrated? | `npm run branches` (read-only) |

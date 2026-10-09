@@ -111,6 +111,12 @@ the ship builders save editable ships, while the station prop kit is reproduced
 from its checked-in builder and manifest. Organic generation follows its own
 approved intake process; generation alone is not acceptance.
 
+Before cleaning inherited topology, use the [Blender mesh scan and cleanup
+baseline](mesh-cleanup.md). Scan source and export, inspect located overlap and
+simple-shape hints, preserve intentional UV/vertex shading/deformation detail and
+repair the responsible builder. The scanner is a review aid; its findings do not
+replace game-rendered inspection or authorize blanket decimation.
+
 Prioritize features that explain how an object is made and used:
 
 - Bevels that catch light, recessed joins, panel thickness and edge protection.
