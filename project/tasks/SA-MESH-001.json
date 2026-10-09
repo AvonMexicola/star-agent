@@ -1,0 +1,16 @@
+{
+  "id": "SA-MESH-001",
+  "title": "Blender topology scan and agent cleanup baseline",
+  "milestone": "M0",
+  "owner": "@AvonMexicola",
+  "agent": "Codex mesh tooling",
+  "status": "review",
+  "branch": "feat/blender-mesh-scan",
+  "base": "6bb57a7732684f0855f028a2b22163ae22139351",
+  "updated": "2026-10-09",
+  "areas": ["assets", "integration"],
+  "claims": ["blender/mesh_scan.py", "blender/mesh_scan_core.py", "blender/mesh_scan_select.py", "tests/mesh_scan/", "docs/mesh-cleanup.md", "docs/briefs/mesh-scan.md", "docs/qa/mesh-scan.md"],
+  "brief": "docs/briefs/mesh-scan.md",
+  "dependencies": [],
+  "qa": "docs/qa/mesh-scan.md"
+}
