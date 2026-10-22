@@ -51,3 +51,16 @@ you actually tested. Do not represent aspirational features as implemented.
 Do not commit tokens, personal machine configuration, recordings containing private
 information, `node_modules`, build output, or generated test reports. Do not overwrite
 other agents' modules or fabricate successful test results. Keep public docs accurate.
+
+## Asset production reference
+
+Use [the asset production standard](docs/asset-production-standard.md) for new
+ships, station modules, props, materials and graphics. Cees designated the hangar
+production process as the reference workflow: preserve source/provenance, build
+reproducibly, connect the asset to actual gameplay, inspect it in the game renderer,
+record failed checks and fixes, and retain the final review and delivery evidence.
+
+[The hangar production record](docs/qa/hangar-production-record.md) is the worked
+example. Read its current status before reusing any result; pending visual review
+or deployment is not approval. `QUALITY.md` remains the acceptance bar, with the
+ship and station pipeline memories supplying the specific runtime contracts.

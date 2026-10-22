@@ -28,6 +28,16 @@ async function loadModel(file) {
   return gltf.scene;
 }
 
+test('recessed ceiling diffusers remain visible from the hangar floor', async () => {
+  const scene = await loadModel('station.glb');
+  for (const x of [-14, 14]) for (const z of [-17, -5, 7, 19]) {
+    const ray = new THREE.Raycaster(new THREE.Vector3(x, DECK_TOP + 1.75, z), new THREE.Vector3(0, 1, 0), 0, 20);
+    const hit = ray.intersectObject(scene, true)[0];
+    assert.equal(hit?.object.material.name, 'HangarLight',
+      `ceiling diffuser at ${x}, ${z} must not be covered by decorative panels (${hit?.object.name})`);
+  }
+});
+
 for (const file of MODEL_FILES) {
   test(`${file} keeps the structural hull below the visible landing deck`, async () => {
     const scene = await loadModel(file);

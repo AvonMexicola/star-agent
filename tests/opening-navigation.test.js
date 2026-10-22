@@ -7,6 +7,8 @@ import { Navigation } from '../src/navigation.js';
 import { SHIP_LAYOUT } from '../src/boarding.js';
 import { RADIUS } from '../src/world.js';
 import { Station, stationQuaternion } from '../src/station.js';
+import { Fleet, FLEET_KEY } from '../src/fleet.js';
+import { FREIGHTER_LAYOUT, FreighterSystems } from '../src/freighter-layout.js';
 
 if (!globalThis.ProgressEvent) {
   globalThis.ProgressEvent = class ProgressEvent {
@@ -108,6 +110,57 @@ test('normal Navigation construction retains the existing orbital start', t => {
   assert.equal(navigation.dockedAtStation, false);
   assert.equal(navigation.shipPosition, null);
   assert.equal(Boolean(navigation.openingActive), false);
+});
+
+test('saved Atlas selection starts outside its hull and physically boards using its belly elevator', async t => {
+  const { navigation, station, press, advance, moveUntil } = await setupOpening(t);
+  const saved=JSON.stringify({version:1,surfaceVisited:true,unlocked:true,active:'atlas'});
+  const fleet=new Fleet({getItem:key=>key===FLEET_KEY?saved:null});
+  navigation.shipId=fleet.active;navigation.layout=FREIGHTER_LAYOUT;navigation.freighter=new FreighterSystems();
+  // The complex tracks a parked berth independently from its current hub/pod view.
+  station.location='hub';station.activeIndex=7;station.parkedPod=0;
+  navigation.startStation();
+  station.beginOpening();station.setOpeningProgress(1);station.endOpening();
+  assert.equal(navigation.shipId,'atlas');assert.equal(fleet.active,'atlas');
+  assert.equal(navigation.layout,FREIGHTER_LAYOUT);
+  assert.equal(station.location,'hangar');assert.equal(station.parkedPod,7);
+  const local=navigation.toShipLocal(),shipPosition=navigation.shipPosition.clone();
+  assert.ok(local.z<FREIGHTER_LAYOUT.flightBounds.min[2]-.25,'spawn is ahead of the complete cockpit overhang');
+  near(local.y,FREIGHTER_LAYOUT.eyeHeight);
+  near(navigation.deckClearance,FREIGHTER_LAYOUT.eyeHeight);
+  assert.equal(navigation.freighter.floorAt(local),null);
+  moveUntil('KeyD',()=>navigation.toShipLocal().x>9.9,3,'walk clears the Atlas side');
+  moveUntil('KeyS',()=>navigation.toShipLocal().z>14.5,10,'walk physically around the Atlas hull');
+  moveUntil('KeyA',()=>navigation.toShipLocal().x<.2,4,'walk to the aft elevator centreline');
+  moveUntil('KeyW',()=>navigation.toShipLocal().z<11.4,2,'approach the fixed belly elevator call station');
+  assert.match(navigation.interaction,/BELLY ELEVATOR/);press('KeyF');advance(6);
+  near(navigation.freighter.lifts[0].y,0);
+  moveUntil('KeyW',()=>navigation.toShipLocal().z<1.7,4,'walk onto the lowered platform and reach its controls');
+  press('KeyF');advance(6);
+  near(navigation.toShipLocal().y,FREIGHTER_LAYOUT.floorY+FREIGHTER_LAYOUT.eyeHeight,1e-5);
+  moveUntil('KeyW',()=>navigation.toShipLocal().z<-9,6,'walk from the elevator to the Atlas pilot chair');
+  press('KeyF');assert.equal(navigation.mode,'landed');
+  nearVector(navigation.toShipLocal(),new THREE.Vector3(...FREIGHTER_LAYOUT.seatEye));
+  nearVector(navigation.shipPosition,shipPosition);
+});
+
+test('station service actions coexist with travel input gating', t => {
+  installDom(t);
+  const nav=new Navigation(new EventSurface(),()=>{});let actions=0;
+  nav.mode='walk';nav.stationAction=()=>{actions++;return true;};
+  nav.travel={};nav.embark();assert.equal(actions,0,'travel cannot open station services');
+  nav.travel=null;nav.embark();assert.equal(actions,1,'walking F still dispatches cargo/elevator services');
+});
+
+test('travel excludes the complete modular station centre even when another berth is active', t => {
+  installDom(t);
+  const nav=new Navigation(new EventSurface(),()=>{});nav.travelTarget='selene';
+  const route=nav.travelRoute();assert.equal(route.ok,true,route.reason);
+  const centre=route.plan.start.clone().lerp(route.plan.end,.5);
+  const sideways=new THREE.Vector3().crossVectors(route.plan.direction,new THREE.Vector3(0,1,0)).normalize().multiplyScalar(3000);
+  nav.station={ready:true,centre,worldPosition:centre.clone().add(sideways)};
+  const guarded=nav.travelRoute();assert.equal(guarded.ok,false);
+  assert.match(guarded.reason,/Aeon Orbital.*exclusion/);
 });
 
 test('tilted station walking keeps one deck plane beyond the ship boundary', async t => {

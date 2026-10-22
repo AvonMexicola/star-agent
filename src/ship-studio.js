@@ -18,8 +18,8 @@ const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStanda
 const ship=createWalkableShip({assetURL:'/models/nomad.glb'});scene.add(ship);ship.setDoor(true);
 const inventory=new ShipInventory();
 const nav={flightEnvironment:{regime:'ATMOSPHERE',atmosphereFraction:1},normal:new THREE.Vector3(.2,.4,.89).normalize(),orientation:new THREE.Quaternion(),velocity:new THREE.Vector3(),speed:0,altitude:2.55,mode:'landed',flightAssist:true,doorOpen:true,doorProgress:1};
-const views={exterior:[[13,9,-15],[0,1.65,-.6]],rear:[[11,7,14],[0,1.8,.3]],cockpit:[[0,2.55,-2.8],[0,2.00,-4.15]],cargo:[[-.9,2.7,-.1],[1.32,1.8,1.15]]};
-function view(name){camera.fov=name==='cockpit'?52:44;camera.updateProjectionMatrix();camera.position.set(...views[name][0]);controls.target.set(...views[name][1]);controls.update();}
+const views={chair:[[1.0,2.5,-4.0],[0,1.85,-2.65]],exterior:[[13,9,-15],[0,1.65,-.6]],rear:[[11,7,14],[0,1.8,.3]],cockpit:[[0,2.55,-2.8],[0,2.00,-4.15]],cargo:[[-.9,2.7,-.1],[1.32,1.8,1.15]]};
+function view(name){camera.fov=name==='cockpit'?52:name==='chair'?65:44;camera.updateProjectionMatrix();camera.position.set(...views[name][0]);controls.target.set(...views[name][1]);controls.update();}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));
 let open=false;document.getElementById('lid').onclick=()=>ship.setStorage(open=!open);
 view('exterior');

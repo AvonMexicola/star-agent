@@ -115,6 +115,7 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
     rod([side * .51, 1.71, -2.92], [side * .51, 1.94, -3.03], .045, finish.dark);
   }
   // Chair faces -Z; its back is behind the seated camera, toward the aisle.
+  const chairFallback=new THREE.Group();chairFallback.name='Pilot chair fallback';ship.add(chairFallback);activeGroup=chairFallback;
   part(new THREE.CylinderGeometry(.24, .32, .32, 10), finish.metal, 0, 1.16, -2.8);
   box(0, 1.42, -2.8, .83, .19, .79, finish.fabric);
   const back = box(0, 1.91, -2.415, .83, .98, .15, finish.fabric);
@@ -126,6 +127,7 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
   }
 
   // Rear bulkhead surrounds an unobstructed 1.8m × 2.5m doorway.
+  activeGroup=shell;
   for (const side of [-1, 1]) {
     box(side * 1.42, 2.5, 4.0, 1.04, 3, .18, finish.hull);
     box(side * .956, 2.24, 4.116, .09, 2.47, .1, finish.metal);
@@ -236,6 +238,7 @@ export function createWalkableShip({ assetURL = `${import.meta.env.BASE_URL}mode
     model.name = 'Blender Nomad exterior and storage';
     model.traverse(object => { if (object.isMesh) { object.castShadow = true;object.receiveShadow = true; } });
     ship.add(model);cargoLid = lid;exterior.visible = false;cargoFallback.visible = false;
+    if(model.getObjectByName('PilotChair'))chairFallback.visible=false;
     ship.userData.assetStatus = 'ready';
     return model;
   }).catch(error => {

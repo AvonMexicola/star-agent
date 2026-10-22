@@ -66,7 +66,8 @@ export class OpeningSequence {
     // Offset the six-metre dolly sideways to clear the Nomad's wing. Aim
     // through the pilot so the ship stays at frame left and the pilot below centre.
     const at=this.nav.toShipLocal();
-    const from=this.nav.fromShipLocal(at.clone().add(new THREE.Vector3(4,2.6-SHIP_LAYOUT.eyeHeight,6)));
+    const side=this.nav.shipId==='atlas'?this.nav.layout.flightBounds.max[0]+1.2:4;
+    const from=this.nav.fromShipLocal(at.clone().add(new THREE.Vector3(side,2.6-SHIP_LAYOUT.eyeHeight,6)));
     const to=from.clone().addScaledVector(FORWARD.clone().applyQuaternion(this.nav.shipOrientation),1.5);
     const look=this.nav.fromShipLocal(at.clone().add(new THREE.Vector3(-4,.25,-6)));
     this.cameraRig.cinematic(from,to,OPENING.duration,look).update(0,this.nav.orientation);
@@ -102,7 +103,7 @@ export class OpeningSequence {
         this.blendElapsed+=dt;
         document.body.style.setProperty('--opening-hud',String(Math.min(1,this.blendElapsed/OPENING.blendSeconds)));
         if(this.blendElapsed>=OPENING.blendSeconds){
-          this.nav.notify('Walk around to the rear hatch. F opens it; walk up the ramp to the pilot chair.');
+          this.nav.notify(this.nav.shipId==='atlas'?'Walk alongside Atlas to its belly elevator. F operates the lift; ride up to the cabin.':'Walk around to the rear hatch. F opens it; walk up the ramp to the pilot chair.');
           this.phase='playing';this.nav.openingActive=false;this.character.setVisible(false);
           this.nav.keys.add(this.bufferedKey);this.bufferRemaining=.12;
           openingUI(false);document.body.style.removeProperty('--opening-hud');
