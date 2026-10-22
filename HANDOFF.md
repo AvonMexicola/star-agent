@@ -412,3 +412,19 @@ Curated surface/ship screenshots are in `docs/selene-landing.png` and
 `docs/selene-aeon.png`. Software renderer details and limits are recorded in the memory.
 This local notice files the requested memory for Fable; it does not assert a read receipt.
 Review, merge and deployment remain with the manager's queue.
+
+
+## Pyre continuation — 2026-09-06
+
+Cees authorised continuing Fable's planet work. The isolated `feat/pyre-planet-tech`
+branch restores the unfinished Pyre wiring on top of `a18cf81`, then adds shared
+patch surface maps, parent-triangle morphing and canonical basalt/oxide/sulphur
+composition. Scope and integration notes: `docs/pyre.md`. Changes to main,
+navigation, atmosphere and UI are confined to this branch; other agents' working
+copies and the existing surface preview were left intact.
+
+Pyre's local preview is on port 53758 (`star-agent-pyre-planet.service`). Browser
+QA is `scripts/pyre.config.js`; evidence is under `/tmp/star-agent-pyre` with curated
+images in `docs/images/pyre`. Resource surveys and terrain colours share the field;
+Pyre excavation and heat damage remain unimplemented. Aeon/Selene's separate
+material, meadow, stones and expedition PRs still require their own integration.
