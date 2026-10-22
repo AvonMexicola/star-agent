@@ -78,3 +78,20 @@ test('additional controllers do not steal an active device; disconnect selects a
   first.connected = false; button(second, 3, true);
   assert.equal(input.poll().pressed.has(3), false); assert.equal(input.index, 0);
 });
+
+test('map input requires neutral, stays separate from flight, and disarms after close', () => {
+  const pad = controller(), input = new GamepadInput(() => [pad]); input.poll();
+  button(pad, 0, true); input.suspend();
+  assert.equal(input.poll({enabled: false, ui: true}).ui, null, 'held confirm cannot select on entry');
+  button(pad, 0, false); input.poll({enabled: false, ui: true});
+  button(pad, 0, true); pad.axes[1] = -1;
+  const menu = input.poll({enabled: false, ui: true});
+  assert.deepEqual([...menu.ui.pressed], [0]); assert.equal(menu.ui.y, -1);
+  assert.equal(menu.forward, 0); assert.equal(menu.jump, false); assert.equal(menu.pressed.size, 0);
+  assert.equal(input.poll({enabled: false, ui: true}).ui.pressed.size, 0);
+  assert.equal(input.poll().forward, 0, 'held menu navigation cannot thrust after close');
+  button(pad, 0, false); pad.axes.fill(0); input.poll();
+  pad.axes[1] = -1; assert.equal(input.poll().forward, 1);
+  assert.equal(input.poll({enabled: false, ui: true, focused: false}).ui, null);
+  assert.equal(input.poll({enabled: false, ui: true}).ui, null, 'focus regain requires neutral');
+});
